@@ -1,5 +1,7 @@
 package com.teamwizardry.libarianlib.client;
 
+import net.minecraftforge.common.MinecraftForge;
+
 import com.teamwizardry.libarianlib.common.LibCommonProxy;
 
 /**
@@ -7,4 +9,10 @@ import com.teamwizardry.libarianlib.common.LibCommonProxy;
  */
 public class LibClientProxy extends LibCommonProxy {
 
+	@Override
+	public void preInit() {
+		super.preInit();
+        MinecraftForge.EVENT_BUS.register(ScissorUtil.INSTANCE);
+	}
+	
 }
