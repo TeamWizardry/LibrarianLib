@@ -22,7 +22,7 @@ public class BookHandler {
 	}
 	
 	public static void display(String mod, GuiScreen parent, String path, int page) {
-    	Minecraft.getMinecraft().displayGuiScreen(PageRegistry.construct(parent, mod, path, page));
+    	Minecraft.getMinecraft().displayGuiScreen(getScreen(parent, mod, path, page));
 	}
 	
 	public static void display(String mod) {

@@ -50,7 +50,7 @@ public class GuiPageStructure extends GuiPageCommon {
 	public GuiPageStructure(GuiScreen parent, DataNode data, DataNode globalData, String mod, String path, int page) {
         super(parent, data, globalData, mod, path, page);
 
-        structure = new Structure(data.get("structure").asStringOr("nullStruct"));
+        structure = new Structure(new ResourceLocation( data.get("structure").asStringOr("minecraft:missingno") ));
         rotX = 22;
         rotY = 45;
         rotZ = 0;

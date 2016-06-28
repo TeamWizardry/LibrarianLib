@@ -21,6 +21,7 @@ import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.Mirror;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -58,8 +59,8 @@ public class Structure {
     protected TemplateBlockAccess blockAccess;
     protected BlockPos origin = BlockPos.ORIGIN;
     
-    public Structure(String name) {
-        InputStream stream = Structure.class.getResourceAsStream("/assets/wizardry/schematics/" + name + ".nbt");
+    public Structure(ResourceLocation loc) {
+        InputStream stream = Structure.class.getResourceAsStream("/assets/" + loc.getResourceDomain() + "/schematics/" + loc.getResourcePath() + ".nbt");
         if (stream != null) {
             try {
                 parse(stream);
