@@ -1,5 +1,6 @@
 package com.teamwizardry.libarianlib;
 
+import com.teamwizardry.libarianlib.common.LibCommonProxy;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -7,10 +8,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.minecraftforge.fml.common.network.PacketLoggingHandler;
-
 import org.apache.logging.log4j.Logger;
-
-import com.teamwizardry.libarianlib.common.LibCommonProxy;
 
 @Mod(modid = LibrarianLib.MODID, version = LibrarianLib.VERSION, name = LibrarianLib.MODNAME, useMetadata = true)
 public class LibrarianLib {
@@ -26,6 +24,7 @@ public class LibrarianLib {
 
     @SidedProxy(clientSide = CLIENT, serverSide = SERVER)
     public static LibCommonProxy proxy;
+
     @Mod.Instance
     public static LibrarianLib instance;
 
