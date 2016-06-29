@@ -1,7 +1,8 @@
 package com.teamwizardry.librarianlib.client.fx.shader;
 
-public abstract class ShaderCallback<T extends Shader> {
+@FunctionalInterface
+public interface ShaderCallback<T extends Shader> {
 
-    public abstract void call(T shader);
+    public void call(T shader);
 
 }

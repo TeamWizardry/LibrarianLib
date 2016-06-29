@@ -1,13 +1,20 @@
 package com.teamwizardry.librarianlib.client.gui.book.bookcomponents;
 
-import com.teamwizardry.librarianlib.LibrarianLib;
-import com.teamwizardry.librarianlib.api.Const;
-import com.teamwizardry.librarianlib.api.util.misc.Color;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
+
+import com.teamwizardry.librarianlib.LibrarianLib;
+import com.teamwizardry.librarianlib.api.Const;
+import com.teamwizardry.librarianlib.api.util.misc.Color;
+import com.teamwizardry.librarianlib.client.fx.shader.LibShaders;
+import com.teamwizardry.librarianlib.client.fx.shader.LibShaders.HueShader;
+import com.teamwizardry.librarianlib.client.fx.shader.ShaderHelper;
 
 
 /**
@@ -86,9 +93,13 @@ class PageBase extends GuiScreen {
     }
 
     @Override
+    public void drawBackground(int tint) {
+    }
+    
+    @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
-
+        GlStateManager.color(1F, 1F, 1F, 1F);
         backButton.enabled = hasNavPrev;
         nextButton.enabled = hasNavNext;
         returnButton.enabled = hasNavReturn;
@@ -105,9 +116,14 @@ class PageBase extends GuiScreen {
         // RENDER HEADER //
 
         // RENDER BOOK BACKGROUND //
-        GlStateManager.color(1F, 1F, 1F, 1F);
+        
         mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
+        ShaderHelper.useShader(LibShaders.HUE, (shader) -> {
+        	((HueShader)shader).hue.set(0);
+        });
         drawTexturedModalRect(left, top, 0, 0, bookBackgroundWidth, bookBackgroundHeight);
+        
+        ShaderHelper.releaseShader();
         // RENDER BOOK BACKGROUND
 
         // RENDER NAV BAR //

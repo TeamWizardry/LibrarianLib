@@ -68,7 +68,7 @@ public enum UniformType {
     SAMPLER_1D_ARRAY(NoUniform::new),
     SAMPLER_1D_ARRAY_SHADOW(NoUniform::new),
 
-    SAMPLER_2D(NoUniform::new),
+    SAMPLER_2D(IntTypes.Int::new),
     SAMPLER_2D_SHADOW(NoUniform::new),
     SAMPLER_2D_ARRAY(NoUniform::new),
     SAMPLER_2D_ARRAY_SHADOW(NoUniform::new),
@@ -192,7 +192,8 @@ public enum UniformType {
 
     public static UniformType getByGlEnum(int type) {
         UniformType uniformType = map.get(type);
-        if (uniformType == null) uniformType = NONE;
+        if (uniformType == null)
+        	uniformType = NONE;
         return uniformType;
     }
 

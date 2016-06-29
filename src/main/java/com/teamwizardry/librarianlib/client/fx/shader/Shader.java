@@ -4,6 +4,9 @@ import com.teamwizardry.librarianlib.api.LibrarianLog;
 import com.teamwizardry.librarianlib.client.fx.shader.uniforms.FloatTypes;
 import com.teamwizardry.librarianlib.client.fx.shader.uniforms.Uniform;
 import com.teamwizardry.librarianlib.client.fx.shader.uniforms.UniformType;
+
+import org.lwjgl.opengl.ARBShaderObjects;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
 public abstract class Shader {
@@ -31,6 +34,7 @@ public abstract class Shader {
         int uniformCount = GL20.glGetProgrami(getGlName(), GL20.GL_ACTIVE_UNIFORMS);
         int uniformLength = GL20.glGetProgrami(getGlName(), GL20.GL_ACTIVE_UNIFORM_MAX_LENGTH);
         uniforms = new Uniform[uniformCount];
+        
         int index = 0;
         for (int i = 0; i < uniformCount; i++) {
             String name = GL20.glGetActiveUniform(getGlName(), i, uniformLength);
@@ -41,8 +45,16 @@ public abstract class Shader {
             Uniform uniform = makeUniform(name, type, size, location);
             uniforms[index++] = uniform;
         }
-
-        time = getUniform("time");
+        
+        if(uniformCount > 0) {
+        	String msg = "Found " + uniformCount + " uniforms. [";
+        	for (Uniform uniform : uniforms) {
+				msg += uniform.getType().toString() + " `" + uniform.getName() + "` @" + uniform.getLocation() + ", ";
+			}
+        	msg += "]";
+        	LibrarianLog.I.info(msg);
+        }
+        time = getUniform("time", true);
 
         initUniforms();
     }
@@ -61,8 +73,12 @@ public abstract class Shader {
         return glName;
     }
 
+    public <T extends Uniform> T getUniform(String name) {
+    	return getUniform(name, false);
+    }
+    
     @SuppressWarnings("unchecked")
-	public <T extends Uniform> T getUniform(String name) {
+	public <T extends Uniform> T getUniform(String name, boolean quiet) {
         for (int i = 0; i < uniforms.length; i++) {
             if (uniforms[i].getName().equals(name)) {
                 try {
@@ -72,7 +88,7 @@ public abstract class Shader {
                 }
             }
         }
-        LibrarianLog.I.debug("Can't find uniform %s", name);
+        if(!quiet) LibrarianLog.I.debug("Can't find uniform %s", name);
         return null;
     }
 

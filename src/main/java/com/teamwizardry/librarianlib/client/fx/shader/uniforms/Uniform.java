@@ -46,7 +46,7 @@ public abstract class Uniform {
                          int size, int location) {
             super(owner, name, type, size, location);
 
-            LibrarianLog.I.warn("[Shader %s] Uniform %s has unsupported type %s", owner == null ? "!!NULL!!" : owner.getClass().getName(), name, type.name());
+            LibrarianLog.I.warn("[Shader %s] Uniform `%s` has unsupported type `%s`", owner == null ? "!!NULL!!" : owner.getGlName(), name, type.name());
         }
     }
 

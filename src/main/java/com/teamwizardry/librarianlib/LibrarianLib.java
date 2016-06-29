@@ -32,7 +32,7 @@ public class LibrarianLib {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         logger = event.getModLog();
-        
+        proxy.preInit();
         PacketHandler.INSTANCE.getClass(); // load the class
     }
 

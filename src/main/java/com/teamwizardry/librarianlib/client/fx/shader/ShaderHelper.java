@@ -14,6 +14,7 @@ import org.lwjgl.opengl.ARBFragmentShader;
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.ARBVertexShader;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -124,7 +125,9 @@ public final class ShaderHelper implements IResourceManagerReloadListener {
 
         String logText = ">> VERT: \n```" + vertText + "```\n>> FRAG: \n```" + fragText + "```";
 
-        program = shader.getGlName() != 0 ? shader.getGlName() : ARBShaderObjects.glCreateProgramObjectARB();
+        if(shader.getGlName() != 0)
+        	GL20.glDeleteProgram(shader.getGlName()); // Don't know if this works... but uploading it with the same id doesn't.
+        program = ARBShaderObjects.glCreateProgramObjectARB();
         if (program == 0)
             return 0;
 
@@ -144,8 +147,7 @@ public final class ShaderHelper implements IResourceManagerReloadListener {
         	LibrarianLog.I.error(getLogInfo(program, logText));
             return 0;
         }
-
-        LibrarianLog.I.debug("Created program %d - VERT:'%s' FRAG:'%s'", program, vert, frag);
+        LibrarianLog.I.info("Created program %d - VERT:'%s' FRAG:'%s'", program, vert, frag);
 
         shader.init(program);
 
@@ -235,13 +237,12 @@ public final class ShaderHelper implements IResourceManagerReloadListener {
     public void reloadShaders(LivingJumpEvent event) {
         if (!event.getEntity().worldObj.isRemote)
             return;
-
-//        createProgram(burst);
     }
 
     @Override
     public void onResourceManagerReload(IResourceManager resourceManager) {
-        initShaders();
+        if(Const.isDev)
+        	initShaders();
     }
 
 }

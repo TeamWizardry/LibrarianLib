@@ -102,7 +102,6 @@ public class Tippable extends PageBase {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
         fontRendererObj.setUnicodeFlag(true);
         fontRendererObj.setBidiFlag(true);
 
@@ -178,8 +177,10 @@ public class Tippable extends PageBase {
         fontRendererObj.setBidiFlag(false);
         fontRendererObj.setUnicodeFlag(false);
 
-        GlStateManager.color(1F, 1F, 1F, 1F);
-        mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
-        drawTexturedModalRect(left, top, 0, 0, bookBackgroundWidth, bookBackgroundHeight);
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        
+//        GlStateManager.color(1F, 1F, 1F, 1F);
+//        mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
+//        drawTexturedModalRect(left, top, 0, 0, bookBackgroundWidth, bookBackgroundHeight);
     }
 }
