@@ -5,4 +5,8 @@ package com.teamwizardry.libarianlib.common;
  */
 public class LibCommonProxy {
 
+	public void preInit() {
+		
+	}
+	
 }
