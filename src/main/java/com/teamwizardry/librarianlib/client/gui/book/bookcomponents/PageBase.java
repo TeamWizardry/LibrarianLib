@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.client.gui.book.bookcomponents;
 
-import com.teamwizardry.libarianlib.LibrarianLib;
+import com.teamwizardry.librarianlib.LibrarianLib;
 import com.teamwizardry.librarianlib.api.Const;
 import com.teamwizardry.librarianlib.api.util.misc.Color;
 import net.minecraft.client.gui.GuiButton;

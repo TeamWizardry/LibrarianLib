@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.client.gui.book.pages;
 
-import com.teamwizardry.libarianlib.LibrarianLib;
+import com.teamwizardry.librarianlib.LibrarianLib;
 import com.teamwizardry.librarianlib.api.gui.GuiEvent;
 import com.teamwizardry.librarianlib.api.gui.components.GuiComponentButton;
 import com.teamwizardry.librarianlib.api.util.gui.TextureDefinition;

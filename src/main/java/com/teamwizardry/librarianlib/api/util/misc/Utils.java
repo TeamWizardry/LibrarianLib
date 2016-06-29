@@ -38,7 +38,7 @@ public class Utils {
     public static void drawLine2D(int x1, int y1, int x2, int y2, int width, Color color) {
         GlStateManager.pushMatrix();
         GlStateManager.disableTexture2D();
-        GlStateManager.color(color.getRed(), color.getGreen(), color.getBlue(), 1F);
+        GlStateManager.color(color.r, color.g, color.b, 1F);
 
         GL11.glEnable(GL11.GL_LINE_SMOOTH);
         GL11.glLineWidth(width);
@@ -58,7 +58,7 @@ public class Utils {
         GL11.glLineWidth(1);
 
         GlStateManager.disableTexture2D();
-        GlStateManager.color(color.getRed(), color.getGreen(), color.getBlue(), 0.7f);
+        GlStateManager.color(color.r, color.g, color.b, 0.7f);
         GlStateManager.translate(0.5, 0.7, 0.5);
 
         VertexBuffer vb = Tessellator.getInstance().getBuffer();

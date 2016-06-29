@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.client.gui.book.bookcomponents;
 
-import com.teamwizardry.libarianlib.LibrarianLib;
+import com.teamwizardry.librarianlib.LibrarianLib;
 import com.teamwizardry.librarianlib.client.gui.book.PageDataManager;
 import com.teamwizardry.librarianlib.client.gui.book.PageRegistry;
 import com.teamwizardry.librarianlib.common.network.data.DataNode;

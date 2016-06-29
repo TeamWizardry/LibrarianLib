@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.client.gui.book.pages;
 
-import com.teamwizardry.libarianlib.LibrarianLib;
+import com.teamwizardry.librarianlib.LibrarianLib;
 import com.teamwizardry.librarianlib.common.network.data.DataNode;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
