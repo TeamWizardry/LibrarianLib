@@ -3,18 +3,13 @@ package com.teamwizardry.librarianlib.client.fx.shader;
 import com.teamwizardry.librarianlib.api.Const;
 import com.teamwizardry.librarianlib.api.LibrarianLog;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.opengl.ARBFragmentShader;
-import org.lwjgl.opengl.ARBShaderObjects;
-import org.lwjgl.opengl.ARBVertexShader;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.*;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -91,7 +86,8 @@ public final class ShaderHelper implements IResourceManagerReloadListener {
     }
 
     public static boolean useShaders() {
-        return /*ConfigHandler.useShaders && */OpenGlHelper.shadersSupported;
+        //  return /*ConfigHandler.useShaders && */OpenGlHelper.shadersSupported;
+        return false;
     }
 
     private static int createProgram(Shader shader) {
