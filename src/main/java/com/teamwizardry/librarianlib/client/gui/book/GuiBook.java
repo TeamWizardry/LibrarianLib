@@ -7,6 +7,9 @@ import com.teamwizardry.librarianlib.api.gui.GuiBase;
 import com.teamwizardry.librarianlib.api.gui.GuiComponentContainer;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentButton;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentSprite;
+import com.teamwizardry.librarianlib.api.gui.components.ComponentText;
+import com.teamwizardry.librarianlib.api.gui.components.ComponentText.TextAlignH;
+import com.teamwizardry.librarianlib.api.gui.components.ComponentText.TextAlignV;
 import com.teamwizardry.librarianlib.client.Sprite;
 import com.teamwizardry.librarianlib.client.Texture;
 
@@ -32,10 +35,11 @@ public class GuiBook extends GuiBase {
 	
 	
 	public GuiBook() {
+		super(146, 180);
 		
 		GuiComponentContainer titleBar = new GuiComponentContainer(0, -20, TITLE_BAR.getWidth(), TITLE_BAR.getHeight());
 		titleBar.add(new ComponentSprite(TITLE_BAR, 0, 0));
-//		titleBar.add(new ComponentText(TextAlignement.CENTER, TextAlignment.BOTTOM, 0, 0, () -> "foo"));
+		titleBar.add(new ComponentText(66, 7, TextAlignH.CENTER, TextAlignV.MIDDLE).val("TITLE"));
 		
 		GuiComponentContainer navBar = new GuiComponentContainer(0, 189, TITLE_BAR.getWidth(), TITLE_BAR.getHeight());
 		
@@ -50,7 +54,8 @@ public class GuiBook extends GuiBase {
 			
 		}));
 		
-		
+		components.add(titleBar);
+		components.add(navBar);
 	}
 	
 }

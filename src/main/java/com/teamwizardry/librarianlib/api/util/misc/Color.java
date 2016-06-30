@@ -46,5 +46,13 @@ public class Color {
     public void glColor() {
         GlStateManager.color(r, g, b, a);
     }
+    
+    public int hexRGBA() {
+    	return ((int)(r*255) << 24) | ((int)(g*255) << 16) | ((int)(b*255) << 8) | (int)(a*255);
+    }
+    
+    public int hexARGB() {
+    	return ((int)(a*255) << 24) | ((int)(r*255) << 16) | ((int)(g*255) << 8) | (int)(b*255);
+    }
 
 }

@@ -6,6 +6,11 @@ import org.lwjgl.input.Keyboard;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A component of a gui, such as a button, image, piece of text, list, etc.
+ * 
+ * @param <T> The class of this component. Used for setup()
+ */
 public abstract class GuiComponent<T extends GuiComponent> implements IGuiDrawable {
 	
 	public int zIndex = 0;

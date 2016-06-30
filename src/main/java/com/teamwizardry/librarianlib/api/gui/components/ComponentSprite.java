@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.api.gui.components;
 
+import net.minecraft.client.renderer.GlStateManager;
+
 import com.teamwizardry.librarianlib.api.gui.GuiComponent;
 import com.teamwizardry.librarianlib.api.util.math.Vec2;
 import com.teamwizardry.librarianlib.client.Sprite;
@@ -19,6 +21,8 @@ public class ComponentSprite extends GuiComponent<ComponentSprite> {
 	
 	@Override
 	public void draw(Vec2 mousePos, float partialTicks) {
+		GlStateManager.color(1, 1, 1);
+		sprite.getTex().bind();
 		sprite.draw(pos.xf, pos.yf, size.xi, size.yi);
 	}
 	

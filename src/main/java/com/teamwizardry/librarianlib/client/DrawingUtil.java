@@ -77,8 +77,8 @@ public class DrawingUtil {
     		maxX = x+width, maxY = y+height;
     	float
     		minU = sprite.minU(), minV = sprite.minV(),
-    		maxU = minU + (sprite.maxU()-minU)*(width/sprite.getWidth()),
-    		maxV = minV + (sprite.maxV()-minV)*(height/sprite.getHeight());
+    		maxU = minU + (sprite.maxU()-minU)*((float)width/(float)sprite.getWidth()),
+    		maxV = minV + (sprite.maxV()-minV)*((float)height/(float)sprite.getHeight());
     	
     	Tessellator tessellator = Tessellator.getInstance();
         VertexBuffer vb = tessellator.getBuffer();

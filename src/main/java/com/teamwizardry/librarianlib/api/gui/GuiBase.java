@@ -11,18 +11,20 @@ import com.teamwizardry.librarianlib.api.util.math.Vec2;
 
 public class GuiBase extends GuiScreen {
 	protected GuiComponentContainer components;
-	protected int top, left;
+	protected int top, left, guiWidth, guiHeight;
 	
-	public GuiBase() {
+	public GuiBase(int guiWidth, int guiHeight) {
 		components = new GuiComponentContainer(0, 0);
         components.advancedHover = true;
+        this.guiWidth = guiWidth;
+        this.guiHeight = guiHeight;
 	}
 	
 	@Override
 	public void initGui() {
 		super.initGui();
-		left = width / 2 - width / 2;
-        top = height / 2 - height / 2;
+		left = width / 2 - guiWidth / 2;
+        top = height / 2 - guiHeight / 2;
         
 		if(components.getPos().xi != left || components.getPos().yi != top)
         	components.setPos(new Vec2(left, top));
