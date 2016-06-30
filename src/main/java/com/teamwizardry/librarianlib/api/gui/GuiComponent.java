@@ -6,7 +6,7 @@ import org.lwjgl.input.Keyboard;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class GuiComponent implements IGuiDrawable {
+public abstract class GuiComponent<T extends GuiComponent> implements IGuiDrawable {
 	
 	public int zIndex = 0;
 	protected Vec2 pos, size;
@@ -20,14 +20,32 @@ public abstract class GuiComponent implements IGuiDrawable {
 		this.size = new Vec2(width, height);
 	}
 	
+	/**
+	 * Setup the component without making temporary variables
+	 */
+	@SuppressWarnings("unchecked")
+	public T setup(IComponentSetup<T> setup) {
+		setup.setup((T)this);
+		return (T)this;
+	}
+	
+	/**
+	 * Get the position of the component relative to it's parent
+	 */
 	public Vec2 getPos() {
 		return pos;
 	}
 
+	/**
+	 * Set the position of the component relative to it's parent
+	 */
 	public void setPos(Vec2 pos) {
 		this.pos = pos;
 	}
 
+	/**
+	 * Get the size of the component
+	 */
 	public Vec2 getSize() {
 		return size;
 	}
@@ -99,4 +117,8 @@ public abstract class GuiComponent implements IGuiDrawable {
 	 */
 	public void keyReleased(char key, int keyCode) {}
 	
+	@FunctionalInterface
+	public static interface IComponentSetup<T extends GuiComponent> {
+		public void setup(T component);
+	}
 }

@@ -6,24 +6,26 @@ import com.teamwizardry.librarianlib.api.gui.HandlerList;
 import com.teamwizardry.librarianlib.api.util.math.Vec2;
 import com.teamwizardry.librarianlib.client.Sprite;
 
-public class GuiComponentButton extends GuiComponent {
+public class ComponentButton extends GuiComponent<ComponentButton> {
 
-	public String id;
 	Sprite sprite;
 	boolean mouseDownInside = false;
 	
 	public final HandlerList<IClickHandler> handlers = new HandlerList<>();
 	@FunctionalInterface public static interface IClickHandler { public void click(); }
+
+	public ComponentButton(int posX, int posY, Sprite sprite) {
+		this(posX, posY, sprite.getWidth(), sprite.getHeight(), sprite);
+	}
 	
-	public GuiComponentButton(String id, int posX, int posY, int width, int height, Sprite sprite) {
+	public ComponentButton(int posX, int posY, int width, int height, Sprite sprite) {
 		super(posX, posY, width, height);
 		this.sprite = sprite;
-		this.id = id;
 	}
 	
 	@Override
 	public void draw(Vec2 mousePos, float partialTicks) {
-		sprite.tex.bind();
+		sprite.getTex().bind();
 		sprite.draw(pos.xf, pos.yf, size.xi, size.yi);
 	}
 

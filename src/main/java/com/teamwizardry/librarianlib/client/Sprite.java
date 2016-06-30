@@ -5,8 +5,8 @@ package com.teamwizardry.librarianlib.client;
  */
 public class Sprite {
 
-	public Texture tex;
-	public int u, v, width, height;
+	protected Texture tex;
+	protected int u, v, width, height;
 	
 	public Sprite(Texture tex, int u, int v, int width, int height) {
 		this.tex = tex;
@@ -98,6 +98,17 @@ public class Sprite {
 	 */
 	public void draw(float x, float y, int width, int height) {
 		DrawingUtil.draw(this, x, y, width, height);
+	}
+	
+	/**
+	 * Draws the sprite to the screen with a custom width and height by clipping instead of stretching/squashing
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 */
+	public void drawClipped(float x, float y, int width, int height) {
+		DrawingUtil.drawClipped(this, x, y, width, height);
 	}
 	
 }

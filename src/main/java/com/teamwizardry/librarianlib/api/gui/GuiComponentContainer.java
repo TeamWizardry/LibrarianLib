@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.api.util.math.Vec2;
 import net.minecraft.client.renderer.GlStateManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GuiComponentContainer extends GuiComponent {
@@ -22,7 +23,7 @@ public class GuiComponentContainer extends GuiComponent {
 	
 	public void add(GuiComponent component) {
 		components.add(component);
-		components.sort( (a, b) -> Integer.compare(b.zIndex, a.zIndex));
+		Collections.sort(components, (a, b) -> Integer.compare(b.zIndex, a.zIndex));
 	}
 	
 	public void add(IGuiDrawable drawable) {

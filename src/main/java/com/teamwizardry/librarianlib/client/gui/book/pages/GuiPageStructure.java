@@ -18,7 +18,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.teamwizardry.librarianlib.LibrarianLib;
 import com.teamwizardry.librarianlib.api.gui.GuiEvent;
-import com.teamwizardry.librarianlib.api.gui.components.GuiComponentButton;
+import com.teamwizardry.librarianlib.api.gui.components.ComponentButton;
 import com.teamwizardry.librarianlib.api.util.math.Matrix4;
 import com.teamwizardry.librarianlib.api.util.math.Vec2;
 import com.teamwizardry.librarianlib.api.util.misc.Color;
@@ -59,21 +59,22 @@ public class GuiPageStructure extends GuiPageCommon {
         originState = DataNodeParsers.parseBlockState(data.get("block"));
         
 		Texture tex = new Texture(new ResourceLocation(LibrarianLib.MODID, "textures/bookcomponents/texturesheet/structure.png"), 128, 128);
-		GuiComponentButton b = new GuiComponentButton("up", 0, 0, 16, 8, tex.getSprite( 0, 0, 16, 8));
-		b.handlers.add(() -> {
-			layer++;
-			initStructure();
-		});
-		components.add(b);
 		
-		b = new GuiComponentButton("dn", 0, 8, 16, 8, tex.getSprite(16, 0, 16, 8));
-		b.handlers.add(() -> {
-			if(layer > -1) {
-				layer--;
-				initStructure();
-			}
-		});
-        components.add(b);
+//		components.add(new GuiComponentButton("up", 0, 0, 16, 8, tex.getSprite( 0, 0, 16, 8)).setup((b) -> {
+//			b.handlers.add(() -> {
+//				layer++;
+//				initStructure();
+//			});
+//		}));
+//		
+//        components.add(new GuiComponentButton("dn", 0, 8, 16, 8, tex.getSprite(16, 0, 16, 8)).setup((b) -> {
+//			b.handlers.add(() -> {
+//				if(layer > -1) {
+//					layer--;
+//					initStructure();
+//				}
+//			});
+//        }));
         
         initStructure();
     }
@@ -107,7 +108,7 @@ public class GuiPageStructure extends GuiPageCommon {
     
     @Override
     public void mouseClickedPage(int mouseX, int mouseY, int mouseButton) {
-    	if(dragButton != -1 || components.isMouseOver(new Vec2(mouseX, mouseY)))
+    	if(dragButton != -1)// || components.isMouseOver(new Vec2(mouseX, mouseY)))
     		return;
     	
     	dragStartX = mouseX;

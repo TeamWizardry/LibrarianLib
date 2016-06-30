@@ -59,4 +59,39 @@ public class DrawingUtil {
         if(!isDrawing)
         	tessellator.draw();
     }
+    
+    /**
+     * <strong>!!! Use {@link Sprite#drawClipped(float, float, int, int)} instead !!!</strong>
+     * 
+     * <p>Draw a sprite at a location with the width and height specified by clipping instead of stretching/squishing</p>
+     * @param sprite The sprite to draw
+     * @param x The x position to draw at
+     * @param y The y position to draw at
+     * @param width The width to draw the sprite
+     * @param height The height to draw the sprite
+     */
+    public static void drawClipped(Sprite sprite, float x, float y, int width, int height) {
+    	
+    	float
+    		minX = x, minY = y,
+    		maxX = x+width, maxY = y+height;
+    	float
+    		minU = sprite.minU(), minV = sprite.minV(),
+    		maxU = minU + (sprite.maxU()-minU)*(width/sprite.getWidth()),
+    		maxV = minV + (sprite.maxV()-minV)*(height/sprite.getHeight());
+    	
+    	Tessellator tessellator = Tessellator.getInstance();
+        VertexBuffer vb = tessellator.getBuffer();
+
+        if(!isDrawing)
+        	vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        
+        vb.pos(minX, maxY, 0).tex(minU, maxV).endVertex();
+        vb.pos(maxX, maxY, 0).tex(maxU, maxV).endVertex();
+        vb.pos(maxX, minY, 0).tex(maxU, minV).endVertex();
+        vb.pos(minX, minY, 0).tex(minU, minV).endVertex();
+
+        if(!isDrawing)
+        	tessellator.draw();
+    }
 }
