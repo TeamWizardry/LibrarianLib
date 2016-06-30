@@ -1,8 +1,11 @@
 package com.teamwizardry.librarianlib.api.util.misc;
 
+import com.teamwizardry.librarianlib.api.PosObject;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Saad on 6/29/2016.
@@ -51,5 +54,15 @@ public class PosUtils {
             return origin.south().east().down();
 
         else return origin;
+    }
+
+    public static PosObject generateRandomPosition(PosObject origin, double range) {
+        double x = origin.getX();
+        double y = origin.getY();
+        double z = origin.getZ();
+        x = ThreadLocalRandom.current().nextDouble(x - range, x + range);
+        y = ThreadLocalRandom.current().nextDouble(y - range, y + range);
+        z = ThreadLocalRandom.current().nextDouble(z - range, z + range);
+        return new PosObject(x, y, z);
     }
 }

@@ -27,7 +27,7 @@ public enum ParticleRenderDispatcher {
     public void renderWorldLast(RenderWorldLastEvent event) {
         Profiler profiler = Minecraft.getMinecraft().mcProfiler;
 
-        profiler.startSection("wizardry-particle");
+        profiler.startSection("wizardry-fx");
 
         for (ParticleRenderQueue queue : queues) {
             profiler.startSection(queue.name());
