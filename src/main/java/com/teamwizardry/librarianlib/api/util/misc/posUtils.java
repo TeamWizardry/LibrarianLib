@@ -1,11 +1,11 @@
 package com.teamwizardry.librarianlib.api.util.misc;
 
-import com.teamwizardry.librarianlib.api.PosObject;
+import java.util.concurrent.ThreadLocalRandom;
+
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Saad on 6/29/2016.
@@ -56,13 +56,13 @@ public class PosUtils {
         else return origin;
     }
 
-    public static PosObject generateRandomPosition(PosObject origin, double range) {
-        double x = origin.getX();
-        double y = origin.getY();
-        double z = origin.getZ();
+    public static Vec3d generateRandomPosition(Vec3d origin, double range) {
+        double x = origin.xCoord;
+        double y = origin.yCoord;
+        double z = origin.zCoord;
         x = ThreadLocalRandom.current().nextDouble(x - range, x + range);
         y = ThreadLocalRandom.current().nextDouble(y - range, y + range);
         z = ThreadLocalRandom.current().nextDouble(z - range, z + range);
-        return new PosObject(x, y, z);
+        return new Vec3d(x, y, z);
     }
 }

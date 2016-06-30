@@ -15,7 +15,7 @@ import com.teamwizardry.librarianlib.client.Texture;
 
 public class GuiBook extends GuiBase {
 	
-	public static Texture BACKGROUND = new Texture(new ResourceLocation(LibrarianLib.MODID, "textures/bookcomponents/book/book.png"), 512, 512);
+	public static Texture BACKGROUND = new Texture(new ResourceLocation(LibrarianLib.MODID, "textures/book/book.png"), 512, 512);
 	public static Sprite BOOK_BACKGROUND_BORDER = BACKGROUND.getSprite(0, 0, 146, 180);
 	public static Sprite BACKGROUND_PAGE = BACKGROUND.getSprite(146, 0, 146, 180);
 	
@@ -47,10 +47,10 @@ public class GuiBook extends GuiBase {
 		navBar.add(new ComponentButton(15, 2, BACK_PAGE).setup((b) -> {
 			
 		}));
-		navBar.add(new ComponentButton(15, 2, NEXT_PAGE).setup((b) -> {
+		navBar.add(new ComponentButton(TITLE_BAR.getWidth()-NEXT_PAGE.getWidth()-15, 2, NEXT_PAGE).setup((b) -> {
 			
 		}));
-		navBar.add(new ComponentButton((width / 2) - (BACK_ARROW.getWidth() / 2), 2, BACK_ARROW).setup((b) -> {
+		navBar.add(new ComponentButton((TITLE_BAR.getWidth() / 2) - (BACK_ARROW.getWidth() / 2), 2, BACK_ARROW).setup((b) -> {
 			
 		}));
 		

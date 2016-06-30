@@ -21,7 +21,7 @@ public class ComponentButton extends GuiComponent<ComponentButton> {
 	public final HandlerList<IClickHandler> click = new HandlerList<>();
 	@FunctionalInterface public static interface IClickHandler { public void click(); }
 	
-	public final Option<ComponentButton, Boolean> enabled = new Option<>();
+	public final Option<ComponentButton, Boolean> enabled = new Option<>(true);
 	
 	public ComponentButton(int posX, int posY, Sprite sprite) {
 		this(posX, posY, sprite.getWidth(), sprite.getHeight(), sprite);

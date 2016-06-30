@@ -12,11 +12,16 @@ import java.util.function.Function;
 public class Option<P, T> {
 
 	protected T value;
+	protected T defaultValue;
 	protected Function<P, T> callback;
+	
+	public Option(T defaultValue) {
+		this.defaultValue = defaultValue;
+	}
 	
 	public T getValue(P param) {
 		if(callback == null)
-			return value;
+			return value == null ? defaultValue : value;
 		return callback.apply(param);
 	}
 	

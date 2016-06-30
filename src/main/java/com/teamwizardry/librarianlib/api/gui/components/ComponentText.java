@@ -12,8 +12,8 @@ import com.teamwizardry.librarianlib.api.util.misc.Color;
 
 public class ComponentText extends GuiComponent<ComponentText> {
 
-	public final Option<ComponentText, String> text = new Option<>();
-	public final Option<ComponentText, Color> color = new Option<>();
+	public final Option<ComponentText, String> text = new Option<>("-NULL TEXT-");
+	public final Option<ComponentText, Color> color = new Option<>(Color.BLACK);
 	
 	public TextAlignH horizontal;
 	public TextAlignV vertical;

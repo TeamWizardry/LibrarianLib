@@ -4,6 +4,8 @@ import net.minecraft.client.renderer.GlStateManager;
 
 public class Color {
 
+	public static final Color BLACK = Color.rgb(0x000000);
+	
     public float r, g, b, a;
 
     public Color(float r, float g, float b, float a) {
