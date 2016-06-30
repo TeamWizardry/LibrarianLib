@@ -3,26 +3,26 @@ package com.teamwizardry.librarianlib.api.gui.components;
 import com.teamwizardry.librarianlib.api.gui.EnumMouseButton;
 import com.teamwizardry.librarianlib.api.gui.GuiComponent;
 import com.teamwizardry.librarianlib.api.gui.event.ButtonClickEvent;
-import com.teamwizardry.librarianlib.api.util.gui.DrawingUtil;
-import com.teamwizardry.librarianlib.api.util.gui.TextureDefinition;
 import com.teamwizardry.librarianlib.api.util.math.Vec2;
+import com.teamwizardry.librarianlib.client.DrawingUtil;
+import com.teamwizardry.librarianlib.client.Sprite;
 
 public class GuiComponentButton extends GuiComponent {
 
 	public String id;
-	TextureDefinition def;
+	Sprite sprite;
 	boolean mouseDownInside = false;
 	
-	public GuiComponentButton(String id, int posX, int posY, int width, int height, TextureDefinition def) {
+	public GuiComponentButton(String id, int posX, int posY, int width, int height, Sprite sprite) {
 		super(posX, posY, width, height);
-		this.def = def;
+		this.sprite = sprite;
 		this.id = id;
 	}
 	
 	@Override
 	public void draw(Vec2 mousePos, float partialTicks) {
-		def.bind();
-		DrawingUtil.drawRect(pos.xi, pos.yi, size.xi, size.yi, def);
+		sprite.tex.bind();
+		sprite.draw(pos.xf, pos.yf, size.xi, size.yi);
 	}
 
 	@Override

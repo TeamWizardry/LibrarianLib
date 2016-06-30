@@ -38,7 +38,7 @@ public final class ShaderHelper implements IResourceManagerReloadListener {
 
     public static <T extends Shader> T addShader(T shader) {
     	shaders.add(shader);
-    	if(hasLoaded)
+    	if(hasLoaded && !useShaders())
     		createProgram(shader);
     	return shader;
     }
