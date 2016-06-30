@@ -10,7 +10,6 @@ public abstract class GuiComponent implements IGuiDrawable {
 	
 	public int zIndex = 0;
 	protected Vec2 pos, size;
-	private Set<IGuiEventListener> eventListeners = new HashSet<>();
 		
 	public GuiComponent(int posX, int posY) {
 		this(posX, posY, 0, 0);
@@ -21,31 +20,23 @@ public abstract class GuiComponent implements IGuiDrawable {
 		this.size = new Vec2(width, height);
 	}
 	
-	public Vec2 getPos() { return pos; }
+	public Vec2 getPos() {
+		return pos;
+	}
 
-	public void setPos(Vec2 pos) { this.pos = pos; }
+	public void setPos(Vec2 pos) {
+		this.pos = pos;
+	}
 
 	public Vec2 getSize() {
 		return size;
 	}
 
-	public void setSize(Vec2 size) { this.size = size; }
 	/**
-	 * Add an event listener
-	 * @param listener
+	 * Set the size of the component
 	 */
-	public void addEventListener(IGuiEventListener listener) {
-		eventListeners.add(listener);
-	}
-	
-	/**
-	 * Post an event to all listeners
-	 * @param event
-	 */
-	protected void postEvent(GuiEvent event) {
-		for (IGuiEventListener listener : eventListeners) {
-			listener.handle(event);
-		}
+	public void setSize(Vec2 size) {
+		this.size = size;
 	}
 	
 	/**

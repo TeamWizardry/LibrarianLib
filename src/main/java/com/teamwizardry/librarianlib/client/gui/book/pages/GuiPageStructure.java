@@ -19,7 +19,6 @@ import org.lwjgl.opengl.GL11;
 import com.teamwizardry.librarianlib.LibrarianLib;
 import com.teamwizardry.librarianlib.api.gui.GuiEvent;
 import com.teamwizardry.librarianlib.api.gui.components.GuiComponentButton;
-import com.teamwizardry.librarianlib.api.util.gui.TextureDefinition;
 import com.teamwizardry.librarianlib.api.util.math.Matrix4;
 import com.teamwizardry.librarianlib.api.util.math.Vec2;
 import com.teamwizardry.librarianlib.api.util.misc.Color;
@@ -60,9 +59,21 @@ public class GuiPageStructure extends GuiPageCommon {
         originState = DataNodeParsers.parseBlockState(data.get("block"));
         
 		Texture tex = new Texture(new ResourceLocation(LibrarianLib.MODID, "textures/bookcomponents/texturesheet/structure.png"), 128, 128);
+		GuiComponentButton b = new GuiComponentButton("up", 0, 0, 16, 8, tex.getSprite( 0, 0, 16, 8));
+		b.handlers.add(() -> {
+			layer++;
+			initStructure();
+		});
+		components.add(b);
 		
-		components.add(new GuiComponentButton("up", 0, 0, 16, 8, tex.getSprite( 0, 0, 16, 8)));
-        components.add(new GuiComponentButton("dn", 0, 8, 16, 8, tex.getSprite(16, 0, 16, 8)));
+		b = new GuiComponentButton("dn", 0, 8, 16, 8, tex.getSprite(16, 0, 16, 8));
+		b.handlers.add(() -> {
+			if(layer > -1) {
+				layer--;
+				initStructure();
+			}
+		});
+        components.add(b);
         
         initStructure();
     }
@@ -82,24 +93,6 @@ public class GuiPageStructure extends GuiPageCommon {
         transpBufferInts = StructureRenderUtil.render(structure, (pos) -> pos.getY() < layer, (pos) -> layer == -1 ? emptyFaces : topFace, new Color(1, 1, 1, 1), 0.5f);
         
         structure.getBlockAccess().clearOverrides();
-    }
-    
-    @Override
-    public void handle(GuiEvent event) {
-    	super.handle(event);
-    	if(event.component instanceof GuiComponentButton) {
-    		String id = ((GuiComponentButton)event.component).id;
-    		if("up".equals(id)) {
-    			layer++;
-    			initStructure();
-    		}
-    		if("dn".equals(id)) {
-    			if(layer > -1) {
-    				layer--;
-    				initStructure();
-    			}
-    		}
-    	}
     }
     
     @Override

@@ -1,10 +1,18 @@
 package com.teamwizardry.librarianlib.client.gui.book.pages;
 
+import java.io.IOException;
+
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.ResourceLocation;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
 import com.teamwizardry.librarianlib.api.Const;
 import com.teamwizardry.librarianlib.api.gui.EnumMouseButton;
 import com.teamwizardry.librarianlib.api.gui.GuiComponentContainer;
-import com.teamwizardry.librarianlib.api.gui.GuiEvent;
-import com.teamwizardry.librarianlib.api.gui.IGuiEventListener;
 import com.teamwizardry.librarianlib.api.util.gui.ScissorUtil;
 import com.teamwizardry.librarianlib.api.util.math.Vec2;
 import com.teamwizardry.librarianlib.api.util.misc.PathUtils;
@@ -12,16 +20,8 @@ import com.teamwizardry.librarianlib.client.gui.book.BookHandler;
 import com.teamwizardry.librarianlib.client.gui.book.PageRegistry;
 import com.teamwizardry.librarianlib.client.gui.book.bookcomponents.Tippable;
 import com.teamwizardry.librarianlib.common.network.data.DataNode;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 
-import java.io.IOException;
-
-public abstract class GuiPageCommon extends Tippable implements IGuiEventListener {
+public abstract class GuiPageCommon extends Tippable {
 
     public String path, mod;
     public int page;
@@ -51,11 +51,7 @@ public abstract class GuiPageCommon extends Tippable implements IGuiEventListene
         
         components = new GuiComponentContainer(0, 0);
         components.advancedHover = true;
-        components.addEventListener(this);
     }
-    
-    @Override
-    public void handle(GuiEvent event) {}
     
     public void mouseClickedPage(int mouseX, int mouseY, int button) {
     }

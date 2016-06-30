@@ -2,9 +2,8 @@ package com.teamwizardry.librarianlib.api.gui.components;
 
 import com.teamwizardry.librarianlib.api.gui.EnumMouseButton;
 import com.teamwizardry.librarianlib.api.gui.GuiComponent;
-import com.teamwizardry.librarianlib.api.gui.event.ButtonClickEvent;
+import com.teamwizardry.librarianlib.api.gui.HandlerList;
 import com.teamwizardry.librarianlib.api.util.math.Vec2;
-import com.teamwizardry.librarianlib.client.DrawingUtil;
 import com.teamwizardry.librarianlib.client.Sprite;
 
 public class GuiComponentButton extends GuiComponent {
@@ -12,6 +11,9 @@ public class GuiComponentButton extends GuiComponent {
 	public String id;
 	Sprite sprite;
 	boolean mouseDownInside = false;
+	
+	public final HandlerList<IClickHandler> handlers = new HandlerList<>();
+	@FunctionalInterface public static interface IClickHandler { public void click(); }
 	
 	public GuiComponentButton(String id, int posX, int posY, int width, int height, Sprite sprite) {
 		super(posX, posY, width, height);
@@ -35,7 +37,7 @@ public class GuiComponentButton extends GuiComponent {
 	@Override
 	public void mouseUp(Vec2 mousePos, EnumMouseButton button) {
 		if(mouseDownInside && isMouseOver(mousePos)) {
-			postEvent(new ButtonClickEvent(this));
+			handlers.fire((h) -> h.click());
 		}
 		mouseDownInside = false;
 	}

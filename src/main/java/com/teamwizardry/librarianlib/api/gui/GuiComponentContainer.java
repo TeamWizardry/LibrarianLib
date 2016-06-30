@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GuiComponentContainer extends GuiComponent implements IGuiEventListener {
+public class GuiComponentContainer extends GuiComponent {
 
 	public boolean advancedHover = false;
 	List<GuiComponent> components = new ArrayList<>();
@@ -22,7 +22,6 @@ public class GuiComponentContainer extends GuiComponent implements IGuiEventList
 	
 	public void add(GuiComponent component) {
 		components.add(component);
-		component.addEventListener(this);
 		components.sort( (a, b) -> Integer.compare(b.zIndex, a.zIndex));
 	}
 	
@@ -55,10 +54,6 @@ public class GuiComponentContainer extends GuiComponent implements IGuiEventList
 		ScissorUtil.pop();
 		if(!wasEnabled)
 			ScissorUtil.disable();
-	}
-	
-	public void handle(GuiEvent event) {
-		this.postEvent(event);
 	}
 	
 	@Override
