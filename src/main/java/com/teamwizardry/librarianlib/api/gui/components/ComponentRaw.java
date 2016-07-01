@@ -20,7 +20,7 @@ public class ComponentRaw extends GuiComponent<ComponentRaw> {
 	}
 
 	@Override
-	public void draw(Vec2 mousePos, float partialTicks) {
+	public void drawComponent(Vec2 mousePos, float partialTicks) {
 		func.accept(this);
 	}
 

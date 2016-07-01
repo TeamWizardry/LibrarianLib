@@ -34,7 +34,7 @@ public class GuiBase extends GuiScreen {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		components.draw(new Vec2(mouseX, mouseY), partialTicks);
+		components.draw(components.relativePos(new Vec2(mouseX, mouseY)), partialTicks);
 	}
 	
 	@Override

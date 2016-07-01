@@ -4,15 +4,25 @@ import net.minecraft.client.renderer.GlStateManager;
 
 public class Color {
 
-	public static final Color BLACK = Color.rgb(0x000000);
-	
-    public float r, g, b, a;
+	public static final Color BLACK	= Color.rgb(0x000000);
+	public static final Color WHITE	= Color.rgb(0xFFFFFF);
+	public static final Color RED 	= Color.rgb(0xFF0000);
+	public static final Color GREEN	= Color.rgb(0x00FF00);
+	public static final Color BLUE 	= Color.rgb(0x0000FF);
 
+    public final float r, g, b, a;
+    public final float h, s, v;
+    
     public Color(float r, float g, float b, float a) {
         this.r = r;
         this.g = g;
         this.b = b;
         this.a = a;
+        float[] hsv = new float[3];
+        java.awt.Color.RGBtoHSB((int)(r*255), (int)(g*255), (int)(b*255), hsv);
+        this.h = hsv[0];
+        this.s = hsv[1];
+        this.v = hsv[2];
     }
 
     public Color(float r, float g, float b) {
@@ -20,6 +30,11 @@ public class Color {
         this.g = g;
         this.b = b;
         this.a = 1;
+        float[] hsv = new float[3];
+        java.awt.Color.RGBtoHSB((int)(r*255), (int)(g*255), (int)(b*255), hsv);
+        this.h = hsv[0];
+        this.s = hsv[1];
+        this.v = hsv[2];
     }
 
     public static Color argb(int color) {

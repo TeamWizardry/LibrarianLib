@@ -49,7 +49,7 @@ public class ComponentText extends GuiComponent<ComponentText> {
 	}
 
 	@Override
-	public void draw(Vec2 mousePos, float partialTicks) {
+	public void drawComponent(Vec2 mousePos, float partialTicks) {
 		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
 		
 		String val = text.getValue(this);

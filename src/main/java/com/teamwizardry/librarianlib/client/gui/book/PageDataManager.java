@@ -23,15 +23,15 @@ public class PageDataManager {
         IResource resource;
         DataNode root = DataNode.NULL;
         try {
+        	// try selected language
             resource = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation(mod, PathUtils.resolve(resourcePath.replace("%LANG%", getLang()) + ".json").substring(1)));
             root = DataParser.parse(resource.getInputStream());
         } catch (IOException e) {
-            //TODO: add logger
             try {
+            	// try English if that fails
                 resource = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation(mod, PathUtils.resolve(resourcePath.replace("%LANG%", "en_US") + ".json").substring(1)));
                 root = DataParser.parse(resource.getInputStream());
             } catch (IOException e2) {
-                //TODO: add logger
                 e2.printStackTrace();
             }
 

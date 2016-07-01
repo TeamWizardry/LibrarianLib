@@ -46,6 +46,8 @@ public class PathUtils {
             path = path.substring(0, path.length() - 1);
         }
         int index = path.lastIndexOf("/");
+        if(index == -1)
+        	index = 0;
         return path.substring(0, index);
     }
 

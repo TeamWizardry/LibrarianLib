@@ -1,14 +1,14 @@
 package com.teamwizardry.librarianlib.api.gui;
 
-import com.teamwizardry.librarianlib.api.util.gui.ScissorUtil;
-import com.teamwizardry.librarianlib.api.util.math.Vec2;
-import net.minecraft.client.renderer.GlStateManager;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class GuiComponentContainer extends GuiComponent {
+import net.minecraft.client.renderer.GlStateManager;
+
+import com.teamwizardry.librarianlib.api.util.math.Vec2;
+
+public class GuiComponentContainer extends GuiComponent<GuiComponentContainer> {
 
 	public boolean advancedHover = false;
 	List<GuiComponent<?>> components = new ArrayList<>();
@@ -32,7 +32,7 @@ public class GuiComponentContainer extends GuiComponent {
 	}
 	
 	@Override
-	public void draw(Vec2 mousePos, float partialTicks) {
+	public void drawComponent(Vec2 mousePos, float partialTicks) {
 //		boolean wasEnabled = ScissorUtil.enable();
 //		ScissorUtil.push();
 		GlStateManager.pushMatrix();
@@ -76,6 +76,7 @@ public class GuiComponentContainer extends GuiComponent {
 	
 	@Override
 	public void keyPressed(char key, int keyCode) {
+		super.keyPressed(key, keyCode);
 		for (GuiComponent component : components) {
 			component.keyPressed(key, keyCode);
 		}
@@ -83,6 +84,7 @@ public class GuiComponentContainer extends GuiComponent {
 	
 	@Override
 	public void keyReleased(char key, int keyCode) {
+		super.keyReleased(key, keyCode);
 		for (GuiComponent component : components) {
 			component.keyReleased(key, keyCode);
 		}
@@ -90,6 +92,7 @@ public class GuiComponentContainer extends GuiComponent {
 	
 	@Override
 	public void mouseDown(Vec2 mousePos, EnumMouseButton button) {
+		super.mouseDown(mousePos, button);
 		for (GuiComponent component : components) {
 			component.mouseDown(component.relativePos(mousePos), button);
 		}
@@ -97,6 +100,7 @@ public class GuiComponentContainer extends GuiComponent {
 	
 	@Override
 	public void mouseDrag(Vec2 mousePos, EnumMouseButton button) {
+		super.mouseDrag(mousePos, button);
 		for (GuiComponent component : components) {
 			component.mouseDrag(component.relativePos(mousePos), button);
 		}
@@ -104,6 +108,7 @@ public class GuiComponentContainer extends GuiComponent {
 	
 	@Override
 	public void mouseUp(Vec2 mousePos, EnumMouseButton button) {
+		super.mouseUp(mousePos, button);
 		for (GuiComponent component : components) {
 			component.mouseUp(component.relativePos(mousePos), button);
 		}
@@ -111,6 +116,7 @@ public class GuiComponentContainer extends GuiComponent {
 
 	@Override
 	public void mouseWheel(Vec2 mousePos, int direction) {
+		super.mouseWheel(mousePos, direction);
 		for (GuiComponent component : components) {
 			component.mouseWheel(component.relativePos(mousePos), direction);
 		}

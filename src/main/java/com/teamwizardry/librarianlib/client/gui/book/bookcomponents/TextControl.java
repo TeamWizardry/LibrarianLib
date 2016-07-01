@@ -88,8 +88,9 @@ public class TextControl {
                     // TODO: logging
                 }
             }
+            String path = str.substring(0, i == -1 ? str.length() : i);
 
-            gui.openPageRelative(str.substring(0, i == -1 ? str.length() : i), page);
+            gui.openPageRelative(path, page);
         }
     }
 }

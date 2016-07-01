@@ -41,7 +41,7 @@ public class ComponentButton extends GuiComponent<ComponentButton> {
 	}
 	
 	@Override
-	public void draw(Vec2 mousePos, float partialTicks) {
+	public void drawComponent(Vec2 mousePos, float partialTicks) {
 		
 		if(!enabled.getValue(this) && disabled != null) {
 			disabled.getTex().bind();
@@ -57,6 +57,7 @@ public class ComponentButton extends GuiComponent<ComponentButton> {
 
 	@Override
 	public void mouseDown(Vec2 mousePos, EnumMouseButton button) {
+		super.mouseDown(mousePos, button);
 		if(isMouseOver(mousePos)) {
 			mouseDownInside = true;
 		}
@@ -64,6 +65,7 @@ public class ComponentButton extends GuiComponent<ComponentButton> {
 	
 	@Override
 	public void mouseUp(Vec2 mousePos, EnumMouseButton button) {
+		super.mouseUp(mousePos, button);
 		if(mouseDownInside && isMouseOver(mousePos)) {
 			click.fire((h) -> h.click());
 		}

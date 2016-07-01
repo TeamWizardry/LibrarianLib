@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.client;
 
+import net.minecraft.util.ResourceLocation;
+
 /**
  * This class represents a section of a {@link Texture}
  */
@@ -14,6 +16,14 @@ public class Sprite {
 		this.v = v;
 		this.width = width;
 		this.height = height;
+	}
+	
+	public Sprite(ResourceLocation loc) {
+		this.tex = new Texture(loc, 16, 16);
+		this.u = 0;
+		this.v = 0;
+		this.width = 16;
+		this.height = 16;
 	}
 	
 	/**

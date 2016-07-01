@@ -1,17 +1,17 @@
 package com.teamwizardry.librarianlib.api.gui.components;
 
-import net.minecraft.client.renderer.GlStateManager;
-
 import org.lwjgl.opengl.GL11;
 
 import com.teamwizardry.librarianlib.api.gui.GuiComponent;
 import com.teamwizardry.librarianlib.api.gui.Option;
 import com.teamwizardry.librarianlib.api.util.math.Vec2;
+import com.teamwizardry.librarianlib.api.util.misc.Color;
 import com.teamwizardry.librarianlib.client.Sprite;
 
 public class ComponentSprite extends GuiComponent<ComponentSprite> {
 
 	public Option<ComponentSprite, Boolean> depth = new Option<>(true);
+	public Option<ComponentSprite, Color> color = new Option<>(Color.WHITE);
 	
 	protected Sprite sprite;
 	
@@ -25,19 +25,23 @@ public class ComponentSprite extends GuiComponent<ComponentSprite> {
 	}
 	
 	@Override
-	public void draw(Vec2 mousePos, float partialTicks) {
+	public void drawComponent(Vec2 mousePos, float partialTicks) {
 		boolean alwaysTop = !depth.getValue(this);
+		
 		if(alwaysTop) {
-			GL11.glPushAttrib(GL11.GL_DEPTH_BUFFER_BIT);// store the current depth function
-			GL11.glDepthFunc(GL11.GL_ALWAYS); // don't disable depth because it
-			// wouldn't write to the depth buffer, thus other things would be cut off even if they are in front of this
+			// store the current depth function
+			GL11.glPushAttrib(GL11.GL_DEPTH_BUFFER_BIT);
+
+			// by using GL_ALWAYS instead of disabling depth it writes to the depth buffer
+			// imagine a mountain, that is the depth buffer. this causes the sprite to write
+			// it's value to the depth buffer, cutting a hole down wherever it's drawn.
+			GL11.glDepthFunc(GL11.GL_ALWAYS);
 		}
-		GlStateManager.color(1, 1, 1);
+		color.getValue(this).glColor();
 		sprite.getTex().bind();
 		sprite.draw(pos.xf, pos.yf, size.xi, size.yi);
-		if(alwaysTop) {
+		if(alwaysTop)
 			GL11.glPopAttrib();
-		}
 	}
 	
 }
