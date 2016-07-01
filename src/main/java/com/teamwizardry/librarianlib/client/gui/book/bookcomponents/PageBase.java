@@ -116,7 +116,7 @@ class PageBase extends GuiScreen {
         // RENDER HEADER //
 
         // RENDER BOOK BACKGROUND //
-        
+        GlStateManager.color(1, 1, 1);
         mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
         ShaderHelper.useShader(LibShaders.HUE, (shader) -> {
         	((HueShader)shader).hue.set(0);

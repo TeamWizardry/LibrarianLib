@@ -11,7 +11,7 @@ import java.util.List;
 public class GuiComponentContainer extends GuiComponent {
 
 	public boolean advancedHover = false;
-	List<GuiComponent> components = new ArrayList<>();
+	List<GuiComponent<?>> components = new ArrayList<>();
 	List<IGuiDrawable> drawables = new ArrayList<>();
 	
 	public GuiComponentContainer(int posX, int posY) {
@@ -21,9 +21,10 @@ public class GuiComponentContainer extends GuiComponent {
 		super(posX, posY, width, height);
 	}
 	
-	public void add(GuiComponent component) {
+	public void add(GuiComponent<?> component) {
 		components.add(component);
-		Collections.sort(components, (a, b) -> Integer.compare(b.zIndex, a.zIndex));
+		component.setParent(this);
+		Collections.sort(components, (a, b) -> Integer.compare(a.zIndex, b.zIndex));
 	}
 	
 	public void add(IGuiDrawable drawable) {
@@ -32,15 +33,15 @@ public class GuiComponentContainer extends GuiComponent {
 	
 	@Override
 	public void draw(Vec2 mousePos, float partialTicks) {
-		boolean wasEnabled = ScissorUtil.enable();
-		ScissorUtil.push();
+//		boolean wasEnabled = ScissorUtil.enable();
+//		ScissorUtil.push();
 		GlStateManager.pushMatrix();
 		GlStateManager.pushAttrib();
 		GlStateManager.translate(pos.x, pos.y, 0);
 		
 		/* */
 		
-		for (GuiComponent component : components) {
+		for (GuiComponent<?> component : components) {
 			component.draw(component.relativePos(mousePos), partialTicks);
 		}
 		
@@ -52,9 +53,9 @@ public class GuiComponentContainer extends GuiComponent {
 		
 		GlStateManager.popAttrib();
 		GlStateManager.popMatrix();
-		ScissorUtil.pop();
-		if(!wasEnabled)
-			ScissorUtil.disable();
+//		ScissorUtil.pop();
+//		if(!wasEnabled)
+//			ScissorUtil.disable();
 	}
 	
 	@Override

@@ -6,10 +6,13 @@ import com.teamwizardry.librarianlib.LibrarianLib;
 import com.teamwizardry.librarianlib.api.gui.GuiBase;
 import com.teamwizardry.librarianlib.api.gui.GuiComponentContainer;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentButton;
+import com.teamwizardry.librarianlib.api.gui.components.ComponentRaw;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentSprite;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentText;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentText.TextAlignH;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentText.TextAlignV;
+import com.teamwizardry.librarianlib.api.util.gui.ScissorUtil;
+import com.teamwizardry.librarianlib.api.util.math.Vec2;
 import com.teamwizardry.librarianlib.client.Sprite;
 import com.teamwizardry.librarianlib.client.Texture;
 
@@ -33,15 +36,18 @@ public class GuiBook extends GuiBase {
 	public static Sprite CHECKBOX_ON = BACKGROUND.getSprite(27, 203, 9, 9);
 	public static Sprite CHECKMARK = BACKGROUND.getSprite(18, 212, 16, 16);
 	
+	public static final int PAGE_WIDTH = 115, PAGE_HEIGHT = 154;
+	
+	protected GuiComponentContainer page;
 	
 	public GuiBook() {
 		super(146, 180);
 		
-		GuiComponentContainer titleBar = new GuiComponentContainer(0, -20, TITLE_BAR.getWidth(), TITLE_BAR.getHeight());
+		GuiComponentContainer titleBar = new GuiComponentContainer((BACKGROUND_PAGE.getWidth()-TITLE_BAR.getWidth())/2, -19, TITLE_BAR.getWidth(), TITLE_BAR.getHeight());
 		titleBar.add(new ComponentSprite(TITLE_BAR, 0, 0));
 		titleBar.add(new ComponentText(66, 7, TextAlignH.CENTER, TextAlignV.MIDDLE).val("TITLE"));
 		
-		GuiComponentContainer navBar = new GuiComponentContainer(0, 189, TITLE_BAR.getWidth(), TITLE_BAR.getHeight());
+		GuiComponentContainer navBar = new GuiComponentContainer((BACKGROUND_PAGE.getWidth()-TITLE_BAR.getWidth())/2, 186, TITLE_BAR.getWidth(), TITLE_BAR.getHeight());
 		
 		navBar.add(new ComponentSprite(TITLE_BAR, 0, 0));
 		navBar.add(new ComponentButton(15, 2, BACK_PAGE).setup((b) -> {
@@ -54,8 +60,40 @@ public class GuiBook extends GuiBase {
 			
 		}));
 		
+		ComponentSprite border = new ComponentSprite(BOOK_BACKGROUND_BORDER, 0, 0).setup((b) -> {
+			b.depth.setValue(false);
+		});
+		
+		ComponentSprite pageBG = new ComponentSprite(BACKGROUND_PAGE, 0, 0);
+		
+		int PAGE_WIDTH = 127;
+		int PAGE_HEIGHT = 161;
+		
+		GuiComponentContainer page = new GuiComponentContainer(15, 12, PAGE_WIDTH, PAGE_HEIGHT);
+		page.add(new ComponentRaw(-11, -8, PAGE_WIDTH + 10, PAGE_HEIGHT + 10, (c) -> {
+			c.zIndex = -1000;
+			Vec2 root = c.rootPos(new Vec2(0,0));
+			ScissorUtil.set(root.xi, root.yi, c.getSize().xi, c.getSize().yi);
+	        ScissorUtil.enable();
+		}).setup((c)-> {c.zIndex = -1000;}));
+		
+		page.add(new ComponentRaw(0, 0, (c) -> {
+	        ScissorUtil.disable();
+		}).setup((c)-> {c.zIndex = 1000;}));
+		
+		pageBG.zIndex = -5;
+		page.zIndex = 0;
+		titleBar.zIndex = 9;
+		navBar.zIndex = 9;
+		border.zIndex = 10;
+		
+		components.add(pageBG);
+		components.add(border);
 		components.add(titleBar);
 		components.add(navBar);
+		components.add(page);
+		
+		this.page = page;
 	}
 	
 }

@@ -11,11 +11,12 @@ import java.util.Set;
  * 
  * @param <T> The class of this component. Used for setup()
  */
-public abstract class GuiComponent<T extends GuiComponent> implements IGuiDrawable {
+public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDrawable {
 	
 	public int zIndex = 0;
 	protected Vec2 pos, size;
-		
+	protected GuiComponent<?> parent;
+	
 	public GuiComponent(int posX, int posY) {
 		this(posX, posY, 0, 0);
 	}
@@ -63,18 +64,38 @@ public abstract class GuiComponent<T extends GuiComponent> implements IGuiDrawab
 	}
 	
 	/**
+	 * Set the parent component
+	 */
+	public void setParent(GuiComponent<?> parent) {
+		this.parent = parent;
+	}
+	
+	/**
+	 * Get the parent component
+	 */
+	public GuiComponent<?> getParent() {
+		return this.parent;
+	}
+	
+	/**
 	 * Transforms the position passed to be relative to this component's position.
-	 * @param pos
-	 * @return
 	 */
 	public Vec2 relativePos(Vec2 pos) {
 		return pos.sub(this.pos);
 	}
 	
 	/**
+	 * Transforms the position passed to be relative to the root component's position.
+	 */
+	public Vec2 rootPos(Vec2 pos) {
+		if(parent == null)
+			return pos.add(this.pos);
+		else
+			return parent.rootPos(pos.add(this.pos));
+	}
+	
+	/**
 	 * Test if the mouse is over this component. mousePos is relative to the position of the element.
-	 * @param mousePos
-	 * @return
 	 */
 	public boolean isMouseOver(Vec2 mousePos) {
 		return mousePos.x >= 0 && mousePos.x <= size.x && mousePos.y >= 0 && mousePos.y <= size.y;
