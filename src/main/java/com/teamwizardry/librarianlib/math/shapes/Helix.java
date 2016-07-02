@@ -56,7 +56,17 @@ public class Helix implements IShape {
      */
     private Vec3d center;
 
-
+    /**
+     * Use this for a helix that shrinks/expands
+     *
+     * @param center  Center point of the helix
+     * @param points  Amount of points to use per strand
+     * @param radius  The maximum radius of the helix. starts from 0 because it shrinks/expands
+     * @param height  Defines the maximum height for the helix to reach
+     * @param strands The number of strands that the helix will have
+     * @param curve   The strength of the curvature per strand
+     * @param reverse Will draw the helix upside down starting from a fat bottom to a peak and vice versa
+     */
     public Helix(Vec3d center, int points, float radius, int height, int strands, float curve, boolean reverse) {
         this.center = center;
         this.points = points;
@@ -68,6 +78,15 @@ public class Helix implements IShape {
         this.shrink = true;
     }
 
+    /**
+     * Use this for a helix that does not shrink nor expand. More like a candy cane pipe
+     * @param center Center point of the helix
+     * @param points Amount of points to use per strand
+     * @param radius The maximum radius of the helix. starts from 0 because it shrinks/expands
+     * @param height Defines the maximum height for the helix to reach
+     * @param strands The number of strands that the helix will have
+     * @param rotation Will define the amount of rotations the helix will assume. Higher values will increase the amount of spins
+     */
     public Helix(Vec3d center, int points, float radius, int height, int strands, double rotation) {
         this.center = center;
         this.points = points;

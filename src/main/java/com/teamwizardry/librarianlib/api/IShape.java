@@ -9,5 +9,10 @@ import java.util.ArrayList;
  */
 public interface IShape {
 
+    /**
+     * Will return a list of points in order that define every point of the helix
+     *
+     * @return Will return the list of points required
+     */
     ArrayList<Vec3d> getPoints();
 }
