@@ -1,5 +1,13 @@
 package com.teamwizardry.librarianlib.client.gui.book.pages;
 
+import com.teamwizardry.librarianlib.LibrarianLib;
+import com.teamwizardry.librarianlib.api.util.misc.Color;
+import com.teamwizardry.librarianlib.client.Texture;
+import com.teamwizardry.librarianlib.client.multiblock.Structure;
+import com.teamwizardry.librarianlib.client.multiblock.StructureRenderUtil;
+import com.teamwizardry.librarianlib.common.network.data.DataNode;
+import com.teamwizardry.librarianlib.common.network.data.DataNodeParsers;
+import com.teamwizardry.librarianlib.math.Matrix4;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -13,20 +21,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
-
 import org.lwjgl.opengl.GL11;
-
-import com.teamwizardry.librarianlib.LibrarianLib;
-import com.teamwizardry.librarianlib.api.gui.GuiEvent;
-import com.teamwizardry.librarianlib.api.gui.components.ComponentButton;
-import com.teamwizardry.librarianlib.api.util.math.Matrix4;
-import com.teamwizardry.librarianlib.api.util.math.Vec2;
-import com.teamwizardry.librarianlib.api.util.misc.Color;
-import com.teamwizardry.librarianlib.client.Texture;
-import com.teamwizardry.librarianlib.client.multiblock.Structure;
-import com.teamwizardry.librarianlib.client.multiblock.StructureRenderUtil;
-import com.teamwizardry.librarianlib.common.network.data.DataNode;
-import com.teamwizardry.librarianlib.common.network.data.DataNodeParsers;
 
 /**
  * Displays a structure

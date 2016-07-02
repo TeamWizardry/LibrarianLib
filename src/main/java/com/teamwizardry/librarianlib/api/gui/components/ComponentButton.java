@@ -4,24 +4,20 @@ import com.teamwizardry.librarianlib.api.gui.EnumMouseButton;
 import com.teamwizardry.librarianlib.api.gui.GuiComponent;
 import com.teamwizardry.librarianlib.api.gui.HandlerList;
 import com.teamwizardry.librarianlib.api.gui.Option;
-import com.teamwizardry.librarianlib.api.util.math.Vec2;
 import com.teamwizardry.librarianlib.client.Sprite;
+import com.teamwizardry.librarianlib.math.Vec2;
 
 public class ComponentButton extends GuiComponent<ComponentButton> {
 
-	Sprite sprite;
-	Sprite hover;
-	Sprite disabled;
-	
-	boolean mouseDownInside = false;
-	
 	/**
 	 * The click handlers
 	 */
 	public final HandlerList<IClickHandler> click = new HandlerList<>();
-	@FunctionalInterface public static interface IClickHandler { public void click(); }
-	
 	public final Option<ComponentButton, Boolean> enabled = new Option<>(true);
+	Sprite sprite;
+	Sprite hover;
+	Sprite disabled;
+	boolean mouseDownInside = false;
 	
 	public ComponentButton(int posX, int posY, Sprite sprite) {
 		this(posX, posY, sprite.getWidth(), sprite.getHeight(), sprite);
@@ -42,7 +38,7 @@ public class ComponentButton extends GuiComponent<ComponentButton> {
 	
 	@Override
 	public void drawComponent(Vec2 mousePos, float partialTicks) {
-		
+
 		if(!enabled.getValue(this) && disabled != null) {
 			disabled.getTex().bind();
 			disabled.draw(pos.xf, pos.yf, size.xi, size.yi);
@@ -62,7 +58,7 @@ public class ComponentButton extends GuiComponent<ComponentButton> {
 			mouseDownInside = true;
 		}
 	}
-	
+
 	@Override
 	public void mouseUp(Vec2 mousePos, EnumMouseButton button) {
 		super.mouseUp(mousePos, button);
@@ -70,6 +66,11 @@ public class ComponentButton extends GuiComponent<ComponentButton> {
 			click.fire((h) -> h.click());
 		}
 		mouseDownInside = false;
+	}
+
+	@FunctionalInterface
+	public interface IClickHandler {
+		void click();
 	}
 	
 }

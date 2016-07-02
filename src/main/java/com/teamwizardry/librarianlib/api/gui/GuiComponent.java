@@ -1,11 +1,7 @@
 package com.teamwizardry.librarianlib.api.gui;
 
-import com.teamwizardry.librarianlib.api.gui.components.ComponentButton.IClickHandler;
-import com.teamwizardry.librarianlib.api.util.math.Vec2;
+import com.teamwizardry.librarianlib.math.Vec2;
 import org.lwjgl.input.Keyboard;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A component of a gui, such as a button, image, piece of text, list, etc.
@@ -13,12 +9,6 @@ import java.util.Set;
  * @param <T> The class of this component. Used for setup()
  */
 public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDrawable {
-	
-	public int zIndex = 0;
-	protected Vec2 pos, size;
-	protected GuiComponent<?> parent;
-	
-	public boolean mouseOverThisFrame = false;
 	
 	public final HandlerList<IComponentDrawEventHandler<T>> preDraw = new HandlerList<>();
 	public final HandlerList<IComponentDrawEventHandler<T>> postDraw = new HandlerList<>();
@@ -28,7 +18,12 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	public final HandlerList<IComponentMouseWheelEventHandler<T>> mouseWheel = new HandlerList<>();
 	public final HandlerList<IComponentKeyEventHandler<T>> keyDown = new HandlerList<>();
 	public final HandlerList<IComponentKeyEventHandler<T>> keyUp = new HandlerList<>();
+	public int zIndex = 0;
+	public boolean mouseOverThisFrame = false;
+	protected Vec2 pos, size;
+	protected GuiComponent<?> parent;
 
+	{/* getters and setters */}
 	
 	public GuiComponent(int posX, int posY) {
 		this(posX, posY, 0, 0);
@@ -142,30 +137,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	public void keyReleased(char key, int keyCode) {
 		keyUp.fire((e) -> e.handle(thiz(), key, keyCode));
 	}
-	
-	@FunctionalInterface
-	public static interface IComponentSetup<T extends GuiComponent> {
-		public void setup(T component);
-	}
-	@FunctionalInterface
-	public static interface IComponentDrawEventHandler<T extends GuiComponent> {
-		public void handle(T component, Vec2 mousePos, float partialTicks);
-	}
-	@FunctionalInterface
-	public static interface IComponentMouseEventHandler<T extends GuiComponent> {
-		public void handle(T component, Vec2 pos, EnumMouseButton button);
-	}
-	@FunctionalInterface
-	public static interface IComponentMouseWheelEventHandler<T extends GuiComponent> {
-		public void handle(T component, Vec2 pos, int direction);
-	}
-	@FunctionalInterface
-	public static interface IComponentKeyEventHandler<T extends GuiComponent> {
-		public void handle(T component, char character, int code);
-	}
-	
-	{/* getters and setters */}
-	
+
 	/**
 	 * Returns {@code this} casted to {@code T}. Used to avoid unchecked cast warnings everywhere.
 	 */
@@ -173,7 +145,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	public T thiz() {
 		return (T)this;
 	}
-	
+
 	/**
 	 * Get the position of the component relative to it's parent
 	 */
@@ -203,16 +175,41 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	}
 	
 	/**
+	 * Get the parent component
+	 */
+	public GuiComponent<?> getParent() {
+		return this.parent;
+	}
+
+	/**
 	 * Set the parent component
 	 */
 	public void setParent(GuiComponent<?> parent) {
 		this.parent = parent;
 	}
-	
-	/**
-	 * Get the parent component
-	 */
-	public GuiComponent<?> getParent() {
-		return this.parent;
+
+	@FunctionalInterface
+	public interface IComponentSetup<T extends GuiComponent> {
+		void setup(T component);
+	}
+
+	@FunctionalInterface
+	public interface IComponentDrawEventHandler<T extends GuiComponent> {
+		void handle(T component, Vec2 mousePos, float partialTicks);
+	}
+
+	@FunctionalInterface
+	public interface IComponentMouseEventHandler<T extends GuiComponent> {
+		void handle(T component, Vec2 pos, EnumMouseButton button);
+	}
+
+	@FunctionalInterface
+	public interface IComponentMouseWheelEventHandler<T extends GuiComponent> {
+		void handle(T component, Vec2 pos, int direction);
+	}
+
+	@FunctionalInterface
+	public interface IComponentKeyEventHandler<T extends GuiComponent> {
+		void handle(T component, char character, int code);
 	}
 }

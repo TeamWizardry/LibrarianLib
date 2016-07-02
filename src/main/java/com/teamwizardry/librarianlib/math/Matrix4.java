@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.api.util.math;
+package com.teamwizardry.librarianlib.math;
 
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.relauncher.Side;

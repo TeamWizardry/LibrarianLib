@@ -1,14 +1,11 @@
 package com.teamwizardry.librarianlib.api.gui;
 
-import java.io.IOException;
-
-import net.minecraft.client.Minecraft;
+import com.teamwizardry.librarianlib.math.Vec2;
 import net.minecraft.client.gui.GuiScreen;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import com.teamwizardry.librarianlib.api.util.math.Vec2;
+import java.io.IOException;
 
 public class GuiBase extends GuiScreen {
 	protected GuiComponentContainer components;

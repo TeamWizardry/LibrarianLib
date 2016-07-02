@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.api.util.math;
+package com.teamwizardry.librarianlib.math;
 
 public class Vec2 {
 

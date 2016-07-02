@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.api.gui;
 
-import com.teamwizardry.librarianlib.api.util.math.Vec2;
+import com.teamwizardry.librarianlib.math.Vec2;
 
 /**
  * An object that can be drawn to a bookcomponents

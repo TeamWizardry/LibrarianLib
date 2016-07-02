@@ -1,14 +1,13 @@
 package com.teamwizardry.librarianlib.api.gui.components;
 
-import java.util.function.Function;
-
+import com.teamwizardry.librarianlib.api.gui.GuiComponent;
+import com.teamwizardry.librarianlib.api.gui.Option;
+import com.teamwizardry.librarianlib.api.util.misc.Color;
+import com.teamwizardry.librarianlib.math.Vec2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 
-import com.teamwizardry.librarianlib.api.gui.GuiComponent;
-import com.teamwizardry.librarianlib.api.gui.Option;
-import com.teamwizardry.librarianlib.api.util.math.Vec2;
-import com.teamwizardry.librarianlib.api.util.misc.Color;
+import java.util.function.Function;
 
 public class ComponentText extends GuiComponent<ComponentText> {
 
@@ -71,13 +70,13 @@ public class ComponentText extends GuiComponent<ComponentText> {
 		
 		fr.drawString(val, x, y, color.getValue(this).hexARGB());
 	}
-	
-	public static enum TextAlignH {
-		LEFT, CENTER, RIGHT;
+
+	public enum TextAlignH {
+		LEFT, CENTER, RIGHT
 	}
-	
-	public static enum TextAlignV {
-		TOP, MIDDLE, BOTTOM;
+
+	public enum TextAlignV {
+		TOP, MIDDLE, BOTTOM
 	}
 
 }

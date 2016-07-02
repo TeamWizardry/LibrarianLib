@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.api.util.math;
+package com.teamwizardry.librarianlib.math;
 
 import net.minecraft.util.math.Vec3d;
 
@@ -9,13 +9,27 @@ import java.util.ArrayList;
  */
 public class MathShapes {
 
-    public static ArrayList<Vec3d> createHelix(Vec3d location) {
+    public static ArrayList<Vec3d> createHelix(Vec3d location, int height, boolean reverse) {
         ArrayList<Vec3d> locs = new ArrayList<>();
         double radius = 0;
 
-        for (double y = 0; y <= 10; y += 0.01) {
-            double x = radius * Math.cos(y * 10);
-            double z = radius * Math.sin(y * 10);
+        for (double y = 0; y <= height; y += 0.01) {
+            double x = radius * Math.cos(y * height);
+            double z = radius * Math.sin(y * height);
+            Vec3d newLoc = new Vec3d(location.xCoord + x, location.yCoord + y, location.zCoord + z);
+            locs.add(newLoc);
+            radius += 0.005;
+        }
+        return locs;
+    }
+
+    public static ArrayList<Vec3d> createReverseHelix(Vec3d location, int height) {
+        ArrayList<Vec3d> locs = new ArrayList<>();
+        double radius = 0;
+
+        for (double y = 0; y <= height; y += 0.01) {
+            double x = radius * Math.cos(y * 1 / height);
+            double z = radius * Math.sin(y * 1 / height);
             Vec3d newLoc = new Vec3d(location.xCoord + x, location.yCoord + y, location.zCoord + z);
             locs.add(newLoc);
             radius += 0.005;

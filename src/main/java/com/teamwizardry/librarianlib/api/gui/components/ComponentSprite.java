@@ -1,12 +1,11 @@
 package com.teamwizardry.librarianlib.api.gui.components;
 
-import org.lwjgl.opengl.GL11;
-
 import com.teamwizardry.librarianlib.api.gui.GuiComponent;
 import com.teamwizardry.librarianlib.api.gui.Option;
-import com.teamwizardry.librarianlib.api.util.math.Vec2;
 import com.teamwizardry.librarianlib.api.util.misc.Color;
 import com.teamwizardry.librarianlib.client.Sprite;
+import com.teamwizardry.librarianlib.math.Vec2;
+import org.lwjgl.opengl.GL11;
 
 public class ComponentSprite extends GuiComponent<ComponentSprite> {
 

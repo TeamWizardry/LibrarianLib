@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.api.gui.components;
 
-import java.util.function.Consumer;
-
 import com.teamwizardry.librarianlib.api.gui.GuiComponent;
-import com.teamwizardry.librarianlib.api.util.math.Vec2;
+import com.teamwizardry.librarianlib.math.Vec2;
+
+import java.util.function.Consumer;
 
 public class ComponentRaw extends GuiComponent<ComponentRaw> {
 	

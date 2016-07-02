@@ -1,12 +1,11 @@
 package com.teamwizardry.librarianlib.api.gui;
 
+import com.teamwizardry.librarianlib.math.Vec2;
+import net.minecraft.client.renderer.GlStateManager;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import net.minecraft.client.renderer.GlStateManager;
-
-import com.teamwizardry.librarianlib.api.util.math.Vec2;
 
 public class GuiComponentContainer extends GuiComponent<GuiComponentContainer> {
 
