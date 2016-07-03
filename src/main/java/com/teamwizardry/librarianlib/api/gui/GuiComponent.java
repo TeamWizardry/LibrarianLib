@@ -18,6 +18,9 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	public final HandlerList<IComponentMouseWheelEventHandler<T>> mouseWheel = new HandlerList<>();
 	public final HandlerList<IComponentKeyEventHandler<T>> keyDown = new HandlerList<>();
 	public final HandlerList<IComponentKeyEventHandler<T>> keyUp = new HandlerList<>();
+	public final HandlerList<IComponentCoordEventHandler<T>> mouseIn = new HandlerList<>();
+	public final HandlerList<IComponentCoordEventHandler<T>> mouseOut = new HandlerList<>();
+
 	public int zIndex = 0;
 	public boolean mouseOverThisFrame = false;
 	protected Vec2 pos, size;
@@ -41,7 +44,14 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 */
 	@Override
 	public void draw(Vec2 mousePos, float partialTicks) {
+		boolean wasMouseOverLastFrame = mouseOverThisFrame;
 		mouseOverThisFrame = isMouseOver(mousePos);
+		
+		if(wasMouseOverLastFrame && !mouseOverThisFrame)
+			mouseOut.fire((e) -> e.handle(thiz(), mousePos));
+		if(!wasMouseOverLastFrame && mouseOverThisFrame)
+			mouseIn.fire((e) -> e.handle(thiz(), mousePos));
+		
 		preDraw.fire((e) -> e.handle(thiz(), mousePos, partialTicks));
 		drawComponent(mousePos, partialTicks);
 		postDraw.fire((e) -> e.handle(thiz(), mousePos, partialTicks));
@@ -189,27 +199,32 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	}
 
 	@FunctionalInterface
-	public interface IComponentSetup<T extends GuiComponent> {
+	public interface IComponentSetup<T extends GuiComponent<?>> {
 		void setup(T component);
 	}
 
 	@FunctionalInterface
-	public interface IComponentDrawEventHandler<T extends GuiComponent> {
+	public interface IComponentDrawEventHandler<T extends GuiComponent<?>> {
 		void handle(T component, Vec2 mousePos, float partialTicks);
 	}
 
 	@FunctionalInterface
-	public interface IComponentMouseEventHandler<T extends GuiComponent> {
+	public interface IComponentMouseEventHandler<T extends GuiComponent<?>> {
 		void handle(T component, Vec2 pos, EnumMouseButton button);
 	}
 
 	@FunctionalInterface
-	public interface IComponentMouseWheelEventHandler<T extends GuiComponent> {
+	public interface IComponentMouseWheelEventHandler<T extends GuiComponent<?>> {
 		void handle(T component, Vec2 pos, int direction);
 	}
 
 	@FunctionalInterface
-	public interface IComponentKeyEventHandler<T extends GuiComponent> {
+	public interface IComponentKeyEventHandler<T extends GuiComponent<?>> {
 		void handle(T component, char character, int code);
+	}
+	
+	@FunctionalInterface
+	public interface IComponentCoordEventHandler<T extends GuiComponent<?>> {
+		void handle(T component, Vec2 mousePos);
 	}
 }

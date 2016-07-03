@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.api.gui.EnumMouseButton;
 import com.teamwizardry.librarianlib.api.gui.GuiComponent;
 import com.teamwizardry.librarianlib.api.gui.HandlerList;
 import com.teamwizardry.librarianlib.api.gui.Option;
+import com.teamwizardry.librarianlib.api.util.misc.Color;
 import com.teamwizardry.librarianlib.client.Sprite;
 import com.teamwizardry.librarianlib.math.Vec2;
 
@@ -14,9 +15,14 @@ public class ComponentButton extends GuiComponent<ComponentButton> {
 	 */
 	public final HandlerList<IClickHandler> click = new HandlerList<>();
 	public final Option<ComponentButton, Boolean> enabled = new Option<>(true);
+	public final Option<ComponentButton, Color> normalColor = new Option<>(Color.WHITE);
+	public final Option<ComponentButton, Color> hoverColor = new Option<>(Color.WHITE);
+	public final Option<ComponentButton, Color> disabledColor = new Option<>(Color.WHITE);
+	
 	Sprite sprite;
 	Sprite hover;
 	Sprite disabled;
+	
 	boolean mouseDownInside = false;
 	
 	public ComponentButton(int posX, int posY, Sprite sprite) {
@@ -38,7 +44,14 @@ public class ComponentButton extends GuiComponent<ComponentButton> {
 	
 	@Override
 	public void drawComponent(Vec2 mousePos, float partialTicks) {
-
+		if(!enabled.getValue(this)) {
+			disabledColor.getValue(this).glColor();
+		} else if(isMouseOver(mousePos)) {
+			hoverColor.getValue(this).glColor();
+		} else {
+			normalColor.getValue(this).glColor();
+		}
+		
 		if(!enabled.getValue(this) && disabled != null) {
 			disabled.getTex().bind();
 			disabled.draw(pos.xf, pos.yf, size.xi, size.yi);

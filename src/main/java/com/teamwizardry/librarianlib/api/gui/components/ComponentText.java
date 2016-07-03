@@ -13,7 +13,7 @@ public class ComponentText extends GuiComponent<ComponentText> {
 
 	public final Option<ComponentText, String> text = new Option<>("-NULL TEXT-");
 	public final Option<ComponentText, Color> color = new Option<>(Color.BLACK);
-	
+	public final Option<ComponentText, Integer> wrap = new Option<>(-1);
 	public TextAlignH horizontal;
 	public TextAlignV vertical;
 
@@ -68,7 +68,11 @@ public class ComponentText extends GuiComponent<ComponentText> {
 			y -= fr.FONT_HEIGHT;
 		}
 		
-		fr.drawString(val, x, y, color.getValue(this).hexARGB());
+		int wrap = this.wrap.getValue(this);
+		if(wrap == -1)
+			fr.drawString(val, x, y, color.getValue(this).hexARGB());
+		else
+			fr.drawSplitString(val, x, y, wrap, color.getValue(this).hexARGB());
 	}
 
 	public enum TextAlignH {

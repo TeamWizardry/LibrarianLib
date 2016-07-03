@@ -10,6 +10,7 @@ import com.teamwizardry.librarianlib.api.gui.components.ComponentText;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentText.TextAlignH;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentText.TextAlignV;
 import com.teamwizardry.librarianlib.api.util.gui.ScissorUtil;
+import com.teamwizardry.librarianlib.api.util.misc.Color;
 import com.teamwizardry.librarianlib.api.util.misc.PathUtils;
 import com.teamwizardry.librarianlib.book.Book;
 import com.teamwizardry.librarianlib.book.util.Page;
@@ -21,7 +22,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class GuiBook extends GuiBase {
 
-	public static final int PAGE_WIDTH = 127, PAGE_HEIGHT = 161;
+	public static final int PAGE_WIDTH = 120, PAGE_HEIGHT = 161;
 	public static Texture TEXTURE = new Texture(new ResourceLocation(LibrarianLib.MODID, "textures/book/book.png"), 512, 512);
 	public static Sprite BOOK_BACKGROUND_BORDER = TEXTURE.getSprite(0, 0, 146, 180);
 	public static Sprite BACKGROUND_PAGE = TEXTURE.getSprite(146, 0, 146, 180);
@@ -58,20 +59,46 @@ public class GuiBook extends GuiBase {
 		// nav
 		GuiComponentContainer navBar = new GuiComponentContainer((BACKGROUND_PAGE.getWidth()-TITLE_BAR.getWidth())/2, 186, TITLE_BAR.getWidth(), TITLE_BAR.getHeight());
 		
+		Color
+        disabledColor = Color.rgb(0xB0B0B0),
+        hoverColor = Color.rgb(0x0DDED3),
+        normalColor = Color.rgb(0x0DBFA2);
+		
 		navBar.add(new ComponentSprite(TITLE_BAR, 0, 0));
 		navBar.add(new ComponentButton(15, 2, BACK_PAGE).setup((b) -> {
+			b.enabled.setValue(pageData.get("hasPrev").exists());
+			b.normalColor.setValue(normalColor);
+			b.disabledColor.setValue(disabledColor);
+			b.hoverColor.setValue(hoverColor);
 			
+			b.click.add(() -> {
+				openPage(this.page.path, this.page.page-1);
+			});
 		}));
 		navBar.add(new ComponentButton(TITLE_BAR.getWidth()-NEXT_PAGE.getWidth()-15, 2, NEXT_PAGE).setup((b) -> {
+			b.enabled.setValue(pageData.get("hasNext").exists());
+			b.normalColor.setValue(normalColor);
+			b.disabledColor.setValue(disabledColor);
+			b.hoverColor.setValue(hoverColor);
 			
+			b.click.add(() -> {
+				openPage(this.page.path, this.page.page+1);
+			});
 		}));
 		navBar.add(new ComponentButton((TITLE_BAR.getWidth() / 2) - (BACK_ARROW.getWidth() / 2), 2, BACK_ARROW).setup((b) -> {
+			b.enabled.setValue(book.history.size() > 0);
+			b.normalColor.setValue(normalColor);
+			b.disabledColor.setValue(disabledColor);
+			b.hoverColor.setValue(hoverColor);
 			
+			b.click.add(() -> {
+				book.back();
+			});
 		}));
-		
+
 		// page
-		GuiComponentContainer contents = new GuiComponentContainer(15, 12, PAGE_WIDTH, PAGE_HEIGHT);
-		contents.add(new ComponentRaw(-11, -8, PAGE_WIDTH + 10, PAGE_HEIGHT + 10, (c) -> {
+		GuiComponentContainer contents = new GuiComponentContainer(13, 9, PAGE_WIDTH, PAGE_HEIGHT);
+		contents.add(new ComponentRaw(-9, -5, PAGE_WIDTH + 17, PAGE_HEIGHT + 10, (c) -> {
 			c.zIndex = -1000;
 			Vec2 root = c.rootPos(new Vec2(0,0));
 			ScissorUtil.set(root.xi, root.yi, c.getSize().xi, c.getSize().yi);
@@ -93,7 +120,7 @@ public class GuiBook extends GuiBase {
 		contents.zIndex = 0;
 		titleBar.zIndex = 9;
 		navBar.zIndex = 9;
-		border.zIndex = 10;
+		border.zIndex = -10;
 		
 		components.add(pageBG);
 		components.add(border);
