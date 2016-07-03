@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.math.Vec2;
 import org.lwjgl.input.Keyboard;
 
 /**
- * A component of a gui, such as a button, image, piece of text, list, etc.
+ * A component of a capability, such as a button, image, piece of text, list, etc.
  * 
  * @param <T> The class of this component. Used for setup()
  */

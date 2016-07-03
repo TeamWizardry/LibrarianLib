@@ -1,13 +1,12 @@
 package com.teamwizardry.librarianlib.book;
 
-import java.util.Stack;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-
 import com.teamwizardry.librarianlib.api.util.misc.Color;
 import com.teamwizardry.librarianlib.book.gui.GuiBook;
 import com.teamwizardry.librarianlib.book.util.Page;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+
+import java.util.Stack;
 
 /**
  * The class that defines a book and has helpers to open it. It defines:
@@ -22,18 +21,19 @@ import com.teamwizardry.librarianlib.book.util.Page;
 public class Book {
 
 	public final String modid;
-	protected Color color;
-
 	/**
 	 * The history of the pages used to get to the current page. The top element is the current page.
 	 */
 	public final Stack<Page> history = new Stack<>();
+	protected Color color;
+
+	{/* getters and setters, ignore for the most part */}
 	
 	public Book(String modid) {
 		this.modid = modid;
 		history.push(new Page("/", 0));
 	}
-	
+
 	protected boolean canOpenPage(String path) {
 		return true;
 	}
@@ -59,16 +59,14 @@ public class Book {
 			return;
 		history.pop();
 		if(history.peek().gui != null)
-			Minecraft.getMinecraft().displayGuiScreen(history.peek().gui); // if a gui was saved, display that
+			Minecraft.getMinecraft().displayGuiScreen(history.peek().gui); // if a capability was saved, display that
 		else
 			Minecraft.getMinecraft().displayGuiScreen(getScreen(history.pop())); // the page is pushed back on, so we have to pop it
 	}
 	
 	public void display(Page page) {
 		Minecraft.getMinecraft().displayGuiScreen(getScreen(page));
-	}	
-	
-	{/* getters and setters, ignore for the most part */}
+	}
 	
 	public Color getColor() {
 		return color;
