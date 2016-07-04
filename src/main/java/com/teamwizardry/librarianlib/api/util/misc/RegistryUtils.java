@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.api.util.misc;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -53,7 +54,7 @@ public class RegistryUtils
 	}
 	
 	/**
-	 * 
+	 * Registers an {@link Item} with the {@link GameRegistry}
 	 * @param item - the item to be registered
 	 * @param modid - the modid of the mod registering the item
 	 * @param name - the name the item should be registered under. This will be used as the unlocalised name, with the modid prepended 
@@ -65,5 +66,34 @@ public class RegistryUtils
 		item.setUnlocalizedName(modid + "." + name);
 		GameRegistry.register(item);
 		return item;
+	}
+	
+	/**
+	 * Creates a generic block with no special properties. This method is useful for creating resource blocks or any
+	 * other block that doesn't need any special behaviour.
+	 * IMPORTANT: The block is not registered; this is so that it can be used as input to other helper methods, such as
+	 * {@link RegistryUtils#registerBlock(Block, ItemBlock, String, String)} or {@link RegistryUtils#registerBlockAndCreateIB(Block, String, String)}
+	 * @param material - the {@link Material} the block should use
+	 * @param modid - the modid of the mod registering the block
+	 * @param name - the name the block should be registered under. This will be used as the unlocalised name, with the modid prepended  
+	 * @return the passed in block, with it's registry name and unlocalised name set
+	 */
+	public static Block createGenericBlock(Material material, String modid, String name)
+	{
+		return new Block(material).setRegistryName(name).setUnlocalizedName(modid + "." + name);
+	}
+	
+	/**
+	 * Creates a generic block with no special properties. This method is useful for creating resource items or any
+	 * other item that doesn't need any special behaviour.
+	 * IMPORTANT: The item is not registered; this is so that it can be used as input to other helper methods, such as
+	 * {@link RegistryUtils#registerItem(Item, String, String)} 
+	 * @param modid - the modid of the mod registering the item
+	 * @param name - the name the item should be registered under. This will be used as the unlocalised name, with the modid prepended  
+	 * @return the passed in item, with it's registry name and unlocalised name set
+	 */
+	public static Item createGenericItem(String modid, String name)
+	{
+		return new Item().setRegistryName(name).setUnlocalizedName(modid + "." + name);
 	}
 }
