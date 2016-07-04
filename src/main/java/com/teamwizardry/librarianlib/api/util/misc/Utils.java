@@ -71,4 +71,12 @@ public class Utils {
 
         GlStateManager.popMatrix();
     }
+
+    public static boolean isInside(int currentX, int currentY, int x, int y, int size) {
+        return currentX >= x && currentX < x + size && currentY >= y && currentY < y + size;
+    }
+
+    public static boolean isInside(int currentX, int currentY, int x, int y, int width, int height) {
+        return currentX >= x && currentX < x + width && currentY >= y && currentY < y + height;
+    }
 }
