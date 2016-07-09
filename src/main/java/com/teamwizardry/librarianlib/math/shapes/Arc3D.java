@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /**
  * Created by Saad on 5/7/2016.
  */
-public class Arc implements IShape {
+public class Arc3D implements IShape {
 
     /**
      * Height of the arc in blocks
@@ -25,7 +25,7 @@ public class Arc implements IShape {
      */
     private Vec3d origin, target;
 
-    public Arc(Vec3d origin, Vec3d target, float height, int particleCount) {
+    public Arc3D(Vec3d origin, Vec3d target, float height, int particleCount) {
         this.height = height;
         this.particles = particleCount;
         this.origin = origin;

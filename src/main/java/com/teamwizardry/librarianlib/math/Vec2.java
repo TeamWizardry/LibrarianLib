@@ -2,9 +2,9 @@ package com.teamwizardry.librarianlib.math;
 
 public class Vec2 {
 
-	public final double x,  y;
 	public final float  xf, yf;
 	public final int    xi, yi;
+	public double x, y;
 	
 	public Vec2(double x, double y) {
 		this.x = x;
@@ -50,5 +50,9 @@ public class Vec2 {
 	public Vec2 mul(double amount) {
 		return new Vec2(x * amount, y * amount);
 	}
-	
+
+	public double dot(Vec2 point) {
+		return (x * point.x) + (y * point.y);
+	}
+
 }
