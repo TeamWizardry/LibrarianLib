@@ -2,9 +2,11 @@ package com.teamwizardry.librarianlib.book.gui;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import net.minecraft.util.ResourceLocation;
 
+import com.teamwizardry.librarianlib.api.gui.components.ComponentSlider;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentSprite;
 import com.teamwizardry.librarianlib.api.gui.components.mixin.ButtonMixin;
 import com.teamwizardry.librarianlib.api.util.misc.Color;
@@ -32,6 +34,7 @@ public class PageIndex extends GuiBook {
 		
 		for (DataNode icon : icons) {
 			contents.add(new ComponentSprite(new Sprite(new ResourceLocation(icon.get("icon").asStringOr("missingno"))), x, y, w, h).setup((i) -> {
+				AtomicReference<ComponentSlider> s = new AtomicReference<>(null);
 				new ButtonMixin(i,
 						() -> {
 							i.color.setValue(normalColor);
@@ -45,6 +48,21 @@ public class PageIndex extends GuiBook {
 							openPageRelative(l.path, l.page);
 						}
 				);
+				i.mouseIn.add((c, pos) -> {
+					if(s.get() != null)
+						s.get().invalidate();
+					ComponentSlider slider = new ComponentSlider(0, c.getPos().yi, -50, 0);
+					slider.add(new ComponentSprite(GuiBook.CHECKMARK, 0, 0));
+					tips.add(slider);
+					s.set(slider);
+					return false;
+				});
+				i.mouseOut.add((c, pos) -> {
+					if(s.get() != null)
+						s.get().close();
+					s.set(null);
+					return false;
+				});
 			}));
 			x += w+sep;
 			if(x > PAGE_WIDTH-w) {

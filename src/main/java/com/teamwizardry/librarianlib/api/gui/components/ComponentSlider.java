@@ -1,23 +1,58 @@
 package com.teamwizardry.librarianlib.api.gui.components;
 
 import com.teamwizardry.librarianlib.api.gui.GuiComponent;
+import com.teamwizardry.librarianlib.api.gui.GuiTickHandler;
 import com.teamwizardry.librarianlib.math.Vec2;
 
 public class ComponentSlider extends GuiComponent<ComponentSlider> {
 	
 	boolean animatingIn = true;
-	boolean animatingOut = true;
+	boolean animatingOut = false;
+	int tickStart;
 	
-	public ComponentSlider(int posY) {
-		super(0, posY);
-		
+	int lifetime = 5;
+	int offsetX, offsetY;
+	Vec2 rootPos;
+	
+	public ComponentSlider(int posX, int posY, int offsetX, int offsetY) {
+		super(posX, posY);
+		setCalculateOwnHover(false);
+		tickStart = GuiTickHandler.ticks;
+		this.offsetX = offsetX;
+		this.offsetY = offsetY;
+		rootPos = pos;
+	}
+
+	public int getLifetime() {
+		return lifetime;
+	}
+	
+	public void setLifetime(int lifetime) {
+		this.lifetime = lifetime;
+	}
+	
+	public void close() {
+		tickStart = GuiTickHandler.ticks;
+		animatingIn = false;
+		animatingOut = true;
 	}
 
 	@Override
 	public void drawComponent(Vec2 mousePos, float partialTicks) {
-		float t = 1;// progress from 0-1 from not showing to all the way out.
+		float t = (float)(GuiTickHandler.ticks - tickStart)/(float)getLifetime();
+		if(t > 1) {
+			t = 1;
+			if(animatingIn)
+				animatingIn = false;
+			if(animatingOut)
+				invalidate();
+		}
+		if(animatingOut)
+			t = 1-t;
 		
-		pos = new Vec2(-( -t*(t-2) ), pos.y);
+		float xOffset = ( -t*(t-2) ) * offsetX;
+		float yOffset = ( -t*(t-2) ) * offsetY;
+		pos = new Vec2(rootPos.x+xOffset, rootPos.y+yOffset);
 	}
 	
 	

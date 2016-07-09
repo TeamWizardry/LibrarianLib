@@ -4,12 +4,12 @@ import net.minecraft.util.ResourceLocation;
 
 import com.teamwizardry.librarianlib.LibrarianLib;
 import com.teamwizardry.librarianlib.api.gui.GuiBase;
-import com.teamwizardry.librarianlib.api.gui.GuiComponentContainer;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentRaw;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentSprite;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentText;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentText.TextAlignH;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentText.TextAlignV;
+import com.teamwizardry.librarianlib.api.gui.components.ComponentVoid;
 import com.teamwizardry.librarianlib.api.gui.components.mixin.ButtonMixin;
 import com.teamwizardry.librarianlib.api.util.gui.ScissorUtil;
 import com.teamwizardry.librarianlib.api.util.misc.Color;
@@ -41,7 +41,7 @@ public class GuiBook extends GuiBase {
 	public final Page page;
 	protected final DataNode rootData;
 	protected final DataNode pageData;
-	protected GuiComponentContainer contents;
+	protected ComponentVoid contents, tips;
 	
 	public GuiBook(Book book, DataNode rootData, DataNode pageData, Page page) {
 		super(146, 180);
@@ -53,12 +53,12 @@ public class GuiBook extends GuiBase {
 		this.pageData = pageData;
 		
 		// title bar
-		GuiComponentContainer titleBar = new GuiComponentContainer((BACKGROUND_PAGE.getWidth()-TITLE_BAR.getWidth())/2, -19, TITLE_BAR.getWidth(), TITLE_BAR.getHeight());
+		ComponentVoid titleBar = new ComponentVoid((BACKGROUND_PAGE.getWidth()-TITLE_BAR.getWidth())/2, -19, TITLE_BAR.getWidth(), TITLE_BAR.getHeight());
 		titleBar.add(new ComponentSprite(TITLE_BAR, 0, 0));
 		titleBar.add(new ComponentText(66, 7, TextAlignH.CENTER, TextAlignV.MIDDLE).val("TITLE"));
 		
 		// nav
-		GuiComponentContainer navBar = new GuiComponentContainer((BACKGROUND_PAGE.getWidth()-TITLE_BAR.getWidth())/2, 186, TITLE_BAR.getWidth(), TITLE_BAR.getHeight());
+		ComponentVoid navBar = new ComponentVoid((BACKGROUND_PAGE.getWidth()-TITLE_BAR.getWidth())/2, 186, TITLE_BAR.getWidth(), TITLE_BAR.getHeight());
 		
 		Color
         disabledColor = Color.rgb(0xB0B0B0),
@@ -113,7 +113,7 @@ public class GuiBook extends GuiBase {
 		}));
 
 		// page
-		GuiComponentContainer contents = new GuiComponentContainer(13, 9, PAGE_WIDTH, PAGE_HEIGHT);
+		ComponentVoid contents = new ComponentVoid(13, 9, PAGE_WIDTH, PAGE_HEIGHT);
 		contents.add(new ComponentRaw(-9, -5, PAGE_WIDTH + 17, PAGE_HEIGHT + 10, (c) -> {
 			c.zIndex = -1000;
 			Vec2 root = c.rootPos(new Vec2(0,0));
@@ -132,12 +132,16 @@ public class GuiBook extends GuiBase {
 		
 		ComponentSprite pageBG = new ComponentSprite(BACKGROUND_PAGE, 0, 0);
 		
+		tips = new ComponentVoid(0, 0, 0, PAGE_HEIGHT);
+		
+		tips.zIndex = -100;
 		pageBG.zIndex = -5;
 		contents.zIndex = 0;
 		titleBar.zIndex = 9;
 		navBar.zIndex = 9;
 		border.zIndex = -10;
 		
+		components.add(tips);
 		components.add(pageBG);
 		components.add(border);
 		components.add(titleBar);

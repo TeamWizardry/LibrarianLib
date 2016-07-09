@@ -1,19 +1,22 @@
 package com.teamwizardry.librarianlib.api.gui;
 
-import com.teamwizardry.librarianlib.math.Vec2;
+import java.io.IOException;
+
 import net.minecraft.client.gui.GuiScreen;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import java.io.IOException;
+import com.teamwizardry.librarianlib.api.gui.components.ComponentVoid;
+import com.teamwizardry.librarianlib.math.Vec2;
 
 public class GuiBase extends GuiScreen {
-	protected GuiComponentContainer components;
+	protected ComponentVoid components;
 	protected int top, left, guiWidth, guiHeight;
 	
 	public GuiBase(int guiWidth, int guiHeight) {
-		components = new GuiComponentContainer(0, 0);
-        components.advancedHover = true;
+		components = new ComponentVoid(0, 0);
+        components.setCalculateOwnHover(false);
         this.guiWidth = guiWidth;
         this.guiHeight = guiHeight;
 	}

@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import net.minecraft.client.renderer.GlStateManager;
 
@@ -54,7 +55,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	public boolean mouseOverThisFrame = false;
 	protected Set<String> tags = new HashSet<>();
 	
-	protected boolean enabled = true, focused = false;
+	protected boolean enabled = true, focused = false, invalid = false;
 	
 	protected boolean[] mouseButtonsDown = new boolean[EnumMouseButton.values().length];
 	protected Map<Key, Boolean> keysDown = new DefaultedMap<>(false);
@@ -121,12 +122,19 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 		addChild.fireAll((h) -> h.handle(thiz(), component));
 	}
 	
+	/**
+	 * Removes the supplied component
+	 * @param component
+	 */
 	public void remove(GuiComponent<?> component) {
-		components.remove(component);
 		component.setParent(null);
 		removeChild.fireAll((h) -> h.handle(thiz(), component));
+		components.remove(component);
 	}
 	
+	/**
+	 * Removes all components that have the supplied tag
+	 */
 	public void remove(String tag) {
 		components.removeIf((e) -> {
 			boolean b = e.hasTag(tag);
@@ -136,6 +144,16 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 			}
 			return b;
 		});
+	}
+	
+	/**
+	 * Calls the consumer for each component that has the supplied tag
+	 */
+	public void getByTag(String tag, Consumer<GuiComponent<?>> consumer) {
+		for (GuiComponent<?> component : components) {
+			if(component.hasTag(tag))
+				consumer.accept(component);
+		}
 	}
 	
 	//=============================================================================
@@ -179,9 +197,20 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 		GlStateManager.pushAttrib();
 		GlStateManager.translate(pos.x, pos.y, 0);
 		
+		List<GuiComponent<?>> remove = new ArrayList<>();
 		for (GuiComponent<?> component : components) {
+			if(component.isInvalid()) {
+				remove.add(component);
+				continue;
+			}
 			component.draw(component.relativePos(mousePos), partialTicks);
 		}
+		
+		for (GuiComponent<?> rem : remove) {
+			rem.setParent(null);
+			removeChild.fireAll((h) -> h.handle(thiz(), rem));
+		}
+		components.removeAll(remove);
 		
 		GlStateManager.popAttrib();
 		GlStateManager.popMatrix();
@@ -421,7 +450,21 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 		return enabled;
 	}
 	
-	
+	/**
+	 * Returns true if this component is invalid and it should be removed from it's parent
+	 * @return
+	 */
+	public boolean isInvalid() {
+		return invalid;
+	}
+
+	/**
+	 * Set this component invalid so it will be removed from it's parent element
+	 */
+	public void invalidate() {
+		this.invalid = true;
+	}
+
 	//=============================================================================
 	{/* Event interfaces */}
 	//=============================================================================
