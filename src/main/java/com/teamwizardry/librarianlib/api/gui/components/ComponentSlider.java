@@ -10,6 +10,7 @@ public class ComponentSlider extends GuiComponent<ComponentSlider> {
 	
 	public ComponentSlider(int posY) {
 		super(0, posY);
+		
 	}
 
 	@Override

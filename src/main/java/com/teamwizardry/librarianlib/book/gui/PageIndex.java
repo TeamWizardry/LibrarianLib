@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.util.ResourceLocation;
 
 import com.teamwizardry.librarianlib.api.gui.components.ComponentSprite;
+import com.teamwizardry.librarianlib.api.gui.components.mixin.ButtonMixin;
 import com.teamwizardry.librarianlib.api.util.misc.Color;
 import com.teamwizardry.librarianlib.book.Book;
 import com.teamwizardry.librarianlib.book.util.Link;
@@ -31,21 +32,19 @@ public class PageIndex extends GuiBook {
 		
 		for (DataNode icon : icons) {
 			contents.add(new ComponentSprite(new Sprite(new ResourceLocation(icon.get("icon").asStringOr("missingno"))), x, y, w, h).setup((i) -> {
-				AtomicBoolean mouseDownInside = new AtomicBoolean(false);
-				i.color.func((comp) -> {
-					return comp.mouseOverThisFrame ? hoverColor : normalColor;
-				});
-				i.mouseDown.add((comp, pos, button) -> {
-					if(comp.mouseOverThisFrame)
-						mouseDownInside.set(true);
-				});
-				i.mouseUp.add((comp, pos, button) -> {
-					if(comp.mouseOverThisFrame && mouseDownInside.get()) {
-						Link l = new Link(icon.get("link").asStringOr("/"));
-						openPageRelative(l.path, l.page);
-					}
-					mouseDownInside.set(false);
-				});
+				new ButtonMixin(i,
+						() -> {
+							i.color.setValue(normalColor);
+						}, () -> {
+							i.color.setValue(hoverColor);
+						}, () -> {
+							i.color.setValue(normalColor);
+						},
+						() -> {
+							Link l = new Link(icon.get("link").asStringOr("/"));
+							openPageRelative(l.path, l.page);
+						}
+				);
 			}));
 			x += w+sep;
 			if(x > PAGE_WIDTH-w) {

@@ -20,17 +20,34 @@ public class HandlerList<T> {
 	}
 	
 	/**
-	 * Fire an event, each handler will be passed to the caller 
+	 * Fire an event, each handler will be passed to the caller
 	 * @param caller
 	 */
-	public void fire(IHandlerCaller<T> caller) {
+	public void fireAll(IHandlerCaller<T> caller) {
 		for (T t : handlers) {
 			caller.call(t);
 		}
 	}
 	
+	/**
+	 * Fire an event, each handler will be passed to the caller in order. Once the handler returns true it will halt.
+	 * @param caller
+	 */
+	public boolean fire(ICancelableHandlerCaller<T> caller) {
+		for (T t : handlers) {
+			if(caller.call(t))
+				return true;
+		}
+		return false;
+	}
+	
 	@FunctionalInterface
 	public static interface IHandlerCaller<T> {
-		public void call(T handler);
+		void call(T handler);
+	}
+	
+	@FunctionalInterface
+	public static interface ICancelableHandlerCaller<T> {
+		boolean call(T handler);
 	}
 }

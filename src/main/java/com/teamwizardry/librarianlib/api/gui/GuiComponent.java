@@ -1,7 +1,18 @@
 package com.teamwizardry.librarianlib.api.gui;
 
-import com.teamwizardry.librarianlib.math.Vec2;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import net.minecraft.client.renderer.GlStateManager;
+
 import org.lwjgl.input.Keyboard;
+
+import com.teamwizardry.librarianlib.api.util.misc.DefaultedMap;
+import com.teamwizardry.librarianlib.math.Vec2;
 
 /**
  * A component of a capability, such as a button, image, piece of text, list, etc.
@@ -12,21 +23,46 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	
 	public final HandlerList<IComponentDrawEventHandler<T>> preDraw = new HandlerList<>();
 	public final HandlerList<IComponentDrawEventHandler<T>> postDraw = new HandlerList<>();
+	
 	public final HandlerList<IComponentMouseEventHandler<T>> mouseDown = new HandlerList<>();
 	public final HandlerList<IComponentMouseEventHandler<T>> mouseUp = new HandlerList<>();
 	public final HandlerList<IComponentMouseEventHandler<T>> mouseDrag = new HandlerList<>();
-	public final HandlerList<IComponentMouseWheelEventHandler<T>> mouseWheel = new HandlerList<>();
+	public final HandlerList<IComponentMouseEventHandler<T>> mouseClick = new HandlerList<>();
+	
 	public final HandlerList<IComponentKeyEventHandler<T>> keyDown = new HandlerList<>();
 	public final HandlerList<IComponentKeyEventHandler<T>> keyUp = new HandlerList<>();
+	
 	public final HandlerList<IComponentCoordEventHandler<T>> mouseIn = new HandlerList<>();
 	public final HandlerList<IComponentCoordEventHandler<T>> mouseOut = new HandlerList<>();
-
+	public final HandlerList<IComponentMouseWheelEventHandler<T>> mouseWheel = new HandlerList<>();
+	
+	public final HandlerList<IComponentVoidEventHandler<T>> focus = new HandlerList<>();
+	public final HandlerList<IComponentVoidEventHandler<T>> blur = new HandlerList<>();
+	
+	public final HandlerList<IComponentVoidEventHandler<T>> enable = new HandlerList<>();
+	public final HandlerList<IComponentVoidEventHandler<T>> disable = new HandlerList<>();
+	
+	public final HandlerList<IComponentChildEventHandler<T>> addChild = new HandlerList<>();
+	public final HandlerList<IComponentChildEventHandler<T>> removeChild = new HandlerList<>();
+	public final HandlerList<IComponentTagEventHandler<T>> matchesTag = new HandlerList<>();
+	public final HandlerList<IComponentTagEventHandler<T>> addTag = new HandlerList<>();
+	public final HandlerList<IComponentTagEventHandler<T>> removeTag = new HandlerList<>();
+	
 	public int zIndex = 0;
-	public boolean mouseOverThisFrame = false;
 	protected Vec2 pos, size;
+	
+	public boolean mouseOverThisFrame = false;
+	protected Set<String> tags = new HashSet<>();
+	
+	protected boolean enabled = true, focused = false;
+	
+	protected boolean[] mouseButtonsDown = new boolean[EnumMouseButton.values().length];
+	protected Map<Key, Boolean> keysDown = new DefaultedMap<>(false);
+	
+	/* subcomponent stuff */
+	protected boolean calculateOwnHover = true;
+	protected List<GuiComponent<?>> components = new ArrayList<>();
 	protected GuiComponent<?> parent;
-
-	{/* getters and setters */}
 	
 	public GuiComponent(int posX, int posY) {
 		this(posX, posY, 0, 0);
@@ -35,26 +71,6 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	public GuiComponent(int posX, int posY, int width, int height) {
 		this.pos = new Vec2(posX, posY);
 		this.size = new Vec2(width, height);
-	}
-	
-	/**
-	 * Draw this component, don't override.
-	 * @param mousePos Mouse position relative to the position of this component
-	 * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
-	 */
-	@Override
-	public void draw(Vec2 mousePos, float partialTicks) {
-		boolean wasMouseOverLastFrame = mouseOverThisFrame;
-		mouseOverThisFrame = isMouseOver(mousePos);
-		
-		if(wasMouseOverLastFrame && !mouseOverThisFrame)
-			mouseOut.fire((e) -> e.handle(thiz(), mousePos));
-		if(!wasMouseOverLastFrame && mouseOverThisFrame)
-			mouseIn.fire((e) -> e.handle(thiz(), mousePos));
-		
-		preDraw.fire((e) -> e.handle(thiz(), mousePos, partialTicks));
-		drawComponent(mousePos, partialTicks);
-		postDraw.fire((e) -> e.handle(thiz(), mousePos, partialTicks));
 	}
 	
 	/**
@@ -87,20 +103,107 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 			return parent.rootPos(pos.add(this.pos));
 	}
 	
+	//=============================================================================
+	{/* Children */}
+	//=============================================================================
+	
+	/**
+	 * Adds a child to this component.
+	 * 
+	 * @throws IllegalArgumentException if the component had a parent already
+	 */
+	public void add(GuiComponent<?> component) {
+		if(component.getParent() != null)
+			throw new IllegalArgumentException("Component already had a parent!");
+		components.add(component);
+		component.setParent(this);
+		Collections.sort(components, (a, b) -> Integer.compare(a.zIndex, b.zIndex));
+		addChild.fireAll((h) -> h.handle(thiz(), component));
+	}
+	
+	public void remove(GuiComponent<?> component) {
+		components.remove(component);
+		component.setParent(null);
+		removeChild.fireAll((h) -> h.handle(thiz(), component));
+	}
+	
+	public void remove(String tag) {
+		components.removeIf((e) -> {
+			boolean b = e.hasTag(tag);
+			if(b) {
+				e.setParent(null);
+				removeChild.fireAll((h) -> h.handle(thiz(), e));
+			}
+			return b;
+		});
+	}
+	
+	//=============================================================================
+	{/* Events/checks */}
+	//=============================================================================
+	
 	/**
 	 * Test if the mouse is over this component. mousePos is relative to the position of the element.
 	 */
 	public boolean isMouseOver(Vec2 mousePos) {
-		return mousePos.x >= 0 && mousePos.x <= size.x && mousePos.y >= 0 && mousePos.y <= size.y;
+		boolean hover = false;
+		if(shouldCalculateOwnHover())
+			hover = hover || mousePos.x >= 0 && mousePos.x <= size.x && mousePos.y >= 0 && mousePos.y <= size.y;
+			
+		for (GuiComponent<?> child : components) {
+			hover = child.isMouseOver(child.relativePos(mousePos)) || hover;
+		}
+		return hover;
 	}
 	
+	/**
+	 * Draw this component, don't override in subclasses unless you know what you're doing.
+	 * @param mousePos Mouse position relative to the position of this component
+	 * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
+	 */
+	@Override
+	public void draw(Vec2 mousePos, float partialTicks) {
+		boolean wasMouseOverLastFrame = mouseOverThisFrame;
+		mouseOverThisFrame = isMouseOver(mousePos);
+		
+		if(wasMouseOverLastFrame && !mouseOverThisFrame)
+			mouseOut.fireAll((e) -> e.handle(thiz(), mousePos));
+		if(!wasMouseOverLastFrame && mouseOverThisFrame)
+			mouseIn.fireAll((e) -> e.handle(thiz(), mousePos));
+		
+		preDraw.fireAll((e) -> e.handle(thiz(), mousePos, partialTicks));
+		
+		drawComponent(mousePos, partialTicks);
+		
+		GlStateManager.pushMatrix();
+		GlStateManager.pushAttrib();
+		GlStateManager.translate(pos.x, pos.y, 0);
+		
+		for (GuiComponent<?> component : components) {
+			component.draw(component.relativePos(mousePos), partialTicks);
+		}
+		
+		GlStateManager.popAttrib();
+		GlStateManager.popMatrix();
+		
+		postDraw.fireAll((e) -> e.handle(thiz(), mousePos, partialTicks));
+	}
+
 	/**
 	 * Called when the mouse is pressed. mousePos is relative to the position of this component.
 	 * @param mousePos
 	 * @param button
 	 */
 	public void mouseDown(Vec2 mousePos, EnumMouseButton button) {
-		mouseDown.fire((e) -> e.handle(thiz(), mousePos, button));
+		if(mouseDown.fire((e) -> e.handle(thiz(), mousePos, button)))
+			return;
+		
+		if(isMouseOver(mousePos))
+			mouseButtonsDown[button.ordinal()] = true;
+		
+		for (GuiComponent<?> child : components) {
+			child.mouseDown(child.relativePos(mousePos), button);
+		}
 	}
 	
 	/**
@@ -109,7 +212,19 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 * @param button
 	 */
 	public void mouseUp(Vec2 mousePos, EnumMouseButton button) {
-		mouseUp.fire((e) -> e.handle(thiz(), mousePos, button));
+		boolean wasDown = mouseButtonsDown[button.ordinal()];
+		mouseButtonsDown[button.ordinal()] = false;
+		
+		if( mouseUp.fire((e) -> e.handle(thiz(), mousePos, button)) )
+			return;
+		
+		if(isMouseOver(mousePos) && wasDown) {
+			mouseClick.fire((e) -> e.handle(thiz(), mousePos, button)); // don't return here, if a click was handled we should still handle the mouseUp
+		}
+		
+		for (GuiComponent<?> child : components) {
+			child.mouseUp(child.relativePos(mousePos), button);
+		}
 	}
 	
 	/**
@@ -118,7 +233,12 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 * @param button
 	 */
 	public void mouseDrag(Vec2 mousePos, EnumMouseButton button) {
-		mouseDrag.fire((e) -> e.handle(thiz(), mousePos, button));
+		if(mouseDrag.fire((e) -> e.handle(thiz(), mousePos, button)))
+			return;
+		
+		for (GuiComponent<?> child : components) {
+			child.mouseDrag(child.relativePos(mousePos), button);
+		}
 	}
 	
 	/**
@@ -127,7 +247,12 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 * @param button
 	 */
 	public void mouseWheel(Vec2 mousePos, int direction) {
-		mouseWheel.fire((e) -> e.handle(thiz(), mousePos, direction));
+		if(mouseWheel.fire((e) -> e.handle(thiz(), mousePos, direction)))
+			return;
+		
+		for (GuiComponent<?> child : components) {
+			child.mouseWheel(child.relativePos(mousePos), direction);
+		}
 	}
 	
 	/**
@@ -136,7 +261,14 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 * @param keyCode The key code, codes listed in {@link Keyboard}
 	 */
 	public void keyPressed(char key, int keyCode) {
-		keyDown.fire((e) -> e.handle(thiz(), key, keyCode));
+		if( keyDown.fire((e) -> e.handle(thiz(), key, keyCode)) )
+			return;
+		
+		keysDown.put(Key.get(key, keyCode), true);
+		
+		for (GuiComponent<?> child : components) {
+			child.keyPressed(key, keyCode);
+		}
 	}
 	
 	/**
@@ -145,9 +277,20 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 * @param keyCode The key code, codes listed in {@link Keyboard}
 	 */
 	public void keyReleased(char key, int keyCode) {
-		keyUp.fire((e) -> e.handle(thiz(), key, keyCode));
+		keysDown.put(Key.get(key, keyCode), false); // do this before so we don't have lingering keyDown entries
+
+		if( keyUp.fire((e) -> e.handle(thiz(), key, keyCode)) )
+			return;
+		
+		for (GuiComponent<?> child : components) {
+			child.keyReleased(key, keyCode);
+		}
 	}
 
+	//=============================================================================
+	{/* Utils, getters/setters */}
+	//=============================================================================
+	
 	/**
 	 * Returns {@code this} casted to {@code T}. Used to avoid unchecked cast warnings everywhere.
 	 */
@@ -198,6 +341,91 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 		this.parent = parent;
 	}
 
+	/**
+	 * Set whether the element should calculate hovering based on it's bounds as
+	 * well as it's children or if it should only calculate based on it's children.
+	 */
+	public void setCalculateOwnHover(boolean calculateOwnHover) {
+		this.calculateOwnHover = calculateOwnHover;
+	}
+	
+	/**
+	 * Whether to calculate hovering based on this component's bounds and its
+	 * children or only this element's children
+	 */
+	public boolean shouldCalculateOwnHover() {
+		return calculateOwnHover;
+	}
+	
+	//=============================================================================
+	{/* Assorted info */}
+	//=============================================================================
+	
+	/**
+	 * Adds the passed tag to this component if it doesn't already have it. Tags are not case sensitive
+	 */
+	public void addTag(String tag) {
+		final String lowerTag = tag.toLowerCase();
+		if(tags.add(lowerTag))
+			addTag.fireAll((h) -> h.handle(thiz(), lowerTag));
+	}
+	
+	/**
+	 * Removes the passed tag to this component if it doesn't already have it. Tags are not case sensitive
+	 */
+	public void removeTag(String tag) {
+		final String lowerTag = tag.toLowerCase();
+		tags.remove(lowerTag);
+	}
+	
+	/**
+	 * Checks if the component has the tag specified. Tags are not case sensitive
+	 */
+	public boolean hasTag(String tag) {
+		final String lowerTag = tag.toLowerCase();
+		return tags.contains(lowerTag);
+	}
+	
+	/**
+	 * Returns an unmodifiable wrapper of the tag set. Tags are all stored in lowercase
+	 */
+	public Set<String> getTags() {
+		return Collections.unmodifiableSet(tags);
+	}
+	
+	public void setFocused(boolean focused) {
+		if(this.focused != focused) {
+			if(focused)
+				focus.fireAll((h) -> h.handle(thiz()));
+			else
+				blur.fireAll((h) -> h.handle(thiz()));
+		}
+		this.focused = focused;
+	}
+	
+	public boolean isFocused() {
+		return focused;
+	}
+	
+	public void setEnabled(boolean enabled) {
+		if(this.enabled != enabled) {
+			if(enabled)
+				enable.fireAll((h) -> h.handle(thiz()));
+			else
+				disable.fireAll((h) -> h.handle(thiz()));
+		}
+		this.enabled = enabled;
+	}
+	
+	public boolean isEnabled() {
+		return enabled;
+	}
+	
+	
+	//=============================================================================
+	{/* Event interfaces */}
+	//=============================================================================
+	
 	@FunctionalInterface
 	public interface IComponentSetup<T extends GuiComponent<?>> {
 		void setup(T component);
@@ -210,21 +438,36 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 
 	@FunctionalInterface
 	public interface IComponentMouseEventHandler<T extends GuiComponent<?>> {
-		void handle(T component, Vec2 pos, EnumMouseButton button);
+		boolean handle(T component, Vec2 pos, EnumMouseButton button);
 	}
 
 	@FunctionalInterface
 	public interface IComponentMouseWheelEventHandler<T extends GuiComponent<?>> {
-		void handle(T component, Vec2 pos, int direction);
+		boolean handle(T component, Vec2 pos, int direction);
 	}
 
 	@FunctionalInterface
 	public interface IComponentKeyEventHandler<T extends GuiComponent<?>> {
-		void handle(T component, char character, int code);
+		boolean handle(T component, char character, int code);
 	}
 	
 	@FunctionalInterface
 	public interface IComponentCoordEventHandler<T extends GuiComponent<?>> {
-		void handle(T component, Vec2 mousePos);
+		boolean handle(T component, Vec2 mousePos);
+	}
+	
+	@FunctionalInterface
+	public interface IComponentChildEventHandler<T extends GuiComponent<?>> {
+		boolean handle(T component, GuiComponent<?> other);
+	}
+	
+	@FunctionalInterface
+	public interface IComponentTagEventHandler<T extends GuiComponent<?>> {
+		boolean handle(T component, String tag);
+	}
+	
+	@FunctionalInterface
+	public interface IComponentVoidEventHandler<T extends GuiComponent<?>> {
+		void handle(T component);
 	}
 }

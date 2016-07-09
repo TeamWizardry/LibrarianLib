@@ -1,14 +1,16 @@
 package com.teamwizardry.librarianlib.book.gui;
 
+import net.minecraft.util.ResourceLocation;
+
 import com.teamwizardry.librarianlib.LibrarianLib;
 import com.teamwizardry.librarianlib.api.gui.GuiBase;
 import com.teamwizardry.librarianlib.api.gui.GuiComponentContainer;
-import com.teamwizardry.librarianlib.api.gui.components.ComponentButton;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentRaw;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentSprite;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentText;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentText.TextAlignH;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentText.TextAlignV;
+import com.teamwizardry.librarianlib.api.gui.components.mixin.ButtonMixin;
 import com.teamwizardry.librarianlib.api.util.gui.ScissorUtil;
 import com.teamwizardry.librarianlib.api.util.misc.Color;
 import com.teamwizardry.librarianlib.api.util.misc.PathUtils;
@@ -18,7 +20,6 @@ import com.teamwizardry.librarianlib.client.Sprite;
 import com.teamwizardry.librarianlib.client.Texture;
 import com.teamwizardry.librarianlib.common.network.data.DataNode;
 import com.teamwizardry.librarianlib.math.Vec2;
-import net.minecraft.util.ResourceLocation;
 
 public class GuiBook extends GuiBase {
 
@@ -65,35 +66,50 @@ public class GuiBook extends GuiBase {
         normalColor = Color.rgb(0x0DBFA2);
 		
 		navBar.add(new ComponentSprite(TITLE_BAR, 0, 0));
-		navBar.add(new ComponentButton(15, 2, BACK_PAGE).setup((b) -> {
-			b.enabled.setValue(pageData.get("hasPrev").exists());
-			b.normalColor.setValue(normalColor);
-			b.disabledColor.setValue(disabledColor);
-			b.hoverColor.setValue(hoverColor);
-			
-			b.click.add(() -> {
-				openPage(this.page.path, this.page.page-1);
-			});
+		navBar.add(new ComponentSprite(BACK_PAGE, 15, 2).setup((b) -> {
+			b.setEnabled(pageData.get("hasPrev").exists());
+			new ButtonMixin(b,
+					() -> {
+						b.color.setValue(normalColor);
+					}, () -> {
+						b.color.setValue(hoverColor);
+					}, () -> {
+						b.color.setValue(disabledColor);
+					},
+					() -> {
+						openPage(this.page.path, this.page.page-1);
+					}
+			);
 		}));
-		navBar.add(new ComponentButton(TITLE_BAR.getWidth()-NEXT_PAGE.getWidth()-15, 2, NEXT_PAGE).setup((b) -> {
-			b.enabled.setValue(pageData.get("hasNext").exists());
-			b.normalColor.setValue(normalColor);
-			b.disabledColor.setValue(disabledColor);
-			b.hoverColor.setValue(hoverColor);
-			
-			b.click.add(() -> {
-				openPage(this.page.path, this.page.page+1);
-			});
+		navBar.add(new ComponentSprite(NEXT_PAGE, TITLE_BAR.getWidth()-NEXT_PAGE.getWidth()-15, 2).setup((b) -> {
+			b.setEnabled(pageData.get("hasNext").exists());
+			new ButtonMixin(b,
+					() -> {
+						b.color.setValue(normalColor);
+					}, () -> {
+						b.color.setValue(hoverColor);
+					}, () -> {
+						b.color.setValue(disabledColor);
+					},
+					() -> {
+						openPage(this.page.path, this.page.page+1);
+					}
+			);
 		}));
-		navBar.add(new ComponentButton((TITLE_BAR.getWidth() / 2) - (BACK_ARROW.getWidth() / 2), 2, BACK_ARROW).setup((b) -> {
-			b.enabled.setValue(book.history.size() > 0);
-			b.normalColor.setValue(normalColor);
-			b.disabledColor.setValue(disabledColor);
-			b.hoverColor.setValue(hoverColor);
-			
-			b.click.add(() -> {
-				book.back();
-			});
+		navBar.add(new ComponentSprite(BACK_ARROW, (TITLE_BAR.getWidth() / 2) - (BACK_ARROW.getWidth() / 2), 2).setup((b) -> {
+			b.setEnabled(book.history.size() > 0);
+			new ButtonMixin(b,
+					() -> {
+						b.color.setValue(normalColor);
+					}, () -> {
+						b.color.setValue(hoverColor);
+					}, () -> {
+						b.color.setValue(disabledColor);
+					},
+					() -> {
+						book.back();
+					}
+			);
 		}));
 
 		// page

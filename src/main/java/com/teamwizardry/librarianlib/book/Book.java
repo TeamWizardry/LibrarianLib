@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.book;
 
+import com.teamwizardry.librarianlib.api.LibrarianLog;
 import com.teamwizardry.librarianlib.api.util.misc.Color;
 import com.teamwizardry.librarianlib.book.gui.GuiBook;
 import com.teamwizardry.librarianlib.book.util.Page;
@@ -41,6 +42,7 @@ public class Book {
 	protected GuiScreen getScreen(Page page) {
 		GuiBook scr = PageHandler.create(this, page);
 		if (scr == null) {
+			LibrarianLog.I.warn("Page [%s:%d] not found! Going to [/:0] ", page.path, page.page);
 			page = new Page("/", 0);
 			scr = PageHandler.create(this, page);
 		}

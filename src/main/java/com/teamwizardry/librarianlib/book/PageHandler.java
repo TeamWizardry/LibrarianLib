@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.book;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.teamwizardry.librarianlib.api.LibrarianLog;
 import com.teamwizardry.librarianlib.book.gui.GuiBook;
 import com.teamwizardry.librarianlib.book.gui.PageIndex;
 import com.teamwizardry.librarianlib.book.gui.PageText;
@@ -48,6 +49,8 @@ public class PageHandler {
                 }
             }
             return map.get(type).create(book, data, pageData, page);
+        } else {
+        	LibrarianLog.I.warn("Page type [%s] not found!", type);
         }
 
         DataNode errorGlobal = DataNode.map();
