@@ -105,6 +105,6 @@ public class AnimtedCurve2D {
     }
 
     private enum CardinalDirections {
-        NORTH, SOUTH, EAST, WEST, SOUTH_EAST_EAST, SOUTH_WEST_EAST, SOUTH_WEST_WEST, SOUTH_EAST_WEST, NORTH_EAST_EAST, NORTH_EAST_WEST, NORTH_WEST_EAST, NORTH_WEST_WEST
+        NORTH, SOUTH, EAST, WEST
     }
 }
