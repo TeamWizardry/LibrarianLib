@@ -55,7 +55,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	public boolean mouseOverThisFrame = false;
 	protected Set<String> tags = new HashSet<>();
 	
-	protected boolean enabled = true, focused = false, invalid = false;
+	protected boolean enabled = true, visible = true, focused = false, invalid = false;
 	
 	protected boolean[] mouseButtonsDown = new boolean[EnumMouseButton.values().length];
 	protected Map<Key, Boolean> keysDown = new DefaultedMap<>(false);
@@ -181,6 +181,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 */
 	@Override
 	public void draw(Vec2 mousePos, float partialTicks) {
+		if(!isVisible()) return;
 		boolean wasMouseOverLastFrame = mouseOverThisFrame;
 		mouseOverThisFrame = isMouseOver(mousePos);
 		
@@ -224,6 +225,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 * @param button
 	 */
 	public void mouseDown(Vec2 mousePos, EnumMouseButton button) {
+		if(!isVisible()) return;
 		if(mouseDown.fire((e) -> e.handle(thiz(), mousePos, button)))
 			return;
 		
@@ -241,6 +243,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 * @param button
 	 */
 	public void mouseUp(Vec2 mousePos, EnumMouseButton button) {
+		if(!isVisible()) return;
 		boolean wasDown = mouseButtonsDown[button.ordinal()];
 		mouseButtonsDown[button.ordinal()] = false;
 		
@@ -262,6 +265,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 * @param button
 	 */
 	public void mouseDrag(Vec2 mousePos, EnumMouseButton button) {
+		if(!isVisible()) return;
 		if(mouseDrag.fire((e) -> e.handle(thiz(), mousePos, button)))
 			return;
 		
@@ -276,6 +280,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 * @param button
 	 */
 	public void mouseWheel(Vec2 mousePos, int direction) {
+		if(!isVisible()) return;
 		if(mouseWheel.fire((e) -> e.handle(thiz(), mousePos, direction)))
 			return;
 		
@@ -290,6 +295,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 * @param keyCode The key code, codes listed in {@link Keyboard}
 	 */
 	public void keyPressed(char key, int keyCode) {
+		if(!isVisible()) return;
 		if( keyDown.fire((e) -> e.handle(thiz(), key, keyCode)) )
 			return;
 		
@@ -306,6 +312,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 * @param keyCode The key code, codes listed in {@link Keyboard}
 	 */
 	public void keyReleased(char key, int keyCode) {
+		if(!isVisible()) return;
 		keysDown.put(Key.get(key, keyCode), false); // do this before so we don't have lingering keyDown entries
 
 		if( keyUp.fire((e) -> e.handle(thiz(), key, keyCode)) )
@@ -463,6 +470,20 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 */
 	public void invalidate() {
 		this.invalid = true;
+	}
+	
+	/**
+	 * Whether this component should be drawn or have events fire
+	 */
+	public boolean isVisible() {
+		return visible;
+	}
+
+	/**
+	 * Set whether this component should be drawn or have events fire
+	 */
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 
 	//=============================================================================
