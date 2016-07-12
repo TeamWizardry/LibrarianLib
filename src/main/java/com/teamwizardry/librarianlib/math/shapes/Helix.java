@@ -64,7 +64,7 @@ public class Helix implements IShape3D {
      * @param radius  The maximum radius of the helix. starts from 0 because it shrinks/expands
      * @param height  Defines the maximum height for the helix to reach
      * @param strands The number of strands that the helix will have
-     * @param curve   The strength of the curvature per strand
+     * @param curve   The stiffness of the curvature per strand
      * @param reverse Will draw the helix upside down starting from a fat bottom to a peak and vice versa
      */
     public Helix(Vec3d center, int points, float radius, int height, int strands, float curve, boolean reverse) {

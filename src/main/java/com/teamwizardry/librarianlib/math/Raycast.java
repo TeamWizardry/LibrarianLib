@@ -23,7 +23,7 @@ public class Raycast
 	 * @param dir
 	 *            The direction along which to search
 	 * @param distance
-	 *            The distance to check
+	 *            The restingDistance to check
 	 * @return The first block or entity along the given ray
 	 */
 	public static RayTraceResult cast(Entity entity, Vec3d dir, double distance)
@@ -103,7 +103,7 @@ public class Raycast
 	 * @param entity
 	 *            The entity being cast from
 	 * @param distance
-	 *            The distance to cast the vector
+	 *            The restingDistance to cast the vector
 	 * @return The first block or entity colliding with the vector
 	 */
 	public static RayTraceResult cast(Entity entity, double distance)
