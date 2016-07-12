@@ -16,11 +16,12 @@ public class Cloth {
 
 	public PointMass[][] masses;
 	public List<Link> links = new ArrayList<>();
+	public List<Link> hardLinks = new ArrayList<>();
 	public int solvePasses = 3;
 	public Vec3d[] top;
 	public int height;
 	public Vec3d size;
-	
+	public float stretch = 1, shear = 1, flex = 0.8f;
 	
 	public Cloth(Vec3d[] top, int height, Vec3d size) {
 		this.top = top;
@@ -38,20 +39,42 @@ public class Cloth {
 			
 			for(int j = 0; j < top.length; j++) {
 				masses[i][j] = new PointMass(top[j].add(size.scale(i)), 0.1f);
+				if(i == 0)
+					masses[i][j].pin = true;
 			}
 			
 		}
 		
 		for (int x = 0; x < masses.length; x++) {
 			for (int z = 0; z < masses[x].length; z++) {
-				if(x == 0)
-					masses[x][z].pin = true;
+				
 				if(x+1 < masses.length)
-					links.add(new Link(masses[x][z], masses[x+1][z]));
-				if(z+1 < masses[x].length)
-					links.add(new Link(masses[x][z], masses[x][z+1]));
+					hardLinks.add(new HardLink(masses[x][z], masses[x+1][z], 1));
+				
+				if(x+1 < masses.length)
+					links.add(new Link(masses[x][z], masses[x+1][z], stretch));
+				if(z+1 < masses[x].length && x != 0)
+					links.add(new Link(masses[x][z], masses[x][z+1], stretch));
+				
 				if(x+1 < masses.length && z+1 < masses[x].length)
-					links.add(new Link(masses[x][z], masses[x+1][z+1]));
+					links.add(new Link(masses[x][z], masses[x+1][z+1], shear));
+				if(x+1 < masses.length && z-1 >= 0)
+					links.add(new Link(masses[x][z], masses[x+1][z-1], shear));
+				
+				if(x+2 < masses.length) {
+					float dist = (float)(
+							masses[x  ][z].pos.subtract(masses[x+1][z].pos).lengthVector() +
+							masses[x+1][z].pos.subtract(masses[x+2][z].pos).lengthVector()
+						); // even if initialized bent, try to keep flat.
+					links.add(new Link(masses[x][z], masses[x+2][z], dist, flex));
+				}
+				if(z+2 < masses[x].length) {
+					float dist = (float)(
+							masses[x][z  ].pos.subtract(masses[x][z+1].pos).lengthVector() +
+							masses[x][z+1].pos.subtract(masses[x][z+2].pos).lengthVector()
+						); // even if initialized bent, try to keep flat.
+					links.add(new Link(masses[x][z], masses[x][z+2], dist, flex));
+				}
 			}
 		}
 	}
@@ -59,7 +82,7 @@ public class Cloth {
 	public void tick(List<AxisAlignedBB> aabbs) {
 		for (int i = 0; i < aabbs.size(); i++) {
 		}
-		Vec3d gravity = new Vec3d(0, -0.05, 0);
+		Vec3d gravity = new Vec3d(0, -0.1, 0);
 		
 		for (PointMass[] column : masses) {
 			for (PointMass point : column) {
@@ -76,6 +99,10 @@ public class Cloth {
 			}
 		}
 		
+		for (Link link : hardLinks) {
+			link.resolve();
+		}
+			
 		for (PointMass[] column : masses) {
 			for (PointMass point : column) {
 				if(!point.pin) {
@@ -104,12 +131,20 @@ public class Cloth {
             vecX = collideWithXPlane(aabb, aabb.minX, vecA, vecB);
     	}
     	
+    	if(vecX != null) {
+    		return new Vec3d(vecX.xCoord, vecB.yCoord, vecB.zCoord);
+    	}
+    	
     	if(vecA.yCoord > vecB.yCoord) {
             vecY = collideWithYPlane(aabb, aabb.maxY, vecA, vecB);
     	}
     	
     	if(vecA.yCoord < vecB.yCoord) {
             vecY = collideWithYPlane(aabb, aabb.minY, vecA, vecB);
+    	}
+    	
+    	if(vecY != null) {
+    		return new Vec3d(vecB.xCoord, vecY.yCoord, vecB.zCoord);
     	}
     	
     	if(vecA.zCoord > vecB.zCoord) {
@@ -120,7 +155,11 @@ public class Cloth {
             vecZ = collideWithZPlane(aabb, aabb.minZ, vecA, vecB);
     	}
     	
-    	return min(vecX, min(vecY, vecZ));
+    	if(vecZ != null) {
+    		return new Vec3d(vecB.xCoord, vecB.yCoord, vecZ.zCoord);
+    	}
+    	
+    	return vecB;
     }
 	
     Vec3d min(Vec3d a, Vec3d b) {

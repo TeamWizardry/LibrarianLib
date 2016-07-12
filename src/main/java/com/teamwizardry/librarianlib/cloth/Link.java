@@ -5,11 +5,20 @@ import net.minecraft.util.math.Vec3d;
 public class Link {
 	public PointMass a, b;
 	public float distance;
+	public float strength;
 	
-	public Link(PointMass a, PointMass b) {
+	public Link(PointMass a, PointMass b, float strength) {
 		this.a = a;
 		this.b = b;
+		this.strength = strength;
 		this.distance = (float) a.pos.subtract(b.pos).lengthVector();
+	}
+	
+	public Link(PointMass a, PointMass b, float distance, float strength) {
+		this.a = a;
+		this.b = b;
+		this.strength = strength;
+		this.distance = distance;
 	}
 	
 	public void resolve() {
