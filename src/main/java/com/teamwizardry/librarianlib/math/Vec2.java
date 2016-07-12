@@ -63,4 +63,10 @@ public class Vec2 {
         double norm = length();
         return new Vec2(x / norm, y / norm);
     }
+
+    public double squareDist(Vec2 vec) {
+        double d0 = vec.x - x;
+        double d1 = vec.y - y;
+        return d0 * d0 + d1 * d1;
+    }
 }
