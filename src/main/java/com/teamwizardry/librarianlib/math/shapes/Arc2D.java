@@ -1,14 +1,14 @@
 package com.teamwizardry.librarianlib.math.shapes;
 
-import com.teamwizardry.librarianlib.api.IShape3D;
-import net.minecraft.util.math.Vec3d;
+import com.teamwizardry.librarianlib.api.IShape2D;
+import com.teamwizardry.librarianlib.math.Vec2;
 
 import java.util.ArrayList;
 
 /**
- * Created by Saad on 5/7/2016.
+ * Created by Saad on 12/7/2016.
  */
-public class Arc3D implements IShape3D {
+public class Arc2D implements IShape2D {
 
     /**
      * Height of the arc in blocks
@@ -23,9 +23,9 @@ public class Arc3D implements IShape3D {
     /**
      * The two points the arc will connect from and to
      */
-    private Vec3d origin, target;
+    private Vec2 origin, target;
 
-    public Arc3D(Vec3d origin, Vec3d target, float height, int particleCount) {
+    public Arc2D(Vec2 origin, Vec2 target, float height, int particleCount) {
         this.height = height;
         this.particles = particleCount;
         this.origin = origin;
@@ -38,17 +38,17 @@ public class Arc3D implements IShape3D {
      * @return Will return the list of points required
      */
     @Override
-    public ArrayList<Vec3d> getPoints() {
-        ArrayList<Vec3d> locs = new ArrayList<>();
-        Vec3d link = target.subtract(origin);
-        float length = (float) link.lengthVector();
+    public ArrayList<Vec2> getPoints() {
+        ArrayList<Vec2> locs = new ArrayList<>();
+        Vec2 link = target.sub(origin);
+        float length = (float) link.length();
         float pitch = (float) (4 * height / Math.pow(length, 2));
         for (int i = 0; i < particles; i++) {
-            Vec3d tmp = new Vec3d(link.xCoord, link.yCoord, link.zCoord).normalize();
-            Vec3d v = new Vec3d(tmp.xCoord * length * i / particles, tmp.yCoord * length * i / particles, tmp.zCoord * length * i / particles);
+            Vec2 tmp = new Vec2(link.x, link.y).normalize();
+            Vec2 v = new Vec2(tmp.x * length * i / particles, tmp.y * length * i / particles);
             float x = ((float) i / particles) * length - length / 2;
             float y = (float) (-pitch * Math.pow(x, 2) + height);
-            locs.add(origin.add(v).add(new Vec3d(0, y, 0)));
+            locs.add(origin.add(v).add(new Vec2(0, y)));
         }
         return locs;
     }

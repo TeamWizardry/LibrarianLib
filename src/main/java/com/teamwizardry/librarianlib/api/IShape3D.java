@@ -7,7 +7,7 @@ import java.util.ArrayList;
 /**
  * Created by Saad on 2/7/2016.
  */
-public interface IShape {
+public interface IShape3D {
 
     /**
      * Will return a list of points in order that define every point of the helix

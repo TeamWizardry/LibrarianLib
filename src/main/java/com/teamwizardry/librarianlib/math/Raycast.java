@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.math;
 
-import java.util.List;
-import javax.annotation.Nullable;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -9,8 +9,9 @@ import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class Raycast
 {
@@ -39,17 +40,15 @@ public class Raycast
 			Vec3d cast = eyePos.addVector(dir.xCoord*distance, dir.yCoord*distance, dir.zCoord*distance);
 			Entity focusedEntity = null;
 			Vec3d vec = null;
-			List<Entity> list = entity.worldObj.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().addCoord(dir.xCoord * distance, dir.yCoord * distance, dir.zCoord * distance).expand(1, 1, 1), Predicates.and(EntitySelectors.NOT_SPECTATING, new Predicate<Entity>()
-			{
-				public boolean apply(@Nullable Entity apply)
-				{
+			List<Entity> list = entity.worldObj.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().addCoord(dir.xCoord * distance, dir.yCoord * distance, dir.zCoord * distance).expand(1, 1, 1), Predicates.and(new Predicate<Entity>() {
+				public boolean apply(@Nullable Entity apply) {
 					return apply != null && (apply.canBeCollidedWith() || apply instanceof EntityItem);
 				}
-			}));
+			}, EntitySelectors.NOT_SPECTATING));
 			double blockDistCopy = blockDistance;
 
-			for (int j = 0; j < list.size(); j++)
-			{
+			int j = 0;
+			while (j < list.size()) {
 				Entity current = list.get(j);
 				AxisAlignedBB axis = current.getEntityBoundingBox().expandXyz(current.getCollisionBorderSize());
 				RayTraceResult result = axis.calculateIntercept(eyePos, cast);
@@ -85,12 +84,13 @@ public class Raycast
 						}
 					}
 				}
-				
+
 				if (focusedEntity != null && (blockDistCopy < blockDistance || focusedBlock == null))
 				{
 					focusedBlock = new RayTraceResult(focusedEntity, vec);
 					if (focusedEntity instanceof EntityLivingBase || focusedEntity instanceof EntityItem) { return focusedBlock; }
 				}
+				j++;
 			}
 			return focusedBlock;
 		}

@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.math.shapes;
 
-import com.teamwizardry.librarianlib.api.IShape;
+import com.teamwizardry.librarianlib.api.IShape3D;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.Collections;
 /**
  * Created by Saad on 2/7/2016.
  */
-public class Helix implements IShape {
+public class Helix implements IShape3D {
 
     /**
      * Amount of strands

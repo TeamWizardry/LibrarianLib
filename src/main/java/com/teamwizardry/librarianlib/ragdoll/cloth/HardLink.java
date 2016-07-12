@@ -1,10 +1,10 @@
-package com.teamwizardry.librarianlib.cloth;
+package com.teamwizardry.librarianlib.ragdoll.cloth;
 
 import net.minecraft.util.math.Vec3d;
 
 public class HardLink extends Link {
 
-	public HardLink(PointMass a, PointMass b, float strength) {
+	public HardLink(PointMass3D a, PointMass3D b, float strength) {
 		super(a, b, strength);
 	}
 	

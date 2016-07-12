@@ -1,21 +1,17 @@
-package com.teamwizardry.librarianlib.cloth;
+package com.teamwizardry.librarianlib.ragdoll.cloth;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.minecraft.util.EnumFacing;
+import com.google.common.annotations.VisibleForTesting;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nullable;
-
-import com.google.common.annotations.VisibleForTesting;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Cloth {
 
-	public PointMass[][] masses;
-	public List<Link> links = new ArrayList<>();
+    public PointMass3D[][] masses;
+    public List<Link> links = new ArrayList<>();
 	public List<Link> hardLinks = new ArrayList<>();
 	public int solvePasses = 3;
 	public Vec3d[] top;
@@ -32,14 +28,14 @@ public class Cloth {
 	}
 	
 	public void init() {
-		masses = new PointMass[height][top.length];
-		links = new ArrayList<>();
+        masses = new PointMass3D[height][top.length];
+        links = new ArrayList<>();
 		
 		for(int i = 0; i < height; i++) {
 			
 			for(int j = 0; j < top.length; j++) {
-				masses[i][j] = new PointMass(top[j].add(size.scale(i)), 0.1f);
-				if(i == 0)
+                masses[i][j] = new PointMass3D(top[j].add(size.scale(i)), 0.1f);
+                if(i == 0)
 					masses[i][j].pin = true;
 			}
 			
@@ -83,10 +79,10 @@ public class Cloth {
 		for (int i = 0; i < aabbs.size(); i++) {
 		}
 		Vec3d gravity = new Vec3d(0, -0.1, 0);
-		
-		for (PointMass[] column : masses) {
-			for (PointMass point : column) {
-				if(point.pin)
+
+        for (PointMass3D[] column : masses) {
+            for (PointMass3D point : column) {
+                if(point.pin)
 					continue;
 				point.origPos = point.pos;
 				point.pos = point.pos.add(gravity).add(point.pos.subtract(point.prevPos));
@@ -102,10 +98,10 @@ public class Cloth {
 		for (Link link : hardLinks) {
 			link.resolve();
 		}
-			
-		for (PointMass[] column : masses) {
-			for (PointMass point : column) {
-				if(!point.pin) {
+
+        for (PointMass3D[] column : masses) {
+            for (PointMass3D point : column) {
+                if(!point.pin) {
 					point.origPos = point.origPos.subtract(point.pos.subtract(point.origPos).scale(0.001));
 					for (AxisAlignedBB aabb : aabbs) {
 						Vec3d res = calculateIntercept(aabb, point.origPos, point.pos);
