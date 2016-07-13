@@ -15,24 +15,4 @@ public class PointMass2D {
         this.prevPos = this.pos = pos;
         this.mass = mass;
     }
-
-    public void updatePhysics() {
-        Vec2 velocity = pos.sub(prevPos);
-
-        nextPos = pos.add(velocity);
-        prevPos = pos;
-        pos = nextPos;
-
-
-        // dampen velocity
-        velocity.mul(0.99);
-
-
-        // calculate the next position using Verlet Integration
-        Vec2 nextPos = pos.add(velocity).add(0.5, 0.5);
-
-        // reset variables
-        prevPos = pos;
-        pos = nextPos;
-    }
 }

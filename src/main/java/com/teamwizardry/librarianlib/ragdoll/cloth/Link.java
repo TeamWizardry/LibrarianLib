@@ -29,7 +29,7 @@ public class Link {
 		double d = posDiff.lengthVector();
 		
 		double difference = (distance - d)/d;
-		
+		difference *= strength;
 		if(!a.pin && !b.pin) // neither are pinned
 			difference = difference / 2.0;
 		
