@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public interface IShape3D {
 
     /**
-     * Will return a list of points in order that define every point of the helix
+     * Will return a list of points in order that define every point of the shape
      *
      * @return Will return the list of points required
      */
