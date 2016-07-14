@@ -12,8 +12,9 @@ import org.lwjgl.opengl.GL20;
 public abstract class Shader {
     public static final Shader NONE = new Shader("", "") {
         @Override
-        public void initUniforms() {
-        }
+        public void initUniforms() {}
+		@Override
+		public void uniformDefaults() {}
     };
 
     public FloatTypes.Float time;
@@ -60,7 +61,9 @@ public abstract class Shader {
     }
 
     public abstract void initUniforms();
-
+    
+    public abstract void uniformDefaults();
+    
     public String getVert() {
         return vert;
     }

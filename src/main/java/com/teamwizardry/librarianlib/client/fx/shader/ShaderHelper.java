@@ -1,21 +1,29 @@
 package com.teamwizardry.librarianlib.client.fx.shader;
 
-import com.teamwizardry.librarianlib.api.Const;
-import com.teamwizardry.librarianlib.api.LibrarianLog;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.IReloadableResourceManager;
-import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.client.resources.IResourceManagerReloadListener;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.opengl.*;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.resources.IReloadableResourceManager;
+import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.resources.IResourceManagerReloadListener;
+
+import org.lwjgl.opengl.ARBFragmentShader;
+import org.lwjgl.opengl.ARBShaderObjects;
+import org.lwjgl.opengl.ARBVertexShader;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
+
+import com.teamwizardry.librarianlib.api.Const;
+import com.teamwizardry.librarianlib.api.LibrarianLog;
 
 /**
  * Credit to Vazkii (https://github.com/Vazkii/Botania/blob/master/src/main/java/vazkii/botania/client/core/helper/ShaderHelper.java)
@@ -42,10 +50,6 @@ public final class ShaderHelper implements IResourceManagerReloadListener {
         if (!useShaders())
             return;
 
-        //burst = new BurstShader(null, "/assets/wizardry/shader/burstNew.frag");
-
-        //createProgram(burst);
-
         for (Shader shader : shaders) {
 			createProgram(shader);
 		}
@@ -69,10 +73,16 @@ public final class ShaderHelper implements IResourceManagerReloadListener {
 
 
         ARBShaderObjects.glUseProgramObjectARB(shader.getGlName());
-
-//    	if(shader.time != null)
-//    		shader.time.set(System.nanoTime()/1000000f);
-
+                
+    	if(shader.time != null) {
+    		long nanos = System.nanoTime();
+    		double seconds = (double)nanos / 1000000000.0;
+    		seconds = seconds % 100_000.0;
+    		shader.time.set(seconds);
+    	}
+    	
+        shader.uniformDefaults();
+        
         if (callback != null)
             callback.call(shader);
     }
@@ -86,8 +96,7 @@ public final class ShaderHelper implements IResourceManagerReloadListener {
     }
 
     public static boolean useShaders() {
-        //  return /*ConfigHandler.useShaders && */OpenGlHelper.shadersSupported;
-        return false;
+          return OpenGlHelper.shadersSupported;
     }
 
     private static int createProgram(Shader shader) {

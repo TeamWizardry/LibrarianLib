@@ -28,6 +28,11 @@ public enum LibShaders {
 		public void initUniforms() {
 			hue = getUniform("hue");
 		}
+
+		@Override
+		public void uniformDefaults() {
+			hue.set(0);
+		}
 		
 	}
 }
