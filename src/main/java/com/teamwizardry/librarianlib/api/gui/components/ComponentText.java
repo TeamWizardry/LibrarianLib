@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.math.Vec2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 
+import java.util.List;
 import java.util.function.Function;
 
 public class ComponentText extends GuiComponent<ComponentText> {
@@ -75,6 +76,24 @@ public class ComponentText extends GuiComponent<ComponentText> {
 			fr.drawSplitString(val, x, y, wrap, color.getValue(this).hexARGB());
 	}
 
+	@Override
+	public Vec2 getLogicalSize() {
+		int wrap = this.wrap.getValue(this);
+		
+		Vec2 size;
+		
+		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+		
+		if(wrap == -1) {
+			size = new Vec2(fr.getStringWidth(text.getValue(this)), fr.FONT_HEIGHT);
+		} else {
+			List<String> wrapped = fr.listFormattedStringToWidth(text.getValue(this), wrap);
+			size = new Vec2(wrap, wrapped.size()*fr.FONT_HEIGHT);
+		}
+		
+		return modifyLogicalSize(size);
+	}
+	
 	public enum TextAlignH {
 		LEFT, CENTER, RIGHT
 	}

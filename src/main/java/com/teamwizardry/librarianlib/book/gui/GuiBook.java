@@ -37,6 +37,9 @@ public class GuiBook extends GuiBase {
 	public static Sprite CHECKBOX = TEXTURE.getSprite(18, 203, 9, 9);
 	public static Sprite CHECKBOX_ON = TEXTURE.getSprite(27, 203, 9, 9);
 	public static Sprite CHECKMARK = TEXTURE.getSprite(18, 212, 16, 16);
+	public static Sprite SLIDER_NORMAL = TEXTURE.getSprite(292, 0, 133, 37);
+	public static Sprite SLIDER_RECIPE = TEXTURE.getSprite(292, 37, 133, 68);
+	
 	public final Book book;
 	public final Page page;
 	protected final DataNode rootData;

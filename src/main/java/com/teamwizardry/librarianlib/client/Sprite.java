@@ -30,28 +30,64 @@ public class Sprite {
 	 * The minimum U coordinate (0-1)
 	 */
 	public float minU() {
-		return (float)u/(float)tex.getWidth();
+		return minU(0);
 	}
 	
 	/**
 	 * The minimum V coordinate (0-1)
 	 */
 	public float minV() {
-		return (float)v/(float)tex.getHeight();
+		return minV(0);
 	}
 	
 	/**
 	 * The maximum U coordinate (0-1)
 	 */
 	public float maxU() {
-		return (float)(u+width)/(float)tex.getWidth();
+		return maxU(0);
 	}
 	
 	/**
 	 * The maximum V coordinate (0-1)
 	 */
 	public float maxV() {
-		return (float)(v+height)/(float)tex.getHeight();
+		return maxV(0);
+	}
+	
+	/**
+	 * The minimum U coordinate (0-1)
+	 * 
+	 * @param offset The offset in pixels toward the center of the texture
+	 */
+	public float minU(int offset) {
+		return (float)(u+offset)/(float)tex.getWidth();
+	}
+	
+	/**
+	 * The minimum V coordinate (0-1)
+	 *
+	 * @param offset The offset in pixels toward the center of the texture
+	 */
+	public float minV(int offset) {
+		return (float)(v+offset)/(float)tex.getHeight();
+	}
+	
+	/**
+	 * The maximum U coordinate (0-1)
+	 *
+	 * @param offset The offset in pixels toward the center of the texture
+	 */
+	public float maxU(int offset) {
+		return (float)(u+width-offset)/(float)tex.getWidth();
+	}
+	
+	/**
+	 * The maximum V coordinate (0-1)
+	 *
+	 * @param offset The offset in pixels toward the center of the texture
+	 */
+	public float maxV(int offset) {
+		return (float)(v+height-offset)/(float)tex.getHeight();
 	}
 
 	/**
@@ -90,6 +126,10 @@ public class Sprite {
 		return height;
 	}
 	
+	public Sprite getSubSprite(int u, int v, int width, int height) {
+		return new Sprite(this.tex, this.u+u, this.v+v, width, height);
+	}
+	
 	/**
 	 * Draws the sprite to the screen
 	 * @param x The x position to draw at
@@ -111,7 +151,7 @@ public class Sprite {
 	}
 	
 	/**
-	 * Draws the sprite to the screen with a custom width and height by clipping instead of stretching/squashing
+	 * Draws the sprite to the screen with a custom width and height by clipping or tiling instead of stretching/squashing
 	 * @param x
 	 * @param y
 	 * @param width

@@ -1,13 +1,14 @@
 package com.teamwizardry.librarianlib.book.gui;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import net.minecraft.util.ResourceLocation;
 
 import com.teamwizardry.librarianlib.api.gui.components.ComponentSlider;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentSprite;
+import com.teamwizardry.librarianlib.api.gui.components.ComponentSpriteTiled;
+import com.teamwizardry.librarianlib.api.gui.components.ComponentText;
 import com.teamwizardry.librarianlib.api.gui.components.mixin.ButtonMixin;
 import com.teamwizardry.librarianlib.api.util.misc.Color;
 import com.teamwizardry.librarianlib.book.Book;
@@ -51,8 +52,15 @@ public class PageIndex extends GuiBook {
 				i.mouseIn.add((c, pos) -> {
 					if(s.get() != null)
 						s.get().invalidate();
-					ComponentSlider slider = new ComponentSlider(0, c.getPos().yi, -50, 0);
-					slider.add(new ComponentSprite(GuiBook.CHECKMARK, 0, 0));
+					ComponentSlider slider = new ComponentSlider(0, c.getPos().yi, -120, 0);
+					ComponentText textComp = new ComponentText(7, 6).setup((comp)-> {
+						comp.text.setValue(icon.get("text").asStringOr("NoText"));
+						comp.wrap.setValue(113);
+					});
+					
+					slider.add(new ComponentSpriteTiled(GuiBook.SLIDER_NORMAL, 6, 0, 0, 133, 10 + textComp.getLogicalSize().yi));
+					slider.add(textComp);
+					
 					tips.add(slider);
 					s.set(slider);
 					return false;

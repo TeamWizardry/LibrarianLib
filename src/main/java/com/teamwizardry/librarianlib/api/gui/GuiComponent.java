@@ -48,6 +48,8 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	public final HandlerList<IComponentTagEventHandler<T>> matchesTag = new HandlerList<>();
 	public final HandlerList<IComponentTagEventHandler<T>> addTag = new HandlerList<>();
 	public final HandlerList<IComponentTagEventHandler<T>> removeTag = new HandlerList<>();
+
+	public final HandlerList<IComponentLogicalSizeEventHandler<T>> logicalSize = new HandlerList<>();
 	
 	public int zIndex = 0;
 	protected Vec2 pos, size;
@@ -364,6 +366,20 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	}
 	
 	/**
+	 * The size of the component for layout. Often dynamically calculated
+	 */
+	public Vec2 getLogicalSize() {
+		return modifyLogicalSize(size);
+	}
+	
+	/**
+	 * Calls the appropriate handlers to modify the logical size of the element
+	 */
+	protected Vec2 modifyLogicalSize(Vec2 size) {
+		return logicalSize.fire((v, t) -> t.handle(v, thiz()), size);
+	}
+	
+	/**
 	 * Get the parent component
 	 */
 	public GuiComponent<?> getParent() {
@@ -533,5 +549,10 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	@FunctionalInterface
 	public interface IComponentVoidEventHandler<T extends GuiComponent<?>> {
 		void handle(T component);
+	}
+	
+	@FunctionalInterface
+	public interface IComponentLogicalSizeEventHandler<T extends GuiComponent<?>> {
+		Vec2 handle(Vec2 size, T component);
 	}
 }
