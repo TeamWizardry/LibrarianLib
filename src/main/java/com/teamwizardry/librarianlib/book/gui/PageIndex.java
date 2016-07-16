@@ -3,12 +3,13 @@ package com.teamwizardry.librarianlib.book.gui;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import com.teamwizardry.librarianlib.api.gui.components.ComponentSlider;
+import com.teamwizardry.librarianlib.api.gui.components.ComponentSlot;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentSprite;
-import com.teamwizardry.librarianlib.api.gui.components.ComponentSpriteTiled;
-import com.teamwizardry.librarianlib.api.gui.components.ComponentText;
 import com.teamwizardry.librarianlib.api.gui.components.mixin.ButtonMixin;
 import com.teamwizardry.librarianlib.api.gui.components.template.SliderTemplate;
 import com.teamwizardry.librarianlib.api.util.misc.Color;
@@ -73,6 +74,10 @@ public class PageIndex extends GuiBook {
 			}
 			
 		}
+		
+		contents.add(new ComponentSlot(30, 30).setup((c) -> {
+			c.stack.setValue(new ItemStack(Blocks.STONE, 3, 2));
+		}));
 		
 	}
 
