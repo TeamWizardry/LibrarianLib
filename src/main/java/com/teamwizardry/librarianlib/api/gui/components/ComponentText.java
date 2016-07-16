@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.api.gui.components;
 import com.teamwizardry.librarianlib.api.gui.GuiComponent;
 import com.teamwizardry.librarianlib.api.gui.Option;
 import com.teamwizardry.librarianlib.api.util.misc.Color;
+import com.teamwizardry.librarianlib.math.BoundingBox2D;
 import com.teamwizardry.librarianlib.math.Vec2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -77,7 +78,7 @@ public class ComponentText extends GuiComponent<ComponentText> {
 	}
 
 	@Override
-	public Vec2 getLogicalSize() {
+	protected BoundingBox2D getContentSize() {
 		int wrap = this.wrap.getValue(this);
 		
 		Vec2 size;
@@ -91,7 +92,7 @@ public class ComponentText extends GuiComponent<ComponentText> {
 			size = new Vec2(wrap, wrapped.size()*fr.FONT_HEIGHT);
 		}
 		
-		return modifyLogicalSize(size);
+		return new BoundingBox2D(Vec2.ZERO, size);
 	}
 	
 	public enum TextAlignH {

@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.input.Keyboard;
 
 import com.teamwizardry.librarianlib.api.util.misc.DefaultedMap;
+import com.teamwizardry.librarianlib.math.BoundingBox2D;
 import com.teamwizardry.librarianlib.math.Vec2;
 
 /**
@@ -368,15 +369,22 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	/**
 	 * The size of the component for layout. Often dynamically calculated
 	 */
-	public Vec2 getLogicalSize() {
-		return modifyLogicalSize(size);
+	public BoundingBox2D getLogicalSize() {
+		BoundingBox2D aabb = getContentSize();
+		
+		for (GuiComponent<?> child : components) {
+			BoundingBox2D childAABB = child.getLogicalSize();
+			aabb = aabb.union(childAABB);
+		}
+		
+		return logicalSize.fire((v, t) -> t.handle(v, thiz()), aabb);
 	}
 	
 	/**
-	 * Calls the appropriate handlers to modify the logical size of the element
+	 * Gets the size of the content of this component.
 	 */
-	protected Vec2 modifyLogicalSize(Vec2 size) {
-		return logicalSize.fire((v, t) -> t.handle(v, thiz()), size);
+	protected BoundingBox2D getContentSize() {
+		return new BoundingBox2D(Vec2.ZERO, size);
 	}
 	
 	/**
@@ -553,6 +561,6 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	
 	@FunctionalInterface
 	public interface IComponentLogicalSizeEventHandler<T extends GuiComponent<?>> {
-		Vec2 handle(Vec2 size, T component);
+		BoundingBox2D handle(BoundingBox2D size, T component);
 	}
 }

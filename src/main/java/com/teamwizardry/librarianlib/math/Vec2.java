@@ -1,7 +1,9 @@
 package com.teamwizardry.librarianlib.math;
 
 public class Vec2 {
-
+	
+	public static final Vec2 ZERO = new Vec2(0,0);
+	
     public final float xf, yf;
     public final int xi, yi;
     public double x, y;

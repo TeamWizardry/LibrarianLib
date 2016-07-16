@@ -10,6 +10,7 @@ import com.teamwizardry.librarianlib.api.gui.components.ComponentSprite;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentSpriteTiled;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentText;
 import com.teamwizardry.librarianlib.api.gui.components.mixin.ButtonMixin;
+import com.teamwizardry.librarianlib.api.gui.components.template.SliderTemplate;
 import com.teamwizardry.librarianlib.api.util.misc.Color;
 import com.teamwizardry.librarianlib.book.Book;
 import com.teamwizardry.librarianlib.book.util.Link;
@@ -52,14 +53,7 @@ public class PageIndex extends GuiBook {
 				i.mouseIn.add((c, pos) -> {
 					if(s.get() != null)
 						s.get().invalidate();
-					ComponentSlider slider = new ComponentSlider(0, c.getPos().yi, -120, 0);
-					ComponentText textComp = new ComponentText(7, 6).setup((comp)-> {
-						comp.text.setValue(icon.get("text").asStringOr("NoText"));
-						comp.wrap.setValue(113);
-					});
-					
-					slider.add(new ComponentSpriteTiled(GuiBook.SLIDER_NORMAL, 6, 0, 0, 133, 10 + textComp.getLogicalSize().yi));
-					slider.add(textComp);
+					ComponentSlider slider = SliderTemplate.text(c.getPos().yi, icon.get("text").asStringOr("NoText"));
 					
 					tips.add(slider);
 					s.set(slider);
