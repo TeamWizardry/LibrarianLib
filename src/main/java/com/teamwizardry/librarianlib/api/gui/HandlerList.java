@@ -45,9 +45,9 @@ public class HandlerList<T> {
 	 * Fire an event, each handler will be passed to the caller in order. Once the handler returns true it will halt.
 	 * @param caller
 	 */
-	public <V> V fire(IModifierHandlerCaller<V, T> caller, V value) {
+	public <V> V fire(V value, IModifierHandlerCaller<V, T> caller) {
 		for (T t : handlers) {
-			value = caller.call(value, t);
+			value = caller.call(t, value);
 		}
 		return value;
 	}
@@ -64,6 +64,6 @@ public class HandlerList<T> {
 	
 	@FunctionalInterface
 	public static interface IModifierHandlerCaller<V, T> {
-		V call(V value, T handler);
+		V call(T handler, V value);
 	}
 }

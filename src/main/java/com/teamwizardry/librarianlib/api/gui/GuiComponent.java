@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 
 import org.lwjgl.input.Keyboard;
@@ -62,6 +63,9 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	
 	protected boolean[] mouseButtonsDown = new boolean[EnumMouseButton.values().length];
 	protected Map<Key, Boolean> keysDown = new DefaultedMap<>(false);
+	
+	public List<String> tooltipText;
+	public FontRenderer tooltipFont;
 	
 	/* subcomponent stuff */
 	protected boolean calculateOwnHover = true;
@@ -167,6 +171,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 * Test if the mouse is over this component. mousePos is relative to the position of the element.
 	 */
 	public boolean isMouseOver(Vec2 mousePos) {
+		if(!isVisible()) return false;
 		boolean hover = false;
 		if(shouldCalculateOwnHover())
 			hover = hover || mousePos.x >= 0 && mousePos.x <= size.x && mousePos.y >= 0 && mousePos.y <= size.y;
@@ -373,11 +378,12 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 		BoundingBox2D aabb = getContentSize();
 		
 		for (GuiComponent<?> child : components) {
+			if(!child.isVisible()) continue;
 			BoundingBox2D childAABB = child.getLogicalSize();
 			aabb = aabb.union(childAABB);
 		}
 		
-		return logicalSize.fire((v, t) -> t.handle(v, thiz()), aabb);
+		return logicalSize.fire(aabb, (t, v) -> t.handle(v, thiz()));
 	}
 	
 	/**
@@ -401,6 +407,33 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 		this.parent = parent;
 	}
 
+	/**
+	 * Gets the root component
+	 */
+	public GuiComponent<?> getRoot() {
+		if(getParent() != null)
+			return getParent().getRoot();
+		return this;
+	}
+	
+	/**
+	 * Sets the tooltip to be drawn, overriding the existing value. Pass null for the font to use the default font renderer.
+	 */
+	public void setTooltip(List<String> text, FontRenderer font) {
+		GuiComponent<?> component = getRoot();
+		component.tooltipText = text;
+		component.tooltipFont = font;
+	}
+	
+	/**
+	 * Sets the tooltip to be drawn, overriding the existing value and using the default font renderer.
+	 */
+	public void setTooltip(List<String> text) {
+		GuiComponent<?> component = getRoot();
+		component.tooltipText = text;
+		component.tooltipFont = null;
+	}
+	
 	/**
 	 * Set whether the element should calculate hovering based on it's bounds as
 	 * well as it's children or if it should only calculate based on it's children.
@@ -432,10 +465,16 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	
 	/**
 	 * Removes the passed tag to this component if it doesn't already have it. Tags are not case sensitive
+	 * 
+	 * @return true if the tag existed and was removed
 	 */
-	public void removeTag(String tag) {
+	public boolean removeTag(String tag) {
 		final String lowerTag = tag.toLowerCase();
-		tags.remove(lowerTag);
+		if(tags.remove(lowerTag)) {
+			removeTag.fireAll((h) -> h.handle(thiz(), lowerTag));
+			return true;
+		}
+		return false;
 	}
 	
 	/**

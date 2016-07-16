@@ -1,7 +1,12 @@
 package com.teamwizardry.librarianlib.book.gui;
 
+import java.util.List;
+
+import net.minecraftforge.fml.client.config.GuiUtils;
+
 import net.minecraft.util.ResourceLocation;
 
+import com.google.common.collect.ImmutableList;
 import com.teamwizardry.librarianlib.LibrarianLib;
 import com.teamwizardry.librarianlib.api.gui.GuiBase;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentRaw;
@@ -153,6 +158,11 @@ public class GuiBook extends GuiBase {
 		components.add(contents);
 		
 		this.contents = contents;
+	}
+	
+	@Override
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
 	
 	public void openPageRelative(String path, int page) {

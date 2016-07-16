@@ -35,7 +35,7 @@ public class ComponentSlot extends GuiComponent<ComponentSlot> {
 		
 		ItemStack stack = this.stack.getValue(this);
 		String str = "" + stack.stackSize;
-		str = quantityText.fire((v, h) -> h.handle(this, v), str);
+		str = quantityText.fire(str, (h, v) -> h.handle(this, v));
 		
 		RenderItem itemRender = Minecraft.getMinecraft().getRenderItem();
         itemRender.zLevel = 200.0F;
@@ -49,16 +49,15 @@ public class ComponentSlot extends GuiComponent<ComponentSlot> {
         
         itemRender.zLevel = 0.0F;
         
-        GlStateManager.disableRescaleNormal();
-        RenderHelper.disableStandardItemLighting();
-
+        
         if(mouseOverThisFrame)
         	drawTooltip(stack, mousePos);
+        
+        GlStateManager.disableRescaleNormal();
+        RenderHelper.disableStandardItemLighting();
 	}
 	
 	public void drawTooltip(ItemStack stack, Vec2 mousePos) {
-		ScissorUtil.push();
-		ScissorUtil.disable();
 		List<String> list = stack.getTooltip(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
 
         for (int i = 0; i < list.size(); ++i)
@@ -76,9 +75,7 @@ public class ComponentSlot extends GuiComponent<ComponentSlot> {
         itemInfo.fireAll((h) -> h.handle(this, list));
         
         FontRenderer font = stack.getItem().getFontRenderer(stack);
-        
-        GuiUtils.drawHoveringText(list, pos.xi + mousePos.xi, pos.yi + mousePos.yi, 1000, 1000, -1, font == null ? Minecraft.getMinecraft().fontRendererObj : font);
-        ScissorUtil.pop();
+        setTooltip(list, font);
 	}
 	
 	@FunctionalInterface

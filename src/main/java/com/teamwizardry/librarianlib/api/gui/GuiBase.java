@@ -2,6 +2,8 @@ package com.teamwizardry.librarianlib.api.gui;
 
 import java.io.IOException;
 
+import net.minecraftforge.fml.client.config.GuiUtils;
+
 import net.minecraft.client.gui.GuiScreen;
 
 import org.lwjgl.input.Keyboard;
@@ -35,6 +37,12 @@ public class GuiBase extends GuiScreen {
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		components.draw(components.relativePos(new Vec2(mouseX, mouseY)), partialTicks);
+		
+		if(components.tooltipText != null) {
+			GuiUtils.drawHoveringText(components.tooltipText, mouseX, mouseY, width, height, -1, components.tooltipFont == null ? mc.fontRendererObj : components.tooltipFont);
+			components.tooltipText = null;
+			components.tooltipFont = null;
+		}
 	}
 	
 	@Override

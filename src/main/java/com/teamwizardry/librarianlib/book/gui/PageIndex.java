@@ -75,10 +75,6 @@ public class PageIndex extends GuiBook {
 			
 		}
 		
-		contents.add(new ComponentSlot(30, 30).setup((c) -> {
-			c.stack.setValue(new ItemStack(Blocks.STONE, 3, 2));
-		}));
-		
 	}
 
 }
