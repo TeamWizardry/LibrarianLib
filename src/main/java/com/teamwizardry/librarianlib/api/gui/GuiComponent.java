@@ -234,7 +234,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 */
 	public void mouseDown(Vec2 mousePos, EnumMouseButton button) {
 		if(!isVisible()) return;
-		if(mouseDown.fire((e) -> e.handle(thiz(), mousePos, button)))
+		if(mouseDown.fireCancel((e) -> e.handle(thiz(), mousePos, button)))
 			return;
 		
 		if(isMouseOver(mousePos))
@@ -255,11 +255,11 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 		boolean wasDown = mouseButtonsDown[button.ordinal()];
 		mouseButtonsDown[button.ordinal()] = false;
 		
-		if( mouseUp.fire((e) -> e.handle(thiz(), mousePos, button)) )
+		if( mouseUp.fireCancel((e) -> e.handle(thiz(), mousePos, button)) )
 			return;
 		
 		if(isMouseOver(mousePos) && wasDown) {
-			mouseClick.fire((e) -> e.handle(thiz(), mousePos, button)); // don't return here, if a click was handled we should still handle the mouseUp
+			mouseClick.fireCancel((e) -> e.handle(thiz(), mousePos, button)); // don't return here, if a click was handled we should still handle the mouseUp
 		}
 		
 		for (GuiComponent<?> child : components) {
@@ -274,7 +274,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 */
 	public void mouseDrag(Vec2 mousePos, EnumMouseButton button) {
 		if(!isVisible()) return;
-		if(mouseDrag.fire((e) -> e.handle(thiz(), mousePos, button)))
+		if(mouseDrag.fireCancel((e) -> e.handle(thiz(), mousePos, button)))
 			return;
 		
 		for (GuiComponent<?> child : components) {
@@ -289,7 +289,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 */
 	public void mouseWheel(Vec2 mousePos, int direction) {
 		if(!isVisible()) return;
-		if(mouseWheel.fire((e) -> e.handle(thiz(), mousePos, direction)))
+		if(mouseWheel.fireCancel((e) -> e.handle(thiz(), mousePos, direction)))
 			return;
 		
 		for (GuiComponent<?> child : components) {
@@ -304,7 +304,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 */
 	public void keyPressed(char key, int keyCode) {
 		if(!isVisible()) return;
-		if( keyDown.fire((e) -> e.handle(thiz(), key, keyCode)) )
+		if( keyDown.fireCancel((e) -> e.handle(thiz(), key, keyCode)) )
 			return;
 		
 		keysDown.put(Key.get(key, keyCode), true);
@@ -323,7 +323,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 		if(!isVisible()) return;
 		keysDown.put(Key.get(key, keyCode), false); // do this before so we don't have lingering keyDown entries
 
-		if( keyUp.fire((e) -> e.handle(thiz(), key, keyCode)) )
+		if( keyUp.fireCancel((e) -> e.handle(thiz(), key, keyCode)) )
 			return;
 		
 		for (GuiComponent<?> child : components) {
@@ -383,7 +383,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 			aabb = aabb.union(childAABB);
 		}
 		
-		return logicalSize.fire(aabb, (t, v) -> t.handle(v, thiz()));
+		return logicalSize.fireModifier(aabb, (t, v) -> t.handle(v, thiz()));
 	}
 	
 	/**
@@ -456,11 +456,16 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	
 	/**
 	 * Adds the passed tag to this component if it doesn't already have it. Tags are not case sensitive
+	 * 
+	 * @return true if the tag didn't exist and was added
 	 */
-	public void addTag(String tag) {
+	public boolean addTag(String tag) {
 		final String lowerTag = tag.toLowerCase();
-		if(tags.add(lowerTag))
+		if(tags.add(lowerTag)) {
 			addTag.fireAll((h) -> h.handle(thiz(), lowerTag));
+			return true;
+		}
+		return false;
 	}
 	
 	/**

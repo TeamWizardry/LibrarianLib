@@ -7,7 +7,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-import com.teamwizardry.librarianlib.api.gui.components.ComponentSlider;
+import com.teamwizardry.librarianlib.api.gui.components.ComponentSliderTray;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentSlot;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentSprite;
 import com.teamwizardry.librarianlib.api.gui.components.mixin.ButtonMixin;
@@ -37,7 +37,7 @@ public class PageIndex extends GuiBook {
 		
 		for (DataNode icon : icons) {
 			contents.add(new ComponentSprite(new Sprite(new ResourceLocation(icon.get("icon").asStringOr("missingno"))), x, y, w, h).setup((i) -> {
-				AtomicReference<ComponentSlider> s = new AtomicReference<>(null);
+				AtomicReference<ComponentSliderTray> s = new AtomicReference<>(null);
 				new ButtonMixin(i,
 						() -> {
 							i.color.setValue(normalColor);
@@ -54,7 +54,7 @@ public class PageIndex extends GuiBook {
 				i.mouseIn.add((c, pos) -> {
 					if(s.get() != null)
 						s.get().invalidate();
-					ComponentSlider slider = SliderTemplate.text(c.getPos().yi, icon.get("text").asStringOr("NoText"));
+					ComponentSliderTray slider = SliderTemplate.text(c.getPos().yi, icon.get("text").asStringOr("NoText"));
 					
 					tips.add(slider);
 					s.set(slider);

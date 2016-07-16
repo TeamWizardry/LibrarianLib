@@ -16,6 +16,7 @@ import com.teamwizardry.librarianlib.api.gui.components.ComponentText.TextAlignH
 import com.teamwizardry.librarianlib.api.gui.components.ComponentText.TextAlignV;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentVoid;
 import com.teamwizardry.librarianlib.api.gui.components.mixin.ButtonMixin;
+import com.teamwizardry.librarianlib.api.gui.components.mixin.ScissorMixin;
 import com.teamwizardry.librarianlib.api.util.gui.ScissorUtil;
 import com.teamwizardry.librarianlib.api.util.misc.Color;
 import com.teamwizardry.librarianlib.api.util.misc.PathUtils;
@@ -122,16 +123,7 @@ public class GuiBook extends GuiBase {
 
 		// page
 		ComponentVoid contents = new ComponentVoid(13, 9, PAGE_WIDTH, PAGE_HEIGHT);
-		contents.add(new ComponentRaw(-9, -5, PAGE_WIDTH + 17, PAGE_HEIGHT + 10, (c) -> {
-			c.zIndex = -1000;
-			Vec2 root = c.rootPos(new Vec2(0,0));
-			ScissorUtil.set(root.xi, root.yi, c.getSize().xi, c.getSize().yi);
-	        ScissorUtil.enable();
-		}).setup((c)-> {c.zIndex = -1000;}));
-		
-		contents.add(new ComponentRaw(0, 0, (c) -> {
-	        ScissorUtil.disable();
-		}).setup((c)-> {c.zIndex = 1000;}));
+		ScissorMixin.scissor(contents);
 		
 		// bg/fg
 		ComponentSprite border = new ComponentSprite(BOOK_BACKGROUND_BORDER, 0, 0).setup((b) -> {

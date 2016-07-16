@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.api.gui.GuiComponent;
 import com.teamwizardry.librarianlib.api.gui.GuiTickHandler;
 import com.teamwizardry.librarianlib.math.Vec2;
 
-public class ComponentSlider extends GuiComponent<ComponentSlider> {
+public class ComponentSliderTray extends GuiComponent<ComponentSliderTray> {
 	
 	boolean animatingIn = true;
 	boolean animatingOut = false;
@@ -14,7 +14,7 @@ public class ComponentSlider extends GuiComponent<ComponentSlider> {
 	int offsetX, offsetY;
 	Vec2 rootPos;
 	
-	public ComponentSlider(int posX, int posY, int offsetX, int offsetY) {
+	public ComponentSliderTray(int posX, int posY, int offsetX, int offsetY) {
 		super(posX, posY);
 		setCalculateOwnHover(false);
 		tickStart = GuiTickHandler.ticks;

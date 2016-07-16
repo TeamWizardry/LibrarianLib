@@ -35,7 +35,7 @@ public class ComponentSlot extends GuiComponent<ComponentSlot> {
 		
 		ItemStack stack = this.stack.getValue(this);
 		String str = "" + stack.stackSize;
-		str = quantityText.fire(str, (h, v) -> h.handle(this, v));
+		str = quantityText.fireModifier(str, (h, v) -> h.handle(this, v));
 		
 		RenderItem itemRender = Minecraft.getMinecraft().getRenderItem();
         itemRender.zLevel = 200.0F;

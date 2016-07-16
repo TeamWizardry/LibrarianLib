@@ -3,6 +3,9 @@ package com.teamwizardry.librarianlib.api.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+import com.teamwizardry.librarianlib.api.gui.GuiComponent.IComponentMouseEventHandler;
+
 /**
  * A list of handlers for an event
  *
@@ -20,6 +23,13 @@ public class HandlerList<T> {
 	}
 	
 	/**
+	 * Add a handler to this event at the begining of the list
+	 */
+	public void addFirst(T handler) {
+		handlers.add(0, handler);
+	}
+	
+	/**
 	 * Fire an event, each handler will be passed to the caller
 	 * @param caller
 	 */
@@ -33,7 +43,7 @@ public class HandlerList<T> {
 	 * Fire an event, each handler will be passed to the caller in order. Once the handler returns true it will halt.
 	 * @param caller
 	 */
-	public boolean fire(ICancelableHandlerCaller<T> caller) {
+	public boolean fireCancel(ICancelableHandlerCaller<T> caller) {
 		for (T t : handlers) {
 			if(caller.call(t))
 				return true;
@@ -45,7 +55,7 @@ public class HandlerList<T> {
 	 * Fire an event, each handler will be passed to the caller in order. Once the handler returns true it will halt.
 	 * @param caller
 	 */
-	public <V> V fire(V value, IModifierHandlerCaller<V, T> caller) {
+	public <V> V fireModifier(V value, IModifierHandlerCaller<V, T> caller) {
 		for (T t : handlers) {
 			value = caller.call(t, value);
 		}
