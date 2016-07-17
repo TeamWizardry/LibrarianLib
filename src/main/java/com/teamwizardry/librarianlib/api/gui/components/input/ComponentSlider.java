@@ -10,7 +10,7 @@ public class ComponentSlider extends GuiComponent<ComponentSlider> {
 
 	public final ComponentVoid handle;
 	private double percentage;
-	private int increments;
+	public int increments;
 	
 	
 	/**
@@ -29,15 +29,14 @@ public class ComponentSlider extends GuiComponent<ComponentSlider> {
 		handle = new ComponentVoid(0, 0);
 		setPercentage(percentage);
 		
-		new DragMixin<ComponentSlider>(this, (vec) -> {
-			vec = vec.sub(pos); // (0,0) is pos
+		new DragMixin<ComponentVoid>(handle, (vec) -> {
 			vec = vec.projectOnTo(size);
 			vec = Vec2.max(vec, Vec2.ZERO); // clamp to the begining
 			vec = Vec2.min(vec, size); // clamp to the end
 			
 			setPercentage(vec.length()/size.length());
 			
-			return pos.add(vec);
+			return vec;
 		});
 		
 		add(handle);
@@ -56,6 +55,6 @@ public class ComponentSlider extends GuiComponent<ComponentSlider> {
 		this.percentage = MathUtil.clamp(percentage, 0, 1);
 		if(increments > 0)
 			this.percentage = MathUtil.round(this.percentage, 1.0/increments);
-		handle.setPos(pos.add(size.mul(percentage)));
+		handle.setPos(size.mul(percentage));
 	}
 }
