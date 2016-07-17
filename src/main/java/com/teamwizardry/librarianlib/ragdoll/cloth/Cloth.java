@@ -1,6 +1,8 @@
 package com.teamwizardry.librarianlib.ragdoll.cloth;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.teamwizardry.librarianlib.math.Geometry;
+
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 
@@ -17,7 +19,7 @@ public class Cloth {
 	public Vec3d[] top;
 	public int height;
 	public Vec3d size;
-	public float stretch = 1, shear = 1, flex = 0.8f;
+	public float stretch = 1, shear = 1, flex = 0.8f, air = 0.2f;
 	
 	public Cloth(Vec3d[] top, int height, Vec3d size) {
 		this.top = top;
@@ -76,16 +78,51 @@ public class Cloth {
 	}
 	
 	public void tick(List<AxisAlignedBB> aabbs) {
+		air = 1.0f;
 		for (int i = 0; i < aabbs.size(); i++) {
 		}
 		Vec3d gravity = new Vec3d(0, -0.1, 0);
 
-        for (PointMass3D[] column : masses) {
+		for (PointMass3D[] column : masses) {
             for (PointMass3D point : column) {
+            	point.origPos = point.pos;
+            }
+		}
+		
+		for (int x = 0; x < masses.length; x++) {
+            for (int y = 0; y < masses[x].length; y++) {
+            	PointMass3D point = masses[x][y];
+            	
                 if(point.pin)
 					continue;
-				point.origPos = point.pos;
-				point.pos = point.pos.add(gravity).add(point.pos.subtract(point.prevPos));
+                Vec3d lastMotion = point.pos.subtract(point.prevPos);
+				point.pos = point.pos.add(gravity); // gravity
+				point.pos.add(lastMotion); // existing motion
+				
+				Vec3d wind = lastMotion.add(new Vec3d(0.0, 0.0, 10.0));
+				Vec3d normal = Vec3d.ZERO;
+				
+				if(x > 0 && y > 0) {
+					normal = normal.add( Geometry.getNormal(point.origPos, masses[x][y-1].origPos, masses[x-1][y].origPos) );
+				}
+				
+				if(x > 0 && y+1 < masses[x].length) {
+					normal = normal.add( Geometry.getNormal(point.origPos, masses[x][y+1].origPos, masses[x-1][y].origPos) );
+				}
+				
+				if(x+1 < masses.length && y+1 < masses[x].length) {
+					normal = normal.add( Geometry.getNormal(point.origPos, masses[x][y+1].origPos, masses[x+1][y].origPos) );
+				}
+				
+				if(x+1 < masses.length && y > 0) {
+					normal = normal.add( Geometry.getNormal(point.origPos, masses[x][y-1].origPos, masses[x+1][y].origPos) );
+				}
+				
+				normal = normal.normalize();
+				wind = wind.scale(wind.lengthVector());
+				Vec3d force = normal.scale(wind.dotProduct(normal));
+				
+				point.pos.add(force.scale(-air));//normal.scale(-air).scale(Math.pow(wind.lengthVector(), 2))); // air resistance
 			}
 		}
 		
@@ -102,10 +139,29 @@ public class Cloth {
         for (PointMass3D[] column : masses) {
             for (PointMass3D point : column) {
                 if(!point.pin) {
-					point.origPos = point.origPos.subtract(point.pos.subtract(point.origPos).scale(0.001));
+//					point.origPos = point.origPos.subtract(point.pos.subtract(point.origPos).scale(0.1));
+					for (AxisAlignedBB aabb : aabbs) {
+						Vec3d vecA = point.origPos, vecB = point.pos;
+						Vec3d res = null;
+						if(vecA.yCoord > vecB.yCoord) {
+				            res = collideWithYPlane(aabb, aabb.maxY, vecA, vecB);
+				    	}
+				    	
+				    	if(vecA.yCoord < vecB.yCoord) {
+				            res = collideWithYPlane(aabb, aabb.minY, vecA, vecB);
+				    	}
+				    	
+						if(res != null) {
+							double f = 0.8;
+							point.pos = new Vec3d(vecB.xCoord - (vecB.xCoord-res.xCoord)*f, res.yCoord, vecB.zCoord - (vecB.zCoord-res.zCoord)*f);
+						}
+					}
 					for (AxisAlignedBB aabb : aabbs) {
 						Vec3d res = calculateIntercept(aabb, point.origPos, point.pos);
 						if(res != null) {
+							if(point.origPos.yCoord == 85 && res.yCoord < 85) {
+								point.pos = calculateIntercept(aabb, point.origPos, point.pos);
+							}
 							point.pos = res;
 						}
 					}
@@ -113,49 +169,61 @@ public class Cloth {
 				point.prevPos = point.pos;
 			}
 		}
+        
+        for (Link link : hardLinks) {
+        	Vec3d posDiff = link.a.pos.subtract(link.b.pos);
+    		double d = posDiff.lengthVector();
+    		
+    		double difference = d-link.distance;
+			if(difference > link.distance)
+				link.resolve();
+		}
 	}
 	
     public Vec3d calculateIntercept(AxisAlignedBB aabb, Vec3d vecA, Vec3d vecB)
     {
     	Vec3d vecX = null, vecY = null, vecZ = null;
     	
-    	if(vecA.xCoord > vecB.xCoord) {
-            vecX = collideWithXPlane(aabb, aabb.maxX, vecA, vecB);
-    	}
-    	
-    	if(vecA.xCoord < vecB.xCoord) {
-            vecX = collideWithXPlane(aabb, aabb.minX, vecA, vecB);
-    	}
-    	
-    	if(vecX != null) {
-    		return new Vec3d(vecX.xCoord, vecB.yCoord, vecB.zCoord);
-    	}
-    	
+    	double f = 0.8;
+    	double m = 0.0;
+    	 
     	if(vecA.yCoord > vecB.yCoord) {
-            vecY = collideWithYPlane(aabb, aabb.maxY, vecA, vecB);
+            vecY = collideWithYPlane(aabb, aabb.maxY, vecA.add(new Vec3d(0, m, 0)), vecB);
     	}
     	
     	if(vecA.yCoord < vecB.yCoord) {
-            vecY = collideWithYPlane(aabb, aabb.minY, vecA, vecB);
+            vecY = collideWithYPlane(aabb, aabb.minY, vecA.add(new Vec3d(0, -m, 0)), vecB);
     	}
     	
     	if(vecY != null) {
-    		return new Vec3d(vecB.xCoord, vecY.yCoord, vecB.zCoord);
+    		return new Vec3d(vecB.xCoord - (vecB.xCoord-vecY.xCoord)*f, vecY.yCoord, vecB.zCoord - (vecB.zCoord-vecY.zCoord)*f);
+    	}
+    	
+    	if(vecA.xCoord > vecB.xCoord) {
+            vecX = collideWithXPlane(aabb, aabb.maxX, vecA.add(new Vec3d(m, 0, 0)), vecB);
+    	}
+    	
+    	if(vecA.xCoord < vecB.xCoord) {
+            vecX = collideWithXPlane(aabb, aabb.minX, vecA.add(new Vec3d(-m, 0, 0)), vecB);
+    	}
+    	
+    	if(vecX != null) {
+            return new Vec3d(vecX.xCoord, vecB.yCoord - (vecB.yCoord-vecX.yCoord)*f, vecB.zCoord - (vecB.zCoord-vecX.zCoord)*f);
     	}
     	
     	if(vecA.zCoord > vecB.zCoord) {
-            vecZ = collideWithZPlane(aabb, aabb.maxZ, vecA, vecB);
+            vecZ = collideWithZPlane(aabb, aabb.maxZ, vecA.add(new Vec3d(0, 0, m)), vecB);
     	}
     	
     	if(vecA.zCoord < vecB.zCoord) {
-            vecZ = collideWithZPlane(aabb, aabb.minZ, vecA, vecB);
+            vecZ = collideWithZPlane(aabb, aabb.minZ, vecA.add(new Vec3d(0, 0, -m)), vecB);
     	}
     	
     	if(vecZ != null) {
-    		return new Vec3d(vecB.xCoord, vecB.yCoord, vecZ.zCoord);
+    		return new Vec3d(vecB.xCoord - (vecB.xCoord-vecZ.xCoord)*f, vecB.yCoord - (vecB.yCoord-vecZ.yCoord)*f, vecZ.zCoord);
     	}
     	
-    	return vecB;
+    	return null;
     }
 	
     Vec3d min(Vec3d a, Vec3d b) {
@@ -198,13 +266,15 @@ public class Cloth {
     @VisibleForTesting
     public boolean intersectsWithYZ(AxisAlignedBB aabb, Vec3d vec)
     {
-        return vec.yCoord > aabb.minY && vec.yCoord < aabb.maxY && vec.zCoord > aabb.minZ && vec.zCoord < aabb.maxZ;
+    	double m = -0.001;
+        return vec.yCoord > aabb.minY+m && vec.yCoord < aabb.maxY-m && vec.zCoord > aabb.minZ+m && vec.zCoord < aabb.maxZ-m;
     }
 
     @VisibleForTesting
     public boolean intersectsWithXZ(AxisAlignedBB aabb, Vec3d vec)
     {
-        return vec.xCoord > aabb.minX && vec.xCoord < aabb.maxX && vec.zCoord > aabb.minZ && vec.zCoord < aabb.maxZ;
+    	double m = -0.001;
+        return vec.xCoord > aabb.minX+m && vec.xCoord < aabb.maxX-m && vec.zCoord > aabb.minZ+m && vec.zCoord < aabb.maxZ-m;
     }
 
     @VisibleForTesting

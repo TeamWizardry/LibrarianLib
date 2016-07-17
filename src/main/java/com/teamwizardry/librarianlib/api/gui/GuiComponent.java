@@ -174,7 +174,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 		if(!isVisible()) return false;
 		boolean hover = false;
 		if(shouldCalculateOwnHover())
-			hover = hover || mousePos.x >= 0 && mousePos.x <= size.x && mousePos.y >= 0 && mousePos.y <= size.y;
+			hover = hover || mousePos.x >= 0 && mousePos.x < size.x && mousePos.y >= 0 && mousePos.y < size.y;
 			
 		for (GuiComponent<?> child : components) {
 			hover = child.isMouseOver(child.relativePos(mousePos)) || hover;

@@ -42,5 +42,13 @@ public class ComponentSprite extends GuiComponent<ComponentSprite> {
 		if(alwaysTop)
 			GL11.glPopAttrib();
 	}
+
+	public Sprite getSprite() {
+		return sprite;
+	}
+
+	public void setSprite(Sprite sprite) {
+		this.sprite = sprite;
+	}
 	
 }
