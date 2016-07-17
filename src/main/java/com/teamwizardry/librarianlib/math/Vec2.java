@@ -28,6 +28,14 @@ public class Vec2 {
     public Vec2 ceil() {
         return new Vec2(Math.ceil(x), Math.ceil(y));
     }
+    
+    public Vec2 setX(double value) {
+    	return new Vec2(value, y);
+    }
+    
+    public Vec2 setY(double value) {
+    	return new Vec2(x, value);
+    }
 
     //=============================================================================
 	{/* Simple math */}

@@ -29,7 +29,7 @@ public class ComponentSlider extends GuiComponent<ComponentSlider> {
 		handle = new ComponentVoid(0, 0);
 		setPercentage(percentage);
 		
-		new DragMixin(this, (vec) -> {
+		new DragMixin<ComponentSlider>(this, (vec) -> {
 			vec = vec.sub(pos); // (0,0) is pos
 			vec = vec.projectOnTo(size);
 			vec = Vec2.max(vec, Vec2.ZERO); // clamp to the begining
