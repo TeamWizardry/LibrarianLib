@@ -1,14 +1,16 @@
 package com.teamwizardry.librarianlib.ragdoll.cloth;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.teamwizardry.librarianlib.math.Geometry;
+import java.util.ArrayList;
+import java.util.List;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.teamwizardry.librarianlib.math.Geometry;
 
 public class Cloth {
 
@@ -96,17 +98,15 @@ public class Cloth {
 		}
 	}
 	
-	public void tick(List<AxisAlignedBB> aabbs) {
+	public void tick(Entity e) {
 		air = 3.5f;
 		double friction = 0.2;
-		
-		for (int i = 0; i < aabbs.size(); i++) {
-		}
 		Vec3d gravity = new Vec3d(0, -0.01, 0);
 
 		for (PointMass3D[] column : masses) {
             for (PointMass3D point : column) {
-            	point.origPos = point.pos;
+            	if(!point.pin)
+            		point.origPos = point.pos;
             }
 		}
 		
@@ -120,7 +120,7 @@ public class Cloth {
 				point.applyMotion(lastMotion); // existing motion
 				point.applyForce(gravity); // gravity
 				
-				Vec3d wind = lastMotion.add(new Vec3d(0.0, 0.0, 1.0/20.0));
+				Vec3d wind = lastMotion.add(new Vec3d(0.0, 0.0, 1.5/20.0));
 				Vec3d normal = Vec3d.ZERO;
 				
 				if(x > 0 && y > 0) {
@@ -155,6 +155,24 @@ public class Cloth {
 				point.friction = null;
 			}
 		}
+		
+		double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE, minZ = Double.MAX_VALUE;
+		double maxX = -Double.MAX_VALUE, maxY = -Double.MAX_VALUE, maxZ = -Double.MAX_VALUE;
+		
+		for (int x = 0; x < masses.length; x++) {
+            for (int y = 0; y < masses[x].length; y++) {
+            	PointMass3D mass = masses[x][y];
+            	minX = Math.min(minX, Math.min(mass.pos.xCoord, mass.origPos.xCoord));
+            	minY = Math.min(minY, Math.min(mass.pos.yCoord, mass.origPos.yCoord));
+            	minZ = Math.min(minZ, Math.min(mass.pos.zCoord, mass.origPos.zCoord));
+            	
+            	maxX = Math.max(maxX, Math.max(mass.pos.xCoord, mass.origPos.xCoord));
+            	maxY = Math.max(maxY, Math.max(mass.pos.yCoord, mass.origPos.yCoord));
+            	maxZ = Math.max(maxZ, Math.max(mass.pos.zCoord, mass.origPos.zCoord));
+            }
+		}
+		double m = 0.5;
+		List<AxisAlignedBB> aabbs = e.worldObj.getCollisionBoxes(new AxisAlignedBB(minX-m, minY-m, minZ-m, maxX+m, maxY+m, maxZ+m));
 		
 		for (int i = 0; i < solvePasses; i++) {
 			for (Link link : links) {
