@@ -142,6 +142,8 @@ public class Cloth {
 				normal = normal.normalize();
 				
 				double angle = Math.acos(wind.normalize().dotProduct(normal));
+				if(angle > Math.PI/2)
+					normal = normal.scale(-1);
 				
 				// https://books.google.com/books?id=x5cLAQAAIAAJ&pg=PA5&lpg=PA5&dq=wind+pressure+on+a+flat+angled+surface&source=bl&ots=g090hiOfxv&sig=MqZQhLMozsMNndJtkA1R_bk5KiA&hl=en&sa=X&ved=0ahUKEwiozMW2z_vNAhUD7yYKHeqvBVcQ6AEILjAC#v=onepage&q&f=false
 				// page 5-6. I'm using formula (5)
