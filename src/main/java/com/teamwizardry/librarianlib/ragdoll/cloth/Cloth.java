@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import com.google.common.annotations.VisibleForTesting;
 import com.teamwizardry.librarianlib.math.Box;
 import com.teamwizardry.librarianlib.math.Geometry;
+import com.teamwizardry.librarianlib.math.MathUtil;
 
 public class Cloth {
 
@@ -146,7 +147,7 @@ public class Cloth {
 				
 				normal = normal.normalize();
 				
-				double angle = Math.acos(wind.normalize().dotProduct(normal));
+				double angle = Math.acos(MathUtil.clamp(wind.normalize().dotProduct(normal), -1, 1));
 				if(angle > Math.PI/2)
 					normal = normal.scale(-1);
 				
