@@ -10,6 +10,7 @@ import net.minecraft.util.math.Vec3d;
 import javax.annotation.Nullable;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.teamwizardry.librarianlib.math.Box;
 import com.teamwizardry.librarianlib.math.Geometry;
 
 public class Cloth {
@@ -98,15 +99,19 @@ public class Cloth {
 		}
 	}
 	
-	public void tick(Entity e) {
+	public void tick(Entity e, List<Box> boxes) {
 		air = 3.5f;
 		double friction = 0.2;
 		Vec3d gravity = new Vec3d(0, -0.01, 0);
 
 		for (PointMass3D[] column : masses) {
             for (PointMass3D point : column) {
-            	if(!point.pin)
+            	if(!point.pin) {
+                	for (Box box : boxes) {
+                		point.pos = box.fix(point.pos);
+    				}
             		point.origPos = point.pos;
+            	}
             }
 		}
 		
@@ -120,7 +125,7 @@ public class Cloth {
 				point.applyMotion(lastMotion); // existing motion
 				point.applyForce(gravity); // gravity
 				
-				Vec3d wind = lastMotion.add(new Vec3d(0.0, 0.0, 1.5/20.0));
+				Vec3d wind = lastMotion.add(new Vec3d(0.0, 0.0, 1.0/20.0));
 				Vec3d normal = Vec3d.ZERO;
 				
 				if(x > 0 && y > 0) {
@@ -166,22 +171,46 @@ public class Cloth {
             	minY = Math.min(minY, Math.min(mass.pos.yCoord, mass.origPos.yCoord));
             	minZ = Math.min(minZ, Math.min(mass.pos.zCoord, mass.origPos.zCoord));
             	
+            	if(maxX-minX > 10)
+            		minX = maxX-10;
+            	if(maxY-minY > 10)
+            		minY = maxY-10;
+            	if(maxZ-minZ > 10)
+            		minZ = maxZ-10;
+            	
             	maxX = Math.max(maxX, Math.max(mass.pos.xCoord, mass.origPos.xCoord));
             	maxY = Math.max(maxY, Math.max(mass.pos.yCoord, mass.origPos.yCoord));
             	maxZ = Math.max(maxZ, Math.max(mass.pos.zCoord, mass.origPos.zCoord));
+            	
+            	if(maxX-minX > 10)
+            		maxX = minX+10;
+            	if(maxY-minY > 10)
+            		maxY = minY+10;
+            	if(maxZ-minZ > 10)
+            		maxZ = minZ+10;
             }
 		}
 		double m = 0.5;
-		List<AxisAlignedBB> aabbs = e.worldObj.getCollisionBoxes(new AxisAlignedBB(minX-m, minY-m, minZ-m, maxX+m, maxY+m, maxZ+m));
-		
+		AxisAlignedBB checkAABB = new AxisAlignedBB(minX-m, minY-m, minZ-m, maxX+m, maxY+m, maxZ+m);
+		List<AxisAlignedBB> aabbs = e.worldObj.getCollisionBoxes(checkAABB);
+		List<Entity> entities = e.worldObj.getEntitiesWithinAABBExcludingEntity(null, checkAABB);
+		for (Entity entity : entities) {
+			aabbs.add(entity.getEntityBoundingBox());
+		}
 		for (int i = 0; i < solvePasses; i++) {
 			for (Link link : links) {
 				link.resolve();
 			}
-		}
-		
-		for (Link link : hardLinks) {
-			link.resolve();
+			for (Link link : hardLinks) {
+				link.resolve();
+			}
+//			for (PointMass3D[] column : masses) {
+//	            for (PointMass3D point : column) {
+//	            	for (Box box : boxes) {
+//						point.pos = box.fix(point.pos);
+//					}
+//	            }
+//			}
 		}
 
         for (PointMass3D[] column : masses) {
@@ -196,6 +225,12 @@ public class Cloth {
 					}
 					for (AxisAlignedBB aabb : aabbs) {
 						Vec3d res = calculateIntercept(aabb, point, false);
+						if(res != null) {
+							point.pos = res;
+						}
+					}
+					for (Box box : boxes) {
+						Vec3d res = box.trace(point.origPos, point.pos);
 						if(res != null) {
 							point.pos = res;
 						}
