@@ -11,8 +11,8 @@ public class DragMixin<T extends GuiComponent<?>> {
 	protected T component;
 	protected Function<Vec2, Vec2> constraints;
 	
-	protected boolean mouseDown = false;
-	protected Vec2 clickPos = Vec2.ZERO;
+	public boolean mouseDown = false;
+	public Vec2 clickPos = Vec2.ZERO;
 	
 	public final HandlerList<IDragEvent<T>> pickup = new HandlerList<>();
 	public final HandlerList<IDragEvent<T>> drop = new HandlerList<>();
@@ -26,7 +26,7 @@ public class DragMixin<T extends GuiComponent<?>> {
 	
 	private void init() {
 		component.mouseDown.add( (c, pos, button) -> {
-			if(c.isMouseOver(pos)) {
+			if(!mouseDown && c.isMouseOver(pos)) {
 				mouseDown = true;
 				clickPos = pos;
 				pickup.fireAll((h) -> h.handle(component, pos));
@@ -46,7 +46,7 @@ public class DragMixin<T extends GuiComponent<?>> {
 				
 				if(!newPos.equals(c.getPos())) {
 					c.setPos(newPos);
-					pickup.fireAll((h) -> h.handle(component, newPos));
+					drag.fireAll((h) -> h.handle(component, newPos));
 				}
 			}
 		});

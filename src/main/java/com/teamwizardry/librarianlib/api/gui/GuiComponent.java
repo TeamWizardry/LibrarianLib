@@ -154,13 +154,27 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	}
 	
 	/**
-	 * Calls the consumer for each component that has the supplied tag
+	 * Returns all the elements with a given tag
 	 */
-	public void getByTag(String tag, Consumer<GuiComponent<?>> consumer) {
+	public List<GuiComponent<?>> getByTag(String tag) {
+		List<GuiComponent<?>> list = new ArrayList<>();
 		for (GuiComponent<?> component : components) {
 			if(component.hasTag(tag))
-				consumer.accept(component);
+				list.add(component);
 		}
+		return list;
+	}
+	
+	/**
+	 * Returns all the elements with a given tag
+	 */
+	public <C> List<C> getByClass(Class<C> tag) {
+		List<C> list = new ArrayList<>();
+		for (GuiComponent<?> component : components) {
+			if(tag.isAssignableFrom(tag.getClass()))
+				list.add((C)component);
+		}
+		return list;
 	}
 	
 	//=============================================================================
@@ -382,6 +396,8 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 			BoundingBox2D childAABB = child.getLogicalSize();
 			aabb = aabb.union(childAABB);
 		}
+		
+		aabb = new BoundingBox2D( aabb.min.add(pos), aabb.max.add(pos) );
 		
 		return logicalSize.fireModifier(aabb, (t, v) -> t.handle(v, thiz()));
 	}
