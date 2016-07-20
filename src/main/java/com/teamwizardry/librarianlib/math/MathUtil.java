@@ -24,4 +24,37 @@ public class MathUtil {
 		return Math.max(min, Math.min(max, val));
 	}
 	
+	// ========
+	
+	public static boolean isLessThanOthers(double check, double... others) {
+		for (double other : others) {
+			if(!( check < other ))
+				return false;
+		}
+		return true;
+	}
+	
+	public static boolean isLequalToOthers(double check, double... others) {
+		for (double other : others) {
+			if(!( check <= other ))
+				return false;
+		}
+		return true;
+	}
+	
+	public static boolean isGreaterThanOthers(double check, double... others) {
+		for (double other : others) {
+			if(!( check > other ))
+				return false;
+		}
+		return true;
+	}
+	
+	public static boolean isGequalToOthers(double check, double... others) {
+		for (double other : others) {
+			if(!( check >= other ))
+				return false;
+		}
+		return true;
+	}
 }

@@ -10,6 +10,7 @@ import net.minecraft.util.math.Vec3d;
 import javax.annotation.Nullable;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.teamwizardry.librarianlib.math.AABBUtils;
 import com.teamwizardry.librarianlib.math.Box;
 import com.teamwizardry.librarianlib.math.Geometry;
 import com.teamwizardry.librarianlib.math.MathUtil;
@@ -23,13 +24,16 @@ public class Cloth {
 	public Vec3d[] top;
 	public int height;
 	public Vec3d size;
-	public float stretch = 1, shear = 1, flex = 1f, air = 0.2f;
+	public float stretch = 1, shear = 1, flex = 1f, air = 3.5f;
+	public Vec3d gravity = new Vec3d(0, -0.01, 0);
 	
 	public Cloth(Vec3d[] top, int height, Vec3d size) {
 		this.top = top;
 		this.height = height;
 		this.size = size;
-		
+		this.stretch = 0.8f;
+		this.shear = 0.8f;
+		this.flex = 0.9f;
 		init();
 	}
 	
@@ -54,14 +58,14 @@ public class Cloth {
 					hardLinks.add(new HardLink(masses[x][z], masses[x+1][z], 1));
 				
 				if(x+1 < masses.length)
-					links.add(new Link(masses[x][z], masses[x+1][z], stretch));
+					links.add(new Link(masses[x][z], masses[x+1][z], stretch/solvePasses));
 				if(z+1 < masses[x].length && x != 0)
-					links.add(new Link(masses[x][z], masses[x][z+1], stretch));
+					links.add(new Link(masses[x][z], masses[x][z+1], stretch/solvePasses));
 				
 				if(x+1 < masses.length && z+1 < masses[x].length)
-					links.add(new Link(masses[x][z], masses[x+1][z+1], shear));
+					links.add(new Link(masses[x][z], masses[x+1][z+1], shear/solvePasses));
 				if(x+1 < masses.length && z-1 >= 0)
-					links.add(new Link(masses[x][z], masses[x+1][z-1], shear));
+					links.add(new Link(masses[x][z], masses[x+1][z-1], shear/solvePasses));
 			}
 		}
 		
@@ -72,14 +76,14 @@ public class Cloth {
 							masses[x  ][z].pos.subtract(masses[x+1][z].pos).lengthVector() +
 							masses[x+1][z].pos.subtract(masses[x+2][z].pos).lengthVector()
 						); // even if initialized bent, try to keep flat.
-					links.add(new Link(masses[x][z], masses[x+2][z], dist, flex));
+					links.add(new Link(masses[x][z], masses[x+2][z], dist, flex/solvePasses));
 				}
 				if(z+2 < masses[x].length) {
 					float dist = (float)(
 							masses[x][z  ].pos.subtract(masses[x][z+1].pos).lengthVector() +
 							masses[x][z+1].pos.subtract(masses[x][z+2].pos).lengthVector()
 						); // even if initialized bent, try to keep flat.
-					links.add(new Link(masses[x][z], masses[x][z+2], dist, flex));
+					links.add(new Link(masses[x][z], masses[x][z+2], dist, flex/solvePasses));
 				}
 				
 				if(x+2 < masses.length && z+2 < masses[x].length) {
@@ -87,81 +91,146 @@ public class Cloth {
 							masses[x  ][z  ].pos.subtract(masses[x+1][z+1].pos).lengthVector() +
 							masses[x+1][z+1].pos.subtract(masses[x+2][z+2].pos).lengthVector()
 						); // even if initialized bent, try to keep flat.
-					links.add(new Link(masses[x][z], masses[x+2][z+2], dist, flex));
+					links.add(new Link(masses[x][z], masses[x+2][z+2], dist, flex/solvePasses));
 				}
 				if(x+2 < masses.length && z-2 > 0) {
 					float dist = (float)(
 							masses[x  ][z  ].pos.subtract(masses[x+1][z-1].pos).lengthVector() +
 							masses[x+1][z-1].pos.subtract(masses[x+2][z-2].pos).lengthVector()
 						); // even if initialized bent, try to keep flat.
-					links.add(new Link(masses[x][z], masses[x+2][z-2], dist, flex));
+					links.add(new Link(masses[x][z], masses[x+2][z-2], dist, flex/solvePasses));
 				}
 			}
 		}
 	}
 	
-	public void tick(Entity e, List<Box> boxes) {
-		air = 3.5f;
-		double friction = 0.2;
-		Vec3d gravity = new Vec3d(0, -0.01, 0);
-
+	/**
+	 * Calls {@link #pushOutPoint(PointMass3D, List, List)} for all the points in the mesh
+	 * @param aabbs
+	 * @param boxes
+	 */
+	private void pushOutPoints(List<AxisAlignedBB> aabbs, List<Box> boxes) {
 		for (PointMass3D[] column : masses) {
             for (PointMass3D point : column) {
-            	if(!point.pin) {
-                	for (Box box : boxes) {
-                		point.pos = box.fix(point.pos);
-    				}
-            		point.origPos = point.pos;
-            	}
+            	pushOutPoint(point, aabbs, boxes);
             }
 		}
-		
-		for (int x = 0; x < masses.length; x++) {
-            for (int y = 0; y < masses[x].length; y++) {
-            	PointMass3D point = masses[x][y];
-            	
-                if(point.pin)
-					continue;
-                Vec3d lastMotion = point.pos.subtract(point.prevPos);
-				point.applyMotion(lastMotion); // existing motion
-				point.applyForce(gravity); // gravity
-				
-				Vec3d wind = lastMotion.add(new Vec3d(0.0, 0.0, 1.0/20.0));
-				Vec3d normal = Vec3d.ZERO;
-				
-				if(x > 0 && y > 0) {
-					normal = normal.add( Geometry.getNormal(point.origPos, masses[x][y-1].origPos, masses[x-1][y].origPos) );
-				}
-				
-				if(x > 0 && y+1 < masses[x].length) {
-					normal = normal.add( Geometry.getNormal(point.origPos, masses[x][y+1].origPos, masses[x-1][y].origPos) );
-				}
-				
-				if(x+1 < masses.length && y+1 < masses[x].length) {
-					normal = normal.add( Geometry.getNormal(point.origPos, masses[x][y+1].origPos, masses[x+1][y].origPos) );
-				}
-				
-				if(x+1 < masses.length && y > 0) {
-					normal = normal.add( Geometry.getNormal(point.origPos, masses[x][y-1].origPos, masses[x+1][y].origPos) );
-				}
-				
-				normal = normal.normalize();
-				
-				double angle = Math.acos(MathUtil.clamp(wind.normalize().dotProduct(normal), -1, 1));
-				if(angle > Math.PI/2)
-					normal = normal.scale(-1);
-				
-				// https://books.google.com/books?id=x5cLAQAAIAAJ&pg=PA5&lpg=PA5&dq=wind+pressure+on+a+flat+angled+surface&source=bl&ots=g090hiOfxv&sig=MqZQhLMozsMNndJtkA1R_bk5KiA&hl=en&sa=X&ved=0ahUKEwiozMW2z_vNAhUD7yYKHeqvBVcQ6AEILjAC#v=onepage&q&f=false
-				// page 5-6. I'm using formula (5)
-				// wind vector length squared is flat pressure. All the other terms can be changed in the air coefficent.
-				Vec3d force = normal.scale(( Math.pow(wind.lengthVector(), 2) * angle )/(Math.PI/4));
-				
-				point.applyForce(force.scale(air));
-					
-				point.friction = null;
+	}
+	
+	/**
+	 * Pushes the point out of the passed AABBs and Boxes
+	 * @param point
+	 * @param aabbs
+	 * @param boxes
+	 */
+	private void pushOutPoint(PointMass3D point, List<AxisAlignedBB> aabbs, List<Box> boxes) {
+		for (AxisAlignedBB aabb : aabbs) {
+			point.pos = AABBUtils.closestOutsidePoint(aabb, point.pos);
+		}
+		for (Box box : boxes) {
+			point.pos = box.fix(point.pos);
+		}
+	}
+	
+	/**
+	 * Calls {@link #collidePoint(PointMass3D, List, List)} to all the points in the mesh
+	 * @param aabbs
+	 * @param boxes
+	 */
+	private void collidePoints(List<AxisAlignedBB> aabbs, List<Box> boxes) {
+		for (PointMass3D[] column : masses) {
+            for (PointMass3D point : column) {
+            	collidePoint(point, aabbs, boxes);
+            }
+		}
+	}
+
+	/**
+	 * Applies motion collision for the passed point using the passed AABBs and Boxes.
+	 * @param point
+	 * @param aabbs
+	 * @param boxes
+	 */
+	private void collidePoint(PointMass3D point, List<AxisAlignedBB> aabbs, List<Box> boxes) {
+		if(point.pin)
+			return;
+		double friction = 0.2;
+    	point.friction = null;
+    	for (AxisAlignedBB aabb : aabbs) {
+			Vec3d res = calculateIntercept(aabb, point, true);
+			if(res != null) {
+				point.pos = res;
 			}
 		}
+		for (AxisAlignedBB aabb : aabbs) {
+			Vec3d res = calculateIntercept(aabb, point, false);
+			if(res != null) {
+				point.pos = res;
+			}
+		}
+		for (Box box : boxes) {
+			Vec3d res = box.trace(point.origPos, point.pos);
+			if(res != null) {
+				point.pos = res;
+			}
+		}
+		point.applyMotion(point.friction == null ? Vec3d.ZERO : point.friction.scale(-friction));
+	}
+	
+	private void applyMotionToPoints() {
+		for (int x = 0; x < masses.length; x++) {
+            for (int y = 0; y < masses[x].length; y++) {
+            	applyMotionToPoint(x, y, masses[x][y]);
+            }
+		}
+	}
+	
+	private void applyMotionToPoint(int x, int y, PointMass3D point) {
+
+		if (point.pin)
+			return;
 		
+		Vec3d lastMotion = point.pos.subtract(point.prevPos);
+		point.applyMotion(lastMotion); // existing motion
+		point.applyForce(gravity); // gravity
+
+		Vec3d wind = new Vec3d(0.0, 0.0, 1.0 / 20.0).subtract(lastMotion);
+		Vec3d normal = Vec3d.ZERO;
+
+		if (x > 0 && y > 0) {
+			normal = normal.add(Geometry.getNormal(point.origPos, masses[x][y - 1].origPos, masses[x - 1][y].origPos));
+		}
+
+		if (x > 0 && y + 1 < masses[x].length) {
+			normal = normal.add(Geometry.getNormal(point.origPos, masses[x][y + 1].origPos, masses[x - 1][y].origPos));
+		}
+
+		if (x + 1 < masses.length && y + 1 < masses[x].length) {
+			normal = normal.add(Geometry.getNormal(point.origPos, masses[x][y + 1].origPos, masses[x + 1][y].origPos));
+		}
+
+		if (x + 1 < masses.length && y > 0) {
+			normal = normal.add(Geometry.getNormal(point.origPos, masses[x][y - 1].origPos, masses[x + 1][y].origPos));
+		}
+
+		normal = normal.normalize();
+
+		double angle = Math.acos(MathUtil.clamp(wind.normalize().dotProduct(normal), -1, 1));
+		if (angle > Math.PI / 2)
+			normal = normal.scale(-1);
+
+		// https://books.google.com/books?id=x5cLAQAAIAAJ&pg=PA5&lpg=PA5&dq=wind+pressure+on+a+flat+angled+surface&source=bl&ots=g090hiOfxv&sig=MqZQhLMozsMNndJtkA1R_bk5KiA&hl=en&sa=X&ved=0ahUKEwiozMW2z_vNAhUD7yYKHeqvBVcQ6AEILjAC#v=onepage&q&f=false
+		// page 5-6. I'm using formula (5)
+		// wind vector length squared is flat pressure. All the other terms can
+		// be changed in the air coefficent.
+		Vec3d force = normal.scale((Math.pow(wind.lengthVector(), 2) * angle) / (Math.PI / 4));
+
+		point.applyForce(force.scale(air));
+
+		point.friction = null;
+	}
+	
+	private List<AxisAlignedBB> getAABBs(Entity e) {
 		double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE, minZ = Double.MAX_VALUE;
 		double maxX = -Double.MAX_VALUE, maxY = -Double.MAX_VALUE, maxZ = -Double.MAX_VALUE;
 		
@@ -198,6 +267,31 @@ public class Cloth {
 		for (Entity entity : entities) {
 			aabbs.add(entity.getEntityBoundingBox());
 		}
+		
+		return aabbs;
+	}
+	
+	public void tick(Entity e, List<Box> boxes) {
+		
+		List<AxisAlignedBB> aabbs = getAABBs(e);
+		pushOutPoints(aabbs, boxes);
+		
+		for (PointMass3D[] column : masses) {
+            for (PointMass3D point : column) {
+            	if(!point.pin) {
+            		point.prevPos = point.pos;
+            		point.origPos = point.pos;
+            	}
+            }
+		}
+		
+		applyMotionToPoints();
+		
+		aabbs = getAABBs(e);
+		
+		pushOutPoints(aabbs, boxes);
+		collidePoints(aabbs, boxes);
+		
 		for (int i = 0; i < solvePasses; i++) {
 			for (Link link : links) {
 				link.resolve();
@@ -205,42 +299,9 @@ public class Cloth {
 			for (Link link : hardLinks) {
 				link.resolve();
 			}
-//			for (PointMass3D[] column : masses) {
-//	            for (PointMass3D point : column) {
-//	            	for (Box box : boxes) {
-//						point.pos = box.fix(point.pos);
-//					}
-//	            }
-//			}
 		}
-
-        for (PointMass3D[] column : masses) {
-            for (PointMass3D point : column) {
-                if(!point.pin) {
-                	point.friction = null;
-                	for (AxisAlignedBB aabb : aabbs) {
-						Vec3d res = calculateIntercept(aabb, point, true);
-						if(res != null) {
-							point.pos = res;
-						}
-					}
-					for (AxisAlignedBB aabb : aabbs) {
-						Vec3d res = calculateIntercept(aabb, point, false);
-						if(res != null) {
-							point.pos = res;
-						}
-					}
-					for (Box box : boxes) {
-						Vec3d res = box.trace(point.origPos, point.pos);
-						if(res != null) {
-							point.pos = res;
-						}
-					}
-					point.applyMotion(point.friction == null ? Vec3d.ZERO : point.friction.scale(-friction));
-				}
-				point.prevPos = point.pos;
-			}
-		}
+		
+		collidePoints(aabbs, boxes);
         
         for (Link link : hardLinks) {
         	Vec3d posDiff = link.a.pos.subtract(link.b.pos);
