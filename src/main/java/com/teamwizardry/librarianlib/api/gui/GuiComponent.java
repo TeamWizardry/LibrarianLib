@@ -52,7 +52,8 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	public final HandlerList<IComponentTagEventHandler<T>> removeTag = new HandlerList<>();
 
 	public final HandlerList<IComponentLogicalSizeEventHandler<T>> logicalSize = new HandlerList<>();
-	
+	public final HandlerList<IComponentChildCoordTransformEventHandler<T>> transformChildPos = new HandlerList<>();
+
 	public int zIndex = 0;
 	protected Vec2 pos, size;
 	
@@ -182,6 +183,14 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	//=============================================================================
 	
 	/**
+	 * Allows the component to modify the position before it is passed to a child element.
+	 */
+	public Vec2 transformChildPos(GuiComponent<?> child, Vec2 pos) {
+		pos = child.relativePos(pos);
+		return transformChildPos.fireModifier(pos, (h, v) -> h.handle(thiz(), child, v));
+	}
+	
+	/**
 	 * Test if the mouse is over this component. mousePos is relative to the position of the element.
 	 */
 	public boolean isMouseOver(Vec2 mousePos) {
@@ -191,7 +200,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 			hover = hover || mousePos.x >= 0 && mousePos.x < size.x && mousePos.y >= 0 && mousePos.y < size.y;
 			
 		for (GuiComponent<?> child : components) {
-			hover = child.isMouseOver(child.relativePos(mousePos)) || hover;
+			hover = child.isMouseOver(transformChildPos(child, mousePos)) || hover;
 		}
 		return hover;
 	}
@@ -226,7 +235,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 				remove.add(component);
 				continue;
 			}
-			component.draw(component.relativePos(mousePos), partialTicks);
+			component.draw(transformChildPos(component, mousePos), partialTicks);
 		}
 		
 		for (GuiComponent<?> rem : remove) {
@@ -255,7 +264,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 			mouseButtonsDown[button.ordinal()] = true;
 		
 		for (GuiComponent<?> child : components) {
-			child.mouseDown(child.relativePos(mousePos), button);
+			child.mouseDown(transformChildPos(child, mousePos), button);
 		}
 	}
 	
@@ -277,7 +286,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 		}
 		
 		for (GuiComponent<?> child : components) {
-			child.mouseUp(child.relativePos(mousePos), button);
+			child.mouseUp(transformChildPos(child, mousePos), button);
 		}
 	}
 	
@@ -292,7 +301,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 			return;
 		
 		for (GuiComponent<?> child : components) {
-			child.mouseDrag(child.relativePos(mousePos), button);
+			child.mouseDrag(transformChildPos(child, mousePos), button);
 		}
 	}
 	
@@ -307,7 +316,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 			return;
 		
 		for (GuiComponent<?> child : components) {
-			child.mouseWheel(child.relativePos(mousePos), direction);
+			child.mouseWheel(transformChildPos(child, mousePos), direction);
 		}
 	}
 	
@@ -602,6 +611,11 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	@FunctionalInterface
 	public interface IComponentCoordEventHandler<T extends GuiComponent<?>> {
 		boolean handle(T component, Vec2 mousePos);
+	}
+	
+	@FunctionalInterface
+	public interface IComponentChildCoordTransformEventHandler<T extends GuiComponent<?>> {
+		Vec2 handle(T component, GuiComponent<?> child, Vec2 mousePos);
 	}
 	
 	@FunctionalInterface

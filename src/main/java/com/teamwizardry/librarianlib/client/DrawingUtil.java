@@ -83,6 +83,11 @@ public class DrawingUtil {
         int leftoverWidth  = width  % sprite.getWidth();
         int leftoverHeight = height % sprite.getHeight();
         
+        if(leftoverWidth == 0)
+        	leftoverWidth = sprite.getWidth();
+        if(leftoverHeight == 0)
+        	leftoverHeight = sprite.getHeight();
+        
         for (int xIndex = 0; xIndex <= wholeSpritesX; xIndex++) {
         	for (int yIndex = 0; yIndex <= wholeSpritesY; yIndex++) {
         		

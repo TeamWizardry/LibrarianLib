@@ -26,7 +26,8 @@ public class ComponentSprite extends GuiComponent<ComponentSprite> {
 	@Override
 	public void drawComponent(Vec2 mousePos, float partialTicks) {
 		boolean alwaysTop = !depth.getValue(this);
-		
+		if(sprite == null)
+			return;
 		if(alwaysTop) {
 			// store the current depth function
 			GL11.glPushAttrib(GL11.GL_DEPTH_BUFFER_BIT);

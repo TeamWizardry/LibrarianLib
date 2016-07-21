@@ -110,7 +110,7 @@ public class Vec2 {
     }
     
     //=============================================================================
-	{/* Equality */}
+	{/* Boring object stuff */}
 	//=============================================================================
 
 	@Override
@@ -139,5 +139,10 @@ public class Vec2 {
 		if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
 			return false;
 		return true;
+	}
+	
+	@Override
+	public String toString() {
+		return "(" + x + "," + y + ")";
 	}
 }

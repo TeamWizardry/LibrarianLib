@@ -1,6 +1,9 @@
 package com.teamwizardry.librarianlib.api.gui.components.input;
 
+import java.util.function.Consumer;
+
 import com.teamwizardry.librarianlib.api.gui.GuiComponent;
+import com.teamwizardry.librarianlib.api.gui.HandlerList;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentVoid;
 import com.teamwizardry.librarianlib.api.gui.components.mixin.DragMixin;
 import com.teamwizardry.librarianlib.math.MathUtil;
@@ -8,10 +11,12 @@ import com.teamwizardry.librarianlib.math.Vec2;
 
 public class ComponentSlider extends GuiComponent<ComponentSlider> {
 
+	public HandlerList<Consumer<Double>> percentageChange = new HandlerList<>();
+	
 	public final ComponentVoid handle;
 	private double percentage;
 	public int increments;
-	
+	private Vec2 handlePos;
 	
 	/**
 	 * 
@@ -39,6 +44,11 @@ public class ComponentSlider extends GuiComponent<ComponentSlider> {
 			return vec;
 		});
 		
+		handle.preDraw.add((c, pos, partialTicks) -> {
+			if(!handlePos.equals(handle.getPos()))
+				handle.setPos(handlePos);
+		});
+		
 		add(handle);
 	}
 
@@ -52,9 +62,11 @@ public class ComponentSlider extends GuiComponent<ComponentSlider> {
 	}
 
 	public void setPercentage(double percentage) {
-		this.percentage = MathUtil.clamp(percentage, 0, 1);
+		percentage = MathUtil.clamp(percentage, 0, 1);
 		if(increments > 0)
-			this.percentage = MathUtil.round(this.percentage, 1.0/increments);
-		handle.setPos(size.mul(percentage));
+			percentage = MathUtil.round(percentage, 1.0/increments);
+		handlePos = size.mul(percentage);
+		this.percentage = percentage;
+		percentageChange.fireAll((h) -> h.accept(this.percentage));
 	}
 }

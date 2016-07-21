@@ -237,6 +237,8 @@ public class Cloth {
 		for (int x = 0; x < masses.length; x++) {
             for (int y = 0; y < masses[x].length; y++) {
             	PointMass3D mass = masses[x][y];
+            	if(mass.origPos == null)
+            		mass.origPos = mass.pos;
             	minX = Math.min(minX, Math.min(mass.pos.xCoord, mass.origPos.xCoord));
             	minY = Math.min(minY, Math.min(mass.pos.yCoord, mass.origPos.yCoord));
             	minZ = Math.min(minZ, Math.min(mass.pos.zCoord, mass.origPos.zCoord));

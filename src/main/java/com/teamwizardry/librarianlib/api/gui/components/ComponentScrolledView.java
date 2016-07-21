@@ -24,8 +24,13 @@ public class ComponentScrolledView extends GuiComponent<ComponentScrolledView> {
 		// noop
 	}
 	
+	@Override
+	public Vec2 transformChildPos(GuiComponent<?> child, Vec2 pos) {
+		return super.transformChildPos(child, pos).add(offset);
+	}
+	
 	public void scrollTo(Vec2 scroll) {
-		scroll = Vec2.min(offset, scroll);
+		scroll = Vec2.min(getMaxScroll(), scroll);
 		if(!scroll.equals(offset)) {
 			this.scroll.fireModifier(scroll, (h, v) -> h.handle(this, offset, v));
 			offset = scroll;
@@ -34,6 +39,10 @@ public class ComponentScrolledView extends GuiComponent<ComponentScrolledView> {
 	
 	public void scrollOffset(Vec2 scroll) {
 		scrollTo(offset.add(scroll));
+	}
+	
+	public void scrollToPercent(Vec2 scroll) {
+		scrollTo(getMaxScroll().mul(scroll));
 	}
 	
 	@Override
