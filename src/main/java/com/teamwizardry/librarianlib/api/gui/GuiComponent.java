@@ -65,7 +65,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	
 	protected boolean[] mouseButtonsDown = new boolean[EnumMouseButton.values().length];
 	protected Map<Key, Boolean> keysDown = new DefaultedMap<>(false);
-	private Map<Class<?>, Object> data = new HashMap<>();
+	private Map<Class<?>, Map<String, Object>> data = new HashMap<>();
 	
 	public List<String> tooltipText;
 	public FontRenderer tooltipFont;
@@ -482,13 +482,17 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	{/* Assorted info */}
 	//=============================================================================
 	
-	public <D> void setData(Class<D> klass, D value) {
-		data.put(klass, value);
+	public <D> void setData(Class<D> klass, String key, D value) {
+		if(!data.containsKey(klass))
+			data.put(klass, new HashMap<>());
+		data.get(klass).put(key, value);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <D> D getData(Class<D> klass) {
-		return (D) data.get(klass);
+	public <D> D getData(Class<D> klass, String key) {
+		if(!data.containsKey(klass))
+			data.put(klass, new HashMap<>());
+		return (D) data.get(klass).get(key);
 	}
 	
 	/**
