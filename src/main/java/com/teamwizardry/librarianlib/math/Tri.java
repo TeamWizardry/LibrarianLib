@@ -14,6 +14,11 @@ public class Tri {
 		this.v3 = v3;
 	}
 	
+	/**
+	 * Traces this tri and returns a new end position.
+	 * 
+	 * Returns {@link end} if there wasn't a hit
+	 */
 	public Vec3d trace(Vec3d start, Vec3d end) {
 		Vec3d v1 = this.v1;
 		Vec3d v2 = this.v2;
@@ -29,7 +34,7 @@ public class Tri {
 	    v = v3.subtract(v1);
 	    n = u.crossProduct(v);              // cross product
 	    if (n.equals( Vec3d.ZERO ))             // triangle is degenerate
-	        return null;                   // do not deal with this case
+	        return end;                   // do not deal with this case
 
 	    dir = end.subtract(start);             // ray direction vector
 	    start.subtract(dir.normalize().scale(0.25));
@@ -40,17 +45,17 @@ public class Tri {
 	    b =  n.dotProduct(dir);
 	    if (Math.abs(b) < SMALL_NUM) {     // ray is  parallel to triangle plane
 	        if (a == 0)                 // ray lies in triangle plane
-	            return null;
+	            return end;
 	        else
-	        	return null;              // ray disjoint from plane
+	        	return end;              // ray disjoint from plane
 	    }
 
 	    // get intersect point of ray with triangle plane
 	    r = a / b;
 	    if (r < 0.0)                    // ray goes away from triangle
-	        return null;                   // => no intersect
+	        return end;                   // => no intersect
 	    if (r > 1.0)                    // ray doesn't reach triangle
-	    	return null;                   // => no intersect
+	    	return end;                   // => no intersect
 
 	    intersect = start.add(dir.scale(r));            // intersect point of ray and plane
 	    
@@ -65,7 +70,7 @@ public class Tri {
         angles += Math.acos(v3.dotProduct(v1));
 
         if(Math.abs(angles - 2*Math.PI) > 0.005)
-        	return null;
+        	return end;
                 
         return intersect;
 	}
