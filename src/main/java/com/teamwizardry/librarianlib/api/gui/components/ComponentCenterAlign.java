@@ -21,18 +21,21 @@ public class ComponentCenterAlign extends GuiComponent<ComponentCenterAlign> {
 	
 	@Override
 	public void draw(Vec2 mousePos, float partialTicks) {
-		for (GuiComponent<?> component : components) {
-			Vec2 compPos = component.getPos();
-			BoundingBox2D bb = component.getLogicalSize();
-			Vec2 posOffsetFromBB = compPos.sub(bb.min);
-			Vec2 centerPos = bb.max.sub(bb.min).mul(1f/2f).sub(posOffsetFromBB);
-			Vec2 adjustedPos = centerPos.mul(-1);
-			if(!centerHorizontal)
-				adjustedPos.setX(compPos.x);
-			if(!centerVertical)
-				adjustedPos.setY(compPos.y);
-			component.setPos(adjustedPos);
+		if(centerHorizontal || centerVertical) {
+			for (GuiComponent<?> component : components) {
+				Vec2 compPos = component.getPos();
+				BoundingBox2D bb = component.getLogicalSize();
+				Vec2 posOffsetFromBB = compPos.sub(bb.min);
+				Vec2 centerPos = bb.max.sub(bb.min).mul(1f/2f).sub(posOffsetFromBB);
+				Vec2 adjustedPos = centerPos.mul(-1);
+				if(!centerHorizontal)
+					adjustedPos = adjustedPos.setX(compPos.x);
+				if(!centerVertical)
+					adjustedPos = adjustedPos.setY(compPos.y);
+				component.setPos(adjustedPos);
+			}
 		}
+		
 		super.draw(mousePos, partialTicks);
 	}
 

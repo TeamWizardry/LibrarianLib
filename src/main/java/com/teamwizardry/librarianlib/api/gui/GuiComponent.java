@@ -2,11 +2,11 @@ package com.teamwizardry.librarianlib.api.gui;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -58,12 +58,14 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	protected Vec2 pos, size;
 	
 	public boolean mouseOverThisFrame = false;
-	protected Set<String> tags = new HashSet<>();
+	public Vec2 mousePosThisFrame = Vec2.ZERO;
+	protected Set<Object> tags = new HashSet<>();
 	
 	protected boolean enabled = true, visible = true, focused = false, invalid = false;
 	
 	protected boolean[] mouseButtonsDown = new boolean[EnumMouseButton.values().length];
 	protected Map<Key, Boolean> keysDown = new DefaultedMap<>(false);
+	private Map<Class<?>, Object> data = new HashMap<>();
 	
 	public List<String> tooltipText;
 	public FontRenderer tooltipFont;
@@ -143,7 +145,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	/**
 	 * Removes all components that have the supplied tag
 	 */
-	public void remove(String tag) {
+	public void removeByTag(Object tag) {
 		components.removeIf((e) -> {
 			boolean b = e.hasTag(tag);
 			if(b) {
@@ -157,7 +159,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	/**
 	 * Returns all the elements with a given tag
 	 */
-	public List<GuiComponent<?>> getByTag(String tag) {
+	public List<GuiComponent<?>> getByTag(Object tag) {
 		List<GuiComponent<?>> list = new ArrayList<>();
 		for (GuiComponent<?> component : components) {
 			if(component.hasTag(tag))
@@ -215,6 +217,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 		if(!isVisible()) return;
 		boolean wasMouseOverLastFrame = mouseOverThisFrame;
 		mouseOverThisFrame = isMouseOver(mousePos);
+		mousePosThisFrame = mousePos;
 		
 		if(wasMouseOverLastFrame && !mouseOverThisFrame)
 			mouseOut.fireAll((e) -> e.handle(thiz(), mousePos));
@@ -479,15 +482,23 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	{/* Assorted info */}
 	//=============================================================================
 	
+	public <D> void setData(Class<D> klass, D value) {
+		data.put(klass, value);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <D> D getData(Class<D> klass) {
+		return (D) data.get(klass);
+	}
+	
 	/**
 	 * Adds the passed tag to this component if it doesn't already have it. Tags are not case sensitive
 	 * 
 	 * @return true if the tag didn't exist and was added
 	 */
-	public boolean addTag(String tag) {
-		final String lowerTag = tag.toLowerCase();
-		if(tags.add(lowerTag)) {
-			addTag.fireAll((h) -> h.handle(thiz(), lowerTag));
+	public boolean addTag(Object tag) {
+		if(tags.add(tag)) {
+			addTag.fireAll((h) -> h.handle(thiz(), tag));
 			return true;
 		}
 		return false;
@@ -498,10 +509,9 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 * 
 	 * @return true if the tag existed and was removed
 	 */
-	public boolean removeTag(String tag) {
-		final String lowerTag = tag.toLowerCase();
-		if(tags.remove(lowerTag)) {
-			removeTag.fireAll((h) -> h.handle(thiz(), lowerTag));
+	public boolean removeTag(Object tag) {
+		if(tags.remove(tag)) {
+			removeTag.fireAll((h) -> h.handle(thiz(), tag));
 			return true;
 		}
 		return false;
@@ -510,15 +520,14 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	/**
 	 * Checks if the component has the tag specified. Tags are not case sensitive
 	 */
-	public boolean hasTag(String tag) {
-		final String lowerTag = tag.toLowerCase();
-		return tags.contains(lowerTag);
+	public boolean hasTag(Object tag) {
+		return tags.contains(tag);
 	}
 	
 	/**
 	 * Returns an unmodifiable wrapper of the tag set. Tags are all stored in lowercase
 	 */
-	public Set<String> getTags() {
+	public Set<Object> getTags() {
 		return Collections.unmodifiableSet(tags);
 	}
 	
@@ -625,7 +634,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	
 	@FunctionalInterface
 	public interface IComponentTagEventHandler<T extends GuiComponent<?>> {
-		boolean handle(T component, String tag);
+		boolean handle(T component, Object tag);
 	}
 	
 	@FunctionalInterface

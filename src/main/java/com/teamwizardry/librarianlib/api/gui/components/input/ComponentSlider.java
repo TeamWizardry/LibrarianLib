@@ -18,15 +18,6 @@ public class ComponentSlider extends GuiComponent<ComponentSlider> {
 	public int increments;
 	private Vec2 handlePos;
 	
-	/**
-	 * 
-	 * @param posX
-	 * @param posY
-	 * @param width
-	 * @param height
-	 * @param percentage
-	 * @param increments number of snap points excluding the ends
-	 */
 	public ComponentSlider(int posX, int posY, int width, int height, double percentage, int increments) {
 		super(posX, posY, width, height);
 		this.increments = increments;
