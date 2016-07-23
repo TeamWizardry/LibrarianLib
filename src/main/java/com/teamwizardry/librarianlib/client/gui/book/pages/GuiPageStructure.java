@@ -53,7 +53,7 @@ public class GuiPageStructure extends GuiPageCommon {
         
         originState = DataNodeParsers.parseBlockState(data.get("block"));
         
-		Texture tex = new Texture(new ResourceLocation(LibrarianLib.MODID, "textures/bookcomponents/texturesheet/structure.png"), 128, 128);
+//		Texture tex = new Texture(new ResourceLocation(LibrarianLib.MODID, "textures/bookcomponents/texturesheet/structure.png"), 128, 128);
 		
 //		components.add(new GuiComponentButton("up", 0, 0, 16, 8, tex.getSprite( 0, 0, 16, 8)).setup((b) -> {
 //			b.handlers.add(() -> {

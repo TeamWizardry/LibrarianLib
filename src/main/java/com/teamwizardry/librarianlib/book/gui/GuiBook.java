@@ -30,21 +30,21 @@ import com.teamwizardry.librarianlib.math.Vec2;
 public class GuiBook extends GuiBase {
 
 	public static final int PAGE_WIDTH = 120, PAGE_HEIGHT = 161;
-	public static Texture TEXTURE = new Texture(new ResourceLocation(LibrarianLib.MODID, "textures/book/book.png"), 512, 512);
-	public static Sprite BOOK_BACKGROUND_BORDER = TEXTURE.getSprite(0, 0, 146, 180);
-	public static Sprite BACKGROUND_PAGE = TEXTURE.getSprite(146, 0, 146, 180);
-	public static Sprite TITLE_BAR = TEXTURE.getSprite(0, 180, 133, 13);
-	public static Sprite BOOKMARK = TEXTURE.getSprite(133, 180, 100, 13);
-	public static Sprite BACK_PAGE = TEXTURE.getSprite(0, 193, 18, 10);
-	public static Sprite NEXT_PAGE = TEXTURE.getSprite(18, 193, 18, 10);
-	public static Sprite BACK_ARROW = TEXTURE.getSprite(0, 203, 18, 9);
-	public static Sprite UP_ARROW = TEXTURE.getSprite(0, 212, 9, 18);
-	public static Sprite DOWN_ARROW = TEXTURE.getSprite(9, 212, 9, 18);
-	public static Sprite CHECKBOX = TEXTURE.getSprite(18, 203, 9, 9);
-	public static Sprite CHECKBOX_ON = TEXTURE.getSprite(27, 203, 9, 9);
-	public static Sprite CHECKMARK = TEXTURE.getSprite(18, 212, 16, 16);
-	public static Sprite SLIDER_NORMAL = TEXTURE.getSprite(292, 0, 133, 37);
-	public static Sprite SLIDER_RECIPE = TEXTURE.getSprite(292, 37, 133, 68);
+	public static Texture TEXTURE = new Texture(new ResourceLocation(LibrarianLib.MODID, "textures/book/book.png"));
+	public static Sprite BOOK_BACKGROUND_BORDER = TEXTURE.getSprite("book_background_border");
+	public static Sprite BACKGROUND_PAGE = TEXTURE.getSprite("background_page");
+	public static Sprite TITLE_BAR = TEXTURE.getSprite("title_bar");
+	public static Sprite BOOKMARK = TEXTURE.getSprite("bookmark");
+	public static Sprite BACK_PAGE = TEXTURE.getSprite("back_page");
+	public static Sprite NEXT_PAGE = TEXTURE.getSprite("next_page");
+	public static Sprite BACK_ARROW = TEXTURE.getSprite("back_arrow");
+	public static Sprite UP_ARROW = TEXTURE.getSprite("up_arrow");
+	public static Sprite DOWN_ARROW = TEXTURE.getSprite("down_arrow");
+	public static Sprite CHECKBOX = TEXTURE.getSprite("checkbox");
+	public static Sprite CHECKBOX_ON = TEXTURE.getSprite("checkbox_on");
+	public static Sprite CHECKMARK = TEXTURE.getSprite("checkmark");
+	public static Sprite SLIDER_NORMAL = TEXTURE.getSprite("slider_normal");
+	public static Sprite SLIDER_RECIPE = TEXTURE.getSprite("slider_recipe");
 	
 	public final Book book;
 	public final Page page;

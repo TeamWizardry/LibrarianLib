@@ -18,7 +18,7 @@ public class GuiTickHandler {
 	private static Field timer;
 	
 	private GuiTickHandler() {
-		timer = ReflectionHelper.findField(Minecraft.class, "timer", "field_71428_T", "Y");
+		timer = ReflectionHelper.findField(Minecraft.class, "timer", "field_71428_T");
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 	

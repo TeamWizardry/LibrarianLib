@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.client;
 
+import java.util.stream.IntStream;
+
 import net.minecraft.util.ResourceLocation;
 
 /**
@@ -9,21 +11,42 @@ public class Sprite {
 
 	protected Texture tex;
 	protected int u, v, width, height;
+	protected int[] frames, frameCounts;
+	protected int frametotal;
 	
-	public Sprite(Texture tex, int u, int v, int width, int height) {
+	public Sprite(Texture tex, int u, int v, int width, int height, int[] frameCounts) {
 		this.tex = tex;
-		this.u = u;
-		this.v = v;
-		this.width = width;
-		this.height = height;
+		init(u, v, width, height, frameCounts);
 	}
 	
 	public Sprite(ResourceLocation loc) {
-		this.tex = new Texture(loc, 16, 16);
+		this.tex = new Texture(loc);
 		this.u = 0;
 		this.v = 0;
 		this.width = 16;
 		this.height = 16;
+	}
+	
+	/**
+	 * Initializes the sprite. Used to reinitialize on resource pack reload.
+	 * 
+	 * --Package private--
+	 */
+	void init(int u, int v, int width, int height, int[] frameCounts) {
+		this.u = u;
+		this.v = v;
+		this.width = width;
+		this.height = height;
+		this.frameCounts = frameCounts;
+		this.frametotal = IntStream.of(frameCounts).sum();
+		this.frames = new int[frametotal];
+		int j = 0;
+		for (int i = 0; i < frameCounts.length; i++) {
+			for(int k = 0; k < frameCounts[i]; k++) {
+				frames[j+k] = i;
+			}
+			j += frameCounts[i];
+		}
 	}
 	
 	/**
@@ -127,7 +150,7 @@ public class Sprite {
 	}
 	
 	public Sprite getSubSprite(int u, int v, int width, int height) {
-		return new Sprite(this.tex, this.u+u, this.v+v, width, height);
+		return new Sprite(this.tex, this.u+u, this.v+v, width, height, frameCounts);
 	}
 	
 	/**
