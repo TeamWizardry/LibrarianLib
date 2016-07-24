@@ -10,9 +10,23 @@ import net.minecraft.util.ResourceLocation;
 public class Sprite {
 
 	protected Texture tex;
-	protected int u, v, width, height;
+	protected int u, v, uvWidth, uvHeight;
 	protected int[] frames, frameCounts;
 	protected int frametotal;
+	
+	/**
+	 * The width on screen of the sprite.
+	 * 
+	 * Public for easy and concise access. Set to 0 by default.
+	 */
+	public int width  = 0;
+	
+	/**
+	 * The height on screen of the sprite.
+	 * 
+	 * Public for easy and concise access. Set to 0 by default.
+	 */
+	public int height = 0;
 	
 	public Sprite(Texture tex, int u, int v, int width, int height, int[] frameCounts) {
 		this.tex = tex;
@@ -23,8 +37,8 @@ public class Sprite {
 		this.tex = new Texture(loc);
 		this.u = 0;
 		this.v = 0;
-		this.width = 16;
-		this.height = 16;
+		this.uvWidth = 16;
+		this.uvHeight = 16;
 	}
 	
 	/**
@@ -35,8 +49,8 @@ public class Sprite {
 	void init(int u, int v, int width, int height, int[] frameCounts) {
 		this.u = u;
 		this.v = v;
-		this.width = width;
-		this.height = height;
+		this.uvWidth = width;
+		this.uvHeight = height;
 		this.frameCounts = frameCounts;
 		this.frametotal = IntStream.of(frameCounts).sum();
 		this.frames = new int[frametotal];
@@ -101,7 +115,7 @@ public class Sprite {
 	 * @param offset The offset in pixels toward the center of the texture
 	 */
 	public float maxU(int offset) {
-		return (float)(u+width-offset)/(float)tex.getWidth();
+		return (float)(u+uvWidth-offset)/(float)tex.getWidth();
 	}
 	
 	/**
@@ -110,7 +124,7 @@ public class Sprite {
 	 * @param offset The offset in pixels toward the center of the texture
 	 */
 	public float maxV(int offset) {
-		return (float)(v+height-offset)/(float)tex.getHeight();
+		return (float)(v+uvHeight-offset)/(float)tex.getHeight();
 	}
 
 	/**
@@ -138,19 +152,21 @@ public class Sprite {
 	/**
 	 * The width in pixels
 	 */
-	public int getWidth() {
-		return width;
+	public int getUVWidth() {
+		return uvWidth;
 	}
 
 	/**
 	 * The height in pixels
 	 */
-	public int getHeight() {
-		return height;
+	public int getUVHeight() {
+		return uvHeight;
 	}
 	
 	public Sprite getSubSprite(int u, int v, int width, int height) {
-		return new Sprite(this.tex, this.u+u, this.v+v, width, height, frameCounts);
+		float uScale = uvWidth/width;
+		float vScale = uvHeight/height;
+		return new Sprite(this.tex, this.u+(int)( u*uScale ), this.v+(int)( v*vScale ), (int)( width*uScale ), (int)( height*vScale ), frameCounts);
 	}
 	
 	/**
@@ -159,7 +175,7 @@ public class Sprite {
 	 * @param y The y position to draw at
 	 */
 	public void draw(float x, float y) {
-		DrawingUtil.draw(this, x, y, getWidth(), getHeight());
+		DrawingUtil.draw(this, x, y, width, height);
 	}
 	
 	/**

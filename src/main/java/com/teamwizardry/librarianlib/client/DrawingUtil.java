@@ -77,16 +77,16 @@ public class DrawingUtil {
         if(!isDrawing)
         	vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
         
-        int wholeSpritesX = (int) Math.ceil((float)width  / (float)sprite.getWidth() )-1;
-        int wholeSpritesY = (int) Math.ceil((float)height / (float)sprite.getHeight())-1;
+        int wholeSpritesX = (int) Math.ceil((float)width  / (float)sprite.width )-1;
+        int wholeSpritesY = (int) Math.ceil((float)height / (float)sprite.height)-1;
         
-        int leftoverWidth  = width  % sprite.getWidth();
-        int leftoverHeight = height % sprite.getHeight();
+        int leftoverWidth  = width  % sprite.width;
+        int leftoverHeight = height % sprite.height;
         
         if(leftoverWidth == 0)
-        	leftoverWidth = sprite.getWidth();
+        	leftoverWidth = sprite.width;
         if(leftoverHeight == 0)
-        	leftoverHeight = sprite.getHeight();
+        	leftoverHeight = sprite.height;
         
         for (int xIndex = 0; xIndex <= wholeSpritesX; xIndex++) {
         	for (int yIndex = 0; yIndex <= wholeSpritesY; yIndex++) {
@@ -94,10 +94,10 @@ public class DrawingUtil {
     			boolean smallX = xIndex == wholeSpritesX;
     			boolean smallY = yIndex == wholeSpritesY;
         		
-        		int spriteWidth = smallX ? wholeSpritesX == 0 ? width : leftoverWidth : sprite.getWidth();
-        		int spriteHeight = smallY ? wholeSpritesY == 0 ? height : leftoverHeight : sprite.getHeight();
-        		int offsetX = sprite.getWidth()*xIndex;
-        		int offsetY = sprite.getHeight()*yIndex;
+        		int spriteWidth = smallX ? wholeSpritesX == 0 ? width : leftoverWidth : sprite.width;
+        		int spriteHeight = smallY ? wholeSpritesY == 0 ? height : leftoverHeight : sprite.height;
+        		int offsetX = sprite.width*xIndex;
+        		int offsetY = sprite.height*yIndex;
         		
         		float
 	        		minX = x + offsetX, minY = y + offsetY,
@@ -106,8 +106,8 @@ public class DrawingUtil {
 	        		uSpan = sprite.maxU() - sprite.minU(), vSpan = sprite.maxV() - sprite.minV(),
 	        		
 	        		minU = sprite.minU(), minV = sprite.minV(),
-	        		maxU = minU + uSpan*((float)spriteWidth/(float)sprite.getWidth()),
-	        		maxV = minV + vSpan*((float)spriteHeight/(float)sprite.getHeight());
+	        		maxU = minU + uSpan*((float)spriteWidth/(float)sprite.width),
+	        		maxV = minV + vSpan*((float)spriteHeight/(float)sprite.height);
         		
 	            vb.pos(minX, maxY, 0).tex(minU, maxV).endVertex();
 	            vb.pos(maxX, maxY, 0).tex(maxU, maxV).endVertex();

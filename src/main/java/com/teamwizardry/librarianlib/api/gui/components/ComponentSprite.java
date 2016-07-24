@@ -15,7 +15,7 @@ public class ComponentSprite extends GuiComponent<ComponentSprite> {
 	protected Sprite sprite;
 	
 	public ComponentSprite(Sprite sprite, int x, int y) {
-		this(sprite, x, y, sprite.getWidth(), sprite.getHeight());
+		this(sprite, x, y, sprite.width, sprite.height);
 	}
 	
 	public ComponentSprite(Sprite sprite, int x, int y, int width, int height) {

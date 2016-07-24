@@ -21,7 +21,7 @@ public class ComponentSpriteTiled extends GuiComponent<ComponentSpriteTiled> {
 	protected Sprite middle, main;
 	
 	public ComponentSpriteTiled(Sprite sprite, int borderSize, int x, int y) {
-		this(sprite, borderSize, x, y, sprite.getWidth(), sprite.getHeight());
+		this(sprite, borderSize, x, y, sprite.width, sprite.height);
 	}
 	
 	public ComponentSpriteTiled(Sprite sprite, int borderSize, int x, int y, int width, int height) {
@@ -29,8 +29,8 @@ public class ComponentSpriteTiled extends GuiComponent<ComponentSpriteTiled> {
 		this.main = sprite;
 		this.borderSize = borderSize;
 		
-		int insideU = main.getWidth()-borderSize;
-		int insideV = main.getHeight()-borderSize;
+		int insideU = main.width-borderSize;
+		int insideV = main.height-borderSize;
 		
 		this.topLeft = main.getSubSprite(0, 0, borderSize, borderSize);
 		this.topRight = main.getSubSprite(insideU, 0, borderSize, borderSize);
@@ -38,13 +38,13 @@ public class ComponentSpriteTiled extends GuiComponent<ComponentSpriteTiled> {
 		this.bottomLeft = main.getSubSprite(0, insideV, borderSize, borderSize);
 		this.bottomRight = main.getSubSprite(insideU, insideV, borderSize, borderSize);
 		
-		this.top = main.getSubSprite(borderSize, 0, main.getWidth()-(2*borderSize), borderSize);
-		this.bottom = main.getSubSprite(borderSize, insideV, main.getWidth()-(2*borderSize), borderSize);
+		this.top = main.getSubSprite(borderSize, 0, main.width-(2*borderSize), borderSize);
+		this.bottom = main.getSubSprite(borderSize, insideV, main.width-(2*borderSize), borderSize);
 		
-		this.left = main.getSubSprite(0, borderSize, borderSize, main.getHeight()-(2*borderSize));
-		this.right = main.getSubSprite(insideU, borderSize, borderSize, main.getHeight()-(2*borderSize));
+		this.left = main.getSubSprite(0, borderSize, borderSize, main.height-(2*borderSize));
+		this.right = main.getSubSprite(insideU, borderSize, borderSize, main.height-(2*borderSize));
 		
-		this.middle = main.getSubSprite(borderSize, borderSize, main.getWidth()-(2*borderSize), main.getHeight()-(2*borderSize));
+		this.middle = main.getSubSprite(borderSize, borderSize, main.width-(2*borderSize), main.height-(2*borderSize));
 	}
 	
 	@Override

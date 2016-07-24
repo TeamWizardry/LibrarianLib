@@ -63,13 +63,16 @@ public class Texture {
 	/**
 	 * Gets the sprite with the specified name
 	 */
-	public Sprite getSprite(String name) {
+	public Sprite getSprite(String name, int w, int h) {
 		Sprite s = sprites.get(name);
 		if(s == null) {
 			// create a new one each time so on reload it'll exist and be replaced with a real one
 			s = new Sprite(this, 0, 0, this.width, this.height, new int[0]);
 			sprites.put(name, s);
 		}
+		
+		s.width = w;
+		s.height = h;
 		return s;
 	}
 	
