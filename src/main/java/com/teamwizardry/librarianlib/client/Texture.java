@@ -48,10 +48,10 @@ public class Texture {
 				this.height = section.height;
 				for (SpriteDefinition def : section.definitions) {
 					if(oldSprites.containsKey(def.name)) {
-						oldSprites.get(def.name).init(def.u, def.v, def.w, def.h, def.frames);
+						oldSprites.get(def.name).init(def.u, def.v, def.w, def.h, def.frames, def.offsetU, def.offsetV);
 						sprites.put(def.name, oldSprites.get(def.name));
 					} else {
-						sprites.put(def.name, new Sprite(this, def.u, def.v, def.w, def.h, def.frames));
+						sprites.put(def.name, new Sprite(this, def.u, def.v, def.w, def.h, def.frames, def.offsetU, def.offsetV));
 					}
 				}
 			}
@@ -67,7 +67,7 @@ public class Texture {
 		Sprite s = sprites.get(name);
 		if(s == null) {
 			// create a new one each time so on reload it'll exist and be replaced with a real one
-			s = new Sprite(this, 0, 0, this.width, this.height, new int[0]);
+			s = new Sprite(this, 0, 0, this.width, this.height, new int[0], 0, 0);
 			sprites.put(name, s);
 		}
 		

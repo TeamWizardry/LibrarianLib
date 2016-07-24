@@ -39,7 +39,7 @@ public class ComponentSprite extends GuiComponent<ComponentSprite> {
 		}
 		color.getValue(this).glColor();
 		sprite.getTex().bind();
-		sprite.draw(pos.xf, pos.yf, size.xi, size.yi);
+		sprite.draw(getAnimationTicks(), pos.xf, pos.yf, size.xi, size.yi);
 		if(alwaysTop)
 			GL11.glPopAttrib();
 	}

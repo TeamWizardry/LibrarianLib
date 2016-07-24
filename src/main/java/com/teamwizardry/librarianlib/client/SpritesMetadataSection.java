@@ -18,10 +18,10 @@ public class SpritesMetadataSection implements IMetadataSection {
 
 	public static class SpriteDefinition {
 		public String name;
-		public int u, v, w, h;
+		public int u, v, w, h, offsetU, offsetV;
 		public int[] frames;
 		
-		public SpriteDefinition(String name, int u, int v, int w, int h, int[] animationTimes) {
+		public SpriteDefinition(String name, int u, int v, int w, int h, int[] animationTimes, int offsetU, int offsetV) {
 			super();
 			this.name = name;
 			this.u = u;
@@ -29,6 +29,8 @@ public class SpritesMetadataSection implements IMetadataSection {
 			this.w = w;
 			this.h = h;
 			this.frames = animationTimes;
+			this.offsetU = offsetU;
+			this.offsetV = offsetV;
 		}
 	}
 	

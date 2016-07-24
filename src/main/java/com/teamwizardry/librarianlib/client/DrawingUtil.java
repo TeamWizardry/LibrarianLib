@@ -30,7 +30,7 @@ public class DrawingUtil {
     }
     
     /**
-     * <strong>!!! Use {@link Sprite#draw(float, float)} or {@link Sprite#draw(float, float, int, int)} instead !!!</strong>
+     * <strong>!!! Use {@link Sprite#draw(int, float, float)} or {@link Sprite#draw(int, float, float, int, int)} instead !!!</strong>
      * 
      * <p>Draw a sprite at a location with the width and height specified.</p>
      * @param sprite The sprite to draw
@@ -39,7 +39,7 @@ public class DrawingUtil {
      * @param width The width to draw the sprite
      * @param height The height to draw the sprite
      */
-    public static void draw(Sprite sprite, float x, float y, int width, int height) {
+    public static void draw(Sprite sprite, int animFrames, float x, float y, int width, int height) {
     	
     	float
     		minX = x, minY = y,
@@ -51,10 +51,10 @@ public class DrawingUtil {
         if(!isDrawing)
         	vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
         
-        vb.pos(minX, maxY, 0).tex(sprite.minU(), sprite.maxV()).endVertex();
-        vb.pos(maxX, maxY, 0).tex(sprite.maxU(), sprite.maxV()).endVertex();
-        vb.pos(maxX, minY, 0).tex(sprite.maxU(), sprite.minV()).endVertex();
-        vb.pos(minX, minY, 0).tex(sprite.minU(), sprite.minV()).endVertex();
+        vb.pos(minX, maxY, 0).tex(sprite.minU(animFrames), sprite.maxV(animFrames)).endVertex();
+        vb.pos(maxX, maxY, 0).tex(sprite.maxU(animFrames), sprite.maxV(animFrames)).endVertex();
+        vb.pos(maxX, minY, 0).tex(sprite.maxU(animFrames), sprite.minV(animFrames)).endVertex();
+        vb.pos(minX, minY, 0).tex(sprite.minU(animFrames), sprite.minV(animFrames)).endVertex();
 
         if(!isDrawing)
         	tessellator.draw();
@@ -70,7 +70,7 @@ public class DrawingUtil {
      * @param width The width to draw the sprite
      * @param height The height to draw the sprite
      */
-    public static void drawClipped(Sprite sprite, float x, float y, int width, int height) {
+    public static void drawClipped(Sprite sprite, int animTicks, float x, float y, int width, int height) {
     	Tessellator tessellator = Tessellator.getInstance();
         VertexBuffer vb = tessellator.getBuffer();
 
@@ -103,9 +103,9 @@ public class DrawingUtil {
 	        		minX = x + offsetX, minY = y + offsetY,
 	        		maxX = minX + spriteWidth, maxY = minY + spriteHeight;
 	        	float
-	        		uSpan = sprite.maxU() - sprite.minU(), vSpan = sprite.maxV() - sprite.minV(),
+	        		uSpan = sprite.maxU(animTicks) - sprite.minU(animTicks), vSpan = sprite.maxV(animTicks) - sprite.minV(animTicks),
 	        		
-	        		minU = sprite.minU(), minV = sprite.minV(),
+	        		minU = sprite.minU(animTicks), minV = sprite.minV(animTicks),
 	        		maxU = minU + uSpan*((float)spriteWidth/(float)sprite.width),
 	        		maxV = minV + vSpan*((float)spriteHeight/(float)sprite.height);
         		

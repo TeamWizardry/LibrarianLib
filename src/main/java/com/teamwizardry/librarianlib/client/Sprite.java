@@ -12,7 +12,7 @@ public class Sprite {
 	protected Texture tex;
 	protected int u, v, uvWidth, uvHeight;
 	protected int[] frames, frameCounts;
-	protected int frametotal;
+	protected int offsetU, offsetV;
 	
 	/**
 	 * The width on screen of the sprite.
@@ -28,9 +28,9 @@ public class Sprite {
 	 */
 	public int height = 0;
 	
-	public Sprite(Texture tex, int u, int v, int width, int height, int[] frameCounts) {
+	public Sprite(Texture tex, int u, int v, int width, int height, int[] frames, int offsetU, int offsetV) {
 		this.tex = tex;
-		init(u, v, width, height, frameCounts);
+		init(u, v, width, height, frames, offsetU, offsetV);
 	}
 	
 	public Sprite(ResourceLocation loc) {
@@ -46,21 +46,14 @@ public class Sprite {
 	 * 
 	 * --Package private--
 	 */
-	void init(int u, int v, int width, int height, int[] frameCounts) {
+	void init(int u, int v, int width, int height, int[] frames, int offsetU, int offsetV) {
 		this.u = u;
 		this.v = v;
 		this.uvWidth = width;
 		this.uvHeight = height;
-		this.frameCounts = frameCounts;
-		this.frametotal = IntStream.of(frameCounts).sum();
-		this.frames = new int[frametotal];
-		int j = 0;
-		for (int i = 0; i < frameCounts.length; i++) {
-			for(int k = 0; k < frameCounts[i]; k++) {
-				frames[j+k] = i;
-			}
-			j += frameCounts[i];
-		}
+		this.offsetU = offsetU;
+		this.offsetV = offsetV;
+		this.frames = frames;
 	}
 	
 	/**
@@ -93,38 +86,30 @@ public class Sprite {
 	
 	/**
 	 * The minimum U coordinate (0-1)
-	 * 
-	 * @param offset The offset in pixels toward the center of the texture
 	 */
-	public float minU(int offset) {
-		return (float)(u+offset)/(float)tex.getWidth();
+	public float minU(int animFrames) {
+		return (float)(u + ( uvWidth * offsetU * (frames.length == 0 ? 0 : frames[animFrames % frames.length]) ))/(float)tex.getWidth();
 	}
 	
 	/**
 	 * The minimum V coordinate (0-1)
-	 *
-	 * @param offset The offset in pixels toward the center of the texture
 	 */
-	public float minV(int offset) {
-		return (float)(v+offset)/(float)tex.getHeight();
+	public float minV(int animFrames) {
+		return (float)(v + ( uvHeight * offsetV * (frames.length == 0 ? 0 : frames[animFrames % frames.length]) ))/(float)tex.getHeight();
 	}
 	
 	/**
 	 * The maximum U coordinate (0-1)
-	 *
-	 * @param offset The offset in pixels toward the center of the texture
 	 */
-	public float maxU(int offset) {
-		return (float)(u+uvWidth-offset)/(float)tex.getWidth();
+	public float maxU(int animFrames) {
+		return (float)(u+uvWidth + ( uvWidth * offsetU * (frames.length == 0 ? 0 : frames[animFrames % frames.length]) ))/(float)tex.getWidth();
 	}
 	
 	/**
 	 * The maximum V coordinate (0-1)
-	 *
-	 * @param offset The offset in pixels toward the center of the texture
 	 */
-	public float maxV(int offset) {
-		return (float)(v+uvHeight-offset)/(float)tex.getHeight();
+	public float maxV(int animFrames) {
+		return (float)(v+uvHeight + ( uvHeight * offsetV * (frames.length == 0 ? 0 : frames[animFrames % frames.length]) ))/(float)tex.getHeight();
 	}
 
 	/**
@@ -166,7 +151,7 @@ public class Sprite {
 	public Sprite getSubSprite(int u, int v, int width, int height) {
 		float uScale = uvWidth/width;
 		float vScale = uvHeight/height;
-		return new Sprite(this.tex, this.u+(int)( u*uScale ), this.v+(int)( v*vScale ), (int)( width*uScale ), (int)( height*vScale ), frameCounts);
+		return new Sprite(this.tex, this.u+(int)( u*uScale ), this.v+(int)( v*vScale ), (int)( width*uScale ), (int)( height*vScale ), frames, offsetU, offsetV);
 	}
 	
 	/**
@@ -174,8 +159,8 @@ public class Sprite {
 	 * @param x The x position to draw at
 	 * @param y The y position to draw at
 	 */
-	public void draw(float x, float y) {
-		DrawingUtil.draw(this, x, y, width, height);
+	public void draw(int animTicks, float x, float y) {
+		DrawingUtil.draw(this, animTicks, x, y, width, height);
 	}
 	
 	/**
@@ -185,8 +170,8 @@ public class Sprite {
 	 * @param width The width to draw the sprite
 	 * @param height The height to draw the sprite
 	 */
-	public void draw(float x, float y, int width, int height) {
-		DrawingUtil.draw(this, x, y, width, height);
+	public void draw(int animTicks, float x, float y, int width, int height) {
+		DrawingUtil.draw(this, animTicks, x, y, width, height);
 	}
 	
 	/**
@@ -196,8 +181,8 @@ public class Sprite {
 	 * @param width
 	 * @param height
 	 */
-	public void drawClipped(float x, float y, int width, int height) {
-		DrawingUtil.drawClipped(this, x, y, width, height);
+	public void drawClipped(int animTicks, float x, float y, int width, int height) {
+		DrawingUtil.drawClipped(this, animTicks, x, y, width, height);
 	}
 	
 }

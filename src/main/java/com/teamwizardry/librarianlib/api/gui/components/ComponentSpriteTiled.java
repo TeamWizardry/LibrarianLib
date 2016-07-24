@@ -74,19 +74,20 @@ public class ComponentSpriteTiled extends GuiComponent<ComponentSpriteTiled> {
 		float insideX = x+width-borderSize;
 		float insideY = y+height-borderSize;
 		
-		DrawingUtil.draw(topLeft, x, y, borderSize, borderSize);
-		DrawingUtil.draw(topRight, insideX, y, borderSize, borderSize);
+		topLeft.draw(getAnimationTicks(), x, y, borderSize, borderSize);
 		
-		DrawingUtil.draw(bottomLeft, x, insideY, borderSize, borderSize);
-		DrawingUtil.draw(bottomRight, insideX, insideY, borderSize, borderSize);
+		topRight.draw(getAnimationTicks(), insideX, y, borderSize, borderSize);
 		
-		DrawingUtil.drawClipped(left, x, borderSize, borderSize, height-(2*borderSize));
-		DrawingUtil.drawClipped(right, insideX, borderSize, borderSize, height-(2*borderSize));
+		bottomLeft.draw(getAnimationTicks(), x, insideY, borderSize, borderSize);
+		bottomRight.draw(getAnimationTicks(), insideX, insideY, borderSize, borderSize);
 		
-		DrawingUtil.drawClipped(top, borderSize, 0, width-(2*borderSize), borderSize);
-		DrawingUtil.drawClipped(bottom, borderSize, insideY, width-(2*borderSize), borderSize);
+		left.drawClipped(getAnimationTicks(), x, borderSize, borderSize, height-(2*borderSize));
+		right.drawClipped(getAnimationTicks(), insideX, borderSize, borderSize, height-(2*borderSize));
+		
+		top.drawClipped(getAnimationTicks(), borderSize, 0, width-(2*borderSize), borderSize);
+		bottom.drawClipped(getAnimationTicks(), borderSize, insideY, width-(2*borderSize), borderSize);
 
-		DrawingUtil.drawClipped(middle, borderSize, borderSize, width-(2*borderSize), height-(2*borderSize));
+		middle.drawClipped(getAnimationTicks(), borderSize, borderSize, width-(2*borderSize), height-(2*borderSize));
 		
 		DrawingUtil.endDrawingSession();
 	}

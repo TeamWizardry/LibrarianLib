@@ -61,7 +61,9 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	public Vec2 mousePosThisFrame = Vec2.ZERO;
 	protected Set<Object> tags = new HashSet<>();
 	
-	protected boolean enabled = true, visible = true, focused = false, invalid = false;
+	private int animTicks = 0, guiTicksLastFrame = GuiTickHandler.ticks;
+	
+	protected boolean enabled = true, visible = true, focused = false, invalid = false, animating = true;
 	
 	protected boolean[] mouseButtonsDown = new boolean[EnumMouseButton.values().length];
 	protected Map<Key, Boolean> keysDown = new DefaultedMap<>(false);
@@ -215,6 +217,12 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	@Override
 	public void draw(Vec2 mousePos, float partialTicks) {
 		if(!isVisible()) return;
+		
+		if(isAnimating()) {
+			animTicks += GuiTickHandler.ticks - guiTicksLastFrame;
+			guiTicksLastFrame = GuiTickHandler.ticks;
+		}
+		
 		boolean wasMouseOverLastFrame = mouseOverThisFrame;
 		mouseOverThisFrame = isMouseOver(mousePos);
 		mousePosThisFrame = mousePos;
@@ -590,6 +598,26 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 */
 	public void setVisible(boolean visible) {
 		this.visible = visible;
+	}
+	
+	public boolean isAnimating() {
+		return this.animating;
+	}
+	
+	public void setIsAnimating(boolean animating) {
+		this.animating = animating;
+	}
+	
+	public void resetAnimation() {
+		setAnimationTicks(0);
+	}
+	
+	public void setAnimationTicks(int ticks) {
+		this.animTicks = ticks;
+	}
+	
+	public int getAnimationTicks() {
+		return this.animTicks;
 	}
 
 	//=============================================================================
