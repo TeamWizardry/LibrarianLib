@@ -12,10 +12,10 @@ public class AABBUtils {
 	 * @return
 	 */
 	public static Vec3d closestOutsidePoint(AxisAlignedBB aabb, Vec3d point) {
-		if( !(
-				point.xCoord > aabb.minX && point.yCoord > aabb.minY && point.zCoord > aabb.minZ &&
-				point.xCoord < aabb.maxX && point.yCoord < aabb.maxY && point.zCoord < aabb.maxZ
-			) ) {
+		if(
+			point.xCoord <= aabb.minX || point.yCoord <= aabb.minY || point.zCoord <= aabb.minZ ||
+			point.xCoord >= aabb.maxX || point.yCoord >= aabb.maxY || point.zCoord >= aabb.maxZ
+			) {
 			return point;
 		}
 		

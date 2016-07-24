@@ -10,10 +10,10 @@ import com.teamwizardry.librarianlib.ragdoll.cloth.PointMass3D;
 
 public class Box {
 	public Matrix4 matrix, inverse;
-	public float minX, minY, minZ, maxX, maxY, maxZ;
+	public double minX, minY, minZ, maxX, maxY, maxZ;
 	public AxisAlignedBB aabb;
 	
-	public Box(Matrix4 matrix, Matrix4 inverse, float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
+	public Box(Matrix4 matrix, Matrix4 inverse, double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
 		super();
 		this.matrix = matrix;
 		this.inverse = inverse;

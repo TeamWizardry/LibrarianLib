@@ -19,4 +19,9 @@ public class PointMass3D {
 	public void applyMotion(Vec3d motion) {
 		pos = pos.add(motion);
 	}
+	
+	@Override
+	public String toString() {
+		return (pin ? "[P]" : "") + pos.toString();
+	}
 }

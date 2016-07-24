@@ -10,10 +10,12 @@ import net.minecraft.util.math.Vec3d;
 import javax.annotation.Nullable;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableList;
 import com.teamwizardry.librarianlib.math.AABBUtils;
 import com.teamwizardry.librarianlib.math.Box;
 import com.teamwizardry.librarianlib.math.Geometry;
 import com.teamwizardry.librarianlib.math.MathUtil;
+import com.teamwizardry.librarianlib.math.Sphere;
 
 public class Cloth {
 
@@ -109,10 +111,10 @@ public class Cloth {
 	 * @param aabbs
 	 * @param boxes
 	 */
-	private void pushOutPoints(List<AxisAlignedBB> aabbs, List<Box> boxes) {
+	private void pushOutPoints(List<AxisAlignedBB> aabbs, List<Sphere> spheres) {
 		for (PointMass3D[] column : masses) {
             for (PointMass3D point : column) {
-            	pushOutPoint(point, aabbs, boxes);
+            	pushOutPoint(point, aabbs, spheres);
             }
 		}
 	}
@@ -123,12 +125,14 @@ public class Cloth {
 	 * @param aabbs
 	 * @param boxes
 	 */
-	private void pushOutPoint(PointMass3D point, List<AxisAlignedBB> aabbs, List<Box> boxes) {
+	private void pushOutPoint(PointMass3D point, List<AxisAlignedBB> aabbs, List<Sphere> spheres) {
+		if(point.pin)
+			return;
 		for (AxisAlignedBB aabb : aabbs) {
 			point.pos = AABBUtils.closestOutsidePoint(aabb, point.pos);
 		}
-		for (Box box : boxes) {
-			point.pos = box.fix(point.pos);
+		for (Sphere sphere : spheres) {
+			point.pos = sphere.fix(point.pos);
 		}
 	}
 	
@@ -137,10 +141,10 @@ public class Cloth {
 	 * @param aabbs
 	 * @param boxes
 	 */
-	private void collidePoints(List<AxisAlignedBB> aabbs, List<Box> boxes) {
+	private void collidePoints(List<AxisAlignedBB> aabbs, List<Sphere> spheres) {
 		for (PointMass3D[] column : masses) {
             for (PointMass3D point : column) {
-            	collidePoint(point, aabbs, boxes);
+            	collidePoint(point, aabbs, spheres);
             }
 		}
 	}
@@ -151,7 +155,7 @@ public class Cloth {
 	 * @param aabbs
 	 * @param boxes
 	 */
-	private void collidePoint(PointMass3D point, List<AxisAlignedBB> aabbs, List<Box> boxes) {
+	private void collidePoint(PointMass3D point, List<AxisAlignedBB> aabbs, List<Sphere> spheres) {
 		if(point.pin)
 			return;
 		double friction = 0.2;
@@ -168,8 +172,8 @@ public class Cloth {
 				point.pos = res;
 			}
 		}
-		for (Box box : boxes) {
-			Vec3d res = box.trace(point.origPos, point.pos);
+		for (Sphere sphere : spheres) {
+			Vec3d res = sphere.trace(point.origPos, point.pos);
 			if(res != null) {
 				point.pos = res;
 			}
@@ -267,16 +271,16 @@ public class Cloth {
 		List<AxisAlignedBB> aabbs = e.worldObj.getCollisionBoxes(checkAABB);
 		List<Entity> entities = e.worldObj.getEntitiesWithinAABBExcludingEntity(null, checkAABB);
 		for (Entity entity : entities) {
-			aabbs.add(entity.getEntityBoundingBox());
+//			aabbs.add(entity.getEntityBoundingBox());
 		}
 		
 		return aabbs;
 	}
 	
-	public void tick(Entity e, List<Box> boxes) {
+	public void tick(Entity e, List<Sphere> spheres) {
 		
 		List<AxisAlignedBB> aabbs = getAABBs(e);
-		pushOutPoints(aabbs, boxes);
+		pushOutPoints(aabbs, spheres);
 		
 		for (PointMass3D[] column : masses) {
             for (PointMass3D point : column) {
@@ -291,8 +295,8 @@ public class Cloth {
 		
 		aabbs = getAABBs(e);
 		
-		pushOutPoints(aabbs, boxes);
-		collidePoints(aabbs, boxes);
+		collidePoints(aabbs, spheres);
+		pushOutPoints(aabbs, spheres);
 		
 		for (int i = 0; i < solvePasses; i++) {
 			for (Link link : links) {
@@ -301,10 +305,12 @@ public class Cloth {
 			for (Link link : hardLinks) {
 				link.resolve();
 			}
+			collidePoints(ImmutableList.of(), spheres);
 		}
 		
-		collidePoints(aabbs, boxes);
-        
+		collidePoints(aabbs, spheres);
+		pushOutPoints(aabbs, spheres);
+
         for (Link link : hardLinks) {
         	Vec3d posDiff = link.a.pos.subtract(link.b.pos);
     		double d = posDiff.lengthVector();
@@ -313,6 +319,9 @@ public class Cloth {
 			if(difference > link.distance)
 				link.resolve();
 		}
+        
+//        collidePoints(ImmutableList.of(), boxes);
+//		pushOutPoints(ImmutableList.of(), boxes);
 	}
 	
     public Vec3d calculateIntercept(AxisAlignedBB aabb, PointMass3D point, boolean yOnly)
