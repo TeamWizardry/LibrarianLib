@@ -58,7 +58,7 @@ public class Sphere {
 	public Vec3d fix(Vec3d vec) {
 		Vec3d dist = vec.subtract(pos);
 		if(dist.lengthVector() < radius) {
-			return pos.add( dist.normalize().scale(radius) );
+			return pos.add( dist.normalize().scale(radius+0.05) );
 		}
 		return vec;
 	}

@@ -1,7 +1,10 @@
 package com.teamwizardry.librarianlib.ragdoll.cloth;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -11,10 +14,9 @@ import javax.annotation.Nullable;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
-import com.teamwizardry.librarianlib.math.AABBUtils;
-import com.teamwizardry.librarianlib.math.Box;
 import com.teamwizardry.librarianlib.math.Geometry;
 import com.teamwizardry.librarianlib.math.MathUtil;
+import com.teamwizardry.librarianlib.math.Matrix4;
 import com.teamwizardry.librarianlib.math.Sphere;
 
 public class Cloth {
@@ -22,12 +24,13 @@ public class Cloth {
     public PointMass3D[][] masses;
     public List<Link> links = new ArrayList<>();
 	public List<Link> hardLinks = new ArrayList<>();
-	public int solvePasses = 3;
+	public int solvePasses = 5;
 	public Vec3d[] top;
 	public int height;
 	public Vec3d size;
-	public float stretch = 1, shear = 1, flex = 1f, air = 3.5f;
+	public float stretch = 1, shear = 1, flex = 1f, air = 1.5f;
 	public Vec3d gravity = new Vec3d(0, -0.01, 0);
+	public Map<PointMass3D, Vec3d> relativePositions = new HashMap<>();
 	
 	public Cloth(Vec3d[] top, int height, Vec3d size) {
 		this.top = top;
@@ -37,6 +40,19 @@ public class Cloth {
 		this.shear = 0.8f;
 		this.flex = 0.9f;
 		init();
+	}
+	
+	public void updateRelative(Vec3d pos, Vec3d rotation) {
+		Matrix4 matrix = new Matrix4();
+		matrix.translate(pos);
+		matrix.rotate(Math.toRadians( rotation.xCoord ), new Vec3d(1, 0, 0));
+		matrix.rotate(Math.toRadians( rotation.yCoord ), new Vec3d(0, 1, 0));
+		matrix.rotate(Math.toRadians( rotation.zCoord ), new Vec3d(0, 0, 1));
+		for (Entry<PointMass3D, Vec3d> entry : relativePositions.entrySet()) {
+			Vec3d trans = matrix.apply(entry.getValue());
+			entry.getKey().origPos = entry.getKey().pos;
+			entry.getKey().pos = trans;
+		}
 	}
 	
 	public void init() {
@@ -129,7 +145,7 @@ public class Cloth {
 		if(point.pin)
 			return;
 		for (AxisAlignedBB aabb : aabbs) {
-			point.pos = AABBUtils.closestOutsidePoint(aabb, point.pos);
+//			point.pos = AABBUtils.closestOutsidePoint(aabb, point.pos);
 		}
 		for (Sphere sphere : spheres) {
 			point.pos = sphere.fix(point.pos);
@@ -198,11 +214,13 @@ public class Cloth {
 		point.applyMotion(lastMotion); // existing motion
 		point.applyForce(gravity); // gravity
 
-		Vec3d wind = new Vec3d(0.0, 0.0, 1.0 / 20.0).subtract(lastMotion);
+		Vec3d wind = new Vec3d(0.0, 0.0, 1.0/20.0).subtract(lastMotion);
+//		wind = Vec3d.ZERO;
 		Vec3d normal = Vec3d.ZERO;
-
+		
 		if (x > 0 && y > 0) {
 			normal = normal.add(Geometry.getNormal(point.origPos, masses[x][y - 1].origPos, masses[x - 1][y].origPos));
+			
 		}
 
 		if (x > 0 && y + 1 < masses[x].length) {
@@ -218,8 +236,9 @@ public class Cloth {
 		}
 
 		normal = normal.normalize();
-
-		double angle = Math.acos(MathUtil.clamp(wind.normalize().dotProduct(normal), -1, 1));
+		Vec3d windNormal = wind.normalize();
+		
+		double angle = Math.acos(MathUtil.clamp(windNormal.dotProduct(normal), -1, 1));
 		if (angle > Math.PI / 2)
 			normal = normal.scale(-1);
 
@@ -227,7 +246,7 @@ public class Cloth {
 		// page 5-6. I'm using formula (5)
 		// wind vector length squared is flat pressure. All the other terms can
 		// be changed in the air coefficent.
-		Vec3d force = normal.scale((Math.pow(wind.lengthVector(), 2) * angle) / (Math.PI / 4));
+		Vec3d force = normal.add(windNormal).normalize().scale((Math.pow(wind.lengthVector(), 2) * angle) / (Math.PI / 4));
 
 		point.applyForce(force.scale(air));
 
