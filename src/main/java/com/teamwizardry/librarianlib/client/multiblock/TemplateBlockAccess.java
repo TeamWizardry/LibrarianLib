@@ -70,16 +70,6 @@ public class TemplateBlockAccess implements IBlockAccess {
     }
 
     @Override
-    public Biome getBiomeGenForCoords(BlockPos pos) {
-        return Biomes.PLAINS;
-    }
-
-    @Override
-    public boolean extendedLevelsInChunkCache() {
-        return false; // TODO: figure out what this does
-    }
-
-    @Override
     public int getStrongPower(BlockPos pos, EnumFacing direction) {
         return 0;
     }
@@ -108,5 +98,10 @@ public class TemplateBlockAccess implements IBlockAccess {
             return _default;
         return state.isSideSolid(this, pos, side);
     }
+
+	@Override
+	public Biome getBiome(BlockPos pos) {
+		return Biomes.PLAINS;
+	}
 
 }
