@@ -67,13 +67,13 @@ public class SpritesMetadataSectionSerializer extends BaseMetadataSectionSeriali
 			
 			
 			// animation offset
-			int offsetU = 0, offsetV = 1; // default animates downward
+			int offsetU = 0, offsetV = h; // default animates downward
 			if(obj.get("offset") != null) {
 				arr = JsonUtils.getJsonArray(obj.get("offset"), "spritesheet{sprites{" + name + "}{offset}");
 				if(arr.size() < 2)
 					throw new JsonSyntaxException("expected spritesheet{sprites{" + name + "{offset to have a length of 2, was " + arr.toString());
-				offsetU = JsonUtils.getInt(arr.get(0), "spritesheet{sprites{" + name + "{offset[0]");
-				offsetV = JsonUtils.getInt(arr.get(1), "spritesheet{sprites{" + name + "{offset[1]");
+				offsetU = JsonUtils.getInt(arr.get(0), "spritesheet{sprites{" + name + "{offset[0]") * w;
+				offsetV = JsonUtils.getInt(arr.get(1), "spritesheet{sprites{" + name + "{offset[1]") * h;
 			}
 			
 			// create def

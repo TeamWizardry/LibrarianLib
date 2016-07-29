@@ -31,7 +31,7 @@ public class GuiBook extends GuiBase {
 
 	public static final int PAGE_WIDTH = 120, PAGE_HEIGHT = 161;
 	public static Texture TEXTURE = new Texture(new ResourceLocation(LibrarianLib.MODID, "textures/book/book.png"));
-	public static Sprite BOOK_BACKGROUND_BORDER = TEXTURE.getSprite("book_background_border", 146, 180);
+	public static Sprite BOOK_BACKGROUND_BORDER = TEXTURE.getSprite("background_border", 146, 180);
 	public static Sprite BACKGROUND_PAGE = TEXTURE.getSprite("background_page", 146, 180);
 	public static Sprite TITLE_BAR = TEXTURE.getSprite("title_bar", 133, 13);
 	public static Sprite BOOKMARK = TEXTURE.getSprite("bookmark", 100, 13);

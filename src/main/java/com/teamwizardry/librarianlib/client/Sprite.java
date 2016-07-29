@@ -17,16 +17,16 @@ public class Sprite {
 	/**
 	 * The width on screen of the sprite.
 	 * 
-	 * Public for easy and concise access. Set to 0 by default.
+	 * Public for easy and concise access. Set to 1 by default.
 	 */
-	public int width  = 0;
+	public int width  = 1;
 	
 	/**
 	 * The height on screen of the sprite.
 	 * 
-	 * Public for easy and concise access. Set to 0 by default.
+	 * Public for easy and concise access. Set to 1 by default.
 	 */
-	public int height = 0;
+	public int height = 1;
 	
 	public Sprite(Texture tex, int u, int v, int width, int height, int[] frames, int offsetU, int offsetV) {
 		this.tex = tex;
@@ -39,6 +39,9 @@ public class Sprite {
 		this.v = 0;
 		this.uvWidth = 16;
 		this.uvHeight = 16;
+		this.width = 16;
+		this.height = 16;
+		this.frames = new int[0];
 	}
 	
 	/**
@@ -88,28 +91,28 @@ public class Sprite {
 	 * The minimum U coordinate (0-1)
 	 */
 	public float minU(int animFrames) {
-		return (float)(u + ( uvWidth * offsetU * (frames.length == 0 ? 0 : frames[animFrames % frames.length]) ))/(float)tex.getWidth();
+		return (float)(u + ( offsetU * (frames.length == 0 ? 0 : frames[animFrames % frames.length]) ))/(float)tex.getWidth();
 	}
 	
 	/**
 	 * The minimum V coordinate (0-1)
 	 */
 	public float minV(int animFrames) {
-		return (float)(v + ( uvHeight * offsetV * (frames.length == 0 ? 0 : frames[animFrames % frames.length]) ))/(float)tex.getHeight();
+		return (float)(v + ( offsetV * (frames.length == 0 ? 0 : frames[animFrames % frames.length]) ))/(float)tex.getHeight();
 	}
 	
 	/**
 	 * The maximum U coordinate (0-1)
 	 */
 	public float maxU(int animFrames) {
-		return (float)(u+uvWidth + ( uvWidth * offsetU * (frames.length == 0 ? 0 : frames[animFrames % frames.length]) ))/(float)tex.getWidth();
+		return (float)(u+uvWidth + ( offsetU * (frames.length == 0 ? 0 : frames[animFrames % frames.length]) ))/(float)tex.getWidth();
 	}
 	
 	/**
 	 * The maximum V coordinate (0-1)
 	 */
 	public float maxV(int animFrames) {
-		return (float)(v+uvHeight + ( uvHeight * offsetV * (frames.length == 0 ? 0 : frames[animFrames % frames.length]) ))/(float)tex.getHeight();
+		return (float)(v+uvHeight + ( offsetV * (frames.length == 0 ? 0 : frames[animFrames % frames.length]) ))/(float)tex.getHeight();
 	}
 
 	/**
@@ -149,9 +152,12 @@ public class Sprite {
 	}
 	
 	public Sprite getSubSprite(int u, int v, int width, int height) {
-		float uScale = uvWidth/width;
-		float vScale = uvHeight/height;
-		return new Sprite(this.tex, this.u+(int)( u*uScale ), this.v+(int)( v*vScale ), (int)( width*uScale ), (int)( height*vScale ), frames, offsetU, offsetV);
+		float uScale = (float)uvWidth/(float)this.width;
+		float vScale = (float)uvHeight/(float)this.height;
+		Sprite s = new Sprite(this.tex, this.u+(int)( u*uScale ), this.v+(int)( v*vScale ), (int)( width*uScale ), (int)( height*vScale ), frames, offsetU, offsetV);
+		s.width = width;
+		s.height = height;
+		return s;
 	}
 	
 	/**

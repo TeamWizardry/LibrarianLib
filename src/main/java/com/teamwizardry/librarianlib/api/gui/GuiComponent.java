@@ -171,12 +171,12 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	}
 	
 	/**
-	 * Returns all the elements with a given tag
+	 * Returns all the elements that can be cast to the specified class
 	 */
-	public <C> List<C> getByClass(Class<C> tag) {
+	public <C> List<C> getByClass(Class<C> klass) {
 		List<C> list = new ArrayList<>();
 		for (GuiComponent<?> component : components) {
-			if(tag.isAssignableFrom(tag.getClass()))
+			if(klass.isAssignableFrom(component.getClass()))
 				list.add((C)component);
 		}
 		return list;
