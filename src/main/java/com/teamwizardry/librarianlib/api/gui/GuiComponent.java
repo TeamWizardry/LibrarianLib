@@ -126,6 +126,8 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 * @throws IllegalArgumentException if the component had a parent already
 	 */
 	public void add(GuiComponent<?> component) {
+		if(component == this)
+			throw new IllegalArgumentException("Can't add components recursivly!");
 		if(component.getParent() != null)
 			throw new IllegalArgumentException("Component already had a parent!");
 		components.add(component);

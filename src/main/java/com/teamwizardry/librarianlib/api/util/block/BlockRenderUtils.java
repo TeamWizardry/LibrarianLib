@@ -81,7 +81,7 @@ public class BlockRenderUtils {
         buf.getByteBuffer().asIntBuffer().put(index, color);
     }
 
-    public static void renderBlockToVB(IBlockState state, IBlockAccess access, BlockPos pos, BlockPos renderPos, VertexBuffer buffer, float red, float green, float blue, float brightness, float alpha, EnumFacing[] forceEnableSides) {
+    public static void renderBlockToVB(IBlockState state, IBlockAccess access, BlockPos pos, BlockPos renderPos, VertexBuffer buffer, float red, float green, float blue, float brightness, float alpha) {
         state = state.getActualState(access, pos);
 
         IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(state);
@@ -90,11 +90,6 @@ public class BlockRenderUtils {
             if (!state.shouldSideBeRendered(access, pos, enumfacing))
                 continue;
             renderQuadsToBuffer(model.getQuads(state, enumfacing, 0L), state, access, pos, renderPos, buffer, red, green, blue, brightness, alpha);
-        }
-
-        for (EnumFacing enumfacing : forceEnableSides) {
-            if (!state.shouldSideBeRendered(access, pos, enumfacing)) // only render them if they haven't been rendered already.
-                renderQuadsToBuffer(model.getQuads(state, enumfacing, 0L), state, access, pos, renderPos, buffer, red, green, blue, brightness, alpha);
         }
 
         renderQuadsToBuffer(model.getQuads(state, null, 0L), state, access, pos, renderPos, buffer, red, green, blue, brightness, alpha);

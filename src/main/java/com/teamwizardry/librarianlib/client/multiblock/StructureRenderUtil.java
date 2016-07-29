@@ -1,27 +1,25 @@
 package com.teamwizardry.librarianlib.client.multiblock;
 
-import com.teamwizardry.librarianlib.api.util.block.BlockRenderUtils;
-import com.teamwizardry.librarianlib.api.util.misc.Color;
-import com.teamwizardry.librarianlib.client.multiblock.vanillashade.Template.BlockInfo;
+import java.nio.IntBuffer;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.gen.structure.template.Template.BlockInfo;
+
 import org.lwjgl.opengl.GL11;
 
-import java.nio.IntBuffer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import com.teamwizardry.librarianlib.api.util.block.BlockRenderUtils;
+import com.teamwizardry.librarianlib.api.util.misc.Color;
 
 public class StructureRenderUtil {
 
 	private static VertexBuffer blockBuf = new VertexBuffer(50000);
 	
-	public static int[] render(Structure structure, Predicate<BlockPos> renderMask, Function<BlockPos, EnumFacing[]> sideDrawingOverrides, Color color, float brightness) {
+	public static int[] render(Structure structure, Color color, float brightness) {
 		IBlockAccess access = structure.getBlockAccess();
 		
 		blockBuf.reset();
@@ -30,31 +28,31 @@ public class StructureRenderUtil {
         // solid block first
         for (BlockInfo info : structure.blockInfos()) {
         	IBlockState state = access.getBlockState(info.pos);
-            if (state.getRenderType() == EnumBlockRenderType.INVISIBLE || !renderMask.test(info.pos))
+            if (state.getRenderType() == EnumBlockRenderType.INVISIBLE)
                 continue;
             if (state.getBlock().getBlockLayer() != BlockRenderLayer.SOLID)
             	continue;
-            BlockRenderUtils.renderBlockToVB(state, access, info.pos, info.pos.subtract(structure.getOrigin()), blockBuf, color.r, color.g, color.b, brightness, color.a, sideDrawingOverrides.apply(info.pos));
+            BlockRenderUtils.renderBlockToVB(state, access, info.pos, info.pos.subtract(structure.getOrigin()), blockBuf, color.r, color.g, color.b, brightness, color.a);
         }
 
         // cutout block next
         for (BlockInfo info : structure.blockInfos()) {
         	IBlockState state = access.getBlockState(info.pos);
-        	if (state.getRenderType() == EnumBlockRenderType.INVISIBLE || !renderMask.test(info.pos))
+        	if (state.getRenderType() == EnumBlockRenderType.INVISIBLE)
                 continue;
             if (state.getBlock().getBlockLayer() != BlockRenderLayer.CUTOUT && state.getBlock().getBlockLayer() != BlockRenderLayer.CUTOUT_MIPPED)
             	continue;
-            BlockRenderUtils.renderBlockToVB(state, access, info.pos, info.pos.subtract(structure.getOrigin()), blockBuf, color.r, color.g, color.b, brightness, color.a, sideDrawingOverrides.apply(info.pos));
+            BlockRenderUtils.renderBlockToVB(state, access, info.pos, info.pos.subtract(structure.getOrigin()), blockBuf, color.r, color.g, color.b, brightness, color.a);
         }
 
         // translucent block next
         for (BlockInfo info : structure.blockInfos()) {
         	IBlockState state = access.getBlockState(info.pos);
-        	if (state.getRenderType() == EnumBlockRenderType.INVISIBLE || !renderMask.test(info.pos))
+        	if (state.getRenderType() == EnumBlockRenderType.INVISIBLE)
                 continue;
             if (state.getBlock().getBlockLayer() != BlockRenderLayer.TRANSLUCENT)
             	continue;
-            BlockRenderUtils.renderBlockToVB(state, access, info.pos, info.pos.subtract(structure.getOrigin()), blockBuf, color.r, color.g, color.b, brightness, color.a, sideDrawingOverrides.apply(info.pos));
+            BlockRenderUtils.renderBlockToVB(state, access, info.pos, info.pos.subtract(structure.getOrigin()), blockBuf, color.r, color.g, color.b, brightness, color.a);
         }
         
         blockBuf.finishDrawing();

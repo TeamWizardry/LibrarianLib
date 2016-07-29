@@ -1,11 +1,22 @@
 package com.teamwizardry.librarianlib.client.multiblock;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Multimap;
-import com.teamwizardry.librarianlib.client.multiblock.vanillashade.Template;
-import com.teamwizardry.librarianlib.client.multiblock.vanillashade.Template.BlockInfo;
-import net.minecraft.block.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
+
+import net.minecraft.block.BlockLog;
+import net.minecraft.block.BlockPane;
+import net.minecraft.block.BlockQuartz;
+import net.minecraft.block.BlockRedstoneComparator;
+import net.minecraft.block.BlockRedstoneRepeater;
+import net.minecraft.block.BlockRedstoneWire;
+import net.minecraft.block.BlockSlab;
+import net.minecraft.block.BlockStairs;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -17,13 +28,12 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.template.Template;
+import net.minecraft.world.gen.structure.template.Template.BlockInfo;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Multimap;
 
 public class Structure {
 
@@ -49,6 +59,7 @@ public class Structure {
 
     public Rotation matchedRotation;
     protected Template template;
+    protected List<BlockInfo> templateBlocks;
     protected TemplateBlockAccess blockAccess;
     protected BlockPos origin = BlockPos.ORIGIN;
     
@@ -65,7 +76,7 @@ public class Structure {
     }
 
     public List<BlockInfo> blockInfos() {
-        return template.infos() == null ? ImmutableList.of() : template.infos();
+        return templateBlocks == null ? ImmutableList.of() : templateBlocks;
     }
 
     public TemplateBlockAccess getBlockAccess() {
@@ -109,7 +120,7 @@ public class Structure {
     public StructureMatchResult match(World world, BlockPos checkPos, Rotation rot) {
         StructureMatchResult result = new StructureMatchResult(checkPos.subtract(origin), rot, this);
         
-        List<Template.BlockInfo> infos = template.infos();
+        List<Template.BlockInfo> infos = templateBlocks;
 
         if (infos == null)
             return null;
@@ -119,7 +130,7 @@ public class Structure {
             if (info.pos.equals(origin))
                 continue;
 
-            BlockPos worldPos = Template.transformedBlockPos(info.pos.subtract(origin), Mirror.NONE, rot).add(checkPos);
+            BlockPos worldPos = this.transformedBlockPos(info.pos.subtract(origin), Mirror.NONE, rot).add(checkPos);
 
             IBlockState worldState = world.getBlockState(worldPos);
             IBlockState templateState = info.blockState;
@@ -178,6 +189,14 @@ public class Structure {
 
     protected void parse(InputStream stream) {
         template = new Template();
+        try {
+			templateBlocks = (List<BlockInfo>) ReflectionHelper.findField(Template.class, "blocks", "field_186270_a").get(template);
+		} catch (IllegalArgumentException e1) {
+			e1.printStackTrace();
+		} catch (IllegalAccessException e1) {
+			e1.printStackTrace();
+		}
+        
         blockAccess = new TemplateBlockAccess(template);
         try {
             NBTTagCompound tag = CompressedStreamTools.readCompressed(stream);
@@ -197,7 +216,7 @@ public class Structure {
             }
 
             if (paletteID >= 0) {
-                list = tag.getTagList("block", 10);
+                list = tag.getTagList("blocks", 10);
                 for (int i = 0; i < list.tagCount(); i++) {
                     NBTTagCompound compound = list.getCompoundTagAt(i);
                     if (compound.getInteger("state") == paletteID) {
@@ -212,4 +231,36 @@ public class Structure {
         }
     }
 
+    
+    private BlockPos transformedBlockPos(BlockPos pos, Mirror mirrorIn, Rotation rotationIn)
+    {
+        int i = pos.getX();
+        int j = pos.getY();
+        int k = pos.getZ();
+        boolean flag = true;
+
+        switch (mirrorIn)
+        {
+            case LEFT_RIGHT:
+                k = -k;
+                break;
+            case FRONT_BACK:
+                i = -i;
+                break;
+            default:
+                flag = false;
+        }
+
+        switch (rotationIn)
+        {
+            case COUNTERCLOCKWISE_90:
+                return new BlockPos(k, j, -i);
+            case CLOCKWISE_90:
+                return new BlockPos(-k, j, i);
+            case CLOCKWISE_180:
+                return new BlockPos(-i, j, -k);
+            default:
+                return flag ? new BlockPos(i, j, k) : pos;
+        }
+    }
 }

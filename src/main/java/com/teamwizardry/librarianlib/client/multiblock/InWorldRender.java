@@ -100,21 +100,21 @@ public enum InWorldRender {
 		StructureMatchResult match = structure.match(Minecraft.getMinecraft().theWorld, pos);
 		this.match = match;
 		rot = structure.matchedRotation;
-		structure.getBlockAccess().addOverride(structure.getOrigin(), Blocks.AIR.getDefaultState());
+		structure.getBlockAccess().setBlockState(structure.getOrigin(), Blocks.AIR.getDefaultState());
 		
 		for (BlockPos pos : match.matches) {
-			structure.getBlockAccess().addOverride(pos, Blocks.AIR.getDefaultState());
+			structure.getBlockAccess().setBlockState(pos, Blocks.AIR.getDefaultState());
 		}
 		for (BlockPos pos : match.nonAirErrors) {
-			structure.getBlockAccess().addOverride(pos, Blocks.AIR.getDefaultState());
+			structure.getBlockAccess().setBlockState(pos, Blocks.AIR.getDefaultState());
 		}
 		for (BlockPos pos : match.propertyErrors) {
-			structure.getBlockAccess().addOverride(pos, Blocks.AIR.getDefaultState());
+			structure.getBlockAccess().setBlockState(pos, Blocks.AIR.getDefaultState());
 		}
 		
-		verts = StructureRenderUtil.render(structure, (check) -> true, (check) -> EnumFacing.values(), new Color(1, 1, 1, 0.75f), 0.75f);
+//		verts = StructureRenderUtil.render(structure, (check) -> true, (check) -> EnumFacing.values(), new Color(1, 1, 1, 0.75f), 0.75f);
 		
-		structure.getBlockAccess().clearOverrides();
+		structure.getBlockAccess().resetSetBlocks();
 	}
 	
 }
