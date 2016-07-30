@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.api.gui.components;
 
-import java.util.List;
-
-import net.minecraftforge.fml.client.config.GuiUtils;
-
+import com.teamwizardry.librarianlib.api.gui.GuiComponent;
+import com.teamwizardry.librarianlib.api.gui.HandlerList;
+import com.teamwizardry.librarianlib.api.gui.Option;
+import com.teamwizardry.librarianlib.math.Vec2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -12,11 +12,7 @@ import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
-import com.teamwizardry.librarianlib.api.gui.GuiComponent;
-import com.teamwizardry.librarianlib.api.gui.HandlerList;
-import com.teamwizardry.librarianlib.api.gui.Option;
-import com.teamwizardry.librarianlib.api.util.gui.ScissorUtil;
-import com.teamwizardry.librarianlib.math.Vec2;
+import java.util.List;
 
 public class ComponentSlot extends GuiComponent<ComponentSlot> {
 
@@ -41,9 +37,8 @@ public class ComponentSlot extends GuiComponent<ComponentSlot> {
         itemRender.zLevel = 200.0F;
         
         FontRenderer font = null;
-        if (stack != null) font = stack.getItem().getFontRenderer(stack);
-        if (font == null) font = Minecraft.getMinecraft().fontRendererObj;
-        
+        font = stack.getItem().getFontRenderer(stack);
+
         itemRender.renderItemAndEffectIntoGUI(stack, pos.xi, pos.yi);
         itemRender.renderItemOverlayIntoGUI(font, stack, pos.xi, pos.yi, str);
         
@@ -64,11 +59,11 @@ public class ComponentSlot extends GuiComponent<ComponentSlot> {
         {
             if (i == 0)
             {
-                list.set(i, stack.getRarity().rarityColor + (String)list.get(i));
+                list.set(i, stack.getRarity().rarityColor + list.get(i));
             }
             else
             {
-                list.set(i, TextFormatting.GRAY + (String)list.get(i));
+                list.set(i, TextFormatting.GRAY + list.get(i));
             }
         }
 
@@ -79,12 +74,12 @@ public class ComponentSlot extends GuiComponent<ComponentSlot> {
 	}
 	
 	@FunctionalInterface
-	public static interface ISlotTextEventHandler<T> {
+	public interface ISlotTextEventHandler<T> {
 		String handle(T component, String text);
 	}
 	
 	@FunctionalInterface
-	public static interface ISlotInfoEventHandler<T> {
+	public interface ISlotInfoEventHandler<T> {
 		void handle(T component, List<String> info);
 	}
 
