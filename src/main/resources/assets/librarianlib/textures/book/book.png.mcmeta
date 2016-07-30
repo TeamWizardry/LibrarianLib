@@ -16,7 +16,8 @@
 			"checkbox_on":[27, 203, 9, 9],
 			"checkmark":[18, 212, 16, 16],
 			"slider_normal":[292, 0, 133, 37],
-			"slider_recipe":[292, 37, 133, 68]
+			"slider_recipe":[292, 37, 133, 68],
+			"button":[0, 230, 32, 32]
 		}
 	}
 }
