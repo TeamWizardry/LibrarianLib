@@ -29,8 +29,8 @@ public class PageIndex extends GuiBook {
 
         int x = 0;
         int y = 0;
-        int w = 25;
-        int h = 25;
+        int w = 32;
+        int h = 32;
         int sep = 10;
 
         for (DataNode icon : icons) {
