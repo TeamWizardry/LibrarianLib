@@ -35,6 +35,18 @@ public class Component3DView extends GuiComponent<Component3DView> {
 	public double rotX, rotY, rotZ;
     EnumMouseButton dragButton = null;
 	
+    @Override
+    public void mouseWheel(Vec2 mousePos, int direction) {
+    	if(!mouseOverThisFrame)
+    		return;
+    	if(direction > 0 && zoom < 100) {
+    		zoom *= 1.5;
+    	}
+    	if(direction < 0 && zoom > 1) {
+    		zoom /= 1.5;
+    	}
+    }
+    
 	@Override
 	public void mouseDown(Vec2 mousePos, EnumMouseButton button) {
 		super.mouseDown(mousePos, button);
@@ -85,6 +97,7 @@ public class Component3DView extends GuiComponent<Component3DView> {
 	}
 	
 	public void preDraw(Component3DView _comp_, Vec2 mousePos, float ticks) {
+		GlStateManager.pushMatrix();
         GlStateManager.translate(this.size.x / 2, this.size.y / 2, 500);
         
         double rotX = this.rotX;
@@ -137,6 +150,7 @@ public class Component3DView extends GuiComponent<Component3DView> {
 	public void postDraw(Component3DView _comp_, Vec2 mousePos, float ticks) {
 		RenderHelper.disableStandardItemLighting();
     	GlStateManager.disableRescaleNormal();
+		GlStateManager.popMatrix();
 	}
 
 }
