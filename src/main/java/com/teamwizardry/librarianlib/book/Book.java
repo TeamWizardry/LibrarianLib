@@ -61,7 +61,7 @@ public class Book {
 			return;
 		history.pop();
 		if(history.peek().gui != null)
-			Minecraft.getMinecraft().displayGuiScreen(history.peek().gui); // if a capability was saved, display that
+			Minecraft.getMinecraft().displayGuiScreen(history.peek().gui); // if a save was saved, display that
 		else
 			Minecraft.getMinecraft().displayGuiScreen(getScreen(history.pop())); // the page is pushed back on, so we have to pop it
 	}

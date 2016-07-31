@@ -1,24 +1,16 @@
 package com.teamwizardry.librarianlib.api.gui;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
-
-import org.lwjgl.input.Keyboard;
-
 import com.teamwizardry.librarianlib.api.util.misc.DefaultedMap;
 import com.teamwizardry.librarianlib.math.BoundingBox2D;
 import com.teamwizardry.librarianlib.math.Vec2;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
+import org.lwjgl.input.Keyboard;
+
+import java.util.*;
 
 /**
- * A component of a capability, such as a button, image, piece of text, list, etc.
+ * A component of a save, such as a button, image, piece of text, list, etc.
  * 
  * @param <T> The class of this component. Used for setup()
  */
