@@ -1,15 +1,7 @@
 package com.teamwizardry.librarianlib.book.gui;
 
-import java.util.List;
-
-import net.minecraftforge.fml.client.config.GuiUtils;
-
-import net.minecraft.util.ResourceLocation;
-
-import com.google.common.collect.ImmutableList;
 import com.teamwizardry.librarianlib.LibrarianLib;
 import com.teamwizardry.librarianlib.api.gui.GuiBase;
-import com.teamwizardry.librarianlib.api.gui.components.ComponentRaw;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentSprite;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentText;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentText.TextAlignH;
@@ -17,7 +9,6 @@ import com.teamwizardry.librarianlib.api.gui.components.ComponentText.TextAlignV
 import com.teamwizardry.librarianlib.api.gui.components.ComponentVoid;
 import com.teamwizardry.librarianlib.api.gui.components.mixin.ButtonMixin;
 import com.teamwizardry.librarianlib.api.gui.components.mixin.ScissorMixin;
-import com.teamwizardry.librarianlib.api.util.gui.ScissorUtil;
 import com.teamwizardry.librarianlib.api.util.misc.Color;
 import com.teamwizardry.librarianlib.api.util.misc.PathUtils;
 import com.teamwizardry.librarianlib.book.Book;
@@ -25,10 +16,11 @@ import com.teamwizardry.librarianlib.book.util.Page;
 import com.teamwizardry.librarianlib.client.Sprite;
 import com.teamwizardry.librarianlib.client.Texture;
 import com.teamwizardry.librarianlib.common.network.data.DataNode;
-import com.teamwizardry.librarianlib.math.Vec2;
+import net.minecraft.util.ResourceLocation;
 
 public class GuiBook extends GuiBase {
 
+	// TODO: LibSprites for liblib
 	public static final int PAGE_WIDTH = 120, PAGE_HEIGHT = 161;
 	public static Texture TEXTURE = new Texture(new ResourceLocation(LibrarianLib.MODID, "textures/book/book.png"));
 	public static Sprite BOOK_BACKGROUND_BORDER = TEXTURE.getSprite("background_border", 146, 180);
