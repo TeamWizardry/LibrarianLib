@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.api.gui.components;
 
+import com.google.common.collect.ImmutableList;
 import com.teamwizardry.librarianlib.api.gui.GuiComponent;
 import com.teamwizardry.librarianlib.api.gui.Option;
 import com.teamwizardry.librarianlib.api.util.misc.Color;
@@ -12,14 +13,30 @@ import java.util.List;
 import java.util.function.Function;
 
 public class ComponentText extends GuiComponent<ComponentText> {
-
+	
+	/**
+	 * The text to draw
+	 */
     public final Option<ComponentText, String> text = new Option<>("-NULL TEXT-");
+	/**
+	 * The color of the text
+	 */
     public final Option<ComponentText, Color> color = new Option<>(Color.BLACK);
-    public final Option<ComponentText, Integer> wrap = new Option<>(-1);
+	/**
+	 * The wrap width in pixels, -1 for no wrapping
+	 */
+	public final Option<ComponentText, Integer> wrap = new Option<>(-1);
+	/**
+	 * Whether to set the font renderer's unicode and bidi flags
+	 */
+	public final Option<ComponentText, Boolean> unicode = new Option<>(false);
+	/**
+	 * Whether to render a shadow behind the text
+	 */
+	public final Option<ComponentText, Boolean> shadow = new Option<>(false);
+	
     public TextAlignH horizontal;
     public TextAlignV vertical;
-
-    private boolean enableFlags = false;
 
     public ComponentText(int posX, int posY) {
         this(posX, posY, TextAlignH.LEFT, TextAlignV.TOP);
@@ -52,70 +69,61 @@ public class ComponentText extends GuiComponent<ComponentText> {
         return this;
     }
 
-    /**
-     * Will set the fontRenderer's bidi flag and unicode flag to true
-     */
-    public void enableFontFlags() {
-        enableFlags = true;
-    }
-
     @Override
     public void drawComponent(Vec2 mousePos, float partialTicks) {
         FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
-
+    
+	    String fullText = text.getValue(this);
+	    int colorHex = color.getValue(this).hexARGB();
+	    boolean enableFlags = unicode.getValue(this);
+	    boolean dropShadow = shadow.getValue(this);
+	    
         if (enableFlags) {
-            fr.setBidiFlag(true);
-            fr.setUnicodeFlag(true);
-
-
-            String val = text.getValue(this);
-
-            int x = pos.xi;
-            int y = pos.yi;
-
-            // TODO: Align properly
-            int textWidth = fr.getStringWidth(val);
-            if (horizontal == TextAlignH.CENTER) {
-                x -= textWidth / 2;
-            } else if (horizontal == TextAlignH.RIGHT) {
-                x -= textWidth;
-            }
-            if (vertical == TextAlignV.MIDDLE) {
-                y -= fr.FONT_HEIGHT / 2;
-            } else if (vertical == TextAlignV.BOTTOM) {
-                y -= fr.FONT_HEIGHT;
-            }
-
-            int wrap = this.wrap.getValue(this);
-            if (wrap == -1)
-                fr.drawString(val, x, y, color.getValue(this).hexARGB());
-            else fr.drawSplitString(val, x, y, wrap, color.getValue(this).hexARGB());
-
-
+	        fr.setBidiFlag(true);
+	        fr.setUnicodeFlag(true);
+        }
+        
+        int x = pos.xi;
+        int y = pos.yi;
+	    
+	    List<String> lines = null;
+	
+	    int wrap = this.wrap.getValue(this);
+	    if(wrap == -1) {
+	    	lines = ImmutableList.of(fullText);
+	    } else {
+		    lines = fr.listFormattedStringToWidth(fullText, wrap);
+	    }
+	    
+	    
+	    int height = lines.size() * fr.FONT_HEIGHT;
+	    if (vertical == TextAlignV.MIDDLE) {
+		    y -= height / 2;
+	    } else if (vertical == TextAlignV.BOTTOM) {
+		    y -= height;
+	    }
+	    
+	    int i = 0;
+	    for (String line : lines) {
+	    	
+	    	int lineX = x;
+		    int lineY = y + i * fr.FONT_HEIGHT;
+		
+		    int textWidth = fr.getStringWidth(line);
+		    if (horizontal == TextAlignH.CENTER) {
+			    lineX -= textWidth / 2;
+		    } else if (horizontal == TextAlignH.RIGHT) {
+			    lineX -= textWidth;
+		    }
+	    	
+	    	fr.drawString(line, lineX, lineY, colorHex, dropShadow);
+	    	
+	    	i++;
+	    }
+    
+        if (enableFlags) {
             fr.setBidiFlag(false);
             fr.setUnicodeFlag(false);
-        } else {
-            String val = text.getValue(this);
-
-            int x = pos.xi;
-            int y = pos.yi;
-
-            int textWidth = fr.getStringWidth(val);
-            if (horizontal == TextAlignH.CENTER) {
-                x -= textWidth / 2;
-            } else if (horizontal == TextAlignH.RIGHT) {
-                x -= textWidth;
-            }
-            if (vertical == TextAlignV.MIDDLE) {
-                y -= fr.FONT_HEIGHT / 2;
-            } else if (vertical == TextAlignV.BOTTOM) {
-                y -= fr.FONT_HEIGHT;
-            }
-
-            int wrap = this.wrap.getValue(this);
-            if (wrap == -1)
-                fr.drawString(val, x, y, color.getValue(this).hexARGB());
-            else fr.drawSplitString(val, x, y, wrap, color.getValue(this).hexARGB());
         }
     }
 
@@ -127,13 +135,25 @@ public class ComponentText extends GuiComponent<ComponentText> {
 
         FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
 
+	    boolean enableFlags = unicode.getValue(this);
+	    
+	    if(enableFlags) {
+		    fr.setUnicodeFlag(true);
+		    fr.setBidiFlag(true);
+	    }
+	    
         if (wrap == -1) {
             size = new Vec2(fr.getStringWidth(text.getValue(this)), fr.FONT_HEIGHT);
         } else {
             List<String> wrapped = fr.listFormattedStringToWidth(text.getValue(this), wrap);
             size = new Vec2(wrap, wrapped.size() * fr.FONT_HEIGHT);
         }
-
+	
+	    if(enableFlags) {
+		    fr.setUnicodeFlag(false);
+		    fr.setBidiFlag(false);
+	    }
+        
         return new BoundingBox2D(Vec2.ZERO, size);
     }
 

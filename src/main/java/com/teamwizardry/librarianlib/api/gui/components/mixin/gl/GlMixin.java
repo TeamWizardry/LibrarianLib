@@ -11,9 +11,7 @@ public class GlMixin {
 	
 	public static final String
 		TAG_ATTRIB = "mixin_attrib",
-		TAG_MATRIX = "mixin_matrix",
-		TAG_COLOR  = "mixin_color",
-		TAG_TRANSFORM = "mixin_transform";
+		TAG_MATRIX = "mixin_matrix";
 	
 	public static void pushPopAttrib(GuiComponent<?> component) {
 		if(!component.addTag(TAG_ATTRIB))
@@ -41,8 +39,6 @@ public class GlMixin {
 	
 	public static <T extends GuiComponent<?>> Option<T, Color> color(T component) {
 		pushPopAttrib(component);
-		if(!component.addTag(TAG_COLOR))
-			return null;
 		
 		Option<T, Color> opt = new Option<>(Color.WHITE);
 		component.preDraw.add((c, pos, partialTicks) -> {
@@ -54,13 +50,37 @@ public class GlMixin {
 	
 	public static <T extends GuiComponent<?>> Option<T, Vec3d> transform(T component) {
 		pushPopMatrix(component);
-		if(!component.addTag(TAG_TRANSFORM))
-			return null;
 		
 		Option<T, Vec3d> opt = new Option<>(Vec3d.ZERO);
 		component.preDraw.add((c, pos, partialTicks) -> {
 			Vec3d v = opt.getValue(component);
 			GlStateManager.translate(v.xCoord, v.yCoord, v.zCoord);
+		});
+		
+		return opt;
+	}
+	
+	public static <T extends GuiComponent<?>> Option<T, Vec3d> scale(T component) {
+		pushPopMatrix(component);
+		
+		Option<T, Vec3d> opt = new Option<>(Vec3d.ZERO);
+		component.preDraw.add((c, pos, partialTicks) -> {
+			Vec3d v = opt.getValue(component);
+			GlStateManager.scale(v.xCoord, v.yCoord, v.zCoord);
+		});
+		
+		return opt;
+	}
+	
+	public static <T extends GuiComponent<?>> Option<T, Vec3d> rotate(T component) {
+		pushPopMatrix(component);
+		
+		Option<T, Vec3d> opt = new Option<>(Vec3d.ZERO);
+		component.preDraw.add((c, pos, partialTicks) -> {
+			Vec3d v = opt.getValue(component);
+			GlStateManager.rotate((float)v.xCoord, 1, 0, 0);
+			GlStateManager.rotate((float)v.yCoord, 0, 1, 0);
+			GlStateManager.rotate((float)v.zCoord, 0, 0, 1);
 		});
 		
 		return opt;

@@ -1,7 +1,11 @@
 package com.teamwizardry.librarianlib.book.gui;
 
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
+import com.teamwizardry.librarianlib.api.gui.components.*;
+import com.teamwizardry.librarianlib.api.gui.components.template.SliderTemplate;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
 import net.minecraft.util.ResourceLocation;
@@ -9,12 +13,8 @@ import net.minecraft.util.ResourceLocation;
 import com.google.common.collect.ImmutableList;
 import com.teamwizardry.librarianlib.LibrarianLib;
 import com.teamwizardry.librarianlib.api.gui.GuiBase;
-import com.teamwizardry.librarianlib.api.gui.components.ComponentRaw;
-import com.teamwizardry.librarianlib.api.gui.components.ComponentSprite;
-import com.teamwizardry.librarianlib.api.gui.components.ComponentText;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentText.TextAlignH;
 import com.teamwizardry.librarianlib.api.gui.components.ComponentText.TextAlignV;
-import com.teamwizardry.librarianlib.api.gui.components.ComponentVoid;
 import com.teamwizardry.librarianlib.api.gui.components.mixin.ButtonMixin;
 import com.teamwizardry.librarianlib.api.gui.components.mixin.ScissorMixin;
 import com.teamwizardry.librarianlib.api.util.gui.ScissorUtil;
@@ -170,4 +170,19 @@ public class GuiBook extends GuiBase {
         return new ResourceLocation(book.modid, PathUtils.resolve("textures/" + PathUtils.resolve(PathUtils.parent(this.page.path), path)));
     }
 	
+    private Map<Object, ComponentSliderTray> sliders = new WeakHashMap<>();
+    
+    public void addTextSlider(Object key, int y, String text) {
+	    removeSlider(key);
+	    
+	    ComponentSliderTray slider = SliderTemplate.text(y, text);
+		sliders.put(key, slider);
+	    
+	    tips.add(slider);
+    }
+    
+    public void removeSlider(Object key) {
+    	if(sliders.containsKey(key))
+    		sliders.get(key).invalidate();
+    }
 }

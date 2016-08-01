@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.teamwizardry.librarianlib.api.LibrarianLog;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 
@@ -26,6 +27,7 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	
 	public final HandlerList<IComponentDrawEventHandler<T>> preDraw = new HandlerList<>();
 	public final HandlerList<IComponentDrawEventHandler<T>> postDraw = new HandlerList<>();
+	public final HandlerList<IComponentDrawEventHandler<T>> preChildrenDraw = new HandlerList<>();
 	
 	public final HandlerList<IComponentMouseEventHandler<T>> mouseDown = new HandlerList<>();
 	public final HandlerList<IComponentMouseEventHandler<T>> mouseUp = new HandlerList<>();
@@ -126,6 +128,10 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	 * @throws IllegalArgumentException if the component had a parent already
 	 */
 	public void add(GuiComponent<?> component) {
+		if(component == null) {
+			LibrarianLog.I.warn("You shouldn't be addinng null components!");
+			return;
+		}
 		if(component == this)
 			throw new IllegalArgumentException("Can't add components recursivly!");
 		if(component.getParent() != null)
@@ -251,6 +257,8 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 			component.draw(transformChildPos(component, mousePos), partialTicks);
 		}
 		
+		preChildrenDraw.fireAll((e) -> e.handle(thiz(), mousePos, partialTicks));
+		
 		for (GuiComponent<?> rem : remove) {
 			rem.setParent(null);
 			removeChild.fireAll((h) -> h.handle(thiz(), rem));
@@ -321,7 +329,6 @@ public abstract class GuiComponent<T extends GuiComponent<?>> implements IGuiDra
 	/**
 	 * Called when the mouse wheel is moved.
 	 * @param mousePos
-	 * @param button
 	 */
 	public void mouseWheel(Vec2 mousePos, int direction) {
 		if(!isVisible()) return;

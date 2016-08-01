@@ -15,8 +15,9 @@ import net.minecraft.util.text.TextFormatting;
 import java.util.List;
 
 public class ComponentSlot extends GuiComponent<ComponentSlot> {
-
+	
 	public final Option<ComponentSlot, ItemStack> stack = new Option<>(null);
+	public final Option<ComponentSlot, Boolean> tooltip = new Option<>(null);
 	public final HandlerList<ISlotTextEventHandler<ComponentSlot>> quantityText = new HandlerList<>();
 	public final HandlerList<ISlotInfoEventHandler<ComponentSlot>> itemInfo = new HandlerList<>();
 	
@@ -40,12 +41,12 @@ public class ComponentSlot extends GuiComponent<ComponentSlot> {
         font = stack.getItem().getFontRenderer(stack);
 
         itemRender.renderItemAndEffectIntoGUI(stack, pos.xi, pos.yi);
-        itemRender.renderItemOverlayIntoGUI(font, stack, pos.xi, pos.yi, str);
+        itemRender.renderItemOverlayIntoGUI(font == null ? Minecraft.getMinecraft().fontRendererObj : font, stack, pos.xi, pos.yi, str);
         
         itemRender.zLevel = 0.0F;
         
         
-        if(mouseOverThisFrame)
+        if(mouseOverThisFrame && tooltip.getValue(this))
         	drawTooltip(stack, mousePos);
         
         GlStateManager.disableRescaleNormal();
@@ -70,7 +71,7 @@ public class ComponentSlot extends GuiComponent<ComponentSlot> {
         itemInfo.fireAll((h) -> h.handle(this, list));
         
         FontRenderer font = stack.getItem().getFontRenderer(stack);
-        setTooltip(list, font);
+        setTooltip(list, font == null ? Minecraft.getMinecraft().fontRendererObj : font);
 	}
 	
 	@FunctionalInterface

@@ -11,13 +11,13 @@ public class SliderTemplate {
 
 	public static ComponentSliderTray text(int posY, String text) {
 		ComponentSliderTray slider = new ComponentSliderTray(0, posY, -120, 0);
-		ComponentText textComp = new ComponentText(7, 6).setup((comp)-> {
+		ComponentText textComp = new ComponentText(6, 4).setup((comp)-> {
 			comp.text.setValue(text);
 			comp.wrap.setValue(113);
-			comp.enableFontFlags();
+			comp.unicode.setValue(true);
 		});
 		
-		slider.add(new ComponentSpriteTiled(GuiBook.SLIDER_NORMAL, 6, 0, 0, 133, 10 + textComp.getLogicalSize().heightI()));
+		slider.add(new ComponentSpriteTiled(GuiBook.SLIDER_NORMAL, 6, 0, 0, 133, 8 + textComp.getLogicalSize().heightI()));
 		slider.add(textComp);
 		
 		return slider;

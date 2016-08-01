@@ -4,10 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.teamwizardry.librarianlib.api.LibrarianLog;
-import com.teamwizardry.librarianlib.book.gui.GuiBook;
-import com.teamwizardry.librarianlib.book.gui.PageIndex;
-import com.teamwizardry.librarianlib.book.gui.PageStructure;
-import com.teamwizardry.librarianlib.book.gui.PageText;
+import com.teamwizardry.librarianlib.book.gui.*;
 import com.teamwizardry.librarianlib.book.util.Page;
 import com.teamwizardry.librarianlib.client.gui.book.PageDataManager;
 import com.teamwizardry.librarianlib.common.network.data.DataNode;
@@ -22,7 +19,7 @@ public class PageHandler {
 		//error = PageError::new;
 		register("index", PageIndex::new);
 		register("text", PageText::new);
-		//register("subindex", PageSubindex::new);
+		register("subindex", PageSubindex::new);
         register("structure", PageStructure::new);
 	}
 

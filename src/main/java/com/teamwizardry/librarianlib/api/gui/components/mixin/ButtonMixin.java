@@ -59,8 +59,9 @@ public class ButtonMixin {
 		});
 		
 		component.mouseClick.add((c, pos, button) -> {
-			handler.handle();
-			return true;
+			if(state != EnumButtonState.DISABLED)
+				handler.handle();
+			return state != EnumButtonState.DISABLED;
 		});
 		
 		normal.changeState();

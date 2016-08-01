@@ -62,6 +62,8 @@ public class Structure {
     protected List<BlockInfo> templateBlocks;
     protected TemplateBlockAccess blockAccess;
     protected BlockPos origin = BlockPos.ORIGIN;
+    protected BlockPos min = BlockPos.ORIGIN;
+    protected BlockPos max = BlockPos.ORIGIN;
     
     public Structure(ResourceLocation loc) {
         InputStream stream = Structure.class.getResourceAsStream("/assets/" + loc.getResourceDomain() + "/schematics/" + loc.getResourcePath() + ".nbt");
@@ -82,10 +84,18 @@ public class Structure {
     public TemplateBlockAccess getBlockAccess() {
         return blockAccess;
     }
-
-    public BlockPos getOrigin() {
-        return origin;
-    }
+	
+	public BlockPos getOrigin() {
+		return origin;
+	}
+	
+	public BlockPos getMin() {
+		return min;
+	}
+	
+	public BlockPos getMax() {
+		return max;
+	}
 
     public void setOrigin(BlockPos pos) {
         origin = pos;
@@ -214,18 +224,33 @@ public class Structure {
                     break;
                 }
             }
-
+            
+            int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE;
+	        int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
+            
             if (paletteID >= 0) {
                 list = tag.getTagList("blocks", 10);
                 for (int i = 0; i < list.tagCount(); i++) {
                     NBTTagCompound compound = list.getCompoundTagAt(i);
+                    NBTTagList posList = compound.getTagList("pos", 3);
+                    BlockPos pos = new BlockPos(posList.getIntAt(0), posList.getIntAt(1), posList.getIntAt(2));
+                    
                     if (compound.getInteger("state") == paletteID) {
-                        NBTTagList posList = compound.getTagList("pos", 3);
-                        origin = new BlockPos(posList.getIntAt(0), posList.getIntAt(1), posList.getIntAt(2));
-                        break;
+                        origin = pos;
                     }
+	
+	                minX = Math.min(minX, pos.getX());
+	                minY = Math.min(minY, pos.getY());
+	                minZ = Math.min(minZ, pos.getZ());
+	
+	                maxX = Math.max(maxX, pos.getX());
+	                maxY = Math.max(maxY, pos.getY());
+	                maxZ = Math.max(maxZ, pos.getZ());
                 }
             }
+            
+            min = new BlockPos(minX, minY, minZ);
+	        max = new BlockPos(maxX, maxY, maxZ);
         } catch (IOException e) {
             e.printStackTrace();
         }

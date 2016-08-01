@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.api.gui.components;
 
+import com.teamwizardry.librarianlib.api.gui.components.mixin.gl.GlMixin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -7,6 +8,7 @@ import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
+import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL11;
 
 import com.teamwizardry.librarianlib.api.gui.GuiComponent;
@@ -25,11 +27,13 @@ public class ComponentStructure extends GuiComponent<ComponentStructure> {
 	public ComponentStructure(int posX, int posY, Structure structure) {
 		super(posX, posY);
 		this.structure = structure;
+		GlMixin.transform(this).func((c) -> new Vec3d(this.pos.x, this.pos.y, 0));
 		initStructure();
 	}
 
 	@Override
 	public void drawComponent(Vec2 mousePos, float partialTicks) {
+		GlStateManager.translate(this.pos.x, this.pos.y, 0);
 		Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 		if(bufferInts == null)
 			return;
@@ -41,6 +45,8 @@ public class ComponentStructure extends GuiComponent<ComponentStructure> {
 		vb.addVertexData(bufferInts);
 		
 		tessellator.draw();
+		
+		GlStateManager.translate(-this.pos.x, -this.pos.y, 0);
 	}
 	
 	public void initStructure() {
