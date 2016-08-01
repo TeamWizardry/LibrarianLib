@@ -27,7 +27,6 @@ public class SliderTemplate {
 		ComponentSliderTray slider = new ComponentSliderTray(0, posY, -120, 0);
 		slider.add(new ComponentSprite(GuiBook.SLIDER_RECIPE, 0, 0));
 		
-		
 		return slider;
 	}
 	

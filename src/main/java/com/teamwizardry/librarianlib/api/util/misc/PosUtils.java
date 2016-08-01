@@ -1,11 +1,11 @@
 package com.teamwizardry.librarianlib.api.util.misc;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Saad on 6/29/2016.
@@ -64,5 +64,39 @@ public class PosUtils {
         y = ThreadLocalRandom.current().nextDouble(y - range, y + range);
         z = ThreadLocalRandom.current().nextDouble(z - range, z + range);
         return new Vec3d(x, y, z);
+    }
+
+    public static boolean hasNeighboringBlock(World world, BlockPos origin, Block check, boolean checkDiagonals, boolean checkVertically) {
+        if (world.getBlockState(origin.south()).getBlock() == check) return true;
+        else if (world.getBlockState(origin.north()).getBlock() == check) return true;
+        else if (world.getBlockState(origin.east()).getBlock() == check) return true;
+        else if (world.getBlockState(origin.west()).getBlock() == check) return true;
+        else if (checkVertically) {
+
+            if (world.getBlockState(origin.down()).getBlock() == check) return true;
+            else if (world.getBlockState(origin.up()).getBlock() == check) return true;
+
+            else if (checkDiagonals) {
+
+                if (world.getBlockState(origin.down().south()).getBlock() == check) return true;
+                else if (world.getBlockState(origin.down().north()).getBlock() == check) return true;
+                else if (world.getBlockState(origin.down().east()).getBlock() == check) return true;
+                else if (world.getBlockState(origin.down().west()).getBlock() == check) return true;
+
+                if (world.getBlockState(origin.up().south()).getBlock() == check) return true;
+                else if (world.getBlockState(origin.up().north()).getBlock() == check) return true;
+                else if (world.getBlockState(origin.up().east()).getBlock() == check) return true;
+                else if (world.getBlockState(origin.up().west()).getBlock() == check) return true;
+            }
+        }
+
+        if (checkDiagonals) {
+            if (world.getBlockState(origin.south().west()).getBlock() == check) return true;
+            else if (world.getBlockState(origin.north().west()).getBlock() == check) return true;
+            else if (world.getBlockState(origin.south().east()).getBlock() == check) return true;
+            else if (world.getBlockState(origin.north().east()).getBlock() == check) return true;
+
+        }
+        return false;
     }
 }
