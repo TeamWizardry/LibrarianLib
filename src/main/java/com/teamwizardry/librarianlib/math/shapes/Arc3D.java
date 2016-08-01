@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.math.shapes;
 
-import com.teamwizardry.librarianlib.api.IShape3D;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;

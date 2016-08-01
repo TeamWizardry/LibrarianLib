@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.math.shapes;
 
-import com.teamwizardry.librarianlib.api.IShape3D;
 import com.teamwizardry.librarianlib.math.Matrix4;
 import net.minecraft.util.math.Vec3d;
 

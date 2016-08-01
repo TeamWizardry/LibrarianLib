@@ -1,18 +1,16 @@
 package com.teamwizardry.librarianlib.book.gui;
 
-import com.teamwizardry.librarianlib.api.gui.GuiComponent;
-import com.teamwizardry.librarianlib.api.gui.components.*;
-import com.teamwizardry.librarianlib.api.gui.components.mixin.ButtonMixin;
+import com.teamwizardry.librarianlib.gui.GuiComponent;
+import com.teamwizardry.librarianlib.gui.components.*;
+import com.teamwizardry.librarianlib.gui.mixin.ButtonMixin;
 import com.teamwizardry.librarianlib.book.Book;
 import com.teamwizardry.librarianlib.book.util.Link;
 import com.teamwizardry.librarianlib.book.util.Page;
-import com.teamwizardry.librarianlib.common.network.data.DataNode;
-import com.teamwizardry.librarianlib.common.network.data.DataNodeParsers;
-import com.teamwizardry.librarianlib.math.Vec2;
+import com.teamwizardry.librarianlib.data.DataNode;
+import com.teamwizardry.librarianlib.data.DataNodeParsers;
+import com.teamwizardry.librarianlib.math.Vec2d;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-
-import java.util.List;
 
 import static com.sun.tools.internal.xjc.reader.Ring.add;
 
@@ -68,7 +66,7 @@ public class PageSubindex extends GuiBook {
 		}
 		
 		if(icon != null) {
-			icon.setPos(new Vec2(0, 2));
+			icon.setPos(new Vec2d(0, 2));
 			comp.add(icon);
 		}
 		

@@ -1,21 +1,19 @@
 package com.teamwizardry.librarianlib.book.gui;
 
-import com.teamwizardry.librarianlib.api.gui.components.ComponentGrid;
-import com.teamwizardry.librarianlib.api.gui.components.ComponentSliderTray;
-import com.teamwizardry.librarianlib.api.gui.components.ComponentSprite;
-import com.teamwizardry.librarianlib.api.gui.components.mixin.ButtonMixin;
-import com.teamwizardry.librarianlib.api.gui.components.template.SliderTemplate;
-import com.teamwizardry.librarianlib.api.util.misc.Color;
+import com.teamwizardry.librarianlib.gui.components.ComponentGrid;
+import com.teamwizardry.librarianlib.gui.components.ComponentSliderTray;
+import com.teamwizardry.librarianlib.gui.components.ComponentSprite;
+import com.teamwizardry.librarianlib.gui.mixin.ButtonMixin;
+import com.teamwizardry.librarianlib.util.Color;
 import com.teamwizardry.librarianlib.book.Book;
 import com.teamwizardry.librarianlib.book.util.Link;
 import com.teamwizardry.librarianlib.book.util.Page;
-import com.teamwizardry.librarianlib.client.Sprite;
-import com.teamwizardry.librarianlib.common.network.data.DataNode;
+import com.teamwizardry.librarianlib.sprite.Sprite;
+import com.teamwizardry.librarianlib.data.DataNode;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class PageIndex extends GuiBook {
 

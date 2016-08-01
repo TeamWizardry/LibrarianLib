@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.book;
 
-import com.teamwizardry.librarianlib.api.LibrarianLog;
-import com.teamwizardry.librarianlib.api.util.misc.Color;
+import com.teamwizardry.librarianlib.LibrarianLog;
+import com.teamwizardry.librarianlib.book.util.PageHandler;
 import com.teamwizardry.librarianlib.book.gui.GuiBook;
 import com.teamwizardry.librarianlib.book.util.Page;
 import net.minecraft.client.Minecraft;

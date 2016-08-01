@@ -1,10 +1,8 @@
 package com.teamwizardry.librarianlib.book.gui;
 
-import com.teamwizardry.librarianlib.api.gui.GuiStyle;
-import com.teamwizardry.librarianlib.api.gui.components.*;
-import com.teamwizardry.librarianlib.api.gui.components.mixin.gl.GlMixin;
-import com.teamwizardry.librarianlib.api.gui.components.template.ButtonTemplate;
-import com.teamwizardry.librarianlib.math.Vec2;
+import com.teamwizardry.librarianlib.gui.components.*;
+import com.teamwizardry.librarianlib.gui.mixin.gl.GlMixin;
+import com.teamwizardry.librarianlib.math.Vec2d;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Blocks;
@@ -12,12 +10,12 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-import com.teamwizardry.librarianlib.api.util.misc.Color;
+import com.teamwizardry.librarianlib.util.Color;
 import com.teamwizardry.librarianlib.book.Book;
 import com.teamwizardry.librarianlib.book.util.Page;
-import com.teamwizardry.librarianlib.client.multiblock.Structure;
-import com.teamwizardry.librarianlib.common.network.data.DataNode;
-import com.teamwizardry.librarianlib.common.network.data.DataNodeParsers;
+import com.teamwizardry.librarianlib.structure.Structure;
+import com.teamwizardry.librarianlib.data.DataNode;
+import com.teamwizardry.librarianlib.data.DataNodeParsers;
 import net.minecraft.world.gen.structure.template.Template;
 import org.lwjgl.opengl.GL11;
 
@@ -57,7 +55,7 @@ public class PageStructure extends GuiBook {
 		tiled.preDraw.add((c, pos, ticks) -> GlStateManager.depthFunc(GL11.GL_ALWAYS));
 		tiled.preChildrenDraw.add((c, pos, ticks) -> GlStateManager.depthFunc(GL11.GL_LEQUAL));
 		
-		tiled.setSize(new Vec2(
+		tiled.setSize(new Vec2d(
 			(structure.getMax().getX()-structure.getMin().getX()+1)*hudScale + 12,
 			(structure.getMax().getY()-structure.getMin().getY()+1)*hudScale + 12
 		));
