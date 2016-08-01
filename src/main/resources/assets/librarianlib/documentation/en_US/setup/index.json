@@ -1,0 +1,31 @@
+{
+	"title":"Setup",
+	"subindex":[
+		{
+			"text":"Creating a Book",
+			"item":"minecraft:anvil",
+			"link":"creating"
+		},
+		{
+			"text":"Opening your book",
+			"item":"minecraft:book",
+			"link":"opening"
+		},
+		{
+			"text":"Your first page",
+			"item":"minecraft:writable_book",
+			"link":"first_page"
+		},
+		{
+			"text":"Other stuff",
+			"item":"minecraft:paper",
+			"link":"other"
+		}
+	],
+	"pages":[
+		{
+			"type":"subindex",
+			"page":0
+		}
+	]
+}

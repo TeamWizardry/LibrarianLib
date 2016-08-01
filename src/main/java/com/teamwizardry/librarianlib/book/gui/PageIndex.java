@@ -24,9 +24,8 @@ public class PageIndex extends GuiBook {
 
         List<DataNode> icons = pageData.get("icons").asList();
 
-        Color normalColor = Color.BLACK;
-        Color hoverColor = Color.rgb(0x00BFFF);
-        // TODO: pressed color not working
+        Color normalColor = Color.rgb(Integer.parseInt(pageData.get("normalColor").asStringOr("0"), 16));
+        Color hoverColor = Color.rgb(Integer.parseInt(pageData.get("hoverColor").asStringOr("00BFFF"), 16));
         Color pressColor = Color.rgb(0x191970);
 	
 	    int size = 32;
@@ -34,12 +33,16 @@ public class PageIndex extends GuiBook {
 	    ComponentGrid grid = new ComponentGrid(0, 0, size+sep, size+sep, 3);
         
         for (DataNode icon : icons) {
-
+	
+	        Color iconNormalColor = icon.get("normalColor").exists() ? Color.rgb(Integer.parseInt(icon.get("normalColor").asString(), 16)) : normalColor;
+	        Color iconHoverColor = icon.get("hoverColor").exists() ? Color.rgb(Integer.parseInt(icon.get("hoverColor").asString(), 16)) : hoverColor;
+	        
+	        
         	ComponentSprite sprite = new ComponentSprite(new Sprite(new ResourceLocation(icon.get("icon").asStringOr("missingno"))), 0, 0, size, size);
 	
 	        MutableObject<ComponentSliderTray> s = new MutableObject<>(null);
 	        new ButtonMixin(sprite,
-		        () -> sprite.color.setValue(normalColor), () -> sprite.color.setValue(hoverColor), () -> sprite.color.setValue(pressColor),
+		        () -> sprite.color.setValue(iconNormalColor), () -> sprite.color.setValue(iconHoverColor), () -> sprite.color.setValue(pressColor),
 		        () -> {
 			        Link l = new Link(icon.get("link").asStringOr("/"));
 			        openPageRelative(l.path, l.page);

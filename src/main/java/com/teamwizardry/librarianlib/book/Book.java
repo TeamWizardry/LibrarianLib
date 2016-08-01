@@ -26,9 +26,6 @@ public class Book {
 	 * The history of the pages used to get to the current page. The top element is the current page.
 	 */
 	public final Stack<Page> history = new Stack<>();
-	protected Color color;
-
-	{/* getters and setters, ignore for the most part */}
 	
 	public Book(String modid) {
 		this.modid = modid;
@@ -47,8 +44,11 @@ public class Book {
 			scr = PageHandler.create(this, page);
 		}
 		page.gui = scr;
-		if(history.empty() || !history.peek().path.equals(page.path)) // don't push duplicate pages
-			history.push(page);
+		if(history.empty())
+			history.push(new Page("/", 0));
+		if(history.peek().path.equals(page.path))
+			history.pop();
+		history.push(page);
 		return scr;
 	}
 	
@@ -68,14 +68,6 @@ public class Book {
 	
 	public void display(Page page) {
 		Minecraft.getMinecraft().displayGuiScreen(getScreen(page));
-	}
-	
-	public Color getColor() {
-		return color;
-	}
-
-	public void setColor(Color color) {
-		this.color = color;
 	}
 	
 	

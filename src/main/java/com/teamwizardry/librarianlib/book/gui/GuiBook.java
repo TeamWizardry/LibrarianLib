@@ -146,7 +146,7 @@ public class GuiBook extends GuiBase {
 		components.add(pageBG);
 		components.add(border);
 		components.add(titleBar);
-		if(book.history.size() > 1 || pageData.get("hasNext").exists() || pageData.get("hasPrev").exists())
+		if(book.history.size() > 0 || pageData.get("hasNext").exists() || pageData.get("hasPrev").exists())
 			components.add(navBar);
 		components.add(contents);
 		

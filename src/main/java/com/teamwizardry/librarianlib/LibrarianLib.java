@@ -1,7 +1,11 @@
 package com.teamwizardry.librarianlib;
 
+import com.teamwizardry.librarianlib.api.Const;
+import com.teamwizardry.librarianlib.api.util.misc.Color;
+import com.teamwizardry.librarianlib.book.Book;
 import com.teamwizardry.librarianlib.common.network.network.PacketHandler;
 import com.teamwizardry.librarianlib.common.proxy.LibCommonProxy;
+import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -34,8 +38,16 @@ public class LibrarianLib {
         logger = event.getModLog();
         proxy.preInit();
         PacketHandler.INSTANCE.getClass(); // load the class
+	    
+        if(Const.isDev)
+            ClientCommandHandler.instance.registerCommand(new ExampleBookCommand());
+	
+	    guide = new Book(MODID);
     }
-
+	
+	public static Book guide;
+	
+    
     @Mod.EventHandler
     public void init(FMLInitializationEvent e) {
     }
