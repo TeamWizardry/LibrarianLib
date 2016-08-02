@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib;
 
 import com.teamwizardry.librarianlib.book.Book;
+import com.teamwizardry.librarianlib.common.Config;
 import com.teamwizardry.librarianlib.network.PacketHandler;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -34,6 +35,7 @@ public class LibrarianLib {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         logger = event.getModLog();
+        Config.initConfig(event.getSuggestedConfigurationFile());
         proxy.preInit();
         PacketHandler.INSTANCE.getClass(); // load the class
 

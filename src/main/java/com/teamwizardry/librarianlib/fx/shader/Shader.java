@@ -7,13 +7,8 @@ import com.teamwizardry.librarianlib.fx.shader.uniforms.UniformType;
 
 import org.lwjgl.opengl.GL20;
 
-public abstract class Shader {
-    public static final Shader NONE = new Shader("", "") {
-        @Override
-        public void initUniforms() {}
-		@Override
-		public void uniformDefaults() {}
-    };
+public class Shader {
+    public static final Shader NONE = new Shader(null, null);
 
     public FloatTypes.Float time;
 
@@ -58,9 +53,13 @@ public abstract class Shader {
         initUniforms();
     }
 
-    public abstract void initUniforms();
+    public void initUniforms() {
+        //NO-OP
+    }
     
-    public abstract void uniformDefaults();
+    public void uniformDefaults() {
+        //NO-OP
+    }
     
     public String getVert() {
         return vert;

@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.teamwizardry.librarianlib.common.Config;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -96,7 +97,7 @@ public final class ShaderHelper implements IResourceManagerReloadListener {
     }
 
     public static boolean useShaders() {
-          return OpenGlHelper.shadersSupported;
+        return Config.shaders && OpenGlHelper.shadersSupported;
     }
 
     private static int createProgram(Shader shader) {
@@ -236,12 +237,6 @@ public final class ShaderHelper implements IResourceManagerReloadListener {
         }
 
         return source.toString();
-    }
-
-    @SubscribeEvent
-    public void reloadShaders(LivingJumpEvent event) {
-        if (!event.getEntity().worldObj.isRemote)
-            return;
     }
 
     @Override
