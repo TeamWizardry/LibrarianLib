@@ -12,8 +12,6 @@ import com.teamwizardry.librarianlib.math.Vec2d;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 
-import static com.sun.tools.internal.xjc.reader.Ring.add;
-
 /**
  * Created by TheCodeWarrior on 7/31/16.
  */

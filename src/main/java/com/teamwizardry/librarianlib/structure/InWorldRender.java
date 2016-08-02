@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.structure;
 
-import com.teamwizardry.librarianlib.structure.vanillashade.Template;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -11,6 +10,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.gen.structure.template.Template;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;
@@ -78,7 +78,7 @@ public enum InWorldRender {
 	}
 	
 	private BlockPos worldToStructure(BlockPos pos) {
-		return Template.inverseTransformedBlockPos(pos.subtract(this.pos), Mirror.NONE, match.rotation).add(structure.origin);
+		return inverseTransformedBlockPos(pos.subtract(this.pos), Mirror.NONE, match.rotation).add(structure.origin);
 	}
 	
 	public void unsetStructure() {
@@ -115,4 +115,69 @@ public enum InWorldRender {
 		structure.getBlockAccess().resetSetBlocks();
 	}
 	
+	
+	private static BlockPos transformedBlockPos(BlockPos pos, Mirror mirrorIn, Rotation rotationIn)
+	{
+		int i = pos.getX();
+		int j = pos.getY();
+		int k = pos.getZ();
+		boolean flag = true;
+		
+		switch (mirrorIn)
+		{
+			case LEFT_RIGHT:
+				k = -k;
+				break;
+			case FRONT_BACK:
+				i = -i;
+				break;
+			default:
+				flag = false;
+		}
+		
+		switch (rotationIn)
+		{
+			case COUNTERCLOCKWISE_90:
+				return new BlockPos(k, j, -i);
+			case CLOCKWISE_90:
+				return new BlockPos(-k, j, i);
+			case CLOCKWISE_180:
+				return new BlockPos(-i, j, -k);
+			default:
+				return flag ? new BlockPos(i, j, k) : pos;
+		}
+	}
+	
+	private static BlockPos inverseTransformedBlockPos(BlockPos pos, Mirror mirrorIn, Rotation rotationIn)
+	{
+		int i = pos.getX();
+		int j = pos.getY();
+		int k = pos.getZ();
+		
+		switch (rotationIn)
+		{
+			case COUNTERCLOCKWISE_90:
+				i = -i;
+			case CLOCKWISE_90:
+				k = -k;
+			case CLOCKWISE_180:
+				i = -i;
+				k = -k;
+			default:
+				
+		}
+		
+		
+		switch (mirrorIn)
+		{
+			case LEFT_RIGHT:
+				k = -k;
+				break;
+			case FRONT_BACK:
+				i = -i;
+				break;
+		}
+		
+		return new BlockPos(i, j, k);
+	}
 }
