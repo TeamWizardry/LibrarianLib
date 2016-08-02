@@ -23,7 +23,7 @@ public class PageSubindex extends GuiBook {
 		
 		int indexPage = pageData.get("page").asInt();
 		
-		DataNode items = rootData.get("subindex");
+		DataNode items = pageData.get("index").isString() ? rootData.get("subindexes").get(pageData.get("index").asString()) : rootData.get("subindex");
 		
 		int begin = indexPage * itemsPerPage;
 		

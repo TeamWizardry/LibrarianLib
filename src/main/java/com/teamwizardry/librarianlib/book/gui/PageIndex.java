@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.book.gui;
 
+import com.teamwizardry.librarianlib.data.DataNodeParsers;
 import com.teamwizardry.librarianlib.gui.components.ComponentGrid;
 import com.teamwizardry.librarianlib.gui.components.ComponentSliderTray;
 import com.teamwizardry.librarianlib.gui.components.ComponentSprite;
@@ -36,7 +37,7 @@ public class PageIndex extends GuiBook {
 	        Color iconHoverColor = icon.get("hoverColor").exists() ? Color.rgb(Integer.parseInt(icon.get("hoverColor").asString(), 16)) : hoverColor;
 	        
 	        
-        	ComponentSprite sprite = new ComponentSprite(new Sprite(new ResourceLocation(icon.get("icon").asStringOr("missingno"))), 0, 0, size, size);
+        	ComponentSprite sprite = new ComponentSprite(DataNodeParsers.parseSprite(icon.get("icon")), 0, 0, size, size);
 	
 	        MutableObject<ComponentSliderTray> s = new MutableObject<>(null);
 	        new ButtonMixin(sprite,
