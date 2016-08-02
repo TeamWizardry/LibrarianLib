@@ -16,6 +16,18 @@ public class Vec2d {
     public final int xi, yi;
     public double x, y;
 
+    //=============================================================================
+	{/* Simple math */}
+
+    //=============================================================================
+	{/* Advanced math */}
+
+    //=============================================================================
+    {/* Static */}
+    
+    //=============================================================================
+	{/* Boring object stuff */}
+    
     public Vec2d(double x, double y) {
         this.x = x;
         this.y = y;
@@ -25,6 +37,15 @@ public class Vec2d {
         this.yi = (int) Math.floor(y);
     }
 
+    public static Vec2d min(Vec2d a, Vec2d b) {
+    	return new Vec2d(Math.min(a.x, b.x), Math.min(a.y, b.y));
+    }
+	//=============================================================================
+    
+    public static Vec2d max(Vec2d a, Vec2d b) {
+    	return new Vec2d(Math.max(a.x, b.x), Math.max(a.y, b.y));
+    }
+
     public Vec2d floor() {
         return new Vec2d(Math.floor(x), Math.floor(y));
     }
@@ -32,19 +53,15 @@ public class Vec2d {
     public Vec2d ceil() {
         return new Vec2d(Math.ceil(x), Math.ceil(y));
     }
-    
+
     public Vec2d setX(double value) {
     	return new Vec2d(value, y);
     }
-    
+
     public Vec2d setY(double value) {
     	return new Vec2d(x, value);
     }
 
-    //=============================================================================
-	{/* Simple math */}
-	//=============================================================================
-    
     public Vec2d add(Vec2d other) {
         return new Vec2d(x + other.x, y + other.y);
     }
@@ -52,10 +69,11 @@ public class Vec2d {
     public Vec2d add(double otherX, double otherY) {
         return new Vec2d(x + otherX, y + otherY);
     }
-
+    
     public Vec2d sub(Vec2d other) {
         return new Vec2d(x - other.x, y - other.y);
     }
+	//=============================================================================
 
     public Vec2d sub(double otherX, double otherY) {
         return new Vec2d(x - otherX, y - otherY);
@@ -73,23 +91,20 @@ public class Vec2d {
         return new Vec2d(x * amount, y * amount);
     }
     
-    //=============================================================================
-	{/* Advanced math */}
-	//=============================================================================
-
     public double dot(Vec2d point) {
         return (x * point.x) + (y * point.y);
     }
-
+    
     public double length() {
         return Math.sqrt((x * x) + (y * y));
     }
-
+    //=============================================================================
+    
     public Vec2d normalize() {
         double norm = length();
         return new Vec2d(x / norm, y / norm);
     }
-
+    
     public double squareDist(Vec2d vec) {
         double d0 = vec.x - x;
         double d1 = vec.y - y;
@@ -100,21 +115,6 @@ public class Vec2d {
     	other = other.normalize();
     	return other.mul(this.dot(other));
     }
-    
-    //=============================================================================
-    {/* Static */}
-    //=============================================================================
-    
-    public static Vec2d min(Vec2d a, Vec2d b) {
-    	return new Vec2d(Math.min(a.x, b.x), Math.min(a.y, b.y));
-    }
-    
-    public static Vec2d max(Vec2d a, Vec2d b) {
-    	return new Vec2d(Math.max(a.x, b.x), Math.max(a.y, b.y));
-    }
-    
-    //=============================================================================
-	{/* Boring object stuff */}
 	//=============================================================================
 
 	@Override
@@ -140,9 +140,7 @@ public class Vec2d {
 		Vec2d other = (Vec2d) obj;
 		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
 			return false;
-		if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
-			return false;
-		return true;
+		return Double.doubleToLongBits(y) == Double.doubleToLongBits(other.y);
 	}
 	
 	@Override

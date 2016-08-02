@@ -5,13 +5,10 @@ import com.teamwizardry.librarianlib.gui.GuiComponent;
 
 public class ButtonMixin {
 	public static final String TAG = "HasButtonMixin";
-	
-	
-	private IStateChanger normal, disabled, hover;
-	private IClickHandler handler;
-	
 	public final GuiComponent<?> component;
 	public EnumButtonState state = EnumButtonState.NORMAL;
+	private IStateChanger normal, disabled, hover;
+	private IClickHandler handler;
 	
 	
 	public ButtonMixin(GuiComponent<?> component,
@@ -67,17 +64,17 @@ public class ButtonMixin {
 		normal.changeState();
 	}
 	
-	public static enum EnumButtonState {
+	public enum EnumButtonState {
 		NORMAL, DISABLED, HOVER
 	}
 	
 	@FunctionalInterface
-	public static interface IStateChanger {
+	public interface IStateChanger {
 		void changeState();
 	}
 	
 	@FunctionalInterface
-	public static interface IClickHandler {
+	public interface IClickHandler {
 		void handle();
 	}
 }

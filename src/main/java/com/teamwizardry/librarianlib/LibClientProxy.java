@@ -4,6 +4,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.teamwizardry.librarianlib.gui.GuiTickHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
@@ -28,7 +29,8 @@ public class LibClientProxy extends LibCommonProxy implements IResourceManagerRe
 	@Override
 	public void preInit() {
 		super.preInit();
-		
+
+		MinecraftForge.EVENT_BUS.register(new GuiTickHandler());
 		MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(ScissorUtil.INSTANCE);
         LibShaders.INSTANCE.getClass();// load the class

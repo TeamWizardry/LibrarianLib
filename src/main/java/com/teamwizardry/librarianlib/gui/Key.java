@@ -5,6 +5,10 @@ import java.util.Map;
 
 public class Key {
 
+	/**
+	 * Maps a keycode to a key
+	 */
+	private static Map<Integer, Key> pool = new HashMap<>();
 	public final char character;
 	public final int keyCode;
 	
@@ -12,11 +16,6 @@ public class Key {
 		this.character = character;
 		this.keyCode = keyCode;
 	}
-	
-	/**
-	 * Maps a keycode to a key
-	 */
-	private static Map<Integer, Key> pool = new HashMap<>();
 	
 	public static Key get(char character, int keyCode) {
 		if(!pool.containsKey(keyCode))
@@ -41,9 +40,7 @@ public class Key {
 		if (getClass() != obj.getClass())
 			return false;
 		Key other = (Key) obj;
-		if (keyCode != other.keyCode)
-			return false;
-		return true;
+		return keyCode == other.keyCode;
 	}
 	
 }
