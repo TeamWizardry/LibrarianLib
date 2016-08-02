@@ -1,12 +1,11 @@
 package com.teamwizardry.librarianlib.gui.components;
 
-import net.minecraft.client.renderer.GlStateManager;
-
 import com.teamwizardry.librarianlib.gui.GuiComponent;
 import com.teamwizardry.librarianlib.gui.HandlerList;
 import com.teamwizardry.librarianlib.gui.mixin.ScissorMixin;
 import com.teamwizardry.librarianlib.math.BoundingBox2D;
 import com.teamwizardry.librarianlib.math.Vec2d;
+import net.minecraft.client.renderer.GlStateManager;
 
 public class ComponentScrolledView extends GuiComponent<ComponentScrolledView> {
 
@@ -62,7 +61,7 @@ public class ComponentScrolledView extends GuiComponent<ComponentScrolledView> {
 	}
 
 	@FunctionalInterface
-	public static interface IScrollEvent<T> {
+	public interface IScrollEvent<T> {
 		Vec2d handle(T component, Vec2d oldScroll, Vec2d newScroll);
 	}
 	

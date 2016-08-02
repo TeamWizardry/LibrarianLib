@@ -7,7 +7,7 @@ public enum LibShaders {
 	
 	public static Shader HUE;
 	
-	private LibShaders() {
+	LibShaders() {
 		initShaders();
 	}
 	
@@ -18,11 +18,11 @@ public enum LibShaders {
 	
 	public static class HueShader extends Shader {
 
+		public FloatTypes.Float hue;
+
 		public HueShader(String vert, String frag) {
 			super(vert, frag);
 		}
-
-		public FloatTypes.Float hue;
 		
 		@Override
 		public void initUniforms() {

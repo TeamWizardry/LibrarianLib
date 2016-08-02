@@ -60,17 +60,17 @@ public class HandlerList<T> {
 	}
 	
 	@FunctionalInterface
-	public static interface IHandlerCaller<T> {
+	public interface IHandlerCaller<T> {
 		void call(T handler);
 	}
 	
 	@FunctionalInterface
-	public static interface ICancelableHandlerCaller<T> {
+	public interface ICancelableHandlerCaller<T> {
 		boolean call(T handler);
 	}
 	
 	@FunctionalInterface
-	public static interface IModifierHandlerCaller<V, T> {
+	public interface IModifierHandlerCaller<V, T> {
 		V call(T handler, V value);
 	}
 }

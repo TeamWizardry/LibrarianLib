@@ -1,17 +1,16 @@
 package com.teamwizardry.librarianlib.sprite;
 
+import com.google.common.collect.ImmutableMap;
+import com.teamwizardry.librarianlib.sprite.SpritesMetadataSection.SpriteDefinition;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.ResourceLocation;
+
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
-
-import com.google.common.collect.ImmutableMap;
-import com.teamwizardry.librarianlib.sprite.SpritesMetadataSection.SpriteDefinition;
 
 /**
  * This class represents a texture and it's size. It is mostly used to create {@link Sprite}
@@ -20,10 +19,9 @@ import com.teamwizardry.librarianlib.sprite.SpritesMetadataSection.SpriteDefinit
 public class Texture {
 
 	public static List<WeakReference<Texture>> textures = new ArrayList<>();
-	
+	private final ResourceLocation loc;
 	private int width;
 	private int height;
-	private final ResourceLocation loc;
 	private SpritesMetadataSection section;
 	private Map<String, Sprite> sprites;
 	
@@ -42,7 +40,7 @@ public class Texture {
 		this.sprites = new HashMap<>();
 		this.width = this.height = 16;
 		try {
-			this.section = (SpritesMetadataSection) Minecraft.getMinecraft().getResourceManager().getResource(loc).getMetadata("spritesheet");
+			this.section = Minecraft.getMinecraft().getResourceManager().getResource(loc).getMetadata("spritesheet");
 			if(section != null) {
 				this.width = section.width;
 				this.height = section.height;

@@ -1,17 +1,16 @@
 package com.teamwizardry.librarianlib.gui.components;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-
 import com.teamwizardry.librarianlib.gui.GuiComponent;
 import com.teamwizardry.librarianlib.gui.HandlerList;
 import com.teamwizardry.librarianlib.gui.Option;
-import com.teamwizardry.librarianlib.util.Color;
-import com.teamwizardry.librarianlib.sprite.TextWrapper;
 import com.teamwizardry.librarianlib.math.Vec2d;
+import com.teamwizardry.librarianlib.sprite.TextWrapper;
+import com.teamwizardry.librarianlib.util.Color;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ComponentMarkup extends GuiComponent<ComponentMarkup> {
 	
@@ -67,14 +66,14 @@ public class ComponentMarkup extends GuiComponent<ComponentMarkup> {
 	}
 	
 	public static class MarkupElement {
-		public int posY;
 		public final Option<Boolean, String> format = new Option<>("");
 		public final Option<Boolean, Color> color = new Option<>(Color.BLACK);
 		public final Option<Boolean, Boolean> dropShadow = new Option<>(false);
 		public final HandlerList<IClickHandler> click = new HandlerList<>();
+		public int posY;
 		public List<String> lines = new ArrayList<>();
-		private int[] lengths;
 		public int firstLineOffset;
+		private int[] lengths;
 		
 		public MarkupElement(int posY, int firstLineOffset, int width, String text) {
 			TextWrapper.wrap(Minecraft.getMinecraft().fontRendererObj, lines, text, firstLineOffset, width);
@@ -124,7 +123,7 @@ public class ComponentMarkup extends GuiComponent<ComponentMarkup> {
 		}
 
 		@FunctionalInterface
-		public static interface IClickHandler {
+		public interface IClickHandler {
 			void click();
 		}
 	}
