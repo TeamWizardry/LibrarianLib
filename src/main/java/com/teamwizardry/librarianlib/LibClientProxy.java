@@ -1,25 +1,23 @@
 package com.teamwizardry.librarianlib;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.teamwizardry.librarianlib.fx.shader.LibShaders;
+import com.teamwizardry.librarianlib.fx.shader.ShaderHelper;
 import com.teamwizardry.librarianlib.gui.GuiTickHandler;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
-
+import com.teamwizardry.librarianlib.sprite.SpritesMetadataSection;
+import com.teamwizardry.librarianlib.sprite.SpritesMetadataSectionSerializer;
+import com.teamwizardry.librarianlib.sprite.Texture;
+import com.teamwizardry.librarianlib.util.ScissorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.client.resources.data.MetadataSerializer;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
-import com.teamwizardry.librarianlib.util.ScissorUtil;
-import com.teamwizardry.librarianlib.sprite.SpritesMetadataSection;
-import com.teamwizardry.librarianlib.sprite.SpritesMetadataSectionSerializer;
-import com.teamwizardry.librarianlib.sprite.Texture;
-import com.teamwizardry.librarianlib.fx.shader.LibShaders;
-import com.teamwizardry.librarianlib.fx.shader.ShaderHelper;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Prefixed with Lib so code suggestion in dependent projects doesn't suggest it
@@ -35,11 +33,10 @@ public class LibClientProxy extends LibCommonProxy implements IResourceManagerRe
         MinecraftForge.EVENT_BUS.register(ScissorUtil.INSTANCE);
         LibShaders.INSTANCE.getClass();// load the class
         ShaderHelper.initShaders();
-        
 		try {
 			MetadataSerializer s = (MetadataSerializer)ReflectionHelper.findField(Minecraft.class, "metadataSerializer_", "field_110452_an").get(Minecraft.getMinecraft());
 	        s.registerMetadataSectionType(new SpritesMetadataSectionSerializer(), SpritesMetadataSection.class);
-		} catch (IllegalArgumentException | IllegalAccessException e) {
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchMethodError e) {
 			e.printStackTrace();
 		}
         
