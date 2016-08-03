@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.ragdoll.line;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.teamwizardry.librarianlib.math.Vec2;
+import com.teamwizardry.librarianlib.math.Vec2d;
 
 public class Rope {
 
@@ -14,12 +14,12 @@ public class Rope {
 	public int solvePasses = 3;
 	public int middles;
 	
-	public Rope(int middles, double length, float stretch, float bend, Vec2 begin, Vec2 end) {
+	public Rope(int middles, double length, float stretch, float bend, Vec2d begin, Vec2d end) {
 		points = new PointMass2D[middles+2];
 		this.middles = middles;
 		float mass = 0.1f;
-		Vec2 offsetPer = end.sub(begin).mul(1.0/(middles+1));
-		Vec2 currentPos = begin;
+		Vec2d offsetPer = end.sub(begin).mul(1.0/(middles+1));
+		Vec2d currentPos = begin;
 		for (int i = 0; i < points.length; i++) {
 			points[i] = new PointMass2D(currentPos, mass);
 			currentPos = currentPos.add(offsetPer);
@@ -44,7 +44,7 @@ public class Rope {
 	}
 	
 	public void tick() {
-		Vec2 gravity = new Vec2(0, 1);
+		Vec2d gravity = new Vec2d(0, 1);
 
         for (PointMass2D point : points) {
             if(point.pin)

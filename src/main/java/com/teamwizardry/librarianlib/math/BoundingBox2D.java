@@ -1,15 +1,15 @@
 package com.teamwizardry.librarianlib.math;
 
 public class BoundingBox2D {
-	public final Vec2 min, max;
+	public final Vec2d min, max;
 	
-	public BoundingBox2D(Vec2 min, Vec2 max) {
+	public BoundingBox2D(Vec2d min, Vec2d max) {
 		this.min = min;
 		this.max = max;
 	}
 	
 	public BoundingBox2D(double minX, double minY, double maxX, double maxY) {
-		this(new Vec2(minX, minY), new Vec2(maxX, maxY));
+		this(new Vec2d(minX, minY), new Vec2d(maxX, maxY));
 	}
 
 	public BoundingBox2D union(BoundingBox2D other) {

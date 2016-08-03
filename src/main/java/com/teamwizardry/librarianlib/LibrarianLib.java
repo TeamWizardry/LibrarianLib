@@ -1,7 +1,9 @@
 package com.teamwizardry.librarianlib;
 
-import com.teamwizardry.librarianlib.common.network.network.PacketHandler;
-import com.teamwizardry.librarianlib.common.proxy.LibCommonProxy;
+import com.teamwizardry.librarianlib.book.Book;
+import com.teamwizardry.librarianlib.common.Config;
+import com.teamwizardry.librarianlib.network.PacketHandler;
+import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -17,8 +19,8 @@ public class LibrarianLib {
     public static final String MODID = "librarianlib";
     public static final String MODNAME = "LibrarianLib";
     public static final String VERSION = "1.0";
-    public static final String CLIENT = "com.teamwizardry.librarianlib.client.proxy.LibClientProxy";
-    public static final String SERVER = "com.teamwizardry.libarianlib.common.LibCommonProxy";
+    public static final String CLIENT = "com.teamwizardry.librarianlib.LibClientProxy";
+    public static final String SERVER = "com.teamwizardry.librarianlib.LibCommonProxy";
     public static PacketLoggingHandler packetHandler;
     public static Logger logger;
     public static EventBus EVENT_BUS = new EventBus();
@@ -28,14 +30,21 @@ public class LibrarianLib {
 
     @Mod.Instance
     public static LibrarianLib instance;
-
+	public static Book guide;
+	
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         logger = event.getModLog();
+        Config.initConfig(event.getSuggestedConfigurationFile());
         proxy.preInit();
         PacketHandler.INSTANCE.getClass(); // load the class
-    }
 
+        if(Const.isDev)
+            ClientCommandHandler.instance.registerCommand(new ExampleBookCommand());
+
+	    guide = new Book(MODID);
+    }
+	
     @Mod.EventHandler
     public void init(FMLInitializationEvent e) {
     }

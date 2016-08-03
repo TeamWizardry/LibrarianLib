@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.math.shapes;
 
-import com.teamwizardry.librarianlib.math.Vec2;
+import com.teamwizardry.librarianlib.math.Vec2d;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
 
@@ -13,22 +13,22 @@ public class BezierCurve2D {
     /**
      * The two points you want to connect with a jagged line
      */
-    private Vec2 startPoint, endPoint;
+    private Vec2d startPoint, endPoint;
 
     /**
      * The points that will curve the line
      */
-    private Vec2 startControlPoint, endControlPoint;
+    private Vec2d startControlPoint, endControlPoint;
 
-    public BezierCurve2D(Vec2 startPoint, Vec2 endPoint) {
+    public BezierCurve2D(Vec2d startPoint, Vec2d endPoint) {
         this.startPoint = startPoint;
         this.endPoint = endPoint;
     }
 
-    public ArrayList<Vec2> getPoints() {
-        ArrayList<Vec2> points = new ArrayList<>();
+    public ArrayList<Vec2d> getPoints() {
+        ArrayList<Vec2d> points = new ArrayList<>();
 
-        Vec2 midpoint = startPoint.sub(endPoint).mul(1.0 / 2.0);
+        Vec2d midpoint = startPoint.sub(endPoint).mul(1.0 / 2.0);
 
         startControlPoint = startPoint.sub(midpoint.x, 0);
         endControlPoint = endPoint.add(midpoint.x, 0);
@@ -38,7 +38,7 @@ public class BezierCurve2D {
         for (float i = 0; i < 1; i += 1 / pointCount) {
             double x = (1 - i) * (1 - i) * (1 - i) * startPoint.x + 3 * (1 - i) * (1 - i) * i * startControlPoint.x + 3 * (1 - i) * i * i * endControlPoint.x + i * i * i * endPoint.x;
             double y = (1 - i) * (1 - i) * (1 - i) * startPoint.y + 3 * (1 - i) * (1 - i) * i * startControlPoint.y + 3 * (1 - i) * i * i * endControlPoint.y + i * i * i * endPoint.y;
-            points.add(new Vec2(x, y));
+            points.add(new Vec2d(x, y));
         }
 
         return points;
@@ -54,7 +54,7 @@ public class BezierCurve2D {
         GL11.glLineWidth(2);
         GL11.glBegin(GL11.GL_LINE_STRIP);
 
-        for (Vec2 point : getPoints()) GL11.glVertex2d(point.x, point.y);
+        for (Vec2d point : getPoints()) GL11.glVertex2d(point.x, point.y);
 
         GL11.glEnd();
         GL11.glPopMatrix();
@@ -62,19 +62,19 @@ public class BezierCurve2D {
         GlStateManager.popMatrix();
     }
 
-    public Vec2 getStartPoint() {
+    public Vec2d getStartPoint() {
         return startPoint;
     }
 
-    public void setStartPoint(Vec2 startPoint) {
+    public void setStartPoint(Vec2d startPoint) {
         this.startPoint = startPoint;
     }
 
-    public Vec2 getEndPoint() {
+    public Vec2d getEndPoint() {
         return endPoint;
     }
 
-    public void setEndPoint(Vec2 endPoint) {
+    public void setEndPoint(Vec2d endPoint) {
         this.endPoint = endPoint;
     }
 }

@@ -5,12 +5,12 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 
-import com.teamwizardry.librarianlib.api.gui.components.ComponentMarkup;
-import com.teamwizardry.librarianlib.api.gui.components.ComponentMarkup.MarkupElement;
-import com.teamwizardry.librarianlib.api.util.misc.Color;
+import com.teamwizardry.librarianlib.gui.components.ComponentMarkup;
+import com.teamwizardry.librarianlib.gui.components.ComponentMarkup.MarkupElement;
+import com.teamwizardry.librarianlib.util.Color;
 import com.teamwizardry.librarianlib.book.Book;
 import com.teamwizardry.librarianlib.book.util.Page;
-import com.teamwizardry.librarianlib.common.network.data.DataNode;
+import com.teamwizardry.librarianlib.data.DataNode;
 
 public class PageText extends GuiBook {
 	

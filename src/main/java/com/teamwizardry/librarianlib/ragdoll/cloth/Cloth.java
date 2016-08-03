@@ -22,8 +22,8 @@ import com.teamwizardry.librarianlib.math.Sphere;
 public class Cloth {
 
     public PointMass3D[][] masses;
-    public List<Link> links = new ArrayList<>();
-	public List<Link> hardLinks = new ArrayList<>();
+    public List<Link3D> links = new ArrayList<>();
+	public List<Link3D> hardLinks = new ArrayList<>();
 	public int solvePasses = 5;
 	public Vec3d[] top;
 	public int height;
@@ -73,17 +73,17 @@ public class Cloth {
 			for (int z = 0; z < masses[x].length; z++) {
 				
 				if(x+1 < masses.length)
-					hardLinks.add(new HardLink(masses[x][z], masses[x+1][z], 1));
+					hardLinks.add(new HardLink3D(masses[x][z], masses[x+1][z], 1));
 				
 				if(x+1 < masses.length)
-					links.add(new Link(masses[x][z], masses[x+1][z], stretch/solvePasses));
+					links.add(new Link3D(masses[x][z], masses[x+1][z], stretch/solvePasses));
 				if(z+1 < masses[x].length && x != 0)
-					links.add(new Link(masses[x][z], masses[x][z+1], stretch/solvePasses));
+					links.add(new Link3D(masses[x][z], masses[x][z+1], stretch/solvePasses));
 				
 				if(x+1 < masses.length && z+1 < masses[x].length)
-					links.add(new Link(masses[x][z], masses[x+1][z+1], shear/solvePasses));
+					links.add(new Link3D(masses[x][z], masses[x+1][z+1], shear/solvePasses));
 				if(x+1 < masses.length && z-1 >= 0)
-					links.add(new Link(masses[x][z], masses[x+1][z-1], shear/solvePasses));
+					links.add(new Link3D(masses[x][z], masses[x+1][z-1], shear/solvePasses));
 			}
 		}
 		
@@ -94,14 +94,14 @@ public class Cloth {
 							masses[x  ][z].pos.subtract(masses[x+1][z].pos).lengthVector() +
 							masses[x+1][z].pos.subtract(masses[x+2][z].pos).lengthVector()
 						); // even if initialized bent, try to keep flat.
-					links.add(new Link(masses[x][z], masses[x+2][z], dist, flex/solvePasses));
+					links.add(new Link3D(masses[x][z], masses[x+2][z], dist, flex/solvePasses));
 				}
 				if(z+2 < masses[x].length) {
 					float dist = (float)(
 							masses[x][z  ].pos.subtract(masses[x][z+1].pos).lengthVector() +
 							masses[x][z+1].pos.subtract(masses[x][z+2].pos).lengthVector()
 						); // even if initialized bent, try to keep flat.
-					links.add(new Link(masses[x][z], masses[x][z+2], dist, flex/solvePasses));
+					links.add(new Link3D(masses[x][z], masses[x][z+2], dist, flex/solvePasses));
 				}
 				
 				if(x+2 < masses.length && z+2 < masses[x].length) {
@@ -109,14 +109,14 @@ public class Cloth {
 							masses[x  ][z  ].pos.subtract(masses[x+1][z+1].pos).lengthVector() +
 							masses[x+1][z+1].pos.subtract(masses[x+2][z+2].pos).lengthVector()
 						); // even if initialized bent, try to keep flat.
-					links.add(new Link(masses[x][z], masses[x+2][z+2], dist, flex/solvePasses));
+					links.add(new Link3D(masses[x][z], masses[x+2][z+2], dist, flex/solvePasses));
 				}
 				if(x+2 < masses.length && z-2 > 0) {
 					float dist = (float)(
 							masses[x  ][z  ].pos.subtract(masses[x+1][z-1].pos).lengthVector() +
 							masses[x+1][z-1].pos.subtract(masses[x+2][z-2].pos).lengthVector()
 						); // even if initialized bent, try to keep flat.
-					links.add(new Link(masses[x][z], masses[x+2][z-2], dist, flex/solvePasses));
+					links.add(new Link3D(masses[x][z], masses[x+2][z-2], dist, flex/solvePasses));
 				}
 			}
 		}
@@ -318,10 +318,10 @@ public class Cloth {
 		pushOutPoints(aabbs, spheres);
 		
 		for (int i = 0; i < solvePasses; i++) {
-			for (Link link : links) {
+			for (Link3D link : links) {
 				link.resolve();
 			}
-			for (Link link : hardLinks) {
+			for (Link3D link : hardLinks) {
 				link.resolve();
 			}
 			collidePoints(ImmutableList.of(), spheres);
@@ -330,7 +330,7 @@ public class Cloth {
 		collidePoints(aabbs, spheres);
 		pushOutPoints(aabbs, spheres);
 
-        for (Link link : hardLinks) {
+        for (Link3D link : hardLinks) {
         	Vec3d posDiff = link.a.pos.subtract(link.b.pos);
     		double d = posDiff.lengthVector();
     		

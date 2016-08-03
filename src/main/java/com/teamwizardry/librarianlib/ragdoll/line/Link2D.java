@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.ragdoll.line;
 
-import com.teamwizardry.librarianlib.math.Vec2;
+import com.teamwizardry.librarianlib.math.Vec2d;
 
 /**
  * Created by Saad on 12/7/2016.
@@ -32,7 +32,7 @@ public class Link2D {
     public void resolve() {
         if (a.pin && b.pin) return;
 
-        Vec2 posDiff = a.pos.sub(b.pos);
+        Vec2d posDiff = a.pos.sub(b.pos);
         double d = posDiff.length();
 
         double difference = (restingDistance - d) / d;
@@ -40,7 +40,7 @@ public class Link2D {
         if (!( a.pin || pinA ) && !( b.pin || pinB )) // neither are pinned
             difference = difference / 2.0;
 
-        Vec2 translate = posDiff.mul(difference);
+        Vec2d translate = posDiff.mul(difference);
 
         if (!( a.pin || pinA )) a.pos = a.pos.add(translate);
 

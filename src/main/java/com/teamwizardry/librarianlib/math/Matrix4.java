@@ -12,6 +12,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
 
+/**
+ * Shamelessly stolen from CodeChickenCore, and modified to use Vec3d instead of Vector3
+ */
 public class Matrix4 {
     private static DoubleBuffer glBuf = ByteBuffer.allocateDirect(16 * 8).order(ByteOrder.nativeOrder()).asDoubleBuffer();
 

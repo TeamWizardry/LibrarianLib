@@ -1,0 +1,9 @@
+{
+	"spritesheet":{
+		"textureWidth":256,
+		"textureHeight":256,
+		"sprites":{
+			"button":[0, 0, 32, 32]
+		}
+	}
+}
