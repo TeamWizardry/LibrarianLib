@@ -91,7 +91,12 @@ public final class ShaderHelper implements IResourceManagerReloadListener {
 
     //http://hastebin.com/ameremuqev.avrasm
     public static boolean useShaders() {
-        return FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT && Config.shaders && OpenGlHelper.shadersSupported;
+        try {
+            return FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT && Config.shaders && OpenGlHelper.shadersSupported;
+        } catch(NoSuchFieldError ignored) {
+            //noop
+            return false;
+        }
     }
 
     private static int createProgram(Shader shader) {
