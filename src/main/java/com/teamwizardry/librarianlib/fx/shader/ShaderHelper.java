@@ -1,30 +1,23 @@
 package com.teamwizardry.librarianlib.fx.shader;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.teamwizardry.librarianlib.Const;
+import com.teamwizardry.librarianlib.LibrarianLog;
 import com.teamwizardry.librarianlib.common.Config;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import org.lwjgl.opengl.*;
 
-import org.lwjgl.opengl.ARBFragmentShader;
-import org.lwjgl.opengl.ARBShaderObjects;
-import org.lwjgl.opengl.ARBVertexShader;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
-
-import com.teamwizardry.librarianlib.Const;
-import com.teamwizardry.librarianlib.LibrarianLog;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Credit to Vazkii (https://github.com/Vazkii/Botania/blob/master/src/main/java/vazkii/botania/client/core/helper/ShaderHelper.java)
@@ -96,8 +89,9 @@ public final class ShaderHelper implements IResourceManagerReloadListener {
         useShader(null);
     }
 
+    //http://hastebin.com/ameremuqev.avrasm
     public static boolean useShaders() {
-        return Config.shaders && OpenGlHelper.shadersSupported;
+        return FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT && Config.shaders && OpenGlHelper.shadersSupported;
     }
 
     private static int createProgram(Shader shader) {
