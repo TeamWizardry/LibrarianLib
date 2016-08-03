@@ -30,32 +30,32 @@ public class LibClientProxy extends LibCommonProxy implements IResourceManagerRe
 
 		MinecraftForge.EVENT_BUS.register(new GuiTickHandler());
 		MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(ScissorUtil.INSTANCE);
-        LibShaders.INSTANCE.getClass();// load the class
-        ShaderHelper.initShaders();
+		MinecraftForge.EVENT_BUS.register(ScissorUtil.INSTANCE);
+		LibShaders.INSTANCE.getClass();// load the class
+		ShaderHelper.initShaders();
 		try {
-			MetadataSerializer s = (MetadataSerializer)ReflectionHelper.findField(Minecraft.class, "metadataSerializer_", "field_110452_an").get(Minecraft.getMinecraft());
-	        s.registerMetadataSectionType(new SpritesMetadataSectionSerializer(), SpritesMetadataSection.class);
-		} catch (IllegalArgumentException | IllegalAccessException | NoSuchMethodError e) {
+			MetadataSerializer s = (MetadataSerializer) ReflectionHelper.findField(Minecraft.class, "metadataSerializer_", "field_110452_an").get(Minecraft.getMinecraft());
+			s.registerMetadataSectionType(new SpritesMetadataSectionSerializer(), SpritesMetadataSection.class);
+		} catch (IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
-        
-		if(Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
-			((IReloadableResourceManager)Minecraft.getMinecraft().getResourceManager()).registerReloadListener(this);
+
+		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
+			((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(this);
 		}
 	}
 
 	@Override
 	public void onResourceManagerReload(IResourceManager resourceManager) {
 		List<WeakReference<Texture>> newList = new ArrayList<>();
-		
+
 		for (WeakReference<Texture> tex : Texture.textures) {
-			if(tex.get() != null) {
+			if (tex.get() != null) {
 				tex.get().loadSpriteData();
 				newList.add(tex);
 			}
 		}
-		
+
 		Texture.textures = newList;
 	}
 }
