@@ -14,6 +14,7 @@ import net.minecraft.world.WorldServer;
 public class TeleportUtil {
 
 	public static void teleportToDimension(EntityPlayer player, int dimension, double x, double y, double z) {
+		if(!(player instanceof EntityPlayerMP)) return;
 		int oldDimension = player.worldObj.provider.getDimension();
 		EntityPlayerMP entityPlayerMP = (EntityPlayerMP) player;
 		MinecraftServer server = ((EntityPlayerMP) player).worldObj.getMinecraftServer();
