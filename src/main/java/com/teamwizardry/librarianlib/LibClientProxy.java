@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib;
 
+import com.teamwizardry.librarianlib.book.Book;
 import com.teamwizardry.librarianlib.fx.shader.LibShaders;
 import com.teamwizardry.librarianlib.fx.shader.ShaderHelper;
 import com.teamwizardry.librarianlib.gui.GuiTickHandler;
@@ -27,7 +28,8 @@ public class LibClientProxy extends LibCommonProxy implements IResourceManagerRe
 	@Override
 	public void preInit() {
 		super.preInit();
-
+		LibrarianLib.guide = new Book(LibrarianLib.MODID);
+		
 		MinecraftForge.EVENT_BUS.register(new GuiTickHandler());
 		MinecraftForge.EVENT_BUS.register(this);
 		MinecraftForge.EVENT_BUS.register(ScissorUtil.INSTANCE);

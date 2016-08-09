@@ -41,8 +41,6 @@ public class LibrarianLib {
 
         if(Const.isDev)
             ClientCommandHandler.instance.registerCommand(new ExampleBookCommand());
-
-	    guide = new Book(MODID);
     }
 	
     @Mod.EventHandler
