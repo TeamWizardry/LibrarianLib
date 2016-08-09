@@ -13,6 +13,7 @@ import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.client.resources.data.MetadataSerializer;
+import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
@@ -29,6 +30,9 @@ public class LibClientProxy extends LibCommonProxy implements IResourceManagerRe
 	public void preInit() {
 		super.preInit();
 		LibrarianLib.guide = new Book(LibrarianLib.MODID);
+		
+		if(Const.isDev)
+			ClientCommandHandler.instance.registerCommand(new ExampleBookCommand());
 		
 		MinecraftForge.EVENT_BUS.register(new GuiTickHandler());
 		MinecraftForge.EVENT_BUS.register(this);

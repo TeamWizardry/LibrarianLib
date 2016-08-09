@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.book.Book;
 import com.teamwizardry.librarianlib.common.Config;
 import com.teamwizardry.librarianlib.network.PacketHandler;
 import net.minecraftforge.client.ClientCommandHandler;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -38,9 +39,6 @@ public class LibrarianLib {
         Config.initConfig(event.getSuggestedConfigurationFile());
         proxy.preInit();
         PacketHandler.INSTANCE.getClass(); // load the class
-
-        if(Const.isDev)
-            ClientCommandHandler.instance.registerCommand(new ExampleBookCommand());
     }
 	
     @Mod.EventHandler
