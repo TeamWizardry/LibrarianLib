@@ -33,8 +33,7 @@ class Sprite {
      */
     var uvHeight: Int = 0
         protected set
-    protected var frames: IntArray
-    protected var frameCounts: IntArray? = null
+    protected var frames: IntArray = IntArray(0)
     protected var offsetU: Int = 0
     protected var offsetV: Int = 0
 

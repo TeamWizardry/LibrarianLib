@@ -14,21 +14,21 @@ class BoolTypes {
 
     class BoolVec2(owner: Shader, name: String, type: UniformType, size: Int, location: Int) : Uniform(owner, name, type, size, location) {
 
-        operator fun set(x: Boolean, y: Boolean) {
+        fun set(x: Boolean, y: Boolean) {
             ARBShaderObjects.glUniform2iARB(location, if (x) 1 else 0, if (y) 1 else 0)
         }
     }
 
     class BoolVec3(owner: Shader, name: String, type: UniformType, size: Int, location: Int) : Uniform(owner, name, type, size, location) {
 
-        operator fun set(x: Boolean, y: Boolean, z: Boolean) {
+        fun set(x: Boolean, y: Boolean, z: Boolean) {
             ARBShaderObjects.glUniform3iARB(location, if (x) 1 else 0, if (y) 1 else 0, if (z) 1 else 0)
         }
     }
 
     class BoolVec4(owner: Shader, name: String, type: UniformType, size: Int, location: Int) : Uniform(owner, name, type, size, location) {
 
-        operator fun set(x: Boolean, y: Boolean, z: Boolean, w: Boolean) {
+        fun set(x: Boolean, y: Boolean, z: Boolean, w: Boolean) {
             ARBShaderObjects.glUniform4iARB(location, if (x) 1 else 0, if (y) 1 else 0, if (z) 1 else 0, if (w) 1 else 0)
         }
     }

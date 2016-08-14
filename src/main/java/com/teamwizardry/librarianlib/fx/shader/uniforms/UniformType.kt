@@ -8,159 +8,154 @@ import org.lwjgl.opengl.*
 import java.lang.reflect.Field
 import java.util.HashMap
 
-enum class UniformType private constructor(private val initializer: UniformType.UniformInitializer) {
-    NONE(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+enum class UniformType private constructor(private val initializer: (Shader, String, UniformType, Int, Int) -> Uniform) {
+    NONE(::NoUniform),
     // bools
-    BOOL(UniformInitializer { owner, name, type, size, location -> BoolTypes.Bool(owner, name, type, size, location) }),
-    BOOL_VEC2(UniformInitializer { owner, name, type, size, location -> BoolTypes.BoolVec2(owner, name, type, size, location) }),
-    BOOL_VEC3(UniformInitializer { owner, name, type, size, location -> BoolTypes.BoolVec3(owner, name, type, size, location) }),
-    BOOL_VEC4(UniformInitializer { owner, name, type, size, location -> BoolTypes.BoolVec4(owner, name, type, size, location) }),
+    BOOL(BoolTypes::Bool),
+    BOOL_VEC2(BoolTypes::BoolVec2),
+    BOOL_VEC3(BoolTypes::BoolVec3),
+    BOOL_VEC4(BoolTypes::BoolVec4),
 
     // ints
-    INT(UniformInitializer { owner, name, type, size, location -> IntTypes.Int(owner, name, type, size, location) }),
-    INT_VEC2(UniformInitializer { owner, name, type, size, location -> IntTypes.IntVec2(owner, name, type, size, location) }),
-    INT_VEC3(UniformInitializer { owner, name, type, size, location -> IntTypes.IntVec3(owner, name, type, size, location) }),
-    INT_VEC4(UniformInitializer { owner, name, type, size, location -> IntTypes.IntVec4(owner, name, type, size, location) }),
+    INT(IntTypes::Int),
+    INT_VEC2(IntTypes::IntVec2),
+    INT_VEC3(IntTypes::IntVec3),
+    INT_VEC4(IntTypes::IntVec4),
 
     // unsigned ints
-    UINT(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    UINT_VEC2(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    UINT_VEC3(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    UINT_VEC4(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    UINT_ATOMIC_COUNTER(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    UINT(::NoUniform),
+    UINT_VEC2(::NoUniform),
+    UINT_VEC3(::NoUniform),
+    UINT_VEC4(::NoUniform),
+    UINT_ATOMIC_COUNTER(::NoUniform),
 
     // floats
-    FLOAT(UniformInitializer { owner, name, type, size, location -> FloatTypes.Float(owner, name, type, size, location) }),
-    FLOAT_VEC2(UniformInitializer { owner, name, type, size, location -> FloatTypes.FloatVec2(owner, name, type, size, location) }),
-    FLOAT_VEC3(UniformInitializer { owner, name, type, size, location -> FloatTypes.FloatVec3(owner, name, type, size, location) }),
-    FLOAT_VEC4(UniformInitializer { owner, name, type, size, location -> FloatTypes.FloatVec4(owner, name, type, size, location) }),
+    FLOAT(FloatTypes::Float),
+    FLOAT_VEC2(FloatTypes::FloatVec2),
+    FLOAT_VEC3(FloatTypes::FloatVec3),
+    FLOAT_VEC4(FloatTypes::FloatVec4),
 
-    FLOAT_MAT2(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    FLOAT_MAT3(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    FLOAT_MAT4(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    FLOAT_MAT2x3(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    FLOAT_MAT2x4(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    FLOAT_MAT3x2(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    FLOAT_MAT3x4(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    FLOAT_MAT4x2(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    FLOAT_MAT4x3(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    FLOAT_MAT2(::NoUniform),
+    FLOAT_MAT3(::NoUniform),
+    FLOAT_MAT4(::NoUniform),
+    FLOAT_MAT2x3(::NoUniform),
+    FLOAT_MAT2x4(::NoUniform),
+    FLOAT_MAT3x2(::NoUniform),
+    FLOAT_MAT3x4(::NoUniform),
+    FLOAT_MAT4x2(::NoUniform),
+    FLOAT_MAT4x3(::NoUniform),
 
     // doubles
-    DOUBLE(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    DOUBLE_VEC2(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    DOUBLE_VEC3(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    DOUBLE_VEC4(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    DOUBLE(::NoUniform),
+    DOUBLE_VEC2(::NoUniform),
+    DOUBLE_VEC3(::NoUniform),
+    DOUBLE_VEC4(::NoUniform),
 
-    DOUBLE_MAT2(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    DOUBLE_MAT3(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    DOUBLE_MAT4(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    DOUBLE_MAT2x3(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    DOUBLE_MAT2x4(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    DOUBLE_MAT3x2(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    DOUBLE_MAT3x4(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    DOUBLE_MAT4x2(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    DOUBLE_MAT4x3(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    DOUBLE_MAT2(::NoUniform),
+    DOUBLE_MAT3(::NoUniform),
+    DOUBLE_MAT4(::NoUniform),
+    DOUBLE_MAT2x3(::NoUniform),
+    DOUBLE_MAT2x4(::NoUniform),
+    DOUBLE_MAT3x2(::NoUniform),
+    DOUBLE_MAT3x4(::NoUniform),
+    DOUBLE_MAT4x2(::NoUniform),
+    DOUBLE_MAT4x3(::NoUniform),
 
     // samplers: 1D, 2D, other
-    SAMPLER_1D(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    SAMPLER_1D_SHADOW(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    SAMPLER_1D_ARRAY(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    SAMPLER_1D_ARRAY_SHADOW(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    SAMPLER_1D(::NoUniform),
+    SAMPLER_1D_SHADOW(::NoUniform),
+    SAMPLER_1D_ARRAY(::NoUniform),
+    SAMPLER_1D_ARRAY_SHADOW(::NoUniform),
 
-    SAMPLER_2D(UniformInitializer { owner, name, type, size, location -> IntTypes.Int(owner, name, type, size, location) }),
-    SAMPLER_2D_SHADOW(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    SAMPLER_2D_ARRAY(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    SAMPLER_2D_ARRAY_SHADOW(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    SAMPLER_2D_MULTISAMPLE(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    SAMPLER_2D_MULTISAMPLE_ARRAY(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    SAMPLER_2D(IntTypes::Int),
+    SAMPLER_2D_SHADOW(::NoUniform),
+    SAMPLER_2D_ARRAY(::NoUniform),
+    SAMPLER_2D_ARRAY_SHADOW(::NoUniform),
+    SAMPLER_2D_MULTISAMPLE(::NoUniform),
+    SAMPLER_2D_MULTISAMPLE_ARRAY(::NoUniform),
 
-    SAMPLER_3D(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    SAMPLER_CUBE(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    SAMPLER_CUBE_SHADOW(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    SAMPLER_BUFFER(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    SAMPLER_2D_RECT(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    SAMPLER_2D_RECT_SHADOW(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    SAMPLER_3D(::NoUniform),
+    SAMPLER_CUBE(::NoUniform),
+    SAMPLER_CUBE_SHADOW(::NoUniform),
+    SAMPLER_BUFFER(::NoUniform),
+    SAMPLER_2D_RECT(::NoUniform),
+    SAMPLER_2D_RECT_SHADOW(::NoUniform),
 
     // int samplers: 1D, 2D, other
-    INT_SAMPLER_1D(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    INT_SAMPLER_1D_ARRAY(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    INT_SAMPLER_1D(::NoUniform),
+    INT_SAMPLER_1D_ARRAY(::NoUniform),
 
-    INT_SAMPLER_2D(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    INT_SAMPLER_2D_ARRAY(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    INT_SAMPLER_2D_MULTISAMPLE(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    INT_SAMPLER_2D_MULTISAMPLE_ARRAY(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    INT_SAMPLER_2D(::NoUniform),
+    INT_SAMPLER_2D_ARRAY(::NoUniform),
+    INT_SAMPLER_2D_MULTISAMPLE(::NoUniform),
+    INT_SAMPLER_2D_MULTISAMPLE_ARRAY(::NoUniform),
 
-    INT_SAMPLER_3D(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    INT_SAMPLER_CUBE(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    INT_SAMPLER_BUFFER(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    INT_SAMPLER_2D_RECT(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    INT_SAMPLER_3D(::NoUniform),
+    INT_SAMPLER_CUBE(::NoUniform),
+    INT_SAMPLER_BUFFER(::NoUniform),
+    INT_SAMPLER_2D_RECT(::NoUniform),
 
     // unsigned int samplers: 1D, 2D, other
-    UINT_SAMPLER_1D(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    UINT_SAMPLER_1D_ARRAY(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    UINT_SAMPLER_1D(::NoUniform),
+    UINT_SAMPLER_1D_ARRAY(::NoUniform),
 
-    UINT_SAMPLER_2D(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    UINT_SAMPLER_2D_ARRAY(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    UINT_SAMPLER_2D_MULTISAMPLE(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    UINT_SAMPLER_2D_MULTISAMPLE_ARRAY(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    UINT_SAMPLER_2D(::NoUniform),
+    UINT_SAMPLER_2D_ARRAY(::NoUniform),
+    UINT_SAMPLER_2D_MULTISAMPLE(::NoUniform),
+    UINT_SAMPLER_2D_MULTISAMPLE_ARRAY(::NoUniform),
 
-    UINT_SAMPLER_3D(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    UINT_SAMPLER_CUBE(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    UINT_SAMPLER_BUFFER(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    UINT_SAMPLER_2D_RECT(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    UINT_SAMPLER_3D(::NoUniform),
+    UINT_SAMPLER_CUBE(::NoUniform),
+    UINT_SAMPLER_BUFFER(::NoUniform),
+    UINT_SAMPLER_2D_RECT(::NoUniform),
 
     // images: 1D, 2D, other
-    IMAGE_1D(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    IMAGE_1D_ARRAY(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    IMAGE_1D(::NoUniform),
+    IMAGE_1D_ARRAY(::NoUniform),
 
-    IMAGE_2D(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    IMAGE_2D_ARRAY(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    IMAGE_2D_RECT(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    IMAGE_2D_MULTISAMPLE(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    IMAGE_2D_MULTISAMPLE_ARRAY(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    IMAGE_2D(::NoUniform),
+    IMAGE_2D_ARRAY(::NoUniform),
+    IMAGE_2D_RECT(::NoUniform),
+    IMAGE_2D_MULTISAMPLE(::NoUniform),
+    IMAGE_2D_MULTISAMPLE_ARRAY(::NoUniform),
 
-    IMAGE_3D(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    IMAGE_CUBE(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    IMAGE_BUFFER(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    IMAGE_3D(::NoUniform),
+    IMAGE_CUBE(::NoUniform),
+    IMAGE_BUFFER(::NoUniform),
 
 
     // int images: 1D, 2D, other
-    INT_IMAGE_1D(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    INT_IMAGE_1D_ARRAY(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    INT_IMAGE_1D(::NoUniform),
+    INT_IMAGE_1D_ARRAY(::NoUniform),
 
-    INT_IMAGE_2D(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    INT_IMAGE_2D_ARRAY(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    INT_IMAGE_2D_RECT(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    INT_IMAGE_2D_MULTISAMPLE(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    INT_IMAGE_2D_MULTISAMPLE_ARRAY(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    INT_IMAGE_2D(::NoUniform),
+    INT_IMAGE_2D_ARRAY(::NoUniform),
+    INT_IMAGE_2D_RECT(::NoUniform),
+    INT_IMAGE_2D_MULTISAMPLE(::NoUniform),
+    INT_IMAGE_2D_MULTISAMPLE_ARRAY(::NoUniform),
 
-    INT_IMAGE_3D(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    INT_IMAGE_CUBE(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    INT_IMAGE_BUFFER(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    INT_IMAGE_3D(::NoUniform),
+    INT_IMAGE_CUBE(::NoUniform),
+    INT_IMAGE_BUFFER(::NoUniform),
 
     // unsigned int images: 1D, 2D, other
-    UINT_IMAGE_1D(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    UINT_IMAGE_1D_ARRAY(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    UINT_IMAGE_1D(::NoUniform),
+    UINT_IMAGE_1D_ARRAY(::NoUniform),
 
-    UINT_IMAGE_2D(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    UINT_IMAGE_2D_ARRAY(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    UINT_IMAGE_2D_RECT(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    UINT_IMAGE_2D_MULTISAMPLE(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    UINT_IMAGE_2D_MULTISAMPLE_ARRAY(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
+    UINT_IMAGE_2D(::NoUniform),
+    UINT_IMAGE_2D_ARRAY(::NoUniform),
+    UINT_IMAGE_2D_RECT(::NoUniform),
+    UINT_IMAGE_2D_MULTISAMPLE(::NoUniform),
+    UINT_IMAGE_2D_MULTISAMPLE_ARRAY(::NoUniform),
 
-    UINT_IMAGE_3D(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    UINT_IMAGE_CUBE(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) }),
-    UINT_IMAGE_BUFFER(UniformInitializer { owner, name, type, size, location -> NoUniform(owner, name, type, size, location) });
+    UINT_IMAGE_3D(::NoUniform),
+    UINT_IMAGE_CUBE(::NoUniform),
+    UINT_IMAGE_BUFFER(::NoUniform);
 
     protected var type: Int = 0
 
     fun make(owner: Shader, name: String, type: UniformType, size: Int, location: Int): Uniform {
-        return initializer.make(owner, name, type, size, location)
-    }
-
-    @FunctionalInterface
-    interface UniformInitializer {
-        fun make(owner: Shader, name: String, type: UniformType, size: Int, location: Int): Uniform
+        return initializer(owner, name, type, size, location)
     }
 
     companion object {
@@ -189,7 +184,7 @@ enum class UniformType private constructor(private val initializer: UniformType.
 
                 }
                 if (!map.containsValue(type)) {
-                    LibrarianLog.I.error("Couldn't find uniform OpenGL constant for %s", name)
+                    LibrarianLog.error("Couldn't find uniform OpenGL constant for %s", name)
                 }
             }
         }

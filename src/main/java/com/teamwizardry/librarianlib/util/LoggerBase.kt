@@ -17,34 +17,34 @@ abstract class LoggerBase protected constructor(name: String) {
         logger = LogManager.getLogger(name)
     }
 
-    fun error(message: String, vararg args: Any) {
+    fun error(message: String, vararg args: Any?) {
         logger.log(Level.ERROR, String.format(message, *args))
     }
 
-    fun error(e: Exception, message: String, vararg args: Any) {
+    fun error(e: Exception, message: String, vararg args: Any?) {
         logger.log(Level.ERROR, String.format(message, *args))
         e.printStackTrace()
     }
 
-    fun warn(message: String, vararg args: Any) {
+    fun warn(message: String, vararg args: Any?) {
         logger.log(Level.WARN, String.format(message, *args))
     }
 
-    fun info(message: String, vararg args: Any) {
+    fun info(message: String, vararg args: Any?) {
         logger.log(Level.INFO, String.format(message, *args))
     }
 
-    fun debug(message: String, vararg args: Any) {
+    fun debug(message: String, vararg args: Any?) {
         if (debugMode) {
             logger.log(Level.INFO, String.format(message, *args))
         }
     }
 
-    fun message(player: EntityPlayer, message: String, vararg args: Any) {
+    fun message(player: EntityPlayer, message: String, vararg args: Any?) {
         player.addChatComponentMessage(TextComponentString(String.format(message, *args)))
     }
 
-    fun warn(player: EntityPlayer, message: String, vararg args: Any) {
+    fun warn(player: EntityPlayer, message: String, vararg args: Any?) {
         player.addChatComponentMessage(TextComponentString(String.format(message, *args)).setStyle(Style().setColor(TextFormatting.RED)))
     }
 }

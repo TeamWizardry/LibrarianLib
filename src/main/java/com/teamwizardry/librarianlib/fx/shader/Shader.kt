@@ -65,7 +65,7 @@ open class Shader(val vert: String?, val frag: String?) {
                 try {
                     return uniforms[i] as T
                 } catch (e: ClassCastException) {
-                    LibrarianLog.debug("Uniform %s was wrong type. (%s)", name, uniforms[i]?.type.name)
+                    LibrarianLog.debug("Uniform %s was wrong type. (%s)", name, uniforms[i]?.type?.name)
                 }
 
             }

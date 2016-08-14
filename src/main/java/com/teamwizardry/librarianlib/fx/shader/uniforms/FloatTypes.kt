@@ -8,7 +8,7 @@ class FloatTypes {
     class Float(owner: Shader, name: String, type: UniformType,
                 size: Int, location: Int) : Uniform(owner, name, type, size, location) {
 
-        fun set(value: Float) {
+        fun set(value: kotlin.Float) {
             ARBShaderObjects.glUniform1fARB(location, value)
         }
 
@@ -20,11 +20,11 @@ class FloatTypes {
     class FloatVec2(owner: Shader, name: String, type: UniformType,
                     size: Int, location: Int) : Uniform(owner, name, type, size, location) {
 
-        operator fun set(x: Float, y: Float) {
+        fun set(x: kotlin.Float, y: kotlin.Float) {
             ARBShaderObjects.glUniform2fARB(location, x, y)
         }
 
-        operator fun set(x: Double, y: Double) {
+        fun set(x: Double, y: Double) {
             set(x.toFloat(), y.toFloat())
         }
     }
@@ -32,11 +32,11 @@ class FloatTypes {
     class FloatVec3(owner: Shader, name: String, type: UniformType,
                     size: Int, location: Int) : Uniform(owner, name, type, size, location) {
 
-        operator fun set(x: Float, y: Float, z: Float) {
+        fun set(x: kotlin.Float, y: kotlin.Float, z: kotlin.Float) {
             ARBShaderObjects.glUniform3fARB(location, x, y, z)
         }
 
-        operator fun set(x: Double, y: Double, z: Double) {
+        fun set(x: Double, y: Double, z: Double) {
             set(x.toFloat(), y.toFloat(), z.toFloat())
         }
     }
@@ -44,11 +44,11 @@ class FloatTypes {
     class FloatVec4(owner: Shader, name: String, type: UniformType,
                     size: Int, location: Int) : Uniform(owner, name, type, size, location) {
 
-        operator fun set(x: Float, y: Float, z: Float, w: Float) {
+        fun set(x: kotlin.Float, y: kotlin.Float, z: kotlin.Float, w: kotlin.Float) {
             ARBShaderObjects.glUniform4fARB(location, x, y, z, w)
         }
 
-        operator fun set(x: Double, y: Double, z: Double, w: Double) {
+        fun set(x: Double, y: Double, z: Double, w: Double) {
             set(x.toFloat(), y.toFloat(), z.toFloat(), w.toFloat())
         }
     }

@@ -14,22 +14,21 @@ enum class LibShaders private constructor() {
         ShaderHelper.addShader(HUE)
     }
 
-    class HueShader(vert: String, frag: String) : Shader(vert, frag) {
+    class HueShader(vert: String?, frag: String?) : Shader(vert, frag) {
 
-        var hue: FloatTypes.Float
+        var hue: FloatTypes.Float? = null
 
         override fun initUniforms() {
             hue = getUniform<FloatTypes.Float>("hue")
         }
 
         override fun uniformDefaults() {
-            hue.set(0f)
+            hue?.set(0f)
         }
 
     }
 
     companion object {
-
-        var HUE: Shader
+        lateinit var HUE: Shader
     }
 }
