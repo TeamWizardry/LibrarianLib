@@ -6,7 +6,7 @@ package com.teamwizardry.librarianlib;
 public class LibCommonProxy {
 
 	public void preInit() {
-		
+
 	}
-	
+
 }
