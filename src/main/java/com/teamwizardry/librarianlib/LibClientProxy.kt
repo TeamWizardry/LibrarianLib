@@ -38,7 +38,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         ShaderHelper.initShaders()
         try {
             val s = ReflectionHelper.findField(Minecraft::class.java, "metadataSerializer_", "field_110452_an").get(Minecraft.getMinecraft()) as MetadataSerializer
-            s.registerMetadataSectionType(SpritesMetadataSectionSerializer(), SpritesMetadataSection::class.java!!)
+            s.registerMetadataSectionType(SpritesMetadataSectionSerializer(), SpritesMetadataSection::class.java)
         } catch (e: IllegalArgumentException) {
             e.printStackTrace()
         } catch (e: IllegalAccessException) {

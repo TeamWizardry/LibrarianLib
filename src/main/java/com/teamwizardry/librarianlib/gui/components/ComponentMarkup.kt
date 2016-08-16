@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.GlStateManager
 
 import java.util.ArrayList
 
-class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent<ComponentMarkup>(posX, posY, width, height) {
+open class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent<ComponentMarkup>(posX, posY, width, height) {
 
     val start = Option<ComponentMarkup, Int>(0)
     val end = Option<ComponentMarkup, Int>(Integer.MAX_VALUE)
@@ -32,7 +32,7 @@ class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
     }
 
     override fun relativePos(pos: Vec2d): Vec2d {
-        return super.relativePos(pos).add(0.0, start.getValue(this)?.toDouble() ?: 0.0)
+        return super.relativePos(pos).add(0.0, start.getValue(this).toDouble())
     }
 
     fun create(text: String): MarkupElement {
@@ -49,8 +49,8 @@ class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
     }
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
-        val start = this.start.getValue(this) ?: Int.MIN_VALUE
-        val end = this.end.getValue(this) ?: Int.MAX_VALUE
+        val start = this.start.getValue(this)
+        val end = this.end.getValue(this)
         GlStateManager.translate(0f, (-start).toFloat(), 0f)
         for (element in elements) {
             if (element.posY >= start && element.posY <= end ||
@@ -86,16 +86,16 @@ class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
         }
 
         protected fun drawLine(line: String, x: Int, y: Int, hover: Boolean) {
-            Minecraft.getMinecraft().fontRendererObj.drawString(format.getValue(hover) + line, x.toFloat(), y.toFloat(), color.getValue(hover)?.hexARGB() ?: 0x000000, dropShadow.getValue(hover) ?: false)
+            Minecraft.getMinecraft().fontRendererObj.drawString(format.getValue(hover) + line, x.toFloat(), y.toFloat(), color.getValue(hover).hexARGB(), dropShadow.getValue(hover))
         }
 
         fun isMouseOver(x: Int, y: Int): Boolean {
-            var y = y
-            y -= posY
+            var yNew = y
+            yNew -= posY
             val height = Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT
             for (i in lengths.indices) {
                 val xPos = if (i == 0) firstLineOffset else 0
-                if (y >= i * height && y < (i + 1) * height &&
+                if (yNew >= i * height && yNew < (i + 1) * height &&
                         x >= xPos && x < xPos + lengths[i]) {
                     return true
                 }

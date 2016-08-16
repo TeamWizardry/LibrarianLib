@@ -12,7 +12,7 @@ object GlMixin {
     val TAG_ATTRIB = "mixin_attrib"
     val TAG_MATRIX = "mixin_matrix"
 
-    fun pushPopAttrib(component: GuiComponent<*>) {
+    fun <T: GuiComponent<T>> pushPopAttrib(component: GuiComponent<T>) {
         if (!component.addTag(TAG_ATTRIB))
             return
 
@@ -20,7 +20,7 @@ object GlMixin {
         component.postDraw.addFirst({ c, pos, partialTicks -> GlStateManager.popAttrib() })
     }
 
-    fun pushPopMatrix(component: GuiComponent<*>) {
+    fun <T: GuiComponent<T>> pushPopMatrix(component: GuiComponent<T>) {
         if (!component.addTag(TAG_MATRIX))
             return
 
@@ -28,7 +28,7 @@ object GlMixin {
         component.postDraw.addFirst({ c, pos, partialTicks -> GlStateManager.popMatrix() })
     }
 
-    fun <T : GuiComponent<*>> color(component: T): Option<T, Color> {
+    fun <T : GuiComponent<T>> color(component: T): Option<T, Color> {
         pushPopAttrib(component)
 
         val opt = Option<T, Color>(Color.WHITE)
@@ -37,7 +37,7 @@ object GlMixin {
         return opt
     }
 
-    fun <T : GuiComponent<*>> transform(component: T): Option<T, Vec3d> {
+    fun <T : GuiComponent<T>> transform(component: T): Option<T, Vec3d> {
         pushPopMatrix(component)
 
         val opt = Option<T, Vec3d>(Vec3d.ZERO)
@@ -49,7 +49,7 @@ object GlMixin {
         return opt
     }
 
-    fun <T : GuiComponent<*>> scale(component: T): Option<T, Vec3d> {
+    fun <T : GuiComponent<T>> scale(component: T): Option<T, Vec3d> {
         pushPopMatrix(component)
 
         val opt = Option<T, Vec3d>(Vec3d.ZERO)
@@ -61,7 +61,7 @@ object GlMixin {
         return opt
     }
 
-    fun <T : GuiComponent<*>> rotate(component: T): Option<T, Vec3d> {
+    fun <T : GuiComponent<T>> rotate(component: T): Option<T, Vec3d> {
         pushPopMatrix(component)
 
         val opt = Option<T, Vec3d>(Vec3d.ZERO)

@@ -19,9 +19,9 @@ class Option<P, T>(protected var defaultValue: T) {
     fun getValue(param: P): T {
         val tmp = callback
         if(tmp != null) {
-            return tmp(param);
+            return tmp(param)
         }
-        return value;
+        return value
     }
 
     fun func(callback: ((P) -> T)?) {

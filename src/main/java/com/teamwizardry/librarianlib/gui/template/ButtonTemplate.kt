@@ -25,7 +25,7 @@ class ButtonTemplate(style: GuiStyle, posX: Int, posY: Int) : ComponentTemplate<
 
         tiled.preDraw.add({ c, pos, ticks ->
             val box = contents.getLogicalSize()
-            tiled.size = Vec2d(box.width() - 1 + 2 * style.BUTTON_BORDER, box.height() - 1 + 2 * style.BUTTON_BORDER)
+            tiled.size = Vec2d((box?.width() ?: 0.0) - 1 + 2 * style.BUTTON_BORDER, (box?.height() ?: 0.0) - 1 + 2 * style.BUTTON_BORDER)
         })
     }
 

@@ -22,7 +22,7 @@ class PageText(book: Book, rootData: DataNode, pageData: DataNode, page: Page) :
         markup.preDraw.add({ c, pos, ticks -> fr.unicodeFlag = true })
         fr.unicodeFlag = true
 
-        var list: List<DataNode>? = null
+        val list: List<DataNode>
         if (pageData.get("text").isList) {
             list = pageData.get("text").asList()
         } else {
@@ -33,7 +33,7 @@ class PageText(book: Book, rootData: DataNode, pageData: DataNode, page: Page) :
 
         var formats = ""
 
-        for (i in list!!.indices) {
+        for (i in list.indices) {
             val node = list[i]
             var str: String? = null
 
@@ -55,7 +55,7 @@ class PageText(book: Book, rootData: DataNode, pageData: DataNode, page: Page) :
                 if (node.isString) {
                     // do nothing
                 } else if (node.isMap) {
-                    val type = node.get("type").asStringOr("<err>")!!.toLowerCase()
+                    val type = node.get("type").asStringOr("<err>").toLowerCase()
                     if (type == "link") {
                         val hoverColor = Color.argb(0xff0000EE.toInt())
                         val normalColor = Color.argb(0xff0F00B0.toInt())
@@ -63,7 +63,7 @@ class PageText(book: Book, rootData: DataNode, pageData: DataNode, page: Page) :
                         elem.color.func { hover -> if (hover) hoverColor else normalColor }
 
                         val ref = node.get("ref").asStringOr("/error")
-                        val colon = ref!!.lastIndexOf(":")
+                        val colon = ref.lastIndexOf(":")
                         var linkPage = 0
 
                         if (colon != -1) {

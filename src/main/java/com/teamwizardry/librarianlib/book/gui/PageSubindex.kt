@@ -79,11 +79,11 @@ class PageSubindex(book: Book, rootData: DataNode, pageData: DataNode, page: Pag
         }
 
         val text = ComponentText(18, 6)
-        text.text.setValue(node.get("text").asString())
+        text.text.setValue(node.get("text").asStringOr("default"))
         comp.add(text)
         ButtonMixin(comp,
-                { text.text.setValue(node.get("text").asString()) },
-                { text.text.setValue("§n" + node.get("text").asString()) }, { }
+                { text.text.setValue(node.get("text").asStringOr("default")) },
+                { text.text.setValue("§n" + node["text"].asStringOr("default")) }, { }
         ) {
             val l = Link(node.get("link").asStringOr("/"))
             openPageRelative(l.path, l.page)

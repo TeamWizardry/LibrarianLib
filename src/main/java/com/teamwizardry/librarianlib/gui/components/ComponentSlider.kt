@@ -15,12 +15,12 @@ class ComponentSlider(posX: Int, posY: Int, width: Int, height: Int, percentage:
     val handle: ComponentVoid
     var percentage: Double = 0.toDouble()
         set(percentage) {
-            var percentage = percentage
-            percentage = MathUtil.clamp(percentage, 0.0, 1.0)
+            var newPercent = percentage
+            newPercent = MathUtil.clamp(newPercent, 0.0, 1.0)
             if (increments > 0)
-                percentage = MathUtil.round(percentage, 1.0 / increments)
-            handlePos = size.mul(percentage)
-            field = percentage
+                newPercent = MathUtil.round(newPercent, 1.0 / increments)
+            handlePos = size.mul(newPercent)
+            field = newPercent
             percentageChange.fireAll { h -> h.accept(this.percentage) }
         }
     private var handlePos: Vec2d = Vec2d(0.0, 0.0)

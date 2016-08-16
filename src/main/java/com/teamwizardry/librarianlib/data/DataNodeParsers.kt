@@ -1,49 +1,56 @@
 package com.teamwizardry.librarianlib.data
 
+import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.sprite.Sprite
 import com.teamwizardry.librarianlib.sprite.Texture
 import net.minecraft.block.Block
 import net.minecraft.block.properties.IProperty
 import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
+import net.minecraft.client.renderer.block.statemap.DefaultStateMapper
 import net.minecraft.init.Blocks
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 
 import java.util.HashMap
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
+@SideOnly(Side.CLIENT)
 object DataNodeParsers {
 
+    val keyGenerator = DefaultStateMapper()
+
     fun parseBlockState(data: DataNode): IBlockState {
-        var iblockstate: IBlockState = Blocks.AIR.defaultState
+        if (data.isMap && data["id"].isString) {
+            val id = data["id"].asStringOr("minecraft:air")
+            val block = Block.REGISTRY.getObject(ResourceLocation(id))
 
-        if (data.isMap && data.get("id").isString) {
-            val block = Block.REGISTRY.getObject(ResourceLocation(data.get("id").asStringOr("minecraft:bedrock")!!))
-            iblockstate = block.defaultState
+            val stateContainer = block.blockState
 
-            if (data.get("props").isMap) {
-                val map = data.get("props").asMap()
+            if (data["props"].isString) {
+                val map = data["props"].asStringOr("default")
 
-                val blockstatecontainer = block.blockState
+                for (state in stateContainer.validStates) if (state.stringForm() == map)
+                    return state
 
-                for (s in map.keys) {
-                    val iproperty = blockstatecontainer.getProperty(s)
+                if (map != "default" && map.isNotBlank())
+                    LibrarianLog.warn("Block state data props are invalid! ($map)")
 
-                    if (iproperty != null) {
-                        iblockstate = withProperty(iblockstate, iproperty, map[s]?.asString()!!)
-                    }
-                }
-            }
+                return block.defaultState
+            } else if (stateContainer.properties.isNotEmpty())
+                LibrarianLog.warn("Block state data doesn't contain props ($id)!")
 
+            return block.defaultState
         }
-        return iblockstate
+        return Blocks.AIR.defaultState
     }
 
-    private fun <T : Comparable<T>> withProperty(state: IBlockState, property: IProperty<T>, value: String): IBlockState {
-        return state.withProperty(property, property.parseValue(value).get())
+    private fun IBlockState.stringForm(): String {
+        return keyGenerator.getPropertyString(properties)
     }
 
     fun parseItem(node: DataNode): Item? {

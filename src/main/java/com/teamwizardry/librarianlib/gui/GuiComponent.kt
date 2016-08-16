@@ -15,7 +15,7 @@ import java.util.*
  */
 abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX: Int, posY: Int, width: Int = 0, height: Int = 0) : IGuiDrawable {
 
-    val preDraw = Event<(T, mousePos: Vec2d, partialTicks: Float) -> Unit>()
+    val preDraw = HandlerList<(T, mousePos: Vec2d, partialTicks: Float) -> Unit>()
     val postDraw = HandlerList<(T, mousePos: Vec2d, partialTicks: Float) -> Unit>()
     val preChildrenDraw = HandlerList<(T, mousePos: Vec2d, partialTicks: Float) -> Unit>()
 
@@ -73,7 +73,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     var animationTicks = 0
     private var guiTicksLastFrame = TickCounter.ticks
 
-    public var enabled = true
+    var enabled = true
         get() {
             return field
         }
@@ -227,6 +227,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     /**
      * Returns all the elements that can be cast to the specified class
      */
+    @Suppress("UNCHECKED_CAST")
     fun <C> getByClass(klass: Class<C>): List<C> {
         val list = ArrayList<C>()
         for (component in components) {
@@ -245,9 +246,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * Allows the component to modify the position before it is passed to a child element.
      */
     open fun transformChildPos(child: GuiComponent<*>, pos: Vec2d): Vec2d {
-        var pos = pos
-        pos = child.relativePos(pos)
-        return transformChildPos.fireModifier<Vec2d>(pos, { h, v -> h(thiz(), child, v) }) ?: pos
+        return transformChildPos.fireModifier(child.relativePos(pos), { h, v -> h(thiz(), child, v) }) ?: pos
     }
 
     /**
@@ -271,7 +270,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * *
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
-    public override fun draw(mousePos: Vec2d, partialTicks: Float) {
+    override fun draw(mousePos: Vec2d, partialTicks: Float) {
         if (!isVisible) return
 
         if (isAnimating) {
@@ -449,7 +448,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
         aabb = BoundingBox2D(aabb.min.add(pos), aabb.max.add(pos))
 
-        return logicalSize.fireModifier<BoundingBox2D>(if(outOfFlow) null else aabb, { t, v -> t(thiz(), v) })
+        return logicalSize.fireModifier(if(outOfFlow) null else aabb, { t, v -> t(thiz(), v) })
     }
 
     /**

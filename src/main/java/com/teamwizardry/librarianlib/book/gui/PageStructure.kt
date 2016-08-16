@@ -27,8 +27,8 @@ class PageStructure(book: Book, rootData: DataNode, pageData: DataNode, page: Pa
 
         originState = DataNodeParsers.parseBlockState(pageData.get("block"))
 
-        val structure = Structure(ResourceLocation(pageData.get("structure").asStringOr("minecraft:missingno")!!))
-        val structureTransparent = Structure(ResourceLocation(pageData.get("structure").asStringOr("minecraft:missingno")!!))
+        val structure = Structure(ResourceLocation(pageData.get("structure").asStringOr("minecraft:missingno")))
+        val structureTransparent = Structure(ResourceLocation(pageData.get("structure").asStringOr("minecraft:missingno")))
 
         val view = Component3DView(0, 0, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT)
         view.rotX = 22.0
@@ -58,7 +58,7 @@ class PageStructure(book: Book, rootData: DataNode, pageData: DataNode, page: Pa
                 ((structure.max.x - structure.min.x + 1) * hudScale + 12).toDouble(),
                 ((structure.max.y - structure.min.y + 1) * hudScale + 12).toDouble())
 
-        val structureHud = Structure(ResourceLocation(pageData.get("structure").asStringOr("minecraft:missingno")!!))
+        val structureHud = Structure(ResourceLocation(pageData.get("structure").asStringOr("minecraft:missingno")))
 
         val structureCompHud = ComponentStructure(0, 0, structureHud)
 
@@ -67,7 +67,7 @@ class PageStructure(book: Book, rootData: DataNode, pageData: DataNode, page: Pa
         GlMixin.rotate(structureCompHud).setValue(Vec3d(0.0, 0.0, 180.0))
         tiled.add(structureCompHud)
 
-        val structureTransparentHud = Structure(ResourceLocation(pageData.get("structure").asStringOr("minecraft:missingno")!!))
+        val structureTransparentHud = Structure(ResourceLocation(pageData.get("structure").asStringOr("minecraft:missingno")))
 
         val structureCompHudTransparent = ComponentStructure(0, 0, structureTransparentHud)
         structureCompHudTransparent.color.setValue(Color(1f, 1f, 1f, 0.5f))
@@ -94,9 +94,6 @@ class PageStructure(book: Book, rootData: DataNode, pageData: DataNode, page: Pa
 
                 structureComp.initStructure()
                 structureCompHud.initStructure()
-
-                val opaqueState = structure.blockAccess.getBlockState(BlockPos(6, y, 6))
-                val transpState = structureTransparent.blockAccess.getBlockState(BlockPos(6, y, 6))
 
                 structureCompTransparent.initStructure()
                 structureCompHudTransparent.initStructure()

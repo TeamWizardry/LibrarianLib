@@ -26,11 +26,10 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
     }
 
     fun scrollTo(scroll: Vec2d) {
-        var scroll = scroll
-        scroll = Vec2d.min(maxScroll, scroll)
-        if (scroll != offset) {
-            this.scroll.fireModifier<Vec2d>(scroll, { h, v -> h(this, offset, v) })
-            offset = scroll
+        val newScroll = Vec2d.min(maxScroll, scroll)
+        if (newScroll != offset) {
+            this.scroll.fireModifier(newScroll, { h, v -> h(this, offset, v) })
+            offset = newScroll
         }
     }
 

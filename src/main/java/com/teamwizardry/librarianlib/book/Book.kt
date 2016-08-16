@@ -18,7 +18,7 @@ import java.util.Stack
  *
  * @author Pierce Corcoran
  */
-class Book(val modid: String) {
+open class Book(val modid: String) {
     /**
      * The history of the pages used to get to the current page. The top element is the current page.
      */
@@ -28,24 +28,24 @@ class Book(val modid: String) {
         history.push(Page("/", 0))
     }
 
-    protected fun canOpenPage(path: String): Boolean {
+    protected open fun canOpenPage(path: String): Boolean {
         return true
     }
 
-    protected fun getScreen(page: Page): GuiScreen? {
-        var page = page
-        var scr = PageHandler.create(this, page)
+    protected open fun getScreen(page: Page): GuiScreen? {
+        var newPage = page
+        var scr = PageHandler.create(this, newPage)
         if (scr == null) {
-            LibrarianLog.warn("Page [%s:%d] not found! Going to [/:0] ", page.path, page.page)
-            page = Page("/", 0)
-            scr = PageHandler.create(this, page)
+            LibrarianLog.warn("Page [%s:%d] not found! Going to [/:0] ", newPage.path, newPage.page)
+            newPage = Page("/", 0)
+            scr = PageHandler.create(this, newPage)
         }
-        page.gui = scr
+        newPage.gui = scr
         if (history.empty())
             history.push(Page("/", 0))
-        if (history.peek().path == page.path)
+        if (history.peek().path == newPage.path)
             history.pop()
-        history.push(page)
+        history.push(newPage)
         return scr
     }
 

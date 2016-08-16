@@ -73,11 +73,11 @@ class Texture(
      * Gets the sprite with the specified name
      */
     fun getSprite(name: String, w: Int, h: Int): Sprite {
-        var s: Sprite? = sprites!![name]
+        var s: Sprite? = sprites[name]
         if (s == null) {
             // create a new one each time so on reload it'll exist and be replaced with a real one
             s = Sprite(this, 0, 0, this.width, this.height, IntArray(0), 0, 0)
-            sprites!!.put(name, s)
+            sprites.put(name, s)
         }
 
         s.width = w

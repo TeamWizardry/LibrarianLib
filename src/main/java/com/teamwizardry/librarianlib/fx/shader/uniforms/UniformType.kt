@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.fx.shader.uniforms.Uniform.NoUniform
 import org.lwjgl.opengl.*
 import java.util.*
 
-enum class UniformType private constructor(private val initializer: (Shader, String, UniformType, Int, Int) -> Uniform) {
+enum class UniformType constructor(private val initializer: (Shader, String, UniformType, Int, Int) -> Uniform) {
     NONE(::NoUniform),
     // bools
     BOOL(::NoUniform),

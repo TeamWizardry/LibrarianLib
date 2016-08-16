@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.math.shapes
 
+import com.teamwizardry.librarianlib.div
 import com.teamwizardry.librarianlib.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11

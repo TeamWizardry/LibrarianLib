@@ -32,12 +32,12 @@ import com.google.common.collect.HashMultimap
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.Multimap
 
-class Structure(loc: ResourceLocation) {
+open class Structure(loc: ResourceLocation) {
 
-    var matchedRotation: Rotation
-    protected var template: Template
+    lateinit var matchedRotation: Rotation
+    protected lateinit var template: Template
     protected var templateBlocks: List<BlockInfo>? = null
-    var blockAccess: TemplateBlockAccess
+    lateinit var blockAccess: TemplateBlockAccess
         protected set
     var origin = BlockPos.ORIGIN
     var min = BlockPos.ORIGIN
@@ -113,7 +113,7 @@ class Structure(loc: ResourceLocation) {
             } else {
                 val worldProps = worldState.propertyNames
                 for (prop in templateState.propertyNames) {
-                    if (IGNORE.contains(prop))
+                    if (IGNORE.contains(prop) || templateState.block == Blocks.REDSTONE_WIRE) // Wire because of annoying privacy
                         continue
 
                     if (!worldProps.contains(prop)) {
@@ -241,12 +241,11 @@ class Structure(loc: ResourceLocation) {
 
     companion object {
 
-        val IGNORE: List<IProperty<*>> = ArrayList(Arrays.asList(
+        val IGNORE: MutableList<IProperty<*>> = ArrayList(Arrays.asList(
                 BlockSlab.HALF,
                 BlockStairs.SHAPE,
                 BlockStairs.FACING,
                 BlockPane.EAST, BlockPane.WEST, BlockPane.NORTH, BlockPane.SOUTH,
-                BlockRedstoneWire.EAST, BlockRedstoneWire.WEST, BlockRedstoneWire.NORTH, BlockRedstoneWire.SOUTH, BlockRedstoneWire.POWER,
                 BlockRedstoneComparator.FACING, BlockRedstoneComparator.MODE, BlockRedstoneComparator.POWERED,
                 BlockRedstoneRepeater.FACING, BlockRedstoneRepeater.DELAY, BlockRedstoneRepeater.LOCKED))
 

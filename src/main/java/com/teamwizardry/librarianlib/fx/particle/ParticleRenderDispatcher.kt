@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 import java.util.ArrayList
 
-enum class ParticleRenderDispatcher private constructor() {
+enum class ParticleRenderDispatcher constructor() {
     INSTANCE;
 
     internal var queues: MutableList<ParticleRenderQueue<*>> = ArrayList()

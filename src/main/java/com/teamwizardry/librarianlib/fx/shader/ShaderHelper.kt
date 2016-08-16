@@ -96,7 +96,6 @@ class ShaderHelper private constructor() : IResourceManagerReloadListener {
             try {
                 return FMLCommonHandler.instance().effectiveSide == Side.CLIENT && Config.shaders && OpenGlHelper.shadersSupported
             } catch (ignored: NoSuchFieldError) {
-                //noop
                 return false
             }
 
@@ -108,9 +107,9 @@ class ShaderHelper private constructor() : IResourceManagerReloadListener {
 
             var vertId = 0
             var fragId = 0
-            var program = 0
-            var vertText = "[[NONE]]"
-            var fragText = "[[NONE]]"
+            val program: Int
+            var vertText: String
+            var fragText: String
             if (vert != null) {
                 try {
                     vertText = readFileAsString(vert)
@@ -128,15 +127,13 @@ class ShaderHelper private constructor() : IResourceManagerReloadListener {
                     fragText = readFileAsString(frag)
                     fragId = createShader(fragText, FRAG)
                 } catch (e: Exception) {
-                    vertText = "ERROR: \n" + e.toString()
+                    fragText = "ERROR: \n" + e.toString()
                     for (elem in e.stackTrace) {
-                        vertText += "\n" + elem.toString()
+                        fragText += "\n" + elem.toString()
                     }
                 }
 
             }
-
-            val logText = ">> VERT: \n```$vertText```\n>> FRAG: \n```$fragText```"
 
             if (shader.glName != 0)
                 GL20.glDeleteProgram(shader.glName) // Don't know if this works... but uploading it with the same id doesn't.
@@ -151,13 +148,13 @@ class ShaderHelper private constructor() : IResourceManagerReloadListener {
 
             ARBShaderObjects.glLinkProgramARB(program)
             if (ARBShaderObjects.glGetObjectParameteriARB(program, ARBShaderObjects.GL_OBJECT_LINK_STATUS_ARB) == GL11.GL_FALSE) {
-                LibrarianLog.error(getLogInfo(program, logText))
+                LibrarianLog.error(getLogInfo(program))
                 return 0
             }
 
             ARBShaderObjects.glValidateProgramARB(program)
             if (ARBShaderObjects.glGetObjectParameteriARB(program, ARBShaderObjects.GL_OBJECT_VALIDATE_STATUS_ARB) == GL11.GL_FALSE) {
-                LibrarianLog.error(getLogInfo(program, logText))
+                LibrarianLog.error(getLogInfo(program))
                 return 0
             }
             LibrarianLog.info("Created program %d - VERT:'%s' FRAG:'%s'", program, vert, frag)
@@ -179,7 +176,7 @@ class ShaderHelper private constructor() : IResourceManagerReloadListener {
                 ARBShaderObjects.glCompileShaderARB(shader)
 
                 if (ARBShaderObjects.glGetObjectParameteriARB(shader, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB) == GL11.GL_FALSE) {
-                    throw RuntimeException("Error creating shader: " + getLogInfo(shader, ">> CREATING:\n```$fileText```"))
+                    throw RuntimeException("Error creating shader: " + getLogInfo(shader))
                 }
 
                 return shader
@@ -194,14 +191,14 @@ class ShaderHelper private constructor() : IResourceManagerReloadListener {
         // Most of the code taken from the LWJGL wiki
         // http://lwjgl.org/wiki/index.php?title=GLSL_Shaders_with_LWJGL
 
-        private fun getLogInfo(obj: Int, fileText: String): String {
+        private fun getLogInfo(obj: Int): String {
             return ARBShaderObjects.glGetInfoLogARB(obj, ARBShaderObjects.glGetObjectParameteriARB(obj, ARBShaderObjects.GL_OBJECT_INFO_LOG_LENGTH_ARB))// + "\n" + fileText;
         }
 
         @Throws(Exception::class)
         private fun readFileAsString(filename: String): String {
             val source = StringBuilder()
-            val `in` = ShaderHelper::class.java!!.getResourceAsStream(filename)
+            val `in` = ShaderHelper::class.java.getResourceAsStream(filename)
             var exception: Exception? = null
             val reader: BufferedReader
 
@@ -209,7 +206,7 @@ class ShaderHelper private constructor() : IResourceManagerReloadListener {
                 return ""
 
             try {
-                reader = BufferedReader(InputStreamReader(`in`!!, "UTF-8"))
+                reader = BufferedReader(InputStreamReader(`in`, "UTF-8"))
 
                 var innerExc: Exception? = null
                 try {
@@ -220,16 +217,15 @@ class ShaderHelper private constructor() : IResourceManagerReloadListener {
                     }
                 } catch (exc: Exception) {
                     exception = exc
-                } finally {
-                    try {
-                        reader.close()
-                    } catch (exc: Exception) {
-                        if (innerExc == null)
-                            innerExc = exc
-                        else
-                            exc.printStackTrace()
-                    }
+                }
 
+                try {
+                    reader.close()
+                } catch (exc: Exception) {
+                    if (innerExc == null)
+                        innerExc = exc
+                    else
+                        exc.printStackTrace()
                 }
 
                 if (innerExc != null)

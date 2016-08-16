@@ -52,25 +52,10 @@ class HandlerList<T> {
      * @param caller
      */
     fun <V> fireModifier(value: V?, caller: (T, V?) -> V?): V? {
-        var value = value
+        var v = value
         for (t in handlers) {
-            value = caller(t, value)
+            v = caller(t, v)
         }
-        return value
-    }
-
-    @FunctionalInterface
-    interface IHandlerCaller<T> {
-        fun call(handler: T)
-    }
-
-    @FunctionalInterface
-    interface ICancelableHandlerCaller<T> {
-        fun call(handler: T): Boolean
-    }
-
-    @FunctionalInterface
-    interface IModifierHandlerCaller<V, T> {
-        fun call(handler: T, value: V): V
+        return v
     }
 }

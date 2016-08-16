@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.GL11
 
 // TODO : Conversion is lazy, may want to rewrite
-enum class InWorldRender private constructor() {
+enum class InWorldRender constructor() {
     INSTANCE;
 
     protected var pos: BlockPos? = null
@@ -96,19 +96,20 @@ enum class InWorldRender private constructor() {
     }
 
     protected fun refreshVerts() {
-        val match = structure!!.match(Minecraft.getMinecraft().theWorld, pos!!)
+        val struct = structure ?: return
+        val match = struct.match(Minecraft.getMinecraft().theWorld, pos!!)
         this.match = match
-        rot = structure!!.matchedRotation
-        structure!!.blockAccess.setBlockState(structure!!.origin, Blocks.AIR.defaultState)
+        rot = struct.matchedRotation
+        struct.blockAccess.setBlockState(struct.origin, Blocks.AIR.defaultState)
 
-        for (pos in match.matches) {
-            structure!!.blockAccess.setBlockState(pos, Blocks.AIR.defaultState)
+        for (pos in match?.matches ?: listOf<BlockPos>()) {
+            struct.blockAccess.setBlockState(pos, Blocks.AIR.defaultState)
         }
-        for (pos in match.nonAirErrors) {
-            structure!!.blockAccess.setBlockState(pos, Blocks.AIR.defaultState)
+        for (pos in match?.nonAirErrors ?: listOf<BlockPos>()) {
+            struct.blockAccess.setBlockState(pos, Blocks.AIR.defaultState)
         }
-        for (pos in match.propertyErrors) {
-            structure!!.blockAccess.setBlockState(pos, Blocks.AIR.defaultState)
+        for (pos in match?.propertyErrors ?: listOf<BlockPos>()) {
+            struct.blockAccess.setBlockState(pos, Blocks.AIR.defaultState)
         }
 
         //		verts = StructureRenderUtil.render(structure, (check) -> true, (check) -> EnumFacing.values(), new Color(1, 1, 1, 0.75f), 0.75f);
@@ -142,29 +143,23 @@ enum class InWorldRender private constructor() {
         val j = pos.y
         var k = pos.z
 
-        when (rotationIn) {
-            Rotation.COUNTERCLOCKWISE_90 -> {
-                i = -i
-                k = -k
-                i = -i
-                k = -k
-            }
-            Rotation.CLOCKWISE_90 -> {
-                k = -k
-                i = -i
-                k = -k
-            }
-            Rotation.CLOCKWISE_180 -> {
-                i = -i
-                k = -k
-            }
+        if (rotationIn == Rotation.COUNTERCLOCKWISE_90) {
+            i = -i
+            k = -k
+            i = -i
+            k = -k
+        } else if (rotationIn == Rotation.CLOCKWISE_90) {
+            k = -k
+            i = -i
+            k = -k
+        } else if (rotationIn == Rotation.CLOCKWISE_180) {
+            i = -i
+            k = -k
         }
 
 
-        when (mirrorIn) {
-            Mirror.LEFT_RIGHT -> k = -k
-            Mirror.FRONT_BACK -> i = -i
-        }
+        if (mirrorIn == Mirror.LEFT_RIGHT) k = -k
+        else if (mirrorIn == Mirror.FRONT_BACK) i = -i
 
         return BlockPos(i, j, k)
     }

@@ -6,7 +6,7 @@ open class ComponentTemplate<T : GuiComponent<*>> {
 
     protected var result: T? = null
 
-    fun get(): T {
+    fun get(): T? {
         return result
     }
 

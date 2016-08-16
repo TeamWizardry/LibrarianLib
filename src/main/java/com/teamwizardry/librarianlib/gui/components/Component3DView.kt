@@ -15,8 +15,8 @@ class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
 
     init {
 
-        preDraw.add({ c, p, t -> preDraw(c, p, t) })
-        postDraw.add({ c, p, t -> postDraw(c, p, t) })
+        preDraw.add({ c, p, t -> preDraw(p) })
+        postDraw.add({ c, p, t -> postDraw() })
     }
 
     internal var dragStart = Vec2d.ZERO
@@ -84,7 +84,7 @@ class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
         }
     }
 
-    fun preDraw(_comp_: Component3DView, mousePos: Vec2d, ticks: Float) {
+    fun preDraw(mousePos: Vec2d) {
         GlStateManager.pushMatrix()
         GlStateManager.translate(this.size.x / 2, this.size.y / 2, 500.0)
 
@@ -135,7 +135,7 @@ class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
 
     }
 
-    fun postDraw(_comp_: Component3DView, mousePos: Vec2d, ticks: Float) {
+    fun postDraw() {
         RenderHelper.disableStandardItemLighting()
         GlStateManager.disableRescaleNormal()
         GlStateManager.popMatrix()

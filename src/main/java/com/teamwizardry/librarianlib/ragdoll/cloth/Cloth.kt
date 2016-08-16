@@ -238,11 +238,9 @@ class Cloth(var top: Array<Vec3d>, var height: Int, var size: Vec3d) {
         for (x in masses.indices) {
             for (y in 0..masses[x].size - 1) {
                 val mass = masses[x][y]
-                if (mass.origPos == null)
-                    mass.origPos = mass.pos
-                minX = Math.min(minX, Math.min(mass.pos.xCoord, mass.origPos!!.xCoord))
-                minY = Math.min(minY, Math.min(mass.pos.yCoord, mass.origPos!!.yCoord))
-                minZ = Math.min(minZ, Math.min(mass.pos.zCoord, mass.origPos!!.zCoord))
+                minX = Math.min(minX, Math.min(mass.pos.xCoord, mass.origPos.xCoord))
+                minY = Math.min(minY, Math.min(mass.pos.yCoord, mass.origPos.yCoord))
+                minZ = Math.min(minZ, Math.min(mass.pos.zCoord, mass.origPos.zCoord))
 
                 if (maxX - minX > 10)
                     minX = maxX - 10
@@ -251,9 +249,9 @@ class Cloth(var top: Array<Vec3d>, var height: Int, var size: Vec3d) {
                 if (maxZ - minZ > 10)
                     minZ = maxZ - 10
 
-                maxX = Math.max(maxX, Math.max(mass.pos.xCoord, mass.origPos!!.xCoord))
-                maxY = Math.max(maxY, Math.max(mass.pos.yCoord, mass.origPos!!.yCoord))
-                maxZ = Math.max(maxZ, Math.max(mass.pos.zCoord, mass.origPos!!.zCoord))
+                maxX = Math.max(maxX, Math.max(mass.pos.xCoord, mass.origPos.xCoord))
+                maxY = Math.max(maxY, Math.max(mass.pos.yCoord, mass.origPos.yCoord))
+                maxZ = Math.max(maxZ, Math.max(mass.pos.zCoord, mass.origPos.zCoord))
 
                 if (maxX - minX > 10)
                     maxX = minX + 10
@@ -329,7 +327,7 @@ class Cloth(var top: Array<Vec3d>, var height: Int, var size: Vec3d) {
         var vecY: Vec3d? = null
         var vecZ: Vec3d? = null
 
-        if (vecA!!.yCoord > vecB.yCoord) {
+        if (vecA.yCoord > vecB.yCoord) {
             vecY = collideWithYPlane(aabb, aabb.maxY, vecA, vecB)
         }
 

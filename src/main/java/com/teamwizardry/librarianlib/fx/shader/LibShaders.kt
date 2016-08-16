@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.fx.shader
 
 import com.teamwizardry.librarianlib.fx.shader.uniforms.FloatTypes
 
-enum class LibShaders private constructor() {
+enum class LibShaders constructor() {
     INSTANCE;
 
     init {

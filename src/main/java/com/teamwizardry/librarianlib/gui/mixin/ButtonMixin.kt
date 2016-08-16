@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.gui.mixin
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.gui.GuiComponent
 
-class ButtonMixin(val component: GuiComponent<*>,
+class ButtonMixin<T : GuiComponent<T>>(val component: GuiComponent<T>,
                   private val normal: () -> Unit, private val hover: () -> Unit, private val disabled: () -> Unit, private val handler: () -> Unit) {
     var state = EnumButtonState.NORMAL
 
@@ -21,32 +21,24 @@ class ButtonMixin(val component: GuiComponent<*>,
         component.addTag(TAG)
 
         component.preDraw.add({ c, pos, partialTicks ->
-            var newState = state
-            if (!c.isEnabled)
-                newState = EnumButtonState.DISABLED
-            else if (c.mouseOverThisFrame)
-                newState = EnumButtonState.HOVER
-            else
-                newState = EnumButtonState.NORMAL
-            if (newState != state) {
-                state = newState
-                when (state) {
-                    ButtonMixin.EnumButtonState.NORMAL -> normal.changeState()
-                    ButtonMixin.EnumButtonState.HOVER -> hover.changeState()
-                    ButtonMixin.EnumButtonState.DISABLED -> disabled.changeState()
-                    else -> {
-                    }
-                }
+            state = if (!c.enabled) EnumButtonState.DISABLED
+            else if (c.mouseOverThisFrame) EnumButtonState.HOVER
+            else EnumButtonState.NORMAL
+
+            when (state) {
+                ButtonMixin.EnumButtonState.NORMAL -> normal()
+                ButtonMixin.EnumButtonState.HOVER -> hover()
+                ButtonMixin.EnumButtonState.DISABLED -> disabled()
             }
         })
 
         component.mouseClick.add({ c, pos, button ->
             if (state != EnumButtonState.DISABLED)
-                handler.handle()
+                handler()
             state != EnumButtonState.DISABLED
         })
 
-        normal.changeState()
+        normal()
     }
 
     enum class EnumButtonState {

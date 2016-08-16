@@ -20,8 +20,8 @@ class PageIndex(book: Book, rootData: DataNode, pageData: DataNode, page: Page) 
 
         val icons = pageData.get("icons").asList()
 
-        val normalColor = Color.rgb(Integer.parseInt(pageData.get("normalColor").asStringOr("0")!!, 16))
-        val hoverColor = Color.rgb(Integer.parseInt(pageData.get("hoverColor").asStringOr("00BFFF")!!, 16))
+        val normalColor = Color.rgb(Integer.parseInt(pageData.get("normalColor").asStringOr("0"), 16))
+        val hoverColor = Color.rgb(Integer.parseInt(pageData.get("hoverColor").asStringOr("00BFFF"), 16))
         val pressColor = Color.rgb(0x191970)
 
         val size = 32
@@ -36,7 +36,6 @@ class PageIndex(book: Book, rootData: DataNode, pageData: DataNode, page: Page) 
 
             val sprite = ComponentSprite(DataNodeParsers.parseSprite(icon.get("icon")), 0, 0, size, size)
 
-            val s = MutableObject<ComponentSliderTray>(null)
             ButtonMixin(sprite,
                     { sprite.color.setValue(iconNormalColor) }, { sprite.color.setValue(iconHoverColor) }, { sprite.color.setValue(pressColor) }
             ) {

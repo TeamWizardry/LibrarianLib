@@ -74,7 +74,7 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
         val x = pos.xi
         var y = pos.yi
 
-        var lines: List<String>? = null
+        val lines: List<String>
 
         val wrap = this.wrap.getValue(this)
         if (wrap == -1) {

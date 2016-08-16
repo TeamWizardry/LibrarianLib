@@ -32,8 +32,7 @@ class ComponentSlot(posX: Int, posY: Int) : GuiComponent<ComponentSlot>(posX, po
             val itemRender = Minecraft.getMinecraft().renderItem
             itemRender.zLevel = 200.0f
 
-            var font: FontRenderer? = null
-            font = stack.item.getFontRenderer(stack)
+            val font = stack.item.getFontRenderer(stack)
 
             itemRender.renderItemAndEffectIntoGUI(stack, pos.xi, pos.yi)
             itemRender.renderItemOverlayIntoGUI(if (font == null) Minecraft.getMinecraft().fontRendererObj else font, stack, pos.xi, pos.yi, str)
@@ -42,14 +41,14 @@ class ComponentSlot(posX: Int, posY: Int) : GuiComponent<ComponentSlot>(posX, po
 
 
             if (mouseOverThisFrame && tooltip.getValue(this))
-                drawTooltip(stack, mousePos)
+                drawTooltip(stack)
         }
 
         GlStateManager.disableRescaleNormal()
         RenderHelper.disableStandardItemLighting()
     }
 
-    fun drawTooltip(stack: ItemStack, mousePos: Vec2d) {
+    fun drawTooltip(stack: ItemStack) {
         val list = stack.getTooltip(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().gameSettings.advancedItemTooltips)
 
         for (i in list.indices) {

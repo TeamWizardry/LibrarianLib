@@ -17,7 +17,7 @@ object SliderTemplate {
             comp.unicode.setValue(true)
         }
 
-        slider.add(ComponentSpriteTiled(GuiBook.SLIDER_NORMAL, 6, 0, 0, 133, 8 + textComp.getLogicalSize().heightI()))
+        slider.add(ComponentSpriteTiled(GuiBook.SLIDER_NORMAL, 6, 0, 0, 133, 8 + (textComp.getLogicalSize()?.heightI() ?: 0)))
         slider.add(textComp)
 
         return slider
