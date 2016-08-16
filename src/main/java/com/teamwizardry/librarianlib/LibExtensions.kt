@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib
 
+import com.teamwizardry.librarianlib.math.Vec2d
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.text.TextFormatting
@@ -14,45 +15,40 @@ operator fun TextFormatting.plus(str: String) : String {
 
 // Vec3d ===============================================================================================================
 
-operator fun Vec3d.plus(other: Vec3d) : Vec3d {
-    return this.add(other)
-}
+operator fun Vec3d.times(other: Vec3d) = Vec3d(this.xCoord*other.xCoord, this.yCoord*other.yCoord, this.zCoord*other.zCoord)
+operator fun Vec3d.times(other: Double) = Vec3d(this.xCoord*other, this.yCoord*other, this.zCoord*other)
+operator fun Vec3d.times(other: Float) = this * other.toDouble()
+operator fun Vec3d.times(other: Int) = this * other.toDouble()
 
-operator fun Vec3d.minus(other: Vec3d) : Vec3d {
-    return this.subtract(other)
-}
+operator fun Vec3d.div(other: Vec3d) = Vec3d(this.xCoord/other.xCoord, this.yCoord/other.yCoord, this.zCoord/other.zCoord)
+operator fun Vec3d.div(other: Double) = Vec3d(this.xCoord/other, this.yCoord/other, this.zCoord/other)
+operator fun Vec3d.div(other: Float) = this / other.toDouble()
+operator fun Vec3d.div(other: Int) = this / other.toDouble()
 
-operator fun Vec3d.times(other: Vec3d) : Vec3d {
-    return Vec3d(this.xCoord*other.xCoord, this.yCoord*other.yCoord, this.zCoord*other.zCoord)
-}
+operator fun Vec3d.plus(other: Vec3d) = this.add(other)
+operator fun Vec3d.minus(other: Vec3d) = this.subtract(other)
+operator fun Vec3d.unaryMinus() = this * -1.0;
 
-operator fun Vec3d.times(other: Double) : Vec3d {
-    return Vec3d(this.xCoord*other, this.yCoord*other, this.zCoord*other)
-}
-operator fun Vec3d.times(other: Float) = this * other as Double
-operator fun Vec3d.times(other: Int) = this * other as Double
+infix fun Vec3d.dot(other: Vec3d) = this.dotProduct(other)
 
-operator fun Vec3d.div(other: Vec3d) : Vec3d {
-    return Vec3d(this.xCoord/other.xCoord, this.yCoord/other.yCoord, this.zCoord/other.zCoord)
-}
+infix fun Vec3d.cross(other: Vec3d) = this.crossProduct(other)
 
-operator fun Vec3d.div(other: Double) : Vec3d {
-    return Vec3d(this.xCoord/other, this.yCoord/other, this.zCoord/other)
-}
-operator fun Vec3d.div(other: Float) = this / other as Double
-operator fun Vec3d.div(other: Int) = this / other as Double
+// Vec2d ===============================================================================================================
 
-operator fun Vec3d.unaryMinus() : Vec3d {
-    return this * -1.0;
-}
+operator fun Vec2d.times(other: Vec2d) = this.mul(other)
+operator fun Vec2d.times(other: Double) = this.mul(other)
+operator fun Vec2d.times(other: Float) = this * other.toDouble()
+operator fun Vec2d.times(other: Int) = this * other.toDouble()
 
-infix fun Vec3d.dot(other: Vec3d) : Double {
-    return this.dotProduct(other)
-}
+operator fun Vec2d.div(other: Vec2d) = this.divide(other)
+operator fun Vec2d.div(other: Double) = this.divide(other)
+operator fun Vec2d.div(other: Float) = this / other.toDouble()
+operator fun Vec2d.div(other: Int) = this / other.toDouble()
 
-infix fun Vec3d.cross(other: Vec3d) : Vec3d {
-    return this.crossProduct(other)
-}
+operator fun Vec2d.plus(other: Vec2d) = this.add(other)
+operator fun Vec2d.minus(other: Vec2d) = this.add(other)
+operator fun Vec2d.unaryMinus() = this * -1
+
 
 // AxisAlignedBB =======================================================================================================
 

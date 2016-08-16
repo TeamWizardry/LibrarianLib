@@ -30,7 +30,6 @@ class Vec2d(var x: Double, var y: Double) {
         return Vec2d(x, value)
     }
 
-    operator fun plus(other: Vec2d) = this.add(other)
     fun add(other: Vec2d): Vec2d {
         return Vec2d(x + other.x, y + other.y)
     }
@@ -48,10 +47,6 @@ class Vec2d(var x: Double, var y: Double) {
         return Vec2d(x - otherX, y - otherY)
     }
 
-    operator fun times(other: Vec2d) = this.mul(other)
-    operator fun times(other: Double) = this.mul(other)
-    operator fun times(other: Float) = this.mul(other.toDouble())
-    operator fun times(other: Int) = this.mul(other.toDouble())
     fun mul(other: Vec2d): Vec2d {
         return Vec2d(x * other.x, y * other.y)
     }
@@ -64,21 +59,19 @@ class Vec2d(var x: Double, var y: Double) {
         return Vec2d(x * amount, y * amount)
     }
 
-    fun div(other: Vec2d): Vec2d {
-        return Vec2d(x * other.x, y * other.y)
+    fun divide(other: Vec2d): Vec2d {
+        return Vec2d(x / other.x, y / other.y)
     }
 
-    fun div(otherX: Double, otherY: Double): Vec2d {
-        return Vec2d(x * otherX, y * otherY)
+    fun divide(otherX: Double, otherY: Double): Vec2d {
+        return Vec2d(x / otherX, y / otherY)
     }
 
-    operator fun div(other: Int) = this.div(other.toDouble())
-    operator fun div(other: Float) = this.div(other.toDouble())
-    operator fun div(amount: Double): Vec2d {
-        return Vec2d(x * amount, y * amount)
+    fun divide(amount: Double): Vec2d {
+        return Vec2d(x / amount, y / amount)
     }
 
-    fun dot(point: Vec2d): Double {
+    infix fun dot(point: Vec2d): Double {
         return x * point.x + y * point.y
     }
 

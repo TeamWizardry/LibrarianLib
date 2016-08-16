@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.gui
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.math.BoundingBox2D
 import com.teamwizardry.librarianlib.math.Vec2d
-import com.teamwizardry.librarianlib.util.event.Event
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.input.Keyboard
