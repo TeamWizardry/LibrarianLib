@@ -13,6 +13,10 @@ class BoundingBox2D(val min: Vec2d, val max: Vec2d) {
                 Math.max(max.y, other.max.y))
     }
 
+    operator fun contains(other: Vec2d): Boolean{
+        return other.x <= max.x && other.x >= min.x && other.y <= max.y && other.y >= min.y
+    }
+
     fun height(): Double {
         return max.y - min.y
     }

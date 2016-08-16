@@ -2,11 +2,9 @@ package com.teamwizardry.librarianlib.gui.template
 
 import com.teamwizardry.librarianlib.gui.GuiComponent
 
-open class ComponentTemplate<T : GuiComponent<*>> {
+open class ComponentTemplate<T : GuiComponent<*>>(protected val result: T) {
 
-    protected var result: T? = null
-
-    fun get(): T? {
+    fun get(): T {
         return result
     }
 

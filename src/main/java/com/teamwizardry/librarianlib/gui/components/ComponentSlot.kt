@@ -38,7 +38,7 @@ class ComponentSlot(posX: Int, posY: Int) : GuiComponent<ComponentSlot>(posX, po
             itemRender.zLevel = 0.0f
 
 
-            if (mouseOverThisFrame && tooltip.getValue(this))
+            if (mouseOver && tooltip.getValue(this))
                 drawTooltip(stack)
         }
 

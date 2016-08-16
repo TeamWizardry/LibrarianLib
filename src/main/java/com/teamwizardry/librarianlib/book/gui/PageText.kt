@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.book.gui
 import com.teamwizardry.librarianlib.book.Book
 import com.teamwizardry.librarianlib.book.util.Page
 import com.teamwizardry.librarianlib.data.DataNode
+import com.teamwizardry.librarianlib.gui.GuiComponent
 import com.teamwizardry.librarianlib.gui.components.ComponentMarkup
 import com.teamwizardry.librarianlib.util.Color
 import net.minecraft.client.Minecraft
@@ -17,7 +18,7 @@ class PageText(book: Book, rootData: DataNode, pageData: DataNode, page: Page) :
 
         val markup = ComponentMarkup(0, 0, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT)
         contents.add(markup)
-        markup.preDraw.add({ c, pos, ticks -> fr.unicodeFlag = true })
+        markup.BUS.hook(GuiComponent.PreDrawEvent::class.java) { fr.unicodeFlag = true }
         fr.unicodeFlag = true
 
         val list: List<DataNode>
@@ -74,8 +75,8 @@ class PageText(book: Book, rootData: DataNode, pageData: DataNode, page: Page) :
                         }
 
                         val path = ref.substring(0, if (colon == -1) ref.length else colon)
-                        val _page = linkPage
-                        elem.click.add({ openPageRelative(path, _page) })
+
+                        elem.BUS.hook(ComponentMarkup.ElementClickEvent::class.java) { openPageRelative(path, linkPage) }
                     }
                 }
                 formats = FontRenderer.getFormatFromString(formats + str)
@@ -83,7 +84,7 @@ class PageText(book: Book, rootData: DataNode, pageData: DataNode, page: Page) :
         }
 
         fr.unicodeFlag = false
-        markup.postDraw.add({ c, pos, ticks -> fr.unicodeFlag = false })
+        markup.BUS.hook(GuiComponent.PreDrawEvent::class.java) { fr.unicodeFlag = false }
 
         if (pageNum != -1) {
             // the / font_height ) * font_height is to round it to the nearest font_height multiple (int division)

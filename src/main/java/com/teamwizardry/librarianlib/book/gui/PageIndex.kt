@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.book.util.Link
 import com.teamwizardry.librarianlib.book.util.Page
 import com.teamwizardry.librarianlib.data.DataNode
 import com.teamwizardry.librarianlib.data.DataNodeParsers
+import com.teamwizardry.librarianlib.gui.GuiComponent
 import com.teamwizardry.librarianlib.gui.components.ComponentGrid
 import com.teamwizardry.librarianlib.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.gui.mixin.ButtonMixin
@@ -32,20 +33,25 @@ class PageIndex(book: Book, rootData: DataNode, pageData: DataNode, page: Page) 
 
             val sprite = ComponentSprite(DataNodeParsers.parseSprite(icon.get("icon")), 0, 0, size, size)
 
-            ButtonMixin(sprite,
-                    { sprite.color.setValue(iconNormalColor) }, { sprite.color.setValue(iconHoverColor) }, { sprite.color.setValue(pressColor) }
-            ) {
+            ButtonMixin(sprite) { sprite.color.setValue(iconNormalColor) }
+            sprite.BUS.hook(ButtonMixin.ButtonStateChangeEvent::class.java) { event ->
+                when (event.newState) {
+                    ButtonMixin.EnumButtonState.NORMAL -> sprite.color.setValue(iconNormalColor)
+                    ButtonMixin.EnumButtonState.DISABLED -> sprite.color.setValue(pressColor)
+                    ButtonMixin.EnumButtonState.HOVER -> sprite.color.setValue(iconHoverColor)
+                }
+            }
+            sprite.BUS.hook(ButtonMixin.ButtonClickEvent::class.java) {
                 val l = Link(icon.get("link").asStringOr("/"))
                 openPageRelative(l.path, l.page)
             }
-            sprite.mouseIn.add({ c, pos ->
-                addTextSlider(sprite, c.pos.yi, icon.get("text").asStringOr("<NULL>"))
-                false
-            })
-            sprite.mouseOut.add({ c, pos ->
+
+            sprite.BUS.hook(GuiComponent.MouseInEvent::class.java) { event ->
+                addTextSlider(sprite, event.component.pos.yi, icon.get("text").asStringOr("<NULL>"))
+            }
+            sprite.BUS.hook(GuiComponent.MouseOutEvent::class.java) { event ->
                 removeSlider(sprite)
-                false
-            })
+            }
 
             grid.add(sprite)
         }

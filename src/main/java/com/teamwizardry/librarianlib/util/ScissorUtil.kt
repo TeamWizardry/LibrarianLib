@@ -35,7 +35,7 @@ class ScissorUtil private constructor() {
             GL11.glDisable(GL11.GL_SCISSOR_TEST)
         }
 
-        operator fun set(left: Int, top: Int, width: Int, height: Int) {
+        fun set(left: Int, top: Int, width: Int, height: Int) {
             if (screenScale == -1)
                 INSTANCE.updateResolution(null)
             GL11.glScissor(left * screenScale, Minecraft.getMinecraft().displayHeight - (top + height) * screenScale,

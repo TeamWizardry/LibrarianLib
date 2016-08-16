@@ -29,7 +29,7 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         super.drawScreen(mouseX, mouseY, partialTicks)
-        components.draw(components.relativePos(Vec2d(mouseX.toDouble(), mouseY.toDouble())), partialTicks)
+        components.draw(Vec2d(mouseX.toDouble(), mouseY.toDouble()) - components.pos, partialTicks)
 
         if (components.tooltipText != null) {
             GuiUtils.drawHoveringText(components.tooltipText, mouseX, mouseY, width, height, -1, if (components.tooltipFont == null) mc.fontRendererObj else components.tooltipFont)
@@ -41,17 +41,17 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
     @Throws(IOException::class)
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         super.mouseClicked(mouseX, mouseY, mouseButton)
-        components.mouseDown(components.relativePos(Vec2d(mouseX.toDouble(), mouseY.toDouble())), EnumMouseButton.getFromCode(mouseButton))
+        components.mouseDown(Vec2d(mouseX.toDouble(), mouseY.toDouble()) - components.pos, EnumMouseButton.getFromCode(mouseButton))
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         super.mouseReleased(mouseX, mouseY, state)
-        components.mouseUp(components.relativePos(Vec2d(mouseX.toDouble(), mouseY.toDouble())), EnumMouseButton.getFromCode(state))
+        components.mouseUp(Vec2d(mouseX.toDouble(), mouseY.toDouble()) - components.pos, EnumMouseButton.getFromCode(state))
     }
 
     override fun mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
         super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)
-        components.mouseDrag(components.relativePos(Vec2d(mouseX.toDouble(), mouseY.toDouble())), EnumMouseButton.getFromCode(clickedMouseButton))
+        components.mouseDrag(Vec2d(mouseX.toDouble(), mouseY.toDouble()) - components.pos, EnumMouseButton.getFromCode(clickedMouseButton))
     }
 
     @Throws(IOException::class)
@@ -72,15 +72,7 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         var wheelAmount = Mouse.getEventDWheel()
 
         if (wheelAmount != 0) {
-            if (wheelAmount > 0) {
-                wheelAmount = 1
-            }
-
-            if (wheelAmount < 0) {
-                wheelAmount = -1
-            }
-
-            components.mouseWheel(components.relativePos(Vec2d(mouseX.toDouble(), mouseY.toDouble())), wheelAmount)
+            components.mouseWheel(Vec2d(mouseX.toDouble(), mouseY.toDouble()) - components.pos, GuiComponent.MouseWheelDirection.fromSign(wheelAmount))
         }
     }
 }

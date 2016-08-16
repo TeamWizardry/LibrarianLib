@@ -11,11 +11,10 @@ object SliderTemplate {
 
     fun text(posY: Int, text: String): ComponentSliderTray {
         val slider = ComponentSliderTray(0, posY, -120, 0)
-        val textComp = ComponentText(6, 4).setup { comp ->
-            comp.text.setValue(text)
-            comp.wrap.setValue(113)
-            comp.unicode.setValue(true)
-        }
+        val textComp = ComponentText(6, 4)
+        textComp.text.setValue(text)
+        textComp.wrap.setValue(113)
+        textComp.unicode.setValue(true)
 
         slider.add(ComponentSpriteTiled(GuiBook.SLIDER_NORMAL, 6, 0, 0, 133, 8 + (textComp.getLogicalSize()?.heightI() ?: 0)))
         slider.add(textComp)

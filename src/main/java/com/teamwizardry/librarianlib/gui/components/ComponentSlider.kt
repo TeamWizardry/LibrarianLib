@@ -39,10 +39,10 @@ class ComponentSlider(posX: Int, posY: Int, width: Int, height: Int, percentage:
             vec
         }
 
-        handle.preDraw.add({ c, pos, partialTicks ->
+        handle.BUS.hook(PreDrawEvent::class.java) { event ->
             if (handlePos != handle.pos)
                 handle.pos = handlePos
-        })
+        }
 
         add(handle)
     }

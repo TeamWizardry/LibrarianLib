@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.book.Book
 import com.teamwizardry.librarianlib.book.util.Page
 import com.teamwizardry.librarianlib.data.DataNode
 import com.teamwizardry.librarianlib.data.DataNodeParsers
+import com.teamwizardry.librarianlib.gui.GuiComponent
 import com.teamwizardry.librarianlib.gui.components.Component3DView
 import com.teamwizardry.librarianlib.gui.components.ComponentSpriteTiled
 import com.teamwizardry.librarianlib.gui.components.ComponentStructure
@@ -51,8 +52,8 @@ class PageStructure(book: Book, rootData: DataNode, pageData: DataNode, page: Pa
         val tiled = ComponentSpriteTiled(GuiBook.SLIDER_NORMAL, 6, 0, 0)
         contents.add(tiled)
 
-        tiled.preDraw.add({ c, pos, ticks -> GlStateManager.depthFunc(GL11.GL_ALWAYS) })
-        tiled.preChildrenDraw.add({ c, pos, ticks -> GlStateManager.depthFunc(GL11.GL_LEQUAL) })
+        tiled.BUS.hook(GuiComponent.PreDrawEvent::class.java) { GlStateManager.depthFunc(GL11.GL_ALWAYS) }
+        tiled.BUS.hook(GuiComponent.PreChildrenDrawEvent::class.java) { GlStateManager.depthFunc(GL11.GL_LEQUAL) }
 
         tiled.size = Vec2d(
                 ((structure.max.x - structure.min.x + 1) * hudScale + 12).toDouble(),
@@ -81,10 +82,9 @@ class PageStructure(book: Book, rootData: DataNode, pageData: DataNode, page: Pa
 
         clickArea.size = tiled.size.sub(12.0, 12.0)
 
-        clickArea.mouseClick.add({ c, pos, button ->
-
-            if (c.mouseOverThisFrame) {
-                val y = (c.size.yi - pos.yi + 1) / 3
+        clickArea.BUS.hook(GuiComponent.MouseClickEvent::class.java) { event ->
+            if (event.component.mouseOver) {
+                val y = (event.component.size.yi - event.mousePos.yi + 1) / 3
 
                 setClipY(y, structureTransparent)
                 setClipY(y, structureTransparentHud)
@@ -98,9 +98,7 @@ class PageStructure(book: Book, rootData: DataNode, pageData: DataNode, page: Pa
                 structureCompTransparent.initStructure()
                 structureCompHudTransparent.initStructure()
             }
-
-            false
-        })
+        }
 
         tiled.add(clickArea)
 

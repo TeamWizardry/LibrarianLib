@@ -39,31 +39,65 @@ open class GuiBook(val book: Book, protected val rootData: DataNode, protected v
         val normalColor = Color.rgb(0x0DBFA2)
 
         navBar.add(ComponentSprite(TITLE_BAR, 0, 0))
-        navBar.add(ComponentSprite(BACK_PAGE, 15, 2).setup { b ->
-            b.enabled = pageData.get("hasPrev").exists()
-            ButtonMixin(b,
-                    { b.color.setValue(normalColor) }, { b.color.setValue(hoverColor) }, { b.color.setValue(disabledColor) }
-            ) { openPage(this.page.path, this.page.page - 1) }
-        })
-        navBar.add(ComponentSprite(NEXT_PAGE, TITLE_BAR.width - NEXT_PAGE.width - 15, 2).setup { b ->
-            b.enabled = pageData.get("hasNext").exists()
-            ButtonMixin(b,
-                    { b.color.setValue(normalColor) }, { b.color.setValue(hoverColor) }, { b.color.setValue(disabledColor) }
-            ) { openPage(this.page.path, this.page.page + 1) }
-        })
-        navBar.add(ComponentSprite(BACK_ARROW, TITLE_BAR.width / 2 - BACK_ARROW.width / 2, 2).setup { b ->
-            b.enabled = book.history.size > 0
-            ButtonMixin(b,
-                    { b.color.setValue(normalColor) }, { b.color.setValue(hoverColor) }, { b.color.setValue(disabledColor) }
-            ) { book.back() }
-        })
+
+        // back page
+        val backPageButton = ComponentSprite(BACK_PAGE, 15, 2)
+        ButtonMixin(backPageButton) { backPageButton.color.setValue(normalColor) }
+
+        backPageButton.enabled = pageData.get("hasPrev").exists()
+        backPageButton.BUS.hook(ButtonMixin.ButtonClickEvent::class.java) {
+            openPage(this.page.path, this.page.page - 1)
+        }
+        backPageButton.BUS.hook(ButtonMixin.ButtonStateChangeEvent::class.java) { event ->
+            when(event.newState) {
+                ButtonMixin.EnumButtonState.NORMAL -> backPageButton.color.setValue(normalColor)
+                ButtonMixin.EnumButtonState.DISABLED -> backPageButton.color.setValue(disabledColor)
+                ButtonMixin.EnumButtonState.HOVER -> backPageButton.color.setValue(hoverColor)
+            }
+        }
+
+        navBar.add(backPageButton)
+
+        // next page
+        val nextPageButton = ComponentSprite(NEXT_PAGE, TITLE_BAR.width - NEXT_PAGE.width - 15, 2)
+        ButtonMixin(nextPageButton) { nextPageButton.color.setValue(normalColor) }
+
+        nextPageButton.enabled = pageData.get("hasNext").exists()
+        nextPageButton.BUS.hook(ButtonMixin.ButtonClickEvent::class.java) {
+            openPage(this.page.path, this.page.page + 1)
+        }
+        nextPageButton.BUS.hook(ButtonMixin.ButtonStateChangeEvent::class.java) { event ->
+            when(event.newState) {
+                ButtonMixin.EnumButtonState.NORMAL -> nextPageButton.color.setValue(normalColor)
+                ButtonMixin.EnumButtonState.DISABLED -> nextPageButton.color.setValue(disabledColor)
+                ButtonMixin.EnumButtonState.HOVER -> nextPageButton.color.setValue(hoverColor)
+            }
+        }
+        navBar.add(nextPageButton)
+
+        // back arrow
+        val backArrowButton = ComponentSprite(BACK_ARROW, TITLE_BAR.width / 2 - BACK_ARROW.width / 2, 2)
+        ButtonMixin(backArrowButton) { backArrowButton.color.setValue(normalColor) }
+
+        backArrowButton.enabled = book.history.size > 0
+        backArrowButton.BUS.hook(ButtonMixin.ButtonClickEvent::class.java) {
+            book.back()
+        }
+        backArrowButton.BUS.hook(ButtonMixin.ButtonStateChangeEvent::class.java) { event ->
+            when(event.newState) {
+                ButtonMixin.EnumButtonState.NORMAL -> backArrowButton.color.setValue(normalColor)
+                ButtonMixin.EnumButtonState.DISABLED -> backArrowButton.color.setValue(disabledColor)
+                ButtonMixin.EnumButtonState.HOVER -> backArrowButton.color.setValue(hoverColor)
+            }
+        }
 
         // page
         val contents = ComponentVoid(13, 9, PAGE_WIDTH, PAGE_HEIGHT)
         ScissorMixin.scissor(contents)
 
         // bg/fg
-        val border = ComponentSprite(BOOK_BACKGROUND_BORDER, 0, 0).setup { b -> b.depth.setValue(false) }
+        val border = ComponentSprite(BOOK_BACKGROUND_BORDER, 0, 0)
+        border.depth.setValue(false)
 
         val pageBG = ComponentSprite(BACKGROUND_PAGE, 0, 0)
 

@@ -15,14 +15,13 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
 
     init {
         ScissorMixin.scissor(this)
+        BUS.hook(ChildMouseOffsetEvent::class.java) { event ->
+            event.offset = event.offset.add(offset)
+        }
     }
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
         // noop
-    }
-
-    override fun transformChildPos(child: GuiComponent<*>, pos: Vec2d): Vec2d {
-        return super.transformChildPos(child, pos).add(offset)
     }
 
     fun scrollTo(scroll: Vec2d) {

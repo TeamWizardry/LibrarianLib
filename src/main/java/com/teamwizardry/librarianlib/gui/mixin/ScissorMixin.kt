@@ -7,13 +7,13 @@ import com.teamwizardry.librarianlib.util.ScissorUtil
 object ScissorMixin {
 
     fun <T : GuiComponent<T>> scissor(component: GuiComponent<T>) {
-        component.preDraw.add({ c, pos, partialTicks ->
-            val root = c.rootPos(Vec2d(0.0, 0.0))
+        component.BUS.hook(GuiComponent.PreDrawEvent::class.java) { event ->
+            val root = event.component.rootPos(Vec2d(0.0, 0.0))
             ScissorUtil.push()
-            ScissorUtil[root.xi, root.yi, c.size.xi] = c.size.yi
+            ScissorUtil.set(root.xi, root.yi, event.component.size.xi, event.component.size.yi)
             ScissorUtil.enable()
-        })
-        component.postDraw.addFirst({ c, pos, partialTicks -> ScissorUtil.pop() })
+        }
+        component.BUS.hook(GuiComponent.PostDrawEvent::class.java) { ScissorUtil.pop() }
     }
 
 }

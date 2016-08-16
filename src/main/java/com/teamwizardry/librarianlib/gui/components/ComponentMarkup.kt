@@ -6,11 +6,15 @@ import com.teamwizardry.librarianlib.gui.Option
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.sprite.TextWrapper
 import com.teamwizardry.librarianlib.util.Color
+import com.teamwizardry.librarianlib.util.event.EventBus
+import com.teamwizardry.librarianlib.util.event.EventCancelable
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import java.util.*
 
 open class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent<ComponentMarkup>(posX, posY, width, height) {
+
+    class ElementClickEvent(val element: MarkupElement) : EventCancelable()
 
     val start = Option<ComponentMarkup, Int>(0)
     val end = Option<ComponentMarkup, Int>(Integer.MAX_VALUE)
@@ -18,20 +22,22 @@ open class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiC
     internal var elements: MutableList<MarkupElement> = ArrayList()
 
     init {
-
-        mouseClick.add({ c, pos, button ->
+        BUS.hook(MouseOffsetEvent::class.java) { event ->
+            event.offset = event.offset.sub(0.0, start.getValue(this).toDouble())
+        }
+        BUS.hook(MouseClickEvent::class.java) { event ->
+            if(!event.component.mouseOver)
+                return@hook
             for (element in elements) {
                 if (element.isMouseOver(pos.xi, pos.yi)) {
-                    element.click.fireAll { h -> h() }
-                    return@add true
+                    if(!element.BUS.fire(ElementClickEvent(element)).isCanceled()) {
+                        event.cancel()
+                        break
+                    }
                 }
             }
             false
-        })
-    }
-
-    override fun relativePos(pos: Vec2d): Vec2d {
-        return super.relativePos(pos).add(0.0, start.getValue(this).toDouble())
+        }
     }
 
     fun create(text: String): MarkupElement {
@@ -61,10 +67,11 @@ open class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiC
     }
 
     class MarkupElement(var posY: Int, var firstLineOffset: Int, width: Int, text: String) {
+        val BUS = EventBus()
+
         val format = Option<Boolean, String>("")
         val color = Option<Boolean, Color>(Color.BLACK)
         val dropShadow = Option<Boolean, Boolean>(false)
-        val click = HandlerList<() -> Unit>()
         var lines: MutableList<String> = ArrayList()
         private val lengths: IntArray
 

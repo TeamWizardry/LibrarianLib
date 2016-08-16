@@ -68,27 +68,27 @@ class PageSubindex(book: Book, rootData: DataNode, pageData: DataNode, page: Pag
         }
 
         if (node.get("tip").exists()) {
-            comp.mouseIn.add({ c, pos ->
-                addTextSlider(comp, c.pos.yi, node.get("tip").asStringOr("<NULL>"))
-                false
-            })
-            comp.mouseOut.add({ c, pos ->
+            comp.BUS.hook(GuiComponent.MouseInEvent::class.java) { event ->
+                addTextSlider(comp, event.component.pos.yi, node.get("tip").asStringOr("<NULL>"))
+            }
+            comp.BUS.hook(GuiComponent.MouseOutEvent::class.java) { event ->
                 removeSlider(comp)
-                false
-            })
+            }
         }
 
         val text = ComponentText(18, 6)
         text.text.setValue(node.get("text").asStringOr("default"))
         comp.add(text)
-        ButtonMixin(comp,
-                { text.text.setValue(node.get("text").asStringOr("default")) },
-                { text.text.setValue("§n" + node["text"].asStringOr("default")) }, { }
-        ) {
+        ButtonMixin(comp) {}
+        comp.BUS.hook(ButtonMixin.ButtonStateChangeEvent::class.java) { event ->
+            when (event.newState) {
+                ButtonMixin.EnumButtonState.NORMAL -> text.text.setValue(node.get("text").asStringOr("default"))
+                ButtonMixin.EnumButtonState.HOVER -> text.text.setValue("§n" + node["text"].asStringOr("default"))
+            }
+        }
+        comp.BUS.hook(ButtonMixin.ButtonClickEvent::class.java) {
             val l = Link(node.get("link").asStringOr("/"))
             openPageRelative(l.path, l.page)
-            var parnt = text.parent
-            parnt = null
         }
     }
 }

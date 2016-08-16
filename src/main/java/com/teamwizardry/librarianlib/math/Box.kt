@@ -4,12 +4,7 @@ import com.google.common.annotations.VisibleForTesting
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
 
-class Box(var matrix: Matrix4, var inverse: Matrix4, var minX: Double, var minY: Double, var minZ: Double, var maxX: Double, var maxY: Double, var maxZ: Double) {
-    var aabb: AxisAlignedBB
-
-    init {
-        this.aabb = AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ)
-    }
+class Box(var matrix: Matrix4, var inverse: Matrix4, val aabb: AxisAlignedBB) {
 
     fun fix(vec: Vec3d): Vec3d {
         var vecT = matrix.apply(vec)

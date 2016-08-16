@@ -1,10 +1,12 @@
 package com.teamwizardry.librarianlib.util.event
 
+import java.util.function.Consumer
+
 /**
  * Created by TheCodeWarrior
  */
 class EventBus {
-    private val hooks = mutableMapOf<Class<*>, MutableList<(Event) -> Unit>>().withDefault { mutableListOf() }
+    private val hooks = mutableMapOf<Class<*>, MutableList<EventHandler<Event>>>().withDefault { mutableListOf() }
 
     fun <E : Event> fire(event: E): E {
         val klass = event.javaClass
@@ -22,6 +24,10 @@ class EventBus {
     }
 
     fun <E : Event> hook(klass: Class<E>, hook: (E) -> Unit) {
-        hooks[klass]?.add(hook as (Event) -> Unit)
+        hook(klass, EventHandler(hook))
+    }
+
+    fun <E : Event> hook(klass: Class<E>, hook: EventHandler<E>) {
+        hooks[klass]?.add(hook as EventHandler<Event>)
     }
 }
