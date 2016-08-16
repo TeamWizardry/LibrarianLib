@@ -1,26 +1,24 @@
 package com.teamwizardry.librarianlib.book.gui
 
-import com.teamwizardry.librarianlib.gui.GuiBase
-import net.minecraft.util.ResourceLocation
-import java.util.WeakHashMap
-
-import com.teamwizardry.librarianlib.gui.components.*
-import com.teamwizardry.librarianlib.gui.template.SliderTemplate
-
 import com.teamwizardry.librarianlib.LibrarianLib
+import com.teamwizardry.librarianlib.book.Book
+import com.teamwizardry.librarianlib.book.util.Page
+import com.teamwizardry.librarianlib.data.DataNode
+import com.teamwizardry.librarianlib.gui.GuiBase
+import com.teamwizardry.librarianlib.gui.components.ComponentSliderTray
 import com.teamwizardry.librarianlib.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.gui.components.ComponentText
 import com.teamwizardry.librarianlib.gui.components.ComponentText.TextAlignH
 import com.teamwizardry.librarianlib.gui.components.ComponentText.TextAlignV
+import com.teamwizardry.librarianlib.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.gui.mixin.ButtonMixin
 import com.teamwizardry.librarianlib.gui.mixin.ScissorMixin
+import com.teamwizardry.librarianlib.gui.template.SliderTemplate
+import com.teamwizardry.librarianlib.sprite.Texture
 import com.teamwizardry.librarianlib.util.Color
 import com.teamwizardry.librarianlib.util.PathUtils
-import com.teamwizardry.librarianlib.book.Book
-import com.teamwizardry.librarianlib.book.util.Page
-import com.teamwizardry.librarianlib.sprite.Sprite
-import com.teamwizardry.librarianlib.sprite.Texture
-import com.teamwizardry.librarianlib.data.DataNode
+import net.minecraft.util.ResourceLocation
+import java.util.*
 
 open class GuiBook(val book: Book, protected val rootData: DataNode, protected val pageData: DataNode, val page: Page) : GuiBase(146, 180) {
     protected var contents: ComponentVoid

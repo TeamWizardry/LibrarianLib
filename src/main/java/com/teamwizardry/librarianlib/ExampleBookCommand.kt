@@ -1,11 +1,9 @@
 package com.teamwizardry.librarianlib
 
-import net.minecraft.client.Minecraft
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import net.minecraft.command.WrongUsageException
 import net.minecraft.server.MinecraftServer
-import net.minecraft.util.text.TextComponentString
 
 /**
  * Created by TheCodeWarrior on 7/31/16.

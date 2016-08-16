@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.math
 
-import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
 
 class Sphere(internal var pos:

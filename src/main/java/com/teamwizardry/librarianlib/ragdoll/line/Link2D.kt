@@ -1,7 +1,5 @@
 package com.teamwizardry.librarianlib.ragdoll.line
 
-import com.teamwizardry.librarianlib.math.Vec2d
-
 /**
  * Created by Saad on 12/7/2016.
  */

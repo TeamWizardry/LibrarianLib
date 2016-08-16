@@ -1,18 +1,17 @@
 package com.teamwizardry.librarianlib.gui.mixin.gl
 
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.util.math.Vec3d
-
 import com.teamwizardry.librarianlib.gui.GuiComponent
 import com.teamwizardry.librarianlib.gui.Option
 import com.teamwizardry.librarianlib.util.Color
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.util.math.Vec3d
 
 object GlMixin {
 
     val TAG_ATTRIB = "mixin_attrib"
     val TAG_MATRIX = "mixin_matrix"
 
-    fun <T: GuiComponent<T>> pushPopAttrib(component: GuiComponent<T>) {
+    fun <T : GuiComponent<T>> pushPopAttrib(component: GuiComponent<T>) {
         if (!component.addTag(TAG_ATTRIB))
             return
 
@@ -20,7 +19,7 @@ object GlMixin {
         component.postDraw.addFirst({ c, pos, partialTicks -> GlStateManager.popAttrib() })
     }
 
-    fun <T: GuiComponent<T>> pushPopMatrix(component: GuiComponent<T>) {
+    fun <T : GuiComponent<T>> pushPopMatrix(component: GuiComponent<T>) {
         if (!component.addTag(TAG_MATRIX))
             return
 

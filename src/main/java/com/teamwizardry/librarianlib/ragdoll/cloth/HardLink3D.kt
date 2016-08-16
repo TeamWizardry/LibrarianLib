@@ -1,7 +1,5 @@
 package com.teamwizardry.librarianlib.ragdoll.cloth
 
-import net.minecraft.util.math.Vec3d
-
 class HardLink3D(a: PointMass3D, b: PointMass3D, strength: Float) : Link3D(a, b, strength) {
 
     override fun resolve() {

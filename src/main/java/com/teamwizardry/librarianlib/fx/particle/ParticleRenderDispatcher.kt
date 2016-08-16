@@ -2,12 +2,10 @@ package com.teamwizardry.librarianlib.fx.particle
 
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.Tessellator
-import net.minecraft.profiler.Profiler
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-
-import java.util.ArrayList
+import java.util.*
 
 enum class ParticleRenderDispatcher constructor() {
     INSTANCE;

@@ -1,7 +1,5 @@
 package com.teamwizardry.librarianlib.book.util
 
-import java.util.HashMap
-
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.book.Book
 import com.teamwizardry.librarianlib.book.gui.*

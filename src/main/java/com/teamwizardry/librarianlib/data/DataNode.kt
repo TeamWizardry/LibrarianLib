@@ -2,9 +2,7 @@ package com.teamwizardry.librarianlib.data
 
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
-
-import java.util.ArrayList
-import java.util.HashMap
+import java.util.*
 
 open class DataNode {
     protected var type: EnumNodeType? = null

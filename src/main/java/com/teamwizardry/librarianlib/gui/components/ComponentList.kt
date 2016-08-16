@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.gui.components
 
 import com.teamwizardry.librarianlib.gui.GuiComponent
-import com.teamwizardry.librarianlib.math.BoundingBox2D
 import com.teamwizardry.librarianlib.math.Vec2d
 
 /**
@@ -15,7 +14,7 @@ class ComponentList(posX: Int, posY: Int) : GuiComponent<ComponentList>(posX, po
         for (component in components) {
             component.pos = Vec2d(component.pos.x, y.toDouble())
             val bb = component.getLogicalSize()
-            if(bb != null) y = bb.max.yi
+            if (bb != null) y = bb.max.yi
         }
     }
 }

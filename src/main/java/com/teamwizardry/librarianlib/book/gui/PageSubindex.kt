@@ -1,13 +1,13 @@
 package com.teamwizardry.librarianlib.book.gui
 
-import com.teamwizardry.librarianlib.gui.GuiComponent
-import com.teamwizardry.librarianlib.gui.components.*
-import com.teamwizardry.librarianlib.gui.mixin.ButtonMixin
 import com.teamwizardry.librarianlib.book.Book
 import com.teamwizardry.librarianlib.book.util.Link
 import com.teamwizardry.librarianlib.book.util.Page
 import com.teamwizardry.librarianlib.data.DataNode
 import com.teamwizardry.librarianlib.data.DataNodeParsers
+import com.teamwizardry.librarianlib.gui.GuiComponent
+import com.teamwizardry.librarianlib.gui.components.*
+import com.teamwizardry.librarianlib.gui.mixin.ButtonMixin
 import com.teamwizardry.librarianlib.math.Vec2d
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack

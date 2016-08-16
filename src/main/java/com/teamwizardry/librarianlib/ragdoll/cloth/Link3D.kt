@@ -1,7 +1,5 @@
 package com.teamwizardry.librarianlib.ragdoll.cloth
 
-import net.minecraft.util.math.Vec3d
-
 open class Link3D {
     var a: PointMass3D
     var b: PointMass3D

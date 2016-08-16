@@ -1,13 +1,12 @@
 package com.teamwizardry.librarianlib.book.util
 
 import com.teamwizardry.librarianlib.LibrarianLog
-import com.teamwizardry.librarianlib.util.PathUtils
 import com.teamwizardry.librarianlib.data.DataNode
 import com.teamwizardry.librarianlib.data.DataParser
+import com.teamwizardry.librarianlib.util.PathUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.IResource
 import net.minecraft.util.ResourceLocation
-
 import java.io.FileNotFoundException
 import java.io.IOException
 

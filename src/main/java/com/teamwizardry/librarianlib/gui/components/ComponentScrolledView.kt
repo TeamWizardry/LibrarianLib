@@ -54,7 +54,7 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
     val maxScroll: Vec2d
         get() {
             var l = super.getLogicalSize()
-            if(l == null)
+            if (l == null)
                 return Vec2d.ZERO
             return l.max.sub(pos).sub(size)
         }

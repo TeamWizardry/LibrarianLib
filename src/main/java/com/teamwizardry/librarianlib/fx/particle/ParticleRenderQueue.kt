@@ -1,11 +1,7 @@
 package com.teamwizardry.librarianlib.fx.particle
 
-import java.util.ArrayList
-import java.util.Collections
-
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.Tessellator
-import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.math.Vec3d
 
 abstract class ParticleRenderQueue<T : QueuedParticle<T>>(sort: Boolean) {

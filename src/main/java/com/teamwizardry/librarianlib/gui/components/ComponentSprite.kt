@@ -2,9 +2,9 @@ package com.teamwizardry.librarianlib.gui.components
 
 import com.teamwizardry.librarianlib.gui.GuiComponent
 import com.teamwizardry.librarianlib.gui.Option
-import com.teamwizardry.librarianlib.util.Color
-import com.teamwizardry.librarianlib.sprite.Sprite
 import com.teamwizardry.librarianlib.math.Vec2d
+import com.teamwizardry.librarianlib.sprite.Sprite
+import com.teamwizardry.librarianlib.util.Color
 import org.lwjgl.opengl.GL11
 
 class ComponentSprite @JvmOverloads constructor(var sprite: Sprite?, x: Int, y: Int, width: Int = sprite?.width ?: 16, height: Int = sprite?.height ?: 16) : GuiComponent<ComponentSprite>(x, y, width, height) {

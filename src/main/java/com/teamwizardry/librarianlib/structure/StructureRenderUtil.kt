@@ -1,19 +1,12 @@
 package com.teamwizardry.librarianlib.structure
 
-import java.nio.IntBuffer
-
-import net.minecraft.block.state.IBlockState
+import com.teamwizardry.librarianlib.util.BlockRenderUtils
+import com.teamwizardry.librarianlib.util.Color
 import net.minecraft.client.renderer.VertexBuffer
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.BlockRenderLayer
 import net.minecraft.util.EnumBlockRenderType
-import net.minecraft.world.IBlockAccess
-import net.minecraft.world.gen.structure.template.Template.BlockInfo
-
 import org.lwjgl.opengl.GL11
-
-import com.teamwizardry.librarianlib.util.BlockRenderUtils
-import com.teamwizardry.librarianlib.util.Color
 
 object StructureRenderUtil {
 

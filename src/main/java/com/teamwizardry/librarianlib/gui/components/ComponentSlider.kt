@@ -1,12 +1,11 @@
 package com.teamwizardry.librarianlib.gui.components
 
-import java.util.function.Consumer
-
 import com.teamwizardry.librarianlib.gui.GuiComponent
 import com.teamwizardry.librarianlib.gui.HandlerList
 import com.teamwizardry.librarianlib.gui.mixin.DragMixin
 import com.teamwizardry.librarianlib.math.MathUtil
 import com.teamwizardry.librarianlib.math.Vec2d
+import java.util.function.Consumer
 
 class ComponentSlider(posX: Int, posY: Int, width: Int, height: Int, percentage: Double, var increments: Int) : GuiComponent<ComponentSlider>(posX, posY, width, height) {
 

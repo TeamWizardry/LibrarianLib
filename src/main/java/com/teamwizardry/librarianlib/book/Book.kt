@@ -1,13 +1,11 @@
 package com.teamwizardry.librarianlib.book
 
 import com.teamwizardry.librarianlib.LibrarianLog
-import com.teamwizardry.librarianlib.book.util.PageHandler
-import com.teamwizardry.librarianlib.book.gui.GuiBook
 import com.teamwizardry.librarianlib.book.util.Page
+import com.teamwizardry.librarianlib.book.util.PageHandler
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
-
-import java.util.Stack
+import java.util.*
 
 /**
  * The class that defines a book and has helpers to open it. It defines:

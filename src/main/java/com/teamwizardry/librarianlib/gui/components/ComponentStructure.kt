@@ -1,22 +1,19 @@
 package com.teamwizardry.librarianlib.gui.components
 
+import com.teamwizardry.librarianlib.gui.GuiComponent
+import com.teamwizardry.librarianlib.gui.Option
 import com.teamwizardry.librarianlib.gui.mixin.gl.GlMixin
+import com.teamwizardry.librarianlib.math.Vec2d
+import com.teamwizardry.librarianlib.structure.Structure
+import com.teamwizardry.librarianlib.structure.StructureRenderUtil
+import com.teamwizardry.librarianlib.util.Color
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.VertexBuffer
 import net.minecraft.client.renderer.texture.TextureMap
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-
 import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11
-
-import com.teamwizardry.librarianlib.gui.GuiComponent
-import com.teamwizardry.librarianlib.gui.Option
-import com.teamwizardry.librarianlib.util.Color
-import com.teamwizardry.librarianlib.structure.Structure
-import com.teamwizardry.librarianlib.structure.StructureRenderUtil
-import com.teamwizardry.librarianlib.math.Vec2d
 
 class ComponentStructure(posX: Int, posY: Int, var structure: Structure?) : GuiComponent<ComponentStructure>(posX, posY) {
 

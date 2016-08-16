@@ -113,7 +113,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     var isAnimating = true
 
     protected var mouseButtonsDown = BooleanArray(EnumMouseButton.values().size)
-    protected var keysDown: MutableMap<Key, Boolean> = HashMap<Key, Boolean>().withDefault({k -> false})
+    protected var keysDown: MutableMap<Key, Boolean> = HashMap<Key, Boolean>().withDefault({ k -> false })
     private val data: MutableMap<Class<*>, MutableMap<String, Any>> = mutableMapOf()
 
     var tooltipText: List<String>? = null
@@ -448,7 +448,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
         aabb = BoundingBox2D(aabb.min.add(pos), aabb.max.add(pos))
 
-        return logicalSize.fireModifier(if(outOfFlow) null else aabb, { t, v -> t(thiz(), v) })
+        return logicalSize.fireModifier(if (outOfFlow) null else aabb, { t, v -> t(thiz(), v) })
     }
 
     /**
@@ -492,7 +492,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     }
     //=============================================================================
 
-    fun <D: Any> setData(klass: Class<D>, key: String, value: D) {
+    fun <D : Any> setData(klass: Class<D>, key: String, value: D) {
         if (!data.containsKey(klass))
             data.put(klass, mutableMapOf())
         data.get(klass)?.put(key, value)

@@ -1,8 +1,7 @@
 package com.teamwizardry.librarianlib.math.shapes
 
 import com.teamwizardry.librarianlib.math.Vec2d
-
-import java.util.ArrayList
+import java.util.*
 
 /**
  * Created by Saad on 2/7/2016.

@@ -4,8 +4,7 @@ import com.teamwizardry.librarianlib.div
 import com.teamwizardry.librarianlib.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
-
-import java.util.ArrayList
+import java.util.*
 
 /**
  * Created by Saad on 15/7/2016.
@@ -23,7 +22,7 @@ class BezierCurve2D(var startPoint: Vec2d, var endPoint: Vec2d) {
         get() {
             val points = ArrayList<Vec2d>()
 
-            val midpoint = ( startPoint - endPoint ) / 2
+            val midpoint = (startPoint - endPoint) / 2
 
             startControlPoint = startPoint.sub(midpoint.x, 0.0)
             endControlPoint = endPoint.add(midpoint.x, 0.0)

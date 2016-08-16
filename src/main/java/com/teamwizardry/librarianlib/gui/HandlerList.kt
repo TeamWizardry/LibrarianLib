@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.gui
 
-import java.util.ArrayList
+import java.util.*
 
 /**
  * A list of handlers for an event

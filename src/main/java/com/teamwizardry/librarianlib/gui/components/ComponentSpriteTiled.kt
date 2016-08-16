@@ -1,13 +1,12 @@
 package com.teamwizardry.librarianlib.gui.components
 
-import org.lwjgl.opengl.GL11
-
 import com.teamwizardry.librarianlib.gui.GuiComponent
 import com.teamwizardry.librarianlib.gui.Option
-import com.teamwizardry.librarianlib.util.Color
+import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.sprite.DrawingUtil
 import com.teamwizardry.librarianlib.sprite.Sprite
-import com.teamwizardry.librarianlib.math.Vec2d
+import com.teamwizardry.librarianlib.util.Color
+import org.lwjgl.opengl.GL11
 
 class ComponentSpriteTiled @JvmOverloads constructor(protected var main: Sprite, borderSize: Int, x: Int, y: Int, width: Int = main.width, height: Int = main.height) : GuiComponent<ComponentSpriteTiled>(x, y, width, height) {
 

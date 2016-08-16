@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.gui.template
 import com.teamwizardry.librarianlib.gui.GuiStyle
 import com.teamwizardry.librarianlib.gui.components.ComponentSpriteTiled
 import com.teamwizardry.librarianlib.gui.components.ComponentVoid
-import com.teamwizardry.librarianlib.math.BoundingBox2D
 import com.teamwizardry.librarianlib.math.Vec2d
 
 class ButtonTemplate(style: GuiStyle, posX: Int, posY: Int) : ComponentTemplate<ComponentVoid>() {

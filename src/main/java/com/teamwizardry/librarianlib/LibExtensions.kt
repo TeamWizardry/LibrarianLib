@@ -13,13 +13,13 @@ operator fun TextFormatting.plus(str: String) = "$this$str"
 
 // Vec3d ===============================================================================================================
 
-operator fun Vec3d.times(other: Vec3d) = Vec3d(this.xCoord*other.xCoord, this.yCoord*other.yCoord, this.zCoord*other.zCoord)
-operator fun Vec3d.times(other: Double) = Vec3d(this.xCoord*other, this.yCoord*other, this.zCoord*other)
+operator fun Vec3d.times(other: Vec3d) = Vec3d(this.xCoord * other.xCoord, this.yCoord * other.yCoord, this.zCoord * other.zCoord)
+operator fun Vec3d.times(other: Double) = Vec3d(this.xCoord * other, this.yCoord * other, this.zCoord * other)
 operator fun Vec3d.times(other: Float) = this * other.toDouble()
 operator fun Vec3d.times(other: Int) = this * other.toDouble()
 
-operator fun Vec3d.div(other: Vec3d) = Vec3d(this.xCoord/other.xCoord, this.yCoord/other.yCoord, this.zCoord/other.zCoord)
-operator fun Vec3d.div(other: Double) = Vec3d(this.xCoord/other, this.yCoord/other, this.zCoord/other)
+operator fun Vec3d.div(other: Vec3d) = Vec3d(this.xCoord / other.xCoord, this.yCoord / other.yCoord, this.zCoord / other.zCoord)
+operator fun Vec3d.div(other: Double) = Vec3d(this.xCoord / other, this.yCoord / other, this.zCoord / other)
 operator fun Vec3d.div(other: Float) = this / other.toDouble()
 operator fun Vec3d.div(other: Int) = this / other.toDouble()
 
@@ -50,6 +50,6 @@ operator fun Vec2d.unaryMinus() = this * -1
 // AxisAlignedBB =======================================================================================================
 
 operator fun AxisAlignedBB.contains(other: Vec3d) =
-    this.minX <= other.xCoord && this.maxX >= other.xCoord &&
-    this.minY <= other.yCoord && this.maxY >= other.yCoord &&
-    this.minZ <= other.zCoord && this.maxZ >= other.zCoord
+        this.minX <= other.xCoord && this.maxX >= other.xCoord &&
+                this.minY <= other.yCoord && this.maxY >= other.yCoord &&
+                this.minZ <= other.zCoord && this.maxZ >= other.zCoord

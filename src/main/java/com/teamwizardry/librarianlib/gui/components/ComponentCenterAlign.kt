@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.gui.components
 
 import com.teamwizardry.librarianlib.gui.GuiComponent
-import com.teamwizardry.librarianlib.math.BoundingBox2D
 import com.teamwizardry.librarianlib.math.Vec2d
 
 class ComponentCenterAlign(posX: Int, posY: Int, var centerHorizontal: Boolean, var centerVertical: Boolean) : GuiComponent<ComponentCenterAlign>(posX, posY) {

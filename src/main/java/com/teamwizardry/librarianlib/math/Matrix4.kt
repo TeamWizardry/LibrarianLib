@@ -4,13 +4,11 @@ import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.opengl.GL11
-
 import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.nio.DoubleBuffer
 
 /**
  * Shamelessly stolen from CodeChickenCore, and modified to use Vec3d instead of Vector3

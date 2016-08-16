@@ -1,7 +1,5 @@
 package com.teamwizardry.librarianlib.gui
 
-import java.util.function.Function
-
 /**
  * An option that can be defined by setting a value or by a callback
  * @author Pierce Corcoran
@@ -18,7 +16,7 @@ class Option<P, T>(protected var defaultValue: T) {
 
     fun getValue(param: P): T {
         val tmp = callback
-        if(tmp != null) {
+        if (tmp != null) {
             return tmp(param)
         }
         return value

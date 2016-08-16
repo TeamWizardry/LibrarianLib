@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib
 import com.teamwizardry.librarianlib.book.Book
 import com.teamwizardry.librarianlib.fx.shader.LibShaders
 import com.teamwizardry.librarianlib.fx.shader.ShaderHelper
-import com.teamwizardry.librarianlib.gui.TickCounter
 import com.teamwizardry.librarianlib.sprite.SpritesMetadataSection
 import com.teamwizardry.librarianlib.sprite.SpritesMetadataSectionSerializer
 import com.teamwizardry.librarianlib.sprite.Texture
@@ -16,9 +15,8 @@ import net.minecraft.client.resources.data.MetadataSerializer
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.relauncher.ReflectionHelper
-
 import java.lang.ref.WeakReference
-import java.util.ArrayList
+import java.util.*
 
 /**
  * Prefixed with Lib so code suggestion in dependent projects doesn't suggest it

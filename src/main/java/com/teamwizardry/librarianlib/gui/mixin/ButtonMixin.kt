@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.gui.GuiComponent
 
 class ButtonMixin<T : GuiComponent<T>>(val component: GuiComponent<T>,
-                  private val normal: () -> Unit, private val hover: () -> Unit, private val disabled: () -> Unit, private val handler: () -> Unit) {
+                                       private val normal: () -> Unit, private val hover: () -> Unit, private val disabled: () -> Unit, private val handler: () -> Unit) {
     var state = EnumButtonState.NORMAL
 
 

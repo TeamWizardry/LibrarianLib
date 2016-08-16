@@ -1,16 +1,12 @@
 package com.teamwizardry.librarianlib.gui
 
-import java.io.IOException
-
-import net.minecraftforge.fml.client.config.GuiUtils
-
-import net.minecraft.client.gui.GuiScreen
-
-import org.lwjgl.input.Keyboard
-import org.lwjgl.input.Mouse
-
 import com.teamwizardry.librarianlib.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.math.Vec2d
+import net.minecraft.client.gui.GuiScreen
+import net.minecraftforge.fml.client.config.GuiUtils
+import org.lwjgl.input.Keyboard
+import org.lwjgl.input.Mouse
+import java.io.IOException
 
 open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : GuiScreen() {
     protected var components: ComponentVoid

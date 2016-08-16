@@ -1,12 +1,12 @@
 package com.teamwizardry.librarianlib.gui.mixin
 
 import com.teamwizardry.librarianlib.gui.GuiComponent
-import com.teamwizardry.librarianlib.util.ScissorUtil
 import com.teamwizardry.librarianlib.math.Vec2d
+import com.teamwizardry.librarianlib.util.ScissorUtil
 
 object ScissorMixin {
 
-    fun <T: GuiComponent<T>> scissor(component: GuiComponent<T>) {
+    fun <T : GuiComponent<T>> scissor(component: GuiComponent<T>) {
         component.preDraw.add({ c, pos, partialTicks ->
             val root = c.rootPos(Vec2d(0.0, 0.0))
             ScissorUtil.push()

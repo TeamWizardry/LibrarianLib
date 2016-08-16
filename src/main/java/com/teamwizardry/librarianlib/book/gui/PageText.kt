@@ -1,14 +1,12 @@
 package com.teamwizardry.librarianlib.book.gui
 
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.FontRenderer
-
-import com.teamwizardry.librarianlib.gui.components.ComponentMarkup
-import com.teamwizardry.librarianlib.gui.components.ComponentMarkup.MarkupElement
-import com.teamwizardry.librarianlib.util.Color
 import com.teamwizardry.librarianlib.book.Book
 import com.teamwizardry.librarianlib.book.util.Page
 import com.teamwizardry.librarianlib.data.DataNode
+import com.teamwizardry.librarianlib.gui.components.ComponentMarkup
+import com.teamwizardry.librarianlib.util.Color
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.FontRenderer
 
 class PageText(book: Book, rootData: DataNode, pageData: DataNode, page: Page) : GuiBook(book, rootData, pageData, page) {
 

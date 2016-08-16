@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.gui.components
 
 import com.teamwizardry.librarianlib.gui.GuiComponent
+import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.sprite.DrawingUtil
 import com.teamwizardry.librarianlib.sprite.Sprite
-import com.teamwizardry.librarianlib.math.Vec2d
 
 class ComponentSpriteCapped(internal var topLeft:
 

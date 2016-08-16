@@ -1,25 +1,11 @@
 package com.teamwizardry.librarianlib.structure
 
-import java.io.IOException
-import java.io.InputStream
-import java.util.ArrayList
-import java.util.Arrays
-
-import net.minecraftforge.fml.relauncher.ReflectionHelper
-
-import net.minecraft.block.BlockPane
-import net.minecraft.block.BlockQuartz
-import net.minecraft.block.BlockRedstoneComparator
-import net.minecraft.block.BlockRedstoneRepeater
-import net.minecraft.block.BlockRedstoneWire
-import net.minecraft.block.BlockSlab
-import net.minecraft.block.BlockStairs
+import com.google.common.collect.HashMultimap
+import com.google.common.collect.Multimap
+import net.minecraft.block.*
 import net.minecraft.block.properties.IProperty
-import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
 import net.minecraft.nbt.CompressedStreamTools
-import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.nbt.NBTTagList
 import net.minecraft.util.Mirror
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Rotation
@@ -27,10 +13,10 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraft.world.gen.structure.template.Template
 import net.minecraft.world.gen.structure.template.Template.BlockInfo
-
-import com.google.common.collect.HashMultimap
-import com.google.common.collect.ImmutableList
-import com.google.common.collect.Multimap
+import net.minecraftforge.fml.relauncher.ReflectionHelper
+import java.io.IOException
+import java.io.InputStream
+import java.util.*
 
 open class Structure(loc: ResourceLocation) {
 

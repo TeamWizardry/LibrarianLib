@@ -3,14 +3,11 @@ package com.teamwizardry.librarianlib.structure
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.VertexBuffer
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.util.Mirror
 import net.minecraft.util.Rotation
 import net.minecraft.util.math.BlockPos
-import net.minecraft.world.gen.structure.template.Template
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.world.BlockEvent

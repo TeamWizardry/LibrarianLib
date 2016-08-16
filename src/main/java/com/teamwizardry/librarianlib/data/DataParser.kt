@@ -3,10 +3,8 @@ package com.teamwizardry.librarianlib.data
 import com.google.gson.*
 import com.teamwizardry.librarianlib.LibrarianLog
 import jline.internal.InputStreamReader
-
 import java.io.InputStream
-import java.util.ArrayList
-import java.util.HashMap
+import java.util.*
 
 object DataParser {
 

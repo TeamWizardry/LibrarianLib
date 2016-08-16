@@ -16,7 +16,7 @@ abstract class PacketBase : IMessage {
         return null
     }
 
-    class Handler<REQ:PacketBase> : IMessageHandler<REQ, PacketBase> {
+    class Handler<REQ : PacketBase> : IMessageHandler<REQ, PacketBase> {
 
         override fun onMessage(message: REQ, ctx: MessageContext): PacketBase? {
             val mainThread: IThreadListener

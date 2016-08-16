@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.util
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
-import net.minecraft.server.MinecraftServer
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.Teleporter
 import net.minecraft.world.WorldServer

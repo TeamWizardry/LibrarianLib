@@ -1,10 +1,10 @@
 package com.teamwizardry.librarianlib.gui.template
 
+import com.teamwizardry.librarianlib.book.gui.GuiBook
 import com.teamwizardry.librarianlib.gui.components.ComponentSliderTray
 import com.teamwizardry.librarianlib.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.gui.components.ComponentSpriteTiled
 import com.teamwizardry.librarianlib.gui.components.ComponentText
-import com.teamwizardry.librarianlib.book.gui.GuiBook
 import net.minecraft.item.ItemStack
 
 object SliderTemplate {

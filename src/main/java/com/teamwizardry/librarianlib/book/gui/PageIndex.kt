@@ -1,18 +1,14 @@
 package com.teamwizardry.librarianlib.book.gui
 
-import com.teamwizardry.librarianlib.data.DataNodeParsers
-import com.teamwizardry.librarianlib.gui.components.ComponentGrid
-import com.teamwizardry.librarianlib.gui.components.ComponentSliderTray
-import com.teamwizardry.librarianlib.gui.components.ComponentSprite
-import com.teamwizardry.librarianlib.gui.mixin.ButtonMixin
-import com.teamwizardry.librarianlib.util.Color
 import com.teamwizardry.librarianlib.book.Book
 import com.teamwizardry.librarianlib.book.util.Link
 import com.teamwizardry.librarianlib.book.util.Page
-import com.teamwizardry.librarianlib.sprite.Sprite
 import com.teamwizardry.librarianlib.data.DataNode
-import net.minecraft.util.ResourceLocation
-import org.apache.commons.lang3.mutable.MutableObject
+import com.teamwizardry.librarianlib.data.DataNodeParsers
+import com.teamwizardry.librarianlib.gui.components.ComponentGrid
+import com.teamwizardry.librarianlib.gui.components.ComponentSprite
+import com.teamwizardry.librarianlib.gui.mixin.ButtonMixin
+import com.teamwizardry.librarianlib.util.Color
 
 class PageIndex(book: Book, rootData: DataNode, pageData: DataNode, page: Page) : GuiBook(book, rootData, pageData, page) {
 

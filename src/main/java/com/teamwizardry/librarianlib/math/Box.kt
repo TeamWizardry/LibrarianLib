@@ -1,10 +1,8 @@
 package com.teamwizardry.librarianlib.math
 
+import com.google.common.annotations.VisibleForTesting
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
-
-import com.google.common.annotations.VisibleForTesting
-import com.teamwizardry.librarianlib.ragdoll.cloth.PointMass3D
 
 class Box(var matrix: Matrix4, var inverse: Matrix4, var minX: Double, var minY: Double, var minZ: Double, var maxX: Double, var maxY: Double, var maxZ: Double) {
     var aabb: AxisAlignedBB

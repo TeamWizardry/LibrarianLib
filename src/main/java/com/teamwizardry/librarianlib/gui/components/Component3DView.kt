@@ -1,15 +1,13 @@
 package com.teamwizardry.librarianlib.gui.components
 
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.RenderHelper
-import net.minecraft.util.math.Vec3d
-
-import org.lwjgl.opengl.GL11
-
 import com.teamwizardry.librarianlib.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.gui.GuiComponent
 import com.teamwizardry.librarianlib.math.Matrix4
 import com.teamwizardry.librarianlib.math.Vec2d
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.RenderHelper
+import net.minecraft.util.math.Vec3d
+import org.lwjgl.opengl.GL11
 
 class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent<Component3DView>(posX, posY, width, height) {
 

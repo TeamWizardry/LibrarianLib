@@ -8,8 +8,7 @@ import com.teamwizardry.librarianlib.sprite.TextWrapper
 import com.teamwizardry.librarianlib.util.Color
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
-
-import java.util.ArrayList
+import java.util.*
 
 open class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent<ComponentMarkup>(posX, posY, width, height) {
 

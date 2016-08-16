@@ -1,9 +1,5 @@
 package com.teamwizardry.librarianlib.structure
 
-import java.util.HashMap
-
-import net.minecraftforge.fml.relauncher.ReflectionHelper
-
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Biomes
 import net.minecraft.init.Blocks
@@ -15,6 +11,8 @@ import net.minecraft.world.WorldType
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.gen.structure.template.Template
 import net.minecraft.world.gen.structure.template.Template.BlockInfo
+import net.minecraftforge.fml.relauncher.ReflectionHelper
+import java.util.*
 
 /**
  * Used to access the block in a template. Made for getActualState()

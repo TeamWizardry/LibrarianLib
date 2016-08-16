@@ -1,17 +1,10 @@
 package com.teamwizardry.librarianlib.gui
 
-import java.lang.reflect.Field
-
-import net.minecraft.client.gui.GuiScreen
-import net.minecraftforge.common.MinecraftForge
+import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase
-import net.minecraftforge.fml.relauncher.ReflectionHelper
-
-import net.minecraft.client.Minecraft
-import net.minecraft.util.Timer
 
 class TickCounter {
 

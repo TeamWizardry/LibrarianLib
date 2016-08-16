@@ -1,8 +1,7 @@
 package com.teamwizardry.librarianlib.ragdoll.line
 
-import java.util.ArrayList
-
 import com.teamwizardry.librarianlib.math.Vec2d
+import java.util.*
 
 class Rope(var middles: Int, length: Double, stretch: Float, bend: Float, begin: Vec2d, end: Vec2d) {
 

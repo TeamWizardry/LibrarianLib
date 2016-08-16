@@ -3,12 +3,10 @@ package com.teamwizardry.librarianlib.gui.components
 import com.google.common.collect.ImmutableList
 import com.teamwizardry.librarianlib.gui.GuiComponent
 import com.teamwizardry.librarianlib.gui.Option
-import com.teamwizardry.librarianlib.util.Color
 import com.teamwizardry.librarianlib.math.BoundingBox2D
 import com.teamwizardry.librarianlib.math.Vec2d
+import com.teamwizardry.librarianlib.util.Color
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.FontRenderer
-import java.util.function.Function
 
 class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizontal: ComponentText.TextAlignH = ComponentText.TextAlignH.LEFT, var vertical: ComponentText.TextAlignV = ComponentText.TextAlignV.TOP) : GuiComponent<ComponentText>(posX, posY) {
 

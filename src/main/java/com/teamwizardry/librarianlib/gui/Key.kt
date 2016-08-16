@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.gui
 
-import java.util.HashMap
+import java.util.*
 
 class Key private constructor(val character: Char, val keyCode: Int) {
 

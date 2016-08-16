@@ -1,12 +1,5 @@
 package com.teamwizardry.librarianlib.ragdoll.cloth
 
-import java.util.ArrayList
-import java.util.HashMap
-
-import net.minecraft.entity.Entity
-import net.minecraft.util.math.AxisAlignedBB
-import net.minecraft.util.math.Vec3d
-
 import com.google.common.annotations.VisibleForTesting
 import com.google.common.collect.ImmutableList
 import com.teamwizardry.librarianlib.math.Geometry
@@ -14,6 +7,10 @@ import com.teamwizardry.librarianlib.math.MathUtil
 import com.teamwizardry.librarianlib.math.Matrix4
 import com.teamwizardry.librarianlib.math.Sphere
 import com.teamwizardry.librarianlib.times
+import net.minecraft.entity.Entity
+import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.Vec3d
+import java.util.*
 
 class Cloth(var top: Array<Vec3d>, var height: Int, var size: Vec3d) {
 
@@ -49,7 +46,7 @@ class Cloth(var top: Array<Vec3d>, var height: Int, var size: Vec3d) {
     }
 
     fun init() {
-        masses = Array<Array<PointMass3D>>(height) { y -> Array<PointMass3D>(top.size) { x -> PointMass3D(top[x].add(size * y ), 0.1f)} }
+        masses = Array<Array<PointMass3D>>(height) { y -> Array<PointMass3D>(top.size) { x -> PointMass3D(top[x].add(size * y), 0.1f) } }
         links = ArrayList<Link3D>()
 
         for (x in masses.indices) {

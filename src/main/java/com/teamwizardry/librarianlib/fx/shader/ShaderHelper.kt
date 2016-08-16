@@ -12,11 +12,9 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.relauncher.Side
 import org.lwjgl.opengl.*
-
 import java.io.BufferedReader
-import java.io.InputStream
 import java.io.InputStreamReader
-import java.util.ArrayList
+import java.util.*
 
 /**
  * Credit to Vazkii (https://github.com/Vazkii/Botania/blob/master/src/main/java/vazkii/botania/client/core/helper/ShaderHelper.java)

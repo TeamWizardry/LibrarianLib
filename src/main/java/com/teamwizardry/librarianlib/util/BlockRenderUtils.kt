@@ -4,13 +4,10 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.VertexBuffer
 import net.minecraft.client.renderer.block.model.BakedQuad
-import net.minecraft.client.renderer.block.model.IBakedModel
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
-import net.minecraft.util.math.Vec3i
 import net.minecraft.world.IBlockAccess
-
 import java.nio.ByteOrder
 
 object BlockRenderUtils {

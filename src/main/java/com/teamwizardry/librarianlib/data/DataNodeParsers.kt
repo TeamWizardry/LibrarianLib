@@ -4,8 +4,6 @@ import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.sprite.Sprite
 import com.teamwizardry.librarianlib.sprite.Texture
 import net.minecraft.block.Block
-import net.minecraft.block.properties.IProperty
-import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.statemap.DefaultStateMapper
 import net.minecraft.init.Blocks
@@ -14,9 +12,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
-
-import java.util.HashMap
-import java.util.regex.Matcher
+import java.util.*
 import java.util.regex.Pattern
 
 @SideOnly(Side.CLIENT)

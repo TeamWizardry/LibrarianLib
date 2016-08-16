@@ -1,9 +1,7 @@
 package com.teamwizardry.librarianlib.sprite
 
 import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.VertexBuffer
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-
 import org.lwjgl.opengl.GL11
 
 object DrawingUtil {

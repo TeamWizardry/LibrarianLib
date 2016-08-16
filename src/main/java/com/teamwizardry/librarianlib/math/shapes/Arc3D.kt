@@ -1,8 +1,7 @@
 package com.teamwizardry.librarianlib.math.shapes
 
 import net.minecraft.util.math.Vec3d
-
-import java.util.ArrayList
+import java.util.*
 
 /**
  * Created by Saad on 5/7/2016.

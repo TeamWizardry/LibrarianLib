@@ -3,8 +3,6 @@ package com.teamwizardry.librarianlib.structure
 import net.minecraft.util.Rotation
 import net.minecraft.util.math.BlockPos
 
-import java.util.ArrayList
-
 class StructureMatchResult(var posOffset: BlockPos, var rotation: Rotation, var structure: Structure) {
 
     var allErrors: MutableList<BlockPos> = mutableListOf()

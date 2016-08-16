@@ -1,14 +1,10 @@
 package com.teamwizardry.librarianlib.sprite
 
-import com.google.common.collect.ImmutableMap
-import com.teamwizardry.librarianlib.sprite.SpritesMetadataSection.SpriteDefinition
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
-
 import java.io.IOException
 import java.lang.ref.WeakReference
-import java.util.ArrayList
-import java.util.HashMap
+import java.util.*
 
 /**
  * This class represents a texture and it's size. It is mostly used to create [Sprite]
@@ -54,7 +50,7 @@ class Texture(
                 for (def in section.definitions) {
                     if (oldSprites.containsKey(def.name)) {
                         var oldSprite = oldSprites.get(def.name)
-                        if(oldSprite != null) {
+                        if (oldSprite != null) {
                             oldSprite.init(def.u, def.v, def.w, def.h, def.frames, def.offsetU, def.offsetV)
                             sprites.put(def.name, oldSprite)
                         }

@@ -5,8 +5,6 @@ import com.teamwizardry.librarianlib.gui.GuiComponent
 import com.teamwizardry.librarianlib.gui.HandlerList
 import com.teamwizardry.librarianlib.math.Vec2d
 
-import java.util.function.Function
-
 class DragMixin<T : GuiComponent<T>>(protected var component: T, protected var constraints: (Vec2d) -> Vec2d) {
 
     val pickup = HandlerList<(T, EnumMouseButton, Vec2d) -> Boolean>()
