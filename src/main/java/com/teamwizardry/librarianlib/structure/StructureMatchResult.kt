@@ -7,9 +7,9 @@ import java.util.ArrayList
 
 class StructureMatchResult(var posOffset: BlockPos, var rotation: Rotation, var structure: Structure) {
 
-    var allErrors: List<BlockPos> = ArrayList()
-    var airErrors: List<BlockPos> = ArrayList()
-    var nonAirErrors: List<BlockPos> = ArrayList()
-    var propertyErrors: List<BlockPos> = ArrayList()
-    var matches: List<BlockPos> = ArrayList()
+    var allErrors: MutableList<BlockPos> = mutableListOf()
+    var airErrors: MutableList<BlockPos> = mutableListOf()
+    var nonAirErrors: MutableList<BlockPos> = mutableListOf()
+    var propertyErrors: MutableList<BlockPos> = mutableListOf()
+    var matches: MutableList<BlockPos> = mutableListOf()
 }

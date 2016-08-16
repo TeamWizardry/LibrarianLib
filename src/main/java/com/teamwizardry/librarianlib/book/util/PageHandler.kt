@@ -10,12 +10,11 @@ import com.teamwizardry.librarianlib.data.DataNode
 class PageHandler private constructor() {
 
     init {
-        map = HashMap<String, IPageConstructor>()
         //error = PageError::new;
-        register("index", IPageConstructor { book, rootData, pageData, page -> PageIndex(book, rootData, pageData, page) })
-        register("text", IPageConstructor { book, rootData, pageData, page -> PageText(book, rootData, pageData, page) })
-        register("subindex", IPageConstructor { book, rootData, pageData, page -> PageSubindex(book, rootData, pageData, page) })
-        register("structure", IPageConstructor { book, rootData, pageData, page -> PageStructure(book, rootData, pageData, page) })
+        register("index", ::PageIndex)
+        register("text", ::PageText)
+        register("subindex", ::PageSubindex)
+        register("structure", ::PageStructure)
     }
 
     @FunctionalInterface
@@ -25,11 +24,11 @@ class PageHandler private constructor() {
 
     companion object {
         val INSTANCE = PageHandler()
-        protected var map: MutableMap<String, IPageConstructor>
+        protected val map: MutableMap<String, (Book, rootNode: DataNode, node: DataNode, Page) -> GuiBook> = mutableMapOf()
         protected var error: IPageConstructor? = null
 
-        fun register(name: String, constructor: IPageConstructor) {
-            (map as java.util.Map<String, IPageConstructor>).putIfAbsent(name, constructor)
+        fun register(name: String, constructor: (Book, rootNode: DataNode, node: DataNode, Page) -> GuiBook) {
+            map.getOrPut(name) { constructor }
         }
 
         fun create(book: Book, page: Page): GuiBook? {
@@ -53,9 +52,9 @@ class PageHandler private constructor() {
                         pageData.put("hasPrev", "true")
                     }
                 }
-                return map[type].create(book, data, pageData, page)
+                return map[type]?.invoke(book, data, pageData, page)
             } else {
-                LibrarianLog.I.warn("Page type [%s] not found!", type)
+                LibrarianLog.warn("Page type [%s] not found!", type)
             }
 
             val errorGlobal = DataNode.map()

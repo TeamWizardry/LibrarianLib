@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.GlStateManager
 
 class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent<ComponentScrolledView>(posX, posY, width, height) {
 
-    val scroll = HandlerList<IScrollEvent<ComponentScrolledView>>()
+    val scroll = HandlerList<(ComponentScrolledView, Vec2d, Vec2d?) -> Vec2d?>()
 
     protected var offset = Vec2d.ZERO
 
@@ -29,7 +29,7 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
         var scroll = scroll
         scroll = Vec2d.min(maxScroll, scroll)
         if (scroll != offset) {
-            this.scroll.fireModifier<Vec2d>(scroll, { h, v -> h.handle(this, offset, v) })
+            this.scroll.fireModifier<Vec2d>(scroll, { h, v -> h(this, offset, v) })
             offset = scroll
         }
     }
@@ -53,7 +53,12 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
     }
 
     val maxScroll: Vec2d
-        get() = super.getLogicalSize().max.sub(pos).sub(size)
+        get() {
+            var l = super.getLogicalSize()
+            if(l == null)
+                return Vec2d.ZERO
+            return l.max.sub(pos).sub(size)
+        }
 
     @FunctionalInterface
     interface IScrollEvent<T> {

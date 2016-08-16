@@ -18,7 +18,7 @@ class Helix : IShape3D {
     /**
      * Points per strand
      */
-    private var points = 30
+    private var pointCount = 30
 
     /**
      * Radius of helix
@@ -33,17 +33,17 @@ class Helix : IShape3D {
     /**
      * Factor for the curves. Negative values reverse rotation.
      */
-    private val curve = 10f
+    private var curve = 10f
 
     /**
      * Rotation of the helix (Fraction of PI)
      */
-    private val rotation = Math.PI / 4
+    private var rotation = Math.PI / 4
 
     /**
      * Will reverse the y axis of the helix
      */
-    private val reverse = false
+    private var reverse = false
 
     /**
      * Will reduce the radius incrementally
@@ -74,7 +74,7 @@ class Helix : IShape3D {
      */
     constructor(center: Vec3d, points: Int, radius: Float, height: Float, strands: Int, curve: Float, reverse: Boolean) {
         this.center = center
-        this.points = points
+        this.pointCount = points
         this.radius = radius
         this.strands = strands
         this.height = height
@@ -99,7 +99,7 @@ class Helix : IShape3D {
      */
     constructor(center: Vec3d, points: Int, radius: Float, height: Float, strands: Int, rotation: Double) {
         this.center = center
-        this.points = points
+        this.pointCount = points
         this.radius = radius
         this.strands = strands
         this.height = height
@@ -107,38 +107,39 @@ class Helix : IShape3D {
         this.shrink = false
     }
 
-    override fun getPoints(): ArrayList<Vec3d> {
-        val locs = ArrayList<Vec3d>()
-        for (strand in 1..strands) {
-            if (shrink) {
-                var y = 0.0
-                if (reverse) y = height.toDouble()
-                for (point in 1..points) {
-                    val ratio = point.toFloat() / points
-                    val angle = curve.toDouble() * ratio.toDouble() * 2.0 * Math.PI / strands + 2.0 * Math.PI * strand.toDouble() / strands + rotation
-                    val x = Math.cos(angle) * ratio.toDouble() * radius.toDouble()
-                    val z = Math.sin(angle) * ratio.toDouble() * radius.toDouble()
-                    if (reverse)
-                        y -= (center!!.yCoord - center!!.yCoord + height) / points
-                    else
-                        y += (center!!.yCoord - center!!.yCoord + height) / points
-                    locs.add(center!!.add(Vec3d(x, y, z)))
-                    //locs.add(center.subtract(new Vec3d(x, y, z)));
-                }
-            } else {
-                var y = 0.0
-                while (y < height) {
-                    val x = radius * Math.cos(y * rotation)
-                    val z = radius * Math.sin(y * rotation)
-                    locs.add(center!!.add(Vec3d(x, y, z)))
-                    y += (center!!.yCoord - center!!.yCoord + height) / points
-                    //locs.add(center.subtract(new Vec3d(x, y, z)));
+    override val points: ArrayList<Vec3d>
+        get() {
+            val locs = ArrayList<Vec3d>()
+            for (strand in 1..strands) {
+                if (shrink) {
+                    var y = 0.0
+                    if (reverse) y = height.toDouble()
+                    for (point in 1..pointCount) {
+                        val ratio = point.toFloat() / pointCount
+                        val angle = curve.toDouble() * ratio.toDouble() * 2.0 * Math.PI / strands + 2.0 * Math.PI * strand.toDouble() / strands + rotation
+                        val x = Math.cos(angle) * ratio.toDouble() * radius.toDouble()
+                        val z = Math.sin(angle) * ratio.toDouble() * radius.toDouble()
+                        if (reverse)
+                            y -= (center!!.yCoord - center!!.yCoord + height) / pointCount
+                        else
+                            y += (center!!.yCoord - center!!.yCoord + height) / pointCount
+                        locs.add(center!!.add(Vec3d(x, y, z)))
+                        //locs.add(center.subtract(new Vec3d(x, y, z)));
+                    }
+                } else {
+                    var y = 0.0
+                    while (y < height) {
+                        val x = radius * Math.cos(y * rotation)
+                        val z = radius * Math.sin(y * rotation)
+                        locs.add(center!!.add(Vec3d(x, y, z)))
+                        y += (center!!.yCoord - center!!.yCoord + height) / pointCount
+                        //locs.add(center.subtract(new Vec3d(x, y, z)));
+                    }
                 }
             }
+            if (reverse) Collections.reverse(locs)
+            return locs
         }
-        if (reverse) Collections.reverse(locs)
-        return locs
-    }
 
     val multipleStrandPoints: ArrayList<ArrayList<Vec3d>>
         get() {
@@ -148,15 +149,15 @@ class Helix : IShape3D {
                 if (shrink) {
                     var y = 0.0
                     if (reverse) y = height.toDouble()
-                    for (point in 1..points) {
-                        val ratio = point.toFloat() / points
+                    for (point in 1..pointCount) {
+                        val ratio = point.toFloat() / pointCount
                         val angle = curve.toDouble() * ratio.toDouble() * 2.0 * Math.PI / strands + 2.0 * Math.PI * strand.toDouble() / strands + rotation
                         val x = Math.cos(angle) * ratio.toDouble() * radius.toDouble()
                         val z = Math.sin(angle) * ratio.toDouble() * radius.toDouble()
                         if (reverse)
-                            y -= (center!!.yCoord - center!!.yCoord + height) / points
+                            y -= (center!!.yCoord - center!!.yCoord + height) / pointCount
                         else
-                            y += (center!!.yCoord - center!!.yCoord + height) / points
+                            y += (center!!.yCoord - center!!.yCoord + height) / pointCount
                         strandPoints.add(center!!.add(Vec3d(x, y, z)))
                     }
                 } else {
@@ -165,7 +166,7 @@ class Helix : IShape3D {
                         val x = radius * Math.cos(y * rotation)
                         val z = radius * Math.sin(y * rotation)
                         strandPoints.add(center!!.add(Vec3d(x, y, z)))
-                        y += (center!!.yCoord - center!!.yCoord + height) / points
+                        y += (center!!.yCoord - center!!.yCoord + height) / pointCount
                     }
                 }
                 locs.add(strandPoints)

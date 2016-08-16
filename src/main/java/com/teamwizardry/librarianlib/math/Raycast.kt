@@ -93,15 +93,15 @@ object Raycast {
      * *
      * @return The first block or entity colliding with the vector
      */
-    fun cast(entity: Entity, distance: Double): RayTraceResult {
+    fun cast(entity: Entity, distance: Double): RayTraceResult? {
         return cast(entity, entity.getLook(1f), distance)
     }
 
-    private fun blockTrace(entity: Entity, distance: Double): RayTraceResult {
+    private fun blockTrace(entity: Entity, distance: Double): RayTraceResult? {
         return blockTrace(entity, entity.getLook(1f), distance)
     }
 
-    private fun blockTrace(entity: Entity, ray: Vec3d, distance: Double): RayTraceResult {
+    private fun blockTrace(entity: Entity, ray: Vec3d, distance: Double): RayTraceResult? {
         val pos = entity.getPositionEyes(1f)
         val cast = pos.add(ray.scale(distance))
         return entity.worldObj.rayTraceBlocks(pos, cast, false, false, true)

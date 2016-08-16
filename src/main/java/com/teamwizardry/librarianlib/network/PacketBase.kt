@@ -12,20 +12,20 @@ abstract class PacketBase : IMessage {
 
     abstract fun handle(ctx: MessageContext)
 
-    fun reply(ctx: MessageContext): IMessage? {
+    fun reply(ctx: MessageContext): PacketBase? {
         return null
     }
 
-    class Handler : IMessageHandler<PacketBase, IMessage> {
+    class Handler<REQ:PacketBase> : IMessageHandler<REQ, PacketBase> {
 
-        override fun onMessage(message: PacketBase, ctx: MessageContext): IMessage {
+        override fun onMessage(message: REQ, ctx: MessageContext): PacketBase? {
             val mainThread: IThreadListener
             if (ctx.netHandler is NetHandlerPlayServer)
                 mainThread = ctx.serverHandler.playerEntity.worldObj as WorldServer
             else
                 mainThread = Minecraft.getMinecraft()
             mainThread.addScheduledTask { message.handle(ctx) }
-            return message.reply(ctx) // no response in this case
+            return message.reply(ctx)
         }
     }
 }

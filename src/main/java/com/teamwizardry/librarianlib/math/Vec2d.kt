@@ -7,22 +7,6 @@ class Vec2d(var x: Double, var y: Double) {
     val xi: Int
     val yi: Int
 
-    //=============================================================================
-    init {/* Simple math */
-    }
-
-    //=============================================================================
-    init {/* Advanced math */
-    }
-
-    //=============================================================================
-    init {/* Static */
-    }
-
-    //=============================================================================
-    init {/* Boring object stuff */
-    }
-
     init {
         this.xf = x.toFloat()
         this.yf = y.toFloat()
@@ -46,6 +30,7 @@ class Vec2d(var x: Double, var y: Double) {
         return Vec2d(x, value)
     }
 
+    operator fun plus(other: Vec2d) = this.add(other)
     fun add(other: Vec2d): Vec2d {
         return Vec2d(x + other.x, y + other.y)
     }
@@ -54,15 +39,19 @@ class Vec2d(var x: Double, var y: Double) {
         return Vec2d(x + otherX, y + otherY)
     }
 
+    operator fun minus(other: Vec2d) = this.sub(other)
     fun sub(other: Vec2d): Vec2d {
         return Vec2d(x - other.x, y - other.y)
     }
-    //=============================================================================
 
     fun sub(otherX: Double, otherY: Double): Vec2d {
         return Vec2d(x - otherX, y - otherY)
     }
 
+    operator fun times(other: Vec2d) = this.mul(other)
+    operator fun times(other: Double) = this.mul(other)
+    operator fun times(other: Float) = this.mul(other.toDouble())
+    operator fun times(other: Int) = this.mul(other.toDouble())
     fun mul(other: Vec2d): Vec2d {
         return Vec2d(x * other.x, y * other.y)
     }
@@ -75,6 +64,20 @@ class Vec2d(var x: Double, var y: Double) {
         return Vec2d(x * amount, y * amount)
     }
 
+    fun div(other: Vec2d): Vec2d {
+        return Vec2d(x * other.x, y * other.y)
+    }
+
+    fun div(otherX: Double, otherY: Double): Vec2d {
+        return Vec2d(x * otherX, y * otherY)
+    }
+
+    operator fun div(other: Int) = this.div(other.toDouble())
+    operator fun div(other: Float) = this.div(other.toDouble())
+    operator fun div(amount: Double): Vec2d {
+        return Vec2d(x * amount, y * amount)
+    }
+
     fun dot(point: Vec2d): Double {
         return x * point.x + y * point.y
     }
@@ -82,7 +85,6 @@ class Vec2d(var x: Double, var y: Double) {
     fun length(): Double {
         return Math.sqrt(x * x + y * y)
     }
-    //=============================================================================
 
     fun normalize(): Vec2d {
         val norm = length()
@@ -132,21 +134,28 @@ class Vec2d(var x: Double, var y: Double) {
 
     companion object {
 
-        val ZERO = Vec2d(0.0, 0.0)
+        @JvmStatic val ZERO = Vec2d(0.0, 0.0)
+        @JvmStatic val INFINITY = Vec2d(Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY)
+        @JvmStatic val NEG_INFINITY = Vec2d(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY)
 
-        val ONE = Vec2d(1.0, 1.0)
-        val X = Vec2d(1.0, 0.0)
-        val Y = Vec2d(0.0, 1.0)
+        @JvmStatic val ONE = Vec2d(1.0, 1.0)
+        @JvmStatic val X = Vec2d(1.0, 0.0)
+        @JvmStatic val Y = Vec2d(0.0, 1.0)
+        @JvmStatic val X_INFINITY = Vec2d(Double.POSITIVE_INFINITY, 0.0)
+        @JvmStatic val Y_INFINITY = Vec2d(0.0, Double.POSITIVE_INFINITY)
 
-        val NEG_ONE = Vec2d(-1.0, -1.0)
-        val NEG_X = Vec2d(-1.0, 0.0)
-        val NEG_Y = Vec2d(0.0, -1.0)
+        @JvmStatic val NEG_ONE = Vec2d(-1.0, -1.0)
+        @JvmStatic val NEG_X = Vec2d(-1.0, 0.0)
+        @JvmStatic val NEG_Y = Vec2d(0.0, -1.0)
+        @JvmStatic val NEG_X_INFINITY = Vec2d(Double.NEGATIVE_INFINITY, 0.0)
+        @JvmStatic val NEG_Y_INFINITY = Vec2d(0.0, Double.NEGATIVE_INFINITY)
 
+        @JvmStatic
         fun min(a: Vec2d, b: Vec2d): Vec2d {
             return Vec2d(Math.min(a.x, b.x), Math.min(a.y, b.y))
         }
-        //=============================================================================
 
+        @JvmStatic
         fun max(a: Vec2d, b: Vec2d): Vec2d {
             return Vec2d(Math.max(a.x, b.x), Math.max(a.y, b.y))
         }

@@ -8,9 +8,9 @@ import net.minecraft.client.renderer.Tessellator
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.math.Vec3d
 
-abstract class ParticleRenderQueue<T : QueuedParticle>(sort: Boolean) {
+abstract class ParticleRenderQueue<T : QueuedParticle<T>>(sort: Boolean) {
 
-    protected var renderQueue: MutableList<T> = ArrayList()
+    protected var renderQueue: MutableList<T> = mutableListOf()
     protected var sort = false
 
     init {
@@ -40,11 +40,10 @@ abstract class ParticleRenderQueue<T : QueuedParticle>(sort: Boolean) {
 
             for (t in renderQueue) {
                 var v = t.pos
-                v = Vec3d(v.xCoord, v.yCoord, v.zCoord)
                 v = projectToRay(playerPos, look, v)
                 t.distFromPlayer = v.lengthVector()
             }
-            Collections.sort(renderQueue) { a, b -> -java.lang.Double.compare(a.distFromPlayer, b.distFromPlayer) }
+            renderQueue.sortByDescending { it.distFromPlayer }
         }
         renderParticles(tessellator)
     }

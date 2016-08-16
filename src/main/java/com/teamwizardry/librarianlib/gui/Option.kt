@@ -13,16 +13,18 @@ import java.util.function.Function
  */
 class Option<P, T>(protected var defaultValue: T) {
 
-    protected var value: T? = null
-    protected var callback: Function<P, T>? = null
+    private var value: T = defaultValue
+    protected var callback: ((P) -> T)? = null
 
     fun getValue(param: P): T {
-        if (callback == null)
-            return if (value == null) defaultValue else value
-        return callback!!.apply(param)
+        val tmp = callback
+        if(tmp != null) {
+            return tmp(param);
+        }
+        return value;
     }
 
-    fun func(callback: Function<P, T>) {
+    fun func(callback: ((P) -> T)?) {
         this.callback = callback
     }
 

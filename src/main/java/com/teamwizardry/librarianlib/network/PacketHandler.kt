@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.network
 
 import net.minecraftforge.fml.common.network.NetworkRegistry
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper
 import net.minecraftforge.fml.relauncher.Side
 
@@ -15,8 +16,8 @@ enum class PacketHandler private constructor() {
     }
 
     @SuppressWarnings("unchecked", "rawtypes")
-    fun register(clazz: Class<*>, targetSide: Side) {
-        network.registerMessage<PacketBase, IMessage>(PacketBase.Handler::class.java!!, clazz, id++, targetSide)
+    fun <T : PacketBase>register(clazz: Class<T>, targetSide: Side) {
+        network.registerMessage<T, PacketBase>(PacketBase.Handler<T>(), clazz, id++, targetSide)
     }
 
     companion object {

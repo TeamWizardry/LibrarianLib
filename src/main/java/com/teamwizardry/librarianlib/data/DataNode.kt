@@ -8,21 +8,21 @@ import java.util.HashMap
 
 open class DataNode {
     protected var type: EnumNodeType? = null
-    protected var stringValue: String
-    protected var mapValue: Map<String, DataNode>? = null
-    protected var listValue: List<DataNode>? = null
+    protected var stringValue: String? = null
+    protected var mapValue: MutableMap<String, DataNode>? = null
+    protected var listValue: MutableList<DataNode>? = null
 
     constructor(value: String) {
         type = EnumNodeType.STRING
         stringValue = value
     }
 
-    constructor(value: Map<String, DataNode>) {
+    constructor(value: MutableMap<String, DataNode>) {
         type = EnumNodeType.MAP
         mapValue = value
     }
 
-    constructor(value: List<DataNode>) {
+    constructor(value: MutableList<DataNode>) {
         type = EnumNodeType.LIST
         listValue = value
     }
@@ -46,18 +46,16 @@ open class DataNode {
     val isMap: Boolean
         get() = type == EnumNodeType.MAP
 
-    open fun asStringOr(defaultValue: String?): String? {
-        if (!isString)
-            return defaultValue
+    open fun asStringOr(defaultValue: String): String {
+        return stringValue ?: defaultValue
+    }
+
+    open fun asString(): String? {
         return stringValue
     }
 
-    open fun asString(): String {
-        return asStringOr(null)
-    }
-
     fun asIntOr(i: Int): Int {
-        val str = asStringOr(null) ?: return i
+        val str = asString() ?: return i
         try {
             return Integer.parseInt(str)
         } catch (e: NumberFormatException) {
@@ -72,7 +70,7 @@ open class DataNode {
     }
 
     fun asDoubleOr(i: Double): Double {
-        val str = asStringOr(null) ?: return i
+        val str = asString() ?: return i
         try {
             return java.lang.Double.parseDouble(str)
         } catch (e: NumberFormatException) {
@@ -86,39 +84,20 @@ open class DataNode {
         return asIntOr(0).toDouble()
     }
 
-    open fun asMap(): MutableMap<String, DataNode> {
-        if (!isMap)
-            return ImmutableMap.of<String, DataNode>()
-        return mapValue
+    open fun asMap(): Map<String, DataNode> {
+        return mapValue ?: emptyMap()
     }
 
-    open fun asList(): MutableList<DataNode> {
-        if (!isList)
-            return ImmutableList.of<DataNode>()
-        return listValue
+    open fun asList(): List<DataNode> {
+        return listValue ?: emptyList()
     }
 
     open operator fun get(key: String): DataNode {
-        if (!isMap || !mapValue!!.containsKey(key))
-            return NULL
-        return mapValue!![key]
+        return mapValue?.get(key) ?: NULL
     }
 
     open operator fun get(index: Int): DataNode {
-        if (!isList || index < 0 || index >= listValue!!.size)
-            return NULL
-        return listValue!![index]
-    }
-
-    open fun getValue(vararg path: String): DataNode {
-        var node = this
-
-        for (part in path) {
-            if (node === NULL)
-                break
-            node = node[part]
-        }
-        return node
+        return listValue?.get(index) ?: NULL
     }
 
     fun put(key: String, str: String): Boolean {
@@ -126,10 +105,10 @@ open class DataNode {
     }
 
     fun put(key: String, node: DataNode): Boolean {
-        if (!isMap)
+        if (mapValue == null)
             return false
 
-        asMap().put(key, node)
+        mapValue?.put(key, node)
 
         return true
     }
@@ -139,10 +118,10 @@ open class DataNode {
     }
 
     fun put(index: Int, node: DataNode): Boolean {
-        if (!isList)
+        if (listValue == null)
             return false
 
-        asList()[index] = node
+        listValue?.set(index, node)
 
         return true
     }
@@ -152,10 +131,10 @@ open class DataNode {
     }
 
     fun add(node: DataNode): Boolean {
-        if (!isList)
+        if (listValue == null)
             return false
 
-        asList().add(node)
+        listValue?.add(node)
 
         return true
     }
@@ -164,7 +143,7 @@ open class DataNode {
         return "DataNode(" + type + ")-[" + (if (type == EnumNodeType.MAP) mapValue else if (type == EnumNodeType.LIST) listValue else stringValue) + "]"
     }
 
-    private enum class EnumNodeType {
+    protected enum class EnumNodeType {
         STRING, LIST, MAP
     }
 
@@ -179,12 +158,12 @@ open class DataNode {
             return false
         }
 
-        override fun asStringOr(defaultValue: String?): String? {
+        override fun asStringOr(defaultValue: String): String {
             return defaultValue
         }
 
-        override fun asString(): String {
-            return asStringOr(null)
+        override fun asString(): String? {
+            return null
         }
 
         override fun asMap(): MutableMap<String, DataNode> {
@@ -202,25 +181,25 @@ open class DataNode {
         override fun get(index: Int): DataNode {
             return NULL
         }
-
-        override fun getValue(vararg path: String): DataNode {
-            return NULL
-        }
     }
 
     companion object {
 
+        @JvmStatic
         val NULL: DataNode = DataNodeNull()
         private val RANDOM_NUMBER_CHECK_VALUE = -262920932
 
+        @JvmStatic
         fun str(value: String): DataNode {
             return DataNode(value)
         }
 
+        @JvmStatic
         fun map(): DataNode {
             return DataNode(HashMap<String, DataNode>())
         }
 
+        @JvmStatic
         fun list(): DataNode {
             return DataNode(ArrayList<DataNode>())
         }

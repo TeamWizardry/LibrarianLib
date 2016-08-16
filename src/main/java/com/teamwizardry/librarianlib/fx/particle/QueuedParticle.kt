@@ -6,17 +6,17 @@ import net.minecraft.entity.Entity
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 
-abstract class QueuedParticle protected constructor(worldIn: World, posXIn: Double, posYIn: Double, posZIn: Double) : Particle(worldIn, posXIn, posYIn, posZIn) {
+abstract class QueuedParticle<T : QueuedParticle<T>> protected constructor(worldIn: World, posXIn: Double, posYIn: Double, posZIn: Double) : Particle(worldIn, posXIn, posYIn, posZIn) {
 
-    var partialTicks: Float = 0.toFloat()
-    var rotationX: Float = 0.toFloat()
-    var rotationZ: Float = 0.toFloat()
-    var rotationYZ: Float = 0.toFloat()
-    var rotationXY: Float = 0.toFloat()
-    var rotationXZ: Float = 0.toFloat()
-    var distFromPlayer: Double = 0.toDouble()
+    var partialTicks: Float = 0.0f
+    var rotationX: Float = 0.0f
+    var rotationZ: Float = 0.0f
+    var rotationYZ: Float = 0.0f
+    var rotationXY: Float = 0.0f
+    var rotationXZ: Float = 0.0f
+    var distFromPlayer: Double = 0.0
 
-    protected abstract fun queue(): ParticleRenderQueue<*>
+    protected abstract fun queue(): ParticleRenderQueue<T>
 
     val pos: Vec3d
         get() {
@@ -35,7 +35,7 @@ abstract class QueuedParticle protected constructor(worldIn: World, posXIn: Doub
         this.rotationXY = rotationXY
         this.rotationXZ = rotationXZ
 
-        queue().add(this)
+        queue().add(this as T)
     }
 
 }

@@ -7,27 +7,7 @@ import java.util.ArrayList
 /**
  * Created by Saad on 5/7/2016.
  */
-class Arc3D(
-        /**
-         * The two points the arc will connect from and to
-         */
-        private val origin: Vec3d, private val target: Vec3d, height: Float, particleCount: Int) : IShape3D {
-
-    /**
-     * Height of the arc in blocks
-     */
-    private val height = 2f
-
-    /**
-     * Particles per arc
-     */
-    private val particles = 100
-
-    init {
-        this.height = height
-        this.particles = particleCount
-    }
-
+class Arc3D @JvmOverloads constructor(private val origin: Vec3d, private val target: Vec3d, private val height: Float = 2f, private val particles: Int = 100) : IShape3D {
     /**
      * Will return a list of points in order that define every point of the arc
 

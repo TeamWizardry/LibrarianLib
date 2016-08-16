@@ -83,14 +83,14 @@ class SpritesMetadataSectionSerializer : BaseMetadataSectionSerializer<SpritesMe
 
     @Throws(JsonParseException::class)
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): SpritesMetadataSection {
-        val `object` = JsonUtils.getJsonObject(json, "spritesheet{")
+        val jsonObject = JsonUtils.getJsonObject(json, "spritesheet{")
 
-        val width = JsonUtils.getInt(`object`.get("textureWidth"), "spritesheet{textureWidth")
-        val height = JsonUtils.getInt(`object`.get("textureHeight"), "spritesheet{textureHeight")
+        val width = JsonUtils.getInt(jsonObject.get("textureWidth"), "spritesheet{textureWidth")
+        val height = JsonUtils.getInt(jsonObject.get("textureHeight"), "spritesheet{textureHeight")
 
-        val sprites = JsonUtils.getJsonObject(`object`.get("sprites"), "spritesheet{sprites")
+        val sprites = JsonUtils.getJsonObject(jsonObject.get("sprites"), "spritesheet{sprites")
         val definitions = ArrayList<SpriteDefinition>()
-        for ((key, value) in sprites) {
+        for ((key, value) in sprites.entrySet()) {
             val d = parseSprite(key, value)
             if (d != null) {
                 definitions.add(d)

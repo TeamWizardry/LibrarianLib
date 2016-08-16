@@ -19,7 +19,7 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
 
     init {
         components = ComponentVoid(0, 0)
-        components.setCalculateOwnHover(false)
+        components.calculateOwnHover = false;
     }
 
     override fun initGui() {

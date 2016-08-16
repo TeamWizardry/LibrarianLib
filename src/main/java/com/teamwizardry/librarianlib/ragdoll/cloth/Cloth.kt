@@ -13,10 +13,11 @@ import com.teamwizardry.librarianlib.math.Geometry
 import com.teamwizardry.librarianlib.math.MathUtil
 import com.teamwizardry.librarianlib.math.Matrix4
 import com.teamwizardry.librarianlib.math.Sphere
+import com.teamwizardry.librarianlib.times
 
 class Cloth(var top: Array<Vec3d>, var height: Int, var size: Vec3d) {
 
-    var masses: Array<Array<PointMass3D>>
+    lateinit var masses: Array<Array<PointMass3D>>
     var links: MutableList<Link3D> = ArrayList()
     var hardLinks: MutableList<Link3D> = ArrayList()
     var solvePasses = 5
@@ -48,18 +49,8 @@ class Cloth(var top: Array<Vec3d>, var height: Int, var size: Vec3d) {
     }
 
     fun init() {
-        masses = Array<Array<PointMass3D>>(height) { arrayOfNulls<PointMass3D>(top.size) }
+        masses = Array<Array<PointMass3D>>(height) { y -> Array<PointMass3D>(top.size) { x -> PointMass3D(top[x].add(size * y ), 0.1f)} }
         links = ArrayList<Link3D>()
-
-        for (i in 0..height - 1) {
-
-            for (j in top.indices) {
-                masses[i][j] = PointMass3D(top[j].add(size.scale(i.toDouble())), 0.1f)
-                if (i == 0)
-                    masses[i][j].pin = true
-            }
-
-        }
 
         for (x in masses.indices) {
             for (z in 0..masses[x].size - 1) {
@@ -175,10 +166,7 @@ class Cloth(var top: Array<Vec3d>, var height: Int, var size: Vec3d) {
             }
         }
         for (sphere in spheres) {
-            val res = sphere.trace(point.origPos, point.pos)
-            if (res != null) {
-                point.pos = res
-            }
+            point.pos = sphere.trace(point.origPos, point.pos)
         }
         point.applyMotion(if (point.friction == null) Vec3d.ZERO else point.friction!!.scale(-friction))
     }

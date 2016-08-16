@@ -22,7 +22,7 @@ class PageSubindex(book: Book, rootData: DataNode, pageData: DataNode, page: Pag
 
         val indexPage = pageData.get("page").asInt()
 
-        val items = if (pageData.get("index").isString) rootData.get("subindexes").get(pageData.get("index").asString()) else rootData.get("subindex")
+        val items = if (pageData.get("index").isString) rootData.get("subindexes").get(pageData.get("index").asStringOr("default")) else rootData.get("subindex")
 
         val begin = indexPage * itemsPerPage
 

@@ -4,23 +4,21 @@ import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.fx.shader.Shader
 import com.teamwizardry.librarianlib.fx.shader.uniforms.Uniform.NoUniform
 import org.lwjgl.opengl.*
-
-import java.lang.reflect.Field
-import java.util.HashMap
+import java.util.*
 
 enum class UniformType private constructor(private val initializer: (Shader, String, UniformType, Int, Int) -> Uniform) {
     NONE(::NoUniform),
     // bools
-    BOOL(BoolTypes::Bool),
-    BOOL_VEC2(BoolTypes::BoolVec2),
-    BOOL_VEC3(BoolTypes::BoolVec3),
-    BOOL_VEC4(BoolTypes::BoolVec4),
+    BOOL(::NoUniform),
+    BOOL_VEC2(::NoUniform),
+    BOOL_VEC3(::NoUniform),
+    BOOL_VEC4(::NoUniform),
 
     // ints
-    INT(IntTypes::Int),
-    INT_VEC2(IntTypes::IntVec2),
-    INT_VEC3(IntTypes::IntVec3),
-    INT_VEC4(IntTypes::IntVec4),
+    INT(::NoUniform),
+    INT_VEC2(::NoUniform),
+    INT_VEC3(::NoUniform),
+    INT_VEC4(::NoUniform),
 
     // unsigned ints
     UINT(::NoUniform),
@@ -30,10 +28,10 @@ enum class UniformType private constructor(private val initializer: (Shader, Str
     UINT_ATOMIC_COUNTER(::NoUniform),
 
     // floats
-    FLOAT(FloatTypes::Float),
-    FLOAT_VEC2(FloatTypes::FloatVec2),
-    FLOAT_VEC3(FloatTypes::FloatVec3),
-    FLOAT_VEC4(FloatTypes::FloatVec4),
+    FLOAT(::NoUniform),
+    FLOAT_VEC2(::NoUniform),
+    FLOAT_VEC3(::NoUniform),
+    FLOAT_VEC4(::NoUniform),
 
     FLOAT_MAT2(::NoUniform),
     FLOAT_MAT3(::NoUniform),
@@ -67,7 +65,7 @@ enum class UniformType private constructor(private val initializer: (Shader, Str
     SAMPLER_1D_ARRAY(::NoUniform),
     SAMPLER_1D_ARRAY_SHADOW(::NoUniform),
 
-    SAMPLER_2D(IntTypes::Int),
+    SAMPLER_2D(::NoUniform),
     SAMPLER_2D_SHADOW(::NoUniform),
     SAMPLER_2D_ARRAY(::NoUniform),
     SAMPLER_2D_ARRAY_SHADOW(::NoUniform),

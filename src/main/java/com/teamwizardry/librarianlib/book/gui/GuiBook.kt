@@ -42,19 +42,19 @@ open class GuiBook(val book: Book, protected val rootData: DataNode, protected v
 
         navBar.add(ComponentSprite(TITLE_BAR, 0, 0))
         navBar.add(ComponentSprite(BACK_PAGE, 15, 2).setup { b ->
-            b.isEnabled = pageData.get("hasPrev").exists()
+            b.enabled = pageData.get("hasPrev").exists()
             ButtonMixin(b,
                     { b.color.setValue(normalColor) }, { b.color.setValue(hoverColor) }, { b.color.setValue(disabledColor) }
             ) { openPage(this.page.path, this.page.page - 1) }
         })
         navBar.add(ComponentSprite(NEXT_PAGE, TITLE_BAR.width - NEXT_PAGE.width - 15, 2).setup { b ->
-            b.isEnabled = pageData.get("hasNext").exists()
+            b.enabled = pageData.get("hasNext").exists()
             ButtonMixin(b,
                     { b.color.setValue(normalColor) }, { b.color.setValue(hoverColor) }, { b.color.setValue(disabledColor) }
             ) { openPage(this.page.path, this.page.page + 1) }
         })
         navBar.add(ComponentSprite(BACK_ARROW, TITLE_BAR.width / 2 - BACK_ARROW.width / 2, 2).setup { b ->
-            b.isEnabled = book.history.size > 0
+            b.enabled = book.history.size > 0
             ButtonMixin(b,
                     { b.color.setValue(normalColor) }, { b.color.setValue(hoverColor) }, { b.color.setValue(disabledColor) }
             ) { book.back() }
@@ -118,7 +118,7 @@ open class GuiBook(val book: Book, protected val rootData: DataNode, protected v
 
     fun removeSlider(key: Any) {
         if (sliders.containsKey(key))
-            sliders[key].invalidate()
+            sliders[key]?.invalidate()
     }
 
     companion object {

@@ -7,22 +7,13 @@ import java.util.ArrayList
 /**
  * Created by Saad on 13/7/2016.
  */
-class BezierCurve3D(
-        /**
-         * Point 1 is the origin, point 2 is the target position
-         */
-        private val point1: Vec3d, private val point2: Vec3d, pointCount: Int) : IShape3D {
+class BezierCurve3D @JvmOverloads constructor(point1: Vec3d, point2: Vec3d, pointCount: Int = 50) : IShape3D {
 
     /**
      * These will do the actual curves
      */
     private val controlPoint1: Vec3d
     private val controlPoint2: Vec3d
-
-    /**
-     * Numer of points on the line
-     */
-    private val pointCount = 50
 
     /**
      * Will return a list of points in order that define every point of the shape
@@ -32,7 +23,6 @@ class BezierCurve3D(
     override val points: ArrayList<Vec3d>
 
     init {
-        this.pointCount = pointCount
         points = ArrayList<Vec3d>()
 
         val midpoint = point1.subtract(point2).scale(1.0 / 2.0)

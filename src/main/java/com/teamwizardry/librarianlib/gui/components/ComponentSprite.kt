@@ -7,7 +7,8 @@ import com.teamwizardry.librarianlib.sprite.Sprite
 import com.teamwizardry.librarianlib.math.Vec2d
 import org.lwjgl.opengl.GL11
 
-class ComponentSprite @JvmOverloads constructor(var sprite: Sprite?, x: Int, y: Int, width: Int = sprite.width, height: Int = sprite.height) : GuiComponent<ComponentSprite>(x, y, width, height) {
+class ComponentSprite @JvmOverloads constructor(var sprite: Sprite?, x: Int, y: Int, width: Int = sprite?.width ?: 16, height: Int = sprite?.height ?: 16) : GuiComponent<ComponentSprite>(x, y, width, height) {
+
 
     var depth = Option<ComponentSprite, Boolean>(true)
     var color = Option<ComponentSprite, Color>(Color.WHITE)

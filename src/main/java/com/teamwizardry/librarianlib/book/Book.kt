@@ -32,11 +32,11 @@ class Book(val modid: String) {
         return true
     }
 
-    protected fun getScreen(page: Page): GuiScreen {
+    protected fun getScreen(page: Page): GuiScreen? {
         var page = page
         var scr = PageHandler.create(this, page)
         if (scr == null) {
-            LibrarianLog.I.warn("Page [%s:%d] not found! Going to [/:0] ", page.path, page.page)
+            LibrarianLog.warn("Page [%s:%d] not found! Going to [/:0] ", page.path, page.page)
             page = Page("/", 0)
             scr = PageHandler.create(this, page)
         }

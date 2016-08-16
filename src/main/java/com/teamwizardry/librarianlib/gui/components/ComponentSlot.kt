@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.gui.GuiComponent
 import com.teamwizardry.librarianlib.gui.HandlerList
 import com.teamwizardry.librarianlib.gui.Option
 import com.teamwizardry.librarianlib.math.Vec2d
+import com.teamwizardry.librarianlib.plus
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
@@ -14,33 +15,35 @@ import net.minecraft.util.text.TextFormatting
 
 class ComponentSlot(posX: Int, posY: Int) : GuiComponent<ComponentSlot>(posX, posY, 16, 16) {
 
-    val stack = Option<ComponentSlot, ItemStack>(null)
-    val tooltip = Option<ComponentSlot, Boolean>(null)
-    val quantityText = HandlerList<ISlotTextEventHandler<ComponentSlot>>()
-    val itemInfo = HandlerList<ISlotInfoEventHandler<ComponentSlot>>()
+    val stack = Option<ComponentSlot, ItemStack?>(null)
+    val tooltip = Option<ComponentSlot, Boolean>(true)
+    val quantityText = HandlerList<(ComponentSlot, String?) -> String?>()
+    val itemInfo = HandlerList<(ComponentSlot, MutableList<String>) -> Unit>()
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
         RenderHelper.enableGUIStandardItemLighting()
         GlStateManager.enableRescaleNormal()
 
         val stack = this.stack.getValue(this)
-        var str = "" + stack.stackSize
-        str = quantityText.fireModifier<String>(str, { h, v -> h.handle(this, v) })
+        if(stack != null) {
+            var str = "" + stack.stackSize
+            str = quantityText.fireModifier(str, { h, v -> h(this, v) }) ?: ""
 
-        val itemRender = Minecraft.getMinecraft().renderItem
-        itemRender.zLevel = 200.0f
+            val itemRender = Minecraft.getMinecraft().renderItem
+            itemRender.zLevel = 200.0f
 
-        var font: FontRenderer? = null
-        font = stack.item.getFontRenderer(stack)
+            var font: FontRenderer? = null
+            font = stack.item.getFontRenderer(stack)
 
-        itemRender.renderItemAndEffectIntoGUI(stack, pos.xi, pos.yi)
-        itemRender.renderItemOverlayIntoGUI(if (font == null) Minecraft.getMinecraft().fontRendererObj else font, stack, pos.xi, pos.yi, str)
+            itemRender.renderItemAndEffectIntoGUI(stack, pos.xi, pos.yi)
+            itemRender.renderItemOverlayIntoGUI(if (font == null) Minecraft.getMinecraft().fontRendererObj else font, stack, pos.xi, pos.yi, str)
 
-        itemRender.zLevel = 0.0f
+            itemRender.zLevel = 0.0f
 
 
-        if (mouseOverThisFrame && tooltip.getValue(this))
-            drawTooltip(stack, mousePos)
+            if (mouseOverThisFrame && tooltip.getValue(this))
+                drawTooltip(stack, mousePos)
+        }
 
         GlStateManager.disableRescaleNormal()
         RenderHelper.disableStandardItemLighting()
@@ -57,20 +60,10 @@ class ComponentSlot(posX: Int, posY: Int) : GuiComponent<ComponentSlot>(posX, po
             }
         }
 
-        itemInfo.fireAll { h -> h.handle(this, list) }
+        itemInfo.fireAll { h -> h(this, list) }
 
         val font = stack.item.getFontRenderer(stack)
         setTooltip(list, font ?: Minecraft.getMinecraft().fontRendererObj)
-    }
-
-    @FunctionalInterface
-    interface ISlotTextEventHandler<T> {
-        fun handle(component: T, text: String): String
-    }
-
-    @FunctionalInterface
-    interface ISlotInfoEventHandler<T> {
-        fun handle(component: T, info: List<String>)
     }
 
 }

@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.gui.GuiComponent
 
 class ButtonMixin(val component: GuiComponent<*>,
-                  private val normal: ButtonMixin.IStateChanger, private val hover: ButtonMixin.IStateChanger, private val disabled: ButtonMixin.IStateChanger, private val handler: ButtonMixin.IClickHandler) {
+                  private val normal: () -> Unit, private val hover: () -> Unit, private val disabled: () -> Unit, private val handler: () -> Unit) {
     var state = EnumButtonState.NORMAL
 
 
@@ -13,7 +13,7 @@ class ButtonMixin(val component: GuiComponent<*>,
         if (!component.hasTag(TAG))
             apply()
         else
-            LibrarianLog.I.warn("Component already has button mixin!")
+            LibrarianLog.warn("Component already has button mixin!")
     }
 
     private fun apply() {
@@ -51,16 +51,6 @@ class ButtonMixin(val component: GuiComponent<*>,
 
     enum class EnumButtonState {
         NORMAL, DISABLED, HOVER
-    }
-
-    @FunctionalInterface
-    interface IStateChanger {
-        fun changeState()
-    }
-
-    @FunctionalInterface
-    interface IClickHandler {
-        fun handle()
     }
 
     companion object {

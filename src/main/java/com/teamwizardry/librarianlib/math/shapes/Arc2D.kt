@@ -7,26 +7,7 @@ import java.util.ArrayList
 /**
  * Created by Saad on 12/7/2016.
  */
-class Arc2D(
-        /**
-         * The two points the arc will connect from and to
-         */
-        private val origin: Vec2d, private val target: Vec2d, height: Float, particleCount: Int) : IShape2D {
-
-    /**
-     * Height of the arc in blocks
-     */
-    private val height = 2f
-
-    /**
-     * Particles per arc
-     */
-    private val particles = 100
-
-    init {
-        this.height = height
-        this.particles = particleCount
-    }
+class Arc2D @JvmOverloads constructor(val origin: Vec2d, val target: Vec2d, val height: Float = 2f, val particles: Int = 100) : IShape2D {
 
     /**
      * Will return a list of points in order that define every point of the arc

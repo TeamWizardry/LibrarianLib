@@ -17,11 +17,12 @@ import net.minecraftforge.event.world.BlockEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.GL11
 
+// TODO : Conversion is lazy, may want to rewrite
 enum class InWorldRender private constructor() {
     INSTANCE;
 
     protected var pos: BlockPos? = null
-    protected var rot: Rotation
+    protected var rot: Rotation? = null
     protected var structure: Structure? = null
     protected var verts: IntArray? = null
     protected var match: StructureMatchResult? = null
@@ -95,7 +96,7 @@ enum class InWorldRender private constructor() {
     }
 
     protected fun refreshVerts() {
-        val match = structure!!.match(Minecraft.getMinecraft().theWorld, pos)
+        val match = structure!!.match(Minecraft.getMinecraft().theWorld, pos!!)
         this.match = match
         rot = structure!!.matchedRotation
         structure!!.blockAccess.setBlockState(structure!!.origin, Blocks.AIR.defaultState)

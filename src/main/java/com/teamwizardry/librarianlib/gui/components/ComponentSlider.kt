@@ -23,19 +23,19 @@ class ComponentSlider(posX: Int, posY: Int, width: Int, height: Int, percentage:
             field = percentage
             percentageChange.fireAll { h -> h.accept(this.percentage) }
         }
-    private var handlePos: Vec2d? = null
+    private var handlePos: Vec2d = Vec2d(0.0, 0.0)
 
     init {
 
         handle = ComponentVoid(0, 0)
-        percentage = percentage
+        this.percentage = percentage
 
-        DragMixin(handle) { vec ->
-            vec = vec.projectOnTo(size)
+        DragMixin(handle) { vecIn ->
+            var vec = vecIn.projectOnTo(size)
             vec = Vec2d.max(vec, Vec2d.ZERO) // clamp to the begining
             vec = Vec2d.min(vec, size) // clamp to the end
 
-            percentage = vec.length() / size.length()
+            this.percentage = vec.length() / size.length()
 
             vec
         }

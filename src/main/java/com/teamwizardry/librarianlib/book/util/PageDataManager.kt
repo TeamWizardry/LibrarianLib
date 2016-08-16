@@ -40,8 +40,8 @@ object PageDataManager {
 
             }
             if (ex is FileNotFoundException) {
-                LibrarianLog.I.warn("File not found: %s:%s", mod, PathUtils.resolve(resourcePath.replace("%LANG%", lang) + ".json").substring(1))
-                LibrarianLog.I.warn("File not found: %s:%s", mod, PathUtils.resolve(resourcePath.replace("%LANG%", "en_US") + ".json").substring(1))
+                LibrarianLog.warn("File not found: %s:%s", mod, PathUtils.resolve(resourcePath.replace("%LANG%", lang) + ".json").substring(1))
+                LibrarianLog.warn("File not found: %s:%s", mod, PathUtils.resolve(resourcePath.replace("%LANG%", "en_US") + ".json").substring(1))
             } else {
                 ex.printStackTrace()
             }

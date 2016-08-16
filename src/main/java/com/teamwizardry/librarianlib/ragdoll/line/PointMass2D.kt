@@ -7,12 +7,8 @@ import com.teamwizardry.librarianlib.math.Vec2d
  */
 class PointMass2D(pos: Vec2d, var mass: Float) {
 
-    var pos: Vec2d
-    var prevPos: Vec2d
+    var pos: Vec2d = pos
+    var prevPos: Vec2d = pos
     var nextPos: Vec2d? = null
     var pin = false
-
-    init {
-        this.prevPos = this.pos = pos
-    }
 }

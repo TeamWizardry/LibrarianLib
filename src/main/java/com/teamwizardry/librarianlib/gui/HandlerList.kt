@@ -29,9 +29,9 @@ class HandlerList<T> {
      * Fire an event, each handler will be passed to the caller
      * @param caller
      */
-    fun fireAll(caller: IHandlerCaller<T>) {
+    fun fireAll(caller: (T) -> Unit) {
         for (t in handlers) {
-            caller.call(t)
+            caller(t)
         }
     }
 
@@ -39,9 +39,9 @@ class HandlerList<T> {
      * Fire an event, each handler will be passed to the caller in order. Once the handler returns true it will halt.
      * @param caller
      */
-    fun fireCancel(caller: ICancelableHandlerCaller<T>): Boolean {
+    fun fireCancel(caller: (T) -> Boolean): Boolean {
         for (t in handlers) {
-            if (caller.call(t))
+            if (caller(t))
                 return true
         }
         return false
@@ -51,10 +51,10 @@ class HandlerList<T> {
      * Fire an event, each handler will be passed to the caller in order. Once the handler returns true it will halt.
      * @param caller
      */
-    fun <V> fireModifier(value: V, caller: IModifierHandlerCaller<V, T>): V {
+    fun <V> fireModifier(value: V?, caller: (T, V?) -> V?): V? {
         var value = value
         for (t in handlers) {
-            value = caller.call(t, value)
+            value = caller(t, value)
         }
         return value
     }

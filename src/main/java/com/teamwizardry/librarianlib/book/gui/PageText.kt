@@ -27,7 +27,7 @@ class PageText(book: Book, rootData: DataNode, pageData: DataNode, page: Page) :
             list = pageData.get("text").asList()
         } else {
             val texts = rootData.get("texts")
-            list = texts.get(pageData.get("text").get("global").asString()).asList()
+            list = texts.get(pageData.get("text").get("global").asStringOr("default")).asList()
             pageNum = pageData.get("text").get("page").asInt()
         }
 

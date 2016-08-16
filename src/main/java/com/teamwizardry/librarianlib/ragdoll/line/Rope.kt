@@ -14,13 +14,13 @@ class Rope(var middles: Int, length: Double, stretch: Float, bend: Float, begin:
     var solvePasses = 3
 
     init {
-        points = arrayOfNulls<PointMass2D>(middles + 2)
         val mass = 0.1f
         val offsetPer = end.sub(begin).mul(1.0 / (middles + 1))
         var currentPos = begin
-        for (i in points.indices) {
-            points[i] = PointMass2D(currentPos, mass)
+        points = Array<PointMass2D>(middles + 2) { i ->
+            var point = PointMass2D(currentPos, mass)
             currentPos = currentPos.add(offsetPer)
+            point
         }
 
         this.start = points[0]

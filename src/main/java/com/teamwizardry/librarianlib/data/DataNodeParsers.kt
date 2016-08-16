@@ -18,7 +18,7 @@ import java.util.regex.Pattern
 object DataNodeParsers {
 
     fun parseBlockState(data: DataNode): IBlockState {
-        var iblockstate = Blocks.AIR.defaultState
+        var iblockstate: IBlockState = Blocks.AIR.defaultState
 
         if (data.isMap && data.get("id").isString) {
             val block = Block.REGISTRY.getObject(ResourceLocation(data.get("id").asStringOr("minecraft:bedrock")!!))
@@ -33,7 +33,7 @@ object DataNodeParsers {
                     val iproperty = blockstatecontainer.getProperty(s)
 
                     if (iproperty != null) {
-                        iblockstate = withProperty<*>(iblockstate, iproperty, map[s].asString())
+                        iblockstate = withProperty(iblockstate, iproperty, map[s]?.asString()!!)
                     }
                 }
             }
@@ -42,8 +42,8 @@ object DataNodeParsers {
         return iblockstate
     }
 
-    private fun <T : Comparable<T>> withProperty(p_190007_0_: IBlockState, p_190007_1_: IProperty<T>, p_190007_2_: String): IBlockState {
-        return p_190007_0_.withProperty(p_190007_1_, p_190007_1_.parseValue(p_190007_2_).get())
+    private fun <T : Comparable<T>> withProperty(state: IBlockState, property: IProperty<T>, value: String): IBlockState {
+        return state.withProperty(property, property.parseValue(value).get())
     }
 
     fun parseItem(node: DataNode): Item? {

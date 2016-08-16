@@ -46,9 +46,10 @@ class ComponentStructure(posX: Int, posY: Int, var structure: Structure?) : GuiC
 
     fun initStructure() {
         bufferInts = null
-        if (structure == null)
+        val tmp = structure
+        if (tmp == null)
             return
-        bufferInts = StructureRenderUtil.render(structure, color.getValue(this), 1f)
+        bufferInts = StructureRenderUtil.render(tmp, color.getValue(this), 1f)
     }
 
     companion object {

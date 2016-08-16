@@ -15,8 +15,8 @@ class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
 
     init {
 
-        preDraw.add(IComponentDrawEventHandler<Component3DView> { _comp_, mousePos, ticks -> this.preDraw(_comp_, mousePos, ticks) })
-        postDraw.add(IComponentDrawEventHandler<Component3DView> { _comp_, mousePos, ticks -> this.postDraw(_comp_, mousePos, ticks) })
+        preDraw.add({ c, p, t -> preDraw(c, p, t) })
+        postDraw.add({ c, p, t -> postDraw(c, p, t) })
     }
 
     internal var dragStart = Vec2d.ZERO
@@ -63,7 +63,7 @@ class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
         //noop for now
     }
 
-    fun calcDrag(mousePos: Vec2d, button: EnumMouseButton) {
+    fun calcDrag(mousePos: Vec2d, button: EnumMouseButton?) {
         if (button != dragButton)
             return
 

@@ -30,7 +30,7 @@ class Texture(
     var height: Int = 0
         private set
     private var section: SpritesMetadataSection? = null
-    private var sprites: MutableMap<String, Sprite>? = null
+    private var sprites: MutableMap<String, Sprite> = mutableMapOf()
 
     init {
         textures.add(WeakReference(this))
@@ -41,20 +41,25 @@ class Texture(
      * Loads the sprite data from disk
      */
     fun loadSpriteData() {
-        val oldSprites = if (this.sprites == null) ImmutableMap.of<String, Sprite>() else this.sprites
-        this.sprites = HashMap<String, Sprite>()
-        this.width = this.height = 16
+        val oldSprites = this.sprites
+        this.sprites = mutableMapOf()
+        this.width = 16
+        this.height = 16
         try {
-            this.section = Minecraft.getMinecraft().resourceManager.getResource(loc).getMetadata<SpritesMetadataSection>("spritesheet")
+            var section = Minecraft.getMinecraft().resourceManager.getResource(loc).getMetadata<SpritesMetadataSection>("spritesheet")
+            this.section = section
             if (section != null) {
-                this.width = section!!.width
-                this.height = section!!.height
-                for (def in section!!.definitions) {
+                this.width = section.width
+                this.height = section.height
+                for (def in section.definitions) {
                     if (oldSprites.containsKey(def.name)) {
-                        oldSprites.get(def.name).init(def.u, def.v, def.w, def.h, def.frames, def.offsetU, def.offsetV)
-                        sprites!!.put(def.name, oldSprites.get(def.name))
+                        var oldSprite = oldSprites.get(def.name)
+                        if(oldSprite != null) {
+                            oldSprite.init(def.u, def.v, def.w, def.h, def.frames, def.offsetU, def.offsetV)
+                            sprites.put(def.name, oldSprite)
+                        }
                     } else {
-                        sprites!!.put(def.name, Sprite(this, def.u, def.v, def.w, def.h, def.frames, def.offsetU, def.offsetV))
+                        sprites.put(def.name, Sprite(this, def.u, def.v, def.w, def.h, def.frames, def.offsetU, def.offsetV))
                     }
                 }
             }

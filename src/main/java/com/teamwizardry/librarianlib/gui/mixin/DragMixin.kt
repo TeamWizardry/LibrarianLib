@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.math.Vec2d
 
 import java.util.function.Function
 
-class DragMixin<T : GuiComponent<*>>(protected var component: T, protected var constraints: Function<Vec2d, Vec2d>) {
+class DragMixin<T : GuiComponent<*>>(protected var component: T, protected var constraints: (Vec2d) -> Vec2d) {
 
     val pickup = HandlerList<IDragCancelableEvent<T>>()
     val drop = HandlerList<IDragCancelableEvent<T>>()
@@ -20,14 +20,14 @@ class DragMixin<T : GuiComponent<*>>(protected var component: T, protected var c
     }
 
     private fun init() {
-        component.mouseDown.add({ c, pos, button ->
-            if (!mouseDown && c.isMouseOver(pos) && !pickup.fireCancel { h -> h.handle(component, button, pos) }) {
+        component.mouseDown.add { c, pos, button ->
+            if (!mouseDown && c.isMouseOver(pos) && !pickup.fireCancel { h -> h(component, button, pos) }) {
                 mouseDown = true
                 clickPos = pos
-                return@component.mouseDown.add true
+                return@add true
             }
             false
-        })
+        }
         component.mouseUp.add({ c, pos, button ->
             if (mouseDown && !drop.fireCancel { h -> h.handle(component, button, pos) })
                 mouseDown = false

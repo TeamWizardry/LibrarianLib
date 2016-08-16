@@ -75,7 +75,7 @@ class ShaderHelper private constructor() : IResourceManagerReloadListener {
                 val nanos = System.nanoTime()
                 var seconds = nanos.toDouble() / 1000000000.0
                 seconds = seconds % 100000.0
-                shader.time.set(seconds)
+                shader.time?.set(seconds)
             }
 
             shader.uniformDefaults()

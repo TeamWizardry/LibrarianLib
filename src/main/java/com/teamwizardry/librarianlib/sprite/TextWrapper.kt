@@ -39,12 +39,6 @@ object TextWrapper {
                         ++j
                     }
                 }
-                else -> {
-                    j += renderer.getCharWidth(c0)
-                    if (flag) {
-                        ++j
-                    }
-                }
                 '\u00a7' ->
 
                     if (k < i - 1) {
@@ -59,6 +53,12 @@ object TextWrapper {
                             flag = true
                         }
                     }
+                else -> {
+                    j += renderer.getCharWidth(c0)
+                    if (flag) {
+                        ++j
+                    }
+                }
             }
 
             if (c0.toInt() == 10) {

@@ -36,7 +36,10 @@ class Matrix4 {
     var m33: Double = 0.toDouble()
 
     constructor() {
-        m00 = m11 = m22 = m33 = 1.0
+        m00 = 1.0
+        m11 = 1.0
+        m22 = 1.0
+        m33 = 1.0
     }
 
     constructor(d00: Double, d01: Double, d02: Double, d03: Double,
@@ -66,8 +69,22 @@ class Matrix4 {
     }
 
     fun setIdentity(): Matrix4 {
-        m00 = m11 = m22 = m33 = 1.0
-        m01 = m02 = m03 = m10 = m12 = m13 = m20 = m21 = m23 = m30 = m31 = m32 = 0.0
+        m00 = 1.0
+        m11 = 1.0
+        m22 = 1.0
+        m33 = 1.0
+        m01 = 0.0
+        m02 = 0.0
+        m03 = 0.0
+        m10 = 0.0
+        m12 = 0.0
+        m13 = 0.0
+        m20 = 0.0
+        m21 = 0.0
+        m23 = 0.0
+        m30 = 0.0
+        m31 = 0.0
+        m32 = 0.0
 
         return this
     }

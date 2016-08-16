@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.data
 
 import com.google.gson.*
+import com.teamwizardry.librarianlib.LibrarianLog
 import jline.internal.InputStreamReader
 
 import java.io.InputStream
@@ -17,23 +18,23 @@ object DataParser {
         return parseNode(jsonElement)
     }
 
-    private fun parseNode(elem: JsonElement): DataNode? {
+    private fun parseNode(elem: JsonElement): DataNode {
         if (elem is JsonObject)
             return parseObject(elem)
         if (elem is JsonArray)
             return parseList(elem)
         if (elem is JsonNull)
-            return null
+            return DataNode.NULL
         return parseOther(elem)
     }
 
-    private fun parseObject(`object`: JsonObject): DataNode {
+    private fun parseObject(json: JsonObject): DataNode {
 
         val map = HashMap<String, DataNode>()
 
-        for ((key, value) in `object`) {
+        for ((key, value) in json.entrySet()) {
             val node = parseNode(value)
-            if (node != null)
+            if (node != DataNode.NULL)
                 map.put(key, node)
         }
 
@@ -46,7 +47,7 @@ object DataParser {
 
         for (elem in array) {
             val node = parseNode(elem)
-            if (node != null)
+            if (node != DataNode.NULL)
                 list.add(node)
         }
 
@@ -59,8 +60,8 @@ object DataParser {
             return DataNode(elem.asString)
         }
 
-
-        return DataNode("!!ERROR!!")
+        LibrarianLog.warn("Error parsing Json Element: $elem")
+        return DataNode.NULL
     }
 
 }

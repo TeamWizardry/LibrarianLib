@@ -15,7 +15,7 @@ class ComponentList(posX: Int, posY: Int) : GuiComponent<ComponentList>(posX, po
         for (component in components) {
             component.pos = Vec2d(component.pos.x, y.toDouble())
             val bb = component.getLogicalSize()
-            y = bb.max.yi
+            if(bb != null) y = bb.max.yi
         }
     }
 }

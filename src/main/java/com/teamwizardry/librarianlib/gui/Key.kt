@@ -30,9 +30,10 @@ class Key private constructor(val character: Char, val keyCode: Int) {
         private val pool = HashMap<Int, Key>()
 
         operator fun get(character: Char, keyCode: Int): Key {
+            var key = pool[keyCode] ?: Key(character, keyCode)
             if (!pool.containsKey(keyCode))
-                pool.put(keyCode, Key(character, keyCode))
-            return pool[keyCode]
+                pool.put(keyCode, key)
+            return key
         }
     }
 

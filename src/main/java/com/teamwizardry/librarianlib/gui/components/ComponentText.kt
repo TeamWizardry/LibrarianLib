@@ -53,7 +53,7 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
      * *
      * @return
      */
-    fun func(func: Function<ComponentText, String>): ComponentText {
+    fun func(func: (ComponentText) -> String): ComponentText {
         text.func(func)
         return this
     }
@@ -115,7 +115,7 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
         }
     }
 
-    protected override val contentSize: BoundingBox2D
+    override val contentSize: BoundingBox2D
         get() {
             val wrap = this.wrap.getValue(this)
 

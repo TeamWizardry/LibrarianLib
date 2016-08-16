@@ -14,6 +14,6 @@ class ComponentRect(posX: Int, posY: Int, width: Int, height: Int) : GuiComponen
     val color = Option<ComponentRect, Color>(Color.WHITE)
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
-        Gui.drawRect(pos.xi, pos.yi, pos.xi + size.xi, pos.yi + size.yi, color.getValue(this).hexARGB())
+        Gui.drawRect(pos.xi, pos.yi, pos.xi + size.xi, pos.yi + size.yi, color.getValue(this)?.hexARGB() ?: 0x000000)
     }
 }

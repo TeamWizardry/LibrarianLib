@@ -46,11 +46,11 @@ class Structure(loc: ResourceLocation) {
         protected set
 
     init {
-        val stream = Structure::class.java!!.getResourceAsStream("/assets/" + loc.resourceDomain + "/schematics/" + loc.resourcePath + ".nbt")
+        val stream = Structure::class.java.getResourceAsStream("/assets/" + loc.resourceDomain + "/schematics/" + loc.resourcePath + ".nbt")
         if (stream != null) {
             try {
                 parse(stream)
-                stream!!.close()
+                stream.close()
             } catch (e: IOException) {
                 e.printStackTrace()
             }
@@ -59,11 +59,10 @@ class Structure(loc: ResourceLocation) {
     }
 
     fun blockInfos(): List<BlockInfo> {
-        return if (templateBlocks == null) ImmutableList.of<BlockInfo>() else templateBlocks
+        return templateBlocks ?: emptyList()
     }
 
-    fun match(world: World, checkPos: BlockPos): StructureMatchResult {
-
+    fun match(world: World, checkPos: BlockPos): StructureMatchResult? {
         val none = match(world, checkPos, Rotation.NONE)
         val reverse = match(world, checkPos, Rotation.CLOCKWISE_180)
         val cw = match(world, checkPos, Rotation.CLOCKWISE_90)
@@ -124,8 +123,8 @@ class Structure(loc: ResourceLocation) {
                     }
 
                     var propsMatch = false
-                    val worldValue = worldState.getValue<*>(prop)
-                    val templateValue = templateState.getValue<*>(prop)
+                    val worldValue = worldState.getValue<kotlin.Comparable<Any>>(prop as IProperty<Comparable<Any>>)
+                    val templateValue = templateState.getValue<kotlin.Comparable<Any>>(prop)
 
                     propsMatch = propsMatch || worldValue === templateValue // if the properties are equal
 

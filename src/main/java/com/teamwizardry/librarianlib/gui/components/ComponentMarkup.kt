@@ -23,8 +23,8 @@ class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
         mouseClick.add({ c, pos, button ->
             for (element in elements) {
                 if (element.isMouseOver(pos.xi, pos.yi)) {
-                    element.click.fireAll { h -> h.click() }
-                    return@mouseClick.add true
+                    element.click.fireAll { h -> h() }
+                    return@add true
                 }
             }
             false
@@ -32,7 +32,7 @@ class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
     }
 
     override fun relativePos(pos: Vec2d): Vec2d {
-        return super.relativePos(pos).add(0.0, start.getValue(this).toDouble())
+        return super.relativePos(pos).add(0.0, start.getValue(this)?.toDouble() ?: 0.0)
     }
 
     fun create(text: String): MarkupElement {
@@ -49,8 +49,8 @@ class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
     }
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
-        val start = this.start.getValue(this)
-        val end = this.end.getValue(this)
+        val start = this.start.getValue(this) ?: Int.MIN_VALUE
+        val end = this.end.getValue(this) ?: Int.MAX_VALUE
         GlStateManager.translate(0f, (-start).toFloat(), 0f)
         for (element in elements) {
             if (element.posY >= start && element.posY <= end ||
@@ -65,7 +65,7 @@ class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
         val format = Option<Boolean, String>("")
         val color = Option<Boolean, Color>(Color.BLACK)
         val dropShadow = Option<Boolean, Boolean>(false)
-        val click = HandlerList<IClickHandler>()
+        val click = HandlerList<() -> Unit>()
         var lines: MutableList<String> = ArrayList()
         private val lengths: IntArray
 
@@ -86,7 +86,7 @@ class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
         }
 
         protected fun drawLine(line: String, x: Int, y: Int, hover: Boolean) {
-            Minecraft.getMinecraft().fontRendererObj.drawString(format.getValue(hover) + line, x.toFloat(), y.toFloat(), color.getValue(hover).hexARGB(), dropShadow.getValue(hover))
+            Minecraft.getMinecraft().fontRendererObj.drawString(format.getValue(hover) + line, x.toFloat(), y.toFloat(), color.getValue(hover)?.hexARGB() ?: 0x000000, dropShadow.getValue(hover) ?: false)
         }
 
         fun isMouseOver(x: Int, y: Int): Boolean {
@@ -113,11 +113,6 @@ class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
 
         fun height(): Int {
             return Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT * lines.size
-        }
-
-        @FunctionalInterface
-        interface IClickHandler {
-            fun click()
         }
     }
 
