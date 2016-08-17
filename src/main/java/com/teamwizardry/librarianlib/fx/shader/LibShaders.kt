@@ -12,10 +12,10 @@ object LibShaders {
 
     class HueShader(vert: String?, frag: String?) : Shader(vert, frag) {
 
-        var hue: FloatTypes.Float1? = null
+        var hue: FloatTypes.FloatUniform? = null
 
         override fun initUniforms() {
-            hue = getUniform<FloatTypes.Float1>("hue")
+            hue = getUniform<FloatTypes.FloatUniform>("hue")
         }
 
         override fun uniformDefaults() {

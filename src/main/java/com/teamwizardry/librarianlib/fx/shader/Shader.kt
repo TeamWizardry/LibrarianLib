@@ -9,7 +9,7 @@ import org.lwjgl.opengl.GL20
 
 open class Shader(val vert: String?, val frag: String?) {
 
-    var time: FloatTypes.Float1? = null
+    var time: FloatTypes.FloatUniform? = null
 
     var glName = 0
         private set
@@ -41,7 +41,7 @@ open class Shader(val vert: String?, val frag: String?) {
             msg += "]"
             LibrarianLog.info(msg)
         }
-        time = getUniform<FloatTypes.Float1>("time", true)
+        time = getUniform<FloatTypes.FloatUniform>("time", true)
 
         initUniforms()
     }

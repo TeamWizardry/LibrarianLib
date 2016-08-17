@@ -32,7 +32,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
         MinecraftForge.EVENT_BUS.register(this)
         MinecraftForge.EVENT_BUS.register(ScissorUtil.INSTANCE)
-        LibShaders.javaClass// load the class
+        LibShaders // load the class
         ShaderHelper.initShaders()
         try {
             val s = ReflectionHelper.findField(Minecraft::class.java, "metadataSerializer_", "field_110452_an").get(Minecraft.getMinecraft()) as MetadataSerializer

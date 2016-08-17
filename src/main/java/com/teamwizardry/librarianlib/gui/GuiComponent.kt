@@ -155,7 +155,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     var outOfFlow = false
     protected var components: MutableList<GuiComponent<*>> = ArrayList()
     var parent: GuiComponent<*>? = null
-        protected set
+        private set
 
     init {
         this.pos = Vec2d(posX.toDouble(), posY.toDouble())
@@ -181,11 +181,12 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      */
     fun add(component: GuiComponent<*>?) {
         if (component == null) {
-            LibrarianLog.error("You shouldn't be addinng null components!")
+            LibrarianLog.error("You shouldn't be adding null components!")
             return
         }
         if (component === this)
             throw IllegalArgumentException("Can't add components to themselves!")
+
         if (component.parent != null)
             throw IllegalArgumentException("Component already had a parent!")
         if(BUS.fire(AddChildEvent(thiz(), component)).isCanceled())
@@ -195,6 +196,13 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         components.add(component)
         component.parent = this
         Collections.sort<GuiComponent<*>>(components, { a, b -> Integer.compare(a.zIndex, b.zIndex) })
+    }
+
+    operator fun contains(component: GuiComponent<*>) : Boolean {
+        if(component in components)
+            return true
+        components.forEach { if(component in it) return true }
+        return false
     }
 
     /**
@@ -266,24 +274,23 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     }
 
     fun calculateMouseOver(mousePos: Vec2d) {
-        var mouseOver = false
+        val wasMouseOver = this.mouseOver
+        this.mouseOver = false
 
-        components.forEach { child ->
-            child.mouseOver = false
-        }
-
-        for(child in components.asReversed()) {
+        components.asReversed().forEach { child ->
             child.calculateMouseOver(transformChildPos(child, mousePos))
+            if(mouseOver) {
+                child.mouseOver = false
+            }
             if(child.mouseOver) {
                 mouseOver = true
-                break
             }
+
         }
 
         mouseOver = mouseOver || (calculateOwnHover &&
-                (mousePos.x >= 0 && mousePos.x < size.x && mousePos.y >= 0 && mousePos.y < size.y) )
-        val wasMouseOver = this.mouseOver
-        this.mouseOver = BUS.fire(MouseOverEvent(thiz(), mousePos, mouseOver)).isOver
+                (mousePos.x >= 0 && mousePos.x <= size.x && mousePos.y >= 0 && mousePos.y <= size.y) )
+        this.mouseOver = BUS.fire(MouseOverEvent(thiz(), mousePos, this.mouseOver)).isOver
 
         if(wasMouseOver != this.mouseOver) {
             if(this.mouseOver)
@@ -323,19 +330,19 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
         drawComponent(mousePos, partialTicks)
 
-        if(mouseOver) {
-            GlStateManager.disableTexture2D()
-            var tessellator = Tessellator.getInstance();
-            var vb = tessellator.buffer
-            vb.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
-            vb.pos(pos.x, pos.y, 0.0).endVertex()
-            vb.pos(pos.x+size.x, pos.y, 0.0).endVertex()
-            vb.pos(pos.x+size.x, pos.y+size.y, 0.0).endVertex()
-            vb.pos(pos.x, pos.y+size.y, 0.0).endVertex()
-            vb.pos(pos.x, pos.y, 0.0).endVertex()
-            tessellator.draw()
-            GlStateManager.enableTexture2D()
-        }
+        if(!mouseOver) GlStateManager.color(1f, 0f, 1f);
+        GlStateManager.disableTexture2D()
+        var tessellator = Tessellator.getInstance();
+        var vb = tessellator.buffer
+        vb.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+        vb.pos(pos.x, pos.y, 0.0).endVertex()
+        vb.pos(pos.x+size.x, pos.y, 0.0).endVertex()
+        vb.pos(pos.x+size.x, pos.y+size.y, 0.0).endVertex()
+        vb.pos(pos.x, pos.y+size.y, 0.0).endVertex()
+        vb.pos(pos.x, pos.y, 0.0).endVertex()
+        tessellator.draw()
+        GlStateManager.enableTexture2D()
+        GlStateManager.color(1f, 1f, 1f);
 
         GlStateManager.pushMatrix()
         GlStateManager.pushAttrib()
