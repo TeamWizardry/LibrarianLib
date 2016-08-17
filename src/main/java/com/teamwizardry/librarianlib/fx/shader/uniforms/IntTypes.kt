@@ -5,30 +5,30 @@ import org.lwjgl.opengl.ARBShaderObjects
 
 class IntTypes {
 
-    class Int(owner: Shader, name: String, type: UniformType, size: kotlin.Int, location: kotlin.Int) : Uniform(owner, name, type, size, location) {
+    class Int1(owner: Shader, name: String, type: UniformType, size: Int, location: Int) : Uniform(owner, name, type, size, location) {
 
-        fun set(value: kotlin.Int) {
+        fun set(value: Int) {
             ARBShaderObjects.glUniform1iARB(location, value)
         }
     }
 
-    class IntVec2(owner: Shader, name: String, type: UniformType, size: kotlin.Int, location: kotlin.Int) : Uniform(owner, name, type, size, location) {
+    class IntVec2(owner: Shader, name: String, type: UniformType, size: Int, location: Int) : Uniform(owner, name, type, size, location) {
 
-        fun set(x: kotlin.Int, y: kotlin.Int) {
+        fun set(x: Int, y: Int) {
             ARBShaderObjects.glUniform2iARB(location, x, y)
         }
     }
 
-    class IntVec3(owner: Shader, name: String, type: UniformType, size: kotlin.Int, location: kotlin.Int) : Uniform(owner, name, type, size, location) {
+    class IntVec3(owner: Shader, name: String, type: UniformType, size: Int, location: Int) : Uniform(owner, name, type, size, location) {
 
-        fun set(x: kotlin.Int, y: kotlin.Int, z: kotlin.Int) {
+        fun set(x: Int, y: Int, z: Int) {
             ARBShaderObjects.glUniform3iARB(location, x, y, z)
         }
     }
 
-    class IntVec4(owner: Shader, name: String, type: UniformType, size: kotlin.Int, location: kotlin.Int) : Uniform(owner, name, type, size, location) {
+    class IntVec4(owner: Shader, name: String, type: UniformType, size: Int, location: Int) : Uniform(owner, name, type, size, location) {
 
-        fun set(x: kotlin.Int, y: kotlin.Int, z: kotlin.Int, w: kotlin.Int) {
+        fun set(x: Int, y: Int, z: Int, w: Int) {
             ARBShaderObjects.glUniform4iARB(location, x, y, z, w)
         }
     }

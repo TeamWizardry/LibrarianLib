@@ -5,7 +5,7 @@ import org.lwjgl.opengl.ARBShaderObjects
 
 class BoolTypes {
 
-    class Bool(owner: Shader, name: String, type: UniformType, size: Int, location: Int) : Uniform(owner, name, type, size, location) {
+    class Bool1(owner: Shader, name: String, type: UniformType, size: Int, location: Int) : Uniform(owner, name, type, size, location) {
 
         fun set(value: Boolean) {
             ARBShaderObjects.glUniform1iARB(location, if (value) 1 else 0)

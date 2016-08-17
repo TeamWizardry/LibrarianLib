@@ -9,7 +9,7 @@ import org.lwjgl.opengl.GL20
 
 open class Shader(val vert: String?, val frag: String?) {
 
-    var time: FloatTypes.Float? = null
+    var time: FloatTypes.Float1? = null
 
     var glName = 0
         private set
@@ -41,7 +41,7 @@ open class Shader(val vert: String?, val frag: String?) {
             msg += "]"
             LibrarianLog.info(msg)
         }
-        time = getUniform<FloatTypes.Float>("time", true)
+        time = getUniform<FloatTypes.Float1>("time", true)
 
         initUniforms()
     }
@@ -63,7 +63,7 @@ open class Shader(val vert: String?, val frag: String?) {
         for (i in uniforms.indices) {
             if (uniforms[i]?.name == name) {
                 try {
-                    return uniforms[i] as T
+                    return uniforms[i] as T?
                 } catch (e: ClassCastException) {
                     LibrarianLog.debug("Uniform %s was wrong type. (%s)", name, uniforms[i]?.type?.name)
                 }

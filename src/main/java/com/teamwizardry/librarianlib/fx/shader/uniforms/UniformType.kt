@@ -4,21 +4,22 @@ import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.fx.shader.Shader
 import com.teamwizardry.librarianlib.fx.shader.uniforms.Uniform.NoUniform
 import org.lwjgl.opengl.*
+import sun.jvm.hotspot.debugger.cdbg.FloatType
 import java.util.*
 
 enum class UniformType constructor(private val initializer: (Shader, String, UniformType, Int, Int) -> Uniform) {
     NONE(::NoUniform),
     // bools
-    BOOL(::NoUniform),
-    BOOL_VEC2(::NoUniform),
-    BOOL_VEC3(::NoUniform),
-    BOOL_VEC4(::NoUniform),
+    BOOL({ owner, name, type, size, location -> BoolTypes.Bool1(owner, name, type, size, location)}),
+    BOOL_VEC2({ owner, name, type, size, location -> BoolTypes.BoolVec2(owner, name, type, size, location)}),
+    BOOL_VEC3({ owner, name, type, size, location -> BoolTypes.BoolVec3(owner, name, type, size, location)}),
+    BOOL_VEC4({ owner, name, type, size, location -> BoolTypes.BoolVec4(owner, name, type, size, location)}),
 
     // ints
-    INT(::NoUniform),
-    INT_VEC2(::NoUniform),
-    INT_VEC3(::NoUniform),
-    INT_VEC4(::NoUniform),
+    INT({ owner, name, type, size, location -> IntTypes.Int1(owner, name, type, size, location)}),
+    INT_VEC2({ owner, name, type, size, location -> IntTypes.IntVec2(owner, name, type, size, location)}),
+    INT_VEC3({ owner, name, type, size, location -> IntTypes.IntVec3(owner, name, type, size, location)}),
+    INT_VEC4({ owner, name, type, size, location -> IntTypes.IntVec4(owner, name, type, size, location)}),
 
     // unsigned ints
     UINT(::NoUniform),
@@ -28,10 +29,10 @@ enum class UniformType constructor(private val initializer: (Shader, String, Uni
     UINT_ATOMIC_COUNTER(::NoUniform),
 
     // floats
-    FLOAT(::NoUniform),
-    FLOAT_VEC2(::NoUniform),
-    FLOAT_VEC3(::NoUniform),
-    FLOAT_VEC4(::NoUniform),
+    FLOAT({ owner, name, type, size, location -> FloatTypes.Float1(owner, name, type, size, location)}),
+    FLOAT_VEC2({ owner, name, type, size, location -> FloatTypes.FloatVec2(owner, name, type, size, location)}),
+    FLOAT_VEC3({ owner, name, type, size, location -> FloatTypes.FloatVec3(owner, name, type, size, location)}),
+    FLOAT_VEC4({ owner, name, type, size, location -> FloatTypes.FloatVec4(owner, name, type, size, location)}),
 
     FLOAT_MAT2(::NoUniform),
     FLOAT_MAT3(::NoUniform),

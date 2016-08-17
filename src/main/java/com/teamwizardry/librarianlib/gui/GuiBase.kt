@@ -29,7 +29,9 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         super.drawScreen(mouseX, mouseY, partialTicks)
-        components.draw(Vec2d(mouseX.toDouble(), mouseY.toDouble()) - components.pos, partialTicks)
+        val relPos = Vec2d(mouseX.toDouble(), mouseY.toDouble()) - components.pos
+        components.calculateMouseOver(relPos)
+        components.draw(relPos, partialTicks)
 
         if (components.tooltipText != null) {
             GuiUtils.drawHoveringText(components.tooltipText, mouseX, mouseY, width, height, -1, if (components.tooltipFont == null) mc.fontRendererObj else components.tooltipFont)

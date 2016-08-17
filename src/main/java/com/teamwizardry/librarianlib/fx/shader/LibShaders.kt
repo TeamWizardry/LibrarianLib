@@ -2,33 +2,25 @@ package com.teamwizardry.librarianlib.fx.shader
 
 import com.teamwizardry.librarianlib.fx.shader.uniforms.FloatTypes
 
-enum class LibShaders constructor() {
-    INSTANCE;
+object LibShaders {
+    @JvmStatic
+    val HUE = HueShader(null, "/assets/librarianlib/shaders/hue.frag")
 
     init {
-        initShaders()
-    }
-
-    private fun initShaders() {
-        HUE = HueShader(null, "/assets/librarianlib/shaders/hue.frag")
         ShaderHelper.addShader(HUE)
     }
 
     class HueShader(vert: String?, frag: String?) : Shader(vert, frag) {
 
-        var hue: FloatTypes.Float? = null
+        var hue: FloatTypes.Float1? = null
 
         override fun initUniforms() {
-            hue = getUniform<FloatTypes.Float>("hue")
+            hue = getUniform<FloatTypes.Float1>("hue")
         }
 
         override fun uniformDefaults() {
             hue?.set(0f)
         }
 
-    }
-
-    companion object {
-        lateinit var HUE: Shader
     }
 }

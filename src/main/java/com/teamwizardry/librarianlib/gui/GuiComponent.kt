@@ -8,7 +8,10 @@ import com.teamwizardry.librarianlib.util.event.EventBus
 import com.teamwizardry.librarianlib.util.event.EventCancelable
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.input.Keyboard
+import org.lwjgl.opengl.GL11
 import java.util.*
 
 /**
@@ -88,11 +91,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
     var mouseOver = false
     var mousePosThisFrame = Vec2d.ZERO
-    var tags: MutableSet<Any> = HashSet<Any>()
-        get() {
-            return Collections.unmodifiableSet<Any>(field)
-        }
-        protected set
+    protected var tagStorage: MutableSet<Any> = HashSet<Any>()
+    fun getTags() = Collections.unmodifiableSet<Any>(tagStorage)
+
 
     var animationTicks = 0
     private var guiTicksLastFrame = TickCounter.ticks
@@ -267,17 +268,29 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     fun calculateMouseOver(mousePos: Vec2d) {
         var mouseOver = false
 
-        components.asReversed().forEach { child ->
+        components.forEach { child ->
             child.mouseOver = false
-            if(!mouseOver) {
-                child.calculateMouseOver(transformChildPos(child, mousePos))
-                mouseOver = mouseOver || child.mouseOver
+        }
+
+        for(child in components.asReversed()) {
+            child.calculateMouseOver(transformChildPos(child, mousePos))
+            if(child.mouseOver) {
+                mouseOver = true
+                break
             }
         }
 
         mouseOver = mouseOver || (calculateOwnHover &&
                 (mousePos.x >= 0 && mousePos.x < size.x && mousePos.y >= 0 && mousePos.y < size.y) )
+        val wasMouseOver = this.mouseOver
         this.mouseOver = BUS.fire(MouseOverEvent(thiz(), mousePos, mouseOver)).isOver
+
+        if(wasMouseOver != this.mouseOver) {
+            if(this.mouseOver)
+                BUS.fire(MouseInEvent(thiz(), mousePos))
+            else
+                BUS.fire(MouseOutEvent(thiz(), mousePos))
+        }
     }
 
     /**
@@ -292,17 +305,6 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         if (isAnimating) {
             animationTicks += TickCounter.ticks - guiTicksLastFrame
             guiTicksLastFrame = TickCounter.ticks
-        }
-
-        val wasMouseOver = mouseOver
-        if(parent == null)
-            calculateMouseOver(mousePos)
-
-        if(wasMouseOver != mouseOver) {
-            if(mouseOver)
-                BUS.fire(MouseInEvent(thiz(), mousePos))
-            else
-                BUS.fire(MouseOutEvent(thiz(), mousePos))
         }
 
         components.removeAll { e ->
@@ -320,6 +322,20 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         BUS.fire(PreDrawEvent(thiz(), mousePos, partialTicks))
 
         drawComponent(mousePos, partialTicks)
+
+        if(mouseOver) {
+            GlStateManager.disableTexture2D()
+            var tessellator = Tessellator.getInstance();
+            var vb = tessellator.buffer
+            vb.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+            vb.pos(pos.x, pos.y, 0.0).endVertex()
+            vb.pos(pos.x+size.x, pos.y, 0.0).endVertex()
+            vb.pos(pos.x+size.x, pos.y+size.y, 0.0).endVertex()
+            vb.pos(pos.x, pos.y+size.y, 0.0).endVertex()
+            vb.pos(pos.x, pos.y, 0.0).endVertex()
+            tessellator.draw()
+            GlStateManager.enableTexture2D()
+        }
 
         GlStateManager.pushMatrix()
         GlStateManager.pushAttrib()
@@ -545,7 +561,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      */
     fun addTag(tag: Any): Boolean {
         if(!BUS.fire(AddTagEvent(thiz(), tag)).isCanceled())
-            if(tags.add(tag))
+            if(tagStorage.add(tag))
                 return true
         return false
     }
@@ -557,7 +573,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      */
     fun removeTag(tag: Any): Boolean {
         if(!BUS.fire(RemoveTagEvent(thiz(), tag)).isCanceled())
-            if(tags.remove(tag))
+            if(tagStorage.remove(tag))
                 return true
         return false
     }
@@ -566,7 +582,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * Checks if the component has the tag specified. Tags are not case sensitive
      */
     fun hasTag(tag: Any): Boolean {
-        return BUS.fire(HasTagEvent(thiz(), tag, tags.contains(tag))).hasTag
+        return BUS.fire(HasTagEvent(thiz(), tag, tagStorage.contains(tag))).hasTag
     }
 
     /**

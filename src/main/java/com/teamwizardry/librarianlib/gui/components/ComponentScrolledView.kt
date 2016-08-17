@@ -16,7 +16,7 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
     init {
         ScissorMixin.scissor(this)
         BUS.hook(ChildMouseOffsetEvent::class.java) { event ->
-            event.offset = event.offset.add(offset)
+            event.offset = event.offset.add(Vec2d.ZERO);//offset)
         }
     }
 
