@@ -6,7 +6,7 @@ import java.util.function.Consumer
  * Created by TheCodeWarrior
  */
 class EventBus {
-    private val hooks = mutableMapOf<Class<*>, MutableList<EventHandler<Event>>>().withDefault { mutableListOf() }
+    private val hooks = mutableMapOf<Class<*>, MutableList<EventHandler<Event>>>()
 
     fun <E : Event> fire(event: E): E {
         val klass = event.javaClass
@@ -28,6 +28,8 @@ class EventBus {
     }
 
     fun <E : Event> hook(klass: Class<E>, hook: EventHandler<E>) {
+        if(!hooks.containsKey(klass))
+            hooks.put(klass, mutableListOf())
         hooks[klass]?.add(hook as EventHandler<Event>)
     }
 }

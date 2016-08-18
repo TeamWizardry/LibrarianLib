@@ -18,6 +18,11 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
         BUS.hook(ChildMouseOffsetEvent::class.java) { event ->
             event.offset = event.offset.add(offset)
         }
+
+        BUS.hook(LogicalSizeEvent::class.java) { event ->
+            if(event.box != null)
+                event.box = contentSize
+        }
     }
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
@@ -38,10 +43,6 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
 
     fun scrollToPercent(scroll: Vec2d) {
         scrollTo(maxScroll.mul(scroll))
-    }
-
-    override fun getLogicalSize(): BoundingBox2D {
-        return contentSize
     }
 
     override fun draw(mousePos: Vec2d, partialTicks: Float) {

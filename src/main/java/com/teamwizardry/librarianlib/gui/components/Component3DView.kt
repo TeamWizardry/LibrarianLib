@@ -15,6 +15,24 @@ class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
     init {
         BUS.hook(PreDrawEvent::class.java) { event -> preDraw(event.mousePos) }
         BUS.hook(PostDrawEvent::class.java) { postDraw() }
+
+        BUS.hook(MouseWheelEvent::class.java) { event ->
+            if (mouseOver) {
+                if (event.direction == MouseWheelDirection.UP && zoom < 100) {
+                    zoom *= 1.5
+                }
+                if (event.direction == MouseWheelDirection.DOWN && zoom > 1) {
+                    zoom /= 1.5
+                }
+            }
+        }
+
+        BUS.hook(MouseUpEvent::class.java) { event ->
+            calcDrag(event.mousePos, event.button)
+
+            dragStart = Vec2d.ZERO
+            dragButton = null
+        }
     }
 
     internal var dragStart = Vec2d.ZERO
@@ -24,17 +42,6 @@ class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
     var rotY: Double = 0.toDouble()
     var rotZ: Double = 0.toDouble()
     internal var dragButton: EnumMouseButton? = null
-
-    override fun mouseWheel(mousePos: Vec2d, direction: MouseWheelDirection) {
-        if (!mouseOver)
-            return
-        if (direction == MouseWheelDirection.UP && zoom < 100) {
-            zoom *= 1.5
-        }
-        if (direction == MouseWheelDirection.DOWN && zoom > 1) {
-            zoom /= 1.5
-        }
-    }
 
     override fun mouseDown(mousePos: Vec2d, button: EnumMouseButton) {
         super.mouseDown(mousePos, button)
@@ -46,15 +53,6 @@ class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
 
         dragStart = mousePos
         dragButton = button
-    }
-
-    override fun mouseUp(mousePos: Vec2d, button: EnumMouseButton) {
-        super.mouseUp(mousePos, button)
-
-        calcDrag(mousePos, button)
-
-        dragStart = Vec2d.ZERO
-        dragButton = null
     }
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {

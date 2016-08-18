@@ -38,7 +38,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
     class MouseInEvent   <T: GuiComponent<T>>(val component: T, val mousePos: Vec2d) : Event()
     class MouseOutEvent  <T: GuiComponent<T>>(val component: T, val mousePos: Vec2d) : Event()
-    class MouseWheelEvent<T: GuiComponent<T>>(val component: T, val mousePos: Vec2d, direction: MouseWheelDirection) : EventCancelable()
+    class MouseWheelEvent<T: GuiComponent<T>>(val component: T, val mousePos: Vec2d, val direction: MouseWheelDirection) : EventCancelable()
     enum class MouseWheelDirection(@JvmField val ydirection: Int) {
         UP(+1), DOWN(-1);
 
@@ -273,7 +273,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         return pos.sub( child.BUS.fire(MouseOffsetEvent(child.thiz(), BUS.fire(ChildMouseOffsetEvent(thiz(), child, child.pos)).offset)).offset )
     }
 
-    fun calculateMouseOver(mousePos: Vec2d) {
+    open fun calculateMouseOver(mousePos: Vec2d) {
         val wasMouseOver = this.mouseOver
         this.mouseOver = false
 
@@ -306,7 +306,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * *
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
-    override fun draw(mousePos: Vec2d, partialTicks: Float) {
+    open override fun draw(mousePos: Vec2d, partialTicks: Float) {
         if (!isVisible) return
 
         if (isAnimating) {
@@ -385,7 +385,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * *
      * @param button
      */
-    open fun mouseUp(mousePos: Vec2d, button: EnumMouseButton) {
+     fun mouseUp(mousePos: Vec2d, button: EnumMouseButton) {
         if (!isVisible) return
         val wasDown = mouseButtonsDown[button.ordinal]
         mouseButtonsDown[button.ordinal] = false
@@ -423,7 +423,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * Called when the mouse wheel is moved.
      * @param mousePos
      */
-    open fun mouseWheel(mousePos: Vec2d, direction: MouseWheelDirection) {
+     fun mouseWheel(mousePos: Vec2d, direction: MouseWheelDirection) {
         if (!isVisible) return
         if(BUS.fire(MouseWheelEvent(thiz(), mousePos, direction)).isCanceled())
             return
@@ -480,7 +480,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     /**
      * The size of the component for layout. Often dynamically calculated
      */
-    open fun getLogicalSize(): BoundingBox2D? {
+     fun getLogicalSize(): BoundingBox2D? {
         var aabb = contentSize
         for (child in components) {
             if (!child.isVisible) continue
