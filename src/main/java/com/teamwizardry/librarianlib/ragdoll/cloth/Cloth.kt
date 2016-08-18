@@ -165,7 +165,7 @@ class Cloth(var top: Array<Vec3d>, var height: Int, var size: Vec3d) {
         for (sphere in spheres) {
             point.pos = sphere.trace(point.origPos, point.pos)
         }
-        point.applyMotion(if (point.friction == null) Vec3d.ZERO else point.friction!!.scale(-friction))
+        point.applyMotion(point.friction * -friction ?: Vec3d.ZERO)
     }
 
     private fun applyMotionToPoints() {
@@ -376,8 +376,10 @@ class Cloth(var top: Array<Vec3d>, var height: Int, var size: Vec3d) {
             return a
         if (a == null && b != null)
             return b
+        if (a == null || b == null)
+            return null
 
-        if (b!!.squareDistanceTo(Vec3d.ZERO) < a!!.squareDistanceTo(Vec3d.ZERO))
+        if (b.squareDistanceTo(Vec3d.ZERO) < a.squareDistanceTo(Vec3d.ZERO))
             return b
         return a
     }

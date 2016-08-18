@@ -21,12 +21,13 @@ class PageHandler private constructor() {
     }
 
     companion object {
+        private val map: MutableMap<String, (Book, rootNode: DataNode, node: DataNode, Page) -> GuiBook> = mutableMapOf()
+        private var error: IPageConstructor? = null
         val INSTANCE = PageHandler()
-        protected val map: MutableMap<String, (Book, rootNode: DataNode, node: DataNode, Page) -> GuiBook> = mutableMapOf()
-        protected var error: IPageConstructor? = null
 
         fun register(name: String, constructor: (Book, rootNode: DataNode, node: DataNode, Page) -> GuiBook) {
-            map.getOrPut(name) { constructor }
+            if(!map.containsKey(name))
+                map.put(name, constructor)
         }
 
         fun create(book: Book, page: Page): GuiBook? {

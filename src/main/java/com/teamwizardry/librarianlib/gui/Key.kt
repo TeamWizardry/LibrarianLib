@@ -18,8 +18,8 @@ class Key private constructor(val character: Char, val keyCode: Int) {
             return false
         if (javaClass != obj.javaClass)
             return false
-        val other = obj as Key?
-        return keyCode == other!!.keyCode
+        val other = obj as Key
+        return keyCode == other.keyCode
     }
 
     companion object {

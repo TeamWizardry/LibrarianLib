@@ -69,7 +69,7 @@ class PageSubindex(book: Book, rootData: DataNode, pageData: DataNode, page: Pag
 
         if (node.get("tip").exists()) {
             comp.BUS.hook(GuiComponent.MouseInEvent::class.java) { event ->
-                addTextSlider(comp, event.component.pos.yi, node.get("tip").asStringOr("<NULL>"))
+                addTextSlider(comp, comp.pos.yi, node.get("tip").asStringOr("<NULL>"))
             }
             comp.BUS.hook(GuiComponent.MouseOutEvent::class.java) { event ->
                 removeSlider(comp)

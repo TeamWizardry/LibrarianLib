@@ -15,12 +15,11 @@ object TeleportUtil {
     fun teleportToDimension(player: EntityPlayer, dimension: Int, x: Double, y: Double, z: Double) {
         if (player !is EntityPlayerMP) return
         val oldDimension = player.worldObj.provider.dimension
-        val server = player.worldObj.minecraftServer
-        val worldServer = server!!.worldServerForDimension(dimension)
+        val server = player.worldObj.minecraftServer!!
+        val worldServer = server.worldServerForDimension(dimension)
         player.addExperienceLevel(0)
 
-
-        worldServer.minecraftServer!!.playerList.transferPlayerToDimension(player, dimension, CustomTeleporter(worldServer, x, y, z))
+        server.playerList.transferPlayerToDimension(player, dimension, CustomTeleporter(worldServer, x, y, z))
         player.setPositionAndUpdate(x, y, z)
         if (oldDimension == 1) {
             // For some reason teleporting out of the end does weird things.

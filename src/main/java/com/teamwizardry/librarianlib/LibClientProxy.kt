@@ -52,10 +52,8 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         val newList = ArrayList<WeakReference<Texture>>()
 
         for (tex in Texture.textures) {
-            if (tex.get() != null) {
-                tex.get()!!.loadSpriteData()
-                newList.add(tex)
-            }
+            tex.get()?.loadSpriteData()
+            if( tex.get() != null) newList.add(tex)
         }
 
         Texture.textures = newList

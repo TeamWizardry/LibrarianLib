@@ -27,14 +27,14 @@ class ComponentStructure(posX: Int, posY: Int, var structure: Structure?) : GuiC
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
         GlStateManager.translate(this.pos.x, this.pos.y, 0.0)
         Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE)
-        if (bufferInts == null)
-            return
+        val buf = bufferInts
+        buf ?: return
 
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
         vb.begin(GL11.GL_QUADS, DefaultVertexFormats.ITEM)
 
-        vb.addVertexData(bufferInts!!)
+        vb.addVertexData(buf)
 
         tessellator.draw()
 

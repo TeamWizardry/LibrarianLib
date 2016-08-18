@@ -23,7 +23,7 @@ class ExampleBookCommand : CommandBase() {
     @Throws(WrongUsageException::class)
     override fun execute(server: MinecraftServer, sender: ICommandSender, args: Array<String>) {
 
-        server.addScheduledTask { LibrarianLib.guide!!.display() }
+        server.addScheduledTask { LibrarianLib.guide.display() }
 
     }
 

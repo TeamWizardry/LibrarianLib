@@ -15,8 +15,8 @@ class ComponentSprite @JvmOverloads constructor(var sprite: Sprite?, x: Int, y: 
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
         val alwaysTop = !depth.getValue(this)
-        if (sprite == null)
-            return
+        val sp = sprite
+        sp ?: return
         if (alwaysTop) {
             // store the current depth function
             GL11.glPushAttrib(GL11.GL_DEPTH_BUFFER_BIT)
@@ -27,8 +27,8 @@ class ComponentSprite @JvmOverloads constructor(var sprite: Sprite?, x: Int, y: 
             GL11.glDepthFunc(GL11.GL_ALWAYS)
         }
         color.getValue(this).glColor()
-        sprite!!.tex.bind()
-        sprite!!.draw(animationTicks, pos.xf, pos.yf, size.xi, size.yi)
+        sp.tex.bind()
+        sp.draw(animationTicks, pos.xf, pos.yf, size.xi, size.yi)
         if (alwaysTop)
             GL11.glPopAttrib()
     }

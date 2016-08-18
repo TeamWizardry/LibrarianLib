@@ -274,7 +274,6 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     }
 
     open fun calculateMouseOver(mousePos: Vec2d) {
-        val wasMouseOver = this.mouseOver
         this.mouseOver = false
 
         components.asReversed().forEach { child ->
@@ -291,14 +290,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         mouseOver = mouseOver || (calculateOwnHover &&
                 (mousePos.x >= 0 && mousePos.x <= size.x && mousePos.y >= 0 && mousePos.y <= size.y) )
         this.mouseOver = BUS.fire(MouseOverEvent(thiz(), mousePos, this.mouseOver)).isOver
-
-        if(wasMouseOver != this.mouseOver) {
-            if(this.mouseOver)
-                BUS.fire(MouseInEvent(thiz(), mousePos))
-            else
-                BUS.fire(MouseOutEvent(thiz(), mousePos))
-        }
     }
+
+    private var wasMouseOver = false
 
     /**
      * Draw this component, don't override in subclasses unless you know what you're doing.
@@ -306,7 +300,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * *
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
-    open override fun draw(mousePos: Vec2d, partialTicks: Float) {
+     override fun draw(mousePos: Vec2d, partialTicks: Float) {
         if (!isVisible) return
 
         if (isAnimating) {
@@ -325,6 +319,15 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             }
             b
         }
+
+        if(wasMouseOver != this.mouseOver) {
+            if(this.mouseOver) {
+                BUS.fire(MouseInEvent(thiz(), mousePos))
+            } else {
+                BUS.fire(MouseOutEvent(thiz(), mousePos))
+            }
+        }
+        wasMouseOver = this.mouseOver
 
         BUS.fire(PreDrawEvent(thiz(), mousePos, partialTicks))
 
@@ -506,9 +509,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      */
     val root: GuiComponent<*>
         get() {
-            if (parent != null)
-                return parent!!.root
-            return this
+            return parent?.root ?: this
         }
 
     /**

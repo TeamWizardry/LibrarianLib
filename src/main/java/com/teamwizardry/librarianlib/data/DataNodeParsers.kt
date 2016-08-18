@@ -57,12 +57,12 @@ object DataNodeParsers {
 
     fun parseStack(node: DataNode): ItemStack? {
         if (node.isString)
-            return ItemStack(parseItem(node)!!)
+            return ItemStack(parseItem(node))
         if (node.isMap) {
             val meta = node.get("meta").asIntOr(0)
             val size = node.get("amount").asIntOr(1)
 
-            return ItemStack(parseItem(node.get("item"))!!, size, meta)
+            return ItemStack(parseItem(node.get("item")), size, meta)
         }
         return null
     }

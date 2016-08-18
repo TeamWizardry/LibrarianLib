@@ -49,7 +49,7 @@ class LibrarianLib {
 
         @Mod.Instance
         lateinit var instance: LibrarianLib
-        var guide: Book? = null
+        lateinit var guide: Book // won't be initialized on the server, and will scream if you try to access it.
     }
 
 }

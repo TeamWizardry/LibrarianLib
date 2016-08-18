@@ -17,7 +17,7 @@ class Circle3D : IShape3D {
     /**
      * The two points the arc will connect from and to
      */
-    private var origin: Vec3d? = null
+    private var origin: Vec3d
 
     /**
      * The radius of the circle
@@ -61,9 +61,9 @@ class Circle3D : IShape3D {
                 val matrix = Matrix4()
                 matrix.rotate(pitch.toDouble(), Vec3d(0.0, -1.0, 0.0))
                 matrix.rotate(yaw.toDouble(), Vec3d(1.0, 0.0, 0.0))
-                val x = origin!!.xCoord + radius * Math.sin(tempTheta)
-                val y = origin!!.yCoord
-                val z = origin!!.zCoord + radius * Math.cos(tempTheta)
+                val x = origin.xCoord + radius * Math.sin(tempTheta)
+                val y = origin.yCoord
+                val z = origin.zCoord + radius * Math.cos(tempTheta)
                 matrix.apply(Vec3d(x, y, z))
                 points.add(Vec3d(x, y, z))
             }

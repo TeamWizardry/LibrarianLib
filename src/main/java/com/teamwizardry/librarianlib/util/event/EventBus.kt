@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.util.event
 
+import com.teamwizardry.librarianlib.util.javainterfaces.EventHandler
 import java.util.function.Consumer
 
 /**

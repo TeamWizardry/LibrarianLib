@@ -18,7 +18,7 @@ class PageText(book: Book, rootData: DataNode, pageData: DataNode, page: Page) :
 
         val markup = ComponentMarkup(0, 0, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT)
         contents.add(markup)
-        markup.BUS.hook(GuiComponent.PreDrawEvent::class.java) { fr.unicodeFlag = true }
+        markup.BUS.hook(GuiComponent.PreDrawEvent::class.java) { Minecraft.getMinecraft().fontRendererObj.unicodeFlag = true }
         fr.unicodeFlag = true
 
         val list: List<DataNode>
@@ -84,7 +84,7 @@ class PageText(book: Book, rootData: DataNode, pageData: DataNode, page: Page) :
         }
 
         fr.unicodeFlag = false
-        markup.BUS.hook(GuiComponent.PreDrawEvent::class.java) { fr.unicodeFlag = false }
+        markup.BUS.hook(GuiComponent.PostDrawEvent::class.java) { Minecraft.getMinecraft().fontRendererObj.unicodeFlag = false }
 
         if (pageNum != -1) {
             // the / font_height ) * font_height is to round it to the nearest font_height multiple (int division)

@@ -78,8 +78,10 @@ class Box(var matrix: Matrix4, var inverse: Matrix4, val aabb: AxisAlignedBB) {
             return a
         if (a == null && b != null)
             return b
+        if (a == null || b == null)
+            return null
 
-        if (b!!.squareDistanceTo(Vec3d.ZERO) < a!!.squareDistanceTo(Vec3d.ZERO))
+        if (b.squareDistanceTo(Vec3d.ZERO) < a.squareDistanceTo(Vec3d.ZERO))
             return b
         return a
     }

@@ -78,11 +78,11 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
         if (wrap == -1) {
             lines = ImmutableList.of(fullText)
         } else {
-            lines = fr.listFormattedStringToWidth(fullText, wrap)
+            lines = fr.listFormattedStringToWidth(fullText, wrap)!!
         }
 
 
-        val height = lines!!.size * fr.FONT_HEIGHT
+        val height = lines.size * fr.FONT_HEIGHT
         if (vertical == TextAlignV.MIDDLE) {
             y -= height / 2
         } else if (vertical == TextAlignV.BOTTOM) {

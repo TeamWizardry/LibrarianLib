@@ -115,8 +115,8 @@ class Vec2d(var x: Double, var y: Double) {
             return false
         if (javaClass != obj.javaClass)
             return false
-        val other = obj as Vec2d?
-        if (java.lang.Double.doubleToLongBits(x) != java.lang.Double.doubleToLongBits(other!!.x))
+        val other = obj as Vec2d
+        if (java.lang.Double.doubleToLongBits(x) != java.lang.Double.doubleToLongBits(other.x))
             return false
         return java.lang.Double.doubleToLongBits(y) == java.lang.Double.doubleToLongBits(other.y)
     }

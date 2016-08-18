@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.book.gui
 
 import com.teamwizardry.librarianlib.LibrarianLib
+import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.book.Book
 import com.teamwizardry.librarianlib.book.util.Page
 import com.teamwizardry.librarianlib.data.DataNode
@@ -90,6 +91,7 @@ open class GuiBook(val book: Book, protected val rootData: DataNode, protected v
                 ButtonMixin.EnumButtonState.HOVER -> backArrowButton.color.setValue(hoverColor)
             }
         }
+        navBar.add(backArrowButton)
 
         // page
         val contents = ComponentVoid(13, 9, PAGE_WIDTH, PAGE_HEIGHT)
