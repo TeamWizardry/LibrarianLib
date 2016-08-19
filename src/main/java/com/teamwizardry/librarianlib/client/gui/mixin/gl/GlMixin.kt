@@ -109,10 +109,11 @@ object GlMixin {
     class GlMixinData {
         private val data: MutableMap<String, Option<GuiComponent<*>, Any>> = mutableMapOf()
 
+        @Suppress("UNCHECKED_CAST")
         fun <COMP : GuiComponent<COMP>, OPT : Any> getData(key: String, init: () -> Option<COMP, OPT>): Option<COMP, OPT> {
             if (!data.containsKey(key))
                 data.put(key, init() as Option<GuiComponent<*>, Any>)
-            return data.get(key) as Option<COMP, OPT>
+            return data[key] as Option<COMP, OPT>
         }
     }
 }

@@ -55,7 +55,7 @@ class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
     }
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
-        //noop for now
+        //NO-OP
     }
 
     fun calcDrag(mousePos: Vec2d, button: EnumMouseButton?) {

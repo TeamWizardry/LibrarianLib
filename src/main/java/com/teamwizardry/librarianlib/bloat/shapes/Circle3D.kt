@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.common.util.math.shapes
+package com.teamwizardry.librarianlib.bloat.shapes
 
 import com.teamwizardry.librarianlib.common.util.math.Matrix4
 import net.minecraft.util.math.Vec3d

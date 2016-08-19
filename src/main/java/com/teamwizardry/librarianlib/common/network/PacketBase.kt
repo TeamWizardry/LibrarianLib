@@ -12,9 +12,7 @@ abstract class PacketBase : IMessage {
 
     abstract fun handle(ctx: MessageContext)
 
-    fun reply(ctx: MessageContext): PacketBase? {
-        return null
-    }
+    open fun reply(ctx: MessageContext): PacketBase? = null
 
     class Handler<REQ : PacketBase> : IMessageHandler<REQ, PacketBase> {
 

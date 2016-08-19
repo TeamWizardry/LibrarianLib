@@ -4,7 +4,7 @@ import net.minecraftforge.common.config.Configuration
 
 import java.io.File
 
-object Config {
+object ConfigHandler {
     var shaders: Boolean = false
 
     fun initConfig(configurationFile: File) {

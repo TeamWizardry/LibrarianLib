@@ -11,15 +11,14 @@ class Key private constructor(val character: Char, val keyCode: Int) {
         return result
     }
 
-    override fun equals(obj: Any?): Boolean {
-        if (this === obj)
+    override fun equals(other: Any?): Boolean {
+        if (this === other)
             return true
-        if (obj == null)
+        if (other == null)
             return false
-        if (javaClass != obj.javaClass)
+        if (javaClass != other.javaClass)
             return false
-        val other = obj as Key
-        return keyCode == other.keyCode
+        return keyCode == (other as Key).keyCode
     }
 
     companion object {

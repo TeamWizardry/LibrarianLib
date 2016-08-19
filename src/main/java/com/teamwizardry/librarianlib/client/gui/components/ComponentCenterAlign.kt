@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.common.util.math.Vec2d
 class ComponentCenterAlign(posX: Int, posY: Int, var centerHorizontal: Boolean, var centerVertical: Boolean) : GuiComponent<ComponentCenterAlign>(posX, posY) {
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
-        // noop
+        //NO-OP
     }
 
     override fun draw(mousePos: Vec2d, partialTicks: Float) {

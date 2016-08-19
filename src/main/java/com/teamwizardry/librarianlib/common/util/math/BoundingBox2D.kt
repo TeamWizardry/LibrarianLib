@@ -2,8 +2,7 @@ package com.teamwizardry.librarianlib.common.util.math
 
 class BoundingBox2D(val min: Vec2d, val max: Vec2d) {
 
-    constructor(minX: Double, minY: Double, maxX: Double, maxY: Double) : this(Vec2d(minX, minY), Vec2d(maxX, maxY)) {
-    }
+    constructor(minX: Double, minY: Double, maxX: Double, maxY: Double) : this(Vec2d(minX, minY), Vec2d(maxX, maxY))
 
     fun union(other: BoundingBox2D): BoundingBox2D {
         return BoundingBox2D(

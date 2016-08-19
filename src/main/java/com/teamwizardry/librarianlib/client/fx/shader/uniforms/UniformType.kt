@@ -175,15 +175,13 @@ enum class UniformType constructor(private val initializer: (Shader, String, Uni
                             //LibrarianLog.I.debug(" == Found %s.%s, it is %d (0x%s)", clazz.getName(), name, type.type, Integer.toHexString(type.type));
                             break
                         }
-                    } catch (e: NoSuchFieldException) {
-                    } catch (e: IllegalArgumentException) {
-                    } catch (e: IllegalAccessException) {
+                    } catch (e: Throwable) {
+                        //NO-OP
                     }
 
                 }
-                if (!map.containsValue(type)) {
+                if (!map.containsValue(type))
                     LibrarianLog.error("Couldn't find uniform OpenGL constant for %s", name)
-                }
             }
         }
 

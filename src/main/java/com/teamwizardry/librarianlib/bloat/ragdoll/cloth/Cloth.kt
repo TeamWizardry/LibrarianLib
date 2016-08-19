@@ -3,9 +3,9 @@ package com.teamwizardry.librarianlib.bloat.ragdoll.cloth
 import com.google.common.annotations.VisibleForTesting
 import com.google.common.collect.ImmutableList
 import com.teamwizardry.librarianlib.bloat.MathUtil
-import com.teamwizardry.librarianlib.common.util.math.Geometry
+import com.teamwizardry.librarianlib.bloat.Geometry
 import com.teamwizardry.librarianlib.common.util.math.Matrix4
-import com.teamwizardry.librarianlib.common.util.math.Sphere
+import com.teamwizardry.librarianlib.bloat.Sphere
 import com.teamwizardry.librarianlib.common.util.times
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.AxisAlignedBB

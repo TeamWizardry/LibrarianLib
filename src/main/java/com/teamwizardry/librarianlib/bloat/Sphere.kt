@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.common.util.math
+package com.teamwizardry.librarianlib.bloat
 
 import net.minecraft.util.math.Vec3d
 

@@ -155,6 +155,7 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
     }
 
     open fun jumpToPage(page: Int) {
+        //NO-OP
     }
 
     open fun pageJump(): Int = 0
@@ -163,9 +164,11 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
     open fun hasPrevPage(): Boolean = false
 
     open fun goToNextPage() {
+        //NO-OP
     }
 
     open fun goToPrevPage() {
+        //NO-OP
     }
 
     fun nextPage() {

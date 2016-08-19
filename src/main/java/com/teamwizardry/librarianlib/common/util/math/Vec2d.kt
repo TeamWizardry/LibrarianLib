@@ -91,9 +91,8 @@ class Vec2d(var x: Double, var y: Double) {
     }
 
     fun projectOnTo(other: Vec2d): Vec2d {
-        var other = other
-        other = other.normalize()
-        return other.mul(this.dot(other))
+        val norm = other.normalize()
+        return norm.mul(this.dot(norm))
     }
     //=============================================================================
 
@@ -108,17 +107,14 @@ class Vec2d(var x: Double, var y: Double) {
         return result
     }
 
-    override fun equals(obj: Any?): Boolean {
-        if (this === obj)
+    override fun equals(other: Any?): Boolean {
+        if (this === other)
             return true
-        if (obj == null)
+        if (other == null)
             return false
-        if (javaClass != obj.javaClass)
+        if (javaClass != other.javaClass)
             return false
-        val other = obj as Vec2d
-        if (java.lang.Double.doubleToLongBits(x) != java.lang.Double.doubleToLongBits(other.x))
-            return false
-        return java.lang.Double.doubleToLongBits(y) == java.lang.Double.doubleToLongBits(other.y)
+        return x == (other as Vec2d).x && y == other.y
     }
 
     override fun toString(): String {

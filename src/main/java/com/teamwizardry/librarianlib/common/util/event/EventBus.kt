@@ -8,32 +8,33 @@ import com.teamwizardry.librarianlib.common.util.lambdainterfs.EventHandler
 class EventBus {
     private val hooks = mutableMapOf<Class<*>, MutableList<EventHandler<Event>>>()
 
-    fun hasHooks(klass: Class<*>): Boolean {
-        return hooks[klass]?.size ?: 0 > 0
+    fun hasHooks(clazz: Class<*>): Boolean {
+        return hooks[clazz]?.size ?: 0 > 0
     }
 
     fun <E : Event> fire(event: E): E {
-        val klass = event.javaClass
-        if (klass in hooks) {
+        val clazz = event.javaClass
+        if (clazz in hooks) {
             if (event.reversed)
-                hooks[klass]?.asReversed()?.forEach { hook ->
+                hooks[clazz]?.asReversed()?.forEach { hook ->
                     hook(event)
                 }
             else
-                hooks[klass]?.forEach { hook ->
+                hooks[clazz]?.forEach { hook ->
                     hook(event)
                 }
         }
         return event
     }
 
-    fun <E : Event> hook(klass: Class<E>, hook: (E) -> Unit) {
-        hook(klass, EventHandler(hook))
+    fun <E : Event> hook(clazz: Class<E>, hook: (E) -> Unit) {
+        hook(clazz, EventHandler(hook))
     }
 
-    fun <E : Event> hook(klass: Class<E>, hook: EventHandler<E>) {
-        if (!hooks.containsKey(klass))
-            hooks.put(klass, mutableListOf())
-        hooks[klass]?.add(hook as EventHandler<Event>)
+    @Suppress("UNCHECKED_CAST")
+    fun <E : Event> hook(clazz: Class<E>, hook: EventHandler<E>) {
+        if (!hooks.containsKey(clazz))
+            hooks.put(clazz, mutableListOf())
+        hooks[clazz]?.add(hook as EventHandler<Event>)
     }
 }

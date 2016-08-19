@@ -19,13 +19,13 @@ import java.util.*
 
  * @author Pierce Corcoran
  */
-class TemplateBlockAccess(protected var template: Template?) : IBlockAccess {
+open class TemplateBlockAccess(protected var template: Template?) : IBlockAccess {
     protected var templateBlocks: List<BlockInfo>? = null
     protected var overrides: MutableMap<BlockPos, IBlockState> = HashMap()
 
     init {
         try {
-            templateBlocks = ReflectionHelper.findField(Template::class.java, "blocks", "field_186270_a").get(template) as List<BlockInfo>
+            templateBlocks = ReflectionHelper.findField(Template::class.java, "blocks", "field_186270_a").get(template) as List<BlockInfo> //todo methodhandle
         } catch (e1: IllegalArgumentException) {
             e1.printStackTrace()
         } catch (e1: IllegalAccessException) {

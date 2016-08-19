@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.client.fx.shader
 
 import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
-import com.teamwizardry.librarianlib.common.core.Config
+import com.teamwizardry.librarianlib.common.core.ConfigHandler
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.resources.IReloadableResourceManager
@@ -92,7 +92,7 @@ class ShaderHelper private constructor() : IResourceManagerReloadListener {
         //http://hastebin.com/ameremuqev.avrasm
         fun useShaders(): Boolean {
             try {
-                return FMLCommonHandler.instance().effectiveSide == Side.CLIENT && Config.shaders && OpenGlHelper.shadersSupported
+                return FMLCommonHandler.instance().effectiveSide == Side.CLIENT && ConfigHandler.shaders && OpenGlHelper.shadersSupported
             } catch (ignored: NoSuchFieldError) {
                 return false
             }

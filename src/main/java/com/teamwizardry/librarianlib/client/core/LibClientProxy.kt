@@ -28,12 +28,13 @@ import java.util.*
  */
 class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
-    private lateinit var guide: Book
+    override var bookInstance: Book? = null
+        private set
 
     override fun pre(e: FMLPreInitializationEvent) {
         super.pre(e)
 
-        guide = Book(LibrarianLib.MODID)
+        bookInstance = Book(LibrarianLib.MODID)
 
         if (LibrarianLib.DEV_ENVIRONMENT)
             ClientCommandHandler.instance.registerCommand(ExampleBookCommand())
@@ -59,9 +60,6 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
     override fun translate(s: String, vararg format: Any?): String {
         return I18n.format(s, *format)
     }
-
-    override val bookInstance: Book?
-        get() = guide
 
     override fun onResourceManagerReload(resourceManager: IResourceManager) {
         val newList = ArrayList<WeakReference<Texture>>()

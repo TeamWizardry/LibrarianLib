@@ -8,7 +8,7 @@ abstract class Uniform(val program: Shader, val name: String, val type: UniformT
     class NoUniform(owner: Shader, name: String, type: UniformType,
                     size: Int, location: Int) : Uniform(owner, name, type, size, location) {
         init {
-            LibrarianLog.warn("[Shader %s] Uniform `%s` has unsupported type `%s`", if (owner == null) "!!NULL!!" else owner.glName, name, type.name)
+            LibrarianLog.warn("[Shader %s] Uniform `%s` has unsupported type `%s`", owner.glName, name, type.name)
         }
     }
 

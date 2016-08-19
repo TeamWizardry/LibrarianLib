@@ -25,7 +25,7 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
     }
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
-        // noop
+        //NO-OP
     }
 
     fun scrollTo(scroll: Vec2d) {

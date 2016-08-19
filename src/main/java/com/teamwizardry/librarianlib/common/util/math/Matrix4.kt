@@ -15,7 +15,7 @@ import java.nio.ByteOrder
  */
 class Matrix4 {
 
-    //m<row><column>    
+    //m<row><column>
     var m00: Double = 0.toDouble()
     var m01: Double = 0.toDouble()
     var m02: Double = 0.toDouble()
@@ -312,9 +312,7 @@ class Matrix4 {
     }
 
     fun apply(vec: Vec3d): Vec3d {
-        var vec = vec
-        vec = mult3x3(vec)
-        return vec.addVector(m03, m13, m23)
+        return mult3x3(vec).addVector(m03, m13, m23)
     }
 
     fun applyN(vec: Vec3d): Vec3d {

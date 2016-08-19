@@ -36,7 +36,6 @@ open class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiC
                     }
                 }
             }
-            false
         }
     }
 

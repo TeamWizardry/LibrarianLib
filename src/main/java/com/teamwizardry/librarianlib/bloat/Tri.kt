@@ -1,5 +1,6 @@
-package com.teamwizardry.librarianlib.common.util.math
+package com.teamwizardry.librarianlib.bloat
 
+import com.teamwizardry.librarianlib.common.util.math.Matrix4
 import net.minecraft.util.math.Vec3d
 
 class Tri(internal var v1:

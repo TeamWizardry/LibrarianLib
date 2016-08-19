@@ -58,12 +58,12 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
     class AddChildEvent<T : GuiComponent<T>>(val component: T, val child: GuiComponent<*>) : EventCancelable()
     class RemoveChildEvent<T : GuiComponent<T>>(val component: T, val child: GuiComponent<*>) : EventCancelable()
-    class AddToParentEvent<T : GuiComponent<*>>(val component: T, val parent: GuiComponent<*>) : EventCancelable()
-    class RemoveFromParentEvent<T : GuiComponent<*>>(val component: T, val parent: GuiComponent<*>) : EventCancelable()
+    class AddToParentEvent<out T : GuiComponent<*>>(val component: T, val parent: GuiComponent<*>) : EventCancelable()
+    class RemoveFromParentEvent<out T : GuiComponent<*>>(val component: T, val parent: GuiComponent<*>) : EventCancelable()
 
-    class SetDataEvent<T : GuiComponent<T>, D>(val component: T, val klass: Class<D>, val key: String, val value: D) : EventCancelable()
-    class RemoveDataEvent<T : GuiComponent<T>, D>(val component: T, val klass: Class<D>, val key: String, val value: D?) : EventCancelable()
-    class GetDataEvent<T : GuiComponent<T>, D>(val component: T, val klass: Class<D>, val key: String, val value: D?) : Event()
+    class SetDataEvent<T : GuiComponent<T>, D>(val component: T, val clazz: Class<D>, val key: String, val value: D) : EventCancelable()
+    class RemoveDataEvent<T : GuiComponent<T>, D>(val component: T, val clazz: Class<D>, val key: String, val value: D?) : EventCancelable()
+    class GetDataEvent<T : GuiComponent<T>, D>(val component: T, val clazz: Class<D>, val key: String, val value: D?) : Event()
 
     class HasTagEvent<T : GuiComponent<T>>(val component: T, val tag: Any, var hasTag: Boolean) : Event()
     class AddTagEvent<T : GuiComponent<T>>(val component: T, val tag: Any) : EventCancelable()
@@ -71,7 +71,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
     class LogicalSizeEvent<T : GuiComponent<T>>(val component: T, var box: BoundingBox2D?) : Event()
     class ChildMouseOffsetEvent<T : GuiComponent<T>>(val component: T, val child: GuiComponent<*>, var offset: Vec2d) : Event()
-    class MouseOffsetEvent<T : GuiComponent<*>>(val component: T, var offset: Vec2d) : Event()
+    class MouseOffsetEvent<out T : GuiComponent<*>>(val component: T, var offset: Vec2d) : Event()
     class MouseOverEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, var isOver: Boolean) : Event()
 
     var zIndex = 0
@@ -254,10 +254,10 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * Returns all the elements that can be cast to the specified class
      */
     @Suppress("UNCHECKED_CAST")
-    fun <C> getByClass(klass: Class<C>): List<C> {
+    fun <C> getByClass(clazz: Class<C>): List<C> {
         val list = ArrayList<C>()
         for (component in components) {
-            if (klass.isAssignableFrom(component.javaClass))
+            if (clazz.isAssignableFrom(component.javaClass))
                 list.add(component as C)
         }
         return list
@@ -536,31 +536,32 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     }
     //=============================================================================
 
-    fun <D : Any> setData(klass: Class<D>, key: String, value: D) {
-        if (!data.containsKey(klass))
-            data.put(klass, mutableMapOf())
-        if (!BUS.fire(SetDataEvent(thiz(), klass, key, value)).isCanceled())
-            data.get(klass)?.put(key, value)
+    fun <D : Any> setData(clazz: Class<D>, key: String, value: D) {
+        if (!data.containsKey(clazz))
+            data.put(clazz, mutableMapOf())
+        if (!BUS.fire(SetDataEvent(thiz(), clazz, key, value)).isCanceled())
+            data.get(clazz)?.put(key, value)
     }
 
-    fun <D : Any> removeData(klass: Class<D>, key: String) {
-        if (!data.containsKey(klass))
-            data.put(klass, mutableMapOf())
-        if (!BUS.fire(RemoveDataEvent(thiz(), klass, key, getData(klass, key))).isCanceled())
-            data.get(klass)?.remove(key)
+    fun <D : Any> removeData(clazz: Class<D>, key: String) {
+        if (!data.containsKey(clazz))
+            data.put(clazz, mutableMapOf())
+        if (!BUS.fire(RemoveDataEvent(thiz(), clazz, key, getData(clazz, key))).isCanceled())
+            data.get(clazz)?.remove(key)
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <D> getData(klass: Class<D>, key: String): D? {
-        if (!data.containsKey(klass))
-            data.put(klass, HashMap<String, Any>())
-        return BUS.fire(GetDataEvent(thiz(), klass, key, data.get(klass)?.get(key) as D?)).value
+    fun <D> getData(clazz: Class<D>, key: String): D? {
+        if (!data.containsKey(clazz))
+            data.put(clazz, HashMap<String, Any>())
+        return BUS.fire(GetDataEvent(thiz(), clazz, key, data.get(clazz)?.get(key) as D?)).value
     }
 
-    fun <D> hasData(klass: Class<D>, key: String): Boolean {
-        if (!data.containsKey(klass))
-            data.put(klass, HashMap<String, Any>())
-        return BUS.fire(GetDataEvent(thiz(), klass, key, data.get(klass)?.get(key) as D?)).value != null
+    @Suppress("UNCHECKED_CAST")
+    fun <D> hasData(clazz: Class<D>, key: String): Boolean {
+        if (!data.containsKey(clazz))
+            data.put(clazz, HashMap<String, Any>())
+        return BUS.fire(GetDataEvent(thiz(), clazz, key, data[clazz]?.get(key) as D?)).value != null
     }
 
     /**

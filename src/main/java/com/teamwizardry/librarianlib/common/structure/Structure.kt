@@ -73,6 +73,7 @@ open class Structure(loc: ResourceLocation) {
         return finalList
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun match(world: World, checkPos: BlockPos, rot: Rotation): StructureMatchResult? {
         val result = StructureMatchResult(checkPos.subtract(origin), rot, this)
 
@@ -143,7 +144,7 @@ open class Structure(loc: ResourceLocation) {
     protected fun parse(stream: InputStream) {
         template = Template()
         try {
-            templateBlocks = ReflectionHelper.findField(Template::class.java, "blocks", "field_186270_a").get(template) as List<BlockInfo>
+            templateBlocks = ReflectionHelper.findField(Template::class.java, "blocks", "field_186270_a").get(template) as List<BlockInfo> //todo methodhandle
         } catch (e1: IllegalArgumentException) {
             e1.printStackTrace()
         } catch (e1: IllegalAccessException) {

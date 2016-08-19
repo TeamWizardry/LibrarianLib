@@ -43,7 +43,7 @@ class SpritesMetadataSectionSerializer : BaseMetadataSectionSerializer<SpritesMe
             val h = JsonUtils.getInt(arr.get(3), "spritesheet{sprites{$name[3]")
 
             // frames
-            var frames = IntArray(0)
+            val frames: IntArray
             if (obj.get("frames").isJsonArray) {
                 arr = JsonUtils.getJsonArray(obj.get("frames"), "spritesheet{sprites{$name{frames")
                 frames = IntArray(arr.size())
@@ -87,12 +87,8 @@ class SpritesMetadataSectionSerializer : BaseMetadataSectionSerializer<SpritesMe
         val sprites = JsonUtils.getJsonObject(jsonObject.get("sprites"), "spritesheet{sprites")
         val definitions = ArrayList<SpriteDefinition>()
         for ((key, value) in sprites.entrySet()) {
-            val d = parseSprite(key, value)
-            if (d != null) {
-                definitions.add(d)
-            } else {
-
-            }
+            val d = parseSprite(key, value) ?: continue
+            definitions.add(d)
         }
         return SpritesMetadataSection(width, height, definitions)
     }

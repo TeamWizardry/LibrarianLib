@@ -14,7 +14,7 @@ open class LibCommonProxy {
 
     open fun pre(e: FMLPreInitializationEvent) {
         val config = e.suggestedConfigurationFile
-        Config.initConfig(config)
+        ConfigHandler.initConfig(config)
     }
 
     open fun init(e: FMLInitializationEvent) {

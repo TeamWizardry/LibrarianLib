@@ -58,7 +58,7 @@ open class Shader(val vert: String?, val frag: String?) {
         return getUniform(name, false)
     }
 
-    @SuppressWarnings("unchecked")
+    @Suppress("UNCHECKED_CAST")
     fun <T : Uniform> getUniform(name: String, quiet: Boolean): T? {
         for (i in uniforms.indices) {
             if (uniforms[i]?.name == name) {
