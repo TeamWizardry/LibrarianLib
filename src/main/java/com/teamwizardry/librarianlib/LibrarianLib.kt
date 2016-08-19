@@ -1,10 +1,11 @@
 package com.teamwizardry.librarianlib
 
-import com.teamwizardry.librarianlib.book.Book
-import com.teamwizardry.librarianlib.common.Config
-import com.teamwizardry.librarianlib.gui.TickCounter
-import com.teamwizardry.librarianlib.network.PacketHandler
-import com.teamwizardry.librarianlib.util.LoggerBase
+import com.teamwizardry.librarianlib.client.book.Book
+import com.teamwizardry.librarianlib.common.core.Config
+import com.teamwizardry.librarianlib.client.gui.TickCounter
+import com.teamwizardry.librarianlib.common.core.LibCommonProxy
+import com.teamwizardry.librarianlib.common.network.PacketHandler
+import com.teamwizardry.librarianlib.common.core.LoggerBase
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.SidedProxy
@@ -22,7 +23,7 @@ class LibrarianLib {
         logger = event.modLog
         Config.initConfig(event.suggestedConfigurationFile)
         proxy.preInit()
-        PacketHandler.INSTANCE.javaClass // load the class
+        javaClass // load the class
         MinecraftForge.EVENT_BUS.register(TickCounter())
     }
 
@@ -39,8 +40,8 @@ class LibrarianLib {
         const val MODID = "librarianlib"
         const val MODNAME = "LibrarianLib"
         const val VERSION = "1.0"
-        const val CLIENT = "com.teamwizardry.librarianlib.LibClientProxy"
-        const val SERVER = "com.teamwizardry.librarianlib.LibCommonProxy"
+        const val CLIENT = "com.teamwizardry.librarianlib.client.core.LibClientProxy"
+        const val SERVER = "com.teamwizardry.librarianlib.common.core.LibCommonProxy"
         var packetHandler: PacketLoggingHandler? = null
         lateinit var logger: Logger
 
