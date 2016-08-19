@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.book.gui
 
-import com.teamwizardry.librarianlib.book.Book
-import com.teamwizardry.librarianlib.book.util.Page
+import com.teamwizardry.librarianlib.book.util.BookSectionOther
 import com.teamwizardry.librarianlib.data.DataNode
 import com.teamwizardry.librarianlib.data.DataNodeParsers
 import com.teamwizardry.librarianlib.gui.GuiComponent
@@ -20,16 +19,16 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11
 
-class PageStructure(book: Book, rootData: DataNode, pageData: DataNode, page: Page) : GuiBook(book, rootData, pageData, page) {
+class PageStructure(section: BookSectionOther, node: DataNode, tag: String) : GuiBook(section) {
 
     protected var originState: IBlockState
 
     init {
 
-        originState = DataNodeParsers.parseBlockState(pageData.get("block"))
+        originState = DataNodeParsers.parseBlockState(node["block"])
 
-        val structure = Structure(ResourceLocation(pageData.get("structure").asStringOr("minecraft:missingno")))
-        val structureTransparent = Structure(ResourceLocation(pageData.get("structure").asStringOr("minecraft:missingno")))
+        val structure = Structure(ResourceLocation(node["structure"].asStringOr("minecraft:missingno")))
+        val structureTransparent = Structure(ResourceLocation(node["structure"].asStringOr("minecraft:missingno")))
 
         val view = Component3DView(0, 0, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT)
         view.rotX = 22.0
@@ -59,7 +58,7 @@ class PageStructure(book: Book, rootData: DataNode, pageData: DataNode, page: Pa
                 ((structure.max.x - structure.min.x + 1) * hudScale + 12).toDouble(),
                 ((structure.max.y - structure.min.y + 1) * hudScale + 12).toDouble())
 
-        val structureHud = Structure(ResourceLocation(pageData.get("structure").asStringOr("minecraft:missingno")))
+        val structureHud = Structure(ResourceLocation(node["structure"].asStringOr("minecraft:missingno")))
 
         val structureCompHud = ComponentStructure(0, 0, structureHud)
 
@@ -68,7 +67,7 @@ class PageStructure(book: Book, rootData: DataNode, pageData: DataNode, page: Pa
         GlMixin.rotate(structureCompHud).setValue(Vec3d(0.0, 0.0, 180.0))
         tiled.add(structureCompHud)
 
-        val structureTransparentHud = Structure(ResourceLocation(pageData.get("structure").asStringOr("minecraft:missingno")))
+        val structureTransparentHud = Structure(ResourceLocation(node["structure"].asStringOr("minecraft:missingno")))
 
         val structureCompHudTransparent = ComponentStructure(0, 0, structureTransparentHud)
         structureCompHudTransparent.color.setValue(Color(1f, 1f, 1f, 0.5f))

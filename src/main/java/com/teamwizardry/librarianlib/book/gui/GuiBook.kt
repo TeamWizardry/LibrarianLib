@@ -1,11 +1,10 @@
 package com.teamwizardry.librarianlib.book.gui
 
 import com.teamwizardry.librarianlib.LibrarianLib
-import com.teamwizardry.librarianlib.LibrarianLog
-import com.teamwizardry.librarianlib.book.Book
-import com.teamwizardry.librarianlib.book.util.Page
-import com.teamwizardry.librarianlib.data.DataNode
+import com.teamwizardry.librarianlib.book.util.BookRegistry
+import com.teamwizardry.librarianlib.book.util.BookSection
 import com.teamwizardry.librarianlib.gui.GuiBase
+import com.teamwizardry.librarianlib.gui.GuiComponent
 import com.teamwizardry.librarianlib.gui.components.ComponentSliderTray
 import com.teamwizardry.librarianlib.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.gui.components.ComponentText
@@ -21,9 +20,14 @@ import com.teamwizardry.librarianlib.util.PathUtils
 import net.minecraft.util.ResourceLocation
 import java.util.*
 
-open class GuiBook(val book: Book, protected val rootData: DataNode, protected val pageData: DataNode, val page: Page) : GuiBase(146, 180) {
+open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
     protected var contents: ComponentVoid
     protected var tips: ComponentVoid
+
+    private val backPageButton: GuiComponent<*>
+    private val nextPageButton: GuiComponent<*>
+    private val backArrowButton: GuiComponent<*>
+    private val navBar: GuiComponent<*>
 
     init {
 
@@ -32,8 +36,23 @@ open class GuiBook(val book: Book, protected val rootData: DataNode, protected v
         titleBar.add(ComponentSprite(TITLE_BAR, 0, 0))
         titleBar.add(ComponentText(66, 7, TextAlignH.CENTER, TextAlignV.MIDDLE).`val`("TITLE"))
 
+        val reload = ComponentSprite(RELOAD, BACKGROUND_PAGE.width - 8, -8);
+
+        ButtonMixin(reload) { reload.color.setValue(Color.RED) }
+        reload.BUS.hook(ButtonMixin.ButtonStateChangeEvent::class.java) { event ->
+            when(event.newState) {
+                ButtonMixin.EnumButtonState.NORMAL -> reload.color.setValue(Color.RED)
+                ButtonMixin.EnumButtonState.HOVER -> reload.color.setValue(Color.GREEN)
+                ButtonMixin.EnumButtonState.DISABLED -> reload.color.setValue(Color.WHITE)
+            }
+        }
+        reload.BUS.hook(ButtonMixin.ButtonClickEvent::class.java) { event ->
+            BookRegistry.clearCache()
+        }
+
+
         // nav
-        val navBar = ComponentVoid((BACKGROUND_PAGE.width - TITLE_BAR.width) / 2, 186, TITLE_BAR.width, TITLE_BAR.height)
+        navBar = ComponentVoid((BACKGROUND_PAGE.width - TITLE_BAR.width) / 2, 186, TITLE_BAR.width, TITLE_BAR.height)
 
         val disabledColor = Color.rgb(0xB0B0B0)
         val hoverColor = Color.rgb(0x0DDED3)
@@ -42,12 +61,11 @@ open class GuiBook(val book: Book, protected val rootData: DataNode, protected v
         navBar.add(ComponentSprite(TITLE_BAR, 0, 0))
 
         // back page
-        val backPageButton = ComponentSprite(BACK_PAGE, 15, 2)
+        backPageButton = ComponentSprite(BACK_PAGE, 15, 2)
         ButtonMixin(backPageButton) { backPageButton.color.setValue(normalColor) }
 
-        backPageButton.enabled = pageData.get("hasPrev").exists()
         backPageButton.BUS.hook(ButtonMixin.ButtonClickEvent::class.java) {
-            openPage(this.page.path, this.page.page - 1)
+            prevPage()
         }
         backPageButton.BUS.hook(ButtonMixin.ButtonStateChangeEvent::class.java) { event ->
             when(event.newState) {
@@ -60,12 +78,11 @@ open class GuiBook(val book: Book, protected val rootData: DataNode, protected v
         navBar.add(backPageButton)
 
         // next page
-        val nextPageButton = ComponentSprite(NEXT_PAGE, TITLE_BAR.width - NEXT_PAGE.width - 15, 2)
+        nextPageButton = ComponentSprite(NEXT_PAGE, TITLE_BAR.width - NEXT_PAGE.width - 15, 2)
         ButtonMixin(nextPageButton) { nextPageButton.color.setValue(normalColor) }
 
-        nextPageButton.enabled = pageData.get("hasNext").exists()
         nextPageButton.BUS.hook(ButtonMixin.ButtonClickEvent::class.java) {
-            openPage(this.page.path, this.page.page + 1)
+            nextPage()
         }
         nextPageButton.BUS.hook(ButtonMixin.ButtonStateChangeEvent::class.java) { event ->
             when(event.newState) {
@@ -77,12 +94,11 @@ open class GuiBook(val book: Book, protected val rootData: DataNode, protected v
         navBar.add(nextPageButton)
 
         // back arrow
-        val backArrowButton = ComponentSprite(BACK_ARROW, TITLE_BAR.width / 2 - BACK_ARROW.width / 2, 2)
+        backArrowButton = ComponentSprite(BACK_ARROW, TITLE_BAR.width / 2 - BACK_ARROW.width / 2, 2)
         ButtonMixin(backArrowButton) { backArrowButton.color.setValue(normalColor) }
 
-        backArrowButton.enabled = book.history.size > 0
         backArrowButton.BUS.hook(ButtonMixin.ButtonClickEvent::class.java) {
-            book.back()
+            section.entry.book.back()
         }
         backArrowButton.BUS.hook(ButtonMixin.ButtonStateChangeEvent::class.java) { event ->
             when(event.newState) {
@@ -110,33 +126,71 @@ open class GuiBook(val book: Book, protected val rootData: DataNode, protected v
         contents.zIndex = 0
         titleBar.zIndex = 9
         navBar.zIndex = 9
-        border.zIndex = -10
+        border.zIndex = 10
+        reload.zIndex = 11
 
         components.add(tips)
         components.add(pageBG)
         components.add(border)
         components.add(titleBar)
-        if (book.history.size > 0 || pageData.get("hasNext").exists() || pageData.get("hasPrev").exists())
-            components.add(navBar)
+        components.add(navBar)
         components.add(contents)
+        components.add(reload)
 
         this.contents = contents
+
+
+
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+
+        nextPageButton.enabled = section.nextSection != null || hasNextPage()
+        backPageButton.enabled = section.prevSection != null || hasPrevPage()
+
+        backArrowButton.isVisible = section.entry.book.history.size > 0
+
+        navBar.isVisible = nextPageButton.enabled || backPageButton.enabled || backArrowButton.isVisible
+
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
-    fun openPageRelative(path: String, page: Int) {
-        openPage(PathUtils.resolve(PathUtils.parent(this.page.path), path), page)
+    open fun jumpToPage(page: Int) {}
+    open fun pageJump() : Int = 0
+
+    open fun hasNextPage() : Boolean = false
+    open fun hasPrevPage() : Boolean = false
+
+    open fun goToNextPage() {}
+    open fun goToPrevPage() {}
+
+    fun nextPage() {
+        val sec = section.nextSection
+        if(hasNextPage())
+            goToNextPage()
+        else if(sec != null)
+            openPage(sec.entry.path, sec.sectionTag)
     }
 
-    fun openPage(path: String, page: Int) {
-        book.display(Page(path, page))
+    fun prevPage() {
+        val sec = section.prevSection
+        if(hasPrevPage())
+            goToPrevPage()
+        else if(sec != null)
+            openPage(sec.entry.path, sec.sectionTag)
     }
 
-    fun pageResource(path: String): ResourceLocation {
-        return ResourceLocation(book.modid, PathUtils.resolve("textures/" + PathUtils.resolve(PathUtils.parent(this.page.path), path)))
+    override fun onGuiClosed() {
+        super.onGuiClosed()
+        section.entry.book.pushHistory(section, pageJump()).gui = this
+    }
+
+    fun openPageRelative(path: String, tag: String) {
+        openPage(PathUtils.resolve(PathUtils.parent(section.entry.path), path), tag)
+    }
+
+    fun openPage(path: String, tag: String) {
+        section.entry.book.display(path, tag)
     }
 
     private val sliders = WeakHashMap<Any, ComponentSliderTray>()
@@ -176,5 +230,6 @@ open class GuiBook(val book: Book, protected val rootData: DataNode, protected v
         var SLIDER_NORMAL = TEXTURE.getSprite("slider_normal", 133, 37)
         var SLIDER_RECIPE = TEXTURE.getSprite("slider_recipe", 133, 68)
         var BUTTON = TEXTURE.getSprite("button", 32, 32)
+        var RELOAD = TEXTURE.getSprite("reload", 16, 16)
     }
 }

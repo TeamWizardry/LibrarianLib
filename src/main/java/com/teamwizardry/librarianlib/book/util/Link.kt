@@ -1,33 +1,20 @@
 package com.teamwizardry.librarianlib.book.util
 
-class Link {
+data class Link(val path:String, val tag:String)
 
+object LinkParser {
+    fun parse(link:String) : Link {
+        var tag = ""
+        var path = link
 
-    val path: String
-    val page: Int
+        val hashLoc = link.lastIndexOf("#")
 
-
-    constructor(str: String) {
-        val i = str.lastIndexOf(":")
-        var page = 0
-
-        if (i != -1) {
-            try {
-                page = Integer.parseInt(str.substring(i))
-            } catch (e: NumberFormatException) {
-                // TODO: logging
-            }
-
+        if (hashLoc != -1) {
+            tag = link.substring(hashLoc)
+            path = link.substring(0, hashLoc)
         }
-        val path = str.substring(0, if (i == -1) str.length else i)
 
-        this.page = page
-        this.path = path
-    }
-
-    constructor(path: String, page: Int) {
-        this.path = path
-        this.page = page
+        return Link(path, tag)
     }
 
 }

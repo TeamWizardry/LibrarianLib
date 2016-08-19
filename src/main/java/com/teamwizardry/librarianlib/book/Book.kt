@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.book
 
-import com.teamwizardry.librarianlib.LibrarianLog
-import com.teamwizardry.librarianlib.book.util.Page
-import com.teamwizardry.librarianlib.book.util.PageHandler
+import com.teamwizardry.librarianlib.book.gui.GuiBook
+import com.teamwizardry.librarianlib.book.util.BookRegistry
+import com.teamwizardry.librarianlib.book.util.BookSection
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import java.util.*
@@ -17,39 +17,44 @@ import java.util.*
  * @author Pierce Corcoran
  */
 open class Book(val modid: String) {
-    /**
-     * The history of the pages used to get to the current page. The top element is the current page.
-     */
     val history = Stack<Page>()
 
-    init {
-        history.push(Page("/", 0))
-    }
-
-    protected open fun canOpenPage(path: String): Boolean {
-        return true
-    }
-
-    protected open fun getScreen(page: Page): GuiScreen? {
-        var newPage = page
-        var scr = PageHandler.create(this, newPage)
-        if (scr == null) {
-            LibrarianLog.warn("Page [%s:%d] not found! Going to [/:0] ", newPage.path, newPage.page)
-            newPage = Page("/", 0)
-            scr = PageHandler.create(this, newPage)
-        }
-        newPage.gui = scr
-        if (history.empty())
-            history.push(Page("/", 0))
-        if (history.peek().path == newPage.path)
-            history.pop()
-        history.push(newPage)
-        return scr
+    fun pushHistory(section: BookSection, page: Int) : Page {
+        val p = Page(section, page)
+        history.push(p)
+        return p
     }
 
     fun display() {
-        Minecraft.getMinecraft().displayGuiScreen(getScreen(history.pop())) // the page is pushed back on, so we have to pop it
+        Minecraft.getMinecraft().displayGuiScreen(if(history.size > 0) getScreen(history.pop()) else getScreen("/index", "")) // the page is pushed back on, so we have to pop it
     }
+
+    fun display(path: String, tag: String) {
+        Minecraft.getMinecraft().displayGuiScreen(getScreen(path, tag))
+    }
+
+    fun getScreen(page: Page): GuiScreen? {
+        val scr = page.section.create("")
+        scr?.jumpToPage(page.page)
+
+        if(scr != null && history.size > 0 &&
+                history.peek().section.entry.path == page.section.entry.path)
+            history.pop()
+
+        return scr
+    }
+
+    fun getScreen(path: String, tag: String): GuiScreen? {
+        val scr = BookRegistry.getEntry(this, path).getTagged(tag).create(tag)
+
+        if(scr != null && history.size > 0 &&
+                history.peek().section.entry.path == scr.section.entry.path)
+            history.pop()
+
+        return scr
+    }
+
+
 
     fun back() {
         if (history.empty())
@@ -61,9 +66,9 @@ open class Book(val modid: String) {
             Minecraft.getMinecraft().displayGuiScreen(getScreen(history.pop())) // the page is pushed back on, so we have to pop it
     }
 
-    fun display(page: Page) {
-        Minecraft.getMinecraft().displayGuiScreen(getScreen(page))
-    }
+
 
 
 }
+
+data class Page(val section: BookSection, val page: Int, var gui: GuiBook? = null)

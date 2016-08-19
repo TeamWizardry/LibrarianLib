@@ -30,7 +30,8 @@ open class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiC
                 return@hook
             for (element in elements) {
                 if (element.isMouseOver(pos.xi, pos.yi)) {
-                    if(!element.BUS.fire(ElementClickEvent(element)).isCanceled()) {
+                    if(element.BUS.hasHooks(ElementClickEvent::class.java) &&
+                            !element.BUS.fire(ElementClickEvent(element)).isCanceled()) {
                         event.cancel()
                         break
                     }

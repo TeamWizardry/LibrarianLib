@@ -1,8 +1,7 @@
 package com.teamwizardry.librarianlib.book.gui
 
-import com.teamwizardry.librarianlib.book.Book
-import com.teamwizardry.librarianlib.book.util.Link
-import com.teamwizardry.librarianlib.book.util.Page
+import com.teamwizardry.librarianlib.book.util.BookSectionOther
+import com.teamwizardry.librarianlib.book.util.LinkParser
 import com.teamwizardry.librarianlib.data.DataNode
 import com.teamwizardry.librarianlib.data.DataNodeParsers
 import com.teamwizardry.librarianlib.gui.GuiComponent
@@ -15,14 +14,14 @@ import net.minecraft.item.ItemStack
 /**
  * Created by TheCodeWarrior on 7/31/16.
  */
-class PageSubindex(book: Book, rootData: DataNode, pageData: DataNode, page: Page) : GuiBook(book, rootData, pageData, page) {
+class PageSubindex(section: BookSectionOther, node: DataNode, tag: String) : GuiBook(section) {
 
     init {
         val itemsPerPage = 8
 
-        val indexPage = pageData.get("page").asInt()
+        val indexPage = node["page"].asInt()
 
-        val items = if (pageData.get("index").isString) rootData.get("subindexes").get(pageData.get("index").asStringOr("default")) else rootData.get("subindex")
+        val items = node["items"]
 
         val begin = indexPage * itemsPerPage
 
@@ -87,8 +86,8 @@ class PageSubindex(book: Book, rootData: DataNode, pageData: DataNode, page: Pag
             }
         }
         comp.BUS.hook(ButtonMixin.ButtonClickEvent::class.java) {
-            val l = Link(node.get("link").asStringOr("/"))
-            openPageRelative(l.path, l.page)
+            val link = LinkParser.parse(node["link"].asStringOr("/"))
+            openPageRelative(link.path, link.tag)
         }
     }
 }

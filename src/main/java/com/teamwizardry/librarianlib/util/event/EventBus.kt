@@ -9,6 +9,10 @@ import java.util.function.Consumer
 class EventBus {
     private val hooks = mutableMapOf<Class<*>, MutableList<EventHandler<Event>>>()
 
+    fun hasHooks(klass: Class<*>) : Boolean {
+        return hooks[klass]?.size ?: 0 > 0
+    }
+
     fun <E : Event> fire(event: E): E {
         val klass = event.javaClass
         if (klass in hooks) {

@@ -50,11 +50,12 @@ class Color {
 
     companion object {
 
-        val BLACK = Color.rgb(0x000000)
-        val WHITE = Color.rgb(0xFFFFFF)
-        val RED = Color.rgb(0xFF0000)
-        val GREEN = Color.rgb(0x00FF00)
-        val BLUE = Color.rgb(0x0000FF)
+        @JvmStatic val BLACK = Color.rgb(0x000000)
+        @JvmStatic val WHITE = Color.rgb(0xFFFFFF)
+        @JvmStatic val RED = Color.rgb(0xFF0000)
+        @JvmStatic val GREEN = Color.rgb(0x00FF00)
+        @JvmStatic val BLUE = Color.rgb(0x0000FF)
+        @JvmStatic val TRANSPARENT = Color.argb(0x00FFFFFF)
 
         fun argb(color: Int): Color {
             val a = (color shr 24 and 0xff) / 255f
