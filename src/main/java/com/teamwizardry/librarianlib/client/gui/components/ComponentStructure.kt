@@ -3,10 +3,10 @@ package com.teamwizardry.librarianlib.client.gui.components
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.Option
 import com.teamwizardry.librarianlib.client.gui.mixin.gl.GlMixin
-import com.teamwizardry.librarianlib.common.util.math.Vec2d
-import com.teamwizardry.librarianlib.common.structure.Structure
 import com.teamwizardry.librarianlib.client.structure.StructureRenderUtil
 import com.teamwizardry.librarianlib.client.util.Color
+import com.teamwizardry.librarianlib.common.structure.Structure
+import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator

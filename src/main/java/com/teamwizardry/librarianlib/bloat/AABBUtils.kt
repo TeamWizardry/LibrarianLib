@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.bloat
 
-import com.teamwizardry.librarianlib.bloat.MathUtil
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
 

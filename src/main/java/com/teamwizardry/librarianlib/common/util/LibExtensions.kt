@@ -19,7 +19,7 @@ operator fun Vec3d.times(other: Float): Vec3d = this * other.toDouble()
 operator fun Vec3d.times(other: Int): Vec3d = this * other.toDouble()
 
 operator fun Vec3d.div(other: Vec3d) = Vec3d(this.xCoord / other.xCoord, this.yCoord / other.yCoord, this.zCoord / other.zCoord)
-operator fun Vec3d.div(other: Double): Vec3d = this * (1/other)
+operator fun Vec3d.div(other: Double): Vec3d = this * (1 / other)
 operator fun Vec3d.div(other: Float): Vec3d = this / other.toDouble()
 operator fun Vec3d.div(other: Int): Vec3d = this / other.toDouble()
 

@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.client.gui.components
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.HandlerList
 import com.teamwizardry.librarianlib.client.gui.mixin.ScissorMixin
-import com.teamwizardry.librarianlib.common.util.math.BoundingBox2D
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
 
@@ -20,7 +19,7 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
         }
 
         BUS.hook(LogicalSizeEvent::class.java) { event ->
-            if(event.box != null)
+            if (event.box != null)
                 event.box = contentSize
         }
     }

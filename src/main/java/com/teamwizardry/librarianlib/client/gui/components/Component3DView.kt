@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.client.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.common.util.math.Matrix4
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
-import net.java.games.input.Mouse
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.util.math.Vec3d

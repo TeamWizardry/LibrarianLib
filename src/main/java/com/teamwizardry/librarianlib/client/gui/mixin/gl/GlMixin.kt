@@ -35,10 +35,10 @@ object GlMixin {
         }
     }
 
-    private fun getData(component: GuiComponent<*>) : GlMixinData {
+    private fun getData(component: GuiComponent<*>): GlMixinData {
         var dat = component.getData(GlMixinData::class.java, "mixin")
 
-        if(dat == null) {
+        if (dat == null) {
             dat = GlMixinData();
             component.setData(GlMixinData::class.java, "mixin", dat)
         }
@@ -78,7 +78,7 @@ object GlMixin {
         pushPopMatrix(component)
 
         val opt = getData(component).getData("scale", {
-            val o = Option<T, Vec3d>(Vec3d(1.0,1.0,1.0))
+            val o = Option<T, Vec3d>(Vec3d(1.0, 1.0, 1.0))
             component.BUS.hook(GuiComponent.PreDrawEvent::class.java) {
                 val v = o.getValue(component)
                 GlStateManager.scale(v.xCoord, v.yCoord, v.zCoord)
@@ -107,10 +107,10 @@ object GlMixin {
     }
 
     class GlMixinData {
-        private val data : MutableMap<String, Option<GuiComponent<*>, Any>> = mutableMapOf()
+        private val data: MutableMap<String, Option<GuiComponent<*>, Any>> = mutableMapOf()
 
-        fun <COMP : GuiComponent<COMP>, OPT : Any> getData(key: String, init: () -> Option<COMP, OPT>) : Option<COMP, OPT> {
-            if(!data.containsKey(key))
+        fun <COMP : GuiComponent<COMP>, OPT : Any> getData(key: String, init: () -> Option<COMP, OPT>): Option<COMP, OPT> {
+            if (!data.containsKey(key))
                 data.put(key, init() as Option<GuiComponent<*>, Any>)
             return data.get(key) as Option<COMP, OPT>
         }

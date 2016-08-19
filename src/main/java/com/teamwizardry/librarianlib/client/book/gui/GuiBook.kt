@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.client.book.gui
 
 import com.teamwizardry.librarianlib.LibrarianLib
+import com.teamwizardry.librarianlib.bloat.PathUtils
 import com.teamwizardry.librarianlib.client.book.util.BookRegistry
 import com.teamwizardry.librarianlib.client.book.util.BookSection
 import com.teamwizardry.librarianlib.client.gui.GuiBase
@@ -16,7 +17,6 @@ import com.teamwizardry.librarianlib.client.gui.mixin.ScissorMixin
 import com.teamwizardry.librarianlib.client.gui.template.SliderTemplate
 import com.teamwizardry.librarianlib.client.sprite.Texture
 import com.teamwizardry.librarianlib.client.util.Color
-import com.teamwizardry.librarianlib.bloat.PathUtils
 import net.minecraft.util.ResourceLocation
 import java.util.*
 
@@ -40,7 +40,7 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
 
         ButtonMixin(reload) { reload.color.setValue(Color.RED) }
         reload.BUS.hook(ButtonMixin.ButtonStateChangeEvent::class.java) { event ->
-            when(event.newState) {
+            when (event.newState) {
                 ButtonMixin.EnumButtonState.NORMAL -> reload.color.setValue(Color.RED)
                 ButtonMixin.EnumButtonState.HOVER -> reload.color.setValue(Color.GREEN)
                 ButtonMixin.EnumButtonState.DISABLED -> reload.color.setValue(Color.WHITE)
@@ -68,7 +68,7 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
             prevPage()
         }
         backPageButton.BUS.hook(ButtonMixin.ButtonStateChangeEvent::class.java) { event ->
-            when(event.newState) {
+            when (event.newState) {
                 ButtonMixin.EnumButtonState.NORMAL -> backPageButton.color.setValue(normalColor)
                 ButtonMixin.EnumButtonState.DISABLED -> backPageButton.color.setValue(disabledColor)
                 ButtonMixin.EnumButtonState.HOVER -> backPageButton.color.setValue(hoverColor)
@@ -85,7 +85,7 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
             nextPage()
         }
         nextPageButton.BUS.hook(ButtonMixin.ButtonStateChangeEvent::class.java) { event ->
-            when(event.newState) {
+            when (event.newState) {
                 ButtonMixin.EnumButtonState.NORMAL -> nextPageButton.color.setValue(normalColor)
                 ButtonMixin.EnumButtonState.DISABLED -> nextPageButton.color.setValue(disabledColor)
                 ButtonMixin.EnumButtonState.HOVER -> nextPageButton.color.setValue(hoverColor)
@@ -101,7 +101,7 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
             section.entry.book.back()
         }
         backArrowButton.BUS.hook(ButtonMixin.ButtonStateChangeEvent::class.java) { event ->
-            when(event.newState) {
+            when (event.newState) {
                 ButtonMixin.EnumButtonState.NORMAL -> backArrowButton.color.setValue(normalColor)
                 ButtonMixin.EnumButtonState.DISABLED -> backArrowButton.color.setValue(disabledColor)
                 ButtonMixin.EnumButtonState.HOVER -> backArrowButton.color.setValue(hoverColor)
@@ -140,7 +140,6 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
         this.contents = contents
 
 
-
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -155,28 +154,33 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
-    open fun jumpToPage(page: Int) {}
-    open fun pageJump() : Int = 0
+    open fun jumpToPage(page: Int) {
+    }
 
-    open fun hasNextPage() : Boolean = false
-    open fun hasPrevPage() : Boolean = false
+    open fun pageJump(): Int = 0
 
-    open fun goToNextPage() {}
-    open fun goToPrevPage() {}
+    open fun hasNextPage(): Boolean = false
+    open fun hasPrevPage(): Boolean = false
+
+    open fun goToNextPage() {
+    }
+
+    open fun goToPrevPage() {
+    }
 
     fun nextPage() {
         val sec = section.nextSection
-        if(hasNextPage())
+        if (hasNextPage())
             goToNextPage()
-        else if(sec != null)
+        else if (sec != null)
             openPage(sec.entry.path, sec.sectionTag)
     }
 
     fun prevPage() {
         val sec = section.prevSection
-        if(hasPrevPage())
+        if (hasPrevPage())
             goToPrevPage()
-        else if(sec != null)
+        else if (sec != null)
             openPage(sec.entry.path, sec.sectionTag)
     }
 

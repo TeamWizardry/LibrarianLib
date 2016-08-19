@@ -2,7 +2,8 @@ package com.teamwizardry.librarianlib.client.core
 
 import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
-import com.teamwizardry.librarianlib.common.base.*
+import com.teamwizardry.librarianlib.common.base.IExtraVariantHolder
+import com.teamwizardry.librarianlib.common.base.IVariantHolder
 import com.teamwizardry.librarianlib.common.base.block.IBlockColorProvider
 import com.teamwizardry.librarianlib.common.base.block.IModBlockProvider
 import com.teamwizardry.librarianlib.common.base.item.IItemColorProvider

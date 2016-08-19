@@ -8,5 +8,5 @@ import org.jetbrains.annotations.NotNull;
  */
 @FunctionalInterface
 public interface EventHandler<E extends Event> {
-	void invoke(@NotNull E event);
+    void invoke(@NotNull E event);
 }

@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.client.gui.mixin
 
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
-import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import com.teamwizardry.librarianlib.client.util.ScissorUtil
+import com.teamwizardry.librarianlib.common.util.math.Vec2d
 
 object ScissorMixin {
 

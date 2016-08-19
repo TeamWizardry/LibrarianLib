@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.client.book.gui
 
-import com.teamwizardry.librarianlib.client.book.util.BookSectionOther
-import com.teamwizardry.librarianlib.client.book.util.LinkParser
 import com.teamwizardry.librarianlib.client.book.data.DataNode
 import com.teamwizardry.librarianlib.client.book.data.DataNodeParsers
+import com.teamwizardry.librarianlib.client.book.util.BookSectionOther
+import com.teamwizardry.librarianlib.client.book.util.LinkParser
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.components.*
 import com.teamwizardry.librarianlib.client.gui.mixin.ButtonMixin

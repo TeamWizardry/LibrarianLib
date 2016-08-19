@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.client.gui.components
 
+import com.teamwizardry.librarianlib.bloat.MathUtil
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.HandlerList
 import com.teamwizardry.librarianlib.client.gui.mixin.DragMixin
-import com.teamwizardry.librarianlib.bloat.MathUtil
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import java.util.function.Consumer
 

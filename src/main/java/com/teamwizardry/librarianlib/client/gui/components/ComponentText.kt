@@ -3,9 +3,9 @@ package com.teamwizardry.librarianlib.client.gui.components
 import com.google.common.collect.ImmutableList
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.Option
+import com.teamwizardry.librarianlib.client.util.Color
 import com.teamwizardry.librarianlib.common.util.math.BoundingBox2D
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
-import com.teamwizardry.librarianlib.client.util.Color
 import net.minecraft.client.Minecraft
 
 class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizontal: ComponentText.TextAlignH = ComponentText.TextAlignH.LEFT, var vertical: ComponentText.TextAlignV = ComponentText.TextAlignV.TOP) : GuiComponent<ComponentText>(posX, posY) {

@@ -68,7 +68,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
         for (tex in Texture.textures) {
             tex.get()?.loadSpriteData()
-            if( tex.get() != null) newList.add(tex)
+            if (tex.get() != null) newList.add(tex)
         }
 
         Texture.textures = newList

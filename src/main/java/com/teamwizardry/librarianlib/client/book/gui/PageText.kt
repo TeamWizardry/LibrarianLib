@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.client.book.gui
 
+import com.teamwizardry.librarianlib.client.book.data.DataNode
 import com.teamwizardry.librarianlib.client.book.util.BookSectionText
 import com.teamwizardry.librarianlib.client.book.util.LinkParser
-import com.teamwizardry.librarianlib.client.book.data.DataNode
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.components.ComponentMarkup
 import com.teamwizardry.librarianlib.client.util.Color

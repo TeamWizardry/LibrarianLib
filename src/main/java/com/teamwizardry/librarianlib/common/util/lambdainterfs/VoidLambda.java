@@ -5,5 +5,5 @@ package com.teamwizardry.librarianlib.common.util.lambdainterfs;
  */
 @FunctionalInterface
 public interface VoidLambda {
-	void invoke();
+    void invoke();
 }

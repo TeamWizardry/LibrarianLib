@@ -2,7 +2,6 @@ package com.teamwizardry.librarianlib.common.util.math
 
 import com.google.common.annotations.VisibleForTesting
 import com.teamwizardry.librarianlib.bloat.AABBUtils
-import com.teamwizardry.librarianlib.common.util.math.Matrix4
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
 

@@ -95,7 +95,7 @@ open class DataNode {
     }
 
     open operator fun get(index: Int): DataNode {
-        if(index >= listValue?.size ?: 0 || index < 0)
+        if (index >= listValue?.size ?: 0 || index < 0)
             return NULL
         return listValue?.get(index) ?: NULL
     }

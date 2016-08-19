@@ -2,12 +2,12 @@ package com.teamwizardry.librarianlib.common.util
 
 import com.teamwizardry.librarianlib.client.core.ModelHandler
 import com.teamwizardry.librarianlib.common.base.IVariantHolder
+import com.teamwizardry.librarianlib.common.base.ModCreativeTab
 import net.minecraft.block.Block
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.registry.GameRegistry
-import com.teamwizardry.librarianlib.common.base.ModCreativeTab
 
 /**
  * Tools to implement variants easily.

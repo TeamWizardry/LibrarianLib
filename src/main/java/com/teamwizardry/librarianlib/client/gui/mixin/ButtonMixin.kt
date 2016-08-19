@@ -3,10 +3,10 @@ package com.teamwizardry.librarianlib.client.gui.mixin
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.client.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
-import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import com.teamwizardry.librarianlib.common.util.event.Event
 import com.teamwizardry.librarianlib.common.util.event.EventCancelable
 import com.teamwizardry.librarianlib.common.util.lambdainterfs.VoidLambda
+import com.teamwizardry.librarianlib.common.util.math.Vec2d
 
 class ButtonMixin<T : GuiComponent<T>>(val component: GuiComponent<T>, init: VoidLambda) {
 

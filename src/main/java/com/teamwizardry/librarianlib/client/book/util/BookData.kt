@@ -1,12 +1,8 @@
 package com.teamwizardry.librarianlib.client.book.util
 
 import com.teamwizardry.librarianlib.client.book.Book
-import com.teamwizardry.librarianlib.client.book.gui.GuiBook
-import com.teamwizardry.librarianlib.client.book.gui.PageText
-import com.teamwizardry.librarianlib.client.book.gui.PageIndex
-import com.teamwizardry.librarianlib.client.book.gui.PageSubindex
-import com.teamwizardry.librarianlib.client.book.gui.PageStructure
 import com.teamwizardry.librarianlib.client.book.data.DataNode
+import com.teamwizardry.librarianlib.client.book.gui.*
 import com.teamwizardry.librarianlib.common.util.lambdainterfs.SectionInitializer
 
 
@@ -19,14 +15,14 @@ object BookRegistry {
     }
 
     fun getEntry(book: Book, path: String): BookEntry {
-        if(!entries.containsKey(book))
+        if (!entries.containsKey(book))
             entries.put(book, mutableMapOf())
-        if(entries[book]!!.contains(path))
+        if (entries[book]!!.contains(path))
             entries[book]!!.put(path, BookEntry(book, path))
         return entries[book]!![path]!!
     }
 
-    fun getType(type: String) : SectionInitializer? {
+    fun getType(type: String): SectionInitializer? {
         return map.get(type)
     }
 
@@ -56,7 +52,7 @@ class BookEntry(val book: Book, val path: String) {
 
     init {
         var data = PageDataManager.getPageData(book.modid, path)
-        if(!data.exists()) {
+        if (!data.exists()) {
             title = "<<404: PAGE NOT FOUND>>"
             bookSections.add(BookSectionError("404: Page not found\n${book.modid}:$path", this, "section-${bookSections.size}"))
         } else {
@@ -131,20 +127,20 @@ abstract class BookSection(val entry: BookEntry, val sectionTag: String) {
     var nextSection: BookSection? = null
     var prevSection: BookSection? = null
 
-    abstract fun create(tag: String) : GuiBook?
+    abstract fun create(tag: String): GuiBook?
 
 }
 
 class BookSectionText(val node: DataNode, entry: BookEntry, sectionTag: String) : BookSection(entry, sectionTag) {
 
-    override fun create(tag: String) : GuiBook? {
+    override fun create(tag: String): GuiBook? {
         return PageText(this, node, tag)
     }
 
 }
 
 class BookSectionOther(val node: DataNode, entry: BookEntry, sectionTag: String) : BookSection(entry, sectionTag) {
-    override fun create(tag: String) : GuiBook? {
+    override fun create(tag: String): GuiBook? {
         var type = node.get("type").asStringOr("NoType")
         return BookRegistry.getType(type)?.invoke(this, node, tag)
 
@@ -152,7 +148,7 @@ class BookSectionOther(val node: DataNode, entry: BookEntry, sectionTag: String)
 }
 
 class BookSectionError(val error: String, entry: BookEntry, sectionTag: String) : BookSection(entry, sectionTag) {
-    override fun create(tag: String) : GuiBook? {
+    override fun create(tag: String): GuiBook? {
         throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.client.book.util
 
-data class Link(val path:String, val tag:String)
+data class Link(val path: String, val tag: String)
 
 object LinkParser {
-    fun parse(link:String) : Link {
+    fun parse(link: String): Link {
         var tag = ""
         var path = link
 

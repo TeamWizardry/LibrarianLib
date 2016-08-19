@@ -2,10 +2,9 @@ package com.teamwizardry.librarianlib.client.gui.mixin
 
 import com.teamwizardry.librarianlib.client.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
-import com.teamwizardry.librarianlib.client.gui.HandlerList
-import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import com.teamwizardry.librarianlib.common.util.event.Event
 import com.teamwizardry.librarianlib.common.util.event.EventCancelable
+import com.teamwizardry.librarianlib.common.util.math.Vec2d
 
 class DragMixin<T : GuiComponent<T>>(protected var component: T, protected var constraints: (Vec2d) -> Vec2d) {
 

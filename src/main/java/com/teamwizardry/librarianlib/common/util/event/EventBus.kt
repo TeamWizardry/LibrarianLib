@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.common.util.event
 
 import com.teamwizardry.librarianlib.common.util.lambdainterfs.EventHandler
-import java.util.function.Consumer
 
 /**
  * Created by TheCodeWarrior
@@ -9,7 +8,7 @@ import java.util.function.Consumer
 class EventBus {
     private val hooks = mutableMapOf<Class<*>, MutableList<EventHandler<Event>>>()
 
-    fun hasHooks(klass: Class<*>) : Boolean {
+    fun hasHooks(klass: Class<*>): Boolean {
         return hooks[klass]?.size ?: 0 > 0
     }
 
@@ -33,7 +32,7 @@ class EventBus {
     }
 
     fun <E : Event> hook(klass: Class<E>, hook: EventHandler<E>) {
-        if(!hooks.containsKey(klass))
+        if (!hooks.containsKey(klass))
             hooks.put(klass, mutableListOf())
         hooks[klass]?.add(hook as EventHandler<Event>)
     }

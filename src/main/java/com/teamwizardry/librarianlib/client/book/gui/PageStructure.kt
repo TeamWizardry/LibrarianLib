@@ -1,17 +1,17 @@
 package com.teamwizardry.librarianlib.client.book.gui
 
-import com.teamwizardry.librarianlib.client.book.util.BookSectionOther
 import com.teamwizardry.librarianlib.client.book.data.DataNode
 import com.teamwizardry.librarianlib.client.book.data.DataNodeParsers
+import com.teamwizardry.librarianlib.client.book.util.BookSectionOther
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.components.Component3DView
 import com.teamwizardry.librarianlib.client.gui.components.ComponentSpriteTiled
 import com.teamwizardry.librarianlib.client.gui.components.ComponentStructure
 import com.teamwizardry.librarianlib.client.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.client.gui.mixin.gl.GlMixin
-import com.teamwizardry.librarianlib.common.util.math.Vec2d
-import com.teamwizardry.librarianlib.common.structure.Structure
 import com.teamwizardry.librarianlib.client.util.Color
+import com.teamwizardry.librarianlib.common.structure.Structure
+import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks

@@ -2,8 +2,8 @@ package com.teamwizardry.librarianlib.bloat.ragdoll.cloth
 
 import com.google.common.annotations.VisibleForTesting
 import com.google.common.collect.ImmutableList
-import com.teamwizardry.librarianlib.common.util.math.Geometry
 import com.teamwizardry.librarianlib.bloat.MathUtil
+import com.teamwizardry.librarianlib.common.util.math.Geometry
 import com.teamwizardry.librarianlib.common.util.math.Matrix4
 import com.teamwizardry.librarianlib.common.util.math.Sphere
 import com.teamwizardry.librarianlib.common.util.times
@@ -165,7 +165,7 @@ class Cloth(var top: Array<Vec3d>, var height: Int, var size: Vec3d) {
         for (sphere in spheres) {
             point.pos = sphere.trace(point.origPos, point.pos)
         }
-        point.applyMotion((point.friction ?: Vec3d.ZERO) * -friction )
+        point.applyMotion((point.friction ?: Vec3d.ZERO) * -friction)
     }
 
     private fun applyMotionToPoints() {

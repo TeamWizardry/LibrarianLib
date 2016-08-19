@@ -4,22 +4,21 @@ import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.client.fx.shader.Shader
 import com.teamwizardry.librarianlib.client.fx.shader.uniforms.Uniform.NoUniform
 import org.lwjgl.opengl.*
-import sun.jvm.hotspot.debugger.cdbg.FloatType
 import java.util.*
 
 enum class UniformType constructor(private val initializer: (Shader, String, UniformType, Int, Int) -> Uniform) {
     NONE(::NoUniform),
     // bools
-    BOOL({ owner, name, type, size, location -> BoolTypes.BoolUniform(owner, name, type, size, location)}),
-    BOOL_VEC2({ owner, name, type, size, location -> BoolTypes.BoolVec2Uniform(owner, name, type, size, location)}),
-    BOOL_VEC3({ owner, name, type, size, location -> BoolTypes.BoolVec3Uniform(owner, name, type, size, location)}),
-    BOOL_VEC4({ owner, name, type, size, location -> BoolTypes.BoolVec4Uniform(owner, name, type, size, location)}),
+    BOOL({ owner, name, type, size, location -> BoolTypes.BoolUniform(owner, name, type, size, location) }),
+    BOOL_VEC2({ owner, name, type, size, location -> BoolTypes.BoolVec2Uniform(owner, name, type, size, location) }),
+    BOOL_VEC3({ owner, name, type, size, location -> BoolTypes.BoolVec3Uniform(owner, name, type, size, location) }),
+    BOOL_VEC4({ owner, name, type, size, location -> BoolTypes.BoolVec4Uniform(owner, name, type, size, location) }),
 
     // ints
-    INT({ owner, name, type, size, location -> IntTypes.IntUniform(owner, name, type, size, location)}),
-    INT_VEC2({ owner, name, type, size, location -> IntTypes.IntVec2Uniform(owner, name, type, size, location)}),
-    INT_VEC3({ owner, name, type, size, location -> IntTypes.IntVec3Uniform(owner, name, type, size, location)}),
-    INT_VEC4({ owner, name, type, size, location -> IntTypes.IntVec4Uniform(owner, name, type, size, location)}),
+    INT({ owner, name, type, size, location -> IntTypes.IntUniform(owner, name, type, size, location) }),
+    INT_VEC2({ owner, name, type, size, location -> IntTypes.IntVec2Uniform(owner, name, type, size, location) }),
+    INT_VEC3({ owner, name, type, size, location -> IntTypes.IntVec3Uniform(owner, name, type, size, location) }),
+    INT_VEC4({ owner, name, type, size, location -> IntTypes.IntVec4Uniform(owner, name, type, size, location) }),
 
     // unsigned ints
     UINT(::NoUniform),
@@ -29,10 +28,10 @@ enum class UniformType constructor(private val initializer: (Shader, String, Uni
     UINT_ATOMIC_COUNTER(::NoUniform),
 
     // floats
-    FLOAT({ owner, name, type, size, location -> FloatTypes.FloatUniform(owner, name, type, size, location)}),
-    FLOAT_VEC2({ owner, name, type, size, location -> FloatTypes.FloatVec2Uniform(owner, name, type, size, location)}),
-    FLOAT_VEC3({ owner, name, type, size, location -> FloatTypes.FloatVec3Uniform(owner, name, type, size, location)}),
-    FLOAT_VEC4({ owner, name, type, size, location -> FloatTypes.FloatVec4Uniform(owner, name, type, size, location)}),
+    FLOAT({ owner, name, type, size, location -> FloatTypes.FloatUniform(owner, name, type, size, location) }),
+    FLOAT_VEC2({ owner, name, type, size, location -> FloatTypes.FloatVec2Uniform(owner, name, type, size, location) }),
+    FLOAT_VEC3({ owner, name, type, size, location -> FloatTypes.FloatVec3Uniform(owner, name, type, size, location) }),
+    FLOAT_VEC4({ owner, name, type, size, location -> FloatTypes.FloatVec4Uniform(owner, name, type, size, location) }),
 
     FLOAT_MAT2(::NoUniform),
     FLOAT_MAT3(::NoUniform),

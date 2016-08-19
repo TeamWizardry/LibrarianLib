@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.client.book.util
 
 import com.teamwizardry.librarianlib.LibrarianLog
+import com.teamwizardry.librarianlib.bloat.PathUtils
 import com.teamwizardry.librarianlib.client.book.data.DataNode
 import com.teamwizardry.librarianlib.client.book.data.DataParser
-import com.teamwizardry.librarianlib.bloat.PathUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.IResource
 import net.minecraft.util.ResourceLocation

@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.client.structure
 
-import com.teamwizardry.librarianlib.common.structure.Structure
 import com.teamwizardry.librarianlib.client.util.BlockRenderUtils
 import com.teamwizardry.librarianlib.client.util.Color
+import com.teamwizardry.librarianlib.common.structure.Structure
 import net.minecraft.client.renderer.VertexBuffer
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.BlockRenderLayer
