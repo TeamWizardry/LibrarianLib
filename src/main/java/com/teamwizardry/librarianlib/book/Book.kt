@@ -54,8 +54,6 @@ open class Book(val modid: String) {
         return scr
     }
 
-
-
     fun back() {
         if (history.empty())
             return

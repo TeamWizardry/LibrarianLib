@@ -11,19 +11,21 @@ import com.teamwizardry.librarianlib.util.javainterfaces.SectionInitializer
 
 
 object BookRegistry {
-    private val entries = mutableMapOf<Book, MutableMap<String, BookEntry>>()
-    private val map: MutableMap<String, SectionInitializer> = mutableMapOf()
+    val entries = mutableMapOf<Book, MutableMap<String, BookEntry>>()
+    val map: MutableMap<String, SectionInitializer> = mutableMapOf()
+
+    init {
+        register("index", ::PageIndex)
+        register("subindex", ::PageSubindex)
+        register("structure", ::PageStructure)
+    }
 
     fun clearCache() {
         entries.clear()
     }
 
     fun getEntry(book: Book, path: String): BookEntry {
-        if(!entries.containsKey(book))
-            entries.put(book, mutableMapOf())
-        if(entries[book]!!.contains(path))
-            entries[book]!!.put(path, BookEntry(book, path))
-        return entries[book]!![path]!!
+        return entries.getOrPut(book, {mutableMapOf()}).getOrPut(path, {BookEntry(book, path)})
     }
 
     fun getType(type: String) : SectionInitializer? {
@@ -36,12 +38,6 @@ object BookRegistry {
 
     fun register(type: String, initializer: SectionInitializer) {
         map.put(type, initializer)
-    }
-
-    init {
-        register("index", ::PageIndex)
-        register("subindex", ::PageSubindex)
-        register("structure", ::PageStructure)
     }
 }
 
@@ -84,22 +80,26 @@ class BookEntry(val book: Book, val path: String) {
                         currentNode.add(node)
                     }
                 } else if (node.isMap) {
-                    var section: BookSection = BookSectionText(currentNode, this, "section-${bookSections.size}")
-                    tags.put(section.sectionTag, section)
-                    currentTags.forEach { tags.put(it, section) }
+                    if(currentNode.asList().size > 0) {
+                        var section: BookSection = BookSectionText(currentNode, this, "section-${bookSections.size}")
+                        tags.put(section.sectionTag, section)
+                        tags.put(section.sectionTagEnd, section)
+                        currentTags.forEach { tags.put(it, section) }
 
-                    if (bookSections.lastIndex >= 0) {
-                        bookSections[bookSections.lastIndex].nextSection = section
-                        section.prevSection = bookSections[bookSections.lastIndex]
+                        if (bookSections.lastIndex >= 0) {
+                            bookSections[bookSections.lastIndex].nextSection = section
+                            section.prevSection = bookSections[bookSections.lastIndex]
+                        }
+                        bookSections.add(section)
+
+                        currentNode = DataNode.list()
                     }
-                    bookSections.add(section)
-
-                    currentNode = DataNode.list()
                     currentTags.clear()
 
                     val pageNode = pages[node["page"].asStringOr("<INVALID_PAGE>")]
-                    section = BookSectionOther(pageNode, this, "section-${bookSections.size}")
+                    var section = BookSectionOther(pageNode, this, "section-${bookSections.size}")
                     tags.put(section.sectionTag, section)
+                    tags.put(section.sectionTagEnd, section)
                     pageNode["tags"].asList().forEach { tags.put(it.asStringOr("<INVALID_TAG>"), section) }
 
                     if (bookSections.lastIndex >= 0) {
@@ -113,6 +113,7 @@ class BookEntry(val book: Book, val path: String) {
             if (currentNode.asList().size != 0) {
                 var section: BookSection = BookSectionText(currentNode, this, "section-${bookSections.size}")
                 tags.put(section.sectionTag, section)
+                tags.put(section.sectionTagEnd, section)
                 currentTags.forEach { tags.put(it, section) }
 
                 if (bookSections.lastIndex >= 0) {
@@ -130,7 +131,7 @@ abstract class BookSection(val entry: BookEntry, val sectionTag: String) {
 
     var nextSection: BookSection? = null
     var prevSection: BookSection? = null
-
+    val sectionTagEnd = sectionTag + "-end"
     abstract fun create(tag: String) : GuiBook?
 
 }
@@ -138,7 +139,10 @@ abstract class BookSection(val entry: BookEntry, val sectionTag: String) {
 class BookSectionText(val node: DataNode, entry: BookEntry, sectionTag: String) : BookSection(entry, sectionTag) {
 
     override fun create(tag: String) : GuiBook? {
-        return PageText(this, node, tag)
+        var p = PageText(this, node, tag)
+        if(tag == this.sectionTagEnd)
+            p.jumpToPage(p.maxpPageJump())
+        return p
     }
 
 }
@@ -146,8 +150,12 @@ class BookSectionText(val node: DataNode, entry: BookEntry, sectionTag: String) 
 class BookSectionOther(val node: DataNode, entry: BookEntry, sectionTag: String) : BookSection(entry, sectionTag) {
     override fun create(tag: String) : GuiBook? {
         var type = node.get("type").asStringOr("NoType")
-        return BookRegistry.getType(type)?.invoke(this, node, tag)
-
+        var p = BookRegistry.getType(type)?.invoke(this, node, tag)
+        if(p == null)
+            return null
+        if(tag == this.sectionTagEnd)
+            p.jumpToPage(p.maxpPageJump())
+        return p
     }
 }
 

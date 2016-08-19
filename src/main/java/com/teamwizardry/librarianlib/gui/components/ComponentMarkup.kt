@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.gui.components
 import com.teamwizardry.librarianlib.gui.GuiComponent
 import com.teamwizardry.librarianlib.gui.HandlerList
 import com.teamwizardry.librarianlib.gui.Option
+import com.teamwizardry.librarianlib.math.BoundingBox2D
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.sprite.TextWrapper
 import com.teamwizardry.librarianlib.util.Color
@@ -37,9 +38,13 @@ open class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiC
                     }
                 }
             }
-            false
         }
     }
+
+    override val contentSize: BoundingBox2D
+        get() {
+            return BoundingBox2D(Vec2d.ZERO, size.setY(elements.last().maxY() - pos.y))
+        }
 
     fun create(text: String): MarkupElement {
         var x = 0
@@ -60,8 +65,8 @@ open class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiC
         GlStateManager.translate(0f, (-start).toFloat(), 0f)
         for (element in elements) {
             if (element.posY >= start && element.posY <= end ||
-                    element.posY + element.height() >= start && element.posY + element.height() <= end ||
-                    element.posY <= start && element.posY + element.height() >= end)
+                    element.maxY() >= start && element.maxY() <= end ||
+                    element.posY <= start && element.maxY() >= end)
                 element.render(element.isMouseOver(mousePos.xi, mousePos.yi))
         }
         GlStateManager.translate(0f, start.toFloat(), 0f)
@@ -116,6 +121,10 @@ open class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiC
 
         fun endY(): Int {
             return posY + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT * (lines.size - 1)
+        }
+
+        fun maxY(): Int {
+            return posY + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT * (lines.size)
         }
 
         fun height(): Int {

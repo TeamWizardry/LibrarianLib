@@ -23,12 +23,12 @@ import java.util.*
 open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
     protected var contents: ComponentVoid
     protected var tips: ComponentVoid
+    private var dontSaveToHistory = false
 
     private val backPageButton: GuiComponent<*>
     private val nextPageButton: GuiComponent<*>
     private val backArrowButton: GuiComponent<*>
     private val navBar: GuiComponent<*>
-
     init {
 
         // title bar
@@ -48,6 +48,8 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
         }
         reload.BUS.hook(ButtonMixin.ButtonClickEvent::class.java) { event ->
             BookRegistry.clearCache()
+            section.entry.book.history.clear()
+            dontSaveToHistory = true
         }
 
 
@@ -157,6 +159,7 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
 
     open fun jumpToPage(page: Int) {}
     open fun pageJump() : Int = 0
+    open fun maxpPageJump() : Int = 0
 
     open fun hasNextPage() : Boolean = false
     open fun hasPrevPage() : Boolean = false
@@ -177,12 +180,13 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
         if(hasPrevPage())
             goToPrevPage()
         else if(sec != null)
-            openPage(sec.entry.path, sec.sectionTag)
+            openPage(sec.entry.path, sec.sectionTagEnd)
     }
 
     override fun onGuiClosed() {
         super.onGuiClosed()
-        section.entry.book.pushHistory(section, pageJump()).gui = this
+        if(!dontSaveToHistory)
+            section.entry.book.pushHistory(section, pageJump()).gui = this
     }
 
     fun openPageRelative(path: String, tag: String) {
