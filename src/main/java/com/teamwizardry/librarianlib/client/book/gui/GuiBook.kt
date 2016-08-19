@@ -1,34 +1,34 @@
-package com.teamwizardry.librarianlib.client.book.gui
+package com.teamwizardry.librarianlib.book.gui
 
 import com.teamwizardry.librarianlib.LibrarianLib
-import com.teamwizardry.librarianlib.bloat.PathUtils
-import com.teamwizardry.librarianlib.client.book.util.BookRegistry
-import com.teamwizardry.librarianlib.client.book.util.BookSection
-import com.teamwizardry.librarianlib.client.gui.GuiBase
-import com.teamwizardry.librarianlib.client.gui.GuiComponent
-import com.teamwizardry.librarianlib.client.gui.components.ComponentSliderTray
-import com.teamwizardry.librarianlib.client.gui.components.ComponentSprite
-import com.teamwizardry.librarianlib.client.gui.components.ComponentText
-import com.teamwizardry.librarianlib.client.gui.components.ComponentText.TextAlignH
-import com.teamwizardry.librarianlib.client.gui.components.ComponentText.TextAlignV
-import com.teamwizardry.librarianlib.client.gui.components.ComponentVoid
-import com.teamwizardry.librarianlib.client.gui.mixin.ButtonMixin
-import com.teamwizardry.librarianlib.client.gui.mixin.ScissorMixin
-import com.teamwizardry.librarianlib.client.gui.template.SliderTemplate
-import com.teamwizardry.librarianlib.client.sprite.Texture
-import com.teamwizardry.librarianlib.client.util.Color
+import com.teamwizardry.librarianlib.book.util.BookRegistry
+import com.teamwizardry.librarianlib.book.util.BookSection
+import com.teamwizardry.librarianlib.gui.GuiBase
+import com.teamwizardry.librarianlib.gui.GuiComponent
+import com.teamwizardry.librarianlib.gui.components.ComponentSliderTray
+import com.teamwizardry.librarianlib.gui.components.ComponentSprite
+import com.teamwizardry.librarianlib.gui.components.ComponentText
+import com.teamwizardry.librarianlib.gui.components.ComponentText.TextAlignH
+import com.teamwizardry.librarianlib.gui.components.ComponentText.TextAlignV
+import com.teamwizardry.librarianlib.gui.components.ComponentVoid
+import com.teamwizardry.librarianlib.gui.mixin.ButtonMixin
+import com.teamwizardry.librarianlib.gui.mixin.ScissorMixin
+import com.teamwizardry.librarianlib.gui.template.SliderTemplate
+import com.teamwizardry.librarianlib.sprite.Texture
+import com.teamwizardry.librarianlib.util.Color
+import com.teamwizardry.librarianlib.util.PathUtils
 import net.minecraft.util.ResourceLocation
 import java.util.*
 
 open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
     protected var contents: ComponentVoid
     protected var tips: ComponentVoid
+    private var dontSaveToHistory = false
 
     private val backPageButton: GuiComponent<*>
     private val nextPageButton: GuiComponent<*>
     private val backArrowButton: GuiComponent<*>
     private val navBar: GuiComponent<*>
-
     init {
 
         // title bar
@@ -40,7 +40,7 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
 
         ButtonMixin(reload) { reload.color.setValue(Color.RED) }
         reload.BUS.hook(ButtonMixin.ButtonStateChangeEvent::class.java) { event ->
-            when (event.newState) {
+            when(event.newState) {
                 ButtonMixin.EnumButtonState.NORMAL -> reload.color.setValue(Color.RED)
                 ButtonMixin.EnumButtonState.HOVER -> reload.color.setValue(Color.GREEN)
                 ButtonMixin.EnumButtonState.DISABLED -> reload.color.setValue(Color.WHITE)
@@ -48,6 +48,8 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
         }
         reload.BUS.hook(ButtonMixin.ButtonClickEvent::class.java) { event ->
             BookRegistry.clearCache()
+            section.entry.book.history.clear()
+            dontSaveToHistory = true
         }
 
 
@@ -68,7 +70,7 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
             prevPage()
         }
         backPageButton.BUS.hook(ButtonMixin.ButtonStateChangeEvent::class.java) { event ->
-            when (event.newState) {
+            when(event.newState) {
                 ButtonMixin.EnumButtonState.NORMAL -> backPageButton.color.setValue(normalColor)
                 ButtonMixin.EnumButtonState.DISABLED -> backPageButton.color.setValue(disabledColor)
                 ButtonMixin.EnumButtonState.HOVER -> backPageButton.color.setValue(hoverColor)
@@ -85,7 +87,7 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
             nextPage()
         }
         nextPageButton.BUS.hook(ButtonMixin.ButtonStateChangeEvent::class.java) { event ->
-            when (event.newState) {
+            when(event.newState) {
                 ButtonMixin.EnumButtonState.NORMAL -> nextPageButton.color.setValue(normalColor)
                 ButtonMixin.EnumButtonState.DISABLED -> nextPageButton.color.setValue(disabledColor)
                 ButtonMixin.EnumButtonState.HOVER -> nextPageButton.color.setValue(hoverColor)
@@ -101,7 +103,7 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
             section.entry.book.back()
         }
         backArrowButton.BUS.hook(ButtonMixin.ButtonStateChangeEvent::class.java) { event ->
-            when (event.newState) {
+            when(event.newState) {
                 ButtonMixin.EnumButtonState.NORMAL -> backArrowButton.color.setValue(normalColor)
                 ButtonMixin.EnumButtonState.DISABLED -> backArrowButton.color.setValue(disabledColor)
                 ButtonMixin.EnumButtonState.HOVER -> backArrowButton.color.setValue(hoverColor)
@@ -140,6 +142,7 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
         this.contents = contents
 
 
+
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -157,11 +160,11 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
     open fun jumpToPage(page: Int) {
         //NO-OP
     }
+    open fun pageJump() : Int = 0
+    open fun maxpPageJump() : Int = 0
 
-    open fun pageJump(): Int = 0
-
-    open fun hasNextPage(): Boolean = false
-    open fun hasPrevPage(): Boolean = false
+    open fun hasNextPage() : Boolean = false
+    open fun hasPrevPage() : Boolean = false
 
     open fun goToNextPage() {
         //NO-OP
@@ -173,23 +176,24 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
 
     fun nextPage() {
         val sec = section.nextSection
-        if (hasNextPage())
+        if(hasNextPage())
             goToNextPage()
-        else if (sec != null)
+        else if(sec != null)
             openPage(sec.entry.path, sec.sectionTag)
     }
 
     fun prevPage() {
         val sec = section.prevSection
-        if (hasPrevPage())
+        if(hasPrevPage())
             goToPrevPage()
-        else if (sec != null)
-            openPage(sec.entry.path, sec.sectionTag)
+        else if(sec != null)
+            openPage(sec.entry.path, sec.sectionTagEnd)
     }
 
     override fun onGuiClosed() {
         super.onGuiClosed()
-        section.entry.book.pushHistory(section, pageJump()).gui = this
+        if(!dontSaveToHistory)
+            section.entry.book.pushHistory(section, pageJump()).gui = this
     }
 
     fun openPageRelative(path: String, tag: String) {

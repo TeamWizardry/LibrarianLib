@@ -11,7 +11,8 @@ import net.minecraft.client.gui.FontRenderer
 
 class PageText(section: BookSectionText, data: DataNode, tag: String) : GuiBook(section) {
 
-    internal var pageNum = -1
+    private var pageNum = 0
+    private var maxPage: Int
 
     init {
         val fr = Minecraft.getMinecraft().fontRendererObj
@@ -21,7 +22,7 @@ class PageText(section: BookSectionText, data: DataNode, tag: String) : GuiBook(
         markup.BUS.hook(GuiComponent.PreDrawEvent::class.java) { Minecraft.getMinecraft().fontRendererObj.unicodeFlag = true }
         fr.unicodeFlag = true
 
-        val list = data.get("text").asList()
+        val list = data.asList()
 
         var formats = ""
 
@@ -66,11 +67,39 @@ class PageText(section: BookSectionText, data: DataNode, tag: String) : GuiBook(
         fr.unicodeFlag = false
         markup.BUS.hook(GuiComponent.PostDrawEvent::class.java) { Minecraft.getMinecraft().fontRendererObj.unicodeFlag = false }
 
-        if (pageNum != -1) {
-            // the / font_height ) * font_height is to round it to the nearest font_height multiple (int division)
-            markup.start.setValue((pageNum * GuiBook.PAGE_HEIGHT + 1) / fr.FONT_HEIGHT * fr.FONT_HEIGHT)
-            markup.end.setValue(((pageNum + 1) * GuiBook.PAGE_HEIGHT + 1) / fr.FONT_HEIGHT * fr.FONT_HEIGHT)
-        }
+        markup.start.func { (pageNum * GuiBook.PAGE_HEIGHT + 1) / fr.FONT_HEIGHT * fr.FONT_HEIGHT }
+        markup.end.func { ((pageNum + 1) * GuiBook.PAGE_HEIGHT + 1) / fr.FONT_HEIGHT * fr.FONT_HEIGHT }
+
+        var h = markup.getLogicalSize()?.heightI() ?: 0
+        maxPage = Math.floor(h.toDouble() / GuiBook.PAGE_HEIGHT).toInt()
     }
 
+
+    override fun jumpToPage(page: Int) {
+        pageNum = page
+    }
+
+    override fun pageJump(): Int {
+        return pageNum
+    }
+
+    override fun maxpPageJump(): Int {
+        return maxPage
+    }
+
+    override fun hasNextPage(): Boolean {
+        return pageNum < maxPage
+    }
+
+    override fun hasPrevPage(): Boolean {
+        return pageNum > 0
+    }
+
+    override fun goToNextPage() {
+        pageNum++
+    }
+
+    override fun goToPrevPage() {
+        pageNum--
+    }
 }
