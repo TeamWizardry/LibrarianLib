@@ -23,7 +23,7 @@ import java.util.*
 abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX: Int, posY: Int, width: Int = 0, height: Int = 0) : IGuiDrawable {
 
     @JvmField
-    val BUS = EventBus();
+    val BUS = EventBus()
 
     class PreDrawEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val partialTicks: Float) : Event()
     class PostDrawEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val partialTicks: Float) : Event(true)
@@ -191,9 +191,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         if (component.parent != null)
             throw IllegalArgumentException("Component already had a parent!")
         if (BUS.fire(AddChildEvent(thiz(), component)).isCanceled())
-            return;
+            return
         if (component.BUS.fire(AddToParentEvent(component.thiz(), thiz())).isCanceled())
-            return;
+            return
         components.add(component)
         component.parent = this
         Collections.sort<GuiComponent<*>>(components, { a, b -> Integer.compare(a.zIndex, b.zIndex) })
@@ -214,9 +214,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         if (component !in components)
             return
         if (BUS.fire(RemoveChildEvent(thiz(), component)).isCanceled())
-            return;
+            return
         if (component.BUS.fire(RemoveFromParentEvent(component.thiz(), thiz())).isCanceled())
-            return;
+            return
         component.parent = null
         components.remove(component)
     }
@@ -334,9 +334,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
         drawComponent(mousePos, partialTicks)
 
-        if (!mouseOver) GlStateManager.color(1f, 0f, 1f);
+        if (!mouseOver) GlStateManager.color(1f, 0f, 1f)
         GlStateManager.disableTexture2D()
-        var tessellator = Tessellator.getInstance();
+        var tessellator = Tessellator.getInstance()
         var vb = tessellator.buffer
         vb.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
         vb.pos(pos.x, pos.y, 0.0).endVertex()
@@ -346,7 +346,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         vb.pos(pos.x, pos.y, 0.0).endVertex()
         tessellator.draw()
         GlStateManager.enableTexture2D()
-        GlStateManager.color(1f, 1f, 1f);
+        GlStateManager.color(1f, 1f, 1f)
 
         GlStateManager.pushMatrix()
         GlStateManager.pushAttrib()

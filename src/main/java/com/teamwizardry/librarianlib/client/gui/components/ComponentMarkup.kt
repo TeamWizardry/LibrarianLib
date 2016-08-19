@@ -1,14 +1,13 @@
-package com.teamwizardry.librarianlib.gui.components
+package com.teamwizardry.librarianlib.client.gui.components
 
-import com.teamwizardry.librarianlib.gui.GuiComponent
-import com.teamwizardry.librarianlib.gui.HandlerList
-import com.teamwizardry.librarianlib.gui.Option
-import com.teamwizardry.librarianlib.math.BoundingBox2D
-import com.teamwizardry.librarianlib.math.Vec2d
-import com.teamwizardry.librarianlib.sprite.TextWrapper
-import com.teamwizardry.librarianlib.util.Color
-import com.teamwizardry.librarianlib.util.event.EventBus
-import com.teamwizardry.librarianlib.util.event.EventCancelable
+import com.teamwizardry.librarianlib.client.gui.GuiComponent
+import com.teamwizardry.librarianlib.client.gui.Option
+import com.teamwizardry.librarianlib.client.sprite.TextWrapper
+import com.teamwizardry.librarianlib.client.util.Color
+import com.teamwizardry.librarianlib.common.util.event.EventBus
+import com.teamwizardry.librarianlib.common.util.event.EventCancelable
+import com.teamwizardry.librarianlib.common.util.math.BoundingBox2D
+import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import java.util.*
@@ -27,11 +26,11 @@ open class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiC
             event.offset = event.offset.sub(0.0, start.getValue(this).toDouble())
         }
         BUS.hook(MouseClickEvent::class.java) { event ->
-            if(!event.component.mouseOver)
+            if (!event.component.mouseOver)
                 return@hook
             for (element in elements) {
                 if (element.isMouseOver(pos.xi, pos.yi)) {
-                    if(element.BUS.hasHooks(ElementClickEvent::class.java) &&
+                    if (element.BUS.hasHooks(ElementClickEvent::class.java) &&
                             !element.BUS.fire(ElementClickEvent(element)).isCanceled()) {
                         event.cancel()
                         break

@@ -11,7 +11,7 @@ abstract class EventCancelable(reversed: Boolean = false) : Event(reversed) {
     }
 
     fun cancel() {
-        canceled = true;
+        canceled = true
     }
 
 }

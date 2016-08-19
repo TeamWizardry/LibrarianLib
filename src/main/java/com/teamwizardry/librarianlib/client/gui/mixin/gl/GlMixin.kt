@@ -39,7 +39,7 @@ object GlMixin {
         var dat = component.getData(GlMixinData::class.java, "mixin")
 
         if (dat == null) {
-            dat = GlMixinData();
+            dat = GlMixinData()
             component.setData(GlMixinData::class.java, "mixin", dat)
         }
         return dat

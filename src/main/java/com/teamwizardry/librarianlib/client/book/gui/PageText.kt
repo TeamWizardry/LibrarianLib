@@ -4,8 +4,8 @@ import com.teamwizardry.librarianlib.client.book.data.DataNode
 import com.teamwizardry.librarianlib.client.book.util.BookSectionText
 import com.teamwizardry.librarianlib.client.book.util.LinkParser
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
-import com.teamwizardry.librarianlib.client.gui.components.ComponentMarkup
 import com.teamwizardry.librarianlib.client.util.Color
+import com.teamwizardry.librarianlib.client.gui.components.ComponentMarkup
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 
@@ -17,7 +17,7 @@ class PageText(section: BookSectionText, data: DataNode, tag: String) : GuiBook(
     init {
         val fr = Minecraft.getMinecraft().fontRendererObj
 
-        val markup = ComponentMarkup(0, 0, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT)
+        val markup = ComponentMarkup(0, 0, PAGE_WIDTH, PAGE_HEIGHT)
         contents.add(markup)
         markup.BUS.hook(GuiComponent.PreDrawEvent::class.java) { Minecraft.getMinecraft().fontRendererObj.unicodeFlag = true }
         fr.unicodeFlag = true
@@ -70,7 +70,7 @@ class PageText(section: BookSectionText, data: DataNode, tag: String) : GuiBook(
         markup.start.func { (pageNum * GuiBook.PAGE_HEIGHT + 1) / fr.FONT_HEIGHT * fr.FONT_HEIGHT }
         markup.end.func { ((pageNum + 1) * GuiBook.PAGE_HEIGHT + 1) / fr.FONT_HEIGHT * fr.FONT_HEIGHT }
 
-        var h = markup.getLogicalSize()?.heightI() ?: 0
+        val h = markup.getLogicalSize()?.heightI() ?: 0
         maxPage = Math.floor(h.toDouble() / GuiBook.PAGE_HEIGHT).toInt()
     }
 

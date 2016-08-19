@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.client.core
 
 import com.teamwizardry.librarianlib.LibrarianLib
-import com.teamwizardry.librarianlib.client.book.Book
+import com.teamwizardry.librarianlib.book.Book
 import com.teamwizardry.librarianlib.client.fx.shader.LibShaders
 import com.teamwizardry.librarianlib.client.fx.shader.ShaderHelper
 import com.teamwizardry.librarianlib.client.sprite.SpritesMetadataSection

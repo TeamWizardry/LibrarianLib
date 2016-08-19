@@ -1,12 +1,7 @@
 package com.teamwizardry.librarianlib.common.util
 
-import com.google.common.base.Predicate
-import com.google.common.base.Predicates
 import net.minecraft.entity.Entity
-import net.minecraft.entity.EntityLivingBase
-import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.util.EntitySelectors
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
