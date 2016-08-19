@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.client.gui
 
 import com.teamwizardry.librarianlib.LibrarianLog
+import com.teamwizardry.librarianlib.client.core.ClientTickHandler
 import com.teamwizardry.librarianlib.common.util.math.BoundingBox2D
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import com.teamwizardry.librarianlib.common.util.event.Event
@@ -96,7 +97,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
 
     var animationTicks = 0
-    private var guiTicksLastFrame = TickCounter.ticks
+    private var guiTicksLastFrame = ClientTickHandler.ticks
 
     var enabled = true
         get() {
@@ -304,8 +305,8 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         if (!isVisible) return
 
         if (isAnimating) {
-            animationTicks += TickCounter.ticks - guiTicksLastFrame
-            guiTicksLastFrame = TickCounter.ticks
+            animationTicks += ClientTickHandler.ticks - guiTicksLastFrame
+            guiTicksLastFrame = ClientTickHandler.ticks
         }
 
         components.removeAll { e ->

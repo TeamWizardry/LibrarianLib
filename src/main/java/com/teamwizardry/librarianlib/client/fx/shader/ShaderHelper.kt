@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.client.fx.shader
 
-import com.teamwizardry.librarianlib.common.core.Const
+import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.core.Config
 import net.minecraft.client.Minecraft
@@ -23,7 +23,7 @@ import java.util.*
 class ShaderHelper private constructor() : IResourceManagerReloadListener {
 
     override fun onResourceManagerReload(resourceManager: IResourceManager) {
-        if (Const.isDev)
+        if (LibrarianLib.DEV_ENVIRONMENT)
             initShaders()
     }
 
@@ -53,7 +53,7 @@ class ShaderHelper private constructor() : IResourceManagerReloadListener {
                 hasLoaded = true
 
                 MinecraftForge.EVENT_BUS.register(INSTANCE)
-                if (Const.isDev && Minecraft.getMinecraft().resourceManager is IReloadableResourceManager)
+                if (LibrarianLib.DEV_ENVIRONMENT && Minecraft.getMinecraft().resourceManager is IReloadableResourceManager)
                     (Minecraft.getMinecraft().resourceManager as IReloadableResourceManager).registerReloadListener(INSTANCE)
             }
         }

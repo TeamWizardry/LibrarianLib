@@ -1,12 +1,28 @@
-package com.teamwizardry.librarianlib.client.gui
+package com.teamwizardry.librarianlib.client.core
 
 import net.minecraft.client.Minecraft
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase
 
-class TickCounter {
+object ClientTickHandler {
+
+    init {
+        MinecraftForge.EVENT_BUS.register(this)
+    }
+
+    var ticks = 0
+        private set
+    var ticksInGame = 0
+        private set
+    var partialTicks = 0f
+        private set
+    var delta = 0f
+        private set
+    var total = 0f
+        private set
 
     private fun calcDelta() {
         val oldTotal = total
@@ -34,15 +50,6 @@ class TickCounter {
 
             calcDelta()
         }
-    }
-
-    companion object {
-
-        var ticks = 0
-        var ticksInGame = 0
-        var partialTicks = 0f
-        var delta = 0f
-        var total = 0f
     }
 
 }

@@ -1,8 +1,5 @@
 package com.teamwizardry.librarianlib.client.core
 
-import com.teamwizardry.librarianlib.common.core.Const
-import com.teamwizardry.librarianlib.common.core.ExampleBookCommand
-import com.teamwizardry.librarianlib.common.core.LibCommonProxy
 import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.client.book.Book
 import com.teamwizardry.librarianlib.client.fx.shader.LibShaders
@@ -11,13 +8,17 @@ import com.teamwizardry.librarianlib.client.sprite.SpritesMetadataSection
 import com.teamwizardry.librarianlib.client.sprite.SpritesMetadataSectionSerializer
 import com.teamwizardry.librarianlib.client.sprite.Texture
 import com.teamwizardry.librarianlib.client.util.ScissorUtil
+import com.teamwizardry.librarianlib.common.core.ExampleBookCommand
+import com.teamwizardry.librarianlib.common.core.LibCommonProxy
 import net.minecraft.client.Minecraft
+import net.minecraft.client.resources.I18n
 import net.minecraft.client.resources.IReloadableResourceManager
 import net.minecraft.client.resources.IResourceManager
 import net.minecraft.client.resources.IResourceManagerReloadListener
 import net.minecraft.client.resources.data.MetadataSerializer
 import net.minecraftforge.client.ClientCommandHandler
-import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.event.FMLInitializationEvent
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.relauncher.ReflectionHelper
 import java.lang.ref.WeakReference
 import java.util.*
@@ -27,30 +28,40 @@ import java.util.*
  */
 class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
-    override fun preInit() {
-        super.preInit()
-        LibrarianLib.guide = Book(LibrarianLib.MODID)
+    private lateinit var guide: Book
 
-        if (Const.isDev)
+    override fun pre(e: FMLPreInitializationEvent) {
+        super.pre(e)
+
+        guide = Book(LibrarianLib.MODID)
+
+        if (LibrarianLib.DEV_ENVIRONMENT)
             ClientCommandHandler.instance.registerCommand(ExampleBookCommand())
 
-        MinecraftForge.EVENT_BUS.register(this)
-        MinecraftForge.EVENT_BUS.register(ScissorUtil.INSTANCE)
-        LibShaders // load the class
+        ScissorUtil
+        LibShaders
         ShaderHelper.initShaders()
-        try {
-            val s = ReflectionHelper.findField(Minecraft::class.java, "metadataSerializer_", "field_110452_an").get(Minecraft.getMinecraft()) as MetadataSerializer
-            s.registerMetadataSectionType(SpritesMetadataSectionSerializer(), SpritesMetadataSection::class.java)
-        } catch (e: IllegalArgumentException) {
-            e.printStackTrace()
-        } catch (e: IllegalAccessException) {
-            e.printStackTrace()
-        }
 
-        if (Minecraft.getMinecraft().resourceManager is IReloadableResourceManager) {
+        ModelHandler.preInit()
+
+        val s = ReflectionHelper.findField(Minecraft::class.java, "metadataSerializer_", "field_110452_an").get(Minecraft.getMinecraft()) as MetadataSerializer //todo methodhandle
+        s.registerMetadataSectionType(SpritesMetadataSectionSerializer(), SpritesMetadataSection::class.java)
+
+        if (Minecraft.getMinecraft().resourceManager is IReloadableResourceManager)
             (Minecraft.getMinecraft().resourceManager as IReloadableResourceManager).registerReloadListener(this)
-        }
     }
+
+    override fun init(e: FMLInitializationEvent) {
+        super.init(e)
+        ModelHandler.init()
+    }
+
+    override fun translate(s: String, vararg format: Any?): String {
+        return I18n.format(s, *format)
+    }
+
+    override val bookInstance: Book?
+        get() = guide
 
     override fun onResourceManagerReload(resourceManager: IResourceManager) {
         val newList = ArrayList<WeakReference<Texture>>()

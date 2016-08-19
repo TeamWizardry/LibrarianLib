@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.client.gui.components
 
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
-import com.teamwizardry.librarianlib.client.gui.TickCounter
+import com.teamwizardry.librarianlib.client.core.ClientTickHandler
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 
 class ComponentSliderTray(posX: Int, posY: Int, internal var offsetX: Int, internal var offsetY: Int) : GuiComponent<ComponentSliderTray>(posX, posY) {
@@ -16,20 +16,20 @@ class ComponentSliderTray(posX: Int, posY: Int, internal var offsetX: Int, inter
 
     init {
         calculateOwnHover = false
-        tickStart = TickCounter.ticks
+        tickStart = ClientTickHandler.ticks
         this.currentOffsetX = pos.x.toFloat()
         rootPos = pos
     }
 
     fun close() {
-        tickStart = TickCounter.ticks
+        tickStart = ClientTickHandler.ticks
         animatingIn = false
         animatingOut = true
     }
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
         // TODO: Respect partialTicks
-        val t = (TickCounter.ticks - tickStart).toFloat() / lifetime.toFloat()
+        val t = (ClientTickHandler.ticks - tickStart).toFloat() / lifetime.toFloat()
         if (t > 1) {
             if (animatingIn)
                 animatingIn = false

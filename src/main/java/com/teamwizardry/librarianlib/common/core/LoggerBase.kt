@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.common.core
 
-import com.teamwizardry.librarianlib.common.core.Const
+import com.teamwizardry.librarianlib.LibrarianLib
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.text.Style
 import net.minecraft.util.text.TextComponentString
@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 
 abstract class LoggerBase protected constructor(name: String) {
-    val debugMode = Const.isDev
+    val debugMode = LibrarianLib.DEV_ENVIRONMENT
     private val logger: Logger
 
     init {

@@ -23,8 +23,7 @@ class ExampleBookCommand : CommandBase() {
     // Older versions (<1.9) had instead of execute method processCommand method (without MinecraftServer parameter)
     @Throws(WrongUsageException::class)
     override fun execute(server: MinecraftServer, sender: ICommandSender, args: Array<String>) {
-
-        server.addScheduledTask { LibrarianLib.guide.display() }
+        server.addScheduledTask { LibrarianLib.PROXY.bookInstance?.display() }
 
     }
 
