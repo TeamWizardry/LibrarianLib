@@ -34,7 +34,7 @@ class LibrarianLib {
         const val VERSION = "1.0"
         const val CLIENT = "com.teamwizardry.librarianlib.client.core.LibClientProxy"
         const val SERVER = "com.teamwizardry.librarianlib.common.core.LibCommonProxy"
-        const val DEPENDENCIES = "after:*"
+        const val DEPENDENCIES = ""
 
         @JvmStatic
         @SidedProxy(clientSide = CLIENT, serverSide = SERVER)

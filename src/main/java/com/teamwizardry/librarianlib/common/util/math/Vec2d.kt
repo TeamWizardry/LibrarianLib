@@ -123,21 +123,21 @@ class Vec2d(var x: Double, var y: Double) {
 
     companion object {
 
-        @JvmStatic val ZERO = Vec2d(0.0, 0.0)
-        @JvmStatic val INFINITY = Vec2d(Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY)
-        @JvmStatic val NEG_INFINITY = Vec2d(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY)
+        @JvmField val ZERO = Vec2d(0.0, 0.0)
+        @JvmField val INFINITY = Vec2d(Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY)
+        @JvmField val NEG_INFINITY = Vec2d(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY)
 
-        @JvmStatic val ONE = Vec2d(1.0, 1.0)
-        @JvmStatic val X = Vec2d(1.0, 0.0)
-        @JvmStatic val Y = Vec2d(0.0, 1.0)
-        @JvmStatic val X_INFINITY = Vec2d(Double.POSITIVE_INFINITY, 0.0)
-        @JvmStatic val Y_INFINITY = Vec2d(0.0, Double.POSITIVE_INFINITY)
+        @JvmField val ONE = Vec2d(1.0, 1.0)
+        @JvmField val X = Vec2d(1.0, 0.0)
+        @JvmField val Y = Vec2d(0.0, 1.0)
+        @JvmField val X_INFINITY = Vec2d(Double.POSITIVE_INFINITY, 0.0)
+        @JvmField val Y_INFINITY = Vec2d(0.0, Double.POSITIVE_INFINITY)
 
-        @JvmStatic val NEG_ONE = Vec2d(-1.0, -1.0)
-        @JvmStatic val NEG_X = Vec2d(-1.0, 0.0)
-        @JvmStatic val NEG_Y = Vec2d(0.0, -1.0)
-        @JvmStatic val NEG_X_INFINITY = Vec2d(Double.NEGATIVE_INFINITY, 0.0)
-        @JvmStatic val NEG_Y_INFINITY = Vec2d(0.0, Double.NEGATIVE_INFINITY)
+        @JvmField val NEG_ONE = Vec2d(-1.0, -1.0)
+        @JvmField val NEG_X = Vec2d(-1.0, 0.0)
+        @JvmField val NEG_Y = Vec2d(0.0, -1.0)
+        @JvmField val NEG_X_INFINITY = Vec2d(Double.NEGATIVE_INFINITY, 0.0)
+        @JvmField val NEG_Y_INFINITY = Vec2d(0.0, Double.NEGATIVE_INFINITY)
 
         @JvmStatic
         fun min(a: Vec2d, b: Vec2d): Vec2d {

@@ -5,7 +5,7 @@ import net.minecraft.util.math.Vec3d
 class PointMass3D(pos: Vec3d, var mass: Float) {
     var pos: Vec3d = pos
     var prevPos: Vec3d = pos
-    lateinit var origPos: Vec3d
+    var origPos: Vec3d = pos
     var friction: Vec3d? = null
     var pin = false
 
