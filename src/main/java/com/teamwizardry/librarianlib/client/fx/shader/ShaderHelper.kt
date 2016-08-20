@@ -10,6 +10,7 @@ import net.minecraft.client.resources.IResourceManager
 import net.minecraft.client.resources.IResourceManagerReloadListener
 import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.opengl.*
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -19,6 +20,7 @@ import java.util.*
  * Credit to Vazkii (https://github.com/Vazkii/Botania/blob/master/src/main/java/vazkii/botania/client/core/helper/ShaderHelper.java)
  */
 
+@SideOnly(Side.CLIENT)
 object ShaderHelper : IResourceManagerReloadListener {
 
     override fun onResourceManagerReload(resourceManager: IResourceManager) {

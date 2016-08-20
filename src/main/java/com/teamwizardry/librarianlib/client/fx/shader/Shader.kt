@@ -4,9 +4,12 @@ import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.client.fx.shader.uniforms.FloatTypes
 import com.teamwizardry.librarianlib.client.fx.shader.uniforms.Uniform
 import com.teamwizardry.librarianlib.client.fx.shader.uniforms.UniformType
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 
 import org.lwjgl.opengl.GL20
 
+@SideOnly(Side.CLIENT)
 open class Shader(val vert: String?, val frag: String?) {
 
     var time: FloatTypes.FloatUniform? = null

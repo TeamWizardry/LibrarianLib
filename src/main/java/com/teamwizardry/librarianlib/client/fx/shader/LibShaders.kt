@@ -1,7 +1,10 @@
 package com.teamwizardry.librarianlib.client.fx.shader
 
 import com.teamwizardry.librarianlib.client.fx.shader.uniforms.FloatTypes
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 
+@SideOnly(Side.CLIENT)
 object LibShaders {
     @JvmField
     val HUE = HueShader(null, "/assets/librarianlib/shaders/hue.frag")

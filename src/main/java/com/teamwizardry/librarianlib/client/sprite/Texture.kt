@@ -2,6 +2,8 @@ package com.teamwizardry.librarianlib.client.sprite
 
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import java.io.IOException
 import java.lang.ref.WeakReference
 import java.util.*
@@ -10,6 +12,7 @@ import java.util.*
  * This class represents a texture and it's size. It is mostly used to create [Sprite]
  * objects
  */
+@SideOnly(Side.CLIENT)
 class Texture(
         /**
          * The location of the texture

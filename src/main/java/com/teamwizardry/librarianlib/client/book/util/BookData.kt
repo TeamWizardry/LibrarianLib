@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.client.book.util
 
-import com.teamwizardry.librarianlib.book.Book
+import com.teamwizardry.librarianlib.client.book.Book
 import com.teamwizardry.librarianlib.client.book.data.DataNode
 import com.teamwizardry.librarianlib.client.book.gui.*
 import com.teamwizardry.librarianlib.client.book.util.PageDataManager

@@ -2,7 +2,7 @@
 
 package com.teamwizardry.librarianlib.common.core
 
-import com.teamwizardry.librarianlib.book.Book
+import com.teamwizardry.librarianlib.client.book.Book
 import net.minecraft.util.text.translation.I18n
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent

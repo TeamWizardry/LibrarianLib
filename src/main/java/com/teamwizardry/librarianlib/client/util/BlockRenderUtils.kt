@@ -8,8 +8,11 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.world.IBlockAccess
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import java.nio.ByteOrder
 
+@SideOnly(Side.CLIENT)
 object BlockRenderUtils {
     @JvmStatic
     fun transferVB(from: VertexBuffer, to: VertexBuffer) {

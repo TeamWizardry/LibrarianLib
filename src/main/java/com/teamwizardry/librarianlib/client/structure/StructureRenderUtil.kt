@@ -6,9 +6,12 @@ import net.minecraft.client.renderer.VertexBuffer
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.BlockRenderLayer
 import net.minecraft.util.EnumBlockRenderType
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
+@SideOnly(Side.CLIENT)
 object StructureRenderUtil {
 
     private val blockBuf = VertexBuffer(50000)

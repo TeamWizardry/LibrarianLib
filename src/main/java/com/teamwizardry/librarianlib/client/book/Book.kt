@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.book
+package com.teamwizardry.librarianlib.client.book
 
 import com.teamwizardry.librarianlib.client.book.gui.GuiBook
 import com.teamwizardry.librarianlib.client.book.util.BookRegistry

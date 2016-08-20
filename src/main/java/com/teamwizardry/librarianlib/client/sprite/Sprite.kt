@@ -1,11 +1,14 @@
 package com.teamwizardry.librarianlib.client.sprite
 
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 
 /**
  * This class represents a section of a [Texture]
  */
-class Sprite {
+@SideOnly(Side.CLIENT)
+open class Sprite {
 
     /**
      * The [Texture] that this sprite is a part of
