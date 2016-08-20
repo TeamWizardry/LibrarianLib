@@ -40,24 +40,21 @@ class PageSubindex(section: BookSectionOther, node: DataNode, tag: String) : Gui
         parent.add(comp)
 
         var icon: GuiComponent<*>? = null
-        if (node.get("item").exists()) {
+        if (node["item"].exists()) {
             val slot = ComponentSlot(0, 0)
-            var stack = DataNodeParsers.parseStack(node.get("item"))
+            var stack = DataNodeParsers.parseStack(node["item"])
 
-            var amountText = ""
-            if (stack == null || stack.item == null) {
-                stack = ItemStack(Blocks.STONE) //todo
-                amountText = if (stack == null) "~s~" else "~i~"
-            }
-            val _amountText = amountText
-            slot.quantityText.add({ c, text -> _amountText })
+            val amountText = if (stack == null) "~s~" else "~i~"
+            if (stack == null || stack.item == null)
+                stack = ItemStack(Blocks.STONE)
+            slot.quantityText.add({ c, text -> amountText })
             slot.stack.setValue(stack)
 
             slot.tooltip.setValue(false)
             icon = slot
         }
-        if (node.get("icon").exists()) {
-            val sprite = ComponentSprite(DataNodeParsers.parseSprite(node.get("icon")), 0, 0, 16, 16)
+        if (node["icon"].exists()) {
+            val sprite = ComponentSprite(DataNodeParsers.parseSprite(node["icon"]), 0, 0, 16, 16)
             icon = sprite
         }
 
@@ -68,7 +65,7 @@ class PageSubindex(section: BookSectionOther, node: DataNode, tag: String) : Gui
 
         if (node.get("tip").exists()) {
             comp.BUS.hook(GuiComponent.MouseInEvent::class.java) { event ->
-                addTextSlider(comp, comp.pos.yi, node.get("tip").asStringOr("<NULL>"))
+                addTextSlider(comp, comp.pos.yi, node["tip"].asStringOr("<NULL>"))
             }
             comp.BUS.hook(GuiComponent.MouseOutEvent::class.java) { event ->
                 removeSlider(comp)
@@ -76,14 +73,14 @@ class PageSubindex(section: BookSectionOther, node: DataNode, tag: String) : Gui
         }
 
         val text = ComponentText(18, 6)
-        text.text.setValue(node.get("text").asStringOr("default"))
+        text.text.setValue(node["text"].asStringOr("default"))
         comp.add(text)
         ButtonMixin(comp) {}
-        comp.BUS.hook(ButtonMixin.ButtonStateChangeEvent::class.java) { event ->
-            when (event.newState) {
-                ButtonMixin.EnumButtonState.NORMAL -> text.text.setValue(node.get("text").asStringOr("default"))
-                ButtonMixin.EnumButtonState.HOVER -> text.text.setValue("§n" + node["text"].asStringOr("default"))
-            }
+        comp.BUS.hook(ButtonMixin.ButtonStateChangeEvent::class.java) {
+            if (it.newState == ButtonMixin.EnumButtonState.NORMAL)
+                text.text.setValue(node["text"].asStringOr("default"))
+            else if (it.newState == ButtonMixin.EnumButtonState.HOVER)
+                text.text.setValue("§n" + node["text"].asStringOr("default"))
         }
         comp.BUS.hook(ButtonMixin.ButtonClickEvent::class.java) {
             val link = LinkParser.parse(node["link"].asStringOr("/"))

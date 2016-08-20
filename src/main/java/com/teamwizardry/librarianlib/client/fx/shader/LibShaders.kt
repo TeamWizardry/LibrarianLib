@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.client.fx.shader
 import com.teamwizardry.librarianlib.client.fx.shader.uniforms.FloatTypes
 
 object LibShaders {
-    @JvmStatic
+    @JvmField
     val HUE = HueShader(null, "/assets/librarianlib/shaders/hue.frag")
 
     init {
