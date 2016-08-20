@@ -5,50 +5,47 @@ import java.util.*
 
 object PathUtils {
 
+    val SEP = "/"
+    val HERE = "."
+    val UP = ".."
+
     fun resolve(path: String): String {
 
         val parts = ArrayList<String>()
-        parts.addAll(Arrays.asList<String>(*path.split("/".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()))
+        parts.addAll(Arrays.asList<String>(*path.split(SEP).dropLastWhile({ it.isEmpty() }).toTypedArray()))
 
         var i = 0
         while (i < parts.size) {
-            if ("" == parts[i] || "." == parts[i]) {
+            if ("" == parts[i] || HERE == parts[i])
                 parts.removeAt(i)
-                i--
-                i++
-                continue
-            }
-            if (".." == parts[i]) {
+            else if (UP == parts[i]) {
                 parts.removeAt(i)
-                i--
                 if (i >= 0) {
-                    parts.removeAt(i)
+                    parts.removeAt(i + 1)
                     i--
                 }
-                i++
-                continue
             }
             i++
         }
 
-        return "/" + parts.joinToString("/")
+        return SEP + parts.joinToString(SEP)
     }
 
     fun resolve(parent: String, relative: String): String {
-        if (relative.startsWith("/"))
+        if (relative.startsWith(SEP))
             return resolve(relative)
-        return resolve(parent + "/" + relative)
+        return resolve(parent + SEP + relative)
     }
 
     fun parent(path: String): String {
-        var path = path
-        if (path.endsWith("/")) {
-            path = path.substring(0, path.length - 1)
+        var newPath = path
+        if (newPath.endsWith(SEP)) {
+            newPath = newPath.substring(0, newPath.length - 1)
         }
-        var index = path.lastIndexOf("/")
+        var index = newPath.lastIndexOf(SEP)
         if (index == -1)
             index = 0
-        return path.substring(0, index)
+        return newPath.substring(0, index)
     }
 
 }

@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.client.gui.components
 
-import com.teamwizardry.librarianlib.bloat.MathUtil
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.HandlerList
 import com.teamwizardry.librarianlib.client.gui.mixin.DragMixin
@@ -15,9 +14,9 @@ class ComponentSlider(posX: Int, posY: Int, width: Int, height: Int, percentage:
     var percentage: Double = 0.toDouble()
         set(percentage) {
             var newPercent = percentage
-            newPercent = MathUtil.clamp(newPercent, 0.0, 1.0)
+            newPercent = Math.min(1.0, Math.max(newPercent, 0.0))
             if (increments > 0)
-                newPercent = MathUtil.round(newPercent, 1.0 / increments)
+                newPercent = Math.round(newPercent * increments).toDouble() / increments
             handlePos = size.mul(newPercent)
             field = newPercent
             percentageChange.fireAll { h -> h.accept(this.percentage) }

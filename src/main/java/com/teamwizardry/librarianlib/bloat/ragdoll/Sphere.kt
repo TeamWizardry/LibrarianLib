@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.bloat
+package com.teamwizardry.librarianlib.bloat.ragdoll
 
 import net.minecraft.util.math.Vec3d
 

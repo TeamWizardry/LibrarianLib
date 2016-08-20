@@ -2,9 +2,7 @@ package com.teamwizardry.librarianlib.bloat.ragdoll.cloth
 
 import com.google.common.annotations.VisibleForTesting
 import com.google.common.collect.ImmutableList
-import com.teamwizardry.librarianlib.bloat.Geometry
-import com.teamwizardry.librarianlib.bloat.MathUtil
-import com.teamwizardry.librarianlib.bloat.Sphere
+import com.teamwizardry.librarianlib.bloat.ragdoll.Sphere
 import com.teamwizardry.librarianlib.common.util.math.Matrix4
 import com.teamwizardry.librarianlib.common.util.times
 import net.minecraft.entity.Entity
@@ -176,6 +174,14 @@ class Cloth(var top: Array<Vec3d>, var height: Int, var size: Vec3d) {
         }
     }
 
+    private fun getNormal(a: Vec3d, b: Vec3d, c: Vec3d): Vec3d {
+        val edge1 = a.subtract(b)
+        val edge2 = b.subtract(c)
+        val cross = edge1.crossProduct(edge2)
+        val normal = cross.normalize()
+        return normal
+    }
+
     private fun applyMotionToPoint(x: Int, y: Int, point: PointMass3D) {
 
         if (point.pin)
@@ -190,26 +196,26 @@ class Cloth(var top: Array<Vec3d>, var height: Int, var size: Vec3d) {
         var normal = Vec3d.ZERO
 
         if (x > 0 && y > 0) {
-            normal = normal.add(Geometry.getNormal(point.origPos, masses[x][y - 1].origPos, masses[x - 1][y].origPos))
+            normal = normal.add(getNormal(point.origPos, masses[x][y - 1].origPos, masses[x - 1][y].origPos))
 
         }
 
         if (x > 0 && y + 1 < masses[x].size) {
-            normal = normal.add(Geometry.getNormal(point.origPos, masses[x][y + 1].origPos, masses[x - 1][y].origPos))
+            normal = normal.add(getNormal(point.origPos, masses[x][y + 1].origPos, masses[x - 1][y].origPos))
         }
 
         if (x + 1 < masses.size && y + 1 < masses[x].size) {
-            normal = normal.add(Geometry.getNormal(point.origPos, masses[x][y + 1].origPos, masses[x + 1][y].origPos))
+            normal = normal.add(getNormal(point.origPos, masses[x][y + 1].origPos, masses[x + 1][y].origPos))
         }
 
         if (x + 1 < masses.size && y > 0) {
-            normal = normal.add(Geometry.getNormal(point.origPos, masses[x][y - 1].origPos, masses[x + 1][y].origPos))
+            normal = normal.add(getNormal(point.origPos, masses[x][y - 1].origPos, masses[x + 1][y].origPos))
         }
 
         normal = normal.normalize()
         val windNormal = wind.normalize()
 
-        val angle = Math.acos(MathUtil.clamp(windNormal.dotProduct(normal), -1.0, 1.0))
+        val angle = Math.acos(Math.min(1.0, Math.max(windNormal.dotProduct(normal), -1.0)))
         if (angle > Math.PI / 2)
             normal = normal.scale(-1.0)
 
