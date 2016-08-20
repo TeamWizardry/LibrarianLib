@@ -11,6 +11,8 @@ import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import java.util.*
@@ -20,6 +22,7 @@ import java.util.*
 
  * @param  The class of this component. Used for setup()
  */
+@SideOnly(Side.CLIENT)
 abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX: Int, posY: Int, width: Int = 0, height: Int = 0) : IGuiDrawable {
 
     @JvmField
@@ -118,9 +121,6 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     var isVisible = true
 
     var focused = false
-        get() {
-            return field
-        }
         set(value) {
             if (field != value) {
                 if (value)
@@ -336,8 +336,8 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
         if (!mouseOver) GlStateManager.color(1f, 0f, 1f)
         GlStateManager.disableTexture2D()
-        var tessellator = Tessellator.getInstance()
-        var vb = tessellator.buffer
+        val tessellator = Tessellator.getInstance()
+        val vb = tessellator.buffer
         vb.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
         vb.pos(pos.x, pos.y, 0.0).endVertex()
         vb.pos(pos.x + size.x, pos.y, 0.0).endVertex()
