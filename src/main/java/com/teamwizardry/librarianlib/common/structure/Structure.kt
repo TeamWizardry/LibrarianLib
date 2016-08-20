@@ -228,6 +228,7 @@ open class Structure(loc: ResourceLocation) {
 
     companion object {
 
+        @JvmField
         val IGNORE: MutableList<IProperty<*>> = ArrayList(Arrays.asList(
                 BlockSlab.HALF,
                 BlockStairs.SHAPE,
@@ -240,6 +241,7 @@ open class Structure(loc: ResourceLocation) {
          * For properties that shouldn't be ignored, but have several equivalent values
          * Property -> list of interchangeable values
          */
+        @JvmField
         val EQUIVALENTS: Multimap<IProperty<*>, List<*>> = HashMultimap.create<IProperty<*>, List<*>>()
 
         init {

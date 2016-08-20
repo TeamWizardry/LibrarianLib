@@ -14,8 +14,8 @@ import com.teamwizardry.librarianlib.client.gui.mixin.ButtonMixin
 import com.teamwizardry.librarianlib.client.gui.mixin.ScissorMixin
 import com.teamwizardry.librarianlib.client.gui.template.SliderTemplate
 import com.teamwizardry.librarianlib.client.sprite.Texture
-import com.teamwizardry.librarianlib.client.util.Color
 import net.minecraft.util.ResourceLocation
+import java.awt.Color
 import java.util.*
 
 open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
@@ -55,9 +55,9 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
         // nav
         navBar = ComponentVoid((BACKGROUND_PAGE.width - TITLE_BAR.width) / 2, 186, TITLE_BAR.width, TITLE_BAR.height)
 
-        val disabledColor = Color.rgb(0xB0B0B0)
-        val hoverColor = Color.rgb(0x0DDED3)
-        val normalColor = Color.rgb(0x0DBFA2)
+        val disabledColor = Color(0xB0B0B0)
+        val hoverColor = Color(0x0DDED3)
+        val normalColor = Color(0x0DBFA2)
 
         navBar.add(ComponentSprite(TITLE_BAR, 0, 0))
 

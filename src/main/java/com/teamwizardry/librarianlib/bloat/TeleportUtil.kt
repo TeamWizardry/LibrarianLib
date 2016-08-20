@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.common.util
+package com.teamwizardry.librarianlib.bloat
 
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer

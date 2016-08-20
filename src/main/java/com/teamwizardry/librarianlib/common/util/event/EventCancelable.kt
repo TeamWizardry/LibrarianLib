@@ -6,9 +6,7 @@ package com.teamwizardry.librarianlib.common.util.event
 abstract class EventCancelable(reversed: Boolean = false) : Event(reversed) {
     private var canceled: Boolean = false
 
-    fun isCanceled(): Boolean {
-        return canceled
-    }
+    fun isCanceled() = canceled
 
     fun cancel() {
         canceled = true

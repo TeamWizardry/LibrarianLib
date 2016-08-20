@@ -30,7 +30,7 @@ open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg 
     override fun setUnlocalizedName(name: String): Block {
         super.setUnlocalizedName(name)
         VariantHelper.setUnlocalizedNameForBlock(this, modId, name, itemForm)
-        return super.setUnlocalizedName(name)
+        return this
     }
 
     open fun createItemForm(): ItemBlock? {

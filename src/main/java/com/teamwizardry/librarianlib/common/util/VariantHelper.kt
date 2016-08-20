@@ -17,8 +17,8 @@ object VariantHelper {
     /**
      * All items which use this method in their constructor should implement the setUnlocalizedNameForItem provided below in their setUnlocalizedName.
      */
-    @JvmOverloads
     @JvmStatic
+    @JvmOverloads
     fun setupItem(item: Item, name: String, variants: Array<out String>, creativeTab: ModCreativeTab? = null): Array<out String> {
         var variantTemp = variants
         item.unlocalizedName = name
@@ -48,8 +48,8 @@ object VariantHelper {
         return variantTemp
     }
 
-    @JvmOverloads
     @JvmStatic
+    @JvmOverloads
     fun finishSetupBlock(block: Block, name: String, itemForm: ItemBlock?, creativeTab: ModCreativeTab? = null) {
         block.unlocalizedName = name
         if (itemForm == null)

@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.teamwizardry.librarianlib.common.core
 
 import com.teamwizardry.librarianlib.book.Book
@@ -25,7 +27,6 @@ open class LibCommonProxy {
         // NO-OP
     }
 
-    @Suppress("DEPRECATION")
     open fun translate(s: String, vararg format: Any?): String {
         return I18n.translateToLocalFormatted(s, *format)
     }

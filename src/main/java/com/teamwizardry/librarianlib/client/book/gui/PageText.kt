@@ -4,10 +4,10 @@ import com.teamwizardry.librarianlib.client.book.data.DataNode
 import com.teamwizardry.librarianlib.client.book.util.BookSectionText
 import com.teamwizardry.librarianlib.client.book.util.LinkParser
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
-import com.teamwizardry.librarianlib.client.util.Color
 import com.teamwizardry.librarianlib.client.gui.components.ComponentMarkup
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
+import java.awt.Color
 
 class PageText(section: BookSectionText, data: DataNode, tag: String) : GuiBook(section) {
 
@@ -50,8 +50,8 @@ class PageText(section: BookSectionText, data: DataNode, tag: String) : GuiBook(
                 } else if (node.isList) {
                     val type = node[1].asStringOr("<TYPE_ERROR>").toLowerCase()
                     if (type == "!link") {
-                        val hoverColor = Color.argb(0xff0000EE.toInt())
-                        val normalColor = Color.argb(0xff0F00B0.toInt())
+                        val hoverColor = Color(0x0000EE)
+                        val normalColor = Color(0x0F00B0)
                         elem.format.func { hover -> if (hover) "§n" else "" }
                         elem.color.func { hover -> if (hover) hoverColor else normalColor }
 

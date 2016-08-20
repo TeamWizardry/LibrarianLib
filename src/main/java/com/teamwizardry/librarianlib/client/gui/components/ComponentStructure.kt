@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.Option
 import com.teamwizardry.librarianlib.client.gui.mixin.gl.GlMixin
 import com.teamwizardry.librarianlib.client.structure.StructureRenderUtil
-import com.teamwizardry.librarianlib.client.util.Color
 import com.teamwizardry.librarianlib.common.structure.Structure
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import net.minecraft.client.Minecraft
@@ -14,6 +13,7 @@ import net.minecraft.client.renderer.texture.TextureMap
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11
+import java.awt.Color
 
 class ComponentStructure(posX: Int, posY: Int, var structure: Structure?) : GuiComponent<ComponentStructure>(posX, posY) {
 
@@ -43,9 +43,7 @@ class ComponentStructure(posX: Int, posY: Int, var structure: Structure?) : GuiC
 
     fun initStructure() {
         bufferInts = null
-        val tmp = structure
-        if (tmp == null)
-            return
+        val tmp = structure ?: return
         bufferInts = StructureRenderUtil.render(tmp, color.getValue(this), 1f)
     }
 

@@ -40,6 +40,7 @@ class LibrarianLib {
         @SidedProxy(clientSide = CLIENT, serverSide = SERVER)
         lateinit var PROXY: LibCommonProxy
 
+        @JvmField
         val DEV_ENVIRONMENT = Launch.blackboard["fml.deobfuscatedEnvironment"] as Boolean
     }
 

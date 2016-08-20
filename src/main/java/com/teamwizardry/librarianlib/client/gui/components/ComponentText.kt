@@ -3,10 +3,10 @@ package com.teamwizardry.librarianlib.client.gui.components
 import com.google.common.collect.ImmutableList
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.Option
-import com.teamwizardry.librarianlib.client.util.Color
 import com.teamwizardry.librarianlib.common.util.math.BoundingBox2D
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import net.minecraft.client.Minecraft
+import java.awt.Color
 
 class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizontal: ComponentText.TextAlignH = ComponentText.TextAlignH.LEFT, var vertical: ComponentText.TextAlignV = ComponentText.TextAlignV.TOP) : GuiComponent<ComponentText>(posX, posY) {
 
@@ -32,7 +32,7 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
     val shadow = Option<ComponentText, Boolean>(false)
 
     init {
-        this.color.setValue(Color.argb(0xff000000.toInt()))
+        this.color.setValue(Color.BLACK)
     }
 
     /**
@@ -60,7 +60,7 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
         val fr = Minecraft.getMinecraft().fontRendererObj
 
         val fullText = text.getValue(this)
-        val colorHex = color.getValue(this).hexARGB()
+        val colorHex = color.getValue(this).rgb
         val enableFlags = unicode.getValue(this)
         val dropShadow = shadow.getValue(this)
 

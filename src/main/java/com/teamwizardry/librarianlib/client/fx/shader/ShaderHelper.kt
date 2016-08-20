@@ -92,7 +92,7 @@ class ShaderHelper private constructor() : IResourceManagerReloadListener {
         //http://hastebin.com/ameremuqev.avrasm
         fun useShaders(): Boolean {
             try {
-                return FMLCommonHandler.instance().effectiveSide == Side.CLIENT && ConfigHandler.shaders && OpenGlHelper.shadersSupported
+                return FMLCommonHandler.instance().effectiveSide == Side.CLIENT && ConfigHandler.useShaders && OpenGlHelper.shadersSupported
             } catch (ignored: NoSuchFieldError) {
                 return false
             }

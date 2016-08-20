@@ -7,6 +7,7 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 
 object RaycastUtils {
+    @JvmStatic
     @JvmOverloads
     fun raycast(e: Entity, len: Double, stopOnLiquid: Boolean = false): RayTraceResult? {
         val vec = e.positionVector.addVector(0.0, if (e is EntityPlayer) e.getEyeHeight().toDouble() else 0.0, 0.0)
@@ -19,6 +20,7 @@ object RaycastUtils {
         }
     }
 
+    @JvmStatic
     @JvmOverloads
     fun raycast(world: World, origin: Vec3d, ray: Vec3d, len: Double, stopOnLiquid: Boolean = false): RayTraceResult? {
         val end = origin.add(ray.normalize().scale(len))
@@ -26,6 +28,7 @@ object RaycastUtils {
         return pos
     }
 
+    @JvmStatic
     @JvmOverloads
     fun getEntityLookedAt(e: Entity, maxDistance: Double = 32.0): Entity? {
         var foundEntity: Entity? = null

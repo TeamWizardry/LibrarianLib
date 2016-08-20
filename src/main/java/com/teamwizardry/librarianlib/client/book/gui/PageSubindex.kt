@@ -46,7 +46,7 @@ class PageSubindex(section: BookSectionOther, node: DataNode, tag: String) : Gui
 
             var amountText = ""
             if (stack == null || stack.item == null) {
-                stack = ItemStack(Blocks.STONE)
+                stack = ItemStack(Blocks.STONE) //todo
                 amountText = if (stack == null) "~s~" else "~i~"
             }
             val _amountText = amountText

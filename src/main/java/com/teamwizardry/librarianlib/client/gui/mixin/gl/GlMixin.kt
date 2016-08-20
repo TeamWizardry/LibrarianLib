@@ -2,9 +2,10 @@ package com.teamwizardry.librarianlib.client.gui.mixin.gl
 
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.Option
-import com.teamwizardry.librarianlib.client.util.Color
+import com.teamwizardry.librarianlib.client.util.glColor
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.Vec3d
+import java.awt.Color
 
 object GlMixin {
 

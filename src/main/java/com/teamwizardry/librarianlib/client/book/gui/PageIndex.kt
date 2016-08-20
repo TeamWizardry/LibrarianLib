@@ -8,7 +8,7 @@ import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.components.ComponentGrid
 import com.teamwizardry.librarianlib.client.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.client.gui.mixin.ButtonMixin
-import com.teamwizardry.librarianlib.client.util.Color
+import java.awt.Color
 
 class PageIndex(section: BookSectionOther, node: DataNode, tag: String) : GuiBook(section) {
 
@@ -16,9 +16,9 @@ class PageIndex(section: BookSectionOther, node: DataNode, tag: String) : GuiBoo
 
         val icons = node["icons"].asList()
 
-        val normalColor = Color.rgb(Integer.parseInt(node["normalColor"].asStringOr("0"), 16))
-        val hoverColor = Color.rgb(Integer.parseInt(node["hoverColor"].asStringOr("00BFFF"), 16))
-        val pressColor = Color.rgb(0x191970)
+        val normalColor = Color(Integer.parseInt(node["normalColor"].asStringOr("0"), 16))
+        val hoverColor = Color(Integer.parseInt(node["hoverColor"].asStringOr("00BFFF"), 16))
+        val pressColor = Color(0x191970)
 
         val size = 32
         val sep = (GuiBook.PAGE_WIDTH - size * 3) / 2
@@ -26,8 +26,8 @@ class PageIndex(section: BookSectionOther, node: DataNode, tag: String) : GuiBoo
 
         for (icon in icons) {
 
-            val iconNormalColor = if (icon["normalColor"].exists()) Color.rgb(Integer.parseInt(icon["normalColor"].asString(), 16)) else normalColor
-            val iconHoverColor = if (icon["hoverColor"].exists()) Color.rgb(Integer.parseInt(icon["hoverColor"].asString(), 16)) else hoverColor
+            val iconNormalColor = if (icon["normalColor"].exists()) Color(Integer.parseInt(icon["normalColor"].asString(), 16)) else normalColor
+            val iconHoverColor = if (icon["hoverColor"].exists()) Color(Integer.parseInt(icon["hoverColor"].asString(), 16)) else hoverColor
 
 
             val sprite = ComponentSprite(DataNodeParsers.parseSprite(icon["icon"]), 0, 0, size, size)

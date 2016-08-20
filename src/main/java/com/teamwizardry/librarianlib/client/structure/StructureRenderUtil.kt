@@ -1,13 +1,13 @@
 package com.teamwizardry.librarianlib.client.structure
 
 import com.teamwizardry.librarianlib.client.util.BlockRenderUtils
-import com.teamwizardry.librarianlib.client.util.Color
 import com.teamwizardry.librarianlib.common.structure.Structure
 import net.minecraft.client.renderer.VertexBuffer
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.BlockRenderLayer
 import net.minecraft.util.EnumBlockRenderType
 import org.lwjgl.opengl.GL11
+import java.awt.Color
 
 object StructureRenderUtil {
 
@@ -26,7 +26,7 @@ object StructureRenderUtil {
                 continue
             if (state.block.blockLayer != BlockRenderLayer.SOLID)
                 continue
-            BlockRenderUtils.renderBlockToVB(state, access, info.pos, info.pos.subtract(structure.origin), blockBuf, color.r, color.g, color.b, brightness, color.a)
+            BlockRenderUtils.renderBlockToVB(state, access, info.pos, info.pos.subtract(structure.origin), blockBuf, color.red / 255f, color.green / 255f, color.blue / 255f, brightness, color.alpha / 255f)
         }
 
         // cutout block next
@@ -36,7 +36,7 @@ object StructureRenderUtil {
                 continue
             if (state.block.blockLayer != BlockRenderLayer.CUTOUT && state.block.blockLayer != BlockRenderLayer.CUTOUT_MIPPED)
                 continue
-            BlockRenderUtils.renderBlockToVB(state, access, info.pos, info.pos.subtract(structure.origin), blockBuf, color.r, color.g, color.b, brightness, color.a)
+            BlockRenderUtils.renderBlockToVB(state, access, info.pos, info.pos.subtract(structure.origin), blockBuf, color.red / 255f, color.green / 255f, color.blue / 255f, brightness, color.alpha / 255f)
         }
 
         // translucent block next
@@ -46,7 +46,7 @@ object StructureRenderUtil {
                 continue
             if (state.block.blockLayer != BlockRenderLayer.TRANSLUCENT)
                 continue
-            BlockRenderUtils.renderBlockToVB(state, access, info.pos, info.pos.subtract(structure.origin), blockBuf, color.r, color.g, color.b, brightness, color.a)
+            BlockRenderUtils.renderBlockToVB(state, access, info.pos, info.pos.subtract(structure.origin), blockBuf, color.red / 255f, color.green / 255f, color.blue / 255f, brightness, color.alpha / 255f)
         }
 
         blockBuf.finishDrawing()

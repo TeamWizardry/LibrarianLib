@@ -11,10 +11,12 @@ import net.minecraft.world.IBlockAccess
 import java.nio.ByteOrder
 
 object BlockRenderUtils {
+    @JvmStatic
     fun transferVB(from: VertexBuffer, to: VertexBuffer) {
         to.addVertexData(from.byteBuffer.asIntBuffer().array())
     }
 
+    @JvmStatic
     fun renderQuadsToBuffer(quads: List<BakedQuad>, state: IBlockState, access: IBlockAccess, pos: BlockPos, renderPos: BlockPos, buf: VertexBuffer, red: Float, green: Float, blue: Float, brightness: Float, alpha: Float) {
         for (i in quads.indices) {
             val bakedquad = quads[i]
@@ -44,6 +46,7 @@ object BlockRenderUtils {
         }
     }
 
+    @JvmStatic
     private fun putRGBA_F4(buf: VertexBuffer, red: Float, green: Float, blue: Float, alpha: Float, relIndex: Int) {
         val index = buf.getColorIndex(relIndex)
         val r = MathHelper.clamp_int((red * 255.0f).toInt(), 0, 255)
@@ -53,6 +56,7 @@ object BlockRenderUtils {
         buf.putColorRGBA(index, r, g, b, a)
     }
 
+    @JvmStatic
     private fun putColorMultiplier(buf: VertexBuffer, red: Float, green: Float, blue: Float, alpha: Float, p_178978_4_: Int) {
         val index = buf.getColorIndex(p_178978_4_)
         var color = buf.byteBuffer.asIntBuffer().get(index)
@@ -75,6 +79,7 @@ object BlockRenderUtils {
         buf.byteBuffer.asIntBuffer().put(index, color)
     }
 
+    @JvmStatic
     fun renderBlockToVB(state: IBlockState, access: IBlockAccess, pos: BlockPos, renderPos: BlockPos, buffer: VertexBuffer, red: Float, green: Float, blue: Float, brightness: Float, alpha: Float) {
         val newState = state.getActualState(access, pos)
 

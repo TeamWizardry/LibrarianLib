@@ -13,6 +13,7 @@ object PacketHandler {
         network = NetworkRegistry.INSTANCE.newSimpleChannel("TeamWizardry")
     }
 
+    @JvmStatic
     fun <T : PacketBase> register(clazz: Class<T>, targetSide: Side) {
         network.registerMessage<T, PacketBase>(PacketBase.Handler<T>(), clazz, id++, targetSide)
     }

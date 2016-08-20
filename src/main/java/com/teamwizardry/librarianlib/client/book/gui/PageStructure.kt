@@ -9,7 +9,6 @@ import com.teamwizardry.librarianlib.client.gui.components.ComponentSpriteTiled
 import com.teamwizardry.librarianlib.client.gui.components.ComponentStructure
 import com.teamwizardry.librarianlib.client.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.client.gui.mixin.gl.GlMixin
-import com.teamwizardry.librarianlib.client.util.Color
 import com.teamwizardry.librarianlib.common.structure.Structure
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import net.minecraft.block.state.IBlockState
@@ -18,6 +17,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11
+import java.awt.Color
 
 open class PageStructure(section: BookSectionOther, node: DataNode, tag: String) : GuiBook(section) {
 

@@ -3,13 +3,13 @@ package com.teamwizardry.librarianlib.client.gui.components
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.Option
 import com.teamwizardry.librarianlib.client.sprite.TextWrapper
-import com.teamwizardry.librarianlib.client.util.Color
 import com.teamwizardry.librarianlib.common.util.event.EventBus
 import com.teamwizardry.librarianlib.common.util.event.EventCancelable
 import com.teamwizardry.librarianlib.common.util.math.BoundingBox2D
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
+import java.awt.Color
 import java.util.*
 
 open class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent<ComponentMarkup>(posX, posY, width, height) {
@@ -97,7 +97,7 @@ open class ComponentMarkup(posX: Int, posY: Int, width: Int, height: Int) : GuiC
         }
 
         protected fun drawLine(line: String, x: Int, y: Int, hover: Boolean) {
-            Minecraft.getMinecraft().fontRendererObj.drawString(format.getValue(hover) + line, x.toFloat(), y.toFloat(), color.getValue(hover).hexARGB(), dropShadow.getValue(hover))
+            Minecraft.getMinecraft().fontRendererObj.drawString(format.getValue(hover) + line, x.toFloat(), y.toFloat(), color.getValue(hover).rgb, dropShadow.getValue(hover))
         }
 
         fun isMouseOver(x: Int, y: Int): Boolean {
