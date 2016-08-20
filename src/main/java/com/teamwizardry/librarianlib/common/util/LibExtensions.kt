@@ -19,6 +19,7 @@ import java.lang.reflect.Type
 
 operator fun TextFormatting.plus(str: String) = "$this$str"
 operator fun String.plus(form: TextFormatting) = "$this$form"
+operator fun TextFormatting.plus(other: TextFormatting) = "$this$other"
 
 // Vec3d ===============================================================================================================
 
