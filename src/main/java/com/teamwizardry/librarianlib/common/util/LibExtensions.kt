@@ -1,3 +1,5 @@
+@file:JvmName("CommonUtilMethods")
+
 package com.teamwizardry.librarianlib.common.util
 
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
