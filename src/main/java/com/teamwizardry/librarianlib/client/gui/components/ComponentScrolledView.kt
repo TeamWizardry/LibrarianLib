@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.client.gui.mixin.ScissorMixin
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
 
-class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent<ComponentScrolledView>(posX, posY, width, height) {
+open class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent<ComponentScrolledView>(posX, posY, width, height) {
 
     val scroll = HandlerList<(ComponentScrolledView, Vec2d, Vec2d?) -> Vec2d?>()
 

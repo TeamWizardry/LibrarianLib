@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.item.ItemStack
 import net.minecraft.util.text.TextFormatting
 
-class ComponentSlot(posX: Int, posY: Int) : GuiComponent<ComponentSlot>(posX, posY, 16, 16) {
+open class ComponentSlot(posX: Int, posY: Int) : GuiComponent<ComponentSlot>(posX, posY, 16, 16) {
 
     val stack = Option<ComponentSlot, ItemStack?>(null)
     val tooltip = Option<ComponentSlot, Boolean>(true)

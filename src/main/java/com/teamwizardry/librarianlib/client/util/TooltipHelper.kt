@@ -14,7 +14,7 @@ object TooltipHelper {
      * If the client player is sneaking, invoke the given lambda, and otherwise add a 'press shift for info'.
      */
     @SideOnly(Side.CLIENT)
-    fun tooltipIfShift(tooltip: MutableList<String>, lambda: () -> Unit) {
+    inline fun tooltipIfShift(tooltip: MutableList<String>, lambda: () -> Unit) {
         if (GuiScreen.isShiftKeyDown())
             lambda()
         else
