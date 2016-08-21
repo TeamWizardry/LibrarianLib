@@ -75,3 +75,14 @@ fun <T> Class<T>.genericType(index: Int): Type? {
         else null
     } else null
 }
+
+fun <T> Class<T>.genericClass(index: Int): Class<*>? {
+    val generic = genericType(index) ?: return null
+    return if (generic is Class<*>) generic else null
+}
+
+@Suppress("UNCHECKED_CAST")
+fun <T, O> Class<T>.genericClassTyped(index: Int): Class<O>? {
+    val generic = genericType(index) ?: return null
+    return if (generic is Class<*>) generic as Class<O> else null
+}
