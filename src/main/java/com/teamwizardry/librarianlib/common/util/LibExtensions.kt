@@ -35,6 +35,19 @@ infix fun Vec3d.dot(other: Vec3d) = this.dotProduct(other)
 
 infix fun Vec3d.cross(other: Vec3d) = this.crossProduct(other)
 
+fun Vec3d.withX(other: Double) = Vec3d(other, this.yCoord, this.zCoord)
+fun Vec3d.withY(other: Double) = Vec3d(this.xCoord, other, this.zCoord)
+fun Vec3d.withZ(other: Double) = Vec3d(this.xCoord, this.yCoord, other)
+
+fun Vec3d.withX(other: Float) = this.withX(other.toDouble())
+fun Vec3d.withY(other: Float) = this.withY(other.toDouble())
+fun Vec3d.withZ(other: Float) = this.withZ(other.toDouble())
+
+fun Vec3d.withX(other: Int) = this.withX(other.toDouble())
+fun Vec3d.withY(other: Int) = this.withY(other.toDouble())
+fun Vec3d.withZ(other: Int) = this.withZ(other.toDouble())
+
+
 // Vec2d ===============================================================================================================
 
 operator fun Vec2d.times(other: Vec2d) = this.mul(other)

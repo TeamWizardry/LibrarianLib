@@ -47,9 +47,12 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
         val s = ReflectionHelper.findField(Minecraft::class.java, "metadataSerializer_", "field_110452_an").get(Minecraft.getMinecraft()) as MetadataSerializer //todo methodhandle
         s.registerMetadataSectionType(SpritesMetadataSectionSerializer(), SpritesMetadataSection::class.java)
+        SpritesMetadataSection.registered = true
 
         if (Minecraft.getMinecraft().resourceManager is IReloadableResourceManager)
             (Minecraft.getMinecraft().resourceManager as IReloadableResourceManager).registerReloadListener(this)
+
+        onResourceManagerReload(Minecraft.getMinecraft().resourceManager)
     }
 
     override fun init(e: FMLInitializationEvent) {
