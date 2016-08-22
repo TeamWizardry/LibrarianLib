@@ -1,7 +1,10 @@
 package com.teamwizardry.librarianlib.client.sprite
 
 import net.minecraft.client.gui.FontRenderer
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 
+@SideOnly(Side.CLIENT)
 object TextWrapper {
     fun wrap(renderer: FontRenderer, list: MutableList<String>, str: String, initialLinePos: Int, width: Int) {
 

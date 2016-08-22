@@ -7,9 +7,12 @@ import com.google.gson.JsonSyntaxException
 import com.teamwizardry.librarianlib.client.sprite.SpritesMetadataSection.SpriteDefinition
 import net.minecraft.client.resources.data.BaseMetadataSectionSerializer
 import net.minecraft.util.JsonUtils
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import java.lang.reflect.Type
 import java.util.*
 
+@SideOnly(Side.CLIENT)
 class SpritesMetadataSectionSerializer : BaseMetadataSectionSerializer<SpritesMetadataSection>() {
 
     override fun getSectionName(): String {

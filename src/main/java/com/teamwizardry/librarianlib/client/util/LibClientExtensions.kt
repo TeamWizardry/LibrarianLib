@@ -1,3 +1,5 @@
+@file:JvmName("ClientUtilMethods")
+
 package com.teamwizardry.librarianlib.client.util
 
 import net.minecraft.client.renderer.GlStateManager

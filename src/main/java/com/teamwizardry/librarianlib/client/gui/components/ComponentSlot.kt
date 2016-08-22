@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.item.ItemStack
 import net.minecraft.util.text.TextFormatting
 
-class ComponentSlot(posX: Int, posY: Int) : GuiComponent<ComponentSlot>(posX, posY, 16, 16) {
+open class ComponentSlot(posX: Int, posY: Int) : GuiComponent<ComponentSlot>(posX, posY, 16, 16) {
 
     val stack = Option<ComponentSlot, ItemStack?>(null)
     val tooltip = Option<ComponentSlot, Boolean>(true)
@@ -30,10 +30,8 @@ class ComponentSlot(posX: Int, posY: Int) : GuiComponent<ComponentSlot>(posX, po
             val itemRender = Minecraft.getMinecraft().renderItem
             itemRender.zLevel = 200.0f
 
-            val font = stack.item.getFontRenderer(stack)
-
             itemRender.renderItemAndEffectIntoGUI(stack, pos.xi, pos.yi)
-            itemRender.renderItemOverlayIntoGUI(if (font == null) Minecraft.getMinecraft().fontRendererObj else font, stack, pos.xi, pos.yi, str)
+            itemRender.renderItemOverlayIntoGUI(stack.item.getFontRenderer(stack) ?: Minecraft.getMinecraft().fontRendererObj, stack, pos.xi, pos.yi, str)
 
             itemRender.zLevel = 0.0f
 

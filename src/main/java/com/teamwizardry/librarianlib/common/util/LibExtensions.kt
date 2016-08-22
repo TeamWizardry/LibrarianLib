@@ -1,3 +1,5 @@
+@file:JvmName("CommonUtilMethods")
+
 package com.teamwizardry.librarianlib.common.util
 
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
@@ -8,12 +10,16 @@ import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.awt.Color
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
 
 /**
  * Created by TheCodeWarrior
  */
 
 operator fun TextFormatting.plus(str: String) = "$this$str"
+operator fun String.plus(form: TextFormatting) = "$this$form"
+operator fun TextFormatting.plus(other: TextFormatting) = "$this$other"
 
 // Vec3d ===============================================================================================================
 
@@ -70,3 +76,23 @@ operator fun AxisAlignedBB.contains(other: Vec3d) =
         this.minX <= other.xCoord && this.maxX >= other.xCoord &&
                 this.minY <= other.yCoord && this.maxY >= other.yCoord &&
                 this.minZ <= other.zCoord && this.maxZ >= other.zCoord
+
+// Class ===============================================================================================================
+
+fun <T> Class<T>.genericType(index: Int): Type? {
+    val genericSuper = genericSuperclass
+    return if (genericSuper is ParameterizedType) {
+        val args = genericSuper.actualTypeArguments
+        if (0 <= index && index < args.size)
+            genericSuper.actualTypeArguments[index]
+        else null
+    } else null
+}
+
+fun <T> Class<T>.genericClass(index: Int): Class<*>? {
+    val generic = genericType(index) ?: return null
+    return if (generic is Class<*>) generic else null
+}
+
+@Suppress("UNCHECKED_CAST")
+fun <T, O> Class<T>.genericClassTyped(index: Int) = genericClass(index) as Class<O>?

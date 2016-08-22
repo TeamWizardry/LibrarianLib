@@ -13,14 +13,19 @@ object ClientTickHandler {
         MinecraftForge.EVENT_BUS.register(this)
     }
 
+    @JvmStatic
     var ticks = 0
         private set
+    @JvmStatic
     var ticksInGame = 0
         private set
+    @JvmStatic
     var partialTicks = 0f
         private set
+    @JvmStatic
     var delta = 0f
         private set
+    @JvmStatic
     var total = 0f
         private set
 

@@ -9,7 +9,7 @@ package com.teamwizardry.librarianlib.client.gui
  * *
  * @param  The type of the parameter to the option
  */
-class Option<P, T>(protected var defaultValue: T) {
+open class Option<P, T>(protected var defaultValue: T) {
 
     private var value: T = defaultValue
     protected var callback: ((P) -> T)? = null

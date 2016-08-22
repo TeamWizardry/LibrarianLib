@@ -14,17 +14,19 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.world.BlockEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.opengl.GL11
 
 // TODO : Conversion is lazy, may want to rewrite
-enum class InWorldRender constructor() {
-    INSTANCE;
+@SideOnly(Side.CLIENT)
+object InWorldRender {
 
-    protected var pos: BlockPos? = null
-    protected var rot: Rotation? = null
-    protected var structure: Structure? = null
-    protected var verts: IntArray? = null
-    protected var match: StructureMatchResult? = null
+    var pos: BlockPos? = null
+    var rot: Rotation? = null
+    var structure: Structure? = null
+    var verts: IntArray? = null
+    var match: StructureMatchResult? = null
 
     init {
         MinecraftForge.EVENT_BUS.register(this)
@@ -94,7 +96,7 @@ enum class InWorldRender constructor() {
         this.refreshVerts()
     }
 
-    protected fun refreshVerts() {
+    fun refreshVerts() {
         val struct = structure ?: return
         val match = struct.match(Minecraft.getMinecraft().theWorld, pos!!)
         this.match = match
