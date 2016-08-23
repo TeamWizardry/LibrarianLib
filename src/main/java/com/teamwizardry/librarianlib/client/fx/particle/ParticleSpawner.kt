@@ -23,7 +23,8 @@ object ParticleSpawner {
     /**
      * The particles that are pending spawning
      */
-    private val pending: MutableSet<ParticleSpawn> = mutableSetOf()
+    private var pending: MutableSet<ParticleSpawn> = mutableSetOf()
+    private val pendingSwap: MutableSet<ParticleSpawn> = mutableSetOf()
 
     @SubscribeEvent
     fun tickEvent(event: TickEvent.ClientTickEvent) {
@@ -38,12 +39,20 @@ object ParticleSpawner {
 
     fun tick() {
         val effectRenderer = Minecraft.getMinecraft().effectRenderer
+        val pend = pending
 
-        pending.forEach { it.ticksTillSpawn-- }
+        pending = pendingSwap
 
-        pending.forEach { if( it.ticksTillSpawn == 0 ) effectRenderer.addEffect(it.particle) }
 
-        pending.removeAll { it.ticksTillSpawn == 0 }
+        pend.forEach { if( it.ticksTillSpawn <= 0 ) effectRenderer.addEffect(it.particle) }
+        pend.removeAll { it.ticksTillSpawn <= 0 }
+
+        pend.forEach { it.ticksTillSpawn-- }
+
+        pending = pend
+
+        pend.addAll(pendingSwap)
+        pendingSwap.clear()
     }
 
     /**
