@@ -189,7 +189,10 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             throw IllegalArgumentException("Can't add components to themselves!")
 
         if (component.parent != null)
-            throw IllegalArgumentException("Component already had a parent!")
+            if(component.parent == this)
+                LibrarianLog.warn("You tried to add the component to the same parent twice. Why?")
+            else
+                throw IllegalArgumentException("Component already had a parent!")
         if (BUS.fire(AddChildEvent(thiz(), component)).isCanceled())
             return
         if (component.BUS.fire(AddToParentEvent(component.thiz(), thiz())).isCanceled())
