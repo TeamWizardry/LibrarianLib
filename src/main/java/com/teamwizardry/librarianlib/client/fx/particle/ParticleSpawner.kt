@@ -8,6 +8,9 @@ import net.minecraft.world.World
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import scala.collection.mutable.SetBuilder
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.function.BiConsumer
 import java.util.function.Consumer
 
@@ -23,8 +26,7 @@ object ParticleSpawner {
     /**
      * The particles that are pending spawning
      */
-    private var pending: MutableSet<ParticleSpawn> = mutableSetOf()
-    private val pendingSwap: MutableSet<ParticleSpawn> = mutableSetOf()
+    private var pending: MutableSet<ParticleSpawn> = Collections.newSetFromMap(ConcurrentHashMap())
 
     @SubscribeEvent
     fun tickEvent(event: TickEvent.ClientTickEvent) {
@@ -39,20 +41,11 @@ object ParticleSpawner {
 
     fun tick() {
         val effectRenderer = Minecraft.getMinecraft().effectRenderer
-        val pend = pending
 
-        pending = pendingSwap
+        pending.forEach { if( it.ticksTillSpawn == 0 ) effectRenderer.addEffect(it.particle) }
+        pending.removeAll { it.ticksTillSpawn <= 0 }
 
-
-        pend.forEach { if( it.ticksTillSpawn <= 0 ) effectRenderer.addEffect(it.particle) }
-        pend.removeAll { it.ticksTillSpawn <= 0 }
-
-        pend.forEach { it.ticksTillSpawn-- }
-
-        pending = pend
-
-        pend.addAll(pendingSwap)
-        pendingSwap.clear()
+        pending.forEach { it.ticksTillSpawn-- }
     }
 
     /**
