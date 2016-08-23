@@ -5,10 +5,11 @@ package com.teamwizardry.librarianlib.common.util.math.interpolate
  */
 class InterpUnionImpl<T> internal constructor(val list: MutableList<UnionEntry<T>>): InterpFunction<T> {
     override fun get(i: Float): T {
-        val fract = i % 1
+        var floored = Math.floor(i.toDouble()).toFloat()
+        val fract = if (floored == i && i > 0) 1f else i - floored
         val func = list.first { fract >= it.start && fract <= it.end }
         val span = func.end - func.start
-        val funcI = (i-func.start)/span
+        val funcI = (fract-func.start)/span
         return func.func.get(funcI)
     }
 }

@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.client.fx.particle.functions.RenderFunction
 import com.teamwizardry.librarianlib.common.util.math.interpolate.InterpFunction
 import com.teamwizardry.librarianlib.common.util.math.interpolate.StaticInterp
 import com.teamwizardry.librarianlib.common.util.minus
+import com.teamwizardry.librarianlib.common.util.plus
 import net.minecraft.client.Minecraft
 import net.minecraft.client.particle.Particle
 import net.minecraft.client.renderer.VertexBuffer
@@ -14,13 +15,17 @@ import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import java.awt.Color
+import java.util.*
+import java.util.concurrent.ThreadLocalRandom
 
 /**
  * Created by TheCodeWarrior
  */
 class ParticleBase(
         val world: World,
+        val position: Vec3d,
         val lifetime: Int,
+        val initialAge: Int,
         val animTime: Int,
         val positionFunc: InterpFunction<Vec3d>,
         val easing: InterpFunction<Float>,
@@ -31,10 +36,12 @@ class ParticleBase(
 ) : Particle(world, 0.0, 0.0, 0.0) {
 
     private var lastPos: Vec3d = positionFunc.get(0f)
+    private val randomNum: Int = ThreadLocalRandom.current().nextInt()
 
     init {
+        particleAge = initialAge
         particleMaxAge = lifetime
-        setPosition(lastPos)
+        setPosition(lastPos + position)
         this.prevPosX = this.posX
         this.prevPosY = this.posY
         this.prevPosZ = this.posZ
@@ -56,7 +63,7 @@ class ParticleBase(
         this.prevPosX = this.posX
         this.prevPosY = this.posY
         this.prevPosZ = this.posZ
-        var i = particleAge.toFloat() / particleMaxAge.toFloat()
+        var i = particleAge.toFloat() / animTime.toFloat()
 
         if(particleAge > particleMaxAge) {
             this.setExpired()
@@ -65,7 +72,7 @@ class ParticleBase(
         var pos = positionFunc.get(Math.min(1f, easing.get(i)))
 
         if(movementMode == EnumMovementMode.PHASE) {
-            setPosition(pos)
+            setPosition(pos + position)
         } else {
             val direction: Vec3d
             if(movementMode == EnumMovementMode.IN_DIRECTION) {
@@ -104,17 +111,36 @@ class ParticleBase(
     }
 }
 
-class ParticleBuilder(private val world: World, private var lifetime: Int) {
-    private var animTime: Int = lifetime
-    private var positionFunc: InterpFunction<Vec3d>? = null
-    private var easingFunc: InterpFunction<Float> = InterpFunction.ONE_TO_ONE
-    private var scaleFunc: InterpFunction<Float> = StaticInterp(1f)
-    private var colorFunc: InterpFunction<Color>? = null
-    private var renderFunc: RenderFunction? = null
-    private var movementMode: EnumMovementMode = EnumMovementMode.IN_DIRECTION
+class ParticleBuilder(private var lifetime: Int) {
+    var animTime: Int = lifetime
+        private set
+    var initialAge: Int = 0
+        private set
+    var positionFunc: InterpFunction<Vec3d>? = null
+        private set
+    var easingFunc: InterpFunction<Float> = InterpFunction.ONE_TO_ONE
+        private set
+    var scaleFunc: InterpFunction<Float> = StaticInterp(1f)
+        private set
+    var colorFunc: InterpFunction<Color>? = null
+        private set
+    var renderFunc: RenderFunction? = null
+        private set
+    var movementMode: EnumMovementMode = EnumMovementMode.IN_DIRECTION
+        private set
 
     fun setLifetime(value: Int): ParticleBuilder {
         lifetime = value
+        animTime = value
+        return this
+    }
+
+    fun setInitialAge(value: Int): ParticleBuilder {
+        initialAge = value
+        return this
+    }
+
+    fun setAnimTime(value: Int): ParticleBuilder {
         animTime = value
         return this
     }
@@ -144,7 +170,7 @@ class ParticleBuilder(private val world: World, private var lifetime: Int) {
         return this
     }
 
-    fun build(): ParticleBase? {
+    fun build(world: World, pos: Vec3d): ParticleBase? {
         val positionFunc_ = positionFunc
         val colorFunc_ = colorFunc
         val renderFunc_ = renderFunc
@@ -159,7 +185,7 @@ class ParticleBuilder(private val world: World, private var lifetime: Int) {
             return null
         }
 
-        return ParticleBase(world, lifetime, animTime, positionFunc_, easingFunc, colorFunc_, renderFunc_, movementMode, scaleFunc)
+        return ParticleBase(world, pos, lifetime, initialAge, animTime, positionFunc_, easingFunc, colorFunc_, renderFunc_, movementMode, scaleFunc)
     }
 }
 

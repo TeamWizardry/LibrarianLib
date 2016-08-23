@@ -38,10 +38,10 @@ class RenderFunctionBasic(val texture: TextureAtlasSprite) : RenderFunction() {
                 Vec3d(( rotationX * radius - rotationXY * radius).toDouble(), (-rotationZ * radius).toDouble(), ( rotationYZ * radius - rotationXZ * radius).toDouble())
         )
 
-        worldRendererIn.pos(posX.toDouble() + vertOffsets[0].xCoord, posY.toDouble() + vertOffsets[0].yCoord, posZ.toDouble() + vertOffsets[0].zCoord).tex(uMax, vMax).color(color.red/255f, color.green/255f, color.blue/255f, color.transparency.toFloat()).lightmap(skyLight, blockLight).endVertex()
-        worldRendererIn.pos(posX.toDouble() + vertOffsets[1].xCoord, posY.toDouble() + vertOffsets[1].yCoord, posZ.toDouble() + vertOffsets[1].zCoord).tex(uMax, vMin).color(color.red/255f, color.green/255f, color.blue/255f, color.transparency.toFloat()).lightmap(skyLight, blockLight).endVertex()
-        worldRendererIn.pos(posX.toDouble() + vertOffsets[2].xCoord, posY.toDouble() + vertOffsets[2].yCoord, posZ.toDouble() + vertOffsets[2].zCoord).tex(uMin, vMin).color(color.red/255f, color.green/255f, color.blue/255f, color.transparency.toFloat()).lightmap(skyLight, blockLight).endVertex()
-        worldRendererIn.pos(posX.toDouble() + vertOffsets[3].xCoord, posY.toDouble() + vertOffsets[3].yCoord, posZ.toDouble() + vertOffsets[3].zCoord).tex(uMin, vMax).color(color.red/255f, color.green/255f, color.blue/255f, color.transparency.toFloat()).lightmap(skyLight, blockLight).endVertex()
+        worldRendererIn.pos(posX.toDouble() + vertOffsets[0].xCoord, posY.toDouble() + vertOffsets[0].yCoord, posZ.toDouble() + vertOffsets[0].zCoord).tex(uMax, vMax).color(color.red/255f, color.green/255f, color.blue/255f, color.alpha/255f).lightmap(skyLight, blockLight).endVertex()
+        worldRendererIn.pos(posX.toDouble() + vertOffsets[1].xCoord, posY.toDouble() + vertOffsets[1].yCoord, posZ.toDouble() + vertOffsets[1].zCoord).tex(uMax, vMin).color(color.red/255f, color.green/255f, color.blue/255f, color.alpha/255f).lightmap(skyLight, blockLight).endVertex()
+        worldRendererIn.pos(posX.toDouble() + vertOffsets[2].xCoord, posY.toDouble() + vertOffsets[2].yCoord, posZ.toDouble() + vertOffsets[2].zCoord).tex(uMin, vMin).color(color.red/255f, color.green/255f, color.blue/255f, color.alpha/255f).lightmap(skyLight, blockLight).endVertex()
+        worldRendererIn.pos(posX.toDouble() + vertOffsets[3].xCoord, posY.toDouble() + vertOffsets[3].yCoord, posZ.toDouble() + vertOffsets[3].zCoord).tex(uMin, vMax).color(color.red/255f, color.green/255f, color.blue/255f, color.alpha/255f).lightmap(skyLight, blockLight).endVertex()
     }
 
 }
