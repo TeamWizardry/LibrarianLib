@@ -16,6 +16,8 @@ import java.awt.Color
 import java.util.*
 import com.teamwizardry.librarianlib.common.util.math.interpolate.position.*
 import com.teamwizardry.librarianlib.client.fx.particle.functions.*
+import com.teamwizardry.librarianlib.common.util.times
+import net.minecraft.util.ResourceLocation
 import java.util.concurrent.ThreadLocalRandom
 
 /**
@@ -32,10 +34,19 @@ class ParticleBase(
         val colorFunc: InterpFunction<Color>,
         val renderFunc: RenderFunction,
         val movementMode: EnumMovementMode,
-        val scaleFunc: InterpFunction<Float>
+        val scaleFunc: InterpFunction<Float>,
+        val motionEnabled: Boolean,
+        var motion: Vec3d,
+        val acceleration: Vec3d,
+        val deceleration: Vec3d,
+        val friction: Vec3d,
+        val jitterMagnitude: Vec3d = Vec3d(0.05, 0.05, 0.05),
+        val jitterChance: Float = 0.1f
 ) : Particle(world, 0.0, 0.0, 0.0) {
 
-    private var lastPos: Vec3d = positionFunc.get(0f)
+    private var lastPos: Vec3d = positionFunc?.get(0f) ?: Vec3d.ZERO
+    private var jitterMotion: Vec3d = Vec3d.ZERO
+
     private val randomNum: Int = ThreadLocalRandom.current().nextInt()
 
     init {
@@ -68,7 +79,29 @@ class ParticleBase(
             this.setExpired()
         }
 
-        val pos = positionFunc.get(Math.min(1f, easing.get(i)))
+        var pos = (
+                if(motionEnabled)
+                    Vec3d.ZERO
+                else
+                    positionFunc.get(Math.min(1f, easing.get(i)))
+                )
+        pos += jitterMotion
+        if(motionEnabled) {
+            pos += motion
+
+            motion += acceleration
+            motion *= deceleration
+            if(this.isCollided)
+                motion *= friction
+        }
+
+        if(ThreadLocalRandom.current().nextFloat() < jitterChance) {
+            jitterMotion += jitterMagnitude * Vec3d(
+                    ThreadLocalRandom.current().nextDouble()*2.0 - 1.0,
+                    ThreadLocalRandom.current().nextDouble()*2.0 - 1.0,
+                    ThreadLocalRandom.current().nextDouble()*2.0 - 1.0
+            )
+        }
 
         if(movementMode == EnumMovementMode.PHASE) {
             setPosition(pos + position)
@@ -77,7 +110,7 @@ class ParticleBase(
             if(movementMode == EnumMovementMode.IN_DIRECTION) {
                 direction = pos - lastPos
             } else { // effectivly `else if(movementMode == EnumMovementMode.TOWARD_POINT)`, only else to avoid errors
-                direction = pos - Vec3d(posX, posY, posZ)
+                direction = pos - ( Vec3d(posX, posY, posZ) - position )
             }
             this.motionX = direction.xCoord
             this.motionY = direction.yCoord
@@ -89,7 +122,6 @@ class ParticleBase(
     }
 
     override fun renderParticle(worldRendererIn: VertexBuffer, entityIn: Entity?, partialTicks: Float, rotationX: Float, rotationZ: Float, rotationYZ: Float, rotationXY: Float, rotationXZ: Float) {
-//        super.renderParticle(worldRendererIn, entityIn, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ)
         val i = Math.min(1f, ( particleAge.toFloat() + partialTicks ) / particleMaxAge.toFloat())
 
         val posX = this.prevPosX + (this.posX - this.prevPosX) * partialTicks.toDouble() - Particle.interpPosX
@@ -135,6 +167,20 @@ class ParticleBuilder(private var lifetime: Int) {
     var movementMode: EnumMovementMode = EnumMovementMode.IN_DIRECTION
         private set
 
+    var motion: Vec3d = Vec3d.ZERO
+        private set
+    var acceleration: Vec3d = Vec3d(0.0, -0.04*0.04, 0.0)
+        private set
+    var deceleration: Vec3d = Vec3d(0.98, 0.98, 0.98)
+        private set
+    var friction: Vec3d = Vec3d(0.7, 1.0, 0.7)
+        private set
+    var jitterMagnitude: Vec3d = Vec3d(0.05, 0.05, 0.05)
+        private set
+    var jitterChance: Float = 0.0f
+        private set
+    var motionEnabled: Boolean = false
+        private set
     /**
      * Set the number of ticks the particle will live
      */
@@ -181,10 +227,164 @@ class ParticleBuilder(private var lifetime: Int) {
     }
 
     /**
+     * Sets the motion
+     *
+     * Each tick while the particle is colliding with a block, it's motion is multiplied by this vector
+     *
+     * (calling this method enables standard particle motion)
+     */
+    fun setMotion(value: Vec3d): ParticleBuilder {
+        motion = value
+        motionEnabled = true
+        return this
+    }
+
+    /**
+     * Adds to the motion
+     *
+     * Each tick while the particle is colliding with a block, it's motion is multiplied by this vector
+     *
+     * (calling this method enables standard particle motion)
+     */
+    fun addMotion(value: Vec3d): ParticleBuilder {
+        motion += value
+        motionEnabled = true
+        return this
+    }
+
+    /**
+     * Sets the acceleration
+     *
+     * Each tick this value is added to the particle's motion
+     *
+     * (calling this method enables standard particle motion)
+     */
+    fun setAcceleration(value: Vec3d): ParticleBuilder {
+        acceleration = value
+        motionEnabled = true
+        return this
+    }
+
+    /**
+     * Adds to the acceleration
+     *
+     * Each tick this value is added to the particle's motion
+     *
+     * (calling this method enables standard particle motion)
+     */
+    fun addAcceleration(value: Vec3d): ParticleBuilder {
+        acceleration += value
+        motionEnabled = true
+        return this
+    }
+
+    /**
+     * Sets the deceleration
+     *
+     * Each tick the particle's motion is multiplied by this vector
+     *
+     * (calling this method enables standard particle motion)
+     */
+    fun setDeceleration(value: Vec3d): ParticleBuilder {
+        deceleration = value
+        motionEnabled = true
+        return this
+    }
+
+    /**
+     * Adds to the deceleration
+     *
+     * Each tick the particle's motion is multiplied by this vector
+     *
+     * (calling this method enables standard particle motion)
+     */
+    fun addDeceleration(value: Vec3d): ParticleBuilder {
+        deceleration += value
+        motionEnabled = true
+        return this
+    }
+
+    /**
+     * Sets the friction
+     *
+     * Each tick while the particle is colliding with a block, it's motion is multiplied by this vector
+     *
+     * (calling this method enables standard particle motion)
+     */
+    fun setFriction(value: Vec3d): ParticleBuilder {
+        friction = value
+        motionEnabled = true
+        return this
+    }
+
+    /**
+     * Adds to the friction
+     *
+     * Each tick while the particle is colliding with a block, it's motion is multiplied by this vector
+     *
+     * (calling this method enables standard particle motion)
+     */
+    fun addFriction(value: Vec3d): ParticleBuilder {
+        friction += value
+        motionEnabled = true
+        return this
+    }
+
+    /**
+     * Sets the motion enabled flag
+     *
+     * The motion enabled flag controls whether the particle uses the position function or traditional motion mechanics
+     */
+    fun setMotionEnabled(value: Boolean): ParticleBuilder {
+        motionEnabled = value
+        return this
+    }
+
+    /**
+     * Sets the motion enabled flag to true
+     *
+     * The motion enabled flag controls whether the particle uses the position function or traditional motion mechanics
+     */
+    fun enableMotion(): ParticleBuilder {
+        motionEnabled = true
+        return this
+    }
+
+    /**
+     * Sets the motion enabled flag to false
+     *
+     * The motion enabled flag controls whether the particle uses the position function or traditional motion mechanics
+     */
+    fun disableMotion(): ParticleBuilder {
+        motionEnabled = false
+        return this
+    }
+
+    /**
+     * Set jitter amount.
+     *
+     * Each tick there is a 1 in [chance] chance of `rand(-1 to 1) *` each of [value]'s components being added
+     * to the particle's motion.
+     */
+    fun setJitter(chance: Int, value: Vec3d): ParticleBuilder {
+        jitterMagnitude = value
+        jitterChance = 1f / chance
+        return this
+    }
+
+    /**
      * Set the scale function for the particle.
      */
     fun setScale(value: InterpFunction<Float>): ParticleBuilder {
         scaleFunc = value
+        return this
+    }
+
+    /**
+     * Shortcut for a static scale
+     */
+    fun setScale(value: Float): ParticleBuilder {
+        scaleFunc = StaticInterp(value)
         return this
     }
 
@@ -200,12 +400,28 @@ class ParticleBuilder(private var lifetime: Int) {
     }
 
     /**
+     * Shortcut for creating a static color
+     */
+    fun setColor(value: Color): ParticleBuilder {
+        colorFunc = StaticInterp(value)
+        return this
+    }
+
+    /**
      * Set the render function for the particle
      *
      * @see RenderFunctionBasic
      */
     fun setRender(value: RenderFunction): ParticleBuilder {
         renderFunc = value
+        return this
+    }
+
+    /**
+     * Shortcut for creating a basic render function
+     */
+    fun setRender(value: ResourceLocation): ParticleBuilder {
+        renderFunc = RenderFunctionBasic(value)
         return this
     }
 
@@ -222,24 +438,20 @@ class ParticleBuilder(private var lifetime: Int) {
     /**
      * Build an instance of the particle.
      *
-     * Returns null and prints a warning if the position function, color function, or render function are null.
+     * Returns null and prints a warning if the color function or render function are null.
      */
     fun build(world: World, pos: Vec3d): ParticleBase? {
-        val positionFunc_ = positionFunc
-        val colorFunc_ = colorFunc
         val renderFunc_ = renderFunc
 
-        if(positionFunc_ == null || colorFunc_ == null || renderFunc_ == null) {
-            var nullVars: String = ""
-            if(positionFunc_ == null) nullVars += "pos,"
-            if(colorFunc_ == null) nullVars += "color,"
-            if(renderFunc_ == null) nullVars += "render,"
-
-            LibrarianLog.warn("Particle functions were null: [$nullVars]")
+        if(renderFunc_ == null) {
+            LibrarianLog.warn("Particle render function was null!!")
             return null
         }
 
-        return ParticleBase(world, pos, lifetime, animStart, animOverflow, positionFunc_, easingFunc, colorFunc_, renderFunc_, movementMode, scaleFunc)
+        return ParticleBase(world, pos, lifetime, animStart, animOverflow,
+                positionFunc ?: StaticInterp(Vec3d.ZERO), easingFunc, colorFunc ?: StaticInterp(Color.WHITE),
+                renderFunc_, movementMode, scaleFunc,
+                motionEnabled, motion, acceleration, deceleration, friction, jitterMagnitude, jitterChance)
     }
 }
 
