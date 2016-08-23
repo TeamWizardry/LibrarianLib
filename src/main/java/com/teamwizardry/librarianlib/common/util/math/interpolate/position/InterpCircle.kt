@@ -17,7 +17,11 @@ import net.minecraft.util.math.Vec3d
 class InterpCircle @JvmOverloads constructor(val origin: Vec3d, normalVector: Vec3d, val radius: Float, val rotations: Float = 1f, val offset: Float = 0f) : InterpFunction<Vec3d> {
     val normal = normalVector.normalize()
 
-    private val perpX = normal cross Vec3d(0.0, 1.0, 0.0)
+    private val perpX =
+            if (normal cross Vec3d(0.0, 1.0, 0.0) == Vec3d(0.0,0.0,0.0))
+                Vec3d(1.0, 0.0, 0.0)
+            else
+                normal cross Vec3d(0.0, 1.0, 0.0)
     private val perpY = normal cross perpX
 
     override fun get(i: Float): Vec3d {

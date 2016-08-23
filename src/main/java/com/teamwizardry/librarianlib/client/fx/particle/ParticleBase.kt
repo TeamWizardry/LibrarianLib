@@ -44,7 +44,7 @@ class ParticleBase(
         val jitterChance: Float = 0.1f
 ) : Particle(world, 0.0, 0.0, 0.0) {
 
-    private var lastPos: Vec3d = positionFunc?.get(0f) ?: Vec3d.ZERO
+    private var lastPos: Vec3d = positionFunc.get(0f)
     private var jitterMotion: Vec3d = Vec3d.ZERO
 
     private val randomNum: Int = ThreadLocalRandom.current().nextInt()
@@ -85,37 +85,42 @@ class ParticleBase(
                 else
                     positionFunc.get(Math.min(1f, easing.get(i)))
                 )
-        pos += jitterMotion
-        if(motionEnabled) {
-            pos += motion
-
-            motion += acceleration
-            motion *= deceleration
-            if(this.isCollided)
-                motion *= friction
-        }
+        if(!motionEnabled)
+            pos += jitterMotion
 
         if(ThreadLocalRandom.current().nextFloat() < jitterChance) {
-            jitterMotion += jitterMagnitude * Vec3d(
+            var jitter = jitterMagnitude * Vec3d(
                     ThreadLocalRandom.current().nextDouble()*2.0 - 1.0,
                     ThreadLocalRandom.current().nextDouble()*2.0 - 1.0,
                     ThreadLocalRandom.current().nextDouble()*2.0 - 1.0
             )
+            if(motionEnabled)
+                motion += jitter
+            else
+                jitterMotion += jitter
         }
 
         if(movementMode == EnumMovementMode.PHASE) {
-            setPosition(pos + position)
+            setPosition(pos + position + motion)
         } else {
-            val direction: Vec3d
+            var direction: Vec3d
             if(movementMode == EnumMovementMode.IN_DIRECTION) {
                 direction = pos - lastPos
             } else { // effectivly `else if(movementMode == EnumMovementMode.TOWARD_POINT)`, only else to avoid errors
                 direction = pos - ( Vec3d(posX, posY, posZ) - position )
             }
+            direction += motion
             this.motionX = direction.xCoord
             this.motionY = direction.yCoord
             this.motionZ = direction.zCoord
             this.moveEntity(this.motionX, this.motionY, this.motionZ)
+        }
+
+        if(motionEnabled) {
+            motion += acceleration
+            motion *= deceleration
+            if(this.isCollided)
+                motion *= friction
         }
 
         lastPos = pos
@@ -167,13 +172,15 @@ class ParticleBuilder(private var lifetime: Int) {
     var movementMode: EnumMovementMode = EnumMovementMode.IN_DIRECTION
         private set
 
+    var positionOffset: Vec3d = Vec3d.ZERO
+        private set
     var motion: Vec3d = Vec3d.ZERO
         private set
-    var acceleration: Vec3d = Vec3d(0.0, -0.04*0.04, 0.0)
+    var acceleration: Vec3d = Vec3d(0.0, -0.01, 0.0)
         private set
-    var deceleration: Vec3d = Vec3d(0.98, 0.98, 0.98)
+    var deceleration: Vec3d = Vec3d(0.95, 0.95, 0.95)
         private set
-    var friction: Vec3d = Vec3d(0.7, 1.0, 0.7)
+    var friction: Vec3d = Vec3d(0.5, 1.0, 0.5)
         private set
     var jitterMagnitude: Vec3d = Vec3d(0.05, 0.05, 0.05)
         private set
@@ -221,8 +228,16 @@ class ParticleBuilder(private var lifetime: Int) {
      * @see InterpBezier3D
      * @see InterpUnion
      */
-    fun setPosition(value: InterpFunction<Vec3d>): ParticleBuilder {
+    fun setPositionFunction(value: InterpFunction<Vec3d>): ParticleBuilder {
         positionFunc = value
+        return this
+    }
+
+    /**
+     * An offset to add to the position passed in to [build()]
+     */
+    fun setPositionOffset(value: Vec3d): ParticleBuilder {
+        positionOffset = value
         return this
     }
 
@@ -448,7 +463,7 @@ class ParticleBuilder(private var lifetime: Int) {
             return null
         }
 
-        return ParticleBase(world, pos, lifetime, animStart, animOverflow,
+        return ParticleBase(world, pos + positionOffset, lifetime, animStart, animOverflow,
                 positionFunc ?: StaticInterp(Vec3d.ZERO), easingFunc, colorFunc ?: StaticInterp(Color.WHITE),
                 renderFunc_, movementMode, scaleFunc,
                 motionEnabled, motion, acceleration, deceleration, friction, jitterMagnitude, jitterChance)

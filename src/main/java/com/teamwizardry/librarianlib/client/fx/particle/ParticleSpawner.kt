@@ -64,7 +64,7 @@ object ParticleSpawner {
     @JvmOverloads
     fun spawn(builder: ParticleBuilder, world: World, curve: InterpFunction<Vec3d>, particleCount: Int, travelTime: Int = 0, callback: BiConsumer<Float, ParticleBuilder> = noop) {
         val actualParticleCount = modifyParticleCount(particleCount)
-        val particleSpan = if(particleCount == 0) 0f else 1f/(particleCount-1)
+        val particleSpan = if(particleCount == 1) 0f else 1f/(particleCount-1)
         for (i in 0..particleCount-1) {
             val t = particleSpan*i
             val tick = Math.floor(t*travelTime.toDouble()).toInt()
@@ -83,7 +83,7 @@ object ParticleSpawner {
                 2 -> 0.25f
                 else -> 1f
             }
-        return Math.max(1f, particleCount.toFloat() * mul).toInt()
+        return Math.max(2f, particleCount.toFloat() * mul).toInt()
     }
 
     private val noop = BiConsumer<Float, ParticleBuilder> { a, b -> }

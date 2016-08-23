@@ -16,7 +16,11 @@ class InterpHelix(
         val rotations: Float, val offset: Float
 ) : InterpFunction<Vec3d> {
     private val norm = (point2 - point1).normalize()
-    private val perpX = norm cross Vec3d(0.0, 1.0, 0.0)
+    private val perpX =
+            if (norm cross Vec3d(0.0, 1.0, 0.0) == Vec3d(0.0,0.0,0.0))
+                Vec3d(1.0, 0.0, 0.0)
+            else
+                norm cross Vec3d(0.0, 1.0, 0.0)
     private val perpY = norm cross perpX
 
     override fun get(i: Float): Vec3d {
