@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.common.util.math.interpolate
 
 /**
- * Created by TheCodeWarrior
+ * A function designed to interpolate based on an input between 0 and 1, inclusive
  */
 interface InterpFunction<T> {
     /**

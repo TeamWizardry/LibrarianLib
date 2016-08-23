@@ -12,10 +12,13 @@ import net.minecraft.util.math.Vec3d
 import java.awt.Color
 
 /**
- * Created by TheCodeWarrior
+ * Render a particle from the block texture map.
  */
 class RenderFunctionBasic(val texture: TextureAtlasSprite) : RenderFunction() {
 
+    /**
+     * Get [tex] from `Minecraft.getMinecraft().getTextureMapBlocks()` automatically
+     */
     constructor(tex: ResourceLocation) : this(Minecraft.getMinecraft().getTextureMapBlocks().getTextureExtry(tex.toString()))
 
     /**

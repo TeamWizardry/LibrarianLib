@@ -6,7 +6,10 @@ import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 
 /**
- * Created by TheCodeWarrior
+ * Create a helix with end origins at [point1] and [point2]. Radius at [point1] is [radius1], radius at [point2] is
+ * [radius2]. Completes [rotations] full rotations between 0 and 1, and the angle is offset by [offset].
+ *
+ * ([offset] is in complete rotations. 0.5 == 180°, 1 == 360°)
  */
 class InterpHelix(
         val point1: Vec3d, val point2: Vec3d, val radius1: Float, val radius2: Float,
@@ -25,10 +28,6 @@ class InterpHelix(
         val y = radius*MathHelper.sin((t * 2 * Math.PI).toFloat())
 
         return point1 + (point2-point1)*i + perpX*x + perpY*y
-    }
-
-    fun rot() {
-
     }
 
 }

@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.common.util.times
 import net.minecraft.util.math.Vec3d
 
 /**
- * Created by TheCodeWarrior
+ * Interpolate between start and end. `get(0)` equals [start], and `get(1)` equals [end]
  */
 class InterpLine(val start: Vec3d, val end: Vec3d) : InterpFunction<Vec3d> {
     override fun get(i: Float): Vec3d {

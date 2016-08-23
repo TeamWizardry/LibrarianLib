@@ -7,7 +7,10 @@ import com.teamwizardry.librarianlib.common.util.withY
 import net.minecraft.util.math.Vec3d
 
 /**
- * Created by TheCodeWarrior
+ * Create a Bézier curve from [start] to [end] with [startControl] and [endControl] as handles for the curvature
+ *
+ * ![Bézier curve image example](http://imgur.com/bkIoyyR) |
+ * P0 is [start], P1 is [startControl], P2 is [endControl], and P3 is [end]
  */
 class InterpBezier3D @JvmOverloads constructor(
         val start: Vec3d, val end: Vec3d,

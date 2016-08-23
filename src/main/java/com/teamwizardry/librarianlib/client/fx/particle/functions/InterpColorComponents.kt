@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.common.util.math.interpolate.InterpFunction
 import java.awt.Color
 
 /**
- * Created by TheCodeWarrior
+ * Interpolate each component of [a] to [b] separately
  */
 class InterpColorComponents(val a: Color, val b: Color) : InterpFunction<Color> {
     override fun get(i: Float): Color {

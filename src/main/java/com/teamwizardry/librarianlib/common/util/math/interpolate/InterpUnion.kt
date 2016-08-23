@@ -1,8 +1,5 @@
 package com.teamwizardry.librarianlib.common.util.math.interpolate
 
-/**
- * Created by TheCodeWarrior
- */
 class InterpUnionImpl<T> internal constructor(val list: MutableList<UnionEntry<T>>): InterpFunction<T> {
     override fun get(i: Float): T {
         var floored = Math.floor(i.toDouble()).toFloat()
@@ -14,11 +11,18 @@ class InterpUnionImpl<T> internal constructor(val list: MutableList<UnionEntry<T
     }
 }
 
+/**
+ * Creates InterpFunction unions.
+ *
+ * Each InterpFunction takes up `weight/totalWeight` time
+ */
 class InterpUnion<T>() {
     private val functions: MutableList<InterpFunction<T>> = mutableListOf()
     private val weights: MutableList<Float> = mutableListOf()
 
     /**
+     * Add an interpFunction
+     *
      * Returns self. Useful for chaining
      */
     fun with(f: InterpFunction<T>, w: Float): InterpUnion<T> {
@@ -28,6 +32,8 @@ class InterpUnion<T>() {
     }
 
     /**
+     * Add an InterpFunction
+     *
      * Returns the final result of the passed function, useful for generating the starting value of the next function
      */
     fun add(f: InterpFunction<T>, w: Float): T {
@@ -36,6 +42,9 @@ class InterpUnion<T>() {
         return f.get(1f)
     }
 
+    /**
+     * Create an instance of the InterpUnion implementation
+     */
     fun build(): InterpUnionImpl<T> {
         val entries = mutableListOf<UnionEntry<T>>()
         val totalWeight = weights.sum()

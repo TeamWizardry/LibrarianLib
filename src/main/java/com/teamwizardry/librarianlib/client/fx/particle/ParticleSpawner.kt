@@ -12,7 +12,7 @@ import java.util.function.BiConsumer
 import java.util.function.Consumer
 
 /**
- * Created by TheCodeWarrior
+ * Manages the spawning of particles along paths
  */
 object ParticleSpawner {
 
@@ -20,6 +20,9 @@ object ParticleSpawner {
         MinecraftForge.EVENT_BUS.register(this)
     }
 
+    /**
+     * The particles that are pending spawning
+     */
     private val pending: MutableSet<ParticleSpawn> = mutableSetOf()
 
     @SubscribeEvent
@@ -43,8 +46,24 @@ object ParticleSpawner {
         pending.removeAll { it.ticksTillSpawn == 0 }
     }
 
+    /**
+     * Kotlin wrapper for [spawn]. Uses kotlin lambdas instead of SAM classes
+     */
+    fun spawn(builder: ParticleBuilder, world: World, curve: InterpFunction<Vec3d>, particleCount: Int, travelTime: Int = 0, callback: (Float, ParticleBuilder) -> Unit = noopLambda) {
+        spawn(builder, world, curve, particleCount, travelTime, BiConsumer<Float, ParticleBuilder>(callback))
+    }
+
+    /**
+     * Spawn [particleCount] particles along [curve], taking [travelTime] ticks to spawn them.
+     *
+     * [callback] is called before each particle is created, and is supplied with the value from 0-1 along [curve] and
+     * the builder itself. Allows setings to be changed for each particle. All particles are created immediately and
+     * spawned at varied times according to [travelTime].
+     */
+    @JvmStatic
     @JvmOverloads
     fun spawn(builder: ParticleBuilder, world: World, curve: InterpFunction<Vec3d>, particleCount: Int, travelTime: Int = 0, callback: BiConsumer<Float, ParticleBuilder> = noop) {
+        val actualParticleCount = modifyParticleCount(particleCount)
         val particleSpan = if(particleCount == 0) 0f else 1f/(particleCount-1)
         for (i in 0..particleCount-1) {
             val t = particleSpan*i
@@ -56,7 +75,19 @@ object ParticleSpawner {
         }
     }
 
+    private fun  modifyParticleCount(particleCount: Int): Int {
+        val mul: Float =
+            when(Minecraft.getMinecraft().gameSettings.particleSetting) {
+                0 -> 1f
+                1 -> 0.5f
+                2 -> 0.25f
+                else -> 1f
+            }
+        return Math.max(1f, particleCount.toFloat() * mul).toInt()
+    }
+
     private val noop = BiConsumer<Float, ParticleBuilder> { a, b -> }
+    private val noopLambda: (Float, ParticleBuilder) -> Unit = { a, b -> }
 }
 
 private data class ParticleSpawn(val particle: ParticleBase, var ticksTillSpawn: Int)
