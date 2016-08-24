@@ -4,8 +4,6 @@ import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.client.fx.particle.functions.RenderFunction
 import com.teamwizardry.librarianlib.common.util.math.interpolate.InterpFunction
 import com.teamwizardry.librarianlib.common.util.math.interpolate.StaticInterp
-import com.teamwizardry.librarianlib.common.util.minus
-import com.teamwizardry.librarianlib.common.util.plus
 import net.minecraft.client.Minecraft
 import net.minecraft.client.particle.Particle
 import net.minecraft.client.renderer.VertexBuffer
@@ -16,8 +14,10 @@ import java.awt.Color
 import java.util.*
 import com.teamwizardry.librarianlib.common.util.math.interpolate.position.*
 import com.teamwizardry.librarianlib.client.fx.particle.functions.*
-import com.teamwizardry.librarianlib.common.util.times
+import com.teamwizardry.librarianlib.common.util.*
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.BlockPos
 import java.util.concurrent.ThreadLocalRandom
 
 /**
@@ -42,15 +42,19 @@ open class ParticleBase(
         val friction: Vec3d,
         val jitterMagnitude: Vec3d = Vec3d(0.05, 0.05, 0.05),
         val jitterChance: Float = 0.1f
-) : Particle(world, 0.0, 0.0, 0.0) {
+) {
 
     open fun tickFirst() {}
     open fun tickLast() {}
 
-    val pos: Vec3d
-        get() {
-            return Vec3d(posX, posY, posZ)
-        }
+    val radius: Vec3d = Vec3d(0.1, 0.1, 0.1)
+
+    var pos: Vec3d = position
+    var prevPos: Vec3d = pos
+    var velocity: Vec3d = motion
+    var age: Int = 0
+    var isCollided: Boolean = false
+    var entityBoundingBox: AxisAlignedBB = createBB(pos - radius, pos + radius)
 
     private var lastPos: Vec3d = positionFunc.get(0f)
     private var jitterMotion: Vec3d = Vec3d.ZERO
@@ -60,33 +64,17 @@ open class ParticleBase(
     internal var depthSquared: Double = 0.0
 
     init {
-        particleMaxAge = lifetime
         setPosition(lastPos + position)
-        this.prevPosX = this.posX
-        this.prevPosY = this.posY
-        this.prevPosZ = this.posZ
-
-        this.particleAlpha = 0.5f // just so minecraft renders the particle on the translucent layer
     }
 
-    private fun setPosition(vec: Vec3d) {
-        setPosition(vec.xCoord, vec.yCoord, vec.zCoord)
-    }
-
-    override fun getFXLayer(): Int {
-        return 1
-    }
-
-
-    override fun onUpdate() {
+    fun onUpdate() {
         tickFirst()
-        particleAge++
-        this.prevPosX = this.posX
-        this.prevPosY = this.posY
-        this.prevPosZ = this.posZ
-        val i = ( particleAge.toFloat() + animStart) / ( particleMaxAge.toFloat() + animOverflow - animStart )
+        age++
+        prevPos = pos
 
-        if(particleAge > particleMaxAge) {
+        val i = ( age.toFloat() + animStart) / ( lifetime.toFloat() + animOverflow - animStart )
+
+        if(age > lifetime) {
             this.setExpired()
         }
 
@@ -118,13 +106,11 @@ open class ParticleBase(
             if(movementMode == EnumMovementMode.IN_DIRECTION) {
                 direction = pos - lastPos
             } else { // effectivly `else if(movementMode == EnumMovementMode.TOWARD_POINT)`, only else to avoid errors
-                direction = pos - ( Vec3d(posX, posY, posZ) - position )
+                direction = pos - ( this.pos - position )
             }
             direction += motion
-            this.motionX = direction.xCoord
-            this.motionY = direction.yCoord
-            this.motionZ = direction.zCoord
-            this.moveEntity(this.motionX, this.motionY, this.motionZ)
+            this.velocity = direction
+            this.moveEntity()
         }
 
         if(motionEnabled) {
@@ -139,17 +125,11 @@ open class ParticleBase(
         tickLast()
     }
 
-    override fun renderParticle(worldRendererIn: VertexBuffer, entityIn: Entity?, partialTicks: Float, rotationX: Float, rotationZ: Float, rotationYZ: Float, rotationXY: Float, rotationXZ: Float) {
+    fun render(worldRendererIn: VertexBuffer, info: ParticleRenderInfo) {
 
-    }
+        val i = Math.min(1f, ( age.toFloat() + info.partialTicks ) / lifetime.toFloat())
 
-    fun renderActual(worldRendererIn: VertexBuffer, info: ParticleRenderInfo) {
-
-        val i = Math.min(1f, ( particleAge.toFloat() + info.partialTicks ) / particleMaxAge.toFloat())
-
-        val posX = this.prevPosX + (this.posX - this.prevPosX) * info.partialTicks.toDouble() - Particle.interpPosX
-        val posY = this.prevPosY + (this.posY - this.prevPosY) * info.partialTicks.toDouble() - Particle.interpPosY
-        val posZ = this.prevPosZ + (this.posZ - this.prevPosZ) * info.partialTicks.toDouble() - Particle.interpPosZ
+        val pos = this.prevPos + (this.pos - prevPos) * info.partialTicks.toDouble() - Vec3d(Particle.interpPosX, Particle.interpPosY, Particle.interpPosZ)
 
         val brightness = this.getBrightnessForRender(info.partialTicks)
         val skyLight = brightness shr 16 and 65535
@@ -157,11 +137,96 @@ open class ParticleBase(
 
         renderFunc.render(i, this, colorFunc.get(i), worldRendererIn, info.entityIn, info.partialTicks,
                 info.rotationX, info.rotationZ, info.rotationYZ, info.rotationXY, info.rotationXZ,
-                scaleFunc.get(i), posX, posY, posZ, skyLight, blockLight)
+                scaleFunc.get(i), pos, skyLight, blockLight)
     }
 
-    override fun isTransparent(): Boolean {
-        return true
+    /*
+    COPIED FROM MINECRAFT'S PARTICLE CLASS:
+     */
+
+    private var isExpiredStore: Boolean = false
+    protected var canCollide: Boolean = true
+
+    fun setExpired() {
+        this.isExpiredStore = true
+    }
+
+    fun setPosition(p: Vec3d) {
+        this.pos = p
+        this.entityBoundingBox = AxisAlignedBB(p - radius, p + radius)
+    }
+
+    fun moveEntity() {
+        var x = this.velocity.xCoord
+        var y = this.velocity.yCoord
+        var z = this.velocity.zCoord
+        val d0 = y
+
+        if (this.canCollide) {
+            val list = this.world.getCollisionBoxes(null, this.entityBoundingBox.addCoord(x, y, z))
+
+            for (axisalignedbb in list) {
+                y = axisalignedbb.calculateYOffset(this.entityBoundingBox, y)
+            }
+
+            this.entityBoundingBox = this.entityBoundingBox.offset(0.0, y, 0.0)
+
+            for (axisalignedbb1 in list) {
+                x = axisalignedbb1.calculateXOffset(this.entityBoundingBox, x)
+            }
+
+            this.entityBoundingBox = this.entityBoundingBox.offset(x, 0.0, 0.0)
+
+            for (axisalignedbb2 in list) {
+                z = axisalignedbb2.calculateZOffset(this.entityBoundingBox, z)
+            }
+
+            this.entityBoundingBox = this.entityBoundingBox.offset(0.0, 0.0, z)
+        } else {
+            this.entityBoundingBox = this.entityBoundingBox.offset(x, y, z)
+        }
+
+        this.resetPositionToBB()
+
+        if (x != x) {
+            this.isCollided = true
+            this.velocity = this.velocity.withX(0)
+        }
+
+        if (y != y) {
+            this.isCollided = true
+            this.velocity = this.velocity.withY(0)
+        }
+
+        if (z != z) {
+            this.isCollided = true
+            this.velocity = this.velocity.withZ(0)
+        }
+    }
+
+    protected fun resetPositionToBB() {
+        val axisalignedbb = this.entityBoundingBox
+        this.pos = Vec3d(
+                (axisalignedbb.minX + axisalignedbb.maxX) / 2.0,
+                (axisalignedbb.minY + axisalignedbb.maxY) / 2.0,
+                (axisalignedbb.minZ + axisalignedbb.maxZ) / 2.0
+        )
+    }
+
+    fun getBrightnessForRender(p_189214_1_: Float): Int {
+        val blockpos = BlockPos(this.pos.xCoord, this.pos.yCoord, this.pos.zCoord)
+        return if (this.world.isBlockLoaded(blockpos)) this.world.getCombinedLight(blockpos, 0) else 0
+    }
+
+    /**
+     * Returns true if this effect has not yet expired. "I feel happy! I feel happy!"
+     */
+    fun isAlive(): Boolean {
+        return !this.isExpiredStore
+    }
+
+    fun createBB(min: Vec3d, max: Vec3d): AxisAlignedBB {
+        return AxisAlignedBB(min.xCoord, min.yCoord, min.zCoord, max.xCoord, max.yCoord, max.zCoord)
     }
 }
 

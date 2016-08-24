@@ -78,7 +78,7 @@ object ParticleRenderManager {
     fun debug(event: RenderGameOverlayEvent.Text) {
         if(!Minecraft.getMinecraft().gameSettings.showDebugInfo)
             return
-        
+
         event.left.add("LibrarianLib Particles:")
         layers.forEach {
             event.left.add("  " + it.name + " - " + it.particleList.size)
@@ -203,7 +203,7 @@ abstract class ParticleRenderLayer(val name: String, val shouldSort: Boolean) {
         setup()
 
         particleList.forEach {
-            it.renderActual(vb, renderInfo)
+            it.render(vb, renderInfo)
         }
 
         teardown()
@@ -223,7 +223,7 @@ abstract class ParticleRenderLayer(val name: String, val shouldSort: Boolean) {
 
         val iter = particleList.iterator()
         for(particle in iter) {
-            if(!particle.isAlive) {
+            if(!particle.isAlive()) {
                 iter.remove()
             }
         }
