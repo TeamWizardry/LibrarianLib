@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.client.fx.particle.functions
 
 import com.teamwizardry.librarianlib.client.fx.particle.ParticleBase
+import com.teamwizardry.librarianlib.client.fx.particle.ParticleRenderManager
 import net.minecraft.client.Minecraft
 import net.minecraft.client.particle.Particle
 import net.minecraft.client.renderer.VertexBuffer
@@ -14,7 +15,7 @@ import java.awt.Color
 /**
  * Render a particle from the block texture map.
  */
-class RenderFunctionBasic(val texture: TextureAtlasSprite) : RenderFunction() {
+class RenderFunctionBasic(val texture: TextureAtlasSprite) : RenderFunction(ParticleRenderManager.LAYER_BLOCK_MAP) {
 
     /**
      * Get [tex] from `Minecraft.getMinecraft().getTextureMapBlocks()` automatically

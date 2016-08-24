@@ -40,9 +40,7 @@ object ParticleSpawner {
     }
 
     fun tick() {
-        val effectRenderer = Minecraft.getMinecraft().effectRenderer
-
-        pending.forEach { if( it.ticksTillSpawn == 0 ) effectRenderer.addEffect(it.particle) }
+        pending.forEach { if( it.ticksTillSpawn == 0 ) ParticleRenderManager.spawn(it.particle) }
         pending.removeAll { it.ticksTillSpawn <= 0 }
 
         pending.forEach { it.ticksTillSpawn-- }
