@@ -30,10 +30,11 @@ object ParticleRenderManager {
         override fun setup() {
             Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
+            GlStateManager.pushAttrib()
             GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
-            GlStateManager.depthMask(false);
+//            GlStateManager.depthMask(false);
             GlStateManager.enableBlend();
-            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+//            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
             GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
             GlStateManager.disableLighting();
             GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
@@ -48,10 +49,12 @@ object ParticleRenderManager {
             val tessellator = Tessellator.getInstance()
             tessellator.draw()
 
+//            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
             GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
             GlStateManager.disableBlend();
-            GlStateManager.depthMask(true);
+//            GlStateManager.depthMask(true);
             GL11.glPopAttrib();
+            GlStateManager.popAttrib()
         }
 
     }
@@ -92,10 +95,17 @@ object ParticleRenderManager {
         val profiler = Minecraft.getMinecraft().mcProfiler
         profiler.startSection("liblib_particles")
 
-        profiler.startSection("update")
+        profiler.startSection("clean")
         layers.forEach {
             profiler.startSection(it.name)
             it.clean()
+            profiler.endSection()
+        }
+
+        profiler.endStartSection("update")
+
+        layers.forEach {
+            profiler.startSection(it.name)
             it.update()
             profiler.endSection()
         }
@@ -107,6 +117,8 @@ object ParticleRenderManager {
             it.sort()
             profiler.endSection()
         }
+
+        profiler.endSection()
 
         profiler.endSection()
     }
@@ -214,12 +226,10 @@ abstract class ParticleRenderLayer(val name: String, val shouldSort: Boolean) {
         particleList.clear()
     }
 
-    private var lastCleanTick: Int = ClientTickHandler.ticksInGame
-
     fun clean() {
-        if(ClientTickHandler.ticksInGame == lastCleanTick)
-            return
-        lastCleanTick = ClientTickHandler.ticksInGame
+        if(particleList.size > 100000)
+            clear() // sometimes the system sprials for no aparent reason
+
 
         val iter = particleList.iterator()
         for(particle in iter) {
