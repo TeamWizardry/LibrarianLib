@@ -188,17 +188,17 @@ open class ParticleBase(
 
         this.resetPositionToBB()
 
-        if (x != x) {
+        if (x != velocity.xCoord) {
             this.isCollided = true
             this.velocity = this.velocity.withX(0)
         }
 
-        if (y != y) {
+        if (y != velocity.yCoord) {
             this.isCollided = true
             this.velocity = this.velocity.withY(0)
         }
 
-        if (z != z) {
+        if (z != velocity.zCoord) {
             this.isCollided = true
             this.velocity = this.velocity.withZ(0)
         }

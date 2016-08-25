@@ -24,7 +24,13 @@ object RaycastUtils {
     @JvmOverloads
     fun raycast(world: World, origin: Vec3d, ray: Vec3d, len: Double, stopOnLiquid: Boolean = false): RayTraceResult? {
         val end = origin.add(ray.normalize().scale(len))
-        val pos = world.rayTraceBlocks(origin, end, stopOnLiquid)
+        return raycast(world, origin, end, stopOnLiquid)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun raycast(world: World, start: Vec3d, end: Vec3d, stopOnLiquid: Boolean = false): RayTraceResult? {
+        val pos = world.rayTraceBlocks(start, end, stopOnLiquid)
         return pos
     }
 

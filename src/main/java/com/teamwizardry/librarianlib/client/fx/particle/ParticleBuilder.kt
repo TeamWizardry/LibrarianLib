@@ -44,7 +44,7 @@ class ParticleBuilder(private var lifetime: Int) {
         private set
     var deceleration: Vec3d = Vec3d(0.95, 0.95, 0.95)
         private set
-    var friction: Vec3d = Vec3d(0.5, 1.0, 0.5)
+    var friction: Vec3d = Vec3d(0.9, 1.0, 0.9)
         private set
     var jitterMagnitude: Vec3d = Vec3d(0.05, 0.05, 0.05)
         private set
