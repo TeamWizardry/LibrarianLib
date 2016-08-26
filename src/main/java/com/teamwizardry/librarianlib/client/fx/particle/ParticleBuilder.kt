@@ -300,7 +300,7 @@ class ParticleBuilder(private var lifetime: Int) {
      * Shortcut for creating a basic render function
      */
     fun setRender(value: ResourceLocation): ParticleBuilder {
-        renderFunc = RenderFunctionBasic(value)
+        renderFunc = RenderFunctionBasic(value, false)
         return this
     }
 

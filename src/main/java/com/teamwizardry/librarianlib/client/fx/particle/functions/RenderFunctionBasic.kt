@@ -15,12 +15,12 @@ import java.awt.Color
 /**
  * Render a particle from the block texture map.
  */
-class RenderFunctionBasic(val texture: TextureAtlasSprite) : RenderFunction(ParticleRenderManager.LAYER_BLOCK_MAP) {
+class RenderFunctionBasic(val texture: TextureAtlasSprite, flatLayer: Boolean) : RenderFunction(if(flatLayer) ParticleRenderManager.LAYER_BLOCK_MAP else ParticleRenderManager.LAYER_BLOCK_MAP_ADDITIVE) {
 
     /**
      * Get [tex] from `Minecraft.getMinecraft().getTextureMapBlocks()` automatically
      */
-    constructor(tex: ResourceLocation) : this(Minecraft.getMinecraft().getTextureMapBlocks().getTextureExtry(tex.toString()))
+    constructor(tex: ResourceLocation, flatLayer: Boolean) : this(Minecraft.getMinecraft().getTextureMapBlocks().getTextureExtry(tex.toString()), flatLayer)
 
     /**
      * `i` is from 0-1 along the animation
@@ -41,7 +41,7 @@ class RenderFunctionBasic(val texture: TextureAtlasSprite) : RenderFunction(Part
                 Vec3d(( rotationX * radius + rotationXY * radius).toDouble(), ( rotationZ * radius).toDouble(), ( rotationYZ * radius + rotationXZ * radius).toDouble()),
                 Vec3d(( rotationX * radius - rotationXY * radius).toDouble(), (-rotationZ * radius).toDouble(), ( rotationYZ * radius - rotationXZ * radius).toDouble())
         )
-        
+
         worldRendererIn.pos(pos.xCoord + vertOffsets[0].xCoord, pos.yCoord + vertOffsets[0].yCoord, pos.zCoord + vertOffsets[0].zCoord).tex(uMax, vMax).color(color.red, color.green, color.blue, color.alpha).lightmap(skyLight, blockLight).endVertex()
         worldRendererIn.pos(pos.xCoord + vertOffsets[1].xCoord, pos.yCoord + vertOffsets[1].yCoord, pos.zCoord + vertOffsets[1].zCoord).tex(uMax, vMin).color(color.red, color.green, color.blue, color.alpha).lightmap(skyLight, blockLight).endVertex()
         worldRendererIn.pos(pos.xCoord + vertOffsets[2].xCoord, pos.yCoord + vertOffsets[2].yCoord, pos.zCoord + vertOffsets[2].zCoord).tex(uMin, vMin).color(color.red, color.green, color.blue, color.alpha).lightmap(skyLight, blockLight).endVertex()

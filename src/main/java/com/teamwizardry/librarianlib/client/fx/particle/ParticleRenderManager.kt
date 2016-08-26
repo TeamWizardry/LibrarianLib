@@ -26,6 +26,40 @@ import java.util.*
 object ParticleRenderManager {
 
     @JvmStatic
+    val LAYER_BLOCK_MAP_ADDITIVE = object : ParticleRenderLayer("blockMap", true) {
+        override fun setup() {
+            Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+
+            GlStateManager.pushAttrib()
+            GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
+//            GlStateManager.depthMask(false);
+            GlStateManager.enableBlend();
+            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+            GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
+            GlStateManager.disableLighting();
+            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+
+
+            val tessellator = Tessellator.getInstance()
+            val vertexbuffer = tessellator.buffer
+            vertexbuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP)
+        }
+
+        override fun teardown() {
+            val tessellator = Tessellator.getInstance()
+            tessellator.draw()
+
+            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+            GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
+            GlStateManager.disableBlend();
+//            GlStateManager.depthMask(true);
+            GL11.glPopAttrib();
+            GlStateManager.popAttrib()
+        }
+
+    }
+
+    @JvmStatic
     val LAYER_BLOCK_MAP = object : ParticleRenderLayer("blockMap", true) {
         override fun setup() {
             Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);

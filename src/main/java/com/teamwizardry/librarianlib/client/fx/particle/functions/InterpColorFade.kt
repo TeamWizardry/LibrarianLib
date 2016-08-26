@@ -14,14 +14,14 @@ class InterpColorFade(val color: Color, fadeIn: Int, normal: Int, fadeOut: Int) 
     val fadeOutStart = fadeOut.toFloat() / (fadeIn + normal + fadeOut)
 
     override fun get(i: Float): Color {
-        var alpha = color.alpha/255f
+        var alpha = color.alpha
         if(i <= fadeInEnd && fadeInEnd != 0f) {
-            alpha = i / fadeInEnd
+            alpha = (alpha * (i / fadeInEnd) ).toInt()
         }
         if(i >= fadeOutStart && fadeOutStart != 1f) {
-            alpha = ( i - fadeOutStart ) / (1 - fadeOutStart)
+            alpha *= ( alpha * ( ( i - fadeOutStart ) / (1 - fadeOutStart) ) ).toInt()
         }
-        return Color(color.rgb or (( alpha * 255 ).toInt() shl 24 ))
+        return Color(color.rgb and 0x00FFFFFF or (( alpha * 255 ).toInt() shl 24 ), true)
     }
 
 }
