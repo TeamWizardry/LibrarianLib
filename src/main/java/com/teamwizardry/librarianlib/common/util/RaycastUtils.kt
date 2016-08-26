@@ -30,7 +30,7 @@ object RaycastUtils {
     @JvmStatic
     @JvmOverloads
     fun raycast(world: World, start: Vec3d, end: Vec3d, stopOnLiquid: Boolean = false): RayTraceResult? {
-        val pos = world.rayTraceBlocks(start, end, stopOnLiquid)
+        val pos = world.rayTraceBlocks(start, end, stopOnLiquid, false, true)
         return pos
     }
 
