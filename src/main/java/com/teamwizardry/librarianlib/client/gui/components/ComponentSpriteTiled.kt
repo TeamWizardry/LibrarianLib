@@ -68,6 +68,8 @@ open class ComponentSpriteTiled @JvmOverloads constructor(protected var main: Sp
     }
 
     fun draw(x: Float, y: Float, width: Int, height: Int) {
+        middle.tex.bind()
+
         DrawingUtil.startDrawingSession()
 
         val insideX = x + width - borderSize

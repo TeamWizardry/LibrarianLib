@@ -46,20 +46,31 @@ class SpritesMetadataSectionSerializer : BaseMetadataSectionSerializer<SpritesMe
             val h = JsonUtils.getInt(arr.get(3), "spritesheet{sprites{$name[3]")
 
             // frames
-            val frames: IntArray
+            val frames_: IntArray
             if (obj.get("frames").isJsonArray) {
                 arr = JsonUtils.getJsonArray(obj.get("frames"), "spritesheet{sprites{$name{frames")
-                frames = IntArray(arr.size())
-                for (i in frames.indices) {
-                    frames[i] = JsonUtils.getInt(arr.get(i), "spritesheet{sprites{$name{frames[$i]")
+                frames_ = IntArray(arr.size())
+                for (i in frames_.indices) {
+                    frames_[i] = JsonUtils.getInt(arr.get(i), "spritesheet{sprites{$name{frames[$i]")
                 }
             } else {
-                frames = IntArray(JsonUtils.getInt(obj.get("frames"), "spritesheet{sprites{$name{frames"))
-                for (i in frames.indices) {
-                    frames[i] = i
+                frames_ = IntArray(JsonUtils.getInt(obj.get("frames"), "spritesheet{sprites{$name{frames"))
+                for (i in frames_.indices) {
+                    frames_[i] = i
                 }
             }
 
+            val frameTime = JsonUtils.getInt(obj, "frameTime", 1);
+
+            val frames: IntArray = IntArray(frames_.size * frameTime)
+
+            var j = 0
+            for(i in frames_) {
+                for(k in 1..frameTime) {
+                    frames[j] =  i
+                    j++
+                }
+            }
 
             // animation offset
             var offsetU = 0
@@ -68,8 +79,8 @@ class SpritesMetadataSectionSerializer : BaseMetadataSectionSerializer<SpritesMe
                 arr = JsonUtils.getJsonArray(obj.get("offset"), "spritesheet{sprites{$name}{offset}")
                 if (arr.size() < 2)
                     throw JsonSyntaxException("expected spritesheet{sprites{" + name + "{offset to have a length of 2, was " + arr.toString())
-                offsetU = JsonUtils.getInt(arr.get(0), "spritesheet{sprites{$name{offset[0]") * w
-                offsetV = JsonUtils.getInt(arr.get(1), "spritesheet{sprites{$name{offset[1]") * h
+                offsetU = JsonUtils.getInt(arr.get(0), "spritesheet{sprites{$name{offset[0]")
+                offsetV = JsonUtils.getInt(arr.get(1), "spritesheet{sprites{$name{offset[1]")
             }
 
             // create def
