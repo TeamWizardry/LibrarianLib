@@ -41,10 +41,8 @@ object ParticleSpawner {
     }
 
     fun tick() {
-        pending.forEach { if( it.ticksTillSpawn == 0 ) ParticleRenderManager.spawn(it.particle) }
-        pending.removeAll { it.ticksTillSpawn <= 0 }
-
-        pending.forEach { it.ticksTillSpawn-- }
+        pending.forEach { if( it.ticksTillSpawn <= 0 ) ParticleRenderManager.spawn(it.particle) }
+        pending.removeAll { it.ticksTillSpawn-- <= 0 }
     }
 
     /**
@@ -90,4 +88,10 @@ object ParticleSpawner {
     private val noopLambda: (Float, ParticleBuilder) -> Unit = { a, b -> }
 }
 
-private data class ParticleSpawn(val particle: ParticleBase, var ticksTillSpawn: Int)
+private data class ParticleSpawn private constructor(val particle: ParticleBase) {
+    var ticksTillSpawn = 0
+
+    constructor(particle: ParticleBase, ticksTillSpawn: Int) : this(particle) {
+        this.ticksTillSpawn = ticksTillSpawn
+    }
+}

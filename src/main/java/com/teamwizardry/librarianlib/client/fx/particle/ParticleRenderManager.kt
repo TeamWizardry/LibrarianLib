@@ -26,7 +26,7 @@ import java.util.*
 object ParticleRenderManager {
 
     @JvmStatic
-    val LAYER_BLOCK_MAP_ADDITIVE = object : ParticleRenderLayer("blockMap", true) {
+    val LAYER_BLOCK_MAP_ADDITIVE = object : ParticleRenderLayer("blockMap+", true) {
         override fun setup() {
             Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
@@ -98,6 +98,7 @@ object ParticleRenderManager {
 
     init {
         register(LAYER_BLOCK_MAP)
+        register(LAYER_BLOCK_MAP_ADDITIVE)
         MinecraftForge.EVENT_BUS.register(this)
     }
 
