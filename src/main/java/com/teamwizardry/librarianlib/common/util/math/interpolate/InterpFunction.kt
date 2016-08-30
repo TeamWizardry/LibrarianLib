@@ -11,6 +11,8 @@ interface InterpFunction<T> {
 
     fun reverse(): InterpFunction<T> = ReversedInterpFunction(this)
 
+    fun list(points: Int): MutableList<T> = InterpListGenerator.getList(this, points)
+    
     companion object {
         val ONE_TO_ONE: InterpFunction<Float> = OneToOneInterp()
     }
