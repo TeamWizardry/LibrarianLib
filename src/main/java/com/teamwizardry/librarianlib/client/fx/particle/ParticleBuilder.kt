@@ -6,10 +6,12 @@ import com.teamwizardry.librarianlib.client.fx.particle.functions.RenderFunction
 import com.teamwizardry.librarianlib.common.util.math.interpolate.InterpFunction
 import com.teamwizardry.librarianlib.common.util.math.interpolate.StaticInterp
 import com.teamwizardry.librarianlib.common.util.plus
+import com.teamwizardry.librarianlib.common.util.times
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import java.awt.Color
+import java.util.concurrent.ThreadLocalRandom
 import java.util.function.Consumer
 
 /**
@@ -371,6 +373,7 @@ class ParticleBuilder(private var lifetime: Int) {
         return this
     }
 
+    // region Randomization lambdas
     /**
      * Clear the randomization lambdas
      */
@@ -394,6 +397,44 @@ class ParticleBuilder(private var lifetime: Int) {
         randomizationLambdas.add(Consumer<ParticleBuilder>(r))
         return this
     }
+    // endregion
+
+    // region Default randomizations
+
+    /**
+     * Sets the default randomization flag
+     *
+     * The default randomization flag controls whether to randomize some of the varibles automatically when building
+     * a particle. (by default it randomizes Position, Lifetime, Anim Start, Anim End, and Motion)
+     */
+    fun setRandomEnabled(value: Boolean): ParticleBuilder {
+        defaultRandomizations = value
+        return this
+    }
+
+    /**
+     * Sets the default randomization flag to true
+     *
+     * The default randomization flag controls whether to randomize some of the varibles automatically when building
+     * a particle. (by default it randomizes Position, Lifetime, Anim Start, Anim End, and Motion)
+     */
+    fun enableRandom(): ParticleBuilder {
+        defaultRandomizations = true
+        return this
+    }
+
+    /**
+     * Sets the default randomization flag to false
+     *
+     * The default randomization flag controls whether to randomize some of the varibles automatically when building
+     * a particle. (by default it randomizes Position, Lifetime, Anim Start, Anim End, and Motion)
+     */
+    fun disableRandom(): ParticleBuilder {
+        defaultRandomizations = false
+        return this
+    }
+
+    // endregion
 
     // endregion
 
@@ -445,6 +486,9 @@ class ParticleBuilder(private var lifetime: Int) {
     var jitterChance: Float = 0.0f
         private set
     var randomizationLambdas: MutableList<Consumer<ParticleBuilder>> = mutableListOf()
+        private set
+    var defaultRandomizations = true
+        private set
 
     /**
      * Set the number of ticks the particle will live
@@ -462,6 +506,36 @@ class ParticleBuilder(private var lifetime: Int) {
     fun build(world: World, pos: Vec3d): ParticleBase? {
         randomizationLambdas.forEach { it.accept(this) }
 
+        var pos_ = pos + positionOffset
+        var lifetime_ = lifetime
+        var animStart_ = animStart
+        var animEnd_ = animEnd
+        var motion_ = motion
+
+        if(defaultRandomizations) {
+            val posRandMagnitude = 0.1f
+            val motionRandMagnitude = 0.01f
+            val lifetimeRandom = lifetime * 0.1
+            val animRandom = 0.05
+
+            pos_ += Vec3d(
+                    (ThreadLocalRandom.current().nextDouble()-0.5)*posRandMagnitude,
+                    (ThreadLocalRandom.current().nextDouble()-0.5)*posRandMagnitude,
+                    (ThreadLocalRandom.current().nextDouble()-0.5)*posRandMagnitude
+            )
+
+            motion_ += Vec3d(
+                    (ThreadLocalRandom.current().nextDouble()-0.5)*motionRandMagnitude,
+                    (ThreadLocalRandom.current().nextDouble()-0.5)*motionRandMagnitude,
+                    (ThreadLocalRandom.current().nextDouble()-0.5)*motionRandMagnitude
+            )
+
+            lifetime_ += ( (ThreadLocalRandom.current().nextDouble()-0.5)*lifetimeRandom ).toInt()
+
+            animStart_ += ( (ThreadLocalRandom.current().nextDouble()-0.5)*animRandom ).toFloat()
+            animEnd_   += ( (ThreadLocalRandom.current().nextDouble()-0.5)*animRandom ).toFloat()
+        }
+
         val renderFunc_ = renderFunc
 
         if(renderFunc_ == null) {
@@ -469,10 +543,10 @@ class ParticleBuilder(private var lifetime: Int) {
             return null
         }
 
-        return ParticleBase(world, pos + positionOffset, lifetime, animStart, animEnd,
+        return ParticleBase(world, pos_, lifetime_, animStart_, animEnd_,
                 positionFunc ?: StaticInterp(Vec3d.ZERO), colorFunc ?: StaticInterp(Color.WHITE), alphaFunc,
                 renderFunc_, movementMode, scaleFunc,
-                motionEnabled, positionEnabled, canCollide, motion, acceleration, deceleration, friction, jitterMagnitude, jitterChance)
+                motionEnabled, positionEnabled, canCollide, motion_, acceleration, deceleration, friction, jitterMagnitude, jitterChance)
     }
 
     /**
@@ -525,5 +599,7 @@ class ParticleBuilder(private var lifetime: Int) {
 
         v.randomizationLambdas.clear()
         v.randomizationLambdas.addAll(this.randomizationLambdas)
+
+        v.defaultRandomizations = this.defaultRandomizations
     }
 }
