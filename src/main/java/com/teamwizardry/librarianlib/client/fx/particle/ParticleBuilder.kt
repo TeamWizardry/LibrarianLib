@@ -10,6 +10,7 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import java.awt.Color
+import java.util.function.Consumer
 
 /**
  * Create a particle builder
@@ -19,66 +20,116 @@ import java.awt.Color
  *
  */
 class ParticleBuilder(private var lifetime: Int) {
-    var animOverflow: Int = 0
-        private set
-    var animStart: Int = 0
-        private set
-    var positionFunc: InterpFunction<Vec3d>? = null
-        private set
-    var easingFunc: InterpFunction<Float> = InterpFunction.ONE_TO_ONE
-        private set
-    var scaleFunc: InterpFunction<Float> = StaticInterp(1f)
-        private set
-    var colorFunc: InterpFunction<Color>? = null
-        private set
-    var renderFunc: RenderFunction? = null
-        private set
-    var movementMode: EnumMovementMode = EnumMovementMode.IN_DIRECTION
-        private set
-
-    var positionOffset: Vec3d = Vec3d.ZERO
-        private set
-    var motion: Vec3d = Vec3d.ZERO
-        private set
-    var acceleration: Vec3d = Vec3d(0.0, -0.01, 0.0)
-        private set
-    var deceleration: Vec3d = Vec3d(0.95, 0.95, 0.95)
-        private set
-    var friction: Vec3d = Vec3d(0.9, 1.0, 0.9)
-        private set
-    var jitterMagnitude: Vec3d = Vec3d(0.05, 0.05, 0.05)
-        private set
-    var jitterChance: Float = 0.0f
-        private set
-    var motionEnabled: Boolean = false
-        private set
+    // region Animation Start/End
     /**
-     * Set the number of ticks the particle will live
+     * Set the starting point of the animation (as a unit float).
      */
-    fun setLifetime(value: Int): ParticleBuilder {
-        lifetime = value
-        return this
-    }
-
-    /**
-     * Set the starting point of the animation (in lifetime ticks).
-     *
-     * Allows you to start in the middle of an animation
-     */
-    fun setAnimStart(value: Int): ParticleBuilder {
+    fun setAnimStart(value: Float): ParticleBuilder {
         animStart = value
         return this
     }
 
     /**
-     * Set the overflow amount of the animation (in lifetime ticks).
-     *
-     * Allows you to have the particle die before it finishes the animation
+     * Set the overflow amount of the animation (as a unit float).
      */
-    fun setAnimOverflow(value: Int): ParticleBuilder {
-        animOverflow = value
+    fun setAnimEnd(value: Float): ParticleBuilder {
+        animEnd = value
         return this
     }
+
+    // endregion
+
+    // region Render function and related interps
+
+    // region Render function
+    /**
+     * Set the render function for the particle
+     *
+     * @see RenderFunctionBasic
+     */
+    fun setRenderFunction(value: RenderFunction): ParticleBuilder {
+        renderFunc = value
+        return this
+    }
+
+    /**
+     * Shortcut for creating a basic render function
+     */
+    fun setRender(value: ResourceLocation): ParticleBuilder {
+        renderFunc = RenderFunctionBasic(value, false)
+        return this
+    }
+    // endregion
+
+    // region Color function
+
+    /**
+     * Set the color function for the particle.
+     *
+     * @see InterpColorComponents
+     * @see InterpColorHSV
+     */
+    fun setColorFunction(value: InterpFunction<Color>): ParticleBuilder {
+        colorFunc = value
+        return this
+    }
+
+    /**
+     * Shortcut for creating a static color
+     */
+    fun setColor(value: Color): ParticleBuilder {
+        colorFunc = StaticInterp(value)
+        return this
+    }
+
+    // endregion
+
+    // region Alpha function
+    /**
+     * Set the alpha function for the particle.
+     */
+    fun setAlphaFunction(value: InterpFunction<Float>): ParticleBuilder {
+        alphaFunc = value
+        return this
+    }
+
+    /**
+     * Shortcut for creating a static color
+     */
+    fun setAlpha(value: Float): ParticleBuilder {
+        alphaFunc = StaticInterp(value)
+        return this
+    }
+
+    // region shortcuts
+
+    // TODO Add alpha functions and alpha function shortcuts
+
+    // endregion
+
+    // endregion
+
+    // region Scale function
+    /**
+     * Set the scale function for the particle.
+     */
+    fun setScaleFunction(value: InterpFunction<Float>): ParticleBuilder {
+        scaleFunc = value
+        return this
+    }
+
+    /**
+     * Shortcut for a static scale
+     */
+    fun setScale(value: Float): ParticleBuilder {
+        scaleFunc = StaticInterp(value)
+        return this
+    }
+    // endregion
+
+    // endregion
+
+    // region Position function
 
     /**
      * Set the position function for the particle.
@@ -93,18 +144,54 @@ class ParticleBuilder(private var lifetime: Int) {
      * @see InterpUnion
      */
     fun setPositionFunction(value: InterpFunction<Vec3d>): ParticleBuilder {
+        positionEnabled = true
         positionFunc = value
         return this
     }
 
+    // region Position enabled
     /**
-     * An offset to add to the position passed in to [build()]
+     * Disable the position function
      */
-    fun setPositionOffset(value: Vec3d): ParticleBuilder {
-        positionOffset = value
+    fun disablePosition(): ParticleBuilder {
+        positionEnabled = false
         return this
     }
 
+    /**
+     * Enable the position function
+     */
+    fun enablePosition(): ParticleBuilder {
+        positionEnabled = true
+        return this
+    }
+
+    /**
+     * Set the position function enabled flag
+     */
+    fun setPositionEnabled(value: Boolean): ParticleBuilder {
+        positionEnabled = value
+        return this
+    }
+    // endregion
+
+    // region Movement Mode
+    /**
+     * Set the movement mode for the particle
+     *
+     * @see EnumMovementMode
+     */
+    fun setMovementMode(value: EnumMovementMode): ParticleBuilder {
+        movementMode = value
+        return this
+    }
+    // endregion
+
+    // endregion
+
+    // region Motion stuff
+
+    // region Motion
     /**
      * Sets the motion
      *
@@ -130,7 +217,9 @@ class ParticleBuilder(private var lifetime: Int) {
         motionEnabled = true
         return this
     }
+    // endregion
 
+    // region Modifiers
     /**
      * Sets the acceleration
      *
@@ -208,7 +297,9 @@ class ParticleBuilder(private var lifetime: Int) {
         motionEnabled = true
         return this
     }
+    // endregion
 
+    // region Motion enabled
     /**
      * Sets the motion enabled flag
      *
@@ -238,6 +329,35 @@ class ParticleBuilder(private var lifetime: Int) {
         motionEnabled = false
         return this
     }
+    // endregion
+
+    // endregion
+
+    // region Plain ol' position stuff
+
+    // region Position offset
+
+    /**
+     * An offset to add to the position passed in to [build()]
+     */
+    fun setPositionOffset(value: Vec3d): ParticleBuilder {
+        positionOffset = value
+        return this
+    }
+
+    /**
+     * An offset to add to the position passed in to [build()]
+     */
+    fun addPositionOffset(value: Vec3d): ParticleBuilder {
+        positionOffset += value
+        return this
+    }
+
+    // endregion
+
+    // endregion
+
+    // region Randomization
 
     /**
      * Set jitter amount.
@@ -252,65 +372,85 @@ class ParticleBuilder(private var lifetime: Int) {
     }
 
     /**
-     * Set the scale function for the particle.
+     * Clear the randomization lambdas
      */
-    fun setScaleFunction(value: InterpFunction<Float>): ParticleBuilder {
-        scaleFunc = value
+    fun clearRandomizationLambdas(): ParticleBuilder {
+        randomizationLambdas.clear()
         return this
     }
 
     /**
-     * Shortcut for a static scale
+     * Add a randomization lambda
      */
-    fun setScale(value: Float): ParticleBuilder {
-        scaleFunc = StaticInterp(value)
+    fun addRandomizationLambda(r: Consumer<ParticleBuilder>): ParticleBuilder {
+        randomizationLambdas.add(r)
         return this
     }
 
     /**
-     * Set the color function for the particle.
-     *
-     * @see InterpColorComponents
-     * @see InterpColorHSV
+     * Add a randomization lambda
      */
-    fun setColor(value: InterpFunction<Color>): ParticleBuilder {
-        colorFunc = value
+    fun addRandomizationLambda(r: (ParticleBuilder) -> Unit): ParticleBuilder {
+        randomizationLambdas.add(Consumer<ParticleBuilder>(r))
         return this
     }
 
-    /**
-     * Shortcut for creating a static color
-     */
-    fun setColor(value: Color): ParticleBuilder {
-        colorFunc = StaticInterp(value)
-        return this
-    }
+    // endregion
+
+    // anim start/end
+    var animStart: Float = 0f
+        private set
+    var animEnd: Float = 1f
+        private set
+
+    // render stuff
+    var renderFunc: RenderFunction? = null
+        private set
+    var colorFunc: InterpFunction<Color>? = null
+        private set
+    var alphaFunc: InterpFunction<Float> = StaticInterp(1f)
+        private set
+    var scaleFunc: InterpFunction<Float> = StaticInterp(1f)
+        private set
+
+    // pos func
+    var positionEnabled: Boolean = false
+        private set
+    var positionFunc: InterpFunction<Vec3d>? = null
+        private set
+    var movementMode: EnumMovementMode = EnumMovementMode.IN_DIRECTION
+        private set
+
+    // motion stuff
+    var motionEnabled: Boolean = false
+        private set
+    var motion: Vec3d = Vec3d.ZERO
+        private set
+    var acceleration: Vec3d = Vec3d(0.0, -0.01, 0.0)
+        private set
+    var deceleration: Vec3d = Vec3d(0.95, 0.95, 0.95)
+        private set
+    var friction: Vec3d = Vec3d(0.9, 1.0, 0.9)
+        private set
+
+    // plain ol' position
+    var positionOffset: Vec3d = Vec3d.ZERO
+        private set
+    var canCollide: Boolean = true
+        private set
+
+    // randomization
+    var jitterMagnitude: Vec3d = Vec3d(0.05, 0.05, 0.05)
+        private set
+    var jitterChance: Float = 0.0f
+        private set
+    var randomizationLambdas: MutableList<Consumer<ParticleBuilder>> = mutableListOf()
 
     /**
-     * Set the render function for the particle
-     *
-     * @see RenderFunctionBasic
+     * Set the number of ticks the particle will live
      */
-    fun setRender(value: RenderFunction): ParticleBuilder {
-        renderFunc = value
-        return this
-    }
-
-    /**
-     * Shortcut for creating a basic render function
-     */
-    fun setRender(value: ResourceLocation): ParticleBuilder {
-        renderFunc = RenderFunctionBasic(value, false)
-        return this
-    }
-
-    /**
-     * Set the movement mode for the particle
-     *
-     * @see EnumMovementMode
-     */
-    fun setMovementMode(value: EnumMovementMode): ParticleBuilder {
-        movementMode = value
+    fun setLifetime(value: Int): ParticleBuilder {
+        lifetime = value
         return this
     }
 
@@ -320,6 +460,8 @@ class ParticleBuilder(private var lifetime: Int) {
      * Returns null and prints a warning if the color function or render function are null.
      */
     fun build(world: World, pos: Vec3d): ParticleBase? {
+        randomizationLambdas.forEach { it.accept(this) }
+
         val renderFunc_ = renderFunc
 
         if(renderFunc_ == null) {
@@ -327,9 +469,61 @@ class ParticleBuilder(private var lifetime: Int) {
             return null
         }
 
-        return ParticleBase(world, pos + positionOffset, lifetime, animStart, animOverflow,
-                positionFunc ?: StaticInterp(Vec3d.ZERO), easingFunc, colorFunc ?: StaticInterp(Color.WHITE),
+        return ParticleBase(world, pos + positionOffset, lifetime, animStart, animEnd,
+                positionFunc ?: StaticInterp(Vec3d.ZERO), colorFunc ?: StaticInterp(Color.WHITE), alphaFunc,
                 renderFunc_, movementMode, scaleFunc,
-                motionEnabled, motion, acceleration, deceleration, friction, jitterMagnitude, jitterChance)
+                motionEnabled, positionEnabled, canCollide, motion, acceleration, deceleration, friction, jitterMagnitude, jitterChance)
+    }
+
+    /**
+     * Clones this builder.
+     */
+    fun clone() : ParticleBuilder {
+        val v = ParticleBuilder(lifetime)
+
+        cloneTo(v)
+        
+        return v
+    }
+
+    /**
+     * Copies all the values from this builder to the other builder.
+     *
+     * All properies point to the same objects (not a deep copy) except for the randomizationLambdas list. The list in
+     * the other object is cleared and the lambdas from this object are copied in. Modifying one list won't modify the
+     * other one.
+     */
+    fun cloneTo(v: ParticleBuilder) {
+        v.animStart = this.animStart
+        v.animEnd = this.animEnd
+
+        // render stuff
+        v.renderFunc = this.renderFunc
+        v.colorFunc = this.colorFunc
+        v.alphaFunc = this.alphaFunc
+        v.scaleFunc = this.scaleFunc
+
+        // pos func
+        v.positionEnabled = this.positionEnabled
+        v.positionFunc = this.positionFunc
+        v.movementMode = this.movementMode
+
+        // motion stuff
+        v.motionEnabled = this.motionEnabled
+        v.motion = this.motion
+        v.acceleration = this.acceleration
+        v.deceleration = this.deceleration
+        v.friction = this.friction
+
+        // plain ol' position
+        v.positionOffset = this.positionOffset
+        v.canCollide = this.canCollide
+
+        // randomization
+        v.jitterMagnitude = this.jitterMagnitude
+        v.jitterChance = this.jitterChance
+
+        v.randomizationLambdas.clear()
+        v.randomizationLambdas.addAll(this.randomizationLambdas)
     }
 }

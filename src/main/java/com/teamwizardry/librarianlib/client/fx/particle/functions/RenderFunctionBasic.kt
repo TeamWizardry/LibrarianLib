@@ -25,7 +25,7 @@ class RenderFunctionBasic(val texture: TextureAtlasSprite, flatLayer: Boolean) :
     /**
      * `i` is from 0-1 along the animation
      */
-    override fun render(i: Float, particle: ParticleBase, color: Color,
+    override fun render(i: Float, particle: ParticleBase, color: Color, alpha: Float,
                         worldRendererIn: VertexBuffer, entityIn: Entity?, partialTicks: Float, rotationX: Float, rotationZ: Float, rotationYZ: Float, rotationXY: Float, rotationXZ: Float,
                         scale: Float, pos: Vec3d, skyLight: Int, blockLight: Int) {
         var uMin = texture.minU.toDouble()
@@ -42,10 +42,10 @@ class RenderFunctionBasic(val texture: TextureAtlasSprite, flatLayer: Boolean) :
                 Vec3d(( rotationX * radius - rotationXY * radius).toDouble(), (-rotationZ * radius).toDouble(), ( rotationYZ * radius - rotationXZ * radius).toDouble())
         )
 
-        worldRendererIn.pos(pos.xCoord + vertOffsets[0].xCoord, pos.yCoord + vertOffsets[0].yCoord, pos.zCoord + vertOffsets[0].zCoord).tex(uMax, vMax).color(color.red, color.green, color.blue, color.alpha).lightmap(skyLight, blockLight).endVertex()
-        worldRendererIn.pos(pos.xCoord + vertOffsets[1].xCoord, pos.yCoord + vertOffsets[1].yCoord, pos.zCoord + vertOffsets[1].zCoord).tex(uMax, vMin).color(color.red, color.green, color.blue, color.alpha).lightmap(skyLight, blockLight).endVertex()
-        worldRendererIn.pos(pos.xCoord + vertOffsets[2].xCoord, pos.yCoord + vertOffsets[2].yCoord, pos.zCoord + vertOffsets[2].zCoord).tex(uMin, vMin).color(color.red, color.green, color.blue, color.alpha).lightmap(skyLight, blockLight).endVertex()
-        worldRendererIn.pos(pos.xCoord + vertOffsets[3].xCoord, pos.yCoord + vertOffsets[3].yCoord, pos.zCoord + vertOffsets[3].zCoord).tex(uMin, vMax).color(color.red, color.green, color.blue, color.alpha).lightmap(skyLight, blockLight).endVertex()
+        worldRendererIn.pos(pos.xCoord + vertOffsets[0].xCoord, pos.yCoord + vertOffsets[0].yCoord, pos.zCoord + vertOffsets[0].zCoord).tex(uMax, vMax).color(color.red/255f, color.green/255f, color.blue/255f, alpha).lightmap(skyLight, blockLight).endVertex()
+        worldRendererIn.pos(pos.xCoord + vertOffsets[1].xCoord, pos.yCoord + vertOffsets[1].yCoord, pos.zCoord + vertOffsets[1].zCoord).tex(uMax, vMin).color(color.red/255f, color.green/255f, color.blue/255f, alpha).lightmap(skyLight, blockLight).endVertex()
+        worldRendererIn.pos(pos.xCoord + vertOffsets[2].xCoord, pos.yCoord + vertOffsets[2].yCoord, pos.zCoord + vertOffsets[2].zCoord).tex(uMin, vMin).color(color.red/255f, color.green/255f, color.blue/255f, alpha).lightmap(skyLight, blockLight).endVertex()
+        worldRendererIn.pos(pos.xCoord + vertOffsets[3].xCoord, pos.yCoord + vertOffsets[3].yCoord, pos.zCoord + vertOffsets[3].zCoord).tex(uMin, vMax).color(color.red/255f, color.green/255f, color.blue/255f, alpha).lightmap(skyLight, blockLight).endVertex()
     }
 
 }

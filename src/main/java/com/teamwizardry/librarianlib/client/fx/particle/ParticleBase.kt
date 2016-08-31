@@ -23,20 +23,22 @@ import java.util.concurrent.ThreadLocalRandom
 /**
  * Created by TheCodeWarrior
  */
-open class ParticleBase(
+open class ParticleBase internal constructor(
         val world: World,
         val position: Vec3d,
         val lifetime: Int,
-        val animStart: Int,
-        val animOverflow: Int,
+        val animStart: Float,
+        val animEnd: Float,
         val positionFunc: InterpFunction<Vec3d>,
-        val easing: InterpFunction<Float>,
         val colorFunc: InterpFunction<Color>,
+        val alphaFunc: InterpFunction<Float>,
         val renderFunc: RenderFunction,
         val movementMode: EnumMovementMode,
         val scaleFunc: InterpFunction<Float>,
         val motionEnabled: Boolean,
-        var motion: Vec3d,
+        val positionEnabled: Boolean,
+        val canCollide: Boolean,
+        val initialMotion: Vec3d,
         val acceleration: Vec3d,
         val deceleration: Vec3d,
         val friction: Vec3d,
@@ -50,13 +52,17 @@ open class ParticleBase(
     val radius: Vec3d = Vec3d(0.1, 0.1, 0.1)
 
     var pos: Vec3d = position
+        set(value) {
+            field = value
+            this.entityBoundingBox = AxisAlignedBB(field - radius, field + radius)
+        }
     var prevPos: Vec3d = pos
-    var velocity: Vec3d = motion
+    var velocity: Vec3d = initialMotion
     var age: Int = 0
     var isCollided: Boolean = false
     var entityBoundingBox: AxisAlignedBB = createBB(pos - radius, pos + radius)
 
-    private var lastPos: Vec3d = positionFunc.get(0f)
+    private var lastInterp: Vec3d = positionFunc.get(0f)
     private var jitterMotion: Vec3d = Vec3d.ZERO
 
     private val randomNum: Int = ThreadLocalRandom.current().nextInt()
@@ -64,70 +70,59 @@ open class ParticleBase(
     internal var depthSquared: Double = 0.0
 
     init {
-        setPosition(lastPos + position)
+        pos = position + ( if(positionEnabled) lastInterp else Vec3d.ZERO )
+    }
+
+    fun animPos(): Float {
+        return animStart + (animEnd-animStart)* ( age.toFloat() / lifetime.toFloat() )
     }
 
     fun onUpdate() {
         tickFirst()
+
         age++
         prevPos = pos
-
-        val i = ( age.toFloat() + animStart) / ( lifetime.toFloat() + animOverflow - animStart )
 
         if(age > lifetime) {
             this.setExpired()
         }
 
-        var pos = (
-                if(motionEnabled)
-                    Vec3d.ZERO
-                else
-                    positionFunc.get(Math.min(1f, easing.get(i)))
-                )
-        if(!motionEnabled)
-            pos += jitterMotion
+        var interpPos = positionFunc.get(Math.max(Math.min(animPos(), 1f), 0f))
+        var jitter = Vec3d.ZERO
 
-        if(ThreadLocalRandom.current().nextFloat() < jitterChance) {
-            var jitter = jitterMagnitude * Vec3d(
+        if(ThreadLocalRandom.current().nextDouble() < jitterChance)
+            jitter = jitterMagnitude * Vec3d(
                     ThreadLocalRandom.current().nextDouble()*2.0 - 1.0,
                     ThreadLocalRandom.current().nextDouble()*2.0 - 1.0,
                     ThreadLocalRandom.current().nextDouble()*2.0 - 1.0
             )
-            if(motionEnabled)
-                motion += jitter
-            else
-                jitterMotion += jitter
-        }
 
-        if(movementMode == EnumMovementMode.PHASE) {
-            setPosition(pos + position + motion)
-        } else {
-            var direction: Vec3d
-            if(movementMode == EnumMovementMode.IN_DIRECTION) {
-                direction = pos - lastPos
-            } else { // effectivly `else if(movementMode == EnumMovementMode.TOWARD_POINT)`, only else to avoid errors
-                direction = pos - ( this.pos - position )
-            }
-            direction += motion
-            this.velocity = direction
-            this.moveEntity()
+        if(positionEnabled) {
+            jitterMotion += jitter
+
+            if(movementMode == EnumMovementMode.TOWARD_POINT)
+                velocity = interpPos + position - pos
+            if(movementMode == EnumMovementMode.IN_DIRECTION)
+                velocity += interpPos - lastInterp
         }
+        lastInterp = interpPos
+
+        this.moveEntity()
 
         if(motionEnabled) {
-            motion += acceleration
-            motion *= deceleration
+            velocity += jitter
+            velocity += acceleration
+            velocity *= deceleration
             if(this.isCollided)
-                motion *= friction
+                velocity *= friction
         }
-
-        lastPos = pos
 
         tickLast()
     }
 
     fun render(worldRendererIn: VertexBuffer, info: ParticleRenderInfo) {
 
-        val i = Math.min(1f, ( age.toFloat() + info.partialTicks ) / lifetime.toFloat())
+        val i = animPos()
 
         val pos = this.prevPos + (this.pos - prevPos) * info.partialTicks.toDouble() - Vec3d(Particle.interpPosX, Particle.interpPosY, Particle.interpPosZ)
 
@@ -135,7 +130,7 @@ open class ParticleBase(
         val skyLight = brightness shr 16 and 65535
         val blockLight = brightness and 65535
 
-        renderFunc.render(i, this, colorFunc.get(i), worldRendererIn, info.entityIn, info.partialTicks,
+        renderFunc.render(i, this, colorFunc.get(i), alphaFunc.get(i), worldRendererIn, info.entityIn, info.partialTicks,
                 info.rotationX, info.rotationZ, info.rotationYZ, info.rotationXY, info.rotationXZ,
                 scaleFunc.get(i), pos, skyLight, blockLight)
     }
@@ -145,15 +140,9 @@ open class ParticleBase(
      */
 
     private var isExpiredStore: Boolean = false
-    protected var canCollide: Boolean = true
 
     fun setExpired() {
         this.isExpiredStore = true
-    }
-
-    fun setPosition(p: Vec3d) {
-        this.pos = p
-        this.entityBoundingBox = AxisAlignedBB(p - radius, p + radius)
     }
 
     fun moveEntity() {
@@ -187,6 +176,7 @@ open class ParticleBase(
         }
 
         this.resetPositionToBB()
+        this.isCollided = false
 
         if (x != velocity.xCoord) {
             this.isCollided = true
@@ -231,10 +221,6 @@ open class ParticleBase(
 }
 
 enum class EnumMovementMode {
-    /**
-     * Particles don't collide, they follow their path exactly and phase through walls
-     */
-    PHASE,
     /**
      * Particles always try to move toward the point specified by the position function, but will collide with blocks.
      *
