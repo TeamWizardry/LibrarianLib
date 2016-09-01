@@ -489,6 +489,10 @@ class ParticleBuilder(private var lifetime: Int) {
         private set
     var defaultRandomizations = true
         private set
+    var posRandMultiplier = 0.1f
+    var motionRandMultiplier = 0.01f
+    var lifetimeRandMultiplier = 0.1
+    var animRandMultiplier = 0.05
 
     /**
      * Set the number of ticks the particle will live
@@ -513,27 +517,23 @@ class ParticleBuilder(private var lifetime: Int) {
         var motion_ = motion
 
         if(defaultRandomizations) {
-            val posRandMagnitude = 0.1f
-            val motionRandMagnitude = 0.01f
-            val lifetimeRandom = lifetime * 0.1
-            val animRandom = 0.05
 
             pos_ += Vec3d(
-                    (ThreadLocalRandom.current().nextDouble()-0.5)*posRandMagnitude,
-                    (ThreadLocalRandom.current().nextDouble()-0.5)*posRandMagnitude,
-                    (ThreadLocalRandom.current().nextDouble()-0.5)*posRandMagnitude
+                    (ThreadLocalRandom.current().nextDouble()-0.5)* posRandMultiplier,
+                    (ThreadLocalRandom.current().nextDouble()-0.5)* posRandMultiplier,
+                    (ThreadLocalRandom.current().nextDouble()-0.5)* posRandMultiplier
             )
 
             motion_ += Vec3d(
-                    (ThreadLocalRandom.current().nextDouble()-0.5)*motionRandMagnitude,
-                    (ThreadLocalRandom.current().nextDouble()-0.5)*motionRandMagnitude,
-                    (ThreadLocalRandom.current().nextDouble()-0.5)*motionRandMagnitude
+                    (ThreadLocalRandom.current().nextDouble()-0.5)* motionRandMultiplier,
+                    (ThreadLocalRandom.current().nextDouble()-0.5)* motionRandMultiplier,
+                    (ThreadLocalRandom.current().nextDouble()-0.5)* motionRandMultiplier
             )
 
-            lifetime_ += ( (ThreadLocalRandom.current().nextDouble()-0.5)*lifetimeRandom ).toInt()
+            lifetime_ += ( (ThreadLocalRandom.current().nextDouble()-0.5)*lifetime* lifetimeRandMultiplier).toInt()
 
-            animStart_ += ( (ThreadLocalRandom.current().nextDouble()-0.5)*animRandom ).toFloat()
-            animEnd_   += ( (ThreadLocalRandom.current().nextDouble()-0.5)*animRandom ).toFloat()
+            animStart_ += ( (ThreadLocalRandom.current().nextDouble()-0.5)* animRandMultiplier).toFloat()
+            animEnd_   += ( (ThreadLocalRandom.current().nextDouble()-0.5)* animRandMultiplier).toFloat()
         }
 
         val renderFunc_ = renderFunc

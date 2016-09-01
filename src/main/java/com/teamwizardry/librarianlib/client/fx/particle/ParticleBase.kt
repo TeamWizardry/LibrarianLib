@@ -62,7 +62,9 @@ open class ParticleBase internal constructor(
     var isCollided: Boolean = false
     var entityBoundingBox: AxisAlignedBB = createBB(pos - radius, pos + radius)
 
-    private var lastInterp: Vec3d = positionFunc.get(0f)
+    private var lastInterp: Vec3d = positionFunc.get(animStart)
+    private var lastInterpMotion: Vec3d = Vec3d.ZERO
+
     private var jitterMotion: Vec3d = Vec3d.ZERO
 
     private val randomNum: Int = ThreadLocalRandom.current().nextInt()
@@ -102,8 +104,11 @@ open class ParticleBase internal constructor(
 
             if(movementMode == EnumMovementMode.TOWARD_POINT)
                 velocity = interpPos + position - pos
-            if(movementMode == EnumMovementMode.IN_DIRECTION)
-                velocity += interpPos - lastInterp
+            if(movementMode == EnumMovementMode.IN_DIRECTION) {
+                var interpMotion = interpPos - lastInterp
+                velocity += interpMotion - lastInterpMotion
+                lastInterpMotion = interpMotion
+            }
         }
         lastInterp = interpPos
 
