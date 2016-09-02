@@ -198,12 +198,9 @@ class ParticleBuilder(private var lifetime: Int) {
      * Sets the motion
      *
      * Each tick while the particle is colliding with a block, it's motion is multiplied by this vector
-     *
-     * (calling this method enables standard particle motion)
      */
     fun setMotion(value: Vec3d): ParticleBuilder {
         motion = value
-        motionEnabled = true
         return this
     }
 
@@ -211,12 +208,9 @@ class ParticleBuilder(private var lifetime: Int) {
      * Adds to the motion
      *
      * Each tick while the particle is colliding with a block, it's motion is multiplied by this vector
-     *
-     * (calling this method enables standard particle motion)
      */
     fun addMotion(value: Vec3d): ParticleBuilder {
         motion += value
-        motionEnabled = true
         return this
     }
     // endregion
@@ -227,11 +221,11 @@ class ParticleBuilder(private var lifetime: Int) {
      *
      * Each tick this value is added to the particle's motion
      *
-     * (calling this method enables standard particle motion)
+     * (calling this method enables standard particle motion calculations)
      */
     fun setAcceleration(value: Vec3d): ParticleBuilder {
         acceleration = value
-        motionEnabled = true
+        motionCalculation = true
         return this
     }
 
@@ -240,11 +234,11 @@ class ParticleBuilder(private var lifetime: Int) {
      *
      * Each tick this value is added to the particle's motion
      *
-     * (calling this method enables standard particle motion)
+     * (calling this method enables standard particle motion calculations)
      */
     fun addAcceleration(value: Vec3d): ParticleBuilder {
         acceleration += value
-        motionEnabled = true
+        motionCalculation = true
         return this
     }
 
@@ -253,11 +247,11 @@ class ParticleBuilder(private var lifetime: Int) {
      *
      * Each tick the particle's motion is multiplied by this vector
      *
-     * (calling this method enables standard particle motion)
+     * (calling this method enables standard particle motion calculations)
      */
     fun setDeceleration(value: Vec3d): ParticleBuilder {
         deceleration = value
-        motionEnabled = true
+        motionCalculation = true
         return this
     }
 
@@ -266,11 +260,11 @@ class ParticleBuilder(private var lifetime: Int) {
      *
      * Each tick the particle's motion is multiplied by this vector
      *
-     * (calling this method enables standard particle motion)
+     * (calling this method enables standard particle motion calculations)
      */
     fun addDeceleration(value: Vec3d): ParticleBuilder {
         deceleration += value
-        motionEnabled = true
+        motionCalculation = true
         return this
     }
 
@@ -279,11 +273,11 @@ class ParticleBuilder(private var lifetime: Int) {
      *
      * Each tick while the particle is colliding with a block, it's motion is multiplied by this vector
      *
-     * (calling this method enables standard particle motion)
+     * (calling this method enables standard particle motion calculations)
      */
     fun setFriction(value: Vec3d): ParticleBuilder {
         friction = value
-        motionEnabled = true
+        motionCalculation = true
         return this
     }
 
@@ -292,11 +286,11 @@ class ParticleBuilder(private var lifetime: Int) {
      *
      * Each tick while the particle is colliding with a block, it's motion is multiplied by this vector
      *
-     * (calling this method enables standard particle motion)
+     * (calling this method enables standard particle motion calculations)
      */
     fun addFriction(value: Vec3d): ParticleBuilder {
         friction += value
-        motionEnabled = true
+        motionCalculation = true
         return this
     }
     // endregion
@@ -307,8 +301,8 @@ class ParticleBuilder(private var lifetime: Int) {
      *
      * The motion enabled flag controls whether the particle uses the position function or traditional motion mechanics
      */
-    fun setMotionEnabled(value: Boolean): ParticleBuilder {
-        motionEnabled = value
+    fun setMotionCalculationEnabled(value: Boolean): ParticleBuilder {
+        motionCalculation = value
         return this
     }
 
@@ -317,8 +311,8 @@ class ParticleBuilder(private var lifetime: Int) {
      *
      * The motion enabled flag controls whether the particle uses the position function or traditional motion mechanics
      */
-    fun enableMotion(): ParticleBuilder {
-        motionEnabled = true
+    fun enableMotionCalculation(): ParticleBuilder {
+        motionCalculation = true
         return this
     }
 
@@ -327,8 +321,8 @@ class ParticleBuilder(private var lifetime: Int) {
      *
      * The motion enabled flag controls whether the particle uses the position function or traditional motion mechanics
      */
-    fun disableMotion(): ParticleBuilder {
-        motionEnabled = false
+    fun disableMotionCalculation(): ParticleBuilder {
+        motionCalculation = false
         return this
     }
     // endregion
@@ -463,7 +457,7 @@ class ParticleBuilder(private var lifetime: Int) {
         private set
 
     // motion stuff
-    var motionEnabled: Boolean = false
+    var motionCalculation: Boolean = false
         private set
     var motion: Vec3d = Vec3d.ZERO
         private set
@@ -477,7 +471,7 @@ class ParticleBuilder(private var lifetime: Int) {
     // plain ol' position
     var positionOffset: Vec3d = Vec3d.ZERO
         private set
-    var canCollide: Boolean = true
+    var canCollide: Boolean = false
         private set
 
     // randomization
@@ -546,7 +540,7 @@ class ParticleBuilder(private var lifetime: Int) {
         return ParticleBase(world, pos_, lifetime_, animStart_, animEnd_,
                 positionFunc ?: StaticInterp(Vec3d.ZERO), colorFunc ?: StaticInterp(Color.WHITE), alphaFunc,
                 renderFunc_, movementMode, scaleFunc,
-                motionEnabled, positionEnabled, canCollide, motion_, acceleration, deceleration, friction, jitterMagnitude, jitterChance)
+                motionCalculation, positionEnabled, canCollide, motion_, acceleration, deceleration, friction, jitterMagnitude, jitterChance)
     }
 
     /**
@@ -583,7 +577,7 @@ class ParticleBuilder(private var lifetime: Int) {
         v.movementMode = this.movementMode
 
         // motion stuff
-        v.motionEnabled = this.motionEnabled
+        v.motionCalculation = this.motionCalculation
         v.motion = this.motion
         v.acceleration = this.acceleration
         v.deceleration = this.deceleration
