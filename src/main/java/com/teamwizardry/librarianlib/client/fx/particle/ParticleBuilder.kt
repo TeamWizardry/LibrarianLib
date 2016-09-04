@@ -61,6 +61,14 @@ class ParticleBuilder(private var lifetime: Int) {
         renderFunc = RenderFunctionBasic(value, false)
         return this
     }
+
+    /**
+     * Shortcut for creating a basic render function
+     */
+    fun setRenderNormalLayer(value: ResourceLocation): ParticleBuilder {
+        renderFunc = RenderFunctionBasic(value, true)
+        return this
+    }
     // endregion
 
     // region Color function

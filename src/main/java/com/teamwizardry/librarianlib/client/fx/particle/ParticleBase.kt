@@ -154,7 +154,6 @@ open class ParticleBase internal constructor(
         var x = this.velocity.xCoord
         var y = this.velocity.yCoord
         var z = this.velocity.zCoord
-        val d0 = y
 
         if (this.canCollide) {
             val list = this.world.getCollisionBoxes(null, this.entityBoundingBox.addCoord(x, y, z))

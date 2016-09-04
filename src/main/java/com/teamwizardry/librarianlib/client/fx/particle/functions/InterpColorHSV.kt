@@ -30,6 +30,19 @@ class InterpColorHSV private constructor(private val aTransp: Int, private val b
         bHSB[0] += hueOffsetDegrees/360f
     }
 
+    /**
+     * Interpolate between the the color [a] and the color represented by the HSV passed.
+     *
+     * Any of the HSV components can be set to a negative value and it will be replaced by the respective component from
+     * [a], effectivly making that component constant.
+     */
+    constructor(a: Color, toH: Float, toS: Float, toV: Float) : this(a.alpha, a.alpha){
+        Color.RGBtoHSB(a.red, a.green, a.blue, aHSB)
+        bHSB[0] = if(toH < 0) aHSB[0] else toH
+        bHSB[1] = if(toS < 0) aHSB[1] else toS
+        bHSB[2] = if(toV < 0) aHSB[2] else toV
+    }
+
     override fun get(i: Float): Color {
         return Color(
                 Color.HSBtoRGB(

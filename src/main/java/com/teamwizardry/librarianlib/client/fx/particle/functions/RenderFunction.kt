@@ -10,7 +10,7 @@ import java.awt.Color
 /**
  * Created by TheCodeWarrior
  */
-abstract class RenderFunction(private val theLayer: ParticleRenderLayer) {
+abstract class RenderFunction(protected var theLayer: ParticleRenderLayer) {
 
     open fun getLayer(): ParticleRenderLayer {
         return theLayer
