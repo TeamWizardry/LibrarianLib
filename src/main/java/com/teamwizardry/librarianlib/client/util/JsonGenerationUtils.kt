@@ -14,7 +14,7 @@ import java.nio.file.Paths
 
 
 /**
- * Created by Elad on 9/27/2016.
+ * Created by WireSegal on 9/27/2016.
  *
  * This works in the default dev environment.
  */
@@ -32,7 +32,7 @@ object JsonGenerationUtils {
 
     fun getPathForItemModel(item: Item, variantName: String? = null): String {
         val registryName = item.registryName
-        val varname = variantName ?: registryName.resourcePath
+        val varname = if (item is ItemBlock || variantName == null) registryName.resourcePath else variantName
         return "${getAssetPath(registryName.resourceDomain)}/models/item/$varname.json"
     }
 
