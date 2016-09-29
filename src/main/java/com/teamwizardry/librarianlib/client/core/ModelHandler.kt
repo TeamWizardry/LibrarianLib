@@ -122,6 +122,7 @@ object ModelHandler {
             if (debug) {
                 val modelPath = JsonGenerationUtils.getPathForBlockModel(holder.providedBlock)
                 val modelFile = File(modelPath)
+                modelFile.mkdirs()
                 if (modelFile.createNewFile()) {
                     val obj = JsonGenerationUtils.generateBaseBlockModel(holder.providedBlock)
                     modelFile.writeText(obj.toString())
@@ -129,6 +130,7 @@ object ModelHandler {
 
                 val statePath = JsonGenerationUtils.getPathForBlockstate(holder.providedBlock)
                 val stateFile = File(statePath)
+                stateFile.mkdirs()
                 if (stateFile.createNewFile()) {
                     val obj = JsonGenerationUtils.generateBaseBlockState(holder.providedBlock)
                     stateFile.writeText(obj.toString())
@@ -148,6 +150,7 @@ object ModelHandler {
                 if (debug) {
                     val path = JsonGenerationUtils.getPathForItemModel(holder.providedItem)
                     val file = File(path)
+                    file.mkdirs()
                     if (file.createNewFile()) {
                         val obj = JsonGenerationUtils.generateBaseItemModel(item, variant.value)
                         file.writeText(obj.toString())
