@@ -132,7 +132,8 @@ object ModelHandler {
                 val modelPath = JsonGenerationUtils.getPathForBlockModel(holder.providedBlock)
                 val modelFile = File(modelPath)
                 modelFile.parentFile.mkdirs()
-                if (modelFile.createNewFile()) {
+                //you don't want to override an existing file
+                if (!modelFile.exists() && modelFile.createNewFile()) {
                     val obj = JsonGenerationUtils.generateBaseBlockModel(holder.providedBlock)
                     modelFile.writeText(obj.serialize())
                     log("$namePad | Creating file for block ${holder.providedBlock.registryName.resourcePath}")
@@ -142,7 +143,8 @@ object ModelHandler {
                 val statePath = JsonGenerationUtils.getPathForBlockstate(holder.providedBlock)
                 val stateFile = File(statePath)
                 stateFile.parentFile.mkdirs()
-                if (stateFile.createNewFile()) {
+                //you don't want to override an existing file
+                if (!stateFile.exists() && stateFile.createNewFile()) {
                     val obj = JsonGenerationUtils.generateBaseBlockState(holder.providedBlock, mapper)
                     stateFile.writeText(obj.serialize())
                     log("$namePad | Creating file for blockstate of ${holder.providedBlock.registryName.resourcePath}")
@@ -173,7 +175,8 @@ object ModelHandler {
                     val path = JsonGenerationUtils.getPathForItemModel(holder.providedItem, variant.value)
                     val file = File(path)
                     file.parentFile.mkdirs()
-                    if (file.createNewFile()) {
+                    //you don't want to override an existing file
+                    if (!file.exists() && file.createNewFile()) {
                         val obj = JsonGenerationUtils.generateBaseItemModel(item, variant.value)
                         file.writeText(obj.serialize())
                         log("$namePad | Creating file for variant of ${holder.providedItem.registryName.resourcePath}")
