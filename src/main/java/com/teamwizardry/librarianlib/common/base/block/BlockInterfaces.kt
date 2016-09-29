@@ -23,13 +23,6 @@ interface IModBlockProvider : IVariantHolder {
     val providedBlock: Block
 
     /**
-     * Blocks can load item models by providing an enum instead of variants. The variants must still be provided for metadata purposes.
-     * This is only relevant if the IModBlockProvider extends IModItemProvider.
-     */
-    val variantEnum: Class<Enum<*>>?
-        get() = null
-
-    /**
      * A list of IProperties to ignore in a blockstate file.
      * If getStateMapper is overridden, this will have to be implemented in the overriden implementation.
      */

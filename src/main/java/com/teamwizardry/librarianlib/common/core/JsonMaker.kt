@@ -2,6 +2,9 @@
 package com.teamwizardry.librarianlib.common.core
 
 import com.google.gson.*
+import com.google.gson.internal.Streams
+import com.google.gson.stream.JsonWriter
+import java.io.StringWriter
 
 /**
  * @author WireSegal
@@ -33,4 +36,13 @@ fun convert(value: Any?) : JsonElement = when (value) {
 
 fun json(lambda: JSON.() -> JsonObject): JsonObject {
     return JSON.lambda()
+}
+
+fun JsonElement.serialize(): String {
+    val stringWriter = StringWriter()
+    val jsonWriter = JsonWriter(stringWriter)
+    jsonWriter.serializeNulls = true
+    jsonWriter.setIndent("\t")
+    Streams.write(this, jsonWriter)
+    return stringWriter.toString() + "\n"
 }

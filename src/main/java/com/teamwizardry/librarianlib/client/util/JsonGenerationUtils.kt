@@ -1,10 +1,11 @@
 package com.teamwizardry.librarianlib.client.util
 
 import com.google.gson.JsonObject
-import com.teamwizardry.librarianlib.client.core.LibLibClientMethodHandles
 import com.teamwizardry.librarianlib.common.core.json
 import net.minecraft.block.Block
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.block.statemap.DefaultStateMapper
+import net.minecraft.client.renderer.block.statemap.IStateMapper
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraftforge.fml.relauncher.Side
@@ -29,9 +30,10 @@ object JsonGenerationUtils {
         return "${getAssetPath(registryName.resourceDomain)}/models/block/${registryName.resourcePath}.json"
     }
 
-    fun getPathForItemModel(item: Item): String {
+    fun getPathForItemModel(item: Item, variantName: String? = null): String {
         val registryName = item.registryName
-        return "${getAssetPath(registryName.resourceDomain)}/models/item/${registryName.resourcePath}.json"
+        val varname = variantName ?: registryName.resourcePath
+        return "${getAssetPath(registryName.resourceDomain)}/models/item/$varname.json"
     }
 
     fun getAssetPath(modid: String): String {
@@ -55,15 +57,14 @@ object JsonGenerationUtils {
         return json { obj (
             "parent" to "block/cube_all",
             "textures" to obj (
-                "all" to "${registryName.resourceDomain}:items/${registryName.resourcePath}"
+                "all" to "${registryName.resourceDomain}:blocks/${registryName.resourcePath}"
             )
         )}
     }
 
-    fun generateBaseBlockState(block: Block): JsonObject {
+    fun generateBaseBlockState(block: Block, stateMapper: IStateMapper? = null): JsonObject {
         val registryName = block.registryName
-        val mapper = LibLibClientMethodHandles.getModelManager().blockModelShapes.blockStateMapper
-        val mapped = mapper.getVariants(block)
+        val mapped = (stateMapper ?: DefaultStateMapper()).putStateModelLocations(block)
         val vars = json { obj() }
         for ((state, loc) in mapped) {
             vars.add(loc.variant, json { obj("model" to registryName.toString()) })
