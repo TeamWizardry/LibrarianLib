@@ -135,7 +135,7 @@ object ModelHandler {
                 if (modelFile.createNewFile()) {
                     val obj = JsonGenerationUtils.generateBaseBlockModel(holder.providedBlock)
                     modelFile.writeText(obj.serialize())
-                    log("$namePad | Creating file for variant")
+                    log("$namePad | Creating file for block ${holder.providedBlock.registryName.resourcePath}")
                     generatedFile = true
                 }
 
@@ -145,7 +145,7 @@ object ModelHandler {
                 if (stateFile.createNewFile()) {
                     val obj = JsonGenerationUtils.generateBaseBlockState(holder.providedBlock, mapper)
                     stateFile.writeText(obj.serialize())
-                    log("$namePad | Creating file for blockstate")
+                    log("$namePad | Creating file for blockstate of ${holder.providedBlock.registryName.resourcePath}")
                     generatedFile = true
                 }
             }
@@ -176,7 +176,7 @@ object ModelHandler {
                     if (file.createNewFile()) {
                         val obj = JsonGenerationUtils.generateBaseItemModel(item, variant.value)
                         file.writeText(obj.serialize())
-                        log("$namePad | Creating file for variant")
+                        log("$namePad | Creating file for variant of ${holder.providedItem.registryName.resourcePath}")
                         generatedFile = true
                     }
                 }
