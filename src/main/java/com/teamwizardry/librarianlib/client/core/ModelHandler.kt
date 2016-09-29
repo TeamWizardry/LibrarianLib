@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.client.core
 
 import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
+import com.teamwizardry.librarianlib.client.util.JsonGenerationUtils
 import com.teamwizardry.librarianlib.common.base.IExtraVariantHolder
 import com.teamwizardry.librarianlib.common.base.IVariantHolder
 import com.teamwizardry.librarianlib.common.base.block.IBlockColorProvider
@@ -20,6 +21,7 @@ import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import java.io.File
 import java.util.*
 
 /**
@@ -117,6 +119,22 @@ object ModelHandler {
             if (mapper != null)
                 ModelLoader.setCustomStateMapper(holder.providedBlock, mapper)
 
+            if (debug) {
+                val modelPath = JsonGenerationUtils.getPathForBlockModel(holder.providedBlock)
+                val modelFile = File(modelPath)
+                if (modelFile.createNewFile()) {
+                    val obj = JsonGenerationUtils.generateBaseBlockModel(holder.providedBlock)
+                    modelFile.writeText(obj.toString())
+                }
+
+                val statePath = JsonGenerationUtils.getPathForBlockstate(holder.providedBlock)
+                val stateFile = File(statePath)
+                if (stateFile.createNewFile()) {
+                    val obj = JsonGenerationUtils.generateBaseBlockState(holder.providedBlock)
+                    stateFile.writeText(obj.toString())
+                }
+            }
+
             if (variantEnum != null && holder is IModItemProvider) {
                 registerVariantsDefaulted(holder.providedItem, holder.providedBlock, variantEnum, "variant")
                 return
@@ -126,8 +144,18 @@ object ModelHandler {
         if (holder is IModItemProvider) {
             val item = holder.providedItem
             for (variant in variants.withIndex()) {
+
+                if (debug) {
+                    val path = JsonGenerationUtils.getPathForItemModel(holder.providedItem)
+                    val file = File(path)
+                    if (file.createNewFile()) {
+                        val obj = JsonGenerationUtils.generateBaseItemModel(item, variant.value)
+                        file.writeText(obj.toString())
+                    }
+                }
+
                 if (variant.index == 0) {
-                    var print = "${namePad} | Registering "
+                    var print = "$namePad | Registering "
 
                     if (variant.value != item.registryName.resourcePath || variants.size != 1 || extra)
                         print += "${if (extra) "extra " else ""}variant${if (variants.size == 1) "" else "s"} of "
