@@ -1,5 +1,6 @@
 buildscript {
     ext.kotlin_version = '1.0.2'
+    ext.gdxVersion = '1.9.4'
     repositories {
         jcenter()
         maven {
@@ -16,6 +17,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'kotlin'
 apply plugin: 'idea'
+apply plugin: 'maven'
 
 allprojects {
     tasks.withType(JavaCompile) {
@@ -105,3 +107,38 @@ processResources
                 exclude 'mcmod.info'
             }
         }
+
+uploadArchives {
+	repositories {
+		mavenDeployer {
+			repository(url: "file://" + System.getenv("local_maven"))
+			pom {
+				groupId = project.group
+				version
+				artifactId = project.archivesBaseName
+				project {
+					name project.archivesBaseName
+					packaging 'jar'
+					description 'LibrarianLib'
+					url 'https://github.com/TeamWizardry/LibrarianLib'
+					scm {
+						url 'https://github.com/TeamWizardry/LibrarianLib.git'
+						connection 'scm:git:git@github.com:TeamWizardry/LibrarianLib.git'
+						developerConnection 'scm:git:git@github.com:TeamWizardry/LibrarianLib.git'
+					}
+					issueManagement {
+						system 'github'
+						url 'https://github.com/TeamWizardry/LibrarianLib/issues'
+					}
+					developers {
+						developer {
+							id 'thecodewarrior'
+							name 'thecodewarrior'
+							roles { role 'developer' }
+						}
+					}
+				}
+			}
+		}
+	}
+}
