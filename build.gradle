@@ -111,7 +111,7 @@ processResources
 uploadArchives {
 	repositories {
 		mavenDeployer {
-			repository(url: "file://" + System.getenv("local_maven"))
+			repository(url: "file://" + System.getenv("bamboo_local_maven"))
 			pom {
 				groupId = project.group
 				version
