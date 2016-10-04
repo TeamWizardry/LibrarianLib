@@ -129,16 +129,6 @@ object ModelHandler {
                 ModelLoader.setCustomStateMapper(holder.providedBlock, mapper)
 
             if (debug && ConfigHandler.generateJson) {
-                val modelPath = JsonGenerationUtils.getPathForBlockModel(holder.providedBlock)
-                val modelFile = File(modelPath)
-                modelFile.parentFile.mkdirs()
-                if (modelFile.createNewFile()) {
-                    val obj = JsonGenerationUtils.generateBaseBlockModel(holder.providedBlock)
-                    modelFile.writeText(obj.serialize())
-                    log("$namePad | Creating file for block ${holder.providedBlock.registryName.resourcePath}")
-                    generatedFiles++
-                }
-
                 val statePath = JsonGenerationUtils.getPathForBlockstate(holder.providedBlock)
                 val stateFile = File(statePath)
                 stateFile.parentFile.mkdirs()
@@ -147,6 +137,16 @@ object ModelHandler {
                     stateFile.writeText(obj.serialize())
                     log("$namePad | Creating file for blockstate of ${holder.providedBlock.registryName.resourcePath}")
                     generatedFiles++
+
+                    val modelPath = JsonGenerationUtils.getPathForBlockModel(holder.providedBlock)
+                    val modelFile = File(modelPath)
+                    modelFile.parentFile.mkdirs()
+                    if (modelFile.createNewFile()) {
+                        val blockObj = JsonGenerationUtils.generateBaseBlockModel(holder.providedBlock)
+                        modelFile.writeText(blockObj.serialize())
+                        log("$namePad | Creating file for block ${holder.providedBlock.registryName.resourcePath}")
+                        generatedFiles++
+                    }
                 }
             }
         }

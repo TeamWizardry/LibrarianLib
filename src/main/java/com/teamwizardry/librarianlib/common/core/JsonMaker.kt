@@ -27,10 +27,12 @@ object JSON {
 }
 
 fun convert(value: Any?) : JsonElement = when (value) {
+    null -> JsonNull.INSTANCE
+    is Char -> JsonPrimitive(value)
     is Number -> JsonPrimitive(value)
     is String -> JsonPrimitive(value)
+    is Boolean -> JsonPrimitive(value)
     is JsonElement -> value
-    null -> JsonNull.INSTANCE
     else -> throw IllegalArgumentException("Unrecognized type: " + value)
 }
 
