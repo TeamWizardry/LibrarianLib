@@ -9,6 +9,11 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 
+/**
+ * Referencing any LibrarianLib class from a static context or as a field in dependant [@Mod] files or proxies will crash.
+ * This is because LibrarianLib loads after dependant mods. To fix this, reference all LibLib classes in separate classes,
+ * and/or don't initialize anything related to LibLib before preinit.
+ */
 @Mod(modid = LibrarianLib.MODID, version = LibrarianLib.VERSION, name = LibrarianLib.MODNAME, dependencies = LibrarianLib.DEPENDENCIES, useMetadata = true)
 class LibrarianLib {
 
