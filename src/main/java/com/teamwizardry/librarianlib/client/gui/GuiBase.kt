@@ -9,16 +9,16 @@ import org.lwjgl.input.Mouse
 import java.io.IOException
 
 open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : GuiScreen() {
-    protected val components: ComponentVoid = ComponentVoid(0, 0)
+    protected val mainComponents: ComponentVoid = ComponentVoid(0, 0)
     protected val fullscreenComponents: ComponentVoid = ComponentVoid(0, 0)
     protected var top: Int = 0
     protected var left: Int = 0
 
     init {
-        components.calculateOwnHover = false
+        mainComponents.calculateOwnHover = false
         fullscreenComponents.calculateOwnHover = false
-        components.zIndex = -100000 // really far back
-        fullscreenComponents.add(components)
+        mainComponents.zIndex = -100000 // really far back
+        fullscreenComponents.add(mainComponents)
     }
 
     override fun initGui() {
@@ -26,8 +26,8 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         left = width / 2 - guiWidth / 2
         top = height / 2 - guiHeight / 2
 
-        if (components.pos.xi != left || components.pos.yi != top)
-            components.pos = Vec2d(left.toDouble(), top.toDouble())
+        if (mainComponents.pos.xi != left || mainComponents.pos.yi != top)
+            mainComponents.pos = Vec2d(left.toDouble(), top.toDouble())
         fullscreenComponents.size = Vec2d(width.toDouble(), height.toDouble())
     }
 

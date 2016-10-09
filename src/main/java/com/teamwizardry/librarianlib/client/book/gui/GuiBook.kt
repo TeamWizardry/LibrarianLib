@@ -130,13 +130,13 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
         border.zIndex = 10
         reload.zIndex = 11
 
-        components.add(tips)
-        components.add(pageBG)
-        components.add(border)
-        components.add(titleBar)
-        components.add(navBar)
-        components.add(contents)
-        components.add(reload)
+        mainComponents.add(tips)
+        mainComponents.add(pageBG)
+        mainComponents.add(border)
+        mainComponents.add(titleBar)
+        mainComponents.add(navBar)
+        mainComponents.add(contents)
+        mainComponents.add(reload)
 
         this.contents = contents
 
