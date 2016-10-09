@@ -9,13 +9,16 @@ import org.lwjgl.input.Mouse
 import java.io.IOException
 
 open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : GuiScreen() {
-    protected var components: ComponentVoid
+    protected val components: ComponentVoid = ComponentVoid(0, 0)
+    protected val fullscreenComponents: ComponentVoid = ComponentVoid(0, 0)
     protected var top: Int = 0
     protected var left: Int = 0
 
     init {
-        components = ComponentVoid(0, 0)
         components.calculateOwnHover = false
+        fullscreenComponents.calculateOwnHover = false
+        components.zIndex = -100000 // really far back
+        fullscreenComponents.add(components)
     }
 
     override fun initGui() {
@@ -25,35 +28,36 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
 
         if (components.pos.xi != left || components.pos.yi != top)
             components.pos = Vec2d(left.toDouble(), top.toDouble())
+        fullscreenComponents.size = Vec2d(width.toDouble(), height.toDouble())
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         super.drawScreen(mouseX, mouseY, partialTicks)
-        val relPos = Vec2d(mouseX.toDouble(), mouseY.toDouble()) - components.pos
-        components.calculateMouseOver(relPos)
-        components.draw(relPos, partialTicks)
+        val relPos = Vec2d(mouseX.toDouble(), mouseY.toDouble())
+        fullscreenComponents.calculateMouseOver(relPos)
+        fullscreenComponents.draw(relPos, partialTicks)
 
-        if (components.tooltipText != null) {
-            GuiUtils.drawHoveringText(components.tooltipText, mouseX, mouseY, width, height, -1, if (components.tooltipFont == null) mc.fontRendererObj else components.tooltipFont)
-            components.tooltipText = null
-            components.tooltipFont = null
+        if (fullscreenComponents.tooltipText != null) {
+            GuiUtils.drawHoveringText(fullscreenComponents.tooltipText, mouseX, mouseY, width, height, -1, if (fullscreenComponents.tooltipFont == null) mc.fontRendererObj else fullscreenComponents.tooltipFont)
+            fullscreenComponents.tooltipText = null
+            fullscreenComponents.tooltipFont = null
         }
     }
 
     @Throws(IOException::class)
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         super.mouseClicked(mouseX, mouseY, mouseButton)
-        components.mouseDown(Vec2d(mouseX.toDouble(), mouseY.toDouble()) - components.pos, EnumMouseButton.getFromCode(mouseButton))
+        fullscreenComponents.mouseDown(Vec2d(mouseX.toDouble(), mouseY.toDouble()), EnumMouseButton.getFromCode(mouseButton))
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         super.mouseReleased(mouseX, mouseY, state)
-        components.mouseUp(Vec2d(mouseX.toDouble(), mouseY.toDouble()) - components.pos, EnumMouseButton.getFromCode(state))
+        fullscreenComponents.mouseUp(Vec2d(mouseX.toDouble(), mouseY.toDouble()), EnumMouseButton.getFromCode(state))
     }
 
     override fun mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
         super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)
-        components.mouseDrag(Vec2d(mouseX.toDouble(), mouseY.toDouble()) - components.pos, EnumMouseButton.getFromCode(clickedMouseButton))
+        fullscreenComponents.mouseDrag(Vec2d(mouseX.toDouble(), mouseY.toDouble()), EnumMouseButton.getFromCode(clickedMouseButton))
     }
 
     @Throws(IOException::class)
@@ -61,9 +65,9 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         super.handleKeyboardInput()
 
         if (Keyboard.getEventKeyState())
-            components.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
+            fullscreenComponents.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
         else
-            components.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
+            fullscreenComponents.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
     }
 
     @Throws(IOException::class)
@@ -71,10 +75,10 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         super.handleMouseInput()
         val mouseX = Mouse.getEventX() * this.width / this.mc.displayWidth
         val mouseY = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1
-        var wheelAmount = Mouse.getEventDWheel()
+        val wheelAmount = Mouse.getEventDWheel()
 
         if (wheelAmount != 0) {
-            components.mouseWheel(Vec2d(mouseX.toDouble(), mouseY.toDouble()) - components.pos, GuiComponent.MouseWheelDirection.fromSign(wheelAmount))
+            fullscreenComponents.mouseWheel(Vec2d(mouseX.toDouble(), mouseY.toDouble()), GuiComponent.MouseWheelDirection.fromSign(wheelAmount))
         }
     }
 }
