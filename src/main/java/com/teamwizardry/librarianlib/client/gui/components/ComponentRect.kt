@@ -4,6 +4,10 @@ import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.Option
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import net.minecraft.client.gui.Gui
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 /**
@@ -14,6 +18,28 @@ class ComponentRect(posX: Int, posY: Int, width: Int, height: Int) : GuiComponen
     val color = Option<ComponentRect, Color>(Color.WHITE)
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
-        Gui.drawRect(pos.xi, pos.yi, pos.xi + size.xi, pos.yi + size.yi, color.getValue(this).rgb)
+        val minX = pos.xi.toDouble()
+        val minY = pos.yi.toDouble()
+        val maxX = pos.xi + size.xi.toDouble()
+        val maxY = pos.yi + size.yi.toDouble()
+
+        val c = color.getValue(this)
+
+        val tessellator = Tessellator.getInstance()
+        val vb = tessellator.buffer
+
+        GlStateManager.disableTexture2D()
+        GlStateManager.enableBlend()
+        GlStateManager.color(c.red/255f, c.green/255f, c.blue/255f, c.alpha/255f)
+
+        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION)
+        vb.pos(minX, minY, 0.0).endVertex()
+        vb.pos(minX, maxY, 0.0).endVertex()
+        vb.pos(maxX, maxY, 0.0).endVertex()
+        vb.pos(maxX, minY, 0.0).endVertex()
+        tessellator.draw()
+
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
     }
 }
