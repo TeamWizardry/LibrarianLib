@@ -340,6 +340,8 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         drawComponent(mousePos, partialTicks)
 
         if(LibrarianLib.DEV_ENVIRONMENT && Minecraft.getMinecraft().renderManager.isDebugBoundingBox) {
+            GlStateManager.pushAttrib()
+            GlStateManager.color(1f, 1f, 1f)
             if (!mouseOver) GlStateManager.color(1f, 0f, 1f)
             GlStateManager.disableTexture2D()
             val tessellator = Tessellator.getInstance()
@@ -351,8 +353,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             vb.pos(pos.x, pos.y + size.y, 0.0).endVertex()
             vb.pos(pos.x, pos.y, 0.0).endVertex()
             tessellator.draw()
-            GlStateManager.enableTexture2D()
-            GlStateManager.color(1f, 1f, 1f)
+            GlStateManager.popAttrib()
         }
 
         GlStateManager.pushMatrix()
