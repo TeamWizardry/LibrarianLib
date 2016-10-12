@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.client.gui
 
+import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.client.core.ClientTickHandler
 import com.teamwizardry.librarianlib.common.util.event.Event
@@ -7,6 +8,7 @@ import com.teamwizardry.librarianlib.common.util.event.EventBus
 import com.teamwizardry.librarianlib.common.util.event.EventCancelable
 import com.teamwizardry.librarianlib.common.util.math.BoundingBox2D
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -337,19 +339,22 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
         drawComponent(mousePos, partialTicks)
 
-        if (!mouseOver) GlStateManager.color(1f, 0f, 1f)
-        GlStateManager.disableTexture2D()
-        val tessellator = Tessellator.getInstance()
-        val vb = tessellator.buffer
-        vb.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
-        vb.pos(pos.x, pos.y, 0.0).endVertex()
-        vb.pos(pos.x + size.x, pos.y, 0.0).endVertex()
-        vb.pos(pos.x + size.x, pos.y + size.y, 0.0).endVertex()
-        vb.pos(pos.x, pos.y + size.y, 0.0).endVertex()
-        vb.pos(pos.x, pos.y, 0.0).endVertex()
-        tessellator.draw()
-        GlStateManager.enableTexture2D()
-        GlStateManager.color(1f, 1f, 1f)
+        if(LibrarianLib.DEV_ENVIRONMENT && Minecraft.getMinecraft().renderManager.isDebugBoundingBox) {
+            GlStateManager.pushAttrib()
+            GlStateManager.color(1f, 1f, 1f)
+            if (!mouseOver) GlStateManager.color(1f, 0f, 1f)
+            GlStateManager.disableTexture2D()
+            val tessellator = Tessellator.getInstance()
+            val vb = tessellator.buffer
+            vb.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+            vb.pos(pos.x, pos.y, 0.0).endVertex()
+            vb.pos(pos.x + size.x, pos.y, 0.0).endVertex()
+            vb.pos(pos.x + size.x, pos.y + size.y, 0.0).endVertex()
+            vb.pos(pos.x, pos.y + size.y, 0.0).endVertex()
+            vb.pos(pos.x, pos.y, 0.0).endVertex()
+            tessellator.draw()
+            GlStateManager.popAttrib()
+        }
 
         GlStateManager.pushMatrix()
         GlStateManager.pushAttrib()
