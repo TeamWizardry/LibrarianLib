@@ -129,7 +129,7 @@ open class Sprite {
      * @param y The y position to draw at
      */
     fun draw(animTicks: Int, x: Float, y: Float) {
-        DrawingUtil.draw(this, animTicks, x, y, width, height)
+        DrawingUtil.draw(this, animTicks, x, y, width.toFloat(), height.toFloat())
     }
 
     /**
@@ -142,7 +142,7 @@ open class Sprite {
      * *
      * @param height The height to draw the sprite
      */
-    fun draw(animTicks: Int, x: Float, y: Float, width: Int, height: Int) {
+    fun draw(animTicks: Int, x: Float, y: Float, width: Float, height: Float) {
         DrawingUtil.draw(this, animTicks, x, y, width, height)
     }
 

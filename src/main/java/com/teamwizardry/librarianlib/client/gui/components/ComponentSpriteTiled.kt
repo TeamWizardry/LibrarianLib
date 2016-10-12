@@ -75,12 +75,12 @@ open class ComponentSpriteTiled @JvmOverloads constructor(protected var main: Sp
         val insideX = x + width - borderSize
         val insideY = y + height - borderSize
 
-        topLeft.draw(animationTicks, x, y, borderSize, borderSize)
+        topLeft.draw(animationTicks, x, y, borderSize.toFloat(), borderSize.toFloat())
 
-        topRight.draw(animationTicks, insideX, y, borderSize, borderSize)
+        topRight.draw(animationTicks, insideX, y, borderSize.toFloat(), borderSize.toFloat())
 
-        bottomLeft.draw(animationTicks, x, insideY, borderSize, borderSize)
-        bottomRight.draw(animationTicks, insideX, insideY, borderSize, borderSize)
+        bottomLeft.draw(animationTicks, x, insideY, borderSize.toFloat(), borderSize.toFloat())
+        bottomRight.draw(animationTicks, insideX, insideY, borderSize.toFloat(), borderSize.toFloat())
 
         left.drawClipped(animationTicks, x, borderSize.toFloat(), borderSize, height - 2 * borderSize)
         right.drawClipped(animationTicks, insideX, borderSize.toFloat(), borderSize, height - 2 * borderSize)

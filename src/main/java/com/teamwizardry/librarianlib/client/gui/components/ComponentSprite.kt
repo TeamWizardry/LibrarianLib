@@ -29,7 +29,7 @@ class ComponentSprite @JvmOverloads constructor(var sprite: Sprite?, x: Int, y: 
         }
         color.getValue(this).glColor()
         sp.tex.bind()
-        sp.draw(animationTicks, pos.xf, pos.yf, size.xi, size.yi)
+        sp.draw(animationTicks, pos.xf, pos.yf, size.xi.toFloat(), size.yi.toFloat())
         if (alwaysTop)
             GL11.glPopAttrib()
     }
