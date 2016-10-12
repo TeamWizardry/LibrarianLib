@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL11
 
 @SideOnly(Side.CLIENT)
 object DrawingUtil {
-    internal var isDrawing = false
+    var isDrawing = false
 
     /**
      * Start drawing multiple quads to be pushed to the GPU at once
@@ -45,7 +45,7 @@ object DrawingUtil {
      * *
      * @param height The height to draw the sprite
      */
-    fun draw(sprite: Sprite, animFrames: Int, x: Float, y: Float, width: Int, height: Int) {
+    fun draw(sprite: Sprite, animFrames: Int, x: Float, y: Float, width: Float, height: Float) {
 
         val minX = x
         val minY = y
