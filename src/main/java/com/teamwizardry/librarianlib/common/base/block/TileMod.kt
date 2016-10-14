@@ -88,7 +88,7 @@ abstract class TileMod : TileEntity() {
                     }
                     else -> {
                         if (AutomaticTileSavingHandler.fieldMap[it]?.first != null) {
-                            val tag = NBTTagCompound()
+                            val tag = par1nbtTagCompound.getCompoundTag(it.name)
                             val clazz = AutomaticTileSavingHandler.fieldMap[it]
                                     ?.first
                             val instance = clazz?.newInstance()
