@@ -32,12 +32,17 @@ class BlockTest : BlockMod("test", Material.BARRIER), ITileEntityProvider {
     override fun onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer?, hand: EnumHand, heldItem: ItemStack?, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         val te = worldIn.getTileEntity(pos)
         if(te !is TileTest || worldIn.isRemote) return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ)
-        else te.saadUglinessMeter++
-        println(te.saadUglinessMeter)
+        else {
+            println(te.isSaadUgly)
+            if(playerIn?.isSneaking ?: false)
+                te.isSaadUgly.value = true
+            else te.isSaadUgly.value = false
+            te.markDirty()
+        }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ)
     }
     companion object {
-        val SHOULD_GENERATE = false
+        const val SHOULD_GENERATE = true
     }
 
 }

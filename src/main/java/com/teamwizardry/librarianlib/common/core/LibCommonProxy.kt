@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.client.book.Book
 import com.teamwizardry.librarianlib.common.test.BlockTest
 import com.teamwizardry.librarianlib.common.util.AutomaticTileSavingHandler
+import com.teamwizardry.librarianlib.common.util.EasyConfigHandler
 import net.minecraft.util.text.translation.I18n
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
@@ -23,6 +24,7 @@ open class LibCommonProxy {
         val config = e.suggestedConfigurationFile
         ConfigHandler.initConfig(config)
         data = e.asmData
+        EasyConfigHandler.init(config, data)
         if(LibrarianLib.DEV_ENVIRONMENT && BlockTest.SHOULD_GENERATE)
             BlockTest() //just an example block
     }
