@@ -33,7 +33,7 @@ abstract class TileMod : TileEntity() {
                 val type = it.type
                 when (type) {
                     String::class.java -> par1nbtTagCompound.setString(it.name, get as String)
-                    Int::class.java -> par1nbtTagCompound.setInteger(it.name, get as Int)
+                    Int::class.javaPrimitiveType!! -> par1nbtTagCompound.setInteger(it.name, get as Int)
                     Boolean::class.java -> par1nbtTagCompound.setBoolean(it.name, get as Boolean)
                     Byte::class.java -> par1nbtTagCompound.setByte(it.name, get as Byte)
                     Float::class.java -> par1nbtTagCompound.setFloat(it.name, get as Float)
@@ -75,7 +75,7 @@ abstract class TileMod : TileEntity() {
                 it.isAccessible = true
                 when (type) {
                     String::class.java -> it.set(this, par1nbtTagCompound.getString(it.name))
-                    Int::class.java -> it.set(this, par1nbtTagCompound.getInteger(it.name))
+                    Int::class.javaPrimitiveType!! -> it.set(this, par1nbtTagCompound.getInteger(it.name))
                     Boolean::class.java -> it.set(this, par1nbtTagCompound.getBoolean(it.name))
                     Byte::class.java -> it.set(this, par1nbtTagCompound.getByte(it.name))
                     Float::class.java -> it.set(this, par1nbtTagCompound.getFloat(it.name))

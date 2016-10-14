@@ -32,8 +32,8 @@ class BlockTest : BlockMod("test", Material.BARRIER), ITileEntityProvider {
     override fun onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer?, hand: EnumHand, heldItem: ItemStack?, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         val te = worldIn.getTileEntity(pos)
         if(te !is TileTest || worldIn.isRemote) return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ)
-        else te.saadIsUgly += "hio"
-        println(te.saadIsUgly)
+        else te.saadUglinessMeter++
+        println(te.saadUglinessMeter)
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ)
     }
     companion object {
@@ -46,7 +46,6 @@ class TileTest : TileMod() {
     @Save var saadIsUgly = ""
     @Save var saadUglinessMeter: Int = 999
     @Save(serializator = "com.teamwizardry.librarianlib.common.test.MutableSerializable") var isSaadUgly: MutableObject<Boolean> = MutableObject(true)
-    //@Save var saadUglinessObject = GameRegistry()
 }
 class MutableSerializable : Serializator<MutableObject<Boolean>> {
     override fun writeToNBT(t: MutableObject<Boolean>, nbt: NBTTagCompound, name: String) {
