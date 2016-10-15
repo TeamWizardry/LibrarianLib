@@ -8,6 +8,8 @@ import java.lang.reflect.Field
 
 /**
  * Created by Elad on 10/14/2016.
+ * This object contains utilities for the automatic config system. Its [init] method should be invoked at
+ * pre-initialization time.
  */
 object EasyConfigHandler {
     val fieldMapStr: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
@@ -61,6 +63,28 @@ object EasyConfigHandler {
         })
     }
 }
+
+/**
+ * This annotation should be applied to non-final, static (if in Kotlin, [JvmStatic]) fields of type [String] (or in Kotlin String?]
+ * that you wish to use as a config property. Use [catagory] to indicate the config catagory in the config file,
+ * [id] will indicate the name of the property, [comment] will be the comment above the entry in the config file,
+ * [def] is the default value, and if [devOnly] (optional) is set to true, this config property will only be set in a
+ * development environment.
+ */
 @Target(AnnotationTarget.FIELD) annotation class ConfigPropertyString(val catagory: String, val id: String, val comment: String, val def: String, val devOnly: Boolean = false)
+/**
+ * This annotation should be applied to non-final, static (if in Kotlin, [JvmStatic]) fields of type [Int] (or in Kotlin Int?]
+ * that you wish to use as a config property. Use [catagory] to indicate the config catagory in the config file,
+ * [id] will indicate the name of the property, [comment] will be the comment above the entry in the config file,
+ * [def] is the default value, and if [devOnly] (optional) is set to true, this config property will only be set in a
+ * development environment.
+ */
 @Target(AnnotationTarget.FIELD) annotation class ConfigPropertyInt(val catagory: String, val id: String, val comment: String, val def: Int, val devOnly: Boolean = false)
+/**
+ * This annotation should be applied to non-final, static (if in Kotlin, [JvmStatic]) fields of type [Boolean] (or in Kotlin Boolean?]
+ * that you wish to use as a config property. Use [catagory] to indicate the config catagory in the config file,
+ * [id] will indicate the name of the property, [comment] will be the comment above the entry in the config file,
+ * [def] is the default value, and if [devOnly] (optional) is set to true, this config property will only be set in a
+ * development environment.
+ */
 @Target(AnnotationTarget.FIELD) annotation class ConfigPropertyBoolean(val catagory: String, val id: String, val comment: String, val def: Boolean, val devOnly: Boolean = false)

@@ -7,6 +7,8 @@ import java.lang.reflect.Field
 
 /**
  * Created by Elad on 10/14/2016.
+ * This object contains utilities for the automatic tile entity saving system. This object should not be accessed
+ * outside of the library. It is for internal use.
  */
 object AutomaticTileSavingHandler {
     val fieldMap: MutableMap<Field, Pair<Class<out Serializator<*>>?, AnnotationHelper.AnnotationInfo>> = mutableMapOf()
@@ -41,11 +43,27 @@ object AutomaticTileSavingHandler {
 
 
 }
-
+/**
+ * This interface should be implemented when you want to save a non-primitive/NBTTagCompound/ItemStack type
+ * using the LibrarianLib automatic saving system.
+ * Implement this interface on a public, non-static class with a public constructor and make its type annotation
+ * the type you want to automatically save. Then put the full path to the class in the "serializator" field in [Save].
+ * An example can be found in com.teamwizardry.librarianlib.common.test.MutableSerializable and its corresponding Tile
+ * Entity, com.teamwizardry.librarianlib.common.test.TileTest.
+ * See the comment on [Save] for more information.
+ */
 interface Serializator<T> {
     fun writeToNBT(t: T, nbt: NBTTagCompound, name: String)
     fun readFromNBT(nbt: NBTTagCompound, name: String): T
 }
 
 
+/**
+ * This annotation should be applied on fields of classes that extend [TileMod] that you wish to have automatically saved.
+ * What this means is that you will not have to use the [writeToNBT] and [readToNBT] methods to read and write them.
+ * You will still need to markDirty as needed. Natively, this annotation supports saving the following types:
+ * Boolean, Character, Byte, Short, Integer, Float, Long, NBTTagCompound, and ItemStack. In case you wish to save types
+ * other than those listed above, you will need to implement a serializator. More information about serializators
+ * can be found in the comment on [Serializator].
+ */
 @Target(AnnotationTarget.FIELD) annotation class Save(val serializator: String = "")

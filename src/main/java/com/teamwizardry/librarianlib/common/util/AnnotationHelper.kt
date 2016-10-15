@@ -4,8 +4,18 @@ import net.minecraftforge.fml.common.discovery.ASMDataTable
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 
+/**
+ * Created by Elad on 10/14/2016.
+ * This object contains utilities for getting annotations from classes. It is not restricted to internal use and may be
+ * used freely in all classes.
+ */
 object AnnotationHelper {
-    data class AnnotationInfo(private val map: Map<String, Any>) {
+    /**
+     * This class saves information about annotations gotten from [findAnnotatedObjects], [findAnnotatedClasses], and
+     * [findAnnotatedMethods]. That information can be of three types by default: String, Integer, and Boolean.
+     * In case other types may be needed, just get the information manually from the [map] field.
+     */
+    data class AnnotationInfo(val map: Map<String, Any>) {
 
         fun getString(id: String, def: String?): String? {
             val `val` = map[id]
@@ -36,6 +46,10 @@ object AnnotationHelper {
     }
 
 
+    /**
+     * Find all annotated fields of super-type [objClass] with annotation [annotationClass] from data table [table]
+     * and send them to the callback [callback].
+     */
     fun <T> findAnnotatedObjects(table: ASMDataTable, objClass: Class<T>, annotationClass: Class<*>, callback: (Field, AnnotationInfo)->Unit) {
         for (data in table.getAll(annotationClass.name)) {
             try {
@@ -60,6 +74,10 @@ object AnnotationHelper {
         }
     }
 
+    /**
+     * Find all annotated classes of super-type [superClass] with annotation [annotationClass] from data table [table]
+     * and send them to the callback [callback].
+     */
     fun <T> findAnnotatedClasses(table: ASMDataTable?, superClass: Class<T>, annotationClass: Class<*>, callback: (Class<T>, AnnotationInfo)->Unit) {
         if(table == null) return
         for (data in table.getAll(annotationClass.name)) {
@@ -73,6 +91,10 @@ object AnnotationHelper {
     }
 
 
+    /**
+     * Find all annotated methods with annotation [annotationClass] from data table [table]
+     * and send them to the callback [callback].
+     */
     fun findAnnotatedMethods(table: ASMDataTable, annotationClass: Class<*>, callback: (Method, Array<Class<*>>, AnnotationInfo)->Unit) {
         for (data in table.getAll(annotationClass.name)) {
             try {
