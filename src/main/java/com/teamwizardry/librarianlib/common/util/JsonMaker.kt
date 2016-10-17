@@ -1,5 +1,5 @@
 @file:JvmName("JsonMaker")
-package com.teamwizardry.librarianlib.common.core
+package com.teamwizardry.librarianlib.common.util
 
 import com.google.gson.*
 import com.google.gson.internal.Streams
@@ -36,9 +36,7 @@ fun convert(value: Any?) : JsonElement = when (value) {
     else -> throw IllegalArgumentException("Unrecognized type: " + value)
 }
 
-fun json(lambda: JSON.() -> JsonObject): JsonObject {
-    return JSON.lambda()
-}
+fun json(lambda: JSON.() -> JsonObject) = JSON.lambda()
 
 fun JsonElement.serialize(): String {
     val stringWriter = StringWriter()
