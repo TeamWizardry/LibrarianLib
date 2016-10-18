@@ -72,7 +72,7 @@ object ModelHandler {
 
         if (generatedFiles.isNotEmpty() && debug) {
             val home = System.getProperty("user.home")
-            generatedFiles = generatedFiles.map { it.replace(home, "~") }.toMutableList()
+            generatedFiles = generatedFiles.map { if (it.startsWith(home) && home.isNotBlank()) (if (home.endsWith("/")) "~/" else "~") + it.substring(home.length) else it }.toMutableList()
             val starPad = Array(generatedFiles.fold(61) { iterated, it ->
                 if (it.length + 3 > iterated) it.length + 3 else iterated
             }) { "*" }.joinToString("")
