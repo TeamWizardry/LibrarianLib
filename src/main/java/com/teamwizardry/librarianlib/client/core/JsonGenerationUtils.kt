@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.client.core
 
-import com.google.gson.JsonObject
+import com.google.gson.JsonElement
 import com.teamwizardry.librarianlib.common.util.json
 import net.minecraft.block.Block
 import net.minecraft.client.Minecraft
@@ -22,7 +22,6 @@ import java.nio.file.Paths
 @SideOnly(Side.CLIENT)
 object JsonGenerationUtils {
     fun getPathsForBlockstate(block: Block, stateMapper: IStateMapper? = null): Array<String> {
-        val registryName = block.registryName
         val mapped = (stateMapper ?: DefaultStateMapper()).putStateModelLocations(block)
         val files = mapped.map {
             getPathForMRL(it.value)
@@ -49,7 +48,7 @@ object JsonGenerationUtils {
         return "${Paths.get(Minecraft.getMinecraft().mcDataDir.absolutePath).parent.parent}/src/main/resources/assets/$modid"
     }
 
-    fun generateBaseItemModel(item: Item, variantName: String? = null): JsonObject {
+    fun generateBaseItemModel(item: Item, variantName: String? = null): JsonElement {
         val registryName = item.registryName
         val varname = variantName ?: registryName.resourcePath
         if (item is ItemBlock) return json { obj("parent" to "${registryName.resourceDomain}:block/$varname") }
@@ -61,7 +60,7 @@ object JsonGenerationUtils {
         )}
     }
 
-    fun generateBaseBlockModel(block: Block): JsonObject {
+    fun generateBaseBlockModel(block: Block): JsonElement {
         val registryName = block.registryName
         return json { obj (
             "parent" to "block/cube_all",
@@ -71,7 +70,7 @@ object JsonGenerationUtils {
         )}
     }
 
-    fun generateBaseBlockStates(block: Block, stateMapper: IStateMapper? = null): Map<String, JsonObject> {
+    fun generateBaseBlockStates(block: Block, stateMapper: IStateMapper? = null): Map<String, JsonElement> {
         val registryName = block.registryName
         val mapped = (stateMapper ?: DefaultStateMapper()).putStateModelLocations(block)
         val files = getPathsForBlockstate(block, stateMapper)
@@ -79,7 +78,7 @@ object JsonGenerationUtils {
             val keypairs = mapped.filter { keypair ->
                 getPathForMRL(keypair.value) == file
             }
-            val vars = json { obj() }
+            val vars = json { obj() }.asJsonObject
             for ((state, loc) in keypairs) {
                 vars.add(loc.variant, json { obj("model" to registryName.toString()) })
             }

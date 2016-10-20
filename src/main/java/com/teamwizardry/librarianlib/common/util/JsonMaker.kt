@@ -15,18 +15,18 @@ object JSON {
 
     fun array(vararg args: Any?) : JsonArray {
         val arr = JsonArray()
-        args.forEach { arr.add(convert(it)) }
+        args.forEach { arr.add(convertJSON(it)) }
         return arr
     }
 
     fun obj(vararg args: Pair<String, *>): JsonObject {
         val obj = JsonObject()
-        args.forEach { obj.add(it.first, convert(it.second)) }
+        args.forEach { obj.add(it.first, convertJSON(it.second)) }
         return obj
     }
 }
 
-fun convert(value: Any?): JsonElement = when (value) {
+fun convertJSON(value: Any?): JsonElement = when (value) {
     null -> JsonNull.INSTANCE
     is Char -> JsonPrimitive(value)
     is Number -> JsonPrimitive(value)
@@ -36,7 +36,7 @@ fun convert(value: Any?): JsonElement = when (value) {
     else -> throw IllegalArgumentException("Unrecognized type: " + value)
 }
 
-inline fun json(lambda: JSON.() -> JsonObject) = JSON.lambda()
+inline fun json(lambda: JSON.() -> JsonElement) = JSON.lambda()
 
 fun JsonElement.serialize(): String {
     val stringWriter = StringWriter()
