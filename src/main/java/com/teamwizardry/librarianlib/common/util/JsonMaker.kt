@@ -26,7 +26,7 @@ object JSON {
     }
 }
 
-fun convert(value: Any?) : JsonElement = when (value) {
+fun convert(value: Any?): JsonElement = when (value) {
     null -> JsonNull.INSTANCE
     is Char -> JsonPrimitive(value)
     is Number -> JsonPrimitive(value)
@@ -36,7 +36,7 @@ fun convert(value: Any?) : JsonElement = when (value) {
     else -> throw IllegalArgumentException("Unrecognized type: " + value)
 }
 
-fun json(lambda: JSON.() -> JsonObject) = JSON.lambda()
+inline fun json(lambda: JSON.() -> JsonObject) = JSON.lambda()
 
 fun JsonElement.serialize(): String {
     val stringWriter = StringWriter()
