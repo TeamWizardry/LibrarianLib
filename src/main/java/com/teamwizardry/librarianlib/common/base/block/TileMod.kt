@@ -14,6 +14,7 @@ import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraft.world.WorldServer
+import net.minecraftforge.common.util.INBTSerializable
 
 /**
  * @author WireSegal
@@ -41,6 +42,7 @@ abstract class TileMod : TileEntity() {
                     Double::class.java -> par1nbtTagCompound.setDouble(it.name, get as Double)
                     Long::class.java -> par1nbtTagCompound.setLong(it.name, get as Long)
                     NBTBase::class.java -> par1nbtTagCompound.setTag(it.name, get as NBTBase)
+                    INBTSerializable::class.java -> par1nbtTagCompound.setTag(it.name, (get as INBTSerializable<*>).serializeNBT())
                     ItemStack::class.java -> {
                         val tag = NBTTagCompound()
                         (get as ItemStack?)?.writeToNBT(tag)
@@ -83,6 +85,7 @@ abstract class TileMod : TileEntity() {
                     Double::class.java -> it.set(this, par1nbtTagCompound.getDouble(it.name))
                     Long::class.java -> it.set(this, par1nbtTagCompound.getLong(it.name))
                     NBTBase::class.java -> it.set(this, par1nbtTagCompound.getTag(it.name))
+                    INBTSerializable::class.java -> (it.get(this) as INBTSerializable<out NBTBase>).deserializeNBT(par1nbtTagCompound.getTag(it.name)) //todo todo todo todo
                     ItemStack::class.java -> {
                         val tag = par1nbtTagCompound.getCompoundTag(it.name)
                         it.set(this, ItemStack.loadItemStackFromNBT(tag))
