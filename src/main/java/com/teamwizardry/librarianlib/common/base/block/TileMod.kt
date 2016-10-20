@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.common.util.AutomaticTileSavingHandler
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.network.NetworkManager
 import net.minecraft.network.play.server.SPacketUpdateTileEntity
@@ -39,10 +40,10 @@ abstract class TileMod : TileEntity() {
                     Float::class.java -> par1nbtTagCompound.setFloat(it.name, get as Float)
                     Double::class.java -> par1nbtTagCompound.setDouble(it.name, get as Double)
                     Long::class.java -> par1nbtTagCompound.setLong(it.name, get as Long)
-                    NBTTagCompound::class.java -> par1nbtTagCompound.setTag(it.name, get as NBTTagCompound)
+                    NBTBase::class.java -> par1nbtTagCompound.setTag(it.name, get as NBTBase)
                     ItemStack::class.java -> {
                         val tag = NBTTagCompound()
-                        (get as ItemStack).writeToNBT(tag)
+                        (get as ItemStack?)?.writeToNBT(tag)
                         par1nbtTagCompound.setTag(it.name, tag)
                     }
                     else -> {
@@ -81,7 +82,7 @@ abstract class TileMod : TileEntity() {
                     Float::class.java -> it.set(this, par1nbtTagCompound.getFloat(it.name))
                     Double::class.java -> it.set(this, par1nbtTagCompound.getDouble(it.name))
                     Long::class.java -> it.set(this, par1nbtTagCompound.getLong(it.name))
-                    NBTTagCompound::class.java -> it.set(this, par1nbtTagCompound.getCompoundTag(it.name))
+                    NBTBase::class.java -> it.set(this, par1nbtTagCompound.getTag(it.name))
                     ItemStack::class.java -> {
                         val tag = par1nbtTagCompound.getCompoundTag(it.name)
                         it.set(this, ItemStack.loadItemStackFromNBT(tag))

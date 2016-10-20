@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.client.gui.components
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.Option
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
-import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
