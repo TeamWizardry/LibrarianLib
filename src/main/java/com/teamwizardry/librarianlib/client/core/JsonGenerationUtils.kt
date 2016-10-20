@@ -1,9 +1,10 @@
-package com.teamwizardry.librarianlib.client.util
+package com.teamwizardry.librarianlib.client.core
 
 import com.google.gson.JsonObject
-import com.teamwizardry.librarianlib.common.core.json
+import com.teamwizardry.librarianlib.common.util.json
 import net.minecraft.block.Block
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.client.renderer.block.statemap.DefaultStateMapper
 import net.minecraft.client.renderer.block.statemap.IStateMapper
 import net.minecraft.item.Item
@@ -20,9 +21,17 @@ import java.nio.file.Paths
  */
 @SideOnly(Side.CLIENT)
 object JsonGenerationUtils {
-    fun getPathForBlockstate(block: Block): String {
+    fun getPathsForBlockstate(block: Block, stateMapper: IStateMapper? = null): Array<String> {
         val registryName = block.registryName
-        return "${getAssetPath(registryName.resourceDomain)}/blockstates/${registryName.resourcePath}.json"
+        val mapped = (stateMapper ?: DefaultStateMapper()).putStateModelLocations(block)
+        val files = mapped.map {
+            getPathForMRL(it.value)
+        }.toSet().toTypedArray()
+        return files
+    }
+
+    fun getPathForMRL(modelResourceLocation: ModelResourceLocation): String {
+        return "${getAssetPath(modelResourceLocation.resourceDomain)}/blockstates/${modelResourceLocation.resourcePath}.json"
     }
 
     fun getPathForBlockModel(block: Block): String {
@@ -37,7 +46,7 @@ object JsonGenerationUtils {
     }
 
     fun getAssetPath(modid: String): String {
-        return "${Paths.get(Minecraft.getMinecraft().mcDataDir.absolutePath).parent.parent}/src/main/resources/assets/$modid/"
+        return "${Paths.get(Minecraft.getMinecraft().mcDataDir.absolutePath).parent.parent}/src/main/resources/assets/$modid"
     }
 
     fun generateBaseItemModel(item: Item, variantName: String? = null): JsonObject {
@@ -62,16 +71,21 @@ object JsonGenerationUtils {
         )}
     }
 
-    fun generateBaseBlockState(block: Block, stateMapper: IStateMapper? = null): JsonObject {
+    fun generateBaseBlockStates(block: Block, stateMapper: IStateMapper? = null): Map<String, JsonObject> {
         val registryName = block.registryName
         val mapped = (stateMapper ?: DefaultStateMapper()).putStateModelLocations(block)
-        val vars = json { obj() }
-        for ((state, loc) in mapped) {
-            vars.add(loc.variant, json { obj("model" to registryName.toString()) })
-        }
-        return json {
-            obj("variants" to vars)
-        }
+        val files = getPathsForBlockstate(block, stateMapper)
+        return mapOf(*(files.map { file ->
+            val keypairs = mapped.filter { keypair ->
+                getPathForMRL(keypair.value) == file
+            }
+            val vars = json { obj() }
+            for ((state, loc) in keypairs) {
+                vars.add(loc.variant, json { obj("model" to registryName.toString()) })
+            }
+
+            file to vars
+        }.toTypedArray()))
     }
 
 }

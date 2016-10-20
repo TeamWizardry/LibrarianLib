@@ -18,27 +18,28 @@ object AnnotationHelper {
     data class AnnotationInfo(val map: Map<String, Any>) {
 
         fun getString(id: String, def: String?): String? {
-            val `val` = map[id]
-            return if (`val` == null) def else `val`.toString()
+            val value = map[id]
+            return if (value == null) def else value.toString()
         }
 
         fun getInt(id: String, def: Int): Int {
-            val `val` = map[id]
-            return if (`val` == null) def else `val`.hashCode()
+            val value = map[id]
+            return if (value == null) def else value.hashCode()
         }
 
         fun getBoolean(id: String, def: Boolean): Boolean {
-            val `val` = map[id]
-            return if (`val` == null) def else `val` as Boolean
+            val value = map[id]
+            return if (value == null) def else value as Boolean
         }
 
+        @Suppress("UNCHECKED_CAST")
         fun getStringList(id: String): List<String> {
-            val `val` = map[id]
+            val value = map[id]
 
-            if (`val` is String) {
-                return listOf(`val`.toString())
-            } else if (`val` is List<*>) {
-                return `val` as List<String>
+            if (value is String) {
+                return listOf(value.toString())
+            } else if (value is List<*>) {
+                return value as List<String>
             }
 
             return emptyList()
@@ -78,11 +79,11 @@ object AnnotationHelper {
      * Find all annotated classes of super-type [superClass] with annotation [annotationClass] from data table [table]
      * and send them to the callback [callback].
      */
-    fun <T> findAnnotatedClasses(table: ASMDataTable?, superClass: Class<T>, annotationClass: Class<*>, callback: (Class<T>, AnnotationInfo)->Unit) {
+    fun <T> findAnnotatedClasses(table: ASMDataTable?, superClass: Class<T>, annotationClass: Class<*>, callback: (Class<out T>, AnnotationInfo)->Unit) {
         if(table == null) return
         for (data in table.getAll(annotationClass.name)) {
             try {
-                callback(Class.forName(data.className).asSubclass(superClass) as Class<T>, AnnotationInfo(data.annotationInfo))
+                callback(Class.forName(data.className).asSubclass(superClass) as Class<out T>, AnnotationInfo(data.annotationInfo))
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }
