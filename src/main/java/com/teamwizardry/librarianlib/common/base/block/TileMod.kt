@@ -25,28 +25,28 @@ abstract class TileMod : TileEntity() {
         return oldState.block !== newState.block
     }
 
-    override fun writeToNBT(par1nbtTagCompound: NBTTagCompound): NBTTagCompound {
-        writeCustomNBT(par1nbtTagCompound)
-        super.writeToNBT(par1nbtTagCompound)
+    override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
+        writeCustomNBT(compound)
+        super.writeToNBT(compound)
         if (ConfigHandler.autoSaveTEs) {
             javaClass.declaredFields.filter { it in AutomaticTileSavingHandler.fieldMap.keys }.forEach {
                 it.isAccessible = true
                 val get = it.get(this)
                 val type = it.type
                 when (type) {
-                    String::class.java -> par1nbtTagCompound.setString(it.name, get as String)
-                    Int::class.javaPrimitiveType!! -> par1nbtTagCompound.setInteger(it.name, get as Int)
-                    Boolean::class.java -> par1nbtTagCompound.setBoolean(it.name, get as Boolean)
-                    Byte::class.java -> par1nbtTagCompound.setByte(it.name, get as Byte)
-                    Float::class.java -> par1nbtTagCompound.setFloat(it.name, get as Float)
-                    Double::class.java -> par1nbtTagCompound.setDouble(it.name, get as Double)
-                    Long::class.java -> par1nbtTagCompound.setLong(it.name, get as Long)
-                    NBTBase::class.java -> par1nbtTagCompound.setTag(it.name, get as NBTBase)
-                    INBTSerializable::class.java -> par1nbtTagCompound.setTag(it.name, (get as INBTSerializable<*>).serializeNBT())
+                    String::class.java -> compound.setString(it.name, get as String)
+                    Int::class.javaPrimitiveType!! -> compound.setInteger(it.name, get as Int)
+                    Boolean::class.java -> compound.setBoolean(it.name, get as Boolean)
+                    Byte::class.java -> compound.setByte(it.name, get as Byte)
+                    Float::class.java -> compound.setFloat(it.name, get as Float)
+                    Double::class.java -> compound.setDouble(it.name, get as Double)
+                    Long::class.java -> compound.setLong(it.name, get as Long)
+                    NBTBase::class.java -> compound.setTag(it.name, get as NBTBase)
+                    INBTSerializable::class.java -> compound.setTag(it.name, (get as INBTSerializable<*>).serializeNBT())
                     ItemStack::class.java -> {
                         val tag = NBTTagCompound()
                         (get as ItemStack?)?.writeToNBT(tag)
-                        par1nbtTagCompound.setTag(it.name, tag)
+                        compound.setTag(it.name, tag)
                     }
                     else -> {
                         if (AutomaticTileSavingHandler.fieldMap[it]?.first != null) {
@@ -58,7 +58,7 @@ abstract class TileMod : TileEntity() {
                                     ?.first
                                     ?.getDeclaredMethod("writeToNBT", it.type, NBTTagCompound::class.java, String::class.java)
                                     ?.invoke(instance, get, tag, it.name)
-                            par1nbtTagCompound.setTag(it.name, tag)
+                            compound.setTag(it.name, tag)
                         } else throw IllegalArgumentException("Invalid field " + it.name)
                     }
                 }
@@ -66,33 +66,34 @@ abstract class TileMod : TileEntity() {
             }
         }
 
-        return par1nbtTagCompound
+        return compound
     }
 
-    override fun readFromNBT(par1nbtTagCompound: NBTTagCompound) {
-        readCustomNBT(par1nbtTagCompound)
-        super.readFromNBT(par1nbtTagCompound)
+    @Suppress("UNCHECKED_CAST")
+    override fun readFromNBT(compound: NBTTagCompound) {
+        readCustomNBT(compound)
+        super.readFromNBT(compound)
         if (ConfigHandler.autoSaveTEs) {
             javaClass.declaredFields.filter { it in AutomaticTileSavingHandler.fieldMap.keys }.forEach {
                 val type = it.type
                 it.isAccessible = true
                 when (type) {
-                    String::class.java -> it.set(this, par1nbtTagCompound.getString(it.name))
-                    Int::class.javaPrimitiveType!! -> it.set(this, par1nbtTagCompound.getInteger(it.name))
-                    Boolean::class.java -> it.set(this, par1nbtTagCompound.getBoolean(it.name))
-                    Byte::class.java -> it.set(this, par1nbtTagCompound.getByte(it.name))
-                    Float::class.java -> it.set(this, par1nbtTagCompound.getFloat(it.name))
-                    Double::class.java -> it.set(this, par1nbtTagCompound.getDouble(it.name))
-                    Long::class.java -> it.set(this, par1nbtTagCompound.getLong(it.name))
-                    NBTBase::class.java -> it.set(this, par1nbtTagCompound.getTag(it.name))
-                    INBTSerializable::class.java -> (it.get(this) as INBTSerializable<out NBTBase>).deserializeNBT(par1nbtTagCompound.getTag(it.name)) //todo todo todo todo
+                    String::class.java -> it.set(this, compound.getString(it.name))
+                    Int::class.javaPrimitiveType!! -> it.set(this, compound.getInteger(it.name))
+                    Boolean::class.java -> it.set(this, compound.getBoolean(it.name))
+                    Byte::class.java -> it.set(this, compound.getByte(it.name))
+                    Float::class.java -> it.set(this, compound.getFloat(it.name))
+                    Double::class.java -> it.set(this, compound.getDouble(it.name))
+                    Long::class.java -> it.set(this, compound.getLong(it.name))
+                    NBTBase::class.java -> it.set(this, compound.getTag(it.name))
+                    INBTSerializable::class.java -> (it.get(this) as INBTSerializable<NBTBase>).deserializeNBT(compound.getTag(it.name))
                     ItemStack::class.java -> {
-                        val tag = par1nbtTagCompound.getCompoundTag(it.name)
+                        val tag = compound.getCompoundTag(it.name)
                         it.set(this, ItemStack.loadItemStackFromNBT(tag))
                     }
                     else -> {
                         if (AutomaticTileSavingHandler.fieldMap[it]?.first != null) {
-                            val tag = par1nbtTagCompound.getCompoundTag(it.name)
+                            val tag = compound.getCompoundTag(it.name)
                             val clazz = AutomaticTileSavingHandler.fieldMap[it]
                                     ?.first
                             val instance = clazz?.newInstance()
