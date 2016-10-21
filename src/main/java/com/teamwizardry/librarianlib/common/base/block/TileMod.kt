@@ -42,7 +42,7 @@ abstract class TileMod : TileEntity() {
                     Double::class.java -> compound.setDouble(it.name, get as Double)
                     Long::class.java -> compound.setLong(it.name, get as Long)
                     NBTBase::class.java -> compound.setTag(it.name, get as NBTBase)
-                    INBTSerializable::class.java -> compound.setTag(it.name, (get as INBTSerializable<NBTTagCompound>).serializeNBT())
+                    //INBTSerializable::class.java ->
                     ItemStack::class.java -> {
                         val tag = NBTTagCompound()
                         (get as ItemStack?)?.writeToNBT(tag)
@@ -59,7 +59,10 @@ abstract class TileMod : TileEntity() {
                                     ?.getDeclaredMethod("writeToNBT", it.type, NBTTagCompound::class.java, String::class.java)
                                     ?.invoke(instance, get, tag, it.name)
                             compound.setTag(it.name, tag)
-                        } else throw IllegalArgumentException("Invalid field " + it.name)
+                        } else if(get is INBTSerializable<*>) {
+                            compound.setTag(it.name, (get as INBTSerializable<NBTTagCompound>).serializeNBT())
+                        }
+                        else throw IllegalArgumentException("Invalid field " + it.name + " of type ")
                     }
                 }
                 if(LibrarianLib.DEV_ENVIRONMENT) println("Saved ${it.name}")
@@ -86,7 +89,7 @@ abstract class TileMod : TileEntity() {
                     Double::class.java -> it.set(this, compound.getDouble(it.name))
                     Long::class.java -> it.set(this, compound.getLong(it.name))
                     NBTBase::class.java -> it.set(this, compound.getTag(it.name))
-                    INBTSerializable::class.java -> (it.get(this) as INBTSerializable<NBTTagCompound>).deserializeNBT(compound.getCompoundTag(it.name))
+                    //INBTSerializable::class.java ->
                     ItemStack::class.java -> {
                         val tag = compound.getCompoundTag(it.name)
                         it.set(this, ItemStack.loadItemStackFromNBT(tag))
@@ -101,7 +104,10 @@ abstract class TileMod : TileEntity() {
                                     ?.first
                                     ?.getDeclaredMethod("readFromNBT", NBTTagCompound::class.java, String::class.java)
                                     ?.invoke(instance, tag, it.name))
-                        } else throw IllegalArgumentException("Invalid field " + it.name)
+                        } else if(it.get(this) is INBTSerializable<*>) {
+                            (it.get(this) as INBTSerializable<NBTTagCompound>).deserializeNBT(compound.getCompoundTag(it.name))
+                        }
+                        else throw IllegalArgumentException("Invalid field " + it.name)
                     }
                 }
                 if(LibrarianLib.DEV_ENVIRONMENT) println("Read ${it.name} (${it.get(this)})")
