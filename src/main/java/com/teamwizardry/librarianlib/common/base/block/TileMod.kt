@@ -94,6 +94,7 @@ abstract class TileMod : TileEntity() {
             javaClass.declaredFields.filter { it in AutomaticTileSavingHandler.fieldMap.keys }.forEach {
                 val type = it.type
                 it.isAccessible = true
+                @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
                 when (type) {
                     String::class.java -> it.set(this, compound.getString(it.name))
                     Int::class.javaPrimitiveType!! -> it.set(this, compound.getInteger(it.name))

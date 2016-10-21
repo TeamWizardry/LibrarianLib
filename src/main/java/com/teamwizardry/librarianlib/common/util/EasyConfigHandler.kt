@@ -11,7 +11,7 @@ import java.lang.reflect.Field
  * This object contains utilities for the automatic config system. Its [init] method should be invoked at
  * pre-initialization time.
  */
-object EasyConfigHandler {
+class EasyConfigHandler {
     val fieldMapStr: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
     val fieldMapInt: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
     val fieldMapBoolean: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()

@@ -22,7 +22,7 @@ open class LibCommonProxy {
         val config = e.suggestedConfigurationFile
         ConfigHandler
         data = e.asmData
-        EasyConfigHandler.init(config, data)
+        EasyConfigHandler().init(config, data)
     }
 
     open fun init(e: FMLInitializationEvent) {
