@@ -17,6 +17,7 @@ import net.minecraft.world.World
 import net.minecraft.world.WorldServer
 import net.minecraftforge.common.util.INBTSerializable
 import java.awt.Color
+import java.lang.reflect.Field
 
 /**
  * @author WireSegal
@@ -26,12 +27,13 @@ abstract class TileMod : TileEntity() {
     override fun shouldRefresh(world: World, pos: BlockPos, oldState: IBlockState, newState: IBlockState): Boolean {
         return oldState.block !== newState.block
     }
+    val fields: List<Field> by lazy { javaClass.declaredFields.filter { it in AutomaticTileSavingHandler.fieldMap.keys } }
 
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         writeCustomNBT(compound)
         super.writeToNBT(compound)
         if (ConfigHandler.autoSaveTEs) {
-            javaClass.declaredFields.filter { it in AutomaticTileSavingHandler.fieldMap.keys }.forEach {
+            fields.forEach {
                 it.isAccessible = true
                 val get = it.get(this)
                 val type = it.type
