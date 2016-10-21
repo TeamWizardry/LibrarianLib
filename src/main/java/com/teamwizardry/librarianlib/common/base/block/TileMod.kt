@@ -42,7 +42,7 @@ abstract class TileMod : TileEntity() {
                     Double::class.java -> compound.setDouble(it.name, get as Double)
                     Long::class.java -> compound.setLong(it.name, get as Long)
                     NBTBase::class.java -> compound.setTag(it.name, get as NBTBase)
-                    INBTSerializable::class.java -> compound.setTag(it.name, (get as INBTSerializable<*>).serializeNBT())
+                    INBTSerializable::class.java -> compound.setTag(it.name, (get as INBTSerializable<NBTTagCompound>).serializeNBT())
                     ItemStack::class.java -> {
                         val tag = NBTTagCompound()
                         (get as ItemStack?)?.writeToNBT(tag)
@@ -86,7 +86,7 @@ abstract class TileMod : TileEntity() {
                     Double::class.java -> it.set(this, compound.getDouble(it.name))
                     Long::class.java -> it.set(this, compound.getLong(it.name))
                     NBTBase::class.java -> it.set(this, compound.getTag(it.name))
-                    INBTSerializable::class.java -> (it.get(this) as INBTSerializable<NBTBase>).deserializeNBT(compound.getTag(it.name))
+                    INBTSerializable::class.java -> (it.get(this) as INBTSerializable<NBTTagCompound>).deserializeNBT(compound.getCompoundTag(it.name))
                     ItemStack::class.java -> {
                         val tag = compound.getCompoundTag(it.name)
                         it.set(this, ItemStack.loadItemStackFromNBT(tag))
