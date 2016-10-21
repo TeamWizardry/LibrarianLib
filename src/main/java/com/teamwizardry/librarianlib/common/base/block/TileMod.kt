@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraft.world.WorldServer
 import net.minecraftforge.common.util.INBTSerializable
+import java.awt.Color
 
 /**
  * @author WireSegal
@@ -48,6 +49,14 @@ abstract class TileMod : TileEntity() {
                     //INBTSerializable::class.java ->
                     BlockPos::class.java -> compound.setLong(it.name, (get as BlockPos).toLong())
                     EnumFacing::class.java -> compound.setInteger(it.name, (get as EnumFacing).ordinal)
+                    Color::class.java -> {
+                        val tag = NBTTagCompound()
+                        val color = get as Color
+                        tag.setInteger("red", color.red)
+                        tag.setInteger("blue", color.blue)
+                        tag.setInteger("green", color.green)
+                        compound.setTag(it.name, tag)
+                    }
                     ItemStack::class.java -> {
                         val tag = NBTTagCompound()
                         (get as ItemStack?)?.writeToNBT(tag)
@@ -101,6 +110,10 @@ abstract class TileMod : TileEntity() {
                     }
                     BlockPos::class.java -> it.set(this, BlockPos.fromLong(compound.getLong(it.name)))
                     EnumFacing::class.java -> it.set(this, EnumFacing.values()[compound.getInteger(it.name)])
+                    Color::class.java -> {
+                        val tag = compound.getCompoundTag(it.name)
+                        it.set(this, Color(tag.getInteger("red"), tag.getInteger("blue"), tag.getInteger("green")))
+                    }
                     else -> {
                         if (AutomaticTileSavingHandler.fieldMap[it]?.first != null) {
                             val tag = compound.getCompoundTag(it.name)
