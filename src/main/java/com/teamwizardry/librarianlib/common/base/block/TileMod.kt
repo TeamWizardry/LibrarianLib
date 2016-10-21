@@ -11,6 +11,7 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.network.NetworkManager
 import net.minecraft.network.play.server.SPacketUpdateTileEntity
 import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraft.world.WorldServer
@@ -33,6 +34,8 @@ abstract class TileMod : TileEntity() {
                 it.isAccessible = true
                 val get = it.get(this)
                 val type = it.type
+                if(get == null) return@forEach
+                @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
                 when (type) {
                     String::class.java -> compound.setString(it.name, get as String)
                     Int::class.javaPrimitiveType!! -> compound.setInteger(it.name, get as Int)
@@ -43,6 +46,8 @@ abstract class TileMod : TileEntity() {
                     Long::class.java -> compound.setLong(it.name, get as Long)
                     NBTBase::class.java -> compound.setTag(it.name, get as NBTBase)
                     //INBTSerializable::class.java ->
+                    BlockPos::class.java -> compound.setLong(it.name, (get as BlockPos).toLong())
+                    EnumFacing::class.java -> compound.setInteger(it.name, (get as EnumFacing).ordinal)
                     ItemStack::class.java -> {
                         val tag = NBTTagCompound()
                         (get as ItemStack?)?.writeToNBT(tag)
@@ -94,6 +99,8 @@ abstract class TileMod : TileEntity() {
                         val tag = compound.getCompoundTag(it.name)
                         it.set(this, ItemStack.loadItemStackFromNBT(tag))
                     }
+                    BlockPos::class.java -> it.set(this, BlockPos.fromLong(compound.getLong(it.name)))
+                    EnumFacing::class.java -> it.set(this, EnumFacing.values()[compound.getInteger(it.name)])
                     else -> {
                         if (AutomaticTileSavingHandler.fieldMap[it]?.first != null) {
                             val tag = compound.getCompoundTag(it.name)
