@@ -60,7 +60,7 @@ abstract class TileMod : TileEntity() {
                                     ?.invoke(instance, get, tag, it.name)
                             compound.setTag(it.name, tag)
                         } else if(get is INBTSerializable<*>) {
-                            compound.setTag(it.name, (get as INBTSerializable<NBTTagCompound>).serializeNBT())
+                            compound.setTag(it.name, (get as INBTSerializable<NBTTagCompound>?)?.serializeNBT())
                         }
                         else throw IllegalArgumentException("Invalid field " + it.name + " of type ")
                     }
@@ -105,7 +105,7 @@ abstract class TileMod : TileEntity() {
                                     ?.getDeclaredMethod("readFromNBT", NBTTagCompound::class.java, String::class.java)
                                     ?.invoke(instance, tag, it.name))
                         } else if(it.get(this) is INBTSerializable<*>) {
-                            (it.get(this) as INBTSerializable<NBTTagCompound>).deserializeNBT(compound.getCompoundTag(it.name))
+                            (it.get(this) as INBTSerializable<NBTTagCompound>?)?.deserializeNBT(compound.getCompoundTag(it.name))
                         }
                         else throw IllegalArgumentException("Invalid field " + it.name)
                     }
