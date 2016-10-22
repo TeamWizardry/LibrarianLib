@@ -83,7 +83,7 @@ object JsonGenerationUtils {
                 vars.add(loc.variant, json { obj("model" to registryName.toString()) })
             }
 
-            file to vars
+            file to json { obj( "variants" to vars) }
         }.toTypedArray()))
     }
 
