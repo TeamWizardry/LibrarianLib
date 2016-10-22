@@ -77,7 +77,6 @@ open class LibCommonProxy {
         }
 
         class TETest : TileMod() {
-            @JvmField
             @Save var coolString: String = ""
 
             fun init(): TETest {

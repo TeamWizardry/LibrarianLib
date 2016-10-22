@@ -24,3 +24,6 @@ run
 # mac
 .DS_Store
 *.hprof
+
+**/models/*
+**/blockstates/*

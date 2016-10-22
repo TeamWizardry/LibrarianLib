@@ -19,6 +19,10 @@ import net.minecraft.world.WorldServer
  */
 abstract class TileMod : TileEntity() {
 
+    init {
+        FieldCache.getClassFields(javaClass)
+    }
+
     override fun shouldRefresh(world: World, pos: BlockPos, oldState: IBlockState, newState: IBlockState): Boolean {
         return oldState.block !== newState.block
     }

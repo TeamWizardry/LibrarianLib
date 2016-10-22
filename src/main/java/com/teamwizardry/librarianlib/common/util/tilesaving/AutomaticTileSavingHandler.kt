@@ -17,12 +17,13 @@ object FieldCache : LinkedHashMap<Class<out TileMod>, Map<String, Field>>() {
         val existing = this[clazz]
         if (existing != null) return existing
 
-        val fields = clazz.fields.filter {
+        val fields = clazz.declaredFields.filter {
             it.declaredAnnotations
             it.isAnnotationPresent(Save::class.java)
         }
 
         val map = mapOf(*(fields.map {
+            it.isAccessible = true
             val string = it.getAnnotation(Save::class.java).saveName
             (if (string == "") it.name else string) to it
         }).toTypedArray())
