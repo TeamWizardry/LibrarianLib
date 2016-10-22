@@ -9,7 +9,7 @@ import java.lang.reflect.Field
 import java.util.*
 
 /**
-* @author WireSegal
+* @author WireSegal and Elad
 * Created at 1:43 PM on 10/14/2016.
 */
 object FieldCache : LinkedHashMap<Class<out TileMod>, Map<String, Field>>() {
