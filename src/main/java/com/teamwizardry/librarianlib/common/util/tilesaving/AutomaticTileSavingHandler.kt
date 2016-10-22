@@ -13,6 +13,7 @@ import java.util.*
 * Created at 1:43 PM on 10/14/2016.
 */
 object FieldCache : LinkedHashMap<Class<out TileMod>, Map<String, Field>>() {
+    @JvmStatic
     fun getClassFields(clazz: Class<out TileMod>): Map<String, Field> {
         val existing = this[clazz]
         if (existing != null) return existing
@@ -57,28 +58,33 @@ object SerializationHandlers {
         })
     }
 
+    @JvmStatic
     @Suppress("UNCHECKED_CAST")
     fun <T> mapHandler(clazz: Class<T>, writer: (T) -> NBTBase, reader: (NBTBase) -> T) {
         map.put(clazz, (writer as (Any) -> NBTBase) to (reader as (NBTBase) -> Any))
     }
 
+    @JvmStatic
     @Suppress("UNCHECKED_CAST")
     fun <T> getWriter(clazz: Class<T>): ((T) -> NBTBase)? {
         val pair = map[clazz] ?: return null
         return pair.first as (T) -> NBTBase
     }
 
+    @JvmStatic
     fun getWriterUnchecked(clazz: Class<*>): ((Any) -> NBTBase)? {
         val pair = map[clazz] ?: return null
         return pair.first
     }
 
+    @JvmStatic
     @Suppress("UNCHECKED_CAST")
     fun <T> getReader(clazz: Class<T>): ((NBTBase) -> T)? {
         val pair = map[clazz] ?: return null
         return pair.second as (NBTBase) -> T
     }
 
+    @JvmStatic
     fun getReaderUnchecked(clazz: Class<*>): ((NBTBase) -> Any)? {
         val pair = map[clazz] ?: return null
         return pair.second

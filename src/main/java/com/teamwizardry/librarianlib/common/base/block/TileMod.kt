@@ -12,6 +12,7 @@ import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraft.world.WorldServer
+import net.minecraftforge.fml.common.registry.GameRegistry
 
 /**
  * @author WireSegal
@@ -19,8 +20,12 @@ import net.minecraft.world.WorldServer
  */
 abstract class TileMod : TileEntity() {
 
-    init {
-        FieldCache.getClassFields(javaClass)
+    companion object {
+        @JvmStatic
+        fun registerTile(clazz: Class<out TileMod>, id: String) {
+            FieldCache.getClassFields(clazz)
+            GameRegistry.registerTileEntity(clazz, id)
+        }
     }
 
     override fun shouldRefresh(world: World, pos: BlockPos, oldState: IBlockState, newState: IBlockState): Boolean {

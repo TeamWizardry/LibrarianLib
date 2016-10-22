@@ -81,7 +81,7 @@ open class LibCommonProxy {
 
             fun init(): TETest {
                 if (!registeredTE) {
-                    GameRegistry.registerTileEntity(javaClass, "test")
+                    TileMod.registerTile(javaClass, "test")
                     registeredTE = true
                 }
                 return this
