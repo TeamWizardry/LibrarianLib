@@ -39,22 +39,22 @@ object SerializationHandlers {
     private val map = HashMap<Class<*>, Pair<(Any) -> NBTBase, (NBTBase) -> Any>>()
 
     init {
-        mapHandler(Char::class.javaPrimitiveType!!, {NBTTagByte(it.toByte())}, { (it as NBTPrimitive).byte.toChar() })
+        mapHandler(Char::class.javaPrimitiveType!!, { NBTTagByte(it.toByte()) }, { (it as NBTPrimitive).byte.toChar() })
         mapHandler(Byte::class.javaPrimitiveType!!, ::NBTTagByte, { (it as NBTPrimitive).byte })
-        mapHandler(Short::class.javaPrimitiveType!!, ::NBTTagShort, {(it as NBTPrimitive).short})
-        mapHandler(Int::class.javaPrimitiveType!!, ::NBTTagInt, {(it as NBTPrimitive).int})
-        mapHandler(Long::class.javaPrimitiveType!!, ::NBTTagLong, {(it as NBTPrimitive).long})
-        mapHandler(Float::class.javaPrimitiveType!!, ::NBTTagFloat, {(it as NBTPrimitive).float})
-        mapHandler(Double::class.javaPrimitiveType!!, ::NBTTagDouble, {(it as NBTPrimitive).double})
-        mapHandler(Boolean::class.javaPrimitiveType!!, { NBTTagByte(if (it) 1 else 0)}, {(it as NBTPrimitive).byte == 1.toByte()})
+        mapHandler(Short::class.javaPrimitiveType!!, ::NBTTagShort, { (it as NBTPrimitive).short })
+        mapHandler(Int::class.javaPrimitiveType!!, ::NBTTagInt, { (it as NBTPrimitive).int })
+        mapHandler(Long::class.javaPrimitiveType!!, ::NBTTagLong, { (it as NBTPrimitive).long })
+        mapHandler(Float::class.javaPrimitiveType!!, ::NBTTagFloat, { (it as NBTPrimitive).float })
+        mapHandler(Double::class.javaPrimitiveType!!, ::NBTTagDouble, { (it as NBTPrimitive).double })
+        mapHandler(Boolean::class.javaPrimitiveType!!, { NBTTagByte(if (it) 1 else 0) }, { (it as NBTPrimitive).byte == 1.toByte() })
 
-        mapHandler(Color::class.java, { NBTTagInt(it.rgb) }, {Color((it as NBTPrimitive).int, true)})
-        mapHandler(String::class.java, ::NBTTagString, {(it as NBTTagString).string})
-        mapHandler(NBTTagCompound::class.java, {it}, {it as NBTTagCompound})
-        mapHandler(ItemStack::class.java, {it.serializeNBT()}, { ItemStack.loadItemStackFromNBT(it as NBTTagCompound)})
-        mapHandler(BlockPos::class.java, {NBTTagLong(it.toLong())}, {BlockPos.fromLong((it as NBTPrimitive).long)})
+        mapHandler(Color::class.java, { NBTTagInt(it.rgb) }, { Color((it as NBTPrimitive).int, true) })
+        mapHandler(String::class.java, ::NBTTagString, { (it as NBTTagString).string })
+        mapHandler(NBTTagCompound::class.java, { it }, { it as NBTTagCompound })
+        mapHandler(ItemStack::class.java, { it.serializeNBT() }, { ItemStack.loadItemStackFromNBT(it as NBTTagCompound) })
+        mapHandler(BlockPos::class.java, { NBTTagLong(it.toLong()) }, { BlockPos.fromLong((it as NBTPrimitive).long) })
 
-        mapHandler(ItemStackHandler::class.java, {it.serializeNBT()}, {
+        mapHandler(ItemStackHandler::class.java, { it.serializeNBT() }, {
             val handler = ItemStackHandler()
             handler.deserializeNBT(it as NBTTagCompound)
             handler
