@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.*
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.items.ItemStackHandler
+import java.awt.Color
 import java.lang.reflect.Field
 import java.util.*
 
@@ -38,6 +39,7 @@ object SerializationHandlers {
     private val map = HashMap<Class<*>, Pair<(Any) -> NBTBase, (NBTBase) -> Any>>()
 
     init {
+        mapHandler(Char::class.javaPrimitiveType!!, {NBTTagByte(it.toByte())}, { (it as NBTPrimitive).byte.toChar() })
         mapHandler(Byte::class.javaPrimitiveType!!, ::NBTTagByte, { (it as NBTPrimitive).byte })
         mapHandler(Short::class.javaPrimitiveType!!, ::NBTTagShort, {(it as NBTPrimitive).short})
         mapHandler(Int::class.javaPrimitiveType!!, ::NBTTagInt, {(it as NBTPrimitive).int})
@@ -46,6 +48,7 @@ object SerializationHandlers {
         mapHandler(Double::class.javaPrimitiveType!!, ::NBTTagDouble, {(it as NBTPrimitive).double})
         mapHandler(Boolean::class.javaPrimitiveType!!, { NBTTagByte(if (it) 1 else 0)}, {(it as NBTPrimitive).byte == 1.toByte()})
 
+        mapHandler(Color::class.java, { NBTTagInt(it.rgb) }, {Color((it as NBTPrimitive).int, true)})
         mapHandler(String::class.java, ::NBTTagString, {(it as NBTTagString).string})
         mapHandler(NBTTagCompound::class.java, {it}, {it as NBTTagCompound})
         mapHandler(ItemStack::class.java, {it.serializeNBT()}, { ItemStack.loadItemStackFromNBT(it as NBTTagCompound)})
