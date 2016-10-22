@@ -12,7 +12,7 @@ object ConfigHandler {
     @JvmStatic
     var generateJson = true
 
-    @ConfigPropertyBoolean(Configuration.CATEGORY_CLIENT, "autoSaveTEs", "Controls whether LibLib autosaves compatible TEs.", true)
+    @ConfigPropertyBoolean(Configuration.CATEGORY_CLIENT, "autoSaveTEs", "Controls whether LibLib autosaves compatible TEs.", true, true)
     @JvmStatic
     var autoSaveTEs = true
 

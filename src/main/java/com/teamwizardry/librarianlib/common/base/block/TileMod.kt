@@ -1,141 +1,40 @@
 package com.teamwizardry.librarianlib.common.base.block
 
-import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.common.core.ConfigHandler
-import com.teamwizardry.librarianlib.common.util.AutomaticTileSavingHandler
+import com.teamwizardry.librarianlib.common.util.tilesaving.FieldCache
+import com.teamwizardry.librarianlib.common.util.tilesaving.SerializationHandlers
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayerMP
-import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.network.NetworkManager
 import net.minecraft.network.play.server.SPacketUpdateTileEntity
 import net.minecraft.tileentity.TileEntity
-import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraft.world.WorldServer
-import net.minecraftforge.common.util.INBTSerializable
-import java.awt.Color
-import java.lang.reflect.Field
 
 /**
  * @author WireSegal
  * Created at 11:06 AM on 8/4/16.
  */
 abstract class TileMod : TileEntity() {
+
     override fun shouldRefresh(world: World, pos: BlockPos, oldState: IBlockState, newState: IBlockState): Boolean {
         return oldState.block !== newState.block
     }
-    val fields: List<Field> by lazy { javaClass.declaredFields.filter { it in AutomaticTileSavingHandler.fieldMap.keys } }
 
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         writeCustomNBT(compound)
+        writeAutoNBT(compound)
         super.writeToNBT(compound)
-        if (ConfigHandler.autoSaveTEs) {
-            fields.forEach {
-                it.isAccessible = true
-                val get = it.get(this)
-                val type = it.type
-                if(get == null) return@forEach
-                @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
-                when (type) {
-                    String::class.java -> compound.setString(it.name, get as String)
-                    Int::class.javaPrimitiveType!! -> compound.setInteger(it.name, get as Int)
-                    Boolean::class.java -> compound.setBoolean(it.name, get as Boolean)
-                    Byte::class.java -> compound.setByte(it.name, get as Byte)
-                    Float::class.java -> compound.setFloat(it.name, get as Float)
-                    Double::class.java -> compound.setDouble(it.name, get as Double)
-                    Long::class.java -> compound.setLong(it.name, get as Long)
-                    NBTBase::class.java -> compound.setTag(it.name, get as NBTBase)
-                    //INBTSerializable::class.java ->
-                    BlockPos::class.java -> compound.setLong(it.name, (get as BlockPos).toLong())
-                    EnumFacing::class.java -> compound.setInteger(it.name, (get as EnumFacing).ordinal)
-                    Color::class.java -> {
-                        val tag = NBTTagCompound()
-                        val color = get as Color
-                        tag.setInteger("red", color.red)
-                        tag.setInteger("blue", color.blue)
-                        tag.setInteger("green", color.green)
-                        compound.setTag(it.name, tag)
-                    }
-                    ItemStack::class.java -> {
-                        val tag = NBTTagCompound()
-                        (get as ItemStack?)?.writeToNBT(tag)
-                        compound.setTag(it.name, tag)
-                    }
-                    else -> {
-                        if (AutomaticTileSavingHandler.fieldMap[it]?.first != null) {
-                            val tag = NBTTagCompound()
-                            val clazz = AutomaticTileSavingHandler.fieldMap[it]
-                                    ?.first
-                            val instance = clazz?.newInstance()
-                            AutomaticTileSavingHandler.fieldMap[it]
-                                    ?.first
-                                    ?.getDeclaredMethod("writeToNBT", it.type, NBTTagCompound::class.java, String::class.java)
-                                    ?.invoke(instance, get, tag, it.name)
-                            compound.setTag(it.name, tag)
-                        } else if(get is INBTSerializable<*>) {
-                            compound.setTag(it.name, (get as INBTSerializable<NBTTagCompound>?)?.serializeNBT())
-                        }
-                        else throw IllegalArgumentException("Invalid field " + it.name + " of type " + it.type)
-                    }
-                }
-                if(LibrarianLib.DEV_ENVIRONMENT) println("Saved ${it.name}")
-            }
-        }
 
         return compound
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun readFromNBT(compound: NBTTagCompound) {
         readCustomNBT(compound)
+        readAutoNBT(compound)
         super.readFromNBT(compound)
-        if (ConfigHandler.autoSaveTEs) {
-            javaClass.declaredFields.filter { it in AutomaticTileSavingHandler.fieldMap.keys }.forEach {
-                val type = it.type
-                it.isAccessible = true
-                @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
-                when (type) {
-                    String::class.java -> it.set(this, compound.getString(it.name))
-                    Int::class.javaPrimitiveType!! -> it.set(this, compound.getInteger(it.name))
-                    Boolean::class.java -> it.set(this, compound.getBoolean(it.name))
-                    Byte::class.java -> it.set(this, compound.getByte(it.name))
-                    Float::class.java -> it.set(this, compound.getFloat(it.name))
-                    Double::class.java -> it.set(this, compound.getDouble(it.name))
-                    Long::class.java -> it.set(this, compound.getLong(it.name))
-                    NBTBase::class.java -> it.set(this, compound.getTag(it.name))
-                    //INBTSerializable::class.java ->
-                    ItemStack::class.java -> {
-                        val tag = compound.getCompoundTag(it.name)
-                        it.set(this, ItemStack.loadItemStackFromNBT(tag))
-                    }
-                    BlockPos::class.java -> it.set(this, BlockPos.fromLong(compound.getLong(it.name)))
-                    EnumFacing::class.java -> it.set(this, EnumFacing.values()[compound.getInteger(it.name)])
-                    Color::class.java -> {
-                        val tag = compound.getCompoundTag(it.name)
-                        it.set(this, Color(tag.getInteger("red"), tag.getInteger("blue"), tag.getInteger("green")))
-                    }
-                    else -> {
-                        if (AutomaticTileSavingHandler.fieldMap[it]?.first != null) {
-                            val tag = compound.getCompoundTag(it.name)
-                            val clazz = AutomaticTileSavingHandler.fieldMap[it]
-                                    ?.first
-                            val instance = clazz?.newInstance()
-                            it.set(this, AutomaticTileSavingHandler.fieldMap[it]
-                                    ?.first
-                                    ?.getDeclaredMethod("readFromNBT", NBTTagCompound::class.java, String::class.java)
-                                    ?.invoke(instance, tag, it.name))
-                        } else if(it.get(this) is INBTSerializable<*>) {
-                            (it.get(this) as INBTSerializable<NBTTagCompound>?)?.deserializeNBT(compound.getCompoundTag(it.name))
-                        }
-                        else throw IllegalArgumentException("Invalid field " + it.name)
-                    }
-                }
-                if(LibrarianLib.DEV_ENVIRONMENT) println("Read ${it.name} (${it.get(this)})")
-            }
-        }
     }
 
     override fun getUpdateTag(): NBTTagCompound {
@@ -154,6 +53,26 @@ abstract class TileMod : TileEntity() {
         // NO-OP
     }
 
+    fun writeAutoNBT(cmp: NBTTagCompound) {
+        if (ConfigHandler.autoSaveTEs) {
+            FieldCache.getClassFields(javaClass).forEach {
+                val handler = SerializationHandlers.getWriterUnchecked(it.value.type)
+                if (handler != null)
+                    cmp.setTag(it.key, handler(it.value.get(this)))
+            }
+        }
+    }
+
+    fun readAutoNBT(cmp: NBTTagCompound) {
+        if (ConfigHandler.autoSaveTEs) {
+            FieldCache.getClassFields(javaClass).forEach {
+                val handler = SerializationHandlers.getReaderUnchecked(it.value.type)
+                if (handler != null)
+                    it.value.set(this, handler(cmp.getTag(it.key)))
+            }
+        }
+    }
+
     override fun markDirty() {
         super.markDirty()
         if (!worldObj.isRemote)
@@ -163,6 +82,7 @@ abstract class TileMod : TileEntity() {
     override fun onDataPacket(net: NetworkManager, packet: SPacketUpdateTileEntity) {
         super.onDataPacket(net, packet)
         readCustomNBT(packet.nbtCompound)
+        readAutoNBT(packet.nbtCompound)
     }
 
     open fun dispatchTileToNearbyPlayers() {
