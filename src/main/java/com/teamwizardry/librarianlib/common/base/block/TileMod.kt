@@ -78,7 +78,7 @@ abstract class TileMod : TileEntity() {
                         } else if(get is INBTSerializable<*>) {
                             compound.setTag(it.name, (get as INBTSerializable<NBTTagCompound>?)?.serializeNBT())
                         }
-                        else throw IllegalArgumentException("Invalid field " + it.name + " of type ")
+                        else throw IllegalArgumentException("Invalid field " + it.name + " of type " + it.type)
                     }
                 }
                 if(LibrarianLib.DEV_ENVIRONMENT) println("Saved ${it.name}")
