@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.common.util.tilesaving
 
+import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.base.block.TileMod
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import net.minecraft.item.ItemStack
@@ -26,10 +27,20 @@ object FieldCache : LinkedHashMap<Class<out TileMod>, Map<String, Triple<Class<*
             !Modifier.isStatic(it.modifiers) && it.isAnnotationPresent(Save::class.java)
         }
 
+        val alreadyDone = mutableListOf<String>()
         val map = mapOf(*(fields.map {
             it.isAccessible = true
             val string = it.getAnnotation(Save::class.java).saveName
-            (if (string == "") it.name else string) to Triple(it.type,
+            val name = if (string == "") it.name else string
+            if (name in alreadyDone) {
+                val msg = "Name $name already in use for class ${clazz.name}! Some things may not be saved!"
+                val pad = Array(msg.length) { "*" }.joinToString("")
+                LibrarianLog.warn(pad)
+                LibrarianLog.warn(msg)
+                LibrarianLog.warn(pad)
+            } else
+                alreadyDone.add(name)
+            name to Triple(it.type,
                     MethodHandleHelper.wrapperForGetter<Any>(publicLookup().unreflectGetter(it)),
                     MethodHandleHelper.wrapperForSetter<Any>(publicLookup().unreflectSetter(it)))
         }).toTypedArray())

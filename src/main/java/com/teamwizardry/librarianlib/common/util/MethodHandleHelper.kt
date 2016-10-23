@@ -31,49 +31,76 @@ object MethodHandleHelper {
         return if (getter) publicLookup().unreflectGetter(f) else publicLookup().unreflectSetter(f)
     }
 
+    /**
+     * Reflects a getter from a class, and provides a wrapper for it.
+     * No casts are required to use this, although they are recommended.
+     */
     @JvmStatic
     fun <T> wrapperForGetter(clazz: Class<T>, vararg fieldNames: String): (T) -> Any? {
         val handle = handleForField(clazz, true, *fieldNames)
         return wrapperForGetter(handle)
     }
 
+    /**
+     * Provides a wrapper for an existing MethodHandle getter.
+     * No casts are required to use this, although they are recommended.
+     */
     @JvmStatic
     fun <T> wrapperForGetter(handle: MethodHandle): (T) -> Any? {
         val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(1)))
         return { wrapper(it) }
     }
 
+    /**
+     * Reflects a static getter from a class, and provides a wrapper for it.
+     * No casts are required to use this, although they are recommended.
+     */
     @JvmStatic
     fun wrapperForStaticGetter(clazz: Class<*>, vararg fieldNames: String): () -> Any? {
         val handle = handleForField(clazz, true, *fieldNames)
         return wrapperForStaticGetter(handle)
     }
 
-
+    /**
+     * Provides a wrapper for an existing static MethodHandle getter.
+     * No casts are required to use this, although they are recommended.
+     */
     @JvmStatic
     fun wrapperForStaticGetter(handle: MethodHandle): () -> Any? {
         val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(0)))
         return { wrapper() }
     }
 
+    /**
+     * Reflects a setter from a class, and provides a wrapper for it.
+     */
     @JvmStatic
     fun <T> wrapperForSetter(clazz: Class<T>, vararg fieldNames: String): (T, Any?) -> Unit {
         val handle = handleForField(clazz, false, *fieldNames)
         return wrapperForSetter(handle)
     }
 
+    /**
+     * Provides a wrapper for an existing MethodHandle setter.
+     */
     @JvmStatic
     fun <T> wrapperForSetter(handle: MethodHandle): (T, Any?) -> Unit {
         val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(2)))
         return { obj, value -> wrapper(obj, value) }
     }
 
+    /**
+     * Reflects a static setter from a class, and provides a wrapper for it.
+     */
     @JvmStatic
     fun wrapperForStaticSetter(clazz: Class<*>, vararg fieldNames: String): (Any?) -> Unit {
         val handle = handleForField(clazz, false, *fieldNames)
         return wrapperForStaticSetter(handle)
     }
 
+    /**
+     * Provides a wrapper for an existing static MethodHandle setter.
+     */
     @JvmStatic
     fun wrapperForStaticSetter(handle: MethodHandle): (Any?) -> Unit {
         val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(1)))
