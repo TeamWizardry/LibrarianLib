@@ -31,15 +31,17 @@ object FieldCache : LinkedHashMap<Class<out TileMod>, Map<String, Triple<Class<*
         val map = mapOf(*(fields.map {
             it.isAccessible = true
             val string = it.getAnnotation(Save::class.java).saveName
-            val name = if (string == "") it.name else string
+            var name = if (string == "") it.name else string
             if (name in alreadyDone) {
-                val msg = "Name $name already in use for class ${clazz.name}! Some things may not be saved!"
+                val msg = "Name $name already in use for class ${clazz.name}! Adding dashes to the end to mitigate this."
                 val pad = Array(msg.length) { "*" }.joinToString("")
                 LibrarianLog.warn(pad)
                 LibrarianLog.warn(msg)
                 LibrarianLog.warn(pad)
-            } else
-                alreadyDone.add(name)
+                while (name in alreadyDone)
+                    name += "-"
+            }
+            alreadyDone.add(name)
             name to Triple(it.type,
                     MethodHandleHelper.wrapperForGetter<Any>(publicLookup().unreflectGetter(it)),
                     MethodHandleHelper.wrapperForSetter<Any>(publicLookup().unreflectSetter(it)))
