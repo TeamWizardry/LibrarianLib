@@ -27,7 +27,8 @@ object FieldCache : LinkedHashMap<Class<out TileMod>, Map<String, Triple<Class<*
 
         val fields = clazz.declaredFields.filter {
             it.declaredAnnotations
-            !Modifier.isStatic(it.modifiers) && it.isAnnotationPresent(Save::class.java)
+            val mods = it.modifiers
+            !Modifier.isStatic(mods) && !Modifier.isFinal(mods) && !Modifier.isTransient(mods) && it.isAnnotationPresent(Save::class.java)
         }
 
         val alreadyDone = mutableListOf("id", "x", "y", "z", "ForgeData", "ForgeCaps")
