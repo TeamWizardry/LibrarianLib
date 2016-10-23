@@ -6,6 +6,8 @@ import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.*
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.Vec3i
 import net.minecraftforge.items.ItemStackHandler
 import java.awt.Color
 import java.lang.invoke.MethodHandles.publicLookup
@@ -91,12 +93,51 @@ object SerializationHandlers {
         mapHandler(Color::class.java, { NBTTagInt(it?.rgb ?: 0) }, { Color(castNBTTag(it, NBTPrimitive::class.java).int, true) })
         mapHandler(String::class.java, { NBTTagString(it ?: "") }, { castNBTTag(it, NBTTagString::class.java).string })
         mapHandler(NBTTagCompound::class.java, { it ?: NBTTagCompound() }, { castNBTTag(it, NBTTagCompound::class.java) })
+
+        mapHandler(BlockPos::class.java, { NBTTagLong(it?.toLong() ?: 0) }, { BlockPos.fromLong(castNBTTag(it, NBTPrimitive::class.java).long) })
+        mapHandler(Vec3d::class.java, {
+            val list = NBTTagList()
+            if (it != null) {
+                list.appendTag(NBTTagDouble(it.xCoord))
+                list.appendTag(NBTTagDouble(it.yCoord))
+                list.appendTag(NBTTagDouble(it.zCoord))
+            }
+            list
+        }, {
+            val tag = castNBTTag(it, NBTTagList::class.java)
+            if (tag.hasNoTags()) null
+            else {
+                val x = tag.getDoubleAt(0)
+                val y = tag.getDoubleAt(1)
+                val z = tag.getDoubleAt(2)
+                Vec3d(x, y, z)
+            }
+        })
+
+        mapHandler(Vec3i::class.java, {
+            val list = NBTTagList()
+            if (it != null) {
+                list.appendTag(NBTTagInt(it.x))
+                list.appendTag(NBTTagInt(it.y))
+                list.appendTag(NBTTagInt(it.z))
+            }
+            list
+        }, {
+            val tag = castNBTTag(it, NBTTagList::class.java)
+            if (tag.hasNoTags()) null
+            else {
+                val x = tag.getIntAt(0)
+                val y = tag.getIntAt(1)
+                val z = tag.getIntAt(2)
+                Vec3i(x, y, z)
+            }
+        })
+
         mapHandler(ItemStack::class.java, { it?.serializeNBT() ?: NBTTagCompound() }, {
             val compound = castNBTTag(it, NBTTagCompound::class.java)
             if (compound.hasNoTags()) null
             else ItemStack.loadItemStackFromNBT(compound)
         })
-        mapHandler(BlockPos::class.java, { NBTTagLong(it?.toLong() ?: 0) }, { BlockPos.fromLong(castNBTTag(it, NBTPrimitive::class.java).long) })
 
         mapHandler(ItemStackHandler::class.java, { it?.serializeNBT() ?: NBTTagCompound() }, {
             val handler = ItemStackHandler()
