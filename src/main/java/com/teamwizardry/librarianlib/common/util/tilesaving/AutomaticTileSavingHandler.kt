@@ -13,7 +13,7 @@ import java.lang.reflect.Modifier
 import java.util.*
 
 /**
-* @author WireSegal and Elad
+* @author WireSegal
 * Created at 1:43 PM on 10/14/2016.
 */
 object FieldCache : LinkedHashMap<Class<out TileMod>, Map<String, Triple<Class<*>, (Any) -> Any?, (Any, Any?) -> Unit>>>() {
