@@ -2,6 +2,7 @@
 
 package com.teamwizardry.librarianlib.common.core
 
+import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.client.book.Book
 import com.teamwizardry.librarianlib.common.base.block.BlockMod
 import com.teamwizardry.librarianlib.common.base.block.TileMod
@@ -30,9 +31,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 open class LibCommonProxy {
 
     open fun pre(e: FMLPreInitializationEvent) {
-        val config = e.suggestedConfigurationFile
-        ConfigHandler
-        EasyConfigHandler().init(config, e.asmData)
+        EasyConfigHandler().init(LibrarianLib.MODID, e.suggestedConfigurationFile, e.asmData)
 //        if(LibrarianLib.DEV_ENVIRONMENT) initBlock()
     }
 

@@ -8,7 +8,7 @@ import com.teamwizardry.librarianlib.common.base.block.IBlockColorProvider
 import com.teamwizardry.librarianlib.common.base.block.IModBlockProvider
 import com.teamwizardry.librarianlib.common.base.item.IItemColorProvider
 import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
-import com.teamwizardry.librarianlib.common.core.ConfigHandler
+import com.teamwizardry.librarianlib.common.core.LibLibConfig
 import com.teamwizardry.librarianlib.common.util.serialize
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.block.model.ModelBakery
@@ -136,7 +136,7 @@ object ModelHandler {
             if (mapper != null)
                 ModelLoader.setCustomStateMapper(holder.providedBlock, mapper)
 
-            if (debug && ConfigHandler.generateJson) {
+            if (debug && LibLibConfig.generateJson) {
                 val files = JsonGenerationUtils.generateBaseBlockStates(holder.providedBlock, mapper)
                 var flag = false
                 files.forEach {
@@ -182,7 +182,7 @@ object ModelHandler {
                 if ((variant.value != item.registryName.resourcePath || variants.size != 1))
                     log("$namePad |  Variant #${variant.index + 1}: ${variant.value}")
 
-                if (debug && ConfigHandler.generateJson) {
+                if (debug && LibLibConfig.generateJson) {
                     val path = JsonGenerationUtils.getPathForItemModel(holder.providedItem, variant.value)
                     val file = File(path)
                     file.parentFile.mkdirs()

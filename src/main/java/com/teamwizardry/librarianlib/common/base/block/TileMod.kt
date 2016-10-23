@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.common.base.block
 
-import com.teamwizardry.librarianlib.common.core.ConfigHandler
+import com.teamwizardry.librarianlib.common.core.LibLibConfig
 import com.teamwizardry.librarianlib.common.util.tilesaving.FieldCache
 import com.teamwizardry.librarianlib.common.util.tilesaving.SerializationHandlers
 import net.minecraft.block.state.IBlockState
@@ -63,7 +63,7 @@ abstract class TileMod : TileEntity() {
     }
 
     fun writeAutoNBT(cmp: NBTTagCompound) {
-        if (ConfigHandler.autoSaveTEs) {
+        if (LibLibConfig.autoSaveTEs) {
             FieldCache.getClassFields(javaClass).forEach {
                 val handler = SerializationHandlers.getWriterUnchecked(it.value.first)
                 if (handler != null)
@@ -73,7 +73,7 @@ abstract class TileMod : TileEntity() {
     }
 
     fun readAutoNBT(cmp: NBTTagCompound) {
-        if (ConfigHandler.autoSaveTEs) {
+        if (LibLibConfig.autoSaveTEs) {
             FieldCache.getClassFields(javaClass).forEach {
                 val handler = SerializationHandlers.getReaderUnchecked(it.value.first)
                 if (handler != null)
