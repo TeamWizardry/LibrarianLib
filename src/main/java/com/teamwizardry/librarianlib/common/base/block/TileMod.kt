@@ -66,8 +66,10 @@ abstract class TileMod : TileEntity() {
         if (LibLibConfig.autoSaveTEs) {
             FieldCache.getClassFields(javaClass).forEach {
                 val handler = SerializationHandlers.getWriterUnchecked(it.value.first)
-                if (handler != null)
-                    cmp.setTag(it.key, handler(it.value.second(this)!!))
+                if (handler != null) {
+                    val value = it.value.second(this)
+                    if (value != null) cmp.setTag(it.key, handler(value))
+                }
             }
         }
     }
