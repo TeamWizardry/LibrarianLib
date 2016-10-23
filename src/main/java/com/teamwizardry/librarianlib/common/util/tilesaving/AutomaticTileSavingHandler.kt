@@ -8,6 +8,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraftforge.items.ItemStackHandler
 import java.awt.Color
 import java.lang.invoke.MethodHandles.publicLookup
+import java.lang.reflect.Modifier
 import java.util.*
 
 /**
@@ -22,7 +23,7 @@ object FieldCache : LinkedHashMap<Class<out TileMod>, Map<String, Triple<Class<*
 
         val fields = clazz.declaredFields.filter {
             it.declaredAnnotations
-            it.isAnnotationPresent(Save::class.java)
+            !Modifier.isStatic(it.modifiers) && it.isAnnotationPresent(Save::class.java)
         }
 
         val map = mapOf(*(fields.map {
