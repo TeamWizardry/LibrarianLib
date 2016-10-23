@@ -2,7 +2,6 @@
 
 package com.teamwizardry.librarianlib.common.core
 
-import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.client.book.Book
 import com.teamwizardry.librarianlib.common.base.block.BlockMod
 import com.teamwizardry.librarianlib.common.base.block.TileMod
@@ -34,7 +33,7 @@ open class LibCommonProxy {
         val config = e.suggestedConfigurationFile
         ConfigHandler
         EasyConfigHandler().init(config, e.asmData)
-        if(LibrarianLib.DEV_ENVIRONMENT) initBlock()
+//        if(LibrarianLib.DEV_ENVIRONMENT) initBlock()
     }
 
     private fun initBlock() {
