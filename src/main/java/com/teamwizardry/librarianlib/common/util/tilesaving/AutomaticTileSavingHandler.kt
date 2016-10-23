@@ -27,7 +27,7 @@ object FieldCache : LinkedHashMap<Class<out TileMod>, Map<String, Triple<Class<*
             !Modifier.isStatic(it.modifiers) && it.isAnnotationPresent(Save::class.java)
         }
 
-        val alreadyDone = mutableListOf<String>()
+        val alreadyDone = mutableListOf("id", "x", "y", "z", "ForgeData", "ForgeCaps")
         val map = mapOf(*(fields.map {
             it.isAccessible = true
             val string = it.getAnnotation(Save::class.java).saveName
