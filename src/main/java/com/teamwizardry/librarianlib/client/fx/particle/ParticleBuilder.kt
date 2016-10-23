@@ -20,6 +20,8 @@ import java.util.function.Consumer
  * Particle builders are used to easily create particles and allow you to pass the
  * particle definition to various methods such as [ParticleSpawner.spawn]
  *
+ * "Top quality glitter. Can't find glitter better than this, in fact, I'm really good friends with
+ * the glitter people. Best pals. Can't get any better than this glitter" -Trump
  */
 class ParticleBuilder(private var lifetime: Int) {
     // region Animation Start/End
