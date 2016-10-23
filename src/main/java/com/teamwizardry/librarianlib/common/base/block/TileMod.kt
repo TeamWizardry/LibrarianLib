@@ -65,9 +65,9 @@ abstract class TileMod : TileEntity() {
     fun writeAutoNBT(cmp: NBTTagCompound) {
         if (ConfigHandler.autoSaveTEs) {
             FieldCache.getClassFields(javaClass).forEach {
-                val handler = SerializationHandlers.getWriterUnchecked(it.value.type)
+                val handler = SerializationHandlers.getWriterUnchecked(it.value.first)
                 if (handler != null)
-                    cmp.setTag(it.key, handler(it.value.get(this)))
+                    cmp.setTag(it.key, handler(it.value.second(this)!!))
             }
         }
     }
@@ -75,9 +75,9 @@ abstract class TileMod : TileEntity() {
     fun readAutoNBT(cmp: NBTTagCompound) {
         if (ConfigHandler.autoSaveTEs) {
             FieldCache.getClassFields(javaClass).forEach {
-                val handler = SerializationHandlers.getReaderUnchecked(it.value.type)
+                val handler = SerializationHandlers.getReaderUnchecked(it.value.first)
                 if (handler != null)
-                    it.value.set(this, handler(cmp.getTag(it.key)))
+                    it.value.third(this, handler(cmp.getTag(it.key)))
             }
         }
     }

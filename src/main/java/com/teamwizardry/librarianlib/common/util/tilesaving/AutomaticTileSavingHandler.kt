@@ -1,21 +1,22 @@
 package com.teamwizardry.librarianlib.common.util.tilesaving
 
 import com.teamwizardry.librarianlib.common.base.block.TileMod
+import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.*
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.items.ItemStackHandler
 import java.awt.Color
-import java.lang.reflect.Field
+import java.lang.invoke.MethodHandles.publicLookup
 import java.util.*
 
 /**
 * @author WireSegal and Elad
 * Created at 1:43 PM on 10/14/2016.
 */
-object FieldCache : LinkedHashMap<Class<out TileMod>, Map<String, Field>>() {
+object FieldCache : LinkedHashMap<Class<out TileMod>, Map<String, Triple<Class<*>, (Any) -> Any?, (Any, Any?) -> Unit>>>() {
     @JvmStatic
-    fun getClassFields(clazz: Class<out TileMod>): Map<String, Field> {
+    fun getClassFields(clazz: Class<out TileMod>): Map<String, Triple<Class<*>, (Any) -> Any?, (Any, Any?) -> Unit>> {
         val existing = this[clazz]
         if (existing != null) return existing
 
@@ -27,7 +28,9 @@ object FieldCache : LinkedHashMap<Class<out TileMod>, Map<String, Field>>() {
         val map = mapOf(*(fields.map {
             it.isAccessible = true
             val string = it.getAnnotation(Save::class.java).saveName
-            (if (string == "") it.name else string) to it
+            (if (string == "") it.name else string) to Triple(it.type,
+                    MethodHandleHelper.wrapperForGetter<Any>(publicLookup().unreflectGetter(it)),
+                    MethodHandleHelper.wrapperForSetter<Any>(publicLookup().unreflectSetter(it)))
         }).toTypedArray())
 
         put(clazz, map)
@@ -35,6 +38,7 @@ object FieldCache : LinkedHashMap<Class<out TileMod>, Map<String, Field>>() {
         return map
     }
 }
+
 object SerializationHandlers {
     private val map = HashMap<Class<*>, Pair<(Any) -> NBTBase, (NBTBase) -> Any>>()
 

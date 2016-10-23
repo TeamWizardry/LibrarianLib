@@ -20,11 +20,9 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.translation.I18n
 import net.minecraft.world.World
-import net.minecraftforge.fml.common.discovery.ASMDataTable
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
-import net.minecraftforge.fml.common.registry.GameRegistry
 
 /**
  * @author WireSegal
@@ -32,12 +30,10 @@ import net.minecraftforge.fml.common.registry.GameRegistry
  */
 open class LibCommonProxy {
 
-    var data: ASMDataTable? = null
     open fun pre(e: FMLPreInitializationEvent) {
         val config = e.suggestedConfigurationFile
         ConfigHandler
-        data = e.asmData
-        EasyConfigHandler().init(config, data)
+        EasyConfigHandler().init(config, e.asmData)
         if(LibrarianLib.DEV_ENVIRONMENT) initBlock()
     }
 
@@ -66,7 +62,8 @@ open class LibCommonProxy {
             if (!worldIn.isRemote) {
                 val te = worldIn.getTileEntity(pos!!)!! as TETest
                 te.coolString += "1"
-                playerIn.addChatComponentMessage(TextComponentString(te.coolString))
+                te.coolNum++
+                playerIn.addChatComponentMessage(TextComponentString("${te.coolString} ${te.coolNum}"))
                 te.markDirty()
             }
             return true
@@ -78,6 +75,7 @@ open class LibCommonProxy {
 
         class TETest : TileMod() {
             @Save var coolString: String = ""
+            @Save var coolNum: Int = 0
 
             fun init(): TETest {
                 if (!registeredTE) {
