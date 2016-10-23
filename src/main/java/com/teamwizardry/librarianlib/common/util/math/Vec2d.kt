@@ -2,10 +2,10 @@ package com.teamwizardry.librarianlib.common.util.math
 
 class Vec2d(var x: Double, var y: Double) {
 
-    val xf: Float
-    val yf: Float
-    val xi: Int
-    val yi: Int
+    @Transient val xf: Float
+    @Transient val yf: Float
+    @Transient val xi: Int
+    @Transient val yi: Int
 
     init {
         this.xf = x.toFloat()

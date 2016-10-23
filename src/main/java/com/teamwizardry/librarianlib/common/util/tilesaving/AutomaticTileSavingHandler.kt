@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.common.util.tilesaving
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.base.block.TileMod
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
+import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.*
 import net.minecraft.util.math.BlockPos
@@ -81,6 +82,7 @@ object SerializationHandlers {
     }
 
     init {
+        // Primitives and String
         mapHandler(Char::class.javaPrimitiveType!!, { NBTTagByte(it?.toByte() ?: 0) }, { castNBTTag(it, NBTPrimitive::class.java).byte.toChar() })
         mapHandler(Byte::class.javaPrimitiveType!!, { NBTTagByte(it ?: 0) }, { castNBTTag(it, NBTPrimitive::class.java).byte })
         mapHandler(Short::class.javaPrimitiveType!!, { NBTTagShort(it ?: 0) }, { castNBTTag(it, NBTPrimitive::class.java).short })
@@ -89,12 +91,31 @@ object SerializationHandlers {
         mapHandler(Float::class.javaPrimitiveType!!, { NBTTagFloat(it ?: 0f) }, { castNBTTag(it, NBTPrimitive::class.java).float })
         mapHandler(Double::class.javaPrimitiveType!!, { NBTTagDouble(it ?: 0.0) }, { castNBTTag(it, NBTPrimitive::class.java).double })
         mapHandler(Boolean::class.javaPrimitiveType!!, { NBTTagByte(if (it ?: false) 1 else 0) }, { castNBTTag(it, NBTPrimitive::class.java).byte == 1.toByte() })
-
-        mapHandler(Color::class.java, { NBTTagInt(it?.rgb ?: 0) }, { Color(castNBTTag(it, NBTPrimitive::class.java).int, true) })
         mapHandler(String::class.java, { NBTTagString(it ?: "") }, { castNBTTag(it, NBTTagString::class.java).string })
+
+        // Misc.
+        mapHandler(Color::class.java, { NBTTagInt(it?.rgb ?: 0) }, { Color(castNBTTag(it, NBTPrimitive::class.java).int, true) })
         mapHandler(NBTTagCompound::class.java, { it ?: NBTTagCompound() }, { castNBTTag(it, NBTTagCompound::class.java) })
 
-        mapHandler(BlockPos::class.java, { NBTTagLong(it?.toLong() ?: 0) }, { BlockPos.fromLong(castNBTTag(it, NBTPrimitive::class.java).long) })
+        // Item Handlers
+        mapHandler(ItemStack::class.java, { it?.serializeNBT() ?: NBTTagCompound() }, {
+            val compound = castNBTTag(it, NBTTagCompound::class.java)
+            if (compound.hasNoTags()) null
+            else ItemStack.loadItemStackFromNBT(compound)
+        })
+        mapHandler(ItemStackHandler::class.java, { it?.serializeNBT() ?: NBTTagCompound() }, {
+            val handler = ItemStackHandler()
+            val compound = castNBTTag(it, NBTTagCompound::class.java)
+            if (compound.hasNoTags())
+                null
+            else {
+                handler.deserializeNBT(compound)
+                handler
+            }
+        })
+
+
+        // Vectors
         mapHandler(Vec3d::class.java, {
             val list = NBTTagList()
             if (it != null) {
@@ -113,7 +134,6 @@ object SerializationHandlers {
                 Vec3d(x, y, z)
             }
         })
-
         mapHandler(Vec3i::class.java, {
             val list = NBTTagList()
             if (it != null) {
@@ -132,23 +152,23 @@ object SerializationHandlers {
                 Vec3i(x, y, z)
             }
         })
-
-        mapHandler(ItemStack::class.java, { it?.serializeNBT() ?: NBTTagCompound() }, {
-            val compound = castNBTTag(it, NBTTagCompound::class.java)
-            if (compound.hasNoTags()) null
-            else ItemStack.loadItemStackFromNBT(compound)
-        })
-
-        mapHandler(ItemStackHandler::class.java, { it?.serializeNBT() ?: NBTTagCompound() }, {
-            val handler = ItemStackHandler()
-            val compound = castNBTTag(it, NBTTagCompound::class.java)
-            if (compound.hasNoTags())
-                null
+        mapHandler(Vec2d::class.java, {
+            val list = NBTTagList()
+            if (it != null) {
+                list.appendTag(NBTTagDouble(it.x))
+                list.appendTag(NBTTagDouble(it.y))
+            }
+            list
+        }, {
+            val tag = castNBTTag(it, NBTTagList::class.java)
+            if (tag.hasNoTags()) null
             else {
-                handler.deserializeNBT(compound)
-                handler
+                val x = tag.getDoubleAt(0)
+                val y = tag.getDoubleAt(1)
+                Vec2d(x, y)
             }
         })
+        mapHandler(BlockPos::class.java, { NBTTagLong(it?.toLong() ?: 0) }, { BlockPos.fromLong(castNBTTag(it, NBTPrimitive::class.java).long) })
     }
 
     @JvmStatic
