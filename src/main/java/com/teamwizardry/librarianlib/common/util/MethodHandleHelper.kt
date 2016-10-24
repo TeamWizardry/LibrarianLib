@@ -106,4 +106,44 @@ object MethodHandleHelper {
         val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(1)))
         return { wrapper(it) }
     }
+
+    /**
+     * Reflects a method from a class, and provides a wrapper for it.
+     */
+    @JvmStatic
+    fun <T> wrapperForMethod(clazz: Class<T>, methodNames: Array<String>, vararg methodClasses: Class<*>): (T, Array<Any?>) -> Any? {
+        val handle = handleForMethod(clazz, methodNames, *methodClasses)
+        return wrapperForMethod(handle)
+    }
+
+    /**
+     * Provides a wrapper for an existing MethodHandle method wrapper.
+     */
+    @JvmStatic
+    fun <T> wrapperForMethod(handle: MethodHandle): (T, Array<Any?>) -> Any? {
+        val type = handle.type()
+        val count = type.parameterCount()
+        val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(count)).asSpreader(Any::class.java, count))
+        return { obj, args -> wrapper.invokeArity(arrayOf(obj, *args)) }
+    }
+
+    /**
+     * Reflects a static method from a class, and provides a wrapper for it.
+     */
+    @JvmStatic
+    fun wrapperForStaticMethod(clazz: Class<*>, methodNames: Array<String>, vararg methodClasses: Class<*>): (Array<Any?>) -> Any? {
+        val handle = handleForMethod(clazz, methodNames, *methodClasses)
+        return wrapperForStaticMethod(handle)
+    }
+
+    /**
+     * Provides a wrapper for an existing MethodHandle method wrapper.
+     */
+    @JvmStatic
+    fun wrapperForStaticMethod(handle: MethodHandle): (Array<Any?>) -> Any? {
+        val type = handle.type()
+        val count = type.parameterCount()
+        val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(count)).asSpreader(Any::class.java, count))
+        return { wrapper.invokeArity(it) }
+    }
 }
