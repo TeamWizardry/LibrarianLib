@@ -35,6 +35,9 @@ fun convertNBT(value: Any?): NBTBase = when (value) {
     is ByteArray -> NBTTagByteArray(value)
     is String -> NBTTagString(value)
     is IntArray -> NBTTagIntArray(value)
+    is Array<*> -> NBT.list(*value)
+    is Collection<*> -> NBT.list(*value.toTypedArray())
+    is Map<*, *> -> NBT.comp(*value.toList().map { it.first.toString() to it.second }.toTypedArray())
 
     else -> throw IllegalArgumentException("Unrecognized type: " + value)
 }

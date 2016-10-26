@@ -32,6 +32,9 @@ fun convertJSON(value: Any?): JsonElement = when (value) {
     is Number -> JsonPrimitive(value)
     is String -> JsonPrimitive(value)
     is Boolean -> JsonPrimitive(value)
+    is Array<*> -> JSON.array(*value)
+    is Collection<*> -> JSON.array(*value.toTypedArray())
+    is Map<*, *> -> JSON.obj(*value.toList().map { it.first.toString() to it.second }.toTypedArray())
     is JsonElement -> value
     else -> throw IllegalArgumentException("Unrecognized type: " + value)
 }

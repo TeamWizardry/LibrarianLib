@@ -85,13 +85,12 @@ object JsonGenerationUtils {
         return mapOf(*(files.map { file ->
             val keypairs = mapped.filter { keypair ->
                 getPathForMRL(keypair.value) == file
-            }
-            val vars = json { obj() }.asJsonObject
-            for ((state, loc) in keypairs) {
-                vars.add(loc.variant, json { obj("model" to registryName.toString()) })
-            }
-
-            file to json { obj( "variants" to vars) }
+            }.toList()
+            file to json { obj (
+                "variants" to mapOf(*Array(keypairs.size) {
+                    keypairs[it].second.variant to json { obj("model" to registryName.toString()) }
+                })
+            ) }
         }.toTypedArray()))
     }
 
