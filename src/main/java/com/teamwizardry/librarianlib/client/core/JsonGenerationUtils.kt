@@ -11,6 +11,7 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import java.io.File
 import java.nio.file.Paths
 
 
@@ -21,6 +22,13 @@ import java.nio.file.Paths
  */
 @SideOnly(Side.CLIENT)
 object JsonGenerationUtils {
+
+    private val s = File.separator
+
+    private operator fun String.unaryPlus(): String {
+        return this.replace("/", s)
+    }
+
     fun getPathsForBlockstate(block: Block, stateMapper: IStateMapper? = null): Array<String> {
         val mapped = (stateMapper ?: DefaultStateMapper()).putStateModelLocations(block)
         val files = mapped.map {
@@ -30,22 +38,22 @@ object JsonGenerationUtils {
     }
 
     fun getPathForMRL(modelResourceLocation: ModelResourceLocation): String {
-        return "${getAssetPath(modelResourceLocation.resourceDomain)}/blockstates/${modelResourceLocation.resourcePath}.json"
+        return getAssetPath(modelResourceLocation.resourceDomain) + + "/blockstates/${modelResourceLocation.resourcePath}.json"
     }
 
     fun getPathForBlockModel(block: Block): String {
         val registryName = block.registryName
-        return "${getAssetPath(registryName.resourceDomain)}/models/block/${registryName.resourcePath}.json"
+        return getAssetPath(registryName.resourceDomain) + + "/models/block/${registryName.resourcePath}.json"
     }
 
     fun getPathForItemModel(item: Item, variantName: String? = null): String {
         val registryName = item.registryName
         val varname = if (item is ItemBlock || variantName == null) registryName.resourcePath else variantName
-        return "${getAssetPath(registryName.resourceDomain)}/models/item/$varname.json"
+        return getAssetPath(registryName.resourceDomain) + + "/models/item/$varname.json"
     }
 
     fun getAssetPath(modid: String): String {
-        return "${Paths.get(Minecraft.getMinecraft().mcDataDir.absolutePath).parent.parent}/src/main/resources/assets/$modid"
+        return Paths.get(Minecraft.getMinecraft().mcDataDir.absolutePath).parent.parent.toString() + + "/src/main/resources/assets/$modid"
     }
 
     fun generateBaseItemModel(item: Item, variantName: String? = null): JsonElement {
