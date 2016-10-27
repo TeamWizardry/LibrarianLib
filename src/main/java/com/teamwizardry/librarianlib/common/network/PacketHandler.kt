@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.common.network
 
-import com.teamwizardry.librarianlib.common.util.saving.MessageFieldCache
 import net.minecraft.client.Minecraft
 import net.minecraft.network.NetHandlerPlayServer
 import net.minecraft.util.IThreadListener
@@ -14,16 +13,11 @@ import net.minecraftforge.fml.relauncher.Side
 object PacketHandler {
 
     @JvmField
-    var NETWORK: SimpleNetworkWrapper
+    val NETWORK: SimpleNetworkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("TeamWizardry")
     private var id = 0
-
-    init {
-        NETWORK = NetworkRegistry.INSTANCE.newSimpleChannel("TeamWizardry")
-    }
 
     @JvmStatic
     fun <T : PacketBase> register(clazz: Class<T>, targetSide: Side) {
-        MessageFieldCache.getClassFields(clazz)
         NETWORK.registerMessage<T, PacketBase>(Handler<T>(), clazz, id++, targetSide)
     }
 
