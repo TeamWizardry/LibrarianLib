@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.client.core
 
 import com.google.gson.JsonElement
-import com.teamwizardry.librarianlib.common.util.json
+import com.teamwizardry.librarianlib.common.util.builders.json
 import net.minecraft.block.Block
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.block.model.ModelResourceLocation

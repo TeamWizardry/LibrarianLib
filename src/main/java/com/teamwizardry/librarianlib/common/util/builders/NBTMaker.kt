@@ -1,5 +1,5 @@
 @file:JvmName("NBTMaker")
-package com.teamwizardry.librarianlib.common.util
+package com.teamwizardry.librarianlib.common.util.builders
 
 import net.minecraft.nbt.*
 

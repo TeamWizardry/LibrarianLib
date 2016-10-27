@@ -9,7 +9,7 @@ import com.teamwizardry.librarianlib.common.base.block.IModBlockProvider
 import com.teamwizardry.librarianlib.common.base.item.IItemColorProvider
 import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.common.core.LibLibConfig
-import com.teamwizardry.librarianlib.common.util.serialize
+import com.teamwizardry.librarianlib.common.util.builders.serialize
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.block.model.ModelBakery
 import net.minecraft.client.renderer.block.model.ModelResourceLocation

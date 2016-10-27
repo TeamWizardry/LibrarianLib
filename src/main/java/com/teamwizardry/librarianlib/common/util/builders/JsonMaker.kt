@@ -1,5 +1,5 @@
 @file:JvmName("JsonMaker")
-package com.teamwizardry.librarianlib.common.util
+package com.teamwizardry.librarianlib.common.util.builders
 
 import com.google.gson.*
 import com.google.gson.internal.Streams
