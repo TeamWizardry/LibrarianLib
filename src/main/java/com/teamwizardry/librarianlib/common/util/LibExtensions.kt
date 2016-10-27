@@ -3,13 +3,13 @@
 package com.teamwizardry.librarianlib.common.util
 
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
-import net.minecraft.client.renderer.GlStateManager
+import io.netty.buffer.ByteBuf
+import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.text.TextFormatting
-import net.minecraftforge.fml.relauncher.Side
-import net.minecraftforge.fml.relauncher.SideOnly
-import java.awt.Color
+import net.minecraftforge.fml.common.network.ByteBufUtils
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
@@ -96,3 +96,15 @@ fun <T> Class<T>.genericClass(index: Int): Class<*>? {
 
 @Suppress("UNCHECKED_CAST")
 fun <T, O> Class<T>.genericClassTyped(index: Int) = genericClass(index) as Class<O>?
+
+// ByteBuf =============================================================================================================
+
+fun ByteBuf.writeString(value: String) = ByteBufUtils.writeUTF8String(this, value)
+fun ByteBuf.readString(): String = ByteBufUtils.readUTF8String(this)
+
+fun ByteBuf.writeStack(value: ItemStack) = ByteBufUtils.writeItemStack(this, value)
+fun ByteBuf.readStack(): ItemStack = ByteBufUtils.readItemStack(this)
+
+fun ByteBuf.writeTag(value: NBTTagCompound) = ByteBufUtils.writeTag(this, value)
+fun ByteBuf.readTag(): NBTTagCompound = ByteBufUtils.readTag(this)
+

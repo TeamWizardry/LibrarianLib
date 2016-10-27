@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.client.book.Book
 import com.teamwizardry.librarianlib.common.base.block.BlockMod
 import com.teamwizardry.librarianlib.common.base.block.TileMod
 import com.teamwizardry.librarianlib.common.util.EasyConfigHandler
-import com.teamwizardry.librarianlib.common.util.tilesaving.Save
+import com.teamwizardry.librarianlib.common.util.saving.Save
 import net.minecraft.block.ITileEntityProvider
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState

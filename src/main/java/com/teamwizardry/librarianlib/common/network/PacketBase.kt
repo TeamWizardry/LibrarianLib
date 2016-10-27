@@ -1,29 +1,65 @@
 package com.teamwizardry.librarianlib.common.network
 
-import net.minecraft.client.Minecraft
-import net.minecraft.network.NetHandlerPlayServer
-import net.minecraft.util.IThreadListener
-import net.minecraft.world.WorldServer
+import com.teamwizardry.librarianlib.common.util.saving.MessageFieldCache
+import com.teamwizardry.librarianlib.common.util.saving.MessageSerializationHandlers
+import io.netty.buffer.ByteBuf
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext
 
 abstract class PacketBase : IMessage {
 
+    /**
+     * Put your handling code for the message in here.
+     * Assume all fields are already populated by the read methods.
+     */
     abstract fun handle(ctx: MessageContext)
 
+    /**
+     * Override this to reply to any incoming messages with your own.
+     * Leave the return null to reply with no message.
+     * The resulting message is fired along the same channel as the incoming one.
+     */
     open fun reply(ctx: MessageContext): PacketBase? = null
 
-    class Handler<REQ : PacketBase> : IMessageHandler<REQ, PacketBase> {
+    /**
+     * Override this to add custom write-to-bytes.
+     * Make sure to have the same order for writing and reading.
+     */
+    open fun writeCustomBytes(buf: ByteBuf) {
+        // NO-OP
+    }
 
-        override fun onMessage(message: REQ, ctx: MessageContext): PacketBase? {
-            val mainThread: IThreadListener
-            if (ctx.netHandler is NetHandlerPlayServer)
-                mainThread = ctx.serverHandler.playerEntity.worldObj as WorldServer
-            else
-                mainThread = Minecraft.getMinecraft()
-            mainThread.addScheduledTask { message.handle(ctx) }
-            return message.reply(ctx)
+    /**
+     * Override this to add custom read-from-bytes.
+     * Make sure to have the same order for writing and reading.
+     */
+    open fun readCustomBytes(buf: ByteBuf) {
+        // NO-OP
+    }
+
+    fun writeAutoBytes(buf: ByteBuf) {
+        MessageFieldCache.getClassFields(javaClass).forEach {
+            val handler = MessageSerializationHandlers.getWriterUnchecked(it.first)
+            if (handler != null)
+                handler(buf, it.second(this)!!)
         }
+    }
+
+    fun readAutoBytes(buf: ByteBuf) {
+        MessageFieldCache.getClassFields(javaClass).forEach {
+            val handler = MessageSerializationHandlers.getReaderUnchecked(it.first)
+            if (handler != null)
+                it.third(this, handler(buf))
+        }
+    }
+
+    override fun fromBytes(buf: ByteBuf) {
+        readAutoBytes(buf)
+        readCustomBytes(buf)
+    }
+
+    override fun toBytes(buf: ByteBuf) {
+        writeAutoBytes(buf)
+        writeCustomBytes(buf)
     }
 }

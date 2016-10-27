@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.common.base.block
 
 import com.teamwizardry.librarianlib.common.core.LibLibConfig
-import com.teamwizardry.librarianlib.common.util.tilesaving.FieldCache
-import com.teamwizardry.librarianlib.common.util.tilesaving.SerializationHandlers
+import com.teamwizardry.librarianlib.common.util.saving.TileFieldCache
+import com.teamwizardry.librarianlib.common.util.saving.TileSerializationHandlers
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.nbt.NBTTagCompound
@@ -23,7 +23,7 @@ abstract class TileMod : TileEntity() {
     companion object {
         @JvmStatic
         fun registerTile(clazz: Class<out TileMod>, id: String) {
-            FieldCache.getClassFields(clazz)
+            TileFieldCache.getClassFields(clazz)
             GameRegistry.registerTileEntity(clazz, id)
         }
     }
@@ -64,8 +64,8 @@ abstract class TileMod : TileEntity() {
 
     fun writeAutoNBT(cmp: NBTTagCompound) {
         if (LibLibConfig.autoSaveTEs) {
-            FieldCache.getClassFields(javaClass).forEach {
-                val handler = SerializationHandlers.getWriterUnchecked(it.value.first)
+            TileFieldCache.getClassFields(javaClass).forEach {
+                val handler = TileSerializationHandlers.getWriterUnchecked(it.value.first)
                 if (handler != null) {
                     val value = it.value.second(this)
                     if (value != null) cmp.setTag(it.key, handler(value))
@@ -76,8 +76,8 @@ abstract class TileMod : TileEntity() {
 
     fun readAutoNBT(cmp: NBTTagCompound) {
         if (LibLibConfig.autoSaveTEs) {
-            FieldCache.getClassFields(javaClass).forEach {
-                val handler = SerializationHandlers.getReaderUnchecked(it.value.first)
+            TileFieldCache.getClassFields(javaClass).forEach {
+                val handler = TileSerializationHandlers.getReaderUnchecked(it.value.first)
                 if (handler != null)
                     it.value.third(this, handler(cmp.getTag(it.key)))
             }

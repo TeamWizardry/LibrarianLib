@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.common.util.tilesaving
+package com.teamwizardry.librarianlib.common.util.saving
 
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.base.block.TileMod
@@ -19,7 +19,7 @@ import java.util.*
 * @author WireSegal
 * Created at 1:43 PM on 10/14/2016.
 */
-object FieldCache : LinkedHashMap<Class<out TileMod>, Map<String, Triple<Class<*>, (Any) -> Any?, (Any, Any?) -> Unit>>>() {
+object TileFieldCache : LinkedHashMap<Class<out TileMod>, Map<String, Triple<Class<*>, (Any) -> Any?, (Any, Any?) -> Unit>>>() {
     @JvmStatic
     fun getClassFields(clazz: Class<out TileMod>): Map<String, Triple<Class<*>, (Any) -> Any?, (Any, Any?) -> Unit>> {
         val existing = this[clazz]
@@ -57,7 +57,7 @@ object FieldCache : LinkedHashMap<Class<out TileMod>, Map<String, Triple<Class<*
     }
 }
 
-object SerializationHandlers {
+object TileSerializationHandlers {
     private val map = HashMap<Class<*>, Pair<(Any?) -> NBTBase, (NBTBase) -> Any?>>()
 
     @Suppress("UNCHECKED_CAST")
@@ -205,9 +205,3 @@ object SerializationHandlers {
     }
 
 }
-
-/**
- * Apply this to a field to have it be serialized by the write/read nbt methods.
- */
-@Target(AnnotationTarget.FIELD)
-annotation class Save(val saveName: String = "")
