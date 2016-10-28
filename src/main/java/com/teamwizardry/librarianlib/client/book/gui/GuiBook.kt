@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.client.book.gui
 
 import com.teamwizardry.librarianlib.LibrarianLib
-import com.teamwizardry.librarianlib.bloat.PathUtils
 import com.teamwizardry.librarianlib.client.book.util.BookRegistry
 import com.teamwizardry.librarianlib.client.book.util.BookSection
 import com.teamwizardry.librarianlib.client.gui.GuiBase
@@ -16,6 +15,7 @@ import com.teamwizardry.librarianlib.client.gui.template.SliderTemplate
 import com.teamwizardry.librarianlib.client.sprite.Texture
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
+import java.nio.file.Paths
 import java.util.*
 
 open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
@@ -196,7 +196,7 @@ open class GuiBook(val section: BookSection) : GuiBase(146, 180) {
     }
 
     fun openPageRelative(path: String, tag: String) {
-        openPage(PathUtils.resolve(PathUtils.parent(section.entry.path), path), tag)
+        openPage(Paths.get(section.entry.path).parent.resolve(path).toString(), tag)
     }
 
     fun openPage(path: String, tag: String) {
