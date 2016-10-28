@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.common.network
 
-import com.teamwizardry.librarianlib.common.util.saving.MessageFieldCache
-import com.teamwizardry.librarianlib.common.util.saving.MessageSerializationHandlers
+import com.teamwizardry.librarianlib.common.util.saving.ByteBufSerializationHandlers
+import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
 import io.netty.buffer.ByteBuf
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext
@@ -38,18 +38,29 @@ abstract class PacketBase : IMessage {
     }
 
     fun writeAutoBytes(buf: ByteBuf) {
-        MessageFieldCache.getClassFields(javaClass).forEach {
-            val handler = MessageSerializationHandlers.getWriterUnchecked(it.first)
-            if (handler != null)
-                handler(buf, it.second(this)!!)
+        SavingFieldCache.getClassFields(javaClass).forEach {
+            val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.first)
+            if (handler != null) {
+                val field = it.value.second(this)
+                if (field == null)
+                    buf.writeBoolean(true)
+                else {
+                    buf.writeBoolean(false)
+                    handler(buf, field)
+                }
+            } else
+                buf.writeBoolean(true)
         }
     }
 
     fun readAutoBytes(buf: ByteBuf) {
-        MessageFieldCache.getClassFields(javaClass).forEach {
-            val handler = MessageSerializationHandlers.getReaderUnchecked(it.first)
-            if (handler != null)
-                it.third(this, handler(buf))
+        SavingFieldCache.getClassFields(javaClass).forEach {
+            if (buf.readBoolean())
+                it.value.third(this, null)
+            else {
+                val handler = ByteBufSerializationHandlers.getReaderUnchecked(it.value.first)
+                if (handler != null) it.value.third(this, handler(buf))
+            }
         }
     }
 

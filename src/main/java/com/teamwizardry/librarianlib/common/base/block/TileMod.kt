@@ -1,8 +1,10 @@
 package com.teamwizardry.librarianlib.common.base.block
 
 import com.teamwizardry.librarianlib.common.core.LibLibConfig
-import com.teamwizardry.librarianlib.common.util.saving.TileFieldCache
-import com.teamwizardry.librarianlib.common.util.saving.TileSerializationHandlers
+import com.teamwizardry.librarianlib.common.network.PacketHandler
+import com.teamwizardry.librarianlib.common.network.PacketSynchronization
+import com.teamwizardry.librarianlib.common.util.saving.NBTSerializationHandlers
+import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.nbt.NBTTagCompound
@@ -23,7 +25,7 @@ abstract class TileMod : TileEntity() {
     companion object {
         @JvmStatic
         fun registerTile(clazz: Class<out TileMod>, id: String) {
-            TileFieldCache.getClassFields(clazz)
+            SavingFieldCache.getClassFields(clazz)
             GameRegistry.registerTileEntity(clazz, id)
         }
     }
@@ -64,8 +66,8 @@ abstract class TileMod : TileEntity() {
 
     fun writeAutoNBT(cmp: NBTTagCompound) {
         if (LibLibConfig.autoSaveTEs) {
-            TileFieldCache.getClassFields(javaClass).forEach {
-                val handler = TileSerializationHandlers.getWriterUnchecked(it.value.first)
+            SavingFieldCache.getClassFields(javaClass).forEach {
+                val handler = NBTSerializationHandlers.getWriterUnchecked(it.value.first)
                 if (handler != null) {
                     val value = it.value.second(this)
                     if (value != null) cmp.setTag(it.key, handler(value))
@@ -76,8 +78,8 @@ abstract class TileMod : TileEntity() {
 
     fun readAutoNBT(cmp: NBTTagCompound) {
         if (LibLibConfig.autoSaveTEs) {
-            TileFieldCache.getClassFields(javaClass).forEach {
-                val handler = TileSerializationHandlers.getReaderUnchecked(it.value.first)
+            SavingFieldCache.getClassFields(javaClass).forEach {
+                val handler = NBTSerializationHandlers.getReaderUnchecked(it.value.first)
                 if (handler != null)
                     it.value.third(this, handler(cmp.getTag(it.key)))
             }
@@ -99,13 +101,12 @@ abstract class TileMod : TileEntity() {
     open fun dispatchTileToNearbyPlayers() {
         if (worldObj is WorldServer) {
             val ws: WorldServer = worldObj as WorldServer
-            val packet: SPacketUpdateTileEntity = updatePacket
 
             for (player in ws.playerEntities) {
                 val playerMP = player as EntityPlayerMP
                 if (playerMP.getDistanceSq(getPos()) < 64 * 64
                         && ws.playerChunkMap.isPlayerWatchingChunk(playerMP, pos.x shr 4, pos.z shr 4)) {
-                    playerMP.connection.sendPacket(packet)
+                    PacketHandler.NETWORK.sendTo(PacketSynchronization(this), playerMP)
                 }
             }
         }

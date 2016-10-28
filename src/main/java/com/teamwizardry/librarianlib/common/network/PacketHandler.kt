@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.common.network
 
-import com.teamwizardry.librarianlib.common.util.saving.MessageFieldCache
+import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
 import net.minecraft.client.Minecraft
 import net.minecraft.network.NetHandlerPlayServer
 import net.minecraft.util.IThreadListener
@@ -17,9 +17,13 @@ object PacketHandler {
     val NETWORK: SimpleNetworkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("TeamWizardry")
     private var id = 0
 
+    init {
+        register(PacketSynchronization::class.java, Side.CLIENT)
+    }
+
     @JvmStatic
     fun <T : PacketBase> register(clazz: Class<T>, targetSide: Side) {
-        MessageFieldCache.getClassFields(clazz)
+        SavingFieldCache.getClassFields(clazz)
         NETWORK.registerMessage<T, PacketBase>(Handler<T>(), clazz, id++, targetSide)
     }
 

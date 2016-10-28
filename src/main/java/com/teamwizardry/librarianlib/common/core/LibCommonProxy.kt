@@ -32,7 +32,7 @@ open class LibCommonProxy {
 
     open fun pre(e: FMLPreInitializationEvent) {
         EasyConfigHandler().init(LibrarianLib.MODID, e.suggestedConfigurationFile, e.asmData)
-//        if(LibrarianLib.DEV_ENVIRONMENT) initBlock()
+        if(LibrarianLib.DEV_ENVIRONMENT) initBlock()
     }
 
     private fun initBlock() {
@@ -61,8 +61,10 @@ open class LibCommonProxy {
                 val te = worldIn.getTileEntity(pos!!)!! as TETest
                 te.coolString += "1"
                 te.coolNum++
-                playerIn.addChatComponentMessage(TextComponentString("${te.coolString} ${te.coolNum}"))
                 te.markDirty()
+            } else {
+                val te = worldIn.getTileEntity(pos!!)!! as TETest
+                playerIn.addChatComponentMessage(TextComponentString("${te.coolString} ${te.coolNum}"))
             }
             return true
         }

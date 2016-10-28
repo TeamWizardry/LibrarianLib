@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.Loader
 /**
  * The default implementation for an IModBlock.
  */
+@Suppress("LeakingThis")
 open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg variants: String) : Block(materialIn, color), IModBlock {
 
     constructor(name: String, materialIn: Material, vararg variants: String) : this(name, materialIn, materialIn.materialMapColor, *variants)
