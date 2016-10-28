@@ -30,6 +30,14 @@ abstract class TileMod : TileEntity() {
         }
     }
 
+    /**
+     * Using fast synchronization is quicker and less expensive than the NBT packet default.
+     * However, it requires you to register both ByteBuf serializers and NBT serializers for custom types.
+     * If you for some reason can only use NBT serializers, turn this property to false.
+     */
+    open val useFastSync: Boolean
+        get() = true
+
     override fun shouldRefresh(world: World, pos: BlockPos, oldState: IBlockState, newState: IBlockState): Boolean {
         return oldState.block !== newState.block
     }
@@ -106,7 +114,10 @@ abstract class TileMod : TileEntity() {
                 val playerMP = player as EntityPlayerMP
                 if (playerMP.getDistanceSq(getPos()) < 64 * 64
                         && ws.playerChunkMap.isPlayerWatchingChunk(playerMP, pos.x shr 4, pos.z shr 4)) {
-                    PacketHandler.NETWORK.sendTo(PacketSynchronization(this), playerMP)
+                    if (useFastSync)
+                        PacketHandler.NETWORK.sendTo(PacketSynchronization(this), playerMP)
+                    else
+                        playerMP.connection.sendPacket(updatePacket)
                 }
             }
         }
