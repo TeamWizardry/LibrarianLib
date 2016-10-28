@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.client.book.util
 import com.teamwizardry.librarianlib.client.book.Book
 import com.teamwizardry.librarianlib.client.book.data.DataNode
 import com.teamwizardry.librarianlib.client.book.gui.*
-import com.teamwizardry.librarianlib.client.book.util.PageDataManager
 import com.teamwizardry.librarianlib.common.util.lambdainterfs.SectionInitializer
 
 

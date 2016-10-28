@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.common.util.math.interpolate.float
 
 import com.teamwizardry.librarianlib.common.util.math.interpolate.InterpFunction
-import java.awt.Color
 
 /**
  * Goes from 0 to 1 in [fadeIn] units of time, holds 1 for [normal] units, then goes to 0 in [fadeOut] units.
@@ -13,11 +12,11 @@ class InterpFloatInOut(fadeIn: Int, normal: Int, fadeOut: Int) : InterpFunction<
     val fadeOutStart = fadeOut.toFloat() / (fadeIn + normal + fadeOut)
 
     override fun get(i: Float): Float {
-        if(i <= fadeInEnd && fadeInEnd != 0f) {
+        if (i <= fadeInEnd && fadeInEnd != 0f) {
             return i / fadeInEnd
         }
-        if(i >= fadeOutStart && fadeOutStart != 1f) {
-            return ( i - fadeOutStart ) / (1 - fadeOutStart)
+        if (i >= fadeOutStart && fadeOutStart != 1f) {
+            return (i - fadeOutStart) / (1 - fadeOutStart)
         }
         return 1f
     }

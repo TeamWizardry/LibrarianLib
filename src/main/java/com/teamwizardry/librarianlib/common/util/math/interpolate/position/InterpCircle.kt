@@ -2,7 +2,6 @@ package com.teamwizardry.librarianlib.common.util.math.interpolate.position
 
 import com.teamwizardry.librarianlib.common.util.cross
 import com.teamwizardry.librarianlib.common.util.math.interpolate.InterpFunction
-import com.teamwizardry.librarianlib.common.util.minus
 import com.teamwizardry.librarianlib.common.util.plus
 import com.teamwizardry.librarianlib.common.util.times
 import net.minecraft.util.math.MathHelper
@@ -18,18 +17,18 @@ class InterpCircle @JvmOverloads constructor(val origin: Vec3d, normalVector: Ve
     val normal = normalVector.normalize()
 
     private val perpX =
-            if (normal cross Vec3d(0.0, 1.0, 0.0) == Vec3d(0.0,0.0,0.0))
+            if (normal cross Vec3d(0.0, 1.0, 0.0) == Vec3d(0.0, 0.0, 0.0))
                 Vec3d(1.0, 0.0, 0.0)
             else
                 normal cross Vec3d(0.0, 1.0, 0.0)
     private val perpY = normal cross perpX
 
     override fun get(i: Float): Vec3d {
-        val t = i*rotations + offset
+        val t = i * rotations + offset
 
-        val x = radius* MathHelper.cos((t * 2 * Math.PI).toFloat())
-        val y = radius* MathHelper.sin((t * 2 * Math.PI).toFloat())
+        val x = radius * MathHelper.cos((t * 2 * Math.PI).toFloat())
+        val y = radius * MathHelper.sin((t * 2 * Math.PI).toFloat())
 
-        return origin + perpX*x + perpY*y
+        return origin + perpX * x + perpY * y
     }
 }

@@ -25,11 +25,12 @@ open class Option<P, T>(protected var defaultValue: T) {
     }
 
     fun func(callback: ((P) -> T)?) {
-        if(callback == null)
+        if (callback == null)
             func(null as Function<P, T>?)
         else
             func(Function<P, T>(callback))
     }
+
     fun func(callback: Function<P, T>?) {
         this.callback = callback
     }
@@ -51,7 +52,7 @@ open class Option<P, T>(protected var defaultValue: T) {
     }
 
     operator fun invoke(callback: ((P) -> T)?) {
-        func(callback);
+        func(callback)
     }
 
 }

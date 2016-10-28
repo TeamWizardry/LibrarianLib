@@ -81,6 +81,7 @@ class EasyConfigHandler {
  * development environment.
  */
 @Target(AnnotationTarget.FIELD) annotation class ConfigPropertyString(val modid: String, val category: String, val id: String, val comment: String, val def: String, val devOnly: Boolean = false)
+
 /**
  * This annotation should be applied to non-final, static (if in Kotlin, [JvmStatic]) fields of type [Int] (or in Kotlin Int?]
  * that you wish to use as a config property. Use [category] to indicate the config category in the config file,
@@ -89,6 +90,7 @@ class EasyConfigHandler {
  * development environment.
  */
 @Target(AnnotationTarget.FIELD) annotation class ConfigPropertyInt(val modid: String, val category: String, val id: String, val comment: String, val def: Int, val devOnly: Boolean = false)
+
 /**
  * This annotation should be applied to non-final, static (if in Kotlin, [JvmStatic]) fields of type [Boolean] (or in Kotlin Boolean?]
  * that you wish to use as a config property. Use [category] to indicate the config category in the config file,

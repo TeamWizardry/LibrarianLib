@@ -1,7 +1,10 @@
 package com.teamwizardry.librarianlib.common.util.math.interpolate.position
 
-import com.teamwizardry.librarianlib.common.util.*
+import com.teamwizardry.librarianlib.common.util.cross
 import com.teamwizardry.librarianlib.common.util.math.interpolate.InterpFunction
+import com.teamwizardry.librarianlib.common.util.minus
+import com.teamwizardry.librarianlib.common.util.plus
+import com.teamwizardry.librarianlib.common.util.times
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 
@@ -17,21 +20,21 @@ class InterpHelix(
 ) : InterpFunction<Vec3d> {
     private val norm = (point2 - point1).normalize()
     private val perpX =
-            if (norm cross Vec3d(0.0, 1.0, 0.0) == Vec3d(0.0,0.0,0.0))
+            if (norm cross Vec3d(0.0, 1.0, 0.0) == Vec3d(0.0, 0.0, 0.0))
                 Vec3d(1.0, 0.0, 0.0)
             else
                 norm cross Vec3d(0.0, 1.0, 0.0)
     private val perpY = norm cross perpX
 
     override fun get(i: Float): Vec3d {
-        val t = i*rotations + offset
+        val t = i * rotations + offset
 
-        val radius = radius1 + (radius2-radius1)*i
+        val radius = radius1 + (radius2 - radius1) * i
 
-        val x = radius*MathHelper.cos((t * 2 * Math.PI).toFloat())
-        val y = radius*MathHelper.sin((t * 2 * Math.PI).toFloat())
+        val x = radius * MathHelper.cos((t * 2 * Math.PI).toFloat())
+        val y = radius * MathHelper.sin((t * 2 * Math.PI).toFloat())
 
-        return point1 + (point2-point1)*i + perpX*x + perpY*y
+        return point1 + (point2 - point1) * i + perpX * x + perpY * y
     }
 
 }

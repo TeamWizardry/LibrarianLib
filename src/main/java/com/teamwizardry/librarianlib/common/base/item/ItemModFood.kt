@@ -13,9 +13,9 @@ import net.minecraftforge.fml.common.Loader
  */
 open class ItemModFood(name: String, amount: Int, saturation: Float, wolfFood: Boolean, vararg variants: String) : ItemFood(amount, saturation, wolfFood), IModItemProvider {
 
-    constructor(name: String, amount: Int, wolfFood: Boolean, vararg variants: String): this(name, amount, 0.6F, wolfFood, *variants)
-    constructor(name: String, amount: Int, saturation: Float, vararg variants: String): this(name, amount, saturation, false, *variants)
-    constructor(name: String, amount: Int, vararg variants: String): this(name, amount, 0.6F, false, *variants)
+    constructor(name: String, amount: Int, wolfFood: Boolean, vararg variants: String) : this(name, amount, 0.6F, wolfFood, *variants)
+    constructor(name: String, amount: Int, saturation: Float, vararg variants: String) : this(name, amount, saturation, false, *variants)
+    constructor(name: String, amount: Int, vararg variants: String) : this(name, amount, 0.6F, false, *variants)
 
     override val providedItem: Item
         get() = this

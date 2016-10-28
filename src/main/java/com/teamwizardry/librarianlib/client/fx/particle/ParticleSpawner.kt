@@ -3,17 +3,14 @@ package com.teamwizardry.librarianlib.client.fx.particle
 import com.teamwizardry.librarianlib.common.util.math.interpolate.InterpFunction
 import com.teamwizardry.librarianlib.common.util.math.interpolate.InterpListGenerator
 import net.minecraft.client.Minecraft
-import net.minecraft.client.particle.Particle
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import scala.collection.mutable.SetBuilder
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.BiConsumer
-import java.util.function.Consumer
 
 /**
  * Manages the spawning of particles along paths
@@ -41,7 +38,7 @@ object ParticleSpawner {
     }
 
     fun tick() {
-        pending.forEach { if( it.ticksTillSpawn <= 0 ) ParticleRenderManager.spawn(it.particle) }
+        pending.forEach { if (it.ticksTillSpawn <= 0) ParticleRenderManager.spawn(it.particle) }
         pending.removeAll { it.ticksTillSpawn-- <= 0 }
     }
 
@@ -65,22 +62,22 @@ object ParticleSpawner {
         val actualParticleCount = modifyParticleCount(particleCount)
 
         InterpListGenerator.getIndexList(actualParticleCount).forEach { t ->
-            val tick = Math.floor(t*travelTime.toDouble()).toInt()
+            val tick = Math.floor(t * travelTime.toDouble()).toInt()
             callback.accept(t, builder)
             val particle = builder.build(world, curve.get(t))
-            if(particle != null)
+            if (particle != null)
                 pending.add(ParticleSpawn(particle, tick))
         }
     }
 
-    private fun  modifyParticleCount(particleCount: Int): Int {
+    private fun modifyParticleCount(particleCount: Int): Int {
         val mul: Float =
-            when(Minecraft.getMinecraft().gameSettings.particleSetting) {
-                0 -> 1f
-                1 -> 0.5f
-                2 -> 0.25f
-                else -> 1f
-            }
+                when (Minecraft.getMinecraft().gameSettings.particleSetting) {
+                    0 -> 1f
+                    1 -> 0.5f
+                    2 -> 0.25f
+                    else -> 1f
+                }
         return Math.max(2f, particleCount.toFloat() * mul).toInt()
     }
 

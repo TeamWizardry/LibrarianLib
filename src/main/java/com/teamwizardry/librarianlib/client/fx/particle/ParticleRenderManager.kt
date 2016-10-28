@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.client.fx.particle
 
-import com.google.common.collect.Queues
 import com.teamwizardry.librarianlib.client.core.ClientTickHandler
 import net.minecraft.client.Minecraft
 import net.minecraft.client.particle.Particle
@@ -28,15 +27,15 @@ object ParticleRenderManager {
     @JvmStatic
     val LAYER_BLOCK_MAP_ADDITIVE = object : ParticleRenderLayer("blockMap+", true) {
         override fun setup() {
-            Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+            Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE)
 
             GlStateManager.pushAttrib()
-            GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
+            GL11.glPushAttrib(GL11.GL_LIGHTING_BIT)
 //            GlStateManager.depthMask(false);
-            GlStateManager.enableBlend();
-            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-            GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
-            GlStateManager.disableLighting();
+            GlStateManager.enableBlend()
+            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE)
+            GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F)
+            GlStateManager.disableLighting()
             GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
 
 
@@ -50,10 +49,10 @@ object ParticleRenderManager {
             tessellator.draw()
 
             GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-            GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
-            GlStateManager.disableBlend();
+            GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
+            GlStateManager.disableBlend()
 //            GlStateManager.depthMask(true);
-            GL11.glPopAttrib();
+            GL11.glPopAttrib()
             GlStateManager.popAttrib()
         }
 
@@ -62,15 +61,15 @@ object ParticleRenderManager {
     @JvmStatic
     val LAYER_BLOCK_MAP = object : ParticleRenderLayer("blockMap", true) {
         override fun setup() {
-            Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+            Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE)
 
             GlStateManager.pushAttrib()
-            GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
+            GL11.glPushAttrib(GL11.GL_LIGHTING_BIT)
 //            GlStateManager.depthMask(false);
-            GlStateManager.enableBlend();
+            GlStateManager.enableBlend()
 //            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-            GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
-            GlStateManager.disableLighting();
+            GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F)
+            GlStateManager.disableLighting()
             GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
 
 
@@ -84,10 +83,10 @@ object ParticleRenderManager {
             tessellator.draw()
 
 //            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-            GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
-            GlStateManager.disableBlend();
+            GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
+            GlStateManager.disableBlend()
 //            GlStateManager.depthMask(true);
-            GL11.glPopAttrib();
+            GL11.glPopAttrib()
             GlStateManager.popAttrib()
         }
 
@@ -114,7 +113,7 @@ object ParticleRenderManager {
 
     @SubscribeEvent
     fun debug(event: RenderGameOverlayEvent.Text) {
-        if(!Minecraft.getMinecraft().gameSettings.showDebugInfo)
+        if (!Minecraft.getMinecraft().gameSettings.showDebugInfo)
             return
 
         event.left.add("LibrarianLib Particles:")
@@ -125,7 +124,7 @@ object ParticleRenderManager {
 
     @SubscribeEvent
     fun tick(event: TickEvent.ClientTickEvent) {
-        if(event.phase != TickEvent.Phase.START)
+        if (event.phase != TickEvent.Phase.START)
             return
         val profiler = Minecraft.getMinecraft().mcProfiler
         profiler.startSection("liblib_particles")
@@ -169,12 +168,12 @@ object ParticleRenderManager {
     fun render(event: RenderWorldLastEvent) {
         val profiler = Minecraft.getMinecraft().mcProfiler
 
-        GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
-        GlStateManager.depthMask(false);
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F);
-        GlStateManager.disableLighting();
+        GL11.glPushAttrib(GL11.GL_LIGHTING_BIT)
+        GlStateManager.depthMask(false)
+        GlStateManager.enableBlend()
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE)
+        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F)
+        GlStateManager.disableLighting()
 
         profiler.startSection("liblib_particles")
 
@@ -185,7 +184,7 @@ object ParticleRenderManager {
 
         val entity = Minecraft.getMinecraft().renderViewEntity
         val partialTicks = ClientTickHandler.partialTicks
-        if(entity != null) {
+        if (entity != null) {
             Particle.interpPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks.toDouble()
             Particle.interpPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks.toDouble()
             Particle.interpPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks.toDouble()
@@ -210,10 +209,10 @@ object ParticleRenderManager {
 
         profiler.endSection()
 
-        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
-        GlStateManager.disableBlend();
-        GlStateManager.depthMask(true);
-        GL11.glPopAttrib();
+        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
+        GlStateManager.disableBlend()
+        GlStateManager.depthMask(true)
+        GL11.glPopAttrib()
     }
 
     internal fun projectToRay(a: Vec3d, b: Vec3d, p: Vec3d): Vec3d {
@@ -262,25 +261,25 @@ abstract class ParticleRenderLayer(val name: String, val shouldSort: Boolean) {
     }
 
     fun clean() {
-        if(particleList.size > 100000)
+        if (particleList.size > 100000)
             clear() // sometimes the system sprials for no aparent reason
 
 
         val iter = particleList.iterator()
-        for(particle in iter) {
-            if(!particle.isAlive()) {
+        for (particle in iter) {
+            if (!particle.isAlive()) {
                 iter.remove()
             }
         }
     }
 
     fun sort() {
-        if(!shouldSort)
-            return;
+        if (!shouldSort)
+            return
         val partialTicks = ClientTickHandler.partialTicks
         val entity = Minecraft.getMinecraft().renderViewEntity
 
-        if(entity == null) // render entity may be null because this method isn't called in the render function
+        if (entity == null) // render entity may be null because this method isn't called in the render function
             return
 
         val d0 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks.toDouble()

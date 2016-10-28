@@ -15,9 +15,9 @@ import java.lang.reflect.Modifier
 import java.util.*
 
 /**
-* @author WireSegal
-* Created at 1:43 PM on 10/14/2016.
-*/
+ * @author WireSegal
+ * Created at 1:43 PM on 10/14/2016.
+ */
 object MessageFieldCache : LinkedHashMap<Class<out PacketBase>, List<Triple<Class<*>, (Any) -> Any?, (Any, Any?) -> Unit>>>() {
     @JvmStatic
     fun getClassFields(clazz: Class<out PacketBase>): List<Triple<Class<*>, (Any) -> Any?, (Any, Any?) -> Unit>> {
@@ -75,17 +75,20 @@ object MessageSerializationHandlers {
 
         // Vectors
         mapHandler(Vec3d::class.java, {
-            buf, obj -> buf.writeDouble(obj.xCoord).writeDouble(obj.yCoord).writeDouble(obj.zCoord)
+            buf, obj ->
+            buf.writeDouble(obj.xCoord).writeDouble(obj.yCoord).writeDouble(obj.zCoord)
         }, {
             Vec3d(it.readDouble(), it.readDouble(), it.readDouble())
         })
         mapHandler(Vec3i::class.java, {
-            buf, obj -> buf.writeInt(obj.x).writeInt(obj.y).writeInt(obj.z)
+            buf, obj ->
+            buf.writeInt(obj.x).writeInt(obj.y).writeInt(obj.z)
         }, {
             Vec3i(it.readInt(), it.readInt(), it.readInt())
         })
         mapHandler(Vec2d::class.java, {
-            buf, obj -> buf.writeDouble(obj.x).writeDouble(obj.y)
+            buf, obj ->
+            buf.writeDouble(obj.x).writeDouble(obj.y)
         }, {
             Vec2d(it.readDouble(), it.readDouble())
         })

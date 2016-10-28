@@ -1,4 +1,5 @@
 @file:JvmName("NBTMaker")
+
 package com.teamwizardry.librarianlib.common.util.builders
 
 import net.minecraft.nbt.*
@@ -10,7 +11,7 @@ import net.minecraft.nbt.*
 
 object NBT {
 
-    fun <T> list(vararg args: T) : NBTTagList {
+    fun <T> list(vararg args: T): NBTTagList {
         val list = NBTTagList()
         args.forEach { list.appendTag(convertNBT(it)) }
         return list

@@ -7,6 +7,6 @@ import com.teamwizardry.librarianlib.common.util.math.interpolate.InterpFunction
  */
 class InterpLinearFloat(val a: Float, val b: Float) : InterpFunction<Float> {
     override fun get(i: Float): Float {
-        return a + (b-a)*i
+        return a + (b - a) * i
     }
 }

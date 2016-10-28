@@ -1,4 +1,5 @@
 @file:JvmName("JsonMaker")
+
 package com.teamwizardry.librarianlib.common.util.builders
 
 import com.google.gson.*
@@ -13,7 +14,7 @@ import java.io.StringWriter
 
 object JSON {
 
-    fun array(vararg args: Any?) : JsonArray {
+    fun array(vararg args: Any?): JsonArray {
         val arr = JsonArray()
         args.forEach { arr.add(convertJSON(it)) }
         return arr

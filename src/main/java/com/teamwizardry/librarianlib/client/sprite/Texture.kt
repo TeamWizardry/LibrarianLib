@@ -33,7 +33,7 @@ class Texture(
 
     init {
         textures.add(WeakReference(this))
-        if(SpritesMetadataSection.registered)
+        if (SpritesMetadataSection.registered)
             loadSpriteData()
     }
 

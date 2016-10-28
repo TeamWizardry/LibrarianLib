@@ -38,44 +38,48 @@ object JsonGenerationUtils {
     }
 
     fun getPathForMRL(modelResourceLocation: ModelResourceLocation): String {
-        return getAssetPath(modelResourceLocation.resourceDomain) + + "/blockstates/${modelResourceLocation.resourcePath}.json"
+        return getAssetPath(modelResourceLocation.resourceDomain) + +"/blockstates/${modelResourceLocation.resourcePath}.json"
     }
 
     fun getPathForBlockModel(block: Block): String {
         val registryName = block.registryName
-        return getAssetPath(registryName.resourceDomain) + + "/models/block/${registryName.resourcePath}.json"
+        return getAssetPath(registryName.resourceDomain) + +"/models/block/${registryName.resourcePath}.json"
     }
 
     fun getPathForItemModel(item: Item, variantName: String? = null): String {
         val registryName = item.registryName
         val varname = if (item is ItemBlock || variantName == null) registryName.resourcePath else variantName
-        return getAssetPath(registryName.resourceDomain) + + "/models/item/$varname.json"
+        return getAssetPath(registryName.resourceDomain) + +"/models/item/$varname.json"
     }
 
     fun getAssetPath(modid: String): String {
-        return Paths.get(Minecraft.getMinecraft().mcDataDir.absolutePath).parent.parent.toString() + + "/src/main/resources/assets/$modid"
+        return Paths.get(Minecraft.getMinecraft().mcDataDir.absolutePath).parent.parent.toString() + +"/src/main/resources/assets/$modid"
     }
 
     fun generateBaseItemModel(item: Item, variantName: String? = null): JsonElement {
         val registryName = item.registryName
         val varname = variantName ?: registryName.resourcePath
         if (item is ItemBlock) return json { obj("parent" to "${registryName.resourceDomain}:block/$varname") }
-        return json { obj (
-            "parent" to "item/generated",
-            "textures" to obj (
-                "layer0" to "${registryName.resourceDomain}:items/$varname"
+        return json {
+            obj(
+                    "parent" to "item/generated",
+                    "textures" to obj(
+                            "layer0" to "${registryName.resourceDomain}:items/$varname"
+                    )
             )
-        )}
+        }
     }
 
     fun generateBaseBlockModel(block: Block): JsonElement {
         val registryName = block.registryName
-        return json { obj (
-            "parent" to "block/cube_all",
-            "textures" to obj (
-                "all" to "${registryName.resourceDomain}:blocks/${registryName.resourcePath}"
+        return json {
+            obj(
+                    "parent" to "block/cube_all",
+                    "textures" to obj(
+                            "all" to "${registryName.resourceDomain}:blocks/${registryName.resourcePath}"
+                    )
             )
-        )}
+        }
     }
 
     fun generateBaseBlockStates(block: Block, stateMapper: IStateMapper? = null): Map<String, JsonElement> {
@@ -86,11 +90,13 @@ object JsonGenerationUtils {
             val keypairs = mapped.filter { keypair ->
                 getPathForMRL(keypair.value) == file
             }.toList()
-            file to json { obj (
-                "variants" to mapOf(*Array(keypairs.size) {
-                    keypairs[it].second.variant to json { obj("model" to registryName.toString()) }
-                })
-            ) }
+            file to json {
+                obj(
+                        "variants" to mapOf(*Array(keypairs.size) {
+                            keypairs[it].second.variant to json { obj("model" to registryName.toString()) }
+                        })
+                )
+            }
         }.toTypedArray()))
     }
 

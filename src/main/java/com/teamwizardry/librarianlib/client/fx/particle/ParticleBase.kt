@@ -1,23 +1,15 @@
 package com.teamwizardry.librarianlib.client.fx.particle
 
-import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.client.fx.particle.functions.RenderFunction
+import com.teamwizardry.librarianlib.common.util.*
 import com.teamwizardry.librarianlib.common.util.math.interpolate.InterpFunction
-import com.teamwizardry.librarianlib.common.util.math.interpolate.StaticInterp
-import net.minecraft.client.Minecraft
 import net.minecraft.client.particle.Particle
 import net.minecraft.client.renderer.VertexBuffer
-import net.minecraft.entity.Entity
+import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import java.awt.Color
-import java.util.*
-import com.teamwizardry.librarianlib.common.util.math.interpolate.position.*
-import com.teamwizardry.librarianlib.client.fx.particle.functions.*
-import com.teamwizardry.librarianlib.common.util.*
-import net.minecraft.util.ResourceLocation
-import net.minecraft.util.math.AxisAlignedBB
-import net.minecraft.util.math.BlockPos
 import java.util.concurrent.ThreadLocalRandom
 
 /**
@@ -46,8 +38,11 @@ open class ParticleBase internal constructor(
         val jitterChance: Float = 0.1f
 ) {
 
-    open fun tickFirst() {}
-    open fun tickLast() {}
+    open fun tickFirst() {
+    }
+
+    open fun tickLast() {
+    }
 
     val radius: Vec3d = Vec3d(0.1, 0.1, 0.1)
 
@@ -72,11 +67,11 @@ open class ParticleBase internal constructor(
     internal var depthSquared: Double = 0.0
 
     init {
-        pos = position + ( if(positionEnabled) lastInterp else Vec3d.ZERO )
+        pos = position + (if (positionEnabled) lastInterp else Vec3d.ZERO)
     }
 
     fun animPos(): Float {
-        return animStart + (animEnd-animStart)* ( age.toFloat() / lifetime.toFloat() )
+        return animStart + (animEnd - animStart) * (age.toFloat() / lifetime.toFloat())
     }
 
     fun onUpdate() {
@@ -85,26 +80,26 @@ open class ParticleBase internal constructor(
         age++
         prevPos = pos
 
-        if(age > lifetime) {
+        if (age > lifetime) {
             this.setExpired()
         }
 
         var interpPos = positionFunc.get(Math.max(Math.min(animPos(), 1f), 0f))
         var jitter = Vec3d.ZERO
 
-        if(ThreadLocalRandom.current().nextDouble() < jitterChance)
+        if (ThreadLocalRandom.current().nextDouble() < jitterChance)
             jitter = jitterMagnitude * Vec3d(
-                    ThreadLocalRandom.current().nextDouble()*2.0 - 1.0,
-                    ThreadLocalRandom.current().nextDouble()*2.0 - 1.0,
-                    ThreadLocalRandom.current().nextDouble()*2.0 - 1.0
+                    ThreadLocalRandom.current().nextDouble() * 2.0 - 1.0,
+                    ThreadLocalRandom.current().nextDouble() * 2.0 - 1.0,
+                    ThreadLocalRandom.current().nextDouble() * 2.0 - 1.0
             )
 
-        if(positionEnabled) {
+        if (positionEnabled) {
             jitterMotion += jitter
 
-            if(movementMode == EnumMovementMode.TOWARD_POINT)
+            if (movementMode == EnumMovementMode.TOWARD_POINT)
                 velocity = interpPos + position - pos
-            if(movementMode == EnumMovementMode.IN_DIRECTION) {
+            if (movementMode == EnumMovementMode.IN_DIRECTION) {
                 var interpMotion = interpPos - lastInterp
                 velocity += interpMotion - lastInterpMotion
                 lastInterpMotion = interpMotion
@@ -114,11 +109,11 @@ open class ParticleBase internal constructor(
 
         this.moveEntity()
 
-        if(motionEnabled) {
+        if (motionEnabled) {
             velocity += jitter
             velocity += acceleration
             velocity *= deceleration
-            if(this.isCollided)
+            if (this.isCollided)
                 velocity *= friction
         }
 

@@ -14,7 +14,7 @@ import net.minecraft.util.math.Vec3d
  */
 class InterpBezier3D @JvmOverloads constructor(
         val start: Vec3d, val end: Vec3d,
-        val startControl: Vec3d = ( (start+end)/2 ).withY(start.yCoord), val endControl: Vec3d = ( (start+end)/2 ).withY(end.yCoord)
+        val startControl: Vec3d = ((start + end) / 2).withY(start.yCoord), val endControl: Vec3d = ((start + end) / 2).withY(end.yCoord)
 ) : InterpFunction<Vec3d> {
     override fun get(i: Float): Vec3d {
         return Vec3d(
@@ -25,7 +25,7 @@ class InterpBezier3D @JvmOverloads constructor(
     }
 
     private fun getBezierComponent(t: Double, s: Double, e: Double, sc: Double, ec: Double): Double {
-        val T = 1-t
-        return T*T*T*s + 3*T*T*t*sc + 3*T*t*t*ec + t*t*t*e
+        val T = 1 - t
+        return T * T * T * s + 3 * T * T * t * sc + 3 * T * t * t * ec + t * t * t * e
     }
 }

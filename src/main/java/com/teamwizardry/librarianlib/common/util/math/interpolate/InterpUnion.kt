@@ -1,12 +1,12 @@
 package com.teamwizardry.librarianlib.common.util.math.interpolate
 
-class InterpUnionImpl<T> internal constructor(val list: MutableList<UnionEntry<T>>): InterpFunction<T> {
+class InterpUnionImpl<T> internal constructor(val list: MutableList<UnionEntry<T>>) : InterpFunction<T> {
     override fun get(i: Float): T {
         var floored = Math.floor(i.toDouble()).toFloat()
         val fract = if (floored == i && i > 0) 1f else i - floored
         val func = list.first { fract >= it.start && fract <= it.end }
         val span = func.end - func.start
-        val funcI = (fract-func.start)/span
+        val funcI = (fract - func.start) / span
         return func.func.get(funcI)
     }
 }
@@ -49,8 +49,8 @@ class InterpUnion<T>() {
         val entries = mutableListOf<UnionEntry<T>>()
         val totalWeight = weights.sum()
         var currentPos = 0f
-        for(i in 0..functions.size-1) {
-            val span = weights[i].toFloat()/totalWeight
+        for (i in 0..functions.size - 1) {
+            val span = weights[i].toFloat() / totalWeight
             entries.add(UnionEntry(
                     functions[i],
                     currentPos,

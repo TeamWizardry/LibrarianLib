@@ -191,7 +191,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             throw IllegalArgumentException("Can't add components to themselves!")
 
         if (component.parent != null)
-            if(component.parent == this)
+            if (component.parent == this)
                 LibrarianLog.warn("You tried to add the component to the same parent twice. Why?")
             else
                 throw IllegalArgumentException("Component already had a parent!")
@@ -339,7 +339,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
         drawComponent(mousePos, partialTicks)
 
-        if(LibrarianLib.DEV_ENVIRONMENT && Minecraft.getMinecraft().renderManager.isDebugBoundingBox) {
+        if (LibrarianLib.DEV_ENVIRONMENT && Minecraft.getMinecraft().renderManager.isDebugBoundingBox) {
             GlStateManager.pushAttrib()
             GlStateManager.color(1f, 1f, 1f)
             if (!mouseOver) GlStateManager.color(1f, 0f, 1f)

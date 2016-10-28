@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.Loader
  */
 open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, toolMaterial: ToolMaterial, effectiveBlocks: Set<Block>, vararg variants: String) : ItemTool(attackDamage, attackSpeed, toolMaterial, effectiveBlocks), IModItemProvider {
 
-    constructor(name: String, toolMaterial: ToolMaterial, effectiveBlocks: Set<Block>, vararg variants: String): this(name, 0F, 0F, toolMaterial, effectiveBlocks, *variants)
+    constructor(name: String, toolMaterial: ToolMaterial, effectiveBlocks: Set<Block>, vararg variants: String) : this(name, 0F, 0F, toolMaterial, effectiveBlocks, *variants)
 
     override val providedItem: Item
         get() = this

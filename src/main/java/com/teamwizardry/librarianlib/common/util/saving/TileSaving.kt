@@ -16,9 +16,9 @@ import java.lang.reflect.Modifier
 import java.util.*
 
 /**
-* @author WireSegal
-* Created at 1:43 PM on 10/14/2016.
-*/
+ * @author WireSegal
+ * Created at 1:43 PM on 10/14/2016.
+ */
 object TileFieldCache : LinkedHashMap<Class<out TileMod>, Map<String, Triple<Class<*>, (Any) -> Any?, (Any, Any?) -> Unit>>>() {
     @JvmStatic
     fun getClassFields(clazz: Class<out TileMod>): Map<String, Triple<Class<*>, (Any) -> Any?, (Any, Any?) -> Unit>> {
@@ -61,7 +61,7 @@ object TileSerializationHandlers {
     private val map = HashMap<Class<*>, Pair<(Any?) -> NBTBase, (NBTBase) -> Any?>>()
 
     @Suppress("UNCHECKED_CAST")
-    private fun <T: NBTBase> castNBTTag(tag: NBTBase, clazz: Class<T>): T {
+    private fun <T : NBTBase> castNBTTag(tag: NBTBase, clazz: Class<T>): T {
         return (
                 if (clazz.isAssignableFrom(tag.javaClass))
                     tag
@@ -79,7 +79,7 @@ object TileSerializationHandlers {
                     NBTTagIntArray(IntArray(0))
                 else
                     throw IllegalArgumentException("Unknown NBT type to cast to")
-        ) as T
+                ) as T
     }
 
     init {

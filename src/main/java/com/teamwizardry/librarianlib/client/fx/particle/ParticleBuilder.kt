@@ -6,7 +6,6 @@ import com.teamwizardry.librarianlib.client.fx.particle.functions.RenderFunction
 import com.teamwizardry.librarianlib.common.util.math.interpolate.InterpFunction
 import com.teamwizardry.librarianlib.common.util.math.interpolate.StaticInterp
 import com.teamwizardry.librarianlib.common.util.plus
-import com.teamwizardry.librarianlib.common.util.times
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
@@ -520,29 +519,29 @@ class ParticleBuilder(private var lifetime: Int) {
         var animEnd_ = animEnd
         var motion_ = motion
 
-        if(defaultRandomizations) {
+        if (defaultRandomizations) {
 
             pos_ += Vec3d(
-                    (ThreadLocalRandom.current().nextDouble()-0.5)* posRandMultiplier,
-                    (ThreadLocalRandom.current().nextDouble()-0.5)* posRandMultiplier,
-                    (ThreadLocalRandom.current().nextDouble()-0.5)* posRandMultiplier
+                    (ThreadLocalRandom.current().nextDouble() - 0.5) * posRandMultiplier,
+                    (ThreadLocalRandom.current().nextDouble() - 0.5) * posRandMultiplier,
+                    (ThreadLocalRandom.current().nextDouble() - 0.5) * posRandMultiplier
             )
 
             motion_ += Vec3d(
-                    (ThreadLocalRandom.current().nextDouble()-0.5)* motionRandMultiplier,
-                    (ThreadLocalRandom.current().nextDouble()-0.5)* motionRandMultiplier,
-                    (ThreadLocalRandom.current().nextDouble()-0.5)* motionRandMultiplier
+                    (ThreadLocalRandom.current().nextDouble() - 0.5) * motionRandMultiplier,
+                    (ThreadLocalRandom.current().nextDouble() - 0.5) * motionRandMultiplier,
+                    (ThreadLocalRandom.current().nextDouble() - 0.5) * motionRandMultiplier
             )
 
-            lifetime_ += ( (ThreadLocalRandom.current().nextDouble()-0.5)*lifetime* lifetimeRandMultiplier).toInt()
+            lifetime_ += ((ThreadLocalRandom.current().nextDouble() - 0.5) * lifetime * lifetimeRandMultiplier).toInt()
 
-            animStart_ += ( (ThreadLocalRandom.current().nextDouble()-0.5)* animRandMultiplier).toFloat()
-            animEnd_   += ( (ThreadLocalRandom.current().nextDouble()-0.5)* animRandMultiplier).toFloat()
+            animStart_ += ((ThreadLocalRandom.current().nextDouble() - 0.5) * animRandMultiplier).toFloat()
+            animEnd_ += ((ThreadLocalRandom.current().nextDouble() - 0.5) * animRandMultiplier).toFloat()
         }
 
         val renderFunc_ = renderFunc
 
-        if(renderFunc_ == null) {
+        if (renderFunc_ == null) {
             LibrarianLog.warn("Particle render function was null!!")
             return null
         }
@@ -556,11 +555,11 @@ class ParticleBuilder(private var lifetime: Int) {
     /**
      * Clones this builder.
      */
-    fun clone() : ParticleBuilder {
+    fun clone(): ParticleBuilder {
         val v = ParticleBuilder(lifetime)
 
         cloneTo(v)
-        
+
         return v
     }
 

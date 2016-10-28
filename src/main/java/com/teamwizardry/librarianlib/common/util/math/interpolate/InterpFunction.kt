@@ -21,7 +21,7 @@ interface InterpFunction<T> {
 internal class ReversedInterpFunction<T>(val wrap: InterpFunction<T>) : InterpFunction<T> {
 
     override fun get(i: Float): T {
-        return wrap.get(1-i);
+        return wrap.get(1 - i)
     }
 
     override fun reverse(): InterpFunction<T> {
@@ -35,7 +35,7 @@ private class OneToOneInterp : InterpFunction<Float> {
     }
 }
 
-class StaticInterp<T> (val v: T) : InterpFunction<T> {
+class StaticInterp<T>(val v: T) : InterpFunction<T> {
     override fun get(i: Float): T {
         return v
     }

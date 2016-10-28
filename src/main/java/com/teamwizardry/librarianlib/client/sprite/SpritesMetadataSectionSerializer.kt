@@ -60,14 +60,14 @@ class SpritesMetadataSectionSerializer : BaseMetadataSectionSerializer<SpritesMe
                 }
             }
 
-            val frameTime = JsonUtils.getInt(obj, "frameTime", 1);
+            val frameTime = JsonUtils.getInt(obj, "frameTime", 1)
 
             val frames: IntArray = IntArray(frames_.size * frameTime)
 
             var j = 0
-            for(i in frames_) {
-                for(k in 1..frameTime) {
-                    frames[j] =  i
+            for (i in frames_) {
+                for (k in 1..frameTime) {
+                    frames[j] = i
                     j++
                 }
             }
