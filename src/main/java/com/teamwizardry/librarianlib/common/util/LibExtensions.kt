@@ -109,3 +109,7 @@ fun ByteBuf.readStack(): ItemStack = ByteBufUtils.readItemStack(this)
 fun ByteBuf.writeTag(value: NBTTagCompound) = ByteBufUtils.writeTag(this, value)
 fun ByteBuf.readTag(): NBTTagCompound = ByteBufUtils.readTag(this)
 
+fun ByteBuf.writeNullSignature() = writeBoolean(true)
+fun ByteBuf.writeNonnullSignature() = writeBoolean(false)
+fun ByteBuf.hasNullSignature(): Boolean = readBoolean()
+

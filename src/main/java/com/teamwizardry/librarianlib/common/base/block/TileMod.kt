@@ -3,9 +3,12 @@ package com.teamwizardry.librarianlib.common.base.block
 import com.teamwizardry.librarianlib.common.core.LibLibConfig
 import com.teamwizardry.librarianlib.common.network.PacketHandler
 import com.teamwizardry.librarianlib.common.network.PacketSynchronization
+import com.teamwizardry.librarianlib.common.util.hasNullSignature
 import com.teamwizardry.librarianlib.common.util.saving.ByteBufSerializationHandlers
 import com.teamwizardry.librarianlib.common.util.saving.NBTSerializationHandlers
 import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
+import com.teamwizardry.librarianlib.common.util.writeNonnullSignature
+import com.teamwizardry.librarianlib.common.util.writeNullSignature
 import io.netty.buffer.ByteBuf
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayerMP
@@ -122,7 +125,7 @@ abstract class TileMod : TileEntity() {
 
     fun writeAutoBytes(buf: ByteBuf) {
         SavingFieldCache.getClassFields(javaClass).forEach {
-            if (buf.readBoolean())
+            if (buf.hasNullSignature())
                 it.value.third(this, null)
             else {
                 val handler = ByteBufSerializationHandlers.getReaderUnchecked(it.value.first)
@@ -138,13 +141,13 @@ abstract class TileMod : TileEntity() {
             if (handler != null) {
                 val field = it.value.second(this)
                 if (field == null)
-                    buf.writeBoolean(true)
+                    buf.writeNullSignature()
                 else {
-                    buf.writeBoolean(false)
+                    buf.writeNonnullSignature()
                     handler(buf, field)
                 }
             } else
-                buf.writeBoolean(true)
+                buf.writeNullSignature()
         }
     }
 

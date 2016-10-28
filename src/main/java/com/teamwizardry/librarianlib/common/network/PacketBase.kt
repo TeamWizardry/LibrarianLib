@@ -1,7 +1,10 @@
 package com.teamwizardry.librarianlib.common.network
 
+import com.teamwizardry.librarianlib.common.util.hasNullSignature
 import com.teamwizardry.librarianlib.common.util.saving.ByteBufSerializationHandlers
 import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
+import com.teamwizardry.librarianlib.common.util.writeNonnullSignature
+import com.teamwizardry.librarianlib.common.util.writeNullSignature
 import io.netty.buffer.ByteBuf
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext
@@ -43,19 +46,19 @@ abstract class PacketBase : IMessage {
             if (handler != null) {
                 val field = it.value.second(this)
                 if (field == null)
-                    buf.writeBoolean(true)
+                    buf.writeNullSignature()
                 else {
-                    buf.writeBoolean(false)
+                    buf.writeNonnullSignature()
                     handler(buf, field)
                 }
             } else
-                buf.writeBoolean(true)
+                buf.writeNullSignature()
         }
     }
 
     fun readAutoBytes(buf: ByteBuf) {
         SavingFieldCache.getClassFields(javaClass).forEach {
-            if (buf.readBoolean())
+            if (buf.hasNullSignature())
                 it.value.third(this, null)
             else {
                 val handler = ByteBufSerializationHandlers.getReaderUnchecked(it.value.first)
