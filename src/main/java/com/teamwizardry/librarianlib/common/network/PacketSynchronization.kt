@@ -1,9 +1,7 @@
 package com.teamwizardry.librarianlib.common.network
 
 import com.teamwizardry.librarianlib.common.base.block.TileMod
-import com.teamwizardry.librarianlib.common.util.saving.ByteBufSerializationHandlers
 import com.teamwizardry.librarianlib.common.util.saving.Save
-import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
 import io.netty.buffer.ByteBuf
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.BlockPos
@@ -31,15 +29,8 @@ class PacketSynchronization(var tile: TileMod? = null /* Tile is always null on 
         val tile = Minecraft.getMinecraft().theWorld.getTileEntity(pos)
         if (b == null || tile == null || tile !is TileMod) return
 
-        SavingFieldCache.getClassFields(tile.javaClass).forEach {
-            if (b.readBoolean())
-                it.value.third(tile, null)
-            else {
-                val handler = ByteBufSerializationHandlers.getReaderUnchecked(it.value.first)
-                if (handler != null)
-                    it.value.third(tile, handler(b))
-            }
-        }
+        tile.readAutoBytes(b)
+        tile.readCustomBytes(b)
     }
 
     override fun readCustomBytes(buf: ByteBuf) {
@@ -54,19 +45,8 @@ class PacketSynchronization(var tile: TileMod? = null /* Tile is always null on 
         else {
             buf.writeBoolean(false)
 
-            SavingFieldCache.getClassFields(te.javaClass).forEach {
-                val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.first)
-                if (handler != null) {
-                    val field = it.value.second(te)
-                    if (field == null)
-                        buf.writeBoolean(true)
-                    else {
-                        buf.writeBoolean(false)
-                        handler(buf, field)
-                    }
-                } else
-                    buf.writeBoolean(true)
-            }
+            te.writeAutoBytes(buf)
+            te.writeCustomBytes(buf)
         }
     }
 }

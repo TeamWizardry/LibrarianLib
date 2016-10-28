@@ -3,8 +3,10 @@ package com.teamwizardry.librarianlib.common.base.block
 import com.teamwizardry.librarianlib.common.core.LibLibConfig
 import com.teamwizardry.librarianlib.common.network.PacketHandler
 import com.teamwizardry.librarianlib.common.network.PacketSynchronization
+import com.teamwizardry.librarianlib.common.util.saving.ByteBufSerializationHandlers
 import com.teamwizardry.librarianlib.common.util.saving.NBTSerializationHandlers
 import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
+import io.netty.buffer.ByteBuf
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.nbt.NBTTagCompound
@@ -64,11 +66,35 @@ abstract class TileMod : TileEntity() {
         return SPacketUpdateTileEntity(pos, -999, updateTag)
     }
 
+    /**
+     * Override this function to store special data not stored in @Save fields in NBT.
+     * If [useFastSync] is false, this will also determine whether it gets sent to clientside.
+     */
     open fun writeCustomNBT(cmp: NBTTagCompound) {
         // NO-OP
     }
 
+    /**
+     * Override this function to read special data not stored in @Save fields from NBT.
+     * If [useFastSync] is false, this will also determine what the client receives.
+     */
     open fun readCustomNBT(cmp: NBTTagCompound) {
+        // NO-OP
+    }
+
+    /**
+     * Override this function to write special data not stored in @Save fields to bytes.
+     * If [useFastSync] is false, this function is never called.
+     */
+    open fun writeCustomBytes(buf: ByteBuf) {
+        // NO-OP
+    }
+
+    /**
+     * Override this function to read special data not stored in @Save fields from bytes.
+     * If [useFastSync] is false, this function is never called.
+     */
+    open fun readCustomBytes(buf: ByteBuf) {
         // NO-OP
     }
 
@@ -91,6 +117,34 @@ abstract class TileMod : TileEntity() {
                 if (handler != null)
                     it.value.third(this, handler(cmp.getTag(it.key)))
             }
+        }
+    }
+
+    fun writeAutoBytes(buf: ByteBuf) {
+        SavingFieldCache.getClassFields(javaClass).forEach {
+            if (buf.readBoolean())
+                it.value.third(this, null)
+            else {
+                val handler = ByteBufSerializationHandlers.getReaderUnchecked(it.value.first)
+                if (handler != null)
+                    it.value.third(this, handler(buf))
+            }
+        }
+    }
+
+    fun readAutoBytes(buf: ByteBuf) {
+        SavingFieldCache.getClassFields(javaClass).forEach {
+            val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.first)
+            if (handler != null) {
+                val field = it.value.second(this)
+                if (field == null)
+                    buf.writeBoolean(true)
+                else {
+                    buf.writeBoolean(false)
+                    handler(buf, field)
+                }
+            } else
+                buf.writeBoolean(true)
         }
     }
 
