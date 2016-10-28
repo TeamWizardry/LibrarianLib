@@ -55,6 +55,7 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, Triple<Class<*>, (
                 name += "-"
         }
         alreadyDone.add(name)
+        nameMap[f] = name
         return name
     }
 }
