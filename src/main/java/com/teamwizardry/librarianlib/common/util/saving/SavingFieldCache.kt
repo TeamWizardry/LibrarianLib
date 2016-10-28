@@ -24,7 +24,7 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, Triple<Class<*>, (
         }
 
         val alreadyDone = mutableListOf("id", "x", "y", "z", "ForgeData", "ForgeCaps")
-        val map = mapOf(*(fields.sortedBy {
+        val map = linkedMapOf(*(fields.sortedBy {
             getNameFromField(clazz, it, alreadyDone)
         }.map {
             it.isAccessible = true
