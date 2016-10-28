@@ -94,7 +94,7 @@ object ByteBufSerializationHandlers {
 }
 
 object NBTSerializationHandlers {
-    private val map = HashMap<Class<*>, Pair<(Any?) -> NBTBase, (NBTBase) -> Any?>>()
+    private val map = HashMap<Class<*>, Pair<(Any) -> NBTBase, (NBTBase) -> Any>>()
 
     @Suppress("UNCHECKED_CAST")
     private fun <T : NBTBase> castNBTTag(tag: NBTBase, clazz: Class<T>): T {
@@ -120,122 +120,102 @@ object NBTSerializationHandlers {
 
     init {
         // Primitives and String
-        mapHandler(Char::class.javaPrimitiveType!!, { NBTTagByte(it?.toByte() ?: 0) }, { castNBTTag(it, NBTPrimitive::class.java).byte.toChar() })
-        mapHandler(Byte::class.javaPrimitiveType!!, { NBTTagByte(it ?: 0) }, { castNBTTag(it, NBTPrimitive::class.java).byte })
-        mapHandler(Short::class.javaPrimitiveType!!, { NBTTagShort(it ?: 0) }, { castNBTTag(it, NBTPrimitive::class.java).short })
-        mapHandler(Int::class.javaPrimitiveType!!, { NBTTagInt(it ?: 0) }, { castNBTTag(it, NBTPrimitive::class.java).int })
-        mapHandler(Long::class.javaPrimitiveType!!, { NBTTagLong(it ?: 0) }, { castNBTTag(it, NBTPrimitive::class.java).long })
-        mapHandler(Float::class.javaPrimitiveType!!, { NBTTagFloat(it ?: 0f) }, { castNBTTag(it, NBTPrimitive::class.java).float })
-        mapHandler(Double::class.javaPrimitiveType!!, { NBTTagDouble(it ?: 0.0) }, { castNBTTag(it, NBTPrimitive::class.java).double })
-        mapHandler(Boolean::class.javaPrimitiveType!!, { NBTTagByte(if (it ?: false) 1 else 0) }, { castNBTTag(it, NBTPrimitive::class.java).byte == 1.toByte() })
-        mapHandler(String::class.java, { NBTTagString(it ?: "") }, { castNBTTag(it, NBTTagString::class.java).string })
+        mapHandler(Char::class.javaPrimitiveType!!, { NBTTagByte(it.toByte()) }, { castNBTTag(it, NBTPrimitive::class.java).byte.toChar() })
+        mapHandler(Byte::class.javaPrimitiveType!!, ::NBTTagByte, { castNBTTag(it, NBTPrimitive::class.java).byte })
+        mapHandler(Short::class.javaPrimitiveType!!, ::NBTTagShort, { castNBTTag(it, NBTPrimitive::class.java).short })
+        mapHandler(Int::class.javaPrimitiveType!!, ::NBTTagInt, { castNBTTag(it, NBTPrimitive::class.java).int })
+        mapHandler(Long::class.javaPrimitiveType!!, ::NBTTagLong, { castNBTTag(it, NBTPrimitive::class.java).long })
+        mapHandler(Float::class.javaPrimitiveType!!, ::NBTTagFloat, { castNBTTag(it, NBTPrimitive::class.java).float })
+        mapHandler(Double::class.javaPrimitiveType!!, ::NBTTagDouble, { castNBTTag(it, NBTPrimitive::class.java).double })
+        mapHandler(Boolean::class.javaPrimitiveType!!, { NBTTagByte(if (it) 1 else 0) }, { castNBTTag(it, NBTPrimitive::class.java).byte == 1.toByte() })
+        mapHandler(String::class.java, ::NBTTagString, { castNBTTag(it, NBTTagString::class.java).string })
 
         // Misc.
-        mapHandler(Color::class.java, { NBTTagInt(it?.rgb ?: 0) }, { Color(castNBTTag(it, NBTPrimitive::class.java).int, true) })
-        mapHandler(NBTTagCompound::class.java, { it ?: NBTTagCompound() }, { castNBTTag(it, NBTTagCompound::class.java) })
+        mapHandler(Color::class.java, { NBTTagInt(it.rgb) }, { Color(castNBTTag(it, NBTPrimitive::class.java).int, true) })
+        mapHandler(NBTTagCompound::class.java, { it }, { castNBTTag(it, NBTTagCompound::class.java) })
 
         // Item Handlers
-        mapHandler(ItemStack::class.java, { it?.serializeNBT() ?: NBTTagCompound() }, {
+        mapHandler(ItemStack::class.java, { it.serializeNBT() ?: NBTTagCompound() }, {
             val compound = castNBTTag(it, NBTTagCompound::class.java)
-            if (compound.hasNoTags()) null
-            else ItemStack.loadItemStackFromNBT(compound)
+            ItemStack.loadItemStackFromNBT(compound)
         })
-        mapHandler(ItemStackHandler::class.java, { it?.serializeNBT() ?: NBTTagCompound() }, {
+        mapHandler(ItemStackHandler::class.java, { it.serializeNBT() ?: NBTTagCompound() }, {
             val handler = ItemStackHandler()
             val compound = castNBTTag(it, NBTTagCompound::class.java)
-            if (compound.hasNoTags())
-                null
-            else {
-                handler.deserializeNBT(compound)
-                handler
-            }
+            handler.deserializeNBT(compound)
+            handler
         })
 
 
         // Vectors
         mapHandler(Vec3d::class.java, {
             val list = NBTTagList()
-            if (it != null) {
-                list.appendTag(NBTTagDouble(it.xCoord))
-                list.appendTag(NBTTagDouble(it.yCoord))
-                list.appendTag(NBTTagDouble(it.zCoord))
-            }
+            list.appendTag(NBTTagDouble(it.xCoord))
+            list.appendTag(NBTTagDouble(it.yCoord))
+            list.appendTag(NBTTagDouble(it.zCoord))
             list
         }, {
             val tag = castNBTTag(it, NBTTagList::class.java)
-            if (tag.hasNoTags()) null
-            else {
-                val x = tag.getDoubleAt(0)
-                val y = tag.getDoubleAt(1)
-                val z = tag.getDoubleAt(2)
-                Vec3d(x, y, z)
-            }
+            val x = tag.getDoubleAt(0)
+            val y = tag.getDoubleAt(1)
+            val z = tag.getDoubleAt(2)
+            Vec3d(x, y, z)
         })
         mapHandler(Vec3i::class.java, {
             val list = NBTTagList()
-            if (it != null) {
-                list.appendTag(NBTTagInt(it.x))
-                list.appendTag(NBTTagInt(it.y))
-                list.appendTag(NBTTagInt(it.z))
-            }
+            list.appendTag(NBTTagInt(it.x))
+            list.appendTag(NBTTagInt(it.y))
+            list.appendTag(NBTTagInt(it.z))
             list
         }, {
             val tag = castNBTTag(it, NBTTagList::class.java)
-            if (tag.hasNoTags()) null
-            else {
-                val x = tag.getIntAt(0)
-                val y = tag.getIntAt(1)
-                val z = tag.getIntAt(2)
-                Vec3i(x, y, z)
-            }
+            val x = tag.getIntAt(0)
+            val y = tag.getIntAt(1)
+            val z = tag.getIntAt(2)
+            Vec3i(x, y, z)
         })
         mapHandler(Vec2d::class.java, {
             val list = NBTTagList()
-            if (it != null) {
-                list.appendTag(NBTTagDouble(it.x))
-                list.appendTag(NBTTagDouble(it.y))
-            }
+            list.appendTag(NBTTagDouble(it.x))
+            list.appendTag(NBTTagDouble(it.y))
             list
         }, {
             val tag = castNBTTag(it, NBTTagList::class.java)
-            if (tag.hasNoTags()) null
-            else {
-                val x = tag.getDoubleAt(0)
-                val y = tag.getDoubleAt(1)
-                Vec2d(x, y)
-            }
+            val x = tag.getDoubleAt(0)
+            val y = tag.getDoubleAt(1)
+            Vec2d(x, y)
         })
-        mapHandler(BlockPos::class.java, { NBTTagLong(it?.toLong() ?: 0) }, { BlockPos.fromLong(castNBTTag(it, NBTPrimitive::class.java).long) })
+        mapHandler(BlockPos::class.java, { NBTTagLong(it.toLong()) }, { BlockPos.fromLong(castNBTTag(it, NBTPrimitive::class.java).long) })
     }
 
     @JvmStatic
     @Suppress("UNCHECKED_CAST")
-    fun <T> mapHandler(clazz: Class<T>, writer: (T?) -> NBTBase, reader: (NBTBase) -> T?) {
-        map.put(clazz, (writer as (Any?) -> NBTBase) to (reader as (NBTBase) -> Any?))
+    fun <T> mapHandler(clazz: Class<T>, writer: (T) -> NBTBase, reader: (NBTBase) -> T) {
+        map.put(clazz, (writer as (Any) -> NBTBase) to (reader as (NBTBase) -> Any))
     }
 
     @JvmStatic
     @Suppress("UNCHECKED_CAST")
-    fun <T> getWriter(clazz: Class<T>): ((T?) -> NBTBase)? {
+    fun <T> getWriter(clazz: Class<T>): ((T) -> NBTBase)? {
+        val pair = map[clazz] ?: return null
+        return pair.first as (T) -> NBTBase
+    }
+
+    @JvmStatic
+    fun getWriterUnchecked(clazz: Class<*>): ((Any) -> NBTBase)? {
         val pair = map[clazz] ?: return null
         return pair.first
     }
 
     @JvmStatic
-    fun getWriterUnchecked(clazz: Class<*>): ((Any?) -> NBTBase)? {
-        val pair = map[clazz] ?: return null
-        return pair.first
-    }
-
-    @JvmStatic
     @Suppress("UNCHECKED_CAST")
-    fun <T> getReader(clazz: Class<T>): ((NBTBase) -> T?)? {
+    fun <T> getReader(clazz: Class<T>): ((NBTBase) -> T)? {
         val pair = map[clazz] ?: return null
-        return pair.second as (NBTBase) -> T?
+        return pair.second as (NBTBase) -> T
     }
 
     @JvmStatic
-    fun getReaderUnchecked(clazz: Class<*>): ((NBTBase) -> Any?)? {
+    fun getReaderUnchecked(clazz: Class<*>): ((NBTBase) -> Any)? {
         val pair = map[clazz] ?: return null
         return pair.second
     }
