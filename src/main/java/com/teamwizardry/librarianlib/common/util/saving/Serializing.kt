@@ -44,6 +44,14 @@ object ByteBufSerializationHandlers {
             handler.deserializeNBT(it.readTag())
             handler
         })
+        mapHandler(ItemStackHandler::class.java, {
+            buf, obj ->
+            buf.writeTag(obj.serializeNBT())
+        }, {
+            val handler = ItemStackHandler()
+            handler.deserializeNBT(it.readTag())
+            handler
+        })
 
         // Vectors
         mapHandler(Vec3d::class.java, {
