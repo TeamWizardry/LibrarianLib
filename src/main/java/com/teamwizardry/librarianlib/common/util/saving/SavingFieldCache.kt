@@ -23,7 +23,7 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, Triple<Class<*>, (
             !Modifier.isStatic(mods) && !Modifier.isFinal(mods) && !Modifier.isTransient(mods) && it.isAnnotationPresent(Save::class.java)
         }
 
-        val alreadyDone = mutableListOf("id", "x", "y", "z", "ForgeData", "ForgeCaps")
+        val alreadyDone = mutableListOf<String>()
         val map = linkedMapOf(*(fields.sortedBy {
             getNameFromField(clazz, it, alreadyDone)
         }.map {
@@ -38,6 +38,8 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, Triple<Class<*>, (
         return map
     }
 
+    private val ILLEGAL_NAMES = listOf("id", "x", "y", "z", "ForgeData", "ForgeCaps")
+
     private val nameMap = mutableMapOf<Field, String>()
     private fun getNameFromField(clazz: Class<*>, f: Field, alreadyDone: MutableList<String>): String {
         val got = nameMap[f]
@@ -45,6 +47,8 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, Triple<Class<*>, (
 
         val string = f.getAnnotation(Save::class.java).saveName
         var name = if (string == "") f.name else string
+        if (name in ILLEGAL_NAMES)
+            name += "X"
         if (name in alreadyDone) {
             val msg = "Name $name already in use for class ${clazz.name}! Adding dashes to the end to mitigate this."
             val pad = Array(msg.length) { "*" }.joinToString("")
