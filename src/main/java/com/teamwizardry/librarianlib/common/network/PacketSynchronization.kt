@@ -1,7 +1,10 @@
 package com.teamwizardry.librarianlib.common.network
 
 import com.teamwizardry.librarianlib.common.base.block.TileMod
+import com.teamwizardry.librarianlib.common.util.hasNullSignature
 import com.teamwizardry.librarianlib.common.util.saving.Save
+import com.teamwizardry.librarianlib.common.util.writeNonnullSignature
+import com.teamwizardry.librarianlib.common.util.writeNullSignature
 import io.netty.buffer.ByteBuf
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.BlockPos
@@ -34,16 +37,16 @@ class PacketSynchronization(var tile: TileMod? = null /* Tile is always null on 
     }
 
     override fun readCustomBytes(buf: ByteBuf) {
-        if (buf.readBoolean()) return
+        if (buf.hasNullSignature()) return
         this.buf = buf.copy()
     }
 
     override fun writeCustomBytes(buf: ByteBuf) {
         val te = tile
         if (te == null)
-            buf.writeBoolean(true)
+            buf.writeNullSignature()
         else {
-            buf.writeBoolean(false)
+            buf.writeNonnullSignature()
 
             te.writeAutoBytes(buf)
             te.writeCustomBytes(buf)
