@@ -126,7 +126,7 @@ open class ParticleBase internal constructor(
 
         val pos = this.prevPos + (this.pos - prevPos) * info.partialTicks.toDouble() - Vec3d(Particle.interpPosX, Particle.interpPosY, Particle.interpPosZ)
 
-        val brightness = this.getBrightnessForRender(info.partialTicks)
+        val brightness = this.getBrightnessForRender()
         val skyLight = brightness shr 16 and 65535
         val blockLight = brightness and 65535
 
@@ -202,7 +202,7 @@ open class ParticleBase internal constructor(
         )
     }
 
-    fun getBrightnessForRender(p_189214_1_: Float): Int {
+    fun getBrightnessForRender(): Int {
         val blockpos = BlockPos(this.pos.xCoord, this.pos.yCoord, this.pos.zCoord)
         return if (this.world.isBlockLoaded(blockpos)) this.world.getCombinedLight(blockpos, 0) else 0
     }

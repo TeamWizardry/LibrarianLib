@@ -11,7 +11,7 @@ import net.minecraft.world.WorldType
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.gen.structure.template.Template
 import net.minecraft.world.gen.structure.template.Template.BlockInfo
-import net.minecraftforge.fml.relauncher.ReflectionHelper
+import com.teamwizardry.librarianlib.common.structure.Structure.Companion.blocks
 import java.util.*
 
 /**
@@ -24,13 +24,7 @@ open class TemplateBlockAccess(protected var template: Template?) : IBlockAccess
     protected var overrides: MutableMap<BlockPos, IBlockState> = HashMap()
 
     init {
-        try {
-            templateBlocks = ReflectionHelper.findField(Template::class.java, "blocks", "field_186270_a").get(template) as List<BlockInfo> //todo methodhandle
-        } catch (e1: IllegalArgumentException) {
-            e1.printStackTrace()
-        } catch (e1: IllegalAccessException) {
-            e1.printStackTrace()
-        }
+        templateBlocks = template?.blocks
 
     }
 
