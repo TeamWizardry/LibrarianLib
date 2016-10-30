@@ -23,7 +23,7 @@ object EasyConfigHandler {
     fun init(modid: String, configf: File, asm: ASMDataTable? = null) {
         if (asm == null && !generated) return
         val config = Configuration(configf)
-        if (!generated) {
+        if (asm != null && !generated) {
             findByClass(Any::class.java, asm)
             findByClass(Boolean::class.javaPrimitiveType!!, asm)
             findByClass(Char::class.javaPrimitiveType!!, asm)
