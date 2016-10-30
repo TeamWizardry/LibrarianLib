@@ -15,21 +15,25 @@ class EasyConfigHandler {
     val fieldMapStr: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
     val fieldMapInt: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
     val fieldMapBoolean: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
+    private var generated = false
 
     fun init(modid: String, configf: File, asm: ASMDataTable?) {
         if (asm == null) return
         val config = Configuration(configf)
-        findByClass(Any::class.java, asm)
-        findByClass(Boolean::class.javaPrimitiveType!!, asm)
-        findByClass(Char::class.javaPrimitiveType!!, asm)
-        findByClass(Byte::class.javaPrimitiveType!!, asm)
-        findByClass(Short::class.javaPrimitiveType!!, asm)
-        findByClass(Int::class.javaPrimitiveType!!, asm)
-        findByClass(Float::class.javaPrimitiveType!!, asm)
-        findByClass(Long::class.javaPrimitiveType!!, asm)
-        if (LibrarianLib.DEV_ENVIRONMENT) {
-            fieldMapStr.keys.forEach { println("Found string config property field ${it.declaringClass.name}.${it.name}") }
-            if (fieldMapStr.keys.size == 0) println("No string config property fields found!")
+        if (!generated) {
+            findByClass(Any::class.java, asm)
+            findByClass(Boolean::class.javaPrimitiveType!!, asm)
+            findByClass(Char::class.javaPrimitiveType!!, asm)
+            findByClass(Byte::class.javaPrimitiveType!!, asm)
+            findByClass(Short::class.javaPrimitiveType!!, asm)
+            findByClass(Int::class.javaPrimitiveType!!, asm)
+            findByClass(Float::class.javaPrimitiveType!!, asm)
+            findByClass(Long::class.javaPrimitiveType!!, asm)
+            if (LibrarianLib.DEV_ENVIRONMENT) {
+                fieldMapStr.keys.forEach { println("Found string config property field ${it.declaringClass.name}.${it.name}") }
+                if (fieldMapStr.keys.size == 0) println("No string config property fields found!")
+            }
+            generated = true
         }
 
         config.load()

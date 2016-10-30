@@ -18,9 +18,7 @@ object BitwiseStorageManager {
     val allocators = mutableMapOf<ResourceLocation, Allocator>()
 
     fun createStorage(container: IBitStorageContainer,loc: ResourceLocation): BitStorage {
-        var value = allocators[loc]
-        if (value == null)
-            throw IllegalArgumentException("Allocator for location `$loc` doesn't exist")
+        val value: Allocator = allocators[loc] ?: throw IllegalArgumentException("Allocator for location `$loc` doesn't exist")
         return BitStorage(value, container)
     }
 
@@ -156,14 +154,13 @@ class Allocator internal constructor(val loc: ResourceLocation) {
     }
 }
 
-class BitStorage(val allocator: Allocator, val container: IBitStorageContainer) {
+open class BitStorage(val allocator: Allocator, val container: IBitStorageContainer) {
     var bitset = BitSet()
         private set
 
+    @Suppress("UNCHECKED_CAST")
     fun <T> getProp(name: String): BitStorageValueDelegate<T> {
-        val prop = allocator.props[name]
-        if(prop == null)
-            throw IllegalArgumentException("Prop `$name` doesn't exist in allocator `${allocator.loc}`")
+        val prop = allocator.props[name] ?: throw IllegalArgumentException("Prop `$name` doesn't exist in allocator `${allocator.loc}`")
         return prop.delegate(this) as BitStorageValueDelegate<T>
     }
 
@@ -176,7 +173,7 @@ class BitStorage(val allocator: Allocator, val container: IBitStorageContainer) 
         readByteArray(tag.getByteArray(name))
     }
 
-    fun toByteArray() = bitset.toByteArray()
+    fun toByteArray(): ByteArray = bitset.toByteArray()
 
     fun readByteArray(array: ByteArray) {
         bitset = BitSet.valueOf(array)
