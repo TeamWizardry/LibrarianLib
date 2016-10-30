@@ -17,6 +17,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
 /**
  * The default implementation for an IModBlock wrapper Item that gets registered as an IVariantHolder.
  */
+@Suppress("LeakingThis")
 open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlockColorProvider {
 
     private val modBlock: IModBlock

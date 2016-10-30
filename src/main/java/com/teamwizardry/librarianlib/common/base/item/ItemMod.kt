@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.Loader
 /**
  * The default implementation for an IVariantHolder item.
  */
+@Suppress("LeakingThis")
 open class ItemMod(name: String, vararg variants: String) : Item(), IModItemProvider {
 
     override val providedItem: Item

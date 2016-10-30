@@ -10,6 +10,7 @@ import com.teamwizardry.librarianlib.client.sprite.Texture
 import com.teamwizardry.librarianlib.client.util.ScissorUtil
 import com.teamwizardry.librarianlib.common.core.ExampleBookCommand
 import com.teamwizardry.librarianlib.common.core.LibCommonProxy
+import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.I18n
 import net.minecraft.client.resources.IReloadableResourceManager
@@ -19,13 +20,15 @@ import net.minecraft.client.resources.data.MetadataSerializer
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
-import net.minecraftforge.fml.relauncher.ReflectionHelper
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import java.lang.ref.WeakReference
 import java.util.*
 
 /**
  * Prefixed with Lib so code suggestion in dependent projects doesn't suggest it
  */
+@SideOnly(Side.CLIENT)
 class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
     override var bookInstance: Book? = null
@@ -45,7 +48,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
         ModelHandler.preInit()
 
-        val s = ReflectionHelper.findField(Minecraft::class.java, "metadataSerializer_", "field_110452_an").get(Minecraft.getMinecraft()) as MetadataSerializer //todo methodhandle
+        val s = MethodHandleHelper.wrapperForGetter(Minecraft::class.java, "metadataSerializer_", "field_110452_an")(Minecraft.getMinecraft()) as MetadataSerializer
         s.registerMetadataSectionType(SpritesMetadataSectionSerializer(), SpritesMetadataSection::class.java)
         SpritesMetadataSection.registered = true
 

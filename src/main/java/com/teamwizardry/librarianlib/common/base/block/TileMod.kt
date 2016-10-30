@@ -130,18 +130,6 @@ abstract class TileMod : TileEntity() {
 
     fun writeAutoBytes(buf: ByteBuf) {
         SavingFieldCache.getClassFields(javaClass).forEach {
-            if (buf.hasNullSignature())
-                it.value.third(this, null)
-            else {
-                val handler = ByteBufSerializationHandlers.getReaderUnchecked(it.value.first)
-                if (handler != null)
-                    it.value.third(this, handler(buf))
-            }
-        }
-    }
-
-    fun readAutoBytes(buf: ByteBuf) {
-        SavingFieldCache.getClassFields(javaClass).forEach {
             val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.first)
             if (handler != null) {
                 val field = it.value.second(this)
@@ -153,6 +141,18 @@ abstract class TileMod : TileEntity() {
                 }
             } else
                 buf.writeNullSignature()
+        }
+    }
+
+    fun readAutoBytes(buf: ByteBuf) {
+        SavingFieldCache.getClassFields(javaClass).forEach {
+            if (buf.hasNullSignature())
+                it.value.third(this, null)
+            else {
+                val handler = ByteBufSerializationHandlers.getReaderUnchecked(it.value.first)
+                if (handler != null)
+                    it.value.third(this, handler(buf))
+            }
         }
     }
 

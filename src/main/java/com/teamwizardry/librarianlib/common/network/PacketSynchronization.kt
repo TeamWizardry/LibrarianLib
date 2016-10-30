@@ -35,7 +35,7 @@ class PacketSynchronization(var tile: TileMod? = null /* Tile is always null on 
 
     override fun readCustomBytes(buf: ByteBuf) {
         if (buf.readBoolean()) return
-        this.buf = buf
+        this.buf = buf.copy()
     }
 
     override fun writeCustomBytes(buf: ByteBuf) {
