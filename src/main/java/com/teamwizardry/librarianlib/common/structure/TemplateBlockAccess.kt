@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.common.structure
 
+import com.teamwizardry.librarianlib.common.structure.Structure.Companion.blocks
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Biomes
 import net.minecraft.init.Blocks
@@ -11,7 +12,6 @@ import net.minecraft.world.WorldType
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.gen.structure.template.Template
 import net.minecraft.world.gen.structure.template.Template.BlockInfo
-import com.teamwizardry.librarianlib.common.structure.Structure.Companion.blocks
 import java.util.*
 
 /**

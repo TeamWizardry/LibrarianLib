@@ -13,8 +13,8 @@ class ExpandedItemStackHandler : ItemStackHandler {
     var changedCallback: (ExpandedItemStackHandler.(Int) -> Unit)? = null
     var slotPredicate: (ExpandedItemStackHandler.(Int, ItemStack) -> Boolean)? = null
 
-    constructor(size: Int = 1): super(size)
-    constructor(stacks: Array<ItemStack>): super(stacks)
+    constructor(size: Int = 1) : super(size)
+    constructor(stacks: Array<ItemStack>) : super(stacks)
 
     override fun insertItem(slot: Int, stack: ItemStack?, simulate: Boolean): ItemStack? {
         if (stack == null || stack.stackSize == 0)
