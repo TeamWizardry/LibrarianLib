@@ -82,27 +82,27 @@ object EasyConfigHandler {
 
 /**
  * This annotation should be applied to non-final, static (if in Kotlin, [JvmStatic]) fields of type [String] (or in Kotlin String?]
- * that you wish to use as a config property. Use [category] to indicate the config category in the config file,
- * [id] will indicate the name of the property, [comment] will be the comment above the entry in the config file,
- * [defaultValue] is the defaultValue value, and if [devOnly] (optional) is set to true, this config property will only be set in a
- * development environment.
+ * that you wish to use as a config property. [modid] is the mod of the config that owns this annotation. Use [category] to
+ * indicate the config category in the config file, [id] will indicate the name of the property, [comment] will be the comment
+ * above the entry in the config file, [defaultValue] is the default value, and if [devOnly] (optional) is set to true,
+ * this config property will only be set in a development environment.
  */
 @Target(AnnotationTarget.FIELD) annotation class ConfigPropertyString(val modid: String, val category: String, val id: String, val comment: String, val defaultValue: String, val devOnly: Boolean = false)
 
 /**
  * This annotation should be applied to non-final, static (if in Kotlin, [JvmStatic]) fields of type [Int] (or in Kotlin Int?]
- * that you wish to use as a config property. Use [category] to indicate the config category in the config file,
- * [id] will indicate the name of the property, [comment] will be the comment above the entry in the config file,
- * [defaultValue] is the defaultValue value, and if [devOnly] (optional) is set to true, this config property will only be set in a
- * development environment.
+ * that you wish to use as a config property. [modid] is the mod of the config that owns this annotation. Use [category] to
+ * indicate the config category in the config file, [id] will indicate the name of the property, [comment] will be the comment
+ * above the entry in the config file, [defaultValue] is the default value, and if [devOnly] (optional) is set to true,
+ * this config property will only be set in a development environment.
  */
 @Target(AnnotationTarget.FIELD) annotation class ConfigPropertyInt(val modid: String, val category: String, val id: String, val comment: String, val defaultValue: Int, val devOnly: Boolean = false)
 
 /**
  * This annotation should be applied to non-final, static (if in Kotlin, [JvmStatic]) fields of type [Boolean] (or in Kotlin Boolean?]
- * that you wish to use as a config property. Use [category] to indicate the config category in the config file,
- * [id] will indicate the name of the property, [comment] will be the comment above the entry in the config file,
- * [defaultValue] is the defaultValue value, and if [devOnly] (optional) is set to true, this config property will only be set in a
- * development environment.
+ * that you wish to use as a config property. [modid] is the mod of the config that owns this annotation. Use [category] to
+ * indicate the config category in the config file, [id] will indicate the name of the property, [comment] will be the comment
+ * above the entry in the config file, [defaultValue] is the default value, and if [devOnly] (optional) is set to true,
+ * this config property will only be set in a development environment.
  */
 @Target(AnnotationTarget.FIELD) annotation class ConfigPropertyBoolean(val modid: String, val category: String, val id: String, val comment: String, val defaultValue: Boolean, val devOnly: Boolean = false)
