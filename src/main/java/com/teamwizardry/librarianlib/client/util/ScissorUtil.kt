@@ -17,6 +17,7 @@ object ScissorUtil {
     }
 
     @SubscribeEvent
+    @Suppress("UNUSED_PARAMETER")
     fun updateResolution(event: InitGuiEvent.Pre?) {
         screenScale = ScaledResolution(Minecraft.getMinecraft()).scaleFactor
     }

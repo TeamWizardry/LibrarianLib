@@ -25,7 +25,7 @@ object SliderTemplate {
     fun recipe(posY: Int, recipe: Array<Array<ItemStack>>): ComponentSliderTray {
         val slider = ComponentSliderTray(0, posY, -120, 0)
         slider.add(ComponentSprite(GuiBook.SLIDER_RECIPE, 0, 0))
-
+        //todo
         return slider
     }
 

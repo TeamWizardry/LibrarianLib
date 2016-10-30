@@ -158,13 +158,13 @@ object ParticleRenderManager {
     }
 
     @SubscribeEvent
+    @Suppress("UNUSED_PARAMETER")
     fun unloadWorld(event: WorldEvent.Unload) {
-        layers.forEach {
-            it.clear()
-        }
+        layers.forEach(ParticleRenderLayer::clear)
     }
 
     @SubscribeEvent
+    @Suppress("UNUSED_PARAMETER")
     fun render(event: RenderWorldLastEvent) {
         val profiler = Minecraft.getMinecraft().mcProfiler
 
@@ -277,10 +277,8 @@ abstract class ParticleRenderLayer(val name: String, val shouldSort: Boolean) {
         if (!shouldSort)
             return
         val partialTicks = ClientTickHandler.partialTicks
-        val entity = Minecraft.getMinecraft().renderViewEntity
-
-        if (entity == null) // render entity may be null because this method isn't called in the render function
-            return
+        // render entity may be null because this method isn't called in the render function
+        val entity = Minecraft.getMinecraft().renderViewEntity ?: return
 
         val d0 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks.toDouble()
         val d1 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks.toDouble()

@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.common.structure
 
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
+import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import net.minecraft.block.*
 import net.minecraft.block.properties.IProperty
 import net.minecraft.init.Blocks
@@ -13,7 +14,6 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraft.world.gen.structure.template.Template
 import net.minecraft.world.gen.structure.template.Template.BlockInfo
-import net.minecraftforge.fml.relauncher.ReflectionHelper
 import java.io.IOException
 import java.io.InputStream
 import java.util.*
@@ -143,13 +143,7 @@ open class Structure(loc: ResourceLocation) {
 
     protected fun parse(stream: InputStream) {
         template = Template()
-        try {
-            templateBlocks = ReflectionHelper.findField(Template::class.java, "blocks", "field_186270_a").get(template) as List<BlockInfo> //todo methodhandle
-        } catch (e1: IllegalArgumentException) {
-            e1.printStackTrace()
-        } catch (e1: IllegalAccessException) {
-            e1.printStackTrace()
-        }
+        templateBlocks = template.blocks
 
         blockAccess = TemplateBlockAccess(template)
         try {
@@ -227,6 +221,12 @@ open class Structure(loc: ResourceLocation) {
     }
 
     companion object {
+
+        val templateGetter = MethodHandleHelper.wrapperForGetter(Template::class.java, "blocks", "field_186270_a")
+
+        @Suppress("UNCHECKED_CAST")
+        val Template.blocks: List<BlockInfo>
+            get() = templateGetter(this) as List<BlockInfo>
 
         @JvmField
         val IGNORE: MutableList<IProperty<*>> = ArrayList(Arrays.asList(
