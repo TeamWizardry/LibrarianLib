@@ -136,6 +136,16 @@ uploadArchives {
 							name 'thecodewarrior'
 							roles { role 'developer' }
 						}
+						developer {
+							id 'wiresegal'
+							name 'wiresegal'
+							roles { role 'developer' }
+						}
+                        developer {
+                            id 'eladkay'
+                            name 'eladkay'
+                            roles { role 'developer' }
+                        }
 					}
 				}
 			}
