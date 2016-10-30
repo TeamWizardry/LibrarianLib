@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.common.util
 
 import com.teamwizardry.librarianlib.LibrarianLib
+import com.teamwizardry.librarianlib.common.util.EasyConfigHandler.init
 import net.minecraftforge.common.config.Configuration
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import java.io.File
@@ -11,14 +12,16 @@ import java.lang.reflect.Field
  * This object contains utilities for the automatic config system. Its [init] method should be invoked at
  * pre-initialization time.
  */
-class EasyConfigHandler {
+object EasyConfigHandler {
     val fieldMapStr: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
     val fieldMapInt: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
     val fieldMapBoolean: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
     private var generated = false
 
-    fun init(modid: String, configf: File, asm: ASMDataTable?) {
-        if (asm == null) return
+    @JvmStatic
+    @JvmOverloads
+    fun init(modid: String, configf: File, asm: ASMDataTable? = null) {
+        if (asm == null && !generated) return
         val config = Configuration(configf)
         if (!generated) {
             findByClass(Any::class.java, asm)
