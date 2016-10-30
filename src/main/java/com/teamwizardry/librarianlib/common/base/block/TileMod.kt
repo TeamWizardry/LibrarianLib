@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.common.base.block
 
-import com.teamwizardry.librarianlib.common.core.LibLibConfig
 import com.teamwizardry.librarianlib.common.network.PacketHandler
 import com.teamwizardry.librarianlib.common.network.PacketSynchronization
 import com.teamwizardry.librarianlib.common.util.hasNullSignature
@@ -102,28 +101,24 @@ abstract class TileMod : TileEntity() {
     }
 
     fun writeAutoNBT(cmp: NBTTagCompound) {
-        if (LibLibConfig.autoSaveTEs) {
-            SavingFieldCache.getClassFields(javaClass).forEach {
-                val handler = NBTSerializationHandlers.getWriterUnchecked(it.value.first)
-                if (handler != null) {
-                    val value = it.value.second(this)
-                    if (value != null)
-                        cmp.setTag(it.key, handler(value))
-                }
+        SavingFieldCache.getClassFields(javaClass).forEach {
+            val handler = NBTSerializationHandlers.getWriterUnchecked(it.value.first)
+            if (handler != null) {
+                val value = it.value.second(this)
+                if (value != null)
+                    cmp.setTag(it.key, handler(value))
             }
         }
     }
 
     fun readAutoNBT(cmp: NBTTagCompound) {
-        if (LibLibConfig.autoSaveTEs) {
-            SavingFieldCache.getClassFields(javaClass).forEach {
-                if (!cmp.hasKey(it.key))
-                    it.value.third(this, null)
-                else {
-                    val handler = NBTSerializationHandlers.getReaderUnchecked(it.value.first)
-                    if (handler != null)
-                        it.value.third(this, handler(cmp.getTag(it.key)))
-                }
+        SavingFieldCache.getClassFields(javaClass).forEach {
+            if (!cmp.hasKey(it.key))
+                it.value.third(this, null)
+            else {
+                val handler = NBTSerializationHandlers.getReaderUnchecked(it.value.first)
+                if (handler != null)
+                    it.value.third(this, handler(cmp.getTag(it.key)))
             }
         }
     }

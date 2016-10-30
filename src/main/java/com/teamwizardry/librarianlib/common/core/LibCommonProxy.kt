@@ -32,7 +32,7 @@ open class LibCommonProxy {
 
     open fun pre(e: FMLPreInitializationEvent) {
         EasyConfigHandler().init(LibrarianLib.MODID, e.suggestedConfigurationFile, e.asmData)
-//        if(LibrarianLib.DEV_ENVIRONMENT) initBlock()
+        if(LibrarianLib.DEV_ENVIRONMENT && LibLibConfig.generateTestBlock) initBlock()
     }
 
     private fun initBlock() {

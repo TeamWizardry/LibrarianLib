@@ -14,7 +14,7 @@ object LibLibConfig {
     var generateJson = true
 
     @JvmStatic
-    @ConfigPropertyBoolean(LibrarianLib.MODID, Configuration.CATEGORY_CLIENT, "autoSaveTEs", "Controls whether LibLib autosaves compatible TEs.", true, true)
-    var autoSaveTEs = true
+    @ConfigPropertyBoolean(LibrarianLib.MODID, Configuration.CATEGORY_GENERAL, "generateTestBlock", "Controls whether LibLib creates a test block.", false, true)
+    var generateTestBlock = false
 
 }
