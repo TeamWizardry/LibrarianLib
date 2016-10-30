@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib
 
 import com.teamwizardry.librarianlib.common.core.LibCommonProxy
 import com.teamwizardry.librarianlib.common.core.LoggerBase
+import com.teamwizardry.librarianlib.common.util.bitsaving.BitwiseStorageManager
 import net.minecraft.launchwrapper.Launch
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.SidedProxy
@@ -20,6 +21,7 @@ class LibrarianLib {
     @Mod.EventHandler
     fun preInit(e: FMLPreInitializationEvent) {
         PROXY.pre(e)
+        BitwiseStorageManager
     }
 
     @Mod.EventHandler

@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.common.structure
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
+import com.teamwizardry.librarianlib.common.util.NBTTypes
 import net.minecraft.block.*
 import net.minecraft.block.properties.IProperty
 import net.minecraft.init.Blocks
@@ -150,7 +151,7 @@ open class Structure(loc: ResourceLocation) {
             val tag = CompressedStreamTools.readCompressed(stream)
             template.read(tag)
 
-            var list = tag.getTagList("palette", 10)
+            var list = tag.getTagList("palette", NBTTypes.COMPOUND)
 
             var paletteID = -1
 
@@ -171,10 +172,10 @@ open class Structure(loc: ResourceLocation) {
             var maxZ = Integer.MIN_VALUE
 
             if (paletteID >= 0) {
-                list = tag.getTagList("blocks", 10)
+                list = tag.getTagList("blocks", NBTTypes.COMPOUND)
                 for (i in 0..list.tagCount() - 1) {
                     val compound = list.getCompoundTagAt(i)
-                    val posList = compound.getTagList("pos", 3)
+                    val posList = compound.getTagList("pos", NBTTypes.INT)
                     val pos = BlockPos(posList.getIntAt(0), posList.getIntAt(1), posList.getIntAt(2))
 
                     if (compound.getInteger("state") == paletteID) {

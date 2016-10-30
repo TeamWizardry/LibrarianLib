@@ -5,7 +5,9 @@ package com.teamwizardry.librarianlib.common.util
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import io.netty.buffer.ByteBuf
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.nbt.NBTTagList
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.text.TextFormatting
@@ -119,3 +121,7 @@ fun ByteBuf.writeNonnullSignature() {
 
 fun ByteBuf.hasNullSignature(): Boolean = readBoolean()
 
+// NBTTagList ==========================================================================================================
+
+val NBTTagList.indices: IntRange
+    get() = 0..this.tagCount()-1
