@@ -36,6 +36,7 @@ open class LibCommonProxy {
     }
 
     private fun initBlock() {
+        TileMod.registerTile(BlockTest.TETest::class.java, "tetest")
         BlockTest()
     }
 
@@ -70,24 +71,12 @@ open class LibCommonProxy {
         }
 
         override fun createNewTileEntity(worldIn: World?, meta: Int): TileEntity? {
-            return TETest().init()
+            return TETest()
         }
 
         class TETest : TileMod() {
             @Save var coolString: String = ""
             @Save var coolNum: Int = 0
-
-            fun init(): TETest {
-                if (!registeredTE) {
-                    TileMod.registerTile(javaClass, "test")
-                    registeredTE = true
-                }
-                return this
-            }
-
-            companion object {
-                var registeredTE = false
-            }
         }
     }
 }
