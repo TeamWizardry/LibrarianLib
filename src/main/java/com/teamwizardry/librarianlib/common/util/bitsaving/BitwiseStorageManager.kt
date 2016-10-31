@@ -7,8 +7,6 @@ import net.minecraft.world.WorldSavedData
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.*
-import kotlin.reflect.KProperty
 
 /**
  * Created by TheCodeWarrior
@@ -56,53 +54,65 @@ object BitwiseStorageManager {
         formatData?.let { data ->
             allocators.forEach {
                 val (loc, allocator) = it
-                var propData = data.formats[loc]
-                if (propData == null) {
-                    propData = mutableMapOf()
-                    data.formats[loc] = propData
-                }
+                val propData = data.formats[loc] ?: mutableMapOf()
+                data.formats[loc] = propData
 
-                nextIndex = (propData.values.map { it.max() }.maxBy { it ?: 0 } ?: -1) + 1
+                nextIndex = (propData.values.flatMap { it.values }.map { it.max() }.maxBy { it ?: 0 } ?: -1) + 1
                 loadAllocator(propData, allocator)
-
             }
         }
     }
 
-    fun loadAllocator(propData: MutableMap<String, MutableList<Int>>, allocator: Allocator) {
-        val deadList = propData.getOrPut("~~dead~~") {mutableListOf<Int>()}
-        val toRemove = mutableListOf<String>()
+    fun loadAllocator(propData: MutableMap<String, MutableMap<String, MutableList<Int>>>, allocator: Allocator) {
+        val deadList = propData.getOrPut("~~dead~~", { mutableMapOf()}).getOrPut("", {mutableListOf<Int>()})
 
-        (propData.keys union allocator.props.keys).forEach { name ->
+        val propertiesToRemove = mutableSetOf<String>()
+        val regionsToRemove = mutableSetOf<String>()
 
-            val prop = allocator.props[name]
-            var bits = propData[name]
+        (propData.keys union allocator.props.keys).forEach properties@{ propertyName ->
 
-            if (prop != null && bits != null) {
-                val required = prop.getRequiredBits()
+            val property = allocator.props[propertyName]
+            val propertyAllocations = propData[propertyName] ?: mutableMapOf()
+            propData[propertyName] = propertyAllocations
 
-                if (required < bits.size) {
-                    dirty = true
-                    deadList.addAll(bits.subList(required, bits.size))
-                    bits = mutableListOf(*bits.subList(0, required).toTypedArray())
-                    propData[name] = bits
-                } else if (required > bits.size) {
-                    bits.addAll(allocateBits(required - bits.size))
-
-                }
-                prop.bits = bits.toIntArray()
-
-            } else if (prop == null && bits != null) {
-                dirty = true
-                deadList.addAll(bits)
-                toRemove.add(name)
-            } else if (prop != null && bits == null) {
-                val newList = mutableListOf<Int>()
-                newList.addAll(allocateBits(prop.getRequiredBits()))
-                propData[name] = newList
-                prop.bits = newList.toIntArray()
+            if(property == null) {
+                propertiesToRemove.add(propertyName)
+                return@properties
             }
+
+            (property.dataRegions.keys union propertyAllocations.keys).forEach { regionName ->
+
+                val region = property.dataRegions[regionName]
+                var regionData = propertyAllocations[regionName]
+
+                if (region != null && regionData != null) {
+                    val required = region.requiredBits
+
+                    if (required < regionData.size) {
+                        dirty = true
+                        deadList.addAll(regionData.subList(required, regionData.size))
+                        regionData = mutableListOf(*regionData.subList(0, required).toTypedArray())
+                        propertyAllocations[regionName] = regionData
+                    } else if (required > regionData.size) {
+                        regionData.addAll(allocateBits(required - regionData.size))
+                    }
+                    region.bits = regionData.toIntArray()
+
+                } else if (region == null && regionData != null) {
+                    dirty = true
+                    deadList.addAll(regionData)
+                    regionsToRemove.add(regionName)
+                } else if (region != null && regionData == null) {
+                    val newList = mutableListOf<Int>()
+                    newList.addAll(allocateBits(region.requiredBits))
+                    propertyAllocations[regionName] = newList
+                    region.bits = newList.toIntArray()
+                }
+            }
+
+            regionsToRemove.forEach { propertyAllocations.remove(it) }
         }
+        propertiesToRemove.forEach { propData.remove(it) }
     }
 
     fun allocateBits(amount: Int): Sequence<Int> {
@@ -116,119 +126,42 @@ object BitwiseStorageManager {
 
 class BitwiseStorageWorldSavedData(name: String) : WorldSavedData(name) {
     companion object { val name = "LibLib_BitwiseStorageFormats" }
-    val formats = mutableMapOf<ResourceLocation, MutableMap<String, MutableList<Int>>>()
+    val formats = mutableMapOf<ResourceLocation, MutableMap<String, MutableMap<String, MutableList<Int>>>>()
 
     override fun readFromNBT(nbt: NBTTagCompound) {
         nbt.keySet.forEach { formatName ->
             val format = ResourceLocation(formatName)
 
-            val props = mutableMapOf<String, MutableList<Int>>()
+            val props = mutableMapOf<String, MutableMap<String, MutableList<Int>>>()
             formats[format] = props
 
             val formatTag = nbt.getCompoundTag(formatName)
             formatTag.keySet.forEach { propName ->
-                props[propName] = mutableListOf(*formatTag.getIntArray(propName).toTypedArray())
+                val propertyTag = formatTag.getCompoundTag(propName)
+                val regions = mutableMapOf<String, MutableList<Int>>()
+                props[propName] = regions
+
+                propertyTag.keySet.forEach { regionName ->
+                    regions[regionName] = mutableListOf(*propertyTag.getIntArray(regionName).toTypedArray())
+                }
             }
         }
     }
 
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
-        formats.forEach { entry ->
+        formats.forEach { format ->
             val formatTag = NBTTagCompound()
-            compound.setTag(entry.key.toString(), formatTag)
+            compound.setTag(format.key.toString(), formatTag)
 
-            entry.value.forEach { formatTag.setIntArray(it.key, it.value.toIntArray()) }
+            format.value.forEach { property ->
+                val propertyTag = NBTTagCompound()
+                formatTag.setTag(property.key, propertyTag)
+
+                property.value.forEach { region ->
+                    propertyTag.setIntArray(region.key, region.value.toIntArray())
+                }
+            }
         }
         return compound
     }
-}
-
-class Allocator internal constructor(val loc: ResourceLocation) {
-    val props = mutableMapOf<String, BitProp>()
-
-    fun createProp(name: String, prop: BitProp): Allocator {
-        if (name in props.keys)
-            throw IllegalStateException("Prop `$name` in allocator `$loc` already exists")
-        props[name] = prop
-        return this
-    }
-}
-
-open class BitStorage(val allocator: Allocator, val container: IBitStorageContainer) {
-    var bitset = BitSet()
-        private set
-
-    @Suppress("UNCHECKED_CAST")
-    fun <T> getProp(name: String): BitStorageValueDelegate<T> {
-        val prop = allocator.props[name] ?: throw IllegalArgumentException("Prop `$name` doesn't exist in allocator `${allocator.loc}`")
-        return prop.delegate(this) as BitStorageValueDelegate<T>
-    }
-
-    fun writeToNBT(tag: NBTTagCompound, name: String = "m"): NBTTagCompound {
-        tag.setByteArray(name, toByteArray())
-        return tag
-    }
-
-    fun readFromNBT(tag: NBTTagCompound, name: String = "m") {
-        readByteArray(tag.getByteArray(name))
-    }
-
-    fun toByteArray(): ByteArray = bitset.toByteArray()
-
-    fun readByteArray(array: ByteArray) {
-        bitset = BitSet.valueOf(array)
-    }
-
-    protected var dirty = false
-    protected fun markDirty() {
-        dirty = true
-    }
-
-    fun notifyIfDirty() {
-        if(dirty)
-            container.markDirty()
-        dirty = false
-    }
-
-    operator fun get(bit: Int): Boolean {
-        return bitset.get(bit)
-    }
-
-    operator fun set(bit: Int, value: Boolean) {
-        if (bitset.get(bit) != value)
-            markDirty()
-        bitset.set(bit, value)
-    }
-}
-
-abstract class BitStorageValueDelegate<T> {
-    abstract fun get(storage: BitStorage): T
-    abstract fun set(storage: BitStorage, value: T)
-
-    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-        if(thisRef !is IBitStorageContainer)
-            throw IllegalStateException("Bit storage properties can only be delegated in instances of IBitStorageContainer")
-        set(thisRef.S, value)
-    }
-
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        if(thisRef !is IBitStorageContainer)
-            throw IllegalStateException("Bit storage properties can only be delegated in instances of IBitStorageContainer")
-        return get(thisRef.S)
-    }
-}
-
-class BasicBitStorageValueDelegate<T>(val property: BasicBitProp<T>) : BitStorageValueDelegate<T>() {
-    override fun get(storage: BitStorage) = property.get(storage)
-
-    override fun set(storage: BitStorage, value: T) {
-        property.set(storage, value)
-    }
-
-}
-
-
-interface IBitStorageContainer {
-    val S: BitStorage
-    fun markDirty()
 }

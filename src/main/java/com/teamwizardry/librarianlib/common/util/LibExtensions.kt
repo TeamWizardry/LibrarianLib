@@ -19,6 +19,8 @@ import java.lang.reflect.Type
  * Created by TheCodeWarrior
  */
 
+fun Int.abs() = if(this < 0) -this else this
+
 operator fun TextFormatting.plus(str: String) = "$this$str"
 
 operator fun String.plus(form: TextFormatting) = "$this$form"
