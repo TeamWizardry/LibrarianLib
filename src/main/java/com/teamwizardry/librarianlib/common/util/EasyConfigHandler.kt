@@ -45,7 +45,7 @@ object EasyConfigHandler {
         }.forEach {
             it.key.isAccessible = true
             if (!it.value.getBoolean("devOnly", false) || LibrarianLib.DEV_ENVIRONMENT)
-                it.key.set(null, config.get(it.value.getString("category", ""), it.value.getString("id", ""), it.value.getString("default", ""), it.value.getString("comment", "")).string)
+                it.key.set(null, config.get(it.value.getString("category", ""), it.value.getString("id", ""), it.value.getString("defaultValue", ""), it.value.getString("comment", "")).string)
         }
 
         fieldMapInt.filter {
@@ -53,7 +53,7 @@ object EasyConfigHandler {
         }.forEach {
             it.key.isAccessible = true
             if (!it.value.getBoolean("devOnly", false) || LibrarianLib.DEV_ENVIRONMENT)
-                it.key.set(null, config.get(it.value.getString("category", ""), it.value.getString("id", ""), it.value.getInt("default", 0), it.value.getString("comment", "")).int)
+                it.key.set(null, config.get(it.value.getString("category", ""), it.value.getString("id", ""), it.value.getInt("defaultValue", 0), it.value.getString("comment", "")).int)
         }
 
         fieldMapBoolean.filter {
@@ -61,7 +61,7 @@ object EasyConfigHandler {
         }.forEach {
             it.key.isAccessible = true
             if (!it.value.getBoolean("devOnly", false) || LibrarianLib.DEV_ENVIRONMENT)
-                it.key.set(null, config.get(it.value.getString("category", ""), it.value.getString("id", ""), it.value.getBoolean("default", false), it.value.getString("comment", "")).boolean)
+                it.key.set(null, config.get(it.value.getString("category", ""), it.value.getString("id", ""), it.value.getBoolean("defaultValue", false), it.value.getString("comment", "")).boolean)
         }
         config.save()
     }
@@ -82,27 +82,27 @@ object EasyConfigHandler {
 
 /**
  * This annotation should be applied to non-final, static (if in Kotlin, [JvmStatic]) fields of type [String] (or in Kotlin String?]
- * that you wish to use as a config property. Use [category] to indicate the config category in the config file,
- * [id] will indicate the name of the property, [comment] will be the comment above the entry in the config file,
- * [default] is the default value, and if [devOnly] (optional) is set to true, this config property will only be set in a
- * development environment.
+ * that you wish to use as a config property. [modid] is the mod of the config that owns this annotation. Use [category] to
+ * indicate the config category in the config file, [id] will indicate the name of the property, [comment] will be the comment
+ * above the entry in the config file, [defaultValue] is the default value, and if [devOnly] (optional) is set to true,
+ * this config property will only be set in a development environment.
  */
-@Target(AnnotationTarget.FIELD) annotation class ConfigPropertyString(val modid: String, val category: String, val id: String, val comment: String, val default: String, val devOnly: Boolean = false)
+@Target(AnnotationTarget.FIELD) annotation class ConfigPropertyString(val modid: String, val category: String, val id: String, val comment: String, val defaultValue: String, val devOnly: Boolean = false)
 
 /**
  * This annotation should be applied to non-final, static (if in Kotlin, [JvmStatic]) fields of type [Int] (or in Kotlin Int?]
- * that you wish to use as a config property. Use [category] to indicate the config category in the config file,
- * [id] will indicate the name of the property, [comment] will be the comment above the entry in the config file,
- * [default] is the default value, and if [devOnly] (optional) is set to true, this config property will only be set in a
- * development environment.
+ * that you wish to use as a config property. [modid] is the mod of the config that owns this annotation. Use [category] to
+ * indicate the config category in the config file, [id] will indicate the name of the property, [comment] will be the comment
+ * above the entry in the config file, [defaultValue] is the default value, and if [devOnly] (optional) is set to true,
+ * this config property will only be set in a development environment.
  */
-@Target(AnnotationTarget.FIELD) annotation class ConfigPropertyInt(val modid: String, val category: String, val id: String, val comment: String, val default: Int, val devOnly: Boolean = false)
+@Target(AnnotationTarget.FIELD) annotation class ConfigPropertyInt(val modid: String, val category: String, val id: String, val comment: String, val defaultValue: Int, val devOnly: Boolean = false)
 
 /**
  * This annotation should be applied to non-final, static (if in Kotlin, [JvmStatic]) fields of type [Boolean] (or in Kotlin Boolean?]
- * that you wish to use as a config property. Use [category] to indicate the config category in the config file,
- * [id] will indicate the name of the property, [comment] will be the comment above the entry in the config file,
- * [default] is the default value, and if [devOnly] (optional) is set to true, this config property will only be set in a
- * development environment.
+ * that you wish to use as a config property. [modid] is the mod of the config that owns this annotation. Use [category] to
+ * indicate the config category in the config file, [id] will indicate the name of the property, [comment] will be the comment
+ * above the entry in the config file, [defaultValue] is the default value, and if [devOnly] (optional) is set to true,
+ * this config property will only be set in a development environment.
  */
-@Target(AnnotationTarget.FIELD) annotation class ConfigPropertyBoolean(val modid: String, val category: String, val id: String, val comment: String, val default: Boolean, val devOnly: Boolean = false)
+@Target(AnnotationTarget.FIELD) annotation class ConfigPropertyBoolean(val modid: String, val category: String, val id: String, val comment: String, val defaultValue: Boolean, val devOnly: Boolean = false)
