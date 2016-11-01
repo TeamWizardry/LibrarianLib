@@ -2,8 +2,8 @@ package com.teamwizardry.librarianlib.common.util.saving
 
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
-import java.lang.invoke.MethodHandles.publicLookup
 import java.lang.reflect.Field
+import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.*
 
@@ -17,31 +17,91 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, Triple<Class<*>, (
         val existing = this[clazz]
         if (existing != null) return existing
 
-        val fields = clazz.declaredFields.filter {
-            it.declaredAnnotations
-            val mods = it.modifiers
-            !Modifier.isStatic(mods) && !Modifier.isFinal(mods) && !Modifier.isTransient(mods) && it.isAnnotationPresent(Save::class.java)
-        }
-
-        val alreadyDone = mutableListOf<String>()
-        val map = linkedMapOf(*(fields.sortedBy {
-            getNameFromField(clazz, it, alreadyDone)
-        }.map {
-            it.isAccessible = true
-            getNameFromField(clazz, it, alreadyDone) to Triple(it.type,
-                    MethodHandleHelper.wrapperForGetter<Any>(publicLookup().unreflectGetter(it)),
-                    MethodHandleHelper.wrapperForSetter<Any>(publicLookup().unreflectSetter(it)))
-        }).toTypedArray())
+        val map = linkedMapOf<String, Triple<Class<*>, (Any) -> Any?, (Any, Any?) -> Unit>>()
+        buildClassFields(clazz, map)
+        buildClassGetSetters(clazz, map)
+        alreadyDone.clear()
 
         put(clazz, map)
 
         return map
     }
 
+    fun buildClassFields(clazz: Class<*>, map: MutableMap<String, Triple<Class<*>, (Any) -> Any?, (Any, Any?) -> Unit>>) {
+        val fields = clazz.declaredFields.filter {
+            it.declaredAnnotations
+            val mods = it.modifiers
+            !Modifier.isStatic(mods) && !Modifier.isFinal(mods) && !Modifier.isTransient(mods) && it.isAnnotationPresent(Save::class.java)
+        }
+
+        fields.map {
+            getNameFromField(clazz, it) to it
+        }.forEach {
+            val (name, field) = it
+            field.isAccessible = true
+            map.put(name, Triple(field.type,
+                    MethodHandleHelper.wrapperForGetter<Any>(field),
+                    MethodHandleHelper.wrapperForSetter<Any>(field)))
+        }
+    }
+
+    fun buildClassGetSetters(clazz: Class<*>, map: MutableMap<String, Triple<Class<*>, (Any) -> Any?, (Any, Any?) -> Unit>>) {
+        val getters = mutableMapOf<String, Method>()
+        val setters = mutableMapOf<String, Method>()
+
+        clazz.declaredMethods.forEach {
+            it.declaredAnnotations
+            val mods = it.modifiers
+            if (!Modifier.isStatic(mods)) {
+                if (it.isAnnotationPresent(SaveMethodGetter::class.java)) {
+                    val types = it.parameterTypes
+                    if (types.isEmpty())
+                        getters.put(getNameFromMethod(clazz, it, true), it)
+                }
+                if (it.isAnnotationPresent(SaveMethodSetter::class.java)) {
+                    val types = it.parameterTypes
+                    if (types.size == 1)
+                        setters.put(getNameFromMethod(clazz, it, false), it)
+                }
+            }
+        }
+
+        val pairs = mutableMapOf<String, Triple<Method, Method, Class<*>>>()
+        getters.forEach {
+            val (name, getter) = it
+            if (name in setters) {
+                val setter = setters[name]!!
+                val getReturnType = getter.returnType
+                val setReturnType = setter.parameterTypes[0]
+                if (getReturnType == setReturnType) {
+                    pairs.put(name, Triple(getter, setter, getReturnType))
+                }
+            }
+        }
+
+
+        pairs.toList().sortedBy {
+            it.first
+        }.forEach {
+            val (name, triple) = it
+            val (getter, setter, type) = triple
+            getter.isAccessible = true
+            setter.isAccessible = true
+
+            val wrapperForGetter = MethodHandleHelper.wrapperForMethod<Any>(getter)
+            val wrapperForSetter = MethodHandleHelper.wrapperForMethod<Any>(setter)
+
+            map.put(name, Triple(type,
+                    { obj -> wrapperForGetter(obj, arrayOf()) },
+                    { obj, inp -> wrapperForSetter(obj, arrayOf(inp))}))
+        }
+    }
+
+    private val alreadyDone = mutableListOf<String>()
     private val ILLEGAL_NAMES = listOf("id", "x", "y", "z", "ForgeData", "ForgeCaps")
 
     private val nameMap = mutableMapOf<Field, String>()
-    private fun getNameFromField(clazz: Class<*>, f: Field, alreadyDone: MutableList<String>): String {
+    private fun getNameFromField(clazz: Class<*>, f: Field): String {
         val got = nameMap[f]
         if (got != null) return got
 
@@ -60,6 +120,25 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, Triple<Class<*>, (
         }
         alreadyDone.add(name)
         nameMap[f] = name
+        return name
+    }
+
+    private fun getNameFromMethod(clazz: Class<*>, m: Method, getter: Boolean): String {
+        var name = if (getter)
+            m.getAnnotation(SaveMethodGetter::class.java).saveName
+        else
+            m.getAnnotation(SaveMethodSetter::class.java).saveName
+
+        if (name in ILLEGAL_NAMES)
+            name += "X"
+
+        var uses = 0
+        for (i in alreadyDone)
+            if (i == name) uses++
+
+        if (uses > 1)
+            throw IllegalArgumentException("Method savename $name already in use for class ${clazz.name}, this is illegal for methods.")
+        alreadyDone.add(name)
         return name
     }
 }

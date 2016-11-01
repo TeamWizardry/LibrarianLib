@@ -40,11 +40,13 @@ abstract class PacketBase : IMessage {
         // NO-OP
     }
 
+    @Suppress("UNUSED_VARIABLE")
     fun writeAutoBytes(buf: ByteBuf) {
         SavingFieldCache.getClassFields(javaClass).forEach {
-            val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.first)
+            val (clazz, getter, setter) = it.value
+            val handler = ByteBufSerializationHandlers.getWriterUnchecked(clazz)
             if (handler != null) {
-                val field = it.value.second(this)
+                val field = getter(this)
                 if (field == null)
                     buf.writeNullSignature()
                 else {
@@ -56,13 +58,15 @@ abstract class PacketBase : IMessage {
         }
     }
 
+    @Suppress("UNUSED_VARIABLE")
     fun readAutoBytes(buf: ByteBuf) {
         SavingFieldCache.getClassFields(javaClass).forEach {
+            val (clazz, getter, setter) = it.value
             if (buf.hasNullSignature())
-                it.value.third(this, null)
+                setter(this, null)
             else {
-                val handler = ByteBufSerializationHandlers.getReaderUnchecked(it.value.first)
-                if (handler != null) it.value.third(this, handler(buf))
+                val handler = ByteBufSerializationHandlers.getReaderUnchecked(clazz)
+                if (handler != null) setter(this, handler(buf))
             }
         }
     }
