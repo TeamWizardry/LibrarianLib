@@ -4,6 +4,8 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles.publicLookup
 import java.lang.invoke.MethodType
+import java.lang.reflect.Field
+import java.lang.reflect.Method
 
 /**
  * @author WireSegal
@@ -50,6 +52,7 @@ object MethodHandleHelper {
         val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(1)))
         return { wrapper(it) }
     }
+    @JvmStatic fun <T> wrapperForGetter(field: Field): (T) -> Any? = wrapperForGetter(publicLookup().unreflectGetter(field))
 
     /**
      * Reflects a static getter from a class, and provides a wrapper for it.
@@ -70,6 +73,7 @@ object MethodHandleHelper {
         val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(0)))
         return { wrapper() }
     }
+    @JvmStatic fun wrapperForStaticGetter(field: Field): () -> Any? = wrapperForStaticGetter(publicLookup().unreflectGetter(field))
 
     /**
      * Reflects a setter from a class, and provides a wrapper for it.
@@ -88,6 +92,7 @@ object MethodHandleHelper {
         val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(2)))
         return { obj, value -> wrapper(obj, value) }
     }
+    @JvmStatic fun <T> wrapperForSetter(field: Field): (T, Any?) -> Unit = wrapperForSetter(publicLookup().unreflectSetter(field))
 
     /**
      * Reflects a static setter from a class, and provides a wrapper for it.
@@ -106,6 +111,8 @@ object MethodHandleHelper {
         val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(1)))
         return { wrapper(it) }
     }
+    @JvmStatic fun wrapperForStaticSetter(field: Field): (Any?) -> Unit = wrapperForStaticSetter(publicLookup().unreflectSetter(field))
+
 
     /**
      * Reflects a method from a class, and provides a wrapper for it.
@@ -123,9 +130,18 @@ object MethodHandleHelper {
     fun <T> wrapperForMethod(handle: MethodHandle): (T, Array<Any?>) -> Any? {
         val type = handle.type()
         val count = type.parameterCount()
-        val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(count)).asSpreader(Any::class.java, count))
+        var remapped = handle.asType(MethodType.genericMethodType(count))
+
+        if (count > 1)
+            remapped = remapped.asSpreader(Array<Any>::class.java, count)
+
+        val wrapper = InvocationWrapper(remapped)
+        if (count == 1)
+            return { obj, args -> wrapper(obj) }
+
         return { obj, args -> wrapper.invokeArity(arrayOf(obj, *args)) }
     }
+    @JvmStatic fun <T> wrapperForMethod(method: Method): (T, Array<Any?>) -> Any? = wrapperForMethod(publicLookup().unreflect(method))
 
     /**
      * Reflects a static method from a class, and provides a wrapper for it.
@@ -143,7 +159,8 @@ object MethodHandleHelper {
     fun wrapperForStaticMethod(handle: MethodHandle): (Array<Any?>) -> Any? {
         val type = handle.type()
         val count = type.parameterCount()
-        val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(count)).asSpreader(Any::class.java, count))
+        val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(count)).asSpreader(Array<Any>::class.java, count))
         return { wrapper.invokeArity(it) }
     }
+    @JvmStatic fun <T> wrapperForStaticMethod(method: Method): (Array<Any?>) -> Any? = wrapperForStaticMethod(publicLookup().unreflect(method))
 }
