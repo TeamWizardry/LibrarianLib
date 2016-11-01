@@ -74,7 +74,7 @@ class SelectionProp<T>(val list: Array<T>) : BasicBitProp<T>() {
     val backwardMap = mutableMapOf<T, Int>().withDefault { 0 }
     val mainRegion = PropDataRegion(bitsNeededToStoreNValues(list.size))
     init {
-        dataRegions.put("", mainRegion)
+        dataRegions.put("value", mainRegion)
 
         list.forEachIndexed { i, value -> backwardMap.put(value, i) }
     }
@@ -97,7 +97,7 @@ class SelectionProp<T>(val list: Array<T>) : BasicBitProp<T>() {
 class BoolProp() : BasicBitProp<Boolean>() {
     val mainRegion = PropDataRegion(1)
     init {
-        dataRegions.put("", mainRegion)
+        dataRegions.put("value", mainRegion)
     }
 
     override fun get(storage: BitStorage): Boolean {
@@ -116,7 +116,7 @@ class BoolProp() : BasicBitProp<Boolean>() {
 class BoolArrayProp(val size: Int) : BasicArrayBitProp<Boolean>() {
     val mainRegion = PropDataRegion(size)
     init {
-        dataRegions.put("", mainRegion)
+        dataRegions.put("value", mainRegion)
     }
 
     override fun get(storage: BitStorage, index: Int): Boolean {
@@ -144,7 +144,7 @@ class BoolMapProp<T>(keys: Array<T>) : BasicMapBitProp<T, Boolean>() {
 
     val mainRegion = PropDataRegion(size)
     init {
-        dataRegions.put("", mainRegion)
+        dataRegions.put("value", mainRegion)
         keys.forEachIndexed { index, value ->
             map.put(value, index)
         }

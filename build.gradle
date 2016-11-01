@@ -82,6 +82,8 @@ sourceSets { main.java.srcDirs += 'src/main/kotlin' }
 idea {
     module {
         inheritOutputDirs = true
+        sourceDirs += file('src/test/java')
+        sourceDirs += file('src/test/resources')
     }
     project {
         languageLevel = '1.8'

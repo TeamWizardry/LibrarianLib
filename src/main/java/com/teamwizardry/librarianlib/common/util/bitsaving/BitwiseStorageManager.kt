@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  */
 object BitwiseStorageManager {
     init { MinecraftForge.EVENT_BUS.register(this) }
-    val allocators = mutableMapOf<ResourceLocation, Allocator>()
+    private val allocators = mutableMapOf<ResourceLocation, Allocator>()
 
     fun createStorage(container: IBitStorageContainer,loc: ResourceLocation): BitStorage {
         val value: Allocator = allocators[loc] ?: throw IllegalArgumentException("Allocator for location `$loc` doesn't exist")
@@ -29,11 +29,11 @@ object BitwiseStorageManager {
         return value
     }
 
-    var formatData: BitwiseStorageWorldSavedData? = null
-    var dirty = false
+    private var formatData: BitwiseStorageWorldSavedData? = null
+    private var dirty = false
 
     @SubscribeEvent
-    fun worldLoad(event: WorldEvent.Load) {
+    fun worldLoadEvent(event: WorldEvent.Load) {
         if (event.world is WorldClient)
             return
         if (event.world.provider.dimension == 0) {
@@ -48,9 +48,9 @@ object BitwiseStorageManager {
         }
     }
 
-    var nextIndex = 0
+    private var nextIndex = 0
 
-    fun reloadFormatData() {
+    private fun reloadFormatData() {
         formatData?.let { data ->
             allocators.forEach {
                 val (loc, allocator) = it
@@ -63,7 +63,7 @@ object BitwiseStorageManager {
         }
     }
 
-    fun loadAllocator(propData: MutableMap<String, MutableMap<String, MutableList<Int>>>, allocator: Allocator) {
+    private fun loadAllocator(propData: MutableMap<String, MutableMap<String, MutableList<Int>>>, allocator: Allocator) {
         val deadList = propData.getOrPut("~~dead~~", { mutableMapOf()}).getOrPut("", {mutableListOf<Int>()})
 
         val propertiesToRemove = mutableSetOf<String>()
@@ -115,7 +115,7 @@ object BitwiseStorageManager {
         propertiesToRemove.forEach { propData.remove(it) }
     }
 
-    fun allocateBits(amount: Int): Sequence<Int> {
+    private fun allocateBits(amount: Int): Sequence<Int> {
         dirty = true
         val seq = (nextIndex..(nextIndex + amount - 1)).asSequence()
         nextIndex += amount
