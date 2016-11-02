@@ -42,6 +42,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         if (LibrarianLib.DEV_ENVIRONMENT)
             ClientCommandHandler.instance.registerCommand(ExampleBookCommand())
 
+        UnlistedPropertyDebugViewer
         ScissorUtil
         LibShaders
         ShaderHelper.initShaders()

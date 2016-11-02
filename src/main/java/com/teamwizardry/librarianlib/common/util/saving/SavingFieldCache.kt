@@ -11,13 +11,13 @@ import java.util.*
  * @author WireSegal
  * Created at 1:43 PM on 10/14/2016.
  */
-object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, Triple<Class<*>, (Any) -> Any?, (Any, Any?) -> Unit>>>() {
+object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
     @JvmStatic
-    fun getClassFields(clazz: Class<*>): Map<String, Triple<Class<*>, (Any) -> Any?, (Any, Any?) -> Unit>> {
+    fun getClassFields(clazz: Class<*>): Map<String, FieldCache> {
         val existing = this[clazz]
         if (existing != null) return existing
 
-        val map = linkedMapOf<String, Triple<Class<*>, (Any) -> Any?, (Any, Any?) -> Unit>>()
+        val map = linkedMapOf<String, FieldCache>()
         buildClassFields(clazz, map)
         buildClassGetSetters(clazz, map)
         alreadyDone.clear()
@@ -27,7 +27,7 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, Triple<Class<*>, (
         return map
     }
 
-    fun buildClassFields(clazz: Class<*>, map: MutableMap<String, Triple<Class<*>, (Any) -> Any?, (Any, Any?) -> Unit>>) {
+    fun buildClassFields(clazz: Class<*>, map: MutableMap<String, FieldCache>) {
         val fields = clazz.declaredFields.filter {
             it.declaredAnnotations
             val mods = it.modifiers
@@ -39,13 +39,13 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, Triple<Class<*>, (
         }.forEach {
             val (name, field) = it
             field.isAccessible = true
-            map.put(name, Triple(field.type,
+            map.put(name, FieldCache(field.type,
                     MethodHandleHelper.wrapperForGetter<Any>(field),
                     MethodHandleHelper.wrapperForSetter<Any>(field)))
         }
     }
 
-    fun buildClassGetSetters(clazz: Class<*>, map: MutableMap<String, Triple<Class<*>, (Any) -> Any?, (Any, Any?) -> Unit>>) {
+    fun buildClassGetSetters(clazz: Class<*>, map: MutableMap<String, FieldCache>) {
         val getters = mutableMapOf<String, Method>()
         val setters = mutableMapOf<String, Method>()
 
@@ -91,7 +91,7 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, Triple<Class<*>, (
             val wrapperForGetter = MethodHandleHelper.wrapperForMethod<Any>(getter)
             val wrapperForSetter = MethodHandleHelper.wrapperForMethod<Any>(setter)
 
-            map.put(name, Triple(type,
+            map.put(name, FieldCache(type,
                     { obj -> wrapperForGetter(obj, arrayOf()) },
                     { obj, inp -> wrapperForSetter(obj, arrayOf(inp))}))
         }
@@ -142,3 +142,5 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, Triple<Class<*>, (
         return name
     }
 }
+
+data class FieldCache(val klass: Class<*>, val getter: (Any) -> Any?, val setter: (Any, Any?) -> Unit)

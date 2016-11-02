@@ -14,13 +14,16 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object BitwiseStorageManager {
     init { MinecraftForge.EVENT_BUS.register(this) }
     private val allocators = mutableMapOf<ResourceLocation, Allocator>()
+    private var isFinalized = false
 
-    fun createStorage(container: IBitStorageContainer,loc: ResourceLocation): BitStorage {
+    fun createStorage(container: BitStorageContainer, loc: ResourceLocation): BitStorage {
         val value: Allocator = allocators[loc] ?: throw IllegalArgumentException("Allocator for location `$loc` doesn't exist")
         return BitStorage(value, container)
     }
 
     fun createAllocator(loc: ResourceLocation): Allocator {
+        if(isFinalized)
+            throw IllegalStateException("Allocators have already been finalized! Make sure your allocator code is being called before any world is loaded")
         var value = allocators[loc]
         if (value != null)
             throw IllegalStateException("Allocator for location `$loc` already exists")
@@ -34,6 +37,7 @@ object BitwiseStorageManager {
 
     @SubscribeEvent
     fun worldLoadEvent(event: WorldEvent.Load) {
+        isFinalized = true
         if (event.world is WorldClient)
             return
         if (event.world.provider.dimension == 0) {

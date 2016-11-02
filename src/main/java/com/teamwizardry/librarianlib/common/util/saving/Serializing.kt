@@ -12,12 +12,14 @@ import net.minecraftforge.items.ItemStackHandler
 import java.awt.Color
 import java.util.*
 
+import java.lang.reflect.Array as ArrayReflect
+
 /**
  * @author WireSegal
  * Created at 10:32 PM on 10/27/16.
  */
 object ByteBufSerializationHandlers {
-    private val map = HashMap<Class<*>, Pair<(ByteBuf, Any) -> Unit, (ByteBuf) -> Any>>()
+    private val map = HashMap<Class<*>, BufferSerializer>()
 
     init {
         // Primitives and String
@@ -31,6 +33,108 @@ object ByteBufSerializationHandlers {
         mapHandler(Double::class.javaPrimitiveType!!, ByteBuf::writeDouble, ByteBuf::readDouble)
         mapHandler(Boolean::class.javaPrimitiveType!!, ByteBuf::writeBoolean, ByteBuf::readBoolean)
         mapHandler(String::class.java, ByteBuf::writeString, ByteBuf::readString)
+
+        // Primitive arrays
+        mapHandler((CharArray(0)).javaClass, { buf, obj ->
+            val len = obj.size
+            buf.writeVarInt(len)
+            for(i in 0..len-1) {
+                buf.writeChar(obj[i].toInt())
+            }
+        }, reader@{ buf ->
+            val len = buf.readVarInt()
+            val array = CharArray(len)
+            for(i in 0..len-1) {
+                array[i] = buf.readChar()
+            }
+            return@reader array
+        })
+        mapHandler((ByteArray(0)).javaClass, { buf, obj ->
+            val len = obj.size
+            buf.writeVarInt(len)
+            for(i in 0..len-1) {
+                buf.writeByte(obj[i].toInt())
+            }
+        }, reader@{ buf ->
+            val len = buf.readVarInt()
+            val array = ByteArray(len)
+            for(i in 0..len-1) {
+                array[i] = buf.readByte()
+            }
+            return@reader array
+        })
+        mapHandler((ShortArray(0)).javaClass, { buf, obj ->
+            val len = obj.size
+            buf.writeVarInt(len)
+            for(i in 0..len-1) {
+                buf.writeShort(obj[i].toInt())
+            }
+        }, reader@{ buf ->
+            val len = buf.readVarInt()
+            val array = ShortArray(len)
+            for(i in 0..len-1) {
+                array[i] = buf.readShort()
+            }
+            return@reader array
+        })
+        mapHandler((IntArray(0)).javaClass, { buf, obj ->
+            val len = obj.size
+            buf.writeVarInt(len)
+            for(i in 0..len-1) {
+                buf.writeInt(obj[i])
+            }
+        }, reader@{ buf ->
+            val len = buf.readVarInt()
+            val array = IntArray(len)
+            for(i in 0..len-1) {
+                array[i] = buf.readInt()
+            }
+            return@reader array
+        })
+        mapHandler((LongArray(0)).javaClass, { buf, obj ->
+            val len = obj.size
+            buf.writeVarInt(len)
+            for(i in 0..len-1) {
+                buf.writeLong(obj[i])
+            }
+        }, reader@{ buf ->
+            val len = buf.readVarInt()
+            val array = LongArray(len)
+            for(i in 0..len-1) {
+                array[i] = buf.readLong()
+            }
+            return@reader array
+        })
+
+        mapHandler((FloatArray(0)).javaClass, { buf, obj ->
+            val len = obj.size.toShort()
+            buf.writeShort(len.toInt())
+            for(i in 0..len-1) {
+                buf.writeFloat(obj[i])
+            }
+        }, reader@{ buf ->
+            val len = buf.readShort().toInt()
+            val array = FloatArray(len)
+            for(i in 0..len-1) {
+                array[i] = buf.readFloat()
+            }
+            return@reader array
+        })
+        mapHandler((DoubleArray(0)).javaClass, { buf, obj ->
+            val len = obj.size.toShort()
+            buf.writeShort(len.toInt())
+            for(i in 0..len-1) {
+                buf.writeDouble(obj[i])
+            }
+        }, reader@{ buf ->
+            val len = buf.readShort().toInt()
+            val array = DoubleArray(len)
+            for(i in 0..len-1) {
+                array[i] = buf.readDouble()
+            }
+            return@reader array
+        })
+        mapHandler((BooleanArray(0)).javaClass, ByteBuf::writeBooleanArray, ByteBuf::readBooleanArray)
 
         // Misc.
         mapHandler(Color::class.java, { buf, obj -> buf.writeInt(obj.rgb) }, { Color(it.readInt(), true) })
@@ -78,36 +182,66 @@ object ByteBufSerializationHandlers {
     @JvmStatic
     @Suppress("UNCHECKED_CAST")
     fun <T> mapHandler(clazz: Class<T>, writer: (ByteBuf, T) -> Any?, reader: (ByteBuf) -> T) {
-        map.put(clazz, ({ buf: ByteBuf, obj: Any -> writer(buf, obj as T) } as (ByteBuf, Any) -> Unit) to (reader as (ByteBuf) -> Any))
+        map.put(clazz, BufferSerializer((reader as (ByteBuf) -> Any), { buf: ByteBuf, obj: Any -> writer(buf, obj as T) } as (ByteBuf, Any) -> Unit))
     }
 
     @JvmStatic
     @Suppress("UNCHECKED_CAST")
     fun <T> getWriter(clazz: Class<T>): ((ByteBuf, T) -> Unit)? {
-        val pair = map[clazz] ?: return null
-        return pair.first as (ByteBuf, T) -> Unit
+        return getWriterUnchecked(clazz) as (ByteBuf, T) -> Unit
     }
 
     @JvmStatic
     fun getWriterUnchecked(clazz: Class<*>): ((ByteBuf, Any) -> Unit)? {
-        val pair = map[clazz] ?: return null
-        return pair.first
+        val pair = map[clazz] ?: createArrayMapping(clazz) ?: return null
+        return pair.write
     }
 
     @JvmStatic
     @Suppress("UNCHECKED_CAST")
     fun <T> getReader(clazz: Class<T>): ((ByteBuf) -> T)? {
-        val pair = map[clazz] ?: return null
-        return pair.second as (ByteBuf) -> T
+        return getReaderUnchecked(clazz) as (ByteBuf) -> T
     }
 
     @JvmStatic
     fun getReaderUnchecked(clazz: Class<*>): ((ByteBuf) -> Any)? {
-        val pair = map[clazz] ?: return null
-        return pair.second
+        val pair = map[clazz] ?: createArrayMapping(clazz) ?: return null
+        return pair.read
     }
 
+    fun createArrayMapping(clazz: Class<*>) : BufferSerializer? {
+        if(!clazz.isArray)
+            return null
+
+        val subclass = clazz.componentType
+
+        val subReader = getReaderUnchecked(subclass)
+        val subWriter = getWriterUnchecked(subclass)
+
+        if(subReader == null || subWriter == null)
+            return null
+
+        val serializer = BufferSerializer(reader@{ buf ->
+            val len = buf.readVarInt()
+            val array = ArrayReflect.newInstance(subclass, len)
+            for(i in 0..len-1) {
+                ArrayReflect.set(array, i, subReader(buf))
+            }
+            return@reader array
+        }, { buf, obj ->
+            val len = ArrayReflect.getLength(obj)
+            buf.writeVarInt(len)
+            for(i in 0..len-1) {
+                subWriter(buf, ArrayReflect.get(obj, i))
+            }
+        })
+
+        map[clazz] = serializer
+        return serializer
+    }
 }
+
+data class BufferSerializer(val read: (ByteBuf) -> Any, val write: (ByteBuf, Any) -> Unit)
 
 object NBTSerializationHandlers {
     private val map = HashMap<Class<*>, Pair<(Any) -> NBTBase, (NBTBase) -> Any>>()

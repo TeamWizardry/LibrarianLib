@@ -19,7 +19,7 @@ class Allocator internal constructor(val loc: ResourceLocation) {
     }
 }
 
-open class BitStorage(val allocator: Allocator, val container: IBitStorageContainer) {
+open class BitStorage(val allocator: Allocator, val container: BitStorageContainer) {
     var bitset = BitSet()
         private set
 
@@ -66,7 +66,7 @@ open class BitStorage(val allocator: Allocator, val container: IBitStorageContai
     }
 }
 
-interface IBitStorageContainer {
+interface BitStorageContainer {
     val S: BitStorage
     fun markDirty()
 }

@@ -24,10 +24,22 @@ class BlockTest : BlockMod("test", Material.CACTUS), ITileEntityProvider {
             val te = worldIn.getTileEntity(pos!!)!! as TETest
             te.coolString += "1"
             te.coolNum++
+            te.coolBools[te.coolNum % 100] = !te.coolBools[te.coolNum % 100]
+
+            val x = Math.round(hitX).toInt()
+            val y = Math.round(hitY).toInt()
+            val z = Math.round(hitZ).toInt()
+            te.coolArr[x][y][z] = if(te.coolArr[x][y][z]=="_") "#" else "_"
+
             te.markDirty()
         } else {
             val te = worldIn.getTileEntity(pos!!)!! as TETest
             playerIn.addChatComponentMessage(TextComponentString("${te.coolString} ${te.coolNum}"))
+            playerIn.addChatComponentMessage(TextComponentString(te.coolBools.map { if(it) "'" else "." }.joinToString("")))
+            playerIn.addChatComponentMessage(TextComponentString("${te.coolArr[0][1][0]} ${te.coolArr[1][1][0]}"))
+            playerIn.addChatComponentMessage(TextComponentString("${te.coolArr[0][0][0]} ${te.coolArr[1][0][0]}"))
+            playerIn.addChatComponentMessage(TextComponentString("${te.coolArr[0][1][1]} ${te.coolArr[1][1][1]}"))
+            playerIn.addChatComponentMessage(TextComponentString("${te.coolArr[0][0][1]} ${te.coolArr[1][0][1]}"))
         }
         return true
     }
@@ -39,6 +51,8 @@ class BlockTest : BlockMod("test", Material.CACTUS), ITileEntityProvider {
     class TETest : TileMod() {
         @Save var coolString: String = ""
         @Save var coolNum: Int = 0
+        @Save var coolBools: BooleanArray = BooleanArray(100)
+        @Save var coolArr: Array<Array<Array<String>>> = Array(2) { Array(2) { Array(2) { "_" }}}
 
         @SaveMethodGetter("name")
         fun getName(): String {

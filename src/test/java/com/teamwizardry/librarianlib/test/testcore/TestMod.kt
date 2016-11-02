@@ -1,7 +1,9 @@
 package com.teamwizardry.librarianlib.test.testcore
 
-import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.common.core.LoggerBase
+import net.minecraft.creativetab.CreativeTabs
+import net.minecraft.init.Blocks
+import net.minecraft.item.Item
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.SidedProxy
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
@@ -11,10 +13,11 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 /**
  * Created by TheCodeWarrior
  */
-@Mod(modid = LibrarianLib.MODID, version = LibrarianLib.VERSION, name = LibrarianLib.MODNAME, dependencies = LibrarianLib.DEPENDENCIES, useMetadata = true)
+@Mod(modid = TestMod.MODID, version = TestMod.VERSION, name = TestMod.MODNAME, dependencies = TestMod.DEPENDENCIES, useMetadata = true)
 class TestMod {
     @Mod.EventHandler
     fun preInit(e: FMLPreInitializationEvent) {
+        BlockRegister
         PROXY.pre(e)
     }
 
@@ -40,6 +43,10 @@ class TestMod {
         @JvmStatic
         @SidedProxy(clientSide = CLIENT, serverSide = SERVER)
         lateinit var PROXY: LibTestCommonProxy
+
+        val tab = object : CreativeTabs("LibLibTesting") {
+            override fun getTabIconItem() = Item.getItemFromBlock(Blocks.BOOKSHELF)
+        }
     }
 
 }

@@ -5,7 +5,6 @@ package com.teamwizardry.librarianlib.common.util
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import io.netty.buffer.ByteBuf
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagList
 import net.minecraft.util.math.AxisAlignedBB
@@ -14,6 +13,7 @@ import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.fml.common.network.ByteBufUtils
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
+import java.util.*
 
 /**
  * Created by TheCodeWarrior
@@ -112,6 +112,89 @@ fun ByteBuf.readStack(): ItemStack = ByteBufUtils.readItemStack(this)
 
 fun ByteBuf.writeTag(value: NBTTagCompound) = ByteBufUtils.writeTag(this, value)
 fun ByteBuf.readTag(): NBTTagCompound = ByteBufUtils.readTag(this)
+
+fun ByteBuf.writeVarInt(value: Int) {
+    var input = value
+    while (input and -128 != 0) {
+        this.writeByte(input and 127 or 128)
+        input = input ushr 7
+    }
+
+    this.writeByte(input)
+}
+
+fun ByteBuf.readVarInt(): Int {
+    var i = 0
+    var j = 0
+
+    while (true) {
+        val b0 = this.readByte()
+        i = i or (b0.toInt() and 127 shl j++ * 7)
+
+        if (j > 5) {
+            throw RuntimeException("VarInt too big")
+        }
+
+        if (b0.toInt() and 128 != 128) {
+            break
+        }
+    }
+
+    return i
+}
+
+fun ByteBuf.writeVarLong(value: Long) {
+    var input = value
+    while (input and -128L != 0L) {
+        this.writeByte((input and 127L).toInt() or 128)
+        input = value ushr 7
+    }
+
+    this.writeByte(value.toInt())
+}
+
+fun ByteBuf.readVarLong(): Long {
+    var i = 0L
+    var j = 0
+
+    while (true) {
+        val b0 = this.readByte()
+        i = i or ((b0.toInt() and 127).toLong() shl j++ * 7)
+
+        if (j > 10) {
+            throw RuntimeException("VarLong too big")
+        }
+
+        if (b0.toInt() and 128 != 128) {
+            break
+        }
+    }
+
+    return i
+}
+
+fun ByteBuf.writeBooleanArray(value: BooleanArray) {
+    val len = value.size
+    this.writeVarInt(len)
+    val bitset = BitSet()
+    for(i in 0..len-1) {
+        bitset.set(i, value[i])
+    }
+    this.writeBytes(bitset.toByteArray())
+}
+
+fun ByteBuf.readBooleanArray(): BooleanArray {
+    val len = this.readVarInt()
+    val bytes = ByteArray(Math.ceil(len/8.0).toInt())
+    this.readBytes(bytes)
+
+    val bitset = BitSet.valueOf(bytes)
+    val booleans = BooleanArray(len)
+    for(i in 0..len-1) {
+        booleans[i] = bitset.get(i)
+    }
+    return booleans
+}
 
 fun ByteBuf.writeNullSignature() {
     writeBoolean(true)

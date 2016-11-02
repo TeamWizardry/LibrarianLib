@@ -12,19 +12,19 @@ abstract class BitStorageValueDelegate<T> {
     abstract fun set(storage: BitStorage, value: T)
 
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-        if(thisRef !is IBitStorageContainer)
-            throw IllegalStateException("Bit storage properties can only be delegated in instances of IBitStorageContainer")
+        if(thisRef !is BitStorageContainer)
+            throw IllegalStateException("Bit storage properties can only be delegated in instances of BitStorageContainer")
         set(thisRef.S, value)
     }
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        if(thisRef !is IBitStorageContainer)
-            throw IllegalStateException("Bit storage properties can only be delegated in instances of IBitStorageContainer")
+        if(thisRef !is BitStorageContainer)
+            throw IllegalStateException("Bit storage properties can only be delegated in instances of BitStorageContainer")
         return get(thisRef.S)
     }
 }
 
-class BasicBitStorageValueDelegate<T>(val property: BasicBitProp<T>) : BitStorageValueDelegate<T>() {
+class BasicBitStorageValueDelegate<T>(val property: PrimitiveBitProp<T>) : BitStorageValueDelegate<T>() {
     override fun get(storage: BitStorage) = property.get(storage)
 
     override fun set(storage: BitStorage, value: T) {
@@ -47,7 +47,7 @@ abstract class BitProp {
     val dataRegions: MutableMap<String, PropDataRegion> = mutableMapOf()
 }
 
-abstract class BasicBitProp<T> : BitProp() {
+abstract class PrimitiveBitProp<T> : BitProp() {
     abstract fun get(storage: BitStorage): T
     abstract fun set(storage: BitStorage, value: T)
 

@@ -2,12 +2,11 @@ package com.teamwizardry.librarianlib.common.base.block
 
 import com.teamwizardry.librarianlib.common.network.PacketHandler
 import com.teamwizardry.librarianlib.common.network.PacketSynchronization
-import com.teamwizardry.librarianlib.common.util.hasNullSignature
+import com.teamwizardry.librarianlib.common.util.readBooleanArray
 import com.teamwizardry.librarianlib.common.util.saving.ByteBufSerializationHandlers
 import com.teamwizardry.librarianlib.common.util.saving.NBTSerializationHandlers
 import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
-import com.teamwizardry.librarianlib.common.util.writeNonnullSignature
-import com.teamwizardry.librarianlib.common.util.writeNullSignature
+import com.teamwizardry.librarianlib.common.util.writeBooleanArray
 import io.netty.buffer.ByteBuf
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayerMP
@@ -102,9 +101,9 @@ abstract class TileMod : TileEntity() {
 
     fun writeAutoNBT(cmp: NBTTagCompound) {
         SavingFieldCache.getClassFields(javaClass).forEach {
-            val handler = NBTSerializationHandlers.getWriterUnchecked(it.value.first)
+            val handler = NBTSerializationHandlers.getWriterUnchecked(it.value.klass)
             if (handler != null) {
-                val value = it.value.second(this)
+                val value = it.value.getter(this)
                 if (value != null)
                     cmp.setTag(it.key, handler(value))
             }
@@ -114,40 +113,55 @@ abstract class TileMod : TileEntity() {
     fun readAutoNBT(cmp: NBTTagCompound) {
         SavingFieldCache.getClassFields(javaClass).forEach {
             if (!cmp.hasKey(it.key))
-                it.value.third(this, null)
+                it.value.setter(this, null)
             else {
-                val handler = NBTSerializationHandlers.getReaderUnchecked(it.value.first)
+                val handler = NBTSerializationHandlers.getReaderUnchecked(it.value.klass)
                 if (handler != null)
-                    it.value.third(this, handler(cmp.getTag(it.key)))
+                    it.value.setter(this, handler(cmp.getTag(it.key)))
             }
         }
     }
 
     fun writeAutoBytes(buf: ByteBuf) {
-        SavingFieldCache.getClassFields(javaClass).forEach {
-            val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.first)
+        val cache = SavingFieldCache.getClassFields(javaClass)
+        val nullSig = BooleanArray(cache.size)
+        var i = 0
+        cache.forEach {
+            nullSig[i] = false
+            val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.klass)
             if (handler != null) {
-                val field = it.value.second(this)
+                val field = it.value.getter(this)
                 if (field == null)
-                    buf.writeNullSignature()
+                    nullSig[i] = true
+            }
+            i++
+        }
+        buf.writeBooleanArray(nullSig)
+        cache.forEach {
+            val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.klass)
+            if (handler != null) {
+                val field = it.value.getter(this)
+                if (field == null)
                 else {
-                    buf.writeNonnullSignature()
                     handler(buf, field)
                 }
-            } else
-                buf.writeNullSignature()
+            }
         }
     }
 
     fun readAutoBytes(buf: ByteBuf) {
-        SavingFieldCache.getClassFields(javaClass).forEach {
-            if (buf.hasNullSignature())
-                it.value.third(this, null)
+        val cache = SavingFieldCache.getClassFields(javaClass)
+        val nullSig = buf.readBooleanArray()
+        var i = 0
+        cache.forEach {
+            if (nullSig[i])
+                it.value.setter(this, null)
             else {
-                val handler = ByteBufSerializationHandlers.getReaderUnchecked(it.value.first)
+                val handler = ByteBufSerializationHandlers.getReaderUnchecked(it.value.klass)
                 if (handler != null)
-                    it.value.third(this, handler(buf))
+                    it.value.setter(this, handler(buf))
             }
+            i++
         }
     }
 
