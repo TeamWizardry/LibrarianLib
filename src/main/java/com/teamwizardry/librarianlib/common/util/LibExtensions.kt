@@ -4,11 +4,14 @@ package com.teamwizardry.librarianlib.common.util
 
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import io.netty.buffer.ByteBuf
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagList
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
+import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.fml.common.network.ByteBufUtils
 import java.lang.reflect.ParameterizedType
@@ -180,7 +183,14 @@ fun ByteBuf.writeBooleanArray(value: BooleanArray) {
     for(i in 0..len-1) {
         bitset.set(i, value[i])
     }
-    this.writeBytes(bitset.toByteArray())
+    val setArray = bitset.toByteArray()
+    val writeArray = ByteArray(Math.ceil(len/8.0).toInt()) {
+        if(it < setArray.size)
+            setArray[it]
+        else
+            0
+    }
+    this.writeBytes(writeArray)
 }
 
 fun ByteBuf.readBooleanArray(): BooleanArray {
@@ -210,3 +220,21 @@ fun ByteBuf.hasNullSignature(): Boolean = readBoolean()
 
 val NBTTagList.indices: IntRange
     get() = 0..this.tagCount()-1
+
+fun <T : NBTBase> NBTTagList.forEach(run: (T) -> Unit) {
+    for(i in this.indices) {
+        run(this.get(i) as T)
+    }
+}
+
+fun <T : NBTBase> NBTTagList.forEachIndexed(run: (Int, T) -> Unit) {
+    for(i in this.indices) {
+        run(i, this.get(i) as T)
+    }
+}
+
+// Player
+
+fun EntityPlayer.sendMessage(str: String) {
+    this.addChatComponentMessage(TextComponentString(str))
+}

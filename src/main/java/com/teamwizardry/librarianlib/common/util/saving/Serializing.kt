@@ -12,8 +12,6 @@ import net.minecraftforge.items.ItemStackHandler
 import java.awt.Color
 import java.util.*
 
-import java.lang.reflect.Array as ArrayReflect
-
 /**
  * @author WireSegal
  * Created at 10:32 PM on 10/27/16.
@@ -38,13 +36,13 @@ object ByteBufSerializationHandlers {
         mapHandler((CharArray(0)).javaClass, { buf, obj ->
             val len = obj.size
             buf.writeVarInt(len)
-            for(i in 0..len-1) {
+            for (i in 0..len - 1) {
                 buf.writeChar(obj[i].toInt())
             }
         }, reader@{ buf ->
             val len = buf.readVarInt()
             val array = CharArray(len)
-            for(i in 0..len-1) {
+            for (i in 0..len - 1) {
                 array[i] = buf.readChar()
             }
             return@reader array
@@ -52,13 +50,13 @@ object ByteBufSerializationHandlers {
         mapHandler((ByteArray(0)).javaClass, { buf, obj ->
             val len = obj.size
             buf.writeVarInt(len)
-            for(i in 0..len-1) {
+            for (i in 0..len - 1) {
                 buf.writeByte(obj[i].toInt())
             }
         }, reader@{ buf ->
             val len = buf.readVarInt()
             val array = ByteArray(len)
-            for(i in 0..len-1) {
+            for (i in 0..len - 1) {
                 array[i] = buf.readByte()
             }
             return@reader array
@@ -66,13 +64,13 @@ object ByteBufSerializationHandlers {
         mapHandler((ShortArray(0)).javaClass, { buf, obj ->
             val len = obj.size
             buf.writeVarInt(len)
-            for(i in 0..len-1) {
+            for (i in 0..len - 1) {
                 buf.writeShort(obj[i].toInt())
             }
         }, reader@{ buf ->
             val len = buf.readVarInt()
             val array = ShortArray(len)
-            for(i in 0..len-1) {
+            for (i in 0..len - 1) {
                 array[i] = buf.readShort()
             }
             return@reader array
@@ -80,13 +78,13 @@ object ByteBufSerializationHandlers {
         mapHandler((IntArray(0)).javaClass, { buf, obj ->
             val len = obj.size
             buf.writeVarInt(len)
-            for(i in 0..len-1) {
+            for (i in 0..len - 1) {
                 buf.writeInt(obj[i])
             }
         }, reader@{ buf ->
             val len = buf.readVarInt()
             val array = IntArray(len)
-            for(i in 0..len-1) {
+            for (i in 0..len - 1) {
                 array[i] = buf.readInt()
             }
             return@reader array
@@ -94,13 +92,13 @@ object ByteBufSerializationHandlers {
         mapHandler((LongArray(0)).javaClass, { buf, obj ->
             val len = obj.size
             buf.writeVarInt(len)
-            for(i in 0..len-1) {
+            for (i in 0..len - 1) {
                 buf.writeLong(obj[i])
             }
         }, reader@{ buf ->
             val len = buf.readVarInt()
             val array = LongArray(len)
-            for(i in 0..len-1) {
+            for (i in 0..len - 1) {
                 array[i] = buf.readLong()
             }
             return@reader array
@@ -109,13 +107,13 @@ object ByteBufSerializationHandlers {
         mapHandler((FloatArray(0)).javaClass, { buf, obj ->
             val len = obj.size.toShort()
             buf.writeShort(len.toInt())
-            for(i in 0..len-1) {
+            for (i in 0..len - 1) {
                 buf.writeFloat(obj[i])
             }
         }, reader@{ buf ->
             val len = buf.readShort().toInt()
             val array = FloatArray(len)
-            for(i in 0..len-1) {
+            for (i in 0..len - 1) {
                 array[i] = buf.readFloat()
             }
             return@reader array
@@ -123,13 +121,13 @@ object ByteBufSerializationHandlers {
         mapHandler((DoubleArray(0)).javaClass, { buf, obj ->
             val len = obj.size.toShort()
             buf.writeShort(len.toInt())
-            for(i in 0..len-1) {
+            for (i in 0..len - 1) {
                 buf.writeDouble(obj[i])
             }
         }, reader@{ buf ->
             val len = buf.readShort().toInt()
             val array = DoubleArray(len)
-            for(i in 0..len-1) {
+            for (i in 0..len - 1) {
                 array[i] = buf.readDouble()
             }
             return@reader array
@@ -188,7 +186,8 @@ object ByteBufSerializationHandlers {
     @JvmStatic
     @Suppress("UNCHECKED_CAST")
     fun <T> getWriter(clazz: Class<T>): ((ByteBuf, T) -> Unit)? {
-        return getWriterUnchecked(clazz) as (ByteBuf, T) -> Unit
+        val unchecked = getWriterUnchecked(clazz) ?: return null
+        return unchecked as (ByteBuf, T) -> Unit
     }
 
     @JvmStatic
@@ -200,7 +199,8 @@ object ByteBufSerializationHandlers {
     @JvmStatic
     @Suppress("UNCHECKED_CAST")
     fun <T> getReader(clazz: Class<T>): ((ByteBuf) -> T)? {
-        return getReaderUnchecked(clazz) as (ByteBuf) -> T
+        val unchecked = getReaderUnchecked(clazz) ?: return null
+        return unchecked as (ByteBuf) -> T
     }
 
     @JvmStatic
@@ -209,8 +209,8 @@ object ByteBufSerializationHandlers {
         return pair.read
     }
 
-    fun createArrayMapping(clazz: Class<*>) : BufferSerializer? {
-        if(!clazz.isArray)
+    fun createArrayMapping(clazz: Class<*>): BufferSerializer? {
+        if (!clazz.isArray)
             return null
 
         val subclass = clazz.componentType
@@ -218,21 +218,23 @@ object ByteBufSerializationHandlers {
         val subReader = getReaderUnchecked(subclass)
         val subWriter = getWriterUnchecked(subclass)
 
-        if(subReader == null || subWriter == null)
+        if (subReader == null || subWriter == null)
             return null
 
         val serializer = BufferSerializer(reader@{ buf ->
-            val len = buf.readVarInt()
-            val array = ArrayReflect.newInstance(subclass, len)
-            for(i in 0..len-1) {
-                ArrayReflect.set(array, i, subReader(buf))
+            val nullsig = buf.readBooleanArray()
+            val array = ArrayReflect.newInstance(subclass, nullsig.size)
+            for (i in 0..nullsig.size - 1) {
+                ArrayReflect.set(array, i, if (nullsig[i]) null else subReader(buf))
             }
             return@reader array
         }, { buf, obj ->
             val len = ArrayReflect.getLength(obj)
-            buf.writeVarInt(len)
-            for(i in 0..len-1) {
-                subWriter(buf, ArrayReflect.get(obj, i))
+            val nullsig = BooleanArray(len) { ArrayReflect.get(obj, it) == null }
+            buf.writeBooleanArray(nullsig)
+            for (i in 0..len - 1) {
+                if (!nullsig[i])
+                    subWriter(buf, ArrayReflect.get(obj, i))
             }
         })
 
@@ -244,7 +246,7 @@ object ByteBufSerializationHandlers {
 data class BufferSerializer(val read: (ByteBuf) -> Any, val write: (ByteBuf, Any) -> Unit)
 
 object NBTSerializationHandlers {
-    private val map = HashMap<Class<*>, Pair<(Any) -> NBTBase, (NBTBase) -> Any>>()
+    private val map = HashMap<Class<*>, NBTSerializer>()
 
     @Suppress("UNCHECKED_CAST")
     private fun <T : NBTBase> castNBTTag(tag: NBTBase, clazz: Class<T>): T {
@@ -275,10 +277,64 @@ object NBTSerializationHandlers {
         mapHandler(Short::class.javaPrimitiveType!!, ::NBTTagShort, { castNBTTag(it, NBTPrimitive::class.java).short })
         mapHandler(Int::class.javaPrimitiveType!!, ::NBTTagInt, { castNBTTag(it, NBTPrimitive::class.java).int })
         mapHandler(Long::class.javaPrimitiveType!!, ::NBTTagLong, { castNBTTag(it, NBTPrimitive::class.java).long })
+
         mapHandler(Float::class.javaPrimitiveType!!, ::NBTTagFloat, { castNBTTag(it, NBTPrimitive::class.java).float })
         mapHandler(Double::class.javaPrimitiveType!!, ::NBTTagDouble, { castNBTTag(it, NBTPrimitive::class.java).double })
         mapHandler(Boolean::class.javaPrimitiveType!!, { NBTTagByte(if (it) 1 else 0) }, { castNBTTag(it, NBTPrimitive::class.java).byte == 1.toByte() })
         mapHandler(String::class.java, ::NBTTagString, { castNBTTag(it, NBTTagString::class.java).string })
+
+        mapHandler(CharArray::class.java, { NBTTagIntArray(it.map(Char::toInt).toIntArray()) }, { castNBTTag(it, NBTTagIntArray::class.java).intArray.map(Int::toChar).toCharArray() })
+        mapHandler(ShortArray::class.java, { NBTTagIntArray(it.map(Short::toInt).toIntArray()) }, { castNBTTag(it, NBTTagIntArray::class.java).intArray.map(Int::toShort).toShortArray() })
+        mapHandler(ByteArray::class.java, ::NBTTagByteArray, { castNBTTag(it, NBTTagByteArray::class.java).byteArray })
+        mapHandler(IntArray::class.java, ::NBTTagIntArray, { castNBTTag(it, NBTTagIntArray::class.java).intArray })
+        mapHandler(LongArray::class.java, {
+            val tag = NBTTagList()
+            it.forEachIndexed { i, l ->
+                tag.appendTag(NBTTagLong(l))
+            }
+            tag
+        }, {
+            val tag = castNBTTag(it, NBTTagList::class.java)
+            val list = LongArray(tag.tagCount())
+            tag.forEachIndexed<NBTTagLong> { i, t ->
+                list[i] = t.long
+            }
+            list
+        })
+
+        mapHandler(FloatArray::class.java, {
+            val tag = NBTTagList()
+            it.forEachIndexed { i, f ->
+                tag.appendTag(NBTTagFloat(f))
+            }
+            tag
+        }, {
+            val tag = castNBTTag(it, NBTTagList::class.java)
+            val list = FloatArray(tag.tagCount())
+            tag.forEachIndexed<NBTTagFloat> { i, t ->
+                list[i] = t.float
+            }
+            list
+        })
+        mapHandler(DoubleArray::class.java, {
+            val tag = NBTTagList()
+            it.forEachIndexed { i, d ->
+                tag.appendTag(NBTTagDouble(d))
+            }
+            tag
+        }, {
+            val tag = castNBTTag(it, NBTTagList::class.java)
+            val list = DoubleArray(tag.tagCount())
+            tag.forEachIndexed<NBTTagDouble> { i, t ->
+                list[i] = t.double
+            }
+            list
+        })
+        mapHandler(BooleanArray::class.java, {
+            NBTTagByteArray(it.map { if (it) 1.toByte() else 0.toByte() }.toByteArray())
+        }, {
+            castNBTTag(it, NBTTagByteArray::class.java).byteArray.map { if (it == 1.toByte()) true else false }.toBooleanArray()
+        })
 
         // Misc.
         mapHandler(Color::class.java, { NBTTagInt(it.rgb) }, { Color(castNBTTag(it, NBTPrimitive::class.java).int, true) })
@@ -341,33 +397,80 @@ object NBTSerializationHandlers {
     @JvmStatic
     @Suppress("UNCHECKED_CAST")
     fun <T> mapHandler(clazz: Class<T>, writer: (T) -> NBTBase, reader: (NBTBase) -> T) {
-        map.put(clazz, (writer as (Any) -> NBTBase) to (reader as (NBTBase) -> Any))
+        map.put(clazz, NBTSerializer(reader as (NBTBase) -> Any, writer as (Any) -> NBTBase))
     }
 
     @JvmStatic
     @Suppress("UNCHECKED_CAST")
     fun <T> getWriter(clazz: Class<T>): ((T) -> NBTBase)? {
-        val pair = map[clazz] ?: return null
-        return pair.first as (T) -> NBTBase
+        val unchecked = getWriterUnchecked(clazz) ?: return null
+        return unchecked as (T) -> NBTBase
     }
 
     @JvmStatic
     fun getWriterUnchecked(clazz: Class<*>): ((Any) -> NBTBase)? {
-        val pair = map[clazz] ?: return null
-        return pair.first
+        val pair = map[clazz] ?: createArrayMapping(clazz) ?: return null
+        return pair.writer
     }
 
     @JvmStatic
     @Suppress("UNCHECKED_CAST")
     fun <T> getReader(clazz: Class<T>): ((NBTBase) -> T)? {
-        val pair = map[clazz] ?: return null
-        return pair.second as (NBTBase) -> T
+        val unchecked = getReaderUnchecked(clazz) ?: return null
+        return unchecked as (NBTBase) -> T
     }
 
     @JvmStatic
     fun getReaderUnchecked(clazz: Class<*>): ((NBTBase) -> Any)? {
-        val pair = map[clazz] ?: return null
-        return pair.second
+        val pair = map[clazz] ?: createArrayMapping(clazz) ?: return null
+        return pair.reader
+    }
+
+    fun createArrayMapping(clazz: Class<*>): NBTSerializer? {
+        if (!clazz.isArray)
+            return null
+
+        val subclass = clazz.componentType
+
+        val subReader = getReaderUnchecked(subclass)
+        val subWriter = getWriterUnchecked(subclass)
+
+        if (subReader == null || subWriter == null)
+            return null
+
+        val serializer = NBTSerializer(reader@{ nbt ->
+            val compound = castNBTTag(nbt, NBTTagCompound::class.java)
+            val list = castNBTTag(compound.getTag("list"), NBTTagList::class.java)
+
+            val array = ArrayReflect.newInstance(subclass, list.tagCount())
+            list.forEachIndexed<NBTTagCompound> { i, compound ->
+                val tag = compound.getTag("-")
+                if (tag == null)
+                    ArrayReflect.set(array, i, null)
+                else
+                    ArrayReflect.set(array, i, subReader(tag))
+            }
+            return@reader array
+        }, { obj ->
+            val list = NBTTagList()
+            val len = ArrayReflect.getLength(obj)
+            for (i in 0..len - 1) {
+                val value = ArrayReflect.get(obj, i)
+                val compound = NBTTagCompound()
+                if (value != null)
+                    compound.setTag("-", subWriter(value))
+                list.appendTag(compound)
+            }
+
+            val compound = NBTTagCompound()
+            compound.setTag("list", list)
+            compound
+        })
+
+        map[clazz] = serializer
+        return serializer
     }
 
 }
+
+data class NBTSerializer(val reader: (NBTBase) -> Any, val writer: (Any) -> NBTBase)
