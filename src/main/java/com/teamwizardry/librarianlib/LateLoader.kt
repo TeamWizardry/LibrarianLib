@@ -5,7 +5,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 
-@Mod(modid = LateLoader.MODID, version = LateLoader.VERSION, name = LateLoader.MODNAME, dependencies = LateLoader.DEPENDENCIES)
+@Mod(modid = LateLoader.MODID, version = LibrarianLib.VERSION, name = LateLoader.MODNAME, dependencies = LateLoader.DEPENDENCIES)
 class LateLoader {
 
     @Mod.EventHandler
@@ -27,7 +27,6 @@ class LateLoader {
 
         const val MODID = "librarianliblate"
         const val MODNAME = "LibrarianLib Stage 2"
-        const val VERSION = "1.3"
         const val DEPENDENCIES = "after:*"
     }
 

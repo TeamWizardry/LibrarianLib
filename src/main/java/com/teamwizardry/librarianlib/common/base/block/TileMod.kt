@@ -2,11 +2,7 @@ package com.teamwizardry.librarianlib.common.base.block
 
 import com.teamwizardry.librarianlib.common.network.PacketHandler
 import com.teamwizardry.librarianlib.common.network.PacketSynchronization
-import com.teamwizardry.librarianlib.common.util.readBooleanArray
-import com.teamwizardry.librarianlib.common.util.saving.ByteBufSerializationHandlers
-import com.teamwizardry.librarianlib.common.util.saving.NBTSerializationHandlers
-import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
-import com.teamwizardry.librarianlib.common.util.writeBooleanArray
+import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
 import io.netty.buffer.ByteBuf
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayerMP
@@ -17,21 +13,12 @@ import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraft.world.WorldServer
-import net.minecraftforge.fml.common.registry.GameRegistry
 
 /**
  * @author WireSegal
  * Created at 11:06 AM on 8/4/16.
  */
 abstract class TileMod : TileEntity() {
-
-    companion object {
-        @JvmStatic
-        fun registerTile(clazz: Class<out TileMod>, id: String) {
-            SavingFieldCache.getClassFields(clazz)
-            GameRegistry.registerTileEntity(clazz, id)
-        }
-    }
 
     /**
      * Using fast synchronization is quicker and less expensive than the NBT packet default.
@@ -47,7 +34,7 @@ abstract class TileMod : TileEntity() {
 
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         writeCustomNBT(compound)
-        writeAutoNBT(compound)
+        AbstractSaveHandler.writeAutoNBT(this, compound)
         super.writeToNBT(compound)
 
         return compound
@@ -55,7 +42,7 @@ abstract class TileMod : TileEntity() {
 
     override fun readFromNBT(compound: NBTTagCompound) {
         readCustomNBT(compound)
-        readAutoNBT(compound)
+        AbstractSaveHandler.readAutoNBT(this, compound)
         super.readFromNBT(compound)
     }
 
@@ -99,72 +86,6 @@ abstract class TileMod : TileEntity() {
         // NO-OP
     }
 
-    fun writeAutoNBT(cmp: NBTTagCompound) {
-        SavingFieldCache.getClassFields(javaClass).forEach {
-            val handler = NBTSerializationHandlers.getWriterUnchecked(it.value.klass)
-            if (handler != null) {
-                val value = it.value.getter(this)
-                if (value != null)
-                    cmp.setTag(it.key, handler(value))
-            }
-        }
-    }
-
-    fun readAutoNBT(cmp: NBTTagCompound) {
-        SavingFieldCache.getClassFields(javaClass).forEach {
-            if (!cmp.hasKey(it.key))
-                it.value.setter(this, null)
-            else {
-                val handler = NBTSerializationHandlers.getReaderUnchecked(it.value.klass)
-                if (handler != null)
-                    it.value.setter(this, handler(cmp.getTag(it.key)))
-            }
-        }
-    }
-
-    fun writeAutoBytes(buf: ByteBuf) {
-        val cache = SavingFieldCache.getClassFields(javaClass)
-        val nullSig = BooleanArray(cache.size)
-        var i = 0
-        cache.forEach {
-            nullSig[i] = false
-            val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.klass)
-            if (handler != null) {
-                val field = it.value.getter(this)
-                if (field == null)
-                    nullSig[i] = true
-            }
-            i++
-        }
-        buf.writeBooleanArray(nullSig)
-        cache.forEach {
-            val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.klass)
-            if (handler != null) {
-                val field = it.value.getter(this)
-                if (field == null)
-                else {
-                    handler(buf, field)
-                }
-            }
-        }
-    }
-
-    fun readAutoBytes(buf: ByteBuf) {
-        val cache = SavingFieldCache.getClassFields(javaClass)
-        val nullSig = buf.readBooleanArray()
-        var i = 0
-        cache.forEach {
-            if (nullSig[i])
-                it.value.setter(this, null)
-            else {
-                val handler = ByteBufSerializationHandlers.getReaderUnchecked(it.value.klass)
-                if (handler != null)
-                    it.value.setter(this, handler(buf))
-            }
-            i++
-        }
-    }
-
     override fun markDirty() {
         super.markDirty()
         if (!worldObj.isRemote)
@@ -174,7 +95,7 @@ abstract class TileMod : TileEntity() {
     override fun onDataPacket(net: NetworkManager, packet: SPacketUpdateTileEntity) {
         super.onDataPacket(net, packet)
         readCustomNBT(packet.nbtCompound)
-        readAutoNBT(packet.nbtCompound)
+        AbstractSaveHandler.readAutoNBT(javaClass, packet.nbtCompound)
     }
 
     open fun dispatchTileToNearbyPlayers() {

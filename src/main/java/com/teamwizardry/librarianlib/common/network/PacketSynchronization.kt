@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.common.network
 
 import com.teamwizardry.librarianlib.common.base.block.TileMod
 import com.teamwizardry.librarianlib.common.util.hasNullSignature
+import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
 import com.teamwizardry.librarianlib.common.util.saving.Save
 import com.teamwizardry.librarianlib.common.util.writeNonnullSignature
 import com.teamwizardry.librarianlib.common.util.writeNullSignature
@@ -32,7 +33,7 @@ class PacketSynchronization(var tile: TileMod? = null /* Tile is always null on 
         val tile = Minecraft.getMinecraft().theWorld.getTileEntity(pos)
         if (b == null || tile == null || tile !is TileMod) return
 
-        tile.readAutoBytes(b)
+        AbstractSaveHandler.readAutoBytes(tile, b)
         tile.readCustomBytes(b)
     }
 
@@ -48,7 +49,7 @@ class PacketSynchronization(var tile: TileMod? = null /* Tile is always null on 
         else {
             buf.writeNonnullSignature()
 
-            te.writeAutoBytes(buf)
+            AbstractSaveHandler.writeAutoBytes(te, buf)
             te.writeCustomBytes(buf)
         }
     }

@@ -4,9 +4,8 @@ package com.teamwizardry.librarianlib.common.core
 
 import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.client.book.Book
-import com.teamwizardry.librarianlib.common.base.block.TileMod
-import com.teamwizardry.librarianlib.common.testing.BlockTest
 import com.teamwizardry.librarianlib.common.util.EasyConfigHandler
+import com.teamwizardry.librarianlib.common.util.autoregister.AutoRegisterHandler
 import com.teamwizardry.librarianlib.common.util.bitsaving.BitwiseStorageManager
 import net.minecraft.util.text.translation.I18n
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
@@ -22,13 +21,10 @@ open class LibCommonProxy {
     open internal fun pre(e: FMLPreInitializationEvent) {
         BitwiseStorageManager
         EasyConfigHandler.init(LibrarianLib.MODID, e.suggestedConfigurationFile, e.asmData)
-
-        if(LibLibConfig.generateTestBlock)
-            initBlock()
     }
 
     open internal fun latePre(e: FMLPreInitializationEvent) {
-        // NO-OP
+        AutoRegisterHandler.handle(e)
     }
 
     open internal fun init(e: FMLInitializationEvent) {
@@ -54,10 +50,5 @@ open class LibCommonProxy {
     open val bookInstance: Book?
         get() = null
 
-
-    private fun initBlock() {
-        TileMod.registerTile(BlockTest.TETest::class.java, "tetest")
-        BlockTest()
-    }
 }
 

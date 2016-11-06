@@ -36,6 +36,12 @@ version = "${config.version}.${config.build_number}"
 group = config.group
 archivesBaseName = config.mod_name
 
+repositories {
+    maven {
+        url "http://maven.amadornes.com/"
+    }
+}
+
 minecraft {
     version = "${config.mc_version}-${config.forge_version}"
     runDir = "run"
@@ -56,6 +62,8 @@ configurations {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     required "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    deobfCompile "MCMultiPart:MCMultiPart:1.2.1:universal"
 }
 
 jar {
@@ -109,48 +117,48 @@ processResources
                 exclude 'mcmod.info'
             }
         }
-
-uploadArchives {
-	repositories {
-		mavenDeployer {
-			repository(url: "file://" + System.getenv("bamboo_local_maven"))
-			pom {
-				groupId = project.group
-				version
-				artifactId = project.archivesBaseName
-				project {
-					name project.archivesBaseName
-					packaging 'jar'
-					description 'LibrarianLib'
-					url 'https://github.com/TeamWizardry/LibrarianLib'
-					scm {
-						url 'https://github.com/TeamWizardry/LibrarianLib.git'
-						connection 'scm:git:git@github.com:TeamWizardry/LibrarianLib.git'
-						developerConnection 'scm:git:git@github.com:TeamWizardry/LibrarianLib.git'
-					}
-					issueManagement {
-						system 'github'
-						url 'https://github.com/TeamWizardry/LibrarianLib/issues'
-					}
-					developers {
-						developer {
-							id 'thecodewarrior'
-							name 'thecodewarrior'
-							roles { role 'developer' }
-						}
-						developer {
-							id 'wiresegal'
-							name 'wiresegal'
-							roles { role 'developer' }
-						}
-                        developer {
-                            id 'eladkay'
-                            name 'eladkay'
-                            roles { role 'developer' }
-                        }
-					}
-				}
-			}
-		}
-	}
-}
+//
+//uploadArchives {
+//	repositories {
+//		mavenDeployer {
+//			repository(url: "file://" + System.getenv("bamboo_local_maven"))
+//			pom {
+//				groupId = project.group
+//				version
+//				artifactId = project.archivesBaseName
+//				project {
+//					name project.archivesBaseName
+//					packaging 'jar'
+//					description 'LibrarianLib'
+//					url 'https://github.com/TeamWizardry/LibrarianLib'
+//					scm {
+//						url 'https://github.com/TeamWizardry/LibrarianLib.git'
+//						connection 'scm:git:git@github.com:TeamWizardry/LibrarianLib.git'
+//						developerConnection 'scm:git:git@github.com:TeamWizardry/LibrarianLib.git'
+//					}
+//					issueManagement {
+//						system 'github'
+//						url 'https://github.com/TeamWizardry/LibrarianLib/issues'
+//					}
+//					developers {
+//						developer {
+//							id 'thecodewarrior'
+//							name 'thecodewarrior'
+//							roles { role 'developer' }
+//						}
+//						developer {
+//							id 'wiresegal'
+//							name 'wiresegal'
+//							roles { role 'developer' }
+//						}
+//                        developer {
+//                            id 'eladkay'
+//                            name 'eladkay'
+//                            roles { role 'developer' }
+//                        }
+//					}
+//				}
+//			}
+//		}
+//	}
+//}

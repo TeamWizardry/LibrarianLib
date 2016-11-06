@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.test.saving
 
 import com.teamwizardry.librarianlib.common.base.block.BlockMod
 import com.teamwizardry.librarianlib.common.base.block.TileMod
+import com.teamwizardry.librarianlib.common.util.autoregister.TileRegister
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import com.teamwizardry.librarianlib.common.util.saving.Save
 import com.teamwizardry.librarianlib.common.util.sendMessage
@@ -26,7 +27,7 @@ import java.util.concurrent.ThreadLocalRandom
  * Created by TheCodeWarrior
  */
 class BlockObjectsSaving : BlockMod("saving_objects", Material.CACTUS), ITileEntityProvider {
-    override fun onBlockActivated(worldIn: World, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer, hand: EnumHand?, heldItem: ItemStack?, side: EnumFacing?, hitX: Float, hitY: Float, hitZ: Float): Boolean {
+    override fun onBlockActivated(worldIn: World, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer, hand: EnumHand?, heldItem: ItemStack?, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         val te = worldIn.getTileEntity(pos!!)!! as TETest
         if (!worldIn.isRemote) {
             te.color = kolors[ThreadLocalRandom.current().nextInt(kolors.size)]
@@ -37,6 +38,7 @@ class BlockObjectsSaving : BlockMod("saving_objects", Material.CACTUS), ITileEnt
             te.vec3d = Vec3d(hitX.toDouble(), hitY.toDouble(), hitZ.toDouble())
             te.vec3i = pos
             te.vec2d = Vec2d(hitX.toDouble(), hitZ.toDouble())
+            te.enum = side
 
             te.markDirty()
         } else {
@@ -47,6 +49,7 @@ class BlockObjectsSaving : BlockMod("saving_objects", Material.CACTUS), ITileEnt
             playerIn.sendMessage("Vec3d: " + te.vec3d)
             playerIn.sendMessage("Vec3i: " + te.vec3i)
             playerIn.sendMessage("Vec2d: " + te.vec2d)
+            playerIn.sendMessage("Enum: " + te.enum)
         }
         return true
     }
@@ -55,10 +58,7 @@ class BlockObjectsSaving : BlockMod("saving_objects", Material.CACTUS), ITileEnt
         return TETest()
     }
 
-    init {
-        TileMod.registerTile(TETest::class.java, registryName.resourcePath)
-    }
-
+    @TileRegister("saving_objects")
     class TETest : TileMod() {
         @Save var color: Color = Color.BLACK
         @Save var tag: NBTTagCompound = NBTTagCompound()
@@ -67,6 +67,7 @@ class BlockObjectsSaving : BlockMod("saving_objects", Material.CACTUS), ITileEnt
         @Save var vec3d: Vec3d = Vec3d.ZERO
         @Save var vec3i: Vec3i = Vec3i.NULL_VECTOR
         @Save var vec2d: Vec2d = Vec2d.ZERO
+        @Save var enum: EnumFacing = EnumFacing.UP
 
     }
 

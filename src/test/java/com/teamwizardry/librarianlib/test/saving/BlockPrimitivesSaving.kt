@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.test.saving
 
 import com.teamwizardry.librarianlib.common.base.block.BlockMod
 import com.teamwizardry.librarianlib.common.base.block.TileMod
+import com.teamwizardry.librarianlib.common.util.autoregister.TileRegister
 import com.teamwizardry.librarianlib.common.util.saving.Save
 import com.teamwizardry.librarianlib.common.util.sendMessage
 import net.minecraft.block.ITileEntityProvider
@@ -48,10 +49,7 @@ class BlockPrimitivesSaving : BlockMod("saving_primitives", Material.CACTUS), IT
         return TETest()
     }
 
-    init {
-        TileMod.registerTile(TETest::class.java, registryName.resourcePath)
-    }
-
+    @TileRegister("saving_primitives")
     class TETest : TileMod() {
         @Save var coolBoolean: Boolean = false
         @Save var coolByte: Byte = 0

@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.test.saving
 
 import com.teamwizardry.librarianlib.common.base.block.BlockMod
 import com.teamwizardry.librarianlib.common.base.block.TileMod
+import com.teamwizardry.librarianlib.common.util.autoregister.TileRegister
 import com.teamwizardry.librarianlib.common.util.saving.Save
 import com.teamwizardry.librarianlib.common.util.sendMessage
 import net.minecraft.block.ITileEntityProvider
@@ -57,10 +58,7 @@ class BlockPrimitiveDeepArraysSaving : BlockMod("saving_primitiveDeepArrays", Ma
         return TETest()
     }
 
-    init {
-        TileMod.registerTile(TETest::class.java, registryName.resourcePath)
-    }
-
+    @TileRegister("saving_primitiveDeepArrays")
     class TETest : TileMod() {
         @Save var index: Int = 0
         @Save var index2: Int = 0

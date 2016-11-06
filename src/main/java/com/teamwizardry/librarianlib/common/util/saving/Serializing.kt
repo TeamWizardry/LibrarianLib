@@ -192,7 +192,7 @@ object ByteBufSerializationHandlers {
 
     @JvmStatic
     fun getWriterUnchecked(clazz: Class<*>): ((ByteBuf, Any) -> Unit)? {
-        val pair = map[clazz] ?: createArrayMapping(clazz) ?: return null
+        val pair = map[clazz] ?: createSpecialMapping(clazz) ?: return null
         return pair.write
     }
 
@@ -205,8 +205,33 @@ object ByteBufSerializationHandlers {
 
     @JvmStatic
     fun getReaderUnchecked(clazz: Class<*>): ((ByteBuf) -> Any)? {
-        val pair = map[clazz] ?: createArrayMapping(clazz) ?: return null
+        val pair = map[clazz] ?: createSpecialMapping(clazz) ?: return null
         return pair.read
+    }
+
+    fun createSpecialMapping(clazz: Class<*>): BufferSerializer? {
+        return createArrayMapping(clazz) ?: createEnumMapping(clazz)
+    }
+
+    fun createEnumMapping(clazz: Class<*>): BufferSerializer? {
+        if(!clazz.isEnum)
+            return null
+
+        val values = clazz.enumConstants
+        val size = values.size
+        val serializer = BufferSerializer(reader@{ buf ->
+            if(size > 256)
+                values[buf.readShort().toInt()]
+            else
+                values[buf.readByte().toInt()]
+        }, writer@{ buf, obj ->
+            if(size > 256)
+                buf.writeShort((obj as Enum<*>).ordinal)
+            else
+                buf.writeByte((obj as Enum<*>).ordinal)
+        })
+
+        return serializer
     }
 
     fun createArrayMapping(clazz: Class<*>): BufferSerializer? {
@@ -409,7 +434,7 @@ object NBTSerializationHandlers {
 
     @JvmStatic
     fun getWriterUnchecked(clazz: Class<*>): ((Any) -> NBTBase)? {
-        val pair = map[clazz] ?: createArrayMapping(clazz) ?: return null
+        val pair = map[clazz] ?: createSpecialMapping(clazz) ?: return null
         return pair.writer
     }
 
@@ -422,8 +447,26 @@ object NBTSerializationHandlers {
 
     @JvmStatic
     fun getReaderUnchecked(clazz: Class<*>): ((NBTBase) -> Any)? {
-        val pair = map[clazz] ?: createArrayMapping(clazz) ?: return null
+        val pair = map[clazz] ?: createSpecialMapping(clazz) ?: return null
         return pair.reader
+    }
+
+    fun createSpecialMapping(clazz: Class<*>): NBTSerializer? {
+        return createArrayMapping(clazz) ?: createEnumMapping(clazz)
+    }
+
+    fun createEnumMapping(clazz: Class<*>): NBTSerializer? {
+        if(!clazz.isEnum)
+            return null
+
+        val values = clazz.enumConstants
+        val serializer = NBTSerializer(reader@{ nbt ->
+            values[castNBTTag(nbt, NBTTagShort::class.java).short.toInt()]
+        }, writer@{ obj ->
+            NBTTagShort((obj as Enum<*>).ordinal.toShort())
+        })
+
+        return serializer
     }
 
     fun createArrayMapping(clazz: Class<*>): NBTSerializer? {
