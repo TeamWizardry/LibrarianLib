@@ -17,7 +17,8 @@ import java.util.*
  * Created at 10:32 PM on 10/27/16.
  */
 object ByteBufSerializationHandlers {
-    private val map = HashMap<Class<*>, BufferSerializer>()
+    val map = hashMapOf<Class<*>, BufferSerializer>()
+    private val specialHandlers = mutableListOf<ByteBufSerializationHandlers.(Class<*>) -> BufferSerializer?>()
 
     init {
         // Primitives and String
@@ -175,12 +176,24 @@ object ByteBufSerializationHandlers {
             Vec2d(it.readDouble(), it.readDouble())
         })
         mapHandler(BlockPos::class.java, { buf, obj -> buf.writeLong(obj.toLong()) }, { BlockPos.fromLong(it.readLong()) })
+
+
+
+        // Dynamic generators
+        registerSpecialHandler { createArrayMapping(it) }
+        registerSpecialHandler { createEnumMapping(it) }
     }
 
     @JvmStatic
     @Suppress("UNCHECKED_CAST")
     fun <T> mapHandler(clazz: Class<T>, writer: (ByteBuf, T) -> Any?, reader: (ByteBuf) -> T) {
         map.put(clazz, BufferSerializer((reader as (ByteBuf) -> Any), { buf: ByteBuf, obj: Any -> writer(buf, obj as T) } as (ByteBuf, Any) -> Unit))
+    }
+
+    @JvmStatic
+    @Suppress("UNCHECKED_CAST")
+    fun registerSpecialHandler(handler: ByteBufSerializationHandlers.(Class<*>) -> BufferSerializer?) {
+        specialHandlers.add(handler)
     }
 
     @JvmStatic
@@ -192,7 +205,7 @@ object ByteBufSerializationHandlers {
 
     @JvmStatic
     fun getWriterUnchecked(clazz: Class<*>): ((ByteBuf, Any) -> Unit)? {
-        val pair = map[clazz] ?: createSpecialMapping(clazz) ?: return null
+        val pair = map[clazz] ?: createSpecialMappings(clazz) ?: return null
         return pair.write
     }
 
@@ -205,15 +218,20 @@ object ByteBufSerializationHandlers {
 
     @JvmStatic
     fun getReaderUnchecked(clazz: Class<*>): ((ByteBuf) -> Any)? {
-        val pair = map[clazz] ?: createSpecialMapping(clazz) ?: return null
+        val pair = map[clazz] ?: createSpecialMappings(clazz) ?: return null
         return pair.read
     }
 
-    fun createSpecialMapping(clazz: Class<*>): BufferSerializer? {
-        return createArrayMapping(clazz) ?: createEnumMapping(clazz)
+    fun createSpecialMappings(clazz: Class<*>): BufferSerializer? {
+        for (handler in specialHandlers) {
+            val serializer = this.handler(clazz)
+            if (serializer != null) return serializer
+        }
+
+        return null
     }
 
-    fun createEnumMapping(clazz: Class<*>): BufferSerializer? {
+    private fun createEnumMapping(clazz: Class<*>): BufferSerializer? {
         if(!clazz.isEnum)
             return null
 
@@ -234,7 +252,7 @@ object ByteBufSerializationHandlers {
         return serializer
     }
 
-    fun createArrayMapping(clazz: Class<*>): BufferSerializer? {
+    private fun createArrayMapping(clazz: Class<*>): BufferSerializer? {
         if (!clazz.isArray)
             return null
 
@@ -271,7 +289,8 @@ object ByteBufSerializationHandlers {
 data class BufferSerializer(val read: (ByteBuf) -> Any, val write: (ByteBuf, Any) -> Unit)
 
 object NBTSerializationHandlers {
-    private val map = HashMap<Class<*>, NBTSerializer>()
+    val map = HashMap<Class<*>, NBTSerializer>()
+    private val specialHandlers = mutableListOf<NBTSerializationHandlers.(Class<*>) -> NBTSerializer?>()
 
     @Suppress("UNCHECKED_CAST")
     private fun <T : NBTBase> castNBTTag(tag: NBTBase, clazz: Class<T>): T {
@@ -321,8 +340,8 @@ object NBTSerializationHandlers {
         }, {
             val tag = castNBTTag(it, NBTTagList::class.java)
             val list = LongArray(tag.tagCount())
-            tag.forEachIndexed<NBTTagLong> { i, t ->
-                list[i] = t.long
+            tag.forEachIndexed<NBTBase> { i, t ->
+                list[i] = castNBTTag(t, NBTPrimitive::class.java).long
             }
             list
         })
@@ -336,8 +355,8 @@ object NBTSerializationHandlers {
         }, {
             val tag = castNBTTag(it, NBTTagList::class.java)
             val list = FloatArray(tag.tagCount())
-            tag.forEachIndexed<NBTTagFloat> { i, t ->
-                list[i] = t.float
+            tag.forEachIndexed<NBTBase> { i, t ->
+                list[i] = castNBTTag(t, NBTPrimitive::class.java).float
             }
             list
         })
@@ -350,8 +369,8 @@ object NBTSerializationHandlers {
         }, {
             val tag = castNBTTag(it, NBTTagList::class.java)
             val list = DoubleArray(tag.tagCount())
-            tag.forEachIndexed<NBTTagDouble> { i, t ->
-                list[i] = t.double
+            tag.forEachIndexed<NBTBase> { i, t ->
+                list[i] = castNBTTag(t, NBTPrimitive::class.java).double
             }
             list
         })
@@ -417,12 +436,24 @@ object NBTSerializationHandlers {
             Vec2d(x, y)
         })
         mapHandler(BlockPos::class.java, { NBTTagLong(it.toLong()) }, { BlockPos.fromLong(castNBTTag(it, NBTPrimitive::class.java).long) })
+
+
+
+        // Dynamic generators
+        registerSpecialHandler { createArrayMapping(it) }
+        registerSpecialHandler { createEnumMapping(it) }
     }
 
     @JvmStatic
     @Suppress("UNCHECKED_CAST")
     fun <T> mapHandler(clazz: Class<T>, writer: (T) -> NBTBase, reader: (NBTBase) -> T) {
         map.put(clazz, NBTSerializer(reader as (NBTBase) -> Any, writer as (Any) -> NBTBase))
+    }
+
+    @JvmStatic
+    @Suppress("UNCHECKED_CAST")
+    fun registerSpecialHandler(handler: NBTSerializationHandlers.(Class<*>) -> NBTSerializer?) {
+        specialHandlers.add(handler)
     }
 
     @JvmStatic
@@ -452,10 +483,15 @@ object NBTSerializationHandlers {
     }
 
     fun createSpecialMapping(clazz: Class<*>): NBTSerializer? {
-        return createArrayMapping(clazz) ?: createEnumMapping(clazz)
+        for (handler in specialHandlers) {
+            val serializer = this.handler(clazz)
+            if (serializer != null) return serializer
+        }
+
+        return null
     }
 
-    fun createEnumMapping(clazz: Class<*>): NBTSerializer? {
+    private fun createEnumMapping(clazz: Class<*>): NBTSerializer? {
         if(!clazz.isEnum)
             return null
 
@@ -469,7 +505,7 @@ object NBTSerializationHandlers {
         return serializer
     }
 
-    fun createArrayMapping(clazz: Class<*>): NBTSerializer? {
+    private fun createArrayMapping(clazz: Class<*>): NBTSerializer? {
         if (!clazz.isArray)
             return null
 
