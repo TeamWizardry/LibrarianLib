@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.Loader
 /**
  * The default implementation for an IVariantHolder tool.
  */
+@Suppress("LeakingThis")
 open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, toolMaterial: ToolMaterial, effectiveBlocks: Set<Block>, vararg variants: String) : ItemTool(attackDamage, attackSpeed, toolMaterial, effectiveBlocks), IModItemProvider {
 
     constructor(name: String, toolMaterial: ToolMaterial, effectiveBlocks: Set<Block>, vararg variants: String) : this(name, 0F, 0F, toolMaterial, effectiveBlocks, *variants)
@@ -49,6 +50,6 @@ open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, to
     }
 
     open val creativeTab: ModCreativeTab?
-        get() = null
+        get() = ModCreativeTab.defaultTabs[modId]
 }
 

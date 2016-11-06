@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.common.base
 
 import net.minecraft.block.Block
 import net.minecraft.creativetab.CreativeTabs
+import net.minecraft.init.Blocks
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.Loader
@@ -9,9 +10,22 @@ import java.util.*
 
 abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(Loader.instance().activeModContainer().modId + if (postFix == null) "" else ".$postFix") {
 
+    companion object {
+        val defaultTabs = mutableMapOf<String, ModCreativeTab>()
+
+        @JvmStatic
+        fun registerDefaultTab(tab: ModCreativeTab) {
+            defaultTabs.put(Loader.instance().activeModContainer().modId, tab)
+        }
+    }
+
     internal lateinit var list: MutableList<ItemStack>
 
-    override abstract fun getIconItemStack(): ItemStack
+    open val iconStack = ItemStack(Blocks.STONE) // Default value for legacy support
+
+    override fun getIconItemStack(): ItemStack {
+        return iconStack
+    }
 
     override fun getTabIconItem(): Item? {
         return this.iconItemStack.item

@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.Loader
 /**
  * The default implementation for an IVariantHolder armor item.
  */
+@Suppress("LeakingThis")
 open class ItemModArmor(name: String, material: ArmorMaterial, slot: EntityEquipmentSlot, vararg variants: String) : ItemArmor(material, -1, slot), IModItemProvider {
 
     override val providedItem: Item
@@ -47,6 +48,6 @@ open class ItemModArmor(name: String, material: ArmorMaterial, slot: EntityEquip
     }
 
     open val creativeTab: ModCreativeTab?
-        get() = null
+        get() = ModCreativeTab.defaultTabs[modId]
 }
 

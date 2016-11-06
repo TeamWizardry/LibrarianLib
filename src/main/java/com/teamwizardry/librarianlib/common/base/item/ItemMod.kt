@@ -46,6 +46,6 @@ open class ItemMod(name: String, vararg variants: String) : Item(), IModItemProv
     }
 
     open val creativeTab: ModCreativeTab?
-        get() = null
+        get() = ModCreativeTab.defaultTabs[modId]
 }
 

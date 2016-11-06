@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.Loader
 /**
  * The default implementation for an IVariantHolder food.
  */
+@Suppress("LeakingThis")
 open class ItemModFood(name: String, amount: Int, saturation: Float, wolfFood: Boolean, vararg variants: String) : ItemFood(amount, saturation, wolfFood), IModItemProvider {
 
     constructor(name: String, amount: Int, wolfFood: Boolean, vararg variants: String) : this(name, amount, 0.6F, wolfFood, *variants)
@@ -50,6 +51,6 @@ open class ItemModFood(name: String, amount: Int, saturation: Float, wolfFood: B
     }
 
     open val creativeTab: ModCreativeTab?
-        get() = null
+        get() = ModCreativeTab.defaultTabs[modId]
 }
 

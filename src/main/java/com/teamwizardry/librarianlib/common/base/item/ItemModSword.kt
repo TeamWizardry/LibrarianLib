@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.Loader
 /**
  * The default implementation for an IVariantHolder sword.
  */
+@Suppress("LeakingThis")
 open class ItemModSword(name: String, material: ToolMaterial, vararg variants: String) : ItemSword(material), IModItemProvider {
 
     override val providedItem: Item
@@ -46,6 +47,6 @@ open class ItemModSword(name: String, material: ToolMaterial, vararg variants: S
     }
 
     open val creativeTab: ModCreativeTab?
-        get() = null
+        get() = ModCreativeTab.defaultTabs[modId]
 }
 
