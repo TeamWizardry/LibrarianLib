@@ -12,11 +12,13 @@ abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(Loader.ins
 
     companion object {
         val defaultTabs = mutableMapOf<String, ModCreativeTab>()
+    }
 
-        @JvmStatic
-        fun registerDefaultTab(tab: ModCreativeTab) {
-            defaultTabs.put(Loader.instance().activeModContainer().modId, tab)
-        }
+    /**
+     * Calling this during mod construction will make items from this mod prefer this tab.
+     */
+    fun registerDefaultTab() {
+        defaultTabs.put(Loader.instance().activeModContainer().modId, this)
     }
 
     internal lateinit var list: MutableList<ItemStack>
