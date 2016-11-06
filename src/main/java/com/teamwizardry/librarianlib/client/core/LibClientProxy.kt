@@ -47,26 +47,28 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         LibShaders
         ShaderHelper.initShaders()
 
-        ModelHandler.preInit()
-
         val s = MethodHandleHelper.wrapperForGetter(Minecraft::class.java, "metadataSerializer_", "field_110452_an")(Minecraft.getMinecraft()) as MetadataSerializer
         s.registerMetadataSectionType(SpritesMetadataSectionSerializer(), SpritesMetadataSection::class.java)
         SpritesMetadataSection.registered = true
 
-        if (Minecraft.getMinecraft().resourceManager is IReloadableResourceManager)
-            (Minecraft.getMinecraft().resourceManager as IReloadableResourceManager).registerReloadListener(this)
-
+        (Minecraft.getMinecraft().resourceManager as IReloadableResourceManager).registerReloadListener(this)
         onResourceManagerReload(Minecraft.getMinecraft().resourceManager)
     }
 
-    override fun init(e: FMLInitializationEvent) {
-        super.init(e)
+    override fun latePre(e: FMLPreInitializationEvent) {
+        super.latePre(e)
+        ModelHandler.preInit()
+    }
+
+    override fun lateInit(e: FMLInitializationEvent) {
+        super.lateInit(e)
         ModelHandler.init()
     }
 
     override fun translate(s: String, vararg format: Any?): String {
         return I18n.format(s, *format)
     }
+
 
     override fun onResourceManagerReload(resourceManager: IResourceManager) {
         val newList = ArrayList<WeakReference<Texture>>()

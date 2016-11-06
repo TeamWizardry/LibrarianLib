@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.client.book.Book
 import com.teamwizardry.librarianlib.common.base.block.TileMod
 import com.teamwizardry.librarianlib.common.testing.BlockTest
 import com.teamwizardry.librarianlib.common.util.EasyConfigHandler
+import com.teamwizardry.librarianlib.common.util.bitsaving.BitwiseStorageManager
 import net.minecraft.util.text.translation.I18n
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
@@ -18,21 +19,31 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
  */
 open class LibCommonProxy {
 
-    open fun pre(e: FMLPreInitializationEvent) {
+    open internal fun pre(e: FMLPreInitializationEvent) {
+        BitwiseStorageManager
         EasyConfigHandler.init(LibrarianLib.MODID, e.suggestedConfigurationFile, e.asmData)
-        if(LibrarianLib.DEV_ENVIRONMENT && LibLibConfig.generateTestBlock) initBlock()
+
+        if(LibLibConfig.generateTestBlock)
+            initBlock()
     }
 
-    private fun initBlock() {
-        TileMod.registerTile(BlockTest.TETest::class.java, "tetest")
-        BlockTest()
-    }
-
-    open fun init(e: FMLInitializationEvent) {
+    open internal fun latePre(e: FMLPreInitializationEvent) {
         // NO-OP
     }
 
-    open fun post(e: FMLPostInitializationEvent) {
+    open internal fun init(e: FMLInitializationEvent) {
+        // NO-OP
+    }
+
+    open internal fun lateInit(e: FMLInitializationEvent) {
+        // NO-OP
+    }
+
+    open internal fun post(e: FMLPostInitializationEvent) {
+        // NO-OP
+    }
+
+    open internal fun latePost(e: FMLPostInitializationEvent) {
         // NO-OP
     }
 
@@ -42,5 +53,11 @@ open class LibCommonProxy {
 
     open val bookInstance: Book?
         get() = null
+
+
+    private fun initBlock() {
+        TileMod.registerTile(BlockTest.TETest::class.java, "tetest")
+        BlockTest()
+    }
 }
 
