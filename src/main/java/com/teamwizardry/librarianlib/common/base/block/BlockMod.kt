@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.common.base.block
 
+import com.teamwizardry.librarianlib.common.base.ModCreativeTab
 import com.teamwizardry.librarianlib.common.util.VariantHelper
 import net.minecraft.block.Block
 import net.minecraft.block.material.MapColor
@@ -37,4 +38,7 @@ open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg 
     open fun createItemForm(): ItemBlock? {
         return ItemModBlock(this)
     }
+
+    override val creativeTab: ModCreativeTab?
+        get() = ModCreativeTab.defaultTabs[modId]
 }

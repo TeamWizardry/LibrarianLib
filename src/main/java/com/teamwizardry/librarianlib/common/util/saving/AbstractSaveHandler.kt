@@ -75,7 +75,7 @@ object AbstractSaveHandler {
         }
     }
 
-    fun  cacheFields(clazz: Class<*>) {
+    fun cacheFields(clazz: Class<*>) {
         SavingFieldCache.getClassFields(clazz)
     }
 }
