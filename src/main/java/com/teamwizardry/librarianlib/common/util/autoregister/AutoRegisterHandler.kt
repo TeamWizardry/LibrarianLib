@@ -20,10 +20,10 @@ object AutoRegisterHandler {
 
     /**
      * Registers a class prefix for a mod. Usually this will be the main package for your mod.
-     * e.g. "com.teamwizardry.refraction." (I like to end it with a dot for clarity)
+     * e.g. "com.teamwizardry.refraction." (If it doesn't end with a dot this method will add one)
      */
     fun registerPrefix(prefix: String, modid: String) {
-        prefixes.add(prefix to modid)
+        prefixes.add((if(prefix.endsWith(".")) prefix else prefix + ".") to modid)
     }
 
     private fun getModid(clazz: Class<*>): String? {
