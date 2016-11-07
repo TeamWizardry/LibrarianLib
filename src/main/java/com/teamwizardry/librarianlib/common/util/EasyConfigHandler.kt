@@ -17,34 +17,30 @@ object EasyConfigHandler {
     val fieldMapStr: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
     val fieldMapInt: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
     val fieldMapBoolean: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
-    private var generated = false
 
-    @JvmStatic
-    @JvmOverloads
-    fun init(configf: File, asm: ASMDataTable? = null) {
-        init(Loader.instance().activeModContainer().modId, configf, asm)
+    internal fun loadAsm(asm: ASMDataTable) {
+        findByClass(Any::class.java, asm)
+        findByClass(Boolean::class.javaPrimitiveType!!, asm)
+        findByClass(Char::class.javaPrimitiveType!!, asm)
+        findByClass(Byte::class.javaPrimitiveType!!, asm)
+        findByClass(Short::class.javaPrimitiveType!!, asm)
+        findByClass(Int::class.javaPrimitiveType!!, asm)
+        findByClass(Float::class.javaPrimitiveType!!, asm)
+        findByClass(Long::class.javaPrimitiveType!!, asm)
+        if (LibrarianLib.DEV_ENVIRONMENT) {
+            fieldMapStr.keys.forEach { println("Found string config property field ${it.declaringClass.name}.${it.name}") }
+            if (fieldMapStr.keys.size == 0) println("No string config property fields found!")
+        }
     }
 
     @JvmStatic
-    @JvmOverloads
-    fun init(modid: String, configf: File, asm: ASMDataTable? = null) {
-        if (asm == null && !generated) return
+    fun init(configf: File) {
+        init(Loader.instance().activeModContainer().modId, configf)
+    }
+
+    @JvmStatic
+    fun init(modid: String, configf: File) {
         val config = Configuration(configf)
-        if (asm != null && !generated) {
-            findByClass(Any::class.java, asm)
-            findByClass(Boolean::class.javaPrimitiveType!!, asm)
-            findByClass(Char::class.javaPrimitiveType!!, asm)
-            findByClass(Byte::class.javaPrimitiveType!!, asm)
-            findByClass(Short::class.javaPrimitiveType!!, asm)
-            findByClass(Int::class.javaPrimitiveType!!, asm)
-            findByClass(Float::class.javaPrimitiveType!!, asm)
-            findByClass(Long::class.javaPrimitiveType!!, asm)
-            if (LibrarianLib.DEV_ENVIRONMENT) {
-                fieldMapStr.keys.forEach { println("Found string config property field ${it.declaringClass.name}.${it.name}") }
-                if (fieldMapStr.keys.size == 0) println("No string config property fields found!")
-            }
-            generated = true
-        }
 
         config.load()
         fieldMapStr.filter {
