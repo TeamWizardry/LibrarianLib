@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.common.util
 
 import com.teamwizardry.librarianlib.LibrarianLib
+import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.util.EasyConfigHandler.init
 import net.minecraftforge.common.config.Configuration
 import net.minecraftforge.fml.common.Loader
@@ -15,6 +16,7 @@ import java.lang.reflect.Field
  */
 object EasyConfigHandler {
     val fieldMapStr: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
+    val fieldMapDouble: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
     val fieldMapInt: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
     val fieldMapBoolean: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
 
@@ -28,8 +30,15 @@ object EasyConfigHandler {
         findByClass(Float::class.javaPrimitiveType!!, asm)
         findByClass(Long::class.javaPrimitiveType!!, asm)
         if (LibrarianLib.DEV_ENVIRONMENT) {
-            fieldMapStr.keys.forEach { println("Found string config property field ${it.declaringClass.name}.${it.name}") }
-            if (fieldMapStr.keys.size == 0) println("No string config property fields found!")
+
+            val modid = LibrarianLib.MODID
+            val pad = Array(modid.length) { " " }.joinToString("")
+
+            LibrarianLog.info("$modid | All config properties found:")
+            fieldMapStr.forEach { LibrarianLog.info("$pad | ${it.key}") }
+            fieldMapInt.forEach { LibrarianLog.info("$pad | ${it.key}") }
+            fieldMapDouble.forEach { LibrarianLog.info("$pad | ${it.key}") }
+            fieldMapBoolean.forEach { LibrarianLog.info("$pad | ${it.key}") }
         }
     }
 
@@ -59,6 +68,14 @@ object EasyConfigHandler {
                 it.key.set(null, config.get(it.value.getString("category", ""), it.value.getString("id", ""), it.value.getInt("defaultValue", 0), it.value.getString("comment", "")).int)
         }
 
+        fieldMapDouble.filter {
+            it.value.getString("modid", "") == modid
+        }.forEach {
+            it.key.isAccessible = true
+            if (!it.value.getBoolean("devOnly", false) || LibrarianLib.DEV_ENVIRONMENT)
+                it.key.set(null, config.get(it.value.getString("category", ""), it.value.getString("id", ""), it.value.getDouble("defaultValue", 0.0), it.value.getString("comment", "")).int)
+        }
+
         fieldMapBoolean.filter {
             it.value.getString("modid", "") == modid
         }.forEach {
@@ -76,6 +93,9 @@ object EasyConfigHandler {
         })
         AnnotationHelper.findAnnotatedObjects(asm, clazz, ConfigPropertyInt::class.java, { field: Field, info: AnnotationHelper.AnnotationInfo ->
             fieldMapInt.put(field, info)
+        })
+        AnnotationHelper.findAnnotatedObjects(asm, clazz, ConfigPropertyDouble::class.java, { field: Field, info: AnnotationHelper.AnnotationInfo ->
+            fieldMapDouble.put(field, info)
         })
         AnnotationHelper.findAnnotatedObjects(asm, clazz, ConfigPropertyBoolean::class.java, { field: Field, info: AnnotationHelper.AnnotationInfo ->
             fieldMapBoolean.put(field, info)
@@ -100,6 +120,15 @@ object EasyConfigHandler {
  * this config property will only be set in a development environment.
  */
 @Target(AnnotationTarget.FIELD) annotation class ConfigPropertyInt(val modid: String, val category: String, val id: String, val comment: String, val defaultValue: Int, val devOnly: Boolean = false)
+
+/**
+ * This annotation should be applied to non-final, static (if in Kotlin, [JvmStatic]) fields of type [Double] (or in Kotlin Double?]
+ * that you wish to use as a config property. [modid] is the mod of the config that owns this annotation. Use [category] to
+ * indicate the config category in the config file, [id] will indicate the name of the property, [comment] will be the comment
+ * above the entry in the config file, [defaultValue] is the default value, and if [devOnly] (optional) is set to true,
+ * this config property will only be set in a development environment.
+ */
+@Target(AnnotationTarget.FIELD) annotation class ConfigPropertyDouble(val modid: String, val category: String, val id: String, val comment: String, val defaultValue: Double, val devOnly: Boolean = false)
 
 /**
  * This annotation should be applied to non-final, static (if in Kotlin, [JvmStatic]) fields of type [Boolean] (or in Kotlin Boolean?]
