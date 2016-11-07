@@ -302,7 +302,7 @@ object NBTSerializationHandlers {
     private val specialHandlers = mutableListOf<NBTSerializationHandlers.(Class<*>) -> NBTSerializer?>()
 
     @Suppress("UNCHECKED_CAST")
-    private fun <T : NBTBase> castNBTTag(tag: NBTBase, clazz: Class<T>): T {
+    fun <T : NBTBase> castNBTTag(tag: NBTBase, clazz: Class<T>): T {
         return (
                 if (clazz.isAssignableFrom(tag.javaClass))
                     tag
