@@ -238,3 +238,7 @@ fun <T : NBTBase> NBTTagList.forEachIndexed(run: (Int, T) -> Unit) {
 fun EntityPlayer.sendMessage(str: String) {
     this.addChatComponentMessage(TextComponentString(str))
 }
+
+// String
+
+operator fun CharSequence.times(n: Int) = this.repeat(n)

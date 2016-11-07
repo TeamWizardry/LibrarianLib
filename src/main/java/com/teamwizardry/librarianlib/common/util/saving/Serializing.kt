@@ -209,11 +209,11 @@ object ByteBufSerializationHandlers {
         return pair.read
     }
 
-    fun createSpecialMapping(clazz: Class<*>): BufferSerializer? {
+    private fun createSpecialMapping(clazz: Class<*>): BufferSerializer? {
         return createArrayMapping(clazz) ?: createEnumMapping(clazz)
     }
 
-    fun createEnumMapping(clazz: Class<*>): BufferSerializer? {
+    private fun createEnumMapping(clazz: Class<*>): BufferSerializer? {
         if(!clazz.isEnum)
             return null
 
@@ -234,7 +234,7 @@ object ByteBufSerializationHandlers {
         return serializer
     }
 
-    fun createArrayMapping(clazz: Class<*>): BufferSerializer? {
+    private fun createArrayMapping(clazz: Class<*>): BufferSerializer? {
         if (!clazz.isArray)
             return null
 
@@ -451,11 +451,11 @@ object NBTSerializationHandlers {
         return pair.reader
     }
 
-    fun createSpecialMapping(clazz: Class<*>): NBTSerializer? {
+    private fun createSpecialMapping(clazz: Class<*>): NBTSerializer? {
         return createArrayMapping(clazz) ?: createEnumMapping(clazz)
     }
 
-    fun createEnumMapping(clazz: Class<*>): NBTSerializer? {
+    private fun createEnumMapping(clazz: Class<*>): NBTSerializer? {
         if(!clazz.isEnum)
             return null
 
@@ -469,7 +469,7 @@ object NBTSerializationHandlers {
         return serializer
     }
 
-    fun createArrayMapping(clazz: Class<*>): NBTSerializer? {
+    private fun createArrayMapping(clazz: Class<*>): NBTSerializer? {
         if (!clazz.isArray)
             return null
 

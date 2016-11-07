@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.test.testcore
 
 import com.teamwizardry.librarianlib.common.core.LoggerBase
+import com.teamwizardry.librarianlib.common.util.autoregister.AutoRegisterHandler
 import com.teamwizardry.librarianlib.test.saving.SavingEntryPoint
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.init.Blocks
@@ -19,6 +20,7 @@ class TestMod {
 
     @Mod.EventHandler
     fun preInit(e: FMLPreInitializationEvent) {
+        AutoRegisterHandler.registerPrefix("com.teamwizardry.librarianlib.test.", TestMod.MODID)
         entrypoints = arrayOf(
                 SavingEntryPoint
         )
@@ -51,7 +53,7 @@ class TestMod {
         const val VERSION = "0.0"
         const val CLIENT = "com.teamwizardry.librarianlib.test.testcore.LibTestClientProxy"
         const val SERVER = "com.teamwizardry.librarianlib.test.testcore.LibTestCommonProxy"
-        const val DEPENDENCIES = "before:librarianlib"
+        const val DEPENDENCIES = "required-before:librarianlib"
 
         @JvmStatic
         @SidedProxy(clientSide = CLIENT, serverSide = SERVER)

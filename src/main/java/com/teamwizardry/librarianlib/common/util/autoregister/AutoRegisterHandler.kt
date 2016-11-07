@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.common.util.autoregister
 
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
+import com.teamwizardry.librarianlib.common.util.times
 import mcmultipart.multipart.IMultipart
 import mcmultipart.multipart.MultipartRegistry
 import net.minecraft.tileentity.TileEntity
@@ -14,26 +15,73 @@ import net.minecraftforge.fml.common.registry.GameRegistry
  * Created by TheCodeWarrior
  */
 object AutoRegisterHandler {
+    private val prefixes = mutableListOf<Pair<String, String>>()
+
+    /**
+     * Registers a class prefix for a mod. Usually this will be the main package for your mod.
+     * e.g. "com.teamwizardry.refraction." (I like to end it with a dot for clarity)
+     */
+    fun registerPrefix(prefix: String, modid: String) {
+        prefixes.add(prefix to modid)
+    }
+
+    private fun getModid(clazz: Class<*>): String? {
+        val name = clazz.canonicalName
+        return prefixes.find { name.startsWith(it.first) }?.second
+    }
+
     fun handle(e: FMLPreInitializationEvent) {
         val table = e.asmData
+        val errors = mutableMapOf<String, MutableList<Class<*>>>()
+
         getAnnotatedBy(TileRegister::class.java, TileEntity::class.java, table).forEach {
-            AbstractSaveHandler.cacheFields(it.clazz)
-            GameRegistry.registerTileEntity(it.clazz, it["id"])
-        }
-        if(Loader.isModLoaded("mcmultipart")) {
-            getAnnotatedBy(PartRegister::class.java, IMultipart::class.java, table).forEach {
+            val name = it.get<String>("value")
+            val modid = getModid(it.clazz)
+            if (modid == null && (name == null || ":" !in name))
+                errors.getOrPut("TileRegister", { mutableListOf() }).add(it.clazz)
+            else {
                 AbstractSaveHandler.cacheFields(it.clazz)
-                MultipartRegistry.registerPart(it.clazz, it["id"])
+                GameRegistry.registerTileEntity(it.clazz, "$modid:$name")
+            }
+
+        }
+        if (Loader.isModLoaded("mcmultipart")) {
+            getAnnotatedBy(PartRegister::class.java, IMultipart::class.java, table).forEach {
+                val name = it.get<String>("value")
+                val modid = getModid(it.clazz)
+                if (modid == null && (name == null || ":" !in name))
+                    errors.getOrPut("PartRegister", { mutableListOf() }).add(it.clazz)
+                else {
+                    AbstractSaveHandler.cacheFields(it.clazz)
+                    MultipartRegistry.registerPart(it.clazz, "$modid:$name")
+                }
             }
         }
 
+        if(errors.isNotEmpty()) {
+            LibrarianLog.warn("AutoRegister Errors")
+            LibrarianLog.warn("Prefixes:")
+
+            val keyMax = prefixes.maxBy { it.second.length }?.second?.length ?: 0
+            for ((prefix, modid) in prefixes) {
+                val spaces = keyMax - modid.length
+                LibrarianLog.warn("${" " * spaces}$modid | $prefix")
+            }
+            for ((name, list) in errors) {
+                LibrarianLog.warn("> @$name")
+                list.forEach {
+                    LibrarianLog.warn("  | ${it.canonicalName}")
+                }
+            }
+            throw IllegalArgumentException("AutoRegister errors!!! (see log above)")
+        }
     }
 
-    fun getAnnotatedBy(annotationClass: Class<out Annotation>, asmDataTable: ASMDataTable): List<AnnotatedClass<*>> {
+    private fun getAnnotatedBy(annotationClass: Class<out Annotation>, asmDataTable: ASMDataTable): List<AnnotatedClass<*>> {
         return getAnnotatedBy(annotationClass, Any::class.java, asmDataTable)
     }
 
-    fun <T> getAnnotatedBy(annotationClass: Class<out Annotation>, instanceClass: Class<T>, asmDataTable: ASMDataTable): List<AnnotatedClass<out T>> {
+    private fun <T> getAnnotatedBy(annotationClass: Class<out Annotation>, instanceClass: Class<T>, asmDataTable: ASMDataTable): List<AnnotatedClass<out T>> {
         val annotationClassName = annotationClass.canonicalName
         val asmDatas = asmDataTable.getAll(annotationClassName)
         val classes = mutableListOf<AnnotatedClass<out T>>()
@@ -50,10 +98,10 @@ object AutoRegisterHandler {
         return classes
     }
 
-    data class AnnotatedClass<T>(val clazz: Class<T>, val properties: Map<String, Any>) {
+    private data class AnnotatedClass<T>(val clazz: Class<T>, val properties: Map<String, Any>) {
         @Suppress("UNCHECKED_CAST")
-        operator fun <T> get(property: String): T {
-            return properties[property] as T
+        operator fun <T> get(property: String): T? {
+            return properties[property] as T?
         }
     }
 }
