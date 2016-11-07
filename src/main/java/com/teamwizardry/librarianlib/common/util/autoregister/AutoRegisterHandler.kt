@@ -21,7 +21,9 @@ object AutoRegisterHandler {
      * Registers a class prefix for a mod. Usually this will be the main package for your mod.
      * e.g. "com.teamwizardry.refraction." (I like to end it with a dot for clarity)
      */
-    fun registerPrefix(prefix: String, modid: String) {
+    @JvmStatic
+    @JvmOverloads
+    fun registerPrefix(prefix: String, modid: String = Loader.instance().activeModContainer().modId) {
         prefixes.add(prefix to modid)
     }
 
