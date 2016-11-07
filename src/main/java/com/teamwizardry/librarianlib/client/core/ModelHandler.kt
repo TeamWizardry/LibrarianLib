@@ -183,18 +183,15 @@ object ModelHandler {
                 if ((variant.value != item.registryName.resourcePath || variants.size != 1))
                     log("$namePad |  Variant #${variant.index + 1}: ${variant.value}")
 
-                if (debug && LibLibConfig.generateJson) {
-
-                    if (shouldGenItemJson(holder)) {
-                        val path = JsonGenerationUtils.getPathForItemModel(holder.providedItem, variant.value)
-                        val file = File(path)
-                        file.parentFile.mkdirs()
-                        if (file.createNewFile()) {
-                            val obj = JsonGenerationUtils.generateBaseItemModel(item, variant.value)
-                            file.writeText(obj.serialize())
-                            log("$namePad | Creating file for variant of ${holder.providedItem.registryName.resourcePath}")
-                            generatedFiles.add(path)
-                        }
+                if (debug && LibLibConfig.generateJson && shouldGenItemJson(holder)) {
+                    val path = JsonGenerationUtils.getPathForItemModel(holder.providedItem, variant.value)
+                    val file = File(path)
+                    file.parentFile.mkdirs()
+                    if (file.createNewFile()) {
+                        val obj = JsonGenerationUtils.generateBaseItemModel(item, variant.value)
+                        file.writeText(obj.serialize())
+                        log("$namePad | Creating file for variant of ${holder.providedItem.registryName.resourcePath}")
+                        generatedFiles.add(path)
                     }
                 }
 
