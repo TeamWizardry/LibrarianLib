@@ -27,7 +27,7 @@ object AbstractSaveHandler {
             else {
                 val handler = NBTSerializationHandlers.getReaderUnchecked(it.value.klass)
                 if (handler != null)
-                    it.value.setter(instance, handler(cmp.getTag(it.key)))
+                    it.value.setter(instance, handler(cmp.getTag(it.key), it.value.getter(instance)))
             }
         }
     }
@@ -69,7 +69,7 @@ object AbstractSaveHandler {
             else {
                 val handler = ByteBufSerializationHandlers.getReaderUnchecked(it.value.klass)
                 if (handler != null)
-                    it.value.setter(instance, handler(buf))
+                    it.value.setter(instance, handler(buf, it.value.getter(instance)))
             }
             i++
         }

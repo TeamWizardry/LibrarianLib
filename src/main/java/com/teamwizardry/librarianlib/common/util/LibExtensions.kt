@@ -193,13 +193,13 @@ fun ByteBuf.writeBooleanArray(value: BooleanArray) {
     this.writeBytes(writeArray)
 }
 
-fun ByteBuf.readBooleanArray(): BooleanArray {
+fun ByteBuf.readBooleanArray(tryReadInto: BooleanArray? = null): BooleanArray {
     val len = this.readVarInt()
     val bytes = ByteArray(Math.ceil(len/8.0).toInt())
     this.readBytes(bytes)
 
     val bitset = BitSet.valueOf(bytes)
-    val booleans = BooleanArray(len)
+    val booleans = if(tryReadInto == null || tryReadInto.size != len) BooleanArray(len) else tryReadInto
     for(i in 0..len-1) {
         booleans[i] = bitset.get(i)
     }

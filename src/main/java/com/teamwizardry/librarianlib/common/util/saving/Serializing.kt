@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.common.util.saving
 
+import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.util.*
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import io.netty.buffer.ByteBuf
@@ -22,16 +23,16 @@ object ByteBufSerializationHandlers {
 
     init {
         // Primitives and String
-        mapHandler(Char::class.javaPrimitiveType!!, { buf, obj -> buf.writeChar(obj.toInt()) }, ByteBuf::readChar)
-        mapHandler(Byte::class.javaPrimitiveType!!, { buf, obj -> buf.writeByte(obj.toInt()) }, ByteBuf::readByte)
-        mapHandler(Short::class.javaPrimitiveType!!, { buf, obj -> buf.writeShort(obj.toInt()) }, ByteBuf::readShort)
-        mapHandler(Int::class.javaPrimitiveType!!, ByteBuf::writeInt, ByteBuf::readInt)
-        mapHandler(Long::class.javaPrimitiveType!!, ByteBuf::writeLong, ByteBuf::readLong)
+        mapHandler(Char::class.javaPrimitiveType!!, { buf, obj -> buf.writeChar(obj.toInt()) }, { buf, existing -> buf.readChar() })
+        mapHandler(Byte::class.javaPrimitiveType!!, { buf, obj -> buf.writeByte(obj.toInt()) }, { buf, existing -> buf.readByte() })
+        mapHandler(Short::class.javaPrimitiveType!!, { buf, obj -> buf.writeShort(obj.toInt()) }, { buf, existing -> buf.readShort() })
+        mapHandler(Int::class.javaPrimitiveType!!, ByteBuf::writeInt, { buf, existing -> buf.readInt() })
+        mapHandler(Long::class.javaPrimitiveType!!, ByteBuf::writeLong, { buf, existing -> buf.readLong() })
 
-        mapHandler(Float::class.javaPrimitiveType!!, ByteBuf::writeFloat, ByteBuf::readFloat)
-        mapHandler(Double::class.javaPrimitiveType!!, ByteBuf::writeDouble, ByteBuf::readDouble)
-        mapHandler(Boolean::class.javaPrimitiveType!!, ByteBuf::writeBoolean, ByteBuf::readBoolean)
-        mapHandler(String::class.java, ByteBuf::writeString, ByteBuf::readString)
+        mapHandler(Float::class.javaPrimitiveType!!, ByteBuf::writeFloat, { buf, existing -> buf.readFloat() })
+        mapHandler(Double::class.javaPrimitiveType!!, ByteBuf::writeDouble, { buf, existing -> buf.readDouble() })
+        mapHandler(Boolean::class.javaPrimitiveType!!, ByteBuf::writeBoolean, { buf, existing -> buf.readBoolean() })
+        mapHandler(String::class.java, ByteBuf::writeString, { buf, existing -> buf.readString() })
 
         // Primitive arrays
         mapHandler((CharArray(0)).javaClass, { buf, obj ->
@@ -40,9 +41,10 @@ object ByteBufSerializationHandlers {
             for (i in 0..len - 1) {
                 buf.writeChar(obj[i].toInt())
             }
-        }, reader@{ buf ->
+        }, reader@{ buf, existing ->
+            existing as CharArray?
             val len = buf.readVarInt()
-            val array = CharArray(len)
+            val array = if(existing == null || existing.size != len) CharArray(len) else existing
             for (i in 0..len - 1) {
                 array[i] = buf.readChar()
             }
@@ -54,9 +56,10 @@ object ByteBufSerializationHandlers {
             for (i in 0..len - 1) {
                 buf.writeByte(obj[i].toInt())
             }
-        }, reader@{ buf ->
+        }, reader@{ buf, existing ->
+            existing as ByteArray?
             val len = buf.readVarInt()
-            val array = ByteArray(len)
+            val array = if(existing == null || existing.size != len) ByteArray(len) else existing
             for (i in 0..len - 1) {
                 array[i] = buf.readByte()
             }
@@ -68,9 +71,10 @@ object ByteBufSerializationHandlers {
             for (i in 0..len - 1) {
                 buf.writeShort(obj[i].toInt())
             }
-        }, reader@{ buf ->
+        }, reader@{ buf, existing ->
+            existing as ShortArray?
             val len = buf.readVarInt()
-            val array = ShortArray(len)
+            val array = if(existing == null || existing.size != len) ShortArray(len) else existing
             for (i in 0..len - 1) {
                 array[i] = buf.readShort()
             }
@@ -82,9 +86,10 @@ object ByteBufSerializationHandlers {
             for (i in 0..len - 1) {
                 buf.writeInt(obj[i])
             }
-        }, reader@{ buf ->
+        }, reader@{ buf, existing ->
+            existing as IntArray?
             val len = buf.readVarInt()
-            val array = IntArray(len)
+            val array = if(existing == null || existing.size != len) IntArray(len) else existing
             for (i in 0..len - 1) {
                 array[i] = buf.readInt()
             }
@@ -96,9 +101,10 @@ object ByteBufSerializationHandlers {
             for (i in 0..len - 1) {
                 buf.writeLong(obj[i])
             }
-        }, reader@{ buf ->
+        }, reader@{ buf, existing ->
+            existing as LongArray?
             val len = buf.readVarInt()
-            val array = LongArray(len)
+            val array = if(existing == null || existing.size != len) LongArray(len) else existing
             for (i in 0..len - 1) {
                 array[i] = buf.readLong()
             }
@@ -111,9 +117,10 @@ object ByteBufSerializationHandlers {
             for (i in 0..len - 1) {
                 buf.writeFloat(obj[i])
             }
-        }, reader@{ buf ->
+        }, reader@{ buf, existing ->
+            existing as FloatArray?
             val len = buf.readShort().toInt()
-            val array = FloatArray(len)
+            val array = if(existing == null || existing.size != len) FloatArray(len) else existing
             for (i in 0..len - 1) {
                 array[i] = buf.readFloat()
             }
@@ -125,9 +132,10 @@ object ByteBufSerializationHandlers {
             for (i in 0..len - 1) {
                 buf.writeDouble(obj[i])
             }
-        }, reader@{ buf ->
+        }, reader@{ buf, existing ->
+            existing as DoubleArray?
             val len = buf.readShort().toInt()
-            val array = DoubleArray(len)
+            val array = if(existing == null || ArrayReflect.getLength(existing) != len) DoubleArray(len) else existing
             for (i in 0..len - 1) {
                 array[i] = buf.readDouble()
             }
@@ -136,23 +144,23 @@ object ByteBufSerializationHandlers {
         mapHandler((BooleanArray(0)).javaClass, ByteBuf::writeBooleanArray, ByteBuf::readBooleanArray)
 
         // Misc.
-        mapHandler(Color::class.java, { buf, obj -> buf.writeInt(obj.rgb) }, { Color(it.readInt(), true) })
-        mapHandler(NBTTagCompound::class.java, ByteBuf::writeTag, ByteBuf::readTag)
-        mapHandler(ItemStack::class.java, ByteBuf::writeStack, ByteBuf::readStack)
+        mapHandler(Color::class.java, { buf, obj -> buf.writeInt(obj.rgb) }, { buf, existing -> Color(buf.readInt(), true) })
+        mapHandler(NBTTagCompound::class.java, ByteBuf::writeTag, { buf, existing -> buf.readTag()})
+        mapHandler(ItemStack::class.java, ByteBuf::writeStack, { buf, existing -> buf.readStack()})
         mapHandler(ItemStackHandler::class.java, {
             buf, obj ->
             buf.writeTag(obj.serializeNBT())
-        }, {
+        }, { buf, existing ->
             val handler = ItemStackHandler()
-            handler.deserializeNBT(it.readTag())
+            handler.deserializeNBT(buf.readTag())
             handler
         })
         mapHandler(ItemStackHandler::class.java, {
             buf, obj ->
             buf.writeTag(obj.serializeNBT())
-        }, {
+        }, { buf, existing ->
             val handler = ItemStackHandler()
-            handler.deserializeNBT(it.readTag())
+            handler.deserializeNBT(buf.readTag())
             handler
         })
 
@@ -160,22 +168,22 @@ object ByteBufSerializationHandlers {
         mapHandler(Vec3d::class.java, {
             buf, obj ->
             buf.writeDouble(obj.xCoord).writeDouble(obj.yCoord).writeDouble(obj.zCoord)
-        }, {
-            Vec3d(it.readDouble(), it.readDouble(), it.readDouble())
+        }, { buf, existing ->
+            Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble())
         })
         mapHandler(Vec3i::class.java, {
             buf, obj ->
             buf.writeInt(obj.x).writeInt(obj.y).writeInt(obj.z)
-        }, {
-            Vec3i(it.readInt(), it.readInt(), it.readInt())
+        }, { buf, existing ->
+            Vec3i(buf.readInt(), buf.readInt(), buf.readInt())
         })
         mapHandler(Vec2d::class.java, {
             buf, obj ->
             buf.writeDouble(obj.x).writeDouble(obj.y)
-        }, {
-            Vec2d(it.readDouble(), it.readDouble())
+        }, { buf, existing ->
+            Vec2d(buf.readDouble(), buf.readDouble())
         })
-        mapHandler(BlockPos::class.java, { buf, obj -> buf.writeLong(obj.toLong()) }, { BlockPos.fromLong(it.readLong()) })
+        mapHandler(BlockPos::class.java, { buf, obj -> buf.writeLong(obj.toLong()) }, { buf, existing -> BlockPos.fromLong(buf.readLong()) })
 
 
 
@@ -186,8 +194,8 @@ object ByteBufSerializationHandlers {
 
     @JvmStatic
     @Suppress("UNCHECKED_CAST")
-    fun <T> mapHandler(clazz: Class<T>, writer: (ByteBuf, T) -> Any?, reader: (ByteBuf) -> T) {
-        map.put(clazz, BufferSerializer((reader as (ByteBuf) -> Any), { buf: ByteBuf, obj: Any -> writer(buf, obj as T) } as (ByteBuf, Any) -> Unit))
+    fun <T> mapHandler(clazz: Class<T>, writer: (ByteBuf, T) -> Any?, reader: (ByteBuf, T?) -> T) {
+        map.put(clazz, BufferSerializer((reader as (ByteBuf, Any?) -> Any), { buf: ByteBuf, obj: Any -> writer(buf, obj as T) } as (ByteBuf, Any) -> Unit))
     }
 
     @JvmStatic
@@ -211,13 +219,13 @@ object ByteBufSerializationHandlers {
 
     @JvmStatic
     @Suppress("UNCHECKED_CAST")
-    fun <T> getReader(clazz: Class<T>): ((ByteBuf) -> T)? {
+    fun <T> getReader(clazz: Class<T>): ((ByteBuf, T?) -> T)? {
         val unchecked = getReaderUnchecked(clazz) ?: return null
-        return unchecked as (ByteBuf) -> T
+        return unchecked as (ByteBuf, T?) -> T
     }
 
     @JvmStatic
-    fun getReaderUnchecked(clazz: Class<*>): ((ByteBuf) -> Any)? {
+    fun getReaderUnchecked(clazz: Class<*>): ((ByteBuf, Any?) -> Any)? {
         val pair = map[clazz] ?: createSpecialMappings(clazz) ?: return null
         return pair.read
     }
@@ -237,7 +245,7 @@ object ByteBufSerializationHandlers {
 
         val values = clazz.enumConstants
         val size = values.size
-        val serializer = BufferSerializer(reader@{ buf ->
+        val serializer = BufferSerializer(reader@{ buf, existing ->
             if(size > 256)
                 values[buf.readShort().toInt()]
             else
@@ -264,11 +272,12 @@ object ByteBufSerializationHandlers {
         if (subReader == null || subWriter == null)
             return null
 
-        val serializer = BufferSerializer(reader@{ buf ->
+        val serializer = BufferSerializer(reader@{ buf, existing ->
+            existing as Array<*>?
             val nullsig = buf.readBooleanArray()
-            val array = ArrayReflect.newInstance(subclass, nullsig.size)
+            val array: Array<Any?> = if(existing == null || existing.size != nullsig.size) ArrayReflect.newInstance(subclass, nullsig.size) as Array<Any?> else existing as Array<Any?>
             for (i in 0..nullsig.size - 1) {
-                ArrayReflect.set(array, i, if (nullsig[i]) null else subReader(buf))
+                array[i] = if (nullsig[i]) null else subReader(buf, array[i])
             }
             return@reader array
         }, { buf, obj ->
@@ -286,7 +295,7 @@ object ByteBufSerializationHandlers {
     }
 }
 
-data class BufferSerializer(val read: (ByteBuf) -> Any, val write: (ByteBuf, Any) -> Unit)
+data class BufferSerializer(val read: (ByteBuf, Any?) -> Any, val write: (ByteBuf, Any) -> Unit)
 
 object NBTSerializationHandlers {
     val map = HashMap<Class<*>, NBTSerializer>()
@@ -316,30 +325,30 @@ object NBTSerializationHandlers {
 
     init {
         // Primitives and String
-        mapHandler(Char::class.javaPrimitiveType!!, { NBTTagByte(it.toByte()) }, { castNBTTag(it, NBTPrimitive::class.java).byte.toChar() })
-        mapHandler(Byte::class.javaPrimitiveType!!, ::NBTTagByte, { castNBTTag(it, NBTPrimitive::class.java).byte })
-        mapHandler(Short::class.javaPrimitiveType!!, ::NBTTagShort, { castNBTTag(it, NBTPrimitive::class.java).short })
-        mapHandler(Int::class.javaPrimitiveType!!, ::NBTTagInt, { castNBTTag(it, NBTPrimitive::class.java).int })
-        mapHandler(Long::class.javaPrimitiveType!!, ::NBTTagLong, { castNBTTag(it, NBTPrimitive::class.java).long })
+        mapHandler(Char::class.javaPrimitiveType!!, { NBTTagByte(it.toByte()) }, { it, existing -> castNBTTag(it, NBTPrimitive::class.java).byte.toChar() })
+        mapHandler(Byte::class.javaPrimitiveType!!, ::NBTTagByte, { it, existing -> castNBTTag(it, NBTPrimitive::class.java).byte })
+        mapHandler(Short::class.javaPrimitiveType!!, ::NBTTagShort, { it, existing -> castNBTTag(it, NBTPrimitive::class.java).short })
+        mapHandler(Int::class.javaPrimitiveType!!, ::NBTTagInt, { it, existing -> castNBTTag(it, NBTPrimitive::class.java).int })
+        mapHandler(Long::class.javaPrimitiveType!!, ::NBTTagLong, { it, existing -> castNBTTag(it, NBTPrimitive::class.java).long })
 
-        mapHandler(Float::class.javaPrimitiveType!!, ::NBTTagFloat, { castNBTTag(it, NBTPrimitive::class.java).float })
-        mapHandler(Double::class.javaPrimitiveType!!, ::NBTTagDouble, { castNBTTag(it, NBTPrimitive::class.java).double })
-        mapHandler(Boolean::class.javaPrimitiveType!!, { NBTTagByte(if (it) 1 else 0) }, { castNBTTag(it, NBTPrimitive::class.java).byte == 1.toByte() })
-        mapHandler(String::class.java, ::NBTTagString, { castNBTTag(it, NBTTagString::class.java).string })
+        mapHandler(Float::class.javaPrimitiveType!!, ::NBTTagFloat, { it, existing -> castNBTTag(it, NBTPrimitive::class.java).float })
+        mapHandler(Double::class.javaPrimitiveType!!, ::NBTTagDouble, { it, existing -> castNBTTag(it, NBTPrimitive::class.java).double })
+        mapHandler(Boolean::class.javaPrimitiveType!!, { NBTTagByte(if (it) 1 else 0) }, { it, existing -> castNBTTag(it, NBTPrimitive::class.java).byte == 1.toByte() })
+        mapHandler(String::class.java, ::NBTTagString, { it, existing -> castNBTTag(it, NBTTagString::class.java).string })
 
-        mapHandler(CharArray::class.java, { NBTTagIntArray(it.map(Char::toInt).toIntArray()) }, { castNBTTag(it, NBTTagIntArray::class.java).intArray.map(Int::toChar).toCharArray() })
-        mapHandler(ShortArray::class.java, { NBTTagIntArray(it.map(Short::toInt).toIntArray()) }, { castNBTTag(it, NBTTagIntArray::class.java).intArray.map(Int::toShort).toShortArray() })
-        mapHandler(ByteArray::class.java, ::NBTTagByteArray, { castNBTTag(it, NBTTagByteArray::class.java).byteArray })
-        mapHandler(IntArray::class.java, ::NBTTagIntArray, { castNBTTag(it, NBTTagIntArray::class.java).intArray })
+        mapHandler(CharArray::class.java, { NBTTagIntArray(it.map(Char::toInt).toIntArray()) }, { it, existing -> castNBTTag(it, NBTTagIntArray::class.java).intArray.map(Int::toChar).toCharArray() })
+        mapHandler(ShortArray::class.java, { NBTTagIntArray(it.map(Short::toInt).toIntArray()) }, { it, existing -> castNBTTag(it, NBTTagIntArray::class.java).intArray.map(Int::toShort).toShortArray() })
+        mapHandler(ByteArray::class.java, ::NBTTagByteArray, { it, existing -> castNBTTag(it, NBTTagByteArray::class.java).byteArray })
+        mapHandler(IntArray::class.java, ::NBTTagIntArray, { it, existing -> castNBTTag(it, NBTTagIntArray::class.java).intArray })
         mapHandler(LongArray::class.java, {
             val tag = NBTTagList()
             it.forEachIndexed { i, l ->
                 tag.appendTag(NBTTagLong(l))
             }
             tag
-        }, {
+        }, { it, existing ->
             val tag = castNBTTag(it, NBTTagList::class.java)
-            val list = LongArray(tag.tagCount())
+            val list = if(existing == null || existing.size != tag.tagCount()) LongArray(tag.tagCount()) else existing
             tag.forEachIndexed<NBTBase> { i, t ->
                 list[i] = castNBTTag(t, NBTPrimitive::class.java).long
             }
@@ -352,9 +361,9 @@ object NBTSerializationHandlers {
                 tag.appendTag(NBTTagFloat(f))
             }
             tag
-        }, {
+        }, { it, existing ->
             val tag = castNBTTag(it, NBTTagList::class.java)
-            val list = FloatArray(tag.tagCount())
+            val list = if(existing == null || existing.size != tag.tagCount()) FloatArray(tag.tagCount()) else existing
             tag.forEachIndexed<NBTBase> { i, t ->
                 list[i] = castNBTTag(t, NBTPrimitive::class.java).float
             }
@@ -366,9 +375,9 @@ object NBTSerializationHandlers {
                 tag.appendTag(NBTTagDouble(d))
             }
             tag
-        }, {
+        }, { it, existing ->
             val tag = castNBTTag(it, NBTTagList::class.java)
-            val list = DoubleArray(tag.tagCount())
+            val list = if(existing == null || existing.size != tag.tagCount()) DoubleArray(tag.tagCount()) else existing
             tag.forEachIndexed<NBTBase> { i, t ->
                 list[i] = castNBTTag(t, NBTPrimitive::class.java).double
             }
@@ -376,20 +385,25 @@ object NBTSerializationHandlers {
         })
         mapHandler(BooleanArray::class.java, {
             NBTTagByteArray(it.map { if (it) 1.toByte() else 0.toByte() }.toByteArray())
-        }, {
-            castNBTTag(it, NBTTagByteArray::class.java).byteArray.map { if (it == 1.toByte()) true else false }.toBooleanArray()
+        }, { it, existing ->
+            val tag = castNBTTag(it, NBTTagByteArray::class.java)
+            val list = if(existing == null || existing.size != tag.byteArray.size) BooleanArray(tag.byteArray.size) else existing
+            tag.byteArray.forEachIndexed { i, t ->
+                list[i] = if(t == 1.toByte()) true else false
+            }
+            list
         })
 
         // Misc.
-        mapHandler(Color::class.java, { NBTTagInt(it.rgb) }, { Color(castNBTTag(it, NBTPrimitive::class.java).int, true) })
-        mapHandler(NBTTagCompound::class.java, { it }, { castNBTTag(it, NBTTagCompound::class.java) })
+        mapHandler(Color::class.java, { NBTTagInt(it.rgb) }, { it, existing -> Color(castNBTTag(it, NBTPrimitive::class.java).int, true) })
+        mapHandler(NBTTagCompound::class.java, { it }, { it, existing -> castNBTTag(it, NBTTagCompound::class.java) })
 
         // Item Handlers
-        mapHandler(ItemStack::class.java, { it.serializeNBT() ?: NBTTagCompound() }, {
+        mapHandler(ItemStack::class.java, { it.serializeNBT() ?: NBTTagCompound() }, { it, existing ->
             val compound = castNBTTag(it, NBTTagCompound::class.java)
             ItemStack.loadItemStackFromNBT(compound)
         })
-        mapHandler(ItemStackHandler::class.java, { it.serializeNBT() ?: NBTTagCompound() }, {
+        mapHandler(ItemStackHandler::class.java, { it.serializeNBT() ?: NBTTagCompound() }, { it, existing ->
             val handler = ItemStackHandler()
             val compound = castNBTTag(it, NBTTagCompound::class.java)
             handler.deserializeNBT(compound)
@@ -404,7 +418,7 @@ object NBTSerializationHandlers {
             list.appendTag(NBTTagDouble(it.yCoord))
             list.appendTag(NBTTagDouble(it.zCoord))
             list
-        }, {
+        }, { it, existing ->
             val tag = castNBTTag(it, NBTTagList::class.java)
             val x = tag.getDoubleAt(0)
             val y = tag.getDoubleAt(1)
@@ -417,7 +431,7 @@ object NBTSerializationHandlers {
             list.appendTag(NBTTagInt(it.y))
             list.appendTag(NBTTagInt(it.z))
             list
-        }, {
+        }, { it, existing ->
             val tag = castNBTTag(it, NBTTagList::class.java)
             val x = tag.getIntAt(0)
             val y = tag.getIntAt(1)
@@ -429,13 +443,13 @@ object NBTSerializationHandlers {
             list.appendTag(NBTTagDouble(it.x))
             list.appendTag(NBTTagDouble(it.y))
             list
-        }, {
+        }, { it, existing ->
             val tag = castNBTTag(it, NBTTagList::class.java)
             val x = tag.getDoubleAt(0)
             val y = tag.getDoubleAt(1)
             Vec2d(x, y)
         })
-        mapHandler(BlockPos::class.java, { NBTTagLong(it.toLong()) }, { BlockPos.fromLong(castNBTTag(it, NBTPrimitive::class.java).long) })
+        mapHandler(BlockPos::class.java, { NBTTagLong(it.toLong()) }, { it, existing -> BlockPos.fromLong(castNBTTag(it, NBTPrimitive::class.java).long) })
 
 
 
@@ -446,8 +460,8 @@ object NBTSerializationHandlers {
 
     @JvmStatic
     @Suppress("UNCHECKED_CAST")
-    fun <T> mapHandler(clazz: Class<T>, writer: (T) -> NBTBase, reader: (NBTBase) -> T) {
-        map.put(clazz, NBTSerializer(reader as (NBTBase) -> Any, writer as (Any) -> NBTBase))
+    fun <T> mapHandler(clazz: Class<T>, writer: (T) -> NBTBase, reader: (NBTBase, T?) -> T) {
+        map.put(clazz, NBTSerializer(reader as (NBTBase, Any?) -> Any, writer as (Any) -> NBTBase))
     }
 
     @JvmStatic
@@ -471,13 +485,13 @@ object NBTSerializationHandlers {
 
     @JvmStatic
     @Suppress("UNCHECKED_CAST")
-    fun <T> getReader(clazz: Class<T>): ((NBTBase) -> T)? {
+    fun <T> getReader(clazz: Class<T>): ((NBTBase, T?) -> T)? {
         val unchecked = getReaderUnchecked(clazz) ?: return null
-        return unchecked as (NBTBase) -> T
+        return unchecked as (NBTBase, T?) -> T
     }
 
     @JvmStatic
-    fun getReaderUnchecked(clazz: Class<*>): ((NBTBase) -> Any)? {
+    fun getReaderUnchecked(clazz: Class<*>): ((NBTBase, Any?) -> Any)? {
         val pair = map[clazz] ?: createSpecialMapping(clazz) ?: return null
         return pair.reader
     }
@@ -496,7 +510,7 @@ object NBTSerializationHandlers {
             return null
 
         val values = clazz.enumConstants
-        val serializer = NBTSerializer(reader@{ nbt ->
+        val serializer = NBTSerializer(reader@{ nbt, existing ->
             values[castNBTTag(nbt, NBTTagShort::class.java).short.toInt()]
         }, writer@{ obj ->
             NBTTagShort((obj as Enum<*>).ordinal.toShort())
@@ -517,17 +531,18 @@ object NBTSerializationHandlers {
         if (subReader == null || subWriter == null)
             return null
 
-        val serializer = NBTSerializer(reader@{ nbt ->
+        val serializer = NBTSerializer(reader@{ nbt, existing ->
+            existing as Array<*>?
             val compound = castNBTTag(nbt, NBTTagCompound::class.java)
             val list = castNBTTag(compound.getTag("list"), NBTTagList::class.java)
 
-            val array = ArrayReflect.newInstance(subclass, list.tagCount())
+            val array: Array<Any?> = if(existing == null || existing.size != list.tagCount()) ArrayReflect.newInstance(subclass, list.tagCount()) as Array<Any?> else existing as Array<Any?>
             list.forEachIndexed<NBTTagCompound> { i, compound ->
                 val tag = compound.getTag("-")
                 if (tag == null)
-                    ArrayReflect.set(array, i, null)
+                    array[i] = null
                 else
-                    ArrayReflect.set(array, i, subReader(tag))
+                    array[i] = subReader(tag, array[i])
             }
             return@reader array
         }, { obj ->
@@ -552,4 +567,4 @@ object NBTSerializationHandlers {
 
 }
 
-data class NBTSerializer(val reader: (NBTBase) -> Any, val writer: (Any) -> NBTBase)
+data class NBTSerializer(val reader: (NBTBase, Any?) -> Any, val writer: (Any) -> NBTBase)
