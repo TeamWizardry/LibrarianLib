@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.common.util.times
 import mcmultipart.multipart.IMultipart
 import mcmultipart.multipart.MultipartRegistry
 import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
@@ -35,9 +36,10 @@ object AutoRegisterHandler {
         val errors = mutableMapOf<String, MutableList<Class<*>>>()
 
         getAnnotatedBy(TileRegister::class.java, TileEntity::class.java, table).forEach {
-            val name = it.get<String>("value")
-            val modid = getModid(it.clazz)
-            if (modid == null && (name == null || ":" !in name))
+            val value = it.get<String>("value") ?: ""
+            val name = if(":" in value) ResourceLocation(value).resourcePath else value
+            val modid = if(":" in value) ResourceLocation(value).resourceDomain else getModid(it.clazz)
+            if (value == "" || modid == null && ":" !in name)
                 errors.getOrPut("TileRegister", { mutableListOf() }).add(it.clazz)
             else {
                 AbstractSaveHandler.cacheFields(it.clazz)
@@ -47,9 +49,10 @@ object AutoRegisterHandler {
         }
         if (Loader.isModLoaded("mcmultipart")) {
             getAnnotatedBy(PartRegister::class.java, IMultipart::class.java, table).forEach {
-                val name = it.get<String>("value")
-                val modid = getModid(it.clazz)
-                if (modid == null && (name == null || ":" !in name))
+                val value = it.get<String>("value") ?: ""
+                val name = if(":" in value) ResourceLocation(value).resourcePath else value
+                val modid = if(":" in value) ResourceLocation(value).resourceDomain else getModid(it.clazz)
+                if (value == "" || modid == null && ":" !in name)
                     errors.getOrPut("PartRegister", { mutableListOf() }).add(it.clazz)
                 else {
                     AbstractSaveHandler.cacheFields(it.clazz)
@@ -59,21 +62,22 @@ object AutoRegisterHandler {
         }
 
         if(errors.isNotEmpty()) {
-            LibrarianLog.warn("AutoRegister Errors")
-            LibrarianLog.warn("Prefixes:")
+            LibrarianLog.warn("AutoRegister Errors: No modid specified!")
+            LibrarianLog.warn("Defined prefixes:")
 
             val keyMax = prefixes.maxBy { it.second.length }?.second?.length ?: 0
             for ((prefix, modid) in prefixes) {
                 val spaces = keyMax - modid.length
                 LibrarianLog.warn("${" " * spaces}$modid | $prefix")
             }
+            LibrarianLog.warn("Errored registers:")
             for ((name, list) in errors) {
                 LibrarianLog.warn("> @$name")
                 list.forEach {
                     LibrarianLog.warn("  | ${it.canonicalName}")
                 }
             }
-            throw IllegalArgumentException("AutoRegister errors!!! (see log above)")
+            throw IllegalArgumentException("AutoRegister modid errors!!! (see log above)")
         }
     }
 
