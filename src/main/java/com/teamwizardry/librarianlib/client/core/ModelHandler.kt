@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.client.core
 
+import com.google.gson.JsonElement
+import com.google.gson.JsonParser
 import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.base.IExtraVariantHolder
@@ -181,7 +183,7 @@ object ModelHandler {
                 if ((variant.value != item.registryName.resourcePath || variants.size != 1))
                     log("$namePad |  Variant #${variant.index + 1}: ${variant.value}")
 
-                if (debug && LibLibConfig.generateJson) {
+                if (debug && LibLibConfig.generateJson && shouldGenItemJson(holder)) {
                     val path = JsonGenerationUtils.getPathForItemModel(holder.providedItem, variant.value)
                     val file = File(path)
                     file.parentFile.mkdirs()
@@ -204,6 +206,32 @@ object ModelHandler {
             }
         }
 
+    }
+
+    @SideOnly(Side.CLIENT)
+    private fun shouldGenItemJson(provider: IVariantHolder): Boolean {
+        if (provider !is IModBlockProvider && provider !is IModItemProvider) return false
+
+        val entry = if (provider is IModBlockProvider) provider.providedBlock else
+            (provider as IModItemProvider).providedItem
+
+        val statePath = JsonGenerationUtils.getPathForBaseBlockstate(entry)
+
+        val file = File(statePath)
+        if (!file.exists()) return true
+
+        val json: JsonElement
+        try { json = JsonParser().parse(file.reader()) } catch (t: Throwable) { return true }
+
+        var isForge = false
+        if (json.isJsonObject && json.asJsonObject.has("forge_marker")) {
+            val marker = json.asJsonObject["forge_marker"]
+            if (marker.isJsonPrimitive && marker.asJsonPrimitive.isNumber)
+                isForge = marker.asJsonPrimitive.asNumber.toInt() != 0
+        }
+        if (isForge)
+            log("$namePad | Assuming forge override for ${entry.getRegistryName().resourcePath} item model")
+        return !isForge
     }
 
     @JvmStatic

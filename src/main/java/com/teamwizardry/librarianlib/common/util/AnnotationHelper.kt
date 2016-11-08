@@ -27,6 +27,11 @@ object AnnotationHelper {
             return if (value == null) def else value.hashCode()
         }
 
+        fun getDouble(id: String, def: Double): Double {
+            val value = map[id]
+            return if (value == null) def else value.toString().toDouble()
+        }
+
         fun getBoolean(id: String, def: Boolean): Boolean {
             val value = map[id]
             return if (value == null) def else value as Boolean

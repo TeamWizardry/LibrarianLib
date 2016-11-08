@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.block.statemap.DefaultStateMapper
 import net.minecraft.client.renderer.block.statemap.IStateMapper
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
+import net.minecraftforge.fml.common.registry.IForgeRegistryEntry
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.io.File
@@ -27,6 +28,11 @@ object JsonGenerationUtils {
 
     private operator fun String.unaryPlus(): String {
         return this.replace("/", s)
+    }
+
+    fun getPathForBaseBlockstate(block: IForgeRegistryEntry<*>): String {
+        val registryName = block.registryName
+        return getAssetPath(registryName.resourceDomain) + +"/blockstates/${registryName.resourcePath}.json"
     }
 
     fun getPathsForBlockstate(block: Block, stateMapper: IStateMapper? = null): Array<String> {
