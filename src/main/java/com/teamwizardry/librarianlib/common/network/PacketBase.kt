@@ -66,7 +66,7 @@ abstract class PacketBase : IMessage {
                 setter(this, null)
             else {
                 val handler = ByteBufSerializationHandlers.getReaderUnchecked(clazz)
-                if (handler != null) setter(this, handler(buf))
+                if (handler != null) setter(this, handler(buf, null))
             }
         }
     }
