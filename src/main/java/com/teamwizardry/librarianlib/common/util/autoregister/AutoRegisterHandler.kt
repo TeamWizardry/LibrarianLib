@@ -61,21 +61,22 @@ object AutoRegisterHandler {
         }
 
         if(errors.isNotEmpty()) {
-            LibrarianLog.warn("AutoRegister Errors")
-            LibrarianLog.warn("Prefixes:")
+            var build = "AutoRegister Errors: No modid specified!"
+            build += "\nDefined prefixes:"
 
             val keyMax = prefixes.maxBy { it.second.length }?.second?.length ?: 0
             for ((prefix, modid) in prefixes) {
                 val spaces = keyMax - modid.length
-                LibrarianLog.warn("${" " * spaces}$modid | $prefix")
+                build += "\n${" " * spaces}$modid | $prefix"
             }
+            build += "\nErrored registers:"
             for ((name, list) in errors) {
-                LibrarianLog.warn("> @$name")
+                build += "\n> @$name"
                 list.forEach {
-                    LibrarianLog.warn("  | ${it.canonicalName}")
+                    build += "\n  | ${it.canonicalName}"
                 }
             }
-            throw IllegalArgumentException("AutoRegister errors!!! (see log above)")
+            throw RuntimeException("FATAL: AutoRegister failed - \n$build")
         }
     }
 
