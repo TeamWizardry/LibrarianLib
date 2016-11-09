@@ -6,9 +6,7 @@ import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import io.netty.buffer.ByteBuf
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NBTBase
-import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.nbt.NBTTagList
+import net.minecraft.nbt.*
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.text.TextComponentString
@@ -231,6 +229,30 @@ fun <T : NBTBase> NBTTagList.forEachIndexed(run: (Int, T) -> Unit) {
     for(i in this.indices) {
         run(i, this.get(i) as T)
     }
+}
+
+// NBT
+
+@Suppress("UNCHECKED_CAST")
+fun <T : NBTBase> NBTBase.safeCast(clazz: Class<T>): T {
+    return (
+            if (clazz.isAssignableFrom(this.javaClass))
+                this
+            else if (clazz == NBTPrimitive::class.java)
+                NBTTagByte(0)
+            else if (clazz == NBTTagByteArray::class.java)
+                NBTTagByteArray(ByteArray(0))
+            else if (clazz == NBTTagString::class.java)
+                NBTTagString("")
+            else if (clazz == NBTTagList::class.java)
+                NBTTagList()
+            else if (clazz == NBTTagCompound::class.java)
+                NBTTagCompound()
+            else if (clazz == NBTTagIntArray::class.java)
+                NBTTagIntArray(IntArray(0))
+            else
+                throw IllegalArgumentException("Unknown NBT type to cast to")
+            ) as T
 }
 
 // Player
