@@ -2,7 +2,6 @@
 
 package com.teamwizardry.librarianlib.common.core
 
-import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.client.book.Book
 import com.teamwizardry.librarianlib.common.util.EasyConfigHandler
 import com.teamwizardry.librarianlib.common.util.autoregister.AutoRegisterHandler
@@ -20,7 +19,8 @@ open class LibCommonProxy {
 
     open internal fun pre(e: FMLPreInitializationEvent) {
         BitwiseStorageManager
-        EasyConfigHandler.init(LibrarianLib.MODID, e.suggestedConfigurationFile, e.asmData)
+        EasyConfigHandler.loadAsm(e.asmData)
+        EasyConfigHandler.init(e.suggestedConfigurationFile)
     }
 
     open internal fun latePre(e: FMLPreInitializationEvent) {

@@ -22,8 +22,11 @@ object AutoRegisterHandler {
      * Registers a class prefix for a mod. Usually this will be the main package for your mod.
      * e.g. "com.teamwizardry.refraction." (If it doesn't end with a dot this method will add one)
      */
-    fun registerPrefix(prefix: String, modid: String) {
-        prefixes.add((if(prefix.endsWith(".")) prefix else prefix + ".") to modid)
+    @JvmStatic
+    @JvmOverloads
+    fun registerPrefix(prefix: String, modid: String = Loader.instance().activeModContainer().modId) {
+        val qualified = if(prefix.endsWith(".")) prefix else prefix + "."
+        prefixes.add(qualified to modid)
     }
 
     private fun getModid(clazz: Class<*>): String? {
@@ -62,22 +65,22 @@ object AutoRegisterHandler {
         }
 
         if(errors.isNotEmpty()) {
-            LibrarianLog.warn("AutoRegister Errors: No modid specified!")
-            LibrarianLog.warn("Defined prefixes:")
+            var build = "AutoRegister Errors: No modid specified!"
+            build += "\nDefined prefixes:"
 
             val keyMax = prefixes.maxBy { it.second.length }?.second?.length ?: 0
             for ((prefix, modid) in prefixes) {
                 val spaces = keyMax - modid.length
-                LibrarianLog.warn("${" " * spaces}$modid | $prefix")
+                build += "\n${" " * spaces}$modid | $prefix"
             }
-            LibrarianLog.warn("Errored registers:")
+            build += "\nErrored registers:"
             for ((name, list) in errors) {
-                LibrarianLog.warn("> @$name")
+                build += "\n> @$name"
                 list.forEach {
-                    LibrarianLog.warn("  | ${it.canonicalName}")
+                    build += "\n  | ${it.canonicalName}"
                 }
             }
-            throw IllegalArgumentException("AutoRegister modid errors!!! (see log above)")
+            throw RuntimeException("FATAL: AutoRegister failed - \n$build")
         }
     }
 
