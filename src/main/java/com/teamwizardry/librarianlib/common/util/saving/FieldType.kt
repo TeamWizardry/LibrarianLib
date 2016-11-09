@@ -57,6 +57,10 @@ class FieldTypeClass(clazz: Class<*>) : FieldType(clazz) {
     override fun hashCode(): Int {
         return clazz.hashCode()
     }
+
+    override fun toString(): String {
+        return clazz.simpleName
+    }
 }
 
 class FieldTypeArray(val componentType: FieldType) : FieldType(getArrayType(componentType)) {
@@ -73,6 +77,10 @@ class FieldTypeArray(val componentType: FieldType) : FieldType(getArrayType(comp
 
     override fun hashCode(): Int {
         return componentType.hashCode()
+    }
+
+    override fun toString(): String {
+        return componentType.toString() + "[]"
     }
 
     companion object {
@@ -104,5 +112,9 @@ class FieldTypeGeneric(clazz: Class<*>, val generics: Array<FieldType>) : FieldT
         var result = clazz.hashCode()
         result = 31 * result + Arrays.hashCode(generics)
         return result
+    }
+
+    override fun toString(): String {
+        return clazz.simpleName + "<" + generics.map { it.toString() }.joinToString(", ") + ">"
     }
 }
