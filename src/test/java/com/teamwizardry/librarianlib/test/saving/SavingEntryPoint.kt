@@ -28,4 +28,5 @@ object SavingBlockRegister {
     val objects = BlockObjectsSaving()
     val objectArrays = BlockObjectArraysSaving()
     val primitiveDeepArrays = BlockPrimitiveDeepArraysSaving()
+    val primitiveGenerics = BlockPrimitiveGenericsSaving()
 }

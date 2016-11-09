@@ -11,7 +11,7 @@ import net.minecraft.nbt.NBTTagCompound
 object AbstractSaveHandler {
     fun writeAutoNBT(instance: Any, cmp: NBTTagCompound) {
         SavingFieldCache.getClassFields(instance.javaClass).forEach {
-            val handler = NBTSerializationHandlers.getWriterUnchecked(it.value.klass)
+            val handler = NBTSerializationHandlers.getWriterUnchecked(it.value.type)
             if (handler != null) {
                 val value = it.value.getter(instance)
                 if (value != null)
@@ -25,7 +25,7 @@ object AbstractSaveHandler {
             if (!cmp.hasKey(it.key))
                 it.value.setter(instance, null)
             else {
-                val handler = NBTSerializationHandlers.getReaderUnchecked(it.value.klass)
+                val handler = NBTSerializationHandlers.getReaderUnchecked(it.value.type)
                 if (handler != null)
                     it.value.setter(instance, handler(cmp.getTag(it.key), it.value.getter(instance)))
             }
@@ -38,7 +38,7 @@ object AbstractSaveHandler {
         var i = 0
         cache.forEach {
             nullSig[i] = false
-            val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.klass)
+            val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.type)
             if (handler != null) {
                 val field = it.value.getter(instance)
                 if (field == null)
@@ -48,7 +48,7 @@ object AbstractSaveHandler {
         }
         buf.writeBooleanArray(nullSig)
         cache.forEach {
-            val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.klass)
+            val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.type)
             if (handler != null) {
                 val field = it.value.getter(instance)
                 if (field == null)
@@ -67,7 +67,7 @@ object AbstractSaveHandler {
             if (nullSig[i])
                 it.value.setter(instance, null)
             else {
-                val handler = ByteBufSerializationHandlers.getReaderUnchecked(it.value.klass)
+                val handler = ByteBufSerializationHandlers.getReaderUnchecked(it.value.type)
                 if (handler != null)
                     it.value.setter(instance, handler(buf, it.value.getter(instance)))
             }

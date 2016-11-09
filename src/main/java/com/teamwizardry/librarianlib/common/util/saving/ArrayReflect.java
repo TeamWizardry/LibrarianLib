@@ -211,7 +211,7 @@ public class ArrayReflect {
 			throw badArray(array);
 	}
 	
-	public static Object newInstance(Class<?> clazz, int length) {
-		return java.lang.reflect.Array.newInstance(clazz, length);
+	public static Object[] newInstance(Class<?> clazz, int length) {
+		return (Object[]) java.lang.reflect.Array.newInstance(clazz, length);
 	}
 }

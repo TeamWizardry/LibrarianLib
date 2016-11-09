@@ -39,7 +39,8 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
         }.forEach {
             val (name, field) = it
             field.isAccessible = true
-            map.put(name, FieldCache(field.type,
+
+            map.put(name, FieldCache(FieldType.create(field),
                     MethodHandleHelper.wrapperForGetter<Any>(field),
                     MethodHandleHelper.wrapperForSetter<Any>(field)))
         }
@@ -91,7 +92,7 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
             val wrapperForGetter = MethodHandleHelper.wrapperForMethod<Any>(getter)
             val wrapperForSetter = MethodHandleHelper.wrapperForMethod<Any>(setter)
 
-            map.put(name, FieldCache(type,
+            map.put(name, FieldCache(FieldType.create(getter),
                     { obj -> wrapperForGetter(obj, arrayOf()) },
                     { obj, inp -> wrapperForSetter(obj, arrayOf(inp))}))
         }
@@ -143,4 +144,5 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
     }
 }
 
-data class FieldCache(val klass: Class<*>, val getter: (Any) -> Any?, val setter: (Any, Any?) -> Unit)
+data class FieldCache(val type: FieldType, val getter: (Any) -> Any?, val setter: (Any, Any?) -> Unit)
+
