@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.common.util.times
 import mcmultipart.multipart.IMultipart
 import mcmultipart.multipart.MultipartRegistry
 import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
@@ -39,11 +40,18 @@ object AutoRegisterHandler {
         getAnnotatedBy(TileRegister::class.java, TileEntity::class.java, table).forEach {
             val name = it.get<String>("value")
             val modid = getModid(it.clazz)
-            if (modid == null && (name == null || ":" !in name))
+            if (name == null) {
                 errors.getOrPut("TileRegister", { mutableListOf() }).add(it.clazz)
-            else {
-                AbstractSaveHandler.cacheFields(it.clazz)
-                GameRegistry.registerTileEntity(it.clazz, "$modid:$name")
+            } else {
+                var loc = ResourceLocation(name)
+                if (loc.resourceDomain == "minecraft" && modid == null)
+                    errors.getOrPut("TileRegister", { mutableListOf() }).add(it.clazz)
+                else {
+                    if (loc.resourceDomain == "minecraft")
+                        loc = ResourceLocation(modid, loc.resourcePath)
+                    AbstractSaveHandler.cacheFields(it.clazz)
+                    GameRegistry.registerTileEntity(it.clazz, loc.toString())
+                }
             }
 
         }
@@ -51,11 +59,18 @@ object AutoRegisterHandler {
             getAnnotatedBy(PartRegister::class.java, IMultipart::class.java, table).forEach {
                 val name = it.get<String>("value")
                 val modid = getModid(it.clazz)
-                if (modid == null && (name == null || ":" !in name))
+                if (name == null) {
                     errors.getOrPut("PartRegister", { mutableListOf() }).add(it.clazz)
-                else {
-                    AbstractSaveHandler.cacheFields(it.clazz)
-                    MultipartRegistry.registerPart(it.clazz, "$modid:$name")
+                } else {
+                    var loc = ResourceLocation(name)
+                    if (loc.resourceDomain == "minecraft" && modid == null)
+                        errors.getOrPut("PartRegister", { mutableListOf() }).add(it.clazz)
+                    else {
+                        if (loc.resourceDomain == "minecraft")
+                            loc = ResourceLocation(modid, loc.resourcePath)
+                        AbstractSaveHandler.cacheFields(it.clazz)
+                        MultipartRegistry.registerPart(it.clazz, loc.toString())
+                    }
                 }
             }
         }
@@ -104,7 +119,7 @@ object AutoRegisterHandler {
     private data class AnnotatedClass<T>(val clazz: Class<T>, val properties: Map<String, Any>) {
         @Suppress("UNCHECKED_CAST")
         operator fun <T> get(property: String): T? {
-            return properties[property] as T?
+            return properties[property] as? T?
         }
     }
 }
