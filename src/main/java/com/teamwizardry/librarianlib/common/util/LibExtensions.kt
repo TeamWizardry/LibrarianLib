@@ -223,12 +223,14 @@ val NBTTagList.indices: IntRange
 
 fun <T : NBTBase> NBTTagList.forEach(run: (T) -> Unit) {
     for(i in this.indices) {
+        @Suppress("UNCHECKED_CAST")
         run(this.get(i) as T)
     }
 }
 
 fun <T : NBTBase> NBTTagList.forEachIndexed(run: (Int, T) -> Unit) {
     for(i in this.indices) {
+        @Suppress("UNCHECKED_CAST")
         run(i, this.get(i) as T)
     }
 }

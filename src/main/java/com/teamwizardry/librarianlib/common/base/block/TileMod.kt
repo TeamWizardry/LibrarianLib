@@ -33,7 +33,7 @@ abstract class TileMod : TileEntity() {
     }
 
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
-        writeCustomNBT(compound)
+        writeCustomNBT(compound, false)
         AbstractSaveHandler.writeAutoNBT(this, compound)
         super.writeToNBT(compound)
 
@@ -47,7 +47,12 @@ abstract class TileMod : TileEntity() {
     }
 
     override fun getUpdateTag(): NBTTagCompound {
-        return writeToNBT(super.getUpdateTag())
+        val compound = super.getUpdateTag()
+        writeCustomNBT(compound, true)
+        AbstractSaveHandler.writeAutoNBT(this, compound, true)
+        super.writeToNBT(compound)
+
+        return compound
     }
 
     override fun getUpdatePacket(): SPacketUpdateTileEntity {
@@ -57,8 +62,10 @@ abstract class TileMod : TileEntity() {
     /**
      * Override this function to store special data not stored in @Save fields in NBT.
      * If [useFastSync] is false, this will also determine whether it gets sent to clientside.
+     *
+     * [sync] implies that this is being used to send to clientside.
      */
-    open fun writeCustomNBT(cmp: NBTTagCompound) {
+    open fun writeCustomNBT(cmp: NBTTagCompound, sync: Boolean) {
         // NO-OP
     }
 
@@ -73,8 +80,10 @@ abstract class TileMod : TileEntity() {
     /**
      * Override this function to write special data not stored in @Save fields to bytes.
      * If [useFastSync] is false, this function is never called.
+     *
+     * [sync] implies that this is being used to send to clientside.
      */
-    open fun writeCustomBytes(buf: ByteBuf) {
+    open fun writeCustomBytes(buf: ByteBuf, sync: Boolean) {
         // NO-OP
     }
 

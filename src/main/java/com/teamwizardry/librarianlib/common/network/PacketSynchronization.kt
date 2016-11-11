@@ -49,8 +49,8 @@ class PacketSynchronization(var tile: TileMod? = null /* Tile is always null on 
         else {
             buf.writeNonnullSignature()
 
-            AbstractSaveHandler.writeAutoBytes(te, buf)
-            te.writeCustomBytes(buf)
+            AbstractSaveHandler.writeAutoBytes(te, buf, true)
+            te.writeCustomBytes(buf, true)
         }
     }
 }

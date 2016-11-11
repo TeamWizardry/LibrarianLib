@@ -15,6 +15,18 @@ annotation class Save(val saveName: String = "")
 
 /**
  * @author WireSegal
+ * Created at 9:24 AM on 11/11/16.
+ *
+ * Apply this to a field or function annotated with [Save] or [SaveMethodSetter]/[SaveMethodGetter] to prevent
+ * the data from syncing to clientside, but still get saved to NBT. This only applies to TileEntities.
+ * NoSync needs to be applied to both a setter and a getter in the case of method annotations.
+ */
+@Target(AnnotationTarget.FIELD, AnnotationTarget.FUNCTION)
+@MustBeDocumented
+annotation class NoSync
+
+/**
+ * @author WireSegal
  * Created at 5:33 PM on 10/31/16.
  *
  * Apply this to a method to mark it as the getter component for reading/writing a property.

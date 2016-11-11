@@ -41,7 +41,8 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
             field.isAccessible = true
             map.put(name, FieldCache(field.type,
                     MethodHandleHelper.wrapperForGetter<Any>(field),
-                    MethodHandleHelper.wrapperForSetter<Any>(field)))
+                    MethodHandleHelper.wrapperForSetter<Any>(field),
+                    !field.isAnnotationPresent(NoSync::class.java)))
         }
     }
 
@@ -73,9 +74,8 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
                 val setter = setters[name]!!
                 val getReturnType = getter.returnType
                 val setReturnType = setter.parameterTypes[0]
-                if (getReturnType == setReturnType) {
+                if (getReturnType == setReturnType)
                     pairs.put(name, Triple(getter, setter, getReturnType))
-                }
             }
         }
 
@@ -93,7 +93,8 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
 
             map.put(name, FieldCache(type,
                     { obj -> wrapperForGetter(obj, arrayOf()) },
-                    { obj, inp -> wrapperForSetter(obj, arrayOf(inp))}))
+                    { obj, inp -> wrapperForSetter(obj, arrayOf(inp))},
+                    !getter.isAnnotationPresent(NoSync::class.java) || !setter.isAnnotationPresent(NoSync::class.java)))
         }
     }
 
@@ -143,4 +144,4 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
     }
 }
 
-data class FieldCache(val klass: Class<*>, val getter: (Any) -> Any?, val setter: (Any, Any?) -> Unit)
+data class FieldCache(val clazz: Class<*>, val getter: (Any) -> Any?, val setter: (Any, Any?) -> Unit, val syncToClient: Boolean)
