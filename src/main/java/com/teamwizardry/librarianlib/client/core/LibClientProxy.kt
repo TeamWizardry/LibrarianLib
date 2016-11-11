@@ -45,7 +45,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         UnlistedPropertyDebugViewer
         ScissorUtil
         LibShaders
-        ShaderHelper.initShaders()
+        ShaderHelper.init()
 
         val s = MethodHandleHelper.wrapperForGetter(Minecraft::class.java, "metadataSerializer_", "field_110452_an")(Minecraft.getMinecraft()) as MetadataSerializer
         s.registerMetadataSectionType(SpritesMetadataSectionSerializer(), SpritesMetadataSection::class.java)
