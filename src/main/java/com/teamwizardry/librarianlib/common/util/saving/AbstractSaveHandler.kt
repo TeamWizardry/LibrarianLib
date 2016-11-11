@@ -40,21 +40,23 @@ object AbstractSaveHandler {
     @JvmStatic
     @JvmOverloads
     fun writeAutoBytes(instance: Any, buf: ByteBuf, sync: Boolean = false) {
-        val cache = SavingFieldCache.getClassFields(instance.javaClass).filter {!sync || it.value.syncToClient}
+        val cache = SavingFieldCache.getClassFields(instance.javaClass)
         val nullSig = BooleanArray(cache.size)
         var i = 0
         cache.forEach {
-            nullSig[i] = false
-            val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.clazz)
-            if (handler != null) {
-                val field = it.value.getter(instance)
-                if (field == null)
-                    nullSig[i] = true
-            }
-            i++
+            if (!sync || it.value.syncToClient) {
+                nullSig[i] = false
+                val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.clazz)
+                if (handler != null) {
+                    val field = it.value.getter(instance)
+                    if (field == null)
+                        nullSig[i] = true
+                }
+                i++
+            } else nullSig[i] = true
         }
         buf.writeBooleanArray(nullSig)
-        cache.forEach {
+        cache.filter {!sync || it.value.syncToClient}.forEach {
             val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.clazz)
             if (handler != null) {
                 val field = it.value.getter(instance)
