@@ -1,7 +1,10 @@
 package com.teamwizardry.librarianlib.client.sprite
 
+import com.teamwizardry.librarianlib.client.event.ResourceReloadEvent
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.io.IOException
@@ -93,6 +96,22 @@ class Texture(
     }
 
     companion object {
+
+        internal fun register() {
+            MinecraftForge.EVENT_BUS.register(this)
+        }
+
+        @SubscribeEvent
+        fun onResourceManagerReload(e: ResourceReloadEvent) {
+            val newList = ArrayList<WeakReference<Texture>>()
+
+            for (tex in Texture.textures) {
+                tex.get()?.loadSpriteData()
+                if (tex.get() != null) newList.add(tex)
+            }
+
+            Texture.textures = newList
+        }
 
         var textures: MutableList<WeakReference<Texture>> = ArrayList()
     }

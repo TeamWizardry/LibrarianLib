@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.client.core
 
 import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.client.book.Book
+import com.teamwizardry.librarianlib.client.event.ResourceReloadEvent
 import com.teamwizardry.librarianlib.client.fx.shader.LibShaders
 import com.teamwizardry.librarianlib.client.fx.shader.ShaderHelper
 import com.teamwizardry.librarianlib.client.sprite.SpritesMetadataSection
@@ -18,12 +19,11 @@ import net.minecraft.client.resources.IResourceManager
 import net.minecraft.client.resources.IResourceManagerReloadListener
 import net.minecraft.client.resources.data.MetadataSerializer
 import net.minecraftforge.client.ClientCommandHandler
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
-import java.lang.ref.WeakReference
-import java.util.*
 
 /**
  * Prefixed with Lib so code suggestion in dependent projects doesn't suggest it
@@ -51,6 +51,8 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         s.registerMetadataSectionType(SpritesMetadataSectionSerializer(), SpritesMetadataSection::class.java)
         SpritesMetadataSection.registered = true
 
+        Texture.register()
+
         (Minecraft.getMinecraft().resourceManager as IReloadableResourceManager).registerReloadListener(this)
         onResourceManagerReload(Minecraft.getMinecraft().resourceManager)
     }
@@ -69,15 +71,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         return I18n.format(s, *format)
     }
 
-
     override fun onResourceManagerReload(resourceManager: IResourceManager) {
-        val newList = ArrayList<WeakReference<Texture>>()
-
-        for (tex in Texture.textures) {
-            tex.get()?.loadSpriteData()
-            if (tex.get() != null) newList.add(tex)
-        }
-
-        Texture.textures = newList
+        MinecraftForge.EVENT_BUS.post(ResourceReloadEvent(resourceManager))
     }
 }
