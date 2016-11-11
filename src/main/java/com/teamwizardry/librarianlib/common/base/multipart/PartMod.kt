@@ -12,15 +12,15 @@ open class PartMod : Multipart() {
 
     /**
      * Override this function to store special data not stored in @Save fields in NBT.
-     * If [useFastSync] is false, this will also determine whether it gets sent to clientside.
+     *
+     * [sync] implies that this is being used to send to clientside.
      */
-    open fun writeCustomNBT(cmp: NBTTagCompound) {
+    open fun writeCustomNBT(cmp: NBTTagCompound, sync: Boolean) {
         // NO-OP
     }
 
     /**
      * Override this function to read special data not stored in @Save fields from NBT.
-     * If [useFastSync] is false, this will also determine what the client receives.
      */
     open fun readCustomNBT(cmp: NBTTagCompound) {
         // NO-OP
@@ -28,15 +28,15 @@ open class PartMod : Multipart() {
 
     /**
      * Override this function to write special data not stored in @Save fields to bytes.
-     * If [useFastSync] is false, this function is never called.
+     *
+     * [sync] implies that this is being used to send to clientside.
      */
-    open fun writeCustomBytes(buf: PacketBuffer) {
+    open fun writeCustomBytes(buf: PacketBuffer, sync: Boolean) {
         // NO-OP
     }
 
     /**
      * Override this function to read special data not stored in @Save fields from bytes.
-     * If [useFastSync] is false, this function is never called.
      */
     open fun readCustomBytes(buf: PacketBuffer) {
         // NO-OP
@@ -49,7 +49,7 @@ open class PartMod : Multipart() {
     }
 
     override fun writeToNBT(tag: NBTTagCompound): NBTTagCompound {
-        writeCustomNBT(tag)
+        writeCustomNBT(tag, false)
         AbstractSaveHandler.writeAutoNBT(javaClass, tag)
         super.writeToNBT(tag)
         return tag
@@ -61,7 +61,7 @@ open class PartMod : Multipart() {
     }
 
     override fun writeUpdatePacket(buf: PacketBuffer) {
-        writeCustomBytes(buf)
-        AbstractSaveHandler.writeAutoBytes(javaClass, buf)
+        writeCustomBytes(buf, true)
+        AbstractSaveHandler.writeAutoBytes(javaClass, buf, true)
     }
 }
