@@ -240,7 +240,7 @@ private object BasicByteBufSerializers {
             buf, obj ->
             buf.writeTag(obj.serializeNBT())
         }, { buf, existing ->
-            val handler = ItemStackHandler()
+            val handler = existing ?: ItemStackHandler()
             handler.deserializeNBT(buf.readTag())
             handler
         })
@@ -248,7 +248,7 @@ private object BasicByteBufSerializers {
             buf, obj ->
             buf.writeTag(obj.serializeNBT())
         }, { buf, existing ->
-            val handler = ItemStackHandler()
+            val handler = existing ?: ItemStackHandler()
             handler.deserializeNBT(buf.readTag())
             handler
         })
@@ -323,7 +323,7 @@ private object SpecialByteBufSerializers {
         val serializer = BufferSerializer(reader@{ buf, existing ->
             existing as Array<*>?
             val nullsig = buf.readBooleanArray()
-            val array: Array<Any?> = if (existing == null || existing.size != nullsig.size) ArrayReflect.newInstance(type.clazz, nullsig.size) else existing as Array<Any?>
+            val array: Array<Any?> = if (existing == null || existing.size != nullsig.size) ArrayReflect.newInstanceRaw(type.clazz, nullsig.size) else existing as Array<Any?>
             for (i in 0..nullsig.size - 1) {
                 array[i] = if (nullsig[i]) null else subReader(buf, array[i])
             }

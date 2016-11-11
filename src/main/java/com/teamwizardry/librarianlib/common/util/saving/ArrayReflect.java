@@ -211,7 +211,11 @@ public class ArrayReflect {
 			throw badArray(array);
 	}
 	
-	public static Object[] newInstance(Class<?> clazz, int length) {
+	public static <T> T[] newInstance(Class<T> clazz, int length) {
+		return (T[]) newInstanceRaw(clazz, length);
+	}
+	
+	public static Object[] newInstanceRaw(Class clazz, int length) {
 		return (Object[]) java.lang.reflect.Array.newInstance(clazz, length);
 	}
 }

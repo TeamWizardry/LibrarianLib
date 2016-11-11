@@ -6,6 +6,7 @@ import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.*
+import javax.annotation.Nonnull
 
 /**
  * @author WireSegal
@@ -39,10 +40,12 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
         }.forEach {
             val (name, field) = it
             field.isAccessible = true
-
             map.put(name, FieldCache(FieldType.create(field),
                     MethodHandleHelper.wrapperForGetter<Any>(field),
-                    MethodHandleHelper.wrapperForSetter<Any>(field)))
+                    MethodHandleHelper.wrapperForSetter<Any>(field),
+                    field.isAnnotationPresent(Nonnull::class.java)))
+
+
         }
     }
 
@@ -94,7 +97,8 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
 
             map.put(name, FieldCache(FieldType.create(getter),
                     { obj -> wrapperForGetter(obj, arrayOf()) },
-                    { obj, inp -> wrapperForSetter(obj, arrayOf(inp))}))
+                    { obj, inp -> wrapperForSetter(obj, arrayOf(inp)) },
+                    getter.isAnnotationPresent(Nonnull::class.java)))
         }
     }
 
@@ -144,5 +148,17 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
     }
 }
 
-data class FieldCache(val type: FieldType, val getter: (Any) -> Any?, val setter: (Any, Any?) -> Unit)
+data class FieldCache(val type: FieldType, val getter: (Any) -> Any?, private val setter_: (Any, Any?) -> Unit, val nonnull: Boolean) {
+    val setter = if(nonnull) {
+        { instance: Any, value: Any? ->
+            if(value == null) {
+                setter_(instance, DefaultValues.getDefaultValue(type))
+            } else {
+                setter_(instance, value)
+            }
+        }
+    } else {
+        setter_
+    }
+}
 

@@ -377,7 +377,7 @@ private object SpecialNBTSerializers {
             val compound = nbt.safeCast(NBTTagCompound::class.java)
             val list = compound.getTag("list").safeCast(NBTTagList::class.java)
 
-            val array: Array<Any?> = if (existing == null || existing.size != list.tagCount()) ArrayReflect.newInstance(componentType.clazz, list.tagCount()) else existing as Array<Any?>
+            val array: Array<Any?> = if (existing == null || existing.size != list.tagCount()) ArrayReflect.newInstanceRaw(componentType.clazz, list.tagCount()) else existing as Array<Any?>
             list.forEachIndexed<NBTTagCompound> { i, compound ->
                 val tag = compound.getTag("-")
                 if (tag == null)

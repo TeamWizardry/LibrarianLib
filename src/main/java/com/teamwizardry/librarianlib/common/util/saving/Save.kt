@@ -1,10 +1,14 @@
 package com.teamwizardry.librarianlib.common.util.saving
 
+import javax.annotation.Nonnull
+
 /**
  * @author WireSegal
  * Created at 3:58 PM on 10/27/16.
  *
  * Apply this to a field to have it be serialized by the write/read nbt methods and write/read byte methods.
+ *
+ * If the field is annotated with @[Nonnull], a default value from [DefaultValues] will be used instead of null.
  *
  * [saveName] doesn't matter for messages, except in sorting. It's for NBT serializers.
  */
@@ -21,6 +25,8 @@ annotation class Save(val saveName: String = "")
  * A method must exist in the same class with the same [saveName]
  * and with the return type of this function as its single parameter,
  * annotated with [SaveMethodSetter], otherwise nothing will be saved.
+ *
+ * If the getter is annotated with @[Nonnull], a default value from [DefaultValues] will be used instead of null.
  *
  * The "getter" method must take exactly zero parameters, and return the content of the field.
  */
