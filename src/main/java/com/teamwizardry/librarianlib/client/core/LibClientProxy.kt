@@ -18,12 +18,14 @@ import net.minecraft.client.resources.IReloadableResourceManager
 import net.minecraft.client.resources.IResourceManager
 import net.minecraft.client.resources.IResourceManagerReloadListener
 import net.minecraft.client.resources.data.MetadataSerializer
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import java.io.InputStream
 
 /**
  * Prefixed with Lib so code suggestion in dependent projects doesn't suggest it
@@ -69,6 +71,11 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
     override fun translate(s: String, vararg format: Any?): String {
         return I18n.format(s, *format)
+    }
+
+    override fun getResource(modId: String, path: String): InputStream? {
+        val resourceManager = Minecraft.getMinecraft().resourceManager
+        return resourceManager.getResource(ResourceLocation(modId, path)).inputStream
     }
 
     override fun onResourceManagerReload(resourceManager: IResourceManager) {
