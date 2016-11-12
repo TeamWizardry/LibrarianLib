@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.common.util.autoregister
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntity
+import com.teamwizardry.librarianlib.common.base.multipart.PartMod
 
 /**
  * Apply this to a class that extends [TileEntity] to have it be automatically registered.
@@ -16,7 +17,7 @@ import net.minecraft.tileentity.TileEntity;
 annotation class TileRegister(val value: String)
 
 /**
- * Apply this to a class that extends PartMod to have it be automatically registered.
+ * Apply this to a class that extends [PartMod] to have it be automatically registered.
  *
  * [value] is the name or domain:name to register as.
  *
