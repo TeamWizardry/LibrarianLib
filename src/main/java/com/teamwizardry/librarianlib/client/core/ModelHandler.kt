@@ -44,9 +44,11 @@ object ModelHandler {
     /**
      * This is Mod name -> (Variant name -> MRL), specifically for ItemMeshDefinitions.
      */
-    @JvmField
     @SideOnly(Side.CLIENT)
-    val resourceLocations = HashMap<String, HashMap<String, ModelResourceLocation>>()
+    lateinit var resourceLocations: HashMap<String, HashMap<String, ResourceLocation>>
+
+    var gennedResources = false
+        private set
 
     /**
      * Use this method to inject your item into the list to be loaded at the end of preinit and colorized at the end of init.
@@ -59,6 +61,10 @@ object ModelHandler {
 
     @SideOnly(Side.CLIENT)
     private fun addToCachedLocations(name: String, mrl: ModelResourceLocation) {
+        if (!gennedResources) {
+            resourceLocations = hashMapOf()
+            gennedResources = true
+        }
         resourceLocations.getOrPut(modName) { hashMapOf() }.put(name, mrl)
     }
 

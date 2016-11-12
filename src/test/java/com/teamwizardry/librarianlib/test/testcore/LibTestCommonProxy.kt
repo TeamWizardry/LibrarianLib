@@ -8,7 +8,9 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
  * Created by TheCodeWarrior
  */
 open class LibTestCommonProxy {
-    fun pre(e: FMLPreInitializationEvent) {}
-    fun init(e: FMLInitializationEvent) {}
-    fun post(e: FMLPostInitializationEvent) {}
+    open fun pre(e: FMLPreInitializationEvent) {
+        TestMod.Companion.Tab
+    }
+    open fun init(e: FMLInitializationEvent) {}
+    open fun post(e: FMLPostInitializationEvent) {}
 }
