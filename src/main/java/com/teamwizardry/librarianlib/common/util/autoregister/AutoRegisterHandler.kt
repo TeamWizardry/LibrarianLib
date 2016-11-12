@@ -16,39 +16,41 @@ import net.minecraftforge.fml.common.registry.GameRegistry
  * Created by TheCodeWarrior
  */
 object AutoRegisterHandler {
-    private val prefixes = mutableListOf<Pair<String, String>>()
+    private val prefixes = mutableMapOf<String, String>()
 
-    /**
-     * Registers a class prefix for a mod. Usually this will be the main package for your mod.
-     * e.g. "com.teamwizardry.refraction." (I like to end it with a dot for clarity)
-     */
-    @JvmStatic
-    @JvmOverloads
-    fun registerPrefix(prefix: String, modid: String = Loader.instance().activeModContainer().modId) {
-        prefixes.add(prefix to modid)
+    private fun generatePrefixes() {
+        Loader.instance().activeModList
+                .flatMap { it.ownedPackages.map { pack -> pack to it.modId } }
+                .forEach { prefixes.put(it.first, it.second) }
     }
 
     private fun getModid(clazz: Class<*>): String? {
         val name = clazz.canonicalName
-        return prefixes.find { name.startsWith(it.first) }?.second
+        prefixes.forEach {
+            if (name.startsWith(it.key))
+                return it.value
+        }
+        return null
     }
 
     fun handle(e: FMLPreInitializationEvent) {
+        generatePrefixes()
+
         val table = e.asmData
         val errors = mutableMapOf<String, MutableList<Class<*>>>()
 
         getAnnotatedBy(TileRegister::class.java, TileEntity::class.java, table).forEach {
             val name = it.get<String>("value")
-            val modid = getModid(it.clazz)
+            val modId = getModid(it.clazz)
             if (name == null) {
                 errors.getOrPut("TileRegister", { mutableListOf() }).add(it.clazz)
             } else {
                 var loc = ResourceLocation(name)
-                if (loc.resourceDomain == "minecraft" && modid == null)
+                if (loc.resourceDomain == "minecraft" && modId == null)
                     errors.getOrPut("TileRegister", { mutableListOf() }).add(it.clazz)
                 else {
                     if (loc.resourceDomain == "minecraft")
-                        loc = ResourceLocation(modid, loc.resourcePath)
+                        loc = ResourceLocation(modId, loc.resourcePath)
                     AbstractSaveHandler.cacheFields(it.clazz)
                     GameRegistry.registerTileEntity(it.clazz, loc.toString())
                 }
@@ -58,16 +60,16 @@ object AutoRegisterHandler {
         if (Loader.isModLoaded("mcmultipart")) {
             getAnnotatedBy(PartRegister::class.java, IMultipart::class.java, table).forEach {
                 val name = it.get<String>("value")
-                val modid = getModid(it.clazz)
+                val modId = getModid(it.clazz)
                 if (name == null) {
                     errors.getOrPut("PartRegister", { mutableListOf() }).add(it.clazz)
                 } else {
                     var loc = ResourceLocation(name)
-                    if (loc.resourceDomain == "minecraft" && modid == null)
+                    if (loc.resourceDomain == "minecraft" && modId == null)
                         errors.getOrPut("PartRegister", { mutableListOf() }).add(it.clazz)
                     else {
                         if (loc.resourceDomain == "minecraft")
-                            loc = ResourceLocation(modid, loc.resourcePath)
+                            loc = ResourceLocation(modId, loc.resourcePath)
                         AbstractSaveHandler.cacheFields(it.clazz)
                         MultipartRegistry.registerPart(it.clazz, loc.toString())
                     }
@@ -76,13 +78,13 @@ object AutoRegisterHandler {
         }
 
         if(errors.isNotEmpty()) {
-            var build = "AutoRegister Errors: No modid specified!"
+            var build = "AutoRegister Errors: No modId specified!"
             build += "\nDefined prefixes:"
 
-            val keyMax = prefixes.maxBy { it.second.length }?.second?.length ?: 0
-            for ((prefix, modid) in prefixes) {
-                val spaces = keyMax - modid.length
-                build += "\n${" " * spaces}$modid | $prefix"
+            val keyMax = prefixes.maxBy { it.value.length }?.value?.length ?: 0
+            for ((prefix, modId) in prefixes) {
+                val spaces = keyMax - modId.length
+                build += "\n${" " * spaces}$modId | $prefix"
             }
             build += "\nErrored registers:"
             for ((name, list) in errors) {
@@ -91,7 +93,7 @@ object AutoRegisterHandler {
                     build += "\n  | ${it.canonicalName}"
                 }
             }
-            throw RuntimeException("FATAL: AutoRegister failed - \n$build")
+            throw RuntimeException("FATAL: AutoRegister failed (This should be impossible!) - \n$build")
         }
     }
 

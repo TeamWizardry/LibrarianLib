@@ -20,7 +20,6 @@ class TestMod {
 
     @Mod.EventHandler
     fun preInit(e: FMLPreInitializationEvent) {
-        AutoRegisterHandler.registerPrefix("com.teamwizardry.librarianlib.test.", TestMod.MODID)
         entrypoints = arrayOf(
                 SavingEntryPoint
         )
