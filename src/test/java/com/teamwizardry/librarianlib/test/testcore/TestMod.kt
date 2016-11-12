@@ -59,10 +59,14 @@ class TestMod {
 
         lateinit var entrypoints: Array<TestEntryPoint>
 
-        val tab = object : ModCreativeTab(MODID) {
+        object Tab : ModCreativeTab(MODID) {
+            init {
+                registerDefaultTab()
+            }
+
             override val iconStack: ItemStack
                 get() = ItemStack(Blocks.BOOKSHELF)
-        }.registerDefaultTab()
+        }
     }
 
 }
