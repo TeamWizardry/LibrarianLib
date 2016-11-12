@@ -19,29 +19,29 @@ import java.io.InputStream
  */
 open class LibCommonProxy {
 
-    open internal fun pre(e: FMLPreInitializationEvent) {
+    open fun pre(e: FMLPreInitializationEvent) {
         BitwiseStorageManager
         EasyConfigHandler.loadAsm(e.asmData)
         EasyConfigHandler.init(e.suggestedConfigurationFile)
     }
 
-    open internal fun latePre(e: FMLPreInitializationEvent) {
+    open fun latePre(e: FMLPreInitializationEvent) {
         AutoRegisterHandler.handle(e)
     }
 
-    open internal fun init(e: FMLInitializationEvent) {
+    open fun init(e: FMLInitializationEvent) {
         // NO-OP
     }
 
-    open internal fun lateInit(e: FMLInitializationEvent) {
+    open fun lateInit(e: FMLInitializationEvent) {
         // NO-OP
     }
 
-    open internal fun post(e: FMLPostInitializationEvent) {
+    open fun post(e: FMLPostInitializationEvent) {
         // NO-OP
     }
 
-    open internal fun latePost(e: FMLPostInitializationEvent) {
+    open fun latePost(e: FMLPostInitializationEvent) {
         // NO-OP
     }
 
