@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.common.util.autoregister
 
+import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
 import com.teamwizardry.librarianlib.common.util.times
@@ -22,6 +23,16 @@ object AutoRegisterHandler {
         Loader.instance().activeModList
                 .flatMap { it.ownedPackages.map { pack -> pack to it.modId } }
                 .forEach { prefixes.put(it.first, it.second) }
+
+        if (LibrarianLib.DEV_ENVIRONMENT) {
+            val pad = Array(LibrarianLib.MODID.length) {" "}.joinToString("")
+            LibrarianLog.info("${LibrarianLib.MODID} | Prefixes: ")
+            for (mod in Loader.instance().activeModList) if (mod.ownedPackages.isNotEmpty()) {
+                LibrarianLog.info("$pad | *** Owned by `${mod.modId}` ***")
+                for (pack in mod.ownedPackages.toSet())
+                    LibrarianLog.info("$pad | | $pack")
+            }
+        }
     }
 
     private fun getModid(clazz: Class<*>): String? {
