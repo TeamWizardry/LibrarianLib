@@ -227,7 +227,7 @@ object ModelHandler {
         if (json.isJsonObject && json.asJsonObject.has("forge_marker")) {
             val marker = json.asJsonObject["forge_marker"]
             if (marker.isJsonPrimitive && marker.asJsonPrimitive.isNumber)
-                isForge = marker.asJsonPrimitive.asNumber.toInt() != 0
+                isForge = marker.asJsonPrimitive.asInt != 0
         }
         if (isForge)
             log("$namePad | Assuming forge override for ${entry.getRegistryName().resourcePath} item model")

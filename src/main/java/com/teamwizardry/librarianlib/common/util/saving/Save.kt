@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.common.util.saving
 
+import kotlin.annotation.AnnotationTarget.*
+
 /**
  * @author WireSegal
  * Created at 3:58 PM on 10/27/16.
@@ -8,7 +10,7 @@ package com.teamwizardry.librarianlib.common.util.saving
  *
  * [saveName] doesn't matter for messages, except in sorting. It's for NBT serializers.
  */
-@Target(AnnotationTarget.FIELD)
+@Target(FIELD)
 @MustBeDocumented
 annotation class Save(val saveName: String = "")
 
@@ -24,7 +26,7 @@ annotation class Save(val saveName: String = "")
  * If [NoSync] is applied to a field/method that cannot accept nulls, it will crash. This is because
  * it sends nulls instead of regular values when trying to sync, to prevent syncing overhead.
  */
-@Target(AnnotationTarget.FIELD, AnnotationTarget.FUNCTION)
+@Target(FIELD, FUNCTION, PROPERTY_GETTER, PROPERTY_SETTER)
 @MustBeDocumented
 annotation class NoSync()
 
@@ -39,7 +41,7 @@ annotation class NoSync()
  *
  * The "getter" method must take exactly zero parameters, and return the content of the field.
  */
-@Target(AnnotationTarget.FUNCTION)
+@Target(FUNCTION, PROPERTY_GETTER, PROPERTY_SETTER)
 @MustBeDocumented
 annotation class SaveMethodGetter(val saveName: String)
 
@@ -54,6 +56,6 @@ annotation class SaveMethodGetter(val saveName: String)
  *
  * The "setter" method must take exactly one parameter, and its return value will be ignored.
  */
-@Target(AnnotationTarget.FUNCTION)
+@Target(FUNCTION, PROPERTY_GETTER, PROPERTY_SETTER)
 @MustBeDocumented
 annotation class SaveMethodSetter(val saveName: String)
