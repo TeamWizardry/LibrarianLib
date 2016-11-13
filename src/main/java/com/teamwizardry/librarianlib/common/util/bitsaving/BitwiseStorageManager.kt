@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.common.util.bitsaving
 
-import net.minecraft.client.multiplayer.WorldClient
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.ResourceLocation
 import net.minecraft.world.WorldSavedData
@@ -38,7 +37,7 @@ object BitwiseStorageManager {
     @SubscribeEvent
     fun worldLoadEvent(event: WorldEvent.Load) {
         isFinalized = true
-        if (event.world is WorldClient)
+        if (event.world.isRemote)
             return
         if (event.world.provider.dimension == 0) {
             formatData = event.world.mapStorage?.getOrLoadData(BitwiseStorageWorldSavedData::class.java, BitwiseStorageWorldSavedData.name) as BitwiseStorageWorldSavedData?
