@@ -251,7 +251,7 @@ fun <T : NBTBase> NBTBase.safeCast(clazz: Class<T>): T {
             else if (clazz == NBTTagIntArray::class.java)
                 NBTTagIntArray(IntArray(0))
             else
-                throw IllegalArgumentException("Unknown NBT type to cast to")
+                throw IllegalArgumentException("Unknown NBT type to cast to: $clazz")
             ) as T
 }
 
