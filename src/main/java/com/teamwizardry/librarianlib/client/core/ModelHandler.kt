@@ -12,6 +12,7 @@ import com.teamwizardry.librarianlib.common.base.item.IItemColorProvider
 import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.common.core.LibLibConfig
 import com.teamwizardry.librarianlib.common.util.builders.serialize
+import com.teamwizardry.librarianlib.common.util.times
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.block.model.ModelBakery
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
@@ -35,7 +36,7 @@ object ModelHandler {
     private val debug = LibrarianLib.DEV_ENVIRONMENT
     private var modName = ""
     private val namePad: String
-        get() = Array(modName.length) { " " }.joinToString("")
+        get() = " " * LibrarianLib.MODID.length
 
     private var generatedFiles = mutableListOf<String>()
 
@@ -76,7 +77,7 @@ object ModelHandler {
             val home = System.getProperty("user.home")
             generatedFiles = generatedFiles.map { if (it.startsWith(home) && home.isNotBlank()) (if (home.endsWith("/")) "~/" else "~") + it.substring(home.length) else it }.toMutableList()
             val starBegin = "**** THIS IS NOT AN ERROR ****"
-            val starPad = Array(generatedFiles.fold(64) { max, it -> Math.max(max, it.length) } - starBegin.length + 3) { "*" }.joinToString("")
+            val starPad = (generatedFiles.fold(64) { max, it -> Math.max(max, it.length) } - starBegin.length + 3) * "*"
 
             LibrarianLog.warn("")
             LibrarianLog.warn(starBegin + starPad)

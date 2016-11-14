@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.common.util.saving
 
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
+import com.teamwizardry.librarianlib.common.util.times
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -116,7 +117,7 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
             name += "X"
         if (name in alreadyDone) {
             val msg = "Name $name already in use for class ${clazz.name}! Adding dashes to the end to mitigate this."
-            val pad = Array(msg.length) { "*" }.joinToString("")
+            val pad = "*" * msg.length
             LibrarianLog.warn(pad)
             LibrarianLog.warn(msg)
             LibrarianLog.warn(pad)

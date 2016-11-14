@@ -32,7 +32,7 @@ object EasyConfigHandler {
         if (LibrarianLib.DEV_ENVIRONMENT) {
 
             val modid = LibrarianLib.MODID
-            val pad = Array(modid.length) { " " }.joinToString("")
+            val pad = " " * LibrarianLib.MODID.length
 
             LibrarianLog.info("$modid | All config properties found:")
             fieldMapStr.forEach { LibrarianLog.info("$pad | ${it.key}") }

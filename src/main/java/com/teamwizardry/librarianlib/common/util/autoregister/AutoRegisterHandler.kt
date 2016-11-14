@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.common.util.autoregister
 
+import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
 import com.teamwizardry.librarianlib.common.util.times
@@ -18,15 +19,20 @@ import net.minecraftforge.fml.common.registry.GameRegistry
 object AutoRegisterHandler {
     private val prefixes = mutableListOf<Pair<String, String>>()
 
-    /**
-     * Registers a class prefix for a mod. Usually this will be the main package for your mod.
-     * e.g. "com.teamwizardry.refraction." (If it doesn't end with a dot this method will add one)
-     */
-    @JvmStatic
-    @JvmOverloads
-    fun registerPrefix(prefix: String, modid: String = Loader.instance().activeModContainer().modId) {
-        val qualified = if(prefix.endsWith(".")) prefix else prefix + "."
-        prefixes.add(qualified to modid)
+    private fun generatePrefixes() {
+        Loader.instance().activeModList
+                .flatMap { it.ownedPackages.map { pack -> pack to it.modId } }
+                .forEach { prefixes.put(it.first, it.second) }
+
+        if (LibrarianLib.DEV_ENVIRONMENT) {
+            val pad = " " * LibrarianLib.MODID.length
+            LibrarianLog.info("${LibrarianLib.MODID} | Prefixes: ")
+            for (mod in Loader.instance().activeModList) if (mod.ownedPackages.isNotEmpty()) {
+                LibrarianLog.info("$pad | *** Owned by `${mod.modId}` ***")
+                for (pack in mod.ownedPackages.toSet())
+                    LibrarianLog.info("$pad | | $pack")
+            }
+        }
     }
 
     private fun getModid(clazz: Class<*>): String? {

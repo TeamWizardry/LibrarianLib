@@ -263,4 +263,5 @@ fun EntityPlayer.sendMessage(str: String) {
 
 // String
 
+operator fun Int.times(n: CharSequence) = n.repeat(this)
 operator fun CharSequence.times(n: Int) = this.repeat(n)
