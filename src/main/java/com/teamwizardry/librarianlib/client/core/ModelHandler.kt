@@ -10,8 +10,10 @@ import com.teamwizardry.librarianlib.common.base.block.IBlockColorProvider
 import com.teamwizardry.librarianlib.common.base.block.IModBlockProvider
 import com.teamwizardry.librarianlib.common.base.item.IItemColorProvider
 import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
+import com.teamwizardry.librarianlib.common.core.DevOwnershipTest
 import com.teamwizardry.librarianlib.common.core.LibLibConfig
 import com.teamwizardry.librarianlib.common.util.builders.serialize
+import com.teamwizardry.librarianlib.common.util.times
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.block.model.ModelBakery
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
@@ -35,7 +37,7 @@ object ModelHandler {
     private val debug = LibrarianLib.DEV_ENVIRONMENT
     private var modName = ""
     private val namePad: String
-        get() = Array(modName.length) { " " }.joinToString("")
+        get() = " " * modName.length
 
     private var generatedFiles = mutableListOf<String>()
 
@@ -82,7 +84,7 @@ object ModelHandler {
             val home = System.getProperty("user.home")
             generatedFiles = generatedFiles.map { if (it.startsWith(home) && home.isNotBlank()) (if (home.endsWith("/")) "~/" else "~") + it.substring(home.length) else it }.toMutableList()
             val starBegin = "**** THIS IS NOT AN ERROR ****"
-            val starPad = Array(generatedFiles.fold(64) { max, it -> Math.max(max, it.length) } - starBegin.length + 3) { "*" }.joinToString("")
+            val starPad = (generatedFiles.fold(64) { max, it -> Math.max(max, it.length) } - starBegin.length + 3) * "*"
 
             LibrarianLog.warn("")
             LibrarianLog.warn(starBegin + starPad)
@@ -143,7 +145,7 @@ object ModelHandler {
             if (mapper != null)
                 ModelLoader.setCustomStateMapper(holder.providedBlock, mapper)
 
-            if (debug && LibLibConfig.generateJson) {
+            if (shouldGenerateAnyJson()) {
                 val files = JsonGenerationUtils.generateBaseBlockStates(holder.providedBlock, mapper)
                 var flag = false
                 files.forEach {
@@ -189,7 +191,7 @@ object ModelHandler {
                 if ((variant.value != item.registryName.resourcePath || variants.size != 1))
                     log("$namePad |  Variant #${variant.index + 1}: ${variant.value}")
 
-                if (debug && LibLibConfig.generateJson && shouldGenItemJson(holder)) {
+                if (shouldGenItemJson(holder)) {
                     val path = JsonGenerationUtils.getPathForItemModel(holder.providedItem, variant.value)
                     val file = File(path)
                     file.parentFile.mkdirs()
@@ -216,10 +218,11 @@ object ModelHandler {
 
     @SideOnly(Side.CLIENT)
     private fun shouldGenItemJson(provider: IVariantHolder): Boolean {
+        if (!shouldGenerateAnyJson()) return false
+
         if (provider !is IModBlockProvider && provider !is IModItemProvider) return false
 
-        val entry = if (provider is IModBlockProvider) provider.providedBlock else
-            (provider as IModItemProvider).providedItem
+        val entry = (provider as? IModBlockProvider)?.providedBlock ?: (provider as IModItemProvider).providedItem
 
         val statePath = JsonGenerationUtils.getPathForBaseBlockstate(entry)
 
@@ -239,6 +242,8 @@ object ModelHandler {
             log("$namePad | Assuming forge override for ${entry.getRegistryName().resourcePath} item model")
         return !isForge
     }
+
+    fun shouldGenerateAnyJson() = debug && LibLibConfig.generateJson && modName in DevOwnershipTest.OWNED
 
     @JvmStatic
     fun getKey(item: Item, meta: Int): String {
