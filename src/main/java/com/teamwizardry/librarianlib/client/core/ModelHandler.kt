@@ -36,7 +36,7 @@ object ModelHandler {
     private val debug = LibrarianLib.DEV_ENVIRONMENT
     private var modName = ""
     private val namePad: String
-        get() = " " * LibrarianLib.MODID.length
+        get() = " " * modName.length
 
     private var generatedFiles = mutableListOf<String>()
 
