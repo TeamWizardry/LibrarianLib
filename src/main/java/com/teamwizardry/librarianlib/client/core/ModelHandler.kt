@@ -10,6 +10,7 @@ import com.teamwizardry.librarianlib.common.base.block.IBlockColorProvider
 import com.teamwizardry.librarianlib.common.base.block.IModBlockProvider
 import com.teamwizardry.librarianlib.common.base.item.IItemColorProvider
 import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
+import com.teamwizardry.librarianlib.common.core.DevOwnershipTest
 import com.teamwizardry.librarianlib.common.core.LibLibConfig
 import com.teamwizardry.librarianlib.common.util.builders.serialize
 import com.teamwizardry.librarianlib.common.util.times
@@ -138,7 +139,7 @@ object ModelHandler {
             if (mapper != null)
                 ModelLoader.setCustomStateMapper(holder.providedBlock, mapper)
 
-            if (debug && LibLibConfig.generateJson) {
+            if (shouldGenerateAnyJson()) {
                 val files = JsonGenerationUtils.generateBaseBlockStates(holder.providedBlock, mapper)
                 var flag = false
                 files.forEach {
@@ -184,7 +185,7 @@ object ModelHandler {
                 if ((variant.value != item.registryName.resourcePath || variants.size != 1))
                     log("$namePad |  Variant #${variant.index + 1}: ${variant.value}")
 
-                if (debug && LibLibConfig.generateJson && shouldGenItemJson(holder)) {
+                if (shouldGenItemJson(holder)) {
                     val path = JsonGenerationUtils.getPathForItemModel(holder.providedItem, variant.value)
                     val file = File(path)
                     file.parentFile.mkdirs()
@@ -211,10 +212,11 @@ object ModelHandler {
 
     @SideOnly(Side.CLIENT)
     private fun shouldGenItemJson(provider: IVariantHolder): Boolean {
+        if (!shouldGenerateAnyJson()) return false
+
         if (provider !is IModBlockProvider && provider !is IModItemProvider) return false
 
-        val entry = if (provider is IModBlockProvider) provider.providedBlock else
-            (provider as IModItemProvider).providedItem
+        val entry = (provider as? IModBlockProvider)?.providedBlock ?: (provider as IModItemProvider).providedItem
 
         val statePath = JsonGenerationUtils.getPathForBaseBlockstate(entry)
 
@@ -234,6 +236,8 @@ object ModelHandler {
             log("$namePad | Assuming forge override for ${entry.getRegistryName().resourcePath} item model")
         return !isForge
     }
+
+    fun shouldGenerateAnyJson() = debug && LibLibConfig.generateJson && modName in DevOwnershipTest.OWNED
 
     @JvmStatic
     fun getKey(item: Item, meta: Int): String {
