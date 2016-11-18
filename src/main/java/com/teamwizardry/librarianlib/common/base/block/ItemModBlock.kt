@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.common.base.block
 import com.teamwizardry.librarianlib.client.core.ModelHandler
 import com.teamwizardry.librarianlib.common.base.item.IItemColorProvider
 import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
+import com.teamwizardry.librarianlib.common.base.item.ISpecialModelProvider
 import net.minecraft.block.Block
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
@@ -18,7 +19,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
  * The default implementation for an IModBlock wrapper Item that gets registered as an IVariantHolder.
  */
 @Suppress("LeakingThis")
-open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlockColorProvider {
+open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlockColorProvider, ISpecialModelProvider {
 
     private val modBlock: IModBlock
     private val modId: String
@@ -71,6 +72,9 @@ open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlo
 
     @SideOnly(Side.CLIENT)
     override fun getBlockColor() = if (this.modBlock is IBlockColorProvider) this.modBlock.getBlockColor() else null
+
+    @SideOnly(Side.CLIENT)
+    override fun getSpecialModel(index: Int) = if (this.modBlock is ISpecialModelProvider) this.modBlock.getSpecialModel(index) else null
 
     override fun getRarity(stack: ItemStack) = this.modBlock.getBlockRarity(stack)
 }
