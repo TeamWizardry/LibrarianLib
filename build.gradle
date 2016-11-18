@@ -40,10 +40,7 @@ repositories {
     maven {
         url "http://maven.amadornes.com/"
     }
-    maven {
-        name 'tterag maven'
-        url "http://maven.tterrag.com/"
-    }
+    maven { url "https://jitpack.io" }
 }
 
 minecraft {
@@ -68,7 +65,7 @@ dependencies {
     required "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     deobfCompile "MCMultiPart:MCMultiPart:1.2.1:universal"
-    deobfCompile "mcjty.theoneprobe:TheOneProbe:1.9.4-1.0.6-17"
+    compile 'com.github.McJty:TheOneProbe:0e0d0f0816'
 }
 
 jar {
