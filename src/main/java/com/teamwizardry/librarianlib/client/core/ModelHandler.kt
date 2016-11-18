@@ -13,6 +13,7 @@ import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.common.base.item.ISpecialModelProvider
 import com.teamwizardry.librarianlib.common.core.DevOwnershipTest
 import com.teamwizardry.librarianlib.common.core.LibLibConfig
+import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import com.teamwizardry.librarianlib.common.util.builders.serialize
 import com.teamwizardry.librarianlib.common.util.times
 import net.minecraft.client.Minecraft
@@ -27,8 +28,10 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.registry.RegistryDelegate
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import org.apache.commons.lang3.tuple.Pair
 import java.io.File
 import java.util.*
 
@@ -196,24 +199,30 @@ object ModelHandler {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     fun onModelBake(e: ModelBakeEvent) {
+        val customModelGetter = MethodHandleHelper.wrapperForStaticGetter(ModelLoader::class.java, "customModels")
+        @Suppress("UNCHECKED_CAST")
+        val customModels = customModelGetter() as MutableMap<Pair<RegistryDelegate<Item>, Int>, ModelResourceLocation>
+
         for ((modid, holders) in variantCache) {
             modName = modid
             log("$modName | Registering special models")
             for (holder in holders) if (holder is ISpecialModelProvider) {
                 val item = holder.providedItem
+                var flag = false
                 for ((index, variant) in holder.variants.withIndex()) {
-                    if (index == 0) {
-                        var print = "$namePad | Applying special model rules for "
-                        print += if (item is IModBlockProvider) "block " else "item "
-                        print += " ${item.registryName.resourcePath}"
-                        log(print)
-                    }
-
                     val model = holder.getSpecialModel(index)
                     if (model != null) {
+                        if (!flag) {
+                            var print = "$namePad | Applying special model rules for "
+                            print += if (item is IModBlockProvider) "block " else "item "
+                            print += item.registryName.resourcePath
+                            log(print)
+                            flag = true
+                        }
                         val mrl = ModelResourceLocation(ResourceLocation(modName, variant).toString(), "inventory")
                         log("$namePad | Special model for variant $index - $variant applied")
                         e.modelRegistry.putObject(mrl, model)
+                        customModels.put(Pair.of<RegistryDelegate<Item>, Int>(item.delegate, index), mrl)
                         addToCachedLocations(variant, mrl)
                     }
                 }
