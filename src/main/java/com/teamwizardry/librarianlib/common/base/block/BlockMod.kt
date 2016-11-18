@@ -34,6 +34,7 @@ open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg 
     @Optional.Method(modid = "Waila")
     override final fun getWailaBody(itemStack: ItemStack?, currenttip: MutableList<String>, accessor: IWailaDataAccessor, config: IWailaConfigHandler?): MutableList<String>? {
         wrapper.list = mutableListOf()
+        addWailaInfo(currenttip, accessor.player, accessor.world, accessor.blockState, accessor.position)
         addHudInformation(wrapper, accessor.player, accessor.world, accessor.blockState, accessor.position)
         return wrapper.list
     }
@@ -110,13 +111,14 @@ open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg 
             wrapper.list = mutableListOf()
             addHudInformation(wrapper, player, world, blockState, data.pos)
         }
+        addProbeInformation(topWrapper, player, world, blockState, data.pos)
         for(string in wrapper.list) probeInfo.text(string)
     }
 
     /**
      * Override this to add probe information. Only called when The One Probe exists.
      */
-    open fun addProbeInformation(info: ProbeInfoWrapper, player: EntityPlayer, world: World, blockState: IBlockState, pos: BlockPos) {
+    open fun addProbeInformation(info: ProbeInfoWrapper?, player: EntityPlayer, world: World, blockState: IBlockState, pos: BlockPos) {
         //NO-OP
     }
 
