@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.common.util.autoregister
 
-import net.minecraft.tileentity.TileEntity
 import com.teamwizardry.librarianlib.common.base.multipart.PartMod
+import net.minecraft.tileentity.TileEntity
 
 /**
  * Apply this to a class that extends [TileEntity] to have it be automatically registered.

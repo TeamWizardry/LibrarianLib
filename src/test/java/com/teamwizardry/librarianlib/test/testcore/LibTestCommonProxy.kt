@@ -11,6 +11,10 @@ open class LibTestCommonProxy {
     open fun pre(e: FMLPreInitializationEvent) {
         TestMod.Companion.Tab
     }
-    open fun init(e: FMLInitializationEvent) {}
-    open fun post(e: FMLPostInitializationEvent) {}
+
+    open fun init(e: FMLInitializationEvent) {
+    }
+
+    open fun post(e: FMLPostInitializationEvent) {
+    }
 }

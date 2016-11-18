@@ -50,7 +50,7 @@ open class BitStorage(val allocator: Allocator, val container: BitStorageContain
     }
 
     fun notifyIfDirty() {
-        if(dirty)
+        if (dirty)
             container.markDirty()
         dirty = false
     }

@@ -22,7 +22,7 @@ class ItemBasicParticles : ItemMod("basic_particle") {
 
     override fun onItemRightClick(itemStackIn: ItemStack, worldIn: World, playerIn: EntityPlayer, hand: EnumHand): ActionResult<ItemStack> {
 
-        if(worldIn.isRemote) {
+        if (worldIn.isRemote) {
             val builder = ParticleBuilder(50)
             builder.enableMotionCalculation()
             builder.enableRandom()
@@ -30,7 +30,7 @@ class ItemBasicParticles : ItemMod("basic_particle") {
             builder.setJitter(5, Vec3d(0.1, 0.1, 0.1))
 
             val loc = ResourceLocation(TestMod.MODID, "particles/glow")
-            if(playerIn.isSneaking) {
+            if (playerIn.isSneaking) {
                 builder.setRender(loc)
             } else {
                 builder.setRenderNormalLayer(loc)

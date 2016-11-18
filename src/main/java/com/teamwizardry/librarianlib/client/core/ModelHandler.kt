@@ -244,7 +244,11 @@ object ModelHandler {
         if (!file.exists()) return true
 
         val json: JsonElement
-        try { json = JsonParser().parse(file.reader()) } catch (t: Throwable) { return true }
+        try {
+            json = JsonParser().parse(file.reader())
+        } catch (t: Throwable) {
+            return true
+        }
 
         var isForge = false
         if (json.isJsonObject && json.asJsonObject.has("forge_marker")) {

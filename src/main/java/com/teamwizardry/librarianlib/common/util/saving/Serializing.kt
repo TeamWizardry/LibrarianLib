@@ -40,7 +40,7 @@ object ByteBufSerializationHandlers {
             for (i in 0..len - 1) {
                 buf.writeChar(obj[i].toInt())
             }
-        }, reader@{ buf ->
+        }, reader@ { buf ->
             val len = buf.readVarInt()
             val array = CharArray(len)
             for (i in 0..len - 1) {
@@ -54,7 +54,7 @@ object ByteBufSerializationHandlers {
             for (i in 0..len - 1) {
                 buf.writeByte(obj[i].toInt())
             }
-        }, reader@{ buf ->
+        }, reader@ { buf ->
             val len = buf.readVarInt()
             val array = ByteArray(len)
             for (i in 0..len - 1) {
@@ -68,7 +68,7 @@ object ByteBufSerializationHandlers {
             for (i in 0..len - 1) {
                 buf.writeShort(obj[i].toInt())
             }
-        }, reader@{ buf ->
+        }, reader@ { buf ->
             val len = buf.readVarInt()
             val array = ShortArray(len)
             for (i in 0..len - 1) {
@@ -82,7 +82,7 @@ object ByteBufSerializationHandlers {
             for (i in 0..len - 1) {
                 buf.writeInt(obj[i])
             }
-        }, reader@{ buf ->
+        }, reader@ { buf ->
             val len = buf.readVarInt()
             val array = IntArray(len)
             for (i in 0..len - 1) {
@@ -96,7 +96,7 @@ object ByteBufSerializationHandlers {
             for (i in 0..len - 1) {
                 buf.writeLong(obj[i])
             }
-        }, reader@{ buf ->
+        }, reader@ { buf ->
             val len = buf.readVarInt()
             val array = LongArray(len)
             for (i in 0..len - 1) {
@@ -111,7 +111,7 @@ object ByteBufSerializationHandlers {
             for (i in 0..len - 1) {
                 buf.writeFloat(obj[i])
             }
-        }, reader@{ buf ->
+        }, reader@ { buf ->
             val len = buf.readShort().toInt()
             val array = FloatArray(len)
             for (i in 0..len - 1) {
@@ -125,7 +125,7 @@ object ByteBufSerializationHandlers {
             for (i in 0..len - 1) {
                 buf.writeDouble(obj[i])
             }
-        }, reader@{ buf ->
+        }, reader@ { buf ->
             val len = buf.readShort().toInt()
             val array = DoubleArray(len)
             for (i in 0..len - 1) {
@@ -176,7 +176,6 @@ object ByteBufSerializationHandlers {
             Vec2d(it.readDouble(), it.readDouble())
         })
         mapHandler(BlockPos::class.java, { buf, obj -> buf.writeLong(obj.toLong()) }, { BlockPos.fromLong(it.readLong()) })
-
 
 
         // Dynamic generators
@@ -232,18 +231,18 @@ object ByteBufSerializationHandlers {
     }
 
     private fun createEnumMapping(clazz: Class<*>): BufferSerializer? {
-        if(!clazz.isEnum)
+        if (!clazz.isEnum)
             return null
 
         val values = clazz.enumConstants
         val size = values.size
-        val serializer = BufferSerializer(reader@{ buf ->
-            if(size > 256)
+        val serializer = BufferSerializer(reader@ { buf ->
+            if (size > 256)
                 values[buf.readShort().toInt()]
             else
                 values[buf.readByte().toInt()]
-        }, writer@{ buf, obj ->
-            if(size > 256)
+        }, writer@ { buf, obj ->
+            if (size > 256)
                 buf.writeShort((obj as Enum<*>).ordinal)
             else
                 buf.writeByte((obj as Enum<*>).ordinal)
@@ -264,7 +263,7 @@ object ByteBufSerializationHandlers {
         if (subReader == null || subWriter == null)
             return null
 
-        val serializer = BufferSerializer(reader@{ buf ->
+        val serializer = BufferSerializer(reader@ { buf ->
             val nullsig = buf.readBooleanArray()
             val array = ArrayReflect.newInstance(subclass, nullsig.size)
             for (i in 0..nullsig.size - 1) {
@@ -438,7 +437,6 @@ object NBTSerializationHandlers {
         mapHandler(BlockPos::class.java, { NBTTagLong(it.toLong()) }, { BlockPos.fromLong(castNBTTag(it, NBTPrimitive::class.java).long) })
 
 
-
         // Dynamic generators
         registerSpecialHandler { createArrayMapping(it) }
         registerSpecialHandler { createEnumMapping(it) }
@@ -492,13 +490,13 @@ object NBTSerializationHandlers {
     }
 
     private fun createEnumMapping(clazz: Class<*>): NBTSerializer? {
-        if(!clazz.isEnum)
+        if (!clazz.isEnum)
             return null
 
         val values = clazz.enumConstants
-        val serializer = NBTSerializer(reader@{ nbt ->
+        val serializer = NBTSerializer(reader@ { nbt ->
             values[castNBTTag(nbt, NBTTagShort::class.java).short.toInt()]
-        }, writer@{ obj ->
+        }, writer@ { obj ->
             NBTTagShort((obj as Enum<*>).ordinal.toShort())
         })
 
@@ -517,7 +515,7 @@ object NBTSerializationHandlers {
         if (subReader == null || subWriter == null)
             return null
 
-        val serializer = NBTSerializer(reader@{ nbt ->
+        val serializer = NBTSerializer(reader@ { nbt ->
             val compound = castNBTTag(nbt, NBTTagCompound::class.java)
             val list = castNBTTag(compound.getTag("list"), NBTTagList::class.java)
 

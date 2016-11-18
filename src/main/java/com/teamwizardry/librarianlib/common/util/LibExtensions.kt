@@ -22,7 +22,7 @@ import java.util.*
  * Created by TheCodeWarrior
  */
 
-fun Int.abs() = if(this < 0) -this else this
+fun Int.abs() = if (this < 0) -this else this
 
 operator fun TextFormatting.plus(str: String) = "$this$str"
 
@@ -180,12 +180,12 @@ fun ByteBuf.writeBooleanArray(value: BooleanArray) {
     val len = value.size
     this.writeVarInt(len)
     val bitset = BitSet()
-    for(i in 0..len-1) {
+    for (i in 0..len - 1) {
         bitset.set(i, value[i])
     }
     val setArray = bitset.toByteArray()
-    val writeArray = ByteArray(Math.ceil(len/8.0).toInt()) {
-        if(it < setArray.size)
+    val writeArray = ByteArray(Math.ceil(len / 8.0).toInt()) {
+        if (it < setArray.size)
             setArray[it]
         else
             0
@@ -195,12 +195,12 @@ fun ByteBuf.writeBooleanArray(value: BooleanArray) {
 
 fun ByteBuf.readBooleanArray(): BooleanArray {
     val len = this.readVarInt()
-    val bytes = ByteArray(Math.ceil(len/8.0).toInt())
+    val bytes = ByteArray(Math.ceil(len / 8.0).toInt())
     this.readBytes(bytes)
 
     val bitset = BitSet.valueOf(bytes)
     val booleans = BooleanArray(len)
-    for(i in 0..len-1) {
+    for (i in 0..len - 1) {
         booleans[i] = bitset.get(i)
     }
     return booleans
@@ -219,17 +219,17 @@ fun ByteBuf.hasNullSignature(): Boolean = readBoolean()
 // NBTTagList ==========================================================================================================
 
 val NBTTagList.indices: IntRange
-    get() = 0..this.tagCount()-1
+    get() = 0..this.tagCount() - 1
 
 fun <T : NBTBase> NBTTagList.forEach(run: (T) -> Unit) {
-    for(i in this.indices) {
+    for (i in this.indices) {
         @Suppress("UNCHECKED_CAST")
         run(this.get(i) as T)
     }
 }
 
 fun <T : NBTBase> NBTTagList.forEachIndexed(run: (Int, T) -> Unit) {
-    for(i in this.indices) {
+    for (i in this.indices) {
         @Suppress("UNCHECKED_CAST")
         run(i, this.get(i) as T)
     }

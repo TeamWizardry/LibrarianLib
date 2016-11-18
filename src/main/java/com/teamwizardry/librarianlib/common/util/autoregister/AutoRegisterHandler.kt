@@ -25,7 +25,7 @@ object AutoRegisterHandler {
                 .forEach { prefixes.put(it.first, it.second) }
 
         if (LibrarianLib.DEV_ENVIRONMENT) {
-            val pad = Array(LibrarianLib.MODID.length) {" "}.joinToString("")
+            val pad = " " * LibrarianLib.MODID.length
             LibrarianLog.info("${LibrarianLib.MODID} | Prefixes: ")
             for (mod in Loader.instance().activeModList) if (mod.ownedPackages.isNotEmpty()) {
                 LibrarianLog.info("$pad | *** Owned by `${mod.modId}` ***")
@@ -88,7 +88,7 @@ object AutoRegisterHandler {
             }
         }
 
-        if(errors.isNotEmpty()) {
+        if (errors.isNotEmpty()) {
             var build = "AutoRegister Errors: No modId specified!"
             build += "\nDefined prefixes:"
 

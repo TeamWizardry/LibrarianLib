@@ -167,7 +167,7 @@ object ParticleRenderManager {
         GL11.glPushAttrib(GL11.GL_LIGHTING_BIT)
         GlStateManager.depthMask(false)
         GlStateManager.enableBlend()
-        GlStateManager.alphaFunc(GL11.GL_GREATER, 1/256f)
+        GlStateManager.alphaFunc(GL11.GL_GREATER, 1 / 256f)
         GlStateManager.disableLighting()
 
         profiler.startSection("liblib_particles")

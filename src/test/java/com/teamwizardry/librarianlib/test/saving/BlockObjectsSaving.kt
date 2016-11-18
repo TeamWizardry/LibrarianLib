@@ -31,7 +31,7 @@ class BlockObjectsSaving : BlockMod("saving_objects", Material.CACTUS), ITileEnt
         val te = worldIn.getTileEntity(pos!!)!! as TETest
         if (!worldIn.isRemote) {
             te.color = kolors[ThreadLocalRandom.current().nextInt(kolors.size)]
-            te.tag.setInteger(te.color.toString(), te.tag.getInteger(te.color.toString())+1)
+            te.tag.setInteger(te.color.toString(), te.tag.getInteger(te.color.toString()) + 1)
             te.stack = playerIn.heldItemMainhand
 
             te.handler = ItemStackHandler(arrayOf(playerIn.heldItemMainhand, playerIn.heldItemOffhand))

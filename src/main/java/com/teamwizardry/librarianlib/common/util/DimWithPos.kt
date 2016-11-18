@@ -8,7 +8,7 @@ import net.minecraft.world.World
  * Created at 5:29 PM on 11/17/16.
  */
 data class DimWithPos(val dim: Int, val pos: BlockPos) {
-    constructor(world: World, pos: BlockPos): this(world.provider.dimension, pos)
+    constructor(world: World, pos: BlockPos) : this(world.provider.dimension, pos)
 
     override fun toString(): String {
         return "$dim:${pos.x}:${pos.y}:${pos.z}"

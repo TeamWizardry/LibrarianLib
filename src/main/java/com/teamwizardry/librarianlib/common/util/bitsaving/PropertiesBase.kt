@@ -12,13 +12,13 @@ abstract class BitStorageValueDelegate<T> {
     abstract fun set(storage: BitStorage, value: T)
 
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-        if(thisRef !is BitStorageContainer)
+        if (thisRef !is BitStorageContainer)
             throw IllegalStateException("Bit storage properties can only be delegated in instances of BitStorageContainer")
         set(thisRef.S, value)
     }
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        if(thisRef !is BitStorageContainer)
+        if (thisRef !is BitStorageContainer)
             throw IllegalStateException("Bit storage properties can only be delegated in instances of BitStorageContainer")
         return get(thisRef.S)
     }
@@ -32,7 +32,7 @@ class BasicBitStorageValueDelegate<T>(val property: PrimitiveBitProp<T>) : BitSt
     }
 }
 
-class ReadOnlyBitStorageValueDelegate<T>(val value: T): BitStorageValueDelegate<T>() {
+class ReadOnlyBitStorageValueDelegate<T>(val value: T) : BitStorageValueDelegate<T>() {
     override fun get(storage: BitStorage) = value
 
     override fun set(storage: BitStorage, value: T) {
@@ -62,7 +62,7 @@ abstract class BasicArrayBitProp<T> : BitProp() {
     override fun delegate(storage: BitStorage): BitStorageValueDelegate<FakeList<T>> {
         return ReadOnlyBitStorageValueDelegate(FakeList(
                 { index -> get(storage, index) },
-                { index, value -> set(storage, index, value)}
+                { index, value -> set(storage, index, value) }
         ))
     }
 }
@@ -74,7 +74,7 @@ abstract class BasicMapBitProp<K, T> : BitProp() {
     override fun delegate(storage: BitStorage): BitStorageValueDelegate<FakeMap<K, T>> {
         return ReadOnlyBitStorageValueDelegate(FakeMap(
                 { key -> get(storage, key) },
-                { key, value -> set(storage, key, value)}
+                { key, value -> set(storage, key, value) }
         ))
     }
 }
@@ -90,6 +90,7 @@ data class PropDataRegion(val requiredBits: Int) {
 
         return value
     }
+
     fun setI(storage: BitStorage, value: Int) {
         bits.forEachIndexed { bit, bitIndex ->
             storage.set(bitIndex, ((value shr bit) and 1) == 1)
@@ -99,6 +100,7 @@ data class PropDataRegion(val requiredBits: Int) {
     fun getB(storage: BitStorage, index: Int = 0): Boolean {
         return storage.get(bits[index])
     }
+
     fun setB(storage: BitStorage, value: Boolean, index: Int = 0) {
         storage.set(bits[index], value)
     }

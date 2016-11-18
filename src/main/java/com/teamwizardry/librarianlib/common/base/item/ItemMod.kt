@@ -45,8 +45,8 @@ open class ItemMod(name: String, vararg variants: String) : Item(), IModItemProv
     }
 
     /**
-    * Override this to have a custom creative tab. Leave blank to have a default tab (or none if no default tab is set).
-    */
+     * Override this to have a custom creative tab. Leave blank to have a default tab (or none if no default tab is set).
+     */
     open val creativeTab: ModCreativeTab?
         get() = ModCreativeTab.defaultTabs[modId]
 }

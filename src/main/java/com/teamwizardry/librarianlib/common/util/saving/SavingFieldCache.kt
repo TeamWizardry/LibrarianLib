@@ -93,7 +93,7 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
 
             map.put(name, FieldCache(type,
                     { obj -> wrapperForGetter(obj, arrayOf()) },
-                    { obj, inp -> wrapperForSetter(obj, arrayOf(inp))},
+                    { obj, inp -> wrapperForSetter(obj, arrayOf(inp)) },
                     !getter.isAnnotationPresent(NoSync::class.java) || !setter.isAnnotationPresent(NoSync::class.java)))
         }
     }

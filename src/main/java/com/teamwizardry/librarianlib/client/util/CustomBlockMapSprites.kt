@@ -21,6 +21,6 @@ object CustomBlockMapSprites {
 
     @SubscribeEvent
     fun stitch(event: TextureStitchEvent.Pre) {
-        customBlockMapLocations.forEach { event.getMap().registerSprite(it) }
+        customBlockMapLocations.forEach { event.map.registerSprite(it) }
     }
 }

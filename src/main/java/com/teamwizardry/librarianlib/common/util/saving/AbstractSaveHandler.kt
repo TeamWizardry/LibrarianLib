@@ -56,7 +56,7 @@ object AbstractSaveHandler {
             } else nullSig[i] = true
         }
         buf.writeBooleanArray(nullSig)
-        cache.filter {!sync || it.value.syncToClient}.forEach {
+        cache.filter { !sync || it.value.syncToClient }.forEach {
             val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.clazz)
             if (handler != null) {
                 val field = it.value.getter(instance)

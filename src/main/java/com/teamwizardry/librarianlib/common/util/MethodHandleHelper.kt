@@ -52,6 +52,7 @@ object MethodHandleHelper {
         val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(1)))
         return { wrapper(it) }
     }
+
     @JvmStatic fun <T> wrapperForGetter(field: Field): (T) -> Any? = wrapperForGetter(publicLookup().unreflectGetter(field))
 
     /**
@@ -73,6 +74,7 @@ object MethodHandleHelper {
         val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(0)))
         return { wrapper() }
     }
+
     @JvmStatic fun wrapperForStaticGetter(field: Field): () -> Any? = wrapperForStaticGetter(publicLookup().unreflectGetter(field))
 
     /**
@@ -92,6 +94,7 @@ object MethodHandleHelper {
         val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(2)))
         return { obj, value -> wrapper(obj, value) }
     }
+
     @JvmStatic fun <T> wrapperForSetter(field: Field): (T, Any?) -> Unit = wrapperForSetter(publicLookup().unreflectSetter(field))
 
     /**
@@ -111,6 +114,7 @@ object MethodHandleHelper {
         val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(1)))
         return { wrapper(it) }
     }
+
     @JvmStatic fun wrapperForStaticSetter(field: Field): (Any?) -> Unit = wrapperForStaticSetter(publicLookup().unreflectSetter(field))
 
 
@@ -141,6 +145,7 @@ object MethodHandleHelper {
 
         return { obj, args -> wrapper.invokeArity(arrayOf(obj, *args)) }
     }
+
     @JvmStatic fun <T> wrapperForMethod(method: Method): (T, Array<Any?>) -> Any? = wrapperForMethod(publicLookup().unreflect(method))
 
     /**
@@ -162,5 +167,6 @@ object MethodHandleHelper {
         val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(count)).asSpreader(Array<Any>::class.java, count))
         return { wrapper.invokeArity(it) }
     }
+
     @JvmStatic fun <T> wrapperForStaticMethod(method: Method): (Array<Any?>) -> Any? = wrapperForStaticMethod(publicLookup().unreflect(method))
 }
