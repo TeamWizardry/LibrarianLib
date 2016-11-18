@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.test.saving
 
 import com.teamwizardry.librarianlib.common.base.block.BlockMod
-import com.teamwizardry.librarianlib.common.base.block.ProbeInfoWrapper
 import com.teamwizardry.librarianlib.common.base.block.TileMod
+import com.teamwizardry.librarianlib.common.base.block.TopAndWailaWrapper
 import com.teamwizardry.librarianlib.common.util.autoregister.TileRegister
 import com.teamwizardry.librarianlib.common.util.saving.Save
 import com.teamwizardry.librarianlib.common.util.sendMessage
@@ -50,20 +50,16 @@ class BlockPrimitivesSaving : BlockMod("saving_primitives", Material.CACTUS), IT
         return TETest()
     }
 
-    override fun addProbeInformation(info: ProbeInfoWrapper, player: EntityPlayer, world: World, blockState: IBlockState) {
-        val probeInfo = info.getProbeInfo()
-        val hitInfo = info.getHitData()
-
-        val te = world.getTileEntity(hitInfo.pos) as TETest
-
-        probeInfo.text("Boolean: " + te.coolBoolean)
-        probeInfo.text("Byte: " + te.coolByte)
-        probeInfo.text("Char: " + te.coolChar)
-        probeInfo.text("Short: " + te.coolShort)
-        probeInfo.text("Int: " + te.coolInt)
-        probeInfo.text("Long: " + te.coolLong)
-        probeInfo.text("Float: " + te.coolFloat)
-        probeInfo.text("Double: " + te.coolDouble)
+    override fun addHudInformation(wrapper: TopAndWailaWrapper, player: EntityPlayer, world: World, blockState: IBlockState, pos: BlockPos) {
+        val te = world.getTileEntity(pos) as TETest
+        wrapper.addString("Boolean: " + te.coolBoolean)
+        wrapper.addString("Byte: " + te.coolByte)
+        wrapper.addString("Char: " + te.coolChar)
+        wrapper.addString("Short: " + te.coolShort)
+        wrapper.addString("Int: " + te.coolInt)
+        wrapper.addString("Long: " + te.coolLong)
+        wrapper.addString("Float: " + te.coolFloat)
+        wrapper.addString("Double: " + te.coolDouble)
     }
 
     @TileRegister("saving_primitives")

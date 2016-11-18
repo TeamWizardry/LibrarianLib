@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.common.util.bitsaving.BitwiseStorageManager
 import net.minecraft.util.text.translation.I18n
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
+import net.minecraftforge.fml.common.event.FMLInterModComms
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import java.io.InputStream
@@ -23,6 +24,7 @@ open class LibCommonProxy {
         BitwiseStorageManager
         EasyConfigHandler.loadAsm(e.asmData)
         EasyConfigHandler.init(e.suggestedConfigurationFile)
+        FMLInterModComms.sendMessage("Waila", "register", "com.teamwizardry.librarianlib.common.base.block.WailaHandler.onWailaCall")
     }
 
     open fun latePre(e: FMLPreInitializationEvent) {

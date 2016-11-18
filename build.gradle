@@ -44,6 +44,9 @@ repositories {
         name 'tterag maven'
         url "http://maven.tterrag.com/"
     }
+    maven {
+        url "http://mobiusstrip.eu/maven"
+    }
 }
 
 minecraft {
@@ -69,6 +72,7 @@ dependencies {
 
     deobfCompile "MCMultiPart:MCMultiPart:1.2.1:universal"
     deobfCompile "mcjty.theoneprobe:TheOneProbe:1.9.4-1.0.6-17"
+    compile "mcp.mobius.waila:Waila:1.7.0-B3_1.9.4"
 }
 
 jar {
