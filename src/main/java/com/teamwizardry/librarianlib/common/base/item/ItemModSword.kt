@@ -42,10 +42,12 @@ open class ItemModSword(name: String, material: ToolMaterial, vararg variants: S
     }
 
     override fun getSubItems(itemIn: Item, tab: CreativeTabs?, subItems: MutableList<ItemStack>) {
-        for (i in 0..this.variants.size - 1)
-            subItems.add(ItemStack(itemIn, 1, i))
+        variants.indices.mapTo(subItems) { ItemStack(itemIn, 1, it) }
     }
 
+    /**
+     * Override this to have a custom creative tab. Leave blank to have a default tab (or none if no default tab is set).
+     */
     open val creativeTab: ModCreativeTab?
         get() = ModCreativeTab.defaultTabs[modId]
 }

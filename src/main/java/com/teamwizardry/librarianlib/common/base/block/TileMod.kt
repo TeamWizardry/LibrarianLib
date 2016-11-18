@@ -95,6 +95,9 @@ abstract class TileMod : TileEntity() {
         // NO-OP
     }
 
+    /**
+     * Tell the server and nearby clients that this tile has changed.
+     */
     override fun markDirty() {
         super.markDirty()
         if (!worldObj.isRemote)
@@ -107,6 +110,9 @@ abstract class TileMod : TileEntity() {
         AbstractSaveHandler.readAutoNBT(javaClass, packet.nbtCompound)
     }
 
+    /**
+     * Dispatch tile data to nearby players. This will sync data to client side.
+     */
     open fun dispatchTileToNearbyPlayers() {
         if (worldObj is WorldServer) {
             val ws: WorldServer = worldObj as WorldServer

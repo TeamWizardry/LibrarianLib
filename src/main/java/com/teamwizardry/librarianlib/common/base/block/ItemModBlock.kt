@@ -49,10 +49,7 @@ open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlo
     }
 
     override fun getSubItems(itemIn: Item, tab: CreativeTabs?, subItems: MutableList<ItemStack>) {
-        val variants = this.variants
-
-        for (i in variants.indices)
-            subItems.add(ItemStack(itemIn, 1, i))
+        variants.indices.mapTo(subItems) { ItemStack(itemIn, 1, it) }
     }
 
     override val providedItem: Item

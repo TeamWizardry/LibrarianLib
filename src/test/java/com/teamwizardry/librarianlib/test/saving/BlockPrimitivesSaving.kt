@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.test.saving
 
 import com.teamwizardry.librarianlib.common.base.block.BlockMod
+import com.teamwizardry.librarianlib.common.base.block.ProbeInfoWrapper
 import com.teamwizardry.librarianlib.common.base.block.TileMod
 import com.teamwizardry.librarianlib.common.util.autoregister.TileRegister
 import com.teamwizardry.librarianlib.common.util.saving.Save
@@ -47,6 +48,22 @@ class BlockPrimitivesSaving : BlockMod("saving_primitives", Material.CACTUS), IT
 
     override fun createNewTileEntity(worldIn: World?, meta: Int): TileEntity? {
         return TETest()
+    }
+
+    override fun addProbeInformation(info: ProbeInfoWrapper, player: EntityPlayer, world: World, blockState: IBlockState) {
+        val probeInfo = info.getProbeInfo()
+        val hitInfo = info.getHitData()
+
+        val te = world.getTileEntity(hitInfo.pos) as TETest
+
+        probeInfo.text("Boolean: " + te.coolBoolean)
+        probeInfo.text("Byte: " + te.coolByte)
+        probeInfo.text("Char: " + te.coolChar)
+        probeInfo.text("Short: " + te.coolShort)
+        probeInfo.text("Int: " + te.coolInt)
+        probeInfo.text("Long: " + te.coolLong)
+        probeInfo.text("Float: " + te.coolFloat)
+        probeInfo.text("Double: " + te.coolDouble)
     }
 
     @TileRegister("saving_primitives")

@@ -44,16 +44,31 @@ open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg 
         return this
     }
 
+    /**
+     * Override this to have a custom ItemBlock implementation.
+     */
     open fun createItemForm(): ItemBlock? {
         return ItemModBlock(this)
     }
 
-
+    /**
+     * Marked final due to overriding errors with it not existing. Use [addProbeInformation] instead.
+     */
     @Optional.Method(modid = "theoneprobe")
-    override fun addProbeInfo(mode: ProbeMode, probeInfo: IProbeInfo, player: EntityPlayer, world: World, blockState: IBlockState, data: IProbeHitData) {
+    override final fun addProbeInfo(mode: ProbeMode, probeInfo: IProbeInfo, player: EntityPlayer, world: World, blockState: IBlockState, data: IProbeHitData) {
+        addProbeInformation(ProbeInfoWrapper(mode, probeInfo, data), player, world, blockState)
+    }
+
+    /**
+     * Override this to add probe information. Only called when The One Probe exists.
+     */
+    open fun addProbeInformation(info: ProbeInfoWrapper, player: EntityPlayer, world: World, blockState: IBlockState) {
         //NO-OP
     }
 
+    /**
+     * Override this to have a custom creative tab. Leave blank to have a default tab (or none if no default tab is set).
+     */
     override val creativeTab: ModCreativeTab?
         get() = ModCreativeTab.defaultTabs[modId]
 }
