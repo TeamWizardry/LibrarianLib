@@ -53,9 +53,13 @@ open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg 
     }
 
     @Optional.Method(modid = "Waila")
-    override fun getNBTData(player: EntityPlayerMP?, te: TileEntity?, tag: NBTTagCompound?, world: World?, pos: BlockPos?): NBTTagCompound? {
-        //noop FOR NOW!
+    override fun getNBTData(player: EntityPlayerMP, te: TileEntity, tag: NBTTagCompound, world: World, pos: BlockPos?): NBTTagCompound? {
+        writeToNbtForWaila(te, tag, player)
         return tag
+    }
+
+    open fun writeToNbtForWaila(te: TileEntity, nbtTagCompound: NBTTagCompound, player: EntityPlayer) {
+        if(te is TileMod) te.writeToNBT(nbtTagCompound)
     }
 
     @Optional.Method(modid = "Waila")
