@@ -353,6 +353,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             vb.pos(pos.x, pos.y + size.y, 0.0).endVertex()
             vb.pos(pos.x, pos.y, 0.0).endVertex()
             tessellator.draw()
+            GlStateManager.enableTexture2D()
             GlStateManager.popAttrib()
         }
 

@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.test.testcore
 import com.teamwizardry.librarianlib.common.base.ModCreativeTab
 import com.teamwizardry.librarianlib.common.core.LoggerBase
 import com.teamwizardry.librarianlib.test.fx.FXEntryPoint
+import com.teamwizardry.librarianlib.test.gui.GuiEntryPoint
 import com.teamwizardry.librarianlib.test.saving.SavingEntryPoint
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
@@ -22,7 +23,8 @@ class TestMod {
     fun preInit(e: FMLPreInitializationEvent) {
         entrypoints = arrayOf(
                 SavingEntryPoint,
-                FXEntryPoint
+                FXEntryPoint,
+                GuiEntryPoint
         )
         PROXY.pre(e)
         entrypoints.forEach {
