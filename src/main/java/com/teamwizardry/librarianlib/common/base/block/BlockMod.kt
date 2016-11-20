@@ -28,45 +28,10 @@ import net.minecraftforge.fml.common.Optional
  * The default implementation for an IModBlock.
  */
 @Suppress("LeakingThis")
-@Optional.InterfaceList(Optional.Interface(iface = "mcjty.theoneprobe.api.IProbeInfoAccessor", modid = "theoneprobe", striprefs = true), Optional.Interface(iface = "mcp.mobius.waila.api.IWailaDataProvider", modid = "Waila", striprefs = true))
+@Optional.InterfaceList(
+        Optional.Interface(iface = "mcjty.theoneprobe.api.IProbeInfoAccessor", modid = "theoneprobe", striprefs = true),
+        Optional.Interface(iface = "mcp.mobius.waila.api.IWailaDataProvider", modid = "Waila", striprefs = true))
 open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg variants: String) : Block(materialIn, color), IModBlock, IProbeInfoAccessor, IWailaDataProvider {
-
-    @Optional.Method(modid = "Waila")
-    override final fun getWailaBody(itemStack: ItemStack?, currenttip: MutableList<String>, accessor: IWailaDataAccessor, config: IWailaConfigHandler?): MutableList<String>? {
-        wrapper.list = mutableListOf()
-        addWailaInfo(currenttip, accessor.player, accessor.world, accessor.blockState, accessor.position)
-        addHudInformation(wrapper, accessor.player, accessor.world, accessor.blockState, accessor.position)
-        return wrapper.list
-    }
-
-    @Optional.Method(modid = "Waila")
-    override final fun getWailaStack(accessor: IWailaDataAccessor, config: IWailaConfigHandler?): ItemStack? {
-        return getStackForWaila(accessor)
-    }
-
-    open fun getStackForWaila(accessor: IWailaDataAccessor) = ItemStack(this, 1, accessor.metadata)
-
-    @Optional.Method(modid = "Waila")
-    override final fun getWailaTail(itemStack: ItemStack?, currenttip: MutableList<String>?, accessor: IWailaDataAccessor?, config: IWailaConfigHandler?): MutableList<String>? {
-        //noop
-        return currenttip
-    }
-
-    @Optional.Method(modid = "Waila")
-    override fun getNBTData(player: EntityPlayerMP, te: TileEntity, tag: NBTTagCompound, world: World, pos: BlockPos?): NBTTagCompound? {
-        writeToNbtForWaila(te, tag, player)
-        return tag
-    }
-
-    open fun writeToNbtForWaila(te: TileEntity, nbtTagCompound: NBTTagCompound, player: EntityPlayer) {
-        if(te is TileMod) te.writeToNBT(nbtTagCompound)
-    }
-
-    @Optional.Method(modid = "Waila")
-    override final fun getWailaHead(itemStack: ItemStack?, currenttip: MutableList<String>?, accessor: IWailaDataAccessor?, config: IWailaConfigHandler?): MutableList<String>? {
-        //noop
-        return currenttip
-    }
 
     constructor(name: String, materialIn: Material, vararg variants: String) : this(name, materialIn, materialIn.materialMapColor, *variants)
 
@@ -75,20 +40,11 @@ open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg 
     override val bareName: String = name
     val modId: String
 
-    companion object {
-        @JvmField
-        internal val blocks: MutableList<BlockMod> = mutableListOf()
-    }
-
     val itemForm: ItemBlock? by lazy { createItemForm() }
-
-    val isTopLoaded: Boolean by lazy { Loader.isModLoaded("theoneprobe") }
-    val isWailaLoaded: Boolean by lazy { Loader.isModLoaded("theoneprobe") }
 
     init {
         modId = Loader.instance().activeModContainer().modId
         this.variants = VariantHelper.beginSetupBlock(name, variants)
-        blocks.add(this)
         VariantHelper.finishSetupBlock(this, name, itemForm, creativeTab)
     }
 
@@ -104,20 +60,14 @@ open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg 
     open fun createItemForm(): ItemBlock? {
         return ItemModBlock(this)
     }
-
     /**
-     * Marked final due to overriding errors with it not existing. Use [addProbeInformation] instead.
+     * Override this to have a custom creative tab. Leave blank to have a default tab (or none if no default tab is set).
      */
-    @Optional.Method(modid = "theoneprobe")
-    override final fun addProbeInfo(mode: ProbeMode, probeInfo: IProbeInfo, player: EntityPlayer, world: World, blockState: IBlockState, data: IProbeHitData) {
-        topWrapper = ProbeInfoWrapper(mode, probeInfo, data)
-        if(!isWailaLoaded) {
-            wrapper.list = mutableListOf()
-            addHudInformation(wrapper, player, world, blockState, data.pos)
-        }
-        addProbeInformation(topWrapper, player, world, blockState, data.pos)
-        for(string in wrapper.list) probeInfo.text(string)
-    }
+    override val creativeTab: ModCreativeTab?
+        get() = ModCreativeTab.defaultTabs[modId]
+
+
+    // Compat //
 
     /**
      * Override this to add probe information. Only called when The One Probe exists.
@@ -125,14 +75,6 @@ open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg 
     open fun addProbeInformation(info: ProbeInfoWrapper?, player: EntityPlayer, world: World, blockState: IBlockState, pos: BlockPos) {
         //NO-OP
     }
-
-    val wrapper = TopAndWailaWrapper()
-    var topWrapper: ProbeInfoWrapper? = null
-    /**
-     * Override this to have a custom creative tab. Leave blank to have a default tab (or none if no default tab is set).
-     */
-    override val creativeTab: ModCreativeTab?
-        get() = ModCreativeTab.defaultTabs[modId]
 
     /**
      * Override this to add probe information. Only called when WAILA exists.
@@ -142,9 +84,88 @@ open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg 
     }
 
     /**
-     * TOP and Waila information! What a time to live in.
+     * Override this to add extra NBT to WAILA data.
+     */
+    open fun writeToNbtForWaila(te: TileEntity, nbtTagCompound: NBTTagCompound, player: EntityPlayer) {
+        if(te is TileMod) te.writeToNBT(nbtTagCompound)
+    }
+
+    /**
+     * Override this to have a
+     */
+    open fun getStackForWaila(player: EntityPlayer, world: World, blockState: IBlockState, pos: BlockPos) =
+            ItemStack(this, 1, damageDropped(blockState))
+
+    /**
+     * Override this to add simple text information to both WAILA and The One Probe.
      */
     open fun addHudInformation(wrapper: TopAndWailaWrapper, player: EntityPlayer, world: World, blockState: IBlockState, pos: BlockPos) {
         //NO-OP
+    }
+
+    // Optional Methods //
+
+    /**
+     * Marked final due to overriding errors with it not existing. Use [addWailaInfo] instead.
+     */
+    @Optional.Method(modid = "Waila")
+    override final fun getWailaBody(itemStack: ItemStack?, currenttip: MutableList<String>, accessor: IWailaDataAccessor, config: IWailaConfigHandler?): MutableList<String>? {
+        val wrapper = TopAndWailaWrapper()
+        addWailaInfo(currenttip, accessor.player, accessor.world, accessor.blockState, accessor.position)
+        addHudInformation(wrapper, accessor.player, accessor.world, accessor.blockState, accessor.position)
+        return wrapper.list
+    }
+
+    /**
+     * Marked final due to overriding errors with it not existing. Use [getStackForWaila] instead.
+     */
+    @Optional.Method(modid = "Waila")
+    override final fun getWailaStack(accessor: IWailaDataAccessor, config: IWailaConfigHandler?): ItemStack? {
+        return getStackForWaila(accessor.player, accessor.world, accessor.blockState, accessor.position)
+    }
+
+    /**
+     * Marked final due to overriding errors with it not existing. Use [addWailaInfo] instead.
+     */
+    @Optional.Method(modid = "Waila")
+    override final fun getWailaTail(itemStack: ItemStack?, currenttip: MutableList<String>?, accessor: IWailaDataAccessor?, config: IWailaConfigHandler?): MutableList<String>? {
+        return currenttip
+    }
+
+    /**
+     * Marked final due to overriding errors with it not existing. Use [writeToNbtForWaila] instead.
+     */
+    @Optional.Method(modid = "Waila")
+    override fun getNBTData(player: EntityPlayerMP, te: TileEntity, tag: NBTTagCompound, world: World, pos: BlockPos?): NBTTagCompound? {
+        writeToNbtForWaila(te, tag, player)
+        return tag
+    }
+
+    @Optional.Method(modid = "Waila")
+    override final fun getWailaHead(itemStack: ItemStack?, currenttip: MutableList<String>?, accessor: IWailaDataAccessor?, config: IWailaConfigHandler?): MutableList<String>? {
+        return currenttip
+    }
+
+    /**
+     * Marked final due to overriding errors with it not existing. Use [addProbeInformation] instead.
+     */
+    @Optional.Method(modid = "theoneprobe")
+    override final fun addProbeInfo(mode: ProbeMode, probeInfo: IProbeInfo, player: EntityPlayer, world: World, blockState: IBlockState, data: IProbeHitData) {
+        val topWrapper = ProbeInfoWrapper(mode, probeInfo, data)
+        if(!isWailaLoaded) {
+            val wrapper = TopAndWailaWrapper()
+            addHudInformation(wrapper, player, world, blockState, data.pos)
+            wrapper.list.forEach { probeInfo.text(it) }
+        }
+
+        addProbeInformation(topWrapper, player, world, blockState, data.pos)
+    }
+
+    companion object {
+        @JvmField
+        val ALL_BLOCKS = mutableListOf<Block>()
+
+        val isTopLoaded: Boolean by lazy { Loader.isModLoaded("theoneprobe") }
+        val isWailaLoaded: Boolean by lazy { Loader.isModLoaded("Waila") }
     }
 }

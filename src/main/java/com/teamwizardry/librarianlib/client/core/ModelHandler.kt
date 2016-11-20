@@ -175,12 +175,12 @@ object ModelHandler {
                 }
 
                 if (holder is ISpecialModelProvider && holder.getSpecialModel(index) != null) {
-                    log("$namePad |  Variant #${index + 1}: ${variant} - SPECIAL")
+                    log("$namePad |  Variant #${index + 1}: $variant - SPECIAL")
                     continue
                 }
 
                 if ((variant != item.registryName.resourcePath || variants.size != 1))
-                    log("$namePad |  Variant #${index + 1}: ${variant}")
+                    log("$namePad |  Variant #${index + 1}: $variant")
 
                 if (shouldGenItemJson(holder)) generateItemJson(holder, variant)
 
@@ -254,7 +254,7 @@ object ModelHandler {
         if (json.isJsonObject && json.asJsonObject.has("forge_marker")) {
             val marker = json.asJsonObject["forge_marker"]
             if (marker.isJsonPrimitive && marker.asJsonPrimitive.isNumber)
-                isForge = marker.asJsonPrimitive.asInt != 0
+                isForge = marker.asInt != 0
         }
         if (isForge)
             log("$namePad | Assuming forge override for ${entry.getRegistryName().resourcePath} item model")
