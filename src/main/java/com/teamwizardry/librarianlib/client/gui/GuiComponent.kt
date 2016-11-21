@@ -30,6 +30,8 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     @JvmField
     val BUS = EventBus()
 
+    class ComponentTickEvent<T : GuiComponent<T>>(val component: T) : Event()
+
     class PreDrawEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val partialTicks: Float) : Event()
     class PostDrawEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val partialTicks: Float) : Event(true)
     class PreChildrenDrawEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val partialTicks: Float) : Event()
@@ -371,6 +373,13 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         GlStateManager.popMatrix()
 
         BUS.fire(PostDrawEvent(thiz(), mousePos, partialTicks))
+    }
+
+    open fun tick() {
+        BUS.fire(ComponentTickEvent(thiz()))
+        for (child in components) {
+            child.tick()
+        }
     }
 
     /**

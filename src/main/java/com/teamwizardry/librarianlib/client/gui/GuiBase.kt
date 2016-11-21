@@ -2,8 +2,12 @@ package com.teamwizardry.librarianlib.client.gui
 
 import com.teamwizardry.librarianlib.client.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.client.config.GuiUtils
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import java.io.IOException
@@ -79,6 +83,24 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
 
         if (wheelAmount != 0) {
             fullscreenComponents.mouseWheel(Vec2d(mouseX.toDouble(), mouseY.toDouble()), GuiComponent.MouseWheelDirection.fromSign(wheelAmount))
+        }
+    }
+
+    fun tick() {
+        fullscreenComponents.tick()
+    }
+
+    companion object {
+        init {
+            MinecraftForge.EVENT_BUS.register(this)
+        }
+
+        @SubscribeEvent
+        fun tick(e: TickEvent.ClientTickEvent) {
+            val gui = Minecraft.getMinecraft().currentScreen
+            if(gui is GuiBase) {
+                gui.tick()
+            }
         }
     }
 }
