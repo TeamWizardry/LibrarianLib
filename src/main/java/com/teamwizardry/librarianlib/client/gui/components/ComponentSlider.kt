@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.HandlerList
 import com.teamwizardry.librarianlib.client.gui.mixin.DragMixin
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
+import com.teamwizardry.librarianlib.common.util.vec
 import java.util.function.Consumer
 
 class ComponentSlider(posX: Int, posY: Int, width: Int, height: Int, percentage: Double, var increments: Int) : GuiComponent<ComponentSlider>(posX, posY, width, height) {
@@ -21,7 +22,7 @@ class ComponentSlider(posX: Int, posY: Int, width: Int, height: Int, percentage:
             field = newPercent
             percentageChange.fireAll { h -> h.accept(this.percentage) }
         }
-    private var handlePos: Vec2d = Vec2d(0.0, 0.0)
+    private var handlePos: Vec2d = vec(0, 0)
 
     init {
 

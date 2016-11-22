@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.Option
 import com.teamwizardry.librarianlib.common.util.math.BoundingBox2D
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
+import com.teamwizardry.librarianlib.common.util.vec
 import net.minecraft.client.Minecraft
 import java.awt.Color
 
@@ -129,10 +130,10 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
             }
 
             if (wrap == -1) {
-                size = Vec2d(fr.getStringWidth(text.getValue(this)).toDouble(), fr.FONT_HEIGHT.toDouble())
+                size = vec(fr.getStringWidth(text.getValue(this)), fr.FONT_HEIGHT)
             } else {
                 val wrapped = fr.listFormattedStringToWidth(text.getValue(this), wrap)
-                size = Vec2d(wrap.toDouble(), (wrapped.size * fr.FONT_HEIGHT).toDouble())
+                size = vec(wrap, wrapped.size * fr.FONT_HEIGHT)
             }
 
             if (enableFlags) {

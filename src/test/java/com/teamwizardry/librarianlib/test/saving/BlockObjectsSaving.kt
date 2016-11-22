@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.common.util.autoregister.TileRegister
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import com.teamwizardry.librarianlib.common.util.saving.Save
 import com.teamwizardry.librarianlib.common.util.sendMessage
+import com.teamwizardry.librarianlib.common.util.vec
 import net.minecraft.block.ITileEntityProvider
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
@@ -35,9 +36,9 @@ class BlockObjectsSaving : BlockMod("saving_objects", Material.CACTUS), ITileEnt
             te.stack = playerIn.heldItemMainhand
 
             te.handler = ItemStackHandler(arrayOf(playerIn.heldItemMainhand, playerIn.heldItemOffhand))
-            te.vec3d = Vec3d(hitX.toDouble(), hitY.toDouble(), hitZ.toDouble())
+            te.vec3d = vec(hitX, hitY, hitZ)
             te.vec3i = pos
-            te.vec2d = Vec2d(hitX.toDouble(), hitZ.toDouble())
+            te.vec2d = vec(hitX, hitZ)
             te.enum = side
 
             te.markDirty()

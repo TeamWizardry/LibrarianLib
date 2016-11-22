@@ -8,6 +8,7 @@ import com.teamwizardry.librarianlib.common.util.event.EventBus
 import com.teamwizardry.librarianlib.common.util.event.EventCancelable
 import com.teamwizardry.librarianlib.common.util.math.BoundingBox2D
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
+import com.teamwizardry.librarianlib.common.util.vec
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
@@ -163,8 +164,8 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         private set
 
     init {
-        this.pos = Vec2d(posX.toDouble(), posY.toDouble())
-        this.size = Vec2d(width.toDouble(), height.toDouble())
+        this.pos = vec(posX, posY)
+        this.size = vec(width, height)
     }
 
     /**
@@ -284,19 +285,21 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     open fun calculateMouseOver(mousePos: Vec2d) {
         this.mouseOver = false
 
-        components.asReversed().forEach { child ->
-            child.calculateMouseOver(transformChildPos(child, mousePos))
-            if (mouseOver) {
-                child.mouseOver = false
-            }
-            if (child.mouseOver) {
-                mouseOver = true
+        if(isVisible) {
+            components.asReversed().forEach { child ->
+                child.calculateMouseOver(transformChildPos(child, mousePos))
+                if (mouseOver) {
+                    child.mouseOver = false
+                }
+                if (child.mouseOver) {
+                    mouseOver = true
+                }
+
             }
 
+            mouseOver = mouseOver || (calculateOwnHover &&
+                    (mousePos.x >= 0 && mousePos.x <= size.x && mousePos.y >= 0 && mousePos.y <= size.y))
         }
-
-        mouseOver = mouseOver || (calculateOwnHover &&
-                (mousePos.x >= 0 && mousePos.x <= size.x && mousePos.y >= 0 && mousePos.y <= size.y))
         this.mouseOver = BUS.fire(MouseOverEvent(thiz(), mousePos, this.mouseOver)).isOver
     }
 

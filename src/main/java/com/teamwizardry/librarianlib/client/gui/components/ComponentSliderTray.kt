@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.client.gui.components
 import com.teamwizardry.librarianlib.client.core.ClientTickHandler
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
+import com.teamwizardry.librarianlib.common.util.vec
 
 class ComponentSliderTray(posX: Int, posY: Int, internal var offsetX: Int, internal var offsetY: Int) : GuiComponent<ComponentSliderTray>(posX, posY) {
 
@@ -59,6 +60,6 @@ class ComponentSliderTray(posX: Int, posY: Int, internal var offsetX: Int, inter
         } else
             invalidate()
 
-        pos = Vec2d(rootPos.x + currentOffsetX, rootPos.y)
+        pos = vec(rootPos.x + currentOffsetX, rootPos.y)
     }
 }
