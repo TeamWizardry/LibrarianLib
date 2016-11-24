@@ -8,6 +8,7 @@ import com.teamwizardry.librarianlib.common.util.event.EventBus
 import com.teamwizardry.librarianlib.common.util.event.EventCancelable
 import com.teamwizardry.librarianlib.common.util.math.BoundingBox2D
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
+import com.teamwizardry.librarianlib.common.util.plus
 import com.teamwizardry.librarianlib.common.util.vec
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
@@ -84,19 +85,29 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
     var zIndex = 0
     /**
-     * Get the position of the component relative to it's parent
-     */
-    /**
-     * Set the position of the component relative to it's parent
+     * The position of the component relative to it's parent
      */
     var pos: Vec2d
     /**
-     * Get the size of the component
-     */
-    /**
-     * Set the size of the component
+     * The size of the component
      */
     var size: Vec2d
+    /**
+     * The left margin for logical alignment
+     */
+    var marginLeft: Double = 0.0
+    /**
+     * The right margin for logical alignment
+     */
+    var marginRight: Double = 0.0
+    /**
+     * The top margin for logical alignment
+     */
+    var marginTop: Double = 0.0
+    /**
+     * The bottom margin for logical alignment
+     */
+    var marginBottom: Double = 0.0
 
     var mouseOver = false
     var mousePosThisFrame = Vec2d.ZERO
@@ -513,7 +524,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             aabb = childAABB?.union(aabb) ?: aabb
         }
 
-        aabb = BoundingBox2D(aabb.min.add(pos), aabb.max.add(pos))
+        aabb = BoundingBox2D(aabb.min + pos - vec(marginLeft, marginTop), aabb.max + pos + vec(marginRight, marginBottom))
 
         return BUS.fire(LogicalSizeEvent(thiz(), if (outOfFlow) null else aabb)).box
     }
