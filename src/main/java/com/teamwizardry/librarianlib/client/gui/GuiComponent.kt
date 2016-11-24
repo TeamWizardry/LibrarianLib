@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.client.gui
 import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.client.core.ClientTickHandler
+import com.teamwizardry.librarianlib.client.gui.GuiComponent.*
 import com.teamwizardry.librarianlib.common.util.event.Event
 import com.teamwizardry.librarianlib.common.util.event.EventBus
 import com.teamwizardry.librarianlib.common.util.event.EventCancelable
@@ -22,9 +23,92 @@ import org.lwjgl.opengl.GL11
 import java.util.*
 
 /**
- * A component of a capability, such as a button, image, piece of text, list, etc.
-
- * @param  The class of this component. Used for setup()
+ * The base class of every on-screen object. These can be nested within each other using [add]. Subcomponents will be
+ * positioned relative to their parent, so modifications to the parent's [pos] will change their rendering position.
+ *
+ * # Summery
+ *
+ * - Events - Fire when something happens, allow you to change what happens or cancel it alltogether. Register on [BUS]
+ * - Tags - Mark a component for retrieval later.
+ * - Data - Store metadata in a component.
+ *
+ * # Detail
+ *
+ * ## Events
+ *
+ * More advanced functionality is achieved through event hooks on the component's [BUS]. All events are subclasses of
+ * [Event] so a type hierarchy of that should show all events available to you. Only the child classes of [GuiComponent]
+ * are fired by default, all others are either a part of a particular component class or require some action on the
+ * user's part to initialize.
+ *
+ * ## Tags
+ *
+ * If you want to mark a component for retrieval later you can use [addTag] to add an arbitrary object as a tag.
+ * Children with a specific tag can be retrieved later using [getByTag], or you can check if a component has a tag using
+ * [hasTag]. Tags are stored in a HashSet, so any object that overrides the [hashCode] and [equals] methods will work by
+ * value, but any object will work by identity. [Explanation here.](http://stackoverflow.com/a/1692882/1541907)
+ *
+ * ## Data
+ *
+ * If you need to store additional metadata in a component, this can be done with [setData]. The class passed in must be
+ * the class of the data, and is used to reduce unchecked cast warnings and to ensure that the same key can be used with
+ * multiple types of data. The key is used to allow multiple instances of the same data type to be stored in a component,
+ * and is independent per class.
+ * ```
+ * component.setData(MyCoolObject.class, "foo", myInstance);
+ * component.setData(MyCoolObject.class, "bar", anotherInstance);
+ * component.setData(YourCoolObject.class, "foo", yourInstance);
+ *
+ * component.getData(MyCoolObject.class, "foo"); // => myInstance
+ * component.getData(MyCoolObject.class, "bar"); // => anotherInstance
+ * component.getData(YourCoolObject.class, "foo"); // => yourInstance
+ * ```
+ *
+ * ## Default events
+ *
+ * ### Common Events
+ * - [ComponentTickEvent] - Fired each tick while the component is a part of a screen
+ * - [PreDrawEvent] - Fired each frame before the component has been drawn
+ * - [PreChildrenDrawEvent] - Fired each frame after the component has been drawn but before children have been drawn
+ * - [PostDrawEvent] - Fired each frame after the component and its children have been drawn
+ * - ---
+ * - [MouseDownEvent] - Fired whenever the mouse is pressed
+ * - [MouseUpEvent] - Fired whenever the mouse is released
+ * - [MouseDragEvent] - Fired whenever the mouse is moved while a button is being pressed
+ * - [MouseClickEvent] - Fired when the mouse is clicked within the component
+ * - ---
+ * - [KeyDownEvent] - Fired when a key is pressed
+ * - [KeyUpEvent] - Fired when a key is released
+ * - ---
+ * - [MouseInEvent] - Fired when the mouse is moved into the component
+ * - [MouseOutEvent] - Fired when the mouse is moved out of the component
+ * - [MouseWheelEvent] - Fired when the mouse wheel is moved
+ * - ---
+ * - [FocusEvent] - Fired when the component gains focus
+ * - [BlurEvent] - Fired when the component loses focus
+ * - ---
+ * - [EnableEvent] - Fired when this component is enabled
+ * - [DisableEvent] - Fired when this component is disabled
+ *
+ * ### Seldom used events
+ * - [AddChildEvent] - Fired before a child is added to the component
+ * - [RemoveChildEvent] - Fired when a child is removed from the component
+ * - [AddToParentEvent] - Fired when the component is added as a child to another component
+ * - [RemoveFromParentEvent] - Fired when the component is removed from its parent
+ * - ---
+ * - [SetDataEvent] - Fired before data is set
+ * - [RemoveDataEvent] - Fired before data is removed
+ * - [GetDataEvent] - Fired when data is queried
+ * - ---
+ * - [HasTagEvent] - Fired when the component is checked for a tag
+ * - [AddTagEvent] - Fired before a tag is added to the component
+ * - [RemoveTagEvent] - Fired before a tag is removed from a component
+ *
+ * ### Advanced events
+ * - [LogicalSizeEvent] - Fired when the logical size is queried
+ * - [ChildMouseOffsetEvent] - Fired when a mouse position is being offset to be relative to a child component
+ * - [MouseOffsetEvent] - Fired when a mouse position is being offset to be relative to this component
+ * - [MouseOverEvent] - Fired when checking if the mouse is over this component
  */
 @SideOnly(Side.CLIENT)
 abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX: Int, posY: Int, width: Int = 0, height: Int = 0) : IGuiDrawable {
