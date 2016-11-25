@@ -198,7 +198,7 @@ object ModelHandler {
     }
 
     val customModels: MutableMap<Pair<RegistryDelegate<Item>, Int>, ModelResourceLocation>
-            by ImmutableStaticFieldDelegator(MethodHandleHelper.wrapperForStaticGetter(ModelLoader::class.java, "customModels"))
+            by ImmutableStaticFieldDelegator(MethodHandleHelper.wrapperForStaticGetter(ModelLoader::class.java, "customModels"), true)
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
