@@ -13,6 +13,7 @@ import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.common.base.item.ISpecialModelProvider
 import com.teamwizardry.librarianlib.common.core.DevOwnershipTest
 import com.teamwizardry.librarianlib.common.core.LibLibConfig
+import com.teamwizardry.librarianlib.common.util.ImmutableStaticFieldDelegator
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import com.teamwizardry.librarianlib.common.util.builders.serialize
 import com.teamwizardry.librarianlib.common.util.times
@@ -196,13 +197,12 @@ object ModelHandler {
         }
     }
 
+    val customModels: MutableMap<Pair<RegistryDelegate<Item>, Int>, ModelResourceLocation>
+            by ImmutableStaticFieldDelegator(MethodHandleHelper.wrapperForStaticGetter(ModelLoader::class.java, "customModels"))
+
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     fun onModelBake(e: ModelBakeEvent) {
-        val customModelGetter = MethodHandleHelper.wrapperForStaticGetter(ModelLoader::class.java, "customModels")
-        @Suppress("UNCHECKED_CAST")
-        val customModels = customModelGetter() as MutableMap<Pair<RegistryDelegate<Item>, Int>, ModelResourceLocation>
-
         for ((modid, holders) in variantCache) {
             modName = modid
             log("$modName | Registering special models")
