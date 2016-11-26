@@ -32,11 +32,18 @@ class BlockPrimitivesSaving : BlockMod("saving_primitives", Material.CACTUS), IT
             te.coolLong++
             te.coolFloat += 1.25f
             te.coolDouble += 1.25
-            te.secretString = te.coolInt * "ftyjbnk"
+            te.secretString = te.coolInt * "secret"
             te.markDirty()
         } else {
-            te.forEveryField {
-                playerIn.sendMessage("${it.displayName ?: it.name}: ${it.getter(te)}")
+            te.run {
+                playerIn.sendMessage("bool: $coolBoolean")
+                playerIn.sendMessage("byte: $coolByte")
+                playerIn.sendMessage("char: $coolChar")
+                playerIn.sendMessage("short: $coolShort")
+                playerIn.sendMessage("int: $coolInt")
+                playerIn.sendMessage("long: $coolLong")
+                playerIn.sendMessage("float: $coolFloat")
+                playerIn.sendMessage("double: $coolDouble")
             }
         }
         return true
@@ -50,16 +57,14 @@ class BlockPrimitivesSaving : BlockMod("saving_primitives", Material.CACTUS), IT
 
     @TileRegister("saving_primitives")
     class TETest : TileMod() {
-        override val automaticallyAddFieldsToWaila: Boolean
-            get() = true
-        @Save(displayName = "Boolean") var coolBoolean: Boolean = false
-        @Save(displayName = "Byte") var coolByte: Byte = 0
-        @Save(displayName = "Char") var coolChar: Char = '0'
-        @Save(displayName = "Short") var coolShort: Short = 0
-        @Save(displayName = "Int") var coolInt: Int = 0
-        @Save(displayName = "Long") var coolLong: Long = 0
-        @Save(displayName = "Float") var coolFloat: Float = 0f
-        @Save(displayName = "Double") var coolDouble: Double = 0.0
-        @Save(displayName = "") var secretString: String = "" //this string is secret, sssh, it should not appear in waila
+        @Save var coolBoolean: Boolean = false
+        @Save var coolByte: Byte = 0
+        @Save var coolChar: Char = '0'
+        @Save var coolShort: Short = 0
+        @Save var coolInt: Int = 0
+        @Save var coolLong: Long = 0
+        @Save var coolFloat: Float = 0f
+        @Save var coolDouble: Double = 0.0
+        @Save var secretString: String = ""
     }
 }

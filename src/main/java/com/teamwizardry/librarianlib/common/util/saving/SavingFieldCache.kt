@@ -39,11 +39,10 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
         }.forEach {
             val (name, field) = it
             field.isAccessible = true
-            val wailaName = field.getAnnotation(Save::class.java).displayName
             map.put(name, FieldCache(field.type,
                     MethodHandleHelper.wrapperForGetter<Any>(field),
                     MethodHandleHelper.wrapperForSetter<Any>(field),
-                    !field.isAnnotationPresent(NoSync::class.java), displayName = if (wailaName == "") null else wailaName, name = field.name))
+                    !field.isAnnotationPresent(NoSync::class.java), field.name))
         }
     }
 
@@ -145,4 +144,4 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
     }
 }
 
-data class FieldCache(val clazz: Class<*>, val getter: (Any) -> Any?, val setter: (Any, Any?) -> Unit, val syncToClient: Boolean, var displayName: String? = null, var name: String = "")
+data class FieldCache(val clazz: Class<*>, val getter: (Any) -> Any?, val setter: (Any, Any?) -> Unit, val syncToClient: Boolean, var name: String = "")
