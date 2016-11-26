@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.common.base.block
 import com.teamwizardry.librarianlib.common.network.PacketHandler
 import com.teamwizardry.librarianlib.common.network.PacketSynchronization
 import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
+import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
 import io.netty.buffer.ByteBuf
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayerMP
@@ -20,6 +21,11 @@ import net.minecraft.world.WorldServer
  */
 abstract class TileMod : TileEntity() {
 
+    /**
+     * Automatically add all fields of this class to the WAILA display
+     */
+    open val automaticallyAddFieldsToWaila: Boolean
+        get() = false
     /**
      * Using fast synchronization is quicker and less expensive than the NBT packet default.
      * However, it requires you to register both ByteBuf serializers and NBT serializers for custom types.
@@ -127,6 +133,11 @@ abstract class TileMod : TileEntity() {
                         playerMP.connection.sendPacket(updatePacket)
                 }
             }
+        }
+    }
+    fun forEveryField(action: (Pair<String, Any?>)->Unit) {
+        SavingFieldCache.getClassFields(javaClass).forEach {
+            action((it.value.wailaName ?: it.key) to it.value.getter(this))
         }
     }
 }

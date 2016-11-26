@@ -9,10 +9,13 @@ import kotlin.annotation.AnnotationTarget.*
  * Apply this to a field to have it be serialized by the write/read nbt methods and write/read byte methods.
  *
  * [saveName] doesn't matter for messages, except in sorting. It's for NBT serializers.
+ *
+ * [wailaName] is for WAILA auto-serialization. If [automaticallyAddFieldsToWaila] in the TE class is set to [false], this will have no effect.
+ * If [wailaName] is set to an empty string, WAILA auto-serialization will be disabled for that field.
  */
 @Target(FIELD)
 @MustBeDocumented
-annotation class Save(val saveName: String = "")
+annotation class Save(val saveName: String = "", val wailaName: String = "thisIsADefaultName")
 
 
 /**

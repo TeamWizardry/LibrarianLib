@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.common.base.block
 
 import com.teamwizardry.librarianlib.common.base.ModCreativeTab
 import com.teamwizardry.librarianlib.common.util.VariantHelper
+import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
 import mcjty.theoneprobe.api.IProbeHitData
 import mcjty.theoneprobe.api.IProbeInfo
 import mcjty.theoneprobe.api.IProbeInfoAccessor
@@ -113,6 +114,16 @@ open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg 
         val wrapper = TopAndWailaWrapper()
         addWailaInfo(currenttip, accessor.player, accessor.world, accessor.blockState, accessor.position)
         addHudInformation(wrapper, accessor.player, accessor.world, accessor.blockState, accessor.position)
+        val te = accessor.tileEntity
+        if(te is TileMod && te.automaticallyAddFieldsToWaila) {
+            SavingFieldCache.getClassFields(te.javaClass).forEach {
+                if(it.value.wailaName != null) {
+                    if(it.value.wailaName == "thisIsADefaultName")
+                        wrapper.list.add("${it.key}: ${it.value.getter(te)}")
+                    else wrapper.list.add("${it.value.wailaName}: ${it.value.getter(te)}")
+                }
+            }
+        }
         return wrapper.list
     }
 
