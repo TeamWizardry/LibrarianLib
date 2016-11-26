@@ -39,7 +39,7 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
         }.forEach {
             val (name, field) = it
             field.isAccessible = true
-            val wailaName = field.getAnnotation(Save::class.java).wailaName
+            val wailaName = field.getAnnotation(Save::class.java).displayName
             map.put(name, FieldCache(field.type,
                     MethodHandleHelper.wrapperForGetter<Any>(field),
                     MethodHandleHelper.wrapperForSetter<Any>(field),

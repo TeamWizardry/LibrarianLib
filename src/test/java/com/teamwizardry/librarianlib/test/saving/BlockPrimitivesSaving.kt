@@ -52,14 +52,14 @@ class BlockPrimitivesSaving : BlockMod("saving_primitives", Material.CACTUS), IT
     class TETest : TileMod() {
         override val automaticallyAddFieldsToWaila: Boolean
             get() = true
-        @Save(wailaName = "Boolean") var coolBoolean: Boolean = false
-        @Save(wailaName = "Byte") var coolByte: Byte = 0
-        @Save(wailaName = "Char") var coolChar: Char = '0'
-        @Save(wailaName = "Short") var coolShort: Short = 0
-        @Save(wailaName = "Int") var coolInt: Int = 0
-        @Save(wailaName = "Long") var coolLong: Long = 0
-        @Save(wailaName = "Float") var coolFloat: Float = 0f
-        @Save(wailaName = "Double") var coolDouble: Double = 0.0
-        @Save(wailaName = "") var secretString: String = "" //this string is secret, sssh, it should not appear in waila
+        @Save(displayName = "Boolean") var coolBoolean: Boolean = false
+        @Save(displayName = "Byte") var coolByte: Byte = 0
+        @Save(displayName = "Char") var coolChar: Char = '0'
+        @Save(displayName = "Short") var coolShort: Short = 0
+        @Save(displayName = "Int") var coolInt: Int = 0
+        @Save(displayName = "Long") var coolLong: Long = 0
+        @Save(displayName = "Float") var coolFloat: Float = 0f
+        @Save(displayName = "Double") var coolDouble: Double = 0.0
+        @Save(displayName = "") var secretString: String = "" //this string is secret, sssh, it should not appear in waila
     }
 }

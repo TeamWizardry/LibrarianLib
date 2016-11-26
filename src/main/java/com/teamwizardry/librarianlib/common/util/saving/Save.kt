@@ -10,12 +10,12 @@ import kotlin.annotation.AnnotationTarget.*
  *
  * [saveName] doesn't matter for messages, except in sorting. It's for NBT serializers.
  *
- * [wailaName] is for WAILA auto-serialization. If [automaticallyAddFieldsToWaila] in the TE class is set to [false], this will have no effect.
- * If [wailaName] is set to an empty string, WAILA auto-serialization will be disabled for that field.
+ * [displayName] is for WAILA auto-serialization. If [automaticallyAddFieldsToWaila] in the TE class is set to [false], this will have no effect.
+ * If [displayName] is set to an empty string, WAILA auto-serialization will be disabled for that field.
  */
 @Target(FIELD)
 @MustBeDocumented
-annotation class Save(val saveName: String = "", val wailaName: String = "thisIsADefaultName")
+annotation class Save(val saveName: String = "", val displayName: String = "thisIsADefaultName")
 
 
 /**
