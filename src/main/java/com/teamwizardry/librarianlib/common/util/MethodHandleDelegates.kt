@@ -59,9 +59,13 @@ data class MutableFieldDelegate<in T, V>(val getter: (T) -> Any?, val setter: (T
         return getter(inst!!) as V
     }
 
-    @Suppress("UNCHECKED_CAST")
     override operator fun setValue(thisRef: T, property: KProperty<*>, value: V) {
-        setter(thisRef, value)
+        if (!instInitialized) {
+            inst = thisRef
+            instInitialized = true
+        }
+
+        setter(inst!!, value)
     }
 }
 
@@ -84,12 +88,6 @@ data class ImmutableStaticFieldDelegate<in T, out V> @JvmOverloads constructor(v
 
 data class MutableStaticFieldDelegate<in T, V>(val getter: () -> Any?, val setter: (Any?) -> Unit) : ReadWriteProperty<T, V> {
     @Suppress("UNCHECKED_CAST")
-    override operator fun getValue(thisRef: T, property: KProperty<*>): V {
-        return getter() as V
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    override operator fun setValue(thisRef: T, property: KProperty<*>, value: V) {
-        setter(value)
-    }
+    override operator fun getValue(thisRef: T, property: KProperty<*>) = getter() as V
+    override operator fun setValue(thisRef: T, property: KProperty<*>, value: V) = setter(value)
 }
