@@ -24,7 +24,6 @@ open class LibCommonProxy {
         BitwiseStorageManager
         EasyConfigHandler.loadAsm(e.asmData)
         EasyConfigHandler.init(e.suggestedConfigurationFile)
-        FMLInterModComms.sendMessage("Waila", "register", "com.teamwizardry.librarianlib.common.base.block.WailaHandler.onWailaCall")
     }
 
     open fun latePre(e: FMLPreInitializationEvent) {
