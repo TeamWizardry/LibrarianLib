@@ -13,7 +13,7 @@ import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.common.base.item.ISpecialModelProvider
 import com.teamwizardry.librarianlib.common.core.DevOwnershipTest
 import com.teamwizardry.librarianlib.common.core.LibLibConfig
-import com.teamwizardry.librarianlib.common.util.ImmutableStaticFieldDelegator
+import com.teamwizardry.librarianlib.common.util.ImmutableStaticFieldDelegate
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import com.teamwizardry.librarianlib.common.util.builders.serialize
 import com.teamwizardry.librarianlib.common.util.times
@@ -198,7 +198,7 @@ object ModelHandler {
     }
 
     val customModels: MutableMap<Pair<RegistryDelegate<Item>, Int>, ModelResourceLocation>
-            by ImmutableStaticFieldDelegator(MethodHandleHelper.wrapperForStaticGetter(ModelLoader::class.java, "customModels"), true)
+            by ImmutableStaticFieldDelegate(MethodHandleHelper.wrapperForStaticGetter(ModelLoader::class.java, "customModels"), true)
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
