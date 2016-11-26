@@ -36,7 +36,7 @@ class BlockPrimitivesSaving : BlockMod("saving_primitives", Material.CACTUS), IT
             te.markDirty()
         } else {
             te.forEveryField {
-                playerIn.sendMessage("${it.first}: ${it.second}")
+                playerIn.sendMessage("${it.displayName ?: it.name}: ${it.getter(te)}")
             }
         }
         return true

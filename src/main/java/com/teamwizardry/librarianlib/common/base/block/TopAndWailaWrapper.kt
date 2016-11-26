@@ -7,6 +7,6 @@ package com.teamwizardry.librarianlib.common.base.block
 class TopAndWailaWrapper(var list: MutableList<String> = mutableListOf()) {
 
     fun addString(vararg string: String) {
-        list = list.plus(string).toMutableList()
+        list.addAll(string)
     }
 }

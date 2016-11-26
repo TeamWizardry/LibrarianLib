@@ -117,10 +117,10 @@ open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg 
         val te = accessor.tileEntity
         if(te is TileMod && te.automaticallyAddFieldsToWaila) {
             SavingFieldCache.getClassFields(te.javaClass).forEach {
-                if(it.value.wailaName != null) {
-                    if(it.value.wailaName == "thisIsADefaultName")
+                if(it.value.displayName != null) {
+                    if(it.value.displayName == "thisIsADefaultName")
                         wrapper.list.add("${it.key}: ${it.value.getter(te)}")
-                    else wrapper.list.add("${it.value.wailaName}: ${it.value.getter(te)}")
+                    else wrapper.list.add("${it.value.displayName}: ${it.value.getter(te)}")
                 }
             }
         }

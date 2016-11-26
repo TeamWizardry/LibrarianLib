@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.common.base.block
 import com.teamwizardry.librarianlib.common.network.PacketHandler
 import com.teamwizardry.librarianlib.common.network.PacketSynchronization
 import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
+import com.teamwizardry.librarianlib.common.util.saving.FieldCache
 import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
 import io.netty.buffer.ByteBuf
 import net.minecraft.block.state.IBlockState
@@ -135,9 +136,9 @@ abstract class TileMod : TileEntity() {
             }
         }
     }
-    fun forEveryField(action: (Pair<String, Any?>)->Unit) {
+    fun forEveryField(action: (FieldCache)->Unit) {
         SavingFieldCache.getClassFields(javaClass).forEach {
-            action((it.value.wailaName ?: it.key) to it.value.getter(this))
+            action(it.value)
         }
     }
 }
