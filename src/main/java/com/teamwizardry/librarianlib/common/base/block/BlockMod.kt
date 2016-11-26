@@ -163,10 +163,20 @@ open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg 
     @Optional.Method(modid = "theoneprobe")
     override final fun addProbeInfo(mode: ProbeMode, probeInfo: IProbeInfo, player: EntityPlayer, world: World, blockState: IBlockState, data: IProbeHitData) {
         val topWrapper = ProbeInfoWrapper(mode, probeInfo, data)
+        val wrapper = TopAndWailaWrapper()
         if(!isWailaLoaded) {
-            val wrapper = TopAndWailaWrapper()
             addHudInformation(wrapper, player, world, blockState, data.pos)
             wrapper.list.forEach { probeInfo.text(it) }
+        }
+        val te = world.getTileEntity(data.pos)
+        if(te is TileMod && te.automaticallyAddFieldsToWaila) {
+            SavingFieldCache.getClassFields(te.javaClass).forEach {
+                if(it.value.displayName != null) {
+                    if(it.value.displayName == "thisIsADefaultName")
+                        wrapper.list.add("${it.key}: ${it.value.getter(te)}")
+                    else wrapper.list.add("${it.value.displayName}: ${it.value.getter(te)}")
+                }
+            }
         }
 
         addProbeInformation(topWrapper, player, world, blockState, data.pos)
