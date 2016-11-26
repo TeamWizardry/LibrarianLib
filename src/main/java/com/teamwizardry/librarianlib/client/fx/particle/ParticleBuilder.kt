@@ -225,6 +225,15 @@ class ParticleBuilder(private var lifetime: Int) {
     // endregion
 
     // region Modifiers
+
+    /**
+     * Sets the collision flag.
+     */
+    fun setCollision(value: Boolean): ParticleBuilder {
+        canCollide = value
+        return this
+    }
+
     /**
      * Sets the acceleration
      *
