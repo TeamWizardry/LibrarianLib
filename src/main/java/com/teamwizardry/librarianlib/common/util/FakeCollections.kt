@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.common.util
 
-class FakeMap<K, V>(val getter: (K) -> V, val setter: (K, V) -> Unit) {
+class FakeMap<in K, V>(val getter: (K) -> V, val setter: (K, V) -> Unit) {
 
     operator fun set(key: K, value: V) {
         setter(key, value)

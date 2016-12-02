@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.test.saving
 import com.teamwizardry.librarianlib.common.base.block.BlockMod
 import com.teamwizardry.librarianlib.common.base.block.TileMod
 import com.teamwizardry.librarianlib.common.util.autoregister.TileRegister
+import com.teamwizardry.librarianlib.common.util.saving.NoSync
 import com.teamwizardry.librarianlib.common.util.saving.Save
 import com.teamwizardry.librarianlib.common.util.sendMessage
 import com.teamwizardry.librarianlib.common.util.times
@@ -65,6 +66,6 @@ class BlockPrimitivesSaving : BlockMod("saving_primitives", Material.CACTUS), IT
         @Save var coolLong: Long = 0
         @Save var coolFloat: Float = 0f
         @Save var coolDouble: Double = 0.0
-        @Save var secretString: String = ""
+        @Save @NoSync var secretString: String = ""
     }
 }

@@ -25,6 +25,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import java.io.IOException
 import java.io.InputStream
 
 /**
@@ -75,7 +76,11 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
     override fun getResource(modId: String, path: String): InputStream? {
         val resourceManager = Minecraft.getMinecraft().resourceManager
-        return resourceManager.getResource(ResourceLocation(modId, path)).inputStream
+        try {
+            return resourceManager.getResource(ResourceLocation(modId, path)).inputStream
+        } catch (e: IOException) {
+            return null
+        }
     }
 
     override fun onResourceManagerReload(resourceManager: IResourceManager) {
