@@ -2,9 +2,7 @@
 
 package com.teamwizardry.librarianlib.common.util
 
-import com.teamwizardry.librarianlib.common.base.block.TileMod
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
-import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
 import io.netty.buffer.ByteBuf
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
@@ -223,6 +221,15 @@ fun ByteBuf.hasNullSignature(): Boolean = readBoolean()
 val NBTTagList.indices: IntRange
     get() = 0..this.tagCount() - 1
 
+operator fun NBTTagList.iterator(): Iterator<NBTBase> {
+    return object : Iterator<NBTBase> {
+        var i = 0
+        val max = this@iterator.tagCount() - 1
+        override fun hasNext() = i < max
+        override fun next() = this@iterator[i++]
+    }
+}
+
 fun <T : NBTBase> NBTTagList.forEach(run: (T) -> Unit) {
     for (i in this.indices) {
         @Suppress("UNCHECKED_CAST")
@@ -236,6 +243,21 @@ fun <T : NBTBase> NBTTagList.forEachIndexed(run: (Int, T) -> Unit) {
         run(i, this.get(i) as T)
     }
 }
+
+// NBTTagCompound
+
+operator fun NBTTagCompound.iterator(): Iterator<Pair<String, NBTBase>> {
+    return object : Iterator<Pair<String, NBTBase>> {
+        val keys = this@iterator.keySet.iterator()
+        override fun hasNext() = keys.hasNext()
+        override fun next(): Pair<String, NBTBase> {
+            val next = keys.next()
+            return next to this@iterator[next]
+        }
+    }
+}
+
+operator fun NBTTagCompound.get(key: String): NBTBase = this.getTag(key)
 
 // Player
 
