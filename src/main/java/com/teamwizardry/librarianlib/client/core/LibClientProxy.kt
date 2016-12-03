@@ -74,6 +74,10 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         return I18n.format(s, *format)
     }
 
+    override fun canTranslate(s: String): Boolean {
+        return I18n.hasKey(s)
+    }
+
     override fun getResource(modId: String, path: String): InputStream? {
         val resourceManager = Minecraft.getMinecraft().resourceManager
         try {

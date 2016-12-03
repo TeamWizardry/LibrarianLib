@@ -2,6 +2,8 @@
 
 package com.teamwizardry.librarianlib.common.util
 
+import com.teamwizardry.librarianlib.LibrarianLib
+import com.teamwizardry.librarianlib.common.base.block.TileMod
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import io.netty.buffer.ByteBuf
 import net.minecraft.entity.player.EntityPlayer
@@ -28,6 +30,14 @@ operator fun TextFormatting.plus(str: String) = "$this$str"
 
 operator fun String.plus(form: TextFormatting) = "$this$form"
 operator fun TextFormatting.plus(other: TextFormatting) = "$this$other"
+
+fun String.localize(vararg parameters: Any): String {
+    return LibrarianLib.PROXY.translate(this, *parameters)
+}
+
+fun String.canLocalize(): Boolean {
+    return LibrarianLib.PROXY.canTranslate(this)
+}
 
 // Vec3d ===============================================================================================================
 

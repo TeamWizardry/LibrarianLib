@@ -28,6 +28,9 @@ open class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) 
         //NO-OP
     }
 
+    /**
+     * Moves the view to a specific offset.
+     */
     fun scrollTo(scroll: Vec2d) {
         val newScroll = Vec2d.min(maxScroll, scroll)
         if (newScroll != offset) {
@@ -36,10 +39,16 @@ open class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) 
         }
     }
 
+    /**
+     * Moves the view by the passed vector.
+     */
     fun scrollOffset(scroll: Vec2d) {
         scrollTo(offset.add(scroll))
     }
 
+    /**
+     * Moves the view to a specified value (0-1) based upon the size of the contained components.
+     */
     fun scrollToPercent(scroll: Vec2d) {
         scrollTo(maxScroll.mul(scroll))
     }
