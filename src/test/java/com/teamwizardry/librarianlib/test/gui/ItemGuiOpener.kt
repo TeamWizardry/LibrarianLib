@@ -1,7 +1,10 @@
 package com.teamwizardry.librarianlib.test.gui
 
 import com.teamwizardry.librarianlib.common.base.item.ItemMod
+import com.teamwizardry.librarianlib.common.util.localize
 import com.teamwizardry.librarianlib.test.gui.tests.GuiTestRect
+import com.teamwizardry.librarianlib.test.gui.tests.GuiTestResizeMove
+import com.teamwizardry.librarianlib.test.gui.tests.GuiTestScrolledView
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.entity.player.EntityPlayer
@@ -25,11 +28,13 @@ class ItemGuiOpener : ItemMod("guiopener") {
         return ActionResult(EnumActionResult.SUCCESS, itemStackIn)
     }
 
-    override fun getUnlocalizedName(stack: ItemStack): String {
-        return super.getUnlocalizedName(stack) + Guis.values()[stack.itemDamage % Guis.values().size]
+    override fun getItemStackDisplayName(stack: ItemStack): String {
+        return (getUnlocalizedName(stack) + ".name").localize(Guis.values()[stack.itemDamage % Guis.values().size].toString())
     }
 }
 
 enum class Guis(val create: () -> GuiScreen) {
-    RECT({ GuiTestRect() })
+    RECT({ GuiTestRect() }),
+    MOVE({ GuiTestResizeMove() }),
+    SCROLL({ GuiTestScrolledView() })
 }

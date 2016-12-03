@@ -20,7 +20,7 @@ object UnlistedPropertyDebugViewer {
     @SubscribeEvent
     fun debugText(event: RenderGameOverlayEvent.Text) {
         val mc = Minecraft.getMinecraft()
-        if (GuiScreen.isAltKeyDown()) {
+        if (mc.gameSettings.showDebugInfo && GuiScreen.isAltKeyDown()) {
             if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK && mc.objectMouseOver.blockPos != null) {
                 val blockpos = mc.objectMouseOver.blockPos
                 val iblockstate = mc.theWorld.getBlockState(blockpos)
@@ -33,9 +33,9 @@ object UnlistedPropertyDebugViewer {
                         val value = maybeExtended.getValue(entry)
 
                         val s = if (value === java.lang.Boolean.TRUE) {
-                            "${TextFormatting.GREEN}${TextFormatting.ITALIC}"
+                            "${TextFormatting.GREEN}TRUE"
                         } else if (value === java.lang.Boolean.FALSE) {
-                            "${TextFormatting.RED}${TextFormatting.ITALIC}"
+                            "${TextFormatting.RED}FALSE"
                         } else {
                             value?.toString() ?: "NULL"
                         }

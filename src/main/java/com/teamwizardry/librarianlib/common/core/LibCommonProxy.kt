@@ -56,6 +56,13 @@ open class LibCommonProxy {
     }
 
     /**
+     * Checks if a string has a translation. Works server or client-side.
+     */
+    open fun canTranslate(s: String): Boolean {
+        return I18n.canTranslate(s)
+    }
+
+    /**
      * Gets a resource for a given modid.
      * [modId] must be the name of an existing mod server-side. Otherwise, it'll return null.
      * Client-side, it can be any domain provided by resource packs.
