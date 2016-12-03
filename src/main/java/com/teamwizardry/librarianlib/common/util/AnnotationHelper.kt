@@ -19,17 +19,17 @@ object AnnotationHelper {
 
         fun getString(id: String, def: String?): String? {
             val value = map[id]
-            return if (value == null) def else value.toString()
+            return value?.toString() ?: def
         }
 
         fun getInt(id: String, def: Int): Int {
             val value = map[id]
-            return if (value == null) def else value.hashCode()
+            return value?.hashCode() ?: def
         }
 
         fun getDouble(id: String, def: Double): Double {
             val value = map[id]
-            return if (value == null) def else value.toString().toDouble()
+            return value?.toString()?.toDouble() ?: def
         }
 
         fun getBoolean(id: String, def: Boolean): Boolean {

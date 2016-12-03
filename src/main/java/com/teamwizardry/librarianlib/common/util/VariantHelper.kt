@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.common.util
 import com.teamwizardry.librarianlib.client.core.ModelHandler
 import com.teamwizardry.librarianlib.common.base.IVariantHolder
 import com.teamwizardry.librarianlib.common.base.ModCreativeTab
-import com.teamwizardry.librarianlib.common.base.block.BlockMod
 import net.minecraft.block.Block
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
@@ -23,13 +22,11 @@ object VariantHelper {
     fun setupItem(item: Item, name: String, variants: Array<out String>, creativeTab: ModCreativeTab? = null): Array<out String> {
         var variantTemp = variants
         item.unlocalizedName = name
-        if (variantTemp.size > 1) {
+        if (variantTemp.size > 1)
             item.hasSubtypes = true
-        }
 
-        if (variantTemp.size == 0) {
+        if (variantTemp.isEmpty())
             variantTemp = arrayOf(name)
-        }
 
         ModelHandler.registerVariantHolder(item as IVariantHolder)
         creativeTab?.set(item)
@@ -52,7 +49,6 @@ object VariantHelper {
     @JvmOverloads
     fun finishSetupBlock(block: Block, name: String, itemForm: ItemBlock?, creativeTab: ModCreativeTab? = null) {
         block.unlocalizedName = name
-        BlockMod.ALL_BLOCKS.add(block)
         if (itemForm == null)
             ModelHandler.registerVariantHolder(block as IVariantHolder)
         creativeTab?.set(block)

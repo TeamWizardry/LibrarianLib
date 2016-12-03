@@ -2,10 +2,11 @@ package com.teamwizardry.librarianlib.test.saving
 
 import com.teamwizardry.librarianlib.common.base.block.BlockMod
 import com.teamwizardry.librarianlib.common.base.block.TileMod
-import com.teamwizardry.librarianlib.common.base.block.TopAndWailaWrapper
 import com.teamwizardry.librarianlib.common.util.autoregister.TileRegister
+import com.teamwizardry.librarianlib.common.util.saving.NoSync
 import com.teamwizardry.librarianlib.common.util.saving.Save
 import com.teamwizardry.librarianlib.common.util.sendMessage
+import com.teamwizardry.librarianlib.common.util.times
 import net.minecraft.block.ITileEntityProvider
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
@@ -32,35 +33,28 @@ class BlockPrimitivesSaving : BlockMod("saving_primitives", Material.CACTUS), IT
             te.coolLong++
             te.coolFloat += 1.25f
             te.coolDouble += 1.25
+            te.secretString = te.coolInt * "secret"
             te.markDirty()
         } else {
-            playerIn.sendMessage("Boolean: " + te.coolBoolean)
-            playerIn.sendMessage("Byte: " + te.coolByte)
-            playerIn.sendMessage("Char: " + te.coolChar)
-            playerIn.sendMessage("Short: " + te.coolShort)
-            playerIn.sendMessage("Int: " + te.coolInt)
-            playerIn.sendMessage("Long: " + te.coolLong)
-            playerIn.sendMessage("Float: " + te.coolFloat)
-            playerIn.sendMessage("Double: " + te.coolDouble)
+            te.run {
+                playerIn.sendMessage("bool: $coolBoolean")
+                playerIn.sendMessage("byte: $coolByte")
+                playerIn.sendMessage("char: $coolChar")
+                playerIn.sendMessage("short: $coolShort")
+                playerIn.sendMessage("int: $coolInt")
+                playerIn.sendMessage("long: $coolLong")
+                playerIn.sendMessage("float: $coolFloat")
+                playerIn.sendMessage("double: $coolDouble")
+            }
         }
         return true
     }
+
 
     override fun createNewTileEntity(worldIn: World?, meta: Int): TileEntity? {
         return TETest()
     }
 
-    override fun addHudInformation(wrapper: TopAndWailaWrapper, player: EntityPlayer, world: World, blockState: IBlockState, pos: BlockPos) {
-        val te = world.getTileEntity(pos) as TETest
-        wrapper.addString("Boolean: " + te.coolBoolean)
-        wrapper.addString("Byte: " + te.coolByte)
-        wrapper.addString("Char: " + te.coolChar)
-        wrapper.addString("Short: " + te.coolShort)
-        wrapper.addString("Int: " + te.coolInt)
-        wrapper.addString("Long: " + te.coolLong)
-        wrapper.addString("Float: " + te.coolFloat)
-        wrapper.addString("Double: " + te.coolDouble)
-    }
 
     @TileRegister("saving_primitives")
     class TETest : TileMod() {
@@ -72,5 +66,6 @@ class BlockPrimitivesSaving : BlockMod("saving_primitives", Material.CACTUS), IT
         @Save var coolLong: Long = 0
         @Save var coolFloat: Float = 0f
         @Save var coolDouble: Double = 0.0
+        @Save @NoSync var secretString: String = ""
     }
 }
