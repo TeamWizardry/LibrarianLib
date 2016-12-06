@@ -253,7 +253,7 @@ fun <T : NBTBase> NBTTagList.forEachIndexed(run: (Int, T) -> Unit) {
     }
 }
 
-// NBTTagCompound
+// NBTTagCompound ======================================================================================================
 
 operator fun NBTTagCompound.iterator(): Iterator<Pair<String, NBTBase>> {
     return object : Iterator<Pair<String, NBTBase>> {
@@ -268,13 +268,13 @@ operator fun NBTTagCompound.iterator(): Iterator<Pair<String, NBTBase>> {
 
 operator fun NBTTagCompound.get(key: String): NBTBase = this.getTag(key)
 
-// Player
+// Player ==============================================================================================================
 
 fun EntityPlayer.sendMessage(str: String) {
     this.addChatComponentMessage(TextComponentString(str))
 }
 
-// String
+// String ==============================================================================================================
 
 operator fun CharSequence.times(n: Int) = this.repeat(n)
 operator fun Int.times(n: CharSequence) = n.repeat(this)
