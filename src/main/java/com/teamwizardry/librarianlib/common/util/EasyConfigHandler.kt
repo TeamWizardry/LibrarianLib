@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.common.util
 
 import com.teamwizardry.librarianlib.LibrarianLib
+import com.teamwizardry.librarianlib.LibrarianLog
 import net.minecraftforge.common.config.Configuration
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import java.io.File
@@ -32,8 +33,14 @@ object EasyConfigHandler {
         findByClass(Float::class.javaPrimitiveType!!, asm)
         findByClass(Long::class.javaPrimitiveType!!, asm)
         if (LibrarianLib.DEV_ENVIRONMENT) {
-            fieldMapStr.keys.forEach { println("Found string config property field ${it.declaringClass.name}.${it.name}") }
-            if (fieldMapStr.keys.size == 0) println("No string config property fields found!")
+            val modid = LibrarianLib.MODID
+            val pad = " " * modid.length
+
+            LibrarianLog.info("$modid | All config properties found:")
+            fieldMapStr.forEach { LibrarianLog.info("$pad | ${it.key}") }
+            fieldMapInt.forEach { LibrarianLog.info("$pad | ${it.key}") }
+            fieldMapDouble.forEach { LibrarianLog.info("$pad | ${it.key}") }
+            fieldMapBoolean.forEach { LibrarianLog.info("$pad | ${it.key}") }
         }
 
         config.load()
