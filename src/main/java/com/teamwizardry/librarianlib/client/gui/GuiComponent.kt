@@ -254,9 +254,18 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * True if the component shouldn't effect the logical size of it's parent. Causes logical size to return null.
      */
     var outOfFlow = false
-    protected var components: MutableList<GuiComponent<*>> = ArrayList()
+    protected val components = mutableListOf<GuiComponent<*>>()
+    val children: Collection<GuiComponent<*>> = Collections.unmodifiableCollection(components)
     var parent: GuiComponent<*>? = null
-        private set
+        private set(value) {
+            parents.clear()
+            if(value != null) {
+                parents.addAll(value.parents)
+                parents.add(value)
+            }
+            field = value
+        }
+    var parents: LinkedHashSet<GuiComponent<*>> = LinkedHashSet()
 
     init {
         this.pos = vec(posX, posY)
@@ -276,30 +285,43 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     }
 
     /**
-     * Adds a child to this component.
+     * Adds child(ren) to this component.
 
      * @throws IllegalArgumentException if the component had a parent already
      */
-    fun add(component: GuiComponent<*>?) {
+    fun add(vararg components: GuiComponent<*>?) {
+        components.forEach { addInternal(it) }
+    }
+
+    protected fun addInternal(component: GuiComponent<*>?) {
         if (component == null) {
-            LibrarianLog.error("You shouldn't be adding null components!")
+            LibrarianLog.error("Null component, ignoring")
             return
         }
         if (component === this)
-            throw IllegalArgumentException("Can't add components to themselves!")
+            throw IllegalArgumentException("Immediately recursive component hierarchy")
 
-        if (component.parent != null)
-            if (component.parent == this)
+        if (component.parent != null) {
+            if (component.parent == this) {
                 LibrarianLog.warn("You tried to add the component to the same parent twice. Why?")
-            else
-                throw IllegalArgumentException("Component already had a parent!")
-        if (BUS.fire(AddChildEvent(thiz(), component)).isCanceled())
-            return
+                return
+            } else {
+                throw IllegalArgumentException("Component already had a parent")
+            }
+        }
+
+        if (component in parents) {
+            throw IllegalArgumentException("Recursive component hierarchy")
+        }
+
+
+            if (BUS.fire(AddChildEvent(thiz(), component)).isCanceled())
+                return
         if (component.BUS.fire(AddToParentEvent(component.thiz(), thiz())).isCanceled())
             return
         components.add(component)
         component.parent = this
-        Collections.sort<GuiComponent<*>>(components, { a, b -> Integer.compare(a.zIndex, b.zIndex) })
+        components.sortBy { it.zIndex }
     }
 
     operator fun contains(component: GuiComponent<*>): Boolean {
@@ -380,7 +402,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     open fun calculateMouseOver(mousePos: Vec2d) {
         this.mouseOver = false
 
-        if(isVisible) {
+        if (isVisible) {
             components.asReversed().forEach { child ->
                 child.calculateMouseOver(transformChildPos(child, mousePos))
                 if (mouseOver) {

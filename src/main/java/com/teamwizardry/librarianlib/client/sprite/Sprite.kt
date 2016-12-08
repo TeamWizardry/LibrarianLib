@@ -39,6 +39,8 @@ open class Sprite {
     protected var frames: IntArray = IntArray(0)
     protected var offsetU: Int = 0
     protected var offsetV: Int = 0
+    val frameCount: Int
+        get() = frames.size
 
     /**
      * The width on screen of the sprite.

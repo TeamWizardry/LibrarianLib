@@ -27,10 +27,12 @@ class ComponentRect(posX: Int, posY: Int, width: Int, height: Int) : GuiComponen
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
 
+//        Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow("foobarbaz", 0f, 0f, 0xFFFFFF)
+
         GlStateManager.pushAttrib()
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
+//        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
         GlStateManager.color(c.red / 255f, c.green / 255f, c.blue / 255f, c.alpha / 255f)
 
         vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION)
