@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.util.EasyConfigHandler.init
 import net.minecraftforge.common.config.Configuration
-import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import java.io.File
 import java.lang.reflect.Field
@@ -15,12 +14,19 @@ import java.lang.reflect.Field
  * pre-initialization time.
  */
 object EasyConfigHandler {
-    val fieldMapStr: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
-    val fieldMapDouble: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
-    val fieldMapInt: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
-    val fieldMapBoolean: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
+    private lateinit var CONFIG_DIR: File
 
-    internal fun loadAsm(asm: ASMDataTable) {
+    private val toLoad = mutableListOf<Pair<String, File>>()
+    private var loaded = false
+
+    private val fieldMapStr: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
+    private val fieldMapDouble: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
+    private val fieldMapInt: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
+    private val fieldMapBoolean: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
+
+    internal fun bootstrap(asm: ASMDataTable, dir: File) {
+        loaded = true
+        CONFIG_DIR = dir
         findByClass(Any::class.java, asm)
         findByClass(Boolean::class.javaPrimitiveType!!, asm)
         findByClass(Char::class.javaPrimitiveType!!, asm)
@@ -40,15 +46,19 @@ object EasyConfigHandler {
             fieldMapDouble.forEach { LibrarianLog.info("$pad | ${it.key}") }
             fieldMapBoolean.forEach { LibrarianLog.info("$pad | ${it.key}") }
         }
+
+        toLoad.forEach { init(it.first, it.second) }
+        toLoad.clear()
     }
 
     @JvmStatic
-    fun init(configf: File) {
-        init(Loader.instance().activeModContainer().modId, configf)
-    }
+    @JvmOverloads
+    fun init(modid: String = currentModId, configf: File = File(CONFIG_DIR, "$currentModId.cfg")) {
+        if (!loaded) {
+            toLoad.add(modid to configf)
+            return
+        }
 
-    @JvmStatic
-    fun init(modid: String, configf: File) {
         val config = Configuration(configf)
 
         config.load()

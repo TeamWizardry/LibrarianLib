@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.common.base.item
 
 import com.teamwizardry.librarianlib.common.base.ModCreativeTab
 import com.teamwizardry.librarianlib.common.util.VariantHelper
+import com.teamwizardry.librarianlib.common.util.currentModId
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -22,7 +23,7 @@ open class ItemMod(name: String, vararg variants: String) : Item(), IModItemProv
     private val modId: String
 
     init {
-        modId = Loader.instance().activeModContainer().modId
+        modId = currentModId
         bareName = name
         this.variants = VariantHelper.setupItem(this, name, variants, creativeTab)
     }

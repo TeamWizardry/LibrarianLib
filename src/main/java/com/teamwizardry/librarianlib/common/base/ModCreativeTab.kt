@@ -1,14 +1,14 @@
 package com.teamwizardry.librarianlib.common.base
 
+import com.teamwizardry.librarianlib.common.util.currentModId
 import net.minecraft.block.Block
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.init.Blocks
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
-import net.minecraftforge.fml.common.Loader
 import java.util.*
 
-abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(Loader.instance().activeModContainer().modId + if (postFix == null) "" else ".$postFix") {
+abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(currentModId + if (postFix == null) "" else ".$postFix") {
 
     companion object {
         val defaultTabs = mutableMapOf<String, ModCreativeTab>()
@@ -17,8 +17,8 @@ abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(Loader.ins
     /**
      * Calling this during mod construction will make items from this mod prefer this tab.
      */
-    fun registerDefaultTab() {
-        defaultTabs.put(Loader.instance().activeModContainer().modId, this)
+    protected fun registerDefaultTab() {
+        defaultTabs.put(currentModId, this)
     }
 
     internal lateinit var list: MutableList<ItemStack>

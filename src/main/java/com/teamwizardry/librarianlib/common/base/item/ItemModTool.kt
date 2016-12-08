@@ -2,12 +2,12 @@ package com.teamwizardry.librarianlib.common.base.item
 
 import com.teamwizardry.librarianlib.common.base.ModCreativeTab
 import com.teamwizardry.librarianlib.common.util.VariantHelper
+import com.teamwizardry.librarianlib.common.util.currentModId
 import net.minecraft.block.Block
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.item.ItemTool
-import net.minecraftforge.fml.common.Loader
 
 /**
  * The default implementation for an IVariantHolder tool.
@@ -26,7 +26,7 @@ open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, to
     private val modId: String
 
     init {
-        modId = Loader.instance().activeModContainer().modId
+        modId = currentModId
         bareName = name
         this.variants = VariantHelper.setupItem(this, name, variants, creativeTab)
     }

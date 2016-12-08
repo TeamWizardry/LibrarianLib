@@ -4,13 +4,13 @@ import com.teamwizardry.librarianlib.client.core.ModelHandler
 import com.teamwizardry.librarianlib.common.base.item.IItemColorProvider
 import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.common.base.item.ISpecialModelProvider
+import com.teamwizardry.librarianlib.common.util.currentModId
 import net.minecraft.block.Block
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -25,7 +25,7 @@ open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlo
     private val modId: String
 
     init {
-        this.modId = Loader.instance().activeModContainer().modId
+        this.modId = currentModId
         this.modBlock = block as IModBlock
         if (this.variants.size > 1)
             this.setHasSubtypes(true)
@@ -35,7 +35,7 @@ open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlo
     override fun getMetadata(damage: Int) = damage
 
     override fun setUnlocalizedName(par1Str: String): ItemBlock {
-        val rl = ResourceLocation(Loader.instance().activeModContainer().modId, par1Str)
+        val rl = ResourceLocation(modId, par1Str)
         GameRegistry.register(this, rl)
         return super.setUnlocalizedName(par1Str)
     }

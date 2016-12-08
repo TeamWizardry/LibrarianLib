@@ -1,11 +1,11 @@
 package com.teamwizardry.librarianlib.common.base
 
+import com.teamwizardry.librarianlib.common.util.currentModId
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.potion.Potion
 import net.minecraft.potion.PotionEffect
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -20,7 +20,7 @@ open class PotionMod(name: String, badEffect: Boolean, color: Int) : Potion(badE
     private val resource: ResourceLocation
 
     init {
-        modid = Loader.instance().activeModContainer().modId
+        modid = currentModId
         resource = ResourceLocation(modid, "textures/gui/potions.png")
 
         val iconIndex = (iconIndexByModId[modid] ?: 0) + 1
@@ -39,7 +39,7 @@ open class PotionMod(name: String, badEffect: Boolean, color: Int) : Potion(badE
     @SideOnly(Side.CLIENT)
     override fun renderInventoryEffect(x: Int, y: Int, effect: PotionEffect, mc: Minecraft) {
         mc.renderEngine.bindTexture(resource)
-        mc.currentScreen!!.drawTexturedModalRect(x + 6, y + 7, 0 + iconX * 18, 198 + iconY * 18, 18, 18)
+        mc.currentScreen?.drawTexturedModalRect(x + 6, y + 7, 0 + iconX * 18, 198 + iconY * 18, 18, 18)
     }
 
     @SideOnly(Side.CLIENT)

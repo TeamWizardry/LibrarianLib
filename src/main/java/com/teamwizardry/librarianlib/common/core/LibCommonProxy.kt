@@ -9,7 +9,6 @@ import com.teamwizardry.librarianlib.common.util.bitsaving.BitwiseStorageManager
 import net.minecraft.util.text.translation.I18n
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
-import net.minecraftforge.fml.common.event.FMLInterModComms
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import java.io.InputStream
@@ -22,12 +21,12 @@ open class LibCommonProxy {
 
     open fun pre(e: FMLPreInitializationEvent) {
         BitwiseStorageManager
-        EasyConfigHandler.loadAsm(e.asmData)
-        EasyConfigHandler.init(e.suggestedConfigurationFile)
+        EasyConfigHandler.init()
     }
 
     open fun latePre(e: FMLPreInitializationEvent) {
         AutoRegisterHandler.handle(e)
+        EasyConfigHandler.bootstrap(e.asmData, e.modConfigurationDirectory)
     }
 
     open fun init(e: FMLInitializationEvent) {
