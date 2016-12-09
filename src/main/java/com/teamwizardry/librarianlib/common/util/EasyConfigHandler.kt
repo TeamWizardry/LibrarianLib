@@ -17,7 +17,7 @@ import java.lang.reflect.Field
 object EasyConfigHandler {
     private lateinit var CONFIG_DIR: File
 
-    private val toLoad = mutableListOf<Pair<String, File>>()
+    private val toLoad = mutableListOf<Pair<String, File?>>()
     private var loaded = false
 
     private val fieldMapStr: MutableMap<Field, AnnotationHelper.AnnotationInfo> = mutableMapOf()
@@ -52,13 +52,17 @@ object EasyConfigHandler {
 
     @JvmStatic
     @JvmOverloads
-    fun init(modid: String = currentModId, configf: File = File(CONFIG_DIR, "$currentModId.cfg")) {
+    fun init(modid: String = currentModId, configf: File? = if (loaded) File(CONFIG_DIR, "$currentModId.cfg") else null) {
         if (!loaded) {
             toLoad.add(modid to configf)
             return
         }
 
-        val config = Configuration(configf)
+
+        val config = if (configf == null)
+            Configuration(File(CONFIG_DIR, "$currentModId.cfg"))
+        else
+            Configuration(configf)
 
         config.load()
         fieldMapStr.filter { it.value.getString("modid", "") == modid }.forEach {
