@@ -13,15 +13,15 @@ import net.minecraftforge.fml.common.Loader
  * Created at 4:22 PM on 12/8/16.
  */
 @Suppress("LeakingThis")
-open class ModAchievement(unlocalizedName: String, column: Int, row: Int, stack: ItemStack, parent: Achievement) : Achievement("achievement.$currentModId.$unlocalizedName", "$currentModId.$unlocalizedName", column, row, stack, parent) {
+open class ModAchievement(unlocalizedName: String, column: Int, row: Int, stack: ItemStack, parent: Achievement?) : Achievement("achievement.$currentModId.$unlocalizedName", "$currentModId.$unlocalizedName", column, row, stack, parent) {
 
     init {
         registerStat()
         achievements.getOrPut(currentModId) { mutableListOf() }.add(this)
     }
 
-    constructor(unlocalizedName: String, column: Int, row: Int, blockIn: Block, parent: Achievement) : this(unlocalizedName, column, row, ItemStack(blockIn), parent)
-    constructor(unlocalizedName: String, column: Int, row: Int, itemIn: Item, parent: Achievement) : this(unlocalizedName, column, row, ItemStack(itemIn), parent)
+    constructor(unlocalizedName: String, column: Int, row: Int, blockIn: Block, parent: Achievement?) : this(unlocalizedName, column, row, ItemStack(blockIn), parent)
+    constructor(unlocalizedName: String, column: Int, row: Int, itemIn: Item, parent: Achievement?) : this(unlocalizedName, column, row, ItemStack(itemIn), parent)
 
     companion object {
         private val achievements = mutableMapOf<String, MutableList<ModAchievement>>()
