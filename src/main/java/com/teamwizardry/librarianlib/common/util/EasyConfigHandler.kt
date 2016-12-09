@@ -35,6 +35,7 @@ object EasyConfigHandler {
         findByClass(Short::class.javaPrimitiveType!!, asm)
         findByClass(Int::class.javaPrimitiveType!!, asm)
         findByClass(Float::class.javaPrimitiveType!!, asm)
+        findByClass(Double::class.javaPrimitiveType!!, asm)
         findByClass(Long::class.javaPrimitiveType!!, asm)
         if (LibrarianLib.DEV_ENVIRONMENT) {
             val pad = " " * LibrarianLib.MODID.length
