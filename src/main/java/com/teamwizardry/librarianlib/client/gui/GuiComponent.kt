@@ -64,6 +64,11 @@ import java.util.*
  * component.getData(YourCoolObject.class, "foo"); // => yourInstance
  * ```
  *
+ * ## Logical size
+ *
+ * The logical size of a component is theoretically the amount of space a component takes up. This is used for general
+ * flow, such as when a list is laid out, the logical height of each element is taken into account in order to stack them.
+ *
  * ## Default events
  *
  * ### Common Events
@@ -364,28 +369,64 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     }
 
     /**
-     * Returns all the elements with a given tag
+     * Returns a list of all children that have the tag [tag]
      */
     fun getByTag(tag: Any): List<GuiComponent<*>> {
-        val list = ArrayList<GuiComponent<*>>()
-        for (component in components) {
-            if (component.hasTag(tag))
-                list.add(component)
-        }
+        val list = mutableListOf<GuiComponent<*>>()
+        addByTag(tag, list)
         return list
     }
 
     /**
-     * Returns all the elements that can be cast to the specified class
+     * Returns a list of all children and grandchildren etc. that have the tag [tag]
      */
+    fun getAllByTag(tag: Any): List<GuiComponent<*>> {
+        val list = mutableListOf<GuiComponent<*>>()
+        addAllByTag(tag, list)
+        return list
+    }
+
+    protected fun addAllByTag(tag: Any, list: MutableList<GuiComponent<*>>) {
+        addByTag(tag, list)
+        components.forEach { it.addAllByTag(tag, list) }
+    }
+
+    protected fun addByTag(tag: Any, list: MutableList<GuiComponent<*>>) {
+        for (component in components) {
+            if (component.hasTag(tag))
+                list.add(component)
+        }
+    }
+
+    /**
+     * Returns a list of all children that are subclasses of [clazz]
+     */
+    fun <C : GuiComponent<*>> getByClass(clazz: Class<C>): List<C> {
+        val list = mutableListOf<C>()
+        addByClass(clazz, list)
+        return list
+    }
+
+    /**
+     * Returns a list of all children and grandchildren etc. that are subclasses of [clazz]
+     */
+    fun <C : GuiComponent<*>> getAllByClass(clazz: Class<C>): List<C> {
+        val list = mutableListOf<C>()
+        addAllByClass(clazz, list)
+        return list
+    }
+
+    protected fun <C : GuiComponent<*>> addAllByClass(clazz: Class<C>, list: MutableList<C>) {
+        addByClass(clazz, list)
+        components.forEach { it.addAllByClass(clazz, list) }
+    }
+
     @Suppress("UNCHECKED_CAST")
-    fun <C> getByClass(clazz: Class<C>): List<C> {
-        val list = ArrayList<C>()
+    protected fun <C : GuiComponent<*>> addByClass(clazz: Class<C>, list: MutableList<C>) {
         for (component in components) {
             if (clazz.isAssignableFrom(component.javaClass))
                 list.add(component as C)
         }
-        return list
     }
 
     //=============================================================================

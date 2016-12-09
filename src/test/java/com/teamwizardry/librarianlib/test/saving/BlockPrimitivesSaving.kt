@@ -13,6 +13,7 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.BlockRenderLayer
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
@@ -55,6 +56,9 @@ class BlockPrimitivesSaving : BlockMod("saving_primitives", Material.CACTUS), IT
         return TETest()
     }
 
+    override fun canRenderInLayer(layer: BlockRenderLayer?): Boolean {
+        return layer == BlockRenderLayer.CUTOUT || layer == BlockRenderLayer.TRANSLUCENT
+    }
 
     @TileRegister("saving_primitives")
     class TETest : TileMod() {

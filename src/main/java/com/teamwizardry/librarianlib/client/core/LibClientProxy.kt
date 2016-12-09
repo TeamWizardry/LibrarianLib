@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.client.book.Book
 import com.teamwizardry.librarianlib.client.event.ResourceReloadEvent
 import com.teamwizardry.librarianlib.client.fx.shader.LibShaders
 import com.teamwizardry.librarianlib.client.fx.shader.ShaderHelper
+import com.teamwizardry.librarianlib.client.model.ModelsInit
 import com.teamwizardry.librarianlib.client.sprite.SpritesMetadataSection
 import com.teamwizardry.librarianlib.client.sprite.SpritesMetadataSectionSerializer
 import com.teamwizardry.librarianlib.client.sprite.Texture
@@ -45,6 +46,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         if (LibrarianLib.DEV_ENVIRONMENT)
             ClientCommandHandler.instance.registerCommand(ExampleBookCommand())
 
+        ModelsInit
         UnlistedPropertyDebugViewer
         ScissorUtil
         LibShaders
