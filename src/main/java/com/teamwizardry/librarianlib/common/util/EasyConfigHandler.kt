@@ -82,7 +82,7 @@ object EasyConfigHandler {
         fieldMapDouble.filter { it.value.getString("modid", "") == modid }.forEach {
             it.key.isAccessible = true
             if(!it.value.getBoolean("devOnly", false) || LibrarianLib.DEV_ENVIRONMENT)
-                it.key.set(null, config.get(it.value.getString("category", ""), it.value.getString("id", ""), it.value.getBoolean("defaultValue", false), it.value.getString("comment", "")).double)
+                it.key.set(null, config.get(it.value.getString("category", ""), it.value.getString("id", ""), it.value.getDouble("defaultValue", 0.0), it.value.getString("comment", "")).double)
         }
         config.save()
 
