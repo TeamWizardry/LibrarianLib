@@ -58,9 +58,8 @@ object EasyConfigHandler {
             return
         }
 
-
         val config = if (configf == null)
-            Configuration(File(CONFIG_DIR, "$currentModId.cfg"))
+            Configuration(File(CONFIG_DIR, "$modid.cfg"))
         else
             Configuration(configf)
 
