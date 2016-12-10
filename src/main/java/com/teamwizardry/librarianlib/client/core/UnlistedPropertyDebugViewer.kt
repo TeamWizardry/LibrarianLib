@@ -23,9 +23,9 @@ object UnlistedPropertyDebugViewer {
         if (mc.gameSettings.showDebugInfo && GuiScreen.isAltKeyDown()) {
             if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK && mc.objectMouseOver.blockPos != null) {
                 val blockpos = mc.objectMouseOver.blockPos
-                val iblockstate = mc.theWorld.getBlockState(blockpos)
+                val iblockstate = mc.world.getBlockState(blockpos)
 
-                val maybeExtended = iblockstate.block.getExtendedState(iblockstate, mc.theWorld, blockpos)
+                val maybeExtended = iblockstate.block.getExtendedState(iblockstate, mc.world, blockpos)
 
                 if (maybeExtended is IExtendedBlockState) {
 

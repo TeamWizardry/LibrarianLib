@@ -183,7 +183,7 @@ object ParticleRenderManager {
             Particle.interpPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks.toDouble()
             Particle.interpPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks.toDouble()
             Particle.interpPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks.toDouble()
-            Particle.field_190016_K = entity.getLook(partialTicks)
+            Particle.cameraViewDir = entity.getLook(partialTicks)
 
             val renderInfo = ParticleRenderInfo(
                     entity,

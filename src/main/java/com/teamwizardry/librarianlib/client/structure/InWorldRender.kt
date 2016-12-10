@@ -42,7 +42,7 @@ object InWorldRender {
 
         GlStateManager.enableBlend()
 
-        val player = Minecraft.getMinecraft().thePlayer
+        val player = Minecraft.getMinecraft().player
         val x = player.lastTickPosX + (player.posX - player.lastTickPosX) * event.partialTicks
         val y = player.lastTickPosY + (player.posY - player.lastTickPosY) * event.partialTicks
         val z = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * event.partialTicks
@@ -98,7 +98,7 @@ object InWorldRender {
 
     fun refreshVerts() {
         val struct = structure ?: return
-        val match = struct.match(Minecraft.getMinecraft().theWorld, pos!!)
+        val match = struct.match(Minecraft.getMinecraft().world, pos!!)
         this.match = match
         rot = struct.matchedRotation
         struct.blockAccess.setBlockState(struct.origin, Blocks.AIR.defaultState)

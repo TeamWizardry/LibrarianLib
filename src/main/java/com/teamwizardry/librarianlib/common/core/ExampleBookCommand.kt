@@ -11,12 +11,11 @@ import net.minecraft.server.MinecraftServer
  */
 class ExampleBookCommand : CommandBase() {
 
-
-    override fun getCommandName(): String {
+    override fun getName(): String {
         return "liblibBook"
     }
 
-    override fun getCommandUsage(p_71518_1_: ICommandSender): String {
+    override fun getUsage(p_71518_1_: ICommandSender): String {
         return "/liblibBook"
     }
 
@@ -29,6 +28,6 @@ class ExampleBookCommand : CommandBase() {
 
     @Throws(WrongUsageException::class)
     fun wrongUsage(sender: ICommandSender) {
-        throw WrongUsageException(getCommandUsage(sender))
+        throw WrongUsageException(getUsage(sender))
     }
 }

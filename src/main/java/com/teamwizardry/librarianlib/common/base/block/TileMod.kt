@@ -100,7 +100,7 @@ abstract class TileMod : TileEntity() {
      */
     override fun markDirty() {
         super.markDirty()
-        if (!worldObj.isRemote)
+        if (!world.isRemote)
             dispatchTileToNearbyPlayers()
     }
 
@@ -114,8 +114,8 @@ abstract class TileMod : TileEntity() {
      * Dispatch tile data to nearby players. This will sync data to client side.
      */
     open fun dispatchTileToNearbyPlayers() {
-        if (worldObj is WorldServer) {
-            val ws: WorldServer = worldObj as WorldServer
+        if (world is WorldServer) {
+            val ws: WorldServer = world as WorldServer
 
             for (player in ws.playerEntities) {
                 val playerMP = player as EntityPlayerMP

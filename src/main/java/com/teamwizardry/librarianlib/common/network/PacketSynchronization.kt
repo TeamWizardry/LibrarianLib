@@ -30,7 +30,7 @@ class PacketSynchronization(var tile: TileMod? = null /* Tile is always null on 
 
         val b = buf
 
-        val tile = Minecraft.getMinecraft().theWorld.getTileEntity(pos)
+        val tile = Minecraft.getMinecraft().world.getTileEntity(pos)
         if (b == null || tile == null || tile !is TileMod) return
 
         AbstractSaveHandler.readAutoBytes(tile, b)

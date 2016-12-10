@@ -271,7 +271,7 @@ operator fun NBTTagCompound.get(key: String): NBTBase = this.getTag(key)
 // Player ==============================================================================================================
 
 fun EntityPlayer.sendMessage(str: String) {
-    this.addChatComponentMessage(TextComponentString(str))
+    this.sendStatusMessage(TextComponentString(str))
 }
 
 // String ==============================================================================================================

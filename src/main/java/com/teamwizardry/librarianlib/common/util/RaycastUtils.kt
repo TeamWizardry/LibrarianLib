@@ -16,7 +16,7 @@ object RaycastUtils {
         if (look == null) {
             return null
         } else {
-            return raycast(e.worldObj, vec, look, len, stopOnLiquid)
+            return raycast(e.world, vec, look, len, stopOnLiquid)
         }
     }
 
@@ -52,7 +52,7 @@ object RaycastUtils {
         val lookVector = e.lookVec
         val reachVector = positionVector.addVector(lookVector.xCoord * maxDistance, lookVector.yCoord * maxDistance, lookVector.zCoord * maxDistance)
         var lookedEntity: Entity? = null
-        val entitiesInBoundingBox = e.worldObj.getEntitiesWithinAABBExcludingEntity(e, e.entityBoundingBox.addCoord(lookVector.xCoord * maxDistance, lookVector.yCoord * maxDistance, lookVector.zCoord * maxDistance).expand(1.0, 1.0, 1.0))
+        val entitiesInBoundingBox = e.world.getEntitiesWithinAABBExcludingEntity(e, e.entityBoundingBox.addCoord(lookVector.xCoord * maxDistance, lookVector.yCoord * maxDistance, lookVector.zCoord * maxDistance).expand(1.0, 1.0, 1.0))
         var minDistance = distance
         val var14 = entitiesInBoundingBox.iterator()
 

@@ -32,7 +32,7 @@ object PacketHandler {
         override fun onMessage(message: REQ, ctx: MessageContext): PacketBase? {
             val mainThread: IThreadListener
             if (ctx.netHandler is NetHandlerPlayServer)
-                mainThread = ctx.serverHandler.playerEntity.worldObj as WorldServer
+                mainThread = ctx.serverHandler.playerEntity.world as WorldServer
             else
                 mainThread = Minecraft.getMinecraft()
             mainThread.addScheduledTask { message.handle(ctx) }
