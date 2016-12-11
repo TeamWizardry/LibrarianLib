@@ -33,7 +33,7 @@ abstract class TileMod : TileEntity() {
     }
 
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
-        writeCustomNBT(compound)
+        writeCustomNBT(compound, false)
         AbstractSaveHandler.writeAutoNBT(this, compound)
         super.writeToNBT(compound)
 
@@ -47,7 +47,12 @@ abstract class TileMod : TileEntity() {
     }
 
     override fun getUpdateTag(): NBTTagCompound {
-        return writeToNBT(super.getUpdateTag())
+        val compound = super.getUpdateTag()
+        writeCustomNBT(compound, true)
+        AbstractSaveHandler.writeAutoNBT(this, compound, true)
+        super.writeToNBT(compound)
+
+        return compound
     }
 
     override fun getUpdatePacket(): SPacketUpdateTileEntity {
@@ -57,8 +62,10 @@ abstract class TileMod : TileEntity() {
     /**
      * Override this function to store special data not stored in @Save fields in NBT.
      * If [useFastSync] is false, this will also determine whether it gets sent to clientside.
+     *
+     * [sync] implies that this is being used to send to clientside.
      */
-    open fun writeCustomNBT(cmp: NBTTagCompound) {
+    open fun writeCustomNBT(cmp: NBTTagCompound, sync: Boolean) {
         // NO-OP
     }
 
@@ -73,8 +80,10 @@ abstract class TileMod : TileEntity() {
     /**
      * Override this function to write special data not stored in @Save fields to bytes.
      * If [useFastSync] is false, this function is never called.
+     *
+     * [sync] implies that this is being used to send to clientside.
      */
-    open fun writeCustomBytes(buf: ByteBuf) {
+    open fun writeCustomBytes(buf: ByteBuf, sync: Boolean) {
         // NO-OP
     }
 
@@ -86,9 +95,12 @@ abstract class TileMod : TileEntity() {
         // NO-OP
     }
 
+    /**
+     * Tell the server and nearby clients that this tile has changed.
+     */
     override fun markDirty() {
         super.markDirty()
-        if (!worldObj.isRemote)
+        if (!world.isRemote)
             dispatchTileToNearbyPlayers()
     }
 
@@ -98,9 +110,12 @@ abstract class TileMod : TileEntity() {
         AbstractSaveHandler.readAutoNBT(javaClass, packet.nbtCompound)
     }
 
+    /**
+     * Dispatch tile data to nearby players. This will sync data to client side.
+     */
     open fun dispatchTileToNearbyPlayers() {
-        if (worldObj is WorldServer) {
-            val ws: WorldServer = worldObj as WorldServer
+        if (world is WorldServer) {
+            val ws: WorldServer = world as WorldServer
 
             for (player in ws.playerEntities) {
                 val playerMP = player as EntityPlayerMP

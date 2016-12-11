@@ -45,7 +45,7 @@ open class ComponentSlot(posX: Int, posY: Int) : GuiComponent<ComponentSlot>(pos
     }
 
     fun drawTooltip(stack: ItemStack) {
-        val list = stack.getTooltip(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().gameSettings.advancedItemTooltips)
+        val list = stack.getTooltip(Minecraft.getMinecraft().player, Minecraft.getMinecraft().gameSettings.advancedItemTooltips)
 
         for (i in list.indices) {
             if (i == 0) {

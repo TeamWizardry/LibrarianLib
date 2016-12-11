@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.common.util.bitsaving
 
-import net.minecraft.client.multiplayer.WorldClient
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.ResourceLocation
 import net.minecraft.world.WorldSavedData
@@ -12,7 +11,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  * Created by TheCodeWarrior
  */
 object BitwiseStorageManager {
-    init { MinecraftForge.EVENT_BUS.register(this) }
+    init {
+        MinecraftForge.EVENT_BUS.register(this)
+    }
+
     private val allocators = mutableMapOf<ResourceLocation, Allocator>()
     private var isFinalized = false
 
@@ -22,7 +24,7 @@ object BitwiseStorageManager {
     }
 
     fun createAllocator(loc: ResourceLocation): Allocator {
-        if(isFinalized)
+        if (isFinalized)
             throw IllegalStateException("Allocators have already been finalized! Make sure your allocator code is being called before any world is loaded")
         var value = allocators[loc]
         if (value != null)
@@ -38,15 +40,15 @@ object BitwiseStorageManager {
     @SubscribeEvent
     fun worldLoadEvent(event: WorldEvent.Load) {
         isFinalized = true
-        if (event.world is WorldClient)
+        if (event.world.isRemote)
             return
         if (event.world.provider.dimension == 0) {
             formatData = event.world.mapStorage?.getOrLoadData(BitwiseStorageWorldSavedData::class.java, BitwiseStorageWorldSavedData.name) as BitwiseStorageWorldSavedData?
-            if(formatData == null)
+            if (formatData == null)
                 formatData = BitwiseStorageWorldSavedData(BitwiseStorageWorldSavedData.name)
             event.world.mapStorage?.setData(BitwiseStorageWorldSavedData.name, formatData)
             reloadFormatData()
-            if(dirty)
+            if (dirty)
                 formatData?.markDirty()
             dirty = false
         }
@@ -68,18 +70,18 @@ object BitwiseStorageManager {
     }
 
     private fun loadAllocator(propData: MutableMap<String, MutableMap<String, MutableList<Int>>>, allocator: Allocator) {
-        val deadList = propData.getOrPut("~~dead~~", { mutableMapOf()}).getOrPut("", {mutableListOf<Int>()})
+        val deadList = propData.getOrPut("~~dead~~", { mutableMapOf() }).getOrPut("", { mutableListOf<Int>() })
 
         val propertiesToRemove = mutableSetOf<String>()
         val regionsToRemove = mutableSetOf<String>()
 
-        (propData.keys union allocator.props.keys).forEach properties@{ propertyName ->
+        (propData.keys union allocator.props.keys).forEach properties@ { propertyName ->
 
             val property = allocator.props[propertyName]
             val propertyAllocations = propData[propertyName] ?: mutableMapOf()
             propData[propertyName] = propertyAllocations
 
-            if(property == null) {
+            if (property == null) {
                 propertiesToRemove.add(propertyName)
                 return@properties
             }
@@ -129,7 +131,10 @@ object BitwiseStorageManager {
 }
 
 class BitwiseStorageWorldSavedData(name: String) : WorldSavedData(name) {
-    companion object { val name = "LibLib_BitwiseStorageFormats" }
+    companion object {
+        val name = "LibLib_BitwiseStorageFormats"
+    }
+
     val formats = mutableMapOf<ResourceLocation, MutableMap<String, MutableMap<String, MutableList<Int>>>>()
 
     override fun readFromNBT(nbt: NBTTagCompound) {

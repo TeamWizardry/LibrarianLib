@@ -2,8 +2,10 @@ package com.teamwizardry.librarianlib.client.core
 
 import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.client.book.Book
+import com.teamwizardry.librarianlib.client.event.ResourceReloadEvent
 import com.teamwizardry.librarianlib.client.fx.shader.LibShaders
 import com.teamwizardry.librarianlib.client.fx.shader.ShaderHelper
+import com.teamwizardry.librarianlib.client.model.ModelsInit
 import com.teamwizardry.librarianlib.client.sprite.SpritesMetadataSection
 import com.teamwizardry.librarianlib.client.sprite.SpritesMetadataSectionSerializer
 import com.teamwizardry.librarianlib.client.sprite.Texture
@@ -17,13 +19,15 @@ import net.minecraft.client.resources.IReloadableResourceManager
 import net.minecraft.client.resources.IResourceManager
 import net.minecraft.client.resources.IResourceManagerReloadListener
 import net.minecraft.client.resources.data.MetadataSerializer
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.ClientCommandHandler
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
-import java.lang.ref.WeakReference
-import java.util.*
+import java.io.IOException
+import java.io.InputStream
 
 /**
  * Prefixed with Lib so code suggestion in dependent projects doesn't suggest it
@@ -42,14 +46,17 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         if (LibrarianLib.DEV_ENVIRONMENT)
             ClientCommandHandler.instance.registerCommand(ExampleBookCommand())
 
+        ModelsInit
         UnlistedPropertyDebugViewer
         ScissorUtil
         LibShaders
-        ShaderHelper.initShaders()
+        ShaderHelper.init()
 
         val s = MethodHandleHelper.wrapperForGetter(Minecraft::class.java, "metadataSerializer_", "field_110452_an")(Minecraft.getMinecraft()) as MetadataSerializer
         s.registerMetadataSectionType(SpritesMetadataSectionSerializer(), SpritesMetadataSection::class.java)
         SpritesMetadataSection.registered = true
+
+        Texture.register()
 
         (Minecraft.getMinecraft().resourceManager as IReloadableResourceManager).registerReloadListener(this)
         onResourceManagerReload(Minecraft.getMinecraft().resourceManager)
@@ -69,15 +76,20 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         return I18n.format(s, *format)
     }
 
+    override fun canTranslate(s: String): Boolean {
+        return I18n.hasKey(s)
+    }
+
+    override fun getResource(modId: String, path: String): InputStream? {
+        val resourceManager = Minecraft.getMinecraft().resourceManager
+        try {
+            return resourceManager.getResource(ResourceLocation(modId, path)).inputStream
+        } catch (e: IOException) {
+            return null
+        }
+    }
 
     override fun onResourceManagerReload(resourceManager: IResourceManager) {
-        val newList = ArrayList<WeakReference<Texture>>()
-
-        for (tex in Texture.textures) {
-            tex.get()?.loadSpriteData()
-            if (tex.get() != null) newList.add(tex)
-        }
-
-        Texture.textures = newList
+        MinecraftForge.EVENT_BUS.post(ResourceReloadEvent(resourceManager))
     }
 }

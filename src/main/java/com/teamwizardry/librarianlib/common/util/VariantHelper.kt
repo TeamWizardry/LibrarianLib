@@ -22,13 +22,11 @@ object VariantHelper {
     fun setupItem(item: Item, name: String, variants: Array<out String>, creativeTab: ModCreativeTab? = null): Array<out String> {
         var variantTemp = variants
         item.unlocalizedName = name
-        if (variantTemp.size > 1) {
+        if (variantTemp.size > 1)
             item.hasSubtypes = true
-        }
 
-        if (variantTemp.size == 0) {
+        if (variantTemp.isEmpty())
             variantTemp = arrayOf(name)
-        }
 
         ModelHandler.registerVariantHolder(item as IVariantHolder)
         creativeTab?.set(item)
@@ -42,9 +40,8 @@ object VariantHelper {
     @JvmStatic
     fun beginSetupBlock(name: String, variants: Array<out String>): Array<out String> {
         var variantTemp = variants
-        if (variants.size == 0) {
+        if (variants.isEmpty())
             variantTemp = arrayOf(name)
-        }
         return variantTemp
     }
 

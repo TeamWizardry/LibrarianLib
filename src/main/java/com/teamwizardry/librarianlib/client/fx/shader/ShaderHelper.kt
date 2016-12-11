@@ -1,14 +1,13 @@
 package com.teamwizardry.librarianlib.client.fx.shader
 
 import com.teamwizardry.librarianlib.LibrarianLog
+import com.teamwizardry.librarianlib.client.event.ResourceReloadEvent
 import com.teamwizardry.librarianlib.client.util.lambdainterfs.ShaderCallback
 import com.teamwizardry.librarianlib.common.core.LibLibConfig
-import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.OpenGlHelper
-import net.minecraft.client.resources.IReloadableResourceManager
-import net.minecraft.client.resources.IResourceManager
-import net.minecraft.client.resources.IResourceManagerReloadListener
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.FMLCommonHandler
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.opengl.*
@@ -21,9 +20,15 @@ import java.util.*
  */
 
 @SideOnly(Side.CLIENT)
-object ShaderHelper : IResourceManagerReloadListener {
+object ShaderHelper {
 
-    override fun onResourceManagerReload(resourceManager: IResourceManager) {
+    fun init() {
+        initShaders()
+        MinecraftForge.EVENT_BUS.register(this)
+    }
+
+    @SubscribeEvent
+    fun onResourceManagerReload(e: ResourceReloadEvent) {
         initShaders()
     }
 
@@ -46,11 +51,7 @@ object ShaderHelper : IResourceManagerReloadListener {
         for (shader in shaders)
             createProgram(shader)
 
-        if (!hasLoaded) {
-            hasLoaded = true
-            if (Minecraft.getMinecraft().resourceManager is IReloadableResourceManager)
-                (Minecraft.getMinecraft().resourceManager as IReloadableResourceManager).registerReloadListener(this)
-        }
+        hasLoaded = true
     }
 
     fun <T : Shader> useShader(shader: T?, callback: ShaderCallback<T>?) {

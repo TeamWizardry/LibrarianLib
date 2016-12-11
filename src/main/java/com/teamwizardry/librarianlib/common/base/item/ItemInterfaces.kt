@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.common.base.item
 
 import com.teamwizardry.librarianlib.common.base.IVariantHolder
 import net.minecraft.client.renderer.ItemMeshDefinition
+import net.minecraft.client.renderer.block.model.IBakedModel
 import net.minecraft.client.renderer.color.IItemColor
 import net.minecraft.item.Item
 import net.minecraftforge.fml.relauncher.Side
@@ -35,4 +36,15 @@ interface IItemColorProvider : IVariantHolder {
      */
     @SideOnly(Side.CLIENT)
     fun getItemColor(): IItemColor?
+}
+
+/**
+ * An interface which defines an item provider (or an IModBlock with an item) that has an IPerspectiveAwareModel.
+ */
+interface ISpecialModelProvider : IModItemProvider {
+    /**
+     * Provides a special model for the provided item. Return null to use default behavior.
+     */
+    @SideOnly(Side.CLIENT)
+    fun getSpecialModel(index: Int): IBakedModel?
 }

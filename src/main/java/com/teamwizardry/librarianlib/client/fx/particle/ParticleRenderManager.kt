@@ -59,15 +59,13 @@ object ParticleRenderManager {
     }
 
     @JvmStatic
-    val LAYER_BLOCK_MAP = object : ParticleRenderLayer("blockMap", true) {
+    val LAYER_BLOCK_MAP = object : ParticleRenderLayer("blockMap", false) {
         override fun setup() {
             Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE)
 
             GlStateManager.pushAttrib()
             GL11.glPushAttrib(GL11.GL_LIGHTING_BIT)
-//            GlStateManager.depthMask(false);
             GlStateManager.enableBlend()
-//            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
             GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F)
             GlStateManager.disableLighting()
             GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
@@ -82,10 +80,8 @@ object ParticleRenderManager {
             val tessellator = Tessellator.getInstance()
             tessellator.draw()
 
-//            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
             GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
             GlStateManager.disableBlend()
-//            GlStateManager.depthMask(true);
             GL11.glPopAttrib()
             GlStateManager.popAttrib()
         }
@@ -171,8 +167,7 @@ object ParticleRenderManager {
         GL11.glPushAttrib(GL11.GL_LIGHTING_BIT)
         GlStateManager.depthMask(false)
         GlStateManager.enableBlend()
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE)
-        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F)
+        GlStateManager.alphaFunc(GL11.GL_GREATER, 1 / 256f)
         GlStateManager.disableLighting()
 
         profiler.startSection("liblib_particles")
@@ -188,7 +183,7 @@ object ParticleRenderManager {
             Particle.interpPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks.toDouble()
             Particle.interpPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks.toDouble()
             Particle.interpPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks.toDouble()
-            Particle.field_190016_K = entity.getLook(partialTicks)
+            Particle.cameraViewDir = entity.getLook(partialTicks)
 
             val renderInfo = ParticleRenderInfo(
                     entity,

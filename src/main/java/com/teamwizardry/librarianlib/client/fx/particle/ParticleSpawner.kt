@@ -12,6 +12,9 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.BiConsumer
 
+private val noop = BiConsumer<Float, ParticleBuilder> { a, b -> }
+private val noopLambda: (Float, ParticleBuilder) -> Unit = { a, b -> }
+
 /**
  * Manages the spawning of particles along paths
  */
@@ -40,13 +43,6 @@ object ParticleSpawner {
     fun tick() {
         pending.forEach { if (it.ticksTillSpawn <= 0) ParticleRenderManager.spawn(it.particle) }
         pending.removeAll { it.ticksTillSpawn-- <= 0 }
-    }
-
-    /**
-     * Kotlin wrapper for [spawn]. Uses kotlin lambdas instead of SAM classes
-     */
-    fun spawn(builder: ParticleBuilder, world: World, curve: InterpFunction<Vec3d>, particleCount: Int, travelTime: Int = 0, callback: (Float, ParticleBuilder) -> Unit = noopLambda) {
-        spawn(builder, world, curve, particleCount, travelTime, BiConsumer<Float, ParticleBuilder>(callback))
     }
 
     /**
@@ -81,8 +77,7 @@ object ParticleSpawner {
         return Math.max(2f, particleCount.toFloat() * mul).toInt()
     }
 
-    private val noop = BiConsumer<Float, ParticleBuilder> { a, b -> }
-    private val noopLambda: (Float, ParticleBuilder) -> Unit = { a, b -> }
+
 }
 
 private data class ParticleSpawn private constructor(val particle: ParticleBase) {
@@ -91,4 +86,11 @@ private data class ParticleSpawn private constructor(val particle: ParticleBase)
     constructor(particle: ParticleBase, ticksTillSpawn: Int) : this(particle) {
         this.ticksTillSpawn = ticksTillSpawn
     }
+}
+
+/**
+ * Kotlin wrapper for [spawn]. Uses kotlin lambdas instead of SAM classes
+ */
+fun ParticleSpawner.spawn(builder: ParticleBuilder, world: World, curve: InterpFunction<Vec3d>, particleCount: Int, travelTime: Int = 0, callback: (Float, ParticleBuilder) -> Unit = noopLambda) {
+    spawn(builder, world, curve, particleCount, travelTime, BiConsumer<Float, ParticleBuilder>(callback))
 }

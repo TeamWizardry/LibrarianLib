@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.client.book.util.LinkParser
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.components.*
 import com.teamwizardry.librarianlib.client.gui.mixin.ButtonMixin
-import com.teamwizardry.librarianlib.common.util.math.Vec2d
+import com.teamwizardry.librarianlib.common.util.vec
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 
@@ -59,7 +59,7 @@ class PageSubindex(section: BookSectionOther, node: DataNode, tag: String) : Gui
         }
 
         if (icon != null) {
-            icon.pos = Vec2d(0.0, 2.0)
+            icon.pos = vec(0, 2)
             comp.add(icon)
         }
 

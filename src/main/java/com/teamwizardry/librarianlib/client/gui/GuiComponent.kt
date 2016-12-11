@@ -3,11 +3,14 @@ package com.teamwizardry.librarianlib.client.gui
 import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.client.core.ClientTickHandler
+import com.teamwizardry.librarianlib.client.gui.GuiComponent.*
 import com.teamwizardry.librarianlib.common.util.event.Event
 import com.teamwizardry.librarianlib.common.util.event.EventBus
 import com.teamwizardry.librarianlib.common.util.event.EventCancelable
 import com.teamwizardry.librarianlib.common.util.math.BoundingBox2D
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
+import com.teamwizardry.librarianlib.common.util.plus
+import com.teamwizardry.librarianlib.common.util.vec
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
@@ -20,15 +23,105 @@ import org.lwjgl.opengl.GL11
 import java.util.*
 
 /**
- * A component of a capability, such as a button, image, piece of text, list, etc.
-
- * @param  The class of this component. Used for setup()
+ * The base class of every on-screen object. These can be nested within each other using [add]. Subcomponents will be
+ * positioned relative to their parent, so modifications to the parent's [pos] will change their rendering position.
+ *
+ * # Summery
+ *
+ * - Events - Fire when something happens, allow you to change what happens or cancel it alltogether. Register on [BUS]
+ * - Tags - Mark a component for retrieval later.
+ * - Data - Store metadata in a component.
+ *
+ * # Detail
+ *
+ * ## Events
+ *
+ * More advanced functionality is achieved through event hooks on the component's [BUS]. All events are subclasses of
+ * [Event] so a type hierarchy of that should show all events available to you. Only the child classes of [GuiComponent]
+ * are fired by default, all others are either a part of a particular component class or require some action on the
+ * user's part to initialize.
+ *
+ * ## Tags
+ *
+ * If you want to mark a component for retrieval later you can use [addTag] to add an arbitrary object as a tag.
+ * Children with a specific tag can be retrieved later using [getByTag], or you can check if a component has a tag using
+ * [hasTag]. Tags are stored in a HashSet, so any object that overrides the [hashCode] and [equals] methods will work by
+ * value, but any object will work by identity. [Explanation here.](http://stackoverflow.com/a/1692882/1541907)
+ *
+ * ## Data
+ *
+ * If you need to store additional metadata in a component, this can be done with [setData]. The class passed in must be
+ * the class of the data, and is used to reduce unchecked cast warnings and to ensure that the same key can be used with
+ * multiple types of data. The key is used to allow multiple instances of the same data type to be stored in a component,
+ * and is independent per class.
+ * ```
+ * component.setData(MyCoolObject.class, "foo", myInstance);
+ * component.setData(MyCoolObject.class, "bar", anotherInstance);
+ * component.setData(YourCoolObject.class, "foo", yourInstance);
+ *
+ * component.getData(MyCoolObject.class, "foo"); // => myInstance
+ * component.getData(MyCoolObject.class, "bar"); // => anotherInstance
+ * component.getData(YourCoolObject.class, "foo"); // => yourInstance
+ * ```
+ *
+ * ## Logical size
+ *
+ * The logical size of a component is theoretically the amount of space a component takes up. This is used for general
+ * flow, such as when a list is laid out, the logical height of each element is taken into account in order to stack them.
+ *
+ * ## Default events
+ *
+ * ### Common Events
+ * - [ComponentTickEvent] - Fired each tick while the component is a part of a screen
+ * - [PreDrawEvent] - Fired each frame before the component has been drawn
+ * - [PreChildrenDrawEvent] - Fired each frame after the component has been drawn but before children have been drawn
+ * - [PostDrawEvent] - Fired each frame after the component and its children have been drawn
+ * - ---
+ * - [MouseDownEvent] - Fired whenever the mouse is pressed
+ * - [MouseUpEvent] - Fired whenever the mouse is released
+ * - [MouseDragEvent] - Fired whenever the mouse is moved while a button is being pressed
+ * - [MouseClickEvent] - Fired when the mouse is clicked within the component
+ * - ---
+ * - [KeyDownEvent] - Fired when a key is pressed
+ * - [KeyUpEvent] - Fired when a key is released
+ * - ---
+ * - [MouseInEvent] - Fired when the mouse is moved into the component
+ * - [MouseOutEvent] - Fired when the mouse is moved out of the component
+ * - [MouseWheelEvent] - Fired when the mouse wheel is moved
+ * - ---
+ * - [FocusEvent] - Fired when the component gains focus
+ * - [BlurEvent] - Fired when the component loses focus
+ * - ---
+ * - [EnableEvent] - Fired when this component is enabled
+ * - [DisableEvent] - Fired when this component is disabled
+ *
+ * ### Seldom used events
+ * - [AddChildEvent] - Fired before a child is added to the component
+ * - [RemoveChildEvent] - Fired when a child is removed from the component
+ * - [AddToParentEvent] - Fired when the component is added as a child to another component
+ * - [RemoveFromParentEvent] - Fired when the component is removed from its parent
+ * - ---
+ * - [SetDataEvent] - Fired before data is set
+ * - [RemoveDataEvent] - Fired before data is removed
+ * - [GetDataEvent] - Fired when data is queried
+ * - ---
+ * - [HasTagEvent] - Fired when the component is checked for a tag
+ * - [AddTagEvent] - Fired before a tag is added to the component
+ * - [RemoveTagEvent] - Fired before a tag is removed from a component
+ *
+ * ### Advanced events
+ * - [LogicalSizeEvent] - Fired when the logical size is queried
+ * - [ChildMouseOffsetEvent] - Fired when a mouse position is being offset to be relative to a child component
+ * - [MouseOffsetEvent] - Fired when a mouse position is being offset to be relative to this component
+ * - [MouseOverEvent] - Fired when checking if the mouse is over this component
  */
 @SideOnly(Side.CLIENT)
 abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX: Int, posY: Int, width: Int = 0, height: Int = 0) : IGuiDrawable {
 
     @JvmField
     val BUS = EventBus()
+
+    class ComponentTickEvent<T : GuiComponent<T>>(val component: T) : Event()
 
     class PreDrawEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val partialTicks: Float) : Event()
     class PostDrawEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val partialTicks: Float) : Event(true)
@@ -81,19 +174,29 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
     var zIndex = 0
     /**
-     * Get the position of the component relative to it's parent
-     */
-    /**
-     * Set the position of the component relative to it's parent
+     * The position of the component relative to it's parent
      */
     var pos: Vec2d
     /**
-     * Get the size of the component
-     */
-    /**
-     * Set the size of the component
+     * The size of the component
      */
     var size: Vec2d
+    /**
+     * The left margin for logical alignment
+     */
+    var marginLeft: Double = 0.0
+    /**
+     * The right margin for logical alignment
+     */
+    var marginRight: Double = 0.0
+    /**
+     * The top margin for logical alignment
+     */
+    var marginTop: Double = 0.0
+    /**
+     * The bottom margin for logical alignment
+     */
+    var marginBottom: Double = 0.0
 
     var mouseOver = false
     var mousePosThisFrame = Vec2d.ZERO
@@ -156,13 +259,22 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * True if the component shouldn't effect the logical size of it's parent. Causes logical size to return null.
      */
     var outOfFlow = false
-    protected var components: MutableList<GuiComponent<*>> = ArrayList()
+    protected val components = mutableListOf<GuiComponent<*>>()
+    val children: Collection<GuiComponent<*>> = Collections.unmodifiableCollection(components)
     var parent: GuiComponent<*>? = null
-        private set
+        private set(value) {
+            parents.clear()
+            if(value != null) {
+                parents.addAll(value.parents)
+                parents.add(value)
+            }
+            field = value
+        }
+    var parents: LinkedHashSet<GuiComponent<*>> = LinkedHashSet()
 
     init {
-        this.pos = Vec2d(posX.toDouble(), posY.toDouble())
-        this.size = Vec2d(width.toDouble(), height.toDouble())
+        this.pos = vec(posX, posY)
+        this.size = vec(width, height)
     }
 
     /**
@@ -178,30 +290,43 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     }
 
     /**
-     * Adds a child to this component.
+     * Adds child(ren) to this component.
 
      * @throws IllegalArgumentException if the component had a parent already
      */
-    fun add(component: GuiComponent<*>?) {
+    fun add(vararg components: GuiComponent<*>?) {
+        components.forEach { addInternal(it) }
+    }
+
+    protected fun addInternal(component: GuiComponent<*>?) {
         if (component == null) {
-            LibrarianLog.error("You shouldn't be adding null components!")
+            LibrarianLog.error("Null component, ignoring")
             return
         }
         if (component === this)
-            throw IllegalArgumentException("Can't add components to themselves!")
+            throw IllegalArgumentException("Immediately recursive component hierarchy")
 
-        if (component.parent != null)
-            if (component.parent == this)
+        if (component.parent != null) {
+            if (component.parent == this) {
                 LibrarianLog.warn("You tried to add the component to the same parent twice. Why?")
-            else
-                throw IllegalArgumentException("Component already had a parent!")
-        if (BUS.fire(AddChildEvent(thiz(), component)).isCanceled())
-            return
+                return
+            } else {
+                throw IllegalArgumentException("Component already had a parent")
+            }
+        }
+
+        if (component in parents) {
+            throw IllegalArgumentException("Recursive component hierarchy")
+        }
+
+
+            if (BUS.fire(AddChildEvent(thiz(), component)).isCanceled())
+                return
         if (component.BUS.fire(AddToParentEvent(component.thiz(), thiz())).isCanceled())
             return
         components.add(component)
         component.parent = this
-        Collections.sort<GuiComponent<*>>(components, { a, b -> Integer.compare(a.zIndex, b.zIndex) })
+        components.sortBy { it.zIndex }
     }
 
     operator fun contains(component: GuiComponent<*>): Boolean {
@@ -244,28 +369,64 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     }
 
     /**
-     * Returns all the elements with a given tag
+     * Returns a list of all children that have the tag [tag]
      */
     fun getByTag(tag: Any): List<GuiComponent<*>> {
-        val list = ArrayList<GuiComponent<*>>()
-        for (component in components) {
-            if (component.hasTag(tag))
-                list.add(component)
-        }
+        val list = mutableListOf<GuiComponent<*>>()
+        addByTag(tag, list)
         return list
     }
 
     /**
-     * Returns all the elements that can be cast to the specified class
+     * Returns a list of all children and grandchildren etc. that have the tag [tag]
      */
+    fun getAllByTag(tag: Any): List<GuiComponent<*>> {
+        val list = mutableListOf<GuiComponent<*>>()
+        addAllByTag(tag, list)
+        return list
+    }
+
+    protected fun addAllByTag(tag: Any, list: MutableList<GuiComponent<*>>) {
+        addByTag(tag, list)
+        components.forEach { it.addAllByTag(tag, list) }
+    }
+
+    protected fun addByTag(tag: Any, list: MutableList<GuiComponent<*>>) {
+        for (component in components) {
+            if (component.hasTag(tag))
+                list.add(component)
+        }
+    }
+
+    /**
+     * Returns a list of all children that are subclasses of [clazz]
+     */
+    fun <C : GuiComponent<*>> getByClass(clazz: Class<C>): List<C> {
+        val list = mutableListOf<C>()
+        addByClass(clazz, list)
+        return list
+    }
+
+    /**
+     * Returns a list of all children and grandchildren etc. that are subclasses of [clazz]
+     */
+    fun <C : GuiComponent<*>> getAllByClass(clazz: Class<C>): List<C> {
+        val list = mutableListOf<C>()
+        addAllByClass(clazz, list)
+        return list
+    }
+
+    protected fun <C : GuiComponent<*>> addAllByClass(clazz: Class<C>, list: MutableList<C>) {
+        addByClass(clazz, list)
+        components.forEach { it.addAllByClass(clazz, list) }
+    }
+
     @Suppress("UNCHECKED_CAST")
-    fun <C> getByClass(clazz: Class<C>): List<C> {
-        val list = ArrayList<C>()
+    protected fun <C : GuiComponent<*>> addByClass(clazz: Class<C>, list: MutableList<C>) {
         for (component in components) {
             if (clazz.isAssignableFrom(component.javaClass))
                 list.add(component as C)
         }
-        return list
     }
 
     //=============================================================================
@@ -282,19 +443,21 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     open fun calculateMouseOver(mousePos: Vec2d) {
         this.mouseOver = false
 
-        components.asReversed().forEach { child ->
-            child.calculateMouseOver(transformChildPos(child, mousePos))
-            if (mouseOver) {
-                child.mouseOver = false
-            }
-            if (child.mouseOver) {
-                mouseOver = true
+        if (isVisible) {
+            components.asReversed().forEach { child ->
+                child.calculateMouseOver(transformChildPos(child, mousePos))
+                if (mouseOver) {
+                    child.mouseOver = false
+                }
+                if (child.mouseOver) {
+                    mouseOver = true
+                }
+
             }
 
+            mouseOver = mouseOver || (calculateOwnHover &&
+                    (mousePos.x >= 0 && mousePos.x <= size.x && mousePos.y >= 0 && mousePos.y <= size.y))
         }
-
-        mouseOver = mouseOver || (calculateOwnHover &&
-                (mousePos.x >= 0 && mousePos.x <= size.x && mousePos.y >= 0 && mousePos.y <= size.y))
         this.mouseOver = BUS.fire(MouseOverEvent(thiz(), mousePos, this.mouseOver)).isOver
     }
 
@@ -353,6 +516,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             vb.pos(pos.x, pos.y + size.y, 0.0).endVertex()
             vb.pos(pos.x, pos.y, 0.0).endVertex()
             tessellator.draw()
+            GlStateManager.enableTexture2D()
             GlStateManager.popAttrib()
         }
 
@@ -370,6 +534,13 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         GlStateManager.popMatrix()
 
         BUS.fire(PostDrawEvent(thiz(), mousePos, partialTicks))
+    }
+
+    open fun tick() {
+        BUS.fire(ComponentTickEvent(thiz()))
+        for (child in components) {
+            child.tick()
+        }
     }
 
     /**
@@ -500,7 +671,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             aabb = childAABB?.union(aabb) ?: aabb
         }
 
-        aabb = BoundingBox2D(aabb.min.add(pos), aabb.max.add(pos))
+        aabb = BoundingBox2D(aabb.min + pos - vec(marginLeft, marginTop), aabb.max + pos + vec(marginRight, marginBottom))
 
         return BUS.fire(LogicalSizeEvent(thiz(), if (outOfFlow) null else aabb)).box
     }

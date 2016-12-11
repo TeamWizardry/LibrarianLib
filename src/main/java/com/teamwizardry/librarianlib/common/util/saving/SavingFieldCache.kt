@@ -44,9 +44,9 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
             map.put(name, FieldCache(FieldType.create(field),
                     MethodHandleHelper.wrapperForGetter<Any>(field),
                     MethodHandleHelper.wrapperForSetter<Any>(field),
-                    field.isAnnotationPresent(Nonnull::class.java)))
-
-
+                    field.isAnnotationPresent(Nonnull::class.java),
+                    !field.isAnnotationPresent(NoSync::class.java),
+                    field.name))
         }
     }
 
@@ -78,9 +78,8 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
                 val setter = setters[name]!!
                 val getReturnType = getter.returnType
                 val setReturnType = setter.parameterTypes[0]
-                if (getReturnType == setReturnType) {
+                if (getReturnType == setReturnType)
                     pairs.put(name, Triple(getter, setter, getReturnType))
-                }
             }
         }
 
@@ -99,7 +98,8 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
             map.put(name, FieldCache(FieldType.create(getter),
                     { obj -> wrapperForGetter(obj, arrayOf()) },
                     { obj, inp -> wrapperForSetter(obj, arrayOf(inp)) },
-                    getter.isAnnotationPresent(Nonnull::class.java)))
+                    getter.isAnnotationPresent(Nonnull::class.java) || setter.parameterAnnotations[0].any { it is Nonnull },
+                    !getter.isAnnotationPresent(NoSync::class.java) || !setter.isAnnotationPresent(NoSync::class.java)))
         }
     }
 
@@ -149,7 +149,7 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
     }
 }
 
-data class FieldCache(val type: FieldType, val getter: (Any) -> Any?, private val setter_: (Any, Any?) -> Unit, val nonnull: Boolean) {
+data class FieldCache(val type: FieldType, val getter: (Any) -> Any?, private val setter_: (Any, Any?) -> Unit, val nonnull: Boolean, val syncToClient: Boolean, var name: String = "") {
     val setter = if(nonnull) {
         { instance: Any, value: Any? ->
             if(value == null) {
@@ -162,4 +162,3 @@ data class FieldCache(val type: FieldType, val getter: (Any) -> Any?, private va
         setter_
     }
 }
-

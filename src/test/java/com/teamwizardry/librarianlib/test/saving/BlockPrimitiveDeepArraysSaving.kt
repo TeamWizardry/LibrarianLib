@@ -25,7 +25,7 @@ class BlockPrimitiveDeepArraysSaving : BlockMod("saving_primitiveDeepArrays", Ma
         val te = worldIn.getTileEntity(pos!!)!! as TETest
         if (!worldIn.isRemote) {
             if (side == EnumFacing.UP) {
-                if(playerIn.isSneaking) {
+                if (playerIn.isSneaking) {
                     te.index2 = (te.index2 + 1) % 3
                 } else {
                     te.index = (te.index + 1) % 3

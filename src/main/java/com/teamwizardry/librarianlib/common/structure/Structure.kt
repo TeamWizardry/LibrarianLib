@@ -99,8 +99,8 @@ open class Structure(loc: ResourceLocation) {
                 }
                 match = false
             } else {
-                val worldProps = worldState.propertyNames
-                for (prop in templateState.propertyNames) {
+                val worldProps = worldState.propertyKeys
+                for (prop in templateState.propertyKeys) {
                     if (IGNORE.contains(prop) || templateState.block == Blocks.REDSTONE_WIRE) // Wire because of annoying privacy
                         continue
 

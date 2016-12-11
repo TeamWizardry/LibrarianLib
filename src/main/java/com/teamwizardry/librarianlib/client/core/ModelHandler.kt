@@ -10,20 +10,29 @@ import com.teamwizardry.librarianlib.common.base.block.IBlockColorProvider
 import com.teamwizardry.librarianlib.common.base.block.IModBlockProvider
 import com.teamwizardry.librarianlib.common.base.item.IItemColorProvider
 import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
+import com.teamwizardry.librarianlib.common.base.item.ISpecialModelProvider
 import com.teamwizardry.librarianlib.common.core.DevOwnershipTest
 import com.teamwizardry.librarianlib.common.core.LibLibConfig
+import com.teamwizardry.librarianlib.common.util.ImmutableStaticFieldDelegate
+import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import com.teamwizardry.librarianlib.common.util.builders.serialize
 import com.teamwizardry.librarianlib.common.util.times
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.block.model.ModelBakery
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
+import net.minecraft.client.renderer.block.statemap.IStateMapper
 import net.minecraft.item.Item
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.client.event.ModelBakeEvent
 import net.minecraftforge.client.model.ModelLoader
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.Loader
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.registry.RegistryDelegate
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import org.apache.commons.lang3.tuple.Pair
 import java.io.File
 import java.util.*
 
@@ -46,9 +55,11 @@ object ModelHandler {
     /**
      * This is Mod name -> (Variant name -> MRL), specifically for ItemMeshDefinitions.
      */
-    @JvmField
     @SideOnly(Side.CLIENT)
-    val resourceLocations = HashMap<String, HashMap<String, ModelResourceLocation>>()
+    lateinit var resourceLocations: HashMap<String, HashMap<String, ResourceLocation>>
+
+    var gennedResources = false
+        private set
 
     /**
      * Use this method to inject your item into the list to be loaded at the end of preinit and colorized at the end of init.
@@ -61,11 +72,17 @@ object ModelHandler {
 
     @SideOnly(Side.CLIENT)
     private fun addToCachedLocations(name: String, mrl: ModelResourceLocation) {
+        if (!gennedResources) {
+            resourceLocations = hashMapOf()
+            gennedResources = true
+        }
         resourceLocations.getOrPut(modName) { hashMapOf() }.put(name, mrl)
     }
 
     @SideOnly(Side.CLIENT)
     fun preInit() {
+        MinecraftForge.EVENT_BUS.register(this)
+
         for ((modid, holders) in variantCache) {
             modName = modid
             log("$modName | Registering models")
@@ -139,42 +156,18 @@ object ModelHandler {
             if (mapper != null)
                 ModelLoader.setCustomStateMapper(holder.providedBlock, mapper)
 
-            if (shouldGenerateAnyJson()) {
-                val files = JsonGenerationUtils.generateBaseBlockStates(holder.providedBlock, mapper)
-                var flag = false
-                files.forEach {
-                    val stateFile = File(it.key)
-                    stateFile.parentFile.mkdirs()
-                    if (stateFile.createNewFile()) {
-                        val obj = it.value
-                        stateFile.writeText(obj.serialize())
-                        log("$namePad | Creating a file for blockstate of ${holder.providedBlock.registryName.resourcePath}")
-                        generatedFiles.add(it.key)
-                        flag = true
-                    }
-                }
-                if (flag) {
-                    val modelPath = JsonGenerationUtils.getPathForBlockModel(holder.providedBlock)
-                    val modelFile = File(modelPath)
-                    modelFile.parentFile.mkdirs()
-                    if (modelFile.createNewFile()) {
-                        val blockObj = JsonGenerationUtils.generateBaseBlockModel(holder.providedBlock)
-                        modelFile.writeText(blockObj.serialize())
-                        log("$namePad | Creating file for block ${holder.providedBlock.registryName.resourcePath}")
-                        generatedFiles.add(modelPath)
-                    }
-                }
-            }
+            if (shouldGenerateAnyJson()) generateBlockJson(holder, mapper)
         }
 
         if (holder is IModItemProvider) {
             val item = holder.providedItem
-            for (variant in variants.withIndex()) {
+            for ((index, variant) in variants.withIndex()) {
 
-                if (variant.index == 0) {
+
+                if (index == 0) {
                     var print = "$namePad | Registering "
 
-                    if (variant.value != item.registryName.resourcePath || variants.size != 1 || extra)
+                    if (variant != item.registryName.resourcePath || variants.size != 1 || extra)
                         print += "${if (extra) "extra " else ""}variant${if (variants.size == 1) "" else "s"} of "
 
                     print += if (item is IModBlockProvider) "block" else "item"
@@ -182,32 +175,59 @@ object ModelHandler {
                     log(print)
                 }
 
-                if ((variant.value != item.registryName.resourcePath || variants.size != 1))
-                    log("$namePad |  Variant #${variant.index + 1}: ${variant.value}")
-
-                if (shouldGenItemJson(holder)) {
-                    val path = JsonGenerationUtils.getPathForItemModel(holder.providedItem, variant.value)
-                    val file = File(path)
-                    file.parentFile.mkdirs()
-                    if (file.createNewFile()) {
-                        val obj = JsonGenerationUtils.generateBaseItemModel(item, variant.value)
-                        file.writeText(obj.serialize())
-                        log("$namePad | Creating file for variant of ${holder.providedItem.registryName.resourcePath}")
-                        generatedFiles.add(path)
-                    }
+                if (holder is ISpecialModelProvider && holder.getSpecialModel(index) != null) {
+                    log("$namePad |  Variant #${index + 1}: $variant - SPECIAL")
+                    continue
                 }
 
-                val model = ModelResourceLocation(ResourceLocation(modName, variant.value).toString(), "inventory")
+                if ((variant != item.registryName.resourcePath || variants.size != 1))
+                    log("$namePad |  Variant #${index + 1}: $variant")
+
+                if (shouldGenItemJson(holder)) generateItemJson(holder, variant)
+
+                val model = ModelResourceLocation(ResourceLocation(modName, variant).toString(), "inventory")
                 if (!extra) {
-                    ModelLoader.setCustomModelResourceLocation(item, variant.index, model)
-                    addToCachedLocations(getKey(item, variant.index), model)
+                    ModelLoader.setCustomModelResourceLocation(item, index, model)
+                    addToCachedLocations(getKey(item, index), model)
                 } else {
                     ModelBakery.registerItemVariants(item, model)
-                    addToCachedLocations(variant.value, model)
+                    addToCachedLocations(variant, model)
                 }
             }
         }
+    }
 
+    val customModels: MutableMap<Pair<RegistryDelegate<Item>, Int>, ModelResourceLocation>
+            by ImmutableStaticFieldDelegate(MethodHandleHelper.wrapperForStaticGetter(ModelLoader::class.java, "customModels"), true)
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    fun onModelBake(e: ModelBakeEvent) {
+        for ((modid, holders) in variantCache) {
+            modName = modid
+            log("$modName | Registering special models")
+            for (holder in holders) if (holder is ISpecialModelProvider) {
+                val item = holder.providedItem
+                var flag = false
+                for ((index, variant) in holder.variants.withIndex()) {
+                    val model = holder.getSpecialModel(index)
+                    if (model != null) {
+                        if (!flag) {
+                            var print = "$namePad | Applying special model rules for "
+                            print += if (item is IModBlockProvider) "block " else "item "
+                            print += item.registryName.resourcePath
+                            log(print)
+                            flag = true
+                        }
+                        val mrl = ModelResourceLocation(ResourceLocation(modName, variant).toString(), "inventory")
+                        log("$namePad | Special model for variant $index - $variant applied")
+                        e.modelRegistry.putObject(mrl, model)
+                        customModels.put(Pair.of<RegistryDelegate<Item>, Int>(item.delegate, index), mrl)
+                        addToCachedLocations(variant, mrl)
+                    }
+                }
+            }
+        }
     }
 
     @SideOnly(Side.CLIENT)
@@ -224,20 +244,66 @@ object ModelHandler {
         if (!file.exists()) return true
 
         val json: JsonElement
-        try { json = JsonParser().parse(file.reader()) } catch (t: Throwable) { return true }
+        try {
+            json = JsonParser().parse(file.reader())
+        } catch (t: Throwable) {
+            return true
+        }
 
         var isForge = false
         if (json.isJsonObject && json.asJsonObject.has("forge_marker")) {
             val marker = json.asJsonObject["forge_marker"]
             if (marker.isJsonPrimitive && marker.asJsonPrimitive.isNumber)
-                isForge = marker.asJsonPrimitive.asNumber.toInt() != 0
+                isForge = marker.asInt != 0
         }
         if (isForge)
             log("$namePad | Assuming forge override for ${entry.getRegistryName().resourcePath} item model")
         return !isForge
     }
 
+    @SideOnly(Side.CLIENT)
+    fun generateItemJson(holder: IModItemProvider, variant: String) {
+        val path = JsonGenerationUtils.getPathForItemModel(holder.providedItem, variant)
+        val file = File(path)
+        file.parentFile.mkdirs()
+        if (file.createNewFile()) {
+            val obj = JsonGenerationUtils.generateBaseItemModel(holder.providedItem, variant)
+            file.writeText(obj.serialize())
+            log("$namePad | Creating file for variant of ${holder.providedItem.registryName.resourcePath}")
+            generatedFiles.add(path)
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
     fun shouldGenerateAnyJson() = debug && LibLibConfig.generateJson && modName in DevOwnershipTest.OWNED
+
+    @SideOnly(Side.CLIENT)
+    fun generateBlockJson(holder: IModBlockProvider, mapper: IStateMapper?) {
+        val files = JsonGenerationUtils.generateBaseBlockStates(holder.providedBlock, mapper)
+        var flag = false
+        files.forEach {
+            val stateFile = File(it.key)
+            stateFile.parentFile.mkdirs()
+            if (stateFile.createNewFile()) {
+                val obj = it.value
+                stateFile.writeText(obj.serialize())
+                log("$namePad | Creating a file for blockstate of ${holder.providedBlock.registryName.resourcePath}")
+                generatedFiles.add(it.key)
+                flag = true
+            }
+        }
+        if (flag) {
+            val modelPath = JsonGenerationUtils.getPathForBlockModel(holder.providedBlock)
+            val modelFile = File(modelPath)
+            modelFile.parentFile.mkdirs()
+            if (modelFile.createNewFile()) {
+                val blockObj = JsonGenerationUtils.generateBaseBlockModel(holder.providedBlock)
+                modelFile.writeText(blockObj.serialize())
+                log("$namePad | Creating file for block ${holder.providedBlock.registryName.resourcePath}")
+                generatedFiles.add(modelPath)
+            }
+        }
+    }
 
     @JvmStatic
     fun getKey(item: Item, meta: Int): String {

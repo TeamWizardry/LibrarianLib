@@ -2,15 +2,19 @@
 
 package com.teamwizardry.librarianlib.common.util
 
+import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import io.netty.buffer.ByteBuf
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.*
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.TextFormatting
+import net.minecraftforge.common.capabilities.Capability
+import net.minecraftforge.common.capabilities.ICapabilityProvider
 import net.minecraftforge.fml.common.network.ByteBufUtils
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
@@ -20,12 +24,20 @@ import java.util.*
  * Created by TheCodeWarrior
  */
 
-fun Int.abs() = if(this < 0) -this else this
+fun Int.abs() = if (this < 0) -this else this
 
 operator fun TextFormatting.plus(str: String) = "$this$str"
 
 operator fun String.plus(form: TextFormatting) = "$this$form"
 operator fun TextFormatting.plus(other: TextFormatting) = "$this$other"
+
+fun String.localize(vararg parameters: Any): String {
+    return LibrarianLib.PROXY.translate(this, *parameters)
+}
+
+fun String.canLocalize(): Boolean {
+    return LibrarianLib.PROXY.canTranslate(this)
+}
 
 // Vec3d ===============================================================================================================
 
@@ -178,12 +190,12 @@ fun ByteBuf.writeBooleanArray(value: BooleanArray) {
     val len = value.size
     this.writeVarInt(len)
     val bitset = BitSet()
-    for(i in 0..len-1) {
+    for (i in 0..len - 1) {
         bitset.set(i, value[i])
     }
     val setArray = bitset.toByteArray()
-    val writeArray = ByteArray(Math.ceil(len/8.0).toInt()) {
-        if(it < setArray.size)
+    val writeArray = ByteArray(Math.ceil(len / 8.0).toInt()) {
+        if (it < setArray.size)
             setArray[it]
         else
             0
@@ -193,7 +205,7 @@ fun ByteBuf.writeBooleanArray(value: BooleanArray) {
 
 fun ByteBuf.readBooleanArray(tryReadInto: BooleanArray? = null): BooleanArray {
     val len = this.readVarInt()
-    val bytes = ByteArray(Math.ceil(len/8.0).toInt())
+    val bytes = ByteArray(Math.ceil(len / 8.0).toInt())
     this.readBytes(bytes)
 
     val bitset = BitSet.valueOf(bytes)
@@ -217,16 +229,27 @@ fun ByteBuf.hasNullSignature(): Boolean = readBoolean()
 // NBTTagList ==========================================================================================================
 
 val NBTTagList.indices: IntRange
-    get() = 0..this.tagCount()-1
+    get() = 0..this.tagCount() - 1
+
+operator fun NBTTagList.iterator(): Iterator<NBTBase> {
+    return object : Iterator<NBTBase> {
+        var i = 0
+        val max = this@iterator.tagCount() - 1
+        override fun hasNext() = i < max
+        override fun next() = this@iterator[i++]
+    }
+}
 
 fun <T : NBTBase> NBTTagList.forEach(run: (T) -> Unit) {
-    for(i in this.indices) {
+    for (i in this.indices) {
+        @Suppress("UNCHECKED_CAST")
         run(this.get(i) as T)
     }
 }
 
 fun <T : NBTBase> NBTTagList.forEachIndexed(run: (Int, T) -> Unit) {
-    for(i in this.indices) {
+    for (i in this.indices) {
+        @Suppress("UNCHECKED_CAST")
         run(i, this.get(i) as T)
     }
 }
@@ -255,13 +278,34 @@ fun <T : NBTBase> NBTBase.safeCast(clazz: Class<T>): T {
             ) as T
 }
 
-// Player
+// NBTTagCompound ======================================================================================================
 
-fun EntityPlayer.sendMessage(str: String) {
-    this.addChatComponentMessage(TextComponentString(str))
+operator fun NBTTagCompound.iterator(): Iterator<Pair<String, NBTBase>> {
+    return object : Iterator<Pair<String, NBTBase>> {
+        val keys = this@iterator.keySet.iterator()
+        override fun hasNext() = keys.hasNext()
+        override fun next(): Pair<String, NBTBase> {
+            val next = keys.next()
+            return next to this@iterator[next]
+        }
+    }
 }
 
-// String
+operator fun NBTTagCompound.get(key: String): NBTBase = this.getTag(key)
 
-operator fun Int.times(n: CharSequence) = n.repeat(this)
+// Player ==============================================================================================================
+
+fun EntityPlayer.sendMessage(str: String) {
+    this.sendStatusMessage(TextComponentString(str))
+}
+
+// String ==============================================================================================================
+
 operator fun CharSequence.times(n: Int) = this.repeat(n)
+operator fun Int.times(n: CharSequence) = n.repeat(this)
+
+fun <T, R> ICapabilityProvider.ifCap(capability: Capability<T>, facing: EnumFacing?, callback: (T) -> R): R? {
+    if(this.hasCapability(capability, facing))
+        return callback(this.getCapability(capability, facing)!!)
+    return null
+}

@@ -19,7 +19,10 @@ import net.minecraftforge.common.property.IExtendedBlockState
  * Created by TheCodeWarrior
  */
 class BlockIntSaveTest : BlockTestingBase(Material.ROCK, "intSaveTest") {
-    init { TileIntSaveTest }
+    init {
+        TileIntSaveTest
+    }
+
     override fun hasTileEntity(state: IBlockState?): Boolean {
         return true
     }
@@ -52,12 +55,12 @@ class BlockIntSaveTest : BlockTestingBase(Material.ROCK, "intSaveTest") {
         val tile: TileIntSaveTest = worldIn.getTileEntity(pos) as TileIntSaveTest
 
 
-        if(player.isSneaking && side == EnumFacing.UP) {
+        if (player.isSneaking && side == EnumFacing.UP) {
             tile.arrayIndex++
         }
 
-        tile.array[tile.arrayIndex] += if(player.isSneaking) -1 else 1
-        tile.sides[side] += if(player.isSneaking) -1 else 1
+        tile.array[tile.arrayIndex] += if (player.isSneaking) -1 else 1
+        tile.sides[side] += if (player.isSneaking) -1 else 1
 
         return true
     }

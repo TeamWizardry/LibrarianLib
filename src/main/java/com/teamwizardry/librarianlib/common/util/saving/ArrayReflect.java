@@ -18,7 +18,6 @@ public class ArrayReflect {
      * double    |    #
      */
 	
-	
 	private static RuntimeException badArray(Object array) {
 		if (array == null)
 			return new NullPointerException("Array argument is null");

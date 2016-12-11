@@ -1,9 +1,13 @@
 package com.teamwizardry.librarianlib.client.gui
 
 import com.teamwizardry.librarianlib.client.gui.components.ComponentVoid
-import com.teamwizardry.librarianlib.common.util.math.Vec2d
+import com.teamwizardry.librarianlib.common.util.vec
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.client.config.GuiUtils
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import java.io.IOException
@@ -27,13 +31,13 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         top = height / 2 - guiHeight / 2
 
         if (mainComponents.pos.xi != left || mainComponents.pos.yi != top)
-            mainComponents.pos = Vec2d(left.toDouble(), top.toDouble())
-        fullscreenComponents.size = Vec2d(width.toDouble(), height.toDouble())
+            mainComponents.pos = vec(left, top)
+        fullscreenComponents.size = vec(width, height)
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         super.drawScreen(mouseX, mouseY, partialTicks)
-        val relPos = Vec2d(mouseX.toDouble(), mouseY.toDouble())
+        val relPos = vec(mouseX, mouseY)
         fullscreenComponents.calculateMouseOver(relPos)
         fullscreenComponents.draw(relPos, partialTicks)
 
@@ -47,17 +51,17 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
     @Throws(IOException::class)
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         super.mouseClicked(mouseX, mouseY, mouseButton)
-        fullscreenComponents.mouseDown(Vec2d(mouseX.toDouble(), mouseY.toDouble()), EnumMouseButton.getFromCode(mouseButton))
+        fullscreenComponents.mouseDown(vec(mouseX, mouseY), EnumMouseButton.getFromCode(mouseButton))
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         super.mouseReleased(mouseX, mouseY, state)
-        fullscreenComponents.mouseUp(Vec2d(mouseX.toDouble(), mouseY.toDouble()), EnumMouseButton.getFromCode(state))
+        fullscreenComponents.mouseUp(vec(mouseX, mouseY), EnumMouseButton.getFromCode(state))
     }
 
     override fun mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
         super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)
-        fullscreenComponents.mouseDrag(Vec2d(mouseX.toDouble(), mouseY.toDouble()), EnumMouseButton.getFromCode(clickedMouseButton))
+        fullscreenComponents.mouseDrag(vec(mouseX, mouseY), EnumMouseButton.getFromCode(clickedMouseButton))
     }
 
     @Throws(IOException::class)
@@ -78,7 +82,25 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         val wheelAmount = Mouse.getEventDWheel()
 
         if (wheelAmount != 0) {
-            fullscreenComponents.mouseWheel(Vec2d(mouseX.toDouble(), mouseY.toDouble()), GuiComponent.MouseWheelDirection.fromSign(wheelAmount))
+            fullscreenComponents.mouseWheel(vec(mouseX, mouseY), GuiComponent.MouseWheelDirection.fromSign(wheelAmount))
+        }
+    }
+
+    fun tick() {
+        fullscreenComponents.tick()
+    }
+
+    companion object {
+        init {
+            MinecraftForge.EVENT_BUS.register(this)
+        }
+
+        @SubscribeEvent
+        fun tick(e: TickEvent.ClientTickEvent) {
+            val gui = Minecraft.getMinecraft().currentScreen
+            if(gui is GuiBase) {
+                gui.tick()
+            }
         }
     }
 }

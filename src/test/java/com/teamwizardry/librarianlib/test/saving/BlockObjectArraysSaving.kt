@@ -27,11 +27,11 @@ import java.util.concurrent.ThreadLocalRandom
 /**
  * Created by TheCodeWarrior
  */
-class BlockObjectArraysSaving: BlockMod("saving_objectArrays", Material.CACTUS), ITileEntityProvider {
+class BlockObjectArraysSaving : BlockMod("saving_objectArrays", Material.CACTUS), ITileEntityProvider {
     override fun onBlockActivated(worldIn: World, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer, hand: EnumHand?, heldItem: ItemStack?, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         val te = worldIn.getTileEntity(pos!!)!! as TETest
         if (!worldIn.isRemote) {
-            if(playerIn.isSneaking) {
+            if (playerIn.isSneaking) {
                 te.index = (te.index + 1) % 3
             } else {
                 te.color[te.index] = kolors[ThreadLocalRandom.current().nextInt(kolors.size)]
@@ -50,7 +50,7 @@ class BlockObjectArraysSaving: BlockMod("saving_objectArrays", Material.CACTUS),
             playerIn.sendMessage("Color: " + Arrays.toString(te.color))
             playerIn.sendMessage("Tag: " + Arrays.toString(te.tag))
             playerIn.sendMessage("Stack: " + Arrays.toString(te.stack))
-            playerIn.sendMessage("Handler: " + Arrays.toString(te.handler.map {it?.slots}.toTypedArray()))
+            playerIn.sendMessage("Handler: " + Arrays.toString(te.handler.map { it?.slots }.toTypedArray()))
             playerIn.sendMessage("Vec3d: " + Arrays.toString(te.vec3d))
             playerIn.sendMessage("Vec3i: " + Arrays.toString(te.vec3i))
             playerIn.sendMessage("Vec2d: " + Arrays.toString(te.vec2d))
@@ -62,6 +62,7 @@ class BlockObjectArraysSaving: BlockMod("saving_objectArrays", Material.CACTUS),
     override fun createNewTileEntity(worldIn: World?, meta: Int): TileEntity? {
         return TETest()
     }
+
     @TileRegister("saving_objectArrays")
     class TETest : TileMod() {
         @Save var index: Int = 0

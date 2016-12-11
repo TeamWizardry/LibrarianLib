@@ -52,10 +52,10 @@ object BlockRenderUtils {
     @JvmStatic
     private fun putRGBA_F4(buf: VertexBuffer, red: Float, green: Float, blue: Float, alpha: Float, relIndex: Int) {
         val index = buf.getColorIndex(relIndex)
-        val r = MathHelper.clamp_int((red * 255.0f).toInt(), 0, 255)
-        val g = MathHelper.clamp_int((green * 255.0f).toInt(), 0, 255)
-        val b = MathHelper.clamp_int((blue * 255.0f).toInt(), 0, 255)
-        val a = MathHelper.clamp_int((alpha * 255.0f).toInt(), 0, 255)
+        val r = MathHelper.clamp((red * 255.0f).toInt(), 0, 255)
+        val g = MathHelper.clamp((green * 255.0f).toInt(), 0, 255)
+        val b = MathHelper.clamp((blue * 255.0f).toInt(), 0, 255)
+        val a = MathHelper.clamp((alpha * 255.0f).toInt(), 0, 255)
         buf.putColorRGBA(index, r, g, b, a)
     }
 

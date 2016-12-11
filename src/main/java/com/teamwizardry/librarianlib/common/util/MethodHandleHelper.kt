@@ -13,6 +13,8 @@ import java.lang.reflect.Method
  */
 object MethodHandleHelper {
 
+    //region base
+
     /**
      * Reflects a method from a class, and provides a MethodHandle for it.
      * Methodhandles MUST be invoked from java code, due to the way [@PolymorphicSignature] works.
@@ -33,6 +35,10 @@ object MethodHandleHelper {
         return if (getter) publicLookup().unreflectGetter(f) else publicLookup().unreflectSetter(f)
     }
 
+    //endregion
+
+    //region getter
+
     /**
      * Reflects a getter from a class, and provides a wrapper for it.
      * No casts are required to use this, although they are recommended.
@@ -52,6 +58,7 @@ object MethodHandleHelper {
         val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(1)))
         return { wrapper(it) }
     }
+
     @JvmStatic fun <T> wrapperForGetter(field: Field): (T) -> Any? = wrapperForGetter(publicLookup().unreflectGetter(field))
 
     /**
@@ -73,7 +80,12 @@ object MethodHandleHelper {
         val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(0)))
         return { wrapper() }
     }
+
     @JvmStatic fun wrapperForStaticGetter(field: Field): () -> Any? = wrapperForStaticGetter(publicLookup().unreflectGetter(field))
+
+    //endregion
+
+    //region setter
 
     /**
      * Reflects a setter from a class, and provides a wrapper for it.
@@ -92,6 +104,7 @@ object MethodHandleHelper {
         val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(2)))
         return { obj, value -> wrapper(obj, value) }
     }
+
     @JvmStatic fun <T> wrapperForSetter(field: Field): (T, Any?) -> Unit = wrapperForSetter(publicLookup().unreflectSetter(field))
 
     /**
@@ -111,8 +124,12 @@ object MethodHandleHelper {
         val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(1)))
         return { wrapper(it) }
     }
+
     @JvmStatic fun wrapperForStaticSetter(field: Field): (Any?) -> Unit = wrapperForStaticSetter(publicLookup().unreflectSetter(field))
 
+    //endregion
+
+    //region methods
 
     /**
      * Reflects a method from a class, and provides a wrapper for it.
@@ -141,6 +158,7 @@ object MethodHandleHelper {
 
         return { obj, args -> wrapper.invokeArity(arrayOf(obj, *args)) }
     }
+
     @JvmStatic fun <T> wrapperForMethod(method: Method): (T, Array<Any?>) -> Any? = wrapperForMethod(publicLookup().unreflect(method))
 
     /**
@@ -162,5 +180,58 @@ object MethodHandleHelper {
         val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(count)).asSpreader(Array<Any>::class.java, count))
         return { wrapper.invokeArity(it) }
     }
+
     @JvmStatic fun wrapperForStaticMethod(method: Method): (Array<Any?>) -> Any? = wrapperForStaticMethod(publicLookup().unreflect(method))
+
+    //endregion
+
+    //region delegates
+
+    @JvmStatic
+    fun <T, V> delegateForReadOnly(clazz: Class<T>, vararg fieldNames: String): ImmutableFieldDelegate<T, V> {
+        val getter = wrapperForGetter(clazz, *fieldNames)
+        return ImmutableFieldDelegate(getter)
+    }
+
+    @JvmStatic
+    fun <T, V> delegateForReadWrite(clazz: Class<T>, vararg fieldNames: String): MutableFieldDelegate<T, V> {
+        val getter = wrapperForGetter(clazz, *fieldNames)
+        val setter = wrapperForSetter(clazz, *fieldNames)
+        return MutableFieldDelegate(getter, setter)
+    }
+
+    @JvmStatic
+    fun <T, V> delegateForStaticReadOnly(clazz: Class<T>, vararg fieldNames: String): ImmutableStaticFieldDelegate<T, V> {
+        val getter = wrapperForStaticGetter(clazz, *fieldNames)
+        return ImmutableStaticFieldDelegate(getter)
+    }
+
+    @JvmStatic
+    fun <T, V> delegateForStaticReadWrite(clazz: Class<T>, vararg fieldNames: String): MutableStaticFieldDelegate<T, V> {
+        val getter = wrapperForStaticGetter(clazz, *fieldNames)
+        val setter = wrapperForStaticSetter(clazz, *fieldNames)
+        return MutableStaticFieldDelegate(getter, setter)
+    }
+
+    //endregion
 }
+
+//region extensions
+
+@Suppress("UNCHECKED_CAST") fun <T, V> Class<T>.mhGetter(vararg names: String): (T) -> V = MethodHandleHelper.wrapperForGetter(this, *names) as (T) -> V
+@Suppress("UNCHECKED_CAST") fun <T, V> Class<T>.mhSetter(vararg names: String): (T, V) -> Unit = MethodHandleHelper.wrapperForSetter(this, *names)
+
+@Suppress("UNCHECKED_CAST") fun <V> Class<*>.mhStaticGetter(vararg names: String): () -> V = MethodHandleHelper.wrapperForStaticGetter(this, *names) as () -> V
+@Suppress("UNCHECKED_CAST") fun <V> Class<*>.mhStaticSetter(vararg names: String): (V) -> Unit = MethodHandleHelper.wrapperForStaticSetter(this, *names)
+
+fun <T, V> Class<T>.mhValDelegate(vararg names: String) = MethodHandleHelper.delegateForReadOnly<T, V>(this, *names)
+fun <T, V> Class<T>.mhVarDelegate(vararg names: String) = MethodHandleHelper.delegateForReadWrite<T, V>(this, *names)
+
+fun <T, V> Class<T>.mhStaticValDelegate(vararg names: String) = MethodHandleHelper.delegateForStaticReadOnly<T, V>(this, *names)
+fun <T, V> Class<T>.mhStaticVarDelegate(vararg names: String) = MethodHandleHelper.delegateForStaticReadWrite<T, V>(this, *names)
+
+fun <T> Class<T>.mhMethod(names: Array<String>, vararg params: Class<*>) = MethodHandleHelper.wrapperForMethod(this, names, *params)
+fun <T> Class<T>.mhStaticMethod(names: Array<String>, vararg params: Class<*>) = MethodHandleHelper.wrapperForStaticMethod(this, names, *params)
+
+
+//endregion

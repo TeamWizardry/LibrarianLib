@@ -1,11 +1,12 @@
 package com.teamwizardry.librarianlib.test.testcore
 
+import com.teamwizardry.librarianlib.common.base.ModCreativeTab
 import com.teamwizardry.librarianlib.common.core.LoggerBase
-import com.teamwizardry.librarianlib.common.util.autoregister.AutoRegisterHandler
+import com.teamwizardry.librarianlib.test.fx.FXEntryPoint
+import com.teamwizardry.librarianlib.test.gui.GuiEntryPoint
 import com.teamwizardry.librarianlib.test.saving.SavingEntryPoint
-import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.init.Blocks
-import net.minecraft.item.Item
+import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.SidedProxy
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
@@ -20,9 +21,10 @@ class TestMod {
 
     @Mod.EventHandler
     fun preInit(e: FMLPreInitializationEvent) {
-        AutoRegisterHandler.registerPrefix("com.teamwizardry.librarianlib.test.", TestMod.MODID)
         entrypoints = arrayOf(
-                SavingEntryPoint
+                SavingEntryPoint,
+                FXEntryPoint,
+                GuiEntryPoint
         )
         PROXY.pre(e)
         entrypoints.forEach {
@@ -61,8 +63,13 @@ class TestMod {
 
         lateinit var entrypoints: Array<TestEntryPoint>
 
-        val tab = object : CreativeTabs("LibLibTesting") {
-            override fun getTabIconItem() = Item.getItemFromBlock(Blocks.BOOKSHELF)
+        object Tab : ModCreativeTab(MODID) {
+            init {
+                registerDefaultTab()
+            }
+
+            override val iconStack: ItemStack
+                get() = ItemStack(Blocks.BOOKSHELF)
         }
     }
 

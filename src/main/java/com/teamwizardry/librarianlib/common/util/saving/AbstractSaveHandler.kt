@@ -9,17 +9,22 @@ import net.minecraft.nbt.NBTTagCompound
  * Created by TheCodeWarrior
  */
 object AbstractSaveHandler {
-    fun writeAutoNBT(instance: Any, cmp: NBTTagCompound) {
+    @JvmStatic
+    @JvmOverloads
+    fun writeAutoNBT(instance: Any, cmp: NBTTagCompound, sync: Boolean = false) {
         SavingFieldCache.getClassFields(instance.javaClass).forEach {
-            val handler = NBTSerializationHandlers.getWriterUnchecked(it.value.type)
-            if (handler != null) {
-                val value = it.value.getter(instance)
-                if (value != null)
-                    cmp.setTag(it.key, handler(value))
+            if (!sync || it.value.syncToClient) {
+                val handler = NBTSerializationHandlers.getWriterUnchecked(it.value.type)
+                if (handler != null) {
+                    val value = it.value.getter(instance)
+                    if (value != null)
+                        cmp.setTag(it.key, handler(value))
+                }
             }
         }
     }
 
+    @JvmStatic
     fun readAutoNBT(instance: Any, cmp: NBTTagCompound) {
         SavingFieldCache.getClassFields(instance.javaClass).forEach {
             if (!cmp.hasKey(it.key))
@@ -32,22 +37,26 @@ object AbstractSaveHandler {
         }
     }
 
-    fun writeAutoBytes(instance: Any, buf: ByteBuf) {
+    @JvmStatic
+    @JvmOverloads
+    fun writeAutoBytes(instance: Any, buf: ByteBuf, sync: Boolean = false) {
         val cache = SavingFieldCache.getClassFields(instance.javaClass)
         val nullSig = BooleanArray(cache.size)
         var i = 0
         cache.forEach {
-            nullSig[i] = false
-            val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.type)
-            if (handler != null) {
-                val field = it.value.getter(instance)
-                if (field == null)
-                    nullSig[i] = true
-            }
-            i++
+            if (!sync || it.value.syncToClient) {
+                nullSig[i] = false
+                val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.type)
+                if (handler != null) {
+                    val field = it.value.getter(instance)
+                    if (field == null)
+                        nullSig[i] = true
+                }
+                i++
+            } else nullSig[i] = true
         }
         buf.writeBooleanArray(nullSig)
-        cache.forEach {
+        cache.filter { !sync || it.value.syncToClient }.forEach {
             val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.type)
             if (handler != null) {
                 val field = it.value.getter(instance)
@@ -59,6 +68,7 @@ object AbstractSaveHandler {
         }
     }
 
+    @JvmStatic
     fun readAutoBytes(instance: Any, buf: ByteBuf) {
         val cache = SavingFieldCache.getClassFields(instance.javaClass)
         val nullSig = buf.readBooleanArray()
@@ -75,6 +85,7 @@ object AbstractSaveHandler {
         }
     }
 
+    @JvmStatic
     fun cacheFields(clazz: Class<*>) {
         SavingFieldCache.getClassFields(clazz)
     }

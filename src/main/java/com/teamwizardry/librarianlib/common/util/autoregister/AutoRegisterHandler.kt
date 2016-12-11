@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry
  * Created by TheCodeWarrior
  */
 object AutoRegisterHandler {
-    private val prefixes = mutableListOf<Pair<String, String>>()
+    private val prefixes = mutableMapOf<String, String>()
 
     private fun generatePrefixes() {
         Loader.instance().activeModList
@@ -37,47 +37,65 @@ object AutoRegisterHandler {
 
     private fun getModid(clazz: Class<*>): String? {
         val name = clazz.canonicalName
-        return prefixes.find { name.startsWith(it.first) }?.second
+        prefixes.forEach {
+            if (name.startsWith(it.key))
+                return it.value
+        }
+        return null
     }
 
     fun handle(e: FMLPreInitializationEvent) {
+        generatePrefixes()
+
         val table = e.asmData
         val errors = mutableMapOf<String, MutableList<Class<*>>>()
 
         getAnnotatedBy(TileRegister::class.java, TileEntity::class.java, table).forEach {
-            val value = it.get<String>("value") ?: ""
-            val name = if(":" in value) ResourceLocation(value).resourcePath else value
-            val modid = if(":" in value) ResourceLocation(value).resourceDomain else getModid(it.clazz)
-            if (value == "" || modid == null && ":" !in name)
+            val name = it.get<String>("value")
+            val modId = getModid(it.clazz)
+            if (name == null) {
                 errors.getOrPut("TileRegister", { mutableListOf() }).add(it.clazz)
-            else {
-                AbstractSaveHandler.cacheFields(it.clazz)
-                GameRegistry.registerTileEntity(it.clazz, "$modid:$name")
+            } else {
+                var loc = ResourceLocation(name)
+                if (loc.resourceDomain == "minecraft" && modId == null)
+                    errors.getOrPut("TileRegister", { mutableListOf() }).add(it.clazz)
+                else {
+                    if (loc.resourceDomain == "minecraft")
+                        loc = ResourceLocation(modId, loc.resourcePath)
+                    AbstractSaveHandler.cacheFields(it.clazz)
+                    GameRegistry.registerTileEntity(it.clazz, loc.toString())
+                }
             }
 
         }
         if (Loader.isModLoaded("mcmultipart")) {
             getAnnotatedBy(PartRegister::class.java, IMultipart::class.java, table).forEach {
-                val value = it.get<String>("value") ?: ""
-                val name = if(":" in value) ResourceLocation(value).resourcePath else value
-                val modid = if(":" in value) ResourceLocation(value).resourceDomain else getModid(it.clazz)
-                if (value == "" || modid == null && ":" !in name)
+                val name = it.get<String>("value")
+                val modId = getModid(it.clazz)
+                if (name == null) {
                     errors.getOrPut("PartRegister", { mutableListOf() }).add(it.clazz)
-                else {
-                    AbstractSaveHandler.cacheFields(it.clazz)
-                    MultipartRegistry.registerPart(it.clazz, "$modid:$name")
+                } else {
+                    var loc = ResourceLocation(name)
+                    if (loc.resourceDomain == "minecraft" && modId == null)
+                        errors.getOrPut("PartRegister", { mutableListOf() }).add(it.clazz)
+                    else {
+                        if (loc.resourceDomain == "minecraft")
+                            loc = ResourceLocation(modId, loc.resourcePath)
+                        AbstractSaveHandler.cacheFields(it.clazz)
+                        MultipartRegistry.registerPart(it.clazz, loc.toString())
+                    }
                 }
             }
         }
 
-        if(errors.isNotEmpty()) {
-            var build = "AutoRegister Errors: No modid specified!"
+        if (errors.isNotEmpty()) {
+            var build = "AutoRegister Errors: No modId specified!"
             build += "\nDefined prefixes:"
 
-            val keyMax = prefixes.maxBy { it.second.length }?.second?.length ?: 0
-            for ((prefix, modid) in prefixes) {
-                val spaces = keyMax - modid.length
-                build += "\n${" " * spaces}$modid | $prefix"
+            val keyMax = prefixes.maxBy { it.value.length }?.value?.length ?: 0
+            for ((prefix, modId) in prefixes) {
+                val spaces = keyMax - modId.length
+                build += "\n${" " * spaces}$modId | $prefix"
             }
             build += "\nErrored registers:"
             for ((name, list) in errors) {
@@ -86,7 +104,7 @@ object AutoRegisterHandler {
                     build += "\n  | ${it.canonicalName}"
                 }
             }
-            throw RuntimeException("FATAL: AutoRegister failed - \n$build")
+            throw RuntimeException("FATAL: AutoRegister failed (This should be impossible!) - \n$build")
         }
     }
 
@@ -114,7 +132,7 @@ object AutoRegisterHandler {
     private data class AnnotatedClass<T>(val clazz: Class<T>, val properties: Map<String, Any>) {
         @Suppress("UNCHECKED_CAST")
         operator fun <T> get(property: String): T? {
-            return properties[property] as T?
+            return properties[property] as? T?
         }
     }
 }

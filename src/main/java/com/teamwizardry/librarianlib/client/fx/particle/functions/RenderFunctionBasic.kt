@@ -18,7 +18,7 @@ class RenderFunctionBasic(val texture: TextureAtlasSprite, flatLayer: Boolean) :
     /**
      * Get [tex] from `Minecraft.getMinecraft().getTextureMapBlocks()` automatically
      */
-    constructor(tex: ResourceLocation, flatLayer: Boolean) : this(Minecraft.getMinecraft().textureMapBlocks.getTextureExtry(tex.toString()), flatLayer)
+    constructor(tex: ResourceLocation, flatLayer: Boolean) : this(Minecraft.getMinecraft().textureMapBlocks.getTextureExtry(tex.toString()) ?: Minecraft.getMinecraft().textureMapBlocks.missingSprite, flatLayer)
 
     /**
      * `i` is from 0-1 along the animation
@@ -45,5 +45,4 @@ class RenderFunctionBasic(val texture: TextureAtlasSprite, flatLayer: Boolean) :
         worldRendererIn.pos(pos.xCoord + vertOffsets[2].xCoord, pos.yCoord + vertOffsets[2].yCoord, pos.zCoord + vertOffsets[2].zCoord).tex(uMin, vMin).color(color.red / 255f, color.green / 255f, color.blue / 255f, alpha * color.alpha / 255f).lightmap(skyLight, blockLight).endVertex()
         worldRendererIn.pos(pos.xCoord + vertOffsets[3].xCoord, pos.yCoord + vertOffsets[3].yCoord, pos.zCoord + vertOffsets[3].zCoord).tex(uMin, vMax).color(color.red / 255f, color.green / 255f, color.blue / 255f, alpha * color.alpha / 255f).lightmap(skyLight, blockLight).endVertex()
     }
-
 }
