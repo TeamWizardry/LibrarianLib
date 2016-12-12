@@ -181,7 +181,7 @@ object MethodHandleHelper {
         return { wrapper.invokeArity(it) }
     }
 
-    @JvmStatic fun <T> wrapperForStaticMethod(method: Method): (Array<Any?>) -> Any? = wrapperForStaticMethod(publicLookup().unreflect(method))
+    @JvmStatic fun wrapperForStaticMethod(method: Method): (Array<Any?>) -> Any? = wrapperForStaticMethod(publicLookup().unreflect(method))
 
     //endregion
 

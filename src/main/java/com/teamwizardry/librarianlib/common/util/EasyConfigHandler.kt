@@ -38,9 +38,10 @@ object EasyConfigHandler {
         findByClass(Double::class.javaPrimitiveType!!, asm)
         findByClass(Long::class.javaPrimitiveType!!, asm)
         if (LibrarianLib.DEV_ENVIRONMENT) {
+            val modid = LibrarianLib.MODID
             val pad = " " * LibrarianLib.MODID.length
 
-            LibrarianLog.info("${LibrarianLib.MODID} | All config properties found:")
+            LibrarianLog.info("$modid | All config properties found:")
             fieldMapStr.forEach { LibrarianLog.info("$pad | ${it.key}") }
             fieldMapInt.forEach { LibrarianLog.info("$pad | ${it.key}") }
             fieldMapDouble.forEach { LibrarianLog.info("$pad | ${it.key}") }

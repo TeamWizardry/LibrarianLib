@@ -1,10 +1,6 @@
 package com.teamwizardry.librarianlib.common.network
 
-import com.teamwizardry.librarianlib.common.util.hasNullSignature
-import com.teamwizardry.librarianlib.common.util.saving.ByteBufSerializationHandlers
-import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
-import com.teamwizardry.librarianlib.common.util.writeNonnullSignature
-import com.teamwizardry.librarianlib.common.util.writeNullSignature
+import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
 import io.netty.buffer.ByteBuf
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext
@@ -42,33 +38,13 @@ abstract class PacketBase : IMessage {
 
     @Suppress("UNUSED_VARIABLE")
     fun writeAutoBytes(buf: ByteBuf) {
-        SavingFieldCache.getClassFields(javaClass).forEach {
-            val (clazz, getter, setter) = it.value
-            val handler = ByteBufSerializationHandlers.getWriterUnchecked(clazz)
-            if (handler != null) {
-                val field = getter(this)
-                if (field == null)
-                    buf.writeNullSignature()
-                else {
-                    buf.writeNonnullSignature()
-                    handler(buf, field)
-                }
-            } else
-                buf.writeNullSignature()
-        }
+        AbstractSaveHandler.writeAutoBytes(this, buf)
     }
 
     @Suppress("UNUSED_VARIABLE")
     fun readAutoBytes(buf: ByteBuf) {
-        SavingFieldCache.getClassFields(javaClass).forEach {
-            val (clazz, getter, setter) = it.value
-            if (buf.hasNullSignature())
-                setter(this, null)
-            else {
-                val handler = ByteBufSerializationHandlers.getReaderUnchecked(clazz)
-                if (handler != null) setter(this, handler(buf))
-            }
-        }
+        AbstractSaveHandler.readAutoBytes(this, buf)
+
     }
 
     override fun fromBytes(buf: ByteBuf) {

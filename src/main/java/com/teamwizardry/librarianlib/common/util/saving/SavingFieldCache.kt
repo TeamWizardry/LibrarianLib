@@ -2,10 +2,12 @@ package com.teamwizardry.librarianlib.common.util.saving
 
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
+import com.teamwizardry.librarianlib.common.util.times
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.*
+import javax.annotation.Nonnull
 
 /**
  * @author WireSegal
@@ -39,10 +41,12 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
         }.forEach {
             val (name, field) = it
             field.isAccessible = true
-            map.put(name, FieldCache(field.type,
+            map.put(name, FieldCache(FieldType.create(field),
                     MethodHandleHelper.wrapperForGetter<Any>(field),
                     MethodHandleHelper.wrapperForSetter<Any>(field),
-                    !field.isAnnotationPresent(NoSync::class.java), field.name))
+                    field.isAnnotationPresent(Nonnull::class.java),
+                    !field.isAnnotationPresent(NoSync::class.java),
+                    field.name))
         }
     }
 
@@ -91,9 +95,10 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
             val wrapperForGetter = MethodHandleHelper.wrapperForMethod<Any>(getter)
             val wrapperForSetter = MethodHandleHelper.wrapperForMethod<Any>(setter)
 
-            map.put(name, FieldCache(type,
+            map.put(name, FieldCache(FieldType.create(getter),
                     { obj -> wrapperForGetter(obj, arrayOf()) },
                     { obj, inp -> wrapperForSetter(obj, arrayOf(inp)) },
+                    getter.isAnnotationPresent(Nonnull::class.java) || setter.parameterAnnotations[0].any { it is Nonnull },
                     !getter.isAnnotationPresent(NoSync::class.java) || !setter.isAnnotationPresent(NoSync::class.java)))
         }
     }
@@ -112,7 +117,7 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
             name += "X"
         if (name in alreadyDone) {
             val msg = "Name $name already in use for class ${clazz.name}! Adding dashes to the end to mitigate this."
-            val pad = Array(msg.length) { "*" }.joinToString("")
+            val pad = "*" * msg.length
             LibrarianLog.warn(pad)
             LibrarianLog.warn(msg)
             LibrarianLog.warn(pad)
@@ -144,4 +149,16 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
     }
 }
 
-data class FieldCache(val clazz: Class<*>, val getter: (Any) -> Any?, val setter: (Any, Any?) -> Unit, val syncToClient: Boolean, var name: String = "")
+data class FieldCache(val type: FieldType, val getter: (Any) -> Any?, private val setter_: (Any, Any?) -> Unit, val nonnull: Boolean, val syncToClient: Boolean, var name: String = "") {
+    val setter = if(nonnull) {
+        { instance: Any, value: Any? ->
+            if(value == null) {
+                setter_(instance, DefaultValues.getDefaultValue(type))
+            } else {
+                setter_(instance, value)
+            }
+        }
+    } else {
+        setter_
+    }
+}

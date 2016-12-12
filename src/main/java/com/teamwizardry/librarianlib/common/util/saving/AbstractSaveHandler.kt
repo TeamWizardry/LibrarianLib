@@ -14,7 +14,7 @@ object AbstractSaveHandler {
     fun writeAutoNBT(instance: Any, cmp: NBTTagCompound, sync: Boolean = false) {
         SavingFieldCache.getClassFields(instance.javaClass).forEach {
             if (!sync || it.value.syncToClient) {
-                val handler = NBTSerializationHandlers.getWriterUnchecked(it.value.clazz)
+                val handler = NBTSerializationHandlers.getWriterUnchecked(it.value.type)
                 if (handler != null) {
                     val value = it.value.getter(instance)
                     if (value != null)
@@ -30,9 +30,9 @@ object AbstractSaveHandler {
             if (!cmp.hasKey(it.key))
                 it.value.setter(instance, null)
             else {
-                val handler = NBTSerializationHandlers.getReaderUnchecked(it.value.clazz)
+                val handler = NBTSerializationHandlers.getReaderUnchecked(it.value.type)
                 if (handler != null)
-                    it.value.setter(instance, handler(cmp.getTag(it.key)))
+                    it.value.setter(instance, handler(cmp.getTag(it.key), it.value.getter(instance)))
             }
         }
     }
@@ -46,7 +46,7 @@ object AbstractSaveHandler {
         cache.forEach {
             if (!sync || it.value.syncToClient) {
                 nullSig[i] = false
-                val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.clazz)
+                val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.type)
                 if (handler != null) {
                     val field = it.value.getter(instance)
                     if (field == null)
@@ -57,7 +57,7 @@ object AbstractSaveHandler {
         }
         buf.writeBooleanArray(nullSig)
         cache.filter { !sync || it.value.syncToClient }.forEach {
-            val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.clazz)
+            val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.type)
             if (handler != null) {
                 val field = it.value.getter(instance)
                 if (field == null)
@@ -77,9 +77,9 @@ object AbstractSaveHandler {
             if (nullSig[i])
                 it.value.setter(instance, null)
             else {
-                val handler = ByteBufSerializationHandlers.getReaderUnchecked(it.value.clazz)
+                val handler = ByteBufSerializationHandlers.getReaderUnchecked(it.value.type)
                 if (handler != null)
-                    it.value.setter(instance, handler(buf))
+                    it.value.setter(instance, handler(buf, it.value.getter(instance)))
             }
             i++
         }
