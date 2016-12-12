@@ -13,10 +13,13 @@ import javax.annotation.Nonnull
  * @author WireSegal
  * Created at 1:43 PM on 10/14/2016.
  */
-object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
+object SavingFieldCache {
+
+    val atSaveMap = LinkedHashMap<Class<*>, Map<String, FieldCache>>()
+
     @JvmStatic
     fun getClassFields(clazz: Class<*>): Map<String, FieldCache> {
-        val existing = this[clazz]
+        val existing = atSaveMap[clazz]
         if (existing != null) return existing
 
         val map = linkedMapOf<String, FieldCache>()
@@ -24,7 +27,7 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
         buildClassGetSetters(clazz, map)
         alreadyDone.clear()
 
-        put(clazz, map)
+        atSaveMap.put(clazz, map)
 
         return map
     }
@@ -32,8 +35,7 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
     fun buildClassFields(clazz: Class<*>, map: MutableMap<String, FieldCache>) {
         val fields = clazz.declaredFields.filter {
             it.declaredAnnotations
-            val mods = it.modifiers
-            !Modifier.isStatic(mods) && !Modifier.isFinal(mods) && !Modifier.isTransient(mods) && it.isAnnotationPresent(Save::class.java)
+            !Modifier.isStatic(it.modifiers)
         }
 
         fields.map {
@@ -41,11 +43,18 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
         }.forEach {
             val (name, field) = it
             field.isAccessible = true
-            map.put(name, FieldCache(FieldType.create(field),
+
+            val mods = field.modifiers
+            val meta = FieldMetadata(FieldType.create(field), SavingFieldFlag.FIELD)
+            if(Modifier.isFinal(mods)) meta.addFlag(SavingFieldFlag.FINAL)
+            if(Modifier.isTransient(mods)) meta.addFlag(SavingFieldFlag.TRANSIENT)
+            if(field.isAnnotationPresent(Save::class.java)) meta.addFlag(SavingFieldFlag.ANNOTATED)
+            if(field.isAnnotationPresent(Nonnull::class.java)) meta.addFlag(SavingFieldFlag.NONNULL)
+            if(field.isAnnotationPresent(NoSync::class.java)) meta.addFlag(SavingFieldFlag.NOSYNC)
+
+            map.put(name, FieldCache(meta,
                     MethodHandleHelper.wrapperForGetter<Any>(field),
                     MethodHandleHelper.wrapperForSetter<Any>(field),
-                    field.isAnnotationPresent(Nonnull::class.java),
-                    !field.isAnnotationPresent(NoSync::class.java),
                     field.name))
         }
     }
@@ -95,11 +104,16 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
             val wrapperForGetter = MethodHandleHelper.wrapperForMethod<Any>(getter)
             val wrapperForSetter = MethodHandleHelper.wrapperForMethod<Any>(setter)
 
-            map.put(name, FieldCache(FieldType.create(getter),
+            val meta = FieldMetadata(FieldType.create(getter), SavingFieldFlag.ANNOTATED, SavingFieldFlag.METHOD)
+
+            if(getter.isAnnotationPresent(Nonnull::class.java) && setter.parameterAnnotations[0].any { it is Nonnull })
+                meta.addFlag(SavingFieldFlag.NONNULL)
+            if(getter.isAnnotationPresent(NoSync::class.java) && setter.isAnnotationPresent(NoSync::class.java))
+                meta.addFlag(SavingFieldFlag.NOSYNC)
+
+            map.put(name, FieldCache(meta,
                     { obj -> wrapperForGetter(obj, arrayOf()) },
-                    { obj, inp -> wrapperForSetter(obj, arrayOf(inp)) },
-                    getter.isAnnotationPresent(Nonnull::class.java) || setter.parameterAnnotations[0].any { it is Nonnull },
-                    !getter.isAnnotationPresent(NoSync::class.java) || !setter.isAnnotationPresent(NoSync::class.java)))
+                    { obj, inp -> wrapperForSetter(obj, arrayOf(inp)) }))
         }
     }
 
@@ -107,11 +121,12 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
     private val ILLEGAL_NAMES = listOf("id", "x", "y", "z", "ForgeData", "ForgeCaps")
 
     private val nameMap = mutableMapOf<Field, String>()
+
     private fun getNameFromField(clazz: Class<*>, f: Field): String {
         val got = nameMap[f]
         if (got != null) return got
 
-        val string = f.getAnnotation(Save::class.java).saveName
+        val string = if(f.isAnnotationPresent(Save::class.java)) f.getAnnotation(Save::class.java).saveName else ""
         var name = if (string == "") f.name else string
         if (name in ILLEGAL_NAMES)
             name += "X"
@@ -149,11 +164,11 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
     }
 }
 
-data class FieldCache(val type: FieldType, val getter: (Any) -> Any?, private val setter_: (Any, Any?) -> Unit, val nonnull: Boolean, val syncToClient: Boolean, var name: String = "") {
-    val setter = if(nonnull) {
+data class FieldCache(val meta: FieldMetadata, val getter: (Any) -> Any?, private val setter_: (Any, Any?) -> Unit, var name: String = "") {
+    val setter = if(meta.hasFlag(SavingFieldFlag.NONNULL)) {
         { instance: Any, value: Any? ->
             if(value == null) {
-                setter_(instance, DefaultValues.getDefaultValue(type))
+                setter_(instance, DefaultValues.getDefaultValue(meta.type))
             } else {
                 setter_(instance, value)
             }
@@ -162,3 +177,23 @@ data class FieldCache(val type: FieldType, val getter: (Any) -> Any?, private va
         setter_
     }
 }
+
+data class FieldMetadata private constructor(val type: FieldType, private var flagsInternal: MutableSet<SavingFieldFlag>) {
+    constructor(type: FieldType, vararg flags: SavingFieldFlag) : this(type, EnumSet.noneOf(SavingFieldFlag::class.java).let { it.addAll(flags); it })
+
+    val flags: Set<SavingFieldFlag>
+        get() = flagsInternal
+
+    fun hasFlag(flag: SavingFieldFlag) = flags.contains(flag)
+    fun containsOnly(vararg allowed: SavingFieldFlag) = flags.containsAll(allowed.asList())
+    fun doesNotContain(vararg disallowed: SavingFieldFlag) = !disallowed.any { it in flags }
+
+    fun addFlag(flag: SavingFieldFlag) {
+        flagsInternal.add(flag)
+    }
+    fun removeFlag(flag: SavingFieldFlag) {
+        flagsInternal.remove(flag)
+    }
+}
+
+enum class SavingFieldFlag { FIELD, METHOD, ANNOTATED, NONNULL, NOSYNC, TRANSIENT, FINAL }

@@ -1,10 +1,7 @@
 package com.teamwizardry.librarianlib.common.util.saving
 
-import com.teamwizardry.librarianlib.common.util.NBTTypes
-import com.teamwizardry.librarianlib.common.util.forEach
-import com.teamwizardry.librarianlib.common.util.forEachIndexed
+import com.teamwizardry.librarianlib.common.util.*
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
-import com.teamwizardry.librarianlib.common.util.safeCast
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.*
 import net.minecraft.util.math.BlockPos
@@ -251,10 +248,61 @@ private object SpecialNBTSerializers {
     fun specials() {
         NBTSerializationHandlers.registerSpecialHandler { createArrayMapping(it) }
         NBTSerializationHandlers.registerSpecialHandler { createEnumMapping(it) }
+        NBTSerializationHandlers.registerSpecialHandler { createSavableMapping(it) }
     }
 
     fun generics() {
         NBTSerializationHandlers.registerGenericHandler { createHashMap(it) }
+    }
+
+    private fun createSavableMapping(type: FieldType): NBTSerializer? {
+        val v = type.clazz.annotations.find { it is Savable } as? Savable ?: return null
+
+        val fields = SavingFieldCache.getClassFields(type.clazz)
+        if(fields.isEmpty()) {
+
+        }
+
+        type.clazz.declaredConstructors.find {
+            if(it.parameterCount == 0)
+                return@find true
+
+
+
+            return@find false
+        }
+
+        val con = type.clazz.getDeclaredConstructor()
+        con.isAccessible = true // to allow for not exposing the zero-arg constructor
+
+        val constructor = MethodHandleHelper.wrapperForConstructor(con)
+
+        val serializer = if(v.mutable) {
+            NBTSerializer(reader@{ nbt, existing ->
+                val instance = existing ?: constructor(arrayOf())
+                AbstractSaveHandler.readAutoNBT(instance, nbt as NBTTagCompound)
+                instance
+            }, writer@{ obj ->
+                val tag = NBTTagCompound()
+                val sync = AbstractSaveHandler.isSyncing
+                AbstractSaveHandler.writeAutoNBT(obj, tag, sync)
+                AbstractSaveHandler.isSyncing = sync
+                tag
+            })
+        } else {
+            NBTSerializer(reader@{ nbt, existing ->
+                val instance = /* existing ?: */ constructor(arrayOf())
+                AbstractSaveHandler.readAutoNBT(instance, nbt as NBTTagCompound)
+                instance
+            }, writer@{ obj ->
+                val tag = NBTTagCompound()
+                val sync = AbstractSaveHandler.isSyncing
+                AbstractSaveHandler.writeAutoNBT(obj, tag, sync)
+                AbstractSaveHandler.isSyncing = sync
+                tag
+            })
+        }
+        return serializer
     }
 
     private fun createHashMap(type: FieldTypeGeneric): NBTSerializer? {

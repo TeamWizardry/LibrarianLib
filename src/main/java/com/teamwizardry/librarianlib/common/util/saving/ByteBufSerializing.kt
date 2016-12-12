@@ -282,12 +282,44 @@ private object SpecialByteBufSerializers {
     fun specials() {
         ByteBufSerializationHandlers.registerSpecialHandler { createArrayMapping(it) }
         ByteBufSerializationHandlers.registerSpecialHandler { createEnumMapping(it) }
+        ByteBufSerializationHandlers.registerSpecialHandler { createSavableMapping(it) }
     }
 
     fun generics() {
         ByteBufSerializationHandlers.registerGenericHandler { createHashMap(it) }
     }
 
+    private fun createSavableMapping(type: FieldType): BufferSerializer? {
+        val v = type.clazz.annotations.find { it is Savable } as? Savable ?: return null
+
+        val con = type.clazz.getDeclaredConstructor()
+        con.isAccessible = true // to allow for not exposing the zero-arg constructor
+
+        val constructor = MethodHandleHelper.wrapperForConstructor(con)
+
+        val serializer = if(v.mutable) {
+            BufferSerializer(reader@{ buf, existing ->
+                val instance = existing ?: constructor(arrayOf())
+                AbstractSaveHandler.readAutoBytes(instance, buf)
+                instance
+            }, writer@{ buf, obj ->
+                val sync = AbstractSaveHandler.isSyncing
+                AbstractSaveHandler.writeAutoBytes(obj, buf, sync)
+                AbstractSaveHandler.isSyncing = sync
+            })
+        } else {
+            BufferSerializer(reader@{ buf, existing ->
+                val instance = existing ?: constructor(arrayOf())
+                AbstractSaveHandler.readAutoBytes(instance, buf)
+                instance
+            }, writer@{ buf, obj ->
+                val sync = AbstractSaveHandler.isSyncing
+                AbstractSaveHandler.writeAutoBytes(obj, buf, sync)
+                AbstractSaveHandler.isSyncing = sync
+            })
+        }
+        return serializer
+    }
 
     private fun createEnumMapping(type: FieldType): BufferSerializer? {
         if (type !is FieldTypeClass || !type.clazz.isEnum)

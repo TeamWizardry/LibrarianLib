@@ -64,3 +64,7 @@ annotation class SaveMethodGetter(val saveName: String)
 @Target(FUNCTION, PROPERTY_GETTER, PROPERTY_SETTER)
 @MustBeDocumented
 annotation class SaveMethodSetter(val saveName: String)
+
+@Target(CLASS)
+@MustBeDocumented
+annotation class Savable(val mutable: Boolean = false)

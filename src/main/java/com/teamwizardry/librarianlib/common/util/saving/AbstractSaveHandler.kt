@@ -9,12 +9,15 @@ import net.minecraft.nbt.NBTTagCompound
  * Created by TheCodeWarrior
  */
 object AbstractSaveHandler {
+    var isSyncing: Boolean = false
+
     @JvmStatic
     @JvmOverloads
     fun writeAutoNBT(instance: Any, cmp: NBTTagCompound, sync: Boolean = false) {
+        isSyncing = sync
         SavingFieldCache.getClassFields(instance.javaClass).forEach {
-            if (!sync || it.value.syncToClient) {
-                val handler = NBTSerializationHandlers.getWriterUnchecked(it.value.type)
+            if (!(sync && it.value.meta.hasFlag(SavingFieldFlag.NOSYNC))) {
+                val handler = NBTSerializationHandlers.getWriterUnchecked(it.value.meta.type)
                 if (handler != null) {
                     val value = it.value.getter(instance)
                     if (value != null)
@@ -22,6 +25,7 @@ object AbstractSaveHandler {
                 }
             }
         }
+        isSyncing = false
     }
 
     @JvmStatic
@@ -30,7 +34,7 @@ object AbstractSaveHandler {
             if (!cmp.hasKey(it.key))
                 it.value.setter(instance, null)
             else {
-                val handler = NBTSerializationHandlers.getReaderUnchecked(it.value.type)
+                val handler = NBTSerializationHandlers.getReaderUnchecked(it.value.meta.type)
                 if (handler != null)
                     it.value.setter(instance, handler(cmp.getTag(it.key), it.value.getter(instance)))
             }
@@ -40,13 +44,14 @@ object AbstractSaveHandler {
     @JvmStatic
     @JvmOverloads
     fun writeAutoBytes(instance: Any, buf: ByteBuf, sync: Boolean = false) {
+        isSyncing = sync
         val cache = SavingFieldCache.getClassFields(instance.javaClass)
         val nullSig = BooleanArray(cache.size)
         var i = 0
         cache.forEach {
-            if (!sync || it.value.syncToClient) {
+            if (!(sync || it.value.meta.hasFlag(SavingFieldFlag.NOSYNC))) {
                 nullSig[i] = false
-                val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.type)
+                val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.meta.type)
                 if (handler != null) {
                     val field = it.value.getter(instance)
                     if (field == null)
@@ -56,8 +61,8 @@ object AbstractSaveHandler {
             } else nullSig[i] = true
         }
         buf.writeBooleanArray(nullSig)
-        cache.filter { !sync || it.value.syncToClient }.forEach {
-            val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.type)
+        cache.filter { !(sync || it.value.meta.hasFlag(SavingFieldFlag.NOSYNC)) }.forEach {
+            val handler = ByteBufSerializationHandlers.getWriterUnchecked(it.value.meta.type)
             if (handler != null) {
                 val field = it.value.getter(instance)
                 if (field == null)
@@ -66,6 +71,7 @@ object AbstractSaveHandler {
                 }
             }
         }
+        isSyncing = false
     }
 
     @JvmStatic
@@ -77,7 +83,7 @@ object AbstractSaveHandler {
             if (nullSig[i])
                 it.value.setter(instance, null)
             else {
-                val handler = ByteBufSerializationHandlers.getReaderUnchecked(it.value.type)
+                val handler = ByteBufSerializationHandlers.getReaderUnchecked(it.value.meta.type)
                 if (handler != null)
                     it.value.setter(instance, handler(buf, it.value.getter(instance)))
             }
