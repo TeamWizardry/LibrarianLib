@@ -1,10 +1,10 @@
 package com.teamwizardry.librarianlib.common.base.item
 
 import com.teamwizardry.librarianlib.common.base.IVariantHolder
-import net.minecraft.client.renderer.ItemMeshDefinition
 import net.minecraft.client.renderer.block.model.IBakedModel
-import net.minecraft.client.renderer.color.IItemColor
+import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.item.Item
+import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 
@@ -21,10 +21,8 @@ interface IModItemProvider : IVariantHolder {
     /**
      * Provides a mesh definition which can override the model loaded based on the MRL you pass back. Leave null to use default behavior.
      */
-    @SideOnly(Side.CLIENT)
-    fun getCustomMeshDefinition(): ItemMeshDefinition? {
-        return null
-    }
+    val meshDefinition: ((stack: ItemStack) -> ModelResourceLocation)?
+        get() = null
 }
 
 /**
@@ -34,8 +32,7 @@ interface IItemColorProvider : IVariantHolder {
     /**
      * Provides an item color for the provided item. Leave null to use default behavior.
      */
-    @SideOnly(Side.CLIENT)
-    fun getItemColor(): IItemColor?
+    val itemColorFunction: ((stack: ItemStack, tintIndex: Int) -> Int)?
 }
 
 /**

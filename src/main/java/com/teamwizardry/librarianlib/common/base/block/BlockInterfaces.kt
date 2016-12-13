@@ -5,13 +5,14 @@ import com.teamwizardry.librarianlib.common.base.ModCreativeTab
 import com.teamwizardry.librarianlib.common.base.item.IItemColorProvider
 import net.minecraft.block.Block
 import net.minecraft.block.properties.IProperty
-import net.minecraft.client.renderer.ItemMeshDefinition
+import net.minecraft.block.state.IBlockState
+import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.client.renderer.block.statemap.IStateMapper
 import net.minecraft.client.renderer.block.statemap.StateMap
-import net.minecraft.client.renderer.color.IBlockColor
-import net.minecraft.client.renderer.color.IItemColor
 import net.minecraft.item.EnumRarity
 import net.minecraft.item.ItemStack
+import net.minecraft.util.math.BlockPos
+import net.minecraft.world.IBlockAccess
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 
@@ -59,10 +60,8 @@ interface IModBlock : IModBlockProvider {
     /**
      * Provides a mesh definition which can override the model loaded based on the MRL you pass back. Leave null to use default behavior.
      */
-    @SideOnly(Side.CLIENT)
-    fun getCustomMeshDefinition(): ItemMeshDefinition? {
-        return null
-    }
+    val meshDefinition: ((stack: ItemStack) -> ModelResourceLocation)?
+        get() = null
 
     /**
      * The tab to register the block in. Leave null to not register.
@@ -81,12 +80,12 @@ interface IModBlock : IModBlockProvider {
  * An interface which defines a block provider (not necessarily with an item) that colorizes the block.
  */
 interface IBlockColorProvider : IItemColorProvider, IModBlockProvider {
+    override val itemColorFunction: ((ItemStack, Int) -> Int)?
+        get() = null
+
     /**
      * Provides a block color for the provided block. Leave null to use default behavior.
      */
-    @SideOnly(Side.CLIENT)
-    fun getBlockColor(): IBlockColor?
-
-    @SideOnly(Side.CLIENT)
-    override fun getItemColor(): IItemColor? = null
+    val blockColorFunction: ((state: IBlockState, world: IBlockAccess?, pos: BlockPos?, tintIndex: Int) -> Int)?
+        get() = null
 }

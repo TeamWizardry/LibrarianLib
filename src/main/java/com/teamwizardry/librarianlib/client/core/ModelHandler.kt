@@ -18,9 +18,12 @@ import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import com.teamwizardry.librarianlib.common.util.builders.serialize
 import com.teamwizardry.librarianlib.common.util.times
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.ItemMeshDefinition
 import net.minecraft.client.renderer.block.model.ModelBakery
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.client.renderer.block.statemap.IStateMapper
+import net.minecraft.client.renderer.color.IBlockColor
+import net.minecraft.client.renderer.color.IItemColor
 import net.minecraft.item.Item
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.ModelBakeEvent
@@ -119,18 +122,18 @@ object ModelHandler {
             for (holder in holders) {
 
                 if (holder is IItemColorProvider && holder is IModItemProvider) {
-                    val color = holder.getItemColor()
+                    val color = holder.itemColorFunction
                     if (color != null) {
                         log("$namePad | Registering item color for ${holder.providedItem.registryName.resourcePath}")
-                        itemColors.registerItemColorHandler(color, holder.providedItem)
+                        itemColors.registerItemColorHandler(IItemColor(color), holder.providedItem)
                     }
                 }
 
                 if (holder is IModBlockProvider && holder is IBlockColorProvider) {
-                    val color = holder.getBlockColor()
+                    val color = holder.blockColorFunction
                     if (color != null) {
                         log("$namePad | Registering block color for ${holder.providedBlock.registryName.resourcePath}")
-                        blockColors.registerBlockColorHandler(color, holder.providedBlock)
+                        blockColors.registerBlockColorHandler(IBlockColor(color), holder.providedBlock)
                     }
                 }
 
@@ -140,13 +143,18 @@ object ModelHandler {
 
     @SideOnly(Side.CLIENT)
     fun registerModels(holder: IVariantHolder) {
-        if (holder is IModItemProvider && holder.getCustomMeshDefinition() != null)
-            ModelLoader.setCustomMeshDefinition(holder.providedItem, holder.getCustomMeshDefinition())
-        else
-            registerModels(holder, holder.variants, false)
-
         if (holder is IExtraVariantHolder)
             registerModels(holder, holder.extraVariants, true)
+
+        if (holder is IModItemProvider) {
+            val meshDef = holder.meshDefinition
+            if (meshDef != null)
+                ModelLoader.setCustomMeshDefinition(holder.providedItem, ItemMeshDefinition(meshDef))
+            return
+        }
+
+        registerModels(holder, holder.variants, false)
+
     }
 
     @SideOnly(Side.CLIENT)

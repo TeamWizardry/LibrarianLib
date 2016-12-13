@@ -8,6 +8,8 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.lang.Boolean.FALSE
+import java.lang.Boolean.TRUE
 
 /**
  * Created by TheCodeWarrior
@@ -30,15 +32,13 @@ object UnlistedPropertyDebugViewer {
                 if (maybeExtended is IExtendedBlockState) {
 
                     for (entry in maybeExtended.unlistedNames.sortedBy { it.name }) {
-                        val value = maybeExtended.getValue(entry)
+                        val value: Any? = maybeExtended.getValue(entry)
 
-                        val s = if (value === java.lang.Boolean.TRUE) {
+                        val s = if (value === TRUE)
                             "${TextFormatting.GREEN}TRUE"
-                        } else if (value === java.lang.Boolean.FALSE) {
+                        else if (value === FALSE)
                             "${TextFormatting.RED}FALSE"
-                        } else {
-                            value?.toString() ?: "NULL"
-                        }
+                        else value.toString()
 
                         event.right.add("${TextFormatting.ITALIC}${entry.name}: $s")
                     }
