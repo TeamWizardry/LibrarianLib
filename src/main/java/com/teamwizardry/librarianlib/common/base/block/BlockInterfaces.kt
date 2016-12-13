@@ -33,11 +33,14 @@ interface IModBlockProvider : IVariantHolder {
     /**
      * Provides a statemapper for the block, if needed. By default uses ignored properties only. Leave null to use default behavior.
      */
-    @SideOnly(Side.CLIENT)
-    fun getStateMapper(): IStateMapper? {
-        val ignored = ignoredProperties
-        return if (ignored == null || ignored.isEmpty()) null else StateMap.Builder().ignore(*ignored).build()
-    }
+    val stateMapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?
+        get() {
+            val ignored = ignoredProperties
+            if (ignored == null || ignored.isEmpty()) return null else {
+                val mapper = StateMap.Builder().ignore(*ignored).build()
+                return { mapper.putStateModelLocations(it) }
+            }
+        }
 }
 
 /**
@@ -53,9 +56,7 @@ interface IModBlock : IModBlockProvider {
     /**
      * The rarity of the block, for the ItemModBlock.
      */
-    fun getBlockRarity(stack: ItemStack): EnumRarity {
-        return EnumRarity.COMMON
-    }
+    fun getBlockRarity(stack: ItemStack) = EnumRarity.COMMON
 
     /**
      * Provides a mesh definition which can override the model loaded based on the MRL you pass back. Leave null to use default behavior.

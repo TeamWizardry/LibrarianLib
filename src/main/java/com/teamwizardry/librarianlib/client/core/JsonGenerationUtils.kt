@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.client.core
 import com.google.gson.JsonElement
 import com.teamwizardry.librarianlib.common.util.builders.json
 import net.minecraft.block.Block
+import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.client.renderer.block.statemap.DefaultStateMapper
@@ -35,8 +36,8 @@ object JsonGenerationUtils {
         return getAssetPath(registryName.resourceDomain) + +"/blockstates/${registryName.resourcePath}.json"
     }
 
-    fun getPathsForBlockstate(block: Block, stateMapper: IStateMapper? = null): Array<String> {
-        val mapped = (stateMapper ?: DefaultStateMapper()).putStateModelLocations(block)
+    fun getPathsForBlockstate(block: Block, stateMapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)? = null): Array<String> {
+        val mapped = (stateMapper ?: { DefaultStateMapper().putStateModelLocations(it) })(block)
         val files = mapped.map {
             getPathForMRL(it.value)
         }.toSet().toTypedArray()
@@ -88,9 +89,9 @@ object JsonGenerationUtils {
         }
     }
 
-    fun generateBaseBlockStates(block: Block, stateMapper: IStateMapper? = null): Map<String, JsonElement> {
+    fun generateBaseBlockStates(block: Block, stateMapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)? = null): Map<String, JsonElement> {
         val registryName = block.registryName
-        val mapped = (stateMapper ?: DefaultStateMapper()).putStateModelLocations(block)
+        val mapped = (stateMapper ?: { DefaultStateMapper().putStateModelLocations(it) })(block)
         val files = getPathsForBlockstate(block, stateMapper)
         return mapOf(*(files.map { file ->
             val keypairs = mapped.filter { keypair ->

@@ -17,6 +17,8 @@ import com.teamwizardry.librarianlib.common.util.ImmutableStaticFieldDelegate
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import com.teamwizardry.librarianlib.common.util.builders.serialize
 import com.teamwizardry.librarianlib.common.util.times
+import net.minecraft.block.Block
+import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.ItemMeshDefinition
 import net.minecraft.client.renderer.block.model.ModelBakery
@@ -160,7 +162,7 @@ object ModelHandler {
     @SideOnly(Side.CLIENT)
     fun registerModels(holder: IVariantHolder, variants: Array<out String>, extra: Boolean) {
         if (holder is IModBlockProvider && !extra) {
-            val mapper = holder.getStateMapper()
+            val mapper = holder.stateMapper
             if (mapper != null)
                 ModelLoader.setCustomStateMapper(holder.providedBlock, mapper)
 
@@ -286,7 +288,7 @@ object ModelHandler {
     fun shouldGenerateAnyJson() = debug && LibLibConfig.generateJson && modName in DevOwnershipTest.OWNED
 
     @SideOnly(Side.CLIENT)
-    fun generateBlockJson(holder: IModBlockProvider, mapper: IStateMapper?) {
+    fun generateBlockJson(holder: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?) {
         val files = JsonGenerationUtils.generateBaseBlockStates(holder.providedBlock, mapper)
         var flag = false
         files.forEach {
