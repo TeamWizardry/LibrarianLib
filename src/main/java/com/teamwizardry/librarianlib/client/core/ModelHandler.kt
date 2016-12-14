@@ -150,9 +150,10 @@ object ModelHandler {
 
         if (holder is IModItemProvider) {
             val meshDef = holder.meshDefinition
-            if (meshDef != null)
+            if (meshDef != null) {
                 ModelLoader.setCustomMeshDefinition(holder.providedItem, ItemMeshDefinition(meshDef))
-            return
+                return
+            }
         }
 
         registerModels(holder, holder.variants, false)
