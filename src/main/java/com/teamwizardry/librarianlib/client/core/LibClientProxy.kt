@@ -1,7 +1,5 @@
 package com.teamwizardry.librarianlib.client.core
 
-import com.teamwizardry.librarianlib.LibrarianLib
-import com.teamwizardry.librarianlib.client.book.Book
 import com.teamwizardry.librarianlib.client.event.ResourceReloadEvent
 import com.teamwizardry.librarianlib.client.fx.shader.LibShaders
 import com.teamwizardry.librarianlib.client.fx.shader.ShaderHelper
@@ -10,7 +8,6 @@ import com.teamwizardry.librarianlib.client.sprite.SpritesMetadataSection
 import com.teamwizardry.librarianlib.client.sprite.SpritesMetadataSectionSerializer
 import com.teamwizardry.librarianlib.client.sprite.Texture
 import com.teamwizardry.librarianlib.client.util.ScissorUtil
-import com.teamwizardry.librarianlib.common.core.ExampleBookCommand
 import com.teamwizardry.librarianlib.common.core.LibCommonProxy
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import net.minecraft.client.Minecraft
@@ -20,7 +17,6 @@ import net.minecraft.client.resources.IResourceManager
 import net.minecraft.client.resources.IResourceManagerReloadListener
 import net.minecraft.client.resources.data.MetadataSerializer
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
@@ -35,16 +31,8 @@ import java.io.InputStream
 @SideOnly(Side.CLIENT)
 class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
-    override var bookInstance: Book? = null
-        private set
-
     override fun pre(e: FMLPreInitializationEvent) {
         super.pre(e)
-
-        bookInstance = Book(LibrarianLib.MODID)
-
-        if (LibrarianLib.DEV_ENVIRONMENT)
-            ClientCommandHandler.instance.registerCommand(ExampleBookCommand())
 
         ModelsInit
         UnlistedPropertyDebugViewer

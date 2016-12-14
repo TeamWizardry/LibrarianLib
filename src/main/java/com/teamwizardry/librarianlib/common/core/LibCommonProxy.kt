@@ -2,7 +2,6 @@
 
 package com.teamwizardry.librarianlib.common.core
 
-import com.teamwizardry.librarianlib.client.book.Book
 import com.teamwizardry.librarianlib.common.util.EasyConfigHandler
 import com.teamwizardry.librarianlib.common.util.autoregister.AutoRegisterHandler
 import com.teamwizardry.librarianlib.common.util.bitsaving.BitwiseStorageManager
@@ -72,9 +71,6 @@ open class LibCommonProxy {
         val mod = mods[modId] ?: return null
         return mod.mod.javaClass.getResourceAsStream("/assets/$modId/$fixPath")
     }
-
-    open val bookInstance: Book?
-        get() = null
 
 }
 
