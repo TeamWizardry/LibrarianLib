@@ -3,11 +3,11 @@ package com.teamwizardry.librarianlib.common.util.saving
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import com.teamwizardry.librarianlib.common.util.times
+import org.jetbrains.annotations.NotNull
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.*
-import javax.annotation.Nonnull
 
 /**
  * @author WireSegal
@@ -44,7 +44,7 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
             map.put(name, FieldCache(FieldType.create(field),
                     MethodHandleHelper.wrapperForGetter<Any>(field),
                     MethodHandleHelper.wrapperForSetter<Any>(field),
-                    field.isAnnotationPresent(Nonnull::class.java),
+                    field.isAnnotationPresent(NotNull::class.java),
                     !field.isAnnotationPresent(NoSync::class.java),
                     field.name))
         }
@@ -98,7 +98,7 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
             map.put(name, FieldCache(FieldType.create(getter),
                     { obj -> wrapperForGetter(obj, arrayOf()) },
                     { obj, inp -> wrapperForSetter(obj, arrayOf(inp)) },
-                    getter.isAnnotationPresent(Nonnull::class.java) || setter.parameterAnnotations[0].any { it is Nonnull },
+                    getter.isAnnotationPresent(NotNull::class.java) || setter.parameterAnnotations[0].any { it is NotNull },
                     !getter.isAnnotationPresent(NoSync::class.java) || !setter.isAnnotationPresent(NoSync::class.java)))
         }
     }
