@@ -3,12 +3,11 @@ package com.teamwizardry.librarianlib.client.book.util
 import com.teamwizardry.librarianlib.client.book.Book
 import com.teamwizardry.librarianlib.client.book.data.DataNode
 import com.teamwizardry.librarianlib.client.book.gui.*
-import com.teamwizardry.librarianlib.common.util.lambdainterfs.SectionInitializer
 
 
 object BookRegistry {
     val entries = mutableMapOf<Book, MutableMap<String, BookEntry>>()
-    val map: MutableMap<String, SectionInitializer> = mutableMapOf()
+    val map: MutableMap<String, (BookSectionOther, DataNode, String) -> GuiBook> = mutableMapOf()
 
     init {
         register("index", ::PageIndex)
@@ -24,16 +23,12 @@ object BookRegistry {
         return entries.getOrPut(book, { mutableMapOf() }).getOrPut(path, { BookEntry(book, path) })
     }
 
-    fun getType(type: String): SectionInitializer? {
-        return map.get(type)
+    fun getType(type: String): ((BookSectionOther, DataNode, String) -> GuiBook)? {
+        return map[type]
     }
 
-    fun register(type: String, initializer: (section: BookSectionOther, node: DataNode, tag: String) -> GuiBook) {
-        map.put(type, SectionInitializer(initializer))
-    }
-
-    fun register(type: String, initializer: SectionInitializer) {
-        map.put(type, initializer)
+    fun register(type: String, initializer: (BookSectionOther, DataNode, String) -> GuiBook) {
+        map[type] = initializer
     }
 }
 

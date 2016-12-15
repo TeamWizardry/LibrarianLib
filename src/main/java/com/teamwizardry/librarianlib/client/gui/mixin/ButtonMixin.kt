@@ -5,12 +5,11 @@ import com.teamwizardry.librarianlib.client.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.common.util.event.Event
 import com.teamwizardry.librarianlib.common.util.event.EventCancelable
-import com.teamwizardry.librarianlib.common.util.lambdainterfs.VoidLambda
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 
-class ButtonMixin<T : GuiComponent<T>>(val component: GuiComponent<T>, init: VoidLambda) {
+class ButtonMixin<T : GuiComponent<T>>(val component: GuiComponent<T>, init: Runnable) {
 
-    constructor(component: GuiComponent<T>, init: () -> Unit) : this(component, VoidLambda(init))
+    constructor(component: GuiComponent<T>, init: () -> Unit) : this(component, Runnable(init))
 
     class ButtonClickEvent<out T : GuiComponent<*>>(val component: T, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
     class ButtonStateChangeEvent<out T : GuiComponent<*>>(val component: T, val mousePos: Vec2d, val state: EnumButtonState, var newState: EnumButtonState) : Event()
@@ -22,7 +21,7 @@ class ButtonMixin<T : GuiComponent<T>>(val component: GuiComponent<T>, init: Voi
             apply()
         else
             LibrarianLog.warn("Component already has button mixin!")
-        init()
+        init.run()
     }
 
     private fun apply() {
