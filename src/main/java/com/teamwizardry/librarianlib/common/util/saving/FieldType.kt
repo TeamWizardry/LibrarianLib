@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.common.util.saving
 import java.lang.reflect.*
 import java.util.*
 
-open class FieldType protected constructor(val clazz: Class<*>) {
+abstract class FieldType protected constructor(val clazz: Class<*>) {
 
     companion object {
         @JvmStatic

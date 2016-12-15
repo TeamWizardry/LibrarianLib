@@ -65,6 +65,18 @@ annotation class SaveMethodGetter(val saveName: String)
 @MustBeDocumented
 annotation class SaveMethodSetter(val saveName: String)
 
+/**
+ * @author TheCodeWarrior
+ *
+ * Apply this to a class to mark it as serializable.
+ *
+ * The class must have:
+ *  - one or more [Save] annotated fields and/or one or more [SaveMethodGetter] annotated methods, or
+ *  - no such fields or methods and one or more non-transient fields
+ *
+ * In order to construct the class it must have:
+ *  - a zero argument constructor
+ */
 @Target(CLASS)
 @MustBeDocumented
 annotation class Savable(val mutable: Boolean = false)

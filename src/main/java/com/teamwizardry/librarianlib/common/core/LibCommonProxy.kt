@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.client.book.Book
 import com.teamwizardry.librarianlib.common.util.EasyConfigHandler
 import com.teamwizardry.librarianlib.common.util.autoregister.AutoRegisterHandler
 import com.teamwizardry.librarianlib.common.util.bitsaving.BitwiseStorageManager
+import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
 import net.minecraft.util.text.translation.I18n
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
@@ -42,7 +43,7 @@ open class LibCommonProxy {
     }
 
     open fun latePost(e: FMLPostInitializationEvent) {
-        // NO-OP
+        SavingFieldCache.handleErrors()
     }
 
     /**

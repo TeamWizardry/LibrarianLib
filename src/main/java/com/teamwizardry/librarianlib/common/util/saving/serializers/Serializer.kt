@@ -10,8 +10,12 @@ class Serializer(val canApply: (FieldType) -> Boolean) {
 
     protected val serializers = mutableMapOf<SerializerTarget<*, *>, (FieldType) -> SerializerImpl<*, *>>()
 
-    fun <R, W> register(target: SerializerTarget<R, W>, generator: (FieldType) -> SerializerImpl<R, W>) {
+    fun <R, W> register(target: SerializerTarget<R, W>, generator: (FieldType) -> SerializerImpl<*, *>) {
         serializers.put(target, generator)
+    }
+
+    fun <R, W> register(target: SerializerTarget<R, W>, impl: SerializerImpl<*,*>) {
+        register(target, { impl })
     }
 
     fun <R, W> register(target: SerializerTarget<R, W>, read: R, write: W) {
@@ -27,6 +31,6 @@ class Serializer(val canApply: (FieldType) -> Boolean) {
     }
 }
 
-open class SerializerTarget<out R, out W>()
+abstract class SerializerTarget<R, W>(val name: String)
 
 class SerializerImpl<out R, out W>(val read: R, val write: W)

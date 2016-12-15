@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.common.core
 
 import com.teamwizardry.librarianlib.LibrarianLib
+import com.teamwizardry.librarianlib.common.util.times
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.text.Style
 import net.minecraft.util.text.TextComponentString
@@ -44,5 +45,44 @@ abstract class LoggerBase protected constructor(name: String) {
 
     fun warn(player: EntityPlayer, message: String, vararg args: Any?) {
         player.sendStatusMessage(TextComponentString(String.format(message, *args)).setStyle(Style().setColor(TextFormatting.RED)))
+    }
+
+    /**
+     * **Only use this if the person seeing it can do something about it**
+     *
+     * Prints the passed lines to the log, surrounded with asterisks, and immediately dies.
+     *
+     * Prints: ```
+     * ******* **** TITLE **** ********
+     * * your lines will appear here, *
+     * * each preceded with asterisks *
+     * ******* **** TITLE **** ********
+     * ```
+     *
+     * The stars at the end of the lines are controlled with the [endStar] parameter.
+     *
+     * The title will never print more than 25 characters from the left
+     */
+    fun bigDie(title: String, lines: List<String>, endStar: Boolean = true) {
+        val maxWidth = lines.fold(0, { cur, value -> Math.max(cur, value.length) })
+
+        val titleWidth = maxWidth + 4
+        var titleStarred = " **** $title **** "
+        var starPadLeft = (maxWidth + 4 - titleStarred.length)/2
+        if(starPadLeft >= 20)
+            starPadLeft = 19
+        val starPadRight = (maxWidth + 4 - titleStarred.length) - starPadLeft
+
+        titleStarred = "*" * starPadLeft + titleStarred + "*" * starPadRight
+
+        warn(titleStarred)
+        lines.forEach {
+            if(endStar) {
+                warn("* " + it.padEnd(maxWidth, ' ') + " *")
+            } else {
+                warn("* " + it)
+            }
+        }
+        warn(titleStarred)
     }
 }

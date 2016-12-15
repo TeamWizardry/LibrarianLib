@@ -1,8 +1,9 @@
 package com.teamwizardry.librarianlib.common.util.saving
 
 import com.teamwizardry.librarianlib.LibrarianLog
+import com.teamwizardry.librarianlib.common.util.DefaultedMutableMap
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
-import com.teamwizardry.librarianlib.common.util.times
+import com.teamwizardry.librarianlib.common.util.withRealDefault
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -52,9 +53,15 @@ object SavingFieldCache {
             if(field.isAnnotationPresent(Nonnull::class.java)) meta.addFlag(SavingFieldFlag.NONNULL)
             if(field.isAnnotationPresent(NoSync::class.java)) meta.addFlag(SavingFieldFlag.NOSYNC)
 
+            val setterLambda: (Any, Any?) -> Unit = if(meta.hasFlag(SavingFieldFlag.FINAL)) {
+                { obj, inp -> throw IllegalAccessException("Tried to set final property $name for class ${clazz.simpleName} (final field)") }
+            } else {
+                MethodHandleHelper.wrapperForSetter<Any>(field)
+            }
+
             map.put(name, FieldCache(meta,
                     MethodHandleHelper.wrapperForGetter<Any>(field),
-                    MethodHandleHelper.wrapperForSetter<Any>(field),
+                    setterLambda,
                     field.name))
         }
     }
@@ -63,33 +70,49 @@ object SavingFieldCache {
         val getters = mutableMapOf<String, Method>()
         val setters = mutableMapOf<String, Method>()
 
+
         clazz.declaredMethods.forEach {
             it.declaredAnnotations
             val mods = it.modifiers
             if (!Modifier.isStatic(mods)) {
                 if (it.isAnnotationPresent(SaveMethodGetter::class.java)) {
                     val types = it.parameterTypes
-                    if (types.isEmpty())
-                        getters.put(getNameFromMethod(clazz, it, true), it)
+                    val name = getNameFromMethod(clazz, it, true)
+                    if (types.isEmpty()) {
+                        getters.put(name, it)
+                    } else {
+                        errorList[clazz][name].add("Getter has parameters")
+                    }
                 }
                 if (it.isAnnotationPresent(SaveMethodSetter::class.java)) {
                     val types = it.parameterTypes
-                    if (types.size == 1)
-                        setters.put(getNameFromMethod(clazz, it, false), it)
+                    val name = getNameFromMethod(clazz, it, false)
+                    if (types.size == 1) {
+                        setters.put(name, it)
+                    } else {
+                        errorList[clazz][name].add("Setter has ${types.size} parameters, they must have exactly 1")
+                    }
                 }
             }
         }
 
-        val pairs = mutableMapOf<String, Triple<Method, Method, Class<*>>>()
+        val pairs = mutableMapOf<String, Triple<Method, Method?, Class<*>>>()
         getters.forEach {
             val (name, getter) = it
+            val getReturnType = getter.returnType
             if (name in setters) {
                 val setter = setters[name]!!
-                val getReturnType = getter.returnType
                 val setReturnType = setter.parameterTypes[0]
                 if (getReturnType == setReturnType)
                     pairs.put(name, Triple(getter, setter, getReturnType))
+                else
+                    errorList[clazz][name].add("Getter and setter have mismatched types")
             }
+        }
+
+        setters.filterKeys { it !in getters }.forEach {
+            val (name, discard) = it
+            errorList[clazz][name].add("Setter has no getter")
         }
 
 
@@ -99,21 +122,28 @@ object SavingFieldCache {
             val (name, triple) = it
             val (getter, setter, type) = triple
             getter.isAccessible = true
-            setter.isAccessible = true
+            setter?.isAccessible = true
 
             val wrapperForGetter = MethodHandleHelper.wrapperForMethod<Any>(getter)
-            val wrapperForSetter = MethodHandleHelper.wrapperForMethod<Any>(setter)
+            val wrapperForSetter = setter?.let { MethodHandleHelper.wrapperForMethod<Any>(it) }
 
             val meta = FieldMetadata(FieldType.create(getter), SavingFieldFlag.ANNOTATED, SavingFieldFlag.METHOD)
 
-            if(getter.isAnnotationPresent(Nonnull::class.java) && setter.parameterAnnotations[0].any { it is Nonnull })
+            if(getter.isAnnotationPresent(Nonnull::class.java) && (setter == null || setter.parameterAnnotations[0].any { it is Nonnull }))
                 meta.addFlag(SavingFieldFlag.NONNULL)
-            if(getter.isAnnotationPresent(NoSync::class.java) && setter.isAnnotationPresent(NoSync::class.java))
+            if(getter.isAnnotationPresent(NoSync::class.java) && (setter == null || setter.isAnnotationPresent(NoSync::class.java)))
                 meta.addFlag(SavingFieldFlag.NOSYNC)
+            if(setter == null)
+                meta.addFlag(SavingFieldFlag.FINAL)
+
+            val setterLambda: (Any, Any?) -> Unit = if(wrapperForSetter == null)
+                { obj, inp -> throw IllegalAccessException("Tried to set final property $name for class ${clazz.simpleName} (no save setter)") }
+            else
+                { obj, inp -> wrapperForSetter(obj, arrayOf(inp)) }
 
             map.put(name, FieldCache(meta,
                     { obj -> wrapperForGetter(obj, arrayOf()) },
-                    { obj, inp -> wrapperForSetter(obj, arrayOf(inp)) }))
+                    setterLambda))
         }
     }
 
@@ -128,17 +158,12 @@ object SavingFieldCache {
 
         val string = if(f.isAnnotationPresent(Save::class.java)) f.getAnnotation(Save::class.java).saveName else ""
         var name = if (string == "") f.name else string
+
         if (name in ILLEGAL_NAMES)
             name += "X"
-        if (name in alreadyDone) {
-            val msg = "Name $name already in use for class ${clazz.name}! Adding dashes to the end to mitigate this."
-            val pad = "*" * msg.length
-            LibrarianLog.warn(pad)
-            LibrarianLog.warn(msg)
-            LibrarianLog.warn(pad)
-            while (name in alreadyDone)
-                name += "-"
-        }
+        if(name in alreadyDone)
+            errorList[clazz][name].add("Name already in use for field")
+
         alreadyDone.add(name)
         nameMap[f] = name
         return name
@@ -152,15 +177,34 @@ object SavingFieldCache {
 
         if (name in ILLEGAL_NAMES)
             name += "X"
-
-        var uses = 0
-        for (i in alreadyDone)
-            if (i == name) uses++
-
-        if (uses > 1)
-            throw IllegalArgumentException("Method savename $name already in use for class ${clazz.name}, this is illegal for methods.")
+        if(name in alreadyDone)
+            errorList[clazz][name].add("Name already in use for ${if(getter) "getter" else "setter"}")
         alreadyDone.add(name)
         return name
+    }
+
+    private val errorList = mutableMapOf<Class<*>, DefaultedMutableMap<String, MutableList<String>>>().withRealDefault { mutableMapOf<String, MutableList<String>>().withRealDefault { mutableListOf<String>() } }
+
+    fun handleErrors() {
+        if(errorList.size == 0)
+            return
+
+        val lines = mutableListOf<String>()
+
+        errorList.forEach {
+            val (clazz, props) = it
+            lines.add("- ${clazz.simpleName}")
+
+            props.forEach {
+                val (name, errors) = it
+                lines.add("  - $name")
+                errors.forEach {
+                    lines.add("    - $it")
+                }
+            }
+        }
+
+        LibrarianLog.bigDie("INVALID SAVE FIELDS", lines)
     }
 }
 

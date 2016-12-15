@@ -40,6 +40,23 @@ fun String.canLocalize(): Boolean {
     return LibrarianLib.PROXY.canTranslate(this)
 }
 
+fun <K, V> MutableMap<K, V>.withRealDefault(default: (K) -> V): DefaultedMutableMap<K, V> {
+    return when(this) {
+        is RealDefaultImpl -> RealDefaultImpl(this.map, default)
+        else -> RealDefaultImpl(this, default)
+    }
+}
+
+interface DefaultedMutableMap<K, V> : MutableMap<K, V> {
+    override fun get(key: K): V
+}
+
+private class RealDefaultImpl<K, V>(val map: MutableMap<K, V>, val default: (K) -> V) : DefaultedMutableMap<K, V>, MutableMap<K, V> by map {
+    override fun get(key: K): V {
+        return map.getOrPut(key, { default(key) })
+    }
+}
+
 // Vec3d ===============================================================================================================
 
 operator fun Vec3d.times(other: Vec3d): Vec3d = Vec3d(this.xCoord * other.xCoord, this.yCoord * other.yCoord, this.zCoord * other.zCoord)
