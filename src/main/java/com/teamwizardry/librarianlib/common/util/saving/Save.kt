@@ -76,6 +76,7 @@ annotation class SaveMethodSetter(val saveName: String)
  *
  * In order to construct the class it must have:
  *  - a zero argument constructor
+ *  - a constructor with arguments similarly named and typed to the saved properties
  */
 @Target(CLASS)
 @MustBeDocumented
