@@ -4,11 +4,11 @@ import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.util.DefaultedMutableMap
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import com.teamwizardry.librarianlib.common.util.withRealDefault
+import org.jetbrains.annotations.NotNull
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.*
-import javax.annotation.Nonnull
 
 /**
  * @author WireSegal
@@ -50,7 +50,7 @@ object SavingFieldCache {
             if(Modifier.isFinal(mods)) meta.addFlag(SavingFieldFlag.FINAL)
             if(Modifier.isTransient(mods)) meta.addFlag(SavingFieldFlag.TRANSIENT)
             if(field.isAnnotationPresent(Save::class.java)) meta.addFlag(SavingFieldFlag.ANNOTATED)
-            if(field.isAnnotationPresent(Nonnull::class.java)) meta.addFlag(SavingFieldFlag.NONNULL)
+            if(field.isAnnotationPresent(NotNull::class.java)) meta.addFlag(SavingFieldFlag.NONNULL)
             if(field.isAnnotationPresent(NoSync::class.java)) meta.addFlag(SavingFieldFlag.NOSYNC)
 
             val setterLambda: (Any, Any?) -> Unit = if(meta.hasFlag(SavingFieldFlag.FINAL)) {
@@ -129,7 +129,7 @@ object SavingFieldCache {
 
             val meta = FieldMetadata(FieldType.create(getter), SavingFieldFlag.ANNOTATED, SavingFieldFlag.METHOD)
 
-            if(getter.isAnnotationPresent(Nonnull::class.java) && (setter == null || setter.parameterAnnotations[0].any { it is Nonnull }))
+            if(getter.isAnnotationPresent(NotNull::class.java) && (setter == null || setter.parameterAnnotations[0].any { it is NotNull }))
                 meta.addFlag(SavingFieldFlag.NONNULL)
             if(getter.isAnnotationPresent(NoSync::class.java) && (setter == null || setter.isAnnotationPresent(NoSync::class.java)))
                 meta.addFlag(SavingFieldFlag.NOSYNC)

@@ -6,11 +6,15 @@ import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.common.base.item.ISpecialModelProvider
 import com.teamwizardry.librarianlib.common.util.currentModId
 import net.minecraft.block.Block
+import net.minecraft.block.state.IBlockState
+import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.math.BlockPos
+import net.minecraft.world.IBlockAccess
 import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -61,14 +65,14 @@ open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlo
     override val variants: Array<out String>
         get() = this.modBlock.variants
 
-    @SideOnly(Side.CLIENT)
-    override fun getCustomMeshDefinition() = this.modBlock.getCustomMeshDefinition()
+    override val meshDefinition: ((ItemStack) -> ModelResourceLocation)?
+        get() = this.modBlock.meshDefinition
 
-    @SideOnly(Side.CLIENT)
-    override fun getItemColor() = if (this.modBlock is IItemColorProvider) this.modBlock.getItemColor() else null
+    override val itemColorFunction: ((ItemStack, Int) -> Int)?
+        get() = if (this.modBlock is IItemColorProvider) modBlock.itemColorFunction else null
 
-    @SideOnly(Side.CLIENT)
-    override fun getBlockColor() = if (this.modBlock is IBlockColorProvider) this.modBlock.getBlockColor() else null
+    override val blockColorFunction: ((IBlockState, IBlockAccess?, BlockPos?, Int) -> Int)?
+        get() = if (this.modBlock is IBlockColorProvider) modBlock.blockColorFunction else null
 
     @SideOnly(Side.CLIENT)
     override fun getSpecialModel(index: Int) = if (this.modBlock is ISpecialModelProvider) this.modBlock.getSpecialModel(index) else null

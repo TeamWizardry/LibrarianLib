@@ -13,14 +13,17 @@ import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.common.base.item.ISpecialModelProvider
 import com.teamwizardry.librarianlib.common.core.DevOwnershipTest
 import com.teamwizardry.librarianlib.common.core.LibLibConfig
-import com.teamwizardry.librarianlib.common.util.ImmutableStaticFieldDelegate
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import com.teamwizardry.librarianlib.common.util.builders.serialize
 import com.teamwizardry.librarianlib.common.util.times
+import net.minecraft.block.Block
+import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.ItemMeshDefinition
 import net.minecraft.client.renderer.block.model.ModelBakery
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
-import net.minecraft.client.renderer.block.statemap.IStateMapper
+import net.minecraft.client.renderer.color.IBlockColor
+import net.minecraft.client.renderer.color.IItemColor
 import net.minecraft.item.Item
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.ModelBakeEvent
@@ -119,18 +122,18 @@ object ModelHandler {
             for (holder in holders) {
 
                 if (holder is IItemColorProvider && holder is IModItemProvider) {
-                    val color = holder.getItemColor()
+                    val color = holder.itemColorFunction
                     if (color != null) {
                         log("$namePad | Registering item color for ${holder.providedItem.registryName.resourcePath}")
-                        itemColors.registerItemColorHandler(color, holder.providedItem)
+                        itemColors.registerItemColorHandler(IItemColor(color), holder.providedItem)
                     }
                 }
 
                 if (holder is IModBlockProvider && holder is IBlockColorProvider) {
-                    val color = holder.getBlockColor()
+                    val color = holder.blockColorFunction
                     if (color != null) {
                         log("$namePad | Registering block color for ${holder.providedBlock.registryName.resourcePath}")
-                        blockColors.registerBlockColorHandler(color, holder.providedBlock)
+                        blockColors.registerBlockColorHandler(IBlockColor(color), holder.providedBlock)
                     }
                 }
 
@@ -140,19 +143,25 @@ object ModelHandler {
 
     @SideOnly(Side.CLIENT)
     fun registerModels(holder: IVariantHolder) {
-        if (holder is IModItemProvider && holder.getCustomMeshDefinition() != null)
-            ModelLoader.setCustomMeshDefinition(holder.providedItem, holder.getCustomMeshDefinition())
-        else
-            registerModels(holder, holder.variants, false)
-
         if (holder is IExtraVariantHolder)
             registerModels(holder, holder.extraVariants, true)
+
+        if (holder is IModItemProvider) {
+            val meshDef = holder.meshDefinition
+            if (meshDef != null) {
+                ModelLoader.setCustomMeshDefinition(holder.providedItem, ItemMeshDefinition(meshDef))
+                return
+            }
+        }
+
+        registerModels(holder, holder.variants, false)
+
     }
 
     @SideOnly(Side.CLIENT)
     fun registerModels(holder: IVariantHolder, variants: Array<out String>, extra: Boolean) {
         if (holder is IModBlockProvider && !extra) {
-            val mapper = holder.getStateMapper()
+            val mapper = holder.stateMapper
             if (mapper != null)
                 ModelLoader.setCustomStateMapper(holder.providedBlock, mapper)
 
@@ -197,12 +206,12 @@ object ModelHandler {
         }
     }
 
-    val customModels: MutableMap<Pair<RegistryDelegate<Item>, Int>, ModelResourceLocation>
-            by ImmutableStaticFieldDelegate(MethodHandleHelper.wrapperForStaticGetter(ModelLoader::class.java, "customModels"), true)
-
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     fun onModelBake(e: ModelBakeEvent) {
+        val customModelGetter = MethodHandleHelper.wrapperForStaticGetter(ModelLoader::class.java, "customModels")
+        @Suppress("UNCHECKED_CAST")
+        val customModels = customModelGetter.invoke() as MutableMap<Pair<RegistryDelegate<Item>, Int>, ModelResourceLocation>
         for ((modid, holders) in variantCache) {
             modName = modid
             log("$modName | Registering special models")
@@ -278,7 +287,7 @@ object ModelHandler {
     fun shouldGenerateAnyJson() = debug && LibLibConfig.generateJson && modName in DevOwnershipTest.OWNED
 
     @SideOnly(Side.CLIENT)
-    fun generateBlockJson(holder: IModBlockProvider, mapper: IStateMapper?) {
+    fun generateBlockJson(holder: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?) {
         val files = JsonGenerationUtils.generateBaseBlockStates(holder.providedBlock, mapper)
         var flag = false
         files.forEach {

@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib
 
 import com.teamwizardry.librarianlib.common.core.LibCommonProxy
 import com.teamwizardry.librarianlib.common.core.LoggerBase
+import com.teamwizardry.librarianlib.common.util.saving.Save
 import net.minecraft.launchwrapper.Launch
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.SidedProxy
@@ -14,7 +15,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
  *
  * - Automatically generate missing models in development environments
  * - Automatically register Item colors, models, statemappers, and all other model-related things
- * - Automatically sync tileentity fields and packet fields marked with @[com.teamwizardry.librarianlib.common.util.saving.Save]
+ * - Automatically sync tileentity fields and packet fields marked with @[Save]
  * - An easy—if slightly complicated—GUI creation framework
  * - A highly customizable and easy to use particle system
  * - Automatic registration of TileEntities
@@ -42,7 +43,7 @@ class LibrarianLib {
 
         const val MODID = "librarianlib"
         const val MODNAME = "LibrarianLib"
-        const val VERSION = "1.6"
+        const val VERSION = "1.7"
         const val CLIENT = "com.teamwizardry.librarianlib.client.core.LibClientProxy"
         const val SERVER = "com.teamwizardry.librarianlib.common.core.LibCommonProxy"
 
