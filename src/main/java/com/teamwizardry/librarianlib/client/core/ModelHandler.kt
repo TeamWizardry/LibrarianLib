@@ -13,7 +13,6 @@ import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.common.base.item.ISpecialModelProvider
 import com.teamwizardry.librarianlib.common.core.DevOwnershipTest
 import com.teamwizardry.librarianlib.common.core.LibLibConfig
-import com.teamwizardry.librarianlib.common.util.ImmutableStaticFieldDelegate
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import com.teamwizardry.librarianlib.common.util.builders.serialize
 import com.teamwizardry.librarianlib.common.util.times
@@ -23,7 +22,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.ItemMeshDefinition
 import net.minecraft.client.renderer.block.model.ModelBakery
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
-import net.minecraft.client.renderer.block.statemap.IStateMapper
 import net.minecraft.client.renderer.color.IBlockColor
 import net.minecraft.client.renderer.color.IItemColor
 import net.minecraft.item.Item
@@ -208,12 +206,12 @@ object ModelHandler {
         }
     }
 
-    val customModels: MutableMap<Pair<RegistryDelegate<Item>, Int>, ModelResourceLocation>
-            by ImmutableStaticFieldDelegate(MethodHandleHelper.wrapperForStaticGetter(ModelLoader::class.java, "customModels"), true)
-
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     fun onModelBake(e: ModelBakeEvent) {
+        val customModelGetter = MethodHandleHelper.wrapperForStaticGetter(ModelLoader::class.java, "customModels")
+        @Suppress("UNCHECKED_CAST")
+        val customModels = customModelGetter.invoke() as MutableMap<Pair<RegistryDelegate<Item>, Int>, ModelResourceLocation>
         for ((modid, holders) in variantCache) {
             modName = modid
             log("$modName | Registering special models")
