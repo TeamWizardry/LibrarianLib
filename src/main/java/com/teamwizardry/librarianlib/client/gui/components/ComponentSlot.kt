@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.client.gui.HandlerList
 import com.teamwizardry.librarianlib.client.gui.Option
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import com.teamwizardry.librarianlib.common.util.plus
+import com.teamwizardry.librarianlib.common.util.size
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
@@ -24,7 +25,7 @@ open class ComponentSlot(posX: Int, posY: Int) : GuiComponent<ComponentSlot>(pos
 
         val stack = this.stack.getValue(this)
         if (stack != null) {
-            var str = "" + stack.stackSize
+            var str = "" + stack.size
             str = quantityText.fireModifier(str, { h, v -> h(this, v) }) ?: ""
 
             val itemRender = Minecraft.getMinecraft().renderItem

@@ -309,3 +309,11 @@ fun <T, R> ICapabilityProvider.ifCap(capability: Capability<T>, facing: EnumFaci
         return callback(this.getCapability(capability, facing)!!)
     return null
 }
+
+// ItemStack ===========================================================================================================
+
+var ItemStack.size: Int // extension for 1.10 -> 1.11 migration help, will be changed in 1.11 to new system
+    get() = stackSize
+    set(value) {
+        stackSize = value
+    }

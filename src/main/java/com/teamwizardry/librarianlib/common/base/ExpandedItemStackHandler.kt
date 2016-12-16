@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.common.base
 
+import com.teamwizardry.librarianlib.common.util.size
 import net.minecraft.item.ItemStack
 import net.minecraftforge.items.ItemHandlerHelper
 import net.minecraftforge.items.ItemStackHandler
@@ -17,7 +18,7 @@ class ExpandedItemStackHandler : ItemStackHandler {
     constructor(stacks: Array<ItemStack>) : super(stacks)
 
     override fun insertItem(slot: Int, stack: ItemStack?, simulate: Boolean): ItemStack? {
-        if (stack == null || stack.stackSize == 0)
+        if (stack == null || stack.size == 0)
             return null
 
         validateSlotIndex(slot)
@@ -33,24 +34,24 @@ class ExpandedItemStackHandler : ItemStackHandler {
             if (!ItemHandlerHelper.canItemStacksStack(stack, existing))
                 return stack
 
-            limit -= existing.stackSize
+            limit -= existing.size
         }
 
         if (limit <= 0)
             return stack
 
-        val reachedLimit = stack.stackSize > limit
+        val reachedLimit = stack.size > limit
 
         if (!simulate) {
             if (existing == null) {
                 this.stacks[slot] = if (reachedLimit) ItemHandlerHelper.copyStackWithSize(stack, limit) else stack
             } else {
-                existing.stackSize += if (reachedLimit) limit else stack.stackSize
+                existing.size += if (reachedLimit) limit else stack.size
             }
             onContentsChanged(slot)
         }
 
-        return if (reachedLimit) ItemHandlerHelper.copyStackWithSize(stack, stack.stackSize - limit) else null
+        return if (reachedLimit) ItemHandlerHelper.copyStackWithSize(stack, stack.size - limit) else null
     }
 
     fun canInsertIntoSlot(slot: Int, stack: ItemStack): Boolean {
