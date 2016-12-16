@@ -7,6 +7,8 @@ import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.basi
 import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.basics.SerializeVectors
 import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.primitives.SerializePrimitiveArrays
 import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.primitives.SerializePrimitives
+import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.special.SerializeArrays
+import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.special.SerializeEnums
 import io.netty.buffer.ByteBuf
 import net.minecraft.nbt.NBTBase
 
@@ -23,7 +25,8 @@ object Targets {
         SerializePrimitiveArrays
         SerializeMisc
         SerializeVectors
-
+        SerializeArrays
+        SerializeEnums
     }
 
     class NBTTarget : SerializerTarget<(nbt: NBTBase, existing: Any?) -> Any, (value: Any) -> NBTBase>("NBT") {

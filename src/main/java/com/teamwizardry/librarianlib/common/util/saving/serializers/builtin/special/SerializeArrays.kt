@@ -27,14 +27,14 @@ object SerializeArrays {
                 val list = nbt.safeCast(NBTTagList::class.java)
 
                 val reuse = existing != null && existing.size == list.tagCount()
-                val array = if(reuse) existing as Array<Any?> else ArrayReflect.newInstanceRaw(type.componentType.clazz, list.tagCount())
+                val array = if (reuse) existing as Array<Any?> else ArrayReflect.newInstanceRaw(type.componentType.clazz, list.tagCount())
 
                 list.forEachIndexed<NBTTagCompound> { i, container ->
                     val tag = container.getTag("-")
-                    if(tag == null)
+                    if (tag == null)
                         array[i] = null
                     else
-                        array[i] = subSerializer().read(tag, if(reuse) array[i] else null)
+                        array[i] = subSerializer().read(tag, if (reuse) array[i] else null)
                 }
 
                 array
@@ -43,11 +43,11 @@ object SerializeArrays {
 
                 val len = ArrayReflect.getLength(value)
 
-                for(i in 0..len-1) {
+                for (i in 0..len - 1) {
                     val v = ArrayReflect.get(value, i)
                     val container = NBTTagCompound()
                     list.appendTag(container)
-                    if(v != null) {
+                    if (v != null) {
                         container.setTag("-", subSerializer().write(v))
                     }
                 }
@@ -63,7 +63,7 @@ object SerializeArrays {
             Targets.BYTES.impl<Array<*>>({ buf, existing ->
                 val nullsig = buf.readBooleanArray()
                 val reuse = existing != null && existing.size == nullsig.size
-                val array = if(reuse) existing as Array<Any?> else ArrayReflect.newInstanceRaw(type.componentType.clazz, nullsig.size)
+                val array = if (reuse) existing as Array<Any?> else ArrayReflect.newInstanceRaw(type.componentType.clazz, nullsig.size)
 
                 for (i in 0..nullsig.size - 1) {
                     array[i] = if (nullsig[i]) null else subSerializer().read(buf, array[i])
