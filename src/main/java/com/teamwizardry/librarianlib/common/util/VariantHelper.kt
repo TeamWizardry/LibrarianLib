@@ -8,11 +8,35 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.registry.GameRegistry
+import java.util.*
 
 /**
  * Tools to implement variants easily.
  */
 object VariantHelper {
+
+    /**
+     * Transforms a string to snake case. Allows people to be lazy in migration.
+     */
+    @JvmStatic
+    fun toSnakeCase(string: String): String {
+        if (string.toUpperCase(Locale.ROOT) == string)
+            return string.toLowerCase(Locale.ROOT)
+        else if (string.toLowerCase(Locale.ROOT) == string)
+            return string
+        else if ("[A-Z]{2,}".toRegex().containsMatchIn(string))
+            return string.toLowerCase(Locale.ROOT)
+
+        val split = mutableListOf<String>()
+        var lastIndex = 0
+        for ((index, token) in string.withIndex()) if (token.isUpperCase()) {
+            split.add(string.substring(lastIndex, index))
+            lastIndex = index
+        }
+        split.add(string.substring(lastIndex))
+
+        return split.joinToString("_") { it.toLowerCase(Locale.ROOT) }
+    }
 
     /**
      * All items which use this method in their constructor should implement the setUnlocalizedNameForItem provided below in their setUnlocalizedName.
@@ -26,7 +50,7 @@ object VariantHelper {
             item.hasSubtypes = true
 
         if (variantTemp.isEmpty())
-            variantTemp = arrayOf(name)
+            variantTemp = arrayOf(toSnakeCase(name))
 
         ModelHandler.registerVariantHolder(item as IVariantHolder)
         creativeTab?.set(item)
@@ -41,7 +65,7 @@ object VariantHelper {
     fun beginSetupBlock(name: String, variants: Array<out String>): Array<out String> {
         var variantTemp = variants
         if (variants.isEmpty())
-            variantTemp = arrayOf(name)
+            variantTemp = arrayOf(toSnakeCase(name))
         return variantTemp
     }
 
@@ -56,16 +80,17 @@ object VariantHelper {
 
     @JvmStatic
     fun setUnlocalizedNameForItem(item: Item, modId: String, name: String) {
-        val rl = ResourceLocation(modId, name)
+        val rl = ResourceLocation(modId, toSnakeCase(name))
         GameRegistry.register(item, rl)
     }
 
     @JvmStatic
     fun setUnlocalizedNameForBlock(block: Block, modId: String, name: String, itemForm: ItemBlock?) {
-        block.setRegistryName(name)
+        val snakeName = toSnakeCase(name)
+        block.setRegistryName(snakeName)
         GameRegistry.register(block)
         if (itemForm != null)
-            GameRegistry.register(itemForm, ResourceLocation(modId, name))
+            GameRegistry.register(itemForm, ResourceLocation(modId, snakeName))
     }
 
 }
