@@ -194,7 +194,7 @@ private object BasicNBTSerializers {
         // Item Handlers
         NBTSerializationHandlers.mapHandler(ItemStack::class.java, { it.serializeNBT() ?: NBTTagCompound() }, { it, existing ->
             val compound = it.safeCast(NBTTagCompound::class.java)
-            ItemStack.loadItemStackFromNBT(compound)
+            ItemStack(compound)
         })
         NBTSerializationHandlers.mapHandler(ItemStackHandler::class.java, { it.serializeNBT() ?: NBTTagCompound() }, { it, existing ->
             val handler = ItemStackHandler()
@@ -360,6 +360,7 @@ private object SpecialNBTSerializers {
         return serializer
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun createArrayMapping(type: FieldType): NBTSerializer? {
         if (type !is FieldTypeArray)
             return null

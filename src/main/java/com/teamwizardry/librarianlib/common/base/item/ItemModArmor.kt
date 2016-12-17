@@ -8,6 +8,7 @@ import net.minecraft.inventory.EntityEquipmentSlot
 import net.minecraft.item.Item
 import net.minecraft.item.ItemArmor
 import net.minecraft.item.ItemStack
+import net.minecraft.util.NonNullList
 
 /**
  * The default implementation for an IVariantHolder armor item.
@@ -42,7 +43,7 @@ open class ItemModArmor(name: String, material: ArmorMaterial, slot: EntityEquip
         return "item.$modId:$name"
     }
 
-    override fun getSubItems(itemIn: Item, tab: CreativeTabs?, subItems: MutableList<ItemStack>) {
+    override fun getSubItems(itemIn: Item, tab: CreativeTabs?, subItems: NonNullList<ItemStack>) {
         variants.indices.mapTo(subItems) { ItemStack(itemIn, 1, it) }
     }
 

@@ -9,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.*
 import net.minecraft.util.EnumFacing
+import net.minecraft.util.NonNullList
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.text.TextComponentString
@@ -295,8 +296,8 @@ operator fun NBTTagCompound.get(key: String): NBTBase = this.getTag(key)
 
 // Player ==============================================================================================================
 
-fun EntityPlayer.sendMessage(str: String) {
-    this.sendStatusMessage(TextComponentString(str))
+fun EntityPlayer.sendMessage(str: String, actionBar: Boolean = false) {
+    this.sendStatusMessage(TextComponentString(str), actionBar)
 }
 
 // String ==============================================================================================================
@@ -312,8 +313,22 @@ fun <T, R> ICapabilityProvider.ifCap(capability: Capability<T>, facing: EnumFaci
 
 // ItemStack ===========================================================================================================
 
-var ItemStack.size: Int // extension for 1.10 -> 1.11 migration help, will be changed in 1.11 to new system
-    get() = stackSize
+var ItemStack.size: Int
+    get() = count
     set(value) {
-        stackSize = value
+        count = value
     }
+
+// Relating to NonNullList =============================================================================================
+
+fun <T> Iterable<T>.toNonnullList(): NonNullList<T> {
+    val ret = NonNullList.create<T>()
+    ret.addAll(this)
+    return ret
+}
+
+fun <T> Array<T>.toNonnullList(): NonNullList<T> {
+    val ret = NonNullList.create<T>()
+    ret.addAll(this)
+    return ret
+}

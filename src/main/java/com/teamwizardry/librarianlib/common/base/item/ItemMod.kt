@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.common.util.currentModId
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
-import net.minecraftforge.fml.common.Loader
+import net.minecraft.util.NonNullList
 
 /**
  * The default implementation for an IVariantHolder item.
@@ -41,7 +41,7 @@ open class ItemMod(name: String, vararg variants: String) : Item(), IModItemProv
         return "item.$modId:$name"
     }
 
-    override fun getSubItems(itemIn: Item, tab: CreativeTabs?, subItems: MutableList<ItemStack>) {
+    override fun getSubItems(itemIn: Item, tab: CreativeTabs?, subItems: NonNullList<ItemStack>) {
         variants.indices.mapTo(subItems) { ItemStack(itemIn, 1, it) }
     }
 

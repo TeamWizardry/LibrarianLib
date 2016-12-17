@@ -19,13 +19,14 @@ import net.minecraft.world.World
  */
 class ItemGuiOpener : ItemMod("guiopener") {
 
-    override fun onItemRightClick(itemStackIn: ItemStack, worldIn: World, playerIn: EntityPlayer, hand: EnumHand?): ActionResult<ItemStack> {
+    override fun onItemRightClick(worldIn: World, playerIn: EntityPlayer, hand: EnumHand?): ActionResult<ItemStack> {
+        val stack = playerIn.getHeldItem(hand)
         if(playerIn.isSneaking)
-            itemStackIn.itemDamage = (itemStackIn.itemDamage + 1) % Guis.values().size
+            stack.itemDamage = (stack.itemDamage + 1) % Guis.values().size
         else if(worldIn.isRemote) {
-            Minecraft.getMinecraft().displayGuiScreen(Guis.values()[itemStackIn.itemDamage % Guis.values().size].create())
+            Minecraft.getMinecraft().displayGuiScreen(Guis.values()[stack.itemDamage % Guis.values().size].create())
         }
-        return ActionResult(EnumActionResult.SUCCESS, itemStackIn)
+        return ActionResult(EnumActionResult.SUCCESS, stack)
     }
 
     override fun getItemStackDisplayName(stack: ItemStack): String {

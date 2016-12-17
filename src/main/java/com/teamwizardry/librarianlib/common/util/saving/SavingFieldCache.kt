@@ -88,7 +88,7 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
             it.first
         }.forEach {
             val (name, triple) = it
-            val (getter, setter, type) = triple
+            val (getter, setter) = triple
             getter.isAccessible = true
             setter.isAccessible = true
 

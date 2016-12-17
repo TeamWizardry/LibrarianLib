@@ -5,7 +5,6 @@ import net.minecraft.block.material.Material
 import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
@@ -51,7 +50,7 @@ class BlockIntSaveTest : BlockTestingBase(Material.ROCK, "intSaveTest") {
                 .withProperty(map_down, tile.sides[EnumFacing.DOWN])
     }
 
-    override fun onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, player: EntityPlayer, hand: EnumHand, heldItem: ItemStack?, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
+    override fun onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, player: EntityPlayer, hand: EnumHand, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         val tile: TileIntSaveTest = worldIn.getTileEntity(pos) as TileIntSaveTest
 
 

@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.common.util.autoregister.TileRegister
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import com.teamwizardry.librarianlib.common.util.saving.Save
 import com.teamwizardry.librarianlib.common.util.sendMessage
+import com.teamwizardry.librarianlib.common.util.toNonnullList
 import com.teamwizardry.librarianlib.common.util.vec
 import net.minecraft.block.ITileEntityProvider
 import net.minecraft.block.material.Material
@@ -28,14 +29,14 @@ import java.util.concurrent.ThreadLocalRandom
  * Created by TheCodeWarrior
  */
 class BlockObjectsSaving : BlockMod("saving_objects", Material.CACTUS), ITileEntityProvider {
-    override fun onBlockActivated(worldIn: World, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer, hand: EnumHand?, heldItem: ItemStack?, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
+    override fun onBlockActivated(worldIn: World, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer, hand: EnumHand?, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         val te = worldIn.getTileEntity(pos!!)!! as TETest
         if (!worldIn.isRemote) {
             te.color = kolors[ThreadLocalRandom.current().nextInt(kolors.size)]
             te.tag.setInteger(te.color.toString(), te.tag.getInteger(te.color.toString()) + 1)
             te.stack = playerIn.heldItemMainhand
 
-            te.handler = ItemStackHandler(arrayOf(playerIn.heldItemMainhand, playerIn.heldItemOffhand))
+            te.handler = ItemStackHandler(arrayOf(playerIn.heldItemMainhand, playerIn.heldItemOffhand).toNonnullList())
             te.vec3d = vec(hitX, hitY, hitZ)
             te.vec3i = pos
             te.vec2d = vec(hitX, hitZ)

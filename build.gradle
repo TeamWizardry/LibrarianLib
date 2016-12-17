@@ -38,11 +38,12 @@ version = "${config.version}.${config.build_number}"
 group = config.group
 archivesBaseName = config.mod_name
 
-repositories {
-    maven {
-        url "http://maven.amadornes.com/"
-    }
-}
+// todo once mcmultipart is 1.11
+//repositories {
+//    maven {
+//        url "http://maven.amadornes.com/"
+//    }
+//}
 
 minecraft {
     version = "${config.mc_version}-${config.forge_version}"
@@ -65,7 +66,8 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     required "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    deobfCompile "MCMultiPart:MCMultiPart:1.2.1:universal"
+// todo once mcmultipart is 1.11
+//    deobfCompile "MCMultiPart:MCMultiPart:1.2.1:universal"
 }
 
 jar {

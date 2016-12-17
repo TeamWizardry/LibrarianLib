@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.common.util.autoregister.TileRegister
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import com.teamwizardry.librarianlib.common.util.saving.Save
 import com.teamwizardry.librarianlib.common.util.sendMessage
+import com.teamwizardry.librarianlib.common.util.toNonnullList
 import net.minecraft.block.ITileEntityProvider
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
@@ -28,7 +29,7 @@ import java.util.concurrent.ThreadLocalRandom
  * Created by TheCodeWarrior
  */
 class BlockObjectArraysSaving : BlockMod("saving_objectArrays", Material.CACTUS), ITileEntityProvider {
-    override fun onBlockActivated(worldIn: World, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer, hand: EnumHand?, heldItem: ItemStack?, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
+    override fun onBlockActivated(worldIn: World, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer, hand: EnumHand?, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         val te = worldIn.getTileEntity(pos!!)!! as TETest
         if (!worldIn.isRemote) {
             if (playerIn.isSneaking) {
@@ -38,7 +39,7 @@ class BlockObjectArraysSaving : BlockMod("saving_objectArrays", Material.CACTUS)
                 te.tag[te.index].setInteger(te.color.toString(), te.tag[te.index].getInteger(te.color.toString()) + 1)
                 te.stack[te.index] = playerIn.heldItemMainhand
 
-                te.handler[te.index] = ItemStackHandler(arrayOf(playerIn.heldItemMainhand, playerIn.heldItemOffhand))
+                te.handler[te.index] = ItemStackHandler(arrayOf(playerIn.heldItemMainhand, playerIn.heldItemOffhand).toNonnullList())
                 te.vec3d[te.index] = Vec3d(hitX.toDouble(), hitY.toDouble(), hitZ.toDouble())
                 te.vec3i[te.index] = pos
                 te.vec2d[te.index] = Vec2d(hitX.toDouble(), hitZ.toDouble())

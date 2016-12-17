@@ -1,11 +1,12 @@
 package com.teamwizardry.librarianlib.common.base
 
 import com.teamwizardry.librarianlib.common.util.currentModId
+import com.teamwizardry.librarianlib.common.util.toNonnullList
 import net.minecraft.block.Block
 import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.init.Blocks
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import net.minecraft.util.NonNullList
 import java.util.*
 
 abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(currentModId + if (postFix == null) "" else ".$postFix") {
@@ -21,19 +22,15 @@ abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(currentMod
         defaultTabs.put(currentModId, this)
     }
 
-    internal lateinit var list: MutableList<ItemStack>
+    internal lateinit var list: NonNullList<ItemStack>
 
-    open val iconStack = ItemStack(Blocks.STONE) // Default value for legacy support
+    abstract val iconStack: ItemStack
 
-    override fun getIconItemStack(): ItemStack {
+    override fun getTabIconItem(): ItemStack {
         return iconStack
     }
 
-    override fun getTabIconItem(): Item? {
-        return this.iconItemStack.item
-    }
-
-    override fun displayAllRelevantItems(list: MutableList<ItemStack>) {
+    override fun displayAllRelevantItems(list: NonNullList<ItemStack>) {
         this.list = list
         for (item in items)
             addItem(item)
@@ -42,8 +39,8 @@ abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(currentMod
 
     private fun addItem(item: Item) {
         val tempList = mutableListOf<ItemStack>()
-        item.getSubItems(item, this, tempList)
-        if (item == tabIconItem)
+        item.getSubItems(item, this, tempList.toNonnullList())
+        if (item == tabIconItem.item)
             this.list.addAll(0, tempList)
         else
             this.list.addAll(tempList)

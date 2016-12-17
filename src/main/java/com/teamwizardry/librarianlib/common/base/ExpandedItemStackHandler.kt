@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.common.base
 
-import com.teamwizardry.librarianlib.common.util.size
+import com.teamwizardry.librarianlib.common.util.toNonnullList
 import net.minecraft.item.ItemStack
 import net.minecraftforge.items.ItemHandlerHelper
 import net.minecraftforge.items.ItemStackHandler
@@ -15,11 +15,11 @@ class ExpandedItemStackHandler : ItemStackHandler {
     var slotPredicate: (ExpandedItemStackHandler.(Int, ItemStack) -> Boolean)? = null
 
     constructor(size: Int = 1) : super(size)
-    constructor(stacks: Array<ItemStack>) : super(stacks)
+    constructor(stacks: Array<ItemStack>) : super(stacks.toNonnullList())
 
-    override fun insertItem(slot: Int, stack: ItemStack?, simulate: Boolean): ItemStack? {
-        if (stack == null || stack.size == 0)
-            return null
+    override fun insertItem(slot: Int, stack: ItemStack, simulate: Boolean): ItemStack {
+        if (stack.isEmpty)
+            return ItemStack.EMPTY
 
         validateSlotIndex(slot)
 
@@ -27,31 +27,30 @@ class ExpandedItemStackHandler : ItemStackHandler {
 
         var limit = getStackLimit(slot, stack)
         val canInsert = canInsertIntoSlot(slot, stack)
-
         if (!canInsert) return stack
 
-        if (existing != null) {
+        if (!existing.isEmpty) {
             if (!ItemHandlerHelper.canItemStacksStack(stack, existing))
                 return stack
 
-            limit -= existing.size
+            limit -= existing.count
         }
 
         if (limit <= 0)
             return stack
 
-        val reachedLimit = stack.size > limit
+        val reachedLimit = stack.count > limit
 
         if (!simulate) {
-            if (existing == null) {
+            if (existing.isEmpty) {
                 this.stacks[slot] = if (reachedLimit) ItemHandlerHelper.copyStackWithSize(stack, limit) else stack
             } else {
-                existing.size += if (reachedLimit) limit else stack.size
+                existing.grow(if (reachedLimit) limit else stack.count)
             }
             onContentsChanged(slot)
         }
 
-        return if (reachedLimit) ItemHandlerHelper.copyStackWithSize(stack, stack.size - limit) else null
+        return if (reachedLimit) ItemHandlerHelper.copyStackWithSize(stack, stack.count - limit) else ItemStack.EMPTY
     }
 
     fun canInsertIntoSlot(slot: Int, stack: ItemStack): Boolean {

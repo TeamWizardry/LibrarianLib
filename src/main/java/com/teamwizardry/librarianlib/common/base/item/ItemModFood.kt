@@ -7,6 +7,7 @@ import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
 import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemStack
+import net.minecraft.util.NonNullList
 
 /**
  * The default implementation for an IVariantHolder food.
@@ -45,7 +46,7 @@ open class ItemModFood(name: String, amount: Int, saturation: Float, wolfFood: B
         return "item.$modId:$name"
     }
 
-    override fun getSubItems(itemIn: Item, tab: CreativeTabs?, subItems: MutableList<ItemStack>) {
+    override fun getSubItems(itemIn: Item, tab: CreativeTabs?, subItems: NonNullList<ItemStack>) {
         variants.indices.mapTo(subItems) { ItemStack(itemIn, 1, it) }
     }
 

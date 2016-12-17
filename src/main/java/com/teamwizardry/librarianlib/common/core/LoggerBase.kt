@@ -39,10 +39,10 @@ abstract class LoggerBase protected constructor(name: String) {
     }
 
     fun message(player: EntityPlayer, message: String, vararg args: Any?) {
-        player.sendStatusMessage(TextComponentString(String.format(message, *args)))
+        player.sendStatusMessage(TextComponentString(String.format(message, *args)), false)
     }
 
     fun warn(player: EntityPlayer, message: String, vararg args: Any?) {
-        player.sendStatusMessage(TextComponentString(String.format(message, *args)).setStyle(Style().setColor(TextFormatting.RED)))
+        player.sendStatusMessage(TextComponentString(String.format(message, *args)).setStyle(Style().setColor(TextFormatting.RED)), false)
     }
 }

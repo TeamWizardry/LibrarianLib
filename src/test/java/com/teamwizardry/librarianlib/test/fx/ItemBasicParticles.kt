@@ -20,7 +20,7 @@ import net.minecraft.world.World
  */
 class ItemBasicParticles : ItemMod("basic_particle") {
 
-    override fun onItemRightClick(itemStackIn: ItemStack, worldIn: World, playerIn: EntityPlayer, hand: EnumHand): ActionResult<ItemStack> {
+    override fun onItemRightClick(worldIn: World, playerIn: EntityPlayer, hand: EnumHand): ActionResult<ItemStack> {
 
         if (worldIn.isRemote) {
             val builder = ParticleBuilder(50)
@@ -39,7 +39,7 @@ class ItemBasicParticles : ItemMod("basic_particle") {
             ParticleSpawner.spawn(builder, worldIn, InterpLine(playerIn.positionVector, playerIn.getPositionEyes(1f)), 5)
         }
 
-        return ActionResult(EnumActionResult.SUCCESS, itemStackIn)
+        return ActionResult(EnumActionResult.SUCCESS, playerIn.getHeldItem(hand))
     }
 
 

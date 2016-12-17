@@ -84,7 +84,7 @@ class LayeredBakedModel(protected val generalQuads: Map<BlockRenderLayer,List<Ba
         }
 
         private fun addGeneralQuads(p_188645_1_: IBlockState, p_188645_2_: IBakedModel, p_188645_3_: TextureAtlasSprite, p_188645_4_: Long) {
-            for (bakedquad in p_188645_2_.getQuads(p_188645_1_, null as EnumFacing, p_188645_4_)) {
+            for (bakedquad in p_188645_2_.getQuads(p_188645_1_, null, p_188645_4_)) {
                 this.addGeneralQuad(BakedQuadRetextured(bakedquad, p_188645_3_))
             }
         }

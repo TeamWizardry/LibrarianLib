@@ -210,6 +210,7 @@ public class ArrayReflect {
 			throw badArray(array);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static <T> T[] newInstance(Class<T> clazz, int length) {
 		return (T[]) newInstanceRaw(clazz, length);
 	}

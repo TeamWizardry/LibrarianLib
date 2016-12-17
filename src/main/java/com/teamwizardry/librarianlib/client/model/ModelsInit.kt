@@ -21,6 +21,7 @@ object ModelsInit {
             .registerTypeAdapter(ModelBlock::class.java, ModelBlock.Deserializer())
 //            .registerTypeAdapter(BlockPart::class.java, createInstance("net.minecraft.client.renderer.block.model.BlockPart${'$'}Deserializer"))
             .registerTypeAdapter(BlockFaceUV::class.java, createInstance("net.minecraft.client.renderer.block.model.BlockFaceUV${'$'}Deserializer"))
+            //todo fix deprecation
             .registerTypeAdapter(ItemTransformVec3f::class.java, createInstance("net.minecraft.client.renderer.block.model.ItemTransformVec3f${'$'}Deserializer"))
             .registerTypeAdapter(ItemCameraTransforms::class.java, createInstance("net.minecraft.client.renderer.block.model.ItemCameraTransforms${'$'}Deserializer"))
             .registerTypeAdapter(ItemOverride::class.java, createInstance("net.minecraft.client.renderer.block.model.ItemOverride${'$'}Deserializer"))

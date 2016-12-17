@@ -8,6 +8,7 @@ import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.item.ItemTool
+import net.minecraft.util.NonNullList
 
 /**
  * The default implementation for an IVariantHolder tool.
@@ -44,7 +45,7 @@ open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, to
         return "item.$modId:$name"
     }
 
-    override fun getSubItems(itemIn: Item, tab: CreativeTabs?, subItems: MutableList<ItemStack>) {
+    override fun getSubItems(itemIn: Item, tab: CreativeTabs?, subItems: NonNullList<ItemStack>) {
         variants.indices.mapTo(subItems) { ItemStack(itemIn, 1, it) }
     }
 

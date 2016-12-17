@@ -4,8 +4,9 @@ import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
 import com.teamwizardry.librarianlib.common.util.times
-import mcmultipart.multipart.IMultipart
-import mcmultipart.multipart.MultipartRegistry
+// todo once mcmultipart is 1.11
+//import mcmultipart.multipart.IMultipart
+//import mcmultipart.multipart.MultipartRegistry
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.Loader
@@ -68,25 +69,26 @@ object AutoRegisterHandler {
             }
 
         }
-        if (Loader.isModLoaded("mcmultipart")) {
-            getAnnotatedBy(PartRegister::class.java, IMultipart::class.java, table).forEach {
-                val name = it.get<String>("value")
-                val modId = getModid(it.clazz)
-                if (name == null) {
-                    errors.getOrPut("PartRegister", { mutableListOf() }).add(it.clazz)
-                } else {
-                    var loc = ResourceLocation(name)
-                    if (loc.resourceDomain == "minecraft" && modId == null)
-                        errors.getOrPut("PartRegister", { mutableListOf() }).add(it.clazz)
-                    else {
-                        if (loc.resourceDomain == "minecraft")
-                            loc = ResourceLocation(modId, loc.resourcePath)
-                        AbstractSaveHandler.cacheFields(it.clazz)
-                        MultipartRegistry.registerPart(it.clazz, loc.toString())
-                    }
-                }
-            }
-        }
+// todo once mcmultipart is 1.11
+//        if (Loader.isModLoaded("mcmultipart")) {
+//            getAnnotatedBy(PartRegister::class.java, IMultipart::class.java, table).forEach {
+//                val name = it.get<String>("value")
+//                val modId = getModid(it.clazz)
+//                if (name == null) {
+//                    errors.getOrPut("PartRegister", { mutableListOf() }).add(it.clazz)
+//                } else {
+//                    var loc = ResourceLocation(name)
+//                    if (loc.resourceDomain == "minecraft" && modId == null)
+//                        errors.getOrPut("PartRegister", { mutableListOf() }).add(it.clazz)
+//                    else {
+//                        if (loc.resourceDomain == "minecraft")
+//                            loc = ResourceLocation(modId, loc.resourcePath)
+//                        AbstractSaveHandler.cacheFields(it.clazz)
+//                        MultipartRegistry.registerPart(it.clazz, loc.toString())
+//                    }
+//                }
+//            }
+//        }
 
         if (errors.isNotEmpty()) {
             var build = "AutoRegister Errors: No modId specified!"

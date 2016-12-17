@@ -12,6 +12,7 @@ import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
+import net.minecraft.util.NonNullList
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.IBlockAccess
@@ -41,7 +42,8 @@ open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlo
     override fun setUnlocalizedName(par1Str: String): ItemBlock {
         val rl = ResourceLocation(modId, par1Str)
         GameRegistry.register(this, rl)
-        return super.setUnlocalizedName(par1Str)
+        super.setUnlocalizedName(par1Str)
+        return this
     }
 
     override fun getUnlocalizedName(stack: ItemStack): String {
@@ -52,7 +54,7 @@ open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlo
         return "tile.$modId:$name"
     }
 
-    override fun getSubItems(itemIn: Item, tab: CreativeTabs?, subItems: MutableList<ItemStack>) {
+    override fun getSubItems(itemIn: Item, tab: CreativeTabs?, subItems: NonNullList<ItemStack>) {
         variants.indices.mapTo(subItems) { ItemStack(itemIn, 1, it) }
     }
 

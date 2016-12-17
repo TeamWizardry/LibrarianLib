@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.common.util.autoregister
 
-import com.teamwizardry.librarianlib.common.base.multipart.PartMod
+// todo once mcmultipart is 1.11
+//import com.teamwizardry.librarianlib.common.base.multipart.PartMod
 import net.minecraft.tileentity.TileEntity
 
 /**

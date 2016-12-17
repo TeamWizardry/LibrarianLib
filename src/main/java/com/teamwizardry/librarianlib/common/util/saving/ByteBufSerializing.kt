@@ -310,6 +310,7 @@ private object SpecialByteBufSerializers {
         return serializer
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun createArrayMapping(type: FieldType): BufferSerializer? {
         if (type !is FieldTypeArray)
             return null
