@@ -4,13 +4,22 @@ import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.client.fx.shader.uniforms.FloatTypes
 import com.teamwizardry.librarianlib.client.fx.shader.uniforms.Uniform
 import com.teamwizardry.librarianlib.client.fx.shader.uniforms.UniformType
+import com.teamwizardry.librarianlib.common.util.VariantHelper
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 
 import org.lwjgl.opengl.GL20
 
 @SideOnly(Side.CLIENT)
-open class Shader(val vert: String?, val frag: String?) {
+open class Shader(vert: String?, frag: String?) {
+
+    val vert: String?
+    val frag: String?
+
+    init {
+        this.vert = if (vert == null) null else VariantHelper.pathToSnakeCase(vert)
+        this.frag = if (frag == null) null else VariantHelper.pathToSnakeCase(frag)
+    }
 
     var time: FloatTypes.FloatUniform? = null
 

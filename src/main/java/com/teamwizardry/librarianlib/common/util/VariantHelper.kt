@@ -44,6 +44,15 @@ object VariantHelper {
     }
 
     /**
+     * Transforms a path string to snake case. Allows people to be lazy in migration.
+     */
+    @JvmStatic
+    fun pathToSnakeCase(str: String): String {
+        val parts = str.replace("\\", "/").split("/")
+        return parts.joinToString("/") { toSnakeCase(it) }
+    }
+
+    /**
      * All items which use this method in their constructor should implement the setUnlocalizedNameForItem provided below in their setUnlocalizedName.
      */
     @JvmStatic
