@@ -322,5 +322,14 @@ var ItemStack.size: Int
 // Relating to NonNullList =============================================================================================
 private class FakeNonnullList<T>(delegate: MutableList<T>) : NonNullList<T>(delegate, null)
 
-fun <T> Iterable<T>.toNonnullList(): NonNullList<T> = FakeNonnullList(toMutableList())
-fun <T> Array<T>.toNonnullList(): NonNullList<T> = FakeNonnullList(toMutableList())
+fun <T> Iterable<T>.toNonnullList() = toMutableList().asNonnullList()
+fun <T> Array<T>.toNonnullList() = toMutableList().asNonnullList()
+fun ByteArray.toNonnullList() = toMutableList().asNonnullList()
+fun ShortArray.toNonnullList() = toMutableList().asNonnullList()
+fun IntArray.toNonnullList() = toMutableList().asNonnullList()
+fun LongArray.toNonnullList() = toMutableList().asNonnullList()
+fun BooleanArray.toNonnullList() = toMutableList().asNonnullList()
+fun FloatArray.toNonnullList() = toMutableList().asNonnullList()
+fun DoubleArray.toNonnullList() = toMutableList().asNonnullList()
+fun CharArray.toNonnullList() = toMutableList().asNonnullList()
+fun <T> MutableList<T>.asNonnullList(): NonNullList<T> = FakeNonnullList(this)
