@@ -311,14 +311,6 @@ fun <T, R> ICapabilityProvider.ifCap(capability: Capability<T>, facing: EnumFaci
     return null
 }
 
-// ItemStack ===========================================================================================================
-
-var ItemStack.size: Int
-    get() = count
-    set(value) {
-        count = value
-    }
-
 // Relating to NonNullList =============================================================================================
 private class FakeNonnullList<T>(delegate: MutableList<T>) : NonNullList<T>(delegate, null)
 

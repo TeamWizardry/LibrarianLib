@@ -28,6 +28,7 @@ object ShaderHelper {
     }
 
     @SubscribeEvent
+    @Suppress("UNUSED_PARAMETER")
     fun onResourceManagerReload(e: ResourceReloadEvent) {
         initShaders()
     }

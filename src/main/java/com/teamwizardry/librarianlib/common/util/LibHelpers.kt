@@ -8,18 +8,8 @@ import net.minecraftforge.fml.common.Loader
 /**
  * Created by TheCodeWarrior
  */
-fun <T> nonnullListOf() = NonNullList.create<T>()
+fun <T> nonnullListOf(): NonNullList<T> = NonNullList.create<T>()
 fun <T> nonnullListOf(vararg items: T) = items.toNonnullList()
-
-fun bitsNeededToStoreNValues(valueCount: Int): Int {
-    var value = valueCount - 1
-    var count = 0
-    while (value > 0) {
-        count++
-        value = value shr 1
-    }
-    return count
-}
 
 fun vec(x: Number, y: Number) = Vec2d(x.toDouble(), y.toDouble())
 

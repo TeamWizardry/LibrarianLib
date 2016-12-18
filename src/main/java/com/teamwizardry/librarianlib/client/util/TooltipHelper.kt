@@ -18,7 +18,7 @@ object TooltipHelper {
         if (GuiScreen.isShiftKeyDown())
             lambda()
         else
-            addToTooltip(tooltip, "${LibrarianLib.Companion.MODID}.shiftinfo")
+            addToTooltip(tooltip, "${LibrarianLib.MODID}.shiftinfo")
     }
 
     /**

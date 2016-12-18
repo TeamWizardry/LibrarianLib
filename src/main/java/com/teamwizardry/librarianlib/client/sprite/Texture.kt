@@ -102,6 +102,7 @@ class Texture(
         }
 
         @SubscribeEvent
+        @Suppress("UNUSED_PARAMETER")
         fun onResourceManagerReload(e: ResourceReloadEvent) {
             val newList = ArrayList<WeakReference<Texture>>()
 
