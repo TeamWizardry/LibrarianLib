@@ -7,7 +7,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
 @SideOnly(Side.CLIENT)
 object LibShaders {
     @JvmField
-    val HUE = HueShader(null, "/assets/librarianlib/shaders/hue.frag")
+    val HUE = HueShader(null, "shaders/hue.frag")
 
     init {
         ShaderHelper.addShader(HUE)

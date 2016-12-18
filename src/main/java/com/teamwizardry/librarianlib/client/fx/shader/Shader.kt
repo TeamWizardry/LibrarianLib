@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.client.fx.shader.uniforms.FloatTypes
 import com.teamwizardry.librarianlib.client.fx.shader.uniforms.Uniform
 import com.teamwizardry.librarianlib.client.fx.shader.uniforms.UniformType
 import com.teamwizardry.librarianlib.common.util.VariantHelper
+import com.teamwizardry.librarianlib.common.util.currentModId
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 
@@ -13,13 +14,8 @@ import org.lwjgl.opengl.GL20
 @SideOnly(Side.CLIENT)
 open class Shader(vert: String?, frag: String?) {
 
-    val vert: String?
-    val frag: String?
-
-    init {
-        this.vert = if (vert == null) null else VariantHelper.pathToSnakeCase(vert)
-        this.frag = if (frag == null) null else VariantHelper.pathToSnakeCase(frag)
-    }
+    val vert: String? = if (vert == null) null else "/assets/$currentModId/${VariantHelper.pathToSnakeCase(vert).removePrefix("/")}"
+    val frag: String? = if (frag == null) null else "/assets/$currentModId/${VariantHelper.pathToSnakeCase(frag).removePrefix("/")}"
 
     var time: FloatTypes.FloatUniform? = null
 
@@ -63,16 +59,15 @@ open class Shader(vert: String?, frag: String?) {
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Uniform> getUniform(name: String, quiet: Boolean): T? {
-        for (i in uniforms.indices) {
-            if (uniforms[i].name == name) {
-                try {
-                    return uniforms[i] as T?
-                } catch (e: ClassCastException) {
-                    LibrarianLog.debug("Uniform %s was wrong type. (%s)", name, uniforms[i].type.name)
+        uniforms.indices
+                .filter { uniforms[it].name == name }
+                .forEach {
+                    try {
+                        return uniforms[it] as T?
+                    } catch (e: ClassCastException) {
+                        LibrarianLog.debug("Uniform %s was wrong type. (%s)", name, uniforms[it].type.name)
+                    }
                 }
-
-            }
-        }
         if (!quiet) LibrarianLog.debug("Can't find uniform %s", name)
         return null
     }
