@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.common.base
 
 import com.teamwizardry.librarianlib.common.util.VariantHelper
 import com.teamwizardry.librarianlib.common.util.currentModId
-import com.teamwizardry.librarianlib.common.util.toNonnullList
+import com.teamwizardry.librarianlib.common.util.nonnullListOf
 import net.minecraft.block.Block
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
@@ -46,8 +46,8 @@ abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(currentMod
     }
 
     private fun addItem(item: Item) {
-        val tempList = mutableListOf<ItemStack>()
-        item.getSubItems(item, this, tempList.toNonnullList())
+        val tempList = nonnullListOf<ItemStack>()
+        item.getSubItems(item, this, tempList)
         if (item == tabIconItem.item)
             this.list.addAll(0, tempList)
         else

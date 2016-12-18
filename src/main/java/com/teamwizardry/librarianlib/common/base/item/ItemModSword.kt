@@ -25,7 +25,7 @@ open class ItemModSword(name: String, material: ToolMaterial, vararg variants: S
 
     init {
         modId = currentModId
-        bareName = name
+        bareName = VariantHelper.toSnakeCase(name)
         this.variants = VariantHelper.setupItem(this, name, variants, creativeTab)
     }
 

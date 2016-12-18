@@ -29,7 +29,7 @@ open class ItemModFood(name: String, amount: Int, saturation: Float, wolfFood: B
 
     init {
         modId = currentModId
-        bareName = name
+        bareName = VariantHelper.toSnakeCase(name)
         this.variants = VariantHelper.setupItem(this, name, variants, creativeTab)
     }
 

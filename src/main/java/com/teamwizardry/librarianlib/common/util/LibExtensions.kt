@@ -320,15 +320,7 @@ var ItemStack.size: Int
     }
 
 // Relating to NonNullList =============================================================================================
+private class FakeNonnullList<T>(delegate: MutableList<T>) : NonNullList<T>(delegate, null)
 
-fun <T> Iterable<T>.toNonnullList(): NonNullList<T> {
-    val ret = NonNullList.create<T>()
-    ret.addAll(this)
-    return ret
-}
-
-fun <T> Array<T>.toNonnullList(): NonNullList<T> {
-    val ret = NonNullList.create<T>()
-    ret.addAll(this)
-    return ret
-}
+fun <T> Iterable<T>.toNonnullList(): NonNullList<T> = FakeNonnullList(toMutableList())
+fun <T> Array<T>.toNonnullList(): NonNullList<T> = FakeNonnullList(toMutableList())

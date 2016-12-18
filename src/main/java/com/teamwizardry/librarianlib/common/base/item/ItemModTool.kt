@@ -28,7 +28,7 @@ open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, to
 
     init {
         modId = currentModId
-        bareName = name
+        bareName = VariantHelper.toSnakeCase(name)
         this.variants = VariantHelper.setupItem(this, name, variants, creativeTab)
     }
 

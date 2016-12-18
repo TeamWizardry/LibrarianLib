@@ -24,7 +24,7 @@ open class ItemMod(name: String, vararg variants: String) : Item(), IModItemProv
 
     init {
         modId = currentModId
-        bareName = name
+        bareName = VariantHelper.toSnakeCase(name)
         this.variants = VariantHelper.setupItem(this, name, variants, creativeTab)
     }
 
