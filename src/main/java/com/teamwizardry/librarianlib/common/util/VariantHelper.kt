@@ -19,7 +19,9 @@ object VariantHelper {
      * Transforms a string to snake case. Allows people to be lazy in migration.
      */
     @JvmStatic
-    fun toSnakeCase(string: String): String {
+    fun toSnakeCase(str: String): String {
+        val string = str.replace("-", "_")
+
         if (string.toUpperCase(Locale.ROOT) == string)
             return string.toLowerCase(Locale.ROOT)
         else if (string.toLowerCase(Locale.ROOT) == string)
@@ -34,7 +36,7 @@ object VariantHelper {
                 lastIndex = index
             }
             lastTokenUpper = true
-        } else lastTokenUpper = false
+        } else lastTokenUpper = token == '_'
         
         split.add(string.substring(lastIndex))
 

@@ -7,11 +7,11 @@ def to_snake_case(string):
     """
     :type string: str
     """
+    string = string.replace("-", "_")
     if string.isupper():
         return string.lower()
     elif string.islower():
         return string
-
     split = list()
     last_index = 0
     last_token_upper = True
@@ -22,7 +22,7 @@ def to_snake_case(string):
                 last_index = i
             last_token_upper = True
         else:
-            last_token_upper = False
+            last_token_upper = string[i] == "_"
     split.append(string[last_index:len(string)].lower())
     return "_".join(split)
 
