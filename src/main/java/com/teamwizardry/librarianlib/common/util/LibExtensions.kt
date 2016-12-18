@@ -313,10 +313,14 @@ fun <T, R> ICapabilityProvider.ifCap(capability: Capability<T>, facing: EnumFaci
 }
 
 // Relating to NonNullList =============================================================================================
-private class FakeNonnullList<T>(delegate: MutableList<T>) : NonNullList<T>(delegate, null)
+private class FakeNonnullList<T: Any>(delegate: MutableList<T>) : NonNullList<T>(delegate, null) {
+    constructor(delegate: MutableList<T?>, default: T) : this(delegate.map { it ?: default }.toMutableList())
+}
 
 fun <T: Any> Iterable<T>.toNonnullList() = toMutableList().asNonnullList()
+fun <T: Any> Iterable<T?>.toNonnullList(default: T): NonNullList<T> = toMutableList().asNonnullList(default)
 fun <T: Any> Array<T>.toNonnullList() = toMutableList().asNonnullList()
+fun <T: Any> Array<T?>.toNonnullList(default: T): NonNullList<T> = toMutableList().asNonnullList(default)
 fun ByteArray.toNonnullList() = toMutableList().asNonnullList()
 fun ShortArray.toNonnullList() = toMutableList().asNonnullList()
 fun IntArray.toNonnullList() = toMutableList().asNonnullList()
@@ -326,3 +330,4 @@ fun FloatArray.toNonnullList() = toMutableList().asNonnullList()
 fun DoubleArray.toNonnullList() = toMutableList().asNonnullList()
 fun CharArray.toNonnullList() = toMutableList().asNonnullList()
 fun <T: Any> MutableList<T>.asNonnullList(): NonNullList<T> = FakeNonnullList(this)
+fun <T: Any> MutableList<T?>.asNonnullList(default: T): NonNullList<T> = FakeNonnullList(this, default)
