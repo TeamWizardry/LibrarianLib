@@ -63,7 +63,7 @@ class TestMod {
 
         lateinit var entrypoints: Array<TestEntryPoint>
 
-        object Tab : ModCreativeTab(MODID) {
+        object Tab : ModCreativeTab() {
             init {
                 registerDefaultTab()
             }
