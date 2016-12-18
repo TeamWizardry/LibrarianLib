@@ -4,7 +4,6 @@ package com.teamwizardry.librarianlib.common.core
 
 import com.teamwizardry.librarianlib.common.util.EasyConfigHandler
 import com.teamwizardry.librarianlib.common.util.autoregister.AutoRegisterHandler
-import com.teamwizardry.librarianlib.common.util.bitsaving.BitwiseStorageManager
 import net.minecraft.util.text.translation.I18n
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
@@ -19,7 +18,6 @@ import java.io.InputStream
 open class LibCommonProxy {
 
     open fun pre(e: FMLPreInitializationEvent) {
-        BitwiseStorageManager
         EasyConfigHandler.init()
     }
 
