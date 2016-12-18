@@ -25,7 +25,7 @@ object SerializePrimitiveArrays {
         SerializerRegistry.register("java:char[]", Serializer(CharArray::class.java, Array<Char>::class.java))
 
         SerializerRegistry["java:char[]"]?.register(Targets.NBT, Targets.NBT.impl<CharArray>
-        ({ nbt, existing ->
+        ({ nbt, existing, syncing ->
             val list = nbt.safeCast(NBTTagList::class.java)
             val array = if(existing != null && existing.size == list.tagCount()) existing else CharArray(list.tagCount())
 
@@ -33,19 +33,19 @@ object SerializePrimitiveArrays {
                 array[i] = tag.safeCast(NBTPrimitive::class.java).short.toChar()
             }
             array
-        }, { value ->
+        }, { value, syncing ->
             val tag = NBTTagList()
             value.map(Char::toShort).forEach { v -> tag.appendTag(NBTTagShort(v)) }
             tag
         }))
 
         SerializerRegistry["java:char[]"]?.register(Targets.BYTES, Targets.BYTES.impl<CharArray>
-        ({ buf, existing ->
+        ({ buf, existing, syncing ->
             val length = buf.readVarInt()
             val arr = if(existing != null && existing.size == length) existing else CharArray(length)
             arr.indices.forEach { arr[it] = buf.readChar() }
             arr
-        }, { buf, value ->
+        }, { buf, value, syncing ->
             buf.writeVarInt(value.size)
             value.forEach { buf.writeChar(it.toInt()) }
         }))
@@ -55,7 +55,7 @@ object SerializePrimitiveArrays {
         SerializerRegistry.register("java:short[]", Serializer(ShortArray::class.java, Array<Short>::class.java))
 
         SerializerRegistry["java:short[]"]?.register(Targets.NBT, Targets.NBT.impl<ShortArray>
-        ({ nbt, existing ->
+        ({ nbt, existing, syncing ->
             val list = nbt.safeCast(NBTTagList::class.java)
             val array = if(existing != null && existing.size == list.tagCount()) existing else ShortArray(list.tagCount())
 
@@ -63,19 +63,19 @@ object SerializePrimitiveArrays {
                 array[i] = tag.safeCast(NBTPrimitive::class.java).short
             }
             array
-        }, { value ->
+        }, { value, syncing ->
             val tag = NBTTagList()
             value.forEach { v -> tag.appendTag(NBTTagShort(v)) }
             tag
         }))
 
         SerializerRegistry["java:short[]"]?.register(Targets.BYTES, Targets.BYTES.impl<ShortArray>
-        ({ buf, existing ->
+        ({ buf, existing, syncing ->
             val length = buf.readVarInt()
             val arr = if(existing != null && existing.size == length) existing else ShortArray(length)
             arr.indices.forEach { arr[it] = buf.readShort() }
             arr
-        }, { buf, value ->
+        }, { buf, value, syncing ->
             buf.writeVarInt(value.size)
             value.forEach { buf.writeShort(it.toInt()) }
         }))
@@ -85,19 +85,19 @@ object SerializePrimitiveArrays {
         SerializerRegistry.register("java:byte[]", Serializer(ByteArray::class.java, Array<Byte>::class.java))
 
         SerializerRegistry["java:byte[]"]?.register(Targets.NBT, Targets.NBT.impl<ByteArray>
-        ({ nbt, existing ->
+        ({ nbt, existing, syncing ->
             nbt.safeCast(NBTTagByteArray::class.java).byteArray
-        }, { value ->
+        }, { value, syncing ->
             NBTTagByteArray(value)
         }))
 
         SerializerRegistry["java:byte[]"]?.register(Targets.BYTES, Targets.BYTES.impl<ByteArray>
-        ({ buf, existing ->
+        ({ buf, existing, syncing ->
             val length = buf.readVarInt()
             val arr = if(existing != null && existing.size == length) existing else ByteArray(length)
             arr.indices.forEach { arr[it] = buf.readByte() }
             arr
-        }, { buf, value ->
+        }, { buf, value, syncing ->
             buf.writeVarInt(value.size)
             buf.writeBytes(value)
         }))
@@ -107,19 +107,19 @@ object SerializePrimitiveArrays {
         SerializerRegistry.register("java:int[]", Serializer(IntArray::class.java, Array<Int>::class.java))
 
         SerializerRegistry["java:int[]"]?.register(Targets.NBT, Targets.NBT.impl<IntArray>
-        ({ nbt, existing ->
+        ({ nbt, existing, syncing ->
             nbt.safeCast(NBTTagIntArray::class.java).intArray
-        }, { value ->
+        }, { value, syncing ->
             NBTTagIntArray(value)
         }))
 
         SerializerRegistry["java:int[]"]?.register(Targets.BYTES, Targets.BYTES.impl<IntArray>
-        ({ buf, existing ->
+        ({ buf, existing, syncing ->
             val length = buf.readVarInt()
             val arr = if(existing != null && existing.size == length) existing else IntArray(length)
             arr.indices.forEach { arr[it] = buf.readInt() }
             arr
-        }, { buf, value ->
+        }, { buf, value, syncing ->
             buf.writeVarInt(value.size)
             value.forEach { buf.writeInt(it) }
         }))
@@ -129,7 +129,7 @@ object SerializePrimitiveArrays {
         SerializerRegistry.register("java:long[]", Serializer(LongArray::class.java, Array<Long>::class.java))
 
         SerializerRegistry["java:long[]"]?.register(Targets.NBT, Targets.NBT.impl<LongArray>
-        ({ nbt, existing ->
+        ({ nbt, existing, syncing ->
             existing as LongArray?
             val list = nbt.safeCast(NBTTagList::class.java)
             val array = if(existing != null && existing.size == list.tagCount()) existing else LongArray(list.tagCount())
@@ -138,7 +138,7 @@ object SerializePrimitiveArrays {
                 array[i] = tag.safeCast(NBTPrimitive::class.java).long
             }
             array
-        }, { value ->
+        }, { value, syncing ->
             value as LongArray
             val tag = NBTTagList()
             value.forEach { tag.appendTag(NBTTagLong(it)) }
@@ -146,13 +146,13 @@ object SerializePrimitiveArrays {
         }))
 
         SerializerRegistry["java:long[]"]?.register(Targets.BYTES, Targets.BYTES.impl<LongArray>
-        ({ buf, existing ->
+        ({ buf, existing, syncing ->
             existing as LongArray?
             val length = buf.readVarInt()
             val arr = if(existing != null && existing.size == length) existing else LongArray(length)
             arr.indices.forEach { arr[it] = buf.readLong() }
             arr
-        }, { buf, value ->
+        }, { buf, value, syncing ->
             value as LongArray
             buf.writeVarInt(value.size)
             value.forEach { buf.writeLong(it) }
@@ -163,7 +163,7 @@ object SerializePrimitiveArrays {
         SerializerRegistry.register("java:float[]", Serializer(FloatArray::class.java, Array<Float>::class.java))
 
         SerializerRegistry["java:float[]"]?.register(Targets.NBT, Targets.NBT.impl<FloatArray>
-        ({ nbt, existing ->
+        ({ nbt, existing, syncing ->
             val list = nbt.safeCast(NBTTagList::class.java)
             val array = if(existing != null && existing.size == list.tagCount()) existing else FloatArray(list.tagCount())
 
@@ -171,19 +171,19 @@ object SerializePrimitiveArrays {
                 array[i] = tag.safeCast(NBTPrimitive::class.java).float
             }
             array
-        }, { value ->
+        }, { value, syncing ->
             val tag = NBTTagList()
             value.forEach { tag.appendTag(NBTTagFloat(it)) }
             tag
         }))
 
         SerializerRegistry["java:float[]"]?.register(Targets.BYTES, Targets.BYTES.impl<FloatArray>
-        ({ buf, existing ->
+        ({ buf, existing, syncing ->
             val length = buf.readVarInt()
             val arr = if(existing != null && existing.size == length) existing else FloatArray(length)
             arr.indices.forEach { arr[it] = buf.readFloat() }
             arr
-        }, { buf, value ->
+        }, { buf, value, syncing ->
             buf.writeVarInt(value.size)
             value.forEach { buf.writeFloat(it) }
         }))
@@ -193,7 +193,7 @@ object SerializePrimitiveArrays {
         SerializerRegistry.register("java:double[]", Serializer(DoubleArray::class.java, Array<Double>::class.java))
 
         SerializerRegistry["java:double[]"]?.register(Targets.NBT, Targets.NBT.impl<DoubleArray>
-        ({ nbt, existing ->
+        ({ nbt, existing, syncing ->
             val list = nbt.safeCast(NBTTagList::class.java)
             val array = if(existing != null && existing.size == list.tagCount()) existing else DoubleArray(list.tagCount())
 
@@ -201,19 +201,19 @@ object SerializePrimitiveArrays {
                 array[i] = tag.safeCast(NBTPrimitive::class.java).double
             }
             array
-        }, { value ->
+        }, { value, syncing ->
             val tag = NBTTagList()
             value.forEach { tag.appendTag(NBTTagDouble(it)) }
             tag
         }))
 
         SerializerRegistry["java:double[]"]?.register(Targets.BYTES, Targets.BYTES.impl<DoubleArray>
-        ({ buf, existing ->
+        ({ buf, existing, syncing ->
             val length = buf.readVarInt()
             val arr = if(existing != null && existing.size == length) existing else DoubleArray(length)
             arr.indices.forEach { arr[it] = buf.readDouble() }
             arr
-        }, { buf, value ->
+        }, { buf, value, syncing ->
             buf.writeVarInt(value.size)
             value.forEach { buf.writeDouble(it) }
         }))
@@ -223,16 +223,16 @@ object SerializePrimitiveArrays {
         SerializerRegistry.register("java:boolean[]", Serializer(BooleanArray::class.java, Array<Boolean>::class.java))
 
         SerializerRegistry["java:boolean[]"]?.register(Targets.NBT, Targets.NBT.impl<BooleanArray>
-        ({ nbt, existing ->
+        ({ nbt, existing, syncing ->
             nbt.safeCast(NBTTagByteArray::class.java).byteArray.map { it == 1.toByte() }.toBooleanArray()
-        }, { value ->
+        }, { value, syncing ->
             NBTTagByteArray(value.map { if(it) 1.toByte() else 0.toByte() }.toByteArray())
         }))
 
         SerializerRegistry["java:boolean[]"]?.register(Targets.BYTES, Targets.BYTES.impl<BooleanArray>
-        ({ buf, existing ->
+        ({ buf, existing, syncing ->
             buf.readBooleanArray(existing)
-        }, { buf, value ->
+        }, { buf, value, syncing ->
             buf.writeBooleanArray(value)
         }))
     }

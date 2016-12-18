@@ -29,23 +29,23 @@ object Targets {
         SerializeEnums
     }
 
-    class NBTTarget : SerializerTarget<(nbt: NBTBase, existing: Any?) -> Any, (value: Any) -> NBTBase>("NBT") {
+    class NBTTarget : SerializerTarget<(nbt: NBTBase, existing: Any?, syncing: Boolean) -> Any, (value: Any, syncing: Boolean) -> NBTBase>("NBT") {
         @Suppress("UNCHECKED_CAST")
-        fun <T> impl(read: (NBTBase, T?) -> T, write: (T) -> NBTBase): SerializerImpl<(NBTBase, T?) -> T, (T) -> NBTBase> {
+        fun <T> impl(read: (nbt: NBTBase, existing: T?, syncing: Boolean) -> T, write: (value: T, syncing: Boolean) -> NBTBase): SerializerImpl<(NBTBase, T?, Boolean) -> T, (T, Boolean) -> NBTBase> {
             return SerializerImpl(read, write)
         }
     }
 
-    class ByteTarget : SerializerTarget<(buf: ByteBuf, existing: Any?) -> Any, (buf: ByteBuf, value: Any) -> Unit>("ByteBuf") {
+    class ByteTarget : SerializerTarget<(buf: ByteBuf, existing: Any?, syncing: Boolean) -> Any, (buf: ByteBuf, value: Any, syncing: Boolean) -> Unit>("ByteBuf") {
         @Suppress("UNCHECKED_CAST")
-        fun <T> impl(read: (buf: ByteBuf, existing: T?) -> T, write: (buf: ByteBuf, value: T) -> Unit): SerializerImpl<(buf: ByteBuf, existing: T?) -> T, (buf: ByteBuf, value: T) -> Unit> {
+        fun <T> impl(read: (buf: ByteBuf, existing: T?, syncing: Boolean) -> T, write: (buf: ByteBuf, value: T, syncing: Boolean) -> Unit): SerializerImpl<(buf: ByteBuf, existing: T?, syncing: Boolean) -> T, (buf: ByteBuf, value: T, syncing: Boolean) -> Unit> {
             return SerializerImpl(read, write)
         }
     }
 
-    class JsonTarget : SerializerTarget<(json: JsonElement, existing: Any?) -> Any, (value: Any) -> JsonElement>("JSON") {
+    class JsonTarget : SerializerTarget<(json: JsonElement, existing: Any?, syncing: Boolean) -> Any, (value: Any, syncing: Boolean) -> JsonElement>("JSON") {
         @Suppress("UNCHECKED_CAST")
-        fun <T> impl(read: (json: JsonElement, existing: T?) -> T, write: (value: T) -> JsonElement): SerializerImpl<(json: JsonElement, existing: T?) -> T, (value: T) -> JsonElement> {
+        fun <T> impl(read: (json: JsonElement, existing: T?, syncing: Boolean) -> T, write: (value: T, syncing: Boolean) -> JsonElement): SerializerImpl<(json: JsonElement, existing: T?, syncing: Boolean) -> T, (value: T, syncing: Boolean) -> JsonElement> {
             return SerializerImpl(read, write)
         }
     }

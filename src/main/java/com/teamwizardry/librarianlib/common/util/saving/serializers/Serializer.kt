@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.common.util.saving.serializers
 
 import com.teamwizardry.librarianlib.common.util.saving.FieldType
+import com.teamwizardry.librarianlib.common.util.saving.FieldTypeVariable
 
 /**
  * Created by TheCodeWarrior
@@ -11,7 +12,12 @@ class Serializer(val canApply: (FieldType) -> Boolean) {
     protected val serializers = mutableMapOf<SerializerTarget<*, *>, (FieldType) -> SerializerImpl<*, *>>()
 
     fun <R, W> register(target: SerializerTarget<R, W>, generator: (FieldType) -> SerializerImpl<*, *>) {
-        serializers.put(target, generator)
+        serializers.put(target, { type ->
+            if(type is FieldTypeVariable)
+                throw IllegalArgumentException("Cannot create serializer for variable field type")
+            else
+                generator(type)
+        })
     }
 
     fun <R, W> register(target: SerializerTarget<R, W>, impl: SerializerImpl<*,*>) {
@@ -34,3 +40,5 @@ class Serializer(val canApply: (FieldType) -> Boolean) {
 abstract class SerializerTarget<R, W>(val name: String)
 
 class SerializerImpl<out R, out W>(val read: R, val write: W)
+
+class SerializerException(msg: String) : RuntimeException(msg)

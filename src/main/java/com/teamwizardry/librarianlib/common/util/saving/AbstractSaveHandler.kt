@@ -15,7 +15,7 @@ object AbstractSaveHandler {
     @JvmOverloads
     fun writeAutoNBT(instance: Any, cmp: NBTTagCompound, sync: Boolean = false) {
         isSyncing = sync
-        SavingFieldCache.getClassFields(instance.javaClass).forEach {
+        SavingFieldCache.getClassFields(instance.javaClass).filter { it.value.meta.hasFlag(SavingFieldFlag.ANNOTATED) }.forEach {
             if (!(sync && it.value.meta.hasFlag(SavingFieldFlag.NOSYNC))) {
                 val handler = NBTSerializationHandlers.getWriterUnchecked(it.value.meta.type)
                 if (handler != null) {

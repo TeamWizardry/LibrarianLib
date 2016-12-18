@@ -23,7 +23,7 @@ object SerializeArrays {
             type as FieldTypeArray
             val subSerializer = SerializerRegistry.lazyImpl(Targets.NBT, type.componentType)
 
-            Targets.NBT.impl<Array<*>>({ nbt, existing ->
+            Targets.NBT.impl<Array<*>>({ nbt, existing, syncing ->
                 val list = nbt.safeCast(NBTTagList::class.java)
 
                 val reuse = existing != null && existing.size == list.tagCount()
@@ -34,11 +34,11 @@ object SerializeArrays {
                     if (tag == null)
                         array[i] = null
                     else
-                        array[i] = subSerializer().read(tag, if (reuse) array[i] else null)
+                        array[i] = subSerializer().read(tag, if (reuse) array[i] else null, syncing)
                 }
 
                 array
-            }, { value ->
+            }, { value, syncing ->
                 val list = NBTTagList()
 
                 val len = ArrayReflect.getLength(value)
@@ -48,7 +48,7 @@ object SerializeArrays {
                     val container = NBTTagCompound()
                     list.appendTag(container)
                     if (v != null) {
-                        container.setTag("-", subSerializer().write(v))
+                        container.setTag("-", subSerializer().write(v, syncing))
                     }
                 }
 
@@ -60,22 +60,22 @@ object SerializeArrays {
             type as FieldTypeArray
             val subSerializer = SerializerRegistry.lazyImpl(Targets.BYTES, type.componentType)
 
-            Targets.BYTES.impl<Array<*>>({ buf, existing ->
+            Targets.BYTES.impl<Array<*>>({ buf, existing, syncing ->
                 val nullsig = buf.readBooleanArray()
                 val reuse = existing != null && existing.size == nullsig.size
                 val array = if (reuse) existing as Array<Any?> else ArrayReflect.newInstanceRaw(type.componentType.clazz, nullsig.size)
 
                 for (i in 0..nullsig.size - 1) {
-                    array[i] = if (nullsig[i]) null else subSerializer().read(buf, array[i])
+                    array[i] = if (nullsig[i]) null else subSerializer().read(buf, array[i], syncing)
                 }
                 array
-            }, { buf, value ->
+            }, { buf, value, syncing ->
                 val len = ArrayReflect.getLength(value)
                 val nullsig = BooleanArray(len) { ArrayReflect.get(value, it) == null }
                 buf.writeBooleanArray(nullsig)
                 for (i in 0..len - 1) {
                     if (!nullsig[i])
-                        subSerializer().write(buf, ArrayReflect.get(value, i))
+                        subSerializer().write(buf, ArrayReflect.get(value, i), syncing)
                 }
             })
         })
