@@ -2,8 +2,6 @@ import os
 import sys
 import re
 
-matcher = re.compile("[A-Z]{2,}")
-
 
 def to_snake_case(string):
     """
@@ -13,15 +11,18 @@ def to_snake_case(string):
         return string.lower()
     elif string.islower():
         return string
-    elif matcher.search(string):
-        return string.lower()
 
     split = list()
     last_index = 0
+    last_token_upper = True
     for i in range(len(string)):
         if string[i].isupper():
-            split.append(string[last_index:i].lower())
-            last_index = i
+            if not last_token_upper:
+                split.append(string[last_index:i].lower())
+                last_index = i
+            last_token_upper = True
+        else:
+            last_token_upper = False
     split.append(string[last_index:len(string)].lower())
     return "_".join(split)
 

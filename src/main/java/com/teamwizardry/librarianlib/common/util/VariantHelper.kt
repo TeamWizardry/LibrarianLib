@@ -24,15 +24,18 @@ object VariantHelper {
             return string.toLowerCase(Locale.ROOT)
         else if (string.toLowerCase(Locale.ROOT) == string)
             return string
-        else if ("[A-Z]{2,}".toRegex().containsMatchIn(string))
-            return string.toLowerCase(Locale.ROOT)
 
         val split = mutableListOf<String>()
+        var lastTokenUpper = true
         var lastIndex = 0
         for ((index, token) in string.withIndex()) if (token.isUpperCase()) {
-            split.add(string.substring(lastIndex, index))
-            lastIndex = index
-        }
+            if (!lastTokenUpper) {
+                split.add(string.substring(lastIndex, index))
+                lastIndex = index
+            }
+            lastTokenUpper = true
+        } else lastTokenUpper = false
+        
         split.add(string.substring(lastIndex))
 
         return split.joinToString("_") { it.toLowerCase(Locale.ROOT) }
