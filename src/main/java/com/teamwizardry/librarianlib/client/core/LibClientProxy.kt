@@ -9,7 +9,7 @@ import com.teamwizardry.librarianlib.client.sprite.SpritesMetadataSectionSeriali
 import com.teamwizardry.librarianlib.client.sprite.Texture
 import com.teamwizardry.librarianlib.client.util.ScissorUtil
 import com.teamwizardry.librarianlib.common.core.LibCommonProxy
-import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
+import com.teamwizardry.librarianlib.common.util.handles.MethodHandleHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.I18n
 import net.minecraft.client.resources.IReloadableResourceManager

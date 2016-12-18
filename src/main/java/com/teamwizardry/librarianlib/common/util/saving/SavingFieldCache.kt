@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.common.util.saving
 
 import com.teamwizardry.librarianlib.LibrarianLog
-import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
+import com.teamwizardry.librarianlib.common.util.handles.MethodHandleHelper
 import com.teamwizardry.librarianlib.common.util.times
 import org.jetbrains.annotations.NotNull
 import java.lang.reflect.Field

@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.common.structure
 
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
-import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
+import com.teamwizardry.librarianlib.common.util.handles.MethodHandleHelper
 import com.teamwizardry.librarianlib.common.util.NBTTypes
 import net.minecraft.block.*
 import net.minecraft.block.properties.IProperty

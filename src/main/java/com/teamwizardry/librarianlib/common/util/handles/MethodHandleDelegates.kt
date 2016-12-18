@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.common.util
+package com.teamwizardry.librarianlib.common.util.handles
 
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty

@@ -6,8 +6,8 @@ import com.google.common.collect.*
 import com.teamwizardry.librarianlib.client.model.multilayer.data.LayeredBakedModel
 import com.teamwizardry.librarianlib.client.model.multilayer.data.LibLibBlockPart
 import com.teamwizardry.librarianlib.client.model.multilayer.data.LibLibBlockPartFace
-import com.teamwizardry.librarianlib.common.util.mhStaticGetter
-import com.teamwizardry.librarianlib.common.util.mhValDelegate
+import com.teamwizardry.librarianlib.common.util.handles.mhStaticGetter
+import com.teamwizardry.librarianlib.common.util.handles.mhValDelegate
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.*
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
