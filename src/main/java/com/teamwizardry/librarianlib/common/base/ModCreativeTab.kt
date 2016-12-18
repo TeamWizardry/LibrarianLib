@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.common.base
 
+import com.teamwizardry.librarianlib.common.util.VariantHelper
 import com.teamwizardry.librarianlib.common.util.currentModId
 import com.teamwizardry.librarianlib.common.util.toNonnullList
 import net.minecraft.block.Block
@@ -7,9 +8,11 @@ import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.util.NonNullList
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import java.util.*
 
-abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(currentModId + if (postFix == null) "" else ".$postFix") {
+abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(currentModId + if (postFix == null) "" else ".${VariantHelper.toSnakeCase(postFix)}") {
 
     companion object {
         val defaultTabs = mutableMapOf<String, ModCreativeTab>()
@@ -20,6 +23,11 @@ abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(currentMod
      */
     protected fun registerDefaultTab() {
         defaultTabs.put(currentModId, this)
+    }
+
+    @SideOnly(Side.CLIENT)
+    override fun getTranslatedTabLabel(): String {
+        return "item_group.$tabLabel"
     }
 
     internal lateinit var list: NonNullList<ItemStack>

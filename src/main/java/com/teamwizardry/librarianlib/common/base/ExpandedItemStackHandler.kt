@@ -16,6 +16,7 @@ class ExpandedItemStackHandler : ItemStackHandler {
 
     constructor(size: Int = 1) : super(size)
     constructor(stacks: Array<ItemStack>) : super(stacks.toNonnullList())
+    constructor(stacks: Iterable<ItemStack>) : super(stacks.toNonnullList())
 
     override fun insertItem(slot: Int, stack: ItemStack, simulate: Boolean): ItemStack {
         if (stack.isEmpty)

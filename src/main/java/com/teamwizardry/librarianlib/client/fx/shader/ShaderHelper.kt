@@ -2,7 +2,6 @@ package com.teamwizardry.librarianlib.client.fx.shader
 
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.client.event.ResourceReloadEvent
-import com.teamwizardry.librarianlib.client.util.lambdainterfs.ShaderCallback
 import com.teamwizardry.librarianlib.common.core.LibLibConfig
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraftforge.common.MinecraftForge
@@ -14,6 +13,7 @@ import org.lwjgl.opengl.*
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.*
+import java.util.function.Consumer
 
 /**
  * Credit to Vazkii (https://github.com/Vazkii/Botania/blob/master/src/main/java/vazkii/botania/client/core/helper/ShaderHelper.java)
@@ -54,7 +54,7 @@ object ShaderHelper {
         hasLoaded = true
     }
 
-    fun <T : Shader> useShader(shader: T?, callback: ShaderCallback<T>?) {
+    fun <T : Shader> useShader(shader: T?, callback: Consumer<T>?) {
         if (shader == null) {
             ARBShaderObjects.glUseProgramObjectARB(0)
             return
@@ -74,7 +74,7 @@ object ShaderHelper {
 
         shader.uniformDefaults()
 
-        callback?.call(shader)
+        callback?.accept(shader)
     }
 
     fun <T : Shader> useShader(shader: T?) {

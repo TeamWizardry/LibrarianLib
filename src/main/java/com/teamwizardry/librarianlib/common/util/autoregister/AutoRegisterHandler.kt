@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.common.util.autoregister
 
 import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
+import com.teamwizardry.librarianlib.common.util.VariantHelper
 import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
 import com.teamwizardry.librarianlib.common.util.times
 // todo once mcmultipart is 1.11
@@ -52,11 +53,12 @@ object AutoRegisterHandler {
         val errors = mutableMapOf<String, MutableList<Class<*>>>()
 
         getAnnotatedBy(TileRegister::class.java, TileEntity::class.java, table).forEach {
-            val name = it.get<String>("value")
+            var name = it.get<String>("value")
             val modId = getModid(it.clazz)
             if (name == null) {
                 errors.getOrPut("TileRegister", { mutableListOf() }).add(it.clazz)
             } else {
+                name = VariantHelper.toSnakeCase(name)
                 var loc = ResourceLocation(name)
                 if (loc.resourceDomain == "minecraft" && modId == null)
                     errors.getOrPut("TileRegister", { mutableListOf() }).add(it.clazz)
@@ -72,11 +74,12 @@ object AutoRegisterHandler {
 // todo once mcmultipart is 1.11
 //        if (Loader.isModLoaded("mcmultipart")) {
 //            getAnnotatedBy(PartRegister::class.java, IMultipart::class.java, table).forEach {
-//                val name = it.get<String>("value")
+//                var name = it.get<String>("value")
 //                val modId = getModid(it.clazz)
 //                if (name == null) {
 //                    errors.getOrPut("PartRegister", { mutableListOf() }).add(it.clazz)
 //                } else {
+//                    name = VariantHelper.toSnakeCase(name)
 //                    var loc = ResourceLocation(name)
 //                    if (loc.resourceDomain == "minecraft" && modId == null)
 //                        errors.getOrPut("PartRegister", { mutableListOf() }).add(it.clazz)

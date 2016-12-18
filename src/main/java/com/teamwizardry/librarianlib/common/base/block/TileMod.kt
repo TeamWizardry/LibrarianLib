@@ -117,16 +117,15 @@ abstract class TileMod : TileEntity() {
         if (world is WorldServer) {
             val ws: WorldServer = world as WorldServer
 
-            for (player in ws.playerEntities) {
-                val playerMP = player as EntityPlayerMP
-                if (playerMP.getDistanceSq(getPos()) < 64 * 64
-                        && ws.playerChunkMap.isPlayerWatchingChunk(playerMP, pos.x shr 4, pos.z shr 4)) {
-                    if (useFastSync)
-                        PacketHandler.NETWORK.sendTo(PacketSynchronization(this), playerMP)
-                    else
-                        playerMP.connection.sendPacket(updatePacket)
-                }
-            }
+            ws.playerEntities
+                    .filterIsInstance<EntityPlayerMP>()
+                    .filter { it.getDistanceSq(getPos()) < 64 * 64 && ws.playerChunkMap.isPlayerWatchingChunk(it, pos.x shr 4, pos.z shr 4) }
+                    .forEach {
+                        if (useFastSync)
+                            PacketHandler.NETWORK.sendTo(PacketSynchronization(this), it)
+                        else
+                            it.connection.sendPacket(updatePacket)
+                    }
         }
     }
 }

@@ -18,7 +18,7 @@ open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg 
 
     override val variants: Array<out String>
 
-    override val bareName: String = name
+    override val bareName: String = VariantHelper.toSnakeCase(name)
     val modId: String
 
     val itemForm: ItemBlock? by lazy { createItemForm() }

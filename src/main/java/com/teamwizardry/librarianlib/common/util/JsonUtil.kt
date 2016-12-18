@@ -24,7 +24,7 @@ fun JsonElement.getObject(key: String): JsonElement? {
             if (!currentElement.isJsonArray) return null
             val arr = currentElement.asJsonArray
             val ind = m.removePrefix("[").removeSuffix("]").toInt()
-            if (arr.size() > ind + 1) return null
+            if (arr.size() < ind + 1) return null
             currentElement = arr[ind]
         } else {
             if (!currentElement.isJsonObject) return null

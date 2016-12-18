@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.common.base
 
+import com.teamwizardry.librarianlib.common.util.VariantHelper
 import com.teamwizardry.librarianlib.common.util.currentModId
 import net.minecraft.block.Block
 import net.minecraft.item.Item
@@ -13,7 +14,7 @@ import net.minecraftforge.fml.common.Loader
  * Created at 4:22 PM on 12/8/16.
  */
 @Suppress("LeakingThis")
-open class ModAchievement(unlocalizedName: String, column: Int, row: Int, stack: ItemStack, parent: Achievement?) : Achievement("achievement.$currentModId.$unlocalizedName", "$currentModId.$unlocalizedName", column, row, stack, parent) {
+open class ModAchievement(unlocalizedName: String, column: Int, row: Int, stack: ItemStack, parent: Achievement?) : Achievement("achievement.$currentModId.${VariantHelper.toSnakeCase(unlocalizedName)}", "$currentModId.${VariantHelper.toSnakeCase(unlocalizedName)}", column, row, stack, parent) {
 
     init {
         registerStat()

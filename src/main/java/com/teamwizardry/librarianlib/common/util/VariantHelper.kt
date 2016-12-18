@@ -44,7 +44,7 @@ object VariantHelper {
     @JvmStatic
     @JvmOverloads
     fun setupItem(item: Item, name: String, variants: Array<out String>, creativeTab: ModCreativeTab? = null): Array<out String> {
-        var variantTemp = variants
+        var variantTemp = variants.map { toSnakeCase(it) }.toTypedArray()
         item.unlocalizedName = name
         if (variantTemp.size > 1)
             item.hasSubtypes = true
@@ -63,7 +63,7 @@ object VariantHelper {
      */
     @JvmStatic
     fun beginSetupBlock(name: String, variants: Array<out String>): Array<out String> {
-        var variantTemp = variants
+        var variantTemp = variants.map { toSnakeCase(it) }.toTypedArray()
         if (variants.isEmpty())
             variantTemp = arrayOf(toSnakeCase(name))
         return variantTemp
