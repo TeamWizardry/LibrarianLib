@@ -24,16 +24,16 @@ object DefaultValues {
         mapDefault(Short::class.javaPrimitiveType!!, 0.toShort())
         mapDefault(Int::class.javaPrimitiveType!!, 0)
         mapDefault(Long::class.javaPrimitiveType!!, 0L)
+        mapDefault(Boolean::class.javaPrimitiveType!!, false)
+        mapDefault(Float::class.javaPrimitiveType!!, 0F)
+        mapDefault(Double::class.javaPrimitiveType!!, 0.0)
 
         mapDefault(Char::class.javaObjectType, 0.toChar())
         mapDefault(Byte::class.javaObjectType, 0.toByte())
         mapDefault(Short::class.javaObjectType, 0.toShort())
         mapDefault(Int::class.javaObjectType, 0)
         mapDefault(Long::class.javaObjectType, 0L)
-
-        mapDefault(Float::class.javaPrimitiveType!!, 0F)
-        mapDefault(Double::class.javaPrimitiveType!!, 0.0)
-
+        mapDefault(Boolean::class.javaObjectType, false)
         mapDefault(Float::class.javaObjectType, 0F)
         mapDefault(Double::class.javaObjectType, 0.0)
 
@@ -44,16 +44,9 @@ object DefaultValues {
         mapDefault(ShortArray::class.java, shortArrayOf())
         mapDefault(IntArray::class.java, intArrayOf())
         mapDefault(LongArray::class.java, longArrayOf())
+        mapDefault(BooleanArray::class.java, booleanArrayOf())
         mapDefault(FloatArray::class.java, floatArrayOf())
         mapDefault(DoubleArray::class.java, doubleArrayOf())
-
-        mapDefault(Array<Char>::class.java, arrayOf())
-        mapDefault(Array<Byte>::class.java, arrayOf())
-        mapDefault(Array<Short>::class.java, arrayOf())
-        mapDefault(Array<Int>::class.java, arrayOf())
-        mapDefault(Array<Long>::class.java, arrayOf())
-        mapDefault(Array<Float>::class.java, arrayOf())
-        mapDefault(Array<Double>::class.java, arrayOf())
 
         mapDefault(Color::class.java, Color.BLACK)
         mapDefaultGenerator(NBTTagCompound::class.java) { NBTTagCompound() }
@@ -64,20 +57,20 @@ object DefaultValues {
         mapDefault(Vec3i::class.java, Vec3i.NULL_VECTOR)
         mapDefault(BlockPos::class.java, BlockPos.ORIGIN)
 
-        registerSpecialDefault handler@{ type ->
+        registerSpecialDefault { type ->
             if(!type.clazz.isEnum)
-                return@handler null
-
-            val firstValue = type.clazz.enumConstants.first()
-            return@handler { firstValue }
+                null
+            else {
+                val first = type.clazz.enumConstants[0]
+                { -> first }
+            }
         }
 
         val arrayInstance = arrayOf<Any>() // WARNING! Identity equalities and synchronized blocks will go screwy with these, just be aware
-        registerSpecialDefault handler@{ type ->
+        registerSpecialDefault { type ->
             if(!type.clazz.isArray)
-                return@handler null
-
-            return@handler { arrayInstance }
+                null
+            else { -> arrayInstance }
         }
 
         mapDefaultGenerator(ArrayList::class.java, { ArrayList<Any>() })

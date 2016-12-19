@@ -139,9 +139,7 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
         if (name in ILLEGAL_NAMES)
             name += "X"
 
-        var uses = 0
-        for (i in alreadyDone)
-            if (i == name) uses++
+        val uses = alreadyDone.count { it == name }
 
         if (uses > 1)
             throw IllegalArgumentException("Method savename $name already in use for class ${clazz.name}, this is illegal for methods.")

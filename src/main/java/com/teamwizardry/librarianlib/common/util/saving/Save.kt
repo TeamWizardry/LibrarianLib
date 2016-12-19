@@ -42,7 +42,7 @@ annotation class NoSync()
  * and with the return type of this function as its single parameter,
  * annotated with [SaveMethodSetter], otherwise nothing will be saved.
  *
- * If the getter is annotated with @[Nonnull], a default value from [DefaultValues] will be used instead of null.
+ * If the getter is annotated with @[NotNull], a default value from [DefaultValues] will be used instead of null.
  *
  * The "getter" method must take exactly zero parameters, and return the content of the field.
  */
