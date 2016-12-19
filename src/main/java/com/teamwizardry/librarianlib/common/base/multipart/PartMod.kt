@@ -43,14 +43,16 @@ open class PartMod : Multipart() {
     }
 
     override fun readFromNBT(tag: NBTTagCompound) {
-        readCustomNBT(tag)
-        AbstractSaveHandler.readAutoNBT(javaClass, tag)
+        readCustomNBT(tag.getCompoundTag("custom"))
+        AbstractSaveHandler.readAutoNBT(javaClass, tag.getTag("auto"))
         super.readFromNBT(tag)
     }
 
     override fun writeToNBT(tag: NBTTagCompound): NBTTagCompound {
-        writeCustomNBT(tag, false)
-        AbstractSaveHandler.writeAutoNBT(javaClass, tag)
+        val customTag = NBTTagCompound()
+        writeCustomNBT(customTag, false)
+        tag.setTag("custom", customTag)
+        tag.setTag("auto", AbstractSaveHandler.writeAutoNBT(javaClass))
         super.writeToNBT(tag)
         return tag
     }

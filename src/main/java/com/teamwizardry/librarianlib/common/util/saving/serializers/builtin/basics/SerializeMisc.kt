@@ -24,10 +24,10 @@ object SerializeMisc {
         SerializerRegistry.register("awt:color", Serializer(Color::class.java))
 
         SerializerRegistry["awt:color"]?.register(Targets.NBT, Targets.NBT.impl<Color>
-        ({ nbt, existing ->
+        ({ nbt, existing, sync ->
             val tag = nbt.safeCast(NBTTagCompound::class.java)
             Color(tag.getByte("r").toInt(), tag.getByte("g").toInt(), tag.getByte("b").toInt(), tag.getByte("a").toInt())
-        }, { value ->
+        }, { value, sync ->
             val tag = NBTTagCompound()
             tag.setByte("r", value.red.toByte())
             tag.setByte("g", value.green.toByte())
@@ -37,9 +37,9 @@ object SerializeMisc {
         }))
 
         SerializerRegistry["awt:color"]?.register(Targets.BYTES, Targets.BYTES.impl<Color>
-        ({ buf, existing ->
+        ({ buf, existing, sync ->
             Color(buf.readByte().toInt(), buf.readByte().toInt(), buf.readByte().toInt(), buf.readByte().toInt())
-        }, { buf, value ->
+        }, { buf, value, sync ->
             buf.writeByte(value.red)
             buf.writeByte(value.green)
             buf.writeByte(value.blue)
@@ -51,15 +51,15 @@ object SerializeMisc {
         SerializerRegistry.register("minecraft:nbttagcompound", Serializer(NBTTagCompound::class.java))
 
         SerializerRegistry["minecraft:nbttagcompound"]?.register(Targets.NBT, Targets.NBT.impl<NBTTagCompound>
-        ({ nbt, existing ->
+        ({ nbt, existing, sync ->
             nbt.safeCast(NBTTagCompound::class.java)
-        }, { value ->
+        }, { value, sync ->
             value
         }))
 
-        SerializerRegistry["minecraft:nbttagcompound"]?.register(Targets.BYTES, { buf, existing ->
+        SerializerRegistry["minecraft:nbttagcompound"]?.register(Targets.BYTES, { buf, existing, sync ->
             buf.readTag()
-        }, { buf, value ->
+        }, { buf, value, sync ->
             buf.writeTag(value as NBTTagCompound)
         })
     }
@@ -68,16 +68,16 @@ object SerializeMisc {
         SerializerRegistry.register("minecraft:itemstack", Serializer(ItemStack::class.java))
 
         SerializerRegistry["minecraft:itemstack"]?.register(Targets.NBT, Targets.NBT.impl<ItemStack>
-        ({ nbt, existing ->
+        ({ nbt, existing, sync ->
             ItemStack.loadItemStackFromNBT(nbt.safeCast(NBTTagCompound::class.java))
-        }, { value ->
+        }, { value, sync ->
             value.writeToNBT(NBTTagCompound())
         }))
 
         SerializerRegistry["minecraft:itemstack"]?.register(Targets.BYTES, Targets.BYTES.impl<ItemStack>
-        ({ buf, existing ->
+        ({ buf, existing, sync ->
             buf.readStack()
-        }, { buf, value ->
+        }, { buf, value, sync ->
             buf.writeStack(value)
         }))
     }
@@ -86,22 +86,20 @@ object SerializeMisc {
         SerializerRegistry.register("forge:itemstackhandler", Serializer(ItemStackHandler::class.java))
 
         SerializerRegistry["forge:itemstackhandler"]?.register(Targets.NBT, Targets.NBT.impl<ItemStackHandler>
-        ({ nbt, existing ->
+        ({ nbt, existing, sync ->
             val handler = ItemStackHandler()
             handler.deserializeNBT(nbt.safeCast(NBTTagCompound::class.java))
             handler
-        }, { value ->
-            value as ItemStackHandler
+        }, { value, sync ->
             value.serializeNBT()
         }))
 
         SerializerRegistry["forge:itemstackhandler"]?.register(Targets.BYTES, Targets.BYTES.impl<ItemStackHandler>
-        ({ buf, existing ->
-            val handler = existing as ItemStackHandler? ?: ItemStackHandler()
+        ({ buf, existing, sync ->
+            val handler = existing ?: ItemStackHandler()
             handler.deserializeNBT(buf.readTag())
             handler
-        }, { buf, value ->
-            value as ItemStackHandler
+        }, { buf, value, sync ->
             buf.writeTag(value.serializeNBT())
         }))
     }

@@ -145,8 +145,8 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
 
     init {
         val allFields = SavingFieldCache.getClassFields(type.clazz)
-        val (mutable: Boolean, fields: Map<String, FieldCache>) =
-                !allFields.any { it.value.meta.hasFlag(SavingFieldFlag.FINAL) } to if (allFields.any { it.value.meta.hasFlag(SavingFieldFlag.ANNOTATED) }) {
+        val fields: Map<String, FieldCache> =
+                if (allFields.any { it.value.meta.hasFlag(SavingFieldFlag.ANNOTATED) }) {
                     allFields.filter {
                         it.value.meta.hasFlag(SavingFieldFlag.ANNOTATED)
                     }
@@ -157,7 +157,7 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
                 } else {
                     mapOf<String, FieldCache>()
                 }
-        this.mutable = mutable
+        this.mutable = !fields.any { it.value.meta.hasFlag(SavingFieldFlag.FINAL) }
         this.fields = fields
         if (!mutable && fields.any { it.value.meta.hasFlag(SavingFieldFlag.NOSYNC) })
             throw SerializerException("Immutable type ${type.clazz.canonicalName} cannot have non-syncing fields")

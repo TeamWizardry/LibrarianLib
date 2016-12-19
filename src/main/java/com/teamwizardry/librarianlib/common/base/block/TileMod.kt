@@ -33,23 +33,27 @@ abstract class TileMod : TileEntity() {
     }
 
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
-        writeCustomNBT(compound, false)
-        AbstractSaveHandler.writeAutoNBT(this, compound)
+        val customTag = NBTTagCompound()
+        writeCustomNBT(customTag, false)
+        compound.setTag("custom", customTag)
+        compound.setTag("auto", AbstractSaveHandler.writeAutoNBT(this))
         super.writeToNBT(compound)
 
         return compound
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        readCustomNBT(compound)
-        AbstractSaveHandler.readAutoNBT(this, compound)
+        readCustomNBT(compound.getCompoundTag("custom"))
+        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"))
         super.readFromNBT(compound)
     }
 
     override fun getUpdateTag(): NBTTagCompound {
         val compound = super.getUpdateTag()
-        writeCustomNBT(compound, true)
-        AbstractSaveHandler.writeAutoNBT(this, compound, true)
+        val customTag = NBTTagCompound()
+        writeCustomNBT(customTag, true)
+        compound.setTag("custom", customTag)
+        compound.setTag("auto", AbstractSaveHandler.writeAutoNBT(this, true))
         super.writeToNBT(compound)
 
         return compound
@@ -106,8 +110,8 @@ abstract class TileMod : TileEntity() {
 
     override fun onDataPacket(net: NetworkManager, packet: SPacketUpdateTileEntity) {
         super.onDataPacket(net, packet)
-        readCustomNBT(packet.nbtCompound)
-        AbstractSaveHandler.readAutoNBT(javaClass, packet.nbtCompound)
+        readCustomNBT(packet.nbtCompound.getCompoundTag("custom"))
+        AbstractSaveHandler.readAutoNBT(javaClass, packet.nbtCompound.getTag("auto"))
     }
 
     /**
