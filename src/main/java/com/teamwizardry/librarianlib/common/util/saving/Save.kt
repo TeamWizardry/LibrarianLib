@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.common.util.saving
 
-import javax.annotation.Nonnull
+import org.jetbrains.annotations.NotNull
 import kotlin.annotation.AnnotationTarget.*
 
 /**
@@ -9,7 +9,7 @@ import kotlin.annotation.AnnotationTarget.*
  *
  * Apply this to a field to have it be serialized by the write/read nbt methods and write/read byte methods.
  *
- * If the field is annotated with @[Nonnull], a default value from [DefaultValues] will be used instead of null.
+ * If the field is annotated with @[NotNull], a default value from [DefaultValues] will be used instead of null.
  *
  * [saveName] doesn't matter for messages, except in sorting. It's for NBT serializers.
  */

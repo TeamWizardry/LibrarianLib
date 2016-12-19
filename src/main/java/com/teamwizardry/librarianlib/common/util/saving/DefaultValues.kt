@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.common.util.saving
 
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
+import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
@@ -22,19 +23,19 @@ object DefaultValues {
         mapDefault(Byte::class.javaPrimitiveType!!, 0.toByte())
         mapDefault(Short::class.javaPrimitiveType!!, 0.toShort())
         mapDefault(Int::class.javaPrimitiveType!!, 0)
-        mapDefault(Long::class.javaPrimitiveType!!, 0.toLong())
+        mapDefault(Long::class.javaPrimitiveType!!, 0L)
 
         mapDefault(Char::class.javaObjectType, 0.toChar())
         mapDefault(Byte::class.javaObjectType, 0.toByte())
         mapDefault(Short::class.javaObjectType, 0.toShort())
         mapDefault(Int::class.javaObjectType, 0)
-        mapDefault(Long::class.javaObjectType, 0.toLong())
+        mapDefault(Long::class.javaObjectType, 0L)
 
-        mapDefault(Float::class.javaPrimitiveType!!, 0.toFloat())
-        mapDefault(Double::class.javaPrimitiveType!!, 0.toDouble())
+        mapDefault(Float::class.javaPrimitiveType!!, 0F)
+        mapDefault(Double::class.javaPrimitiveType!!, 0.0)
 
-        mapDefault(Float::class.javaObjectType, 0.toFloat())
-        mapDefault(Double::class.javaObjectType, 0.toDouble())
+        mapDefault(Float::class.javaObjectType, 0F)
+        mapDefault(Double::class.javaObjectType, 0.0)
 
         mapDefault(String::class.java, "")
 
@@ -56,6 +57,7 @@ object DefaultValues {
 
         mapDefault(Color::class.java, Color.BLACK)
         mapDefaultGenerator(NBTTagCompound::class.java) { NBTTagCompound() }
+        mapDefault(ItemStack::class.java, ItemStack.EMPTY)
 
         mapDefault(Vec3d::class.java, Vec3d.ZERO)
         mapDefault(Vec2d::class.java, Vec2d.ZERO)

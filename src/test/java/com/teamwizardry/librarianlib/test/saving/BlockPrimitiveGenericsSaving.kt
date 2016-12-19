@@ -15,7 +15,6 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import java.util.*
-import javax.annotation.Nonnull
 
 /**
  * Created by TheCodeWarrior
@@ -38,6 +37,6 @@ class BlockPrimitiveGenericsSaving : BlockMod("saving_primitiveGenerics", Materi
 
     @TileRegister("saving_primitiveGenerics")
     class TETest : TileMod() {
-        @Save @Nonnull var map: HashMap<EnumFacing, Int> = HashMap()
+        @Save var map: HashMap<EnumFacing, Int> = HashMap()
     }
 }

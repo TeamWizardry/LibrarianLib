@@ -8,6 +8,7 @@ import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.*
+import javax.annotation.Nonnull
 
 /**
  * @author WireSegal
@@ -44,7 +45,7 @@ object SavingFieldCache : LinkedHashMap<Class<*>, Map<String, FieldCache>>() {
             map.put(name, FieldCache(FieldType.create(field),
                     MethodHandleHelper.wrapperForGetter<Any>(field),
                     MethodHandleHelper.wrapperForSetter<Any>(field),
-                    field.isAnnotationPresent(NotNull::class.java),
+                    field.isAnnotationPresent(NotNull::class.java) || field.isAnnotationPresent(Nonnull::class.java),
                     !field.isAnnotationPresent(NoSync::class.java),
                     field.name))
         }
