@@ -332,3 +332,6 @@ fun CharArray.toNonnullList() = toMutableList().asNonnullList()
 fun CharSequence.toNonnullList() = toMutableList().asNonnullList()
 fun <T: Any> MutableList<T>.asNonnullList(): NonNullList<T> = FakeNonnullList(this)
 fun <T: Any> MutableList<T?>.asNonnullList(default: T): NonNullList<T> = FakeNonnullList(this, default)
+
+fun <T: Any> Iterable<T>.nullable() = toMutableList<T?>()
+fun <T: Any> Array<T>.nullable() = toMutableList<T?>()

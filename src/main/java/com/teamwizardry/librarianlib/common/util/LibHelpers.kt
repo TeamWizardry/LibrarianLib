@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.Loader
  */
 fun <T: Any> nonnullListOf(): NonNullList<T> = NonNullList.create<T>()
 fun <T: Any> nonnullListOf(vararg items: T) = items.toNonnullList()
+fun <T: Any> nonnullListOf(count: Int, default: T) = NonNullList.withSize(count, default)
 
 fun vec(x: Number, y: Number) = Vec2d(x.toDouble(), y.toDouble())
 
