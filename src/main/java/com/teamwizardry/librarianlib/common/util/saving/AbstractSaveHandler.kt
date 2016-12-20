@@ -19,24 +19,22 @@ object AbstractSaveHandler {
             .withRealDefault { SerializerRegistry.impl(Targets.BYTES, FieldType.create(it)) }
 
     @JvmStatic
-    @JvmOverloads
-    fun writeAutoNBT(instance: Any, sync: Boolean = false): NBTBase {
+    fun writeAutoNBT(instance: Any, sync: Boolean): NBTBase {
         return nbtCache[instance.javaClass].write(instance, sync)
     }
 
     @JvmStatic
-    fun readAutoNBT(instance: Any, tag: NBTBase, sync: Boolean = false) : Any {
+    fun readAutoNBT(instance: Any, tag: NBTBase, sync: Boolean) : Any {
         return nbtCache[instance.javaClass].read(tag, instance, sync)
     }
 
     @JvmStatic
-    @JvmOverloads
-    fun writeAutoBytes(instance: Any, buf: ByteBuf, sync: Boolean = false) {
+    fun writeAutoBytes(instance: Any, buf: ByteBuf, sync: Boolean) {
         byteCache[instance.javaClass].write(buf, instance, sync)
     }
 
     @JvmStatic
-    fun readAutoBytes(instance: Any, buf: ByteBuf, sync: Boolean = false) : Any {
+    fun readAutoBytes(instance: Any, buf: ByteBuf, sync: Boolean) : Any {
         return byteCache[instance.javaClass].read(buf, instance, sync)
     }
 

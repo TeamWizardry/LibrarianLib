@@ -227,8 +227,9 @@ fun ByteBuf.readBooleanArray(tryReadInto: BooleanArray? = null): BooleanArray {
     val toReturn = if(tryReadInto != null && tryReadInto.size == len) tryReadInto else BooleanArray(len)
     for (entry in bytes.indices) {
         for (bit in 0..7) {
-            if (entry * 8 + bit < len && bytes[entry * 8 + bit].toInt() and (128 shr bit) == 1) {
-                toReturn[entry] = true
+            val bitThing = bytes[entry].toInt() and (128 shr bit)
+            if (entry * 8 + bit < len && bitThing != 0) {
+                toReturn[entry * 8 + bit] = true
             }
         }
     }

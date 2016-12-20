@@ -66,7 +66,7 @@ object SerializerRegistry {
 class NoSuchSerializerError(target: SerializerTarget<*,*>, type: FieldType) : RuntimeException(calcMessage(target, type)) {
     companion object {
         fun calcMessage(target: SerializerTarget<*, *>, type: FieldType): String {
-            return type.toString() + " for " + target.name
+            return "type " + type.toString() + " for target " + target.name
         }
     }
 }

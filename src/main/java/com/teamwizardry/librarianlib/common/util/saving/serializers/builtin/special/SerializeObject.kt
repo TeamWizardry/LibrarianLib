@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.common.util.safeCast
 import com.teamwizardry.librarianlib.common.util.saving.*
 import com.teamwizardry.librarianlib.common.util.saving.serializers.*
 import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.Targets
+import com.teamwizardry.librarianlib.common.util.writeBooleanArray
 import net.minecraft.nbt.NBTTagCompound
 import java.lang.reflect.Constructor
 import java.util.*
@@ -16,7 +17,9 @@ import java.util.*
 object SerializeObject {
     init {
         SerializerRegistry.register("liblib:savable", Serializer({ type ->
-            type.clazz.isAnnotationPresent(Savable::class.java)
+            val savable = type.clazz.isAnnotationPresent(Savable::class.java)
+            val inplace = ISerializeInPlace::class.java.isAssignableFrom(type.clazz)
+            savable || inplace
         }))
 
         SerializerRegistry["liblib:savable"]?.register(Targets.NBT, { type ->
@@ -88,8 +91,8 @@ object SerializeObject {
                             it.value.setter(instance, analysis.serializers[it.key]!!.invoke().read(buf, it.value.getter(instance), sync))
                         }
                     }
-                    if (sync) {
-                        analysis.alwaysFields.forEach {
+                    if (!sync) {
+                        analysis.noSyncFields.forEach {
                             if (nullsig[i++]) {
                                 it.value.setter(instance, null)
                             } else {
@@ -99,19 +102,31 @@ object SerializeObject {
                     }
                     return@impl instance
                 } else {
+                    val map = mutableMapOf<String, Any?>()
+
+                    analysis.alwaysFields.forEach {
+                        if (!nullsig[i++]) {
+                            map[it.key] = analysis.serializers[it.key]!!.invoke().read(buf, null, sync)
+                        }
+                    }
+                    if (!sync) {
+                        analysis.noSyncFields.forEach {
+                            if (!nullsig[i++]) {
+                                map[it.key] = analysis.serializers[it.key]!!.invoke().read(buf, null, sync)
+                            }
+                        }
+                    }
                     return@impl analysis.constructorMH(analysis.constructorArgOrder.map {
-                        if (nullsig[i++])
-                            analysis.serializers[it]!!.invoke().read(buf, null, sync)
-                        else
-                            null
+                        map[it]
                     }.toTypedArray())
                 }
             }, { buf, value, sync ->
                 val nullsig = if (sync) {
-                    analysis.alwaysFields.map { it.value.getter(value) == null }.toTypedArray()
+                    analysis.alwaysFields.map { it.value.getter(value) == null }.toTypedArray().toBooleanArray()
                 } else {
-                    allFieldsOrdered.map { it.value.getter(value) == null }.toTypedArray()
+                    allFieldsOrdered.map { it.value.getter(value) == null }.toTypedArray().toBooleanArray()
                 }
+                buf.writeBooleanArray(nullsig)
 
                 analysis.alwaysFields.forEach {
                     val fieldValue = it.value.getter(value)
@@ -137,6 +152,8 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
     val fields: Map<String, FieldCache>
 
     val mutable: Boolean
+
+    val inPlaceSavable: Boolean
 
     val constructor: Constructor<*>
     val constructorArgOrder: List<String>
@@ -165,8 +182,12 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
         alwaysFields = fields.filter { !it.value.meta.hasFlag(SavingFieldFlag.NOSYNC) }
         noSyncFields = fields.filter { it.value.meta.hasFlag(SavingFieldFlag.NOSYNC) }
 
+        inPlaceSavable = ISerializeInPlace::class.java.isAssignableFrom(type.clazz)
+
         constructor =
-                if (mutable) {
+                if(inPlaceSavable) {
+                    nullConstructor
+                } else if (mutable) {
                     type.clazz.declaredConstructors.find { it.parameterCount == 0 } ?: throw SerializerException("Couldn't find zero-argument constructor for mutable type ${type.clazz.canonicalName}")
                 } else {
                     type.clazz.declaredConstructors.find {
@@ -177,7 +198,11 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
                     } ?: throw SerializerException("Couldn't find constructor with parameters (${fields.map { it.value.meta.type.toString() + " " + it.key }.joinToString(", ")}) for immutable type ${type.clazz.canonicalName}")
                 }
         constructorArgOrder = constructor.parameters.map { it.name }
-        constructorMH = MethodHandleHelper.wrapperForConstructor(constructor)
+        constructorMH = if(inPlaceSavable) {
+            { arr -> throw SerializerException("Cannot create instance of ISerializeInPlace")}
+        } else {
+            MethodHandleHelper.wrapperForConstructor(constructor)
+        }
 
         serializers = fields.mapValues {
             val rawType = it.value.meta.type
@@ -190,5 +215,9 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
             }
             SerializerRegistry.lazyImpl(target, fieldType)
         }
+    }
+
+    companion object {
+        val nullConstructor: Constructor<*> = Any::class.java.constructors.first()
     }
 }

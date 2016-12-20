@@ -77,7 +77,20 @@ annotation class SaveMethodSetter(val saveName: String)
  * In order to construct the class it must have:
  *  - a zero argument constructor
  *  - a constructor with arguments similarly named and typed to the saved properties
+ *
+ * If any of the saved fields are final, or if there are any [SaveMethodGetter]s without a matching [SaveMethodSetter],
+ * the class will be marked as immutable and cannot use a zero argument constructor
  */
 @Target(CLASS)
 @MustBeDocumented
 annotation class Savable(val mutable: Boolean = false)
+
+/**
+ * @author TheCodeWarrior
+ *
+ * Implement this interface to make a class serializable in place. Only annotated mutable fields will be saved.
+ *
+ * Classes implementing this will not be able to be instantiated, only serialized/deserialized in place using an existing
+ * instance. Use this for classes that should automatically handle saving.
+ */
+interface ISerializeInPlace

@@ -38,7 +38,7 @@ object SerializeMisc {
 
         SerializerRegistry["awt:color"]?.register(Targets.BYTES, Targets.BYTES.impl<Color>
         ({ buf, existing, sync ->
-            Color(buf.readByte().toInt(), buf.readByte().toInt(), buf.readByte().toInt(), buf.readByte().toInt())
+            Color(buf.readUnsignedByte().toInt(), buf.readUnsignedByte().toInt(), buf.readUnsignedByte().toInt(), buf.readUnsignedByte().toInt())
         }, { buf, value, sync ->
             buf.writeByte(value.red)
             buf.writeByte(value.green)

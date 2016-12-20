@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.common.base.block
 import com.teamwizardry.librarianlib.common.network.PacketHandler
 import com.teamwizardry.librarianlib.common.network.PacketSynchronization
 import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
+import com.teamwizardry.librarianlib.common.util.saving.ISerializeInPlace
 import io.netty.buffer.ByteBuf
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayerMP
@@ -18,7 +19,7 @@ import net.minecraft.world.WorldServer
  * @author WireSegal
  * Created at 11:06 AM on 8/4/16.
  */
-abstract class TileMod : TileEntity() {
+abstract class TileMod : TileEntity(), ISerializeInPlace {
 
     /**
      * Using fast synchronization is quicker and less expensive than the NBT packet default.
@@ -36,7 +37,7 @@ abstract class TileMod : TileEntity() {
         val customTag = NBTTagCompound()
         writeCustomNBT(customTag, false)
         compound.setTag("custom", customTag)
-        compound.setTag("auto", AbstractSaveHandler.writeAutoNBT(this))
+        compound.setTag("auto", AbstractSaveHandler.writeAutoNBT(this, false))
         super.writeToNBT(compound)
 
         return compound
@@ -44,7 +45,7 @@ abstract class TileMod : TileEntity() {
 
     override fun readFromNBT(compound: NBTTagCompound) {
         readCustomNBT(compound.getCompoundTag("custom"))
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"))
+        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
         super.readFromNBT(compound)
     }
 
@@ -111,7 +112,7 @@ abstract class TileMod : TileEntity() {
     override fun onDataPacket(net: NetworkManager, packet: SPacketUpdateTileEntity) {
         super.onDataPacket(net, packet)
         readCustomNBT(packet.nbtCompound.getCompoundTag("custom"))
-        AbstractSaveHandler.readAutoNBT(javaClass, packet.nbtCompound.getTag("auto"))
+        AbstractSaveHandler.readAutoNBT(this, packet.nbtCompound.getTag("auto"), true)
     }
 
     /**
