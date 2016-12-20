@@ -83,7 +83,7 @@ annotation class SaveMethodSetter(val saveName: String)
  */
 @Target(CLASS)
 @MustBeDocumented
-annotation class Savable(val mutable: Boolean = false)
+annotation class Savable
 
 /**
  * @author TheCodeWarrior

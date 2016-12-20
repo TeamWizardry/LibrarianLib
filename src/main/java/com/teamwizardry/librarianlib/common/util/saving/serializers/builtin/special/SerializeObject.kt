@@ -161,7 +161,9 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
     val serializers: Map<String, () -> SerializerImpl<R, W>>
 
     init {
-        val allFields = SavingFieldCache.getClassFields(type.clazz)
+        val allFields = mutableMapOf<String, FieldCache>()
+        allFields.putAll(SavingFieldCache.getClassFields(type.clazz))
+        addSuperClass(allFields, type.clazz)
         val fields: Map<String, FieldCache> =
                 if (allFields.any { it.value.meta.hasFlag(SavingFieldFlag.ANNOTATED) }) {
                     allFields.filter {
@@ -185,21 +187,22 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
         inPlaceSavable = ISerializeInPlace::class.java.isAssignableFrom(type.clazz)
 
         constructor =
-                if(inPlaceSavable) {
+                if (inPlaceSavable) {
                     nullConstructor
-                } else if (mutable) {
-                    type.clazz.declaredConstructors.find { it.parameterCount == 0 } ?: throw SerializerException("Couldn't find zero-argument constructor for mutable type ${type.clazz.canonicalName}")
                 } else {
-                    type.clazz.declaredConstructors.find {
-                        val paramsToFind = HashMap(fields)
-                        it.parameters.all {
-                            paramsToFind.remove(it.name)?.meta?.type?.equals(FieldType.create(it.parameterizedType)) ?: false
-                        }
-                    } ?: throw SerializerException("Couldn't find constructor with parameters (${fields.map { it.value.meta.type.toString() + " " + it.key }.joinToString(", ")}) for immutable type ${type.clazz.canonicalName}")
+                    val test = type.clazz.declaredConstructors.map { it.parameters }
+                    type.clazz.declaredConstructors.find { it.parameterCount == 0 } ?:
+                            type.clazz.declaredConstructors.find {
+                                val paramsToFind = HashMap(fields)
+                                it.parameters.all {
+                                    paramsToFind.remove(it.name)?.meta?.type?.equals(FieldType.create(it.parameterizedType)) ?: false
+                                }
+                            } ?:
+                            throw SerializerException("Couldn't find zero-argument constructor or constructor with parameters (${fields.map { it.value.meta.type.toString() + " " + it.key }.joinToString(", ")}) for immutable type ${type.clazz.canonicalName}")
                 }
         constructorArgOrder = constructor.parameters.map { it.name }
-        constructorMH = if(inPlaceSavable) {
-            { arr -> throw SerializerException("Cannot create instance of ISerializeInPlace")}
+        constructorMH = if (inPlaceSavable) {
+            { arr -> throw SerializerException("Cannot create instance of ISerializeInPlace") }
         } else {
             MethodHandleHelper.wrapperForConstructor(constructor)
         }
@@ -215,6 +218,12 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
             }
             SerializerRegistry.lazyImpl(target, fieldType)
         }
+    }
+
+    private fun addSuperClass(map: MutableMap<String, FieldCache>, clazz: Class<*>) {
+        map.putAll(SavingFieldCache.getClassFields(clazz))
+        if(clazz.superclass != null)
+            addSuperClass(map, clazz.superclass)
     }
 
     companion object {
