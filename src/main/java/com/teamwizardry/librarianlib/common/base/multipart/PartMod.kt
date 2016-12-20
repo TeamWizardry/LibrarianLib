@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.common.base.multipart
 
 import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
+import com.teamwizardry.librarianlib.common.util.saving.ISerializeInPlace
 import mcmultipart.multipart.Multipart
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.network.PacketBuffer
@@ -8,7 +9,7 @@ import net.minecraft.network.PacketBuffer
 /**
  * Created by TheCodeWarrior
  */
-open class PartMod : Multipart() {
+open class PartMod : Multipart(), ISerializeInPlace {
 
     /**
      * Override this function to store special data not stored in @Save fields in NBT.
@@ -43,21 +44,23 @@ open class PartMod : Multipart() {
     }
 
     override fun readFromNBT(tag: NBTTagCompound) {
-        readCustomNBT(tag)
-        AbstractSaveHandler.readAutoNBT(javaClass, tag)
+        readCustomNBT(tag.getCompoundTag("custom"))
+        AbstractSaveHandler.readAutoNBT(javaClass, tag.getTag("auto"), false)
         super.readFromNBT(tag)
     }
 
     override fun writeToNBT(tag: NBTTagCompound): NBTTagCompound {
-        writeCustomNBT(tag, false)
-        AbstractSaveHandler.writeAutoNBT(javaClass, tag)
+        val customTag = NBTTagCompound()
+        writeCustomNBT(customTag, false)
+        tag.setTag("custom", customTag)
+        tag.setTag("auto", AbstractSaveHandler.writeAutoNBT(javaClass, false))
         super.writeToNBT(tag)
         return tag
     }
 
     override fun readUpdatePacket(buf: PacketBuffer) {
         readCustomBytes(buf)
-        AbstractSaveHandler.readAutoBytes(javaClass, buf)
+        AbstractSaveHandler.readAutoBytes(javaClass, buf, true)
     }
 
     override fun writeUpdatePacket(buf: PacketBuffer) {

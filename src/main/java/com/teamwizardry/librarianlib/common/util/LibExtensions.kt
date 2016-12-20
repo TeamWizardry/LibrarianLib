@@ -18,7 +18,8 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider
 import net.minecraftforge.fml.common.network.ByteBufUtils
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
-import java.util.*
+
+
 
 /**
  * Created by TheCodeWarrior
@@ -37,6 +38,23 @@ fun String.localize(vararg parameters: Any): String {
 
 fun String.canLocalize(): Boolean {
     return LibrarianLib.PROXY.canTranslate(this)
+}
+
+fun <K, V> MutableMap<K, V>.withRealDefault(default: (K) -> V): DefaultedMutableMap<K, V> {
+    return when(this) {
+        is RealDefaultImpl -> RealDefaultImpl(this.map, default)
+        else -> RealDefaultImpl(this, default)
+    }
+}
+
+interface DefaultedMutableMap<K, V> : MutableMap<K, V> {
+    override fun get(key: K): V
+}
+
+private class RealDefaultImpl<K, V>(val map: MutableMap<K, V>, val default: (K) -> V) : DefaultedMutableMap<K, V>, MutableMap<K, V> by map {
+    override fun get(key: K): V {
+        return map.getOrPut(key, { default(key) })
+    }
 }
 
 // Vec3d ===============================================================================================================
@@ -189,31 +207,33 @@ fun ByteBuf.readVarLong(): Long {
 fun ByteBuf.writeBooleanArray(value: BooleanArray) {
     val len = value.size
     this.writeVarInt(len)
-    val bitset = BitSet()
-    for (i in 0..len - 1) {
-        bitset.set(i, value[i])
+
+    val toReturn = ByteArray((len + 7) / 8) // +7 to round up
+    for (entry in toReturn.indices) {
+        for (bit in 0..7) {
+            if (entry * 8 + bit < len && value[entry * 8 + bit]) {
+                toReturn[entry] = (toReturn[entry].toInt() or (128 shr bit)).toByte()
+            }
+        }
     }
-    val setArray = bitset.toByteArray()
-    val writeArray = ByteArray(Math.ceil(len / 8.0).toInt()) {
-        if (it < setArray.size)
-            setArray[it]
-        else
-            0
-    }
-    this.writeBytes(writeArray)
+    this.writeBytes(toReturn)
 }
 
 fun ByteBuf.readBooleanArray(tryReadInto: BooleanArray? = null): BooleanArray {
     val len = this.readVarInt()
-    val bytes = ByteArray(Math.ceil(len / 8.0).toInt())
+    val bytes = ByteArray((len + 7)/ 8)
     this.readBytes(bytes)
 
-    val bitset = BitSet.valueOf(bytes)
-    val booleans = if(tryReadInto == null || tryReadInto.size != len) BooleanArray(len) else tryReadInto
-    for(i in 0..len-1) {
-        booleans[i] = bitset.get(i)
+    val toReturn = if(tryReadInto != null && tryReadInto.size == len) tryReadInto else BooleanArray(len)
+    for (entry in bytes.indices) {
+        for (bit in 0..7) {
+            val bitThing = bytes[entry].toInt() and (128 shr bit)
+            if (entry * 8 + bit < len && bitThing != 0) {
+                toReturn[entry * 8 + bit] = true
+            }
+        }
     }
-    return booleans
+    return toReturn
 }
 
 fun ByteBuf.writeNullSignature() {
