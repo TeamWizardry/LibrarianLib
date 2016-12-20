@@ -5,6 +5,8 @@ import com.teamwizardry.librarianlib.common.util.saving.serializers.SerializerIm
 import com.teamwizardry.librarianlib.common.util.saving.serializers.SerializerTarget
 import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.basics.SerializeMisc
 import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.basics.SerializeVectors
+import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.generics.SerializeLists
+import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.generics.SerializeMaps
 import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.primitives.SerializePrimitiveArrays
 import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.primitives.SerializePrimitives
 import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.special.SerializeArrays
@@ -29,6 +31,8 @@ object Targets {
         SerializeArrays
         SerializeEnums
         SerializeObject
+        SerializeLists
+        SerializeMaps
     }
 
     class NBTTarget : SerializerTarget<(nbt: NBTBase, existing: Any?, syncing: Boolean) -> Any, (value: Any, syncing: Boolean) -> NBTBase>("NBT") {

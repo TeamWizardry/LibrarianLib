@@ -1,12 +1,16 @@
 package com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.generics
 
-import com.teamwizardry.librarianlib.common.util.*
+import com.teamwizardry.librarianlib.common.util.forEachIndexed
+import com.teamwizardry.librarianlib.common.util.readBooleanArray
+import com.teamwizardry.librarianlib.common.util.safeCast
 import com.teamwizardry.librarianlib.common.util.saving.FieldTypeGeneric
 import com.teamwizardry.librarianlib.common.util.saving.serializers.Serializer
 import com.teamwizardry.librarianlib.common.util.saving.serializers.SerializerRegistry
 import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.Targets
+import com.teamwizardry.librarianlib.common.util.writeBooleanArray
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagList
+import java.util.*
 
 /**
  * Created by TheCodeWarrior
@@ -14,22 +18,17 @@ import net.minecraft.nbt.NBTTagList
 object SerializeLists {
     // check for list interface and 0 arg constructor
     init {
-        SerializerRegistry.register("java:generator.list", Serializer({ type ->
-            MutableList::class.java.isAssignableFrom(type.clazz) && type is FieldTypeGeneric && type.generics.size == 1
-        }))
+        SerializerRegistry.register("java:generator.list", Serializer(ArrayList::class.java))
 
         SerializerRegistry["java:generator.list"]?.register(Targets.NBT, { type ->
             type as FieldTypeGeneric
             val typeParam = type.generic(0)!!
             val subSerializer = SerializerRegistry.lazyImpl(Targets.NBT, typeParam)
 
-            val constructor = type.clazz.declaredConstructors.find { it.parameterCount == 0 } ?: throw NoSuchMethodException("Could not find zero-argument constructor for class ${type.clazz.canonicalName}")
-            val constructorMH = MethodHandleHelper.wrapperForConstructor(constructor)
-
-            Targets.NBT.impl<MutableList<*>>({ nbt, existing, syncing ->
+            Targets.NBT.impl<ArrayList<*>>({ nbt, existing, syncing ->
                 val list = nbt.safeCast(NBTTagList::class.java)
 
-                val array = (existing ?: constructorMH(arrayOf())) as MutableList<Any?>
+                val array = (existing ?: ArrayList<Any?>()) as ArrayList<Any?>
 
                 while(array.size > list.tagCount())
                     array.removeAt(array.size-1)
@@ -61,18 +60,15 @@ object SerializeLists {
             })
         })
 
-        SerializerRegistry["java:generator.array"]?.register(Targets.BYTES, { type ->
+        SerializerRegistry["java:generator.list"]?.register(Targets.BYTES, { type ->
             type as FieldTypeGeneric
             val typeParam = type.generic(0)!!
             val subSerializer = SerializerRegistry.lazyImpl(Targets.BYTES, typeParam)
 
-            val constructor = type.clazz.declaredConstructors.find { it.parameterCount == 0 } ?: throw NoSuchMethodException("Could not find zero-argument constructor for class ${type.clazz.canonicalName}")
-            val constructorMH = MethodHandleHelper.wrapperForConstructor(constructor)
-
-            Targets.BYTES.impl<MutableList<*>>({ buf, existing, syncing ->
+            Targets.BYTES.impl<ArrayList<*>>({ buf, existing, syncing ->
                 val nullsig = buf.readBooleanArray()
 
-                val array = (existing ?: constructorMH(arrayOf())) as MutableList<Any?>
+                val array = (existing ?: ArrayList<Any?>()) as ArrayList<Any?>
 
                 while(array.size > nullsig.size)
                     array.removeAt(array.size-1)

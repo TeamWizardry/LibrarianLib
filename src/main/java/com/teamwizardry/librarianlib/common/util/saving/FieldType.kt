@@ -14,18 +14,22 @@ abstract class FieldType protected constructor(open val clazz: Class<*>) {
 
         @JvmStatic
         fun create(type: Type): FieldType {
+            val fType: FieldType =
             if(type is ParameterizedType)
-                return createGeneric(type)
-            if(type is GenericArrayType)
-                return createGenericArray(type)
-            if(type is TypeVariable<*>)
-                return createVariable(type)
-            if(type is Class<*>)
+                createGeneric(type)
+            else if(type is GenericArrayType)
+                createGenericArray(type)
+            else if(type is TypeVariable<*>)
+                createVariable(type)
+            else if(type is Class<*>)
                 if(type.isArray)
-                    return createArray(type)
+                    createArray(type)
                 else
-                    return createPlain(type)
-            throw IllegalArgumentException("Cannot create FieldType from $type")
+                    createPlain(type)
+            else
+                throw IllegalArgumentException("Cannot create FieldType from $type")
+
+            return fType
         }
 
         private fun createPlain(type: Class<*>): FieldType {
