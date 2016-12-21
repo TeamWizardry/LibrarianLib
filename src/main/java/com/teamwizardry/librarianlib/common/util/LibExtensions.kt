@@ -335,3 +335,10 @@ fun <T: Any> MutableList<T?>.asNonnullList(default: T): NonNullList<T> = FakeNon
 
 fun <T: Any> Iterable<T>.nullable() = toMutableList<T?>()
 fun <T: Any> Array<T>.nullable() = toMutableList<T?>()
+
+
+// ItemStack ===========================================================================================================
+
+var ItemStack.stackSize: Int
+    get() = count
+    set(value) { count = value }
