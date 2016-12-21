@@ -8,12 +8,11 @@ import net.minecraft.world.World
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.BiConsumer
-
-private val noop = BiConsumer<Float, ParticleBuilder> { a, b -> }
-private val noopLambda: (Float, ParticleBuilder) -> Unit = { a, b -> }
 
 /**
  * Manages the spawning of particles along paths
@@ -29,6 +28,7 @@ object ParticleSpawner {
      */
     private var pending: MutableSet<ParticleSpawn> = Collections.newSetFromMap(ConcurrentHashMap())
 
+    @SideOnly(Side.CLIENT)
     @SubscribeEvent
     fun tickEvent(event: TickEvent.ClientTickEvent) {
         if (event.phase == TickEvent.Phase.END) {
@@ -54,7 +54,7 @@ object ParticleSpawner {
      */
     @JvmStatic
     @JvmOverloads
-    fun spawn(builder: ParticleBuilder, world: World, curve: InterpFunction<Vec3d>, particleCount: Int, travelTime: Int = 0, callback: BiConsumer<Float, ParticleBuilder> = noop) {
+    fun spawn(builder: ParticleBuilder, world: World, curve: InterpFunction<Vec3d>, particleCount: Int, travelTime: Int = 0, callback: BiConsumer<Float, ParticleBuilder> = BiConsumer { t, u ->  }) {
         val actualParticleCount = modifyParticleCount(particleCount)
 
         InterpListGenerator.getIndexList(actualParticleCount).forEach { t ->
@@ -91,6 +91,6 @@ private data class ParticleSpawn private constructor(val particle: ParticleBase)
 /**
  * Kotlin wrapper for [spawn]. Uses kotlin lambdas instead of SAM classes
  */
-fun ParticleSpawner.spawn(builder: ParticleBuilder, world: World, curve: InterpFunction<Vec3d>, particleCount: Int, travelTime: Int = 0, callback: (Float, ParticleBuilder) -> Unit = noopLambda) {
+fun ParticleSpawner.spawn(builder: ParticleBuilder, world: World, curve: InterpFunction<Vec3d>, particleCount: Int, travelTime: Int = 0, callback: (Float, ParticleBuilder) -> Unit = { a, b -> }) {
     spawn(builder, world, curve, particleCount, travelTime, BiConsumer<Float, ParticleBuilder>(callback))
 }

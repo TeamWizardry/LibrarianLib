@@ -8,11 +8,14 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.entity.Entity
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.Vec3d
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import java.awt.Color
 
 /**
  * Render a particle from the block texture map.
  */
+@SideOnly(Side.CLIENT)
 class RenderFunctionBasic(val texture: TextureAtlasSprite, flatLayer: Boolean) : RenderFunction(if (flatLayer) ParticleRenderManager.LAYER_BLOCK_MAP else ParticleRenderManager.LAYER_BLOCK_MAP_ADDITIVE) {
 
     /**
@@ -26,10 +29,10 @@ class RenderFunctionBasic(val texture: TextureAtlasSprite, flatLayer: Boolean) :
     override fun render(i: Float, particle: ParticleBase, color: Color, alpha: Float,
                         worldRendererIn: VertexBuffer, entityIn: Entity?, partialTicks: Float, rotationX: Float, rotationZ: Float, rotationYZ: Float, rotationXY: Float, rotationXZ: Float,
                         scale: Float, pos: Vec3d, skyLight: Int, blockLight: Int) {
-        var uMin = texture.minU.toDouble()
-        var uMax = texture.maxU.toDouble()
-        var vMin = texture.minV.toDouble()
-        var vMax = texture.maxV.toDouble()
+        val uMin = texture.minU.toDouble()
+        val uMax = texture.maxU.toDouble()
+        val vMin = texture.minV.toDouble()
+        val vMax = texture.maxV.toDouble()
 
         val radius = 0.1f * scale
 
