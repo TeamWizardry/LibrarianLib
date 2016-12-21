@@ -18,6 +18,10 @@ object DefaultValues {
     private val genericHandlers = mutableListOf<(FieldTypeGeneric) -> (() -> Any)?>()
 
     init {
+        mapDefault(Boolean::class.javaPrimitiveType!!, false)
+        mapDefault(Boolean::class.javaObjectType, false)
+        mapDefault(BooleanArray::class.java, booleanArrayOf())
+
         mapDefault(Char::class.javaPrimitiveType!!, 0.toChar())
         mapDefault(Byte::class.javaPrimitiveType!!, 0.toByte())
         mapDefault(Short::class.javaPrimitiveType!!, 0.toShort())
@@ -45,14 +49,6 @@ object DefaultValues {
         mapDefault(LongArray::class.java, longArrayOf())
         mapDefault(FloatArray::class.java, floatArrayOf())
         mapDefault(DoubleArray::class.java, doubleArrayOf())
-
-        mapDefault(Array<Char>::class.java, arrayOf())
-        mapDefault(Array<Byte>::class.java, arrayOf())
-        mapDefault(Array<Short>::class.java, arrayOf())
-        mapDefault(Array<Int>::class.java, arrayOf())
-        mapDefault(Array<Long>::class.java, arrayOf())
-        mapDefault(Array<Float>::class.java, arrayOf())
-        mapDefault(Array<Double>::class.java, arrayOf())
 
         mapDefault(Color::class.java, Color.BLACK)
         mapDefaultGenerator(NBTTagCompound::class.java) { NBTTagCompound() }

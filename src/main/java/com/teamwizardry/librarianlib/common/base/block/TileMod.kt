@@ -38,6 +38,7 @@ abstract class TileMod : TileEntity(), ISerializeInPlace {
         writeCustomNBT(customTag, false)
         compound.setTag("custom", customTag)
         compound.setTag("auto", AbstractSaveHandler.writeAutoNBT(this, false))
+        compound.setInteger("_v", 2)
         super.writeToNBT(compound)
 
         return compound
@@ -45,7 +46,13 @@ abstract class TileMod : TileEntity(), ISerializeInPlace {
 
     override fun readFromNBT(compound: NBTTagCompound) {
         readCustomNBT(compound.getCompoundTag("custom"))
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        if(!compound.hasKey("_v"))
+            AbstractSaveHandler.readAutoNBT(this, compound, false)
+        else {
+            when(compound.getInteger("_v")) {
+                2 -> AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+            }
+        }
         super.readFromNBT(compound)
     }
 
@@ -111,8 +118,12 @@ abstract class TileMod : TileEntity(), ISerializeInPlace {
 
     override fun onDataPacket(net: NetworkManager, packet: SPacketUpdateTileEntity) {
         super.onDataPacket(net, packet)
-        readCustomNBT(packet.nbtCompound.getCompoundTag("custom"))
-        AbstractSaveHandler.readAutoNBT(this, packet.nbtCompound.getTag("auto"), true)
+        handleUpdateTag(packet.nbtCompound)
+    }
+
+    override fun handleUpdateTag(tag: NBTTagCompound) {
+        readCustomNBT(tag.getCompoundTag("custom"))
+        AbstractSaveHandler.readAutoNBT(this, tag.getTag("auto"), true)
     }
 
     /**

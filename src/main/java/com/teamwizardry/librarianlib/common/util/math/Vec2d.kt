@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.common.util.math
 
-class Vec2d(var x: Double, var y: Double) {
+class Vec2d(val x: Double, val y: Double) {
 
     @Transient val xf: Float
     @Transient val yf: Float

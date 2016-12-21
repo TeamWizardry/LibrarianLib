@@ -51,6 +51,7 @@ object SavingFieldCache {
             if(Modifier.isTransient(mods)) meta.addFlag(SavingFieldFlag.TRANSIENT)
             if(field.isAnnotationPresent(Save::class.java)) meta.addFlag(SavingFieldFlag.ANNOTATED)
             if(field.isAnnotationPresent(NotNull::class.java)) meta.addFlag(SavingFieldFlag.NONNULL)
+            if(field.type.isPrimitive) meta.addFlag(SavingFieldFlag.NONNULL)
             if(field.isAnnotationPresent(NoSync::class.java)) meta.addFlag(SavingFieldFlag.NOSYNC)
 
             val setterLambda: (Any, Any?) -> Unit = if(meta.hasFlag(SavingFieldFlag.FINAL)) {
@@ -130,6 +131,8 @@ object SavingFieldCache {
             val meta = FieldMetadata(FieldType.create(getter), SavingFieldFlag.ANNOTATED, SavingFieldFlag.METHOD)
 
             if(getter.isAnnotationPresent(NotNull::class.java) && (setter == null || setter.parameterAnnotations[0].any { it is NotNull }))
+                meta.addFlag(SavingFieldFlag.NONNULL)
+            if(type.isPrimitive)
                 meta.addFlag(SavingFieldFlag.NONNULL)
             if(getter.isAnnotationPresent(NoSync::class.java) && (setter == null || setter.isAnnotationPresent(NoSync::class.java)))
                 meta.addFlag(SavingFieldFlag.NOSYNC)
