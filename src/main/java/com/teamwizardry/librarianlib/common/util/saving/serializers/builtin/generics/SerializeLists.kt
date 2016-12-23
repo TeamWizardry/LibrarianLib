@@ -1,13 +1,10 @@
 package com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.generics
 
-import com.teamwizardry.librarianlib.common.util.forEachIndexed
-import com.teamwizardry.librarianlib.common.util.readBooleanArray
-import com.teamwizardry.librarianlib.common.util.safeCast
+import com.teamwizardry.librarianlib.common.util.*
 import com.teamwizardry.librarianlib.common.util.saving.FieldTypeGeneric
 import com.teamwizardry.librarianlib.common.util.saving.serializers.Serializer
 import com.teamwizardry.librarianlib.common.util.saving.serializers.SerializerRegistry
 import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.Targets
-import com.teamwizardry.librarianlib.common.util.writeBooleanArray
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagList
 import java.util.*
@@ -18,17 +15,19 @@ import java.util.*
 object SerializeLists {
     // check for list interface and 0 arg constructor
     init {
-        SerializerRegistry.register("java:generator.list", Serializer(ArrayList::class.java))
+        SerializerRegistry.register("java:generator.list", Serializer(ArrayList::class.java, LinkedList::class.java))
 
         SerializerRegistry["java:generator.list"]?.register(Targets.NBT, { type ->
             type as FieldTypeGeneric
             val typeParam = type.generic(0)!!
             val subSerializer = SerializerRegistry.lazyImpl(Targets.NBT, typeParam)
 
-            Targets.NBT.impl<ArrayList<*>>({ nbt, existing, syncing ->
+            val constructorMH = MethodHandleHelper.wrapperForConstructor(type.clazz.getConstructor()) as (Array<Any>) -> MutableList<Any?>
+
+            Targets.NBT.impl<MutableList<*>>({ nbt, existing, syncing ->
                 val list = nbt.safeCast(NBTTagList::class.java)
 
-                val array = (existing ?: ArrayList<Any?>()) as ArrayList<Any?>
+                val array = (existing ?: constructorMH(arrayOf())) as MutableList<Any?>
 
                 while(array.size > list.tagCount())
                     array.removeAt(array.size-1)
@@ -65,10 +64,12 @@ object SerializeLists {
             val typeParam = type.generic(0)!!
             val subSerializer = SerializerRegistry.lazyImpl(Targets.BYTES, typeParam)
 
-            Targets.BYTES.impl<ArrayList<*>>({ buf, existing, syncing ->
+            val constructorMH = MethodHandleHelper.wrapperForConstructor(type.clazz.getConstructor()) as (Array<Any>) -> MutableList<Any?>
+
+            Targets.BYTES.impl<MutableList<*>>({ buf, existing, syncing ->
                 val nullsig = buf.readBooleanArray()
 
-                val array = (existing ?: ArrayList<Any?>()) as ArrayList<Any?>
+                val array = (existing ?: constructorMH(arrayOf())) as MutableList<Any?>
 
                 while(array.size > nullsig.size)
                     array.removeAt(array.size-1)

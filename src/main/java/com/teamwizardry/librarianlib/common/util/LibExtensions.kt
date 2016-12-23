@@ -324,9 +324,9 @@ fun EntityPlayer.sendMessage(str: String) {
 operator fun CharSequence.times(n: Int) = this.repeat(n)
 operator fun Int.times(n: CharSequence) = n.repeat(this)
 
-fun <T, R> ICapabilityProvider.ifCap(capability: Capability<T>, facing: EnumFacing?, callback: (T) -> R): R? {
-    if(this.hasCapability(capability, facing))
-        return callback(this.getCapability(capability, facing)!!)
+fun <C : ICapabilityProvider, T, R> C.ifCap(capability: Capability<T>?, facing: EnumFacing?, callback: T.(C) -> R): R? {
+    if(capability != null && this.hasCapability(capability, facing))
+        return this.getCapability(capability, facing)!!.callback(this)
     return null
 }
 
