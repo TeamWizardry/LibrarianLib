@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.client.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.common.util.vec
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.client.config.GuiUtils
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -54,6 +55,7 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         super.drawScreen(mouseX, mouseY, partialTicks)
+        GlStateManager.enableBlend()
         val relPos = vec(mouseX, mouseY)
         fullscreenComponents.calculateMouseOver(relPos)
         fullscreenComponents.draw(relPos, partialTicks)

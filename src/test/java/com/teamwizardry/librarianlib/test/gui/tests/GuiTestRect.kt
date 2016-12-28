@@ -11,7 +11,7 @@ class GuiTestRect : GuiBase(100, 100) {
     init {
 
         val c = ComponentRect(25, 25, 50, 50)
-        c.color.setValue(Color.RED)
+        c.color.setValue(Color(255, 0, 0, 127))
         mainComponents.add(c)
 
     }
