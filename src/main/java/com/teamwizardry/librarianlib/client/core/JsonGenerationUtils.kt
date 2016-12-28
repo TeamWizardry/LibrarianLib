@@ -7,7 +7,6 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.client.renderer.block.statemap.DefaultStateMapper
-import net.minecraft.client.renderer.block.statemap.IStateMapper
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry
@@ -55,7 +54,7 @@ object JsonGenerationUtils {
 
     fun getPathForItemModel(item: Item, variantName: String? = null): String {
         val registryName = item.registryName
-        val varname = if (item is ItemBlock || variantName == null) registryName.resourcePath else variantName
+        val varname = variantName ?: registryName.resourcePath
         return getAssetPath(registryName.resourceDomain) + +"/models/item/$varname.json"
     }
 
