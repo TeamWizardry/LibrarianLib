@@ -15,25 +15,40 @@ import java.io.IOException
 open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : GuiScreen() {
     protected val mainComponents: ComponentVoid = ComponentVoid(0, 0)
     protected val fullscreenComponents: ComponentVoid = ComponentVoid(0, 0)
-    protected var top: Int = 0
-    protected var left: Int = 0
+    private val mainScaleWrapper: ComponentVoid = ComponentVoid(0,0)
+//    protected var top: Int = 0
+//    protected var left: Int = 0
 
     init {
         mainComponents.calculateOwnHover = false
         fullscreenComponents.calculateOwnHover = false
-        mainComponents.zIndex = -100000 // really far back
-        fullscreenComponents.add(mainComponents)
+        mainScaleWrapper.zIndex = -100000 // really far back
+        fullscreenComponents.add(mainScaleWrapper)
+        mainScaleWrapper.add(mainComponents)
 
         mainComponents.size = vec(guiWidth, guiHeight)
     }
 
     override fun initGui() {
         super.initGui()
-        left = width / 2 - guiWidth / 2
-        top = height / 2 - guiHeight / 2
 
-        if (mainComponents.pos.xi != left || mainComponents.pos.yi != top)
-            mainComponents.pos = vec(left, top)
+        // find required scale, either 1x, 1/2x 1/3x, or 1/4x
+        var s = 1.0
+        var i = 1
+        while((guiWidth*s > width || guiHeight*s > height) && i < 4) {
+            i++
+            s = 1.0/i
+        }
+
+        val left = (width / 2 - guiWidth*s / 2).toInt()
+        val top = (height / 2 - guiHeight*s / 2).toInt()
+
+        if (mainScaleWrapper.pos.xi != left || mainScaleWrapper.pos.yi != top) {
+            mainScaleWrapper.pos = vec(left, top)
+            mainScaleWrapper.childScale = s
+            mainScaleWrapper.size = vec(guiWidth*s, guiHeight*s)
+        }
+
         fullscreenComponents.size = vec(width, height)
     }
 
