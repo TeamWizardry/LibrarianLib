@@ -113,8 +113,6 @@ import java.util.*
  *
  * ### Advanced events
  * - [LogicalSizeEvent] - Fired when the logical size is queried
- * - [ChildMouseOffsetEvent] - Fired when a mouse position is being offset to be relative to a child component
- * - [MouseOffsetEvent] - Fired when a mouse position is being offset to be relative to this component
  * - [MouseOverEvent] - Fired when checking if the mouse is over this component
  */
 @SideOnly(Side.CLIENT)
@@ -170,8 +168,6 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     class RemoveTagEvent<T : GuiComponent<T>>(val component: T, val tag: Any) : EventCancelable()
 
     class LogicalSizeEvent<T : GuiComponent<T>>(val component: T, var box: BoundingBox2D?) : Event()
-//    class ChildMouseOffsetEvent<T : GuiComponent<T>>(val component: T, val child: GuiComponent<*>, var offset: Vec2d) : Event()
-//    class MouseOffsetEvent<out T : GuiComponent<*>>(val component: T, var offset: Vec2d) : Event()
     class MouseOverEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, var isOver: Boolean) : Event()
 
     var zIndex = 0
@@ -740,6 +736,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     }
     //=============================================================================
 
+    /**
+     * Sets the value associated with the pair of keys [clazz] and [key]. The value must be a subclass of [clazz]
+     */
     fun <D : Any> setData(clazz: Class<D>, key: String, value: D) {
         if (!data.containsKey(clazz))
             data.put(clazz, mutableMapOf())
@@ -747,6 +746,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             data.get(clazz)?.put(key, value)
     }
 
+    /**
+     * Removes the value associated with the pair of keys [clazz] and [key]
+     */
     fun <D : Any> removeData(clazz: Class<D>, key: String) {
         if (!data.containsKey(clazz))
             data.put(clazz, mutableMapOf())
@@ -754,6 +756,10 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             data.get(clazz)?.remove(key)
     }
 
+    /**
+     * Returns the value associated with the pair of keys [clazz] and [key] if it exists, else it returns null.
+     * The value will be an instance of [clazz]
+     */
     @Suppress("UNCHECKED_CAST")
     fun <D> getData(clazz: Class<D>, key: String): D? {
         if (!data.containsKey(clazz))
@@ -761,11 +767,43 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         return BUS.fire(GetDataEvent(thiz(), clazz, key, data.get(clazz)?.get(key) as D?)).value
     }
 
+    /**
+     * Checks if there is a value associated with the pair of keys [clazz] and [key]
+     */
     @Suppress("UNCHECKED_CAST")
     fun <D> hasData(clazz: Class<D>, key: String): Boolean {
         if (!data.containsKey(clazz))
             data.put(clazz, HashMap<String, Any>())
         return BUS.fire(GetDataEvent(thiz(), clazz, key, data[clazz]?.get(key) as D?)).value != null
+    }
+
+    /**
+     * Sets the value associated with the pair of keys [clazz] and `""`. The value must be a subclass of [clazz]
+     */
+    fun <D : Any> setData(clazz: Class<D>, value: D) {
+        setData(clazz, "", value)
+    }
+
+    /**
+     * Removes the value associated with the pair of keys [clazz] and `""`
+     */
+    fun <D : Any> removeData(clazz: Class<D>) {
+        removeData(clazz, "")
+    }
+
+    /**
+     * Returns the value Associated with the pair of keys [clazz] and `""` if it exists, else it returns null.
+     * The value will be an instance of [clazz]
+     */
+    fun <D : Any> getData(clazz: Class<D>): D? {
+        return getData(clazz, "")
+    }
+
+    /**
+     * Checks if there is a value associated with the pair of keys [clazz] and `""`
+     */
+    fun <D : Any> hasData(clazz: Class<D>): Boolean {
+        return hasData(clazz, "")
     }
 
     /**
