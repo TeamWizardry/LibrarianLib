@@ -33,12 +33,14 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
     override fun initGui() {
         super.initGui()
 
-        // find required scale, either 1x, 1/2x 1/3x, or 1/4x
         var s = 1.0
-        var i = 1
-        while((guiWidth*s > width || guiHeight*s > height) && i < 4) {
-            i++
-            s = 1.0/i
+        if(!adjustGuiSize()) {
+            var i = 1
+            // find required scale, either 1x, 1/2x 1/3x, or 1/4x
+            while ((guiWidth * s > width || guiHeight * s > height) && i < 4) {
+                i++
+                s = 1.0 / i
+            }
         }
 
         val left = (width / 2 - guiWidth*s / 2).toInt()
@@ -51,6 +53,16 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         }
 
         fullscreenComponents.size = vec(width, height)
+    }
+
+    /**
+     * Try to fit the gui in a [width] by [height] area, setting [guiWidth] and [guiHeight] to whatever size you manage
+     * to clamp the GUI to.
+     *
+     * Return true from this function to cancel any auto resizing
+     */
+    open fun adjustGuiSize(): Boolean {
+        return false
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {

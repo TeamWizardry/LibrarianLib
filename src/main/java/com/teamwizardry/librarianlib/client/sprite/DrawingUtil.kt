@@ -82,7 +82,7 @@ object DrawingUtil {
      * *
      * @param height The height to draw the sprite
      */
-    fun drawClipped(sprite: Sprite, animTicks: Int, x: Float, y: Float, width: Int, height: Int) {
+    fun drawClipped(sprite: Sprite, animTicks: Int, x: Float, y: Float, width: Int, height: Int, reverseX: Boolean, reverseY: Boolean) {
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
 
@@ -103,13 +103,13 @@ object DrawingUtil {
         for (xIndex in 0..wholeSpritesX) {
             for (yIndex in 0..wholeSpritesY) {
 
-                val smallX = xIndex == wholeSpritesX
-                val smallY = yIndex == wholeSpritesY
+                val smallX = if (reverseX) xIndex == 0 else xIndex == wholeSpritesX
+                val smallY = if (reverseY) yIndex == 0 else yIndex == wholeSpritesY
 
                 val spriteWidth = if (smallX) if (wholeSpritesX == 0) width else leftoverWidth else sprite.width
                 val spriteHeight = if (smallY) if (wholeSpritesY == 0) height else leftoverHeight else sprite.height
-                val offsetX = sprite.width * xIndex
-                val offsetY = sprite.height * yIndex
+                val offsetX = if (reverseX) if (xIndex == 0) 0 else sprite.width * (xIndex - 1) + width else sprite.width * xIndex
+                val offsetY = if (reverseY) if (yIndex == 0) 0 else sprite.height * (yIndex - 1) + height else sprite.height * yIndex
 
                 val minX = x + offsetX
                 val minY = y + offsetY
@@ -127,7 +127,7 @@ object DrawingUtil {
                 vb.pos(maxX.toDouble(), maxY.toDouble(), 0.0).tex(maxU.toDouble(), maxV.toDouble()).endVertex()
                 vb.pos(maxX.toDouble(), minY.toDouble(), 0.0).tex(maxU.toDouble(), minV.toDouble()).endVertex()
                 vb.pos(minX.toDouble(), minY.toDouble(), 0.0).tex(minU.toDouble(), minV.toDouble()).endVertex()
-
+                vb.pos(minX.toDouble(), minY.toDouble(), 0.0).tex(minU.toDouble(), minV.toDouble()).endVertex()
             }
         }
 

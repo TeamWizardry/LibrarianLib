@@ -159,19 +159,7 @@ open class Sprite {
      * @param height
      */
     fun drawClipped(animTicks: Int, x: Float, y: Float, width: Int, height: Int) {
-        DrawingUtil.drawClipped(this, animTicks, x, y, width, height)
+        DrawingUtil.drawClipped(this, animTicks, x, y, width, height, false, false)
     }
 
 }
-/**
- * The minimum U coordinate (0-1)
- */
-/**
- * The minimum V coordinate (0-1)
- */
-/**
- * The maximum U coordinate (0-1)
- */
-/**
- * The maximum V coordinate (0-1)
- */
