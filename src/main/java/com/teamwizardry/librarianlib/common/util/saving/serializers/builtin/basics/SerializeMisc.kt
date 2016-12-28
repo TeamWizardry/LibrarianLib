@@ -26,7 +26,7 @@ object SerializeMisc {
         SerializerRegistry["awt:color"]?.register(Targets.NBT, Targets.NBT.impl<Color>
         ({ nbt, existing, sync ->
             val tag = nbt.safeCast(NBTTagCompound::class.java)
-            Color(tag.getByte("r").toInt(), tag.getByte("g").toInt(), tag.getByte("b").toInt(), tag.getByte("a").toInt())
+            Color(tag.getByte("r").toInt() and 0xFF, tag.getByte("g").toInt() and 0xFF, tag.getByte("b").toInt() and 0xFF, tag.getByte("a").toInt() and 0xFF)
         }, { value, sync ->
             val tag = NBTTagCompound()
             tag.setByte("r", value.red.toByte())
