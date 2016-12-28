@@ -23,6 +23,8 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         fullscreenComponents.calculateOwnHover = false
         mainComponents.zIndex = -100000 // really far back
         fullscreenComponents.add(mainComponents)
+
+        mainComponents.size = vec(guiWidth, guiHeight)
     }
 
     override fun initGui() {

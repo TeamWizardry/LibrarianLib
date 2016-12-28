@@ -4,12 +4,14 @@ import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.client.core.ClientTickHandler
 import com.teamwizardry.librarianlib.client.gui.GuiComponent.*
+import com.teamwizardry.librarianlib.common.util.div
 import com.teamwizardry.librarianlib.common.util.event.Event
 import com.teamwizardry.librarianlib.common.util.event.EventBus
 import com.teamwizardry.librarianlib.common.util.event.EventCancelable
 import com.teamwizardry.librarianlib.common.util.math.BoundingBox2D
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import com.teamwizardry.librarianlib.common.util.plus
+import com.teamwizardry.librarianlib.common.util.times
 import com.teamwizardry.librarianlib.common.util.vec
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
@@ -168,8 +170,8 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     class RemoveTagEvent<T : GuiComponent<T>>(val component: T, val tag: Any) : EventCancelable()
 
     class LogicalSizeEvent<T : GuiComponent<T>>(val component: T, var box: BoundingBox2D?) : Event()
-    class ChildMouseOffsetEvent<T : GuiComponent<T>>(val component: T, val child: GuiComponent<*>, var offset: Vec2d) : Event()
-    class MouseOffsetEvent<out T : GuiComponent<*>>(val component: T, var offset: Vec2d) : Event()
+//    class ChildMouseOffsetEvent<T : GuiComponent<T>>(val component: T, val child: GuiComponent<*>, var offset: Vec2d) : Event()
+//    class MouseOffsetEvent<out T : GuiComponent<*>>(val component: T, var offset: Vec2d) : Event()
     class MouseOverEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, var isOver: Boolean) : Event()
 
     var zIndex = 0
@@ -272,6 +274,15 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         }
     var parents: LinkedHashSet<GuiComponent<*>> = LinkedHashSet()
 
+    /**
+     * Amount to translate children, applied to both drawing and mouse position. Applied before [childScale]
+     */
+    var childTranslation: Vec2d = Vec2d.ZERO
+    /**
+     * Amount to scale children, applied to both drawing and mouse position. Applied after [childTranslation]
+     */
+    var childScale: Double = 1.0
+
     init {
         this.pos = vec(posX, posY)
         this.size = vec(width, height)
@@ -281,13 +292,6 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * Draws the component, this is called between pre and post draw events
      */
     abstract fun drawComponent(mousePos: Vec2d, partialTicks: Float)
-
-    /**
-     * Transforms the position passed to be relative to the root component's position.
-     */
-    fun rootPos(pos: Vec2d): Vec2d {
-        return parent?.rootPos(pos.add(this.pos)) ?: pos.add(this.pos)
-    }
 
     /**
      * Adds child(ren) to this component.
@@ -434,10 +438,29 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     //=============================================================================
 
     /**
-     * Allows the component to modify the position before it is passed to a child element.
+     * Allows the component to modify the mouse position before it is passed to a child element.
      */
     fun transformChildPos(child: GuiComponent<*>, pos: Vec2d): Vec2d {
-        return pos.sub(child.BUS.fire(MouseOffsetEvent(child.thiz(), BUS.fire(ChildMouseOffsetEvent(thiz(), child, child.pos)).offset)).offset)
+        //     [ translate to child's screen space ] [ subtract child pos to put origin at child origin ]
+        return (pos - childTranslation) / childScale - child.pos
+    }
+
+    /**
+     * Reverses [transformChildPos]
+     */
+    fun unTransformChildPos(child: GuiComponent<*>, pos: Vec2d): Vec2d {
+        return (pos + child.pos) * childScale + childTranslation
+    }
+
+    /**
+     * Recursivly reverses [transformChildPos], expressing the passed position relative to the root component.
+     *
+     * If [screenRoot] is set, then the root component's position is accounted for, making the position relative to the
+     * GL context of the root caller. Generally meaning the pos is relative to the screen.
+     */
+    @JvmOverloads
+    fun unTransformRoot(child: GuiComponent<*>, pos: Vec2d, screenRoot: Boolean = false): Vec2d {
+        return parent?.unTransformRoot(this, unTransformChildPos(child, pos), screenRoot) ?: if(screenRoot) unTransformChildPos(child, pos) + this.pos else unTransformChildPos(child, pos)
     }
 
     open fun calculateMouseOver(mousePos: Vec2d) {
@@ -522,7 +545,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
         GlStateManager.pushMatrix()
         GlStateManager.pushAttrib()
-        GlStateManager.translate(pos.x, pos.y, 0.0)
+        GlStateManager.translate(pos.x + childTranslation.x, pos.y + childTranslation.y, 0.0)
+        if(childScale != 1.0) // avoid unnecessary GL calls. Possibly microoptimization but meh.
+            GlStateManager.scale(childScale, childScale, 1.0)
 
         BUS.fire(PreChildrenDrawEvent(thiz(), mousePos, partialTicks))
 
@@ -667,7 +692,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         var aabb = contentSize
         for (child in components) {
             if (!child.isVisible) continue
-            val childAABB = child.getLogicalSize()
+            val childAABB = child.getLogicalSize()?.scale(childScale)?.offset(childTranslation)
             aabb = childAABB?.union(aabb) ?: aabb
         }
 
