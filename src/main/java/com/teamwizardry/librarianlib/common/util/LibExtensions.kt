@@ -49,9 +49,10 @@ fun <K, V> MutableMap<K, V>.withRealDefault(default: (K) -> V): DefaultedMutable
 
 interface DefaultedMutableMap<K, V> : MutableMap<K, V> {
     override fun get(key: K): V
+    val map: MutableMap<K, V>
 }
 
-private class RealDefaultImpl<K, V>(val map: MutableMap<K, V>, val default: (K) -> V) : DefaultedMutableMap<K, V>, MutableMap<K, V> by map {
+private class RealDefaultImpl<K, V>(override val map: MutableMap<K, V>, val default: (K) -> V) : DefaultedMutableMap<K, V>, MutableMap<K, V> by map {
     override fun get(key: K): V {
         return map.getOrPut(key, { default(key) })
     }

@@ -86,11 +86,11 @@ annotation class SaveMethodSetter(val saveName: String)
 annotation class Savable
 
 /**
- * @author TheCodeWarrior
+ * Marks this class and all of its subclasses to be saved in place. Only [Save] annotated fields will be saved.
  *
- * Implement this interface to make a class serializable in place. Only annotated mutable fields will be saved.
- *
- * Classes implementing this will not be able to be instantiated, only serialized/deserialized in place using an existing
- * instance. Use this for classes that should automatically handle saving.
+ * The automatic object serializer will not create any new instances of annotated classes.
  */
-interface ISerializeInPlace
+@Target(CLASS)
+@MustBeDocumented
+annotation class SaveInPlace
+

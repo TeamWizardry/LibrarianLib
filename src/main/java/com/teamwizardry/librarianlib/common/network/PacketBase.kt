@@ -1,12 +1,13 @@
 package com.teamwizardry.librarianlib.common.network
 
 import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
-import com.teamwizardry.librarianlib.common.util.saving.ISerializeInPlace
+import com.teamwizardry.librarianlib.common.util.saving.SaveInPlace
 import io.netty.buffer.ByteBuf
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext
 
-abstract class PacketBase : IMessage, ISerializeInPlace {
+@SaveInPlace
+abstract class PacketBase : IMessage {
 
     /**
      * Put your handling code for the message in here.

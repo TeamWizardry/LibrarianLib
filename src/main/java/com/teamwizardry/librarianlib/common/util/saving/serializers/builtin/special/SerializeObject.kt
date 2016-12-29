@@ -15,10 +15,17 @@ import java.util.*
  * Created by TheCodeWarrior
  */
 object SerializeObject {
+
+    fun inPlaceCheck(clazz: Class<*>): Boolean {
+        if (clazz.isAnnotationPresent(SaveInPlace::class.java))
+            return true
+        return clazz.superclass?.let { inPlaceCheck(it) } ?: false
+    }
+
     init {
         SerializerRegistry.register("liblib:savable", Serializer({ type ->
             val savable = type.clazz.isAnnotationPresent(Savable::class.java)
-            val inplace = ISerializeInPlace::class.java.isAssignableFrom(type.clazz)
+            val inplace = inPlaceCheck(type.clazz)
             savable || inplace
         }, SerializerPriority.GENERAL))
 
@@ -31,19 +38,24 @@ object SerializeObject {
                 if (analysis.mutable) {
                     val instance = existing ?: analysis.constructorMH(arrayOf())
                     analysis.alwaysFields.forEach {
-                        if (tag.hasKey(it.key)) {
-                            it.value.setter(instance, analysis.serializers[it.key]!!.invoke().read(tag.getTag(it.key), it.value.getter(instance), sync))
+                        val value = if (tag.hasKey(it.key)) {
+                            analysis.serializers[it.key]!!.invoke().read(tag.getTag(it.key), it.value.getter(instance), sync)
                         } else {
-                            it.value.setter(instance, null)
+                            null
+                        }
+                        if(!it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
+                            it.value.setter(instance, value)
                         }
                     }
                     if (sync) {
                         analysis.noSyncFields.forEach {
-                            if (tag.hasKey(it.key)) {
-                                it.value.setter(instance, analysis.serializers[it.key]!!.invoke().read(tag.getTag(it.key), it.value.getter(instance), sync))
+                            val value = if (tag.hasKey(it.key)) {
+                                analysis.serializers[it.key]!!.invoke().read(tag.getTag(it.key), it.value.getter(instance), sync)
                             } else {
-                                it.value.setter(instance, null)
+                                null
                             }
+                            if(!it.value.meta.hasFlag(SavingFieldFlag.FINAL))
+                                it.value.setter(instance, value)
                         }
                     }
                     return@impl instance
@@ -85,19 +97,23 @@ object SerializeObject {
                 if (analysis.mutable) {
                     val instance = existing ?: analysis.constructorMH(arrayOf())
                     analysis.alwaysFields.forEach {
-                        if (nullsig[i++]) {
-                            it.value.setter(instance, null)
+                        val value = if (nullsig[i++]) {
+                            null
                         } else {
-                            it.value.setter(instance, analysis.serializers[it.key]!!.invoke().read(buf, it.value.getter(instance), sync))
+                            analysis.serializers[it.key]!!.invoke().read(buf, it.value.getter(instance), sync)
                         }
+                        if(!it.value.meta.hasFlag(SavingFieldFlag.FINAL))
+                            it.value.setter(instance, value)
                     }
                     if (!sync) {
                         analysis.noSyncFields.forEach {
-                            if (nullsig[i++]) {
-                                it.value.setter(instance, null)
+                            val value = if (nullsig[i++]) {
+                                null
                             } else {
-                                it.value.setter(instance, analysis.serializers[it.key]!!.invoke().read(buf, it.value.getter(instance), sync))
+                                analysis.serializers[it.key]!!.invoke().read(buf, it.value.getter(instance), sync)
                             }
+                            if(!it.value.meta.hasFlag(SavingFieldFlag.FINAL))
+                                it.value.setter(instance, value)
                         }
                     }
                     return@impl instance
@@ -164,7 +180,7 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
         val allFields = mutableMapOf<String, FieldCache>()
         allFields.putAll(SavingFieldCache.getClassFields(type.clazz))
         addSuperClass(allFields, type.clazz)
-        val fields: Map<String, FieldCache> =
+        this.fields =
                 if (allFields.any { it.value.meta.hasFlag(SavingFieldFlag.ANNOTATED) }) {
                     allFields.filter {
                         it.value.meta.hasFlag(SavingFieldFlag.ANNOTATED)
@@ -176,21 +192,18 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
                 } else {
                     mapOf<String, FieldCache>()
                 }
-        this.mutable = !fields.any { it.value.meta.hasFlag(SavingFieldFlag.FINAL) }
-        this.fields = fields
+        inPlaceSavable = SerializeObject.inPlaceCheck(type.clazz)
+        this.mutable = inPlaceSavable || !fields.any { it.value.meta.hasFlag(SavingFieldFlag.FINAL) }
         if (!mutable && fields.any { it.value.meta.hasFlag(SavingFieldFlag.NOSYNC) })
             throw SerializerException("Immutable type ${type.clazz.canonicalName} cannot have non-syncing fields")
 
         alwaysFields = fields.filter { !it.value.meta.hasFlag(SavingFieldFlag.NOSYNC) }
         noSyncFields = fields.filter { it.value.meta.hasFlag(SavingFieldFlag.NOSYNC) }
 
-        inPlaceSavable = ISerializeInPlace::class.java.isAssignableFrom(type.clazz)
-
         constructor =
                 if (inPlaceSavable) {
                     nullConstructor
                 } else {
-                    val test = type.clazz.declaredConstructors.map { it.parameters }
                     type.clazz.declaredConstructors.find { it.parameterCount == 0 } ?:
                             type.clazz.declaredConstructors.find {
                                 val paramsToFind = HashMap(fields)
@@ -202,7 +215,7 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
                 }
         constructorArgOrder = constructor.parameters.map { it.name }
         constructorMH = if (inPlaceSavable) {
-            { arr -> throw SerializerException("Cannot create instance of ISerializeInPlace") }
+            { arr -> throw SerializerException("Cannot create instance of class marked with @SaveInPlace") }
         } else {
             MethodHandleHelper.wrapperForConstructor(constructor)
         }
@@ -211,7 +224,7 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
             val rawType = it.value.meta.type
             val fieldType = if (rawType is FieldTypeVariable) {
                 if (type !is FieldTypeGeneric)
-                    throw RuntimeException("What the actual hell? (variable field type in non-generic class)")
+                    throw RuntimeException("Sorry, generic inheritence isn't currently implemented.")
                 type.generic(rawType.index)!!
             } else {
                 rawType
@@ -222,7 +235,7 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
 
     private fun addSuperClass(map: MutableMap<String, FieldCache>, clazz: Class<*>) {
         map.putAll(SavingFieldCache.getClassFields(clazz))
-        if(clazz.superclass != null)
+        if (clazz.superclass != null)
             addSuperClass(map, clazz.superclass)
     }
 

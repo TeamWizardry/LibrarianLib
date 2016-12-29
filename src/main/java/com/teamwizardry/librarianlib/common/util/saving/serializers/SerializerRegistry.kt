@@ -54,9 +54,11 @@ object SerializerRegistry {
         return cached.getOrPut(target, { mutableMapOf() }).getOrPut(type, l@ {
             var impl: SerializerImpl<*, *>? = null
             val ser = serializers.values.maxBy {
+                val k = serializers.entries.find { e -> e.value == it }?.key
                 if(target in it && it.canApply(type))
                     it.priority.ordinal
-                -1000
+                else
+                    -1000
             }
             if(ser != null && target in ser && ser.canApply(type)) {
                 impl = ser[target](type)
