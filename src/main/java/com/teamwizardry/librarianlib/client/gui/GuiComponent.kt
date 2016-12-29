@@ -199,6 +199,13 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     var mouseOver = false
     var mousePosThisFrame = Vec2d.ZERO
     protected var tagStorage: MutableSet<Any> = HashSet<Any>()
+    /**
+     * Do not use this to check if a component has a tag, as event hooks can add virtual tags to components. Use [hasTag] instead.
+     *
+     * Returns an unmodifiable set of all the tags this component has.
+     *
+     * You should use [addTag] and [removeTag] to modify the tag set.
+     */
     fun getTags() = Collections.unmodifiableSet<Any>(tagStorage)
 
 
