@@ -6,8 +6,8 @@ import com.teamwizardry.librarianlib.common.util.saving.FieldTypeVariable
 /**
  * Created by TheCodeWarrior
  */
-class Serializer(val canApply: (FieldType) -> Boolean) {
-    constructor(vararg classes: Class<*>) : this({ it.clazz in classes })
+class Serializer(val canApply: (FieldType) -> Boolean, val priority: SerializerPriority) {
+    constructor(vararg classes: Class<*>) : this({ it.clazz in classes }, SerializerPriority.EXACT)
 
     protected val serializers = mutableMapOf<SerializerTarget<*, *>, (FieldType) -> SerializerImpl<*, *>>()
 
@@ -35,6 +35,21 @@ class Serializer(val canApply: (FieldType) -> Boolean) {
     operator fun <R, W> get(target: SerializerTarget<R, W>): (FieldType) -> SerializerImpl<R, W> {
         return serializers[target] as? (FieldType) -> SerializerImpl<R, W> ?: throw IllegalArgumentException("No serializer target registered!")
     }
+}
+
+enum class SerializerPriority {
+    /**
+     * General class or interface, optionally with arbitrary generic parameters
+     */
+    GENERAL,
+    /**
+     * Exact class with arbitrary generic paramters
+     */
+    GENERIC,
+    /**
+     * Exact class matching
+     */
+    EXACT
 }
 
 abstract class SerializerTarget<R, W>(val name: String)

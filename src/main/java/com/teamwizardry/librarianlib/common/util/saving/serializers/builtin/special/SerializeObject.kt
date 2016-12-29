@@ -20,7 +20,7 @@ object SerializeObject {
             val savable = type.clazz.isAnnotationPresent(Savable::class.java)
             val inplace = ISerializeInPlace::class.java.isAssignableFrom(type.clazz)
             savable || inplace
-        }))
+        }, SerializerPriority.GENERAL))
 
         SerializerRegistry["liblib:savable"]?.register(Targets.NBT, { type ->
 

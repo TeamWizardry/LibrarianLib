@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.common.util.safeCast
 import com.teamwizardry.librarianlib.common.util.saving.ArrayReflect
 import com.teamwizardry.librarianlib.common.util.saving.FieldTypeArray
 import com.teamwizardry.librarianlib.common.util.saving.serializers.Serializer
+import com.teamwizardry.librarianlib.common.util.saving.serializers.SerializerPriority
 import com.teamwizardry.librarianlib.common.util.saving.serializers.SerializerRegistry
 import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.Targets
 import com.teamwizardry.librarianlib.common.util.writeBooleanArray
@@ -17,7 +18,7 @@ import net.minecraft.nbt.NBTTagList
  */
 object SerializeArrays {
     init {
-        SerializerRegistry.register("java:generator.array", Serializer({ type -> type is FieldTypeArray }))
+        SerializerRegistry.register("java:generator.array", Serializer({ type -> type is FieldTypeArray }, SerializerPriority.GENERAL))
 
         SerializerRegistry["java:generator.array"]?.register(Targets.NBT, { type ->
             type as FieldTypeArray

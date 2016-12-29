@@ -53,10 +53,13 @@ object SerializerRegistry {
     private fun <R, W> implInternal(target: SerializerTarget<R, W>, type: FieldType): SerializerImpl<R, W> {
         return cached.getOrPut(target, { mutableMapOf() }).getOrPut(type, l@ {
             var impl: SerializerImpl<*, *>? = null
-            serializers.forEach { name, serializer ->
-                if (impl == null && target in serializer && serializer.canApply(type)) {
-                    impl = serializer[target](type)
-                }
+            val ser = serializers.values.maxBy {
+                if(target in it && it.canApply(type))
+                    it.priority.ordinal
+                -1000
+            }
+            if(ser != null && target in ser && ser.canApply(type)) {
+                impl = ser[target](type)
             }
             impl ?: throw NoSuchSerializerError(target, type)
         }) as SerializerImpl<R, W>
