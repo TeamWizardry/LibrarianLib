@@ -1,6 +1,8 @@
 package com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.basics
 
 import com.teamwizardry.librarianlib.common.util.*
+import com.teamwizardry.librarianlib.common.util.saving.helpers.SavableItemStackHandler
+import com.teamwizardry.librarianlib.common.util.saving.helpers.StaticSavableItemStackHandler
 import com.teamwizardry.librarianlib.common.util.saving.serializers.Serializer
 import com.teamwizardry.librarianlib.common.util.saving.serializers.SerializerRegistry
 import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.Targets
@@ -38,12 +40,9 @@ object SerializeMisc {
 
         SerializerRegistry["awt:color"]?.register(Targets.BYTES, Targets.BYTES.impl<Color>
         ({ buf, existing, sync ->
-            Color(buf.readUnsignedByte().toInt(), buf.readUnsignedByte().toInt(), buf.readUnsignedByte().toInt(), buf.readUnsignedByte().toInt())
+            Color(buf.readInt())
         }, { buf, value, sync ->
-            buf.writeByte(value.red)
-            buf.writeByte(value.green)
-            buf.writeByte(value.blue)
-            buf.writeByte(value.alpha)
+            buf.writeInt(value.rgb)
         }))
     }
 
@@ -83,7 +82,7 @@ object SerializeMisc {
     }
 
     private fun itemStackHandler() {
-        SerializerRegistry.register("forge:itemstackhandler", Serializer(ItemStackHandler::class.java))
+        SerializerRegistry.register("forge:itemstackhandler", Serializer(ItemStackHandler::class.java, SavableItemStackHandler::class.java, StaticSavableItemStackHandler::class.java))
 
         SerializerRegistry["forge:itemstackhandler"]?.register(Targets.NBT, Targets.NBT.impl<ItemStackHandler>
         ({ nbt, existing, sync ->
