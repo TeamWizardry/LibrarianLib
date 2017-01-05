@@ -8,8 +8,10 @@ import com.teamwizardry.librarianlib.common.util.saving.serializers.SerializerRe
 import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.Targets
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.nbt.NBTTagString
 import net.minecraftforge.items.ItemStackHandler
 import java.awt.Color
+import java.util.*
 
 /**
  * Created by TheCodeWarrior
@@ -20,6 +22,7 @@ object SerializeMisc {
         nbtTagCompound()
         itemStack()
         itemStackHandler()
+        uuid()
     }
 
     private fun color() {
@@ -100,6 +103,29 @@ object SerializeMisc {
             handler
         }, { buf, value, sync ->
             buf.writeTag(value.serializeNBT())
+        }))
+    }
+
+    private fun uuid() {
+        SerializerRegistry.register("java:uuid", Serializer(UUID::class.java))
+
+        SerializerRegistry["java:uuid"]?.register(Targets.NBT, Targets.NBT.impl<UUID>
+        ({ nbt, existing, sync ->
+            val tag = nbt as? NBTTagString
+            if(tag == null)
+                UUID.randomUUID()
+            else
+                UUID.fromString(tag.string)
+        }, { value, sync ->
+            NBTTagString(value.toString())
+        }))
+
+        SerializerRegistry["java:uuid"]?.register(Targets.BYTES, Targets.BYTES.impl<UUID>
+        ({ buf, existing, sync ->
+            UUID(buf.readLong(), buf.readLong())
+        }, { buf, value, sync ->
+            buf.writeLong(value.mostSignificantBits)
+            buf.writeLong(value.leastSignificantBits)
         }))
     }
 }
