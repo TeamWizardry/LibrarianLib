@@ -53,6 +53,11 @@ class LibrarianLib {
 
         @JvmField
         val DEV_ENVIRONMENT = Launch.blackboard["fml.deobfuscatedEnvironment"] as Boolean
+
+        val isClient: Boolean
+            get() = PROXY.isClient
+        val isDedicatedServer: Boolean
+            get() = PROXY.isDedicatedServer
     }
 
 }

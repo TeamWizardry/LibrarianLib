@@ -75,8 +75,11 @@ class Vec2d(val x: Double, val y: Double) {
         return x * point.x + y * point.y
     }
 
+    @delegate:Transient
+    private val len by lazy { Math.sqrt(x * x + y * y) }
+
     fun length(): Double {
-        return Math.sqrt(x * x + y * y)
+        return len
     }
 
     fun normalize(): Vec2d {
