@@ -4,7 +4,6 @@ package com.teamwizardry.librarianlib.common.core
 
 import com.teamwizardry.librarianlib.common.util.EasyConfigHandler
 import com.teamwizardry.librarianlib.common.util.autoregister.AutoRegisterHandler
-import com.teamwizardry.librarianlib.common.util.bitsaving.BitwiseStorageManager
 import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
 import net.minecraft.util.text.translation.I18n
 import net.minecraftforge.fml.common.Loader
@@ -23,7 +22,6 @@ open class LibCommonProxy {
     open val isDedicatedServer = true
 
     open fun pre(e: FMLPreInitializationEvent) {
-        BitwiseStorageManager
         EasyConfigHandler.init()
     }
 
