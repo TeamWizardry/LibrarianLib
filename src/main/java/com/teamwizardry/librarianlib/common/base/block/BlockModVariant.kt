@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import java.util.*
 
 /**
- * The default implementation for an IModBlock.
+ * The default implementation for an IModBlock that defines its variants based on item variants.
  */
 @Suppress("LeakingThis")
 open class BlockModVariant(name: String, materialIn: Material, color: MapColor, vararg variants: String) : BlockMod(name, materialIn, color, *injectNames(name, variants)), IModBlock, IModelGenerator {
