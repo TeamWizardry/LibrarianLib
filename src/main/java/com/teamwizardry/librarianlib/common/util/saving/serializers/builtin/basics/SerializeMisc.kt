@@ -1,13 +1,17 @@
 package com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.basics
 
 import com.teamwizardry.librarianlib.common.util.*
+import com.teamwizardry.librarianlib.common.util.saving.helpers.SavableItemStackHandler
+import com.teamwizardry.librarianlib.common.util.saving.helpers.StaticSavableItemStackHandler
 import com.teamwizardry.librarianlib.common.util.saving.serializers.Serializer
 import com.teamwizardry.librarianlib.common.util.saving.serializers.SerializerRegistry
 import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.Targets
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.nbt.NBTTagString
 import net.minecraftforge.items.ItemStackHandler
 import java.awt.Color
+import java.util.*
 
 /**
  * Created by TheCodeWarrior
@@ -18,6 +22,7 @@ object SerializeMisc {
         nbtTagCompound()
         itemStack()
         itemStackHandler()
+        uuid()
     }
 
     private fun color() {
@@ -26,7 +31,7 @@ object SerializeMisc {
         SerializerRegistry["awt:color"]?.register(Targets.NBT, Targets.NBT.impl<Color>
         ({ nbt, existing, sync ->
             val tag = nbt.safeCast(NBTTagCompound::class.java)
-            Color(tag.getByte("r").toInt(), tag.getByte("g").toInt(), tag.getByte("b").toInt(), tag.getByte("a").toInt())
+            Color(tag.getByte("r").toInt() and 0xFF, tag.getByte("g").toInt() and 0xFF, tag.getByte("b").toInt() and 0xFF, tag.getByte("a").toInt() and 0xFF)
         }, { value, sync ->
             val tag = NBTTagCompound()
             tag.setByte("r", value.red.toByte())
@@ -38,12 +43,9 @@ object SerializeMisc {
 
         SerializerRegistry["awt:color"]?.register(Targets.BYTES, Targets.BYTES.impl<Color>
         ({ buf, existing, sync ->
-            Color(buf.readUnsignedByte().toInt(), buf.readUnsignedByte().toInt(), buf.readUnsignedByte().toInt(), buf.readUnsignedByte().toInt())
+            Color(buf.readInt())
         }, { buf, value, sync ->
-            buf.writeByte(value.red)
-            buf.writeByte(value.green)
-            buf.writeByte(value.blue)
-            buf.writeByte(value.alpha)
+            buf.writeInt(value.rgb)
         }))
     }
 
@@ -83,7 +85,7 @@ object SerializeMisc {
     }
 
     private fun itemStackHandler() {
-        SerializerRegistry.register("forge:itemstackhandler", Serializer(ItemStackHandler::class.java))
+        SerializerRegistry.register("forge:itemstackhandler", Serializer(ItemStackHandler::class.java, SavableItemStackHandler::class.java, StaticSavableItemStackHandler::class.java))
 
         SerializerRegistry["forge:itemstackhandler"]?.register(Targets.NBT, Targets.NBT.impl<ItemStackHandler>
         ({ nbt, existing, sync ->
@@ -101,6 +103,29 @@ object SerializeMisc {
             handler
         }, { buf, value, sync ->
             buf.writeTag(value.serializeNBT())
+        }))
+    }
+
+    private fun uuid() {
+        SerializerRegistry.register("java:uuid", Serializer(UUID::class.java))
+
+        SerializerRegistry["java:uuid"]?.register(Targets.NBT, Targets.NBT.impl<UUID>
+        ({ nbt, existing, sync ->
+            val tag = nbt as? NBTTagString
+            if(tag == null)
+                UUID.randomUUID()
+            else
+                UUID.fromString(tag.string)
+        }, { value, sync ->
+            NBTTagString(value.toString())
+        }))
+
+        SerializerRegistry["java:uuid"]?.register(Targets.BYTES, Targets.BYTES.impl<UUID>
+        ({ buf, existing, sync ->
+            UUID(buf.readLong(), buf.readLong())
+        }, { buf, value, sync ->
+            buf.writeLong(value.mostSignificantBits)
+            buf.writeLong(value.leastSignificantBits)
         }))
     }
 }

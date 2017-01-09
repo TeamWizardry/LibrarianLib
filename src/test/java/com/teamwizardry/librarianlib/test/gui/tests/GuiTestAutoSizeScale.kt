@@ -7,11 +7,11 @@ import java.awt.Color
 /**
  * Created by TheCodeWarrior
  */
-class GuiTestRect : GuiBase(100, 100) {
+class GuiTestAutoSizeScale : GuiBase(100, 500) {
     init {
 
-        val c = ComponentRect(25, 25, 50, 50)
-        c.color.setValue(Color(255, 0, 0, 127))
+        val c = ComponentRect(25, 0, 50, 500)
+        c.color.setValue(Color.RED)
         mainComponents.add(c)
 
     }

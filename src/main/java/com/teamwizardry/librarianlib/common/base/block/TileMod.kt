@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.common.base.block
 import com.teamwizardry.librarianlib.common.network.PacketHandler
 import com.teamwizardry.librarianlib.common.network.PacketSynchronization
 import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
-import com.teamwizardry.librarianlib.common.util.saving.ISerializeInPlace
+import com.teamwizardry.librarianlib.common.util.saving.SaveInPlace
 import io.netty.buffer.ByteBuf
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayerMP
@@ -21,7 +21,8 @@ import net.minecraftforge.common.capabilities.Capability
  * @author WireSegal
  * Created at 11:06 AM on 8/4/16.
  */
-abstract class TileMod : TileEntity(), ISerializeInPlace {
+@SaveInPlace
+abstract class TileMod : TileEntity() {
 
     /**
      * Using fast synchronization is quicker and less expensive than the NBT packet default.

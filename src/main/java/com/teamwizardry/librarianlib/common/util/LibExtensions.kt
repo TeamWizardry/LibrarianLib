@@ -5,6 +5,7 @@ package com.teamwizardry.librarianlib.common.util
 import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import io.netty.buffer.ByteBuf
+import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.*
@@ -13,12 +14,12 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.TextFormatting
+import net.minecraft.world.World
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.ICapabilityProvider
 import net.minecraftforge.fml.common.network.ByteBufUtils
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
-
 
 
 /**
@@ -41,7 +42,7 @@ fun String.canLocalize(): Boolean {
 }
 
 fun <K, V> MutableMap<K, V>.withRealDefault(default: (K) -> V): DefaultedMutableMap<K, V> {
-    return when(this) {
+    return when (this) {
         is RealDefaultImpl -> RealDefaultImpl(this.map, default)
         else -> RealDefaultImpl(this, default)
     }
@@ -49,9 +50,10 @@ fun <K, V> MutableMap<K, V>.withRealDefault(default: (K) -> V): DefaultedMutable
 
 interface DefaultedMutableMap<K, V> : MutableMap<K, V> {
     override fun get(key: K): V
+    val map: MutableMap<K, V>
 }
 
-private class RealDefaultImpl<K, V>(val map: MutableMap<K, V>, val default: (K) -> V) : DefaultedMutableMap<K, V>, MutableMap<K, V> by map {
+private class RealDefaultImpl<K, V>(override val map: MutableMap<K, V>, val default: (K) -> V) : DefaultedMutableMap<K, V>, MutableMap<K, V> by map {
     override fun get(key: K): V {
         return map.getOrPut(key, { default(key) })
     }
@@ -76,6 +78,11 @@ operator fun Vec3d.unaryMinus(): Vec3d = this * -1.0
 infix fun Vec3d.dot(other: Vec3d) = this.dotProduct(other)
 
 infix fun Vec3d.cross(other: Vec3d) = this.crossProduct(other)
+
+fun Vec3d.projectOn(other: Vec3d): Vec3d {
+    val normal = this.normalize()
+    return normal * (normal dot other)
+}
 
 fun Vec3d.withX(other: Double) = Vec3d(other, this.yCoord, this.zCoord)
 fun Vec3d.withY(other: Double) = Vec3d(this.xCoord, other, this.zCoord)
@@ -112,6 +119,27 @@ operator fun AxisAlignedBB.contains(other: Vec3d) =
         this.minX <= other.xCoord && this.maxX >= other.xCoord &&
                 this.minY <= other.yCoord && this.maxY >= other.yCoord &&
                 this.minZ <= other.zCoord && this.maxZ >= other.zCoord
+
+// World
+
+fun World.collideAABB(boundingBox: AxisAlignedBB, offset: Vec3d, entity: Entity? = null): Vec3d {
+    var bbSoFar = boundingBox
+    var x = offset.xCoord
+    var y = offset.yCoord
+    var z = offset.zCoord
+
+    val list1 = this.getCollisionBoxes(entity, boundingBox.addCoord(x, y, z));
+    var i = 0;
+
+    list1.forEach { y = it.calculateYOffset(bbSoFar, y) }
+    bbSoFar = bbSoFar.offset(0.0, y, 0.0)
+    list1.forEach { x = it.calculateXOffset(bbSoFar, x) }
+    bbSoFar = bbSoFar.offset(x, 0.0, 0.0)
+    list1.forEach { z = it.calculateZOffset(bbSoFar, z) }
+    bbSoFar = bbSoFar.offset(0.0, 0.0, z)
+
+    return vec(x, y, z)
+}
 
 // Class ===============================================================================================================
 
@@ -221,10 +249,10 @@ fun ByteBuf.writeBooleanArray(value: BooleanArray) {
 
 fun ByteBuf.readBooleanArray(tryReadInto: BooleanArray? = null): BooleanArray {
     val len = this.readVarInt()
-    val bytes = ByteArray((len + 7)/ 8)
+    val bytes = ByteArray((len + 7) / 8)
     this.readBytes(bytes)
 
-    val toReturn = if(tryReadInto != null && tryReadInto.size == len) tryReadInto else BooleanArray(len)
+    val toReturn = if (tryReadInto != null && tryReadInto.size == len) tryReadInto else BooleanArray(len)
     for (entry in bytes.indices) {
         for (bit in 0..7) {
             val bitThing = bytes[entry].toInt() and (128 shr bit)
@@ -324,9 +352,9 @@ fun EntityPlayer.sendMessage(str: String) {
 operator fun CharSequence.times(n: Int) = this.repeat(n)
 operator fun Int.times(n: CharSequence) = n.repeat(this)
 
-fun <T, R> ICapabilityProvider.ifCap(capability: Capability<T>, facing: EnumFacing?, callback: (T) -> R): R? {
-    if(this.hasCapability(capability, facing))
-        return callback(this.getCapability(capability, facing)!!)
+fun <C : ICapabilityProvider, T, R> C.ifCap(capability: Capability<T>?, facing: EnumFacing?, callback: T.(C) -> R): R? {
+    if (capability != null && this.hasCapability(capability, facing))
+        return this.getCapability(capability, facing)!!.callback(this)
     return null
 }
 
@@ -337,3 +365,14 @@ var ItemStack.size: Int // extension for 1.10 -> 1.11 migration help, will be ch
     set(value) {
         stackSize = value
     }
+
+// Numbers =============================================================================================================
+
+fun Int.clamp(min: Int, max: Int): Int = if (this < min) min else if (this > max) max else this
+fun Short.clamp(min: Short, max: Short): Short = if (this < min) min else if (this > max) max else this
+fun Long.clamp(min: Long, max: Long): Long = if (this < min) min else if (this > max) max else this
+fun Byte.clamp(min: Byte, max: Byte): Byte = if (this < min) min else if (this > max) max else this
+fun Char.clamp(min: Char, max: Char): Char = if (this < min) min else if (this > max) max else this
+fun Float.clamp(min: Float, max: Float): Float = if (this < min) min else if (this > max) max else this
+fun Double.clamp(min: Double, max: Double): Double = if (this < min) min else if (this > max) max else this
+
