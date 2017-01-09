@@ -161,6 +161,14 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockMod(name, 
         }
         return true
     }
+
+    override fun isToolEffective(type: String?, state: IBlockState?): Boolean {
+        return parent.block.isToolEffective(type, parent)
+    }
+
+    override fun getHarvestTool(state: IBlockState): String {
+        return parent.block.getHarvestTool(parent)
+    }
 }
 
 enum class SlabType : EnumStringSerializable {
