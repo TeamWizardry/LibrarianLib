@@ -11,10 +11,14 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.*
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.TextFormatting
+import net.minecraft.world.ChunkCache
+import net.minecraft.world.IBlockAccess
 import net.minecraft.world.World
+import net.minecraft.world.chunk.Chunk
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.ICapabilityProvider
 import net.minecraftforge.fml.common.network.ByteBufUtils
@@ -358,14 +362,6 @@ fun <C : ICapabilityProvider, T, R> C.ifCap(capability: Capability<T>?, facing: 
     return null
 }
 
-// ItemStack ===========================================================================================================
-
-var ItemStack.size: Int // extension for 1.10 -> 1.11 migration help, will be changed in 1.11 to new system
-    get() = stackSize
-    set(value) {
-        stackSize = value
-    }
-
 // Numbers =============================================================================================================
 
 fun Int.clamp(min: Int, max: Int): Int = if (this < min) min else if (this > max) max else this
@@ -375,4 +371,8 @@ fun Byte.clamp(min: Byte, max: Byte): Byte = if (this < min) min else if (this >
 fun Char.clamp(min: Char, max: Char): Char = if (this < min) min else if (this > max) max else this
 fun Float.clamp(min: Float, max: Float): Float = if (this < min) min else if (this > max) max else this
 fun Double.clamp(min: Double, max: Double): Double = if (this < min) min else if (this > max) max else this
+
+// IBlockAccess ========================================================================================================
+
+fun IBlockAccess.getTileEntitySafely(pos: BlockPos) = if (this is ChunkCache) this.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK) else this.getTileEntity(pos)
 
