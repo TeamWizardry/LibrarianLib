@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.common.base.block
 
+import com.teamwizardry.librarianlib.common.base.IModelGenerator
 import net.minecraft.block.BlockLog
 import net.minecraft.block.SoundType
 import net.minecraft.block.material.Material
@@ -22,7 +23,7 @@ import net.minecraftforge.oredict.OreDictionary
  * Created at 10:36 AM on 5/7/16.
  */
 @Suppress("LeakingThis")
-open class BlockModLog(name: String, vararg variants: String) : BlockMod(name, Material.WOOD, *variants) {
+open class BlockModLog(name: String, vararg variants: String) : BlockMod(name, Material.WOOD, *variants), IModelGenerator {
     companion object {
         val AXIS: PropertyEnum<BlockLog.EnumAxis> = PropertyEnum.create("axis", BlockLog.EnumAxis::class.java)
     }
@@ -127,4 +128,6 @@ open class BlockModLog(name: String, vararg variants: String) : BlockMod(name, M
     override fun isToolEffective(type: String?, state: IBlockState?): Boolean {
         return type == "axe"
     }
+
+    //todo model generation
 }

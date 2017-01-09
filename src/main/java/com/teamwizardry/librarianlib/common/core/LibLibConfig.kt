@@ -14,7 +14,7 @@ object LibLibConfig {
     var generateJson = true
 
     @JvmStatic
-    @ConfigPropertyBoolean(LibrarianLib.MODID, Configuration.CATEGORY_GENERAL, "generateTestBlock", "Controls whether LibLib creates a test block.", false, true)
-    var generateTestBlock = false
+    @ConfigPropertyBoolean(LibrarianLib.MODID, Configuration.CATEGORY_GENERAL, "one_bonemeal", "Only require one bonemeal to grow LibrarianLib saplings.", false)
+    var oneBonemeal = false
 
 }

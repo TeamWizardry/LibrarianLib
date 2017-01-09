@@ -1,6 +1,11 @@
 package com.teamwizardry.librarianlib.common.base.block
 
-import com.teamwizardry.librarianlib.common.util.ConfigPropertyBoolean
+import com.teamwizardry.librarianlib.client.core.JsonGenerationUtils
+import com.teamwizardry.librarianlib.client.core.ModelHandler
+import com.teamwizardry.librarianlib.common.base.IModelGenerator
+import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
+import com.teamwizardry.librarianlib.common.core.LibLibConfig
+import com.teamwizardry.librarianlib.common.util.builders.json
 import net.minecraft.block.Block
 import net.minecraft.block.IGrowable
 import net.minecraft.block.SoundType
@@ -9,7 +14,9 @@ import net.minecraft.block.properties.IProperty
 import net.minecraft.block.properties.PropertyInteger
 import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
+import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.init.Blocks
+import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.util.BlockRenderLayer
@@ -34,15 +41,11 @@ import java.util.*
  * Created at 10:13 PM on 5/27/16.
  */
 @Suppress("LeakingThis")
-abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod(name, Material.PLANTS, *variants), IPlantable, IGrowable  {
+abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod(name, Material.PLANTS, *variants), IPlantable, IGrowable, IModelGenerator  {
 
     companion object : IFuelHandler {
         override fun getBurnTime(fuel: ItemStack)
                 = if (fuel.item is ItemBlock && (fuel.item as ItemBlock).block is BlockModSapling) 100 else 0
-
-        @JvmStatic
-        @ConfigPropertyBoolean("librarianlib", "general", "one_bonemeal", "Only require one bonemeal to generate saplings.", false)
-        var oneBonemeal = false
 
         init {
             GameRegistry.registerFuelHandler(this)
@@ -121,7 +124,7 @@ abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod
     }
 
     override fun canUseBonemeal(worldIn: World, rand: Random, pos: BlockPos, state: IBlockState): Boolean {
-        return worldIn.rand.nextFloat().toDouble() < 0.45
+        return worldIn.rand.nextFloat().toDouble() < 0.45 || LibLibConfig.oneBonemeal
     }
 
     override fun grow(worldIn: World, rand: Random, pos: BlockPos, state: IBlockState) {
@@ -139,7 +142,7 @@ abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod
     }
 
     fun grow(worldIn: World, pos: BlockPos, state: IBlockState, rand: Random) {
-        if (!oneBonemeal && (state.getValue(STAGE) as Int).toInt() == 0) {
+        if (!LibLibConfig.oneBonemeal && (state.getValue(STAGE) as Int).toInt() == 0) {
             worldIn.setBlockState(pos, state.cycleProperty(STAGE), 4)
         } else {
             this.generateTree(worldIn, pos, state, rand)
@@ -181,6 +184,38 @@ abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod
     @SideOnly(Side.CLIENT)
     override fun getBlockLayer(): BlockRenderLayer {
         return BlockRenderLayer.CUTOUT
+    }
+
+    override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
+        ModelHandler.generateBlockJson(this, {
+            JsonGenerationUtils.generateBaseBlockStates(this, mapper)
+        }, {
+            mapOf(JsonGenerationUtils.getPathForBlockModel(this)
+                    to json {
+                obj(
+                        "parent" to "block/cross",
+                        "textures" to obj(
+                                "cross" to "${registryName.resourceDomain}:blocks/${registryName.resourcePath}"
+                        )
+                )
+            })
+        })
+        return true
+    }
+
+    override fun generateMissingItem(variant: String): Boolean {
+        val item = itemForm as? IModItemProvider ?: return false
+        ModelHandler.generateItemJson(item) {
+            mapOf(JsonGenerationUtils.getPathForItemModel(item as Item, variant) to json {
+                obj(
+                        "parent" to "item/generated",
+                        "textures" to obj(
+                                "layer0" to "${registryName.resourceDomain}:blocks/$variant"
+                        )
+                )
+            })
+        }
+        return true
     }
 }
 
