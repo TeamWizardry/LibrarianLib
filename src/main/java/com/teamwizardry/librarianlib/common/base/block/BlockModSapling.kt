@@ -51,7 +51,7 @@ abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod
             GameRegistry.registerFuelHandler(this)
         }
 
-        val STAGE = PropertyInteger.create("stage", 0, 1)
+        val STAGE: PropertyInteger = PropertyInteger.create("stage", 0, 1)
 
         fun defaultSaplingBehavior(world: World, pos: BlockPos, state: IBlockState, rand: Random, wood: IBlockState, leaves: IBlockState) {
             if (!TerrainGen.saplingGrowTree(world, rand, pos)) return

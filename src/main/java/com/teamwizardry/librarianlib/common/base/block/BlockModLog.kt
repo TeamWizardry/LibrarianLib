@@ -1,12 +1,17 @@
 package com.teamwizardry.librarianlib.common.base.block
 
+import com.teamwizardry.librarianlib.client.core.JsonGenerationUtils
+import com.teamwizardry.librarianlib.client.core.ModelHandler
 import com.teamwizardry.librarianlib.common.base.IModelGenerator
+import com.teamwizardry.librarianlib.common.util.builders.json
+import net.minecraft.block.Block
 import net.minecraft.block.BlockLog
 import net.minecraft.block.SoundType
 import net.minecraft.block.material.Material
 import net.minecraft.block.properties.PropertyEnum
 import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
+import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
@@ -129,5 +134,47 @@ open class BlockModLog(name: String, vararg variants: String) : BlockMod(name, M
         return type == "axe"
     }
 
-    //todo model generation
+    override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
+        ModelHandler.generateBlockJson(this, {
+            JsonGenerationUtils.generateBlockStates(this, mapper) {
+                if ("axis=y" in it) json {
+                    obj(
+                            "model" to registryName.toString()
+                    )
+                } else if ("axis=x" in it) json {
+                    obj(
+                            "model" to registryName.toString(),
+                            "x" to 90,
+                            "y" to 90
+                    )
+                } else if ("axis=z" in it) json {
+                    obj(
+                            "model" to registryName.toString(),
+                            "x" to 90
+                    )
+                } else json {
+                    obj(
+                            "model" to registryName.toString() + "_bark"
+                    )
+                }
+            }
+        }, {
+            mapOf(*variants.flatMap {
+                listOf(
+                        JsonGenerationUtils.getPathForBlockModel(this)
+                                to json {
+                            obj(
+                                    "parent" to "block/cube_column",
+                                    "textures" to obj(
+                                            "end" to "$modId:blocks/$it",
+                                            "side" to "$modId:blocks/${it}_bark"
+                                    )
+                            )
+                        },
+                        JsonGenerationUtils.getPathForBlockModel(this, "${it}_bark")
+                                to JsonGenerationUtils.generateBaseBlockModel(this, "${it}_bark"))
+            }.toTypedArray())
+        })
+        return true
+    }
 }

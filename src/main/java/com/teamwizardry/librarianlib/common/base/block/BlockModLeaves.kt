@@ -212,7 +212,7 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
         worldIn?.setBlockState(pos, state?.withProperty(DECAYABLE, false))
     }
 
-    abstract override fun getItemDropped(state: IBlockState?, rand: Random?, fortune: Int): Item?
+    abstract override fun getItemDropped(state: IBlockState, rand: Random, fortune: Int): Item?
 
     override fun dropBlockAsItemWithChance(worldIn: World, pos: BlockPos, state: IBlockState, chance: Float, fortune: Int) {
         super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune)

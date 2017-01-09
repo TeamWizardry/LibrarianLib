@@ -1,12 +1,16 @@
 package com.teamwizardry.librarianlib.test.variants
 
-import com.teamwizardry.librarianlib.common.base.block.BlockModSlab
-import com.teamwizardry.librarianlib.common.base.block.BlockModVariant
+import com.teamwizardry.librarianlib.common.base.block.*
 import com.teamwizardry.librarianlib.test.testcore.TestEntryPoint
 import net.minecraft.block.material.Material
+import net.minecraft.block.state.IBlockState
+import net.minecraft.item.Item
+import net.minecraft.util.math.BlockPos
+import net.minecraft.world.World
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
+import java.util.*
 
 /**
  * @author WireSegal
@@ -14,16 +18,24 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
  */
 object VariantEntryPoint : TestEntryPoint {
 
-    lateinit var block: BlockModVariant
-    lateinit var slabA: BlockModSlab
-    lateinit var slabB: BlockModSlab
-    lateinit var slabC: BlockModSlab
+    lateinit var sapling: BlockModSapling
 
     override fun preInit(event: FMLPreInitializationEvent) {
-        block = BlockModVariant("variant", Material.ROCK, "a", "b", "c")
-        slabA = BlockModSlab("a_slab", block.defaultState)
-        slabB = BlockModSlab("b_slab", block.defaultState.withProperty(block.property, "b"))
-        slabC = BlockModSlab("c_slab", block.defaultState.withProperty(block.property, "c"))
+        val block = BlockModVariant("variant", Material.ROCK, "a", "b", "c")
+        BlockModSlab("a_slab", block.defaultState)
+        BlockModSlab("b_slab", block.defaultState.withProperty(block.property, "b"))
+        BlockModSlab("c_slab", block.defaultState.withProperty(block.property, "c"))
+        val wood = BlockModLog("log")
+        val leaves = object : BlockModLeaves("leaves") {
+            override fun getItemDropped(state: IBlockState, rand: Random, fortune: Int): Item? {
+                return sapling.itemForm
+            }
+        }
+        sapling = object : BlockModSapling("sapling") {
+            override fun generateTree(worldIn: World, pos: BlockPos, state: IBlockState, rand: Random) {
+                defaultSaplingBehavior(worldIn, pos, state, rand, wood, leaves)
+            }
+        }
     }
 
     override fun init(event: FMLInitializationEvent) {
