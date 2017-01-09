@@ -10,8 +10,6 @@ import net.minecraft.client.renderer.block.statemap.DefaultStateMapper
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry
-import net.minecraftforge.fml.relauncher.Side
-import net.minecraftforge.fml.relauncher.SideOnly
 import java.io.File
 import java.nio.file.Paths
 
@@ -21,7 +19,6 @@ import java.nio.file.Paths
  *
  * This works in the default dev environment.
  */
-@SideOnly(Side.CLIENT)
 object JsonGenerationUtils {
 
     private val s = File.separator
@@ -48,8 +45,11 @@ object JsonGenerationUtils {
     }
 
     fun getPathForBlockModel(block: Block): String {
-        val registryName = block.registryName
-        return getAssetPath(registryName.resourceDomain) + +"/models/block/${registryName.resourcePath}.json"
+        return getPathForBlockModel(block, block.registryName.resourcePath)
+    }
+
+    fun getPathForBlockModel(block: Block, variant: String): String {
+        return getAssetPath(block.registryName.resourceDomain) + +"/models/block/$variant.json"
     }
 
     fun getPathForItemModel(item: Item, variantName: String? = null): String {
@@ -62,13 +62,13 @@ object JsonGenerationUtils {
         return Paths.get(Minecraft.getMinecraft().mcDataDir.absolutePath).parent.parent.toString() + +"/src/main/resources/assets/$modid"
     }
 
-    fun generateBaseItemModel(item: Item, variantName: String? = null): JsonElement {
+    fun generateBaseItemModel(item: Item, variantName: String? = null, parent: String = "item/generated"): JsonElement {
         val registryName = item.registryName
         val varname = variantName ?: registryName.resourcePath
         if (item is ItemBlock) return json { obj("parent" to "${registryName.resourceDomain}:block/$varname") }
         return json {
             obj(
-                    "parent" to "item/generated",
+                    "parent" to parent,
                     "textures" to obj(
                             "layer0" to "${registryName.resourceDomain}:items/$varname"
                     )
@@ -77,12 +77,16 @@ object JsonGenerationUtils {
     }
 
     fun generateBaseBlockModel(block: Block): JsonElement {
+        return generateBaseBlockModel(block, block.registryName.resourcePath)
+    }
+
+    fun generateBaseBlockModel(block: Block, variant: String): JsonElement {
         val registryName = block.registryName
         return json {
             obj(
                     "parent" to "block/cube_all",
                     "textures" to obj(
-                            "all" to "${registryName.resourceDomain}:blocks/${registryName.resourcePath}"
+                            "all" to "${registryName.resourceDomain}:blocks/$variant"
                     )
             )
         }
@@ -90,6 +94,12 @@ object JsonGenerationUtils {
 
     fun generateBaseBlockStates(block: Block, stateMapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)? = null): Map<String, JsonElement> {
         val registryName = block.registryName
+        return generateBlockStates(block, stateMapper) {
+            json { obj("model" to registryName.toString()) }
+        }
+    }
+
+    inline fun generateBlockStates(block: Block, noinline stateMapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?, makeVariant: (variant: String) -> JsonElement): Map<String, JsonElement> {
         val mapped = (stateMapper ?: { DefaultStateMapper().putStateModelLocations(it) })(block)
         val files = getPathsForBlockstate(block, stateMapper)
         return mapOf(*(files.map { file ->
@@ -99,7 +109,8 @@ object JsonGenerationUtils {
             file to json {
                 obj(
                         "variants" to mapOf(*Array(keypairs.size) {
-                            keypairs[it].second.variant to json { obj("model" to registryName.toString()) }
+                            val variant = keypairs[it].second.variant
+                            variant to makeVariant(variant)
                         })
                 )
             }

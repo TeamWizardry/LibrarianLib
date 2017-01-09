@@ -178,11 +178,11 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
                 }
         this.mutable = !fields.any { it.value.meta.hasFlag(SavingFieldFlag.FINAL) }
         this.fields = fields
-        if (!mutable && fields.any { it.value.meta.hasFlag(SavingFieldFlag.NOSYNC) })
+        if (!mutable && fields.any { it.value.meta.hasFlag(SavingFieldFlag.NO_SYNC) })
             throw SerializerException("Immutable type ${type.clazz.canonicalName} cannot have non-syncing fields")
 
-        alwaysFields = fields.filter { !it.value.meta.hasFlag(SavingFieldFlag.NOSYNC) }
-        noSyncFields = fields.filter { it.value.meta.hasFlag(SavingFieldFlag.NOSYNC) }
+        alwaysFields = fields.filter { !it.value.meta.hasFlag(SavingFieldFlag.NO_SYNC) }
+        noSyncFields = fields.filter { it.value.meta.hasFlag(SavingFieldFlag.NO_SYNC) }
 
         inPlaceSavable = ISerializeInPlace::class.java.isAssignableFrom(type.clazz)
 

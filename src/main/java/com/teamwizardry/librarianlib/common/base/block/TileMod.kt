@@ -11,9 +11,11 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.network.NetworkManager
 import net.minecraft.network.play.server.SPacketUpdateTileEntity
 import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraft.world.WorldServer
+import net.minecraftforge.common.capabilities.Capability
 
 /**
  * @author WireSegal
@@ -133,16 +135,29 @@ abstract class TileMod : TileEntity(), ISerializeInPlace {
         if (world is WorldServer) {
             val ws: WorldServer = world as WorldServer
 
-            for (player in ws.playerEntities) {
-                val playerMP = player as EntityPlayerMP
-                if (playerMP.getDistanceSq(getPos()) < 64 * 64
-                        && ws.playerChunkMap.isPlayerWatchingChunk(playerMP, pos.x shr 4, pos.z shr 4)) {
-                    if (useFastSync)
-                        PacketHandler.NETWORK.sendTo(PacketSynchronization(this), playerMP)
-                    else
-                        playerMP.connection.sendPacket(updatePacket)
-                }
-            }
+            ws.playerEntities
+                    .filterIsInstance<EntityPlayerMP>()
+                    .filter { it.getDistanceSq(getPos()) < 64 * 64 && ws.playerChunkMap.isPlayerWatchingChunk(it, pos.x shr 4, pos.z shr 4) }
+                    .forEach { sendUpdatePacket(it) }
         }
+    }
+
+    /**
+     * The specific implementation for an update packet.
+     * By default, controlled by [useFastSync], it will send the vanilla packet or the LibLib sync packet.
+     */
+    open fun sendUpdatePacket(player: EntityPlayerMP) {
+        if (useFastSync)
+            PacketHandler.NETWORK.sendTo(PacketSynchronization(this), player)
+        else
+            player.connection.sendPacket(updatePacket)
+    }
+
+    override fun <T : Any> getCapability(capability: Capability<T>, facing: EnumFacing?): T? {
+        return AbstractSaveHandler.getCapability(this, capability, facing) ?: super.getCapability(capability, facing)
+    }
+
+    override fun hasCapability(capability: Capability<*>, facing: EnumFacing?): Boolean {
+        return AbstractSaveHandler.hasCapability(this, capability, facing) || super.hasCapability(capability, facing)
     }
 }

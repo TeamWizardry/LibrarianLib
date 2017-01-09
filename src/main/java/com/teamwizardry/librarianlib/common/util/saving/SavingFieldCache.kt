@@ -4,6 +4,9 @@ import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.util.DefaultedMutableMap
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import com.teamwizardry.librarianlib.common.util.withRealDefault
+import net.minecraft.util.EnumFacing
+import net.minecraftforge.common.capabilities.Capability
+import net.minecraftforge.common.capabilities.CapabilityManager
 import org.jetbrains.annotations.NotNull
 import java.lang.reflect.Field
 import java.lang.reflect.Method
@@ -52,7 +55,17 @@ object SavingFieldCache {
             if(field.isAnnotationPresent(Save::class.java)) meta.addFlag(SavingFieldFlag.ANNOTATED)
             if(field.isAnnotationPresent(NotNull::class.java)) meta.addFlag(SavingFieldFlag.NONNULL)
             if(field.type.isPrimitive) meta.addFlag(SavingFieldFlag.NONNULL)
-            if(field.isAnnotationPresent(NoSync::class.java)) meta.addFlag(SavingFieldFlag.NOSYNC)
+            if(field.isAnnotationPresent(NoSync::class.java)) meta.addFlag(SavingFieldFlag.NO_SYNC)
+            if(field.isAnnotationPresent(CapabilityProvide::class.java)) {
+                meta.addFlag(SavingFieldFlag.CAPABILITY)
+                val annot = field.getAnnotation(CapabilityProvide::class.java)
+                if (EnumFacing.UP in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_UP)
+                if (EnumFacing.DOWN in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_DOWN)
+                if (EnumFacing.NORTH in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_NORTH)
+                if (EnumFacing.SOUTH in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_SOUTH)
+                if (EnumFacing.EAST in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_EAST)
+                if (EnumFacing.WEST in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_WEST)
+            }
 
             val setterLambda: (Any, Any?) -> Unit = if(meta.hasFlag(SavingFieldFlag.FINAL)) {
                 { obj, inp -> throw IllegalAccessException("Tried to set final property $name for class ${clazz.simpleName} (final field)") }
@@ -112,7 +125,7 @@ object SavingFieldCache {
         }
 
         setters.filterKeys { it !in getters }.forEach {
-            val (name, discard) = it
+            val name = it.key
             errorList[clazz][name].add("Setter has no getter")
         }
 
@@ -135,7 +148,7 @@ object SavingFieldCache {
             if(type.isPrimitive)
                 meta.addFlag(SavingFieldFlag.NONNULL)
             if(getter.isAnnotationPresent(NoSync::class.java) && (setter == null || setter.isAnnotationPresent(NoSync::class.java)))
-                meta.addFlag(SavingFieldFlag.NOSYNC)
+                meta.addFlag(SavingFieldFlag.NO_SYNC)
             if(setter == null)
                 meta.addFlag(SavingFieldFlag.FINAL)
 
@@ -223,6 +236,42 @@ data class FieldCache(val meta: FieldMetadata, val getter: (Any) -> Any?, privat
     } else {
         setter_
     }
+
+
+    companion object {
+        val providersGetter = MethodHandleHelper.wrapperForGetter(CapabilityManager::class.java, "providers")
+
+        @Suppress("UNCHECKED_CAST")
+        val providers by lazy {
+            providersGetter.invoke(CapabilityManager.INSTANCE) as IdentityHashMap<String, Capability<*>>
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T: Any> getCapability(container: Any, capability: Capability<T>, side: EnumFacing?): T? {
+        return if (hasCapability(capability, side)) getter(container) as? T else null
+    }
+
+    fun hasCapability(capability: Capability<*>, side: EnumFacing?): Boolean {
+        val interfaces = meta.type.interfaces
+        @Suppress("UNCHECKED_CAST")
+
+        if (interfaces
+                .map { it.name.intern() }
+                .none { providers[it] == capability })
+            return false
+        if (!meta.hasFlag(SavingFieldFlag.CAPABILITY)) return false
+
+        return when (side) {
+            EnumFacing.DOWN -> meta.hasFlag(SavingFieldFlag.CAPABILITY_DOWN)
+            EnumFacing.UP -> meta.hasFlag(SavingFieldFlag.CAPABILITY_UP)
+            EnumFacing.NORTH -> meta.hasFlag(SavingFieldFlag.CAPABILITY_NORTH)
+            EnumFacing.SOUTH -> meta.hasFlag(SavingFieldFlag.CAPABILITY_SOUTH)
+            EnumFacing.WEST -> meta.hasFlag(SavingFieldFlag.CAPABILITY_WEST)
+            EnumFacing.EAST -> meta.hasFlag(SavingFieldFlag.CAPABILITY_EAST)
+            else -> true
+        }
+    }
 }
 
 data class FieldMetadata private constructor(val type: FieldType, private var flagsInternal: MutableSet<SavingFieldFlag>) {
@@ -235,12 +284,11 @@ data class FieldMetadata private constructor(val type: FieldType, private var fl
     fun containsOnly(vararg allowed: SavingFieldFlag) = flags.containsAll(allowed.asList())
     fun doesNotContain(vararg disallowed: SavingFieldFlag) = !disallowed.any { it in flags }
 
-    fun addFlag(flag: SavingFieldFlag) {
-        flagsInternal.add(flag)
-    }
-    fun removeFlag(flag: SavingFieldFlag) {
-        flagsInternal.remove(flag)
-    }
+    fun addFlag(flag: SavingFieldFlag) = flagsInternal.add(flag)
+    fun removeFlag(flag: SavingFieldFlag) = flagsInternal.remove(flag)
 }
 
-enum class SavingFieldFlag { FIELD, METHOD, ANNOTATED, NONNULL, NOSYNC, TRANSIENT, FINAL }
+enum class SavingFieldFlag {
+    FIELD, METHOD, ANNOTATED, NONNULL, NO_SYNC, TRANSIENT, FINAL,
+    CAPABILITY, CAPABILITY_UP, CAPABILITY_DOWN, CAPABILITY_NORTH, CAPABILITY_SOUTH, CAPABILITY_EAST, CAPABILITY_WEST
+}

@@ -1,5 +1,8 @@
 package com.teamwizardry.librarianlib.common.base.item
 
+import com.teamwizardry.librarianlib.client.core.JsonGenerationUtils
+import com.teamwizardry.librarianlib.client.core.ModelHandler
+import com.teamwizardry.librarianlib.common.base.IModelGenerator
 import com.teamwizardry.librarianlib.common.base.ModCreativeTab
 import com.teamwizardry.librarianlib.common.util.VariantHelper
 import com.teamwizardry.librarianlib.common.util.currentModId
@@ -12,7 +15,7 @@ import net.minecraft.item.ItemSword
  * The default implementation for an IVariantHolder sword.
  */
 @Suppress("LeakingThis")
-open class ItemModSword(name: String, material: ToolMaterial, vararg variants: String) : ItemSword(material), IModItemProvider {
+open class ItemModSword(name: String, material: ToolMaterial, vararg variants: String) : ItemSword(material), IModItemProvider, IModelGenerator {
 
     override val providedItem: Item
         get() = this
@@ -50,5 +53,15 @@ open class ItemModSword(name: String, material: ToolMaterial, vararg variants: S
      */
     open val creativeTab: ModCreativeTab?
         get() = ModCreativeTab.defaultTabs[modId]
+
+    // Model Generation
+
+    override fun generateMissingItem(variant: String): Boolean {
+        ModelHandler.generateItemJson(this) {
+            mapOf(JsonGenerationUtils.getPathForItemModel(this, variant)
+                    to JsonGenerationUtils.generateBaseItemModel(this, variant, "item/handheld"))
+        }
+        return true
+    }
 }
 

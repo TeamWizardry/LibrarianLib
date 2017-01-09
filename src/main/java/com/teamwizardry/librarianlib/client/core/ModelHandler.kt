@@ -5,6 +5,7 @@ import com.google.gson.JsonParser
 import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.base.IExtraVariantHolder
+import com.teamwizardry.librarianlib.common.base.IModelGenerator
 import com.teamwizardry.librarianlib.common.base.IVariantHolder
 import com.teamwizardry.librarianlib.common.base.block.IBlockColorProvider
 import com.teamwizardry.librarianlib.common.base.block.IModBlockProvider
@@ -48,10 +49,10 @@ object ModelHandler {
     // Easy access
     private val debug = LibrarianLib.DEV_ENVIRONMENT
     private var modName = ""
-    private val namePad: String
+    val namePad: String
         get() = " " * modName.length
 
-    private var generatedFiles = mutableListOf<String>()
+    var generatedFiles = mutableListOf<String>()
 
     private val variantCache = HashMap<String, MutableList<IVariantHolder>>()
 
@@ -272,14 +273,25 @@ object ModelHandler {
 
     @SideOnly(Side.CLIENT)
     fun generateItemJson(holder: IModItemProvider, variant: String) {
-        val path = JsonGenerationUtils.getPathForItemModel(holder.providedItem, variant)
-        val file = File(path)
-        file.parentFile.mkdirs()
-        if (file.createNewFile()) {
-            val obj = JsonGenerationUtils.generateBaseItemModel(holder.providedItem, variant)
-            file.writeText(obj.serialize())
-            log("$namePad | Creating file for variant of ${holder.providedItem.registryName.resourcePath}")
-            generatedFiles.add(path)
+        if (holder is IModelGenerator && holder.generateMissingItem(variant)) return
+
+        generateItemJson(holder) {
+            mapOf(JsonGenerationUtils.getPathForItemModel(holder.providedItem, variant)
+                    to JsonGenerationUtils.generateBaseItemModel(holder.providedItem, variant))
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    inline fun generateItemJson(holder: IModItemProvider, modelFiles: () -> Map<String, JsonElement>) {
+        val files = modelFiles()
+        for ((path, model) in files) {
+            val file = File(path)
+            file.parentFile.mkdirs()
+            if (file.createNewFile()) {
+                file.writeText(model.serialize())
+                log("$namePad | Creating file for variant of ${holder.providedItem.registryName.resourcePath}")
+                generatedFiles.add(path)
+            }
         }
     }
 
@@ -288,28 +300,42 @@ object ModelHandler {
 
     @SideOnly(Side.CLIENT)
     fun generateBlockJson(holder: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?) {
-        val files = JsonGenerationUtils.generateBaseBlockStates(holder.providedBlock, mapper)
+        if (holder is IModelGenerator && holder.generateMissingBlockstate(mapper)) return
+
+        generateBlockJson(holder, {
+            JsonGenerationUtils.generateBaseBlockStates(holder.providedBlock, mapper)
+        }, {
+            mapOf(JsonGenerationUtils.getPathForBlockModel(holder.providedBlock)
+                    to JsonGenerationUtils.generateBaseBlockModel(holder.providedBlock))
+        })
+    }
+
+    @SideOnly(Side.CLIENT)
+    inline fun generateBlockJson(holder: IModBlockProvider,
+                                 blockstateFiles: () -> Map<String, JsonElement>,
+                                 modelFiles: () -> Map<String, JsonElement>) {
+        val files = blockstateFiles()
         var flag = false
-        files.forEach {
-            val stateFile = File(it.key)
+        for ((path, model) in files) {
+            val stateFile = File(path)
             stateFile.parentFile.mkdirs()
             if (stateFile.createNewFile()) {
-                val obj = it.value
-                stateFile.writeText(obj.serialize())
-                log("$namePad | Creating a file for blockstate of ${holder.providedBlock.registryName.resourcePath}")
-                generatedFiles.add(it.key)
+                stateFile.writeText(model.serialize())
+                ModelHandler.log("$namePad | Creating a file for blockstate of ${holder.providedBlock.registryName.resourcePath}")
+                ModelHandler.generatedFiles.add(path)
                 flag = true
             }
         }
         if (flag) {
-            val modelPath = JsonGenerationUtils.getPathForBlockModel(holder.providedBlock)
-            val modelFile = File(modelPath)
-            modelFile.parentFile.mkdirs()
-            if (modelFile.createNewFile()) {
-                val blockObj = JsonGenerationUtils.generateBaseBlockModel(holder.providedBlock)
-                modelFile.writeText(blockObj.serialize())
-                log("$namePad | Creating file for block ${holder.providedBlock.registryName.resourcePath}")
-                generatedFiles.add(modelPath)
+            val models = modelFiles()
+            for ((path, model) in models) {
+                val modelFile = File(path)
+                modelFile.parentFile.mkdirs()
+                if (modelFile.createNewFile()) {
+                    modelFile.writeText(model.serialize())
+                    ModelHandler.log("${ModelHandler.namePad} | Creating file for block ${holder.providedBlock.registryName.resourcePath}")
+                    ModelHandler.generatedFiles.add(path)
+                }
             }
         }
     }

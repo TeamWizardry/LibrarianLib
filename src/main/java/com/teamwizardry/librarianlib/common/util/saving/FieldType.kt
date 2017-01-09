@@ -5,6 +5,9 @@ import java.util.*
 
 abstract class FieldType protected constructor(open val clazz: Class<*>) {
 
+    open val interfaces: Array<out Class<*>>
+        get() = arrayOf()
+
     companion object {
         @JvmStatic
         fun create(field: Field) = create(field.genericType)
@@ -55,6 +58,9 @@ abstract class FieldType protected constructor(open val clazz: Class<*>) {
 }
 
 class FieldTypeClass(clazz: Class<*>) : FieldType(clazz) {
+
+    override val interfaces: Array<out Class<*>> = if (clazz.isInterface) arrayOf(*clazz.interfaces, clazz) else clazz.interfaces
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is FieldTypeClass) return false

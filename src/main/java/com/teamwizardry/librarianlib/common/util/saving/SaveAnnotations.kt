@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.common.util.saving
 
+import net.minecraft.util.EnumFacing
 import javax.annotation.Nonnull
 import kotlin.annotation.AnnotationTarget.*
 
@@ -83,7 +84,19 @@ annotation class SaveMethodSetter(val saveName: String)
  */
 @Target(CLASS)
 @MustBeDocumented
-annotation class Savable
+annotation class Savable()
+
+/**
+ * @author WireSegal
+ * Created at 3:18 PM on 1/6/17.
+ *
+ * Apply this to a capability-containing field to have it be automatically provided (from TileMods) to the provided [sides]
+ * and null. This will apply to all capability superinterfaces of the annotated field type.
+ */
+@Target(FIELD)
+@MustBeDocumented
+annotation class CapabilityProvide(vararg val sides: EnumFacing)
+
 
 /**
  * @author TheCodeWarrior

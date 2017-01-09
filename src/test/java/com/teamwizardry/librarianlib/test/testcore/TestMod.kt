@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.common.core.LoggerBase
 import com.teamwizardry.librarianlib.test.fx.FXEntryPoint
 import com.teamwizardry.librarianlib.test.gui.GuiEntryPoint
 import com.teamwizardry.librarianlib.test.saving.SavingEntryPoint
+import com.teamwizardry.librarianlib.test.variants.VariantEntryPoint
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.Mod
@@ -24,7 +25,8 @@ class TestMod {
         entrypoints = arrayOf(
                 SavingEntryPoint,
                 FXEntryPoint,
-                GuiEntryPoint
+                GuiEntryPoint,
+                VariantEntryPoint
         )
         PROXY.pre(e)
         entrypoints.forEach {

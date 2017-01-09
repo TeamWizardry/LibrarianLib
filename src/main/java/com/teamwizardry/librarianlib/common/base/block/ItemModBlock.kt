@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.common.base.block
 
 import com.teamwizardry.librarianlib.client.core.ModelHandler
+import com.teamwizardry.librarianlib.common.base.IModelGenerator
 import com.teamwizardry.librarianlib.common.base.item.IItemColorProvider
 import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.common.base.item.ISpecialModelProvider
@@ -23,7 +24,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
  * The default implementation for an IModBlock wrapper Item that gets registered as an IVariantHolder.
  */
 @Suppress("LeakingThis")
-open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlockColorProvider, ISpecialModelProvider {
+open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlockColorProvider, ISpecialModelProvider, IModelGenerator {
 
     private val modBlock: IModBlock
     private val modId: String
@@ -73,6 +74,12 @@ open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlo
 
     override val blockColorFunction: ((IBlockState, IBlockAccess?, BlockPos?, Int) -> Int)?
         get() = if (this.modBlock is IBlockColorProvider) modBlock.blockColorFunction else null
+
+    override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?)
+            = if (this.modBlock is IModelGenerator) modBlock.generateMissingBlockstate(mapper) else false
+
+    override fun generateMissingItem(variant: String)
+            = if (this.modBlock is IModelGenerator) modBlock.generateMissingItem(variant) else false
 
     @SideOnly(Side.CLIENT)
     override fun getSpecialModel(index: Int) = if (this.modBlock is ISpecialModelProvider) this.modBlock.getSpecialModel(index) else null

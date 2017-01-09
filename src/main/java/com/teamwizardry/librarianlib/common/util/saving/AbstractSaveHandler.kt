@@ -6,6 +6,8 @@ import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.Targ
 import com.teamwizardry.librarianlib.common.util.withRealDefault
 import io.netty.buffer.ByteBuf
 import net.minecraft.nbt.NBTBase
+import net.minecraft.util.EnumFacing
+import net.minecraftforge.common.capabilities.Capability
 
 /**
  * Created by TheCodeWarrior
@@ -24,7 +26,7 @@ object AbstractSaveHandler {
     }
 
     @JvmStatic
-    fun readAutoNBT(instance: Any, tag: NBTBase, sync: Boolean) : Any {
+    fun readAutoNBT(instance: Any, tag: NBTBase, sync: Boolean): Any {
         return nbtCache[instance.javaClass].read(tag, instance, sync)
     }
 
@@ -34,8 +36,22 @@ object AbstractSaveHandler {
     }
 
     @JvmStatic
-    fun readAutoBytes(instance: Any, buf: ByteBuf, sync: Boolean) : Any {
+    fun readAutoBytes(instance: Any, buf: ByteBuf, sync: Boolean): Any {
         return byteCache[instance.javaClass].read(buf, instance, sync)
+    }
+
+    @JvmStatic
+    fun hasCapability(instance: Any, cap: Capability<*>, side: EnumFacing?): Boolean {
+        return SavingFieldCache.getClassFields(instance.javaClass).any { it.value.hasCapability(cap, side) }
+    }
+
+    @JvmStatic
+    fun <T: Any> getCapability(instance: Any, cap: Capability<T>, side: EnumFacing?): T? {
+        for ((key, value) in SavingFieldCache.getClassFields(instance.javaClass)) {
+            val inst = value.getCapability(instance, cap, side)
+            if (inst != null) return inst
+        }
+        return null
     }
 
     @JvmStatic

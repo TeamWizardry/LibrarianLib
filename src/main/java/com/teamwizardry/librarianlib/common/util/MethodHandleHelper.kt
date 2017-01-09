@@ -42,7 +42,7 @@ object MethodHandleHelper {
      */
     @JvmStatic
     fun <T> handleForConstructor(clazz: Class<T>, vararg constructorArgs: Class<*>): MethodHandle {
-        var c = try {
+        val c = try {
             val m = clazz.getDeclaredConstructor(*constructorArgs)
             m.isAccessible = true
             m
@@ -246,13 +246,13 @@ object MethodHandleHelper {
     }
 
     @JvmStatic
-    fun <T, V> delegateForStaticReadOnly(clazz: Class<T>, vararg fieldNames: String): ImmutableStaticFieldDelegate<T, V> {
+    fun <T, V> delegateForStaticReadOnly(clazz: Class<*>, vararg fieldNames: String): ImmutableStaticFieldDelegate<T, V> {
         val getter = wrapperForStaticGetter(clazz, *fieldNames)
         return ImmutableStaticFieldDelegate(getter)
     }
 
     @JvmStatic
-    fun <T, V> delegateForStaticReadWrite(clazz: Class<T>, vararg fieldNames: String): MutableStaticFieldDelegate<T, V> {
+    fun <T, V> delegateForStaticReadWrite(clazz: Class<*>, vararg fieldNames: String): MutableStaticFieldDelegate<T, V> {
         val getter = wrapperForStaticGetter(clazz, *fieldNames)
         val setter = wrapperForStaticSetter(clazz, *fieldNames)
         return MutableStaticFieldDelegate(getter, setter)
