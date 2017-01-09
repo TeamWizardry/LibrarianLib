@@ -22,7 +22,7 @@ open class BlockModVariant(name: String, materialIn: Material, color: MapColor, 
     constructor(name: String, materialIn: Material, vararg variants: String) : this(name, materialIn, materialIn.materialMapColor, *variants)
 
     companion object {
-        private var lastNames: SortedSet<String> = sortedSetOf()
+        private val lastNames: ThreadLocal<SortedSet<String>> = ThreadLocal.withInitial { sortedSetOf<String>() }
 
         /**
          * Hacky nonsense required because constructor and associated arguments
@@ -32,15 +32,16 @@ open class BlockModVariant(name: String, materialIn: Material, color: MapColor, 
          * created by first access in [createBlockState].
          */
         fun injectNames(name: String, variants: Array<out String>): Array<out String> {
-            lastNames = VariantHelper.beginSetupBlock(name, variants).toSortedSet()
+            lastNames.set(VariantHelper.beginSetupBlock(name, variants).toSortedSet())
             return variants
         }
     }
 
     lateinit var property: PropertyString
         private set
+
     override fun createBlockState(): BlockStateContainer {
-        property = PropertyString("variant", lastNames)
+        property = PropertyString("variant", lastNames.get())
         return BlockStateContainer(this, property)
     }
 
