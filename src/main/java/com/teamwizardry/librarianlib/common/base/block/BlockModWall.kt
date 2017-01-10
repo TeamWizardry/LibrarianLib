@@ -18,6 +18,7 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.IBlockAccess
+import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 
@@ -84,6 +85,13 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
             else false
         else true
     }
+
+    override fun getLightOpacity(state: IBlockState, world: IBlockAccess, pos: BlockPos) = parent.getLightOpacity(world, pos)
+    override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
+    @SideOnly(Side.CLIENT) override fun isTranslucent(state: IBlockState?) = parent.isTranslucent
+    override fun getUseNeighborBrightness(state: IBlockState?) = parent.useNeighborBrightness()
+    override fun isToolEffective(type: String?, state: IBlockState) = parent.block.isToolEffective(type, parent)
+    override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent)
 
     @SideOnly(Side.CLIENT)
     override fun shouldSideBeRendered(blockState: IBlockState, blockAccess: IBlockAccess, pos: BlockPos, side: EnumFacing): Boolean {
