@@ -11,6 +11,12 @@ import java.util.*
 open class PropertyString(name: String, open val values: SortedSet<String>) : PropertyHelper<String>(name, String::class.java) {
     constructor(name: String, vararg values: String) : this(name, values.toSortedSet())
 
+    init {
+        @Suppress("LeakingThis")
+        if (values.isEmpty())
+            throw IllegalArgumentException("Values are empty!")
+    }
+
     private val indexToValues by lazy { mapOf(*values.mapIndexed { i, s -> i to s }.toTypedArray()) }
     private val valuesToIndex by lazy { mapOf(*values.mapIndexed { i, s -> s to i }.toTypedArray()) }
 
@@ -19,7 +25,7 @@ open class PropertyString(name: String, open val values: SortedSet<String>) : Pr
     override fun getAllowedValues() = values
 
     fun getMetaFromName(name: String) = valuesToIndex[name] ?: 0
-    fun getNameFromMeta(meta: Int) = indexToValues[meta] ?: values.first()
+    fun getNameFromMeta(meta: Int): String = indexToValues[meta] ?: values.first()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

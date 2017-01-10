@@ -4,106 +4,131 @@ import com.teamwizardry.librarianlib.client.core.JsonGenerationUtils
 import com.teamwizardry.librarianlib.client.core.JsonGenerationUtils.getPathForBlockModel
 import com.teamwizardry.librarianlib.client.core.ModelHandler
 import com.teamwizardry.librarianlib.common.base.IModelGenerator
+import com.teamwizardry.librarianlib.common.base.ModCreativeTab
 import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
+import com.teamwizardry.librarianlib.common.util.VariantHelper
 import com.teamwizardry.librarianlib.common.util.builders.json
+import com.teamwizardry.librarianlib.common.util.currentModId
 import net.minecraft.block.Block
+import net.minecraft.block.BlockSlab
+import net.minecraft.block.properties.IProperty
 import net.minecraft.block.properties.PropertyEnum
 import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
-import net.minecraft.entity.EntityLivingBase
 import net.minecraft.item.Item
+import net.minecraft.item.ItemBlock
+import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.IBlockAccess
-import net.minecraft.world.World
-import net.minecraftforge.fml.relauncher.Side
-import net.minecraftforge.fml.relauncher.SideOnly
 import java.util.*
 
-/**
- * The default implementation for an IModBlock slab.
- */
-open class BlockModSlab(name: String, val parent: IBlockState) : BlockMod(name, parent.material, parent.mapColor), IModelGenerator {
 
-    companion object {
-        val STATE: PropertyEnum<SlabType> = PropertyEnum.create("state", SlabType::class.java)
-    }
+/**
+ * @author WireSegal
+ * Created at 9:50 AM on 1/10/17.
+ */
+@Suppress("LeakingThis")
+open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(parent.material), IModBlock, IModelGenerator {
 
     private val parentName = parent.block.registryName
 
-    override fun createBlockState() = BlockStateContainer(this, STATE)
-    override fun createItemForm() = ItemModSlab(this)
-    override fun canSilkHarvest() = false
+    open val singleBlock: BlockModSlab = this
 
-    override fun isFullBlock(state: IBlockState) = state.isOpaqueCube
+    protected inner class BlockDouble(name: String, parent: IBlockState) : BlockModSlab(name, parent) {
+        override val singleBlock: BlockModSlab = this@BlockModSlab
 
-    override fun getLightOpacity(state: IBlockState, world: IBlockAccess, pos: BlockPos) = parent.getLightOpacity(world, pos)
-    override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
-    @SideOnly(Side.CLIENT) override fun isTranslucent(state: IBlockState?) = super.isTranslucent(state)
-    override fun getUseNeighborBrightness(state: IBlockState?) = parent.useNeighborBrightness()
+        override fun isDouble() = true
 
+        override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
+            return false
+        }
 
-    protected val AABB_BOTTOM_HALF = AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.5, 1.0)
-    protected val AABB_TOP_HALF = AxisAlignedBB(0.0, 0.5, 0.0, 1.0, 1.0, 1.0)
+        override fun generateMissingItem(variant: String): Boolean {
+            return false
+        }
+    }
 
-    override fun getBoundingBox(state: IBlockState, source: IBlockAccess, pos: BlockPos)
-            = if (state.isOpaqueCube)
-                Block.FULL_BLOCK_AABB
-            else if (state.getValue(STATE) == SlabType.TOP)
-                AABB_TOP_HALF
-            else
-                AABB_BOTTOM_HALF
+    companion object {
+        val DUMMY_PROP: PropertyEnum<Dummy> = PropertyEnum.create("block", Dummy::class.java)
+    }
 
-    /**
-     * Checks if an IBlockState represents a block that is opaque and a full cube.
-     */
-    override fun isFullyOpaque(state: IBlockState) = state.isOpaqueCube || state.getValue(STATE) == SlabType.TOP
+    val doubleBlock: BlockModSlab
 
-    /**
-     * Used to determine ambient occlusion and culling when rebuilding chunks for render
-     */
-    override fun isOpaqueCube(state: IBlockState) = state.getValue(STATE) == SlabType.FULL
+    override val variants: Array<out String>
 
-    override fun doesSideBlockRendering(state: IBlockState, world: IBlockAccess, pos: BlockPos, face: EnumFacing): Boolean {
-        if (state.isOpaqueCube)
-            return true
+    override val bareName: String = name
+    val modId: String
 
-        val side = state.getValue(STATE)
-        return side == SlabType.TOP && face == EnumFacing.UP || side == SlabType.BOTTOM && face == EnumFacing.DOWN
+    val itemForm: ItemBlock? by lazy { createItemForm() }
+
+    init {
+        modId = currentModId
+        this.variants = VariantHelper.beginSetupBlock(name, arrayOf())
+
+        doubleBlock = if (!isDouble) BlockDouble(name + "_full", parent) else this
+
+        VariantHelper.finishSetupBlock(this, name, itemForm, creativeTab)
+    }
+
+    override fun setUnlocalizedName(name: String): Block {
+        super.setUnlocalizedName(name)
+        VariantHelper.setUnlocalizedNameForBlock(this, modId, name, itemForm)
+        return this
     }
 
     /**
-     * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
-     * IBlockstate
+     * Override this to have a custom ItemBlock implementation.
      */
-    override fun getStateForPlacement(worldIn: World, pos: BlockPos, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float, meta: Int, placer: EntityLivingBase): IBlockState {
-        val iblockstate = super.getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer)
-        return if (iblockstate.isOpaqueCube)
-            iblockstate
-        else if (facing != EnumFacing.DOWN && (facing == EnumFacing.UP || hitY.toDouble() <= 0.5))
-            iblockstate.withProperty(STATE, SlabType.BOTTOM)
-        else
-            iblockstate.withProperty(STATE, SlabType.TOP)
+    open fun createItemForm(): ItemBlock? {
+        return if (isDouble) null else ItemModSlab(this)
     }
 
-    override fun quantityDropped(state: IBlockState, fortune: Int, random: Random?) = if (state.isOpaqueCube) 2 else 1
+    /**
+     * Override this to have a custom creative tab. Leave blank to have a default tab (or none if no default tab is set).
+     */
+    override val creativeTab: ModCreativeTab?
+        get() = ModCreativeTab.defaultTabs[modId]
 
-    override fun isFullCube(state: IBlockState) = state.isOpaqueCube
 
-    override fun getMetaFromState(state: IBlockState) = state.getValue(STATE).ordinal
-    override fun getStateFromMeta(meta: Int) = defaultState.withProperty(STATE, SlabType.values()[meta % SlabType.values().size])
+    override fun createBlockState()
+            = if (isDouble) BlockStateContainer(this, DUMMY_PROP)
+            else BlockStateContainer(this, HALF, DUMMY_PROP)
 
-    @SideOnly(Side.CLIENT)
-    override fun shouldSideBeRendered(blockState: IBlockState, blockAccess: IBlockAccess, pos: BlockPos, side: EnumFacing): Boolean
-            = if (blockState.isOpaqueCube)
-                super.shouldSideBeRendered(blockState, blockAccess, pos, side)
-            else if (side != EnumFacing.UP && side != EnumFacing.DOWN && !super.shouldSideBeRendered(blockState, blockAccess, pos, side))
-                false
-            else
-                super.shouldSideBeRendered(blockState, blockAccess, pos, side)
+    override val ignoredProperties: Array<IProperty<*>>?
+        get() = arrayOf(DUMMY_PROP)
+
+    override fun isSideSolid(base_state: IBlockState, world: IBlockAccess, pos: BlockPos, side: EnumFacing?): Boolean {
+        val state = getActualState(base_state, world, pos)
+        return isDouble
+                || state.getValue(BlockSlab.HALF) == EnumBlockHalf.TOP && side == EnumFacing.UP
+                || state.getValue(BlockSlab.HALF) == EnumBlockHalf.BOTTOM && side == EnumFacing.DOWN
+    }
+
+    override fun getItemDropped(state: IBlockState, rand: Random, fortune: Int): Item? {
+        return singleBlock.itemForm
+    }
+
+    override fun getStateFromMeta(meta: Int)
+            = if (isDouble) defaultState
+            else defaultState.withProperty(BlockSlab.HALF, if (meta == 8) EnumBlockHalf.TOP else EnumBlockHalf.BOTTOM)
+
+    override fun getMetaFromState(state: IBlockState)
+            = if (isDouble) 0
+            else if (state.getValue(BlockSlab.HALF) == EnumBlockHalf.TOP) 8 else 0
+
+    // Internal fixes for slab overriding
+
+    override fun getTypeForItem(stack: ItemStack?) = Dummy.SLAB
+    override fun isDouble() = false
+    override fun getUnlocalizedName(meta: Int): String = unlocalizedName
+    override fun getVariantProperty() = DUMMY_PROP
+
+    enum class Dummy : EnumStringSerializable {
+        SLAB
+    }
 
     override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
         val name = ResourceLocation(parentName.resourceDomain, "blocks/${parentName.resourcePath}").toString()
@@ -112,9 +137,8 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockMod(name, 
         ModelHandler.generateBlockJson(this, {
             JsonGenerationUtils.generateBlockStates(this, mapper) {
                 when (it) {
-                    "state=bottom" -> json { obj("model" to "${parentName}_bottom") }
-                    "state=top" -> json { obj("model" to "${parentName}_top") }
-                    "state=full" -> json { obj("model" to "${parentName}_full") }
+                    "half=bottom" -> json { obj("model" to "${parentName}_bottom") }
+                    "half=top" -> json { obj("model" to "${parentName}_top") }
                     else -> json { obj() }
                 }
             }
@@ -139,14 +163,6 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockMod(name, 
                                         "side" to name
                                 )
                         )
-                    },
-                    getPathForBlockModel(this, "${simpleName}_full") to json {
-                        obj(
-                                "parent" to "block/cube_all",
-                                "textures" to obj(
-                                        "all" to name
-                                )
-                        )
                     }
             )
         })
@@ -161,16 +177,6 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockMod(name, 
         }
         return true
     }
-
-    override fun isToolEffective(type: String?, state: IBlockState?): Boolean {
-        return parent.block.isToolEffective(type, parent)
-    }
-
-    override fun getHarvestTool(state: IBlockState): String {
-        return parent.block.getHarvestTool(parent)
-    }
 }
 
-enum class SlabType : EnumStringSerializable {
-    BOTTOM, TOP, FULL
-}
+

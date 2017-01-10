@@ -75,6 +75,9 @@ open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlo
     override val blockColorFunction: ((IBlockState, IBlockAccess?, BlockPos?, Int) -> Int)?
         get() = if (this.modBlock is IBlockColorProvider) modBlock.blockColorFunction else null
 
+    override val stateMapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?
+        get() = this.modBlock.stateMapper
+
     override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?)
             = if (this.modBlock is IModelGenerator) modBlock.generateMissingBlockstate(mapper) else false
 
