@@ -1,11 +1,21 @@
 package com.teamwizardry.librarianlib.test.variants
 
 import com.teamwizardry.librarianlib.common.base.block.*
+import com.teamwizardry.librarianlib.common.base.item.ItemModArrow
 import com.teamwizardry.librarianlib.test.testcore.TestEntryPoint
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.projectile.EntityArrow
+import net.minecraft.entity.projectile.EntityTippedArrow
+import net.minecraft.init.Items
+import net.minecraft.init.PotionTypes
 import net.minecraft.item.Item
+import net.minecraft.item.ItemStack
+import net.minecraft.potion.PotionUtils
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
@@ -21,6 +31,23 @@ object VariantEntryPoint : TestEntryPoint {
     lateinit var sapling: BlockModSapling
 
     override fun preInit(event: FMLPreInitializationEvent) {
+        object : ItemModArrow("arrow") {
+            override fun generateArrowEntity(worldIn: World, stack: ItemStack, position: Vec3d, shooter: EntityLivingBase?): EntityArrow {
+                val arrow = if (shooter != null) EntityTippedArrow(worldIn, shooter)
+                else EntityTippedArrow(worldIn, position.xCoord, position.yCoord, position.zCoord)
+
+                val s = ItemStack(Items.TIPPED_ARROW)
+                PotionUtils.addPotionToItemStack(s, PotionTypes.INVISIBILITY)
+                arrow.setPotionEffect(s)
+
+                return arrow
+            }
+
+            override fun isInfinite(stack: ItemStack, bow: ItemStack, player: EntityPlayer): Boolean {
+                return false
+            }
+        }
+
         val block = BlockModVariant("variant", Material.ROCK, "a", "b", "c")
         BlockModSlab("a_slab", block.defaultState)
         BlockModSlab("b_slab", block.defaultState.withProperty(block.property, "b"))
