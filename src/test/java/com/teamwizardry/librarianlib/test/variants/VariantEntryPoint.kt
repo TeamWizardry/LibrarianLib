@@ -25,6 +25,10 @@ object VariantEntryPoint : TestEntryPoint {
         BlockModSlab("a_slab", block.defaultState)
         BlockModSlab("b_slab", block.defaultState.withProperty(block.property, "b"))
         BlockModSlab("c_slab", block.defaultState.withProperty(block.property, "c"))
+        BlockModStairs("a_stairs", block.defaultState)
+        BlockModStairs("b_stairs", block.defaultState.withProperty(block.property, "b"))
+        BlockModStairs("c_stairs", block.defaultState.withProperty(block.property, "c"))
+
         val wood = BlockModLog("log")
         val leaves = object : BlockModLeaves("leaves") {
             override fun getItemDropped(state: IBlockState, rand: Random, fortune: Int): Item? {

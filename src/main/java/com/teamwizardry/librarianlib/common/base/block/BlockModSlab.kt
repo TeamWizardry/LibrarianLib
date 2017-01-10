@@ -43,7 +43,14 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(paren
         override fun isDouble() = true
 
         override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
-            return false
+            ModelHandler.generateBlockJson(this, {
+                JsonGenerationUtils.generateBlockStates(this, mapper) {
+                    json { obj("model" to parentName.toString()) }
+                }
+            }, {
+                mapOf()
+            })
+            return true
         }
 
         override fun generateMissingItem(variant: String): Boolean {
