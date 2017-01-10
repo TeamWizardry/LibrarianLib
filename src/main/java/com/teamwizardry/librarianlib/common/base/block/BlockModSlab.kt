@@ -11,6 +11,8 @@ import com.teamwizardry.librarianlib.common.util.builders.json
 import com.teamwizardry.librarianlib.common.util.currentModId
 import net.minecraft.block.Block
 import net.minecraft.block.BlockSlab
+import net.minecraft.block.material.MapColor
+import net.minecraft.block.material.Material
 import net.minecraft.block.properties.IProperty
 import net.minecraft.block.properties.PropertyEnum
 import net.minecraft.block.state.BlockStateContainer
@@ -26,6 +28,8 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.Explosion
 import net.minecraft.world.IBlockAccess
 import net.minecraft.world.World
+import net.minecraftforge.fml.common.IFuelHandler
+import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.util.*
@@ -36,7 +40,7 @@ import java.util.*
  * Created at 9:50 AM on 1/10/17.
  */
 @Suppress("LeakingThis")
-open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(parent.material), IModBlock, IModelGenerator {
+open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapMaterial(parent.material)), IModBlock, IModelGenerator {
 
     private val parentName = parent.block.registryName
 
@@ -63,8 +67,27 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(paren
         }
     }
 
-    companion object {
+    companion object : IFuelHandler {
+        override fun getBurnTime(fuel: ItemStack): Int {
+            return if (fuel.item is ItemBlock &&
+                    (fuel.item as ItemBlock).block is BlockModSlab &&
+                    (fuel.item as ItemBlock).block.defaultState.material == FAKE_WOOD) 150 else 0
+        }
+
+        init {
+            GameRegistry.registerFuelHandler(this)
+        }
+
         val DUMMY_PROP: PropertyEnum<Dummy> = PropertyEnum.create("block", Dummy::class.java)
+
+        fun wrapMaterial(material: Material) = if (material == Material.WOOD) FAKE_WOOD else material
+
+        val FAKE_WOOD = object : Material(MapColor.WOOD) {
+            init {
+                setBurning()
+            }
+        }
+
     }
 
     val doubleBlock: BlockModSlab
@@ -110,8 +133,8 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(paren
     override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
     @SideOnly(Side.CLIENT) override fun isTranslucent(state: IBlockState?) = parent.isTranslucent
     override fun getUseNeighborBrightness(state: IBlockState?) = parent.useNeighborBrightness()
-    override fun isToolEffective(type: String?, state: IBlockState) = parent.block.isToolEffective(type, parent)
-    override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent)
+    override fun isToolEffective(type: String?, state: IBlockState) = parent.block.isToolEffective(type, parent) || (blockMaterial == FAKE_WOOD && type == "axe")
+    override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent) ?: if (blockMaterial == FAKE_WOOD) "axe" else null
 
     override fun createBlockState()
             = if (isDouble) BlockStateContainer(this, DUMMY_PROP)
