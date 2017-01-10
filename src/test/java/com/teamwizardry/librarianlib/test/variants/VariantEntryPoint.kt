@@ -55,6 +55,9 @@ object VariantEntryPoint : TestEntryPoint {
         BlockModStairs("a_stairs", block.defaultState)
         BlockModStairs("b_stairs", block.defaultState.withProperty(block.property, "b"))
         BlockModStairs("c_stairs", block.defaultState.withProperty(block.property, "c"))
+        BlockModFence("a_fence", block.defaultState)
+        BlockModWall("a_wall", block.defaultState)
+        BlockModFenceGate("a_gate", block.defaultState)
 
         val wood = BlockModLog("log")
         val leaves = object : BlockModLeaves("leaves") {

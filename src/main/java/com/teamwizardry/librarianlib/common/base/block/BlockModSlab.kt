@@ -16,13 +16,18 @@ import net.minecraft.block.properties.PropertyEnum
 import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
+import net.minecraft.entity.Entity
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
+import net.minecraft.world.Explosion
 import net.minecraft.world.IBlockAccess
+import net.minecraft.world.World
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import java.util.*
 
 
@@ -99,6 +104,14 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(paren
     override val creativeTab: ModCreativeTab?
         get() = ModCreativeTab.defaultTabs[modId]
 
+
+    override fun getExplosionResistance(world: World, pos: BlockPos, exploder: Entity, explosion: Explosion) = parent.block.getExplosionResistance(world, pos, exploder, explosion)
+    override fun getLightOpacity(state: IBlockState, world: IBlockAccess, pos: BlockPos) = parent.getLightOpacity(world, pos)
+    override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
+    @SideOnly(Side.CLIENT) override fun isTranslucent(state: IBlockState?) = parent.isTranslucent
+    override fun getUseNeighborBrightness(state: IBlockState?) = parent.useNeighborBrightness()
+    override fun isToolEffective(type: String?, state: IBlockState) = parent.block.isToolEffective(type, parent)
+    override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent)
 
     override fun createBlockState()
             = if (isDouble) BlockStateContainer(this, DUMMY_PROP)

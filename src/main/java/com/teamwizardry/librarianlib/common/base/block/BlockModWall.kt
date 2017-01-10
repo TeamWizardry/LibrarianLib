@@ -12,11 +12,13 @@ import net.minecraft.block.properties.PropertyBool
 import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
+import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
+import net.minecraft.world.Explosion
 import net.minecraft.world.IBlockAccess
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.Side
@@ -27,7 +29,6 @@ import net.minecraftforge.fml.relauncher.SideOnly
  * @author WireSegal
  * Created at 10:36 AM on 5/7/16.
  */
-@Suppress("LeakingThis")
 open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, parent.material, parent.mapColor), IModelGenerator {
     private val parentName = parent.block.registryName
 
@@ -64,7 +65,8 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
 
     override fun getBoundingBox(state: IBlockState, source: IBlockAccess, pos: BlockPos)
             = AABB_BY_INDEX[getAABBIndex(getActualState(state, source, pos))]
-    fun getCollisionBoundingBox(blockState: IBlockState, worldIn: IBlockAccess, pos: BlockPos)
+
+    override fun getCollisionBoundingBox(blockState: IBlockState, worldIn: World, pos: BlockPos): AxisAlignedBB
             = CLIP_AABB_BY_INDEX[getAABBIndex(getActualState(blockState, worldIn, pos))]
 
     override fun canPlaceTorchOnTop(state: IBlockState, world: IBlockAccess, pos: BlockPos) = true
@@ -86,7 +88,8 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
         else true
     }
 
-    override fun getLightOpacity(state: IBlockState, world: IBlockAccess, pos: BlockPos) = parent.getLightOpacity(world, pos)
+
+    override fun getExplosionResistance(world: World, pos: BlockPos, exploder: Entity, explosion: Explosion) = parent.block.getExplosionResistance(world, pos, exploder, explosion)
     override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
     @SideOnly(Side.CLIENT) override fun isTranslucent(state: IBlockState?) = parent.isTranslucent
     override fun getUseNeighborBrightness(state: IBlockState?) = parent.useNeighborBrightness()

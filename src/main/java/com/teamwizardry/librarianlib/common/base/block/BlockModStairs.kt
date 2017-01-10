@@ -25,7 +25,7 @@ open class BlockModStairs(name: String, parent: IBlockState) : BlockStairs(paren
 
     override val variants: Array<out String>
 
-    val parentName = parent.block.registryName
+    private val parentName = parent.block.registryName
 
     override val bareName: String = name
     val modId: String
