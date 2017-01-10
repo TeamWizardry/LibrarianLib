@@ -132,5 +132,5 @@ open class BlockModPillar(name: String, material: Material, vararg variants: Str
     }
 
     protected open val postFix: String
-        get() = "bark"
+        get() = "none"
 }
