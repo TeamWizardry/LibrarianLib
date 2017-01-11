@@ -73,7 +73,7 @@ open class BlockModStairs(name: String, parent: IBlockState) : BlockStairs(paren
 
                 val modelType = if ("shape=straight" in it) "" else if ("shape=inner" in it) "_inner" else "_outer"
                 json { obj(
-                        "model" to "$parentName$modelType",
+                        "model" to "$registryName$modelType",
                         *if (x != 0) arrayOf("x" to x) else arrayOf(),
                         *if (y != 0) arrayOf("y" to y) else arrayOf(),
                         *if (x != 0 || y != 0) arrayOf("uvlock" to true) else arrayOf()
@@ -120,7 +120,7 @@ open class BlockModStairs(name: String, parent: IBlockState) : BlockStairs(paren
         val item = itemForm as? IModItemProvider ?: return false
         ModelHandler.generateItemJson(item) {
             mapOf(JsonGenerationUtils.getPathForItemModel(item as Item)
-                    to JsonGenerationUtils.generateBaseItemModel(item, "${item.registryName.resourcePath}"))
+                    to JsonGenerationUtils.generateBaseItemModel(item))
         }
         return true
     }

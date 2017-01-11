@@ -138,11 +138,10 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
     }
 
     override fun generateMissingItem(variant: String): Boolean {
-        val name = parentName.resourcePath
         val item = itemForm as? IModItemProvider ?: return false
         ModelHandler.generateItemJson(item) {
             mapOf(JsonGenerationUtils.getPathForItemModel(item.providedItem)
-                    to JsonGenerationUtils.generateBaseItemModel(item.providedItem, "${name}_fence_closed"))
+                    to JsonGenerationUtils.generateBaseItemModel(item.providedItem, "${registryName.resourcePath}_fence_closed"))
         }
         return true
     }
