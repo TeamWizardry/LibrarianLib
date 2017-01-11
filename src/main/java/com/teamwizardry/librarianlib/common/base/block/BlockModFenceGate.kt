@@ -89,7 +89,7 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
                 val modelType = "gate_${if (inWall) "wall" else "fence"}_${if (open) "open" else "closed"}"
                 json {
                     obj(
-                            "model" to "${parentName}_$modelType",
+                            "model" to "${registryName}_$modelType",
                             "uvlock" to true,
                             *if (y != 0) arrayOf("y" to y) else arrayOf()
                     )

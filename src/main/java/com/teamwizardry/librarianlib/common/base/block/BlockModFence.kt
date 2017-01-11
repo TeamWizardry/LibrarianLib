@@ -79,7 +79,7 @@ open class BlockModFence(name: String, val parent: IBlockState) : BlockFence(par
                             "multipart" to array(
                                     obj(
                                             "apply" to obj(
-                                                    "model" to "${parentName}_fence_post"
+                                                    "model" to "${registryName}_fence_post"
                                             )
                                     ),
                                     obj(
@@ -87,7 +87,7 @@ open class BlockModFence(name: String, val parent: IBlockState) : BlockFence(par
                                                     "north" to "true"
                                             ),
                                             "apply" to obj(
-                                                    "model" to "${parentName}_fence_side",
+                                                    "model" to "${registryName}_fence_side",
                                                     "uvlock" to true
                                             )
                                     ),
@@ -96,7 +96,7 @@ open class BlockModFence(name: String, val parent: IBlockState) : BlockFence(par
                                                     "east" to "true"
                                             ),
                                             "apply" to obj(
-                                                    "model" to "${parentName}_fence_side",
+                                                    "model" to "${registryName}_fence_side",
                                                     "y" to 90,
                                                     "uvlock" to true
                                             )
@@ -106,7 +106,7 @@ open class BlockModFence(name: String, val parent: IBlockState) : BlockFence(par
                                                     "south" to "true"
                                             ),
                                             "apply" to obj(
-                                                    "model" to "${parentName}_fence_side",
+                                                    "model" to "${registryName}_fence_side",
                                                     "y" to 180,
                                                     "uvlock" to true
                                             )
@@ -116,7 +116,7 @@ open class BlockModFence(name: String, val parent: IBlockState) : BlockFence(par
                                                     "west" to "true"
                                             ),
                                             "apply" to obj(
-                                                    "model" to "${parentName}_fence_side",
+                                                    "model" to "${registryName}_fence_side",
                                                     "y" to 270,
                                                     "uvlock" to true
                                             )
