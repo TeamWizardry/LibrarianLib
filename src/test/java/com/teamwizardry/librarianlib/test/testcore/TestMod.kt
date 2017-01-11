@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.test.testcore
 
 import com.teamwizardry.librarianlib.common.base.ModCreativeTab
 import com.teamwizardry.librarianlib.common.core.LoggerBase
+import com.teamwizardry.librarianlib.test.container.ContainerEntryPoint
 import com.teamwizardry.librarianlib.test.fx.FXEntryPoint
 import com.teamwizardry.librarianlib.test.gui.GuiEntryPoint
 import com.teamwizardry.librarianlib.test.saving.SavingEntryPoint
@@ -26,7 +27,8 @@ class TestMod {
                 SavingEntryPoint,
                 FXEntryPoint,
                 GuiEntryPoint,
-                VariantEntryPoint
+                VariantEntryPoint,
+                ContainerEntryPoint
         )
         PROXY.pre(e)
         entrypoints.forEach {

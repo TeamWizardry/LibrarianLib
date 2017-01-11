@@ -170,6 +170,11 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     class LogicalSizeEvent<T : GuiComponent<T>>(val component: T, var box: BoundingBox2D?) : Event()
     class MouseOverEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, var isOver: Boolean) : Event()
 
+    class MessageArriveEvent<T : GuiComponent<T>>(val component: T, val from: GuiComponent<*>, val message: Message) : Event()
+
+    data class Message(val component: GuiComponent<*>, val data: Any, val rippleType: EnumRippleType)
+    enum class EnumRippleType { NONE, UP, DOWN, ALL }
+
     var zIndex = 0
     /**
      * The position of the component relative to it's parent
@@ -564,8 +569,11 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         BUS.fire(PostDrawEvent(thiz(), mousePos, partialTicks))
     }
 
-    open fun tick() {
+    open fun onTick() {}
+
+    fun tick() {
         BUS.fire(ComponentTickEvent(thiz()))
+        onTick()
         for (child in components) {
             child.tick()
         }
@@ -742,6 +750,34 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     init {/* Assorted info */
     }
     //=============================================================================
+
+    open fun onMessage(from: GuiComponent<*>, message: Message) {}
+
+    fun handleMessage(from: GuiComponent<*>, message: Message) {
+        BUS.fire(MessageArriveEvent(thiz(), from, message))
+        onMessage(from, message)
+
+        if(message.rippleType != EnumRippleType.NONE) {
+            if(message.rippleType == EnumRippleType.UP || message.rippleType == EnumRippleType.ALL) {
+                parent?.let {
+                    if(it != from) {
+                        it.handleMessage(this, message)
+                    }
+                }
+            }
+            if(message.rippleType == EnumRippleType.DOWN || message.rippleType == EnumRippleType.ALL) {
+                children.forEach {
+                    if(it != from) {
+                        it.handleMessage(this, message)
+                    }
+                }
+            }
+        }
+    }
+
+    fun sendMessage(data: Any, ripple: EnumRippleType) {
+
+    }
 
     /**
      * Sets the value associated with the pair of keys [clazz] and [key]. The value must be a subclass of [clazz]
