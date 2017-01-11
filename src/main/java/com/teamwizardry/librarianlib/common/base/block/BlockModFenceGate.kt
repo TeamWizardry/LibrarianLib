@@ -15,9 +15,15 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.entity.Entity
 import net.minecraft.item.ItemBlock
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.EnumFacing.Axis.X
+import net.minecraft.util.EnumFacing.Axis.Z
+import net.minecraft.util.EnumFacing.AxisDirection.NEGATIVE
+import net.minecraft.util.EnumFacing.AxisDirection.POSITIVE
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.Explosion
+import net.minecraft.world.IBlockAccess
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -62,6 +68,19 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
     override val creativeTab: ModCreativeTab?
         get() = ModCreativeTab.defaultTabs[modId]
 
+
+    override fun getActualState(state: IBlockState, worldIn: IBlockAccess, pos: BlockPos): IBlockState {
+        val actual = super.getActualState(state, worldIn, pos)
+        if (actual.getValue(IN_WALL)) return actual
+
+        val axis = if (actual.getValue(FACING).axis == X) Z else X
+
+        if (worldIn.getBlockState(pos.offset(EnumFacing.getFacingFromAxis(NEGATIVE, axis))).block is BlockModWall ||
+                worldIn.getBlockState(pos.offset(EnumFacing.getFacingFromAxis(POSITIVE, axis))).block is BlockModWall)
+            return actual.withProperty(IN_WALL, true)
+        else
+            return actual
+    }
 
     override fun getMapColor(state: IBlockState) = parent.mapColor
     override fun getMaterial(state: IBlockState) = parent.material
