@@ -127,7 +127,7 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
                                                     "up" to "true"
                                             ),
                                             "apply" to obj(
-                                                    "model" to "${registryName}_wall_post"
+                                                    "model" to "${registryName}_post"
                                             )
                                     ),
                                     obj(
@@ -135,7 +135,7 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
                                                     "north" to "true"
                                             ),
                                             "apply" to obj(
-                                                    "model" to "${registryName}_wall_side",
+                                                    "model" to "${registryName}_side",
                                                     "uvlock" to true
                                             )
                                     ),
@@ -144,7 +144,7 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
                                                     "east" to "true"
                                             ),
                                             "apply" to obj(
-                                                    "model" to "${registryName}_wall_side",
+                                                    "model" to "${registryName}_side",
                                                     "y" to 90,
                                                     "uvlock" to true
                                             )
@@ -154,7 +154,7 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
                                                     "south" to "true"
                                             ),
                                             "apply" to obj(
-                                                    "model" to "${registryName}_wall_side",
+                                                    "model" to "${registryName}_side",
                                                     "y" to 180,
                                                     "uvlock" to true
                                             )
@@ -164,7 +164,7 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
                                                     "west" to "true"
                                             ),
                                             "apply" to obj(
-                                                    "model" to "${registryName}_wall_side",
+                                                    "model" to "${registryName}_side",
                                                     "y" to 270,
                                                     "uvlock" to true
                                             )
@@ -174,7 +174,7 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
                 }
             }.toTypedArray())
         }, {
-            mapOf(JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_wall_post")
+            mapOf(JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_post")
                     to json {
                 obj(
                         "parent" to "block/wall_post",
@@ -183,7 +183,7 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
                         )
                 )
             },
-            JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_wall_side")
+            JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_side")
                     to json {
                 obj(
                         "parent" to "block/wall_side",

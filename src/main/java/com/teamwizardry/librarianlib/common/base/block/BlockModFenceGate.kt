@@ -86,7 +86,7 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
                 val inWall = "in_wall=true" in it
                 val open = "open=true" in it
 
-                val modelType = "gate_${if (inWall) "wall" else "fence"}_${if (open) "open" else "closed"}"
+                val modelType = "${if (inWall) "wall" else "fence"}_${if (open) "open" else "closed"}"
                 json {
                     obj(
                             "model" to "${registryName}_$modelType",
@@ -97,25 +97,25 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
             }
         }, {
             mapOf(
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_gate_fence_closed")
+                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_fence_closed")
                             to json {
                         obj(
-                                "parent" to "block/fence_gate_closed",
+                                "parent" to "block/fence_closed",
                                 "textures" to obj(
                                         "texture" to name
                                 )
                         )
                     },
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_gate_fence_open")
+                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_fence_open")
                             to json {
                         obj(
-                                "parent" to "block/fence_gate_open",
+                                "parent" to "block/fence_open",
                                 "textures" to obj(
                                         "texture" to name
                                 )
                         )
                     },
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_gate_wall_closed")
+                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_wall_closed")
                             to json {
                         obj(
                                 "parent" to "block/fence_wall_closed",
@@ -124,7 +124,7 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
                                 )
                         )
                     },
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_gate_wall_open")
+                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_wall_open")
                             to json {
                         obj(
                                 "parent" to "block/fence_wall_open",
@@ -142,7 +142,7 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
         val item = itemForm as? IModItemProvider ?: return false
         ModelHandler.generateItemJson(item) {
             mapOf(JsonGenerationUtils.getPathForItemModel(item.providedItem)
-                    to JsonGenerationUtils.generateBaseItemModel(item.providedItem, "${name}_gate_fence_closed"))
+                    to JsonGenerationUtils.generateBaseItemModel(item.providedItem, "${name}_fence_closed"))
         }
         return true
     }
