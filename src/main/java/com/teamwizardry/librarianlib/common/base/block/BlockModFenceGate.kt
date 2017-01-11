@@ -100,7 +100,7 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
                     JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_fence_closed")
                             to json {
                         obj(
-                                "parent" to "block/fence_closed",
+                                "parent" to "block/fence_gate_closed",
                                 "textures" to obj(
                                         "texture" to name
                                 )
@@ -109,7 +109,7 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
                     JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_fence_open")
                             to json {
                         obj(
-                                "parent" to "block/fence_open",
+                                "parent" to "block/fence_gate_open",
                                 "textures" to obj(
                                         "texture" to name
                                 )
@@ -118,7 +118,7 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
                     JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_wall_closed")
                             to json {
                         obj(
-                                "parent" to "block/fence_wall_closed",
+                                "parent" to "block/wall_gate_closed",
                                 "textures" to obj(
                                         "texture" to name
                                 )
@@ -127,7 +127,7 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
                     JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_wall_open")
                             to json {
                         obj(
-                                "parent" to "block/fence_wall_open",
+                                "parent" to "block/wall_gate_open",
                                 "textures" to obj(
                                         "texture" to name
                                 )
