@@ -149,7 +149,7 @@ open class BlockModFence(name: String, val parent: IBlockState) : BlockFence(par
     }
 
     override fun generateMissingItem(variant: String): Boolean {
-        val name = ResourceLocation(parentName.resourceDomain, "block/${parentName.resourcePath}").toString()
+        val name = ResourceLocation(parentName.resourceDomain, "blocks/${parentName.resourcePath}").toString()
         val item = itemForm as? IModItemProvider ?: return false
         ModelHandler.generateItemJson(item) {
             mapOf(JsonGenerationUtils.getPathForItemModel(item.providedItem)
