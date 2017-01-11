@@ -59,7 +59,7 @@ open class BlockModStairs(name: String, parent: IBlockState) : BlockStairs(paren
 
     override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
         val name = ResourceLocation(parentName.resourceDomain, "blocks/${parentName.resourcePath}").toString()
-        val simpleName = parentName.resourcePath
+        val simpleName = registryName.resourcePath
 
         ModelHandler.generateBlockJson(this, {
             JsonGenerationUtils.generateBlockStates(this, mapper) {
@@ -118,9 +118,9 @@ open class BlockModStairs(name: String, parent: IBlockState) : BlockStairs(paren
 
     override fun generateMissingItem(variant: String): Boolean {
         val item = itemForm as? IModItemProvider ?: return false
-        val name = ResourceLocation(parentName.resourceDomain, "block/${parentName.resourcePath}").toString()
         ModelHandler.generateItemJson(item) {
-            mapOf(JsonGenerationUtils.getPathForItemModel(item as Item) to json { obj("parent" to name + "_stairs") })
+            mapOf(JsonGenerationUtils.getPathForItemModel(item as Item)
+                    to JsonGenerationUtils.generateBaseItemModel(item, "${item.registryName.resourcePath}_stairs"))
         }
         return true
     }

@@ -115,7 +115,7 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
 
     override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
         val name = ResourceLocation(parentName.resourceDomain, "blocks/${parentName.resourcePath}").toString()
-        val simpleName = parentName.resourcePath
+        val simpleName = registryName.resourcePath
 
         ModelHandler.generateBlockJson(this, {
             mapOf(*JsonGenerationUtils.getPathsForBlockstate(this, mapper).map {
