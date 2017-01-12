@@ -10,6 +10,7 @@ import com.teamwizardry.librarianlib.common.util.vec
  */
 class ComponentSlot(val slot: SlotBase, x: Int, y: Int) : GuiComponent<ComponentSlot>(x, y) {
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
+        slot.visible = true
     }
 
     override fun onTick() {

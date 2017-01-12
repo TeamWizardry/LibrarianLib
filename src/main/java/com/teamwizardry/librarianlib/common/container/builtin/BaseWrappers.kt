@@ -3,17 +3,21 @@ package com.teamwizardry.librarianlib.common.container.builtin
 import com.teamwizardry.librarianlib.common.container.InventoryWrapper
 import net.minecraft.entity.player.InventoryPlayer
 import net.minecraft.inventory.IInventory
+import net.minecraftforge.items.IItemHandler
+import net.minecraftforge.items.wrapper.InvWrapper
 
 /**
  * Created by TheCodeWarrior
  */
 object BaseWrappers {
 
-    fun player(inv: InventoryPlayer) = InventoryWrapperPlayer(inv)
+    fun player(inv: InventoryPlayer) = InventoryWrapperPlayer(InvWrapper(inv))
 
-    fun inventory(inv: IInventory) = InventoryWrapper(inv)
+    fun inventory(inv: IInventory) = InventoryWrapper(InvWrapper(inv))
 
-    class InventoryWrapperPlayer(inv: InventoryPlayer) : InventoryWrapper<InventoryPlayer>(inv) {
+    fun stacks(inv: IItemHandler) = InventoryWrapper(inv)
+
+    class InventoryWrapperPlayer(inv: IItemHandler) : InventoryWrapper(inv) {
 
         val armor = slots[36..39]
         val head = slots[39]

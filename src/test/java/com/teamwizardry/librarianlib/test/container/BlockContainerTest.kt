@@ -32,4 +32,4 @@ class BlockContainerTest : BlockMod("container", Material.ROCK), ITileEntityProv
 
 
 @TileRegister("container")
-class TEContainer : TileModInventory(23)
+class TEContainer : TileModInventory(27 + 9)

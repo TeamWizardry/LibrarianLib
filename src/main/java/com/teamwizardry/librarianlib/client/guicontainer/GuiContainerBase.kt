@@ -5,12 +5,10 @@ import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.common.container.ContainerBase
 import com.teamwizardry.librarianlib.common.container.internal.ContainerImpl
-import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import com.teamwizardry.librarianlib.common.util.vec
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.inventory.Slot
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.client.config.GuiUtils
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -78,11 +76,10 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
     }
 
 
-    override fun drawDefaultBackground() {
-
-    }
+    override fun drawDefaultBackground() { /* NOOP */ }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        container.allSlots.forEach { it.visible = false }
         super.drawDefaultBackground()
         GlStateManager.pushAttrib()
         GlStateManager.enableBlend()
@@ -98,6 +95,8 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
         GlStateManager.popAttrib()
+
+
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
@@ -157,5 +156,3 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         }
     }
 }
-
-var GuiContainer.theSlot by MethodHandleHelper.delegateForReadWrite<GuiContainer, Slot?>(GuiContainer::class.java, "theSlot", "field_147006_u")

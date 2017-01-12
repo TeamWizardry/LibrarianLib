@@ -1,13 +1,13 @@
 package com.teamwizardry.librarianlib.common.container
 
 import com.teamwizardry.librarianlib.common.container.internal.SlotBase
-import net.minecraft.inventory.IInventory
+import net.minecraftforge.items.IItemHandler
 
 /**
  * Created by TheCodeWarrior
  */
-open class InventoryWrapper<T : IInventory>(val inventory: T) {
-    val slotArray = (0..inventory.sizeInventory-1).map { SlotBase(inventory, it) }
+open class InventoryWrapper(val inventory: IItemHandler) {
+    val slotArray = (0..inventory.slots-1).map { SlotBase(inventory, it) }
     val slots = SlotManager(slotArray)
     val types = TypeManager(slotArray)
 

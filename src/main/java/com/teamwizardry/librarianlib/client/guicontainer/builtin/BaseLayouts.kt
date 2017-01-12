@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.client.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.client.guicontainer.ComponentSlot
 import com.teamwizardry.librarianlib.common.container.InventoryWrapper
 import com.teamwizardry.librarianlib.common.container.builtin.BaseWrappers
+import com.teamwizardry.librarianlib.common.container.internal.SlotBase
 
 /**
  * Created by TheCodeWarrior
@@ -12,10 +13,12 @@ object BaseLayouts {
 
     fun player(inv: BaseWrappers.InventoryWrapperPlayer) = PlayerLayout(inv)
 
-    fun grid(inv: InventoryWrapper<*>, rowLength: Int) = GridLayout(inv, rowLength)
+    fun grid(inv: InventoryWrapper, rowLength: Int) = GridLayout(inv.slotArray, rowLength)
 
-    class GridLayout(inv: InventoryWrapper<*>, rowLength: Int) {
-        val rowCount = (inv.slotArray.size+rowLength-1)/rowLength
+    fun grid(inv: List<SlotBase>, rowLength: Int) = GridLayout(inv, rowLength)
+
+    class GridLayout(inv: List<SlotBase>, rowLength: Int) {
+        val rowCount = (inv.size+rowLength-1)/rowLength
         val root = ComponentVoid(0,0)
         val rows = Array(rowCount) {
             val row = ComponentVoid(0, it*18)
@@ -23,10 +26,10 @@ object BaseLayouts {
             row
         }
         val slots = Array(rowCount) { row ->
-            Array(if(row == rowCount-1) inv.slotArray.size - rowLength*row else rowLength) { column ->
+            Array(if(row == rowCount-1) inv.size - rowLength*row else rowLength) { column ->
                 val index = row * rowLength + column
 
-                val slot = ComponentSlot(inv.slotArray[index], column*18, 0)
+                val slot = ComponentSlot(inv[index], column*18, 0)
                 rows[row].add(slot)
 
                 slot
