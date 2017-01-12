@@ -5,6 +5,8 @@ import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.common.container.ContainerBase
 import com.teamwizardry.librarianlib.common.container.internal.ContainerImpl
+import com.teamwizardry.librarianlib.common.network.PacketHandler
+import com.teamwizardry.librarianlib.common.network.PacketSyncSlotVisibility
 import com.teamwizardry.librarianlib.common.util.vec
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiContainer
@@ -79,7 +81,7 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
     override fun drawDefaultBackground() { /* NOOP */ }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        container.allSlots.forEach { it.visible = false }
+        container.allSlots.forEach { it.lastVisible = it.visible; it.visible = false }
         super.drawDefaultBackground()
         GlStateManager.pushAttrib()
         GlStateManager.enableBlend()
@@ -96,6 +98,9 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         GlStateManager.enableTexture2D()
         GlStateManager.popAttrib()
 
+        if(container.allSlots.any { it.lastVisible != it.visible }) {
+            PacketHandler.NETWORK.sendToServer(PacketSyncSlotVisibility().apply { visibility = container.allSlots.map { it.visible }.toBooleanArray() })
+        }
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

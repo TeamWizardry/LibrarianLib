@@ -12,6 +12,7 @@ import net.minecraftforge.items.SlotItemHandler
 class SlotBase(handler: IItemHandler, index: Int) : SlotItemHandler(handler, index, 0, 0) {
     var type = SlotType.BASIC
     var visible = true
+    var lastVisible = visible
 
     override fun getStack(): ItemStack? {
         return if(visible) super.getStack() else null

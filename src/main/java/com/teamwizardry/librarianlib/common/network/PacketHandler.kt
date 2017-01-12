@@ -19,6 +19,7 @@ object PacketHandler {
 
     init {
         register(PacketSynchronization::class.java, Side.CLIENT)
+        register(PacketSyncSlotVisibility::class.java, Side.SERVER)
     }
 
     @JvmStatic

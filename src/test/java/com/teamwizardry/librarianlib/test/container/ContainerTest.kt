@@ -12,6 +12,7 @@ import com.teamwizardry.librarianlib.common.container.InventoryWrapper
 import com.teamwizardry.librarianlib.common.container.builtin.BaseWrappers
 import com.teamwizardry.librarianlib.common.util.vec
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.init.Items
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
 
@@ -26,6 +27,15 @@ class ContainerTest(player: EntityPlayer, tile: TEContainer) : ContainerBase(pla
     init {
         addSlots(invPlayer)
         addSlots(invBlock)
+
+        transferRule().from(invPlayer.main).from(invPlayer.hotbar).deposit(invPlayer.head).filter {
+            it.stack?.item == Items.DIAMOND_HELMET
+        }
+
+        transferRule().from(invPlayer.main).deposit(invBlock.main)
+        transferRule().from(invPlayer.hotbar).deposit(invBlock.small)
+        transferRule().from(invBlock.main).deposit(invPlayer.main)
+        transferRule().from(invBlock.small).deposit(invPlayer.hotbar)
     }
 
     companion object {
@@ -81,6 +91,27 @@ class GuiContainerTest(container: ContainerTest) : GuiContainerBase(container, 1
         }
 
         b.add(button)
+        // CIRCLE!!!
+        /*
+        grid.rows[2].pos += vec(18*4.5, 40)
+
+        var a = 0.0
+        val aFrame = (2*Math.PI)/360
+        val aPer = (2*Math.PI)/9
+        val radius = 30
+
+        val row = grid.slots[2]
+
+        grid.root.BUS.hook(GuiComponent.ComponentTickEvent::class.java) {
+            a += aFrame
+
+            row.forEachIndexed { i, slot ->
+                val s = Math.sin(a + aPer*i)
+                val c = Math.cos(a + aPer*i)
+                slot.pos = vec(c*radius, s*radius) - vec(8, 8)
+            }
+        }
+        */
     }
 }
 
