@@ -5,8 +5,10 @@ package com.teamwizardry.librarianlib.common.util
 import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import io.netty.buffer.ByteBuf
+import net.minecraft.block.Block
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.*
 import net.minecraft.util.EnumFacing
@@ -24,6 +26,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider
 import net.minecraftforge.fml.common.network.ByteBufUtils
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
+
 
 
 /**
@@ -46,7 +49,7 @@ fun String.canLocalize(): Boolean {
 }
 
 fun <K, V> MutableMap<K, V>.withRealDefault(default: (K) -> V): DefaultedMutableMap<K, V> {
-    return when (this) {
+    return when(this) {
         is RealDefaultImpl -> RealDefaultImpl(this.map, default)
         else -> RealDefaultImpl(this, default)
     }
@@ -54,10 +57,9 @@ fun <K, V> MutableMap<K, V>.withRealDefault(default: (K) -> V): DefaultedMutable
 
 interface DefaultedMutableMap<K, V> : MutableMap<K, V> {
     override fun get(key: K): V
-    val map: MutableMap<K, V>
 }
 
-private class RealDefaultImpl<K, V>(override val map: MutableMap<K, V>, val default: (K) -> V) : DefaultedMutableMap<K, V>, MutableMap<K, V> by map {
+private class RealDefaultImpl<K, V>(val map: MutableMap<K, V>, val default: (K) -> V) : DefaultedMutableMap<K, V>, MutableMap<K, V> by map {
     override fun get(key: K): V {
         return map.getOrPut(key, { default(key) })
     }
@@ -82,11 +84,6 @@ operator fun Vec3d.unaryMinus(): Vec3d = this * -1.0
 infix fun Vec3d.dot(other: Vec3d) = this.dotProduct(other)
 
 infix fun Vec3d.cross(other: Vec3d) = this.crossProduct(other)
-
-fun Vec3d.projectOn(other: Vec3d): Vec3d {
-    val normal = this.normalize()
-    return normal * (normal dot other)
-}
 
 fun Vec3d.withX(other: Double) = Vec3d(other, this.yCoord, this.zCoord)
 fun Vec3d.withY(other: Double) = Vec3d(this.xCoord, other, this.zCoord)
@@ -356,11 +353,28 @@ fun EntityPlayer.sendMessage(str: String) {
 operator fun CharSequence.times(n: Int) = this.repeat(n)
 operator fun Int.times(n: CharSequence) = n.repeat(this)
 
-fun <C : ICapabilityProvider, T, R> C.ifCap(capability: Capability<T>?, facing: EnumFacing?, callback: T.(C) -> R): R? {
-    if (capability != null && this.hasCapability(capability, facing))
-        return this.getCapability(capability, facing)!!.callback(this)
+// ICapabilityProvider ==============================================================================================================
+fun <T, R> ICapabilityProvider.ifCap(capability: Capability<T>, facing: EnumFacing?, callback: (T) -> R): R? {
+    if(this.hasCapability(capability, facing))
+        return callback(this.getCapability(capability, facing)!!)
     return null
 }
+
+// ItemStack ===========================================================================================================
+
+var ItemStack.size: Int // extension for 1.10 -> 1.11 migration help, will be changed in 1.11 to new system
+    get() = stackSize
+    set(value) {
+        stackSize = value
+    }
+
+// Item ===========================================================================================================
+
+fun Item.toStack(amount: Int = 0, meta: Int = 0) = ItemStack(this, amount, meta)
+
+// Block ===========================================================================================================
+
+fun Block.toStack(amount: Int = 0, meta: Int = 0) = ItemStack(this, amount, meta)
 
 // Numbers =============================================================================================================
 
@@ -375,4 +389,3 @@ fun Double.clamp(min: Double, max: Double): Double = if (this < min) min else if
 // IBlockAccess ========================================================================================================
 
 fun IBlockAccess.getTileEntitySafely(pos: BlockPos) = if (this is ChunkCache) this.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK) else this.getTileEntity(pos)
-
