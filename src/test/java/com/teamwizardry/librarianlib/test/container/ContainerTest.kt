@@ -10,6 +10,7 @@ import com.teamwizardry.librarianlib.common.container.ContainerBase
 import com.teamwizardry.librarianlib.common.container.GuiHandler
 import com.teamwizardry.librarianlib.common.container.InventoryWrapper
 import com.teamwizardry.librarianlib.common.container.builtin.BaseWrappers
+import com.teamwizardry.librarianlib.common.container.builtin.SlotTypeGhost
 import com.teamwizardry.librarianlib.common.util.vec
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Items
@@ -21,7 +22,7 @@ import java.awt.Color
  */
 class ContainerTest(player: EntityPlayer, tile: TEContainer) : ContainerBase(player) {
 
-    val invPlayer = BaseWrappers.player(player.inventory)
+    val invPlayer = BaseWrappers.player(player)
     val invBlock = TestWrapper(tile)
 
     init {
@@ -50,6 +51,10 @@ class ContainerTest(player: EntityPlayer, tile: TEContainer) : ContainerBase(pla
 class TestWrapper(te: TEContainer) : InventoryWrapper(te) {
     val main = slots[0..26]
     val small = slots[27..35]
+
+    init {
+        small.forEach { it.type = SlotTypeGhost(32, true)}
+    }
 }
 
 class GuiContainerTest(container: ContainerTest) : GuiContainerBase(container, 197, 166) {

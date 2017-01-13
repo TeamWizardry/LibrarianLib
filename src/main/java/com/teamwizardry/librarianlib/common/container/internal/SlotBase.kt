@@ -1,7 +1,9 @@
 package com.teamwizardry.librarianlib.common.container.internal
 
+import com.teamwizardry.librarianlib.common.container.ContainerBase
 import com.teamwizardry.librarianlib.common.container.SlotType
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.inventory.ClickType
 import net.minecraft.item.ItemStack
 import net.minecraftforge.items.IItemHandler
 import net.minecraftforge.items.SlotItemHandler
@@ -19,7 +21,7 @@ class SlotBase(handler: IItemHandler, index: Int) : SlotItemHandler(handler, ind
     }
 
     override fun canTakeStack(playerIn: EntityPlayer?): Boolean {
-        return if(visible) super.canTakeStack(playerIn) else false
+        return if(visible) type.canTake(this, playerIn, stack) && super.canTakeStack(playerIn) else false
     }
 
     override fun canBeHovered(): Boolean {
@@ -27,6 +29,14 @@ class SlotBase(handler: IItemHandler, index: Int) : SlotItemHandler(handler, ind
     }
 
     override fun isItemValid(stack: ItemStack?): Boolean {
-        return if(visible) super.isItemValid(stack) else false
+        return if(visible) type.isValid(this, stack) && super.isItemValid(stack) else false
+    }
+
+    override fun getSlotStackLimit(): Int {
+        return type.stackLimit(this, stack)
+    }
+
+    fun  handleClick(container: ContainerBase, dragType: Int, clickType: ClickType?, player: EntityPlayer): Pair<Boolean, ItemStack?> {
+        return type.handleClick(this, container, dragType, clickType, player)
     }
 }

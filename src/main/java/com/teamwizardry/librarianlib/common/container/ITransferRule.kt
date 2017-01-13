@@ -27,73 +27,51 @@ interface ITransferRule {
          *
          * If the input and output itemstacks succeed on an identity equality then none of the stack fit.
          */
-        fun mergeIntoRegion(stack: ItemStack, region: List<SlotBase>): ItemStack? {
+        fun mergeIntoRegion(stack: ItemStack, region: List<SlotBase>): AutoTransferResult {
             var runningStack = stack.copy()
-            var insertedAny = false
+
+            var foundSpot = false
+            var shouldContinue = true
 
             if (stack.isStackable) { // no sense trying to stack similar items if the stack can't stack.
                 // try to merge stack into slots that already have items (don't fill up empty slots unless you need to)
                 region.forEach { slot ->
-                    if (runningStack == null)
+                    if(!shouldContinue)
                         return@forEach
-                    val slotStack = slot.stack ?: return@forEach
 
-                    if(areItemStacksEqual(runningStack, slotStack)) {
-                        val combinedSize = runningStack.stackSize + slotStack.stackSize
-                        val maxStackSize = Math.min(slot.getItemStackLimit(runningStack), runningStack.maxStackSize)
+                    val result = slot.type.autoTransferInto(slot, runningStack)
 
-                        if(combinedSize <= maxStackSize) {
-                            runningStack = null
-                            val newStack = slotStack.copy()
-                            newStack.stackSize = combinedSize
-                            slot.putStack(newStack)
-                            insertedAny = true
-                        } else {
-                            runningStack.stackSize -= maxStackSize - slotStack.stackSize
-                            val newStack = slotStack.copy()
-                            newStack.stackSize = maxStackSize
-                            slot.putStack(newStack)
-
-                            insertedAny = true
-                        }
-                    }
+                    runningStack = result.remainingStack
+                    foundSpot = foundSpot || result.foundSpot
+                    shouldContinue = shouldContinue && result.shouldContinue
                 }
             }
 
             if(runningStack != null) {
                 region.forEach { slot ->
-                    if(runningStack == null)
-                        return@forEach
-                    val slotStack = slot.stack
-                    if(slotStack != null)
+                    if(!shouldContinue)
                         return@forEach
 
-                    val maxStackSize = Math.min(slot.getItemStackLimit(runningStack), runningStack.maxStackSize)
+                    val result = slot.type.autoTransferInto(slot, runningStack)
 
-                    if(runningStack.stackSize <= maxStackSize) {
-                        slot.putStack(runningStack.copy())
-                        runningStack = null
-                        insertedAny = true
-                    } else {
-                        val newStack = runningStack.copy()
-                        newStack.stackSize = maxStackSize
-                        slot.putStack(newStack)
-
-                        runningStack.stackSize -= maxStackSize
-                        insertedAny = true
-                    }
+                    runningStack = result.remainingStack
+                    foundSpot = foundSpot || result.foundSpot
+                    shouldContinue = shouldContinue && result.shouldContinue
                 }
             }
 
-            if(insertedAny)
-                return runningStack
-            else
-                return stack
+            return AutoTransferResult(runningStack, foundSpot, !foundSpot)
         }
 
 
-        private fun areItemStacksEqual(stackA: ItemStack, stackB: ItemStack): Boolean {
+        fun areItemStacksEqual(stackA: ItemStack?, stackB: ItemStack?): Boolean {
+            if(stackA == null || stackB == null) {
+                return stackA === stackB
+            }
             return stackB.item === stackA.item && (!stackA.hasSubtypes || stackA.metadata == stackB.metadata) && ItemStack.areItemStackTagsEqual(stackA, stackB)
         }
+
     }
+
+    data class AutoTransferResult(val remainingStack: ItemStack?, val foundSpot: Boolean, val shouldContinue: Boolean = remainingStack != null)
 }

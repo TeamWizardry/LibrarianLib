@@ -7,10 +7,10 @@ import net.minecraft.item.ItemStack
 /**
  * Created by TheCodeWarrior
  */
-class BasicTransferRule : ITransferRule {
-    private val fromSet = mutableSetOf<SlotBase>()
-    private var filter: (SlotBase) -> Boolean = { true }
-    private val targets = mutableListOf<List<SlotBase>>()
+open class BasicTransferRule : ITransferRule {
+    protected val fromSet = mutableSetOf<SlotBase>()
+    protected var filter: (SlotBase) -> Boolean = { true }
+    protected val targets = mutableListOf<List<SlotBase>>()
 
     fun from(slots: List<SlotBase>): BasicTransferRule {
         fromSet.addAll(slots)
@@ -43,8 +43,8 @@ class BasicTransferRule : ITransferRule {
     override fun putStack(stack: ItemStack): ItemStack? {
         for(target in targets) {
             val result = ITransferRule.mergeIntoRegion(stack, target.filter { it.visible })
-            if(result !== stack)
-                return result
+            if(result.foundSpot)
+                return result.remainingStack
         }
         return stack
     }

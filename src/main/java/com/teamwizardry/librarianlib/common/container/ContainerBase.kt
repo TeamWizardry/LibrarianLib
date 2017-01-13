@@ -34,7 +34,7 @@ abstract class ContainerBase(val player: EntityPlayer) {
                 val result = rule.putStack(stack)
                 if(result !== stack) {
                     slot.putStack(result)
-                    return result
+                    return if(result === stack) result else null
                 }
             }
         }
