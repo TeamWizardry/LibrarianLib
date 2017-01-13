@@ -13,7 +13,7 @@ import net.minecraft.item.ItemStack
 @SaveInPlace
 abstract class ContainerBase(val player: EntityPlayer) {
 
-    lateinit var impl: ContainerImpl // hopefully people don't do anything screwy.
+    lateinit var impl: ContainerImpl // hopefully people don't do anything screwy, cause lateinit would cause problems.
 
     protected fun addSlots(wrapper: InventoryWrapper) {
         wrapper.slotArray.forEach {
@@ -21,6 +21,9 @@ abstract class ContainerBase(val player: EntityPlayer) {
         }
     }
 
+    /**
+     * Create a new basic transfer rule
+     */
     fun transferRule(): BasicTransferRule {
         val rule = BasicTransferRule()
         transferRules.add(rule)

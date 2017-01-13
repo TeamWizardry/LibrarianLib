@@ -8,24 +8,20 @@ import net.minecraft.item.ItemStack
  */
 interface ITransferRule {
     /**
-     * Return true if the associated target should be applied for the passed slot
+     * Return true if the associated targets should be applied for the passed slot
      */
     fun shouldApply(slot: SlotBase): Boolean
 
     /**
      * Transfer stack from [from] to this target. Return the remainder or null if the entire stack fit. Do not modify
      * passed stack.
-     *
-     * If passed and returned stacks are equal by identity the stack couldn't fit in the region.
      */
     fun putStack(stack: ItemStack): ItemStack?
 
     companion object {
 
         /**
-         * Attempt to merge the [stack] into the [region]. Returns the remainder or null if the entire stack fit.
-         *
-         * If the input and output itemstacks succeed on an identity equality then none of the stack fit.
+         * Attempt to merge the [stack] into the [region].
          */
         fun mergeIntoRegion(stack: ItemStack, region: List<SlotBase>): AutoTransferResult {
             var runningStack = stack.copy()
@@ -73,5 +69,17 @@ interface ITransferRule {
 
     }
 
-    data class AutoTransferResult(val remainingStack: ItemStack?, val foundSpot: Boolean, val shouldContinue: Boolean = remainingStack != null)
+    data class AutoTransferResult(
+            /**
+             * The stack remaining after the transfer
+             */
+            val remainingStack: ItemStack?,
+            /**
+             * whether the item was added to the slot, used to know if the next slot region should be attempted
+             */
+            val foundSpot: Boolean,
+            /**
+             * whether the rest of the stack should be tried in the other slots
+             */
+            val shouldContinue: Boolean = remainingStack != null)
 }

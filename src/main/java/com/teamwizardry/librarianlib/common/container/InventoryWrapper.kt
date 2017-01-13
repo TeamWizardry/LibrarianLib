@@ -1,10 +1,11 @@
 package com.teamwizardry.librarianlib.common.container
 
+import com.teamwizardry.librarianlib.common.container.builtin.BaseWrappers
 import com.teamwizardry.librarianlib.common.container.internal.SlotBase
 import net.minecraftforge.items.IItemHandler
 
 /**
- * Created by TheCodeWarrior
+ * Used to provide a convenient slot meaning association. See [BaseWrappers] for examples.
  */
 open class InventoryWrapper(val inventory: IItemHandler) {
     val slotArray = (0..inventory.slots-1).map { SlotBase(inventory, it) }

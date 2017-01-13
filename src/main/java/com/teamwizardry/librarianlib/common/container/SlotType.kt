@@ -7,16 +7,13 @@ import net.minecraft.item.ItemStack
 
 open class SlotType {
 
-//    open fun onChange(player: EntityPlayer, from: ItemStack?, to: ItemStack?) {}
-//    open fun tryPickUp(player: EntityPlayer, )
-
-//    open fun onSlotChange(player: EntityPlayer?, from: ItemStack?, to: ItemStack?) {}
-//    open fun onPickUp(player: EntityPlayer, stack: ItemStack) {}
-//
     open fun isValid(slot: SlotBase, stack: ItemStack?): Boolean { return true }
     open fun stackLimit(slot: SlotBase, stack: ItemStack?): Int { return 64 }
     open fun canTake(slot: SlotBase, player: EntityPlayer?, stack: ItemStack?): Boolean { return true }
 
+    /**
+     * try to shift click the item into this slot
+     */
     open fun autoTransferInto(slot: SlotBase, stack: ItemStack): ITransferRule.AutoTransferResult {
         if(!slot.isItemValid(stack))
             return ITransferRule.AutoTransferResult(stack,  false)
@@ -57,15 +54,17 @@ open class SlotType {
 
         return ITransferRule.AutoTransferResult(stack, false)
     }
-//    open fun canHover(): Boolean { return true }
-
-
 
     companion object {
         @JvmStatic
         val BASIC = SlotType()
     }
 
+    /**
+     * handle a click on the slot, the first value in the returned pair is whether the click had custom handling, and the
+     * second is the value to return from the container slot click method. If the click was handled the default slot click
+     * handling is not run.
+     */
     open fun handleClick(slot: SlotBase, container: ContainerBase, dragType: Int, clickType: ClickType?, player: EntityPlayer): Pair<Boolean, ItemStack?> {
         return false to null
     }

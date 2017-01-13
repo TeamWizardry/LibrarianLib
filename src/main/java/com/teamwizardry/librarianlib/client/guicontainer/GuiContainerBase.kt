@@ -102,6 +102,8 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
             PacketHandler.NETWORK.sendToServer(PacketSyncSlotVisibility().apply { visibility = container.allSlots.map { it.visible }.toBooleanArray() })
         }
 
+        container.allSlots.filter { !it.visible }.forEach { it.xPos = -1000; it.yPos = -1000 }
+
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
