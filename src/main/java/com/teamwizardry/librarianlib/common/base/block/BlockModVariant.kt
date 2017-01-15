@@ -57,7 +57,7 @@ open class BlockModVariant(name: String, materialIn: Material, color: MapColor, 
                 json { obj("model" to registryName.resourceDomain + ":" + it.replace("variant=", "")) }
             }
         }, {
-            mapOf(*variants.map { JsonGenerationUtils.getPathForBlockModel(this, it) to JsonGenerationUtils.generateBaseBlockModel(this, it) }.toTypedArray())
+            variants.associate { JsonGenerationUtils.getPathForBlockModel(this, it) to JsonGenerationUtils.generateBaseBlockModel(this, it) }
         })
         return true
     }

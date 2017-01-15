@@ -102,19 +102,18 @@ object JsonGenerationUtils {
     inline fun generateBlockStates(block: Block, noinline stateMapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?, makeVariant: (variant: String) -> JsonElement): Map<String, JsonElement> {
         val mapped = (stateMapper ?: { DefaultStateMapper().putStateModelLocations(it) })(block)
         val files = getPathsForBlockstate(block, stateMapper)
-        return mapOf(*(files.map { file ->
+        return files.associate { file ->
             val keypairs = mapped.filter { keypair ->
                 getPathForMRL(keypair.value) == file
             }.toList()
             file to json {
                 obj(
-                        "variants" to mapOf(*Array(keypairs.size) {
-                            val variant = keypairs[it].second.variant
+                        "variants" to keypairs.associate {
+                            val variant = it.second.variant
                             variant to makeVariant(variant)
                         })
-                )
             }
-        }.toTypedArray()))
+        }
     }
 
 }

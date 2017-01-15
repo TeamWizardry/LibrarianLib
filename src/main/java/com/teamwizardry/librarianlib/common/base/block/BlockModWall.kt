@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.client.core.JsonGenerationUtils
 import com.teamwizardry.librarianlib.client.core.ModelHandler
 import com.teamwizardry.librarianlib.common.base.IModelGenerator
 import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
+import com.teamwizardry.librarianlib.common.util.associateInPlace
 import com.teamwizardry.librarianlib.common.util.builders.json
 import net.minecraft.block.Block
 import net.minecraft.block.BlockFenceGate
@@ -118,8 +119,8 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
         val simpleName = registryName.resourcePath
 
         ModelHandler.generateBlockJson(this, {
-            mapOf(*JsonGenerationUtils.getPathsForBlockstate(this, mapper).map {
-                it to json {
+            JsonGenerationUtils.getPathsForBlockstate(this, mapper).associateInPlace {
+                json {
                     obj(
                             "multipart" to array(
                                     obj(
@@ -172,7 +173,7 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
                             )
                     )
                 }
-            }.toTypedArray())
+            }
         }, {
             mapOf(JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_post")
                     to json {

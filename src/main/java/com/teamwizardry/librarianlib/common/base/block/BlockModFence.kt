@@ -73,7 +73,7 @@ open class BlockModFence(name: String, val parent: IBlockState) : BlockFence(par
         val simpleName = registryName.resourcePath
 
         ModelHandler.generateBlockJson(this, {
-            mapOf(*JsonGenerationUtils.getPathsForBlockstate(this, mapper).map {
+            JsonGenerationUtils.getPathsForBlockstate(this, mapper).associate {
                 it to json {
                     obj(
                             "multipart" to array(
@@ -124,7 +124,7 @@ open class BlockModFence(name: String, val parent: IBlockState) : BlockFence(par
                             )
                     )
                 }
-            }.toTypedArray())
+            }
         }, {
             mapOf(JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_post")
                     to json {

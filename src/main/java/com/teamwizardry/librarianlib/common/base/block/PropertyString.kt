@@ -17,8 +17,8 @@ open class PropertyString(name: String, open val values: SortedSet<String>) : Pr
             throw IllegalArgumentException("Values are empty!")
     }
 
-    private val indexToValues by lazy { mapOf(*values.mapIndexed { i, s -> i to s }.toTypedArray()) }
-    private val valuesToIndex by lazy { mapOf(*values.mapIndexed { i, s -> s to i }.toTypedArray()) }
+    private val indexToValues by lazy { values.withIndex().associate { it.index to it.value } }
+    private val valuesToIndex by lazy { values.withIndex().associate { it.value to it.index } }
 
     override fun parseValue(value: String): Optional<String> = if (value in values) Optional.of(value) else Optional.absent()
     override fun getName(value: String) = value

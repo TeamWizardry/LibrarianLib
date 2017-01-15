@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.client.core.JsonGenerationUtils
 import com.teamwizardry.librarianlib.client.core.ModelHandler
 import com.teamwizardry.librarianlib.common.base.IModelGenerator
 import com.teamwizardry.librarianlib.common.util.builders.json
+import com.teamwizardry.librarianlib.common.util.flatAssociate
 import net.minecraft.block.Block
 import net.minecraft.block.BlockLog
 import net.minecraft.block.material.Material
@@ -112,7 +113,7 @@ open class BlockModPillar(name: String, material: Material, vararg variants: Str
                 }
             }
         }, {
-            mapOf(*variants.flatMap {
+            variants.flatAssociate {
                 listOf(
                         JsonGenerationUtils.getPathForBlockModel(this)
                                 to json {
@@ -126,7 +127,7 @@ open class BlockModPillar(name: String, material: Material, vararg variants: Str
                         },
                         JsonGenerationUtils.getPathForBlockModel(this, "${it}_$postFix")
                                 to JsonGenerationUtils.generateBaseBlockModel(this, "${it}_$postFix"))
-            }.toTypedArray())
+            }
         })
         return true
     }
