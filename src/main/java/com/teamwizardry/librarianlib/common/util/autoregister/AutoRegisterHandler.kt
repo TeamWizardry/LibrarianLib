@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.common.util.autoregister
 
-import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
+import com.teamwizardry.librarianlib.common.core.OwnershipHandler
 import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
 import com.teamwizardry.librarianlib.common.util.times
 import mcmultipart.multipart.IMultipart
@@ -17,42 +17,14 @@ import net.minecraftforge.fml.common.registry.GameRegistry
  * Created by TheCodeWarrior
  */
 object AutoRegisterHandler {
-    private val prefixes = mutableMapOf<String, String>()
-
-    private fun generatePrefixes() {
-        Loader.instance().activeModList
-                .flatMap { it.ownedPackages.map { pack -> pack to it.modId } }
-                .forEach { prefixes.put(it.first, it.second) }
-
-        if (LibrarianLib.DEV_ENVIRONMENT) {
-            val pad = " " * LibrarianLib.MODID.length
-            LibrarianLog.info("${LibrarianLib.MODID} | Prefixes: ")
-            for (mod in Loader.instance().activeModList) if (mod.ownedPackages.isNotEmpty()) {
-                LibrarianLog.info("$pad | *** Owned by `${mod.modId}` ***")
-                for (pack in mod.ownedPackages.toSet())
-                    LibrarianLog.info("$pad | | $pack")
-            }
-        }
-    }
-
-    private fun getModid(clazz: Class<*>): String? {
-        val name = clazz.canonicalName
-        prefixes.forEach {
-            if (name.startsWith(it.key))
-                return it.value
-        }
-        return null
-    }
 
     fun handle(e: FMLPreInitializationEvent) {
-        generatePrefixes()
-
         val table = e.asmData
         val errors = mutableMapOf<String, MutableList<Class<*>>>()
 
         getAnnotatedBy(TileRegister::class.java, TileEntity::class.java, table).forEach {
             val name = it.get<String>("value")
-            val modId = getModid(it.clazz)
+            val modId = OwnershipHandler.getModId(it.clazz)
             if (name == null) {
                 errors.getOrPut("TileRegister", { mutableListOf() }).add(it.clazz)
             } else {
@@ -71,7 +43,7 @@ object AutoRegisterHandler {
         if (Loader.isModLoaded("mcmultipart")) {
             getAnnotatedBy(PartRegister::class.java, IMultipart::class.java, table).forEach {
                 val name = it.get<String>("value")
-                val modId = getModid(it.clazz)
+                val modId = OwnershipHandler.getModId(it.clazz)
                 if (name == null) {
                     errors.getOrPut("PartRegister", { mutableListOf() }).add(it.clazz)
                 } else {
@@ -92,8 +64,8 @@ object AutoRegisterHandler {
             var build = "AutoRegister Errors: No modId specified!"
             build += "\nDefined prefixes:"
 
-            val keyMax = prefixes.maxBy { it.value.length }?.value?.length ?: 0
-            for ((prefix, modId) in prefixes) {
+            val keyMax = OwnershipHandler.prefixes.maxBy { it.value.length }?.value?.length ?: 0
+            for ((prefix, modId) in OwnershipHandler.prefixes) {
                 val spaces = keyMax - modId.length
                 build += "\n${" " * spaces}$modId | $prefix"
             }

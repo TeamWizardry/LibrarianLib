@@ -12,7 +12,7 @@ import com.teamwizardry.librarianlib.common.base.block.IModBlockProvider
 import com.teamwizardry.librarianlib.common.base.item.IItemColorProvider
 import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.common.base.item.ISpecialModelProvider
-import com.teamwizardry.librarianlib.common.core.DevOwnershipTest
+import com.teamwizardry.librarianlib.common.core.OwnershipHandler
 import com.teamwizardry.librarianlib.common.core.LibLibConfig
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import com.teamwizardry.librarianlib.common.util.builders.serialize
@@ -296,7 +296,7 @@ object ModelHandler {
     }
 
     @SideOnly(Side.CLIENT)
-    fun shouldGenerateAnyJson() = debug && LibLibConfig.generateJson && modName in DevOwnershipTest.OWNED
+    fun shouldGenerateAnyJson() = debug && LibLibConfig.generateJson && modName in OwnershipHandler.DEV_OWNED
 
     @SideOnly(Side.CLIENT)
     fun generateBlockJson(holder: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?) {
