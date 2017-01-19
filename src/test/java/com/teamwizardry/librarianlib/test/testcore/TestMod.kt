@@ -26,7 +26,8 @@ class TestMod {
                 SavingEntryPoint,
                 FXEntryPoint,
                 GuiEntryPoint,
-                VariantEntryPoint
+                VariantEntryPoint,
+                UnsafeTest
         )
         PROXY.pre(e)
         entrypoints.forEach {

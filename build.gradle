@@ -15,6 +15,7 @@ buildscript {
     }
 }
 
+
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'kotlin'
 apply plugin: 'org.jetbrains.dokka'
@@ -42,6 +43,9 @@ repositories {
     maven {
         url "http://maven.amadornes.com/"
     }
+    maven {
+        url "http://mvn.rx14.co.uk/shadowfacts/"
+    }
 }
 
 minecraft {
@@ -63,8 +67,9 @@ configurations {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    required "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    //required "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
+    compile "net.shadowfacts:Forgelin:1.2.0"
     deobfCompile "MCMultiPart:MCMultiPart:1.2.1:universal"
 }
 
