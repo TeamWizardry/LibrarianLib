@@ -26,7 +26,7 @@ object GuiHandler : IGuiHandler {
         if(name !in ids)
             throw IllegalArgumentException("No GUI handler registered for $name")
         if(!player.world.isRemote) {
-            player.openGui(LibrarianLib.INSTANCE, ids[name]!!, player.world, pos.x, pos.y, pos.z)
+            player.openGui(LibrarianLib, ids[name]!!, player.world, pos.x, pos.y, pos.z)
         }
     }
 

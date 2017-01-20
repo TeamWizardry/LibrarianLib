@@ -34,7 +34,7 @@ open class LibCommonProxy {
     }
 
     open fun init(e: FMLInitializationEvent) {
-        NetworkRegistry.INSTANCE.registerGuiHandler(LibrarianLib.INSTANCE, GuiHandler)
+        NetworkRegistry.INSTANCE.registerGuiHandler(LibrarianLib, GuiHandler)
     }
 
     open fun lateInit(e: FMLInitializationEvent) {
