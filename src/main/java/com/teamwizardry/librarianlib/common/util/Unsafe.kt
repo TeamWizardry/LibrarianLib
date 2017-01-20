@@ -33,8 +33,8 @@ fun getUnsafe(more: Int = 0): Unsafe {
 }
 
 
-internal fun <T> Class<T>.newInstanceUnsafe(more: Int = 0) = getUnsafe(1 + more).allocateInstance(this) as? T ?: throw InvalidRelationServiceException("Invalid class $this?")
-internal fun Throwable.throwUnsafely(more: Int = 0) = getUnsafe(1 + more).throwException(this)
-internal fun Field.getOffset(more: Int = 0) = getUnsafe(1 + more).fieldOffset(this)
-internal inline fun <reified T : Any> T?.orNewUnsafe(): T = this ?: T::class.java.newInstanceUnsafe(1);
-internal inline fun <reified T : Any> T?.orNew(): T = this ?: T::class.constructors.elementAt(0).call()
+fun <T> Class<T>.newInstanceUnsafe(more: Int = 0) = getUnsafe(1 + more).allocateInstance(this) as? T ?: throw InvalidRelationServiceException("Invalid class $this?")
+fun Throwable.throwUnsafely(more: Int = 0) = getUnsafe(1 + more).throwException(this)
+fun Field.getOffset(more: Int = 0) = getUnsafe(1 + more).fieldOffset(this)
+inline fun <reified T : Any> T?.orNewUnsafe(): T = this ?: T::class.java.newInstanceUnsafe(1);
+inline fun <reified T : Any> T?.orNew(): T = this ?: T::class.constructors.elementAt(0).call()
