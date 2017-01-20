@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.Targ
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagString
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.items.ItemStackHandler
 import java.awt.Color
 import java.util.*
@@ -23,6 +24,7 @@ object SerializeMisc {
         itemStack()
         itemStackHandler()
         uuid()
+        resourcelocation()
     }
 
     private fun color() {
@@ -126,6 +128,28 @@ object SerializeMisc {
         }, { buf, value, sync ->
             buf.writeLong(value.mostSignificantBits)
             buf.writeLong(value.leastSignificantBits)
+        }))
+    }
+
+    private fun resourcelocation() {
+        SerializerRegistry.register("minecraft:resourcelocation", Serializer(ResourceLocation::class.java))
+
+        SerializerRegistry["minecraft:resourcelocation"]?.register(Targets.NBT, Targets.NBT.impl<ResourceLocation>
+        ({ nbt, existing, sync ->
+            val tag = nbt as? NBTTagString
+            if(tag == null)
+                ResourceLocation("minecraft:missingno")
+            else
+                ResourceLocation(tag.string)
+        }, { value, sync ->
+            NBTTagString(value.toString())
+        }))
+
+        SerializerRegistry["minecraft:resourcelocation"]?.register(Targets.BYTES, Targets.BYTES.impl<ResourceLocation>
+        ({ buf, existing, sync ->
+            ResourceLocation(buf.readString())
+        }, { buf, value, sync ->
+            buf.writeString(value.toString())
         }))
     }
 }

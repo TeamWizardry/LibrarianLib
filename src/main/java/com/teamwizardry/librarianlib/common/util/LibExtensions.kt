@@ -26,6 +26,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider
 import net.minecraftforge.fml.common.network.ByteBufUtils
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
+import java.util.*
 
 
 
@@ -113,6 +114,21 @@ operator fun Vec2d.div(other: Int) = this / other.toDouble()
 operator fun Vec2d.plus(other: Vec2d) = this.add(other)
 operator fun Vec2d.minus(other: Vec2d) = this.add(other)
 operator fun Vec2d.unaryMinus() = this * -1
+
+// BlockPos ============================================================================================================
+
+operator fun BlockPos.times(other: BlockPos) = BlockPos(this.x * other.x, this.y * other.y, this.z * other.z)
+operator fun BlockPos.times(other: Vec3d) = BlockPos((this.x * other.xCoord).toInt(), (this.y * other.yCoord).toInt(), (this.z * other.zCoord).toInt())
+operator fun BlockPos.times(other: Number) = BlockPos((this.x * other.toDouble()).toInt(), (this.y * other.toDouble()).toInt(), (this.z * other.toDouble()).toInt())
+
+operator fun BlockPos.div(other: BlockPos) = BlockPos(this.x / other.x, this.y / other.y, this.z / other.z)
+operator fun BlockPos.div(other: Vec3d) = BlockPos((this.x / other.xCoord).toInt(), (this.y / other.yCoord).toInt(), (this.z / other.zCoord).toInt())
+operator fun BlockPos.div(other: Number) = BlockPos((this.x / other.toDouble()).toInt(), (this.y / other.toDouble()).toInt(), (this.z / other.toDouble()).toInt())
+
+operator fun BlockPos.plus(other: BlockPos) = this.add(other)
+operator fun BlockPos.minus(other: BlockPos) = this.subtract(other)
+
+operator fun BlockPos.unaryMinus() = this * -1
 
 // AxisAlignedBB =======================================================================================================
 
@@ -359,6 +375,11 @@ fun <T, R> ICapabilityProvider.ifCap(capability: Capability<T>, facing: EnumFaci
     return null
 }
 
+fun <C : ICapabilityProvider, T, R> C.forCap(capability: Capability<T>?, facing: EnumFacing?, callback: (T) -> R): R? {
+    if (capability != null && this.hasCapability(capability, facing))
+        return callback(this.getCapability(capability, facing)!!)
+    return null
+}
 // ItemStack ===========================================================================================================
 
 val ItemStack?.isEmpty: Boolean // 1.10 -> 1.11
@@ -517,5 +538,17 @@ inline fun <K, V> FloatArray.flatAssociateBy(mapper: (Float) -> Iterable<Pair<K,
 inline fun <K, V> DoubleArray.flatAssociateBy(mapper: (Double) -> Iterable<Pair<K, V>>): Map<K, V> {
     val map = mutableMapOf<K, V>()
     forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+// listOf and mapOf ====================================================================================================
+
+inline fun <reified K: Enum<K>, V> enumMapOf(): EnumMap<K, V> {
+    return EnumMap(K::class.java)
+}
+
+inline fun <reified K: Enum<K>, V> enumMapOf(vararg pairs: Pair<K, V>): EnumMap<K, V> {
+    val map = enumMapOf<K, V>()
+    map.putAll(pairs)
     return map
 }

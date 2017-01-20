@@ -7,7 +7,6 @@ import net.minecraft.launchwrapper.Launch
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.SidedProxy
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
-import net.minecraftforge.fml.common.event.FMLInterModComms
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 
@@ -22,8 +21,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
  * - Automatic registration of TileEntities
  *
  */
-@Mod(modid = LibrarianLib.MODID, version = LibrarianLib.VERSION, name = LibrarianLib.MODNAME, modLanguageAdapter = "net.shadowfacts.forgelin.KotlinAdapter")
-object LibrarianLib {
+@Mod(modid = LibrarianLib.MODID, version = LibrarianLib.VERSION, name = LibrarianLib.MODNAME)
+class LibrarianLib {
 
     @Mod.EventHandler
     fun preInit(e: FMLPreInitializationEvent) {
@@ -40,33 +39,29 @@ object LibrarianLib {
         PROXY.post(e)
     }
 
+    companion object {
 
-    const val MODID = "librarianlib"
-    const val MODNAME = "LibrarianLib"
-    const val VERSION = "1.7"
-    const val CLIENT = "com.teamwizardry.librarianlib.client.core.LibClientProxy"
-    const val SERVER = "com.teamwizardry.librarianlib.common.core.LibCommonProxy"
+        const val MODID = "librarianlib"
+        const val MODNAME = "LibrarianLib"
+        const val VERSION = "1.7"
+        const val CLIENT = "com.teamwizardry.librarianlib.client.core.LibClientProxy"
+        const val SERVER = "com.teamwizardry.librarianlib.common.core.LibCommonProxy"
 
-    @JvmStatic
-    @SidedProxy(clientSide = CLIENT, serverSide = SERVER)
-    lateinit var PROXY: LibCommonProxy
+        @JvmStatic
+        @SidedProxy(clientSide = CLIENT, serverSide = SERVER)
+        lateinit var PROXY: LibCommonProxy
 
-    @JvmField
-    val DEV_ENVIRONMENT = Launch.blackboard["fml.deobfuscatedEnvironment"] as Boolean
+        @JvmStatic
+        @Mod.Instance(LibrarianLib.MODID)
+        lateinit var INSTANCE: LibrarianLib
 
-    val isClient: Boolean
-        get() = PROXY.isClient
-    val isDedicatedServer: Boolean
-        get() = PROXY.isDedicatedServer
-    val unsafeAllowedModIds = mutableListOf<String>()
-    @Mod.EventHandler
-    fun onImcMessage(e: FMLInterModComms.IMCEvent) {
-        val modids = e.messages.filter { it.key.toLowerCase() == "unsafe" }.map { it.stringValue }
-        if(DEV_ENVIRONMENT && modids.isNotEmpty()) {
-            println(MODID + " | Unsafe-allowed mod IDs:")
-            modids.forEach { " ".repeat(MODID.length) + " | $it" }
-        }
-        unsafeAllowedModIds.addAll(modids)
+        @JvmField
+        val DEV_ENVIRONMENT = Launch.blackboard["fml.deobfuscatedEnvironment"] as Boolean
+
+        val isClient: Boolean
+            get() = PROXY.isClient
+        val isDedicatedServer: Boolean
+            get() = PROXY.isDedicatedServer
     }
 
 }

@@ -170,6 +170,11 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     class LogicalSizeEvent<T : GuiComponent<T>>(val component: T, var box: BoundingBox2D?) : Event()
     class MouseOverEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, var isOver: Boolean) : Event()
 
+    class MessageArriveEvent<T : GuiComponent<T>>(val component: T, val from: GuiComponent<*>, val message: Message) : Event()
+
+    data class Message(val component: GuiComponent<*>, val data: Any, val rippleType: EnumRippleType)
+    enum class EnumRippleType { NONE, UP, DOWN, ALL }
+
     var zIndex = 0
     /**
      * The position of the component relative to it's parent
@@ -278,13 +283,19 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     var parents: LinkedHashSet<GuiComponent<*>> = LinkedHashSet()
 
     /**
-     * Amount to translate children, applied to both drawing and mouse position. Applied before [childScale]
+     * Amount to translate children, applied to both drawing and mouse position. Applied before [childScale] and [childRotation]
      */
     var childTranslation: Vec2d = Vec2d.ZERO
     /**
-     * Amount to scale children, applied to both drawing and mouse position. Applied after [childTranslation]
+     * Amount to scale children, applied to both drawing and mouse position. Applied after [childTranslation] and before [childRotation]
      */
     var childScale: Double = 1.0
+    /**
+     * Amount to rotate children around this component's origin, applied to both drawing and mouse position. Applied after [childScale]
+     *
+     * Angle is in clockwise radians
+     */
+    var childRotation: Double = 0.0
 
     init {
         this.pos = vec(posX, posY)
@@ -445,14 +456,14 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      */
     fun transformChildPos(child: GuiComponent<*>, pos: Vec2d): Vec2d {
         //     [ translate to child's screen space ] [ subtract child pos to put origin at child origin ]
-        return (pos - childTranslation) / childScale - child.pos
+        return ((pos - childTranslation) / childScale).rotate(-childRotation) - child.pos
     }
 
     /**
      * Reverses [transformChildPos]
      */
     fun unTransformChildPos(child: GuiComponent<*>, pos: Vec2d): Vec2d {
-        return (pos + child.pos) * childScale + childTranslation
+        return (pos + child.pos).rotate(childRotation) * childScale + childTranslation
     }
 
     /**
@@ -551,6 +562,8 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         GlStateManager.translate(pos.x + childTranslation.x, pos.y + childTranslation.y, 0.0)
         if(childScale != 1.0) // avoid unnecessary GL calls. Possibly microoptimization but meh.
             GlStateManager.scale(childScale, childScale, 1.0)
+        if(childRotation != 0.0) // see above comment
+            GlStateManager.rotate(Math.toDegrees(childRotation).toFloat(), 0f, 0f, 1f)
 
         BUS.fire(PreChildrenDrawEvent(thiz(), mousePos, partialTicks))
 
@@ -564,8 +577,11 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         BUS.fire(PostDrawEvent(thiz(), mousePos, partialTicks))
     }
 
-    open fun tick() {
+    open fun onTick() {}
+
+    fun tick() {
         BUS.fire(ComponentTickEvent(thiz()))
+        onTick()
         for (child in components) {
             child.tick()
         }
@@ -742,6 +758,34 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     init {/* Assorted info */
     }
     //=============================================================================
+
+    open fun onMessage(from: GuiComponent<*>, message: Message) {}
+
+    fun handleMessage(from: GuiComponent<*>, message: Message) {
+        BUS.fire(MessageArriveEvent(thiz(), from, message))
+        onMessage(from, message)
+
+        if(message.rippleType != EnumRippleType.NONE) {
+            if(message.rippleType == EnumRippleType.UP || message.rippleType == EnumRippleType.ALL) {
+                parent?.let {
+                    if(it != from) {
+                        it.handleMessage(this, message)
+                    }
+                }
+            }
+            if(message.rippleType == EnumRippleType.DOWN || message.rippleType == EnumRippleType.ALL) {
+                children.forEach {
+                    if(it != from) {
+                        it.handleMessage(this, message)
+                    }
+                }
+            }
+        }
+    }
+
+    fun sendMessage(data: Any, ripple: EnumRippleType) {
+
+    }
 
     /**
      * Sets the value associated with the pair of keys [clazz] and [key]. The value must be a subclass of [clazz]

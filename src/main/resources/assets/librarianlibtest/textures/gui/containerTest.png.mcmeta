@@ -1,0 +1,10 @@
+{
+	"spritesheet":{
+		"textureWidth":256,
+		"textureHeight":256,
+		"sprites":{
+			"bg":[0, 0, 197, 166],
+			"slider":[196,7,60,62]
+		}
+	}
+}

@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.client.fx.particle
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.client.fx.particle.functions.RenderFunction
 import com.teamwizardry.librarianlib.client.fx.particle.functions.RenderFunctionBasic
+import com.teamwizardry.librarianlib.client.fx.particle.functions.TickFunction
 import com.teamwizardry.librarianlib.common.util.math.interpolate.InterpFunction
 import com.teamwizardry.librarianlib.common.util.math.interpolate.StaticInterp
 import com.teamwizardry.librarianlib.common.util.plus
@@ -204,9 +205,9 @@ class ParticleBuilder(private var lifetime: Int) {
 
     // region Motion
     /**
-     * Sets the motion
+     * Sets the tick
      *
-     * Each tick while the particle is colliding with a block, it's motion is multiplied by this vector
+     * Each tick while the particle is colliding with a block, it's tick is multiplied by this vector
      */
     fun setMotion(value: Vec3d): ParticleBuilder {
         motion = value
@@ -214,9 +215,9 @@ class ParticleBuilder(private var lifetime: Int) {
     }
 
     /**
-     * Adds to the motion
+     * Adds to the tick
      *
-     * Each tick while the particle is colliding with a block, it's motion is multiplied by this vector
+     * Each tick while the particle is colliding with a block, it's tick is multiplied by this vector
      */
     fun addMotion(value: Vec3d): ParticleBuilder {
         motion += value
@@ -237,9 +238,9 @@ class ParticleBuilder(private var lifetime: Int) {
     /**
      * Sets the acceleration
      *
-     * Each tick this value is added to the particle's motion
+     * Each tick this value is added to the particle's tick
      *
-     * (calling this method enables standard particle motion calculations)
+     * (calling this method enables standard particle tick calculations)
      */
     fun setAcceleration(value: Vec3d): ParticleBuilder {
         acceleration = value
@@ -250,9 +251,9 @@ class ParticleBuilder(private var lifetime: Int) {
     /**
      * Adds to the acceleration
      *
-     * Each tick this value is added to the particle's motion
+     * Each tick this value is added to the particle's tick
      *
-     * (calling this method enables standard particle motion calculations)
+     * (calling this method enables standard particle tick calculations)
      */
     fun addAcceleration(value: Vec3d): ParticleBuilder {
         acceleration += value
@@ -263,9 +264,9 @@ class ParticleBuilder(private var lifetime: Int) {
     /**
      * Sets the deceleration
      *
-     * Each tick the particle's motion is multiplied by this vector
+     * Each tick the particle's tick is multiplied by this vector
      *
-     * (calling this method enables standard particle motion calculations)
+     * (calling this method enables standard particle tick calculations)
      */
     fun setDeceleration(value: Vec3d): ParticleBuilder {
         deceleration = value
@@ -276,9 +277,9 @@ class ParticleBuilder(private var lifetime: Int) {
     /**
      * Adds to the deceleration
      *
-     * Each tick the particle's motion is multiplied by this vector
+     * Each tick the particle's tick is multiplied by this vector
      *
-     * (calling this method enables standard particle motion calculations)
+     * (calling this method enables standard particle tick calculations)
      */
     fun addDeceleration(value: Vec3d): ParticleBuilder {
         deceleration += value
@@ -289,9 +290,9 @@ class ParticleBuilder(private var lifetime: Int) {
     /**
      * Sets the friction
      *
-     * Each tick while the particle is colliding with a block, it's motion is multiplied by this vector
+     * Each tick while the particle is colliding with a block, it's tick is multiplied by this vector
      *
-     * (calling this method enables standard particle motion calculations)
+     * (calling this method enables standard particle tick calculations)
      */
     fun setFriction(value: Vec3d): ParticleBuilder {
         friction = value
@@ -302,9 +303,9 @@ class ParticleBuilder(private var lifetime: Int) {
     /**
      * Adds to the friction
      *
-     * Each tick while the particle is colliding with a block, it's motion is multiplied by this vector
+     * Each tick while the particle is colliding with a block, it's tick is multiplied by this vector
      *
-     * (calling this method enables standard particle motion calculations)
+     * (calling this method enables standard particle tick calculations)
      */
     fun addFriction(value: Vec3d): ParticleBuilder {
         friction += value
@@ -315,9 +316,9 @@ class ParticleBuilder(private var lifetime: Int) {
 
     // region Motion enabled
     /**
-     * Sets the motion enabled flag
+     * Sets the tick enabled flag
      *
-     * The motion enabled flag controls whether the particle uses the position function or traditional motion mechanics
+     * The tick enabled flag controls whether the particle uses the position function or traditional tick mechanics
      */
     fun setMotionCalculationEnabled(value: Boolean): ParticleBuilder {
         motionCalculation = value
@@ -325,9 +326,9 @@ class ParticleBuilder(private var lifetime: Int) {
     }
 
     /**
-     * Sets the motion enabled flag to true
+     * Sets the tick enabled flag to true
      *
-     * The motion enabled flag controls whether the particle uses the position function or traditional motion mechanics
+     * The tick enabled flag controls whether the particle uses the position function or traditional tick mechanics
      */
     fun enableMotionCalculation(): ParticleBuilder {
         motionCalculation = true
@@ -335,14 +336,20 @@ class ParticleBuilder(private var lifetime: Int) {
     }
 
     /**
-     * Sets the motion enabled flag to false
+     * Sets the tick enabled flag to false
      *
-     * The motion enabled flag controls whether the particle uses the position function or traditional motion mechanics
+     * The tick enabled flag controls whether the particle uses the position function or traditional tick mechanics
      */
     fun disableMotionCalculation(): ParticleBuilder {
         motionCalculation = false
         return this
     }
+    // endregion
+
+    // region Motion Function
+
+    // see tick function property
+
     // endregion
 
     // endregion
@@ -377,7 +384,7 @@ class ParticleBuilder(private var lifetime: Int) {
      * Set jitter amount.
      *
      * Each tick there is a 1 in [chance] chance of `rand(-1 to 1) *` each of [value]'s components being added
-     * to the particle's motion.
+     * to the particle's tick.
      */
     fun setJitter(chance: Int, value: Vec3d): ParticleBuilder {
         jitterMagnitude = value
@@ -474,7 +481,7 @@ class ParticleBuilder(private var lifetime: Int) {
     var movementMode: EnumMovementMode = EnumMovementMode.IN_DIRECTION
         private set
 
-    // motion stuff
+    // tick stuff
     var motionCalculation: Boolean = false
         private set
     var motion: Vec3d = Vec3d.ZERO
@@ -485,6 +492,7 @@ class ParticleBuilder(private var lifetime: Int) {
         private set
     var friction: Vec3d = Vec3d(0.9, 1.0, 0.9)
         private set
+    var tickFunction: TickFunction? = null
 
     // plain ol' position
     var positionOffset: Vec3d = Vec3d.ZERO
@@ -557,7 +565,7 @@ class ParticleBuilder(private var lifetime: Int) {
 
         return ParticleBase(world, pos_, lifetime_, animStart_, animEnd_,
                 positionFunc ?: StaticInterp(Vec3d.ZERO), colorFunc ?: StaticInterp(Color.WHITE), alphaFunc,
-                renderFunc_, movementMode, scaleFunc,
+                renderFunc_, tickFunction, movementMode, scaleFunc,
                 motionCalculation, positionEnabled, canCollide, motion_, acceleration, deceleration, friction, jitterMagnitude, jitterChance)
     }
 
@@ -594,7 +602,7 @@ class ParticleBuilder(private var lifetime: Int) {
         v.positionFunc = this.positionFunc
         v.movementMode = this.movementMode
 
-        // motion stuff
+        // tick stuff
         v.motionCalculation = this.motionCalculation
         v.motion = this.motion
         v.acceleration = this.acceleration

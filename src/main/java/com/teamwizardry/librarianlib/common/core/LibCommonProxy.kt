@@ -2,6 +2,8 @@
 
 package com.teamwizardry.librarianlib.common.core
 
+import com.teamwizardry.librarianlib.LibrarianLib
+import com.teamwizardry.librarianlib.common.container.GuiHandler
 import com.teamwizardry.librarianlib.common.util.EasyConfigHandler
 import com.teamwizardry.librarianlib.common.util.autoregister.AutoRegisterHandler
 import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
@@ -10,6 +12,7 @@ import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
+import net.minecraftforge.fml.common.network.NetworkRegistry
 import java.io.InputStream
 
 /**
@@ -31,7 +34,7 @@ open class LibCommonProxy {
     }
 
     open fun init(e: FMLInitializationEvent) {
-        // NO-OP
+        NetworkRegistry.INSTANCE.registerGuiHandler(LibrarianLib.INSTANCE, GuiHandler)
     }
 
     open fun lateInit(e: FMLInitializationEvent) {
