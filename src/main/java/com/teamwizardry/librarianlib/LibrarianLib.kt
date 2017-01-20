@@ -58,7 +58,7 @@ object LibrarianLib {
         get() = PROXY.isClient
     val isDedicatedServer: Boolean
         get() = PROXY.isDedicatedServer
-    val unsafeAllowedModIds = mutableListOf<String>()
+    internal val unsafeAllowedModIds = mutableListOf<String>()
 
     @Mod.EventHandler
     fun onImcMessage(e: FMLInterModComms.IMCEvent) {

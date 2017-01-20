@@ -15,9 +15,17 @@ private val unsafe by lazy {
     theUnsafe.get(null) as Unsafe
 }
 
+/**
+ * This method provides a safe and fast way of accessing Unsafe methods but requires
+ * the mod ID accessing it to be registered to be able to access it without errors.
+ * In order to register your mod ID, send an IMC message to LibrarianLib with
+ * title "Unsafe" and put your mod ID as the content.
+ * This registration system is put in place as a minor security measure against abuse
+ * of Unsafe.
+ */
 @JvmName("getUnsafeSafely")
-fun getUnsafe(): Unsafe {
-    val clazz = Class.forName(Throwable().stackTrace[2].className)
+fun getUnsafe(more: Int = 0): Unsafe {
+    val clazz = Class.forName(Throwable().stackTrace[2 + more].className)
     val modid = OwnershipHandler.getModId(clazz)
     println(clazz.name + " " + modid)
     if(modid in LibrarianLib.unsafeAllowedModIds || modid == LibrarianLib.MODID) return unsafe
@@ -25,8 +33,8 @@ fun getUnsafe(): Unsafe {
 }
 
 
-internal fun <T> Class<T>.newInstanceUnsafe() = unsafe.allocateInstance(this) as? T ?: throw InvalidRelationServiceException("Invalid class $this?")
-internal fun Throwable.throwUnsafely() = unsafe.throwException(this)
-internal fun Field.getOffset() = unsafe.fieldOffset(this)
-internal inline fun <reified T : Any> T?.orNewUnsafe(): T = this ?: T::class.java.newInstanceUnsafe();
+internal fun <T> Class<T>.newInstanceUnsafe(more: Int = 0) = getUnsafe(1 + more).allocateInstance(this) as? T ?: throw InvalidRelationServiceException("Invalid class $this?")
+internal fun Throwable.throwUnsafely(more: Int = 0) = getUnsafe(1 + more).throwException(this)
+internal fun Field.getOffset(more: Int = 0) = getUnsafe(1 + more).fieldOffset(this)
+internal inline fun <reified T : Any> T?.orNewUnsafe(): T = this ?: T::class.java.newInstanceUnsafe(1);
 internal inline fun <reified T : Any> T?.orNew(): T = this ?: T::class.constructors.elementAt(0).call()
