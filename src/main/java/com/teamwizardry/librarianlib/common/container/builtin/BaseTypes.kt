@@ -56,7 +56,7 @@ open class SlotTypeGhost(val maxStackSize: Int = 1, val overstack: Boolean = fal
 }
 
 open class SlotTypeEquipment(val player: EntityPlayer, vararg val types: EntityEquipmentSlot) : SlotType() {
-    override fun isValid(slot: SlotBase, stack: ItemStack?): Boolean {
+    override fun isValid(slot: SlotBase, stack: ItemStack?, default: Boolean): Boolean {
         return types.any { stack?.item?.isValidArmor(stack, it, player) ?: false }
     }
 

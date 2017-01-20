@@ -16,20 +16,40 @@ class SlotBase(handler: IItemHandler, index: Int) : SlotItemHandler(handler, ind
     var visible = true
     var lastVisible = visible
 
+    override fun onPickupFromSlot(playerIn: EntityPlayer?, stack: ItemStack?) {
+        if(type.onPickup(this, playerIn, stack))
+            super.onPickupFromSlot(playerIn, stack)
+    }
+
+    override fun onSlotChanged() {
+        if(type.onSlotChange(this))
+            super.onSlotChanged()
+    }
+
+    override fun onSlotChange(old: ItemStack?, new: ItemStack?) {
+        if(type.onSlotChange(this, old, new))
+            super.onSlotChange(old, new)
+    }
+
+    override fun putStack(stack: ItemStack?) {
+        if(type.putStack(this, stack))
+            super.putStack(stack)
+    }
+
     override fun getStack(): ItemStack? {
-        return if(visible) super.getStack() else null
+        return if(visible) type.getStack(this, super.getStack()) else null
     }
 
     override fun canTakeStack(playerIn: EntityPlayer?): Boolean {
-        return if(visible) type.canTake(this, playerIn, stack) && super.canTakeStack(playerIn) else false
+        return if(visible) type.canTake(this, playerIn, stack, super.canTakeStack(playerIn)) else false
     }
 
     override fun canBeHovered(): Boolean {
-        return if(visible) super.canBeHovered() else false
+        return if(visible) type.canHover(this) else false
     }
 
     override fun isItemValid(stack: ItemStack?): Boolean {
-        return if(visible) type.isValid(this, stack) && super.isItemValid(stack) else false
+        return if(visible) type.isValid(this, stack, super.isItemValid(stack)) else false
     }
 
     override fun getSlotStackLimit(): Int {

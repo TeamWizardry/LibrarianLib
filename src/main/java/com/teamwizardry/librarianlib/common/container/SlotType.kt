@@ -7,9 +7,20 @@ import net.minecraft.item.ItemStack
 
 open class SlotType {
 
-    open fun isValid(slot: SlotBase, stack: ItemStack?): Boolean { return true }
+    /**
+     * Returned form the slot `isItemValid` method. Passed the result of the default method
+     */
+    open fun isValid(slot: SlotBase, stack: ItemStack?, default: Boolean): Boolean { return default }
+
+    /**
+     * Returned from the slot `getSlotStackLimit` method.
+     */
     open fun stackLimit(slot: SlotBase, stack: ItemStack?): Int { return 64 }
-    open fun canTake(slot: SlotBase, player: EntityPlayer?, stack: ItemStack?): Boolean { return true }
+
+    /**
+     * Returned from the slot `canTakeStack` method, passed the result of the default method.
+     */
+    open fun canTake(slot: SlotBase, player: EntityPlayer?, stack: ItemStack?, default: Boolean): Boolean { return default }
 
     /**
      * try to shift click the item into this slot
@@ -68,5 +79,39 @@ open class SlotType {
     open fun handleClick(slot: SlotBase, container: ContainerBase, dragType: Int, clickType: ClickType?, player: EntityPlayer): Pair<Boolean, ItemStack?> {
         return false to null
     }
+
+    /**
+     * Called in the slot `onPickupFromSlot` method. If this returns true the normal handling will proceed, false will
+     * override the default handling causing it not to be called.
+     */
+    fun  onPickup(slot: SlotBase, player: EntityPlayer?, stack: ItemStack?): Boolean { return true }
+
+    /**
+     * Called in the slot `onSlotChange()` method, return false to cancel default handling.
+     */
+    fun  onSlotChange(slot: SlotBase): Boolean { return true }
+
+    /**
+     * Called in the slot `onSlotChange(old, new)` method, return false to cancel default handling.
+     */
+    fun  onSlotChange(slot: SlotBase, old: ItemStack?, new: ItemStack?): Boolean { return true }
+
+    /**
+     * Called in the slot `putStack` method, return false to cancel default handling
+     */
+    fun  putStack(slot: SlotBase, stack: ItemStack?): Boolean { return true }
+
+
+    /**
+     * Returned from the slot `getStack` method. It is passed the default stack, and may modify or entirely replace the
+     * return value
+     */
+    fun  getStack(slot: SlotBase, defaultStack: ItemStack?): ItemStack? { return defaultStack }
+
+    /**
+     * Returned from the slot `canBeHovered` method.
+     */
+    fun  canHover(slot: SlotBase): Boolean { return true }
+
 }
 

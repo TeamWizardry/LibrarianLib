@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.client.core
 
+import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.client.event.ResourceReloadEvent
 import com.teamwizardry.librarianlib.client.fx.shader.LibShaders
 import com.teamwizardry.librarianlib.client.fx.shader.ShaderHelper
@@ -7,6 +8,7 @@ import com.teamwizardry.librarianlib.client.model.ModelsInit
 import com.teamwizardry.librarianlib.client.sprite.SpritesMetadataSection
 import com.teamwizardry.librarianlib.client.sprite.SpritesMetadataSectionSerializer
 import com.teamwizardry.librarianlib.client.sprite.Texture
+import com.teamwizardry.librarianlib.client.util.F3Handler
 import com.teamwizardry.librarianlib.client.util.ScissorUtil
 import com.teamwizardry.librarianlib.common.core.LibCommonProxy
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
@@ -37,6 +39,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
     override fun pre(e: FMLPreInitializationEvent) {
         super.pre(e)
 
+        F3Handler
         ModelsInit
         UnlistedPropertyDebugViewer
         ScissorUtil
@@ -51,6 +54,9 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
         (Minecraft.getMinecraft().resourceManager as IReloadableResourceManager).registerReloadListener(this)
         onResourceManagerReload(Minecraft.getMinecraft().resourceManager)
+
+        if(LibrarianLib.DEV_ENVIRONMENT)
+            TextureMapExporter
     }
 
     override fun latePre(e: FMLPreInitializationEvent) {

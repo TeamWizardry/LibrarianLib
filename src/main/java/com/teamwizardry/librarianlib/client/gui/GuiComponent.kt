@@ -283,13 +283,19 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     var parents: LinkedHashSet<GuiComponent<*>> = LinkedHashSet()
 
     /**
-     * Amount to translate children, applied to both drawing and mouse position. Applied before [childScale]
+     * Amount to translate children, applied to both drawing and mouse position. Applied before [childScale] and [childRotation]
      */
     var childTranslation: Vec2d = Vec2d.ZERO
     /**
-     * Amount to scale children, applied to both drawing and mouse position. Applied after [childTranslation]
+     * Amount to scale children, applied to both drawing and mouse position. Applied after [childTranslation] and before [childRotation]
      */
     var childScale: Double = 1.0
+    /**
+     * Amount to rotate children around this component's origin, applied to both drawing and mouse position. Applied after [childScale]
+     *
+     * Angle is in clockwise radians
+     */
+    var childRotation: Double = 0.0
 
     init {
         this.pos = vec(posX, posY)
@@ -450,14 +456,14 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      */
     fun transformChildPos(child: GuiComponent<*>, pos: Vec2d): Vec2d {
         //     [ translate to child's screen space ] [ subtract child pos to put origin at child origin ]
-        return (pos - childTranslation) / childScale - child.pos
+        return ((pos - childTranslation) / childScale).rotate(-childRotation) - child.pos
     }
 
     /**
      * Reverses [transformChildPos]
      */
     fun unTransformChildPos(child: GuiComponent<*>, pos: Vec2d): Vec2d {
-        return (pos + child.pos) * childScale + childTranslation
+        return (pos + child.pos).rotate(childRotation) * childScale + childTranslation
     }
 
     /**
@@ -556,6 +562,8 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         GlStateManager.translate(pos.x + childTranslation.x, pos.y + childTranslation.y, 0.0)
         if(childScale != 1.0) // avoid unnecessary GL calls. Possibly microoptimization but meh.
             GlStateManager.scale(childScale, childScale, 1.0)
+        if(childRotation != 0.0) // see above comment
+            GlStateManager.rotate(Math.toDegrees(childRotation).toFloat(), 0f, 0f, 1f)
 
         BUS.fire(PreChildrenDrawEvent(thiz(), mousePos, partialTicks))
 
