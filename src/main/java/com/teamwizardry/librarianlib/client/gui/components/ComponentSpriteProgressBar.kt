@@ -51,8 +51,8 @@ class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: Sprite?, 
         if(dir == ProgressDirection.X_POS || dir == ProgressDirection.X_NEG)
             w = (w * progress).toInt()
 
-        var posX = (pos.xf + size.xi) - w
-        var posY = (pos.yf + size.yi) - h
+        var posX = if(dir == ProgressDirection.X_NEG) (pos.xf + size.xi) - w else pos.xf
+        var posY = if(dir == ProgressDirection.Y_NEG) (pos.yf + size.yi) - h else pos.yf
 
         sp.drawClipped(animationTicks, posX, posY, w, h, dir == ProgressDirection.X_NEG, dir == ProgressDirection.Y_POS)
         if (alwaysTop)
