@@ -1,5 +1,9 @@
 package com.teamwizardry.librarianlib.common.util.math
 
+import com.teamwizardry.librarianlib.common.util.times
+import com.teamwizardry.librarianlib.common.util.vec
+import net.minecraft.util.math.MathHelper
+
 class Vec2d(val x: Double, val y: Double) {
 
     @Transient val xf: Float
@@ -97,6 +101,11 @@ class Vec2d(val x: Double, val y: Double) {
         val norm = other.normalize()
         return norm.mul(this.dot(norm))
     }
+
+    fun rotate(theta: Number): Vec2d {
+        return this * vec(MathHelper.cos(theta.toFloat()), MathHelper.sin(theta.toFloat()))
+    }
+
     //=============================================================================
 
     override fun hashCode(): Int {

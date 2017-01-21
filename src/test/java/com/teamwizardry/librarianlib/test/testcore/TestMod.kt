@@ -1,13 +1,20 @@
 package com.teamwizardry.librarianlib.test.testcore
 
 import com.teamwizardry.librarianlib.common.base.ModCreativeTab
+import com.teamwizardry.librarianlib.common.base.item.ItemMod
 import com.teamwizardry.librarianlib.common.core.LoggerBase
+import com.teamwizardry.librarianlib.test.container.ContainerEntryPoint
 import com.teamwizardry.librarianlib.test.fx.FXEntryPoint
 import com.teamwizardry.librarianlib.test.gui.GuiEntryPoint
+import com.teamwizardry.librarianlib.test.items.ModItems
 import com.teamwizardry.librarianlib.test.saving.SavingEntryPoint
 import com.teamwizardry.librarianlib.test.variants.VariantEntryPoint
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
+import net.minecraft.util.ActionResult
+import net.minecraft.util.EnumHand
+import net.minecraft.world.World
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.SidedProxy
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
@@ -26,12 +33,21 @@ class TestMod {
                 SavingEntryPoint,
                 FXEntryPoint,
                 GuiEntryPoint,
-                VariantEntryPoint
+                VariantEntryPoint,
+                UnsafeTest,
+                ContainerEntryPoint
         )
         PROXY.pre(e)
         entrypoints.forEach {
             it.preInit(e)
         }
+        object : ItemMod("test") {
+            override fun onItemRightClick(itemStackIn: ItemStack?, worldIn: World?, playerIn: EntityPlayer, hand: EnumHand?): ActionResult<ItemStack> {
+                ModItems.test(playerIn)
+                return super.onItemRightClick(itemStackIn, worldIn, playerIn, hand)
+            }
+        }
+        ModItems
     }
 
     @Mod.EventHandler

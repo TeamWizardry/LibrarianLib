@@ -10,10 +10,12 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagString
 import net.minecraft.network.PacketBuffer
+import net.minecraft.util.ResourceLocation
 import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.items.ItemStackHandler
 import java.awt.Color
 import java.util.*
+
 
 /**
  * Created by TheCodeWarrior
@@ -26,6 +28,7 @@ object SerializeMisc {
         itemStackHandler()
         uuid()
         iTextComponent()
+        resourcelocation()
     }
 
     private fun color() {
@@ -145,6 +148,28 @@ object SerializeMisc {
             PacketBuffer(buf).readTextComponent()
         }, { buf, value, sync ->
             PacketBuffer(buf).writeTextComponent(value)
+        }))
+    }
+
+    private fun resourcelocation() {
+        SerializerRegistry.register("minecraft:resourcelocation", Serializer(ResourceLocation::class.java))
+
+        SerializerRegistry["minecraft:resourcelocation"]?.register(Targets.NBT, Targets.NBT.impl<ResourceLocation>
+        ({ nbt, existing, sync ->
+            val tag = nbt as? NBTTagString
+            if(tag == null)
+                ResourceLocation("minecraft:missingno")
+            else
+                ResourceLocation(tag.string)
+        }, { value, sync ->
+            NBTTagString(value.toString())
+        }))
+
+        SerializerRegistry["minecraft:resourcelocation"]?.register(Targets.BYTES, Targets.BYTES.impl<ResourceLocation>
+        ({ buf, existing, sync ->
+            ResourceLocation(buf.readString())
+        }, { buf, value, sync ->
+            buf.writeString(value.toString())
         }))
     }
 }

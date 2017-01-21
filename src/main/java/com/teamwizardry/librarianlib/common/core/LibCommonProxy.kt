@@ -2,14 +2,19 @@
 
 package com.teamwizardry.librarianlib.common.core
 
+import com.teamwizardry.librarianlib.LibrarianLib
+import com.teamwizardry.librarianlib.common.base.ItemBlockClassAnnotationsHandler
+import com.teamwizardry.librarianlib.common.container.GuiHandler
 import com.teamwizardry.librarianlib.common.util.EasyConfigHandler
 import com.teamwizardry.librarianlib.common.util.autoregister.AutoRegisterHandler
 import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
 import net.minecraft.util.text.translation.I18n
 import net.minecraftforge.fml.common.Loader
+import net.minecraftforge.fml.common.discovery.ASMDataTable
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
+import net.minecraftforge.fml.common.network.NetworkRegistry
 import java.io.InputStream
 
 /**
@@ -20,6 +25,7 @@ open class LibCommonProxy {
 
     open val isClient = false
     open val isDedicatedServer = true
+    lateinit var asmDataTable: ASMDataTable
 
     open fun pre(e: FMLPreInitializationEvent) {
         EasyConfigHandler.init()
@@ -28,10 +34,12 @@ open class LibCommonProxy {
     open fun latePre(e: FMLPreInitializationEvent) {
         AutoRegisterHandler.handle(e)
         EasyConfigHandler.bootstrap(e.asmData, e.modConfigurationDirectory)
+        asmDataTable = e.asmData
+        ItemBlockClassAnnotationsHandler
     }
 
     open fun init(e: FMLInitializationEvent) {
-        // NO-OP
+        NetworkRegistry.INSTANCE.registerGuiHandler(LibrarianLib, GuiHandler)
     }
 
     open fun lateInit(e: FMLInitializationEvent) {

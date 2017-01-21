@@ -5,8 +5,8 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 
-@Mod(modid = LateLoader.MODID, version = LibrarianLib.VERSION, name = LateLoader.MODNAME, dependencies = LateLoader.DEPENDENCIES)
-class LateLoader {
+@Mod(modid = LateLoader.MODID, version = LibrarianLib.VERSION, name = LateLoader.MODNAME, dependencies = LateLoader.DEPENDENCIES, modLanguageAdapter = "net.shadowfacts.forgelin.KotlinAdapter")
+object LateLoader {
 
     @Mod.EventHandler
     fun preInit(e: FMLPreInitializationEvent) {
@@ -23,11 +23,9 @@ class LateLoader {
         LibrarianLib.PROXY.latePost(e)
     }
 
-    companion object {
+    const val MODID = "librarianliblate"
+    const val MODNAME = "LibrarianLib Stage 2"
+    const val DEPENDENCIES = "after:*"
 
-        const val MODID = "librarianliblate"
-        const val MODNAME = "LibrarianLib Stage 2"
-        const val DEPENDENCIES = "after:*"
-    }
 
 }
