@@ -27,7 +27,6 @@ private val unsafe by lazy {
 fun getUnsafe(more: Int = 0): Unsafe {
     val clazz = Class.forName(Throwable().stackTrace[2 + more].className)
     val modid = OwnershipHandler.getModId(clazz)
-    println(clazz.name + " " + modid)
     if(modid in LibrarianLib.unsafeAllowedModIds || modid == LibrarianLib.MODID) return unsafe
     throw IllegalAccessError("Tried to access Unsafe from $modid")
 }
