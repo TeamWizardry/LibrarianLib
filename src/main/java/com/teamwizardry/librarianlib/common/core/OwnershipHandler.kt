@@ -19,8 +19,10 @@ object OwnershipHandler {
     val BASE_PATHS = arrayOf(
             "src/main/java",
             "src/main/kotlin",
+            "src/main/scala",
             "src/test/java",
-            "src/test/kotlin"
+            "src/test/kotlin",
+            "src/test/scala"
     )
 
     val ABS_BASE = Paths.get(Minecraft.getMinecraft().mcDataDir.absolutePath).parent.parent.toString()

@@ -387,11 +387,11 @@ val ItemStack?.isEmpty: Boolean // 1.10 -> 1.11
 
 // Item ===========================================================================================================
 
-fun Item.toStack(amount: Int = 0, meta: Int = 0) = ItemStack(this, amount, meta)
+fun Item.toStack(amount: Int = 1, meta: Int = 0) = ItemStack(this, amount, meta)
 
 // Block ===========================================================================================================
 
-fun Block.toStack(amount: Int = 0, meta: Int = 0) = ItemStack(this, amount, meta)
+fun Block.toStack(amount: Int = 1, meta: Int = 0) = ItemStack(this, amount, meta)
 
 // Numbers =============================================================================================================
 
@@ -551,4 +551,10 @@ inline fun <reified K: Enum<K>, V> enumMapOf(vararg pairs: Pair<K, V>): EnumMap<
     val map = enumMapOf<K, V>()
     map.putAll(pairs)
     return map
+}
+
+// Collections
+
+fun <T : Any, E : Any, R : Collection<T>, F : Collection<E>> R.instanceof(collection: F): Boolean {
+    return javaClass.isAssignableFrom(collection.javaClass) && (this.isNotEmpty() && collection.isNotEmpty() && elementAt(0).javaClass.isAssignableFrom(collection.elementAt(0).javaClass))
 }
