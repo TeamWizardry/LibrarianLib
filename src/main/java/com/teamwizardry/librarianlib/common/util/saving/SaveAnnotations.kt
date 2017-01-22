@@ -107,3 +107,10 @@ annotation class CapabilityProvide(vararg val sides: EnumFacing)
 @MustBeDocumented
 annotation class SaveInPlace
 
+/**
+ * Specifies the order in which the fields appear in the constructor for dynamic deserialization.
+ *
+ */
+@Target(CONSTRUCTOR)
+@MustBeDocumented
+annotation class SavableConstructorOrder(vararg val params: String)

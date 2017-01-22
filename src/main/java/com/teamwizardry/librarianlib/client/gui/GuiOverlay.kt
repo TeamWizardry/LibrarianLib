@@ -31,15 +31,14 @@ object GuiOverlay {
         }
     }
 
-    private val mainComp = ComponentVoid(0,0)
+    private var mainComp = ComponentVoid(0,0)
     private val registered = mutableSetOf<StorageThing>()
+    private val newlyRegistered = mutableSetOf<StorageThing>()
 
     init {
         MinecraftForge.EVENT_BUS.register(this)
         F3Handler.addHandler(Keyboard.KEY_O, "Reinitialize overlay components", Supplier { "Reloaded overlays" }, Runnable {
-            mainComp.children.toTypedArray().forEach { sub ->
-               mainComp.remove(sub)
-            }
+            mainComp = ComponentVoid(0, 0)
             registered.forEach {
                 it.reinit(mainComp)
             }
@@ -55,6 +54,7 @@ object GuiOverlay {
         val storage = StorageThing(initializer, visible)
         storage.reinit(mainComp)
         registered.add(storage)
+        newlyRegistered.add(storage)
     }
 
     @SubscribeEvent
@@ -68,6 +68,10 @@ object GuiOverlay {
 
     @SubscribeEvent
     fun tick(e: TickEvent.ClientTickEvent) {
+        newlyRegistered.forEach {
+            it.reinit(mainComp)
+        }
+        newlyRegistered.clear()
         mainComp.tick()
     }
 

@@ -6,7 +6,10 @@ import com.teamwizardry.librarianlib.common.util.saving.helpers.StaticSavableIte
 import com.teamwizardry.librarianlib.common.util.saving.serializers.Serializer
 import com.teamwizardry.librarianlib.common.util.saving.serializers.SerializerRegistry
 import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.Targets
+import io.netty.buffer.ByteBuf
+import io.netty.buffer.Unpooled
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NBTTagByteArray
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagString
 import net.minecraft.util.ResourceLocation
@@ -25,6 +28,7 @@ object SerializeMisc {
         itemStackHandler()
         uuid()
         resourcelocation()
+        bytebuf()
     }
 
     private fun color() {
@@ -150,6 +154,36 @@ object SerializeMisc {
             ResourceLocation(buf.readString())
         }, { buf, value, sync ->
             buf.writeString(value.toString())
+        }))
+    }
+
+    private fun bytebuf() {
+        SerializerRegistry.register("netty:bytebuf", Serializer(ByteBuf::class.java))
+
+        SerializerRegistry["netty:bytebuf"]?.register(Targets.NBT, Targets.NBT.impl<ByteBuf>
+        ({ nbt, existing, sync ->
+            val tag = nbt as? NBTTagByteArray
+            if(tag == null)
+                Unpooled.EMPTY_BUFFER
+            else {
+                Unpooled.wrappedBuffer(tag.byteArray)
+            }
+        }, { value, sync ->
+            val bytes = ByteArray(value.readableBytes())
+            value.readBytes(bytes)
+            NBTTagByteArray(bytes)
+        }))
+
+        SerializerRegistry["netty:bytebuf"]?.register(Targets.BYTES, Targets.BYTES.impl<ByteBuf>
+        ({ buf, existing, sync ->
+            val bytes = ByteArray(buf.readVarInt())
+            buf.readBytes(bytes)
+            Unpooled.wrappedBuffer(bytes)
+        }, { buf, value, sync ->
+            val bytes = ByteArray(value.readableBytes())
+            value.readBytes(bytes)
+            buf.writeVarInt(bytes.size)
+            buf.writeBytes(bytes)
         }))
     }
 }

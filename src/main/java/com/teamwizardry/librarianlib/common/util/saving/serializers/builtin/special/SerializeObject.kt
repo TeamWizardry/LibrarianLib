@@ -207,13 +207,21 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
                     type.clazz.declaredConstructors.find { it.parameterCount == 0 } ?:
                             type.clazz.declaredConstructors.find {
                                 val paramsToFind = HashMap(fields)
+                                val customParamNames = it.getDeclaredAnnotation(SavableConstructorOrder::class.java)?.params
+                                var i = 0
                                 it.parameters.all {
-                                    paramsToFind.remove(it.name)?.meta?.type?.equals(FieldType.create(it.parameterizedType)) ?: false
+                                    var ret = false
+                                    if(customParamNames != null && i < customParamNames.size)
+                                        ret = paramsToFind.remove(customParamNames[i])?.meta?.type?.equals(FieldType.create(it.parameterizedType)) ?: false
+                                    else
+                                        ret = paramsToFind.remove(it.name)?.meta?.type?.equals(FieldType.create(it.parameterizedType)) ?: false
+                                    i++
+                                    ret
                                 }
                             } ?:
                             throw SerializerException("Couldn't find zero-argument constructor or constructor with parameters (${fields.map { it.value.meta.type.toString() + " " + it.key }.joinToString(", ")}) for immutable type ${type.clazz.canonicalName}")
                 }
-        constructorArgOrder = constructor.parameters.map { it.name }
+        constructorArgOrder = constructor.getDeclaredAnnotation(SavableConstructorOrder::class.java)?.params?.asList() ?: constructor.parameters.map { it.name }
         constructorMH = if (inPlaceSavable) {
             { arr -> throw SerializerException("Cannot create instance of class marked with @SaveInPlace") }
         } else {
