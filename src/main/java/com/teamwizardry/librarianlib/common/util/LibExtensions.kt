@@ -345,6 +345,8 @@ fun <T : NBTBase> NBTBase.safeCast(clazz: Class<T>): T {
             ) as T
 }
 
+inline fun <reified T : NBTBase> NBTBase.safeCast(): T = safeCast(T::class.java)
+
 // NBTTagCompound ======================================================================================================
 
 operator fun NBTTagCompound.iterator(): Iterator<Pair<String, NBTBase>> {

@@ -9,10 +9,13 @@ import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.Targ
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagString
+import net.minecraft.network.PacketBuffer
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.items.ItemStackHandler
 import java.awt.Color
 import java.util.*
+
 
 /**
  * Created by TheCodeWarrior
@@ -24,6 +27,7 @@ object SerializeMisc {
         itemStack()
         itemStackHandler()
         uuid()
+        iTextComponent()
         resourcelocation()
     }
 
@@ -128,6 +132,22 @@ object SerializeMisc {
         }, { buf, value, sync ->
             buf.writeLong(value.mostSignificantBits)
             buf.writeLong(value.leastSignificantBits)
+        }))
+    }
+
+    private fun iTextComponent() {
+        SerializerRegistry.register("minecraft:itextcomponent", Serializer(ITextComponent::class.java))
+
+        SerializerRegistry["minecraft:itextcomponent"]?.register(Targets.NBT, Targets.NBT.impl<ITextComponent>({ nbt, existing, sync ->
+            ITextComponent.Serializer.jsonToComponent(nbt.safeCast<NBTTagString>().string)
+        }, { value, sync ->
+            NBTTagString(ITextComponent.Serializer.componentToJson(value))
+        }))
+
+        SerializerRegistry["minecraft:itextcomponent"]?.register(Targets.BYTES, Targets.BYTES.impl<ITextComponent>({ buf, existing, sync ->
+            PacketBuffer(buf).readTextComponent()
+        }, { buf, value, sync ->
+            PacketBuffer(buf).writeTextComponent(value)
         }))
     }
 
