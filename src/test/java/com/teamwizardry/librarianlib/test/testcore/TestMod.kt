@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.test.testcore
 import com.teamwizardry.librarianlib.common.base.ModCreativeTab
 import com.teamwizardry.librarianlib.common.base.item.ItemMod
 import com.teamwizardry.librarianlib.common.core.LoggerBase
+import com.teamwizardry.librarianlib.test.cap.CapabilityTest
 import com.teamwizardry.librarianlib.test.container.ContainerEntryPoint
 import com.teamwizardry.librarianlib.test.fx.FXEntryPoint
 import com.teamwizardry.librarianlib.test.gui.GuiEntryPoint
@@ -43,10 +44,12 @@ class TestMod {
         }
         object : ItemMod("test") {
             override fun onItemRightClick(itemStackIn: ItemStack?, worldIn: World?, playerIn: EntityPlayer, hand: EnumHand?): ActionResult<ItemStack> {
-                ModItems.test(playerIn)
+                //ModItems.test(playerIn)
+                println(playerIn.getCapability(CapabilityTest.cap, null))
                 return super.onItemRightClick(itemStackIn, worldIn, playerIn, hand)
             }
         }
+        CapabilityTest.init()
         ModItems
     }
 

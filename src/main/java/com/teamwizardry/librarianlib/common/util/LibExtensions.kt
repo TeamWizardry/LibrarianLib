@@ -12,6 +12,7 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.*
 import net.minecraft.util.EnumFacing
+import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
@@ -48,6 +49,8 @@ fun String.localize(vararg parameters: Any): String {
 fun String.canLocalize(): Boolean {
     return LibrarianLib.PROXY.canTranslate(this)
 }
+
+fun String.toRl(): ResourceLocation = ResourceLocation(this)
 
 fun <K, V> MutableMap<K, V>.withRealDefault(default: (K) -> V): DefaultedMutableMap<K, V> {
     return when(this) {

@@ -11,6 +11,7 @@ import net.minecraft.entity.player.EntityPlayer
  */
 @ResourceClass
 object ModItems {
+    @JvmStatic
     lateinit var foo: ItemFoo
 
     @Ignored

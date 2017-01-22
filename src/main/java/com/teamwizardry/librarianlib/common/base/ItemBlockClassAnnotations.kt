@@ -35,8 +35,12 @@ object ItemBlockClassAnnotationsHandler {
     init {
         AnnotationHelper.findAnnotatedClasses(LibrarianLib.PROXY.asmDataTable, Object::class.java, ResourceClass::class.java) {
             clazz, info ->
-            clazz.declaredFields.filter { !it.annotations.any { it is Ignored } }.forEach {
-                it.set(clazz.kotlin.objectInstance, it.type.newInstance())
+            clazz.declaredFields.filter { it.annotations.none { it is Ignored } }.forEach {
+                try {
+                    it.set(clazz.kotlin.objectInstance, it.type.newInstance())
+                } catch(e: IllegalAccessException) {
+                    throw RuntimeException(it.toString(), e)
+                }
                 Class.forName(it.type.name)
             }
         }
