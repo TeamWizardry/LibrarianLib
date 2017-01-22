@@ -10,7 +10,7 @@ object RaycastUtils {
     @JvmStatic
     @JvmOverloads
     fun raycast(e: Entity, len: Double, stopOnLiquid: Boolean = false): RayTraceResult? {
-        val vec = e.positionVector.addVector(0.0, if (e is EntityPlayer) e.getEyeHeight().toDouble() else 0.0, 0.0)
+        val vec = e.positionVector.addVector(0.0, (e as? EntityPlayer)?.getEyeHeight()?.toDouble() ?: 0.0, 0.0)
 
         val look = e.lookVec
         if (look == null) {

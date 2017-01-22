@@ -12,6 +12,7 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.*
 import net.minecraft.util.EnumFacing
+import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
@@ -48,6 +49,8 @@ fun String.localize(vararg parameters: Any): String {
 fun String.canLocalize(): Boolean {
     return LibrarianLib.PROXY.canTranslate(this)
 }
+
+fun String.toRl(): ResourceLocation = ResourceLocation(this)
 
 fun <K, V> MutableMap<K, V>.withRealDefault(default: (K) -> V): DefaultedMutableMap<K, V> {
     return when(this) {
@@ -342,6 +345,8 @@ fun <T : NBTBase> NBTBase.safeCast(clazz: Class<T>): T {
             ) as T
 }
 
+inline fun <reified T : NBTBase> NBTBase.safeCast(): T = safeCast(T::class.java)
+
 // NBTTagCompound ======================================================================================================
 
 operator fun NBTTagCompound.iterator(): Iterator<Pair<String, NBTBase>> {
@@ -387,11 +392,11 @@ val ItemStack?.isEmpty: Boolean // 1.10 -> 1.11
 
 // Item ===========================================================================================================
 
-fun Item.toStack(amount: Int = 0, meta: Int = 0) = ItemStack(this, amount, meta)
+fun Item.toStack(amount: Int = 1, meta: Int = 0) = ItemStack(this, amount, meta)
 
 // Block ===========================================================================================================
 
-fun Block.toStack(amount: Int = 0, meta: Int = 0) = ItemStack(this, amount, meta)
+fun Block.toStack(amount: Int = 1, meta: Int = 0) = ItemStack(this, amount, meta)
 
 // Numbers =============================================================================================================
 
@@ -551,4 +556,10 @@ inline fun <reified K: Enum<K>, V> enumMapOf(vararg pairs: Pair<K, V>): EnumMap<
     val map = enumMapOf<K, V>()
     map.putAll(pairs)
     return map
+}
+
+// Collections
+
+fun <T : Any, E : Any, R : Collection<T>, F : Collection<E>> R.instanceof(collection: F): Boolean {
+    return javaClass.isAssignableFrom(collection.javaClass) && (this.isNotEmpty() && collection.isNotEmpty() && elementAt(0).javaClass.isAssignableFrom(collection.elementAt(0).javaClass))
 }

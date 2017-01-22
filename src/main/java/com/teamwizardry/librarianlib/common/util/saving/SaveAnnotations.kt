@@ -32,7 +32,7 @@ annotation class Save(val saveName: String = "")
  */
 @Target(FIELD, FUNCTION, PROPERTY_GETTER, PROPERTY_SETTER)
 @MustBeDocumented
-annotation class NoSync()
+annotation class NoSync
 
 /**
  * @author WireSegal
@@ -84,7 +84,7 @@ annotation class SaveMethodSetter(val saveName: String)
  */
 @Target(CLASS)
 @MustBeDocumented
-annotation class Savable()
+annotation class Savable
 
 /**
  * @author WireSegal

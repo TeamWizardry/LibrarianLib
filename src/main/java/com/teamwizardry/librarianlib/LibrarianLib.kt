@@ -18,6 +18,7 @@ import com.teamwizardry.librarianlib.common.structure.Structure
 import com.teamwizardry.librarianlib.common.util.ConfigPropertyInt
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import com.teamwizardry.librarianlib.common.util.autoregister.TileRegister
+import com.teamwizardry.librarianlib.common.util.EasyConfigHandler
 import com.teamwizardry.librarianlib.common.util.event.Event
 import com.teamwizardry.librarianlib.common.util.event.EventBus
 import com.teamwizardry.librarianlib.common.util.getUnsafe
@@ -50,7 +51,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
  * - Base classes for a variety of situations, for example: [Vec2d] [Matrix4] [Event] [ModAchievement]
  * - Structure API [Structure]
  * - Reliable and simple packet handler also using [Save] [PacketBase]
- * - Config Property system that is completely painless and only requires very minimal registration: [ConfigPropertyInt]
+ * - Config Property system that is completely painless and only requires very minimal registration: [EasyConfigHandler]
  * - Container API [ContainerBase]
  * - Multipart API [PartMod]
  * - An easy F3+key handler [F3Handler]
