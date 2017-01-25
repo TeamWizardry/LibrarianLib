@@ -14,17 +14,14 @@ import net.minecraftforge.fml.common.registry.GameRegistry
  * Created at 7:41 PM on 1/24/17.
  */
 @Suppress("LeakingThis")
-open class EnchantmentMod(name: String, rarity: Rarity, type: EnumEnchantmentType, vararg applicableSlots: EntityEquipmentSlot) : Enchantment(rarity, type, applicableSlots) {
+open class EnchantmentMod(name: String, rarity: Rarity, type: EnumEnchantmentType, vararg open val applicableSlots: EntityEquipmentSlot) : Enchantment(rarity, type, applicableSlots) {
 
-    val modId = currentModId
+    private val modId = currentModId
 
     init {
         setName("$modId.$name")
         GameRegistry.register(this, ResourceLocation(modId, name))
     }
-
-    open val applicableSlots: Array<EntityEquipmentSlot>
-        get() = arrayOf()
 
     private fun getEntityEquipmentForLevel(entityIn: EntityLivingBase)
             = applicableSlots.mapNotNull { entityIn.getItemStackFromSlot(it) }
