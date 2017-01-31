@@ -4,17 +4,20 @@ import com.teamwizardry.librarianlib.common.base.ModCreativeTab
 import com.teamwizardry.librarianlib.common.base.item.ItemMod
 import com.teamwizardry.librarianlib.common.core.LoggerBase
 import com.teamwizardry.librarianlib.test.cap.CapabilityTest
+import com.teamwizardry.librarianlib.test.command.CommandEntryPoint
 import com.teamwizardry.librarianlib.test.container.ContainerEntryPoint
 import com.teamwizardry.librarianlib.test.fx.FXEntryPoint
 import com.teamwizardry.librarianlib.test.gui.GuiEntryPoint
-import com.teamwizardry.librarianlib.test.items.ModItems
 import com.teamwizardry.librarianlib.test.saving.SavingEntryPoint
 import com.teamwizardry.librarianlib.test.variants.VariantEntryPoint
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ActionResult
+import net.minecraft.util.EnumActionResult
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
+import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.SidedProxy
@@ -36,7 +39,8 @@ class TestMod {
                 GuiEntryPoint,
                 VariantEntryPoint,
                 UnsafeTest,
-                ContainerEntryPoint
+                ContainerEntryPoint,
+                CommandEntryPoint
         )
         PROXY.pre(e)
         entrypoints.forEach {
@@ -45,12 +49,17 @@ class TestMod {
         object : ItemMod("test") {
             override fun onItemRightClick(itemStackIn: ItemStack?, worldIn: World?, playerIn: EntityPlayer, hand: EnumHand?): ActionResult<ItemStack> {
                 //ModItems.test(playerIn)
-                println(playerIn.getCapability(CapabilityTest.cap, null))
+                //println(playerIn.getCapability(CapabilityTest.cap, null))
                 return super.onItemRightClick(itemStackIn, worldIn, playerIn, hand)
             }
+
+            override fun onItemUse(stack: ItemStack?, playerIn: EntityPlayer?, worldIn: World?, pos: BlockPos?, hand: EnumHand?, facing: EnumFacing?, hitX: Float, hitY: Float, hitZ: Float): EnumActionResult {
+                println(worldIn?.getTileEntity(pos)?.getCapability(CapabilityTest.cap, null))
+                return super.onItemUse(stack, playerIn, worldIn, pos, hand, facing, hitX, hitY, hitZ)
+            }
         }
-        CapabilityTest.init()
-        ModItems
+        //CapabilityTest.init()
+        Class.forName("com.teamwizardry.librarianlib.test.items.ModItems")
     }
 
     @Mod.EventHandler

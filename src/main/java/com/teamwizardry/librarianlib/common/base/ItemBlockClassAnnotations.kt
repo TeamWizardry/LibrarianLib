@@ -35,11 +35,11 @@ object ItemBlockClassAnnotationsHandler {
     init {
         AnnotationHelper.findAnnotatedClasses(LibrarianLib.PROXY.asmDataTable, Object::class.java, ResourceClass::class.java) {
             clazz, info ->
-            clazz.declaredFields.filter { it.annotations.none { it is Ignored } }.forEach {
+            clazz.declaredFields.filter { it.annotations.none { it is Ignored } && it.name != "Companion" && it.name != "INSTANCE" }.forEach {
                 try {
-                    it.set(clazz.kotlin.objectInstance, it.type.newInstance())
+                    it.set(clazz.kotlin.objectInstance, it.type.newInstance()) //if the kotlin object instance is null, it will be all null, which means it's static :)
                 } catch(e: IllegalAccessException) {
-                    throw RuntimeException(it.toString(), e)
+                    throw RuntimeException("Exception in @ResourceClass! Private field: " + it.toString(), e)
                 }
                 Class.forName(it.type.name)
             }

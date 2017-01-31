@@ -13,6 +13,7 @@ import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
@@ -27,6 +28,7 @@ import net.minecraftforge.common.capabilities.CapabilityInject
  * Created by Elad on 1/22/2017.
  */
 class CapabilityTest : CapabilityMod("${TestMod.MODID}:CapTest".toRl()) {
+
     companion object {
         @JvmStatic
         @CapabilityInject(CapabilityTest::class)
@@ -46,12 +48,20 @@ class CapabilityTest : CapabilityMod("${TestMod.MODID}:CapTest".toRl()) {
     @Save
     var test = 0
 
+    override fun writeToCustomNbt(nbtTagCompound: NBTTagCompound) {
+        nbtTagCompound.setInteger("test", test)
+    }
+
+    override fun readFromCustomNbt(nbtTagCompound: NBTTagCompound) {
+        test = nbtTagCompound.getInteger("test")
+    }
 
 }
 
 class BlockCapTest : BlockMod("hi", Material.ROCK), ITileEntityProvider {
     override fun onBlockActivated(worldIn: World?, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer?, hand: EnumHand?, heldItem: ItemStack?, side: EnumFacing?, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         (worldIn?.getTileEntity(pos) as? TileEntityCapTest?)?.cap?.test = (worldIn?.getTileEntity(pos) as? TileEntityCapTest?)?.cap?.test?.plus(1) ?: 0
+        //(worldIn?.getTileEntity(pos) as? TileEntityCapTest?)?.cap?.markDirty()
         playerIn?.sendStatusMessage(TextComponentString((worldIn?.getTileEntity(pos) as? TileEntityCapTest?)?.cap?.test.toString()))
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ)
     }

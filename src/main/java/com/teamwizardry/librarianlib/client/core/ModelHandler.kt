@@ -12,8 +12,8 @@ import com.teamwizardry.librarianlib.common.base.block.IModBlockProvider
 import com.teamwizardry.librarianlib.common.base.item.IItemColorProvider
 import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.common.base.item.ISpecialModelProvider
-import com.teamwizardry.librarianlib.common.core.OwnershipHandler
 import com.teamwizardry.librarianlib.common.core.LibLibConfig
+import com.teamwizardry.librarianlib.common.core.OwnershipHandler
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import com.teamwizardry.librarianlib.common.util.builders.serialize
 import com.teamwizardry.librarianlib.common.util.times
@@ -36,7 +36,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.registry.RegistryDelegate
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
-import org.apache.commons.lang3.tuple.Pair
 import java.io.File
 import java.util.*
 
@@ -232,7 +231,7 @@ object ModelHandler {
                         val mrl = ModelResourceLocation(ResourceLocation(modName, variant).toString(), "inventory")
                         log("$namePad | Special model for variant $index - $variant applied")
                         e.modelRegistry.putObject(mrl, model)
-                        customModels.put(Pair.of<RegistryDelegate<Item>, Int>(item.delegate, index), mrl)
+                        customModels.put(item.delegate to index, mrl)
                         addToCachedLocations(variant, mrl)
                     }
                 }

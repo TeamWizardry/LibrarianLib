@@ -27,6 +27,10 @@ object RaycastUtils {
         return raycast(world, origin, end, stopOnLiquid)
     }
 
+    /**
+     * Return a raycast that starts on [start], ends on [end], does (or does not) stop
+     * when hitting liquids ([stopOnLiquid]) and is on world [world]
+     */
     @JvmStatic
     @JvmOverloads
     fun raycast(world: World, start: Vec3d, end: Vec3d, stopOnLiquid: Boolean = false): RayTraceResult? {
@@ -34,6 +38,10 @@ object RaycastUtils {
         return pos
     }
 
+    /**
+     * Get the entity [e] is looking at, or null if it can't be found in the range of
+     * [maxDistance]
+     */
     @JvmStatic
     @JvmOverloads
     fun getEntityLookedAt(e: Entity, maxDistance: Double = 32.0): Entity? {

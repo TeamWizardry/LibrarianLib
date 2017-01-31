@@ -19,7 +19,7 @@ object VariantHelper {
      */
     @JvmStatic
     @JvmOverloads
-    fun setupItem(item: Item, name: String, variants: Array<out String>, creativeTab: ModCreativeTab? = null): Array<out String> {
+    fun <T> setupItem(item: T, name: String, variants: Array<out String>, creativeTab: ModCreativeTab? = null): Array<out String> where T : Item, T : IVariantHolder {
         var variantTemp = variants
         item.unlocalizedName = name
         if (variantTemp.size > 1)
@@ -28,7 +28,7 @@ object VariantHelper {
         if (variantTemp.isEmpty())
             variantTemp = arrayOf(name)
 
-        ModelHandler.registerVariantHolder(item as IVariantHolder)
+        ModelHandler.registerVariantHolder(item)
         creativeTab?.set(item)
         return variantTemp
     }
@@ -47,10 +47,10 @@ object VariantHelper {
 
     @JvmStatic
     @JvmOverloads
-    fun finishSetupBlock(block: Block, name: String, itemForm: ItemBlock?, creativeTab: ModCreativeTab? = null) {
+    fun <T> finishSetupBlock(block: T, name: String, itemForm: ItemBlock?, creativeTab: ModCreativeTab? = null) where T : Block, T : IVariantHolder {
         block.unlocalizedName = name
         if (itemForm == null)
-            ModelHandler.registerVariantHolder(block as IVariantHolder)
+            ModelHandler.registerVariantHolder(block)
         creativeTab?.set(block)
     }
 

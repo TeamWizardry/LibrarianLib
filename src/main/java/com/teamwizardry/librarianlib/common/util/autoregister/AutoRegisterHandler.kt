@@ -2,8 +2,11 @@ package com.teamwizardry.librarianlib.common.util.autoregister
 
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.core.OwnershipHandler
+import com.teamwizardry.librarianlib.common.network.PacketBase
+import com.teamwizardry.librarianlib.common.network.PacketHandler
 import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
 import com.teamwizardry.librarianlib.common.util.times
+import com.teamwizardry.librarianlib.common.util.toRl
 import mcmultipart.multipart.IMultipart
 import mcmultipart.multipart.MultipartRegistry
 import net.minecraft.tileentity.TileEntity
@@ -12,6 +15,7 @@ import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.common.registry.GameRegistry
+import net.minecraftforge.fml.relauncher.Side
 
 /**
  * Created by TheCodeWarrior
@@ -28,7 +32,10 @@ object AutoRegisterHandler {
             if (name == null) {
                 errors.getOrPut("TileRegister", { mutableListOf() }).add(it.clazz)
             } else {
-                var loc = ResourceLocation(name)
+                var loc: ResourceLocation
+                if (name != "")
+                    loc = ResourceLocation(name)
+                else loc = it.clazz.canonicalName.toLowerCase().toRl()
                 if (loc.resourceDomain == "minecraft" && modId == null)
                     errors.getOrPut("TileRegister", { mutableListOf() }).add(it.clazz)
                 else {
@@ -40,6 +47,15 @@ object AutoRegisterHandler {
             }
 
         }
+        getAnnotatedBy(PacketRegister::class.java, PacketBase::class.java, table).forEach {
+            val side = it.get<Side>("value")
+            if (side == null) {
+                errors.getOrPut("TileRegister", { mutableListOf() }).add(it.clazz)
+            } else {
+                AbstractSaveHandler.cacheFields(it.clazz)
+                PacketHandler.register(it.clazz, side)
+            }
+        }
         if (Loader.isModLoaded("mcmultipart")) {
             getAnnotatedBy(PartRegister::class.java, IMultipart::class.java, table).forEach {
                 val name = it.get<String>("value")
@@ -47,7 +63,10 @@ object AutoRegisterHandler {
                 if (name == null) {
                     errors.getOrPut("PartRegister", { mutableListOf() }).add(it.clazz)
                 } else {
-                    var loc = ResourceLocation(name)
+                    var loc: ResourceLocation
+                    if (name != "")
+                        loc = ResourceLocation(name)
+                    else loc = it.clazz.canonicalName.toLowerCase().toRl()
                     if (loc.resourceDomain == "minecraft" && modId == null)
                         errors.getOrPut("PartRegister", { mutableListOf() }).add(it.clazz)
                     else {

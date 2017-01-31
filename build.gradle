@@ -46,6 +46,7 @@ repositories {
     maven {
         url "http://mvn.rx14.co.uk/shadowfacts/"
     }
+    maven { url 'https://jitpack.io' }
 }
 
 minecraft {
@@ -68,6 +69,7 @@ configurations {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     //required "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile 'com.github.Eladkay:Mixin:-SNAPSHOT'
 
     compile "net.shadowfacts:Forgelin:1.2.0"
     deobfCompile "MCMultiPart:MCMultiPart:1.2.1:universal"
@@ -85,6 +87,7 @@ jar {
     }
     manifest {
         attributes 'FMLAT': 'librarianlib_at.cfg'
+        //todo add fmlloadingplugin attribute
     }
 
 }

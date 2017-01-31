@@ -23,6 +23,7 @@ private val unsafe by lazy {
  * of Unsafe.
  */
 @JvmName("getUnsafeSafely")
+@JvmOverloads
 fun getUnsafe(more: Int = 0): Unsafe {
     val clazz = Class.forName(Throwable().stackTrace[2 + more].className)
     val modid = OwnershipHandler.getModId(clazz)
