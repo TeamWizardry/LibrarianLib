@@ -38,12 +38,14 @@ open class ParticleBase internal constructor(
         var friction: Vec3d,
         var jitterMagnitude: Vec3d = Vec3d(0.05, 0.05, 0.05),
         var jitterChance: Float = 0.1f
-) {
+    ) {
 
     open fun tickFirst() {
+        // NO-OP
     }
 
     open fun tickLast() {
+        // NO-OP
     }
 
     val radius: Vec3d = Vec3d(0.1, 0.1, 0.1)

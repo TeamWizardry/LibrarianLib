@@ -57,9 +57,11 @@ abstract class CapabilityMod(val name: ResourceLocation) {
     }
 
     open fun writeToCustomNbt(nbtTagCompound: NBTTagCompound) {
+        // NO-OP
     }
 
     open fun readFromCustomNbt(nbtTagCompound: NBTTagCompound) {
+        // NO-OP
     }
 
     fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {

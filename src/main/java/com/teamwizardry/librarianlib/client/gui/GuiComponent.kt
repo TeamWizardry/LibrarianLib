@@ -783,8 +783,8 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         }
     }
 
-    fun sendMessage(data: Any, ripple: EnumRippleType) {
-
+    open fun sendMessage(data: Any, ripple: EnumRippleType) {
+        // NO-OP
     }
 
     /**

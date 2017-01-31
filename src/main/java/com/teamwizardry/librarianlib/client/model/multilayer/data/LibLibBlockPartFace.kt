@@ -11,9 +11,7 @@ import java.lang.reflect.Type
 /**
  * Created by TheCodeWarrior
  */
-class LibLibBlockPartFace(cullFace: EnumFacing?, tintIndex: Int, texture: String, blockFaceUV: BlockFaceUV, val layer: BlockRenderLayer) : BlockPartFace(cullFace, tintIndex, texture, blockFaceUV){
-
-}
+class LibLibBlockPartFace(cullFace: EnumFacing?, tintIndex: Int, texture: String, blockFaceUV: BlockFaceUV, val layer: BlockRenderLayer) : BlockPartFace(cullFace, tintIndex, texture, blockFaceUV)
 
 internal class LibLibBlockPartFaceDeserializer : JsonDeserializer<BlockPartFace> {
     @Throws(JsonParseException::class)
@@ -27,7 +25,7 @@ internal class LibLibBlockPartFaceDeserializer : JsonDeserializer<BlockPartFace>
         return LibLibBlockPartFace(enumfacing, i, s, blockfaceuv, layer)
     }
 
-    protected fun parseTintIndex(jsonObject: JsonObject): Int {
+    private fun parseTintIndex(jsonObject: JsonObject): Int {
         return JsonUtils.getInt(jsonObject, "tintindex", -1)
     }
 
