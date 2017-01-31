@@ -35,8 +35,8 @@ object ItemBlockClassAnnotationsHandler {
     init {
         AnnotationHelper.findAnnotatedClasses(LibrarianLib.PROXY.asmDataTable, Any::class.java, ResourceClass::class.java) {
             clazz, info ->
-            val ownedid = OwnershipHandler.getModId(clazz)
-            modIdOverride = ownedid
+            val ownedId = OwnershipHandler.getModId(clazz)
+            modIdOverride = ownedId
             clazz.declaredFields.filter { it.annotations.none { it is Ignored } && it.name != "Companion" && it.name != "INSTANCE" }.forEach {
                 try {
                     it.set(clazz.kotlin.objectInstance, it.type.newInstance()) //if the kotlin object instance is null, it will be all null, which means it's static :)

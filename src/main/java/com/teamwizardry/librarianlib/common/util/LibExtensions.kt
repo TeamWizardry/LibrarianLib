@@ -369,7 +369,7 @@ operator fun NBTTagCompound.get(key: String): NBTBase = this.getTag(key)
 // Player ==============================================================================================================
 
 fun EntityPlayer.sendMessage(str: String)
-        = sendStatusMessage(TextComponentString(str))
+        = sendStatusMessage(str.toComponent())
 fun EntityPlayer.sendSpamlessMessage(str: String, uniqueId: Int)
         = sendSpamlessMessage(str.toComponent(), uniqueId)
 fun EntityPlayer.sendSpamlessMessage(comp: ITextComponent, uniqueId: Int)

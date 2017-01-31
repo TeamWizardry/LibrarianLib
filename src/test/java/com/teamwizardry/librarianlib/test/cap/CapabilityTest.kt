@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.common.base.capability.CapabilityMod
 import com.teamwizardry.librarianlib.common.base.capability.ICapabilityObjectProvider
 import com.teamwizardry.librarianlib.common.util.autoregister.TileRegister
 import com.teamwizardry.librarianlib.common.util.saving.Save
+import com.teamwizardry.librarianlib.common.util.toComponent
 import com.teamwizardry.librarianlib.common.util.toRl
 import com.teamwizardry.librarianlib.test.testcore.TestMod
 import net.minecraft.block.ITileEntityProvider
@@ -18,7 +19,6 @@ import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.text.TextComponentString
 import net.minecraft.world.World
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.capabilities.Capability
@@ -62,7 +62,7 @@ class BlockCapTest : BlockMod("hi", Material.ROCK), ITileEntityProvider {
     override fun onBlockActivated(worldIn: World?, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer?, hand: EnumHand?, heldItem: ItemStack?, side: EnumFacing?, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         (worldIn?.getTileEntity(pos) as? TileEntityCapTest?)?.cap?.test = (worldIn?.getTileEntity(pos) as? TileEntityCapTest?)?.cap?.test?.plus(1) ?: 0
         //(worldIn?.getTileEntity(pos) as? TileEntityCapTest?)?.cap?.markDirty()
-        playerIn?.sendStatusMessage(TextComponentString((worldIn?.getTileEntity(pos) as? TileEntityCapTest?)?.cap?.test.toString()))
+        playerIn?.sendStatusMessage((worldIn?.getTileEntity(pos) as? TileEntityCapTest?)?.cap?.test.toString().toComponent())
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ)
     }
 

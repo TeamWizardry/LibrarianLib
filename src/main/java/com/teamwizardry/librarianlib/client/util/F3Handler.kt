@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.client.util
 
+import com.teamwizardry.librarianlib.common.util.toComponent
 import net.minecraft.client.Minecraft
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.util.text.Style
-import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -43,7 +43,7 @@ object F3Handler {
                 if(it.key == Keyboard.KEY_Q)
                     return@forEach
                 val str = "F3 + ${Keyboard.getKeyName(it.key)} = ${descriptions[it.key]}"
-                guinewchat.printChatMessage(TextComponentString(str))
+                guinewchat.printChatMessage(str.toComponent())
             }
         })
     }
@@ -62,7 +62,7 @@ object F3Handler {
                     val update = updateText[it.key]?.get()
                     if(update != null) {
                         Minecraft.getMinecraft().ingameGUI.chatGUI.printChatMessage(
-                                TextComponentString("").appendSibling(TextComponentString("[Debug]: ").setStyle(Style().setColor(TextFormatting.YELLOW).setBold(true)))
+                                "".toComponent().appendSibling("[Debug]: ".toComponent().setStyle(Style().setColor(TextFormatting.YELLOW).setBold(true)))
                                         .appendText(update))
                     }
 

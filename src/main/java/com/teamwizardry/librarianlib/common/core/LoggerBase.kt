@@ -2,9 +2,9 @@ package com.teamwizardry.librarianlib.common.core
 
 import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.common.util.times
+import com.teamwizardry.librarianlib.common.util.toComponent
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.text.Style
-import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.TextFormatting
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
@@ -40,11 +40,11 @@ abstract class LoggerBase protected constructor(name: String) {
     }
 
     fun message(player: EntityPlayer, message: String, vararg args: Any?) {
-        player.sendStatusMessage(TextComponentString(String.format(message, *args)))
+        player.sendStatusMessage(String.format(message, *args).toComponent())
     }
 
     fun warn(player: EntityPlayer, message: String, vararg args: Any?) {
-        player.sendStatusMessage(TextComponentString(String.format(message, *args)).setStyle(Style().setColor(TextFormatting.RED)))
+        player.sendStatusMessage(String.format(message, *args).toComponent().setStyle(Style().setColor(TextFormatting.RED)))
     }
 
     /**
