@@ -13,6 +13,7 @@ import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.discovery.ASMDataTable
+import net.minecraftforge.fml.common.discovery.asm.ModAnnotation
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.fml.relauncher.Side
@@ -48,7 +49,7 @@ object AutoRegisterHandler {
 
         }
         getAnnotatedBy(PacketRegister::class.java, PacketBase::class.java, table).forEach {
-            val side = it.get<Side>("value")
+            val side = it.get<ModAnnotation.EnumHolder>("value")?.value?.run { Side.valueOf(this) }
             if (side == null)
                 errors.getOrPut("PacketRegister", { mutableListOf() }).add(it.clazz)
             else

@@ -18,6 +18,7 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.TextFormatting
 import net.minecraft.world.ChunkCache
@@ -367,9 +368,12 @@ operator fun NBTTagCompound.get(key: String): NBTBase = this.getTag(key)
 
 // Player ==============================================================================================================
 
-fun EntityPlayer.sendMessage(str: String) {
-    this.sendStatusMessage(TextComponentString(str))
-}
+fun EntityPlayer.sendMessage(str: String)
+        = sendStatusMessage(TextComponentString(str))
+fun EntityPlayer.sendSpamlessMessage(str: String, uniqueId: Int)
+        = sendSpamlessMessage(str.toComponent(), uniqueId)
+fun EntityPlayer.sendSpamlessMessage(comp: ITextComponent, uniqueId: Int)
+        = LibrarianLib.PROXY.sendSpamlessMessage(this, comp, uniqueId)
 
 fun Entity.setVelocityAndUpdate(vec: Vec3d) = setVelocityAndUpdate(vec.xCoord, vec.yCoord, vec.zCoord)
 fun Entity.setVelocityAndUpdate(x: Double = motionX, y: Double = motionY, z: Double = motionZ) {
@@ -386,6 +390,7 @@ val Entity.motionVec: Vec3d
 
 operator fun CharSequence.times(n: Int) = this.repeat(n)
 operator fun Int.times(n: CharSequence) = n.repeat(this)
+fun String.toComponent() = TextComponentString(this)
 
 // ICapabilityProvider ==============================================================================================================
 fun <T, R> ICapabilityProvider.ifCap(capability: Capability<T>, facing: EnumFacing?, callback: (T) -> R): R? {
