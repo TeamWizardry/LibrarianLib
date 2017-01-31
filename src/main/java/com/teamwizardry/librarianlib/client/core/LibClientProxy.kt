@@ -33,9 +33,6 @@ import java.io.InputStream
 @SideOnly(Side.CLIENT)
 class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
-    override val isClient = true
-    override val isDedicatedServer = false
-
     override fun pre(e: FMLPreInitializationEvent) {
         super.pre(e)
 

@@ -23,8 +23,6 @@ import java.io.InputStream
  */
 open class LibCommonProxy {
 
-    open val isClient = false
-    open val isDedicatedServer = true
     lateinit var asmDataTable: ASMDataTable
 
     open fun pre(e: FMLPreInitializationEvent) {

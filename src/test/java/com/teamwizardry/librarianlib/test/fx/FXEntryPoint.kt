@@ -8,6 +8,7 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
+import net.minecraftforge.fml.relauncher.FMLLaunchHandler
 
 /**
  * Created by TheCodeWarrior
@@ -15,7 +16,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 object FXEntryPoint : TestEntryPoint {
     override fun init(event: FMLInitializationEvent) {
         FXItemRegister
-        if(LibrarianLib.isClient)
+        if(FMLLaunchHandler.side().isClient)
             CustomBlockMapSprites.register(ResourceLocation(TestMod.MODID, "particles/glow"))
     }
 

@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.common.network
 
-import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
+import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
 import net.minecraft.client.Minecraft
 import net.minecraft.network.NetHandlerPlayServer
 import net.minecraft.util.IThreadListener
@@ -24,7 +24,7 @@ object PacketHandler {
 
     @JvmStatic
     fun <T : PacketBase> register(clazz: Class<T>, targetSide: Side) {
-        SavingFieldCache.getClassFields(clazz)
+        AbstractSaveHandler.cacheFields(clazz)
         NETWORK.registerMessage<T, PacketBase>(Handler<T>(), clazz, id++, targetSide)
     }
 

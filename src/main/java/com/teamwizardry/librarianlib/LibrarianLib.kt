@@ -17,7 +17,6 @@ import com.teamwizardry.librarianlib.common.core.LoggerBase
 import com.teamwizardry.librarianlib.common.core.OwnershipHandler
 import com.teamwizardry.librarianlib.common.network.PacketBase
 import com.teamwizardry.librarianlib.common.structure.Structure
-import com.teamwizardry.librarianlib.common.util.CommandBuilder
 import com.teamwizardry.librarianlib.common.util.EasyConfigHandler
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import com.teamwizardry.librarianlib.common.util.autoregister.TileRegister
@@ -32,7 +31,10 @@ import com.teamwizardry.librarianlib.common.util.saving.Save
 import net.minecraft.launchwrapper.Launch
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.SidedProxy
-import net.minecraftforge.fml.common.event.*
+import net.minecraftforge.fml.common.event.FMLInitializationEvent
+import net.minecraftforge.fml.common.event.FMLInterModComms
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 
 
 /**
@@ -42,7 +44,7 @@ import net.minecraftforge.fml.common.event.*
  * - Automatically register Item colors, models, statemappers, and all other model-related things [ItemMod]
  * - Automatically sync tileentity fields and packet fields marked with @[Save]
  * - An easy—if slightly complicated—GUI creation framework [GuiComponent] [GuiBase] [GuiOverlay]
- * - A flexable container framework based on the GUI component system [ContainerBase] [GuiContainerBase]
+ * - A flexible container framework based on the GUI component system [ContainerBase] [GuiContainerBase]
  * - A highly customizable and easy to use particle system [ParticleBuilder] [ParticleSpawner]
  * - Automatic registration of TileEntities @[TileRegister]
  * - Unsafe extensions and reflection-free access [getUnsafe] (UnsafeKt.getUnsafeSafely in java)
@@ -84,17 +86,13 @@ object LibrarianLib {
     const val CLIENT = "com.teamwizardry.librarianlib.client.core.LibClientProxy"
     const val SERVER = "com.teamwizardry.librarianlib.common.core.LibCommonProxy"
 
-    @JvmStatic
     @SidedProxy(clientSide = CLIENT, serverSide = SERVER)
     lateinit var PROXY: LibCommonProxy
+        @JvmStatic @JvmName("proxy") get
 
     @JvmField
     val DEV_ENVIRONMENT = Launch.blackboard["fml.deobfuscatedEnvironment"] as Boolean
 
-    val isClient: Boolean
-        get() = PROXY.isClient
-    val isDedicatedServer: Boolean
-        get() = PROXY.isDedicatedServer
     internal val unsafeAllowedModIds = mutableListOf<String>()
 
     @Mod.EventHandler
@@ -105,12 +103,6 @@ object LibrarianLib {
             modids.forEach { " ".repeat(MODID.length) + " | $it" }
         }
         unsafeAllowedModIds.addAll(modids)
-    }
-
-    @Mod.EventHandler
-    fun onServerStart(e: FMLServerStartingEvent) {
-        CommandBuilder.commands.forEach { e.registerServerCommand(it) }
-        CommandBuilder.isIsTooLate = true
     }
 }
 

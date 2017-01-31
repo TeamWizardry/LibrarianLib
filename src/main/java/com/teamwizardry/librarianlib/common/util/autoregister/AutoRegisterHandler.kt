@@ -49,20 +49,18 @@ object AutoRegisterHandler {
         }
         getAnnotatedBy(PacketRegister::class.java, PacketBase::class.java, table).forEach {
             val side = it.get<Side>("value")
-            if (side == null) {
-                errors.getOrPut("TileRegister", { mutableListOf() }).add(it.clazz)
-            } else {
-                AbstractSaveHandler.cacheFields(it.clazz)
+            if (side == null)
+                errors.getOrPut("PacketRegister", { mutableListOf() }).add(it.clazz)
+            else
                 PacketHandler.register(it.clazz, side)
-            }
         }
         if (Loader.isModLoaded("mcmultipart")) {
             getAnnotatedBy(PartRegister::class.java, IMultipart::class.java, table).forEach {
                 val name = it.get<String>("value")
                 val modId = OwnershipHandler.getModId(it.clazz)
-                if (name == null) {
+                if (name == null)
                     errors.getOrPut("PartRegister", { mutableListOf() }).add(it.clazz)
-                } else {
+                else {
                     var loc: ResourceLocation
                     if (name != "")
                         loc = ResourceLocation(name)

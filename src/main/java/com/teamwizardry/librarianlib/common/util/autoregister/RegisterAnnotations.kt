@@ -38,7 +38,7 @@ annotation class PartRegister(val value: String = "")
 /**
  * Apply this to a class that extends [PacketBase] to have it be automatically registered.
  *
- * [side] is the side the packet will be received on..
+ * [value] is the side the packet will be received on.
  */
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
