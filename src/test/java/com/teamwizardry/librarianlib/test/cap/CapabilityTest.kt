@@ -48,11 +48,11 @@ class CapabilityTest : CapabilityMod("${TestMod.MODID}:CapTest".toRl()) {
     @Save
     var test = 0
 
-    override fun writeToCustomNbt(nbtTagCompound: NBTTagCompound) {
+    override fun writeCustomNBT(nbtTagCompound: NBTTagCompound) {
         nbtTagCompound.setInteger("test", test)
     }
 
-    override fun readFromCustomNbt(nbtTagCompound: NBTTagCompound) {
+    override fun readCustomNBT(nbtTagCompound: NBTTagCompound) {
         test = nbtTagCompound.getInteger("test")
     }
 

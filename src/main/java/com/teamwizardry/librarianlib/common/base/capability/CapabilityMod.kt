@@ -56,23 +56,23 @@ abstract class CapabilityMod(val name: ResourceLocation) {
         }
     }
 
-    open fun writeToCustomNbt(nbtTagCompound: NBTTagCompound) {
+    open fun writeCustomNBT(nbtTagCompound: NBTTagCompound) {
         // NO-OP
     }
 
-    open fun readFromCustomNbt(nbtTagCompound: NBTTagCompound) {
+    open fun readCustomNBT(nbtTagCompound: NBTTagCompound) {
         // NO-OP
     }
 
     fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         compound.setTag("auto", AbstractSaveHandler.writeAutoNBT(this, false))
-        writeToCustomNbt(compound)
+        writeCustomNBT(compound)
         return compound
     }
 
     fun readFromNBT(compound: NBTTagCompound) {
         AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
-        readFromCustomNbt(compound)
+        readCustomNBT(compound)
     }
 
     protected open inner class CapabilityModSerializer : ICapabilitySerializable<NBTTagCompound> {

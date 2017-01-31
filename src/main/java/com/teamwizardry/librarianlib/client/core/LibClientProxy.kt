@@ -10,6 +10,7 @@ import com.teamwizardry.librarianlib.client.sprite.SpritesMetadataSectionSeriali
 import com.teamwizardry.librarianlib.client.sprite.Texture
 import com.teamwizardry.librarianlib.client.util.F3Handler
 import com.teamwizardry.librarianlib.client.util.ScissorUtil
+import com.teamwizardry.librarianlib.client.util.lambdainterfs.ClientRunnable
 import com.teamwizardry.librarianlib.common.core.LibCommonProxy
 import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
 import net.minecraft.client.Minecraft
@@ -18,7 +19,9 @@ import net.minecraft.client.resources.IReloadableResourceManager
 import net.minecraft.client.resources.IResourceManager
 import net.minecraft.client.resources.IResourceManagerReloadListener
 import net.minecraft.client.resources.data.MetadataSerializer
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
@@ -81,6 +84,15 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         } catch (e: IOException) {
             return null
         }
+    }
+
+    override fun runIfClient(clientRunnable: ClientRunnable) = clientRunnable.runIfClient()
+
+    override fun getClientPlayer(): EntityPlayer = Minecraft.getMinecraft().player
+
+    override fun sendSpamlessMessage(player: EntityPlayer, msg: ITextComponent, uniqueId: Int) {
+        val chat = Minecraft.getMinecraft().ingameGUI.chatGUI
+        chat.printChatMessageWithOptionalDeletion(msg, uniqueId)
     }
 
     override fun onResourceManagerReload(resourceManager: IResourceManager) {

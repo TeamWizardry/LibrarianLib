@@ -8,9 +8,11 @@ import io.netty.buffer.ByteBuf
 import net.minecraft.block.Block
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.*
+import net.minecraft.network.play.server.SPacketEntityVelocity
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.AxisAlignedBB
@@ -368,6 +370,17 @@ operator fun NBTTagCompound.get(key: String): NBTBase = this.getTag(key)
 fun EntityPlayer.sendMessage(str: String) {
     this.sendStatusMessage(TextComponentString(str))
 }
+
+fun Entity.setVelocityAndUpdate(vec: Vec3d) = setVelocityAndUpdate(vec.xCoord, vec.yCoord, vec.zCoord)
+fun Entity.setVelocityAndUpdate(x: Double = motionX, y: Double = motionY, z: Double = motionZ) {
+    motionX = x
+    motionY = y
+    motionZ = z
+    if (this is EntityPlayerMP)
+        connection.sendPacket(SPacketEntityVelocity(this))
+}
+val Entity.motionVec: Vec3d
+    get() = Vec3d(motionX, motionY, motionZ)
 
 // String ==============================================================================================================
 

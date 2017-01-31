@@ -99,7 +99,7 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         GlStateManager.popAttrib()
 
         if(container.allSlots.any { it.lastVisible != it.visible }) {
-            PacketHandler.NETWORK.sendToServer(PacketSyncSlotVisibility().apply { visibility = container.allSlots.map { it.visible }.toBooleanArray() })
+            PacketHandler.NETWORK.sendToServer(PacketSyncSlotVisibility(container.allSlots.map { it.visible }.toBooleanArray()))
         }
 
         container.allSlots.filter { !it.visible }.forEach { it.xPos = -1000; it.yPos = -1000 }

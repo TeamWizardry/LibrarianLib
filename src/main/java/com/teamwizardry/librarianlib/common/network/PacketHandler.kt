@@ -17,11 +17,6 @@ object PacketHandler {
     val NETWORK: SimpleNetworkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("TeamWizardry")
     private var id = 0
 
-    init {
-        register(PacketSynchronization::class.java, Side.CLIENT)
-        register(PacketSyncSlotVisibility::class.java, Side.SERVER)
-    }
-
     @JvmStatic
     fun <T : PacketBase> register(clazz: Class<T>, targetSide: Side) {
         AbstractSaveHandler.cacheFields(clazz)

@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.common.base.ModCreativeTab
 import com.teamwizardry.librarianlib.common.base.item.ItemMod
 import com.teamwizardry.librarianlib.common.core.LoggerBase
 import com.teamwizardry.librarianlib.test.cap.CapabilityTest
-import com.teamwizardry.librarianlib.test.command.CommandEntryPoint
 import com.teamwizardry.librarianlib.test.container.ContainerEntryPoint
 import com.teamwizardry.librarianlib.test.fx.FXEntryPoint
 import com.teamwizardry.librarianlib.test.gui.GuiEntryPoint
@@ -39,8 +38,7 @@ class TestMod {
                 GuiEntryPoint,
                 VariantEntryPoint,
                 UnsafeTest,
-                ContainerEntryPoint,
-                CommandEntryPoint
+                ContainerEntryPoint
         )
         PROXY.pre(e)
         entrypoints.forEach {
