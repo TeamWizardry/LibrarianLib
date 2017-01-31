@@ -111,7 +111,7 @@ object DefaultValues {
 
     @JvmStatic
     fun getDefaultValue(type: FieldType): Any {
-        val default = map[type] ?: createSpecialDefaults(type) ?: classMap[type.clazz] ?: throw IllegalArgumentException()
+        val default = map[type] ?: createSpecialDefaults(type) ?: classMap[type.clazz] ?: throw IllegalArgumentException(type.toString())
         return default()
     }
 

@@ -21,7 +21,7 @@ import java.util.*
 @SaveInPlace
 abstract class CapabilityMod(val name: ResourceLocation) {
 
-    val capability: Capability<*> by lazy { capabilities[javaClass]?.invoke() ?: throw InvalidPropertiesFormatException("Invalid class!") }
+    val capability: Capability<*> by lazy { capabilities[javaClass]?.invoke() ?: throw ClassNotFoundException("Invalid class!") }
 
     fun attach(event: AttachCapabilitiesEvent<*>) {
         event.addCapability(name, CapabilityModSerializer())

@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.common.core.OwnershipHandler
 import sun.misc.Unsafe
 import java.lang.reflect.Field
-import javax.management.relation.InvalidRelationServiceException
 
 /**
  * Created by Elad on 12/20/2016.
@@ -32,8 +31,9 @@ fun getUnsafe(more: Int = 0): Unsafe {
 }
 
 
-fun <T> Class<T>.newInstanceUnsafe(more: Int = 0) = getUnsafe(1 + more).allocateInstance(this) as? T ?: throw InvalidRelationServiceException("Invalid class $this?")
+@Suppress("UNCHECKED_CAST")
+fun <T> Class<T>.newInstanceUnsafe(more: Int = 0) = getUnsafe(1 + more).allocateInstance(this) as? T ?: throw ClassNotFoundException("Invalid class $this")
 fun Throwable.throwUnsafely(more: Int = 0) = getUnsafe(1 + more).throwException(this)
 fun Field.getOffset(more: Int = 0) = getUnsafe(1 + more).fieldOffset(this)
 inline fun <reified T : Any> T?.orNewUnsafe(): T = this ?: T::class.java.newInstanceUnsafe(1);
-inline fun <reified T : Any> T?.orNew(): T = this ?: T::class.constructors.elementAt(0).call()
+inline fun <reified T : Any> T?.orNew(): T = this ?: T::class.java.constructors.elementAt(0).newInstance() as T
