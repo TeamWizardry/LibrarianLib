@@ -29,11 +29,10 @@ abstract class CapabilityMod(val name: ResourceLocation) {
 
     companion object {
         init {
-            MinecraftForge.EVENT_BUS.register(javaClass)
+            MinecraftForge.EVENT_BUS.register(this)
         }
 
         @SubscribeEvent
-        @JvmStatic
         fun onDeath(playerCloneEvent: PlayerEvent.Clone) {
             if (playerCloneEvent.isWasDeath)
                 for (cap in capabilities.values)
@@ -41,7 +40,6 @@ abstract class CapabilityMod(val name: ResourceLocation) {
                             .readFromNBT((playerCloneEvent.original.getCapability(cap(), null) as CapabilityMod).writeToNBT(NBTTagCompound()))
         }
 
-        @JvmStatic
         fun <T : CapabilityMod> register(capClass: Class<T>, capObj: ICapabilityObjectProvider<T>) {
             CapabilityManager.INSTANCE.register(capClass, object : Capability.IStorage<T> {
                 override fun writeNBT(capability: Capability<T>, instance: T, side: EnumFacing?): NBTBase {
