@@ -3,7 +3,10 @@ package com.teamwizardry.librarianlib.common.util.saving
 import java.lang.reflect.*
 import java.util.*
 
-open class FieldType protected constructor(val clazz: Class<*>) {
+abstract class FieldType protected constructor(open val clazz: Class<*>) {
+
+    open val interfaces: Array<out Class<*>>
+        get() = arrayOf()
 
     companion object {
         @JvmStatic
@@ -14,16 +17,22 @@ open class FieldType protected constructor(val clazz: Class<*>) {
 
         @JvmStatic
         fun create(type: Type): FieldType {
+            val fType: FieldType =
             if(type is ParameterizedType)
-                return createGeneric(type)
-            if(type is GenericArrayType)
-                return createGenericArray(type)
-            if(type is Class<*>)
+                createGeneric(type)
+            else if(type is GenericArrayType)
+                createGenericArray(type)
+            else if(type is TypeVariable<*>)
+                createVariable(type)
+            else if(type is Class<*>)
                 if(type.isArray)
-                    return createArray(type)
+                    createArray(type)
                 else
-                    return createPlain(type)
-            throw IllegalArgumentException("Cannot create FieldType from $type")
+                    createPlain(type)
+            else
+                throw IllegalArgumentException("Cannot create FieldType from $type")
+
+            return fType
         }
 
         private fun createPlain(type: Class<*>): FieldType {
@@ -41,10 +50,17 @@ open class FieldType protected constructor(val clazz: Class<*>) {
         private fun createGenericArray(type: GenericArrayType): FieldType {
             return FieldTypeArray(create(type.genericComponentType))
         }
+
+        private fun createVariable(type: TypeVariable<*>): FieldType {
+            return FieldTypeVariable(type.genericDeclaration as Class<*>, type.name, type.genericDeclaration.typeParameters.indexOfFirst { it.name == type.name })
+        }
     }
 }
 
 class FieldTypeClass(clazz: Class<*>) : FieldType(clazz) {
+
+    override val interfaces: Array<out Class<*>> = if (clazz.isInterface) arrayOf(*clazz.interfaces, clazz) else clazz.interfaces
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is FieldTypeClass) return false
@@ -116,5 +132,30 @@ class FieldTypeGeneric(clazz: Class<*>, val generics: Array<FieldType>) : FieldT
 
     override fun toString(): String {
         return clazz.simpleName + "<" + generics.map { it.toString() }.joinToString(", ") + ">"
+    }
+}
+
+class FieldTypeVariable(val parent: Class<*>, val name: String, val index: Int) : FieldType(Any::class.java) {
+    override val clazz: Class<*>
+        get() = throw UnsupportedOperationException("Cannot get class from variable field type!")
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is FieldTypeVariable) return false
+
+        if (name != other.name) return false
+        if (index != other.index) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + index
+        return result
+    }
+
+    override fun toString(): String {
+        return name
     }
 }

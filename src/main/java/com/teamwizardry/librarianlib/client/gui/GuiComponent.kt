@@ -4,12 +4,14 @@ import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.client.core.ClientTickHandler
 import com.teamwizardry.librarianlib.client.gui.GuiComponent.*
+import com.teamwizardry.librarianlib.common.util.div
 import com.teamwizardry.librarianlib.common.util.event.Event
 import com.teamwizardry.librarianlib.common.util.event.EventBus
 import com.teamwizardry.librarianlib.common.util.event.EventCancelable
 import com.teamwizardry.librarianlib.common.util.math.BoundingBox2D
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import com.teamwizardry.librarianlib.common.util.plus
+import com.teamwizardry.librarianlib.common.util.times
 import com.teamwizardry.librarianlib.common.util.vec
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
@@ -111,8 +113,6 @@ import java.util.*
  *
  * ### Advanced events
  * - [LogicalSizeEvent] - Fired when the logical size is queried
- * - [ChildMouseOffsetEvent] - Fired when a mouse position is being offset to be relative to a child component
- * - [MouseOffsetEvent] - Fired when a mouse position is being offset to be relative to this component
  * - [MouseOverEvent] - Fired when checking if the mouse is over this component
  */
 @SideOnly(Side.CLIENT)
@@ -168,9 +168,12 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     class RemoveTagEvent<T : GuiComponent<T>>(val component: T, val tag: Any) : EventCancelable()
 
     class LogicalSizeEvent<T : GuiComponent<T>>(val component: T, var box: BoundingBox2D?) : Event()
-    class ChildMouseOffsetEvent<T : GuiComponent<T>>(val component: T, val child: GuiComponent<*>, var offset: Vec2d) : Event()
-    class MouseOffsetEvent<out T : GuiComponent<*>>(val component: T, var offset: Vec2d) : Event()
     class MouseOverEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, var isOver: Boolean) : Event()
+
+    class MessageArriveEvent<T : GuiComponent<T>>(val component: T, val from: GuiComponent<*>, val message: Message) : Event()
+
+    data class Message(val component: GuiComponent<*>, val data: Any, val rippleType: EnumRippleType)
+    enum class EnumRippleType { NONE, UP, DOWN, ALL }
 
     var zIndex = 0
     /**
@@ -201,6 +204,13 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     var mouseOver = false
     var mousePosThisFrame = Vec2d.ZERO
     protected var tagStorage: MutableSet<Any> = HashSet<Any>()
+    /**
+     * Do not use this to check if a component has a tag, as event hooks can add virtual tags to components. Use [hasTag] instead.
+     *
+     * Returns an unmodifiable set of all the tags this component has.
+     *
+     * You should use [addTag] and [removeTag] to modify the tag set.
+     */
     fun getTags() = Collections.unmodifiableSet<Any>(tagStorage)
 
 
@@ -272,6 +282,21 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         }
     var parents: LinkedHashSet<GuiComponent<*>> = LinkedHashSet()
 
+    /**
+     * Amount to translate children, applied to both drawing and mouse position. Applied before [childScale] and [childRotation]
+     */
+    var childTranslation: Vec2d = Vec2d.ZERO
+    /**
+     * Amount to scale children, applied to both drawing and mouse position. Applied after [childTranslation] and before [childRotation]
+     */
+    var childScale: Double = 1.0
+    /**
+     * Amount to rotate children around this component's origin, applied to both drawing and mouse position. Applied after [childScale]
+     *
+     * Angle is in clockwise radians
+     */
+    var childRotation: Double = 0.0
+
     init {
         this.pos = vec(posX, posY)
         this.size = vec(width, height)
@@ -281,13 +306,6 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * Draws the component, this is called between pre and post draw events
      */
     abstract fun drawComponent(mousePos: Vec2d, partialTicks: Float)
-
-    /**
-     * Transforms the position passed to be relative to the root component's position.
-     */
-    fun rootPos(pos: Vec2d): Vec2d {
-        return parent?.rootPos(pos.add(this.pos)) ?: pos.add(this.pos)
-    }
 
     /**
      * Adds child(ren) to this component.
@@ -434,10 +452,29 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     //=============================================================================
 
     /**
-     * Allows the component to modify the position before it is passed to a child element.
+     * Allows the component to modify the mouse position before it is passed to a child element.
      */
     fun transformChildPos(child: GuiComponent<*>, pos: Vec2d): Vec2d {
-        return pos.sub(child.BUS.fire(MouseOffsetEvent(child.thiz(), BUS.fire(ChildMouseOffsetEvent(thiz(), child, child.pos)).offset)).offset)
+        //     [ translate to child's screen space ] [ subtract child pos to put origin at child origin ]
+        return ((pos - childTranslation) / childScale).rotate(-childRotation) - child.pos
+    }
+
+    /**
+     * Reverses [transformChildPos]
+     */
+    fun unTransformChildPos(child: GuiComponent<*>, pos: Vec2d): Vec2d {
+        return (pos + child.pos).rotate(childRotation) * childScale + childTranslation
+    }
+
+    /**
+     * Recursivly reverses [transformChildPos], expressing the passed position relative to the root component.
+     *
+     * If [screenRoot] is set, then the root component's position is accounted for, making the position relative to the
+     * GL context of the root caller. Generally meaning the pos is relative to the screen.
+     */
+    @JvmOverloads
+    fun unTransformRoot(child: GuiComponent<*>, pos: Vec2d, screenRoot: Boolean = false): Vec2d {
+        return parent?.unTransformRoot(this, unTransformChildPos(child, pos), screenRoot) ?: if(screenRoot) unTransformChildPos(child, pos) + this.pos else unTransformChildPos(child, pos)
     }
 
     open fun calculateMouseOver(mousePos: Vec2d) {
@@ -522,7 +559,11 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
         GlStateManager.pushMatrix()
         GlStateManager.pushAttrib()
-        GlStateManager.translate(pos.x, pos.y, 0.0)
+        GlStateManager.translate(pos.x + childTranslation.x, pos.y + childTranslation.y, 0.0)
+        if(childScale != 1.0) // avoid unnecessary GL calls. Possibly microoptimization but meh.
+            GlStateManager.scale(childScale, childScale, 1.0)
+        if(childRotation != 0.0) // see above comment
+            GlStateManager.rotate(Math.toDegrees(childRotation).toFloat(), 0f, 0f, 1f)
 
         BUS.fire(PreChildrenDrawEvent(thiz(), mousePos, partialTicks))
 
@@ -536,8 +577,11 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         BUS.fire(PostDrawEvent(thiz(), mousePos, partialTicks))
     }
 
-    open fun tick() {
+    open fun onTick() {}
+
+    fun tick() {
         BUS.fire(ComponentTickEvent(thiz()))
+        onTick()
         for (child in components) {
             child.tick()
         }
@@ -667,7 +711,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         var aabb = contentSize
         for (child in components) {
             if (!child.isVisible) continue
-            val childAABB = child.getLogicalSize()
+            val childAABB = child.getLogicalSize()?.scale(childScale)?.offset(childTranslation)
             aabb = childAABB?.union(aabb) ?: aabb
         }
 
@@ -715,6 +759,37 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     }
     //=============================================================================
 
+    open fun onMessage(from: GuiComponent<*>, message: Message) {}
+
+    fun handleMessage(from: GuiComponent<*>, message: Message) {
+        BUS.fire(MessageArriveEvent(thiz(), from, message))
+        onMessage(from, message)
+
+        if(message.rippleType != EnumRippleType.NONE) {
+            if(message.rippleType == EnumRippleType.UP || message.rippleType == EnumRippleType.ALL) {
+                parent?.let {
+                    if(it != from) {
+                        it.handleMessage(this, message)
+                    }
+                }
+            }
+            if(message.rippleType == EnumRippleType.DOWN || message.rippleType == EnumRippleType.ALL) {
+                children.forEach {
+                    if(it != from) {
+                        it.handleMessage(this, message)
+                    }
+                }
+            }
+        }
+    }
+
+    open fun sendMessage(data: Any, ripple: EnumRippleType) {
+        // NO-OP
+    }
+
+    /**
+     * Sets the value associated with the pair of keys [clazz] and [key]. The value must be a subclass of [clazz]
+     */
     fun <D : Any> setData(clazz: Class<D>, key: String, value: D) {
         if (!data.containsKey(clazz))
             data.put(clazz, mutableMapOf())
@@ -722,6 +797,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             data.get(clazz)?.put(key, value)
     }
 
+    /**
+     * Removes the value associated with the pair of keys [clazz] and [key]
+     */
     fun <D : Any> removeData(clazz: Class<D>, key: String) {
         if (!data.containsKey(clazz))
             data.put(clazz, mutableMapOf())
@@ -729,6 +807,10 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             data.get(clazz)?.remove(key)
     }
 
+    /**
+     * Returns the value associated with the pair of keys [clazz] and [key] if it exists, else it returns null.
+     * The value will be an instance of [clazz]
+     */
     @Suppress("UNCHECKED_CAST")
     fun <D> getData(clazz: Class<D>, key: String): D? {
         if (!data.containsKey(clazz))
@@ -736,11 +818,43 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         return BUS.fire(GetDataEvent(thiz(), clazz, key, data.get(clazz)?.get(key) as D?)).value
     }
 
+    /**
+     * Checks if there is a value associated with the pair of keys [clazz] and [key]
+     */
     @Suppress("UNCHECKED_CAST")
     fun <D> hasData(clazz: Class<D>, key: String): Boolean {
         if (!data.containsKey(clazz))
             data.put(clazz, HashMap<String, Any>())
         return BUS.fire(GetDataEvent(thiz(), clazz, key, data[clazz]?.get(key) as D?)).value != null
+    }
+
+    /**
+     * Sets the value associated with the pair of keys [clazz] and `""`. The value must be a subclass of [clazz]
+     */
+    fun <D : Any> setData(clazz: Class<D>, value: D) {
+        setData(clazz, "", value)
+    }
+
+    /**
+     * Removes the value associated with the pair of keys [clazz] and `""`
+     */
+    fun <D : Any> removeData(clazz: Class<D>) {
+        removeData(clazz, "")
+    }
+
+    /**
+     * Returns the value Associated with the pair of keys [clazz] and `""` if it exists, else it returns null.
+     * The value will be an instance of [clazz]
+     */
+    fun <D : Any> getData(clazz: Class<D>): D? {
+        return getData(clazz, "")
+    }
+
+    /**
+     * Checks if there is a value associated with the pair of keys [clazz] and `""`
+     */
+    fun <D : Any> hasData(clazz: Class<D>): Boolean {
+        return hasData(clazz, "")
     }
 
     /**

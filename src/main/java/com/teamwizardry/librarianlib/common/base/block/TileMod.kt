@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.common.base.block
 import com.teamwizardry.librarianlib.common.network.PacketHandler
 import com.teamwizardry.librarianlib.common.network.PacketSynchronization
 import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
+import com.teamwizardry.librarianlib.common.util.saving.SaveInPlace
 import io.netty.buffer.ByteBuf
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayerMP
@@ -10,14 +11,17 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.network.NetworkManager
 import net.minecraft.network.play.server.SPacketUpdateTileEntity
 import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraft.world.WorldServer
+import net.minecraftforge.common.capabilities.Capability
 
 /**
  * @author WireSegal
  * Created at 11:06 AM on 8/4/16.
  */
+@SaveInPlace
 abstract class TileMod : TileEntity() {
 
     /**
@@ -33,23 +37,34 @@ abstract class TileMod : TileEntity() {
     }
 
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
-        writeCustomNBT(compound, false)
-        AbstractSaveHandler.writeAutoNBT(this, compound)
+        val customTag = NBTTagCompound()
+        writeCustomNBT(customTag, false)
+        compound.setTag("custom", customTag)
+        compound.setTag("auto", AbstractSaveHandler.writeAutoNBT(this, false))
+        compound.setInteger("_v", 2)
         super.writeToNBT(compound)
 
         return compound
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        readCustomNBT(compound)
-        AbstractSaveHandler.readAutoNBT(this, compound)
+        readCustomNBT(compound.getCompoundTag("custom"))
+        if(!compound.hasKey("_v"))
+            AbstractSaveHandler.readAutoNBT(this, compound, false)
+        else {
+            when(compound.getInteger("_v")) {
+                2 -> AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+            }
+        }
         super.readFromNBT(compound)
     }
 
     override fun getUpdateTag(): NBTTagCompound {
         val compound = super.getUpdateTag()
-        writeCustomNBT(compound, true)
-        AbstractSaveHandler.writeAutoNBT(this, compound, true)
+        val customTag = NBTTagCompound()
+        writeCustomNBT(customTag, true)
+        compound.setTag("custom", customTag)
+        compound.setTag("auto", AbstractSaveHandler.writeAutoNBT(this, true))
         super.writeToNBT(compound)
 
         return compound
@@ -106,8 +121,12 @@ abstract class TileMod : TileEntity() {
 
     override fun onDataPacket(net: NetworkManager, packet: SPacketUpdateTileEntity) {
         super.onDataPacket(net, packet)
-        readCustomNBT(packet.nbtCompound)
-        AbstractSaveHandler.readAutoNBT(javaClass, packet.nbtCompound)
+        handleUpdateTag(packet.nbtCompound)
+    }
+
+    override fun handleUpdateTag(tag: NBTTagCompound) {
+        readCustomNBT(tag.getCompoundTag("custom"))
+        AbstractSaveHandler.readAutoNBT(this, tag.getTag("auto"), true)
     }
 
     /**
@@ -120,12 +139,26 @@ abstract class TileMod : TileEntity() {
             ws.playerEntities
                     .filterIsInstance<EntityPlayerMP>()
                     .filter { it.getDistanceSq(getPos()) < 64 * 64 && ws.playerChunkMap.isPlayerWatchingChunk(it, pos.x shr 4, pos.z shr 4) }
-                    .forEach {
-                        if (useFastSync)
-                            PacketHandler.NETWORK.sendTo(PacketSynchronization(this), it)
-                        else
-                            it.connection.sendPacket(updatePacket)
-                    }
+                    .forEach { sendUpdatePacket(it) }
         }
+    }
+
+    /**
+     * The specific implementation for an update packet.
+     * By default, controlled by [useFastSync], it will send the vanilla packet or the LibLib sync packet.
+     */
+    open fun sendUpdatePacket(player: EntityPlayerMP) {
+        if (useFastSync)
+            PacketHandler.NETWORK.sendTo(PacketSynchronization(this), player)
+        else
+            player.connection.sendPacket(updatePacket)
+    }
+
+    override fun <T : Any> getCapability(capability: Capability<T>, facing: EnumFacing?): T? {
+        return AbstractSaveHandler.getCapability(this, capability, facing) ?: super.getCapability(capability, facing)
+    }
+
+    override fun hasCapability(capability: Capability<*>, facing: EnumFacing?): Boolean {
+        return AbstractSaveHandler.hasCapability(this, capability, facing) || super.hasCapability(capability, facing)
     }
 }

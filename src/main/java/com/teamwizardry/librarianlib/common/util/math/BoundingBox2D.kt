@@ -1,5 +1,8 @@
 package com.teamwizardry.librarianlib.common.util.math
 
+import com.teamwizardry.librarianlib.common.util.plus
+import com.teamwizardry.librarianlib.common.util.times
+
 class BoundingBox2D(val min: Vec2d, val max: Vec2d) {
 
     constructor(minX: Double, minY: Double, maxX: Double, maxY: Double) : this(Vec2d(minX, minY), Vec2d(maxX, maxY))
@@ -10,6 +13,14 @@ class BoundingBox2D(val min: Vec2d, val max: Vec2d) {
                 Math.min(min.y, other.min.y),
                 Math.max(max.x, other.max.x),
                 Math.max(max.y, other.max.y))
+    }
+
+    fun offset(pos: Vec2d): BoundingBox2D {
+        return BoundingBox2D(min + pos, max + pos)
+    }
+
+    fun scale(amount: Double): BoundingBox2D {
+        return BoundingBox2D(min * amount, max * amount)
     }
 
     operator fun contains(other: Vec2d): Boolean {

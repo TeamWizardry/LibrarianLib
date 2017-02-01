@@ -4,15 +4,13 @@ import com.teamwizardry.librarianlib.client.fx.particle.ParticleBuilder
 import com.teamwizardry.librarianlib.client.fx.particle.ParticleSpawner
 import com.teamwizardry.librarianlib.common.base.item.ItemMod
 import com.teamwizardry.librarianlib.common.util.math.interpolate.position.InterpLine
-import com.teamwizardry.librarianlib.common.util.times
-import com.teamwizardry.librarianlib.test.testcore.TestMod
+import com.teamwizardry.librarianlib.common.util.vec
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ActionResult
 import net.minecraft.util.EnumActionResult
 import net.minecraft.util.EnumHand
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 
 /**
@@ -24,12 +22,12 @@ class ItemBasicParticles : ItemMod("basic_particle") {
 
         if (worldIn.isRemote) {
             val builder = ParticleBuilder(50)
-            builder.enableMotionCalculation()
-            builder.enableRandom()
-            builder.setMotion(playerIn.lookVec * 0.5)
-            builder.setJitter(5, Vec3d(0.1, 0.1, 0.1))
+//            builder.enableMotionCalculation()
+//            builder.enableRandom()
+//            builder.setMotion(playerIn.lookVec * 0.5)
+            builder.setJitter(5, vec(0.1, 0.1, 0.1))
 
-            val loc = ResourceLocation(TestMod.MODID, "particles/glow")
+            val loc = ResourceLocation("blocks/wool_colored_orange")
             if (playerIn.isSneaking) {
                 builder.setRender(loc)
             } else {

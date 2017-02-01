@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.common.util
 
 /**
  * Created by TheCodeWarrior
+ * NBT Types for use in lists
  */
 @Suppress("UNUSED")
 object NBTTypes {

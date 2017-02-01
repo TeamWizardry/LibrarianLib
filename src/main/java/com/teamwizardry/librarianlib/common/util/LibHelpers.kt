@@ -18,5 +18,7 @@ fun vec(x: Number, y: Number) = Vec2d(x.toDouble(), y.toDouble())
 
 fun vec(x: Number, y: Number, z: Number) = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
 
+internal var modIdOverride: String? = null
+
 val currentModId: String
-    get() = Loader.instance().activeModContainer()?.modId ?: ""
+    get() = modIdOverride ?: Loader.instance().activeModContainer()?.modId ?: ""

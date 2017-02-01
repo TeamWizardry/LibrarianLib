@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.client.fx.particle.functions
 
 import com.teamwizardry.librarianlib.client.fx.particle.ParticleBase
+import com.teamwizardry.librarianlib.client.fx.particle.ParticleRenderLayer
 import com.teamwizardry.librarianlib.client.fx.particle.ParticleRenderManager
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.VertexBuffer
@@ -16,12 +17,16 @@ import java.awt.Color
  * Render a particle from the block texture map.
  */
 @SideOnly(Side.CLIENT)
-class RenderFunctionBasic(val texture: TextureAtlasSprite, flatLayer: Boolean) : RenderFunction(if (flatLayer) ParticleRenderManager.LAYER_BLOCK_MAP else ParticleRenderManager.LAYER_BLOCK_MAP_ADDITIVE) {
+class RenderFunctionBasic(val texture: TextureAtlasSprite, layer: ParticleRenderLayer) : RenderFunction(layer) {
+
+    constructor(tex: ResourceLocation, layer: ParticleRenderLayer) : this(Minecraft.getMinecraft().textureMapBlocks.getTextureExtry(tex.toString()) ?: Minecraft.getMinecraft().textureMapBlocks.missingSprite, layer)
 
     /**
      * Get [tex] from `Minecraft.getMinecraft().getTextureMapBlocks()` automatically
      */
     constructor(tex: ResourceLocation, flatLayer: Boolean) : this(Minecraft.getMinecraft().textureMapBlocks.getTextureExtry(tex.toString()) ?: Minecraft.getMinecraft().textureMapBlocks.missingSprite, flatLayer)
+
+    constructor(tex: TextureAtlasSprite, flatLayer: Boolean) : this(tex, if (flatLayer) ParticleRenderManager.LAYER_BLOCK_MAP else ParticleRenderManager.LAYER_BLOCK_MAP_ADDITIVE)
 
     /**
      * `i` is from 0-1 along the animation

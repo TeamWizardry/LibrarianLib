@@ -5,19 +5,18 @@ import com.teamwizardry.librarianlib.client.gui.HandlerList
 import com.teamwizardry.librarianlib.client.gui.Option
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import com.teamwizardry.librarianlib.common.util.plus
-import com.teamwizardry.librarianlib.common.util.stackSize
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.item.ItemStack
 import net.minecraft.util.text.TextFormatting
 
-open class ComponentSlot(posX: Int, posY: Int) : GuiComponent<ComponentSlot>(posX, posY, 16, 16) {
+open class ComponentStack(posX: Int, posY: Int) : GuiComponent<ComponentStack>(posX, posY, 16, 16) {
 
-    val stack = Option<ComponentSlot, ItemStack?>(null)
-    val tooltip = Option<ComponentSlot, Boolean>(true)
-    val quantityText = HandlerList<(ComponentSlot, String?) -> String?>()
-    val itemInfo = HandlerList<(ComponentSlot, MutableList<String>) -> Unit>()
+    val stack = Option<ComponentStack, ItemStack?>(null)
+    val tooltip = Option<ComponentStack, Boolean>(true)
+    val quantityText = HandlerList<(ComponentStack, String?) -> String?>()
+    val itemInfo = HandlerList<(ComponentStack, MutableList<String>) -> Unit>()
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
         RenderHelper.enableGUIStandardItemLighting()
@@ -25,7 +24,7 @@ open class ComponentSlot(posX: Int, posY: Int) : GuiComponent<ComponentSlot>(pos
 
         val stack = this.stack.getValue(this)
         if (stack != null) {
-            var str = "" + stack.stackSize
+            var str = "" + stack.count
             str = quantityText.fireModifier(str, { h, v -> h(this, v) }) ?: ""
 
             val itemRender = Minecraft.getMinecraft().renderItem

@@ -1,6 +1,8 @@
 package com.teamwizardry.librarianlib.common.util.saving
 
 import org.jetbrains.annotations.NotNull
+import net.minecraft.util.EnumFacing
+import javax.annotation.Nonnull
 import kotlin.annotation.AnnotationTarget.*
 
 /**
@@ -31,7 +33,7 @@ annotation class Save(val saveName: String = "")
  */
 @Target(FIELD, FUNCTION, PROPERTY_GETTER, PROPERTY_SETTER)
 @MustBeDocumented
-annotation class NoSync()
+annotation class NoSync
 
 /**
  * @author WireSegal
@@ -64,3 +66,52 @@ annotation class SaveMethodGetter(val saveName: String)
 @Target(FUNCTION, PROPERTY_GETTER, PROPERTY_SETTER)
 @MustBeDocumented
 annotation class SaveMethodSetter(val saveName: String)
+
+/**
+ * @author TheCodeWarrior
+ *
+ * Apply this to a class to mark it as serializable.
+ *
+ * The class must have:
+ *  - one or more [Save] annotated fields and/or one or more [SaveMethodGetter] annotated methods, or
+ *  - no such fields or methods and one or more non-transient fields
+ *
+ * In order to construct the class it must have:
+ *  - a zero argument constructor
+ *  - a constructor with arguments similarly named and typed to the saved properties
+ *
+ * If any of the saved fields are final, or if there are any [SaveMethodGetter]s without a matching [SaveMethodSetter],
+ * the class will be marked as immutable and cannot use a zero argument constructor
+ */
+@Target(CLASS)
+@MustBeDocumented
+annotation class Savable
+
+/**
+ * @author WireSegal
+ * Created at 3:18 PM on 1/6/17.
+ *
+ * Apply this to a capability-containing field to have it be automatically provided (from TileMods) to the provided [sides]
+ * and null. This will apply to all capability superinterfaces of the annotated field type.
+ */
+@Target(FIELD)
+@MustBeDocumented
+annotation class CapabilityProvide(vararg val sides: EnumFacing)
+
+
+/**
+ * Marks this class and all of its subclasses to be saved in place. Only [Save] annotated fields will be saved.
+ *
+ * The automatic object serializer will not create any new instances of annotated classes.
+ */
+@Target(CLASS)
+@MustBeDocumented
+annotation class SaveInPlace
+
+/**
+ * Specifies the order in which the fields appear in the constructor for dynamic deserialization.
+ *
+ */
+@Target(CONSTRUCTOR)
+@MustBeDocumented
+annotation class SavableConstructorOrder(vararg val params: String)

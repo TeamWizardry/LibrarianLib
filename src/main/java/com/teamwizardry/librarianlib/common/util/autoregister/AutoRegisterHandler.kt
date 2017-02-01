@@ -1,65 +1,45 @@
 package com.teamwizardry.librarianlib.common.util.autoregister
 
-import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.util.VariantHelper
-import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
 import com.teamwizardry.librarianlib.common.util.times
 // todo once mcmultipart is 1.11
 //import mcmultipart.multipart.IMultipart
 //import mcmultipart.multipart.MultipartRegistry
+import com.teamwizardry.librarianlib.common.core.OwnershipHandler
+import com.teamwizardry.librarianlib.common.network.PacketBase
+import com.teamwizardry.librarianlib.common.network.PacketHandler
+import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
+import com.teamwizardry.librarianlib.common.util.times
+import com.teamwizardry.librarianlib.common.util.toRl
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.discovery.ASMDataTable
+import net.minecraftforge.fml.common.discovery.asm.ModAnnotation
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.common.registry.GameRegistry
+import net.minecraftforge.fml.relauncher.Side
 
 /**
  * Created by TheCodeWarrior
  */
 object AutoRegisterHandler {
-    private val prefixes = mutableMapOf<String, String>()
-
-    private fun generatePrefixes() {
-        Loader.instance().activeModList
-                .flatMap { it.ownedPackages.map { pack -> pack to it.modId } }
-                .forEach { prefixes.put(it.first, it.second) }
-
-        if (LibrarianLib.DEV_ENVIRONMENT) {
-            val pad = " " * LibrarianLib.MODID.length
-            LibrarianLog.info("${LibrarianLib.MODID} | Prefixes: ")
-            for (mod in Loader.instance().activeModList) if (mod.ownedPackages.isNotEmpty()) {
-                LibrarianLog.info("$pad | *** Owned by `${mod.modId}` ***")
-                for (pack in mod.ownedPackages.toSet())
-                    LibrarianLog.info("$pad | | $pack")
-            }
-        }
-    }
-
-    private fun getModid(clazz: Class<*>): String? {
-        val name = clazz.canonicalName
-        prefixes.forEach {
-            if (name.startsWith(it.key))
-                return it.value
-        }
-        return null
-    }
 
     fun handle(e: FMLPreInitializationEvent) {
-        generatePrefixes()
-
         val table = e.asmData
         val errors = mutableMapOf<String, MutableList<Class<*>>>()
 
         getAnnotatedBy(TileRegister::class.java, TileEntity::class.java, table).forEach {
-            var name = it.get<String>("value")
-            val modId = getModid(it.clazz)
+            val name = it.get<String>("value")
+            val modId = OwnershipHandler.getModId(it.clazz)
             if (name == null) {
                 errors.getOrPut("TileRegister", { mutableListOf() }).add(it.clazz)
             } else {
-                name = VariantHelper.toSnakeCase(name)
-                var loc = ResourceLocation(name)
+                var loc: ResourceLocation
+                if (name != "")
+                    loc = ResourceLocation(name)
+                else loc = it.clazz.canonicalName.toLowerCase().toRl()
                 if (loc.resourceDomain == "minecraft" && modId == null)
                     errors.getOrPut("TileRegister", { mutableListOf() }).add(it.clazz)
                 else {
@@ -92,13 +72,20 @@ object AutoRegisterHandler {
 //                }
 //            }
 //        }
+        getAnnotatedBy(PacketRegister::class.java, PacketBase::class.java, table).forEach {
+            val side = it.get<ModAnnotation.EnumHolder>("value")?.value?.run { Side.valueOf(this) }
+            if (side == null)
+                errors.getOrPut("PacketRegister", { mutableListOf() }).add(it.clazz)
+            else
+                PacketHandler.register(it.clazz, side)
+        }
 
         if (errors.isNotEmpty()) {
             var build = "AutoRegister Errors: No modId specified!"
             build += "\nDefined prefixes:"
 
-            val keyMax = prefixes.maxBy { it.value.length }?.value?.length ?: 0
-            for ((prefix, modId) in prefixes) {
+            val keyMax = OwnershipHandler.prefixes.maxBy { it.value.length }?.value?.length ?: 0
+            for ((prefix, modId) in OwnershipHandler.prefixes) {
                 val spaces = keyMax - modId.length
                 build += "\n${" " * spaces}$modId | $prefix"
             }

@@ -2,9 +2,7 @@ package com.teamwizardry.librarianlib.test.gui
 
 import com.teamwizardry.librarianlib.common.base.item.ItemMod
 import com.teamwizardry.librarianlib.common.util.localize
-import com.teamwizardry.librarianlib.test.gui.tests.GuiTestRect
-import com.teamwizardry.librarianlib.test.gui.tests.GuiTestResizeMove
-import com.teamwizardry.librarianlib.test.gui.tests.GuiTestScrolledView
+import com.teamwizardry.librarianlib.test.gui.tests.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.entity.player.EntityPlayer
@@ -37,5 +35,9 @@ class ItemGuiOpener : ItemMod("guiopener") {
 enum class Guis(val create: () -> GuiScreen) {
     RECT({ GuiTestRect() }),
     MOVE({ GuiTestResizeMove() }),
-    SCROLL({ GuiTestScrolledView() })
+    SCROLL({ GuiTestScrolledView() }),
+    SCALE({ GuiTestScale() }),
+    SCISSOR({ GuiTestScissor() }),
+    AUTOSIZE({ GuiTestAutoSizeScale() }),
+    SPRITE({ GuiTestSprite() })
 }

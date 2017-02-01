@@ -90,7 +90,7 @@ object AnnotationHelper {
             try {
                 callback(Class.forName(data.className).asSubclass(superClass) as Class<out T>, AnnotationInfo(data.annotationInfo))
             } catch (ex: Exception) {
-                ex.printStackTrace()
+                throw ex
             }
 
         }

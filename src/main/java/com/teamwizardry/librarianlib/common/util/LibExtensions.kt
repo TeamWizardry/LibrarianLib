@@ -6,21 +6,34 @@ package com.teamwizardry.librarianlib.common.util
 import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import io.netty.buffer.ByteBuf
+import net.minecraft.block.Block
+import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.player.EntityPlayerMP
+import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.*
+import net.minecraft.network.play.server.SPacketEntityVelocity
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.NonNullList
+import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.TextFormatting
+import net.minecraft.world.ChunkCache
+import net.minecraft.world.IBlockAccess
+import net.minecraft.world.World
+import net.minecraft.world.chunk.Chunk
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.ICapabilityProvider
 import net.minecraftforge.fml.common.network.ByteBufUtils
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.util.*
+
 
 /**
  * Created by TheCodeWarrior
@@ -39,6 +52,26 @@ fun String.localize(vararg parameters: Any): String {
 
 fun String.canLocalize(): Boolean {
     return LibrarianLib.PROXY.canTranslate(this)
+}
+
+fun String.toRl(): ResourceLocation = ResourceLocation(this)
+
+fun <K, V> MutableMap<K, V>.withRealDefault(default: (K) -> V): DefaultedMutableMap<K, V> {
+    return when(this) {
+        is RealDefaultImpl -> RealDefaultImpl(this.map, default)
+        else -> RealDefaultImpl(this, default)
+    }
+}
+
+interface DefaultedMutableMap<K, V> : MutableMap<K, V> {
+    override fun get(key: K): V
+}
+
+private class RealDefaultImpl<K, V>(val map: MutableMap<K, V>, val default: (K) -> V) : DefaultedMutableMap<K, V>, MutableMap<K, V> by map {
+    override fun get(key: K): V {
+        //return map.getOrPut(key, { default(key) })
+        return map[key] ?: default(key)  //better
+    }
 }
 
 // Vec3d ===============================================================================================================
@@ -90,12 +123,47 @@ operator fun Vec2d.plus(other: Vec2d) = this.add(other)
 operator fun Vec2d.minus(other: Vec2d) = this.add(other)
 operator fun Vec2d.unaryMinus() = this * -1
 
+// BlockPos ============================================================================================================
+
+operator fun BlockPos.times(other: BlockPos) = BlockPos(this.x * other.x, this.y * other.y, this.z * other.z)
+operator fun BlockPos.times(other: Vec3d) = BlockPos((this.x * other.xCoord).toInt(), (this.y * other.yCoord).toInt(), (this.z * other.zCoord).toInt())
+operator fun BlockPos.times(other: Number) = BlockPos((this.x * other.toDouble()).toInt(), (this.y * other.toDouble()).toInt(), (this.z * other.toDouble()).toInt())
+
+operator fun BlockPos.div(other: BlockPos) = BlockPos(this.x / other.x, this.y / other.y, this.z / other.z)
+operator fun BlockPos.div(other: Vec3d) = BlockPos((this.x / other.xCoord).toInt(), (this.y / other.yCoord).toInt(), (this.z / other.zCoord).toInt())
+operator fun BlockPos.div(other: Number) = BlockPos((this.x / other.toDouble()).toInt(), (this.y / other.toDouble()).toInt(), (this.z / other.toDouble()).toInt())
+
+operator fun BlockPos.plus(other: BlockPos) = this.add(other)
+operator fun BlockPos.minus(other: BlockPos) = this.subtract(other)
+
+operator fun BlockPos.unaryMinus() = this * -1
+
 // AxisAlignedBB =======================================================================================================
 
 operator fun AxisAlignedBB.contains(other: Vec3d) =
         this.minX <= other.xCoord && this.maxX >= other.xCoord &&
                 this.minY <= other.yCoord && this.maxY >= other.yCoord &&
                 this.minZ <= other.zCoord && this.maxZ >= other.zCoord
+
+// World
+
+fun World.collideAABB(boundingBox: AxisAlignedBB, offset: Vec3d, entity: Entity? = null): Vec3d {
+    var bbSoFar = boundingBox
+    var x = offset.xCoord
+    var y = offset.yCoord
+    var z = offset.zCoord
+
+    val list1 = this.getCollisionBoxes(entity, boundingBox.addCoord(x, y, z))
+
+    list1.forEach { y = it.calculateYOffset(bbSoFar, y) }
+    bbSoFar = bbSoFar.offset(0.0, y, 0.0)
+    list1.forEach { x = it.calculateXOffset(bbSoFar, x) }
+    bbSoFar = bbSoFar.offset(x, 0.0, 0.0)
+    list1.forEach { z = it.calculateZOffset(bbSoFar, z) }
+    bbSoFar = bbSoFar.offset(0.0, 0.0, z)
+
+    return vec(x, y, z)
+}
 
 // Class ===============================================================================================================
 
@@ -191,31 +259,33 @@ fun ByteBuf.readVarLong(): Long {
 fun ByteBuf.writeBooleanArray(value: BooleanArray) {
     val len = value.size
     this.writeVarInt(len)
-    val bitset = BitSet()
-    for (i in 0..len - 1) {
-        bitset.set(i, value[i])
+
+    val toReturn = ByteArray((len + 7) / 8) // +7 to round up
+    for (entry in toReturn.indices) {
+        for (bit in 0..7) {
+            if (entry * 8 + bit < len && value[entry * 8 + bit]) {
+                toReturn[entry] = (toReturn[entry].toInt() or (128 shr bit)).toByte()
+            }
+        }
     }
-    val setArray = bitset.toByteArray()
-    val writeArray = ByteArray(Math.ceil(len / 8.0).toInt()) {
-        if (it < setArray.size)
-            setArray[it]
-        else
-            0
-    }
-    this.writeBytes(writeArray)
+    this.writeBytes(toReturn)
 }
 
 fun ByteBuf.readBooleanArray(tryReadInto: BooleanArray? = null): BooleanArray {
     val len = this.readVarInt()
-    val bytes = ByteArray(Math.ceil(len / 8.0).toInt())
+    val bytes = ByteArray((len + 7) / 8)
     this.readBytes(bytes)
 
-    val bitset = BitSet.valueOf(bytes)
-    val booleans = if(tryReadInto == null || tryReadInto.size != len) BooleanArray(len) else tryReadInto
-    for(i in 0..len-1) {
-        booleans[i] = bitset.get(i)
+    val toReturn = if (tryReadInto != null && tryReadInto.size == len) tryReadInto else BooleanArray(len)
+    for (entry in bytes.indices) {
+        for (bit in 0..7) {
+            val bitThing = bytes[entry].toInt() and (128 shr bit)
+            if (entry * 8 + bit < len && bitThing != 0) {
+                toReturn[entry * 8 + bit] = true
+            }
+        }
     }
-    return booleans
+    return toReturn
 }
 
 fun ByteBuf.writeNullSignature() {
@@ -280,6 +350,8 @@ fun <T : NBTBase> NBTBase.safeCast(clazz: Class<T>): T {
             ) as T
 }
 
+inline fun <reified T : NBTBase> NBTBase.safeCast(): T = safeCast(T::class.java)
+
 // NBTTagCompound ======================================================================================================
 
 operator fun NBTTagCompound.iterator(): Iterator<Pair<String, NBTBase>> {
@@ -297,15 +369,31 @@ operator fun NBTTagCompound.get(key: String): NBTBase = this.getTag(key)
 
 // Player ==============================================================================================================
 
-fun EntityPlayer.sendMessage(str: String, actionBar: Boolean = false) {
-    this.sendStatusMessage(TextComponentString(str), actionBar)
+fun EntityPlayer.sendMessage(str: String, actionBar: Boolean = false)
+        = sendStatusMessage(str.toComponent(), actionBar)
+fun EntityPlayer.sendSpamlessMessage(str: String, uniqueId: Int)
+        = sendSpamlessMessage(str.toComponent(), uniqueId)
+fun EntityPlayer.sendSpamlessMessage(comp: ITextComponent, uniqueId: Int)
+        = LibrarianLib.PROXY.sendSpamlessMessage(this, comp, uniqueId)
+
+fun Entity.setVelocityAndUpdate(vec: Vec3d) = setVelocityAndUpdate(vec.xCoord, vec.yCoord, vec.zCoord)
+fun Entity.setVelocityAndUpdate(x: Double = motionX, y: Double = motionY, z: Double = motionZ) {
+    motionX = x
+    motionY = y
+    motionZ = z
+    if (this is EntityPlayerMP)
+        connection.sendPacket(SPacketEntityVelocity(this))
 }
+val Entity.motionVec: Vec3d
+    get() = Vec3d(motionX, motionY, motionZ)
 
 // String ==============================================================================================================
 
 operator fun CharSequence.times(n: Int) = this.repeat(n)
 operator fun Int.times(n: CharSequence) = n.repeat(this)
+fun String.toComponent() = TextComponentString(this)
 
+// ICapabilityProvider ==============================================================================================================
 fun <T, R> ICapabilityProvider.ifCap(capability: Capability<T>, facing: EnumFacing?, callback: (T) -> R): R? {
     if(this.hasCapability(capability, facing))
         return callback(this.getCapability(capability, facing)!!)
@@ -339,6 +427,182 @@ fun <T: Any> Array<T>.nullable() = toMutableList<T?>()
 
 // ItemStack ===========================================================================================================
 
-var ItemStack.stackSize: Int
-    get() = count
-    set(value) { count = value }
+fun <C : ICapabilityProvider, T, R> C.forCap(capability: Capability<T>?, facing: EnumFacing?, callback: (T) -> R): R? {
+    if (capability != null && this.hasCapability(capability, facing))
+        return callback(this.getCapability(capability, facing)!!)
+    return null
+}
+
+// Item ===========================================================================================================
+
+fun Item.toStack(amount: Int = 1, meta: Int = 0) = ItemStack(this, amount, meta)
+
+// Block ===========================================================================================================
+
+fun Block.toStack(amount: Int = 1, meta: Int = 0) = ItemStack(this, amount, meta)
+
+// Numbers =============================================================================================================
+
+fun Int.clamp(min: Int, max: Int): Int = if (this < min) min else if (this > max) max else this
+fun Short.clamp(min: Short, max: Short): Short = if (this < min) min else if (this > max) max else this
+fun Long.clamp(min: Long, max: Long): Long = if (this < min) min else if (this > max) max else this
+fun Byte.clamp(min: Byte, max: Byte): Byte = if (this < min) min else if (this > max) max else this
+fun Char.clamp(min: Char, max: Char): Char = if (this < min) min else if (this > max) max else this
+fun Float.clamp(min: Float, max: Float): Float = if (this < min) min else if (this > max) max else this
+fun Double.clamp(min: Double, max: Double): Double = if (this < min) min else if (this > max) max else this
+
+// IBlockAccess ========================================================================================================
+
+fun IBlockAccess.getTileEntitySafely(pos: BlockPos)
+        = if (this is ChunkCache) this.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK) else this.getTileEntity(pos)
+
+// Association =========================================================================================================
+
+inline fun <K, V> Iterable<K>.associateInPlace(mapper: (K) -> V) = associate { it to mapper(it) }
+inline fun <K, V> Array<K>.associateInPlace(mapper: (K) -> V) = associate { it to mapper(it) }
+inline fun <V> BooleanArray.associateInPlace(mapper: (Boolean) -> V) = associate { it to mapper(it) }
+inline fun <V> ByteArray.associateInPlace(mapper: (Byte) -> V) = associate { it to mapper(it) }
+inline fun <V> ShortArray.associateInPlace(mapper: (Short) -> V) = associate { it to mapper(it) }
+inline fun <V> CharArray.associateInPlace(mapper: (Char) -> V) = associate { it to mapper(it) }
+inline fun <V> IntArray.associateInPlace(mapper: (Int) -> V) = associate { it to mapper(it) }
+inline fun <V> LongArray.associateInPlace(mapper: (Long) -> V) = associate { it to mapper(it) }
+inline fun <V> FloatArray.associateInPlace(mapper: (Float) -> V) = associate { it to mapper(it) }
+inline fun <V> DoubleArray.associateInPlace(mapper: (Double) -> V) = associate { it to mapper(it) }
+
+inline fun <K, V> Iterable<K>.flatAssociate(mapper: (K) -> Iterable<Pair<K, V>>): Map<K, V> {
+    val map = mutableMapOf<K, V>()
+    forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+inline fun <K, V> Array<out K>.flatAssociate(mapper: (K) -> Iterable<Pair<K, V>>): Map<K, V> {
+    val map = mutableMapOf<K, V>()
+    forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+inline fun <V> BooleanArray.flatAssociate(mapper: (Boolean) -> Iterable<Pair<Boolean, V>>): Map<Boolean, V> {
+    val map = mutableMapOf<Boolean, V>()
+    forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+inline fun <V> ByteArray.flatAssociate(mapper: (Byte) -> Iterable<Pair<Byte, V>>): Map<Byte, V> {
+    val map = mutableMapOf<Byte, V>()
+    forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+inline fun <V> ShortArray.flatAssociate(mapper: (Short) -> Iterable<Pair<Short, V>>): Map<Short, V> {
+    val map = mutableMapOf<Short, V>()
+    forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+inline fun <V> CharArray.flatAssociate(mapper: (Char) -> Iterable<Pair<Char, V>>): Map<Char, V> {
+    val map = mutableMapOf<Char, V>()
+    forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+inline fun <V> IntArray.flatAssociate(mapper: (Int) -> Iterable<Pair<Int, V>>): Map<Int, V> {
+    val map = mutableMapOf<Int, V>()
+    forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+inline fun <V> LongArray.flatAssociate(mapper: (Long) -> Iterable<Pair<Long, V>>): Map<Long, V> {
+    val map = mutableMapOf<Long, V>()
+    forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+inline fun <V> FloatArray.flatAssociate(mapper: (Float) -> Iterable<Pair<Float, V>>): Map<Float, V> {
+    val map = mutableMapOf<Float, V>()
+    forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+inline fun <V> DoubleArray.flatAssociate(mapper: (Double) -> Iterable<Pair<Double, V>>): Map<Double, V> {
+    val map = mutableMapOf<Double, V>()
+    forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+inline fun <T, K, V> Iterable<T>.flatAssociateBy(mapper: (T) -> Iterable<Pair<K, V>>): Map<K, V> {
+    val map = mutableMapOf<K, V>()
+    forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+inline fun <T, K, V> Array<out T>.flatAssociateBy(mapper: (T) -> Iterable<Pair<K, V>>): Map<K, V> {
+    val map = mutableMapOf<K, V>()
+    forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+inline fun <K, V> BooleanArray.flatAssociateBy(mapper: (Boolean) -> Iterable<Pair<K, V>>): Map<K, V> {
+    val map = mutableMapOf<K, V>()
+    forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+inline fun <K, V> ByteArray.flatAssociateBy(mapper: (Byte) -> Iterable<Pair<K, V>>): Map<K, V> {
+    val map = mutableMapOf<K, V>()
+    forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+inline fun <K, V> ShortArray.flatAssociateBy(mapper: (Short)  -> Iterable<Pair<K, V>>): Map<K, V> {
+    val map = mutableMapOf<K, V>()
+    forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+inline fun <K, V> CharArray.flatAssociateBy(mapper: (Char)  -> Iterable<Pair<K, V>>): Map<K, V> {
+    val map = mutableMapOf<K, V>()
+    forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+inline fun <K, V> IntArray.flatAssociateBy(mapper: (Int) -> Iterable<Pair<K, V>>): Map<K, V> {
+    val map = mutableMapOf<K, V>()
+    forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+inline fun <K, V> LongArray.flatAssociateBy(mapper: (Long) -> Iterable<Pair<K, V>>): Map<K, V> {
+    val map = mutableMapOf<K, V>()
+    forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+inline fun <K, V> FloatArray.flatAssociateBy(mapper: (Float) -> Iterable<Pair<K, V>>): Map<K, V> {
+    val map = mutableMapOf<K, V>()
+    forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+inline fun <K, V> DoubleArray.flatAssociateBy(mapper: (Double) -> Iterable<Pair<K, V>>): Map<K, V> {
+    val map = mutableMapOf<K, V>()
+    forEach { map.putAll(mapper(it)) }
+    return map
+}
+
+// listOf and mapOf ====================================================================================================
+
+inline fun <reified K: Enum<K>, V> enumMapOf(): EnumMap<K, V> {
+    return EnumMap(K::class.java)
+}
+
+inline fun <reified K: Enum<K>, V> enumMapOf(vararg pairs: Pair<K, V>): EnumMap<K, V> {
+    val map = enumMapOf<K, V>()
+    map.putAll(pairs)
+    return map
+}
+
+// Collections
+
+fun <T : Any, E : Any, R : Collection<T>, F : Collection<E>> R.instanceof(collection: F): Boolean {
+    return javaClass.isAssignableFrom(collection.javaClass) && (this.isNotEmpty() && collection.isNotEmpty() && elementAt(0).javaClass.isAssignableFrom(collection.elementAt(0).javaClass))
+}

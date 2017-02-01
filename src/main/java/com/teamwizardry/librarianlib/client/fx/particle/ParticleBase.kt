@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.client.fx.particle
 
 import com.teamwizardry.librarianlib.client.fx.particle.functions.RenderFunction
+import com.teamwizardry.librarianlib.client.fx.particle.functions.TickFunction
 import com.teamwizardry.librarianlib.common.util.*
 import com.teamwizardry.librarianlib.common.util.math.interpolate.InterpFunction
 import net.minecraft.client.particle.Particle
@@ -25,23 +26,26 @@ open class ParticleBase internal constructor(
         val colorFunc: InterpFunction<Color>,
         val alphaFunc: InterpFunction<Float>,
         val renderFunc: RenderFunction,
+        val tickFunc: TickFunction?,
         val movementMode: EnumMovementMode,
         val scaleFunc: InterpFunction<Float>,
         val motionEnabled: Boolean,
         val positionEnabled: Boolean,
-        val canCollide: Boolean,
+        var canCollide: Boolean,
         val initialMotion: Vec3d,
-        val acceleration: Vec3d,
-        val deceleration: Vec3d,
-        val friction: Vec3d,
-        val jitterMagnitude: Vec3d = Vec3d(0.05, 0.05, 0.05),
-        val jitterChance: Float = 0.1f
-) {
+        var acceleration: Vec3d,
+        var deceleration: Vec3d,
+        var friction: Vec3d,
+        var jitterMagnitude: Vec3d = Vec3d(0.05, 0.05, 0.05),
+        var jitterChance: Float = 0.1f
+    ) {
 
     open fun tickFirst() {
+        // NO-OP
     }
 
     open fun tickLast() {
+        // NO-OP
     }
 
     val radius: Vec3d = Vec3d(0.1, 0.1, 0.1)
@@ -68,6 +72,7 @@ open class ParticleBase internal constructor(
 
     init {
         pos = position + (if (positionEnabled) lastInterp else Vec3d.ZERO)
+        prevPos = pos
     }
 
     fun animPos(): Float {
@@ -115,6 +120,11 @@ open class ParticleBase internal constructor(
             velocity *= deceleration
             if (this.isCollided)
                 velocity *= friction
+
+        }
+
+        tickFunc?.let {
+            it.tick(this)
         }
 
         tickLast()

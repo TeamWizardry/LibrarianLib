@@ -3,6 +3,7 @@
 //package com.teamwizardry.librarianlib.common.base.multipart
 //
 //import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
+//import com.teamwizardry.librarianlib.common.util.saving.SaveInPlace
 //import mcmultipart.multipart.Multipart
 //import net.minecraft.nbt.NBTTagCompound
 //import net.minecraft.network.PacketBuffer
@@ -10,6 +11,7 @@
 ///**
 // * Created by TheCodeWarrior
 // */
+//@SaveInPlace
 //open class PartMod : Multipart() {
 //
 //    /**
@@ -45,25 +47,28 @@
 //    }
 //
 //    override fun readFromNBT(tag: NBTTagCompound) {
-//        readCustomNBT(tag)
-//        AbstractSaveHandler.readAutoNBT(javaClass, tag)
+//        readCustomNBT(tag.getCompoundTag("custom"))
+//        if(tag.hasKey("auto"))
+//            AbstractSaveHandler.readAutoNBT(this, tag.getTag("auto"), false)
 //        super.readFromNBT(tag)
 //    }
 //
 //    override fun writeToNBT(tag: NBTTagCompound): NBTTagCompound {
-//        writeCustomNBT(tag, false)
-//        AbstractSaveHandler.writeAutoNBT(javaClass, tag)
+//        val customTag = NBTTagCompound()
+//        writeCustomNBT(customTag, false)
+//        tag.setTag("custom", customTag)
+//        tag.setTag("auto", AbstractSaveHandler.writeAutoNBT(this, false))
 //        super.writeToNBT(tag)
 //        return tag
 //    }
 //
 //    override fun readUpdatePacket(buf: PacketBuffer) {
 //        readCustomBytes(buf)
-//        AbstractSaveHandler.readAutoBytes(javaClass, buf)
+//        AbstractSaveHandler.readAutoBytes(this, buf, true)
 //    }
 //
 //    override fun writeUpdatePacket(buf: PacketBuffer) {
 //        writeCustomBytes(buf, true)
-//        AbstractSaveHandler.writeAutoBytes(javaClass, buf, true)
+//        AbstractSaveHandler.writeAutoBytes(this, buf, true)
 //    }
 //}

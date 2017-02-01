@@ -6,17 +6,12 @@ import com.teamwizardry.librarianlib.client.gui.mixin.ScissorMixin
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
 
-open class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent<ComponentScrolledView>(posX, posY, width, height) {
+class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent<ComponentScrolledView>(posX, posY, width, height) {
 
     val scroll = HandlerList<(ComponentScrolledView, Vec2d, Vec2d?) -> Vec2d?>()
 
-    protected var offset = Vec2d.ZERO
-
     init {
         ScissorMixin.scissor(this)
-        BUS.hook(ChildMouseOffsetEvent::class.java) { event ->
-            event.offset = event.offset.add(offset)
-        }
 
         BUS.hook(LogicalSizeEvent::class.java) { event ->
             if (event.box != null)
@@ -29,13 +24,13 @@ open class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) 
     }
 
     /**
-     * Moves the view to a specific offset.
+     * Moves the view to a specific childTranslation.
      */
     fun scrollTo(scroll: Vec2d) {
         val newScroll = Vec2d.min(maxScroll, scroll)
-        if (newScroll != offset) {
-            this.scroll.fireModifier(newScroll, { h, v -> h(this, offset, v) })
-            offset = newScroll
+        if (newScroll != childTranslation) {
+            this.scroll.fireModifier(newScroll, { h, v -> h(this, childTranslation, v) })
+            childTranslation = newScroll
         }
     }
 
@@ -43,7 +38,7 @@ open class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) 
      * Moves the view by the passed vector.
      */
     fun scrollOffset(scroll: Vec2d) {
-        scrollTo(offset.add(scroll))
+        scrollTo(childTranslation.add(scroll))
     }
 
     /**
@@ -54,9 +49,9 @@ open class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) 
     }
 
     override fun draw(mousePos: Vec2d, partialTicks: Float) {
-        GlStateManager.translate(-offset.x, -offset.y, 0.0)
+        GlStateManager.translate(-childTranslation.x, -childTranslation.y, 0.0)
         super.draw(mousePos, partialTicks)
-        GlStateManager.translate(offset.x, offset.y, 0.0)
+        GlStateManager.translate(childTranslation.x, childTranslation.y, 0.0)
     }
 
     val maxScroll: Vec2d

@@ -41,6 +41,7 @@ open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg 
     open fun createItemForm(): ItemBlock? {
         return ItemModBlock(this)
     }
+
     /**
      * Override this to have a custom creative tab. Leave blank to have a default tab (or none if no default tab is set).
      */

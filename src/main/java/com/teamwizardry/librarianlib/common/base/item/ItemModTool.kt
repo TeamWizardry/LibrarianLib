@@ -1,9 +1,15 @@
 package com.teamwizardry.librarianlib.common.base.item
 
+import com.teamwizardry.librarianlib.client.core.JsonGenerationUtils
+import com.teamwizardry.librarianlib.client.core.ModelHandler
+import com.teamwizardry.librarianlib.common.base.IModelGenerator
 import com.teamwizardry.librarianlib.common.base.ModCreativeTab
 import com.teamwizardry.librarianlib.common.util.VariantHelper
+import com.teamwizardry.librarianlib.common.util.builders.serialize
 import com.teamwizardry.librarianlib.common.util.currentModId
 import net.minecraft.block.Block
+import net.minecraft.block.state.IBlockState
+import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -14,7 +20,7 @@ import net.minecraft.util.NonNullList
  * The default implementation for an IVariantHolder tool.
  */
 @Suppress("LeakingThis")
-open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, toolMaterial: ToolMaterial, effectiveBlocks: Set<Block>, vararg variants: String) : ItemTool(attackDamage, attackSpeed, toolMaterial, effectiveBlocks), IModItemProvider {
+open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, toolMaterial: ToolMaterial, effectiveBlocks: Set<Block>, vararg variants: String) : ItemTool(attackDamage, attackSpeed, toolMaterial, effectiveBlocks), IModItemProvider, IModelGenerator {
 
     constructor(name: String, toolMaterial: ToolMaterial, effectiveBlocks: Set<Block>, vararg variants: String) : this(name, 0F, 0F, toolMaterial, effectiveBlocks, *variants)
 
@@ -54,5 +60,15 @@ open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, to
      */
     open val creativeTab: ModCreativeTab?
         get() = ModCreativeTab.defaultTabs[modId]
+
+    // Model Generation
+
+    override fun generateMissingItem(variant: String): Boolean {
+        ModelHandler.generateItemJson(this) {
+            mapOf(JsonGenerationUtils.getPathForItemModel(this, variant)
+                    to JsonGenerationUtils.generateBaseItemModel(this, variant, "item/handheld"))
+        }
+        return true
+    }
 }
 

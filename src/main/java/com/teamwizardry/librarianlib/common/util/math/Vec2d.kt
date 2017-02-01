@@ -1,6 +1,10 @@
 package com.teamwizardry.librarianlib.common.util.math
 
-class Vec2d(var x: Double, var y: Double) {
+import com.teamwizardry.librarianlib.common.util.times
+import com.teamwizardry.librarianlib.common.util.vec
+import net.minecraft.util.math.MathHelper
+
+class Vec2d(val x: Double, val y: Double) {
 
     @Transient val xf: Float
     @Transient val yf: Float
@@ -75,8 +79,11 @@ class Vec2d(var x: Double, var y: Double) {
         return x * point.x + y * point.y
     }
 
+    @delegate:Transient
+    private val len by lazy { Math.sqrt(x * x + y * y) }
+
     fun length(): Double {
-        return Math.sqrt(x * x + y * y)
+        return len
     }
 
     fun normalize(): Vec2d {
@@ -94,6 +101,11 @@ class Vec2d(var x: Double, var y: Double) {
         val norm = other.normalize()
         return norm.mul(this.dot(norm))
     }
+
+    fun rotate(theta: Number): Vec2d {
+        return this * vec(MathHelper.cos(theta.toFloat()), MathHelper.sin(theta.toFloat()))
+    }
+
     //=============================================================================
 
     override fun hashCode(): Int {

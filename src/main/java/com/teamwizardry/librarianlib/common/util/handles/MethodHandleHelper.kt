@@ -9,6 +9,7 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles.publicLookup
 import java.lang.invoke.MethodType
+import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 
@@ -38,6 +39,23 @@ object MethodHandleHelper {
     fun <T> handleForField(clazz: Class<T>, getter: Boolean, vararg fieldNames: String): MethodHandle {
         val f = ReflectionHelper.findField(clazz, *fieldNames)
         return if (getter) publicLookup().unreflectGetter(f) else publicLookup().unreflectSetter(f)
+    }
+
+    /**
+     * Reflects a constructor from a class, and provides a MethodHandle for it.
+     * MethodHandles MUST be invoked from java code, due to the way [@PolymorphicSignature] works.
+     */
+    @JvmStatic
+    fun <T> handleForConstructor(clazz: Class<T>, vararg constructorArgs: Class<*>): MethodHandle {
+        val c = try {
+            val m = clazz.getDeclaredConstructor(*constructorArgs)
+            m.isAccessible = true
+            m
+        } catch (e: Exception) {
+            throw ReflectionHelper.UnableToFindMethodException(arrayOf("<init>"), e)
+        }
+
+        return publicLookup().unreflectConstructor(c)
     }
 
     //endregion
@@ -190,6 +208,33 @@ object MethodHandleHelper {
 
     //endregion
 
+    //region constructors
+
+    /**
+     * Reflects a constructor from a class, and provides a wrapper for it.
+     */
+    @JvmStatic
+    fun <T> wrapperForConstructor(clazz: Class<*>, vararg constructorArgs: Class<*>): (Array<Any?>) -> T {
+        val handle = handleForConstructor(clazz, *constructorArgs)
+        return wrapperForConstructor(handle)
+    }
+
+    /**
+     * Provides a wrapper for an existing MethodHandle constructor wrapper.
+     */
+    @Suppress("UNCHECKED_CAST")
+    @JvmStatic
+    fun <T> wrapperForConstructor(handle: MethodHandle): (Array<Any?>) -> T {
+        val type = handle.type()
+        val count = type.parameterCount()
+        val wrapper = InvocationWrapper(handle.asType(MethodType.genericMethodType(count)).asSpreader(Array<Any>::class.java, count))
+        return { wrapper.invokeArity(it) as T }
+    }
+
+    @JvmStatic fun <T> wrapperForConstructor(constructor: Constructor<T>): (Array<Any?>) -> T = wrapperForConstructor(publicLookup().unreflectConstructor(constructor))
+
+    //endregion
+
     //region delegates
 
     @JvmStatic
@@ -206,13 +251,13 @@ object MethodHandleHelper {
     }
 
     @JvmStatic
-    fun <T, V> delegateForStaticReadOnly(clazz: Class<T>, vararg fieldNames: String): ImmutableStaticFieldDelegate<T, V> {
+    fun <T, V> delegateForStaticReadOnly(clazz: Class<*>, vararg fieldNames: String): ImmutableStaticFieldDelegate<T, V> {
         val getter = wrapperForStaticGetter(clazz, *fieldNames)
         return ImmutableStaticFieldDelegate(getter)
     }
 
     @JvmStatic
-    fun <T, V> delegateForStaticReadWrite(clazz: Class<T>, vararg fieldNames: String): MutableStaticFieldDelegate<T, V> {
+    fun <T, V> delegateForStaticReadWrite(clazz: Class<*>, vararg fieldNames: String): MutableStaticFieldDelegate<T, V> {
         val getter = wrapperForStaticGetter(clazz, *fieldNames)
         val setter = wrapperForStaticSetter(clazz, *fieldNames)
         return MutableStaticFieldDelegate(getter, setter)

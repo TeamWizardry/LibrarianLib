@@ -19,6 +19,10 @@ object DefaultValues {
     private val genericHandlers = mutableListOf<(FieldTypeGeneric) -> (() -> Any)?>()
 
     init {
+        mapDefault(Boolean::class.javaPrimitiveType!!, false)
+        mapDefault(Boolean::class.javaObjectType, false)
+        mapDefault(BooleanArray::class.java, booleanArrayOf())
+
         mapDefault(Char::class.javaPrimitiveType!!, 0.toChar())
         mapDefault(Byte::class.javaPrimitiveType!!, 0.toByte())
         mapDefault(Short::class.javaPrimitiveType!!, 0.toShort())
@@ -110,7 +114,7 @@ object DefaultValues {
 
     @JvmStatic
     fun getDefaultValue(type: FieldType): Any {
-        val default = map[type] ?: createSpecialDefaults(type) ?: classMap[type.clazz] ?: throw IllegalArgumentException()
+        val default = map[type] ?: createSpecialDefaults(type) ?: classMap[type.clazz] ?: throw IllegalArgumentException(type.toString())
         return default()
     }
 

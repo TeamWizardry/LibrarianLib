@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.common.network
 
 import com.teamwizardry.librarianlib.common.base.block.TileMod
+import com.teamwizardry.librarianlib.common.util.autoregister.PacketRegister
 import com.teamwizardry.librarianlib.common.util.hasNullSignature
 import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
 import com.teamwizardry.librarianlib.common.util.saving.Save
@@ -11,8 +12,9 @@ import net.minecraft.client.Minecraft
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler
+import net.minecraftforge.fml.relauncher.Side
 
-
+@PacketRegister(Side.CLIENT)
 class PacketSynchronization(var tile: TileMod? = null /* Tile is always null on clientside */) : PacketBase() {
 
     @Save var pos: BlockPos? = null
@@ -33,7 +35,7 @@ class PacketSynchronization(var tile: TileMod? = null /* Tile is always null on 
         val tile = Minecraft.getMinecraft().world.getTileEntity(pos)
         if (b == null || tile == null || tile !is TileMod) return
 
-        AbstractSaveHandler.readAutoBytes(tile, b)
+        AbstractSaveHandler.readAutoBytes(tile, b, true)
         tile.readCustomBytes(b)
     }
 

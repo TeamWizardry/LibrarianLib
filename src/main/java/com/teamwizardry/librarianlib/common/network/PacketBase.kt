@@ -1,10 +1,12 @@
 package com.teamwizardry.librarianlib.common.network
 
 import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
+import com.teamwizardry.librarianlib.common.util.saving.SaveInPlace
 import io.netty.buffer.ByteBuf
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext
 
+@SaveInPlace
 abstract class PacketBase : IMessage {
 
     /**
@@ -38,12 +40,12 @@ abstract class PacketBase : IMessage {
 
     @Suppress("UNUSED_VARIABLE")
     fun writeAutoBytes(buf: ByteBuf) {
-        AbstractSaveHandler.writeAutoBytes(this, buf)
+        AbstractSaveHandler.writeAutoBytes(this, buf, true)
     }
 
     @Suppress("UNUSED_VARIABLE")
     fun readAutoBytes(buf: ByteBuf) {
-        AbstractSaveHandler.readAutoBytes(this, buf)
+        AbstractSaveHandler.readAutoBytes(this, buf, true)
 
     }
 

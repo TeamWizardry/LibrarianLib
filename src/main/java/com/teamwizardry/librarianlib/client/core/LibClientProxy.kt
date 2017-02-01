@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.client.core
 
+import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.client.event.ResourceReloadEvent
 import com.teamwizardry.librarianlib.client.fx.shader.LibShaders
 import com.teamwizardry.librarianlib.client.fx.shader.ShaderHelper
@@ -7,7 +8,9 @@ import com.teamwizardry.librarianlib.client.model.ModelsInit
 import com.teamwizardry.librarianlib.client.sprite.SpritesMetadataSection
 import com.teamwizardry.librarianlib.client.sprite.SpritesMetadataSectionSerializer
 import com.teamwizardry.librarianlib.client.sprite.Texture
+import com.teamwizardry.librarianlib.client.util.F3Handler
 import com.teamwizardry.librarianlib.client.util.ScissorUtil
+import com.teamwizardry.librarianlib.client.util.lambdainterfs.ClientRunnable
 import com.teamwizardry.librarianlib.common.core.LibCommonProxy
 import com.teamwizardry.librarianlib.common.util.handles.MethodHandleHelper
 import net.minecraft.client.Minecraft
@@ -16,7 +19,9 @@ import net.minecraft.client.resources.IReloadableResourceManager
 import net.minecraft.client.resources.IResourceManager
 import net.minecraft.client.resources.IResourceManagerReloadListener
 import net.minecraft.client.resources.data.MetadataSerializer
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
@@ -34,6 +39,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
     override fun pre(e: FMLPreInitializationEvent) {
         super.pre(e)
 
+        F3Handler
         ModelsInit
         UnlistedPropertyDebugViewer
         ScissorUtil
@@ -48,6 +54,9 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
         (Minecraft.getMinecraft().resourceManager as IReloadableResourceManager).registerReloadListener(this)
         onResourceManagerReload(Minecraft.getMinecraft().resourceManager)
+
+        if(LibrarianLib.DEV_ENVIRONMENT)
+            TextureMapExporter
     }
 
     override fun latePre(e: FMLPreInitializationEvent) {
@@ -75,6 +84,15 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         } catch (e: IOException) {
             return null
         }
+    }
+
+    override fun runIfClient(clientRunnable: ClientRunnable) = clientRunnable.runIfClient()
+
+    override fun getClientPlayer(): EntityPlayer = Minecraft.getMinecraft().player
+
+    override fun sendSpamlessMessage(player: EntityPlayer, msg: ITextComponent, uniqueId: Int) {
+        val chat = Minecraft.getMinecraft().ingameGUI.chatGUI
+        chat.printChatMessageWithOptionalDeletion(msg, uniqueId)
     }
 
     override fun onResourceManagerReload(resourceManager: IResourceManager) {
