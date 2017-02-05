@@ -30,7 +30,7 @@ abstract class FieldType protected constructor(open val clazz: Class<*>) {
                 else
                     createPlain(type)
             else
-                throw IllegalArgumentException("Cannot create FieldType from $type")
+                FieldTypeError()
 
             return fType
         }
@@ -56,6 +56,8 @@ abstract class FieldType protected constructor(open val clazz: Class<*>) {
         }
     }
 }
+
+class FieldTypeError : FieldType(Any::class.java)
 
 class FieldTypeClass(clazz: Class<*>) : FieldType(clazz) {
 
