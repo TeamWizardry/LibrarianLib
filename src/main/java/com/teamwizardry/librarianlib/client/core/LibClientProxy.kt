@@ -88,7 +88,9 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
     override fun runIfClient(clientRunnable: ClientRunnable) = clientRunnable.runIfClient()
 
-    override fun getClientPlayer(): EntityPlayer = Minecraft.getMinecraft().player
+
+    //nullable because there isn't always a player instance
+    override fun getClientPlayer(): EntityPlayer? = Minecraft.getMinecraft()?.player
 
     override fun sendSpamlessMessage(player: EntityPlayer, msg: ITextComponent, uniqueId: Int) {
         val chat = Minecraft.getMinecraft().ingameGUI.chatGUI

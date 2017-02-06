@@ -33,6 +33,7 @@ open class LibCommonProxy {
 
     open fun pre(e: FMLPreInitializationEvent) {
         EasyConfigHandler.init()
+        LibrarianLib.mcDataFolder = e.modConfigurationDirectory.parentFile
     }
 
     open fun latePre(e: FMLPreInitializationEvent) {
@@ -90,7 +91,10 @@ open class LibCommonProxy {
         // NO-OP
     }
 
-    open fun getClientPlayer(): EntityPlayer = throw UnsupportedOperationException("No client player on server side!")
+    //the entire point of using a proxy is _not_ to throw an error, if you wanted
+    //an error you could've just done Minecraft.getMinecraft().player
+    //besides, it should be nullable anyways
+    open fun getClientPlayer(): EntityPlayer? = null
 
     open fun sendSpamlessMessage(player: EntityPlayer, msg: ITextComponent, uniqueId: Int) {
         if (player !is EntityPlayerMP) return

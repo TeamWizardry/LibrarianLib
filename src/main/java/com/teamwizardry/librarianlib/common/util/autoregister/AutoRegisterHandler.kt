@@ -31,14 +31,18 @@ object AutoRegisterHandler {
             val name = it.get<String>("value")
             val modId = OwnershipHandler.getModId(it.clazz)
             if (name == null) {
-                errors.getOrPut("TileRegister", { mutableListOf() }).add(it.clazz)
+                errors.getOrPut("TileRegister") {
+                    mutableListOf()
+                }.add(it.clazz)
             } else {
                 var loc: ResourceLocation
                 if (name != "")
                     loc = ResourceLocation(name)
                 else loc = it.clazz.canonicalName.toLowerCase().toRl()
                 if (loc.resourceDomain == "minecraft" && modId == null)
-                    errors.getOrPut("TileRegister", { mutableListOf() }).add(it.clazz)
+                    errors.getOrPut("TileRegister") {
+                        mutableListOf()
+                    }.add(it.clazz)
                 else {
                     if (loc.resourceDomain == "minecraft")
                         loc = ResourceLocation(modId, loc.resourcePath)
@@ -51,7 +55,9 @@ object AutoRegisterHandler {
         getAnnotatedBy(PacketRegister::class.java, PacketBase::class.java, table).forEach {
             val side = it.get<ModAnnotation.EnumHolder>("value")?.value?.run { Side.valueOf(this) }
             if (side == null)
-                errors.getOrPut("PacketRegister", { mutableListOf() }).add(it.clazz)
+                errors.getOrPut("PacketRegister") {
+                    mutableListOf()
+                }.add(it.clazz)
             else
                 PacketHandler.register(it.clazz, side)
         }
@@ -60,14 +66,18 @@ object AutoRegisterHandler {
                 val name = it.get<String>("value")
                 val modId = OwnershipHandler.getModId(it.clazz)
                 if (name == null)
-                    errors.getOrPut("PartRegister", { mutableListOf() }).add(it.clazz)
+                    errors.getOrPut("PartRegister") {
+                        mutableListOf()
+                    }.add(it.clazz)
                 else {
                     var loc: ResourceLocation
                     if (name != "")
                         loc = ResourceLocation(name)
                     else loc = it.clazz.canonicalName.toLowerCase().toRl()
                     if (loc.resourceDomain == "minecraft" && modId == null)
-                        errors.getOrPut("PartRegister", { mutableListOf() }).add(it.clazz)
+                        errors.getOrPut("PartRegister") {
+                            mutableListOf()
+                        }.add(it.clazz)
                     else {
                         if (loc.resourceDomain == "minecraft")
                             loc = ResourceLocation(modId, loc.resourcePath)
