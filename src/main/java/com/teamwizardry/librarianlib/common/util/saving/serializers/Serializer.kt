@@ -9,7 +9,7 @@ import com.teamwizardry.librarianlib.common.util.saving.FieldTypeVariable
 class Serializer(val canApply: (FieldType) -> Boolean, val priority: SerializerPriority) {
     constructor(vararg classes: Class<*>) : this({ it.clazz in classes }, SerializerPriority.EXACT)
 
-    protected val serializers = mutableMapOf<SerializerTarget<*, *>, (FieldType) -> SerializerImpl<*, *>>()
+    private val serializers = mutableMapOf<SerializerTarget<*, *>, (FieldType) -> SerializerImpl<*, *>>()
 
     fun <R, W> register(target: SerializerTarget<R, W>, generator: (FieldType) -> SerializerImpl<*, *>) {
         serializers.put(target, { type ->

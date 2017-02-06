@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.util.flatAssociateBy
 import com.teamwizardry.librarianlib.common.util.times
-import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.common.Loader
 import java.io.File
 import java.nio.file.Paths
@@ -25,7 +24,7 @@ object OwnershipHandler {
             "src/test/scala"
     )
 
-    val ABS_BASE = Paths.get(Minecraft.getMinecraft().mcDataDir.absolutePath).parent.parent.toString()
+    val ABS_BASE = Paths.get(LibrarianLib.PROXY.getDataFolder().absolutePath).parent.parent.toString()
 
     init {
         prefixes = Loader.instance().activeModList

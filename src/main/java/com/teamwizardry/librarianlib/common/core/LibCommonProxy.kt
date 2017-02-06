@@ -21,6 +21,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.common.network.NetworkRegistry
+import java.io.File
 import java.io.InputStream
 
 /**
@@ -30,9 +31,13 @@ import java.io.InputStream
 open class LibCommonProxy {
 
     lateinit var asmDataTable: ASMDataTable
+        private set
+
+    private var mcDataFolder: File = File("/")
 
     open fun pre(e: FMLPreInitializationEvent) {
         EasyConfigHandler.init()
+        mcDataFolder = e.modConfigurationDirectory.parentFile
     }
 
     open fun latePre(e: FMLPreInitializationEvent) {
@@ -96,6 +101,8 @@ open class LibCommonProxy {
         if (player !is EntityPlayerMP) return
         PacketHandler.NETWORK.sendTo(PacketSpamlessMessage(msg, uniqueId), player)
     }
+
+    open fun getDataFolder() = mcDataFolder
 
 }
 

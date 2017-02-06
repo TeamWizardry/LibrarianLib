@@ -95,6 +95,8 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         chat.printChatMessageWithOptionalDeletion(msg, uniqueId)
     }
 
+    override fun getDataFolder() = Minecraft.getMinecraft().mcDataDir
+
     override fun onResourceManagerReload(resourceManager: IResourceManager) {
         MinecraftForge.EVENT_BUS.post(ResourceReloadEvent(resourceManager))
     }

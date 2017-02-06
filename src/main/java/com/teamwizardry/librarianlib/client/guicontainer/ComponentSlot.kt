@@ -17,7 +17,7 @@ class ComponentSlot(val slot: SlotBase, x: Int, y: Int) : GuiComponent<Component
     }
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
-        background.isVisible = slot.stack == null
+        background.isVisible = slot.stack.isEmpty
         slot.visible = true
     }
 

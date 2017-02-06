@@ -1,7 +1,5 @@
 package com.teamwizardry.librarianlib.common.util.math
 
-import com.teamwizardry.librarianlib.common.util.times
-import com.teamwizardry.librarianlib.common.util.vec
 import net.minecraft.util.math.MathHelper
 
 class Vec2d(val x: Double, val y: Double) {
@@ -103,7 +101,12 @@ class Vec2d(val x: Double, val y: Double) {
     }
 
     fun rotate(theta: Number): Vec2d {
-        return this * vec(MathHelper.cos(theta.toFloat()), MathHelper.sin(theta.toFloat()))
+        val cs = MathHelper.cos(theta.toFloat())
+        val sn = MathHelper.sin(theta.toFloat())
+        return Vec2d(
+                this.x * cs - this.y*sn,
+                this.x * sn + this.y*cs
+        )
     }
 
     //=============================================================================
