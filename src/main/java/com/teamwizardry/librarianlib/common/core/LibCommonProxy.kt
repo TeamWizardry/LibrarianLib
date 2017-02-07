@@ -21,6 +21,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.common.network.NetworkRegistry
+import java.io.File
 import java.io.InputStream
 
 /**
@@ -30,10 +31,13 @@ import java.io.InputStream
 open class LibCommonProxy {
 
     lateinit var asmDataTable: ASMDataTable
+        private set
+
+    private var mcDataFolder: File = File("/")
 
     open fun pre(e: FMLPreInitializationEvent) {
         EasyConfigHandler.init()
-        LibrarianLib.mcDataFolder = e.modConfigurationDirectory.parentFile
+        mcDataFolder = e.modConfigurationDirectory.parentFile
     }
 
     open fun latePre(e: FMLPreInitializationEvent) {
@@ -91,15 +95,14 @@ open class LibCommonProxy {
         // NO-OP
     }
 
-    //the entire point of using a proxy is _not_ to throw an error, if you wanted
-    //an error you could've just done Minecraft.getMinecraft().player
-    //besides, it should be nullable anyways
-    open fun getClientPlayer(): EntityPlayer? = null
+    open fun getClientPlayer(): EntityPlayer = throw UnsupportedOperationException("No client player on server side!")
 
     open fun sendSpamlessMessage(player: EntityPlayer, msg: ITextComponent, uniqueId: Int) {
         if (player !is EntityPlayerMP) return
         PacketHandler.NETWORK.sendTo(PacketSpamlessMessage(msg, uniqueId), player)
     }
+
+    open fun getDataFolder() = mcDataFolder
 
 }
 

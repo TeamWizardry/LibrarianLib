@@ -35,7 +35,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLInterModComms
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
-import java.io.File
 
 
 /**
@@ -90,8 +89,6 @@ object LibrarianLib {
     @SidedProxy(clientSide = CLIENT, serverSide = SERVER)
     lateinit var PROXY: LibCommonProxy
         @JvmStatic @JvmName("proxy") get
-
-    lateinit var mcDataFolder: File
 
     @JvmField
     val DEV_ENVIRONMENT = Launch.blackboard["fml.deobfuscatedEnvironment"] as Boolean
