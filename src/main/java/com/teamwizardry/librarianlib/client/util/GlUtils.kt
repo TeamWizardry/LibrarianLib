@@ -9,13 +9,13 @@ import net.minecraftforge.fml.relauncher.SideOnly
  */
 @SideOnly(Side.CLIENT)
 object GlUtils {
-    fun pushAttrib(lambda: () -> Unit) {
+    inline fun pushAttrib(lambda: () -> Unit) {
         GlStateManager.pushAttrib()
         lambda()
         GlStateManager.popAttrib()
     }
 
-    fun pushMatrix(lambda: () -> Unit) {
+    inline fun pushMatrix(lambda: () -> Unit) {
         GlStateManager.pushMatrix()
         lambda()
         GlStateManager.popMatrix()
