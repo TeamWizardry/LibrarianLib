@@ -24,7 +24,8 @@ object EasyConfigHandler {
     private val toLoad = mutableListOf<Pair<String, File?>>()
     private var loaded = false
 
-    private val allFields: MutableMap<Triple<*, *, *>, String> = mutableMapOf()
+    private val allFields: MutableMap<Triple<*, *, *>, Pair<String, String>> = mutableMapOf()
+    private val toLog: MutableList<Pair<String, String>> = mutableListOf()
 
     private val fieldMapStr: MutableList<Triple<String, (String) -> Unit, AnnotationInfo>> = mutableListOf()
     private val fieldMapInt: MutableList<Triple<String, (Int) -> Unit, AnnotationInfo>> = mutableListOf()
@@ -76,6 +77,8 @@ object EasyConfigHandler {
             Configuration(configf)
 
         config.load()
+        toLog.clear()
+
         fieldMapStr.filter { shouldUse(it) }.forEach {
             logFieldName(it)
             it.second(config.get(it.category, it.id, it.third.getString("defaultValue"), it.comment).string)
@@ -123,6 +126,12 @@ object EasyConfigHandler {
                     arr[i]
                 } }.toLongArray())
         }
+        if (LibrarianLib.DEV_ENVIRONMENT) {
+            val maxNameLen = toLog.maxBy { it.first.length }?.first?.length ?: 0
+            toLog.forEach { LibrarianLog.info("${modid.length * " "} | ${it.first}${" " * (maxNameLen - it.first.length)} ${it.second}") }
+        }
+
+        toLog.clear()
         config.save()
     }
 
@@ -137,15 +146,12 @@ object EasyConfigHandler {
         field.isAccessible = true
         val modid = OwnershipHandler.getModId(field.declaringClass) ?: "unknown"
         val triple = Triple(modid, { it: T -> field.set(inst, it) }, info)
-        val name = annotationClass.simpleName.replace("ConfigProperty", "")
-        val paddedName = name + " " * (12 - name.length)
-        allFields.put(triple as Triple<*, *, *>, "$paddedName | ${field.declaringClass.typeName}.${field.name}")
+        allFields.put(triple, annotationClass.simpleName.replace("ConfigProperty", "") to "${field.declaringClass.typeName}.${field.name}")
         target.add(triple)
     }
 
     private fun <T> logFieldName(it: Triple<String, (T) -> Unit, AnnotationInfo>) {
-        val pad = workingId.length * " "
-        LibrarianLog.info("$pad | " + allFields[it])
+        toLog.add(allFields[it] ?: return)
     }
 
     private val <T> Triple<String, (T) -> Unit, AnnotationInfo>.category: String
