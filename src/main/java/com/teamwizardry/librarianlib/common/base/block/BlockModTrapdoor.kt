@@ -9,7 +9,6 @@ import com.teamwizardry.librarianlib.common.util.VariantHelper
 import com.teamwizardry.librarianlib.common.util.builders.json
 import com.teamwizardry.librarianlib.common.util.currentModId
 import net.minecraft.block.Block
-import net.minecraft.block.BlockFence
 import net.minecraft.block.BlockTrapDoor
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
@@ -118,13 +117,13 @@ open class BlockModTrapdoor(name: String, val parent: IBlockState) : BlockTrapDo
         }, {
             mapOf(JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_bottom")
                     to json {
-                        obj(
-                                "parent" to "block/trapdoor_bottom",
-                                "textures" to obj(
-                                        "texture" to name
-                                )
+                obj(
+                        "parent" to "block/trapdoor_bottom",
+                        "textures" to obj(
+                                "texture" to name
                         )
-                    },
+                )
+            },
                     JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_top")
                             to json {
                         obj(

@@ -31,7 +31,7 @@ object GuiOverlay {
         }
     }
 
-    private var mainComp = ComponentVoid(0,0)
+    private var mainComp = ComponentVoid(0, 0)
     private val registered = mutableSetOf<StorageThing>()
     private val newlyRegistered = mutableSetOf<StorageThing>()
 
@@ -59,11 +59,11 @@ object GuiOverlay {
 
     @SubscribeEvent
     fun overlay(e: RenderGameOverlayEvent.Post) {
-        if(e.type != RenderGameOverlayEvent.ElementType.ALL) return
+        if (e.type != RenderGameOverlayEvent.ElementType.ALL) return
         val res = ScaledResolution(Minecraft.getMinecraft())
         GlStateManager.enableBlend()
         mainComp.size = vec(res.scaledWidth, res.scaledHeight)
-        mainComp.draw(mainComp.size/2, ClientTickHandler.partialTicks)
+        mainComp.draw(mainComp.size / 2, ClientTickHandler.partialTicks)
     }
 
     @SubscribeEvent
@@ -75,7 +75,7 @@ object GuiOverlay {
         mainComp.tick()
     }
 
-    private class ComponentVisiblePredicate(val predicate: BooleanSupplier) : GuiComponent<ComponentVisiblePredicate>(0,0) {
+    private class ComponentVisiblePredicate(val predicate: BooleanSupplier) : GuiComponent<ComponentVisiblePredicate>(0, 0) {
         override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
             // noop
         }

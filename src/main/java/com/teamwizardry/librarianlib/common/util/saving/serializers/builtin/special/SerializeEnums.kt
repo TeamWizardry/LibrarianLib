@@ -19,12 +19,13 @@ object SerializeEnums {
 
         SerializerRegistry["java:generator.enum"]?.register(Targets.NBT, { type ->
 
+            @Suppress("UNCHECKED_CAST")
             val constants = type.clazz.enumConstants as Array<Enum<*>>
             val constantsMap = constants.associateBy { it.name }
             val constSize = constants.size
 
             Targets.NBT.impl<Enum<*>>({ nbt, existing, syncing ->
-                if(syncing || nbt is NBTPrimitive) {
+                if (syncing || nbt is NBTPrimitive) {
                     nbt.safeCast(NBTPrimitive::class.java).let {
                         if (constSize <= 256) {
                             constants[it.byte.toInt()]
@@ -37,7 +38,7 @@ object SerializeEnums {
                     constantsMap[name] ?: throw IllegalArgumentException("No such enum element $name for class ${type.clazz.canonicalName}")
                 }
             }, { value, syncing ->
-                if(syncing) {
+                if (syncing) {
                     if (constSize <= 256) {
                         NBTTagByte(value.ordinal.toByte())
                     } else {
@@ -51,6 +52,7 @@ object SerializeEnums {
 
         SerializerRegistry["java:generator.enum"]?.register(Targets.BYTES, { type ->
 
+            @Suppress("UNCHECKED_CAST")
             val constants = type.clazz.enumConstants as Array<Enum<*>>
             val constSize = constants.size
 

@@ -4,24 +4,19 @@ import com.teamwizardry.librarianlib.client.core.JsonGenerationUtils
 import com.teamwizardry.librarianlib.client.core.ModelHandler
 import com.teamwizardry.librarianlib.common.base.IModelGenerator
 import com.teamwizardry.librarianlib.common.base.ModCreativeTab
-import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.common.util.VariantHelper
 import com.teamwizardry.librarianlib.common.util.builders.json
 import com.teamwizardry.librarianlib.common.util.currentModId
 import net.minecraft.block.Block
 import net.minecraft.block.BlockDoor
-import net.minecraft.block.BlockFence
-import net.minecraft.block.BlockTrapDoor
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.entity.Entity
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
-import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.Explosion
-import net.minecraft.world.IBlockAccess
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -43,6 +38,7 @@ open class BlockModDoor(name: String, val parent: IBlockState) : BlockDoor(paren
     val itemForm: ItemBlock? by lazy { createItemForm() }
 
     val doorItemForm: Item?
+
     init {
         doorItemForm = createDoorItemForm()
         this.variants = VariantHelper.beginSetupBlock(name, arrayOf())
@@ -94,24 +90,24 @@ open class BlockModDoor(name: String, val parent: IBlockState) : BlockDoor(paren
                 if ("hinge=left" in it && "open=true" in it) rot += 90
                 else if ("hinge=right" in it && "open=true" in it) rot += 270
                 rot %= 360
-                    json {
-                        obj(
-                                "model" to "${registryName}_$suffix",
-                                *(if (rot == 0) arrayOf() else arrayOf("y" to rot))
-                        )
-                    }
+                json {
+                    obj(
+                            "model" to "${registryName}_$suffix",
+                            *(if (rot == 0) arrayOf() else arrayOf("y" to rot))
+                    )
+                }
             }
         }, {
             mapOf(JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_bottom")
                     to json {
-                        obj(
-                                "parent" to "block/door_bottom",
-                                "textures" to obj(
-                                        "bottom" to name + "_door_lower",
-                                        "top" to name + "_door_upper"
-                                )
+                obj(
+                        "parent" to "block/door_bottom",
+                        "textures" to obj(
+                                "bottom" to name + "_door_lower",
+                                "top" to name + "_door_upper"
                         )
-                    },
+                )
+            },
                     JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_top")
                             to json {
                         obj(

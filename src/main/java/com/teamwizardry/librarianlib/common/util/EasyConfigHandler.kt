@@ -5,10 +5,14 @@ import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.core.OwnershipHandler
 import com.teamwizardry.librarianlib.common.util.EasyConfigHandler.init
 import net.minecraftforge.common.config.Configuration
-import net.minecraftforge.common.config.Property
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import java.io.File
 import java.lang.reflect.Field
+import kotlin.String
+import kotlin.Int
+import kotlin.Boolean
+import kotlin.Double
+import kotlin.Long
 
 
 /**
@@ -124,7 +128,8 @@ object EasyConfigHandler {
                     s.toLong()
                 } catch (e: NumberFormatException) {
                     arr[i]
-                } }.toLongArray())
+                }
+            }.toLongArray())
         }
 
 
@@ -254,6 +259,7 @@ private val noModId = ""
  * development environment.
  */
 @Target(AnnotationTarget.FIELD) annotation class ConfigPropertyDoubleArray(val modid: String = noModId, val category: String, val id: String, val comment: String, val defaultValue: DoubleArray, val devOnly: Boolean = false)
+
 /**
  * This annotation should be applied to non-final, static (if in Kotlin, [JvmStatic]) fields of type [DoubleArray]
  * that you wish to use as a config property. Use [category] to indicate the config category in the config file,

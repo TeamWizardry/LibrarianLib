@@ -56,7 +56,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         (Minecraft.getMinecraft().resourceManager as IReloadableResourceManager).registerReloadListener(this)
         onResourceManagerReload(Minecraft.getMinecraft().resourceManager)
 
-        if(LibrarianLib.DEV_ENVIRONMENT)
+        if (LibrarianLib.DEV_ENVIRONMENT)
             TextureMapExporter
     }
 

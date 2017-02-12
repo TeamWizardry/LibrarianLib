@@ -22,20 +22,22 @@ object SerializeLists {
             val typeParam = type.generic(0)!!
             val subSerializer = SerializerRegistry.lazyImpl(Targets.NBT, typeParam)
 
+            @Suppress("UNCHECKED_CAST")
             val constructorMH = MethodHandleHelper.wrapperForConstructor(type.clazz.getConstructor()) as (Array<Any>) -> MutableList<Any?>
 
             Targets.NBT.impl<MutableList<*>>({ nbt, existing, syncing ->
                 val list = nbt.safeCast(NBTTagList::class.java)
 
+                @Suppress("UNCHECKED_CAST")
                 val array = (existing ?: constructorMH(arrayOf())) as MutableList<Any?>
 
-                while(array.size > list.tagCount())
-                    array.removeAt(array.size-1)
+                while (array.size > list.tagCount())
+                    array.removeAt(array.size - 1)
 
                 list.forEachIndexed<NBTTagCompound> { i, container ->
                     val tag = container.getTag("-")
                     val v = if (tag == null) null else subSerializer().read(tag, array.getOrNull(i), syncing)
-                    if(i >= array.size) {
+                    if (i >= array.size) {
                         array.add(v)
                     } else {
                         array.set(i, v)
@@ -46,7 +48,7 @@ object SerializeLists {
             }, { value, syncing ->
                 val list = NBTTagList()
 
-                for (i in 0..value.size-1) {
+                for (i in 0..value.size - 1) {
                     val container = NBTTagCompound()
                     list.appendTag(container)
                     val v = value[i]
@@ -64,19 +66,21 @@ object SerializeLists {
             val typeParam = type.generic(0)!!
             val subSerializer = SerializerRegistry.lazyImpl(Targets.BYTES, typeParam)
 
+            @Suppress("UNCHECKED_CAST")
             val constructorMH = MethodHandleHelper.wrapperForConstructor(type.clazz.getConstructor()) as (Array<Any>) -> MutableList<Any?>
 
             Targets.BYTES.impl<MutableList<*>>({ buf, existing, syncing ->
                 val nullsig = buf.readBooleanArray()
 
+                @Suppress("UNCHECKED_CAST")
                 val array = (existing ?: constructorMH(arrayOf())) as MutableList<Any?>
 
-                while(array.size > nullsig.size)
-                    array.removeAt(array.size-1)
+                while (array.size > nullsig.size)
+                    array.removeAt(array.size - 1)
 
                 for (i in 0..nullsig.size - 1) {
                     val v = if (nullsig[i]) null else subSerializer().read(buf, array.getOrNull(i), syncing)
-                    if(i >= array.size) {
+                    if (i >= array.size) {
                         array.add(v)
                     } else {
                         array.set(i, v)
@@ -87,7 +91,7 @@ object SerializeLists {
                 val nullsig = BooleanArray(value.size) { value.get(it) == null }
                 buf.writeBooleanArray(nullsig)
 
-                for (i in 0..value.size-1) {
+                for (i in 0..value.size - 1) {
                     if (!nullsig[i])
                         subSerializer().write(buf, value.get(i)!!, syncing)
                 }

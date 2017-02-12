@@ -75,7 +75,7 @@ open class TileModInventory(val size: Int) : TileMod(), IItemHandlerModifiable {
 
         val existing = this.stacks[slot] ?: return null
 
-        val toExtract = Math.min(amount, existing.getMaxStackSize())
+        val toExtract = Math.min(amount, existing.maxStackSize)
 
         if (existing.stackSize <= toExtract) {
             if (!simulate) {

@@ -27,7 +27,7 @@ object SerializeSets {
 
             @Suppress("UNCHECKED_CAST")
             val constructorMH = (if (EnumSet::class.java.isAssignableFrom(type.clazz))
-            { arr -> RawEnumSetCreator.create(type.clazz) }
+                { arr -> RawEnumSetCreator.create(type.clazz) }
             else
                 MethodHandleHelper.wrapperForConstructor(type.clazz.getConstructor())
                     ) as (Array<Any>) -> MutableSet<Any?>
@@ -37,6 +37,7 @@ object SerializeSets {
                 val list = compound.getTag("values").safeCast(NBTTagList::class.java)
                 val nullFlag = compound.getBoolean("hasNull")
 
+                @Suppress("UNCHECKED_CAST")
                 val set = (existing ?: constructorMH(arrayOf())) as MutableSet<Any?>
                 set.clear()
                 if (nullFlag)

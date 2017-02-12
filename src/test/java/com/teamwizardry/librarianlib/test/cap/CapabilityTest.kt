@@ -80,6 +80,7 @@ class TileEntityCapTest : TileMod() {
 
     val cap: CapabilityTest = CapabilityTest()
 
+    @Suppress("UNCHECKED_CAST")
     override fun <T : Any> getCapability(capability: Capability<T>, facing: EnumFacing?): T? {
         return if (capability == CapabilityTest.cap) cap as T else super.getCapability(capability, facing)
     }

@@ -8,7 +8,6 @@ import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
 import net.minecraft.item.ItemDoor
 import net.minecraft.item.ItemStack
-import net.minecraftforge.fml.common.Loader
 
 /**
  * The default implementation for an IVariantHolder item.

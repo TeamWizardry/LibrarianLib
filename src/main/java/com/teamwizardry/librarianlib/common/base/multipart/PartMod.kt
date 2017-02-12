@@ -46,7 +46,7 @@ open class PartMod : Multipart() {
 
     override fun readFromNBT(tag: NBTTagCompound) {
         readCustomNBT(tag.getCompoundTag("custom"))
-        if(tag.hasKey("auto"))
+        if (tag.hasKey("auto"))
             AbstractSaveHandler.readAutoNBT(this, tag.getTag("auto"), false)
         super.readFromNBT(tag)
     }

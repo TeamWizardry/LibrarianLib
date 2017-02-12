@@ -16,12 +16,12 @@ import java.util.*
 private val EMPTY_LIST = listOf<BakedQuad>()
 private val EMPTY_FACE_MAP = mapOf<EnumFacing, List<BakedQuad>>()
 
-class LayeredBakedModel(protected val generalQuads: Map<BlockRenderLayer,List<BakedQuad>>, protected val faceQuads: Map<BlockRenderLayer,Map<EnumFacing, List<BakedQuad>>>, protected val ambientOcclusion: Boolean, protected val gui3d: Boolean, protected val texture: TextureAtlasSprite, protected val cameraTransforms: ItemCameraTransforms, protected val itemOverrideList: ItemOverrideList) : IBakedModel {
+class LayeredBakedModel(protected val generalQuads: Map<BlockRenderLayer, List<BakedQuad>>, protected val faceQuads: Map<BlockRenderLayer, Map<EnumFacing, List<BakedQuad>>>, protected val ambientOcclusion: Boolean, protected val gui3d: Boolean, protected val texture: TextureAtlasSprite, protected val cameraTransforms: ItemCameraTransforms, protected val itemOverrideList: ItemOverrideList) : IBakedModel {
 
     override fun getQuads(state: IBlockState?, side: EnumFacing?, rand: Long): List<BakedQuad> {
         val layer = MinecraftForgeClient.getRenderLayer()
 
-        if(side == null) {
+        if (side == null) {
             return generalQuads[layer] ?: EMPTY_LIST
         } else {
             return (faceQuads[layer] ?: EMPTY_FACE_MAP)[side] ?: EMPTY_LIST
@@ -65,7 +65,7 @@ class LayeredBakedModel(protected val generalQuads: Map<BlockRenderLayer,List<Ba
         private var builderItemOverrideList: ItemOverrideList = p_i46988_2_
 
         init {
-            for(layer in BlockRenderLayer.values()) {
+            for (layer in BlockRenderLayer.values()) {
                 this.builderGeneralQuads[layer] = mutableListOf()
                 this.builderFaceQuads[layer] = EnumMap(EnumFacing::class.java)
 
@@ -84,7 +84,7 @@ class LayeredBakedModel(protected val generalQuads: Map<BlockRenderLayer,List<Ba
         }
 
         private fun addGeneralQuads(p_188645_1_: IBlockState, p_188645_2_: IBakedModel, p_188645_3_: TextureAtlasSprite, p_188645_4_: Long) {
-            for (bakedquad in p_188645_2_.getQuads(p_188645_1_, null as EnumFacing, p_188645_4_)) {
+            for (bakedquad in p_188645_2_.getQuads(p_188645_1_, null, p_188645_4_)) {
                 this.addGeneralQuad(BakedQuadRetextured(bakedquad, p_188645_3_))
             }
         }

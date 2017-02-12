@@ -81,6 +81,7 @@ object AnnotationHelper {
         }
     }
 }
+
 /**
  * This class saves information about annotations gotten from [AnnotationHelper.findAnnotatedObjects], [AnnotationHelper.findAnnotatedClasses], and
  * [AnnotationHelper.findAnnotatedMethods]. That information can be of three types by default: String, Integer, and Boolean.

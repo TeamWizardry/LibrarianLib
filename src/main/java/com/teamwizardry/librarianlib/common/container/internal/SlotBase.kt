@@ -17,46 +17,46 @@ class SlotBase(handler: IItemHandler, index: Int) : SlotItemHandler(handler, ind
     var lastVisible = visible
 
     override fun onPickupFromSlot(playerIn: EntityPlayer?, stack: ItemStack?) {
-        if(type.onPickup(this, playerIn, stack))
+        if (type.onPickup(this, playerIn, stack))
             super.onPickupFromSlot(playerIn, stack)
     }
 
     override fun onSlotChanged() {
-        if(type.onSlotChange(this))
+        if (type.onSlotChange(this))
             super.onSlotChanged()
     }
 
     override fun onSlotChange(old: ItemStack?, new: ItemStack?) {
-        if(type.onSlotChange(this, old, new))
+        if (type.onSlotChange(this, old, new))
             super.onSlotChange(old, new)
     }
 
     override fun putStack(stack: ItemStack?) {
-        if(type.putStack(this, stack))
+        if (type.putStack(this, stack))
             super.putStack(stack)
     }
 
     override fun getStack(): ItemStack? {
-        return if(visible) type.getStack(this, super.getStack()) else null
+        return if (visible) type.getStack(this, super.getStack()) else null
     }
 
     override fun canTakeStack(playerIn: EntityPlayer?): Boolean {
-        return if(visible) type.canTake(this, playerIn, stack, super.canTakeStack(playerIn)) else false
+        return if (visible) type.canTake(this, playerIn, stack, super.canTakeStack(playerIn)) else false
     }
 
     override fun canBeHovered(): Boolean {
-        return if(visible) type.canHover(this) else false
+        return if (visible) type.canHover(this) else false
     }
 
     override fun isItemValid(stack: ItemStack?): Boolean {
-        return if(visible) type.isValid(this, stack, super.isItemValid(stack)) else false
+        return if (visible) type.isValid(this, stack, super.isItemValid(stack)) else false
     }
 
     override fun getSlotStackLimit(): Int {
         return type.stackLimit(this, stack)
     }
 
-    fun  handleClick(container: ContainerBase, dragType: Int, clickType: ClickType?, player: EntityPlayer): Pair<Boolean, ItemStack?> {
+    fun handleClick(container: ContainerBase, dragType: Int, clickType: ClickType?, player: EntityPlayer): Pair<Boolean, ItemStack?> {
         return type.handleClick(this, container, dragType, clickType, player)
     }
 }

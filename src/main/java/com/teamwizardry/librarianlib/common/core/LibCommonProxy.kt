@@ -42,7 +42,7 @@ open class LibCommonProxy {
         EasyConfigHandler.init()
         mcDataFolder = e.modConfigurationDirectory.parentFile
 
-        if(LibrarianLib.DEV_ENVIRONMENT && unsafeAllowedModIds.isNotEmpty()) {
+        if (LibrarianLib.DEV_ENVIRONMENT && unsafeAllowedModIds.isNotEmpty()) {
             LibrarianLog.info(LibrarianLib.MODID + " | Unsafe-allowed mod IDs:")
             unsafeAllowedModIds.forEach { "${" " * LibrarianLib.MODID.length} | $it" }
         }

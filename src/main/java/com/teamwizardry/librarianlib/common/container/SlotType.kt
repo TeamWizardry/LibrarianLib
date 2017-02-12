@@ -10,27 +10,33 @@ open class SlotType {
     /**
      * Returned form the slot `isItemValid` method. Passed the result of the default method
      */
-    open fun isValid(slot: SlotBase, stack: ItemStack?, default: Boolean): Boolean { return default }
+    open fun isValid(slot: SlotBase, stack: ItemStack?, default: Boolean): Boolean {
+        return default
+    }
 
     /**
      * Returned from the slot `getSlotStackLimit` method.
      */
-    open fun stackLimit(slot: SlotBase, stack: ItemStack?): Int { return 64 }
+    open fun stackLimit(slot: SlotBase, stack: ItemStack?): Int {
+        return 64
+    }
 
     /**
      * Returned from the slot `canTakeStack` method, passed the result of the default method.
      */
-    open fun canTake(slot: SlotBase, player: EntityPlayer?, stack: ItemStack?, default: Boolean): Boolean { return default }
+    open fun canTake(slot: SlotBase, player: EntityPlayer?, stack: ItemStack?, default: Boolean): Boolean {
+        return default
+    }
 
     /**
      * try to shift click the item into this slot
      */
     open fun autoTransferInto(slot: SlotBase, stack: ItemStack): ITransferRule.AutoTransferResult {
-        if(!slot.isItemValid(stack))
-            return ITransferRule.AutoTransferResult(stack,  false)
+        if (!slot.isItemValid(stack))
+            return ITransferRule.AutoTransferResult(stack, false)
         val slotStack = slot.stack
 
-        if(slotStack == null) {
+        if (slotStack == null) {
             val leftOver = stack.copy()
             val quantity = Math.min(slot.slotStackLimit, leftOver.stackSize)
 
@@ -39,13 +45,13 @@ open class SlotType {
             slot.putStack(insert)
 
             leftOver.stackSize -= quantity
-            return ITransferRule.AutoTransferResult(if(leftOver.stackSize <= 0) null else leftOver, true)
+            return ITransferRule.AutoTransferResult(if (leftOver.stackSize <= 0) null else leftOver, true)
         }
-        if(ITransferRule.areItemStacksEqual(stack, slotStack)) {
+        if (ITransferRule.areItemStacksEqual(stack, slotStack)) {
             val combinedSize = stack.stackSize + slotStack.stackSize
             val maxStackSize = Math.min(slot.getItemStackLimit(stack), stack.maxStackSize)
 
-            if(combinedSize <= maxStackSize) {
+            if (combinedSize <= maxStackSize) {
                 val newStack = slotStack.copy()
                 newStack.stackSize = combinedSize
                 slot.putStack(newStack)
@@ -84,34 +90,46 @@ open class SlotType {
      * Called in the slot `onPickupFromSlot` method. If this returns true the normal handling will proceed, false will
      * override the default handling causing it not to be called.
      */
-    fun  onPickup(slot: SlotBase, player: EntityPlayer?, stack: ItemStack?): Boolean { return true }
+    open fun onPickup(slot: SlotBase, player: EntityPlayer?, stack: ItemStack?): Boolean {
+        return true
+    }
 
     /**
      * Called in the slot `onSlotChange()` method, return false to cancel default handling.
      */
-    fun  onSlotChange(slot: SlotBase): Boolean { return true }
+    open fun onSlotChange(slot: SlotBase): Boolean {
+        return true
+    }
 
     /**
      * Called in the slot `onSlotChange(old, new)` method, return false to cancel default handling.
      */
-    fun  onSlotChange(slot: SlotBase, old: ItemStack?, new: ItemStack?): Boolean { return true }
+    open fun onSlotChange(slot: SlotBase, old: ItemStack?, new: ItemStack?): Boolean {
+        return true
+    }
 
     /**
      * Called in the slot `putStack` method, return false to cancel default handling
      */
-    fun  putStack(slot: SlotBase, stack: ItemStack?): Boolean { return true }
+    open fun putStack(slot: SlotBase, stack: ItemStack?): Boolean {
+        return true
+    }
 
 
     /**
      * Returned from the slot `getStack` method. It is passed the default stack, and may modify or entirely replace the
      * return value
      */
-    fun  getStack(slot: SlotBase, defaultStack: ItemStack?): ItemStack? { return defaultStack }
+    open fun getStack(slot: SlotBase, defaultStack: ItemStack?): ItemStack? {
+        return defaultStack
+    }
 
     /**
      * Returned from the slot `canBeHovered` method.
      */
-    fun  canHover(slot: SlotBase): Boolean { return true }
+    open fun canHover(slot: SlotBase): Boolean {
+        return true
+    }
 
 }
 

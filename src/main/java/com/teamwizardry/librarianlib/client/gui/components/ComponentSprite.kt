@@ -32,7 +32,7 @@ class ComponentSprite @JvmOverloads constructor(var sprite: Sprite?, x: Int, y: 
             // it's value to the depth buffer, cutting a hole down wherever it's drawn.
             GL11.glDepthFunc(GL11.GL_ALWAYS)
         }
-        if(sp.frameCount > 0 && lastAnim / sp.frameCount < animationTicks / sp.frameCount) {
+        if (sp.frameCount > 0 && lastAnim / sp.frameCount < animationTicks / sp.frameCount) {
             BUS.fire(AnimationLoopEvent(this))
         }
         lastAnim = animationTicks

@@ -137,7 +137,7 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
 
     override fun createBlockState()
             = if (isDouble) BlockStateContainer(this, DUMMY_PROP)
-            else BlockStateContainer(this, HALF, DUMMY_PROP)
+    else BlockStateContainer(this, HALF, DUMMY_PROP)
 
     override val ignoredProperties: Array<IProperty<*>>?
         get() = arrayOf(DUMMY_PROP)
@@ -155,11 +155,11 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
 
     override fun getStateFromMeta(meta: Int)
             = if (isDouble) defaultState
-            else defaultState.withProperty(BlockSlab.HALF, if (meta == 8) EnumBlockHalf.TOP else EnumBlockHalf.BOTTOM)
+    else defaultState.withProperty(BlockSlab.HALF, if (meta == 8) EnumBlockHalf.TOP else EnumBlockHalf.BOTTOM)
 
     override fun getMetaFromState(state: IBlockState)
             = if (isDouble) 0
-            else if (state.getValue(BlockSlab.HALF) == EnumBlockHalf.TOP) 8 else 0
+    else if (state.getValue(BlockSlab.HALF) == EnumBlockHalf.TOP) 8 else 0
 
     // Internal fixes for slab overriding
 

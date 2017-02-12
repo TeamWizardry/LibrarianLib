@@ -33,7 +33,6 @@ import java.lang.reflect.Type
 import java.util.*
 
 
-
 /**
  * Created by TheCodeWarrior
  */
@@ -56,7 +55,7 @@ fun String.canLocalize(): Boolean {
 fun String.toRl(): ResourceLocation = ResourceLocation(this)
 
 fun <K, V> MutableMap<K, V>.withRealDefault(default: (K) -> V): DefaultedMutableMap<K, V> {
-    return when(this) {
+    return when (this) {
         is RealDefaultImpl -> RealDefaultImpl(this.map, default)
         else -> RealDefaultImpl(this, default)
     }
@@ -370,8 +369,10 @@ operator fun NBTTagCompound.get(key: String): NBTBase = this.getTag(key)
 
 fun EntityPlayer.sendMessage(str: String)
         = sendStatusMessage(str.toComponent())
+
 fun EntityPlayer.sendSpamlessMessage(str: String, uniqueId: Int)
         = sendSpamlessMessage(str.toComponent(), uniqueId)
+
 fun EntityPlayer.sendSpamlessMessage(comp: ITextComponent, uniqueId: Int)
         = LibrarianLib.PROXY.sendSpamlessMessage(this, comp, uniqueId)
 
@@ -383,6 +384,7 @@ fun Entity.setVelocityAndUpdate(x: Double = motionX, y: Double = motionY, z: Dou
     if (this is EntityPlayerMP)
         connection.sendPacket(SPacketEntityVelocity(this))
 }
+
 val Entity.motionVec: Vec3d
     get() = Vec3d(motionX, motionY, motionZ)
 
@@ -394,7 +396,7 @@ fun String.toComponent() = TextComponentString(this)
 
 // ICapabilityProvider ==============================================================================================================
 fun <T, R> ICapabilityProvider.ifCap(capability: Capability<T>, facing: EnumFacing?, callback: (T) -> R): R? {
-    if(this.hasCapability(capability, facing))
+    if (this.hasCapability(capability, facing))
         return callback(this.getCapability(capability, facing)!!)
     return null
 }
@@ -529,13 +531,13 @@ inline fun <K, V> ByteArray.flatAssociateBy(mapper: (Byte) -> Iterable<Pair<K, V
     return map
 }
 
-inline fun <K, V> ShortArray.flatAssociateBy(mapper: (Short)  -> Iterable<Pair<K, V>>): Map<K, V> {
+inline fun <K, V> ShortArray.flatAssociateBy(mapper: (Short) -> Iterable<Pair<K, V>>): Map<K, V> {
     val map = mutableMapOf<K, V>()
     forEach { map.putAll(mapper(it)) }
     return map
 }
 
-inline fun <K, V> CharArray.flatAssociateBy(mapper: (Char)  -> Iterable<Pair<K, V>>): Map<K, V> {
+inline fun <K, V> CharArray.flatAssociateBy(mapper: (Char) -> Iterable<Pair<K, V>>): Map<K, V> {
     val map = mutableMapOf<K, V>()
     forEach { map.putAll(mapper(it)) }
     return map
@@ -567,11 +569,11 @@ inline fun <K, V> DoubleArray.flatAssociateBy(mapper: (Double) -> Iterable<Pair<
 
 // listOf and mapOf ====================================================================================================
 
-inline fun <reified K: Enum<K>, V> enumMapOf(): EnumMap<K, V> {
+inline fun <reified K : Enum<K>, V> enumMapOf(): EnumMap<K, V> {
     return EnumMap(K::class.java)
 }
 
-inline fun <reified K: Enum<K>, V> enumMapOf(vararg pairs: Pair<K, V>): EnumMap<K, V> {
+inline fun <reified K : Enum<K>, V> enumMapOf(vararg pairs: Pair<K, V>): EnumMap<K, V> {
     val map = enumMapOf<K, V>()
     map.putAll(pairs)
     return map

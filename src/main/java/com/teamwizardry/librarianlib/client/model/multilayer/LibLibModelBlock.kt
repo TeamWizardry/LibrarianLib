@@ -137,10 +137,12 @@ class LibLibModelWrapper(private val location: ResourceLocation, private val mod
     private fun bakeNormal(model: ModelBlock, perState: IModelState, modelState: IModelState, newTransforms: List<TRSRTransformation>, format: VertexFormat, bakedTextureGetter: Function<ResourceLocation, TextureAtlasSprite>, uvLocked: Boolean): IBakedModel {
         val baseState = modelState.apply(Optional.absent<IModelPart>()).or(TRSRTransformation.identity())
         val particle = bakedTextureGetter.apply(ResourceLocation(model.resolveTextureName("particle")))
-        val builder = if(model.elements.any { it is LibLibBlockPart || it.mapFaces.any {
-            val v = it.value
-            v is LibLibBlockPartFace
-        } } )
+        val builder = if (model.elements.any {
+            it is LibLibBlockPart || it.mapFaces.any {
+                val v = it.value
+                v is LibLibBlockPartFace
+            }
+        })
             LayeredBakedModel.Builder(model, model.createOverrides()).setTexture(particle!!)
         else
             SimpleBakedModel.Builder(model, model.createOverrides()).setTexture(particle!!)
@@ -149,17 +151,15 @@ class LibLibModelWrapper(private val location: ResourceLocation, private val mod
                 continue
             }
             var part = model.elements[i]
-            var transformation = baseState
-            if (newTransforms[i] != null) {
-                transformation = transformation.compose(newTransforms[i])
-                var rot: BlockPartRotation? = part.partRotation
-                if (rot == null) rot = BlockPartRotation(org.lwjgl.util.vector.Vector3f(), EnumFacing.Axis.Y, 0f, false)
-                part = BlockPart(part.positionFrom, part.positionTo, part.mapFaces, rot, part.shade)
-            }
+            val transformation = baseState.compose(newTransforms[i])
+            var rot: BlockPartRotation? = part.partRotation
+            if (rot == null) rot = BlockPartRotation(org.lwjgl.util.vector.Vector3f(), EnumFacing.Axis.Y, 0f, false)
+            part = BlockPart(part.positionFrom, part.positionTo, part.mapFaces, rot, part.shade)
+
             for ((key, value) in part.mapFaces) {
                 val textureatlassprite1 = bakedTextureGetter.apply(ResourceLocation(model.resolveTextureName(value.texture)))
 
-                if(builder is LayeredBakedModel.Builder) {
+                if (builder is LayeredBakedModel.Builder) {
                     builder.nextLayer((value as? LibLibBlockPartFace)?.layer ?: (part as? LibLibBlockPart)?.layer ?: BlockRenderLayer.SOLID)
                 }
 

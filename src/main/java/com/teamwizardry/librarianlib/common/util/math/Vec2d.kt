@@ -104,8 +104,8 @@ class Vec2d(val x: Double, val y: Double) {
         val cs = MathHelper.cos(theta.toFloat())
         val sn = MathHelper.sin(theta.toFloat())
         return Vec2d(
-                this.x * cs - this.y*sn,
-                this.x * sn + this.y*cs
+                this.x * cs - this.y * sn,
+                this.x * sn + this.y * cs
         )
     }
 

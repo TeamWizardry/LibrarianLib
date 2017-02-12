@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.client.gui.components
 
-import com.google.common.collect.ImmutableList
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.Option
 import com.teamwizardry.librarianlib.common.util.math.BoundingBox2D

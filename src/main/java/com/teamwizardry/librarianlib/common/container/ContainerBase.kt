@@ -32,12 +32,12 @@ abstract class ContainerBase(val player: EntityPlayer) {
 
     fun transferStackInSlot(slot: SlotBase): ItemStack? {
         val stack = slot.stack ?: return null
-        for(rule in transferRules) {
-            if(rule.shouldApply(slot)) {
+        for (rule in transferRules) {
+            if (rule.shouldApply(slot)) {
                 val result = rule.putStack(stack)
-                if(result !== stack) {
+                if (result !== stack) {
                     slot.putStack(result)
-                    return if(result === stack) result else null
+                    return if (result === stack) result else null
                 }
             }
         }

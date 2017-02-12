@@ -28,6 +28,7 @@ object SerializeArrays {
                 val list = nbt.safeCast(NBTTagList::class.java)
 
                 val reuse = existing != null && existing.size == list.tagCount()
+                @Suppress("UNCHECKED_CAST")
                 val array = if (reuse) existing as Array<Any?> else ArrayReflect.newInstanceRaw(type.componentType.clazz, list.tagCount())
 
                 list.forEachIndexed<NBTTagCompound> { i, container ->
@@ -64,6 +65,7 @@ object SerializeArrays {
             Targets.BYTES.impl<Array<*>>({ buf, existing, syncing ->
                 val nullsig = buf.readBooleanArray()
                 val reuse = existing != null && existing.size == nullsig.size
+                @Suppress("UNCHECKED_CAST")
                 val array = if (reuse) existing as Array<Any?> else ArrayReflect.newInstanceRaw(type.componentType.clazz, nullsig.size)
 
                 for (i in 0..nullsig.size - 1) {

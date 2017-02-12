@@ -41,7 +41,7 @@ import java.util.*
  * Created at 10:13 PM on 5/27/16.
  */
 @Suppress("LeakingThis")
-abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod(name, Material.PLANTS, *variants), IPlantable, IGrowable, IModelGenerator  {
+abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod(name, Material.PLANTS, *variants), IPlantable, IGrowable, IModelGenerator {
 
     companion object : IFuelHandler {
         override fun getBurnTime(fuel: ItemStack)

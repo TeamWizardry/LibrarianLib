@@ -64,20 +64,22 @@ open class BlockModStairs(name: String, parent: IBlockState) : BlockStairs(paren
             JsonGenerationUtils.generateBlockStates(this, mapper) {
                 val x = if ("half=top" in it) 180 else 0
                 var y = if ("facing=east" in it) 0
-                    else if ("facing=west" in it) 180
-                    else if ("facing=south" in it) 90
-                    else 270
+                else if ("facing=west" in it) 180
+                else if ("facing=south" in it) 90
+                else 270
                 if ("half=top" in it && ("shape=inner" in it || "shape=outer" in it)) y += 90
                 if ("_left" in it) y += 270
                 y %= 360
 
                 val modelType = if ("shape=straight" in it) "" else if ("shape=inner" in it) "_inner" else "_outer"
-                json { obj(
-                        "model" to "$registryName$modelType",
-                        *if (x != 0) arrayOf("x" to x) else arrayOf(),
-                        *if (y != 0) arrayOf("y" to y) else arrayOf(),
-                        *if (x != 0 || y != 0) arrayOf("uvlock" to true) else arrayOf()
-                ) }
+                json {
+                    obj(
+                            "model" to "$registryName$modelType",
+                            *if (x != 0) arrayOf("x" to x) else arrayOf(),
+                            *if (y != 0) arrayOf("y" to y) else arrayOf(),
+                            *if (x != 0 || y != 0) arrayOf("uvlock" to true) else arrayOf()
+                    )
+                }
             }
         }, {
             mapOf(

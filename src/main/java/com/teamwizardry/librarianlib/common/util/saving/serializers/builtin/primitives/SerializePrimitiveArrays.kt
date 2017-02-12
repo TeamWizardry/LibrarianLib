@@ -27,7 +27,7 @@ object SerializePrimitiveArrays {
         SerializerRegistry["java:char[]"]?.register(Targets.NBT, Targets.NBT.impl<CharArray>
         ({ nbt, existing, syncing ->
             val list = nbt.safeCast(NBTTagList::class.java)
-            val array = if(existing != null && existing.size == list.tagCount()) existing else CharArray(list.tagCount())
+            val array = if (existing != null && existing.size == list.tagCount()) existing else CharArray(list.tagCount())
 
             list.forEachIndexed<NBTBase> { i, tag ->
                 array[i] = tag.safeCast(NBTPrimitive::class.java).short.toChar()
@@ -42,7 +42,7 @@ object SerializePrimitiveArrays {
         SerializerRegistry["java:char[]"]?.register(Targets.BYTES, Targets.BYTES.impl<CharArray>
         ({ buf, existing, syncing ->
             val length = buf.readVarInt()
-            val arr = if(existing != null && existing.size == length) existing else CharArray(length)
+            val arr = if (existing != null && existing.size == length) existing else CharArray(length)
             arr.indices.forEach { arr[it] = buf.readChar() }
             arr
         }, { buf, value, syncing ->
@@ -57,7 +57,7 @@ object SerializePrimitiveArrays {
         SerializerRegistry["java:short[]"]?.register(Targets.NBT, Targets.NBT.impl<ShortArray>
         ({ nbt, existing, syncing ->
             val list = nbt.safeCast(NBTTagList::class.java)
-            val array = if(existing != null && existing.size == list.tagCount()) existing else ShortArray(list.tagCount())
+            val array = if (existing != null && existing.size == list.tagCount()) existing else ShortArray(list.tagCount())
 
             list.forEachIndexed<NBTBase> { i, tag ->
                 array[i] = tag.safeCast(NBTPrimitive::class.java).short
@@ -72,7 +72,7 @@ object SerializePrimitiveArrays {
         SerializerRegistry["java:short[]"]?.register(Targets.BYTES, Targets.BYTES.impl<ShortArray>
         ({ buf, existing, syncing ->
             val length = buf.readVarInt()
-            val arr = if(existing != null && existing.size == length) existing else ShortArray(length)
+            val arr = if (existing != null && existing.size == length) existing else ShortArray(length)
             arr.indices.forEach { arr[it] = buf.readShort() }
             arr
         }, { buf, value, syncing ->
@@ -94,7 +94,7 @@ object SerializePrimitiveArrays {
         SerializerRegistry["java:byte[]"]?.register(Targets.BYTES, Targets.BYTES.impl<ByteArray>
         ({ buf, existing, syncing ->
             val length = buf.readVarInt()
-            val arr = if(existing != null && existing.size == length) existing else ByteArray(length)
+            val arr = if (existing != null && existing.size == length) existing else ByteArray(length)
             arr.indices.forEach { arr[it] = buf.readByte() }
             arr
         }, { buf, value, syncing ->
@@ -116,7 +116,7 @@ object SerializePrimitiveArrays {
         SerializerRegistry["java:int[]"]?.register(Targets.BYTES, Targets.BYTES.impl<IntArray>
         ({ buf, existing, syncing ->
             val length = buf.readVarInt()
-            val arr = if(existing != null && existing.size == length) existing else IntArray(length)
+            val arr = if (existing != null && existing.size == length) existing else IntArray(length)
             arr.indices.forEach { arr[it] = buf.readInt() }
             arr
         }, { buf, value, syncing ->
@@ -130,16 +130,14 @@ object SerializePrimitiveArrays {
 
         SerializerRegistry["java:long[]"]?.register(Targets.NBT, Targets.NBT.impl<LongArray>
         ({ nbt, existing, syncing ->
-            existing as LongArray?
             val list = nbt.safeCast(NBTTagList::class.java)
-            val array = if(existing != null && existing.size == list.tagCount()) existing else LongArray(list.tagCount())
+            val array = if (existing != null && existing.size == list.tagCount()) existing else LongArray(list.tagCount())
 
             list.forEachIndexed<NBTBase> { i, tag ->
                 array[i] = tag.safeCast(NBTPrimitive::class.java).long
             }
             array
         }, { value, syncing ->
-            value as LongArray
             val tag = NBTTagList()
             value.forEach { tag.appendTag(NBTTagLong(it)) }
             tag
@@ -147,13 +145,11 @@ object SerializePrimitiveArrays {
 
         SerializerRegistry["java:long[]"]?.register(Targets.BYTES, Targets.BYTES.impl<LongArray>
         ({ buf, existing, syncing ->
-            existing as LongArray?
             val length = buf.readVarInt()
-            val arr = if(existing != null && existing.size == length) existing else LongArray(length)
+            val arr = if (existing != null && existing.size == length) existing else LongArray(length)
             arr.indices.forEach { arr[it] = buf.readLong() }
             arr
         }, { buf, value, syncing ->
-            value as LongArray
             buf.writeVarInt(value.size)
             value.forEach { buf.writeLong(it) }
         }))
@@ -165,7 +161,7 @@ object SerializePrimitiveArrays {
         SerializerRegistry["java:float[]"]?.register(Targets.NBT, Targets.NBT.impl<FloatArray>
         ({ nbt, existing, syncing ->
             val list = nbt.safeCast(NBTTagList::class.java)
-            val array = if(existing != null && existing.size == list.tagCount()) existing else FloatArray(list.tagCount())
+            val array = if (existing != null && existing.size == list.tagCount()) existing else FloatArray(list.tagCount())
 
             list.forEachIndexed<NBTBase> { i, tag ->
                 array[i] = tag.safeCast(NBTPrimitive::class.java).float
@@ -180,7 +176,7 @@ object SerializePrimitiveArrays {
         SerializerRegistry["java:float[]"]?.register(Targets.BYTES, Targets.BYTES.impl<FloatArray>
         ({ buf, existing, syncing ->
             val length = buf.readVarInt()
-            val arr = if(existing != null && existing.size == length) existing else FloatArray(length)
+            val arr = if (existing != null && existing.size == length) existing else FloatArray(length)
             arr.indices.forEach { arr[it] = buf.readFloat() }
             arr
         }, { buf, value, syncing ->
@@ -195,7 +191,7 @@ object SerializePrimitiveArrays {
         SerializerRegistry["java:double[]"]?.register(Targets.NBT, Targets.NBT.impl<DoubleArray>
         ({ nbt, existing, syncing ->
             val list = nbt.safeCast(NBTTagList::class.java)
-            val array = if(existing != null && existing.size == list.tagCount()) existing else DoubleArray(list.tagCount())
+            val array = if (existing != null && existing.size == list.tagCount()) existing else DoubleArray(list.tagCount())
 
             list.forEachIndexed<NBTBase> { i, tag ->
                 array[i] = tag.safeCast(NBTPrimitive::class.java).double
@@ -210,7 +206,7 @@ object SerializePrimitiveArrays {
         SerializerRegistry["java:double[]"]?.register(Targets.BYTES, Targets.BYTES.impl<DoubleArray>
         ({ buf, existing, syncing ->
             val length = buf.readVarInt()
-            val arr = if(existing != null && existing.size == length) existing else DoubleArray(length)
+            val arr = if (existing != null && existing.size == length) existing else DoubleArray(length)
             arr.indices.forEach { arr[it] = buf.readDouble() }
             arr
         }, { buf, value, syncing ->
@@ -226,7 +222,7 @@ object SerializePrimitiveArrays {
         ({ nbt, existing, syncing ->
             nbt.safeCast(NBTTagByteArray::class.java).byteArray.map { it == 1.toByte() }.toBooleanArray()
         }, { value, syncing ->
-            NBTTagByteArray(value.map { if(it) 1.toByte() else 0.toByte() }.toByteArray())
+            NBTTagByteArray(value.map { if (it) 1.toByte() else 0.toByte() }.toByteArray())
         }))
 
         SerializerRegistry["java:boolean[]"]?.register(Targets.BYTES, Targets.BYTES.impl<BooleanArray>

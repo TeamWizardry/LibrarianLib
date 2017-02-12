@@ -15,6 +15,7 @@ object ModelsInit {
         ModelLoaderRegistry.registerLoader(LibLibModelBlockLoader)
     }
 
+    @Suppress("DEPRECATION")
     val SERIALIZER = GsonBuilder()
             .registerTypeAdapter(BlockPartFace::class.java, LibLibBlockPartFaceDeserializer())
             .registerTypeAdapter(BlockPart::class.java, LibLibBlockPartDeserializer())

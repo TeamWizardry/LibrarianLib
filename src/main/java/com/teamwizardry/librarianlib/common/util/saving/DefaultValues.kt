@@ -58,8 +58,8 @@ object DefaultValues {
         mapDefault(Vec3i::class.java, Vec3i.NULL_VECTOR)
         mapDefault(BlockPos::class.java, BlockPos.ORIGIN)
 
-        registerSpecialDefault handler@{ type ->
-            if(!type.clazz.isEnum)
+        registerSpecialDefault handler@ { type ->
+            if (!type.clazz.isEnum)
                 return@handler null
 
             val firstValue = type.clazz.enumConstants.first()
@@ -67,8 +67,8 @@ object DefaultValues {
         }
 
         val arrayInstance = arrayOf<Any>() // WARNING! Identity equalities and synchronized blocks will go screwy with these, just be aware
-        registerSpecialDefault handler@{ type ->
-            if(!type.clazz.isArray)
+        registerSpecialDefault handler@ { type ->
+            if (!type.clazz.isArray)
                 return@handler null
 
             return@handler { arrayInstance }
@@ -93,7 +93,7 @@ object DefaultValues {
     @JvmStatic
     fun aliasAs(aliasTo: Class<*>, clazz: Class<*>) {
         val aliasValue = map[FieldType.create(aliasTo)]
-        if(aliasValue != null)
+        if (aliasValue != null)
             map[FieldType.create(clazz)] = aliasValue
     }
 
@@ -116,10 +116,10 @@ object DefaultValues {
     }
 
     fun createSpecialDefaults(type: FieldType): (() -> Any)? {
-        if(type is FieldTypeGeneric) {
+        if (type is FieldTypeGeneric) {
             for (handler in genericHandlers) {
                 val serializer = handler(type)
-                if(serializer != null) {
+                if (serializer != null) {
                     map[type] = serializer
                     return serializer
                 }

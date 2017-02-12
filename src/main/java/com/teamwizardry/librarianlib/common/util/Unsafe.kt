@@ -2,10 +2,8 @@ package com.teamwizardry.librarianlib.common.util
 
 import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.common.core.OwnershipHandler
-import net.minecraftforge.fml.common.FMLLog
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.LoaderState
-import org.apache.logging.log4j.Level
 import sun.misc.Unsafe
 import java.lang.reflect.Field
 
@@ -45,7 +43,9 @@ fun getUnsafe(more: Int = 0): Unsafe {
 
 @Suppress("UNCHECKED_CAST")
 fun <T> Class<T>.newInstanceUnsafe(more: Int = 0) = getUnsafe(1 + more).allocateInstance(this) as? T ?: throw ClassNotFoundException("Invalid class $this")
+
 fun Throwable.throwUnsafely(more: Int = 0) = getUnsafe(1 + more).throwException(this)
+@Suppress("DEPRECATION")
 fun Field.getOffset(more: Int = 0) = getUnsafe(1 + more).fieldOffset(this)
-inline fun <reified T : Any> T?.orNewUnsafe(): T = this ?: T::class.java.newInstanceUnsafe(1);
+inline fun <reified T : Any> T?.orNewUnsafe(): T = this ?: T::class.java.newInstanceUnsafe(1)
 inline fun <reified T : Any> T?.orNew(): T = this ?: T::class.java.constructors.elementAt(0).newInstance() as T

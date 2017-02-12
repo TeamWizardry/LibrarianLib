@@ -21,4 +21,4 @@ fun registerPathForMixinsConfig(vararg paths: String) {
  */
 fun <T> createSupplier(value: T) = { value }
 
-fun <T, E> createSupplier(key: E, value: T): (E) -> T = { e: E -> value }
+fun <T, E> createSupplier(@Suppress("UNUSED_PARAMETER") key: E, value: T): (E) -> T = { e: E -> value }

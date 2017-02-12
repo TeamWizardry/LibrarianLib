@@ -84,8 +84,7 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
         else if (block !== this && block !is BlockFenceGate)
             if (material.isOpaque && iblockstate.isFullCube)
                 material !== Material.GOURD
-            else if (block is BlockModWall) true
-            else false
+            else block is BlockModWall
         else true
     }
 
@@ -184,15 +183,15 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
                         )
                 )
             },
-            JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_side")
-                    to json {
-                obj(
-                        "parent" to "block/wall_side",
-                        "textures" to obj(
-                                "wall" to name
+                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_side")
+                            to json {
+                        obj(
+                                "parent" to "block/wall_side",
+                                "textures" to obj(
+                                        "wall" to name
+                                )
                         )
-                )
-            })
+                    })
         })
         return true
     }
