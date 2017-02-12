@@ -27,16 +27,9 @@ open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, to
     override val providedItem: Item
         get() = this
 
-    override val variants: Array<out String>
-
-    private val bareName: String
-    private val modId: String
-
-    init {
-        modId = currentModId
-        bareName = name
-        this.variants = VariantHelper.setupItem(this, name, variants, creativeTab)
-    }
+    private val bareName = name
+    private val modId = currentModId
+    override val variants = VariantHelper.setupItem(this, name, variants, creativeTab)
 
     override fun setUnlocalizedName(name: String): Item {
         VariantHelper.setUnlocalizedNameForItem(this, modId, name)

@@ -1,21 +1,20 @@
-package com.teamwizardry.librarianlib.common.base.item
+package com.teamwizardry.librarianlib.common.base.block
 
-import com.teamwizardry.librarianlib.client.core.JsonGenerationUtils
-import com.teamwizardry.librarianlib.client.core.ModelHandler
-import com.teamwizardry.librarianlib.common.base.IModelGenerator
 import com.teamwizardry.librarianlib.common.base.ModCreativeTab
+import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.common.util.VariantHelper
 import com.teamwizardry.librarianlib.common.util.currentModId
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
+import net.minecraft.item.ItemDoor
 import net.minecraft.item.ItemStack
-import net.minecraft.item.ItemSword
+import net.minecraftforge.fml.common.Loader
 
 /**
- * The default implementation for an IVariantHolder sword.
+ * The default implementation for an IVariantHolder item.
  */
 @Suppress("LeakingThis")
-open class ItemModSword(name: String, material: ToolMaterial, vararg variants: String) : ItemSword(material), IModItemProvider, IModelGenerator {
+open class ItemModDoor(block: BlockModDoor, name: String, vararg variants: String) : ItemDoor(block), IModItemProvider {
 
     override val providedItem: Item
         get() = this
@@ -23,6 +22,7 @@ open class ItemModSword(name: String, material: ToolMaterial, vararg variants: S
     private val bareName = name
     private val modId = currentModId
     override val variants = VariantHelper.setupItem(this, name, variants, creativeTab)
+
 
     override fun setUnlocalizedName(name: String): Item {
         VariantHelper.setUnlocalizedNameForItem(this, modId, name)
@@ -46,15 +46,5 @@ open class ItemModSword(name: String, material: ToolMaterial, vararg variants: S
      */
     open val creativeTab: ModCreativeTab?
         get() = ModCreativeTab.defaultTabs[modId]
-
-    // Model Generation
-
-    override fun generateMissingItem(variant: String): Boolean {
-        ModelHandler.generateItemJson(this) {
-            mapOf(JsonGenerationUtils.getPathForItemModel(this, variant)
-                    to JsonGenerationUtils.generateBaseItemModel(this, variant, "item/handheld"))
-        }
-        return true
-    }
 }
 

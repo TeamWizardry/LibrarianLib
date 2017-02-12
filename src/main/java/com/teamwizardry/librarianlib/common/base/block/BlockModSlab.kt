@@ -95,12 +95,11 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
     override val variants: Array<out String>
 
     override val bareName: String = name
-    val modId: String
+    val modId = currentModId
 
     val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
-        modId = currentModId
         this.variants = VariantHelper.beginSetupBlock(name, arrayOf())
 
         doubleBlock = if (!isDouble) BlockDouble(name + "_full", parent) else this

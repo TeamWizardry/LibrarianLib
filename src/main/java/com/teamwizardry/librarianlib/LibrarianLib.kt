@@ -17,14 +17,12 @@ import com.teamwizardry.librarianlib.common.core.LoggerBase
 import com.teamwizardry.librarianlib.common.core.OwnershipHandler
 import com.teamwizardry.librarianlib.common.network.PacketBase
 import com.teamwizardry.librarianlib.common.structure.Structure
-import com.teamwizardry.librarianlib.common.util.EasyConfigHandler
-import com.teamwizardry.librarianlib.common.util.MethodHandleHelper
+import com.teamwizardry.librarianlib.common.util.*
 import com.teamwizardry.librarianlib.common.util.autoregister.TileRegister
 import com.teamwizardry.librarianlib.common.util.builders.json
 import com.teamwizardry.librarianlib.common.util.builders.nbt
 import com.teamwizardry.librarianlib.common.util.event.Event
 import com.teamwizardry.librarianlib.common.util.event.EventBus
-import com.teamwizardry.librarianlib.common.util.getUnsafe
 import com.teamwizardry.librarianlib.common.util.math.Matrix4
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import com.teamwizardry.librarianlib.common.util.saving.Save
@@ -92,18 +90,6 @@ object LibrarianLib {
 
     @JvmField
     val DEV_ENVIRONMENT = Launch.blackboard["fml.deobfuscatedEnvironment"] as Boolean
-
-    internal val unsafeAllowedModIds = mutableListOf<String>()
-
-    @Mod.EventHandler
-    fun onImcMessage(e: FMLInterModComms.IMCEvent) {
-        val modids = e.messages.filter { it.key.toLowerCase() == "unsafe" }.map { it.stringValue }
-        if(DEV_ENVIRONMENT && modids.isNotEmpty()) {
-            println(MODID + " | Unsafe-allowed mod IDs:")
-            modids.forEach { " ".repeat(MODID.length) + " | $it" }
-        }
-        unsafeAllowedModIds.addAll(modids)
-    }
 }
 
 object LibrarianLog : LoggerBase("LibrarianLib")

@@ -9,21 +9,15 @@ import com.teamwizardry.librarianlib.common.util.VariantHelper
 import com.teamwizardry.librarianlib.common.util.builders.json
 import com.teamwizardry.librarianlib.common.util.currentModId
 import net.minecraft.block.Block
-import net.minecraft.block.BlockFenceGate
-import net.minecraft.block.BlockPlanks
+import net.minecraft.block.BlockFence
+import net.minecraft.block.BlockTrapDoor
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.entity.Entity
 import net.minecraft.item.ItemBlock
-import net.minecraft.util.EnumFacing
-import net.minecraft.util.EnumFacing.Axis.X
-import net.minecraft.util.EnumFacing.Axis.Z
-import net.minecraft.util.EnumFacing.AxisDirection.NEGATIVE
-import net.minecraft.util.EnumFacing.AxisDirection.POSITIVE
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.Explosion
-import net.minecraft.world.IBlockAccess
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -32,7 +26,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
  * The default implementation for an IModBlock.
  */
 @Suppress("LeakingThis")
-open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFenceGate(BlockPlanks.EnumType.DARK_OAK), IModBlock, IModelGenerator {
+open class BlockModTrapdoor(name: String, val parent: IBlockState) : BlockTrapDoor(parent.material), IModBlock, IModelGenerator {
 
     private val parentName = parent.block.registryName
 
@@ -67,22 +61,6 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
     override val creativeTab: ModCreativeTab?
         get() = ModCreativeTab.defaultTabs[modId]
 
-
-    override fun getActualState(state: IBlockState, worldIn: IBlockAccess, pos: BlockPos): IBlockState {
-        val actual = super.getActualState(state, worldIn, pos)
-        if (actual.getValue(IN_WALL)) return actual
-
-        val axis = if (actual.getValue(FACING).axis == X) Z else X
-
-        if (worldIn.getBlockState(pos.offset(EnumFacing.getFacingFromAxis(NEGATIVE, axis))).block is BlockModWall ||
-                worldIn.getBlockState(pos.offset(EnumFacing.getFacingFromAxis(POSITIVE, axis))).block is BlockModWall)
-            return actual.withProperty(IN_WALL, true)
-        else
-            return actual
-    }
-
-    override fun getMapColor(state: IBlockState) = parent.mapColor
-    override fun getMaterial(state: IBlockState) = parent.material
     override fun getExplosionResistance(world: World, pos: BlockPos, exploder: Entity, explosion: Explosion) = parent.block.getExplosionResistance(world, pos, exploder, explosion)
     override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
     @SideOnly(Side.CLIENT) override fun isTranslucent(state: IBlockState?) = parent.isTranslucent
@@ -96,56 +74,70 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
 
         ModelHandler.generateBlockJson(this, {
             JsonGenerationUtils.generateBlockStates(this, mapper) {
-                val y = if ("facing=south" in it) 0
-                else if ("facing=west" in it) 90
-                else if ("facing=north" in it) 180
-                else 270
-
-                val inWall = "in_wall=true" in it
-                val open = "open=true" in it
-
-                val modelType = "${if (inWall) "wall" else "fence"}_${if (open) "open" else "closed"}"
-                json {
-                    obj(
-                            "model" to "${registryName}_$modelType",
-                            "uvlock" to true,
-                            *if (y != 0) arrayOf("y" to y) else arrayOf()
-                    )
+                if ("half=bottom" in it && "open=false" in it) {
+                    json {
+                        obj(
+                                "model" to "${registryName}_bottom"
+                        )
+                    }
+                } else if ("half=top" in it && "open=false" in it) {
+                    json {
+                        obj(
+                                "model" to "${registryName}_top"
+                        )
+                    }
+                } else if ("facing=north" in it) {
+                    json {
+                        obj(
+                                "model" to "${registryName}_open"
+                        )
+                    }
+                } else if ("facing=south" in it) {
+                    json {
+                        obj(
+                                "model" to "${registryName}_open",
+                                "y" to 180
+                        )
+                    }
+                } else if ("facing=east" in it) {
+                    json {
+                        obj(
+                                "model" to "${registryName}_open",
+                                "y" to 90
+                        )
+                    }
+                } else {
+                    json {
+                        obj(
+                                "model" to "${registryName}_open",
+                                "y" to 270
+                        )
+                    }
                 }
             }
         }, {
-            mapOf(
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_fence_closed")
-                            to json {
+            mapOf(JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_bottom")
+                    to json {
                         obj(
-                                "parent" to "block/fence_gate_closed",
+                                "parent" to "block/trapdoor_bottom",
                                 "textures" to obj(
                                         "texture" to name
                                 )
                         )
                     },
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_fence_open")
+                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_top")
                             to json {
                         obj(
-                                "parent" to "block/fence_gate_open",
+                                "parent" to "block/trapdoor_top",
                                 "textures" to obj(
                                         "texture" to name
                                 )
                         )
                     },
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_wall_closed")
+                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_open")
                             to json {
                         obj(
-                                "parent" to "block/wall_gate_closed",
-                                "textures" to obj(
-                                        "texture" to name
-                                )
-                        )
-                    },
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_wall_open")
-                            to json {
-                        obj(
-                                "parent" to "block/wall_gate_open",
+                                "parent" to "block/trapdoor_open",
                                 "textures" to obj(
                                         "texture" to name
                                 )
@@ -156,10 +148,15 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
     }
 
     override fun generateMissingItem(variant: String): Boolean {
+        val name = ResourceLocation(registryName.resourceDomain, "block/${registryName.resourcePath}").toString()
         val item = itemForm as? IModItemProvider ?: return false
         ModelHandler.generateItemJson(item) {
             mapOf(JsonGenerationUtils.getPathForItemModel(item.providedItem)
-                    to JsonGenerationUtils.generateBaseItemModel(item.providedItem, "${registryName.resourcePath}_fence_closed"))
+                    to json {
+                obj(
+                        "parent" to name + "_bottom"
+                )
+            })
         }
         return true
     }

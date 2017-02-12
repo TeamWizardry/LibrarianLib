@@ -19,12 +19,11 @@ open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg 
     override val variants: Array<out String>
 
     override val bareName: String = name
-    val modId: String
+    val modId = currentModId
 
     val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
-        modId = currentModId
         this.variants = VariantHelper.beginSetupBlock(name, variants)
         VariantHelper.finishSetupBlock(this, name, itemForm, creativeTab)
     }

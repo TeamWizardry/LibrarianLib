@@ -57,6 +57,8 @@ object VariantEntryPoint : TestEntryPoint {
                 return true
             }
         }
+        BlockModTrapdoor("a_trap", block.defaultState)
+        BlockModDoor("a_door", block.defaultState)
         BlockModSlab("a_slab", block.defaultState)
         BlockModSlab("b_slab", block.defaultState.withProperty(block.property, "b"))
         BlockModSlab("c_slab", block.defaultState.withProperty(block.property, "c"))
