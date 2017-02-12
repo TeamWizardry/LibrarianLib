@@ -28,12 +28,11 @@ open class BlockModStairs(name: String, parent: IBlockState) : BlockStairs(paren
     private val parentName = parent.block.registryName
 
     override val bareName: String = name
-    val modId: String
+    val modId = currentModId
 
     val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
-        modId = currentModId
         this.variants = VariantHelper.beginSetupBlock(name, arrayOf())
         VariantHelper.finishSetupBlock(this, name, itemForm, creativeTab)
     }

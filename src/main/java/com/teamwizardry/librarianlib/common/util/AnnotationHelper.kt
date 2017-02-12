@@ -10,46 +10,6 @@ import java.lang.reflect.Method
  * used freely in all classes.
  */
 object AnnotationHelper {
-    /**
-     * This class saves information about annotations gotten from [findAnnotatedObjects], [findAnnotatedClasses], and
-     * [findAnnotatedMethods]. That information can be of three types by default: String, Integer, and Boolean.
-     * In case other types may be needed, just get the information manually from the [map] field.
-     */
-    data class AnnotationInfo(val map: Map<String, Any>) {
-
-        fun getString(id: String, def: String?): String? {
-            val value = map[id]
-            return value?.toString() ?: def
-        }
-
-        fun getInt(id: String, def: Int): Int {
-            val value = map[id]
-            return value?.hashCode() ?: def
-        }
-
-        fun getDouble(id: String, def: Double): Double {
-            val value = map[id]
-            return value?.toString()?.toDouble() ?: def
-        }
-
-        fun getBoolean(id: String, def: Boolean): Boolean {
-            val value = map[id]
-            return if (value == null) def else value as Boolean
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        fun getStringList(id: String): List<String> {
-            val value = map[id]
-
-            if (value is String) {
-                return listOf(value.toString())
-            } else if (value is List<*>) {
-                return value as List<String>
-            }
-
-            return emptyList()
-        }
-    }
 
 
     /**
@@ -119,5 +79,73 @@ object AnnotationHelper {
             }
 
         }
+    }
+}
+/**
+ * This class saves information about annotations gotten from [AnnotationHelper.findAnnotatedObjects], [AnnotationHelper.findAnnotatedClasses], and
+ * [AnnotationHelper.findAnnotatedMethods]. That information can be of three types by default: String, Integer, and Boolean.
+ * In case other types may be needed, just get the information manually from the [map] field.
+ */
+data class AnnotationInfo(val map: Map<String, Any>) {
+
+    fun getString(id: String): String {
+        val value = map[id]
+        return value?.toString() ?: ""
+    }
+
+    fun getInt(id: String): Int {
+        val value = map[id]
+        return value?.hashCode() ?: 0
+    }
+
+    fun getDouble(id: String): Double {
+        val value = map[id]
+        return value?.toString()?.toDouble() ?: 0.0
+    }
+
+    fun getBoolean(id: String): Boolean {
+        val value = map[id]
+        return value as? Boolean ?: false
+    }
+
+    fun getLong(id: String): Long {
+        val value = map[id]
+        return value as? Long ?: 0L
+    }
+
+    fun getStringArray(id: String): Array<String> {
+        val value = map[id]
+
+        return if (value is Array<*>) value.map(Any?::toString).toTypedArray()
+        else if (value is List<*>) value.map(Any?::toString).toTypedArray()
+        else arrayOf(value.toString())
+    }
+
+    fun getIntArray(id: String): IntArray {
+        val value = map[id]
+        return if (value is IntArray) value
+        else if (value is List<*>) value.map(Any?::toString).map(String::toInt).toIntArray()
+        else intArrayOf()
+    }
+
+    fun getDoubleArray(id: String): DoubleArray {
+        val value = map[id]
+        return if (value is DoubleArray) value
+        else if (value is List<*>) value.map(Any?::toString).map(String::toDouble).toDoubleArray()
+        else doubleArrayOf()
+    }
+
+    fun getBooleanArray(id: String): BooleanArray {
+        val value = map[id]
+        return if (value is BooleanArray) value
+        else if (value is List<*>) value.map(Any?::toString).map(String::toBoolean).toBooleanArray()
+        else booleanArrayOf()
+    }
+
+    fun getLongArray(id: String): LongArray {
+        val value = map[id]
+        return if (value is LongArray) value
+        else if (value is List<*>) value.map(Any?::toString).map(String::toLong).toLongArray()
+        else longArrayOf()
     }
 }

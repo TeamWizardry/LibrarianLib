@@ -1,8 +1,10 @@
 package com.teamwizardry.librarianlib.test.testcore
 
+import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.common.base.ModCreativeTab
 import com.teamwizardry.librarianlib.common.base.item.ItemMod
 import com.teamwizardry.librarianlib.common.core.LoggerBase
+import com.teamwizardry.librarianlib.common.util.*
 import com.teamwizardry.librarianlib.test.cap.CapabilityTest
 import com.teamwizardry.librarianlib.test.container.ContainerEntryPoint
 import com.teamwizardry.librarianlib.test.fx.FXEntryPoint
@@ -63,6 +65,7 @@ class TestMod {
     @Mod.EventHandler
     fun init(e: FMLInitializationEvent) {
         PROXY.init(e)
+        EasyConfigHandler.init()
         entrypoints.forEach {
             it.init(e)
         }
@@ -101,6 +104,38 @@ class TestMod {
         }
     }
 
+}
+
+object Config {
+    @ConfigPropertyBoolean(TestMod.MODID, "general", "boolean", "it's a boolean", false)
+    var boolean = false
+
+    @ConfigPropertyInt(TestMod.MODID, "general", "int", "it's an int", 0)
+    var int = 0
+
+    @ConfigPropertyDouble(TestMod.MODID, "general", "double", "it's a double", 0.0)
+    var double = 0.0
+
+    @ConfigPropertyString(TestMod.MODID, "general", "string", "it's a string", "")
+    var string = ""
+
+    @ConfigPropertyLong(TestMod.MODID, "general", "long", "it's a long", 0L)
+    var long = 0L
+
+    @ConfigPropertyBooleanArray(TestMod.MODID, "general", "booleanArr", "it's a boolean array", booleanArrayOf(false))
+    var booleanArr = booleanArrayOf(false)
+
+    @ConfigPropertyIntArray(TestMod.MODID, "general", "intArr", "it's an int array", intArrayOf(0))
+    var intArr = intArrayOf(0)
+
+    @ConfigPropertyDoubleArray(TestMod.MODID, "general", "doubleArr", "it's a double array", doubleArrayOf(0.0))
+    var doubleArr = doubleArrayOf(0.0)
+
+    @ConfigPropertyStringArray(TestMod.MODID, "general", "stringArr", "it's a string array", arrayOf(""))
+    var stringArr = arrayOf("")
+
+    @ConfigPropertyLongArray(TestMod.MODID, "general", "longArr", "it's a long array", longArrayOf(0L))
+    var longArr = longArrayOf(0L)
 }
 
 object TestLog : LoggerBase("LibrarianLibTest")

@@ -118,12 +118,15 @@ object ModelHandler {
         val blockColors = Minecraft.getMinecraft().blockColors
         for ((modid, holders) in variantCache) {
             modName = modid
-            log("$modName | Registering colors")
+            var flag = false
             for (holder in holders) {
-
                 if (holder is IItemColorProvider && holder is IModItemProvider) {
                     val color = holder.itemColorFunction
                     if (color != null) {
+                        if (!flag) {
+                            log("$modName | Registering colors")
+                            flag = true
+                        }
                         log("$namePad | Registering item color for ${holder.providedItem.registryName.resourcePath}")
                         itemColors.registerItemColorHandler(IItemColor(color), holder.providedItem)
                     }
@@ -132,6 +135,10 @@ object ModelHandler {
                 if (holder is IModBlockProvider && holder is IBlockColorProvider) {
                     val color = holder.blockColorFunction
                     if (color != null) {
+                        if (!flag) {
+                            log("$modName | Registering colors")
+                            flag = true
+                        }
                         log("$namePad | Registering block color for ${holder.providedBlock.registryName.resourcePath}")
                         blockColors.registerBlockColorHandler(IBlockColor(color), holder.providedBlock)
                     }
@@ -212,15 +219,20 @@ object ModelHandler {
         val customModelGetter = MethodHandleHelper.wrapperForStaticGetter(ModelLoader::class.java, "customModels")
         @Suppress("UNCHECKED_CAST")
         val customModels = customModelGetter.invoke() as MutableMap<Pair<RegistryDelegate<Item>, Int>, ModelResourceLocation>
+
         for ((modid, holders) in variantCache) {
             modName = modid
-            log("$modName | Registering special models")
+            var hasRegisteredAny = false
             for (holder in holders) if (holder is ISpecialModelProvider) {
                 val item = holder.providedItem
                 var flag = false
                 for ((index, variant) in holder.variants.withIndex()) {
                     val model = holder.getSpecialModel(index)
                     if (model != null) {
+                        if (!hasRegisteredAny) {
+                            log("$modName | Registering special models")
+                            hasRegisteredAny = true
+                        }
                         if (!flag) {
                             var print = "$namePad | Applying special model rules for "
                             print += if (item is IModBlockProvider) "block " else "item "

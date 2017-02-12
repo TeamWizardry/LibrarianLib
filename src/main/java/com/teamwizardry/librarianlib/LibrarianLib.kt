@@ -28,6 +28,7 @@ import com.teamwizardry.librarianlib.common.util.getUnsafe
 import com.teamwizardry.librarianlib.common.util.math.Matrix4
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import com.teamwizardry.librarianlib.common.util.saving.Save
+import com.teamwizardry.librarianlib.common.util.times
 import net.minecraft.launchwrapper.Launch
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.SidedProxy
@@ -99,8 +100,8 @@ object LibrarianLib {
     fun onImcMessage(e: FMLInterModComms.IMCEvent) {
         val modids = e.messages.filter { it.key.toLowerCase() == "unsafe" }.map { it.stringValue }
         if(DEV_ENVIRONMENT && modids.isNotEmpty()) {
-            println(MODID + " | Unsafe-allowed mod IDs:")
-            modids.forEach { " ".repeat(MODID.length) + " | $it" }
+            LibrarianLog.info(MODID + " | Unsafe-allowed mod IDs:")
+            modids.forEach { "${" " * MODID.length} | $it" }
         }
         unsafeAllowedModIds.addAll(modids)
     }

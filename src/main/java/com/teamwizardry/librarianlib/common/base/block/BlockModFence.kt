@@ -32,12 +32,11 @@ open class BlockModFence(name: String, val parent: IBlockState) : BlockFence(par
     override val variants: Array<out String>
 
     override val bareName: String = name
-    val modId: String
+    val modId = currentModId
 
     val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
-        modId = currentModId
         this.variants = VariantHelper.beginSetupBlock(name, arrayOf())
         VariantHelper.finishSetupBlock(this, name, itemForm, creativeTab)
     }

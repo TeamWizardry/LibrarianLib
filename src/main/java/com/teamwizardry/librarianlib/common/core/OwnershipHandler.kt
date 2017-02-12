@@ -10,7 +10,6 @@ import java.nio.file.Paths
 
 object OwnershipHandler {
 
-
     val prefixes: Map<String, String>
 
     val DEV_OWNED: List<String>

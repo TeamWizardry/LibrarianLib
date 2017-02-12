@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.test.testcore
 
 import com.teamwizardry.librarianlib.LibrarianLib
+import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.util.getUnsafe
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLInterModComms
@@ -20,6 +21,6 @@ object UnsafeTest : TestEntryPoint {
     }
 
     override fun postInit(event: FMLPostInitializationEvent) {
-        println("${TestMod.MODID}: ${getUnsafe()}")
+        LibrarianLog.info("${TestMod.MODID} | ${getUnsafe()}")
     }
 }
