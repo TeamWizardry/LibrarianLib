@@ -625,7 +625,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             // don't return here, if a click was handled we should still handle the mouseUp
         }
 
-        for (child in components) {
+        for (child in components.toList()) {
             child.mouseUp(transformChildPos(child, mousePos), button)
         }
     }
