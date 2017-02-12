@@ -109,7 +109,7 @@ object MethodHandleHelper {
      * Reflects a setter from a class, and provides a wrapper for it.
      */
     @JvmStatic
-    fun <T : Any> wrapperForSetter(clazz: Class<T>, vararg fieldNames: String): (T, Any?) -> Unit {
+    fun <T> wrapperForSetter(clazz: Class<T>, vararg fieldNames: String): (T, Any?) -> Unit {
         val handle = handleForField(clazz, false, *fieldNames)
         return wrapperForSetter(handle)
     }
