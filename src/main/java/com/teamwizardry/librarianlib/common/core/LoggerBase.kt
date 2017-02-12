@@ -66,7 +66,6 @@ abstract class LoggerBase protected constructor(name: String) {
     fun bigDie(title: String, lines: List<String>, endStar: Boolean = true) {
         val maxWidth = lines.fold(0, { cur, value -> Math.max(cur, value.length) })
 
-        val titleWidth = maxWidth + 4
         var titleStarred = " **** $title **** "
         var starPadLeft = (maxWidth + 4 - titleStarred.length)/2
         if(starPadLeft >= 20)

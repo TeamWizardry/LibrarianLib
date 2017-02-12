@@ -27,12 +27,15 @@ import com.teamwizardry.librarianlib.common.util.math.Matrix4
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import com.teamwizardry.librarianlib.common.util.saving.Save
 import net.minecraft.launchwrapper.Launch
+import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.SidedProxy
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLInterModComms
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 
 
 /**
@@ -60,7 +63,22 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
  * - Capability which uses the [Save] scheme to save and sync fields [CapabilityMod]
  */
 @Mod(modid = LibrarianLib.MODID, version = LibrarianLib.VERSION, name = LibrarianLib.MODNAME, modLanguageAdapter = "net.shadowfacts.forgelin.KotlinAdapter")
+@Suppress("IfThenToSafeAccess")
 object LibrarianLib {
+
+    init {
+        try {
+            Class.forName("net.shadowfacts.forgelin.ForgelinPlugin")
+        } catch (e: ClassNotFoundException) {
+            val log: Logger? = LogManager.getLogger("LibrarianLib")
+            if (log != null) log.error("**********************************************************************************")
+            if (log != null) log.error("        Shadowfacts' Forgelin must be installed for LibrarianLib to work!         ")
+            if (log != null) log.error(" Download it here: https://minecraft.curseforge.com/projects/shadowfacts-forgelin ")
+            if (log != null) log.error("**********************************************************************************")
+            val common: FMLCommonHandler? = FMLCommonHandler.instance()
+            if (common != null) common.handleExit(0)
+        }
+    }
 
     @Mod.EventHandler
     fun preInit(e: FMLPreInitializationEvent) {
