@@ -67,7 +67,8 @@ open class BlockModStairs(name: String, parent: IBlockState) : BlockStairs(paren
                     else if ("facing=west" in it) 180
                     else if ("facing=south" in it) 90
                     else 270
-                y += if ("_left" in it) 270 else 0
+                if ("half=top" in it && "shape=inner" in it) y += 90
+                if ("_left" in it) y += 270
                 y %= 360
 
                 val modelType = if ("shape=straight" in it) "" else if ("shape=inner" in it) "_inner" else "_outer"
