@@ -34,7 +34,7 @@ class TestMod {
 
     @Mod.EventHandler
     fun preInit(e: FMLPreInitializationEvent) {
-
+        EasyConfigHandler.init()
         PROXY.pre(e)
         entrypoints.forEach {
             it.preInit(e)
@@ -58,7 +58,6 @@ class TestMod {
     @Mod.EventHandler
     fun init(e: FMLInitializationEvent) {
         PROXY.init(e)
-        EasyConfigHandler.init()
         entrypoints.forEach {
             it.init(e)
         }
