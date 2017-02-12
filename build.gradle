@@ -47,6 +47,10 @@ repositories {
         url "http://mvn.rx14.co.uk/shadowfacts/"
     }
     maven { url 'https://jitpack.io' }
+    maven {
+        name = 'sponge'
+        url = 'https://repo.spongepowered.org/maven/'
+    }
 }
 
 minecraft {
@@ -69,7 +73,8 @@ configurations {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     //required "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile 'com.github.Eladkay:Mixin:-SNAPSHOT'
+    //required 'com.github.Eladkay:Mixin:-SNAPSHOT'
+    compile 'org.spongepowered:mixin:0.6.8-SNAPSHOT'
 
     compile "net.shadowfacts:Forgelin:1.2.0"
     deobfCompile "MCMultiPart:MCMultiPart:1.2.1:universal"
