@@ -137,15 +137,15 @@ object EasyConfigHandler {
         field.isAccessible = true
         val modid = OwnershipHandler.getModId(field.declaringClass) ?: "unknown"
         val triple = Triple(modid, { it: T -> field.set(inst, it) }, info)
-        val name = annotationClass.simpleName
-        val paddedName = name + " " * (26 - name.length)
+        val name = annotationClass.simpleName.replace("ConfigProperty", "")
+        val paddedName = name + " " * (12 - name.length)
         allFields.put(triple as Triple<*, *, *>, "$paddedName | ${field.declaringClass.typeName}.${field.name}")
         target.add(triple)
     }
 
     private fun <T> logFieldName(it: Triple<String, (T) -> Unit, AnnotationInfo>) {
         val pad = workingId.length * " "
-        LibrarianLog.info(" $pad | " + allFields[it])
+        LibrarianLog.info("$pad | " + allFields[it])
     }
 
     private val <T> Triple<String, (T) -> Unit, AnnotationInfo>.category: String
