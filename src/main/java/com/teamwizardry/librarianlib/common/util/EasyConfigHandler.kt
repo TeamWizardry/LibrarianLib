@@ -126,9 +126,11 @@ object EasyConfigHandler {
                     arr[i]
                 } }.toLongArray())
         }
+
+
         if (LibrarianLib.DEV_ENVIRONMENT) {
             val maxNameLen = toLog.maxBy { it.first.length }?.first?.length ?: 0
-            toLog.forEach { LibrarianLog.info("${modid.length * " "} | ${it.first}${" " * (maxNameLen - it.first.length)} ${it.second}") }
+            toLog.forEach { LibrarianLog.info("${modid.length * " "} | ${it.first}${" " * (maxNameLen - it.first.length)} | ${it.second}") }
         }
 
         toLog.clear()

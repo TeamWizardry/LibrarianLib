@@ -27,6 +27,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import java.io.File
 import java.io.IOException
 import java.io.InputStream
 
@@ -95,7 +96,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         chat.printChatMessageWithOptionalDeletion(msg, uniqueId)
     }
 
-    override fun getDataFolder() = Minecraft.getMinecraft().mcDataDir
+    override fun getDataFolder(): File = Minecraft.getMinecraft().mcDataDir
 
     override fun onResourceManagerReload(resourceManager: IResourceManager) {
         MinecraftForge.EVENT_BUS.post(ResourceReloadEvent(resourceManager))

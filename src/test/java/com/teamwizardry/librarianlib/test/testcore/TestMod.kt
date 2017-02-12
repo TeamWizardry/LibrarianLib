@@ -34,14 +34,7 @@ class TestMod {
 
     @Mod.EventHandler
     fun preInit(e: FMLPreInitializationEvent) {
-        entrypoints = arrayOf(
-                SavingEntryPoint,
-                FXEntryPoint,
-                GuiEntryPoint,
-                VariantEntryPoint,
-                UnsafeTest,
-                ContainerEntryPoint
-        )
+
         PROXY.pre(e)
         entrypoints.forEach {
             it.preInit(e)
@@ -92,7 +85,14 @@ class TestMod {
         @SidedProxy(clientSide = CLIENT, serverSide = SERVER)
         lateinit var PROXY: LibTestCommonProxy
 
-        lateinit var entrypoints: Array<TestEntryPoint>
+        val entrypoints: Array<TestEntryPoint> = arrayOf(
+                SavingEntryPoint,
+                FXEntryPoint,
+                GuiEntryPoint,
+                VariantEntryPoint,
+                UnsafeTest,
+                ContainerEntryPoint
+        )
 
         object Tab : ModCreativeTab(MODID) {
             init {

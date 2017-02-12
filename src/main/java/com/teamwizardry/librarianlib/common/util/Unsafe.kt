@@ -2,6 +2,10 @@ package com.teamwizardry.librarianlib.common.util
 
 import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.common.core.OwnershipHandler
+import net.minecraftforge.fml.common.FMLLog
+import net.minecraftforge.fml.common.Loader
+import net.minecraftforge.fml.common.LoaderState
+import org.apache.logging.log4j.Level
 import sun.misc.Unsafe
 import java.lang.reflect.Field
 
@@ -13,6 +17,13 @@ private val unsafe by lazy {
     theUnsafe.isAccessible = true
     theUnsafe.get(null) as Unsafe
 }
+
+fun hookIntoUnsafe() {
+    if (!Loader.instance().hasReachedState(LoaderState.PREINITIALIZATION))
+        unsafeAllowedModIds.add(currentModId)
+}
+
+internal var unsafeAllowedModIds = mutableListOf<String>()
 
 /**
  * This method provides a safe and fast way of accessing Unsafe methods but requires
@@ -27,7 +38,7 @@ private val unsafe by lazy {
 fun getUnsafe(more: Int = 0): Unsafe {
     val clazz = Class.forName(Throwable().stackTrace[2 + more].className)
     val modid = OwnershipHandler.getModId(clazz)
-    if(modid in LibrarianLib.unsafeAllowedModIds || modid == LibrarianLib.MODID) return unsafe
+    if (modid in unsafeAllowedModIds || modid == LibrarianLib.MODID) return unsafe
     throw IllegalAccessError("Tried to access Unsafe from $modid")
 }
 
