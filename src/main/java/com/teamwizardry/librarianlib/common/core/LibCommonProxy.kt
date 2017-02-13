@@ -5,7 +5,6 @@ package com.teamwizardry.librarianlib.common.core
 import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.client.util.lambdainterfs.ClientRunnable
-import com.teamwizardry.librarianlib.common.base.ItemBlockClassAnnotationsHandler
 import com.teamwizardry.librarianlib.common.container.GuiHandler
 import com.teamwizardry.librarianlib.common.network.PacketHandler
 import com.teamwizardry.librarianlib.common.network.PacketSpamlessMessage
@@ -52,7 +51,6 @@ open class LibCommonProxy {
         AutoRegisterHandler.handle(e)
         EasyConfigHandler.bootstrap(e.asmData, e.modConfigurationDirectory)
         asmDataTable = e.asmData
-        ItemBlockClassAnnotationsHandler
     }
 
     open fun init(e: FMLInitializationEvent) {
