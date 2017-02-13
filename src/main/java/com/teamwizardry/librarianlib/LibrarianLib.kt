@@ -64,22 +64,7 @@ import org.apache.logging.log4j.Logger
  * - Capability which uses the [Save] scheme to save and sync fields [CapabilityMod]
  */
 @Mod(modid = LibrarianLib.MODID, version = LibrarianLib.VERSION, name = LibrarianLib.MODNAME, modLanguageAdapter = "net.shadowfacts.forgelin.KotlinAdapter")
-@Suppress("IfThenToSafeAccess")
 object LibrarianLib {
-
-    init {
-        try {
-            Class.forName("net.shadowfacts.forgelin.ForgelinPlugin")
-        } catch (e: ClassNotFoundException) {
-            val log: Logger? = LogManager.getLogger("LibrarianLib")
-            if (log != null) log.error("**********************************************************************************")
-            if (log != null) log.error("        Shadowfacts' Forgelin must be installed for LibrarianLib to work!         ")
-            if (log != null) log.error(" Download it here: https://minecraft.curseforge.com/projects/shadowfacts-forgelin ")
-            if (log != null) log.error("**********************************************************************************")
-            val common: FMLCommonHandler? = FMLCommonHandler.instance()
-            if (common != null) common.handleExit(0)
-        }
-    }
 
     @Mod.EventHandler
     fun preInit(e: FMLPreInitializationEvent) {
@@ -96,7 +81,6 @@ object LibrarianLib {
         PROXY.post(e)
     }
 
-
     const val MODID = "librarianlib"
     const val MODNAME = "LibrarianLib"
     const val VERSION = "1.10"
@@ -105,7 +89,6 @@ object LibrarianLib {
 
     @SidedProxy(clientSide = CLIENT, serverSide = SERVER)
     lateinit var PROXY: LibCommonProxy
-        @JvmStatic @JvmName("proxy") get
 
     @JvmField
     val DEV_ENVIRONMENT = Launch.blackboard["fml.deobfuscatedEnvironment"] as Boolean
