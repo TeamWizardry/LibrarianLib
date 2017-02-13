@@ -12,16 +12,23 @@ import net.minecraft.block.Block
 import net.minecraft.block.BlockStairs
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
+import net.minecraft.entity.Entity
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.math.BlockPos
+import net.minecraft.world.Explosion
+import net.minecraft.world.IBlockAccess
+import net.minecraft.world.World
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 
 /**
  * @author WireSegal
  * Created at 10:36 AM on 1/10/17.
  */
 @Suppress("LeakingThis")
-open class BlockModStairs(name: String, parent: IBlockState) : BlockStairs(parent), IModBlock, IModelGenerator {
+open class BlockModStairs(name: String, val parent: IBlockState) : BlockStairs(parent), IModBlock, IModelGenerator {
 
     override val variants: Array<out String>
 
@@ -42,6 +49,12 @@ open class BlockModStairs(name: String, parent: IBlockState) : BlockStairs(paren
         VariantHelper.setUnlocalizedNameForBlock(this, modId, name, itemForm)
         return this
     }
+
+    override fun getExplosionResistance(world: World, pos: BlockPos, exploder: Entity, explosion: Explosion) = parent.block.getExplosionResistance(world, pos, exploder, explosion)
+    override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
+    @SideOnly(Side.CLIENT) override fun isTranslucent(state: IBlockState?) = parent.isTranslucent
+    override fun isToolEffective(type: String?, state: IBlockState) = parent.block.isToolEffective(type, parent)
+    override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent)
 
     /**
      * Override this to have a custom ItemBlock implementation.
