@@ -177,8 +177,8 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
         ModelHandler.generateBlockJson(this, {
             JsonGenerationUtils.generateBlockStates(this, mapper) {
                 when (it) {
-                    "half=bottom" -> json { obj("model" to "${parentName}_bottom") }
-                    "half=top" -> json { obj("model" to "${parentName}_top") }
+                    "half=bottom" -> json { obj("model" to "${registryName}_bottom") }
+                    "half=top" -> json { obj("model" to "${registryName}_top") }
                     else -> json { obj() }
                 }
             }
