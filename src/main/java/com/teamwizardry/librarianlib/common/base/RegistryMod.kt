@@ -8,28 +8,28 @@ import net.minecraft.util.registry.RegistryNamespaced
  * Created by Elad on 2/12/2017.
  */
 abstract class RegistryMod<T> {
-    private val oaths = RegistryNamespaced<ResourceLocation, T>()
+    private val registry = RegistryNamespaced<ResourceLocation, T>()
     private var lastId = 0
 
     fun register(id: ResourceLocation, oath: T): T {
-        oaths.register(lastId++, id, oath)
+        registry.register(lastId++, id, oath)
         return oath
     }
 
     fun getObjectByName(id: ResourceLocation): T? {
-        return oaths.getObject(id)
+        return registry.getObject(id)
     }
 
     fun getObjectById(id: Int): T? {
-        return oaths.getObjectById(id)
+        return registry.getObjectById(id)
     }
 
     fun getIdFromObject(oath: T): ResourceLocation? {
-        return oaths.getNameForObject(oath)
+        return registry.getNameForObject(oath)
     }
 
     operator fun iterator(): Iterator<RegistryEntry<ResourceLocation, T>> {
-        return RegistryEntry.iterateOverRegistry(oaths)
+        return RegistryEntry.iterateOverRegistry(registry)
     }
 
     data class RegistryEntry<out K, V>(val id: Int, val key: K, val value: V) {

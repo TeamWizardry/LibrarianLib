@@ -41,7 +41,7 @@ abstract class ItemModBauble(name: String, vararg variants: String) : ItemMod(na
     override fun onItemRightClick(stack: ItemStack, world: World, player: EntityPlayer, hand: EnumHand): ActionResult<ItemStack> {
         if (canEquip(stack, player)) {
             val baubles = BaublesApi.getBaublesHandler(player) ?: return ActionResult(EnumActionResult.FAIL, stack)
-            for (i in 0..baubles.slots - 1) {
+            for (i in 0 until baubles.slots) {
                 if (baubles.isItemValidForSlot(i, stack, player)) {
                     val stackInSlot = baubles.getStackInSlot(i)
                     if (stackInSlot == null || (stackInSlot.item as IBauble).canUnequip(stackInSlot, player)) {

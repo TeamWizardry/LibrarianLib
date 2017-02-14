@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.common.util
 
+import com.teamwizardry.librarianlib.LibrarianLib
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import java.lang.reflect.Field
 import java.lang.reflect.Method
@@ -44,7 +45,7 @@ object AnnotationHelper {
      * Find all annotated classes of super-type [superClass] with annotation [annotationClass] from data table [table]
      * and send them to the callback [callback].
      */
-    fun <T> findAnnotatedClasses(table: ASMDataTable?, superClass: Class<T>, annotationClass: Class<*>, callback: (Class<out T>, AnnotationInfo) -> Unit) {
+    fun <T> findAnnotatedClasses(table: ASMDataTable? = LibrarianLib.PROXY.asmDataTable, superClass: Class<T>, annotationClass: Class<*>, callback: (Class<out T>, AnnotationInfo) -> Unit) {
         if (table == null) return
         for (data in table.getAll(annotationClass.name)) {
             try {
