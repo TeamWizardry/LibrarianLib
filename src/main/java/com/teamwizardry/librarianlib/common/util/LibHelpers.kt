@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.common.util
 
+import com.teamwizardry.librarianlib.common.core.OwnershipHandler
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.Loader
@@ -25,3 +26,7 @@ internal var modIdOverride: String? = null
 
 val currentModId: String
     get() = modIdOverride ?: Loader.instance().activeModContainer()?.modId ?: ""
+
+@JvmName("getModId")
+fun getCurrentModId() = if (currentModId == "") currentModId else OwnershipHandler.getModId(Class.forName(Throwable().stackTrace[2].className))
+
