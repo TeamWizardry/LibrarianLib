@@ -206,14 +206,8 @@ abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod
     override fun generateMissingItem(variant: String): Boolean {
         val item = itemForm as? IModItemProvider ?: return false
         ModelHandler.generateItemJson(item) {
-            mapOf(JsonGenerationUtils.getPathForItemModel(item as Item, variant) to json {
-                obj(
-                        "parent" to "item/generated",
-                        "textures" to obj(
-                                "layer0" to "${registryName.resourceDomain}:blocks/$variant"
-                        )
-                )
-            })
+            mapOf(JsonGenerationUtils.getPathForItemModel(item as Item, variant) to
+                JsonGenerationUtils.generateRegularItemModel(item, variant))
         }
         return true
     }

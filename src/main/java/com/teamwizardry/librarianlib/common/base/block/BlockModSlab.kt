@@ -70,7 +70,6 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
     companion object : IFuelHandler {
         override fun getBurnTime(fuel: ItemStack): Int {
             return if (fuel.item is ItemBlock &&
-                    (fuel.item as ItemBlock).block is BlockModSlab &&
                     (fuel.item as ItemBlock).block.defaultState.material == FAKE_WOOD) 150 else 0
         }
 

@@ -45,6 +45,9 @@ import java.util.*
  */
 object ModelHandler {
 
+    fun serialize(el: JsonElement)
+            = if (LibLibConfig.prettyJsonSerialization) el.serialize() else el.toString() + "\n"
+
     // Easy access
     private val debug = LibrarianLib.DEV_ENVIRONMENT
     private var modName = ""
@@ -298,7 +301,7 @@ object ModelHandler {
             val file = File(path)
             file.parentFile.mkdirs()
             if (file.createNewFile()) {
-                file.writeText(model.serialize())
+                file.writeText(serialize(model))
                 log("$namePad | Creating file for variant of ${holder.providedItem.registryName.resourcePath}")
                 generatedFiles.add(path)
             }
@@ -330,7 +333,7 @@ object ModelHandler {
             val stateFile = File(path)
             stateFile.parentFile.mkdirs()
             if (stateFile.createNewFile()) {
-                stateFile.writeText(model.serialize())
+                stateFile.writeText(serialize(model))
                 ModelHandler.log("$namePad | Creating a file for blockstate of ${holder.providedBlock.registryName.resourcePath}")
                 ModelHandler.generatedFiles.add(path)
                 flag = true
@@ -342,7 +345,7 @@ object ModelHandler {
                 val modelFile = File(path)
                 modelFile.parentFile.mkdirs()
                 if (modelFile.createNewFile()) {
-                    modelFile.writeText(model.serialize())
+                    modelFile.writeText(serialize(model))
                     ModelHandler.log("${ModelHandler.namePad} | Creating file for block ${holder.providedBlock.registryName.resourcePath}")
                     ModelHandler.generatedFiles.add(path)
                 }

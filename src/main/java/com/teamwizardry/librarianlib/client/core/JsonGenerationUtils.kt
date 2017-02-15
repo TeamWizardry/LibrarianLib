@@ -66,6 +66,12 @@ object JsonGenerationUtils {
         val registryName = item.registryName
         val varname = variantName ?: registryName.resourcePath
         if (item is ItemBlock) return json { obj("parent" to "${registryName.resourceDomain}:block/$varname") }
+        return generateRegularItemModel(item, variantName, parent)
+    }
+
+    fun generateRegularItemModel(item: Item, variantName: String? = null, parent: String = "item/generated"): JsonElement {
+        val registryName = item.registryName
+        val varname = variantName ?: registryName.resourcePath
         return json {
             obj(
                     "parent" to parent,
