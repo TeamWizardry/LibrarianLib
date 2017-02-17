@@ -63,7 +63,7 @@ import org.apache.logging.log4j.Logger
  * - A simple event bus implementation [Event] [EventBus]
  * - Capability which uses the [Save] scheme to save and sync fields [CapabilityMod]
  */
-@Mod(modid = LibrarianLib.MODID, version = LibrarianLib.VERSION, name = LibrarianLib.MODNAME, modLanguageAdapter = "net.shadowfacts.forgelin.KotlinAdapter")
+@Mod(modid = LibrarianLib.MODID, version = LibrarianLib.VERSION, name = LibrarianLib.MODNAME, dependencies = LibrarianLib.DEPENDENCIES, modLanguageAdapter = LibrarianLib.ADAPTER)
 object LibrarianLib {
 
     @Mod.EventHandler
@@ -83,9 +83,11 @@ object LibrarianLib {
 
     const val MODID = "librarianlib"
     const val MODNAME = "LibrarianLib"
-    const val VERSION = "1.10"
+    const val VERSION = "1.10.1"
     const val CLIENT = "com.teamwizardry.librarianlib.client.core.LibClientProxy"
     const val SERVER = "com.teamwizardry.librarianlib.common.core.LibCommonProxy"
+    const val DEPENDENCIES = "required-after:forgelin;required-after:Forge@[12.18.3.2185,)"
+    const val ADAPTER = "net.shadowfacts.forgelin.KotlinAdapter"
 
     @SidedProxy(clientSide = CLIENT, serverSide = SERVER)
     lateinit var PROXY: LibCommonProxy
