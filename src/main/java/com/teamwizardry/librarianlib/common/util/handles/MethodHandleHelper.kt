@@ -1,10 +1,5 @@
 package com.teamwizardry.librarianlib.common.util.handles
 
-import com.teamwizardry.librarianlib.common.util.handles.ImmutableFieldDelegate
-import com.teamwizardry.librarianlib.common.util.handles.ImmutableStaticFieldDelegate
-import com.teamwizardry.librarianlib.common.util.handles.MutableFieldDelegate
-import com.teamwizardry.librarianlib.common.util.handles.MutableStaticFieldDelegate
-import com.teamwizardry.librarianlib.common.util.handles.InvocationWrapper
 import net.minecraftforge.fml.relauncher.ReflectionHelper
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles.publicLookup
@@ -231,7 +226,10 @@ object MethodHandleHelper {
         return { wrapper.invokeArity(it) as T }
     }
 
-    @JvmStatic fun <T> wrapperForConstructor(constructor: Constructor<T>): (Array<Any?>) -> T = wrapperForConstructor(publicLookup().unreflectConstructor(constructor))
+    @JvmStatic fun <T> wrapperForConstructor(constructor: Constructor<T>): (Array<Any?>) -> T {
+        constructor.isAccessible = true
+        return wrapperForConstructor(publicLookup().unreflectConstructor(constructor))
+    }
 
     //endregion
 
