@@ -375,6 +375,10 @@ fun EntityPlayer.sendSpamlessMessage(str: String, uniqueId: Int)
         = sendSpamlessMessage(str.toComponent(), uniqueId)
 fun EntityPlayer.sendSpamlessMessage(comp: ITextComponent, uniqueId: Int)
         = LibrarianLib.PROXY.sendSpamlessMessage(this, comp, uniqueId)
+fun EntityPlayer.sendSpamlessMessage(str: String, uniqueId: String)
+        = sendSpamlessMessage(str.toComponent(), uniqueId.hashCode())
+fun EntityPlayer.sendSpamlessMessage(comp: ITextComponent, uniqueId: String)
+        = sendSpamlessMessage(comp, uniqueId.hashCode())
 
 fun Entity.setVelocityAndUpdate(vec: Vec3d) = setVelocityAndUpdate(vec.xCoord, vec.yCoord, vec.zCoord)
 fun Entity.setVelocityAndUpdate(x: Double = motionX, y: Double = motionY, z: Double = motionZ) {
