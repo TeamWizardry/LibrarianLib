@@ -82,7 +82,7 @@ abstract class CapabilityMod(val name: ResourceLocation) {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : Any?> getCapability(capability: Capability<T>, facing: EnumFacing?): T? {
-            return if (capability == this@CapabilityMod.capability) this as T else null
+            return if (capability == this@CapabilityMod.capability) this@CapabilityMod as T else null
         }
 
         override fun deserializeNBT(nbt: NBTTagCompound) {
