@@ -104,5 +104,12 @@ open class LibCommonProxy {
 
     open fun getDataFolder() = mcDataFolder
 
+    open fun startProfilerSection(name: String) {
+
+    }
+
+    open fun endProfilerSection() {
+
+    }
 }
 

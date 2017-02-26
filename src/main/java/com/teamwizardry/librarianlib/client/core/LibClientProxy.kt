@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.client.core
 
 import com.teamwizardry.librarianlib.LibrarianLib
+import com.teamwizardry.librarianlib.client.event.CustomWorldRenderEvent
 import com.teamwizardry.librarianlib.client.event.ResourceReloadEvent
 import com.teamwizardry.librarianlib.client.fx.shader.LibShaders
 import com.teamwizardry.librarianlib.client.fx.shader.ShaderHelper
@@ -13,7 +14,12 @@ import com.teamwizardry.librarianlib.client.util.ScissorUtil
 import com.teamwizardry.librarianlib.client.util.lambdainterfs.ClientRunnable
 import com.teamwizardry.librarianlib.common.core.LibCommonProxy
 import com.teamwizardry.librarianlib.common.util.handles.MethodHandleHelper
+import com.teamwizardry.librarianlib.common.util.minus
+import com.teamwizardry.librarianlib.common.util.times
+import com.teamwizardry.librarianlib.common.util.unaryMinus
+import com.teamwizardry.librarianlib.common.util.vec
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.resources.I18n
 import net.minecraft.client.resources.IReloadableResourceManager
 import net.minecraft.client.resources.IResourceManager
@@ -22,9 +28,12 @@ import net.minecraft.client.resources.data.MetadataSerializer
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.text.ITextComponent
+import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.client.model.animation.Animation
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.io.IOException
@@ -35,6 +44,10 @@ import java.io.InputStream
  */
 @SideOnly(Side.CLIENT)
 class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
+
+    init {
+        MinecraftForge.EVENT_BUS.register(this)
+    }
 
     override fun pre(e: FMLPreInitializationEvent) {
         super.pre(e)
@@ -97,7 +110,40 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
     override fun getDataFolder() = Minecraft.getMinecraft().mcDataDir
 
+    override fun startProfilerSection(name: String) {
+        Minecraft.getMinecraft().mcProfiler.startSection(name)
+    }
+
+    override fun endProfilerSection() {
+        Minecraft.getMinecraft().mcProfiler.endSection()
+    }
+
+    // custom events
+
     override fun onResourceManagerReload(resourceManager: IResourceManager) {
         MinecraftForge.EVENT_BUS.post(ResourceReloadEvent(resourceManager))
+    }
+
+    @SubscribeEvent
+    fun renderWorldEvent(e: RenderWorldLastEvent) {
+        GlStateManager.pushMatrix()
+        GlStateManager.pushAttrib()
+        val player = Minecraft.getMinecraft().player
+
+        val lastPos = vec(player.lastTickPosX, player.lastTickPosY, player.lastTickPosZ)
+        val partialOffset = (player.positionVector-lastPos)*(1-Animation.getPartialTickTime())
+
+        val globalize = -(player.positionVector-partialOffset)
+        GlStateManager.translate(globalize.xCoord, globalize.yCoord, globalize.zCoord)
+
+
+        GlStateManager.disableTexture2D()
+        GlStateManager.color(1f, 1f, 1f, 1f)
+
+        MinecraftForge.EVENT_BUS.post(CustomWorldRenderEvent(Minecraft.getMinecraft().world, e.context, Animation.getPartialTickTime()))
+
+        GlStateManager.enableTexture2D()
+        GlStateManager.popAttrib()
+        GlStateManager.popMatrix()
     }
 }
