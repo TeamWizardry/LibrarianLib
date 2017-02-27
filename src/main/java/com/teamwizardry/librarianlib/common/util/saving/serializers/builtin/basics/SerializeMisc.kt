@@ -122,7 +122,7 @@ object SerializeMisc {
         SerializerRegistry["java:uuid"]?.register(Targets.NBT, Targets.NBT.impl<UUID>
         ({ nbt, existing, sync ->
             val tag = nbt as? NBTTagString
-            if(tag == null)
+            if (tag == null)
                 UUID.randomUUID()
             else
                 UUID.fromString(tag.string)
@@ -161,7 +161,7 @@ object SerializeMisc {
         SerializerRegistry["minecraft:resourcelocation"]?.register(Targets.NBT, Targets.NBT.impl<ResourceLocation>
         ({ nbt, existing, sync ->
             val tag = nbt as? NBTTagString
-            if(tag == null)
+            if (tag == null)
                 ResourceLocation("minecraft:missingno")
             else
                 ResourceLocation(tag.string)
@@ -183,7 +183,7 @@ object SerializeMisc {
         SerializerRegistry["netty:bytebuf"]?.register(Targets.NBT, Targets.NBT.impl<ByteBuf>
         ({ nbt, existing, sync ->
             val tag = nbt as? NBTTagByteArray
-            if(tag == null)
+            if (tag == null)
                 Unpooled.EMPTY_BUFFER
             else {
                 Unpooled.wrappedBuffer(tag.byteArray)

@@ -26,15 +26,11 @@ abstract class ItemModArrow(name: String, vararg variants: String) : ItemArrow()
     override val providedItem: Item
         get() = this
 
-    override val variants: Array<out String>
-
-    private val bareName: String
-    private val modId: String
+    private val bareName = VariantHelper.toSnakeCase(name)
+    private val modId = currentModId
+    override val variants = VariantHelper.setupItem(this, bareName, variants, creativeTab)
 
     init {
-        modId = currentModId
-        bareName = name
-        this.variants = VariantHelper.setupItem(this, name, variants, creativeTab)
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, object : BehaviorProjectileDispense() {
             override fun getProjectileEntity(worldIn: World, position: IPosition, stackIn: ItemStack)
                     = generateArrowEntity(worldIn, stackIn, Vec3d(position.x, position.y, position.z), null)

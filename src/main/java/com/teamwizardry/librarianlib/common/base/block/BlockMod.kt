@@ -16,17 +16,15 @@ open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg 
 
     constructor(name: String, materialIn: Material, vararg variants: String) : this(name, materialIn, materialIn.materialMapColor, *variants)
 
-    override val variants: Array<out String>
 
     override val bareName: String = VariantHelper.toSnakeCase(name)
-    val modId: String
+    override val variants: Array<out String> = VariantHelper.beginSetupBlock(bareName, variants)
+    val modId = currentModId
 
     val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
-        modId = currentModId
-        this.variants = VariantHelper.beginSetupBlock(name, variants)
-        VariantHelper.finishSetupBlock(this, name, itemForm, creativeTab)
+        VariantHelper.finishSetupBlock(this, bareName, itemForm, creativeTab)
     }
 
     override fun setUnlocalizedName(name: String): Block {

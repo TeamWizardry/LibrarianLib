@@ -36,7 +36,7 @@ abstract class ContainerBase(val player: EntityPlayer) {
         for(rule in transferRules) {
             if(rule.shouldApply(slot)) {
                 val result = rule.putStack(stack)
-                if(result !== stack) {
+                if (result !== stack) {
                     slot.putStack(result)
                     return if(result === stack) result else ItemStack.EMPTY
                 }

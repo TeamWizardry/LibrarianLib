@@ -4,6 +4,8 @@
 package com.teamwizardry.librarianlib.common.util
 
 import com.teamwizardry.librarianlib.LibrarianLib
+import com.teamwizardry.librarianlib.common.network.PacketHandler
+import com.teamwizardry.librarianlib.common.network.PacketSpamlessMessage
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import io.netty.buffer.ByteBuf
 import net.minecraft.block.Block
@@ -57,7 +59,7 @@ fun String.canLocalize(): Boolean {
 fun String.toRl(): ResourceLocation = ResourceLocation(this)
 
 fun <K, V> MutableMap<K, V>.withRealDefault(default: (K) -> V): DefaultedMutableMap<K, V> {
-    return when(this) {
+    return when (this) {
         is RealDefaultImpl -> RealDefaultImpl(this.map, default)
         else -> RealDefaultImpl(this, default)
     }
@@ -92,7 +94,7 @@ operator fun Vec3d.unaryMinus(): Vec3d = this * -1.0
 
 infix fun Vec3d.dot(other: Vec3d) = this.dotProduct(other)
 
-infix fun Vec3d.cross(other: Vec3d) = this.crossProduct(other)
+infix fun Vec3d.cross(other: Vec3d): Vec3d = this.crossProduct(other)
 
 fun Vec3d.withX(other: Double) = Vec3d(other, this.yCoord, this.zCoord)
 fun Vec3d.withY(other: Double) = Vec3d(this.xCoord, other, this.zCoord)
@@ -371,14 +373,23 @@ operator fun NBTTagCompound.get(key: String): NBTBase = this.getTag(key)
 
 fun EntityPlayer.sendMessage(str: String, actionBar: Boolean = false)
         = sendStatusMessage(str.toComponent(), actionBar)
+
+fun EntityPlayer.sendSpamlessMessage(str: String, channelName: String)
+        = sendSpamlessMessage(str, channelName.hashCode())
+
+fun EntityPlayer.sendSpamlessMessage(comp: ITextComponent, channelName: String)
+    = sendSpamlessMessage(comp, channelName.hashCode())
+
 fun EntityPlayer.sendSpamlessMessage(str: String, uniqueId: Int)
         = sendSpamlessMessage(str.toComponent(), uniqueId)
-fun EntityPlayer.sendSpamlessMessage(comp: ITextComponent, uniqueId: Int)
-        = LibrarianLib.PROXY.sendSpamlessMessage(this, comp, uniqueId)
-fun EntityPlayer.sendSpamlessMessage(str: String, uniqueId: String)
-        = sendSpamlessMessage(str.toComponent(), uniqueId.hashCode())
-fun EntityPlayer.sendSpamlessMessage(comp: ITextComponent, uniqueId: String)
-        = sendSpamlessMessage(comp, uniqueId.hashCode())
+
+fun EntityPlayer.sendSpamlessMessage(comp: ITextComponent, uniqueId: Int) {
+    val packet = PacketSpamlessMessage(comp, uniqueId)
+    if (this is EntityPlayerMP)
+        PacketHandler.NETWORK.sendTo(packet, this)
+    else
+        LibrarianLib.PROXY.runIfClient(packet)
+}
 
 fun Entity.setVelocityAndUpdate(vec: Vec3d) = setVelocityAndUpdate(vec.xCoord, vec.yCoord, vec.zCoord)
 fun Entity.setVelocityAndUpdate(x: Double = motionX, y: Double = motionY, z: Double = motionZ) {
@@ -388,6 +399,7 @@ fun Entity.setVelocityAndUpdate(x: Double = motionX, y: Double = motionY, z: Dou
     if (this is EntityPlayerMP)
         connection.sendPacket(SPacketEntityVelocity(this))
 }
+
 val Entity.motionVec: Vec3d
     get() = Vec3d(motionX, motionY, motionZ)
 
@@ -399,7 +411,7 @@ fun String.toComponent() = TextComponentString(this)
 
 // ICapabilityProvider ==============================================================================================================
 fun <T, R> ICapabilityProvider.ifCap(capability: Capability<T>, facing: EnumFacing?, callback: (T) -> R): R? {
-    if(this.hasCapability(capability, facing))
+    if (this.hasCapability(capability, facing))
         return callback(this.getCapability(capability, facing)!!)
     return null
 }
@@ -557,13 +569,13 @@ inline fun <K, V> ByteArray.flatAssociateBy(mapper: (Byte) -> Iterable<Pair<K, V
     return map
 }
 
-inline fun <K, V> ShortArray.flatAssociateBy(mapper: (Short)  -> Iterable<Pair<K, V>>): Map<K, V> {
+inline fun <K, V> ShortArray.flatAssociateBy(mapper: (Short) -> Iterable<Pair<K, V>>): Map<K, V> {
     val map = mutableMapOf<K, V>()
     forEach { map.putAll(mapper(it)) }
     return map
 }
 
-inline fun <K, V> CharArray.flatAssociateBy(mapper: (Char)  -> Iterable<Pair<K, V>>): Map<K, V> {
+inline fun <K, V> CharArray.flatAssociateBy(mapper: (Char) -> Iterable<Pair<K, V>>): Map<K, V> {
     val map = mutableMapOf<K, V>()
     forEach { map.putAll(mapper(it)) }
     return map
@@ -595,11 +607,11 @@ inline fun <K, V> DoubleArray.flatAssociateBy(mapper: (Double) -> Iterable<Pair<
 
 // listOf and mapOf ====================================================================================================
 
-inline fun <reified K: Enum<K>, V> enumMapOf(): EnumMap<K, V> {
+inline fun <reified K : Enum<K>, V> enumMapOf(): EnumMap<K, V> {
     return EnumMap(K::class.java)
 }
 
-inline fun <reified K: Enum<K>, V> enumMapOf(vararg pairs: Pair<K, V>): EnumMap<K, V> {
+inline fun <reified K : Enum<K>, V> enumMapOf(vararg pairs: Pair<K, V>): EnumMap<K, V> {
     val map = enumMapOf<K, V>()
     map.putAll(pairs)
     return map

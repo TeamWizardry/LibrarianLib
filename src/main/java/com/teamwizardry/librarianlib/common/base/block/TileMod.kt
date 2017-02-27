@@ -49,10 +49,10 @@ abstract class TileMod : TileEntity() {
 
     override fun readFromNBT(compound: NBTTagCompound) {
         readCustomNBT(compound.getCompoundTag("custom"))
-        if(!compound.hasKey("_v"))
+        if (!compound.hasKey("_v"))
             AbstractSaveHandler.readAutoNBT(this, compound, false)
         else {
-            when(compound.getInteger("_v")) {
+            when (compound.getInteger("_v")) {
                 2 -> AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
             }
         }

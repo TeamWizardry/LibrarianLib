@@ -102,7 +102,8 @@ class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
         this.rotY = rotY
         this.rotX = rotX
 
-        run { // RenderHelper.enableStandardItemLighting but brighter because of different light and ambiant values.
+        run {
+            // RenderHelper.enableStandardItemLighting but brighter because of different light and ambiant values.
             val LIGHT0_POS = Vec3d(0.0, 1.0, 0.1).normalize()//(new Vec3d(0.20000000298023224D, 1.0D, -0.699999988079071D)).normalize();
             val LIGHT1_POS = Vec3d(0.0, 1.0, -0.1).normalize()//(new Vec3d(-0.20000000298023224D, 1.0D, 0.699999988079071D)).normalize();
 

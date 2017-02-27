@@ -73,7 +73,7 @@ object VariantHelper {
 
     /**
      * All blocks which use this method in their constructor should implement the setUnlocalizedNameForBlock provided below in their setUnlocalizedName.
-     * After caching variants using this, call finishSetupBlock.
+     * After caching variants using this, call [finishSetupBlock].
      */
     @JvmStatic
     fun beginSetupBlock(name: String, variants: Array<out String>): Array<out String> {

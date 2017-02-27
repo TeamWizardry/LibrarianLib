@@ -26,6 +26,4 @@ object LateLoader {
     const val MODID = "librarianliblate"
     const val MODNAME = "LibrarianLib Stage 2"
     const val DEPENDENCIES = "after:*"
-
-
 }

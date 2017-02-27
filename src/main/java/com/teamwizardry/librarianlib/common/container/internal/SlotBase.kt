@@ -23,7 +23,7 @@ class SlotBase(handler: IItemHandler, index: Int) : SlotItemHandler(handler, ind
     }
 
     override fun onSlotChanged() {
-        if(type.onSlotChange(this))
+        if (type.onSlotChange(this))
             super.onSlotChanged()
     }
 
@@ -42,11 +42,11 @@ class SlotBase(handler: IItemHandler, index: Int) : SlotItemHandler(handler, ind
     }
 
     override fun canTakeStack(playerIn: EntityPlayer?): Boolean {
-        return if(visible) type.canTake(this, playerIn, stack, super.canTakeStack(playerIn)) else false
+        return if (visible) type.canTake(this, playerIn, stack, super.canTakeStack(playerIn)) else false
     }
 
     override fun canBeHovered(): Boolean {
-        return if(visible) type.canHover(this) else false
+        return if (visible) type.canHover(this) else false
     }
 
     override fun isItemValid(stack: ItemStack): Boolean {
@@ -57,7 +57,7 @@ class SlotBase(handler: IItemHandler, index: Int) : SlotItemHandler(handler, ind
         return type.stackLimit(this, stack)
     }
 
-    fun  handleClick(container: ContainerBase, dragType: Int, clickType: ClickType?, player: EntityPlayer): Pair<Boolean, ItemStack?> {
+    fun handleClick(container: ContainerBase, dragType: Int, clickType: ClickType?, player: EntityPlayer): Pair<Boolean, ItemStack> {
         return type.handleClick(this, container, dragType, clickType, player)
     }
 }

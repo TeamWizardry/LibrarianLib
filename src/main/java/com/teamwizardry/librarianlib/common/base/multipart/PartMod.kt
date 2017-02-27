@@ -1,7 +1,5 @@
 
 // todo once mcmultipart is 1.11
-//package com.teamwizardry.librarianlib.common.base.multipart
-//
 //import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
 //import com.teamwizardry.librarianlib.common.util.saving.SaveInPlace
 //import mcmultipart.multipart.Multipart
@@ -48,7 +46,7 @@
 //
 //    override fun readFromNBT(tag: NBTTagCompound) {
 //        readCustomNBT(tag.getCompoundTag("custom"))
-//        if(tag.hasKey("auto"))
+//        if (tag.hasKey("auto"))
 //            AbstractSaveHandler.readAutoNBT(this, tag.getTag("auto"), false)
 //        super.readFromNBT(tag)
 //    }

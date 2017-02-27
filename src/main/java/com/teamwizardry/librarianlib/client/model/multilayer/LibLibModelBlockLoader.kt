@@ -19,8 +19,8 @@ object LibLibModelBlockLoader : ICustomModelLoader {
     private lateinit var manager: IResourceManager
 
     override fun accepts(modelLocation: ResourceLocation): Boolean {
-        val v =  modelLocation.resourcePath.endsWith(".liblib", true)
-        if(v)
+        val v = modelLocation.resourcePath.endsWith(".liblib", true)
+        if (v)
             LibrarianLog.debug("foobar $modelLocation")
         return v
     }

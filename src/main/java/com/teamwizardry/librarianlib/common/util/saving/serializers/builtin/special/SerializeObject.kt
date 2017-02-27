@@ -43,7 +43,7 @@ object SerializeObject {
                         } else {
                             null
                         }
-                        if(!it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
+                        if (!it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
                             it.value.setter(instance, value)
                         }
                     }
@@ -54,7 +54,7 @@ object SerializeObject {
                             } else {
                                 null
                             }
-                            if(!it.value.meta.hasFlag(SavingFieldFlag.FINAL))
+                            if (!it.value.meta.hasFlag(SavingFieldFlag.FINAL))
                                 it.value.setter(instance, value)
                         }
                     }
@@ -102,7 +102,7 @@ object SerializeObject {
                         } else {
                             analysis.serializers[it.key]!!.invoke().read(buf, it.value.getter(instance), sync)
                         }
-                        if(!it.value.meta.hasFlag(SavingFieldFlag.FINAL))
+                        if (!it.value.meta.hasFlag(SavingFieldFlag.FINAL))
                             it.value.setter(instance, value)
                     }
                     if (!sync) {
@@ -112,7 +112,7 @@ object SerializeObject {
                             } else {
                                 analysis.serializers[it.key]!!.invoke().read(buf, it.value.getter(instance), sync)
                             }
-                            if(!it.value.meta.hasFlag(SavingFieldFlag.FINAL))
+                            if (!it.value.meta.hasFlag(SavingFieldFlag.FINAL))
                                 it.value.setter(instance, value)
                         }
                     }
@@ -211,7 +211,7 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
                                 var i = 0
                                 it.parameters.all {
                                     val ret =
-                                    if(customParamNames != null && i < customParamNames.size)
+                                    if (customParamNames != null && i < customParamNames.size)
                                         paramsToFind.remove(customParamNames[i])?.meta?.type?.equals(FieldType.create(it.parameterizedType)) ?: false
                                     else
                                         paramsToFind.remove(it.name)?.meta?.type?.equals(FieldType.create(it.parameterizedType)) ?: false

@@ -16,7 +16,7 @@ class InterpUnionImpl<T> internal constructor(val list: MutableList<UnionEntry<T
  *
  * The InterpFunction weights are proportions
  */
-class InterpUnion<T>() {
+class InterpUnion<T> {
     private val functions: MutableList<InterpFunction<T>> = mutableListOf()
     private val weights: MutableList<Float> = mutableListOf()
 

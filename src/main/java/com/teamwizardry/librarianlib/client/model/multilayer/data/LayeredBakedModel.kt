@@ -16,12 +16,12 @@ import java.util.*
 private val EMPTY_LIST = listOf<BakedQuad>()
 private val EMPTY_FACE_MAP = mapOf<EnumFacing, List<BakedQuad>>()
 
-class LayeredBakedModel(protected val generalQuads: Map<BlockRenderLayer,List<BakedQuad>>, protected val faceQuads: Map<BlockRenderLayer,Map<EnumFacing, List<BakedQuad>>>, protected val ambientOcclusion: Boolean, protected val gui3d: Boolean, protected val texture: TextureAtlasSprite, protected val cameraTransforms: ItemCameraTransforms, protected val itemOverrideList: ItemOverrideList) : IBakedModel {
+class LayeredBakedModel(protected val generalQuads: Map<BlockRenderLayer, List<BakedQuad>>, protected val faceQuads: Map<BlockRenderLayer, Map<EnumFacing, List<BakedQuad>>>, protected val ambientOcclusion: Boolean, protected val gui3d: Boolean, protected val texture: TextureAtlasSprite, protected val cameraTransforms: ItemCameraTransforms, protected val itemOverrideList: ItemOverrideList) : IBakedModel {
 
     override fun getQuads(state: IBlockState?, side: EnumFacing?, rand: Long): List<BakedQuad> {
         val layer = MinecraftForgeClient.getRenderLayer()
 
-        if(side == null) {
+        if (side == null) {
             return generalQuads[layer] ?: EMPTY_LIST
         } else {
             return (faceQuads[layer] ?: EMPTY_FACE_MAP)[side] ?: EMPTY_LIST
@@ -65,7 +65,7 @@ class LayeredBakedModel(protected val generalQuads: Map<BlockRenderLayer,List<Ba
         private var builderItemOverrideList: ItemOverrideList = p_i46988_2_
 
         init {
-            for(layer in BlockRenderLayer.values()) {
+            for (layer in BlockRenderLayer.values()) {
                 this.builderGeneralQuads[layer] = mutableListOf()
                 this.builderFaceQuads[layer] = EnumMap(EnumFacing::class.java)
 

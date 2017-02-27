@@ -23,9 +23,9 @@ object GuiHandler : IGuiHandler {
     @JvmStatic
     @JvmOverloads
     fun open(name: ResourceLocation, player: EntityPlayer, pos: BlockPos = BlockPos.ORIGIN) {
-        if(name !in ids)
+        if (name !in ids)
             throw IllegalArgumentException("No GUI handler registered for $name")
-        if(!player.world.isRemote) {
+        if (!player.world.isRemote) {
             player.openGui(LibrarianLib, ids[name]!!, player.world, pos.x, pos.y, pos.z)
         }
     }

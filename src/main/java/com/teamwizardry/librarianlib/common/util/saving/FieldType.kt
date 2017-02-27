@@ -18,19 +18,19 @@ abstract class FieldType protected constructor(open val clazz: Class<*>) {
         @JvmStatic
         fun create(type: Type): FieldType {
             val fType: FieldType =
-            if(type is ParameterizedType)
-                createGeneric(type)
-            else if(type is GenericArrayType)
-                createGenericArray(type)
-            else if(type is TypeVariable<*>)
-                createVariable(type)
-            else if(type is Class<*>)
-                if(type.isArray)
-                    createArray(type)
-                else
-                    createPlain(type)
-            else
-                FieldTypeError()
+                    if (type is ParameterizedType)
+                        createGeneric(type)
+                    else if (type is GenericArrayType)
+                        createGenericArray(type)
+                    else if (type is TypeVariable<*>)
+                        createVariable(type)
+                    else if (type is Class<*>)
+                        if (type.isArray)
+                            createArray(type)
+                        else
+                            createPlain(type)
+                    else
+                        FieldTypeError()
 
             return fType
         }
@@ -111,7 +111,7 @@ class FieldTypeArray(val componentType: FieldType) : FieldType(getArrayType(comp
 class FieldTypeGeneric(clazz: Class<*>, val generics: Array<FieldType>) : FieldType(clazz) {
 
     fun generic(i: Int): FieldType? {
-        if(i < 0 || i >= generics.size)
+        if (i < 0 || i >= generics.size)
             return null
         return generics[i]
     }

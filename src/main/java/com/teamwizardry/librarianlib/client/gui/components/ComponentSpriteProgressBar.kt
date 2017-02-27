@@ -34,7 +34,7 @@ class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: Sprite?, 
             // it's value to the depth buffer, cutting a hole down wherever it's drawn.
             GL11.glDepthFunc(GL11.GL_ALWAYS)
         }
-        if(sp.frameCount > 0 && lastAnim / sp.frameCount < animationTicks / sp.frameCount) {
+        if (sp.frameCount > 0 && lastAnim / sp.frameCount < animationTicks / sp.frameCount) {
             BUS.fire(AnimationLoopEvent(this))
         }
         lastAnim = animationTicks
@@ -46,13 +46,13 @@ class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: Sprite?, 
         val dir = direction.getValue(this)
         val progress = this.progress.getValue(this)
 
-        if(dir == ProgressDirection.Y_POS || dir == ProgressDirection.Y_NEG)
+        if (dir == ProgressDirection.Y_POS || dir == ProgressDirection.Y_NEG)
             h = (h * progress).toInt()
-        if(dir == ProgressDirection.X_POS || dir == ProgressDirection.X_NEG)
+        if (dir == ProgressDirection.X_POS || dir == ProgressDirection.X_NEG)
             w = (w * progress).toInt()
 
-        var posX = if(dir == ProgressDirection.X_NEG) (pos.xf + size.xi) - w else pos.xf
-        var posY = if(dir == ProgressDirection.Y_NEG) (pos.yf + size.yi) - h else pos.yf
+        var posX = if (dir == ProgressDirection.X_NEG) (pos.xf + size.xi) - w else pos.xf
+        var posY = if (dir == ProgressDirection.Y_NEG) (pos.yf + size.yi) - h else pos.yf
 
         sp.drawClipped(animationTicks, posX, posY, w, h, dir == ProgressDirection.X_NEG, dir == ProgressDirection.Y_POS)
         if (alwaysTop)

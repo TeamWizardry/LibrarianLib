@@ -10,7 +10,7 @@ import com.teamwizardry.librarianlib.common.util.vec
  * Created by TheCodeWarrior
  */
 class ComponentSlot(val slot: SlotBase, x: Int, y: Int) : GuiComponent<ComponentSlot>(x, y) {
-    val background = ComponentVoid(0,0)
+    val background = ComponentVoid(0, 0)
 
     init {
         this.add(background)
@@ -22,7 +22,7 @@ class ComponentSlot(val slot: SlotBase, x: Int, y: Int) : GuiComponent<Component
     }
 
     override fun onTick() {
-        val p = parent!!.unTransformRoot(this, vec(0,0))
+        val p = parent!!.unTransformRoot(this, vec(0, 0))
 
         slot.xPos = p.xi
         slot.yPos = p.yi

@@ -22,16 +22,9 @@ open class ItemModFood(name: String, amount: Int, saturation: Float, wolfFood: B
     override val providedItem: Item
         get() = this
 
-    override val variants: Array<out String>
-
-    private val bareName: String
-    private val modId: String
-
-    init {
-        modId = currentModId
-        bareName = VariantHelper.toSnakeCase(name)
-        this.variants = VariantHelper.setupItem(this, name, variants, creativeTab)
-    }
+    private val bareName = VariantHelper.toSnakeCase(name)
+    private val modId = currentModId
+    override val variants = VariantHelper.setupItem(this, bareName, variants, creativeTab)
 
     override fun setUnlocalizedName(name: String): Item {
         VariantHelper.setUnlocalizedNameForItem(this, modId, name)

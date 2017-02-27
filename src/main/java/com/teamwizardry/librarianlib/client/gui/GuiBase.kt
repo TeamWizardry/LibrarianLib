@@ -16,7 +16,7 @@ import java.io.IOException
 open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : GuiScreen() {
     protected val mainComponents: ComponentVoid = ComponentVoid(0, 0)
     protected val fullscreenComponents: ComponentVoid = ComponentVoid(0, 0)
-    private val mainScaleWrapper: ComponentVoid = ComponentVoid(0,0)
+    private val mainScaleWrapper: ComponentVoid = ComponentVoid(0, 0)
 //    protected var top: Int = 0
 //    protected var left: Int = 0
 
@@ -34,7 +34,7 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         super.initGui()
 
         var s = 1.0
-        if(!adjustGuiSize()) {
+        if (!adjustGuiSize()) {
             var i = 1
             // find required scale, either 1x, 1/2x 1/3x, or 1/4x
             while ((guiWidth * s > width || guiHeight * s > height) && i < 4) {
@@ -43,13 +43,13 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
             }
         }
 
-        val left = (width / 2 - guiWidth*s / 2).toInt()
-        val top = (height / 2 - guiHeight*s / 2).toInt()
+        val left = (width / 2 - guiWidth * s / 2).toInt()
+        val top = (height / 2 - guiHeight * s / 2).toInt()
 
         if (mainScaleWrapper.pos.xi != left || mainScaleWrapper.pos.yi != top) {
             mainScaleWrapper.pos = vec(left, top)
             mainScaleWrapper.childScale = s
-            mainScaleWrapper.size = vec(guiWidth*s, guiHeight*s)
+            mainScaleWrapper.size = vec(guiWidth * s, guiHeight * s)
         }
 
         fullscreenComponents.size = vec(width, height)
@@ -130,7 +130,7 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         @Suppress("UNUSED_PARAMETER")
         fun tick(e: TickEvent.ClientTickEvent) {
             val gui = Minecraft.getMinecraft().currentScreen
-            if(gui is GuiBase) {
+            if (gui is GuiBase) {
                 gui.tick()
             }
         }

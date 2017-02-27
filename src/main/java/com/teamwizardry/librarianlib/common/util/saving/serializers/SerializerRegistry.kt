@@ -36,13 +36,13 @@ object SerializerRegistry {
     @Suppress("UNCHECKED_CAST")
     fun <R, W> lazyImpl(target: SerializerTarget<R, W>, type: FieldType): () -> SerializerImpl<R, W> {
         val cachedImpl = cached.getOrPut(target, { mutableMapOf() }).get(type)
-        if(cachedImpl != null) {
+        if (cachedImpl != null) {
             return { cachedImpl as SerializerImpl<R, W> }
         }
 
-        var lazyInstance: SerializerImpl<R,W>? = null
+        var lazyInstance: SerializerImpl<R, W>? = null
         return {
-            if(lazyInstance == null) {
+            if (lazyInstance == null) {
                 lazyInstance = implInternal(target, type)
             }
             lazyInstance!!
@@ -54,12 +54,12 @@ object SerializerRegistry {
         return cached.getOrPut(target, { mutableMapOf() }).getOrPut(type, l@ {
             var impl: SerializerImpl<*, *>? = null
             val ser = serializers.values.maxBy {
-                if(target in it && it.canApply(type))
+                if (target in it && it.canApply(type))
                     it.priority.ordinal
                 else
                     -1000
             }
-            if(ser != null && target in ser && ser.canApply(type)) {
+            if (ser != null && target in ser && ser.canApply(type)) {
                 impl = ser[target](type)
             }
             impl ?: throw NoSuchSerializerError(target, type)
@@ -67,7 +67,7 @@ object SerializerRegistry {
     }
 }
 
-class NoSuchSerializerError(target: SerializerTarget<*,*>, type: FieldType) : RuntimeException(calcMessage(target, type)) {
+class NoSuchSerializerError(target: SerializerTarget<*, *>, type: FieldType) : RuntimeException(calcMessage(target, type)) {
     companion object {
         fun calcMessage(target: SerializerTarget<*, *>, type: FieldType): String {
             return "type " + type.toString() + " for target " + target.name

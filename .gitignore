@@ -27,5 +27,6 @@ run
 
 **/models/*
 **/blockstates/*
-**/textures/blocks/*
+**/librarianlibtest/**/*
+**/librarianliblate/**/*
 **/textures/items/*

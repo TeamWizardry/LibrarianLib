@@ -31,7 +31,7 @@ object SerializeMaps {
 
             val constructorMH = MethodHandleHelper.wrapperForConstructor<MutableMap<Any?, Any?>>(type.clazz)
 
-            Targets.NBT.impl<MutableMap<*,*>>({ nbt, existing, syncing ->
+            Targets.NBT.impl<MutableMap<*, *>>({ nbt, existing, syncing ->
                 val list = nbt.safeCast(NBTTagList::class.java)
                 val map = constructorMH(arrayOf())
 
@@ -73,23 +73,23 @@ object SerializeMaps {
 
             val constructorMH = MethodHandleHelper.wrapperForConstructor<MutableMap<Any?, Any?>>(type.clazz)
 
-            Targets.BYTES.impl<MutableMap<*,*>>({ buf, existing, syncing ->
+            Targets.BYTES.impl<MutableMap<*, *>>({ buf, existing, syncing ->
                 val map = constructorMH(arrayOf())
 
                 val nullCount = buf.readVarInt()
-                for(i in 0..nullCount-1) {
+                for (i in 0..nullCount - 1) {
                     val k = keySerializer().read(buf, null, syncing)
                     map[k] = null
                 }
 
                 val hasNullKey = buf.readBoolean()
-                if(hasNullKey) {
+                if (hasNullKey) {
                     val isNullValue = buf.readBoolean()
-                    map[null] = if(isNullValue) null else valueSerializer().read(buf, existing?.get(null), syncing)
+                    map[null] = if (isNullValue) null else valueSerializer().read(buf, existing?.get(null), syncing)
                 }
 
                 val nonNullCount = buf.readVarInt()
-                for(i in 0..nonNullCount-1) {
+                for (i in 0..nonNullCount-1) {
                     val k = keySerializer().read(buf, null, syncing)
                     val v = valueSerializer().read(buf, existing?.get(k), syncing)
                     map[k] = v
@@ -102,13 +102,13 @@ object SerializeMaps {
                 nulls.forEach { keySerializer().write(buf, it.key!!, syncing) }
 
                 buf.writeBoolean(value.containsKey(null))
-                if(value.containsKey(null)) {
+                if (value.containsKey(null)) {
                     buf.writeBoolean(value[null] == null)
-                    if(value[null] != null)
+                    if (value[null] != null)
                         valueSerializer().write(buf, value[null]!!, syncing)
                 }
 
-                val nonNulls = value.filter { it.value != null && it.key != null}
+                val nonNulls = value.filter { it.value != null && it.key != null }
                 buf.writeVarInt(nonNulls.size)
                 nonNulls.forEach {
                     keySerializer().write(buf, it.key!!, syncing)

@@ -3,14 +3,17 @@
 package com.teamwizardry.librarianlib.common.core
 
 import com.teamwizardry.librarianlib.LibrarianLib
+import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.client.util.lambdainterfs.ClientRunnable
-import com.teamwizardry.librarianlib.common.base.ItemBlockClassAnnotationsHandler
 import com.teamwizardry.librarianlib.common.container.GuiHandler
 import com.teamwizardry.librarianlib.common.network.PacketHandler
 import com.teamwizardry.librarianlib.common.network.PacketSpamlessMessage
 import com.teamwizardry.librarianlib.common.util.EasyConfigHandler
 import com.teamwizardry.librarianlib.common.util.autoregister.AutoRegisterHandler
 import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
+import com.teamwizardry.librarianlib.common.util.sendSpamlessMessage
+import com.teamwizardry.librarianlib.common.util.times
+import com.teamwizardry.librarianlib.common.util.unsafeAllowedModIds
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.util.text.ITextComponent
@@ -33,18 +36,21 @@ open class LibCommonProxy {
     lateinit var asmDataTable: ASMDataTable
         private set
 
-    private var mcDataFolder: File = File("/")
+    // Internal methods for initialization
 
     open fun pre(e: FMLPreInitializationEvent) {
         EasyConfigHandler.init()
-        mcDataFolder = e.modConfigurationDirectory.parentFile
+
+        if (LibrarianLib.DEV_ENVIRONMENT && unsafeAllowedModIds.isNotEmpty()) {
+            LibrarianLog.info(LibrarianLib.MODID + " | Unsafe-allowed mod IDs:")
+            unsafeAllowedModIds.forEach { "${" " * LibrarianLib.MODID.length} | $it" }
+        }
     }
 
     open fun latePre(e: FMLPreInitializationEvent) {
         AutoRegisterHandler.handle(e)
         EasyConfigHandler.bootstrap(e.asmData, e.modConfigurationDirectory)
         asmDataTable = e.asmData
-        ItemBlockClassAnnotationsHandler
     }
 
     open fun init(e: FMLInitializationEvent) {
@@ -62,6 +68,8 @@ open class LibCommonProxy {
     open fun latePost(e: FMLPostInitializationEvent) {
         SavingFieldCache.handleErrors()
     }
+
+    // End internal methods
 
     /**
      * Translates a string. Works server-side or client-side.
@@ -91,18 +99,28 @@ open class LibCommonProxy {
         return mod.mod.javaClass.getResourceAsStream("/assets/$modId/$fixPath")
     }
 
+    /**
+     * See [ClientRunnable].
+     */
     open fun runIfClient(clientRunnable: ClientRunnable) {
         // NO-OP
     }
 
+    /**
+     * Used for clientside code rather than proxying.
+     */
     open fun getClientPlayer(): EntityPlayer = throw UnsupportedOperationException("No client player on server side!")
 
-    open fun sendSpamlessMessage(player: EntityPlayer, msg: ITextComponent, uniqueId: Int) {
-        if (player !is EntityPlayerMP) return
-        PacketHandler.NETWORK.sendTo(PacketSpamlessMessage(msg, uniqueId), player)
-    }
+    @Suppress("unused")
+    @Deprecated("Spamless messages are no longer proxied.",
+            ReplaceWith("player.sendSpamlessMessage(msg, uniqueId)", "com.teamwizardry.librarianlib.common.util.sendSpamlessMessage"),
+            level = DeprecationLevel.HIDDEN)
+    fun sendSpamlessMessage(player: EntityPlayer, msg: ITextComponent, uniqueId: Int) = player.sendSpamlessMessage(msg, uniqueId)
 
-    open fun getDataFolder() = mcDataFolder
+    /**
+     * Gets the working minecraft data folder. A reasonable guess is made that the CWD is the data folder on serverside.
+     */
+    open fun getDataFolder() = File("")
 
     open fun startProfilerSection(name: String) {
 

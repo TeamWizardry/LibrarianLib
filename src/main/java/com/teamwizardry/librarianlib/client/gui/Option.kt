@@ -19,7 +19,7 @@ open class Option<P, T>(protected var defaultValue: T) {
     fun getValue(param: P): T {
         val tmp = callback
         if (tmp != null) {
-            return tmp.apply(param)
+            return tmp.apply(param) ?: value
         }
         return value
     }

@@ -14,7 +14,7 @@ open class SlotTypeGhost(val maxStackSize: Int = 1, val overstack: Boolean = fal
         return maxStackSize
     }
 
-    override fun handleClick(slot: SlotBase, container: ContainerBase, dragType: Int, clickType: ClickType?, player: EntityPlayer): Pair<Boolean, ItemStack?> {
+    override fun handleClick(slot: SlotBase, container: ContainerBase, dragType: Int, clickType: ClickType?, player: EntityPlayer): Pair<Boolean, ItemStack> {
 
         val slotStack = slot.stack
         val playerStack: ItemStack = player.inventory.itemStack
@@ -37,7 +37,7 @@ open class SlotTypeGhost(val maxStackSize: Int = 1, val overstack: Boolean = fal
             slot.putStack(copy)
         }
 
-        return true to null
+        return true to ItemStack.EMPTY
     }
 
     override fun autoTransferInto(slot: SlotBase, stack: ItemStack): ITransferRule.AutoTransferResult {
@@ -48,7 +48,7 @@ open class SlotTypeGhost(val maxStackSize: Int = 1, val overstack: Boolean = fal
             slot.putStack(newStack)
             return ITransferRule.AutoTransferResult(stack, true, false)
         }
-        if(ITransferRule.areItemStacksEqual(slot.stack, stack)) {
+        if (ITransferRule.areItemStacksEqual(slot.stack, stack)) {
             return ITransferRule.AutoTransferResult(stack, false, false)
         }
         return ITransferRule.AutoTransferResult(stack, false)

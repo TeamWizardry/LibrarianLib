@@ -274,7 +274,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     var parent: GuiComponent<*>? = null
         private set(value) {
             parents.clear()
-            if(value != null) {
+            if (value != null) {
                 parents.addAll(value.parents)
                 parents.add(value)
             }
@@ -338,8 +338,8 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         }
 
 
-            if (BUS.fire(AddChildEvent(thiz(), component)).isCanceled())
-                return
+        if (BUS.fire(AddChildEvent(thiz(), component)).isCanceled())
+            return
         if (component.BUS.fire(AddToParentEvent(component.thiz(), thiz())).isCanceled())
             return
         components.add(component)
@@ -474,7 +474,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      */
     @JvmOverloads
     fun unTransformRoot(child: GuiComponent<*>, pos: Vec2d, screenRoot: Boolean = false): Vec2d {
-        return parent?.unTransformRoot(this, unTransformChildPos(child, pos), screenRoot) ?: if(screenRoot) unTransformChildPos(child, pos) + this.pos else unTransformChildPos(child, pos)
+        return parent?.unTransformRoot(this, unTransformChildPos(child, pos), screenRoot) ?: if (screenRoot) unTransformChildPos(child, pos) + this.pos else unTransformChildPos(child, pos)
     }
 
     open fun calculateMouseOver(mousePos: Vec2d) {
@@ -560,9 +560,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         GlStateManager.pushMatrix()
         GlStateManager.pushAttrib()
         GlStateManager.translate(pos.x + childTranslation.x, pos.y + childTranslation.y, 0.0)
-        if(childScale != 1.0) // avoid unnecessary GL calls. Possibly microoptimization but meh.
+        if (childScale != 1.0) // avoid unnecessary GL calls. Possibly microoptimization but meh.
             GlStateManager.scale(childScale, childScale, 1.0)
-        if(childRotation != 0.0) // see above comment
+        if (childRotation != 0.0) // see above comment
             GlStateManager.rotate(Math.toDegrees(childRotation).toFloat(), 0f, 0f, 1f)
 
         BUS.fire(PreChildrenDrawEvent(thiz(), mousePos, partialTicks))
@@ -625,7 +625,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             // don't return here, if a click was handled we should still handle the mouseUp
         }
 
-        for (child in components) {
+        for (child in components.toList()) {
             child.mouseUp(transformChildPos(child, mousePos), button)
         }
     }
@@ -765,17 +765,17 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         BUS.fire(MessageArriveEvent(thiz(), from, message))
         onMessage(from, message)
 
-        if(message.rippleType != EnumRippleType.NONE) {
-            if(message.rippleType == EnumRippleType.UP || message.rippleType == EnumRippleType.ALL) {
+        if (message.rippleType != EnumRippleType.NONE) {
+            if (message.rippleType == EnumRippleType.UP || message.rippleType == EnumRippleType.ALL) {
                 parent?.let {
-                    if(it != from) {
+                    if (it != from) {
                         it.handleMessage(this, message)
                     }
                 }
             }
-            if(message.rippleType == EnumRippleType.DOWN || message.rippleType == EnumRippleType.ALL) {
+            if (message.rippleType == EnumRippleType.DOWN || message.rippleType == EnumRippleType.ALL) {
                 children.forEach {
-                    if(it != from) {
+                    if (it != from) {
                         it.handleMessage(this, message)
                     }
                 }
