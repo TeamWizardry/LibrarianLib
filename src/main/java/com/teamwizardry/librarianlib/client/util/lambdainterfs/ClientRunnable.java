@@ -9,6 +9,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * Use this instead of proxying a single use method.
  * See {@link LibCommonProxy#runIfClient(ClientRunnable)} for where to use.
  */
+@FunctionalInterface
 public interface ClientRunnable {
     @SideOnly(Side.CLIENT)
     void runIfClient();
