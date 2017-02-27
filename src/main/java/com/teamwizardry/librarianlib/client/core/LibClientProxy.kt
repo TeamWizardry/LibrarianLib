@@ -92,8 +92,6 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
     override fun getClientPlayer(): EntityPlayer = Minecraft.getMinecraft().player
 
     override fun sendSpamlessMessage(player: EntityPlayer, msg: ITextComponent, uniqueId: Int) {
-        val chat = Minecraft.getMinecraft().ingameGUI.chatGUI
-        chat.printChatMessageWithOptionalDeletion(msg, uniqueId)
     }
 
     override fun getDataFolder(): File = Minecraft.getMinecraft().mcDataDir

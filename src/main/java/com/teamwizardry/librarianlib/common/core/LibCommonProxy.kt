@@ -11,6 +11,7 @@ import com.teamwizardry.librarianlib.common.network.PacketSpamlessMessage
 import com.teamwizardry.librarianlib.common.util.EasyConfigHandler
 import com.teamwizardry.librarianlib.common.util.autoregister.AutoRegisterHandler
 import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
+import com.teamwizardry.librarianlib.common.util.sendSpamlessMessage
 import com.teamwizardry.librarianlib.common.util.times
 import com.teamwizardry.librarianlib.common.util.unsafeAllowedModIds
 import net.minecraft.entity.player.EntityPlayer
@@ -103,10 +104,11 @@ open class LibCommonProxy {
 
     open fun getClientPlayer(): EntityPlayer = throw UnsupportedOperationException("No client player on server side!")
 
-    open fun sendSpamlessMessage(player: EntityPlayer, msg: ITextComponent, uniqueId: Int) {
-        if (player !is EntityPlayerMP) return
-        PacketHandler.NETWORK.sendTo(PacketSpamlessMessage(msg, uniqueId), player)
-    }
+    @Suppress("unused")
+    @Deprecated("Spamless messages are no longer proxied.",
+            ReplaceWith("player.sendSpamlessMessage(msg, uniqueId)", "com.teamwizardry.librarianlib.common.util.sendSpamlessMessage"),
+            level = DeprecationLevel.HIDDEN)
+    fun sendSpamlessMessage(player: EntityPlayer, msg: ITextComponent, uniqueId: Int) = player.sendSpamlessMessage(msg, uniqueId)
 
     open fun getDataFolder() = mcDataFolder
 
