@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.special
 
+import com.google.gson.internal.`$Gson$Types`
 import com.teamwizardry.librarianlib.common.util.handles.MethodHandleHelper
 import com.teamwizardry.librarianlib.common.util.readBooleanArray
 import com.teamwizardry.librarianlib.common.util.safeCast
@@ -38,24 +39,35 @@ object SerializeObject {
                 if (analysis.mutable) {
                     val instance = existing ?: analysis.constructorMH(arrayOf())
                     analysis.alwaysFields.forEach {
+                        val oldValue = it.value.getter(instance)
                         val value = if (tag.hasKey(it.key)) {
-                            analysis.serializers[it.key]!!.invoke().read(tag.getTag(it.key), it.value.getter(instance), sync)
+                            analysis.serializers[it.key]!!.invoke().read(tag.getTag(it.key), oldValue, sync)
                         } else {
                             null
                         }
-                        if(!it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
+                        if(it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
+                            if(oldValue !== value) {
+                                throw SerializerException("Cannot set final field ${it.value.name} in class ${type} to new value. Either make the field mutable or modify the serializer to change the existing object instead of creating a new one.")
+                            }
+                        } else {
                             it.value.setter(instance, value)
                         }
                     }
                     if (sync) {
                         analysis.noSyncFields.forEach {
+                            val oldValue = it.value.getter(instance)
                             val value = if (tag.hasKey(it.key)) {
-                                analysis.serializers[it.key]!!.invoke().read(tag.getTag(it.key), it.value.getter(instance), sync)
+                                analysis.serializers[it.key]!!.invoke().read(tag.getTag(it.key), oldValue, sync)
                             } else {
                                 null
                             }
-                            if(!it.value.meta.hasFlag(SavingFieldFlag.FINAL))
+                            if(it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
+                                if(oldValue !== value) {
+                                    throw SerializerException("Cannot set final field ${it.value.name} in class ${type} to new value. Either make the field mutable or modify the serializer to change the existing object instead of creating a new one.")
+                                }
+                            } else {
                                 it.value.setter(instance, value)
+                            }
                         }
                     }
                     return@impl instance
@@ -97,23 +109,35 @@ object SerializeObject {
                 if (analysis.mutable) {
                     val instance = existing ?: analysis.constructorMH(arrayOf())
                     analysis.alwaysFields.forEach {
+                        val oldValue = it.value.getter(instance)
                         val value = if (nullsig[i++]) {
                             null
                         } else {
-                            analysis.serializers[it.key]!!.invoke().read(buf, it.value.getter(instance), sync)
+                            analysis.serializers[it.key]!!.invoke().read(buf, oldValue, sync)
                         }
-                        if(!it.value.meta.hasFlag(SavingFieldFlag.FINAL))
+                        if(it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
+                            if(oldValue !== value) {
+                                throw SerializerException("Cannot set final field ${it.value.name} in class ${type} to new value. Either make the field mutable or modify the serializer to change the existing object instead of creating a new one.")
+                            }
+                        } else {
                             it.value.setter(instance, value)
+                        }
                     }
                     if (!sync) {
                         analysis.noSyncFields.forEach {
+                            val oldValue = it.value.getter(instance)
                             val value = if (nullsig[i++]) {
                                 null
                             } else {
-                                analysis.serializers[it.key]!!.invoke().read(buf, it.value.getter(instance), sync)
+                                analysis.serializers[it.key]!!.invoke().read(buf, oldValue, sync)
                             }
-                            if(!it.value.meta.hasFlag(SavingFieldFlag.FINAL))
+                            if(it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
+                                if(oldValue !== value) {
+                                    throw SerializerException("Cannot set final field ${it.value.name} in class ${type} to new value. Either make the field mutable or modify the serializer to change the existing object instead of creating a new one.")
+                                }
+                            } else {
                                 it.value.setter(instance, value)
+                            }
                         }
                     }
                     return@impl instance
@@ -178,8 +202,7 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
 
     init {
         val allFields = mutableMapOf<String, FieldCache>()
-        allFields.putAll(SavingFieldCache.getClassFields(type.clazz))
-        addSuperClass(allFields, type.clazz)
+        addFieldsRecursive(allFields, type)
         this.fields =
                 if (allFields.any { it.value.meta.hasFlag(SavingFieldFlag.ANNOTATED) }) {
                     allFields.filter {
@@ -229,22 +252,15 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
         }
 
         serializers = fields.mapValues {
-            val rawType = it.value.meta.type
-            val fieldType = if (rawType is FieldTypeVariable) {
-                if (type !is FieldTypeGeneric)
-                    throw RuntimeException("Sorry, generic inheritence isn't currently implemented.")
-                type.generic(rawType.index)!!
-            } else {
-                rawType
-            }
+            val fieldType = it.value.meta.type
             SerializerRegistry.lazyImpl(target, fieldType)
         }
     }
 
-    private fun addSuperClass(map: MutableMap<String, FieldCache>, clazz: Class<*>) {
-        map.putAll(SavingFieldCache.getClassFields(clazz))
-        if (clazz.superclass != null)
-            addSuperClass(map, clazz.superclass)
+    private tailrec fun addFieldsRecursive(map: MutableMap<String, FieldCache>, type: FieldType) {
+        map.putAll(SavingFieldCache.getClassFields(type))
+        if (type.clazz != Any::class.java)
+            addFieldsRecursive(map, FieldType.create(`$Gson$Types`.resolve(type.type, type.clazz, type.clazz.genericSuperclass)))
     }
 
     companion object {

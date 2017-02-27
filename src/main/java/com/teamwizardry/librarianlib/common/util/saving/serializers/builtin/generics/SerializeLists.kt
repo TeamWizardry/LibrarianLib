@@ -19,7 +19,7 @@ import java.util.*
 object SerializeLists {
     // check for list interface and 0 arg constructor
     init {
-        SerializerRegistry.register("java:generator.list", Serializer(ArrayList::class.java, LinkedList::class.java))
+        SerializerRegistry.register("java:generator.list", Serializer(ArrayList::class.java, LinkedList::class.java, List::class.java))
 
         SerializerRegistry["java:generator.list"]?.register(Targets.NBT, { type ->
             type as FieldTypeGeneric
@@ -27,7 +27,10 @@ object SerializeLists {
             val subSerializer = SerializerRegistry.lazyImpl(Targets.NBT, typeParam)
 
             @Suppress("UNCHECKED_CAST")
-            val constructorMH = MethodHandleHelper.wrapperForConstructor(type.clazz.getConstructor()) as (Array<Any>) -> MutableList<Any?>
+            val constructorMH = if(type.clazz == List::class.java)
+                { a: Array<Any> -> mutableListOf<Any?>() }
+            else
+                MethodHandleHelper.wrapperForConstructor(type.clazz.getConstructor()) as (Array<Any>) -> MutableList<Any?>
 
             Targets.NBT.impl<MutableList<*>>({ nbt, existing, syncing ->
                 val list = nbt.safeCast(NBTTagList::class.java)

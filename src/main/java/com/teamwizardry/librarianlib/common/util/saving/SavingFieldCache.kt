@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.common.util.saving
 
+import com.google.gson.internal.`$Gson$Types`
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.util.DefaultedMutableMap
 import com.teamwizardry.librarianlib.common.util.handles.MethodHandleHelper
@@ -12,7 +13,6 @@ import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.*
-import javax.annotation.Nonnull
 
 /**
  * @author WireSegal
@@ -20,37 +20,39 @@ import javax.annotation.Nonnull
  */
 object SavingFieldCache {
 
-    val atSaveMap = LinkedHashMap<Class<*>, Map<String, FieldCache>>()
+    val atSaveMap = LinkedHashMap<FieldType, Map<String, FieldCache>>()
 
     @JvmStatic
-    fun getClassFields(clazz: Class<*>): Map<String, FieldCache> {
-        val existing = atSaveMap[clazz]
+    fun getClassFields(type: FieldType): Map<String, FieldCache> {
+        val existing = atSaveMap[type]
         if (existing != null) return existing
 
         val map = linkedMapOf<String, FieldCache>()
-        buildClassFields(clazz, map)
-        buildClassGetSetters(clazz, map)
+        buildClassFields(type, map)
+        buildClassGetSetters(type, map)
         alreadyDone.clear()
 
-        atSaveMap.put(clazz, map)
+        atSaveMap.put(type, map)
 
         return map
     }
 
-    fun buildClassFields(clazz: Class<*>, map: MutableMap<String, FieldCache>) {
-        val fields = clazz.declaredFields.filter {
+    fun buildClassFields(type: FieldType, map: MutableMap<String, FieldCache>) {
+        val fields = type.clazz.declaredFields.filter {
             it.declaredAnnotations
             !Modifier.isStatic(it.modifiers)
         }
 
         fields.map {
-            getNameFromField(clazz, it) to it
+            getNameFromField(type, it) to it
         }.forEach {
             val (name, field) = it
             field.isAccessible = true
 
+            val resolved = FieldType.create(`$Gson$Types`.resolve(type.type, type.clazz, field.genericType))
+
             val mods = field.modifiers
-            val meta = FieldMetadata(FieldType.create(field), SavingFieldFlag.FIELD)
+            val meta = FieldMetadata(resolved, SavingFieldFlag.FIELD)
             if(Modifier.isFinal(mods)) meta.addFlag(SavingFieldFlag.FINAL)
             if(Modifier.isTransient(mods)) meta.addFlag(SavingFieldFlag.TRANSIENT)
             if(field.isAnnotationPresent(Save::class.java)) meta.addFlag(SavingFieldFlag.ANNOTATED)
@@ -69,7 +71,7 @@ object SavingFieldCache {
             }
 
             val setterLambda: (Any, Any?) -> Unit = if(meta.hasFlag(SavingFieldFlag.FINAL)) {
-                { obj, inp -> throw IllegalAccessException("Tried to set final property $name for class ${clazz.simpleName} (final field)") }
+                { obj, inp -> throw IllegalAccessException("Tried to set final property $name for class ${type.clazz.simpleName} (final field)") }
             } else {
                 MethodHandleHelper.wrapperForSetter<Any>(field)
             }
@@ -81,31 +83,31 @@ object SavingFieldCache {
         }
     }
 
-    fun buildClassGetSetters(clazz: Class<*>, map: MutableMap<String, FieldCache>) {
+    fun buildClassGetSetters(type: FieldType, map: MutableMap<String, FieldCache>) {
         val getters = mutableMapOf<String, Method>()
         val setters = mutableMapOf<String, Method>()
 
 
-        clazz.declaredMethods.forEach {
+        type.clazz.declaredMethods.forEach {
             it.declaredAnnotations
             val mods = it.modifiers
             if (!Modifier.isStatic(mods)) {
                 if (it.isAnnotationPresent(SaveMethodGetter::class.java)) {
                     val types = it.parameterTypes
-                    val name = getNameFromMethod(clazz, it, true)
+                    val name = getNameFromMethod(type, it, true)
                     if (types.isEmpty()) {
                         getters.put(name, it)
                     } else {
-                        errorList[clazz][name].add("Getter has parameters")
+                        errorList[type][name].add("Getter has parameters")
                     }
                 }
                 if (it.isAnnotationPresent(SaveMethodSetter::class.java)) {
                     val types = it.parameterTypes
-                    val name = getNameFromMethod(clazz, it, false)
+                    val name = getNameFromMethod(type, it, false)
                     if (types.size == 1) {
                         setters.put(name, it)
                     } else {
-                        errorList[clazz][name].add("Setter has ${types.size} parameters, they must have exactly 1")
+                        errorList[type][name].add("Setter has ${types.size} parameters, they must have exactly 1")
                     }
                 }
             }
@@ -121,13 +123,13 @@ object SavingFieldCache {
                 if (getReturnType == setReturnType)
                     pairs.put(name, Triple(getter, setter, getReturnType))
                 else
-                    errorList[clazz][name].add("Getter and setter have mismatched types")
+                    errorList[type][name].add("Getter and setter have mismatched types")
             }
         }
 
         setters.filterKeys { it !in getters }.forEach {
             val name = it.key
-            errorList[clazz][name].add("Setter has no getter")
+            errorList[type][name].add("Setter has no getter")
         }
 
 
@@ -154,7 +156,7 @@ object SavingFieldCache {
                 meta.addFlag(SavingFieldFlag.FINAL)
 
             val setterLambda: (Any, Any?) -> Unit = if(wrapperForSetter == null)
-                { obj, inp -> throw IllegalAccessException("Tried to set final property $name for class ${clazz.simpleName} (no save setter)") }
+                { obj, inp -> throw IllegalAccessException("Tried to set final property $name for class $type (no save setter)") }
             else
                 { obj, inp -> wrapperForSetter(obj, arrayOf(inp)) }
 
@@ -169,7 +171,7 @@ object SavingFieldCache {
 
     private val nameMap = mutableMapOf<Field, String>()
 
-    private fun getNameFromField(clazz: Class<*>, f: Field): String {
+    private fun getNameFromField(type: FieldType, f: Field): String {
         val got = nameMap[f]
         if (got != null) return got
 
@@ -179,14 +181,14 @@ object SavingFieldCache {
         if (name in ILLEGAL_NAMES)
             name += "X"
         if(name in alreadyDone)
-            errorList[clazz][name].add("Name already in use for field")
+            errorList[type][name].add("Name already in use for field")
 
         alreadyDone.add(name)
         nameMap[f] = name
         return name
     }
 
-    private fun getNameFromMethod(clazz: Class<*>, m: Method, getter: Boolean): String {
+    private fun getNameFromMethod(type: FieldType, m: Method, getter: Boolean): String {
         var name = if (getter)
             m.getAnnotation(SaveMethodGetter::class.java).saveName
         else
@@ -195,12 +197,12 @@ object SavingFieldCache {
         if (name in ILLEGAL_NAMES)
             name += "X"
         if(name in alreadyDone)
-            errorList[clazz][name].add("Name already in use for ${if(getter) "getter" else "setter"}")
+            errorList[type][name].add("Name already in use for ${if(getter) "getter" else "setter"}")
         alreadyDone.add(name)
         return name
     }
 
-    private val errorList = mutableMapOf<Class<*>, DefaultedMutableMap<String, MutableList<String>>>().withRealDefault { mutableMapOf<String, MutableList<String>>().withRealDefault { mutableListOf<String>() } }
+    private val errorList = mutableMapOf<FieldType, DefaultedMutableMap<String, MutableList<String>>>().withRealDefault { mutableMapOf<String, MutableList<String>>().withRealDefault { mutableListOf<String>() } }
 
     fun handleErrors() {
         if(errorList.size == 0)
@@ -210,7 +212,7 @@ object SavingFieldCache {
 
         errorList.forEach {
             val (clazz, props) = it
-            lines.add("- ${clazz.simpleName}")
+            lines.add("- ${it.key}")
 
             props.forEach {
                 val (name, errors) = it

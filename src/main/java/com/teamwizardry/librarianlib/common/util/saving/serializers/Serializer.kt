@@ -52,8 +52,13 @@ enum class SerializerPriority {
     EXACT
 }
 
-abstract class SerializerTarget<R, W>(val name: String)
+abstract class SerializerTarget<R, W>(val name: String) {
+    abstract fun wrap(impl: SerializerImpl<R, W>, type: FieldType): SerializerImpl<R, W>
+}
 
 class SerializerImpl<out R, out W>(val read: R, val write: W)
 
-class SerializerException(msg: String) : RuntimeException(msg)
+class SerializerException : RuntimeException {
+    constructor(msg: String) : super(msg)
+    constructor(msg: String, cause: Exception) : super(msg, cause)
+}

@@ -62,7 +62,7 @@ object SerializerRegistry {
             if(ser != null && target in ser && ser.canApply(type)) {
                 impl = ser[target](type)
             }
-            impl ?: throw NoSuchSerializerError(target, type)
+            if(impl == null) throw NoSuchSerializerError(target, type) else target.wrap(impl as SerializerImpl<R, W>, type)
         }) as SerializerImpl<R, W>
     }
 }
@@ -70,7 +70,7 @@ object SerializerRegistry {
 class NoSuchSerializerError(target: SerializerTarget<*,*>, type: FieldType) : RuntimeException(calcMessage(target, type)) {
     companion object {
         fun calcMessage(target: SerializerTarget<*, *>, type: FieldType): String {
-            return "type " + type.toString() + " for target " + target.name
+            return "no serializer for type " + type.toString() + " for target " + target.name
         }
     }
 }

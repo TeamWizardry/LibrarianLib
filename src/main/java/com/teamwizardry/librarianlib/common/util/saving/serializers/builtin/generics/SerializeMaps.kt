@@ -20,7 +20,7 @@ import kotlin.collections.set
 object SerializeMaps {
     // check for map interface and 0 arg constructor
     init {
-        SerializerRegistry.register("java:generator.map", Serializer(HashMap::class.java, LinkedHashMap::class.java))
+        SerializerRegistry.register("java:generator.map", Serializer(HashMap::class.java, LinkedHashMap::class.java, Map::class.java))
 
         SerializerRegistry["java:generator.map"]?.register(Targets.NBT, { type ->
             type as FieldTypeGeneric
@@ -29,7 +29,10 @@ object SerializeMaps {
             val keySerializer = SerializerRegistry.lazyImpl(Targets.NBT, keyParam)
             val valueSerializer = SerializerRegistry.lazyImpl(Targets.NBT, valueParam)
 
-            val constructorMH = MethodHandleHelper.wrapperForConstructor<MutableMap<Any?, Any?>>(type.clazz)
+            val constructorMH = if(type.clazz == Map::class.java)
+                { a: Array<Any?> -> LinkedHashMap<Any?, Any?>() }
+            else
+                MethodHandleHelper.wrapperForConstructor<MutableMap<Any?, Any?>>(type.clazz)
 
             Targets.NBT.impl<MutableMap<*,*>>({ nbt, existing, syncing ->
                 val list = nbt.safeCast(NBTTagList::class.java)

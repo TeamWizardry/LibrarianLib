@@ -42,12 +42,12 @@ object AbstractSaveHandler {
 
     @JvmStatic
     fun hasCapability(instance: Any, cap: Capability<*>, side: EnumFacing?): Boolean {
-        return SavingFieldCache.getClassFields(instance.javaClass).any { it.value.hasCapability(cap, side) }
+        return SavingFieldCache.getClassFields(FieldType.create(instance.javaClass)).any { it.value.hasCapability(cap, side) }
     }
 
     @JvmStatic
     fun <T: Any> getCapability(instance: Any, cap: Capability<T>, side: EnumFacing?): T? {
-        for ((key, value) in SavingFieldCache.getClassFields(instance.javaClass)) {
+        for ((key, value) in SavingFieldCache.getClassFields(FieldType.create(instance.javaClass))) {
             val inst = value.getCapability(instance, cap, side)
             if (inst != null) return inst
         }
@@ -56,6 +56,6 @@ object AbstractSaveHandler {
 
     @JvmStatic
     fun cacheFields(clazz: Class<*>) {
-        SavingFieldCache.getClassFields(clazz)
+        SavingFieldCache.getClassFields(FieldType.create(clazz))
     }
 }

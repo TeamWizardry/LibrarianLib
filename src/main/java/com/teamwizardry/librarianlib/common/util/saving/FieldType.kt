@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.common.util.saving
 import java.lang.reflect.*
 import java.util.*
 
-abstract class FieldType protected constructor(open val clazz: Class<*>) {
+abstract class FieldType protected constructor(val type: Type, open val clazz: Class<*>) {
 
     open val interfaces: Array<out Class<*>>
         get() = arrayOf()
@@ -36,30 +36,30 @@ abstract class FieldType protected constructor(open val clazz: Class<*>) {
         }
 
         private fun createPlain(type: Class<*>): FieldType {
-            return FieldTypeClass(type)
+            return FieldTypeClass(type, type)
         }
 
         private fun createArray(type: Class<*>): FieldType {
-            return FieldTypeArray(create(type.componentType))
+            return FieldTypeArray(type, create(type.componentType))
         }
 
         private fun createGeneric(type: ParameterizedType): FieldType {
-            return FieldTypeGeneric(type.rawType as Class<*>, type.actualTypeArguments.map { create(it) }.toTypedArray())
+            return FieldTypeGeneric(type, type.rawType as Class<*>, type.actualTypeArguments.map { create(it) }.toTypedArray())
         }
 
         private fun createGenericArray(type: GenericArrayType): FieldType {
-            return FieldTypeArray(create(type.genericComponentType))
+            return FieldTypeArray(type, create(type.genericComponentType))
         }
 
         private fun createVariable(type: TypeVariable<*>): FieldType {
-            return FieldTypeVariable(type.genericDeclaration as Class<*>, type.name, type.genericDeclaration.typeParameters.indexOfFirst { it.name == type.name })
+            return FieldTypeVariable(type, type.genericDeclaration as Class<*>, type.name, type.genericDeclaration.typeParameters.indexOfFirst { it.name == type.name })
         }
     }
 }
 
-class FieldTypeError : FieldType(Any::class.java)
+class FieldTypeError : FieldType(Any::class.java, Any::class.java)
 
-class FieldTypeClass(clazz: Class<*>) : FieldType(clazz) {
+class FieldTypeClass(type: Type, clazz: Class<*>) : FieldType(type, clazz) {
 
     override val interfaces: Array<out Class<*>> = if (clazz.isInterface) arrayOf(*clazz.interfaces, clazz) else clazz.interfaces
 
@@ -81,7 +81,7 @@ class FieldTypeClass(clazz: Class<*>) : FieldType(clazz) {
     }
 }
 
-class FieldTypeArray(val componentType: FieldType) : FieldType(getArrayType(componentType)) {
+class FieldTypeArray(type: Type, val componentType: FieldType) : FieldType(type, getArrayType(componentType)) {
 
 
     override fun equals(other: Any?): Boolean {
@@ -108,7 +108,7 @@ class FieldTypeArray(val componentType: FieldType) : FieldType(getArrayType(comp
     }
 }
 
-class FieldTypeGeneric(clazz: Class<*>, val generics: Array<FieldType>) : FieldType(clazz) {
+class FieldTypeGeneric(type: Type, clazz: Class<*>, val generics: Array<FieldType>) : FieldType(type, clazz) {
 
     fun generic(i: Int): FieldType? {
         if(i < 0 || i >= generics.size)
@@ -137,7 +137,7 @@ class FieldTypeGeneric(clazz: Class<*>, val generics: Array<FieldType>) : FieldT
     }
 }
 
-class FieldTypeVariable(val parent: Class<*>, val name: String, val index: Int) : FieldType(Any::class.java) {
+class FieldTypeVariable(type: Type, val parent: Class<*>, val name: String, val index: Int) : FieldType(type, Any::class.java) {
     override val clazz: Class<*>
         get() = throw UnsupportedOperationException("Cannot get class from variable field type!")
 

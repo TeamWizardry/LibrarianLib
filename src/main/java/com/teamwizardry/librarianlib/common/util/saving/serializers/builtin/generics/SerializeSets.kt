@@ -30,10 +30,13 @@ object SerializeSets {
             val subSerializer = SerializerRegistry.lazyImpl(Targets.NBT, typeParam)
 
             @Suppress("UNCHECKED_CAST")
-            val constructorMH = (if (EnumSet::class.java.isAssignableFrom(type.clazz))
-            { arr -> RawEnumSetCreator.create(type.clazz) }
-            else
-                MethodHandleHelper.wrapperForConstructor(type.clazz.getConstructor())
+            val constructorMH = (
+                    if(type.clazz == Set::class.java)
+                        { a -> LinkedHashSet<Any?>() } // linked so if order is important it's preserved.
+                    else if (EnumSet::class.java.isAssignableFrom(type.clazz))
+                        { arr -> RawEnumSetCreator.create(type.clazz) }
+                    else
+                        MethodHandleHelper.wrapperForConstructor(type.clazz.getConstructor())
                     ) as (Array<Any>) -> MutableSet<Any?>
 
             Targets.NBT.impl<MutableSet<*>>({ nbt, existing, syncing ->
