@@ -36,11 +36,10 @@ open class LibCommonProxy {
     lateinit var asmDataTable: ASMDataTable
         private set
 
-    private var mcDataFolder: File = File("/")
+    // Internal methods for initialization
 
     open fun pre(e: FMLPreInitializationEvent) {
         EasyConfigHandler.init()
-        mcDataFolder = e.modConfigurationDirectory.parentFile
 
         if (LibrarianLib.DEV_ENVIRONMENT && unsafeAllowedModIds.isNotEmpty()) {
             LibrarianLog.info(LibrarianLib.MODID + " | Unsafe-allowed mod IDs:")
@@ -70,6 +69,8 @@ open class LibCommonProxy {
         SavingFieldCache.handleErrors()
     }
 
+    // End internal methods
+
     /**
      * Translates a string. Works server-side or client-side.
      * [s] is the localization key, and [format] is any objects you want to fill into `%s`.
@@ -98,10 +99,16 @@ open class LibCommonProxy {
         return mod.mod.javaClass.getResourceAsStream("/assets/$modId/$fixPath")
     }
 
+    /**
+     * See [ClientRunnable].
+     */
     open fun runIfClient(clientRunnable: ClientRunnable) {
         // NO-OP
     }
 
+    /**
+     * Used for clientside code rather than proxying.
+     */
     open fun getClientPlayer(): EntityPlayer = throw UnsupportedOperationException("No client player on server side!")
 
     @Suppress("unused")
@@ -110,7 +117,10 @@ open class LibCommonProxy {
             level = DeprecationLevel.HIDDEN)
     fun sendSpamlessMessage(player: EntityPlayer, msg: ITextComponent, uniqueId: Int) = player.sendSpamlessMessage(msg, uniqueId)
 
-    open fun getDataFolder() = mcDataFolder
+    /**
+     * Gets the working minecraft data folder. A reasonable guess is made that the CWD is the data folder on serverside.
+     */
+    open fun getDataFolder() = File("")
 
 }
 

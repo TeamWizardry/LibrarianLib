@@ -91,9 +91,6 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
     override fun getClientPlayer(): EntityPlayer = Minecraft.getMinecraft().player
 
-    override fun sendSpamlessMessage(player: EntityPlayer, msg: ITextComponent, uniqueId: Int) {
-    }
-
     override fun getDataFolder(): File = Minecraft.getMinecraft().mcDataDir
 
     override fun onResourceManagerReload(resourceManager: IResourceManager) {
