@@ -78,6 +78,7 @@ object SerializeSets {
                 val nullFlag = buf.readBoolean()
                 val len = buf.readVarInt() - if (nullFlag) 1 else 0
 
+                @Suppress("UNCHECKED_CAST")
                 val set = (existing ?: constructorMH(arrayOf())) as MutableSet<Any?>
                 set.clear()
                 if (nullFlag)
