@@ -134,7 +134,7 @@ class LibLibModelWrapper(private val location: ResourceLocation, private val mod
         return bakeNormal(model, perState, state, newTransforms, format, bakedTextureGetter, uvlock)
     }
 
-    private fun bakeNormal(model: ModelBlock, perState: IModelState, modelState: IModelState, newTransforms: List<TRSRTransformation>, format: VertexFormat, bakedTextureGetter: Function<ResourceLocation, TextureAtlasSprite>, uvLocked: Boolean): IBakedModel {
+    private fun bakeNormal(model: ModelBlock, perState: IModelState, modelState: IModelState, newTransforms: List<TRSRTransformation?>, format: VertexFormat, bakedTextureGetter: Function<ResourceLocation, TextureAtlasSprite>, uvLocked: Boolean): IBakedModel {
         val baseState = modelState.apply(Optional.absent<IModelPart>()).or(TRSRTransformation.identity())
         val particle = bakedTextureGetter.apply(ResourceLocation(model.resolveTextureName("particle")))
         val builder = if(model.elements.any { it is LibLibBlockPart || it.mapFaces.any {
@@ -149,7 +149,7 @@ class LibLibModelWrapper(private val location: ResourceLocation, private val mod
                 continue
             }
             var part = model.elements[i]
-            val transformation = baseState.compose(newTransforms[i])
+            val transformation = if(newTransforms[i] == null ) baseState else baseState.compose(newTransforms[i])
             var rot: BlockPartRotation? = part.partRotation
             if (rot == null) rot = BlockPartRotation(org.lwjgl.util.vector.Vector3f(), EnumFacing.Axis.Y, 0f, false)
             part = BlockPart(part.positionFrom, part.positionTo, part.mapFaces, rot, part.shade)
