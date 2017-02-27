@@ -207,7 +207,7 @@ abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod
         val item = itemForm as? IModItemProvider ?: return false
         ModelHandler.generateItemJson(item) {
             mapOf(JsonGenerationUtils.getPathForItemModel(item as Item, variant) to
-                JsonGenerationUtils.generateRegularItemModel(item, variant))
+                    JsonGenerationUtils.generateRegularItemModel(item, variant))
         }
         return true
     }

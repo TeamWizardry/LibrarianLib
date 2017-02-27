@@ -17,7 +17,7 @@ class SlotBase(handler: IItemHandler, index: Int) : SlotItemHandler(handler, ind
     var lastVisible = visible
 
     override fun onTake(thePlayer: EntityPlayer?, stack: ItemStack): ItemStack {
-        if(type.onPickup(this, thePlayer, stack))
+        if (type.onPickup(this, thePlayer, stack))
             return super.onTake(thePlayer, stack)
         return ItemStack.EMPTY
     }
@@ -28,17 +28,17 @@ class SlotBase(handler: IItemHandler, index: Int) : SlotItemHandler(handler, ind
     }
 
     override fun onSlotChange(old: ItemStack, new: ItemStack) {
-        if(type.onSlotChange(this, old, new))
+        if (type.onSlotChange(this, old, new))
             super.onSlotChange(old, new)
     }
 
     override fun putStack(stack: ItemStack) {
-        if(type.putStack(this, stack))
+        if (type.putStack(this, stack))
             super.putStack(stack)
     }
 
     override fun getStack(): ItemStack {
-        return if(visible) type.getStack(this, super.getStack()) else ItemStack.EMPTY
+        return if (visible) type.getStack(this, super.getStack()) else ItemStack.EMPTY
     }
 
     override fun canTakeStack(playerIn: EntityPlayer?): Boolean {
@@ -50,7 +50,7 @@ class SlotBase(handler: IItemHandler, index: Int) : SlotItemHandler(handler, ind
     }
 
     override fun isItemValid(stack: ItemStack): Boolean {
-        return if(visible) type.isValid(this, stack, super.isItemValid(stack)) else false
+        return if (visible) type.isValid(this, stack, super.isItemValid(stack)) else false
     }
 
     override fun getSlotStackLimit(): Int {

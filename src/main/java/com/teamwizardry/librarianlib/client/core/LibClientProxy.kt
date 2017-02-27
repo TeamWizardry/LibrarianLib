@@ -27,7 +27,6 @@ import net.minecraft.client.resources.IResourceManagerReloadListener
 import net.minecraft.client.resources.data.MetadataSerializer
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.client.model.animation.Animation
 import net.minecraftforge.common.MinecraftForge
@@ -127,9 +126,9 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         val player = Minecraft.getMinecraft().player
 
         val lastPos = vec(player.lastTickPosX, player.lastTickPosY, player.lastTickPosZ)
-        val partialOffset = (player.positionVector-lastPos)*(1-Animation.getPartialTickTime())
+        val partialOffset = (player.positionVector - lastPos) * (1 - Animation.getPartialTickTime())
 
-        val globalize = -(player.positionVector-partialOffset)
+        val globalize = -(player.positionVector - partialOffset)
         GlStateManager.translate(globalize.xCoord, globalize.yCoord, globalize.zCoord)
 
 

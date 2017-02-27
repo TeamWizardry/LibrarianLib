@@ -6,8 +6,6 @@ import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.client.util.lambdainterfs.ClientRunnable
 import com.teamwizardry.librarianlib.common.container.GuiHandler
-import com.teamwizardry.librarianlib.common.network.PacketHandler
-import com.teamwizardry.librarianlib.common.network.PacketSpamlessMessage
 import com.teamwizardry.librarianlib.common.util.EasyConfigHandler
 import com.teamwizardry.librarianlib.common.util.autoregister.AutoRegisterHandler
 import com.teamwizardry.librarianlib.common.util.saving.SavingFieldCache
@@ -15,7 +13,6 @@ import com.teamwizardry.librarianlib.common.util.sendSpamlessMessage
 import com.teamwizardry.librarianlib.common.util.times
 import com.teamwizardry.librarianlib.common.util.unsafeAllowedModIds
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.translation.I18n
 import net.minecraftforge.fml.common.Loader

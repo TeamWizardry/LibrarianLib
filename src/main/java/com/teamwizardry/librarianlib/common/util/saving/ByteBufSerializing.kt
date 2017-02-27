@@ -40,7 +40,7 @@ object ByteBufSerializationHandlers {
     @JvmStatic
     fun aliasAs(aliasTo: Class<*>, clazz: Class<*>) {
         val aliasValue = map[FieldType.create(aliasTo)]
-        if(aliasValue != null)
+        if (aliasValue != null)
             map[FieldType.create(clazz)] = aliasValue
     }
 
@@ -69,10 +69,10 @@ object ByteBufSerializationHandlers {
     }
 
     fun createSpecialMappings(type: FieldType): BufferSerializer? {
-        if(type is FieldTypeGeneric) {
+        if (type is FieldTypeGeneric) {
             for (handler in genericHandlers) {
                 val serializer = handler(type)
-                if(serializer != null) {
+                if (serializer != null) {
                     map[type] = serializer
                     return serializer
                 }
@@ -125,7 +125,7 @@ private object BasicByteBufSerializers {
             for (i in 0..len - 1) {
                 buf.writeChar(obj[i].toInt())
             }
-        }, reader@{ buf, existing ->
+        }, reader@ { buf, existing ->
             val len = buf.readVarInt()
             val array = if (existing == null || existing.size != len) CharArray(len) else existing
             for (i in 0..len - 1) {
@@ -139,7 +139,7 @@ private object BasicByteBufSerializers {
             for (i in 0..len - 1) {
                 buf.writeByte(obj[i].toInt())
             }
-        }, reader@{ buf, existing ->
+        }, reader@ { buf, existing ->
             val len = buf.readVarInt()
             val array = if (existing == null || existing.size != len) ByteArray(len) else existing
             for (i in 0..len - 1) {
@@ -153,7 +153,7 @@ private object BasicByteBufSerializers {
             for (i in 0..len - 1) {
                 buf.writeShort(obj[i].toInt())
             }
-        }, reader@{ buf, existing ->
+        }, reader@ { buf, existing ->
             val len = buf.readVarInt()
             val array = if (existing == null || existing.size != len) ShortArray(len) else existing
             for (i in 0..len - 1) {
@@ -167,7 +167,7 @@ private object BasicByteBufSerializers {
             for (i in 0..len - 1) {
                 buf.writeInt(obj[i])
             }
-        }, reader@{ buf, existing ->
+        }, reader@ { buf, existing ->
             val len = buf.readVarInt()
             val array = if (existing == null || existing.size != len) IntArray(len) else existing
             for (i in 0..len - 1) {
@@ -181,7 +181,7 @@ private object BasicByteBufSerializers {
             for (i in 0..len - 1) {
                 buf.writeLong(obj[i])
             }
-        }, reader@{ buf, existing ->
+        }, reader@ { buf, existing ->
             val len = buf.readVarInt()
             val array = if (existing == null || existing.size != len) LongArray(len) else existing
             for (i in 0..len - 1) {
@@ -196,7 +196,7 @@ private object BasicByteBufSerializers {
             for (i in 0..len - 1) {
                 buf.writeFloat(obj[i])
             }
-        }, reader@{ buf, existing ->
+        }, reader@ { buf, existing ->
             val len = buf.readShort().toInt()
             val array = if (existing == null || existing.size != len) FloatArray(len) else existing
             for (i in 0..len - 1) {
@@ -210,7 +210,7 @@ private object BasicByteBufSerializers {
             for (i in 0..len - 1) {
                 buf.writeDouble(obj[i])
             }
-        }, reader@{ buf, existing ->
+        }, reader@ { buf, existing ->
             val len = buf.readShort().toInt()
             val array = if (existing == null || ArrayReflect.getLength(existing) != len) DoubleArray(len) else existing
             for (i in 0..len - 1) {
@@ -295,12 +295,12 @@ private object SpecialByteBufSerializers {
 
         val values = type.clazz.enumConstants
         val size = values.size
-        val serializer = BufferSerializer(reader@{ buf, existing ->
+        val serializer = BufferSerializer(reader@ { buf, existing ->
             if (size > 256)
                 values[buf.readShort().toInt()]
             else
                 values[buf.readByte().toInt()]
-        }, writer@{ buf, obj ->
+        }, writer@ { buf, obj ->
             if (size > 256)
                 buf.writeShort((obj as Enum<*>).ordinal)
             else
@@ -321,7 +321,7 @@ private object SpecialByteBufSerializers {
         if (subReader == null || subWriter == null)
             return null
 
-        val serializer = BufferSerializer(reader@{ buf, existing ->
+        val serializer = BufferSerializer(reader@ { buf, existing ->
             existing as Array<*>?
             val nullsig = buf.readBooleanArray()
             val array: Array<Any?> = if (existing == null || existing.size != nullsig.size) ArrayReflect.newInstanceRaw(type.clazz, nullsig.size) else existing as Array<Any?>
@@ -360,7 +360,7 @@ private object SpecialByteBufSerializers {
 
         @Suppress("UNCHECKED_CAST")
         val serializer =
-                BufferSerializer(reader@{ buf, existing ->
+                BufferSerializer(reader@ { buf, existing ->
                     existing as HashMap<Any, Any?>?
 
                     val nullSig = buf.readBooleanArray()
@@ -375,10 +375,11 @@ private object SpecialByteBufSerializers {
                         }
                     }
                     map
-                }, writer@{ buf, obj ->
+                }, writer@ { buf, obj ->
                     obj as HashMap<*, *>
                     val nullSig = BooleanArray(obj.entries.size)
-                    obj.entries.forEachIndexed { i, entry -> // WARNING: this is dangerous!!!
+                    obj.entries.forEachIndexed { i, entry ->
+                        // WARNING: this is dangerous!!!
                         // If someone uses a stupid HashMap implementation that doesn't have a stable iteration
                         // order between the two calls this WILL break in vague and hard to track down ways
                         nullSig[i] = entry.value == null

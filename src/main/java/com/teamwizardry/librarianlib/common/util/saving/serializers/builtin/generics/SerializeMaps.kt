@@ -89,7 +89,7 @@ object SerializeMaps {
                 }
 
                 val nonNullCount = buf.readVarInt()
-                for (i in 0..nonNullCount-1) {
+                for (i in 0..nonNullCount - 1) {
                     val k = keySerializer().read(buf, null, syncing)
                     val v = valueSerializer().read(buf, existing?.get(k), syncing)
                     map[k] = v

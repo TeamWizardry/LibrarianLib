@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.common.util
 
 import com.teamwizardry.librarianlib.LibrarianLib
-import net.minecraft.client.Minecraft
 
 /**
  * Created by TheCodeWarrior

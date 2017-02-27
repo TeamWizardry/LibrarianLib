@@ -45,9 +45,9 @@ open class SlotType {
             slot.putStack(insert)
 
             leftOver.count -= quantity
-            return ITransferRule.AutoTransferResult(if(leftOver.count <= 0) ItemStack.EMPTY else leftOver, true)
+            return ITransferRule.AutoTransferResult(if (leftOver.count <= 0) ItemStack.EMPTY else leftOver, true)
         }
-        if(ITransferRule.areItemStacksEqual(stack, slotStack)) {
+        if (ITransferRule.areItemStacksEqual(stack, slotStack)) {
             val combinedSize = stack.count + slotStack.count
             val maxStackSize = Math.min(slot.getItemStackLimit(stack), stack.maxStackSize)
 

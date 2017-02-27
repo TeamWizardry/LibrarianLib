@@ -54,7 +54,7 @@ object ParticleSpawner {
      */
     @JvmStatic
     @JvmOverloads
-    fun spawn(builder: ParticleBuilder, world: World, curve: InterpFunction<Vec3d>, particleCount: Int, travelTime: Int = 0, callback: BiConsumer<Float, ParticleBuilder> = BiConsumer { t, u ->  }) {
+    fun spawn(builder: ParticleBuilder, world: World, curve: InterpFunction<Vec3d>, particleCount: Int, travelTime: Int = 0, callback: BiConsumer<Float, ParticleBuilder> = BiConsumer { t, u -> }) {
         val actualParticleCount = modifyParticleCount(particleCount)
 
         InterpListGenerator.getIndexList(actualParticleCount).forEach { t ->

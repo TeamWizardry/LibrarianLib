@@ -95,7 +95,7 @@ object SerializeLists {
                 val nullsig = BooleanArray(value.size) { value[it] == null }
                 buf.writeBooleanArray(nullsig)
 
-                (0..value.size-1)
+                (0..value.size - 1)
                         .filterNot { nullsig[it] }
                         .forEach { subSerializer().write(buf, value[it]!!, syncing) }
             })

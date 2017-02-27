@@ -1,11 +1,9 @@
 package com.teamwizardry.librarianlib.common.util.autoregister
 
-import com.teamwizardry.librarianlib.LibrarianLog
-import com.teamwizardry.librarianlib.common.util.VariantHelper
-import com.teamwizardry.librarianlib.common.util.times
 // todo once mcmultipart is 1.11
 //import mcmultipart.multipart.IMultipart
 //import mcmultipart.multipart.MultipartRegistry
+import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.core.OwnershipHandler
 import com.teamwizardry.librarianlib.common.network.PacketBase
 import com.teamwizardry.librarianlib.common.network.PacketHandler
@@ -14,7 +12,6 @@ import com.teamwizardry.librarianlib.common.util.toRl
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.FMLCommonHandler
-import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import net.minecraftforge.fml.common.discovery.asm.ModAnnotation
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent

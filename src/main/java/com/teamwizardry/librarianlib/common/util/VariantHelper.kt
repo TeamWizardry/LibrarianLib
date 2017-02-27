@@ -37,7 +37,7 @@ object VariantHelper {
             }
             lastTokenUpper = true
         } else lastTokenUpper = token == '_'
-        
+
         split.add(string.substring(lastIndex))
 
         return split.joinToString("_") { it.toLowerCase(Locale.ROOT) }

@@ -62,7 +62,7 @@ object DefaultValues {
         mapDefault(BlockPos::class.java, BlockPos.ORIGIN)
 
         registerSpecialDefault { type ->
-            if(!type.clazz.isEnum)
+            if (!type.clazz.isEnum)
                 null
             else {
                 val first = type.clazz.enumConstants[0]
@@ -71,7 +71,7 @@ object DefaultValues {
         }
 
         registerSpecialDefault { type ->
-            if(!type.clazz.isArray)
+            if (!type.clazz.isArray)
                 null
             else { -> arrayOf<Any>() }
         }

@@ -211,10 +211,10 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
                                 var i = 0
                                 it.parameters.all {
                                     val ret =
-                                    if (customParamNames != null && i < customParamNames.size)
-                                        paramsToFind.remove(customParamNames[i])?.meta?.type?.equals(FieldType.create(it.parameterizedType)) ?: false
-                                    else
-                                        paramsToFind.remove(it.name)?.meta?.type?.equals(FieldType.create(it.parameterizedType)) ?: false
+                                            if (customParamNames != null && i < customParamNames.size)
+                                                paramsToFind.remove(customParamNames[i])?.meta?.type?.equals(FieldType.create(it.parameterizedType)) ?: false
+                                            else
+                                                paramsToFind.remove(it.name)?.meta?.type?.equals(FieldType.create(it.parameterizedType)) ?: false
                                     i++
                                     ret
                                 }

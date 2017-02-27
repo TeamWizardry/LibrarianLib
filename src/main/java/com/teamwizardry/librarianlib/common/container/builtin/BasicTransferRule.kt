@@ -42,9 +42,9 @@ open class BasicTransferRule : ITransferRule {
 
     override fun putStack(stack: ItemStack)
             = targets
-                .map { target -> ITransferRule.mergeIntoRegion(stack, target.filter { it.visible }) }
-                .firstOrNull { it.foundSpot }
-                ?.remainingStack
-                ?: stack
+            .map { target -> ITransferRule.mergeIntoRegion(stack, target.filter { it.visible }) }
+            .firstOrNull { it.foundSpot }
+            ?.remainingStack
+            ?: stack
 
 }
