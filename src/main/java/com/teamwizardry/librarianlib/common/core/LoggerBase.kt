@@ -25,7 +25,7 @@ abstract class LoggerBase protected constructor(name: String) {
      */
     open fun processFormatArg(value: Any): Any {
 
-        if(value is World) {
+        if (value is World) {
             return "${value.providerName} (${value.provider.dimension})"
         }
 
@@ -39,9 +39,9 @@ abstract class LoggerBase protected constructor(name: String) {
      */
     fun processFormatting(value: Array<out Any?>): Array<Any?> {
         val arr = arrayOfNulls<Any?>(value.size)
-        for(i in value.indices) {
+        for (i in value.indices) {
             val v = value[i]
-            if(v != null)
+            if (v != null)
                 arr[i] = processFormatArg(v)
             else
                 arr[i] = null
@@ -98,8 +98,8 @@ abstract class LoggerBase protected constructor(name: String) {
         val maxWidth = lines.fold(0, { cur, value -> Math.max(cur, value.length) })
 
         var titleStarred = " **** $title **** "
-        var starPadLeft = (maxWidth + 4 - titleStarred.length)/2
-        if(starPadLeft >= 20)
+        var starPadLeft = (maxWidth + 4 - titleStarred.length) / 2
+        if (starPadLeft >= 20)
             starPadLeft = 19
         val starPadRight = (maxWidth + 4 - titleStarred.length) - starPadLeft
 
@@ -107,7 +107,7 @@ abstract class LoggerBase protected constructor(name: String) {
 
         warn(titleStarred)
         lines.forEach {
-            if(endStar) {
+            if (endStar) {
                 warn("* " + it.padEnd(maxWidth, ' ') + " *")
             } else {
                 warn("* " + it)

@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.common.base.block
 
-import com.teamwizardry.librarianlib.common.base.block.BlockMod
 import net.minecraft.block.SoundType
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState

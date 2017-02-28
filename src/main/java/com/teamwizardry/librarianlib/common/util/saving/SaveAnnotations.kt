@@ -1,8 +1,7 @@
 package com.teamwizardry.librarianlib.common.util.saving
 
-import org.jetbrains.annotations.NotNull
 import net.minecraft.util.EnumFacing
-import javax.annotation.Nonnull
+import org.jetbrains.annotations.NotNull
 import kotlin.annotation.AnnotationTarget.*
 
 /**

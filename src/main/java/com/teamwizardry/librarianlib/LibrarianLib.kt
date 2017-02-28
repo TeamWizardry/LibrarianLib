@@ -30,7 +30,6 @@ import net.minecraft.launchwrapper.Launch
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.SidedProxy
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
-import net.minecraftforge.fml.common.event.FMLInterModComms
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 
@@ -59,7 +58,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
  * - A simple event bus implementation [Event] [EventBus]
  * - Capability which uses the [Save] scheme to save and sync fields [CapabilityMod]
  */
-@Mod(modid = LibrarianLib.MODID, version = LibrarianLib.VERSION, name = LibrarianLib.MODNAME, modLanguageAdapter = "net.shadowfacts.forgelin.KotlinAdapter")
+@Mod(modid = LibrarianLib.MODID, version = LibrarianLib.VERSION, name = LibrarianLib.MODNAME, dependencies = LibrarianLib.DEPENDENCIES, modLanguageAdapter = LibrarianLib.ADAPTER)
 object LibrarianLib {
 
     @Mod.EventHandler
@@ -77,31 +76,19 @@ object LibrarianLib {
         PROXY.post(e)
     }
 
-
     const val MODID = "librarianlib"
     const val MODNAME = "LibrarianLib"
-    const val VERSION = "1.7"
+    const val VERSION = "1.10.1"
     const val CLIENT = "com.teamwizardry.librarianlib.client.core.LibClientProxy"
     const val SERVER = "com.teamwizardry.librarianlib.common.core.LibCommonProxy"
+    const val DEPENDENCIES = "required-after:forgelin;required-after:Forge@[12.18.3.2185,)"
+    const val ADAPTER = "net.shadowfacts.forgelin.KotlinAdapter"
 
     @SidedProxy(clientSide = CLIENT, serverSide = SERVER)
     lateinit var PROXY: LibCommonProxy
-        @JvmStatic @JvmName("proxy") get
 
     @JvmField
     val DEV_ENVIRONMENT = Launch.blackboard["fml.deobfuscatedEnvironment"] as Boolean
-
-    internal val unsafeAllowedModIds = mutableListOf<String>()
-
-    @Mod.EventHandler
-    fun onImcMessage(e: FMLInterModComms.IMCEvent) {
-        val modids = e.messages.filter { it.key.toLowerCase() == "unsafe" }.map { it.stringValue }
-        if(DEV_ENVIRONMENT && modids.isNotEmpty()) {
-            println(MODID + " | Unsafe-allowed mod IDs:")
-            modids.forEach { " ".repeat(MODID.length) + " | $it" }
-        }
-        unsafeAllowedModIds.addAll(modids)
-    }
 }
 
 object LibrarianLog : LoggerBase("LibrarianLib")

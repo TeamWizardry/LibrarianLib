@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.client.gui.components
 
-import com.google.common.collect.ImmutableList
 import com.teamwizardry.librarianlib.client.gui.GuiComponent
 import com.teamwizardry.librarianlib.client.gui.Option
 import com.teamwizardry.librarianlib.common.util.math.BoundingBox2D
@@ -77,7 +76,7 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
 
         val wrap = this.wrap.getValue(this)
         if (wrap == -1) {
-            lines = ImmutableList.of(fullText)
+            lines = listOf(fullText)
         } else {
             lines = fr.listFormattedStringToWidth(fullText, wrap)!!
         }
@@ -90,9 +89,7 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
             y -= height
         }
 
-        var i = 0
-        for (line in lines) {
-
+        for ((i, line) in lines.withIndex()) {
             var lineX = x
             val lineY = y + i * fr.FONT_HEIGHT
 
@@ -104,8 +101,6 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
             }
 
             fr.drawString(line, lineX.toFloat(), lineY.toFloat(), colorHex, dropShadow)
-
-            i++
         }
 
         if (enableFlags) {

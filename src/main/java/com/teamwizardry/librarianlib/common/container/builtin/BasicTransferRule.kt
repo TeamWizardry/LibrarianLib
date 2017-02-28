@@ -40,13 +40,11 @@ open class BasicTransferRule : ITransferRule {
         return slot in fromSet && filter(slot)
     }
 
-    override fun putStack(stack: ItemStack): ItemStack {
-        for(target in targets) {
-            val result = ITransferRule.mergeIntoRegion(stack, target.filter { it.visible })
-            if(result.foundSpot)
-                return result.remainingStack
-        }
-        return stack
-    }
+    override fun putStack(stack: ItemStack)
+            = targets
+            .map { target -> ITransferRule.mergeIntoRegion(stack, target.filter { it.visible }) }
+            .firstOrNull { it.foundSpot }
+            ?.remainingStack
+            ?: stack
 
 }

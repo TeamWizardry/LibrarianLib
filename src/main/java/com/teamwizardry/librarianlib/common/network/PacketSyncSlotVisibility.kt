@@ -14,7 +14,7 @@ class PacketSyncSlotVisibility(@Save var visibility: BooleanArray = BooleanArray
 
     override fun handle(ctx: MessageContext) {
         (ctx.serverHandler.playerEntity.openContainer as? ContainerImpl)?.container?.allSlots?.forEachIndexed { i, slot ->
-            if(i < visibility.size)
+            if (i < visibility.size)
                 slot.visible = visibility[i]
         }
     }

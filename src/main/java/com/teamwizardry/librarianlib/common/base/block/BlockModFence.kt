@@ -18,8 +18,6 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.Explosion
 import net.minecraft.world.World
-import net.minecraftforge.fml.relauncher.Side
-import net.minecraftforge.fml.relauncher.SideOnly
 
 /**
  * The default implementation for an IModBlock.
@@ -31,15 +29,14 @@ open class BlockModFence(name: String, val parent: IBlockState) : BlockFence(par
 
     override val variants: Array<out String>
 
-    override val bareName: String = name
-    val modId: String
+    override val bareName: String = VariantHelper.toSnakeCase(name)
+    val modId = currentModId
 
     val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
-        modId = currentModId
         this.variants = VariantHelper.beginSetupBlock(name, arrayOf())
-        VariantHelper.finishSetupBlock(this, name, itemForm, creativeTab)
+        VariantHelper.finishSetupBlock(this, bareName, itemForm, creativeTab)
     }
 
     override fun setUnlocalizedName(name: String): Block {
@@ -63,8 +60,6 @@ open class BlockModFence(name: String, val parent: IBlockState) : BlockFence(par
 
     override fun getExplosionResistance(world: World, pos: BlockPos, exploder: Entity, explosion: Explosion) = parent.block.getExplosionResistance(world, pos, exploder, explosion)
     override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
-    @SideOnly(Side.CLIENT) override fun isTranslucent(state: IBlockState?) = parent.isTranslucent
-    override fun getUseNeighborBrightness(state: IBlockState?) = parent.useNeighborBrightness()
     override fun isToolEffective(type: String?, state: IBlockState) = parent.block.isToolEffective(type, parent)
     override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent)
 

@@ -13,14 +13,14 @@ class Serializer(val canApply: (FieldType) -> Boolean, val priority: SerializerP
 
     fun <R, W> register(target: SerializerTarget<R, W>, generator: (FieldType) -> SerializerImpl<*, *>) {
         serializers.put(target, { type ->
-            if(type is FieldTypeVariable)
+            if (type is FieldTypeVariable)
                 throw IllegalArgumentException("Cannot create serializer for variable field type")
             else
                 generator(type)
         })
     }
 
-    fun <R, W> register(target: SerializerTarget<R, W>, impl: SerializerImpl<*,*>) {
+    fun <R, W> register(target: SerializerTarget<R, W>, impl: SerializerImpl<*, *>) {
         register(target, { impl })
     }
 

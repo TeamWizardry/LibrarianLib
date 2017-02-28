@@ -39,7 +39,7 @@ object NBTSerializationHandlers {
     @JvmStatic
     fun aliasAs(aliasTo: Class<*>, clazz: Class<*>) {
         val aliasValue = map[FieldType.create(aliasTo)]
-        if(aliasValue != null)
+        if (aliasValue != null)
             map[FieldType.create(clazz)] = aliasValue
     }
 
@@ -171,7 +171,7 @@ private object BasicNBTSerializers {
             val tag = it.safeCast(NBTTagByteArray::class.java)
             val list = if (existing == null || existing.size != tag.byteArray.size) BooleanArray(tag.byteArray.size) else existing
             tag.byteArray.forEachIndexed { i, t ->
-                list[i] = if (t == 1.toByte()) true else false
+                list[i] = t == 1.toByte()
             }
             list
         })
@@ -276,7 +276,7 @@ private object SpecialNBTSerializers {
         @Suppress("UNCHECKED_CAST")
         val serializer =
                 if (keyType.clazz == String::class.java) {
-                    NBTSerializer(reader@{ nbt, existing ->
+                    NBTSerializer(reader@ { nbt, existing ->
                         existing as HashMap<String, Any?>?
 
                         val tag = nbt.safeCast(NBTTagCompound::class.java)
@@ -293,7 +293,7 @@ private object SpecialNBTSerializers {
                         }
 
                         map
-                    }, writer@{ obj ->
+                    }, writer@ { obj ->
                         obj as HashMap<String, *>
 
                         val tag = NBTTagCompound()
@@ -313,7 +313,7 @@ private object SpecialNBTSerializers {
                         tag
                     })
                 } else {
-                    NBTSerializer(reader@{ nbt, existing ->
+                    NBTSerializer(reader@ { nbt, existing ->
                         existing as HashMap<Any, Any?>?
 
                         val entries = nbt.safeCast(NBTTagList::class.java)
@@ -326,7 +326,7 @@ private object SpecialNBTSerializers {
                         }
 
                         map
-                    }, writer@{ obj ->
+                    }, writer@ { obj ->
                         obj as HashMap<Any, *>
 
                         val entries = NBTTagList()
@@ -351,9 +351,9 @@ private object SpecialNBTSerializers {
             return null
 
         val values = type.clazz.enumConstants
-        val serializer = NBTSerializer(reader@{ nbt, existing ->
+        val serializer = NBTSerializer(reader@ { nbt, existing ->
             values[nbt.safeCast(NBTTagShort::class.java).short.toInt()]
-        }, writer@{ obj ->
+        }, writer@ { obj ->
             NBTTagShort((obj as Enum<*>).ordinal.toShort())
         })
 
@@ -373,7 +373,7 @@ private object SpecialNBTSerializers {
         if (subReader == null || subWriter == null)
             return null
 
-        val serializer = NBTSerializer(reader@{ nbt, existing ->
+        val serializer = NBTSerializer(reader@ { nbt, existing ->
             existing as Array<*>?
             val compound = nbt.safeCast(NBTTagCompound::class.java)
             val list = compound.getTag("list").safeCast(NBTTagList::class.java)

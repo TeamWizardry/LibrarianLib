@@ -52,14 +52,14 @@ object SavingFieldCache {
             val resolved = FieldType.create(`$Gson$Types`.resolve(type.type, type.clazz, field.genericType))
 
             val mods = field.modifiers
-            val meta = FieldMetadata(resolved, SavingFieldFlag.FIELD)
-            if(Modifier.isFinal(mods)) meta.addFlag(SavingFieldFlag.FINAL)
-            if(Modifier.isTransient(mods)) meta.addFlag(SavingFieldFlag.TRANSIENT)
-            if(field.isAnnotationPresent(Save::class.java)) meta.addFlag(SavingFieldFlag.ANNOTATED)
-            if(field.isAnnotationPresent(NotNull::class.java)) meta.addFlag(SavingFieldFlag.NONNULL)
-            if(field.type.isPrimitive) meta.addFlag(SavingFieldFlag.NONNULL)
-            if(field.isAnnotationPresent(NoSync::class.java)) meta.addFlag(SavingFieldFlag.NO_SYNC)
-            if(field.isAnnotationPresent(CapabilityProvide::class.java)) {
+            val meta = FieldMetadata(FieldType.create(field), SavingFieldFlag.FIELD)
+            if (Modifier.isFinal(mods)) meta.addFlag(SavingFieldFlag.FINAL)
+            if (Modifier.isTransient(mods)) meta.addFlag(SavingFieldFlag.TRANSIENT)
+            if (field.isAnnotationPresent(Save::class.java)) meta.addFlag(SavingFieldFlag.ANNOTATED)
+            if (field.isAnnotationPresent(NotNull::class.java)) meta.addFlag(SavingFieldFlag.NONNULL)
+            if (field.type.isPrimitive) meta.addFlag(SavingFieldFlag.NONNULL)
+            if (field.isAnnotationPresent(NoSync::class.java)) meta.addFlag(SavingFieldFlag.NO_SYNC)
+            if (field.isAnnotationPresent(CapabilityProvide::class.java)) {
                 meta.addFlag(SavingFieldFlag.CAPABILITY)
                 val annot = field.getAnnotation(CapabilityProvide::class.java)
                 if (EnumFacing.UP in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_UP)
@@ -146,13 +146,13 @@ object SavingFieldCache {
 
             val meta = FieldMetadata(FieldType.create(getter), SavingFieldFlag.ANNOTATED, SavingFieldFlag.METHOD)
 
-            if(getter.isAnnotationPresent(NotNull::class.java) && (setter == null || setter.parameterAnnotations[0].any { it is NotNull }))
+            if (getter.isAnnotationPresent(NotNull::class.java) && (setter == null || setter.parameterAnnotations[0].any { it is NotNull }))
                 meta.addFlag(SavingFieldFlag.NONNULL)
-            if(type.isPrimitive)
+            if (type.isPrimitive)
                 meta.addFlag(SavingFieldFlag.NONNULL)
-            if(getter.isAnnotationPresent(NoSync::class.java) && (setter == null || setter.isAnnotationPresent(NoSync::class.java)))
+            if (getter.isAnnotationPresent(NoSync::class.java) && (setter == null || setter.isAnnotationPresent(NoSync::class.java)))
                 meta.addFlag(SavingFieldFlag.NO_SYNC)
-            if(setter == null)
+            if (setter == null)
                 meta.addFlag(SavingFieldFlag.FINAL)
 
             val setterLambda: (Any, Any?) -> Unit = if(wrapperForSetter == null)
@@ -175,7 +175,7 @@ object SavingFieldCache {
         val got = nameMap[f]
         if (got != null) return got
 
-        val string = if(f.isAnnotationPresent(Save::class.java)) f.getAnnotation(Save::class.java).saveName else ""
+        val string = if (f.isAnnotationPresent(Save::class.java)) f.getAnnotation(Save::class.java).saveName else ""
         var name = if (string == "") f.name else string
 
         if (name in ILLEGAL_NAMES)
@@ -205,7 +205,7 @@ object SavingFieldCache {
     private val errorList = mutableMapOf<FieldType, DefaultedMutableMap<String, MutableList<String>>>().withRealDefault { mutableMapOf<String, MutableList<String>>().withRealDefault { mutableListOf<String>() } }
 
     fun handleErrors() {
-        if(errorList.size == 0)
+        if (errorList.size == 0)
             return
 
         val lines = mutableListOf<String>()
@@ -228,9 +228,9 @@ object SavingFieldCache {
 }
 
 data class FieldCache(val meta: FieldMetadata, val getter: (Any) -> Any?, private val setter_: (Any, Any?) -> Unit, var name: String = "") {
-    val setter = if(meta.hasFlag(SavingFieldFlag.NONNULL)) {
+    val setter = if (meta.hasFlag(SavingFieldFlag.NONNULL)) {
         { instance: Any, value: Any? ->
-            if(value == null) {
+            if (value == null) {
                 setter_(instance, DefaultValues.getDefaultValue(meta.type))
             } else {
                 setter_(instance, value)
@@ -251,7 +251,7 @@ data class FieldCache(val meta: FieldMetadata, val getter: (Any) -> Any?, privat
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T: Any> getCapability(container: Any, capability: Capability<T>, side: EnumFacing?): T? {
+    fun <T : Any> getCapability(container: Any, capability: Capability<T>, side: EnumFacing?): T? {
         return if (hasCapability(capability, side)) getter(container) as? T else null
     }
 

@@ -5,11 +5,8 @@ import com.teamwizardry.librarianlib.client.core.ModelHandler
 import com.teamwizardry.librarianlib.common.base.IModelGenerator
 import com.teamwizardry.librarianlib.common.base.ModCreativeTab
 import com.teamwizardry.librarianlib.common.util.VariantHelper
-import com.teamwizardry.librarianlib.common.util.builders.serialize
 import com.teamwizardry.librarianlib.common.util.currentModId
 import net.minecraft.block.Block
-import net.minecraft.block.state.IBlockState
-import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -27,16 +24,9 @@ open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, to
     override val providedItem: Item
         get() = this
 
-    override val variants: Array<out String>
-
-    private val bareName: String
-    private val modId: String
-
-    init {
-        modId = currentModId
-        bareName = VariantHelper.toSnakeCase(name)
-        this.variants = VariantHelper.setupItem(this, name, variants, creativeTab)
-    }
+    private val bareName = VariantHelper.toSnakeCase(name)
+    private val modId = currentModId
+    override val variants = VariantHelper.setupItem(this, bareName, variants, creativeTab)
 
     override fun setUnlocalizedName(name: String): Item {
         VariantHelper.setUnlocalizedNameForItem(this, modId, name)

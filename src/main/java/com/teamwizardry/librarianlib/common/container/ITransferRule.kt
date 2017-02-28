@@ -32,7 +32,7 @@ interface ITransferRule {
             if (stack.isStackable) { // no sense trying to stack similar items if the stack can't stack.
                 // try to merge stack into slots that already have items (don't fill up empty slots unless you need to)
                 region.forEach { slot ->
-                    if(!shouldContinue)
+                    if (!shouldContinue)
                         return@forEach
 
                     val result = slot.type.autoTransferInto(slot, runningStack)
@@ -43,9 +43,9 @@ interface ITransferRule {
                 }
             }
 
-            if(runningStack != null) {
+            if (runningStack != null) {
                 region.forEach { slot ->
-                    if(!shouldContinue)
+                    if (!shouldContinue)
                         return@forEach
 
                     val result = slot.type.autoTransferInto(slot, runningStack)
@@ -61,7 +61,7 @@ interface ITransferRule {
 
 
         fun areItemStacksEqual(stackA: ItemStack?, stackB: ItemStack?): Boolean {
-            if(stackA == null || stackB == null) {
+            if (stackA == null || stackB == null) {
                 return stackA === stackB
             }
             return stackB.item === stackA.item && (!stackA.hasSubtypes || stackA.metadata == stackB.metadata) && ItemStack.areItemStackTagsEqual(stackA, stackB)

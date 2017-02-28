@@ -22,10 +22,10 @@ import java.io.IOException
 /**
  * Created by TheCodeWarrior
  */
-open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var guiHeight: Int) : GuiContainer(ContainerImpl(container)){
+open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var guiHeight: Int) : GuiContainer(ContainerImpl(container)) {
     protected val mainComponents: ComponentVoid = ComponentVoid(0, 0)
     protected val fullscreenComponents: ComponentVoid = ComponentVoid(0, 0)
-    private val mainScaleWrapper: ComponentVoid = ComponentVoid(0,0)
+    private val mainScaleWrapper: ComponentVoid = ComponentVoid(0, 0)
 
     init {
         fullscreenComponents.setData(GuiContainerBase::class.java, this)
@@ -46,7 +46,7 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         guiLeft = 0
         guiTop = 0
         var s = 1.0
-        if(!adjustGuiSize()) {
+        if (!adjustGuiSize()) {
             var i = 1
             // find required scale, either 1x, 1/2x 1/3x, or 1/4x
             while ((guiWidth * s > width || guiHeight * s > height) && i < 4) {
@@ -55,13 +55,13 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
             }
         }
 
-        val left = (width / 2 - guiWidth*s / 2).toInt()
-        val top = (height / 2 - guiHeight*s / 2).toInt()
+        val left = (width / 2 - guiWidth * s / 2).toInt()
+        val top = (height / 2 - guiHeight * s / 2).toInt()
 
         if (mainScaleWrapper.pos.xi != left || mainScaleWrapper.pos.yi != top) {
             mainScaleWrapper.pos = vec(left, top)
             mainScaleWrapper.childScale = s
-            mainScaleWrapper.size = vec(guiWidth*s, guiHeight*s)
+            mainScaleWrapper.size = vec(guiWidth * s, guiHeight * s)
         }
 
         fullscreenComponents.size = vec(width, height)
@@ -78,7 +78,8 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
     }
 
 
-    override fun drawDefaultBackground() { /* NOOP */ }
+    override fun drawDefaultBackground() { /* NOOP */
+    }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         container.allSlots.forEach { it.lastVisible = it.visible; it.visible = false }
@@ -98,7 +99,7 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         GlStateManager.enableTexture2D()
         GlStateManager.popAttrib()
 
-        if(container.allSlots.any { it.lastVisible != it.visible }) {
+        if (container.allSlots.any { it.lastVisible != it.visible }) {
             PacketHandler.NETWORK.sendToServer(PacketSyncSlotVisibility(container.allSlots.map { it.visible }.toBooleanArray()))
         }
 
@@ -157,7 +158,7 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         @SubscribeEvent
         fun tick(e: TickEvent.ClientTickEvent) {
             val gui = Minecraft.getMinecraft().currentScreen
-            if(gui is GuiContainerBase) {
+            if (gui is GuiContainerBase) {
                 gui.tick()
             }
         }

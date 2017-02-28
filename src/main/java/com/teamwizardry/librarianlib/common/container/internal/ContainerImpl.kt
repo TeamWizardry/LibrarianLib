@@ -21,12 +21,12 @@ class ContainerImpl(val container: ContainerBase) : Container() {
         container.addContainerSlots()
     }
 
-    override fun slotClick(slotId: Int, dragType: Int, clickTypeIn: ClickType?, player: EntityPlayer): ItemStack? {
-        if(slotId > 0 && slotId < inventorySlots.size) {
+    override fun slotClick(slotId: Int, dragType: Int, clickTypeIn: ClickType?, player: EntityPlayer): ItemStack {
+        if (slotId > 0 && slotId < inventorySlots.size) {
             val slot = inventorySlots[slotId] as SlotBase
 
             val pair = slot.handleClick(container, dragType, clickTypeIn, player)
-            if(pair.first) {
+            if (pair.first) {
                 return pair.second
             }
         }

@@ -157,7 +157,7 @@ object SerializePrimitives {
         ({ nbt, existing, syncing ->
             nbt.safeCast(NBTPrimitive::class.java).byte == 1.toByte()
         }, { value, syncing ->
-            NBTTagByte(if(value) 1 else 0)
+            NBTTagByte(if (value) 1 else 0)
         }))
 
         SerializerRegistry["java:boolean"]?.register(Targets.BYTES, Targets.BYTES.impl<Boolean>

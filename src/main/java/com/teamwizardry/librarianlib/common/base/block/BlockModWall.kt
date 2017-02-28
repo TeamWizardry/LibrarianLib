@@ -84,16 +84,13 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
         else if (block !== this && block !is BlockFenceGate)
             if (material.isOpaque && iblockstate.isFullCube)
                 material !== Material.GOURD
-            else if (block is BlockModWall) true
-            else false
+            else block is BlockModWall
         else true
     }
 
 
     override fun getExplosionResistance(world: World, pos: BlockPos, exploder: Entity, explosion: Explosion) = parent.block.getExplosionResistance(world, pos, exploder, explosion)
     override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
-    @SideOnly(Side.CLIENT) override fun isTranslucent(state: IBlockState?) = parent.isTranslucent
-    override fun getUseNeighborBrightness(state: IBlockState?) = parent.useNeighborBrightness()
     override fun isToolEffective(type: String?, state: IBlockState) = parent.block.isToolEffective(type, parent)
     override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent)
 
@@ -184,15 +181,15 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
                         )
                 )
             },
-            JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_side")
-                    to json {
-                obj(
-                        "parent" to "block/wall_side",
-                        "textures" to obj(
-                                "wall" to name
+                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_side")
+                            to json {
+                        obj(
+                                "parent" to "block/wall_side",
+                                "textures" to obj(
+                                        "wall" to name
+                                )
                         )
-                )
-            })
+                    })
         })
         return true
     }

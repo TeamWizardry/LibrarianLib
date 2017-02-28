@@ -26,7 +26,7 @@ object F3Handler {
     private var f3Down = false
 
     fun addHandler(key: Int, desc: String, update: Supplier<String?>, run: Runnable): Boolean {
-        if(key in handlers || key in reserved)
+        if (key in handlers || key in reserved)
             return false
         handlers.put(key, run)
         keysDown.put(key, false)
@@ -40,7 +40,7 @@ object F3Handler {
         addHandler(Keyboard.KEY_Q, "", Supplier { null }, Runnable {
             val guinewchat = Minecraft.getMinecraft().ingameGUI.chatGUI
             handlers.forEach {
-                if(it.key == Keyboard.KEY_Q)
+                if (it.key == Keyboard.KEY_Q)
                     return@forEach
                 val str = "F3 + ${Keyboard.getKeyName(it.key)} = ${descriptions[it.key]}"
                 guinewchat.printChatMessage(str.toComponent())
@@ -50,17 +50,17 @@ object F3Handler {
 
     @SubscribeEvent
     fun key(e: InputEvent.KeyInputEvent) {
-        if(Minecraft.getMinecraft().currentScreen != null) return
+        if (Minecraft.getMinecraft().currentScreen != null) return
 
         val currentF3 = Keyboard.isKeyDown(Keyboard.KEY_F3)
-        if(currentF3) {
+        if (currentF3) {
             keysDown.forEach {
                 val currentKey = Keyboard.isKeyDown(it.key)
 
-                if(currentKey && !it.value) {
+                if (currentKey && !it.value) {
                     handlers.get(it.key)?.run()
                     val update = updateText[it.key]?.get()
-                    if(update != null) {
+                    if (update != null) {
                         Minecraft.getMinecraft().ingameGUI.chatGUI.printChatMessage(
                                 "".toComponent().appendSibling("[Debug]: ".toComponent().setStyle(Style().setColor(TextFormatting.YELLOW).setBold(true)))
                                         .appendText(update))

@@ -27,12 +27,10 @@ import net.minecraftforge.fml.relauncher.SideOnly
 @Suppress("LeakingThis")
 open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlockColorProvider, ISpecialModelProvider, IModelGenerator {
 
-    private val modBlock: IModBlock
-    private val modId: String
+    private val modBlock = block as IModBlock
+    private val modId = currentModId
 
     init {
-        this.modId = currentModId
-        this.modBlock = block as IModBlock
         if (this.variants.size > 1)
             this.setHasSubtypes(true)
         ModelHandler.registerVariantHolder(this)

@@ -27,7 +27,6 @@ import net.minecraft.client.resources.IResourceManagerReloadListener
 import net.minecraft.client.resources.data.MetadataSerializer
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.client.model.animation.Animation
 import net.minecraftforge.common.MinecraftForge
@@ -36,6 +35,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import java.io.File
 import java.io.IOException
 import java.io.InputStream
 
@@ -68,7 +68,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         (Minecraft.getMinecraft().resourceManager as IReloadableResourceManager).registerReloadListener(this)
         onResourceManagerReload(Minecraft.getMinecraft().resourceManager)
 
-        if(LibrarianLib.DEV_ENVIRONMENT)
+        if (LibrarianLib.DEV_ENVIRONMENT)
             TextureMapExporter
     }
 
@@ -103,12 +103,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
     override fun getClientPlayer(): EntityPlayer = Minecraft.getMinecraft().player
 
-    override fun sendSpamlessMessage(player: EntityPlayer, msg: ITextComponent, uniqueId: Int) {
-        val chat = Minecraft.getMinecraft().ingameGUI.chatGUI
-        chat.printChatMessageWithOptionalDeletion(msg, uniqueId)
-    }
-
-    override fun getDataFolder() = Minecraft.getMinecraft().mcDataDir
+    override fun getDataFolder(): File = Minecraft.getMinecraft().mcDataDir
 
     override fun startProfilerSection(name: String) {
         Minecraft.getMinecraft().mcProfiler.startSection(name)
@@ -131,9 +126,9 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         val player = Minecraft.getMinecraft().player
 
         val lastPos = vec(player.lastTickPosX, player.lastTickPosY, player.lastTickPosZ)
-        val partialOffset = (player.positionVector-lastPos)*(1-Animation.getPartialTickTime())
+        val partialOffset = (player.positionVector - lastPos) * (1 - Animation.getPartialTickTime())
 
-        val globalize = -(player.positionVector-partialOffset)
+        val globalize = -(player.positionVector - partialOffset)
         GlStateManager.translate(globalize.xCoord, globalize.yCoord, globalize.zCoord)
 
 
