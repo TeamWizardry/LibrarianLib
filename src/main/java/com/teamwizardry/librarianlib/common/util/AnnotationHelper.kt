@@ -118,36 +118,26 @@ data class AnnotationInfo(val map: Map<String, Any>) {
     fun getStringArray(id: String): Array<String> {
         val value = map[id]
 
-        return if (value is Array<*>) value.map(Any?::toString).toTypedArray()
-        else if (value is List<*>) value.map(Any?::toString).toTypedArray()
-        else arrayOf(value.toString())
+        return (value as? Array<*>)?.map(Any?::toString)?.toTypedArray() ?: ((value as? List<*>)?.map(Any?::toString)?.toTypedArray() ?: arrayOf(value.toString()))
     }
 
     fun getIntArray(id: String): IntArray {
         val value = map[id]
-        return if (value is IntArray) value
-        else if (value is List<*>) value.map(Any?::toString).map(String::toInt).toIntArray()
-        else intArrayOf()
+        return value as? IntArray ?: ((value as? List<*>)?.map(Any?::toString)?.map(String::toInt)?.toIntArray() ?: intArrayOf())
     }
 
     fun getDoubleArray(id: String): DoubleArray {
         val value = map[id]
-        return if (value is DoubleArray) value
-        else if (value is List<*>) value.map(Any?::toString).map(String::toDouble).toDoubleArray()
-        else doubleArrayOf()
+        return value as? DoubleArray ?: ((value as? List<*>)?.map(Any?::toString)?.map(String::toDouble)?.toDoubleArray() ?: doubleArrayOf())
     }
 
     fun getBooleanArray(id: String): BooleanArray {
         val value = map[id]
-        return if (value is BooleanArray) value
-        else if (value is List<*>) value.map(Any?::toString).map(String::toBoolean).toBooleanArray()
-        else booleanArrayOf()
+        return value as? BooleanArray ?: ((value as? List<*>)?.map(Any?::toString)?.map(String::toBoolean)?.toBooleanArray() ?: booleanArrayOf())
     }
 
     fun getLongArray(id: String): LongArray {
         val value = map[id]
-        return if (value is LongArray) value
-        else if (value is List<*>) value.map(Any?::toString).map(String::toLong).toLongArray()
-        else longArrayOf()
+        return value as? LongArray ?: ((value as? List<*>)?.map(Any?::toString)?.map(String::toLong)?.toLongArray() ?: longArrayOf())
     }
 }
