@@ -47,13 +47,13 @@ object SerializeObject {
                         }
                         if(it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
                             if(oldValue !== value) {
-                                throw SerializerException("Cannot set final field ${it.value.name} in class ${type} to new value. Either make the field mutable or modify the serializer to change the existing object instead of creating a new one.")
+                                throw SerializerException("Cannot set final field ${it.value.name} in class $type to new value. Either make the field mutable or modify the serializer to change the existing object instead of creating a new one.")
                             }
                         } else {
                             it.value.setter(instance, value)
                         }
                     }
-                    if (sync) {
+                    if (!sync) {
                         analysis.noSyncFields.forEach {
                             val oldValue = it.value.getter(instance)
                             val value = if (tag.hasKey(it.key)) {
@@ -63,7 +63,23 @@ object SerializeObject {
                             }
                             if(it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
                                 if(oldValue !== value) {
-                                    throw SerializerException("Cannot set final field ${it.value.name} in class ${type} to new value. Either make the field mutable or modify the serializer to change the existing object instead of creating a new one.")
+                                    throw SerializerException("Cannot set final field ${it.value.name} in class $type to new value. Either make the field mutable or modify the serializer to change the existing object instead of creating a new one.")
+                                }
+                            } else {
+                                it.value.setter(instance, value)
+                            }
+                        }
+                    } else {
+                        analysis.nonPersistentFields.forEach {
+                            val oldValue = it.value.getter(instance)
+                            val value = if (tag.hasKey(it.key)) {
+                                analysis.serializers[it.key]!!.invoke().read(tag.getTag(it.key), oldValue, sync)
+                            } else {
+                                null
+                            }
+                            if(it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
+                                if(oldValue !== value) {
+                                    throw SerializerException("Cannot set final field ${it.value.name} in class $type to new value. Either make the field mutable or modify the serializer to change the existing object instead of creating a new one.")
                                 }
                             } else {
                                 it.value.setter(instance, value)
@@ -94,6 +110,12 @@ object SerializeObject {
                         if (fieldValue != null)
                             tag.setTag(it.key, analysis.serializers[it.key]!!.invoke().write(fieldValue, sync))
                     }
+                } else {
+                    analysis.nonPersistentFields.forEach {
+                        val fieldValue = it.value.getter(value)
+                        if (fieldValue != null)
+                            tag.setTag(it.key, analysis.serializers[it.key]!!.invoke().write(fieldValue, sync))
+                    }
                 }
                 tag
             })
@@ -102,7 +124,7 @@ object SerializeObject {
         SerializerRegistry["liblib:savable"]?.register(Targets.BYTES, { type ->
 
             val analysis = SerializerAnalysis(type, Targets.BYTES)
-            val allFieldsOrdered = analysis.alwaysFields + analysis.noSyncFields
+            val allFieldsOrdered = analysis.alwaysFields + analysis.noSyncFields + analysis.nonPersistentFields
             Targets.BYTES.impl<Any>({ buf, existing, sync ->
                 val nullsig = buf.readBooleanArray()
                 var i = 0
@@ -139,6 +161,22 @@ object SerializeObject {
                                 it.value.setter(instance, value)
                             }
                         }
+                    } else {
+                        analysis.nonPersistentFields.forEach {
+                            val oldValue = it.value.getter(instance)
+                            val value = if (nullsig[i++]) {
+                                null
+                            } else {
+                                analysis.serializers[it.key]!!.invoke().read(buf, oldValue, sync)
+                            }
+                            if(it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
+                                if(oldValue !== value) {
+                                    throw SerializerException("Cannot set final field ${it.value.name} in class ${type} to new value. Either make the field mutable or modify the serializer to change the existing object instead of creating a new one.")
+                                }
+                            } else {
+                                it.value.setter(instance, value)
+                            }
+                        }
                     }
                     return@impl instance
                 } else {
@@ -151,6 +189,12 @@ object SerializeObject {
                     }
                     if (!sync) {
                         analysis.noSyncFields.forEach {
+                            if (!nullsig[i++]) {
+                                map[it.key] = analysis.serializers[it.key]!!.invoke().read(buf, null, sync)
+                            }
+                        }
+                    } else {
+                        analysis.nonPersistentFields.forEach {
                             if (!nullsig[i++]) {
                                 map[it.key] = analysis.serializers[it.key]!!.invoke().read(buf, null, sync)
                             }
@@ -189,6 +233,7 @@ object SerializeObject {
 class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget<R, W>) {
     val alwaysFields: Map<String, FieldCache>
     val noSyncFields: Map<String, FieldCache>
+    val nonPersistentFields: Map<String, FieldCache>
     val fields: Map<String, FieldCache>
 
     val mutable: Boolean
@@ -220,8 +265,9 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
         if (!mutable && fields.any { it.value.meta.hasFlag(SavingFieldFlag.NO_SYNC) })
             throw SerializerException("Immutable type ${type.clazz.canonicalName} cannot have non-syncing fields")
 
-        alwaysFields = fields.filter { !it.value.meta.hasFlag(SavingFieldFlag.NO_SYNC) }
-        noSyncFields = fields.filter { it.value.meta.hasFlag(SavingFieldFlag.NO_SYNC) }
+        alwaysFields = fields.filter { !it.value.meta.hasFlag(SavingFieldFlag.NO_SYNC) && !it.value.meta.hasFlag(SavingFieldFlag.NON_PERSISTENT) }
+        noSyncFields = fields.filter { it.value.meta.hasFlag(SavingFieldFlag.NO_SYNC) && !it.value.meta.hasFlag(SavingFieldFlag.NON_PERSISTENT) }
+        nonPersistentFields = fields.filter { it.value.meta.hasFlag(SavingFieldFlag.NON_PERSISTENT) && !it.value.meta.hasFlag(SavingFieldFlag.NO_SYNC) }
 
         constructor =
                 if (inPlaceSavable) {

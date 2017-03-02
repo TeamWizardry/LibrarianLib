@@ -26,13 +26,20 @@ annotation class Save(val saveName: String = "")
  * Apply this to a field or function annotated with [Save] or [SaveMethodSetter]/[SaveMethodGetter] to prevent
  * the data from syncing to clients, but still get saved to NBT. This does not apply to packets.
  * [NoSync] needs to be applied to both a setter and a getter in the case of method annotations.
- *
- * If [NoSync] is applied to a field/method that cannot accept nulls, it will crash. This is because
- * it sends nulls instead of regular values when trying to sync, to prevent syncing overhead.
  */
 @Target(FIELD, FUNCTION, PROPERTY_GETTER, PROPERTY_SETTER)
 @MustBeDocumented
 annotation class NoSync
+
+
+/**
+ * Apply this to a field or function annotated with [Save] or [SaveMethodSetter]/[SaveMethodGetter] to prevent
+ * the data from saved perminently, but still get synced to clients.
+ */
+@Target(FIELD, FUNCTION, PROPERTY_GETTER, PROPERTY_SETTER)
+@MustBeDocumented
+annotation class NonPersistent
+
 
 /**
  * @author WireSegal
