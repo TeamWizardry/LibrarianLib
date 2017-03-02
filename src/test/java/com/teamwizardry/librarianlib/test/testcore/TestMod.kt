@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.test.testcore
 
-import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.common.base.ModCreativeTab
 import com.teamwizardry.librarianlib.common.base.item.ItemMod
 import com.teamwizardry.librarianlib.common.core.LoggerBase
@@ -52,7 +51,7 @@ class TestMod {
             }
         }
         //CapabilityTest.init()
-        Class.forName("com.teamwizardry.librarianlib.test.items.ModItems")
+//        Class.forName("com.teamwizardry.librarianlib.test.items.ModItems")
     }
 
     @Mod.EventHandler

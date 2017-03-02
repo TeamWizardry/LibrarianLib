@@ -105,15 +105,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
     override fun getDataFolder(): File = Minecraft.getMinecraft().mcDataDir
 
-    override fun startProfilerSection(name: String) {
-        Minecraft.getMinecraft().mcProfiler.startSection(name)
-    }
-
-    override fun endProfilerSection() {
-        Minecraft.getMinecraft().mcProfiler.endSection()
-    }
-
-    // custom events
+    // Custom events
 
     override fun onResourceManagerReload(resourceManager: IResourceManager) {
         MinecraftForge.EVENT_BUS.post(ResourceReloadEvent(resourceManager))

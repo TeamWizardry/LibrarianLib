@@ -53,12 +53,12 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
  * - Reliable and simple packet handler also using [Save] [PacketBase]
  * - Config Property system that is completely painless and only requires very minimal registration: [EasyConfigHandler]
  * - Container API [ContainerBase]
- * - Multipart API [PartMod]
+ * ~~- Multipart API [PartMod]~~
  * - An easy F3+key handler [F3Handler]
  * - A simple event bus implementation [Event] [EventBus]
  * - Capability which uses the [Save] scheme to save and sync fields [CapabilityMod]
  */
-@Mod(modid = LibrarianLib.MODID, version = LibrarianLib.VERSION, name = LibrarianLib.MODNAME, dependencies = LibrarianLib.DEPENDENCIES, modLanguageAdapter = LibrarianLib.ADAPTER)
+@Mod(modid = LibrarianLib.MODID, version = LibrarianLib.VERSION, name = LibrarianLib.MODNAME, dependencies = LibrarianLib.DEPENDENCIES, modLanguageAdapter = LibrarianLib.ADAPTER, acceptedMinecraftVersions = LibrarianLib.ALLOWED)
 object LibrarianLib {
 
     @Mod.EventHandler
@@ -78,10 +78,11 @@ object LibrarianLib {
 
     const val MODID = "librarianlib"
     const val MODNAME = "LibrarianLib"
-    const val VERSION = "1.10.1"
+    const val VERSION = "2.0"
+    const val ALLOWED = "[1.11,)"
     const val CLIENT = "com.teamwizardry.librarianlib.client.core.LibClientProxy"
     const val SERVER = "com.teamwizardry.librarianlib.common.core.LibCommonProxy"
-    const val DEPENDENCIES = "required-after:forgelin;required-after:forge@[12.18.3.2185,)"
+    const val DEPENDENCIES = "required-after:forgelin;required-after:forge@[13.19.1.2195,)"
     const val ADAPTER = "net.shadowfacts.forgelin.KotlinAdapter"
 
     @SidedProxy(clientSide = CLIENT, serverSide = SERVER)

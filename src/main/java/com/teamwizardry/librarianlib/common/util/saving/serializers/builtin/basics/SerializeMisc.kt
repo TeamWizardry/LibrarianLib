@@ -15,6 +15,7 @@ import net.minecraft.nbt.NBTTagString
 import net.minecraft.network.PacketBuffer
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.text.ITextComponent
+import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.items.ItemStackHandler
 import java.awt.Color
 import java.util.*
@@ -149,7 +150,7 @@ object SerializeMisc {
         }))
 
         SerializerRegistry["minecraft:itextcomponent"]?.register(Targets.BYTES, Targets.BYTES.impl<ITextComponent>({ buf, existing, sync ->
-            PacketBuffer(buf).readTextComponent()
+            PacketBuffer(buf).readTextComponent() ?: TextComponentString("") // #BlameLordMau
         }, { buf, value, sync ->
             PacketBuffer(buf).writeTextComponent(value)
         }))
