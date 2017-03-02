@@ -19,9 +19,8 @@ import java.util.*
  */
 object SerializeSets {
     init {
-        val classes = setOf(HashSet::class.java)
         SerializerRegistry.register("java:generator.set", Serializer({
-            it.clazz in classes || EnumSet::class.java.isAssignableFrom(it.clazz)
+            Set::class.java.isAssignableFrom(it.clazz) || EnumSet::class.java.isAssignableFrom(it.clazz)
         }, SerializerPriority.EXACT))
 
         SerializerRegistry["java:generator.set"]?.register(Targets.NBT, { type ->
@@ -75,10 +74,13 @@ object SerializeSets {
             val subSerializer = SerializerRegistry.lazyImpl(Targets.BYTES, typeParam)
 
             @Suppress("UNCHECKED_CAST")
-            val constructorMH = (if (EnumSet::class.java.isAssignableFrom(type.clazz))
-                { arr -> RawEnumSetCreator.create(type.clazz) }
-            else
-                MethodHandleHelper.wrapperForConstructor(type.clazz.getConstructor())
+            val constructorMH =(
+                    if(type.clazz == Set::class.java)
+                        { a -> LinkedHashSet<Any?>() } // linked so if order is important it's preserved.
+                    else if (EnumSet::class.java.isAssignableFrom(type.clazz))
+                        { arr -> RawEnumSetCreator.create(type.clazz) }
+                    else
+                        MethodHandleHelper.wrapperForConstructor(type.clazz.getConstructor())
                     ) as (Array<Any>) -> MutableSet<Any?>
 
             Targets.BYTES.impl<MutableSet<*>>({ buf, existing, syncing ->

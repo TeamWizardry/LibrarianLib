@@ -43,7 +43,7 @@ object SerializeObject {
                         val value = if (tag.hasKey(it.key)) {
                             analysis.serializers[it.key]!!.invoke().read(tag.getTag(it.key), oldValue, sync)
                         } else {
-                            null
+                            if(it.value.meta.hasFlag(SavingFieldFlag.FINAL)) oldValue else null
                         }
                         if(it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
                             if(oldValue !== value) {
@@ -59,7 +59,7 @@ object SerializeObject {
                             val value = if (tag.hasKey(it.key)) {
                                 analysis.serializers[it.key]!!.invoke().read(tag.getTag(it.key), oldValue, sync)
                             } else {
-                                null
+                                if(it.value.meta.hasFlag(SavingFieldFlag.FINAL)) oldValue else null
                             }
                             if(it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
                                 if(oldValue !== value) {
@@ -75,7 +75,7 @@ object SerializeObject {
                             val value = if (tag.hasKey(it.key)) {
                                 analysis.serializers[it.key]!!.invoke().read(tag.getTag(it.key), oldValue, sync)
                             } else {
-                                null
+                                if(it.value.meta.hasFlag(SavingFieldFlag.FINAL)) oldValue else null
                             }
                             if(it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
                                 if(oldValue !== value) {
@@ -220,6 +220,12 @@ object SerializeObject {
 
                 if (!sync) {
                     analysis.noSyncFields.forEach {
+                        val fieldValue = it.value.getter(value)
+                        if (fieldValue != null)
+                            analysis.serializers[it.key]!!.invoke().write(buf, fieldValue, sync)
+                    }
+                } else {
+                    analysis.nonPersistentFields.forEach {
                         val fieldValue = it.value.getter(value)
                         if (fieldValue != null)
                             analysis.serializers[it.key]!!.invoke().write(buf, fieldValue, sync)
