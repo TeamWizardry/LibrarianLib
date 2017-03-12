@@ -3,8 +3,10 @@ package com.teamwizardry.librarianlib.common.util.autoregister
 // todo once mcmultipart is 1.11
 //import com.teamwizardry.librarianlib.common.base.multipart.PartMod
 import com.teamwizardry.librarianlib.common.network.PacketBase
+import com.teamwizardry.librarianlib.common.util.saving.serializers.Serializer
 import net.minecraft.tileentity.TileEntity
 import net.minecraftforge.fml.relauncher.Side
+import kotlin.reflect.KClass
 
 /**
  * Apply this to a class that extends [TileEntity] to have it be automatically registered.
@@ -44,3 +46,19 @@ annotation class PartRegister(val value: String = "")
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
 annotation class PacketRegister(val value: Side)
+
+/**
+ * Apply this to a class that extends [Serializer] to have it automatically be registered for those classes.
+ *
+ * [classes] are the classes that this serializer will be applied to.
+ */
+@Target(AnnotationTarget.CLASS)
+@MustBeDocumented
+annotation class SerializerRegister(vararg val classes: KClass<*>)
+
+/**
+ * Apply this to a class that extends [SerializerFactory] to have it automatically be registered.
+ */
+@Target(AnnotationTarget.CLASS)
+@MustBeDocumented
+annotation class SerializerFactoryRegister()

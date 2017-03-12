@@ -1,12 +1,24 @@
 package com.teamwizardry.librarianlib.common.util.saving
 
+import com.google.gson.internal.`$Gson$Types`
+import com.teamwizardry.librarianlib.common.util.handles.MethodHandleHelper
 import java.lang.reflect.*
 import java.util.*
+
+val getGenericSuperclassMH = MethodHandleHelper.wrapperForStaticMethod(`$Gson$Types`::class.java, arrayOf("getGenericSuperclass"), Type::class.java, Class::class.java, Class::class.java)
 
 abstract class FieldType protected constructor(val type: Type, open val clazz: Class<*>) {
 
     open val interfaces: Array<out Class<*>>
         get() = arrayOf()
+
+    fun resolve(type: Type): FieldType {
+        return FieldType.create(`$Gson$Types`.resolve(this.type, this.clazz, type))
+    }
+
+    fun genericSuperclass(clazz: Class<*>): FieldType {
+        return FieldType.create(getGenericSuperclassMH(arrayOf(this.type, this.clazz, clazz)) as Type)
+    }
 
     companion object {
         @JvmStatic
@@ -30,7 +42,7 @@ abstract class FieldType protected constructor(val type: Type, open val clazz: C
                         else
                             createPlain(type)
                     else
-                        FieldTypeError()
+                        FieldTypeError(type)
 
             return fType
         }
@@ -57,7 +69,9 @@ abstract class FieldType protected constructor(val type: Type, open val clazz: C
     }
 }
 
-class FieldTypeError : FieldType(Any::class.java, Any::class.java)
+class FieldTypeError(type: Type) : FieldType(type, Any::class.java) {
+
+}
 
 class FieldTypeClass(type: Type, clazz: Class<*>) : FieldType(type, clazz) {
 
@@ -110,8 +124,12 @@ class FieldTypeArray(type: Type, val componentType: FieldType) : FieldType(type,
 
 class FieldTypeGeneric(type: Type, clazz: Class<*>, val generics: Array<FieldType>) : FieldType(type, clazz) {
 
-    fun generic(i: Int): FieldType? {
-        if (i < 0 || i >= generics.size)
+    fun generic(i: Int): FieldType {
+        return generics[i]
+    }
+
+    fun genericOrNull(i: Int): FieldType? {
+        if(i < 0 || i >= generics.size)
             return null
         return generics[i]
     }

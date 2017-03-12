@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.common.util.saving
 
-import com.google.gson.internal.`$Gson$Types`
 import com.teamwizardry.librarianlib.LibrarianLog
 import com.teamwizardry.librarianlib.common.util.DefaultedMutableMap
 import com.teamwizardry.librarianlib.common.util.handles.MethodHandleHelper
@@ -98,7 +97,7 @@ object SavingFieldCache {
             { obj, inp -> throw IllegalAccessException("Tried to set final field/property ${field.name} for class $enclosing (final field)") }
 
     fun createMetaForField(field: Field, enclosing: FieldType): FieldMetadata {
-        val resolved = FieldType.create(`$Gson$Types`.resolve(enclosing.type, enclosing.clazz, field.genericType))
+        val resolved = enclosing.resolve(field.genericType)
 
         val meta = FieldMetadata(resolved, SavingFieldFlag.FIELD)
 

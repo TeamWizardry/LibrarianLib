@@ -1,8 +1,7 @@
 package com.teamwizardry.librarianlib.common.util.saving
 
-import com.teamwizardry.librarianlib.common.util.saving.serializers.SerializerImpl
+import com.teamwizardry.librarianlib.common.util.saving.serializers.Serializer
 import com.teamwizardry.librarianlib.common.util.saving.serializers.SerializerRegistry
-import com.teamwizardry.librarianlib.common.util.saving.serializers.builtin.Targets
 import com.teamwizardry.librarianlib.common.util.withRealDefault
 import io.netty.buffer.ByteBuf
 import net.minecraft.nbt.NBTBase
@@ -13,12 +12,10 @@ import net.minecraftforge.common.capabilities.Capability
  * Created by TheCodeWarrior
  */
 object AbstractSaveHandler {
-    var isSyncing: Boolean = false
-
-    val nbtCache = mutableMapOf<Class<*>, SerializerImpl<(nbt: NBTBase, existing: Any?, syncing: Boolean) -> Any, (value: Any, syncing: Boolean) -> NBTBase>>()
-            .withRealDefault { SerializerRegistry.impl(Targets.NBT, FieldType.create(it)) }
-    val byteCache = mutableMapOf<Class<*>, SerializerImpl<(buf: ByteBuf, existing: Any?, syncing: Boolean) -> Any, (buf: ByteBuf, value: Any, syncing: Boolean) -> Unit>>()
-            .withRealDefault { SerializerRegistry.impl(Targets.BYTES, FieldType.create(it)) }
+    val nbtCache = mutableMapOf<Class<*>, Serializer<Any>>()
+            .withRealDefault { SerializerRegistry.getOrCreate(FieldType.create(it)) }
+    val byteCache = mutableMapOf<Class<*>, Serializer<Any>>()
+            .withRealDefault { SerializerRegistry.getOrCreate(FieldType.create(it)) }
 
     @JvmStatic
     fun writeAutoNBT(instance: Any, sync: Boolean): NBTBase {

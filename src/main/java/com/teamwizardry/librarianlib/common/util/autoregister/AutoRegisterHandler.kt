@@ -8,6 +8,10 @@ import com.teamwizardry.librarianlib.common.core.OwnershipHandler
 import com.teamwizardry.librarianlib.common.network.PacketBase
 import com.teamwizardry.librarianlib.common.network.PacketHandler
 import com.teamwizardry.librarianlib.common.util.saving.AbstractSaveHandler
+import com.teamwizardry.librarianlib.common.util.saving.FieldType
+import com.teamwizardry.librarianlib.common.util.saving.serializers.Serializer
+import com.teamwizardry.librarianlib.common.util.saving.serializers.SerializerFactory
+import com.teamwizardry.librarianlib.common.util.saving.serializers.SerializerRegistry
 import com.teamwizardry.librarianlib.common.util.toRl
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.ResourceLocation
@@ -17,6 +21,7 @@ import net.minecraftforge.fml.common.discovery.asm.ModAnnotation
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.fml.relauncher.Side
+import java.lang.reflect.Modifier
 
 /**
  * Created by TheCodeWarrior
@@ -83,6 +88,53 @@ object AutoRegisterHandler {
                 }.add(it.clazz)
             else
                 PacketHandler.register(it.clazz, side)
+        }
+        getAnnotatedBy(SerializerRegister::class.java, Serializer::class.java, table).forEach {
+            val classes = it.get<Array<Class<*>>>("classes")
+            if (classes == null) {
+                errors.getOrPut("SerializerRegister") {
+                    mutableListOf()
+                }.add(it.clazz)
+            } else {
+                try {
+                    val instance = it.clazz.declaredFields.find { f ->
+                        f.name == "INSTANCE" && Modifier.isStatic(f.modifiers) && f.type == it.clazz
+                    }?.apply { this.isAccessible = true; this.get(null) }
+                            ?: it.clazz.getConstructor()?.apply { this.isAccessible = true; this.newInstance() }
+                    if(instance == null) {
+                        errors.getOrPut("SerializerFactoryRegister") {
+                            mutableListOf()
+                        }.add(it.clazz)
+                    } else {
+                        classes.forEach {
+                            SerializerRegistry.register(FieldType.create(it), instance as Serializer<*>)
+                        }
+                    }
+                } catch(e: Exception) { // no multi-catch, and I'm lazy. Pokemon exception handling engage!
+                    errors.getOrPut("SerializerRegister") {
+                        mutableListOf()
+                    }.add(it.clazz)
+                }
+            }
+        }
+        getAnnotatedBy(SerializerFactoryRegister::class.java, SerializerFactory::class.java, table).forEach {
+            try {
+                val instance = it.clazz.declaredFields.find { f ->
+                    f.name == "INSTANCE" && Modifier.isStatic(f.modifiers) && f.type == it.clazz
+                }?.apply { this.isAccessible = true; this.get(null) }
+                ?: it.clazz.getConstructor()?.apply { this.isAccessible = true; this.newInstance() }
+                if(instance == null) {
+                    errors.getOrPut("SerializerFactoryRegister") {
+                        mutableListOf()
+                    }.add(it.clazz)
+                } else {
+                    SerializerRegistry.register(instance as SerializerFactory)
+                }
+            } catch(e: Exception) { // no multi-catch, and I'm lazy. Pokemon exception handling engage!
+                errors.getOrPut("SerializerFactoryRegister") {
+                    mutableListOf()
+                }.add(it.clazz)
+            }
         }
 
         if (errors.isNotEmpty()) {
