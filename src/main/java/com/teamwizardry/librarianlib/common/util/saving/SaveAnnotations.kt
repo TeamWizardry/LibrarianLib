@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.common.util.saving
 
 import net.minecraft.util.EnumFacing
-import org.jetbrains.annotations.NotNull
 import kotlin.annotation.AnnotationTarget.*
 
 /**
@@ -10,7 +9,7 @@ import kotlin.annotation.AnnotationTarget.*
  *
  * Apply this to a field to have it be serialized by the write/read nbt methods and write/read byte methods.
  *
- * If the field is annotated with @[NotNull], a default value from [DefaultValues] will be used instead of null.
+ * If the field is annotated with @[NotNullAcceptor], a default value from [DefaultValues] will be used instead of null.
  *
  * [saveName] doesn't matter for messages, except in sorting. It's for NBT serializers.
  */
@@ -18,6 +17,17 @@ import kotlin.annotation.AnnotationTarget.*
 @MustBeDocumented
 annotation class Save(val saveName: String = "")
 
+/**
+ * @author WireSegal
+ * Created at 9:30 AM on 3/13/17.
+ *
+ * Apply this to a field to have it be marked as not accepting nulls on syncing.
+ *
+ * The field will receive a [DefaultValues] entry if it exists instead of null.
+ */
+@Target(FIELD, FUNCTION, PROPERTY_GETTER, PROPERTY_SETTER)
+@MustBeDocumented
+annotation class NotNullAcceptor
 
 /**
  * @author WireSegal
@@ -27,8 +37,9 @@ annotation class Save(val saveName: String = "")
  * the data from syncing to clients, but still get saved to NBT. This does not apply to packets.
  * [NoSync] needs to be applied to both a setter and a getter in the case of method annotations.
  *
- * If [NoSync] is applied to a field/method that cannot accept nulls, it will crash. This is because
- * it sends nulls instead of regular values when trying to sync, to prevent syncing overhead.
+ * If [NoSync] is applied to a field/method with @[NotNullAcceptor] without a [DefaultValues] entry,
+ * it will crash. This is because it sends nulls instead of regular values when trying to sync,
+ * to prevent syncing overhead.
  */
 @Target(FIELD, FUNCTION, PROPERTY_GETTER, PROPERTY_SETTER)
 @MustBeDocumented
@@ -43,7 +54,7 @@ annotation class NoSync
  * and with the return type of this function as its single parameter,
  * annotated with [SaveMethodSetter], otherwise nothing will be saved.
  *
- * If the getter is annotated with @[NotNull], a default value from [DefaultValues] will be used instead of null.
+ * If the getter is annotated with @[NotNullAcceptor], a default value from [DefaultValues] will be used instead of null.
  *
  * The "getter" method must take exactly zero parameters, and return the content of the field.
  */

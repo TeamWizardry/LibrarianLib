@@ -7,7 +7,6 @@ import com.teamwizardry.librarianlib.common.util.withRealDefault
 import net.minecraft.util.EnumFacing
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.CapabilityManager
-import org.jetbrains.annotations.NotNull
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -53,7 +52,7 @@ object SavingFieldCache {
             if (Modifier.isFinal(mods)) meta.addFlag(SavingFieldFlag.FINAL)
             if (Modifier.isTransient(mods)) meta.addFlag(SavingFieldFlag.TRANSIENT)
             if (field.isAnnotationPresent(Save::class.java)) meta.addFlag(SavingFieldFlag.ANNOTATED)
-            if (field.isAnnotationPresent(NotNull::class.java)) meta.addFlag(SavingFieldFlag.NONNULL)
+            if (field.isAnnotationPresent(NotNullAcceptor::class.java)) meta.addFlag(SavingFieldFlag.NONNULL)
             if (field.type.isPrimitive) meta.addFlag(SavingFieldFlag.NONNULL)
             if (field.isAnnotationPresent(NoSync::class.java)) meta.addFlag(SavingFieldFlag.NO_SYNC)
             if (field.isAnnotationPresent(CapabilityProvide::class.java)) {
@@ -143,7 +142,7 @@ object SavingFieldCache {
 
             val meta = FieldMetadata(FieldType.create(getter), SavingFieldFlag.ANNOTATED, SavingFieldFlag.METHOD)
 
-            if (getter.isAnnotationPresent(NotNull::class.java) && (setter == null || setter.parameterAnnotations[0].any { it is NotNull }))
+            if (getter.isAnnotationPresent(NotNullAcceptor::class.java) && (setter == null || setter.parameterAnnotations[0].any { it is NotNullAcceptor }))
                 meta.addFlag(SavingFieldFlag.NONNULL)
             if (type.isPrimitive)
                 meta.addFlag(SavingFieldFlag.NONNULL)
