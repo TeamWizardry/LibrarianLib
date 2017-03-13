@@ -144,7 +144,7 @@ object SerializeMisc {
         SerializerRegistry.register("minecraft:itextcomponent", Serializer(ITextComponent::class.java))
 
         SerializerRegistry["minecraft:itextcomponent"]?.register(Targets.NBT, Targets.NBT.impl<ITextComponent>({ nbt, existing, sync ->
-            ITextComponent.Serializer.jsonToComponent(nbt.safeCast<NBTTagString>().string)
+            ITextComponent.Serializer.jsonToComponent(nbt.safeCast(NBTTagString::class.java).string)
         }, { value, sync ->
             NBTTagString(ITextComponent.Serializer.componentToJson(value))
         }))

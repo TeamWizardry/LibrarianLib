@@ -36,7 +36,7 @@ abstract class RegistryMod<T> {
         companion object {
             fun <K, V> iterateOverRegistry(registry: RegistryNamespaced<K, V>): Iterator<RegistryEntry<K, V>> {
                 return object : Iterator<RegistryEntry<K, V>> {
-                    internal var underlying = registry.iterator()
+                    private var underlying = registry.iterator()
 
                     override fun hasNext(): Boolean {
                         return underlying.hasNext()

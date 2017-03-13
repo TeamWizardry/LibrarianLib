@@ -24,7 +24,7 @@ object OwnershipHandler {
             "test/scala"
     )
 
-    val ABS_BASE = Paths.get(LibrarianLib.PROXY.getDataFolder().absolutePath).parent.parent.toString()
+    val ABS_BASE = Paths.get(LibrarianLib.PROXY.getDataFolder().absolutePath)?.parent?.parent?.toString() ?: ""
 
     init {
 

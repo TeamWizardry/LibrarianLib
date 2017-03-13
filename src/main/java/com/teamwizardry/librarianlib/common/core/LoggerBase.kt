@@ -14,11 +14,7 @@ import org.apache.logging.log4j.Logger
 
 abstract class LoggerBase protected constructor(name: String) {
     val debugMode = LibrarianLib.DEV_ENVIRONMENT
-    private val logger: Logger
-
-    init {
-        logger = LogManager.getLogger(name)
-    }
+    private val logger = LogManager.getLogger(name)
 
     /**
      * Performs special processing on formatting arguments, such as replacing Worlds with "WORLD_NAME (DIM_ID)"

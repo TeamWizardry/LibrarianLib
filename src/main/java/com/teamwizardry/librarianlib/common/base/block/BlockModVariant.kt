@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.client.core.ModelHandler
 import com.teamwizardry.librarianlib.common.base.IModelGenerator
 import com.teamwizardry.librarianlib.common.util.VariantHelper
 import com.teamwizardry.librarianlib.common.util.builders.json
+import com.teamwizardry.librarianlib.common.util.threadLocal
 import net.minecraft.block.Block
 import net.minecraft.block.material.MapColor
 import net.minecraft.block.material.Material
@@ -22,7 +23,9 @@ open class BlockModVariant(name: String, materialIn: Material, color: MapColor, 
     constructor(name: String, materialIn: Material, vararg variants: String) : this(name, materialIn, materialIn.materialMapColor, *variants)
 
     companion object {
-        private val lastNames: ThreadLocal<SortedSet<String>> = ThreadLocal.withInitial { sortedSetOf<String>() }
+        private var lastNames: SortedSet<String> by threadLocal {
+            sortedSetOf<String>()
+        }
 
         /**
          * Hacky nonsense required because constructor and associated arguments
@@ -31,8 +34,8 @@ open class BlockModVariant(name: String, materialIn: Material, color: MapColor, 
          * This captures the variants during construction and injects them into the [property]
          * created by first access in [createBlockState].
          */
-        fun injectNames(name: String, variants: Array<out String>): Array<out String> {
-            lastNames.set(VariantHelper.beginSetupBlock(name, variants).toSortedSet())
+        private fun injectNames(name: String, variants: Array<out String>): Array<out String> {
+            lastNames = VariantHelper.beginSetupBlock(name, variants).toSortedSet()
             return variants
         }
     }
@@ -41,7 +44,7 @@ open class BlockModVariant(name: String, materialIn: Material, color: MapColor, 
         private set
 
     override fun createBlockState(): BlockStateContainer {
-        property = PropertyString("variant", lastNames.get())
+        property = PropertyString("variant", lastNames)
         return BlockStateContainer(this, property)
     }
 

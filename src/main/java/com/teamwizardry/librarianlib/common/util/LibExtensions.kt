@@ -9,6 +9,8 @@ import com.teamwizardry.librarianlib.common.network.PacketSpamlessMessage
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import io.netty.buffer.ByteBuf
 import net.minecraft.block.Block
+import net.minecraft.block.properties.IProperty
+import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
@@ -352,8 +354,6 @@ fun <T : NBTBase> NBTBase.safeCast(clazz: Class<T>): T {
             ) as T
 }
 
-inline fun <reified T : NBTBase> NBTBase.safeCast(): T = safeCast(T::class.java)
-
 // NBTTagCompound ======================================================================================================
 
 operator fun NBTTagCompound.iterator(): Iterator<Pair<String, NBTBase>> {
@@ -617,8 +617,12 @@ inline fun <reified K : Enum<K>, V> enumMapOf(vararg pairs: Pair<K, V>): EnumMap
     return map
 }
 
-// Collections
+// Collections =========================================================================================================
 
-fun <T : Any, E : Any, R : Collection<T>, F : Collection<E>> R.instanceof(collection: F): Boolean {
+fun <T : Any, E : Any, R : Collection<T>, F : Collection<E>> R.instanceOf(collection: F): Boolean {
     return javaClass.isAssignableFrom(collection.javaClass) && (this.isNotEmpty() && collection.isNotEmpty() && elementAt(0).javaClass.isAssignableFrom(collection.elementAt(0).javaClass))
 }
+
+// IBlockState =========================================================================================================
+
+operator fun <T: Comparable<T>> IBlockState.get(value: IProperty<T>): T = getValue(value)

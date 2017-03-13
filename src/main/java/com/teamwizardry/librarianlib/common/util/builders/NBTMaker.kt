@@ -43,4 +43,5 @@ fun convertNBT(value: Any?): NBTBase = when (value) {
     else -> throw IllegalArgumentException("Unrecognized type: " + value)
 }
 
-inline fun nbt(lambda: NBT.() -> NBTBase) = NBT.lambda()
+// Not inline because hot reloading fails on inline obfuscated classes under some circumstances
+fun nbt(lambda: NBT.() -> NBTBase) = NBT.lambda()
