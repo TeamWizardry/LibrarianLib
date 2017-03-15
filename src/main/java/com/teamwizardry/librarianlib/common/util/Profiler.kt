@@ -10,7 +10,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
 /**
  * Created by TheCodeWarrior
  */
-inline fun section(name: String, targetSide: Side, code: () -> Unit) {
+fun section(name: String, targetSide: Side, code: () -> Unit) {
     if (targetSide == Side.CLIENT) LibrarianLib.PROXY.runIfClient(StartProfiler(name))
     else FMLCommonHandler.instance().minecraftServerInstance.theProfiler.startSection(name)
     code()
