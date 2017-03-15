@@ -13,10 +13,8 @@ import com.teamwizardry.librarianlib.common.util.sendSpamlessMessage
 import com.teamwizardry.librarianlib.common.util.times
 import com.teamwizardry.librarianlib.common.util.unsafeAllowedModIds
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.server.MinecraftServer
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.translation.I18n
-import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import net.minecraftforge.fml.common.event.FMLInitializationEvent

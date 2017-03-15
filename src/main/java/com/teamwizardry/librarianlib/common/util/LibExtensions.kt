@@ -625,4 +625,4 @@ fun <T : Any, E : Any, R : Collection<T>, F : Collection<E>> R.instanceOf(collec
 
 // IBlockState =========================================================================================================
 
-operator fun <T: Comparable<T>> IBlockState.get(value: IProperty<T>): T = getValue(value)
+operator fun <T : Comparable<T>> IBlockState.get(value: IProperty<T>): T = getValue(value)

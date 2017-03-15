@@ -10,7 +10,6 @@ import net.minecraft.util.text.TextFormatting
 import net.minecraft.world.World
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 
 abstract class LoggerBase protected constructor(name: String) {
     val debugMode = LibrarianLib.DEV_ENVIRONMENT

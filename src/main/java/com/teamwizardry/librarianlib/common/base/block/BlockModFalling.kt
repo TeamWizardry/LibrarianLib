@@ -5,7 +5,6 @@ import com.teamwizardry.librarianlib.common.util.VariantHelper
 import com.teamwizardry.librarianlib.common.util.currentModId
 import net.minecraft.block.Block
 import net.minecraft.block.BlockFalling
-import net.minecraft.block.material.MapColor
 import net.minecraft.block.material.Material
 import net.minecraft.item.ItemBlock
 

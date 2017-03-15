@@ -7,12 +7,14 @@ import com.teamwizardry.librarianlib.common.util.EasyConfigHandler.init
 import net.minecraftforge.common.config.Configuration
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import java.io.File
+import java.lang.Class
+import java.lang.NumberFormatException
 import java.lang.reflect.Field
-import kotlin.String
-import kotlin.Int
 import kotlin.Boolean
 import kotlin.Double
+import kotlin.Int
 import kotlin.Long
+import kotlin.String
 
 
 /**
@@ -177,7 +179,7 @@ object EasyConfigHandler {
     }
 }
 
-private val noModId = ""
+const val noModId = ""
 
 /**
  * This annotation should be applied to non-final, static (if in Kotlin, [JvmStatic]) fields of type [String]

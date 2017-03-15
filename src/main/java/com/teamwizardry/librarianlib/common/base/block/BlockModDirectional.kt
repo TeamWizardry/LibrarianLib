@@ -4,20 +4,16 @@ import com.teamwizardry.librarianlib.client.core.JsonGenerationUtils
 import com.teamwizardry.librarianlib.client.core.ModelHandler
 import com.teamwizardry.librarianlib.common.base.IModelGenerator
 import com.teamwizardry.librarianlib.common.util.builders.json
-import com.teamwizardry.librarianlib.common.util.flatAssociate
 import com.teamwizardry.librarianlib.common.util.get
 import com.teamwizardry.librarianlib.common.util.threadLocal
 import net.minecraft.block.Block
-import net.minecraft.block.BlockLog
 import net.minecraft.block.material.Material
 import net.minecraft.block.properties.PropertyDirection
-import net.minecraft.block.properties.PropertyEnum
 import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.EnumFacing
-import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Rotation
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
@@ -102,10 +98,11 @@ open class BlockModDirectional(name: String, material: Material, vararg directio
                             *if (y != 0) arrayOf("y" to y) else arrayOf()
                     )
                 }
-            }}, {
-                mapOf(JsonGenerationUtils.getPathForBlockModel(this)
-                        to JsonGenerationUtils.generateBaseBlockModel(this))
-                })
+            }
+        }, {
+            mapOf(JsonGenerationUtils.getPathForBlockModel(this)
+                    to JsonGenerationUtils.generateBaseBlockModel(this))
+        })
         return true
     }
 }
