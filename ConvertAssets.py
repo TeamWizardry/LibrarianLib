@@ -4,9 +4,7 @@ import re
 
 
 def to_snake_case(string):
-    """
-    :type string: str
-    """
+    # type: (str) -> str
     string = string.replace("-", "_")
     if string.isupper():
         return string.lower()
@@ -28,9 +26,7 @@ def to_snake_case(string):
 
 
 def break_up_lang(string):
-    """
-    :type string: str
-    """
+    # type: (str) -> str
     if string.strip().startswith("#"):
         return string
     broken = string.split("=", 1)
@@ -46,6 +42,39 @@ def break_up_lang(string):
             corrected += "." + snake
 
     return corrected[1:] + "=" + broken[1]
+
+
+resource_location_pattern = re.compile(r"\w+:[\w/.]+")
+
+
+def break_up_resource_location(string):
+    # type: (str) -> str
+    if not resource_location_pattern.fullmatch(string):
+        return string
+    elif string.isupper():
+        return string.lower()
+    elif string.islower():
+        return string
+
+    broken = string.split(":", 1)
+    if len(broken) != 2:
+        return string
+    resource_domain = broken[0]
+    resource_path = broken[1].split("/")
+    corrected = to_snake_case(resource_domain) + ":"
+    for part in resource_path:
+        if part.startswith("/"):
+            corrected += "/" + to_snake_case(part[1:])
+        else:
+            corrected += to_snake_case(part)
+    return corrected
+
+
+def parse_json_line(string):
+    # type: (str) -> str
+    for i in resource_location_pattern.findall(string):
+        string = string.replace(i, break_up_resource_location(i))
+    return string
 
 
 allConverted = list()
@@ -72,9 +101,15 @@ for (path, dirs, files) in directories:
             data += "\n"
             changed = True
 
+        # noinspection SpellCheckingInspection
         if f.endswith(".lang"):
             lines = data.splitlines(True)
             lines = map(break_up_lang, lines)
+            data = "".join(lines)
+            changed = True
+        elif f.endswith(".json") or f.endswith(".mcmeta"):
+            lines = data.splitlines(True)
+            lines = map(parse_json_line, lines)
             data = "".join(lines)
             changed = True
 
