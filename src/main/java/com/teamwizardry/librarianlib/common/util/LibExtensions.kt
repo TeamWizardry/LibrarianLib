@@ -6,6 +6,7 @@ package com.teamwizardry.librarianlib.common.util
 import com.teamwizardry.librarianlib.LibrarianLib
 import com.teamwizardry.librarianlib.common.network.PacketHandler
 import com.teamwizardry.librarianlib.common.network.PacketSpamlessMessage
+import com.teamwizardry.librarianlib.common.util.builders.convertNBT
 import com.teamwizardry.librarianlib.common.util.math.Vec2d
 import io.netty.buffer.ByteBuf
 import net.minecraft.block.Block
@@ -354,6 +355,21 @@ fun <T : NBTBase> NBTBase.safeCast(clazz: Class<T>): T {
             ) as T
 }
 
+class NBTWrapper(val contained: ItemStack) {
+    operator fun set(s: String, tag: Any?) {
+        if (tag == null)
+            ItemNBTHelper.removeEntry(contained, s)
+        else ItemNBTHelper.set(contained, s, convertNBT(tag))
+    }
+
+    operator fun get(s: String): NBTBase? {
+        return ItemNBTHelper.get(contained, s)
+    }
+}
+
+val ItemStack.nbt: NBTWrapper
+    get() = NBTWrapper(this)
+
 // NBTTagCompound ======================================================================================================
 
 operator fun NBTTagCompound.iterator(): Iterator<Pair<String, NBTBase>> {
@@ -362,12 +378,12 @@ operator fun NBTTagCompound.iterator(): Iterator<Pair<String, NBTBase>> {
         override fun hasNext() = keys.hasNext()
         override fun next(): Pair<String, NBTBase> {
             val next = keys.next()
-            return next to this@iterator[next]
+            return next to this@iterator[next]!!
         }
     }
 }
 
-operator fun NBTTagCompound.get(key: String): NBTBase = this.getTag(key)
+operator fun NBTTagCompound.get(key: String): NBTBase? = this.getTag(key)
 
 // Player ==============================================================================================================
 

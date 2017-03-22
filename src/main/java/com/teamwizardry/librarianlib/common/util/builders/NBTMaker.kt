@@ -2,7 +2,9 @@
 
 package com.teamwizardry.librarianlib.common.util.builders
 
+import com.sun.org.apache.xpath.internal.operations.Bool
 import net.minecraft.nbt.*
+import java.util.*
 
 /**
  * @author WireSegal
@@ -27,7 +29,9 @@ object NBT {
 fun convertNBT(value: Any?): NBTBase = when (value) {
     is NBTBase -> value
 
+    is Boolean -> NBTTagByte(if (value) 1 else 0)
     is Byte -> NBTTagByte(value)
+    is Char -> NBTTagShort(value.toShort())
     is Short -> NBTTagShort(value)
     is Int -> NBTTagInt(value)
     is Long -> NBTTagLong(value)
@@ -36,6 +40,10 @@ fun convertNBT(value: Any?): NBTBase = when (value) {
     is ByteArray -> NBTTagByteArray(value)
     is String -> NBTTagString(value)
     is IntArray -> NBTTagIntArray(value)
+    is UUID -> NBTTagList().apply {
+        appendTag(NBTTagLong(value.leastSignificantBits))
+        appendTag(NBTTagLong(value.mostSignificantBits))
+    }
     is Array<*> -> NBT.list(*value)
     is Collection<*> -> NBT.list(*value.toTypedArray())
     is Map<*, *> -> NBT.comp(*value.toList().map { it.first.toString() to it.second }.toTypedArray())

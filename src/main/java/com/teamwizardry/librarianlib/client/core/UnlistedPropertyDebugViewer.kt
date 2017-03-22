@@ -34,11 +34,9 @@ object UnlistedPropertyDebugViewer {
                     for (entry in maybeExtended.unlistedNames.sortedBy { it.name }) {
                         val value: Any? = maybeExtended.getValue(entry)
 
-                        val s = if (value === TRUE)
-                            "${TextFormatting.GREEN}TRUE"
-                        else if (value === FALSE)
-                            "${TextFormatting.RED}FALSE"
-                        else value.toString()
+                        val s = if (value is Boolean) {
+                            if (value) "${TextFormatting.GREEN}TRUE" else "${TextFormatting.RED}FALSE"
+                        } else value.toString()
 
                         event.right.add("${TextFormatting.ITALIC}${entry.name}: $s")
                     }

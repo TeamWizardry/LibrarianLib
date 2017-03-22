@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.client.util.lambdainterfs;
 
+import com.teamwizardry.librarianlib.LibrarianLib;
 import com.teamwizardry.librarianlib.common.core.LibCommonProxy;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -13,4 +14,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public interface ClientRunnable {
     @SideOnly(Side.CLIENT)
     void runIfClient();
+
+    static void run(ClientRunnable runnable) {
+        LibrarianLib.PROXY.runIfClient(runnable);
+    }
 }

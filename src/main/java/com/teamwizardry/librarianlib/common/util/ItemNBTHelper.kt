@@ -4,19 +4,19 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagList
+import net.minecraft.nbt.NBTTagLong
+import net.minecraftforge.common.util.Constants
 import java.util.*
 
 object ItemNBTHelper {
 
     private val EMPTY_INT_ARRAY = IntArray(0)
-    private val EMPTY_UUID = UUID(0, 0)
 
     @JvmStatic fun detectNBT(stack: ItemStack) = stack.hasTagCompound()
-    @JvmStatic fun getNBT(stack: ItemStack) = initNBT(stack).tagCompound!!
-    @JvmStatic fun initNBT(stack: ItemStack): ItemStack {
-        if (!detectNBT(stack))
+    @JvmStatic @JvmOverloads fun getNBT(stack: ItemStack, modify: Boolean = true): NBTTagCompound {
+        if (modify && !detectNBT(stack))
             stack.tagCompound = NBTTagCompound()
-        return stack
+        return stack.tagCompound ?: NBTTagCompound()
     }
 
     @JvmStatic fun removeEntry(stack: ItemStack, tag: String) = getNBT(stack).removeTag(tag)
@@ -36,49 +36,60 @@ object ItemNBTHelper {
     @JvmStatic fun setLong(stack: ItemStack, tag: String, l: Long) = getNBT(stack).setLong(tag, l)
     @JvmStatic fun setFloat(stack: ItemStack, tag: String, f: Float) = getNBT(stack).setFloat(tag, f)
     @JvmStatic fun setDouble(stack: ItemStack, tag: String, d: Double) = getNBT(stack).setDouble(tag, d)
-    @JvmStatic fun setCompound(stack: ItemStack, tag: String, cmp: NBTTagCompound) = getNBT(stack).setTag(tag, cmp)
+    @JvmStatic fun setCompound(stack: ItemStack, tag: String, cmp: NBTTagCompound) = set(stack, tag, cmp)
     @JvmStatic fun setString(stack: ItemStack, tag: String, s: String) = getNBT(stack).setString(tag, s)
-    @JvmStatic fun setList(stack: ItemStack, tag: String, list: NBTTagList) = getNBT(stack).setTag(tag, list)
-    @JvmStatic fun setUUID(stack: ItemStack, tag: String, uuid: UUID) = getNBT(stack).setUniqueId(tag, uuid)
+    @JvmStatic fun setList(stack: ItemStack, tag: String, list: NBTTagList) = set(stack, tag, list)
+    @JvmStatic fun setUUID(stack: ItemStack, tag: String, uuid: UUID) = set(stack, tag, NBTTagList().apply {
+        appendTag(NBTTagLong(uuid.leastSignificantBits))
+        appendTag(NBTTagLong(uuid.mostSignificantBits))
+    })
+    @JvmStatic fun set(stack: ItemStack, tag: String, value: NBTBase) = getNBT(stack).setTag(tag, value)
 
 
     @JvmStatic fun getBoolean(stack: ItemStack, tag: String, defaultExpected: Boolean) =
-            if (verifyExistence(stack, tag)) getNBT(stack).getBoolean(tag) else defaultExpected
+            if (verifyExistence(stack, tag)) getNBT(stack, false).getBoolean(tag) else defaultExpected
 
     @JvmStatic fun getByte(stack: ItemStack, tag: String, defaultExpected: Byte) =
-            if (verifyExistence(stack, tag)) getNBT(stack).getByte(tag) else defaultExpected
+            if (verifyExistence(stack, tag)) getNBT(stack, false).getByte(tag) else defaultExpected
 
     @JvmStatic fun getShort(stack: ItemStack, tag: String, defaultExpected: Short) =
-            if (verifyExistence(stack, tag)) getNBT(stack).getShort(tag) else defaultExpected
+            if (verifyExistence(stack, tag)) getNBT(stack, false).getShort(tag) else defaultExpected
 
     @JvmStatic fun getInt(stack: ItemStack, tag: String, defaultExpected: Int) =
-            if (verifyExistence(stack, tag)) getNBT(stack).getInteger(tag) else defaultExpected
+            if (verifyExistence(stack, tag)) getNBT(stack, false).getInteger(tag) else defaultExpected
 
     @JvmStatic fun getIntArray(stack: ItemStack, tag: String) =
-            if (verifyExistence(stack, tag)) getNBT(stack).getIntArray(tag) else EMPTY_INT_ARRAY
+            if (verifyExistence(stack, tag)) getNBT(stack, false).getIntArray(tag) else EMPTY_INT_ARRAY
 
     @JvmStatic fun getLong(stack: ItemStack, tag: String, defaultExpected: Long) =
-            if (verifyExistence(stack, tag)) getNBT(stack).getLong(tag) else defaultExpected
+            if (verifyExistence(stack, tag)) getNBT(stack, false).getLong(tag) else defaultExpected
 
     @JvmStatic fun getFloat(stack: ItemStack, tag: String, defaultExpected: Float) =
-            if (verifyExistence(stack, tag)) getNBT(stack).getFloat(tag) else defaultExpected
+            if (verifyExistence(stack, tag)) getNBT(stack, false).getFloat(tag) else defaultExpected
 
     @JvmStatic fun getDouble(stack: ItemStack, tag: String, defaultExpected: Double) =
-            if (verifyExistence(stack, tag)) getNBT(stack).getDouble(tag) else defaultExpected
+            if (verifyExistence(stack, tag)) getNBT(stack, false).getDouble(tag) else defaultExpected
 
-    @JvmStatic fun getCompound(stack: ItemStack, tag: String, nullifyOnFail: Boolean) =
-            if (verifyExistence(stack, tag)) getNBT(stack).getCompoundTag(tag) else if (nullifyOnFail) null else NBTTagCompound()
+    @JvmStatic fun getCompound(stack: ItemStack, tag: String) =
+            if (verifyExistence(stack, tag)) getNBT(stack, false).getCompoundTag(tag) else null
 
     @JvmStatic fun getString(stack: ItemStack, tag: String, defaultExpected: String?) =
-            if (verifyExistence(stack, tag)) getNBT(stack).getString(tag) else defaultExpected
+            if (verifyExistence(stack, tag)) getNBT(stack, false).getString(tag) else defaultExpected
 
-    @JvmStatic fun getList(stack: ItemStack, tag: String, nbtClass: Class<NBTBase>, nullifyOnFail: Boolean) =
-            getList(stack, tag, nbtClass.newInstance().id.toInt(), nullifyOnFail)
+    @JvmStatic fun getList(stack: ItemStack, tag: String, nbtClass: Class<NBTBase>) =
+            getList(stack, tag, nbtClass.newInstance().id.toInt())
 
-    @JvmStatic fun getList(stack: ItemStack, tag: String, objType: Int, nullifyOnFail: Boolean) =
-            if (verifyExistence(stack, tag)) getNBT(stack).getTagList(tag, objType) else if (nullifyOnFail) null else NBTTagList()
+    @JvmStatic fun getList(stack: ItemStack, tag: String, objType: Int) =
+            if (verifyExistence(stack, tag)) getNBT(stack, false).getTagList(tag, objType) else null
 
-    @JvmStatic fun getUUID(stack: ItemStack, tag: String, nullifyOnFail: Boolean) =
-            if (verifyUUIDExistence(stack, tag)) getNBT(stack).getUniqueId(tag) else if (nullifyOnFail) null else EMPTY_UUID
+    @JvmStatic fun getUUID(stack: ItemStack, tag: String) =
+            if (verifyUUIDExistence(stack, tag)) fromList(getNBT(stack, false).getTagList(tag, Constants.NBT.TAG_LONG)) else null
+
+    @JvmStatic fun get(stack: ItemStack, tag: String) = getNBT(stack, false)[tag]
+
+    private fun fromList(list: NBTTagList): UUID? {
+        if (list.tagType != Constants.NBT.TAG_LONG || list.tagCount() != 2) return null
+        return UUID((list.get(0) as NBTTagLong).long, (list.get(1) as NBTTagLong).long)
+    }
 
 }

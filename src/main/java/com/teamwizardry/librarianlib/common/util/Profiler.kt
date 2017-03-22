@@ -11,23 +11,13 @@ import net.minecraftforge.fml.relauncher.SideOnly
  * Created by TheCodeWarrior
  */
 fun section(name: String, targetSide: Side, code: () -> Unit) {
-    if (targetSide == Side.CLIENT) LibrarianLib.PROXY.runIfClient(StartProfiler(name))
-    else FMLCommonHandler.instance().minecraftServerInstance.theProfiler.startSection(name)
-    code()
-    if (targetSide == Side.CLIENT) LibrarianLib.PROXY.runIfClient(EndProfiler)
-    else FMLCommonHandler.instance().minecraftServerInstance.theProfiler.endSection()
-}
-
-class StartProfiler(val name: String) : ClientRunnable {
-    @SideOnly(Side.CLIENT)
-    override fun runIfClient() {
+    if (targetSide == Side.CLIENT) ClientRunnable.run {
         Minecraft.getMinecraft().mcProfiler.startSection(name)
     }
-}
-
-object EndProfiler : ClientRunnable {
-    @SideOnly(Side.CLIENT)
-    override fun runIfClient() {
+    else FMLCommonHandler.instance().minecraftServerInstance.theProfiler.startSection(name)
+    code()
+    if (targetSide == Side.CLIENT) ClientRunnable.run {
         Minecraft.getMinecraft().mcProfiler.endSection()
     }
+    else FMLCommonHandler.instance().minecraftServerInstance.theProfiler.endSection()
 }
