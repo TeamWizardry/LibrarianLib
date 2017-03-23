@@ -38,12 +38,10 @@ abstract class PacketBase : IMessage {
         // NO-OP
     }
 
-    @Suppress("UNUSED_VARIABLE")
     fun writeAutoBytes(buf: ByteBuf) {
         AbstractSaveHandler.writeAutoBytes(this, buf, true)
     }
 
-    @Suppress("UNUSED_VARIABLE")
     fun readAutoBytes(buf: ByteBuf) {
         AbstractSaveHandler.readAutoBytes(this, buf, true)
 

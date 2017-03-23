@@ -49,7 +49,7 @@ resource_location_pattern = re.compile(r"\w+:[\w/.]+")
 
 def break_up_resource_location(string):
     # type: (str) -> str
-    if not resource_location_pattern.fullmatch(string):
+    if not resource_location_pattern.match(string):
         return string
     elif string.isupper():
         return string.lower()
