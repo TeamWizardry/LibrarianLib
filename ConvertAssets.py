@@ -22,7 +22,7 @@ def to_snake_case(string):
             last_token_upper = True
         else:
             last_token_upper = string[i] == "_"
-    split.append(string[last_index:len(string)].lower())
+    split.append(string[last_index:].lower())
     return "_".join(split)
 
 
