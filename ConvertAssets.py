@@ -128,4 +128,4 @@ for (path, dirs, files) in directories:
                 allConverted.append(path_to_file + " -> " + path_to_new)
 
 for converted in allConverted:
-    print "Converted file", converted
+    print("Converted file " + converted)
