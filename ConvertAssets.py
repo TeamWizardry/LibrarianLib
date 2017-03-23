@@ -73,59 +73,59 @@ def parse_json_line(string):
         string = string.replace(i, break_up_resource_location(i))
     return string
 
+if __name__ == "__main__":
+    allConverted = list()
 
-allConverted = list()
+    homeDir = os.path.expanduser("~")
 
-homeDir = os.path.expanduser("~")
+    walk_path = "." if len(sys.argv) < 2 else sys.argv[1]
 
-walk_path = "." if len(sys.argv) < 2 else sys.argv[1]
+    possible_path = walk_path + os.path.sep + "src" + os.path.sep + "main" + os.path.sep + "resources"
 
-possible_path = walk_path + os.path.sep + "src" + os.path.sep + "main" + os.path.sep + "resources"
+    if os.path.exists(possible_path):
+        walk_path = possible_path
 
-if os.path.exists(possible_path):
-    walk_path = possible_path
+    directories = os.walk(walk_path)
 
-directories = os.walk(walk_path)
+    for (path, dirs, files) in directories:
+        for f in files:
+            changed = False
 
-for (path, dirs, files) in directories:
-    for f in files:
-        changed = False
-
-        path_to_file = os.path.join(path, f)
-        if not f.islower():
-            path_to_new = os.path.join(path, to_snake_case(f))
-            changed = True
-        else:
-            path_to_new = path_to_file
-
-        loaded = open(path_to_file)
-        data = loaded.read()
-        loaded.close()
-        if not data.endswith("\n") and not f.endswith(".png"):
-            data += "\n"
-            changed = True
-
-        # noinspection SpellCheckingInspection
-        if f.endswith(".lang"):
-            lines = data.splitlines(True)
-            lines = map(break_up_lang, lines)
-            data = "".join(lines)
-            changed = True
-        elif f.endswith(".json") or f.endswith(".mcmeta"):
-            lines = data.splitlines(True)
-            lines = map(parse_json_line, lines)
-            data = "".join(lines)
-            changed = True
-
-        if changed:
-            os.remove(path_to_file)
-            new = open(path_to_new, "w")
-            new.write(data)
-            new.close()
-            if path_to_file == path_to_new:
-                allConverted.append(path_to_file)
+            path_to_file = os.path.join(path, f)
+            if not f.islower():
+                path_to_new = os.path.join(path, to_snake_case(f))
+                changed = True
             else:
-                allConverted.append(path_to_file + " -> " + path_to_new)
+                path_to_new = path_to_file
 
-for converted in allConverted:
-    print("Converted file " + converted)
+            loaded = open(path_to_file)
+            data = loaded.read()
+            loaded.close()
+            if not data.endswith("\n") and not f.endswith(".png"):
+                data += "\n"
+                changed = True
+
+            # noinspection SpellCheckingInspection
+            if f.endswith(".lang"):
+                lines = data.splitlines(True)
+                lines = map(break_up_lang, lines)
+                data = "".join(lines)
+                changed = True
+            elif f.endswith(".json") or f.endswith(".mcmeta"):
+                lines = data.splitlines(True)
+                lines = map(parse_json_line, lines)
+                data = "".join(lines)
+                changed = True
+
+            if changed:
+                os.remove(path_to_file)
+                new = open(path_to_new, "w")
+                new.write(data)
+                new.close()
+                if path_to_file == path_to_new:
+                    allConverted.append(path_to_file)
+                else:
+                    allConverted.append(path_to_file + " -> " + path_to_new)
+
+    for converted in allConverted:
+        print("Converted file " + converted)
