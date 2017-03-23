@@ -62,11 +62,7 @@ def break_up_resource_location(string):
     resource_domain = broken[0]
     resource_path = broken[1].split("/")
     corrected = to_snake_case(resource_domain) + ":"
-    for part in resource_path:
-        if part.startswith("/"):
-            corrected += "/" + to_snake_case(part[1:])
-        else:
-            corrected += to_snake_case(part)
+    corrected += "/".join(map(to_snake_case, resource_path))
     return corrected
 
 
@@ -81,7 +77,14 @@ allConverted = list()
 
 homeDir = os.path.expanduser("~")
 
-directories = os.walk("." if len(sys.argv) < 2 else sys.argv[1])
+walk_path = "." if len(sys.argv) < 2 else sys.argv[1]
+
+possible_path = walk_path + os.path.sep + "src" + os.path.sep + "main" + os.path.sep + "resources"
+
+if os.path.exists(possible_path):
+    walk_path = possible_path
+
+directories = os.walk(walk_path)
 
 for (path, dirs, files) in directories:
     for f in files:
