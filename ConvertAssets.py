@@ -97,7 +97,7 @@ if __name__ == "__main__":
 
     should_continue = False
 
-    expanded_path = os.path.normpath(walk_path)
+    expanded_path = os.path.abspath(walk_path)
     if src_main_resources in expanded_path:
         should_continue = True
 
