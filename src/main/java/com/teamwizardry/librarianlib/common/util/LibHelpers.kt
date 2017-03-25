@@ -11,6 +11,8 @@ import net.minecraftforge.fml.common.Loader
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
+private class LibHelpers // so we can jump to this file with "go to class"
+
 /**
  * Created by TheCodeWarrior
  */

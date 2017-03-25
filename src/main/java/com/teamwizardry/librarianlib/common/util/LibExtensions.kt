@@ -44,6 +44,8 @@ import java.util.*
  * Created by TheCodeWarrior
  */
 
+private class LibExtensions // so we can jump to this file with "go to class"
+
 fun Int.abs() = if (this < 0) -this else this
 
 operator fun TextFormatting.plus(str: String) = "$this$str"

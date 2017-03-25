@@ -7,6 +7,8 @@ import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.awt.Color
 
+private class LibClientExtensions // so we can jump to this file with "go to class"
+
 // Color ===============================================================================================================
 
 @SideOnly(Side.CLIENT)
