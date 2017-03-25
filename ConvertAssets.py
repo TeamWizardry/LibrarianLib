@@ -112,7 +112,7 @@ if __name__ == "__main__":
         forge_forward = agnostic_input("This path (" + expanded_path + ") doesn't contain " + src_main_resources + ".\n"
                                        + "Are you sure you want to continue? Anything other than a blank will be "
                                        + "interpreted as \"go ahead\". ")
-        if not forge_forward.isspace():
+        if forge_forward.isspace():
             exit()
 
     directories = os.walk(walk_path)
