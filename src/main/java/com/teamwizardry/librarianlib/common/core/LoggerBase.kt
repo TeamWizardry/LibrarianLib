@@ -96,7 +96,10 @@ abstract class LoggerBase protected constructor(name: String) {
         var starPadLeft = (maxWidth + 4 - titleStarred.length) / 2
         if (starPadLeft >= 20)
             starPadLeft = 19
-        val starPadRight = (maxWidth + 4 - titleStarred.length) - starPadLeft
+        var starPadRight = (maxWidth + 4 - titleStarred.length) - starPadLeft
+
+        if (starPadLeft < 0) starPadLeft = 0
+        if (starPadRight < 0) starPadRight = 0
 
         titleStarred = "*" * starPadLeft + titleStarred + "*" * starPadRight
 
