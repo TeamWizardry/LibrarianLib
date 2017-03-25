@@ -102,7 +102,7 @@ if __name__ == "__main__":
         should_continue = True
 
     if not should_continue:
-        possible_path = walk_path + src_main_resources
+        possible_path = walk_path + os.path.sep + src_main_resources
 
         if os.path.exists(possible_path):
             walk_path = possible_path
@@ -134,7 +134,7 @@ if __name__ == "__main__":
             loaded = open(path_to_file)
             data = loaded.read()
             loaded.close()
-            if not data.endswith("\n") and not f.endswith(".png"):
+            if not data.endswith("\n") and not f.endswith(".png") and not f.endswith(".ogg"):
                 data += "\n"
                 changed = True
 

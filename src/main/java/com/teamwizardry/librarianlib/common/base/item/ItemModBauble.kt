@@ -99,6 +99,6 @@ abstract class ItemModBauble(name: String, vararg variants: String) : ItemMod(na
                 .firstOrNull { it.keyDescription == "Baubles Inventory" }
                 ?.displayName
 
-        if (key != null) TooltipHelper.addToTooltip(tooltip, "${LibrarianLib.MODID}.baubleTooltip", key)
+        if (key != null) TooltipHelper.addToTooltip(tooltip, "${LibrarianLib.MODID}.bauble_tooltip", key)
     }
 }
