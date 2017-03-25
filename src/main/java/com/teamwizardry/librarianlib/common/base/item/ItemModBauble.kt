@@ -22,7 +22,7 @@ import net.minecraftforge.fml.common.Optional
  * @author WireSegal
  * Created at 7:55 PM on 2/11/17.
  */
-@Optional.Interface(iface = "baubles.api.IBauble", modid = "Baubles")
+@Optional.Interface(iface = "baubles.api.IBauble", modid = "baubles")
 abstract class ItemModBauble(name: String, vararg variants: String) : ItemMod(name, *variants), IBauble {
     companion object {
         val TAG_HASHCODE = "playerHashcode"
@@ -35,7 +35,7 @@ abstract class ItemModBauble(name: String, vararg variants: String) : ItemMod(na
         maxStackSize = 1
     }
 
-    @Optional.Method(modid = "Baubles")
+    @Optional.Method(modid = "baubles")
     override abstract fun getBaubleType(stack: ItemStack): BaubleType
 
     override fun onItemRightClick(world: World, player: EntityPlayer, hand: EnumHand): ActionResult<ItemStack> {
@@ -69,7 +69,7 @@ abstract class ItemModBauble(name: String, vararg variants: String) : ItemMod(na
         //NO-OP
     }
 
-    @Optional.Method(modid = "Baubles")
+    @Optional.Method(modid = "baubles")
     override fun onEquipped(stack: ItemStack, player: EntityLivingBase) {
         if (!player.world.isRemote)
             player.world.playSound(null, player.posX, player.posY, player.posZ, LibLibSoundEvents.baubleEquip, SoundCategory.PLAYERS, 0.1F, 1.3F)
@@ -78,7 +78,7 @@ abstract class ItemModBauble(name: String, vararg variants: String) : ItemMod(na
         setLastPlayerHashcode(stack, player.hashCode())
     }
 
-    @Optional.Method(modid = "Baubles")
+    @Optional.Method(modid = "baubles")
     override fun onWornTick(stack: ItemStack, player: EntityLivingBase) {
         if (getLastPlayerHashcode(stack) != player.hashCode()) {
             onEquippedOrLoadedIntoWorld(stack, player)
@@ -86,7 +86,7 @@ abstract class ItemModBauble(name: String, vararg variants: String) : ItemMod(na
         }
     }
 
-    @Optional.Method(modid = "Baubles")
+    @Optional.Method(modid = "baubles")
     override fun addInformation(stack: ItemStack, player: EntityPlayer, tooltip: MutableList<String>, advanced: Boolean) {
         TooltipHelper.tooltipIfShift(tooltip) {
             addHiddenTooltip(stack, player, tooltip, advanced)
