@@ -33,6 +33,7 @@ class DragMixin<T : GuiComponent<T>>(protected var component: T, protected var c
                 event.cancel()
             }
         }
+
         component.BUS.hook(GuiComponent.PreDrawEvent::class.java) { event ->
             val mouseButton = mouseDown
             if (mouseButton != null) {
