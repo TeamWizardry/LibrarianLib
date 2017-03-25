@@ -14,6 +14,7 @@ import com.teamwizardry.librarianlib.common.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.common.base.item.ISpecialModelProvider
 import com.teamwizardry.librarianlib.common.core.LibLibConfig
 import com.teamwizardry.librarianlib.common.core.OwnershipHandler
+import com.teamwizardry.librarianlib.common.util.VariantHelper
 import com.teamwizardry.librarianlib.common.util.builders.serialize
 import com.teamwizardry.librarianlib.common.util.handles.MethodHandleHelper
 import com.teamwizardry.librarianlib.common.util.times
@@ -179,8 +180,8 @@ object ModelHandler {
 
         if (holder is IModItemProvider) {
             val item = holder.providedItem
-            for ((index, variant) in variants.withIndex()) {
-
+            for ((index, variantName) in variants.withIndex()) {
+                val variant = VariantHelper.toSnakeCase(variantName)
 
                 if (index == 0) {
                     var print = "$namePad | Registering "
@@ -209,7 +210,7 @@ object ModelHandler {
                     addToCachedLocations(getKey(item, index), model)
                 } else {
                     ModelBakery.registerItemVariants(item, model)
-                    addToCachedLocations(variant, model)
+                    addToCachedLocations(variantName, model)
                 }
             }
         }

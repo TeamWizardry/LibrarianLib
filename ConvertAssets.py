@@ -89,6 +89,9 @@ if __name__ == "__main__":
 
     for (path, dirs, files) in directories:
         for f in files:
+            if f.startswith("."):
+                continue
+
             changed = False
 
             path_to_file = os.path.join(path, f)
