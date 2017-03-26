@@ -7,20 +7,24 @@ import com.teamwizardry.librarianlib.common.util.withY
 import net.minecraft.util.math.Vec3d
 
 /**
- * Create a Bézier curve from [start] to [end] with [startControl] and [endControl] as handles for the curvature
+ * Create a Bézier curve from [start] to [end] with [startControl] and [endControl] as relative positions of handles for the curvature
  *
  * ![Bézier curve image example](http://imgur.com/bkIoyyR) |
- * P0 is [start], P1 is [startControl], P2 is [endControl], and P3 is [end]
+ * P0 is [start], P1 relative to P0 is [startControl], P2 relative to P3 is [endControl], and P3 is [end]
  */
 class InterpBezier3D @JvmOverloads constructor(
         val start: Vec3d, val end: Vec3d,
-        val startControl: Vec3d = ((start + end) / 2).withY(start.yCoord), val endControl: Vec3d = ((start + end) / 2).withY(end.yCoord)
+        val startControl: Vec3d = ((end - start) / 2).withY(0), val endControl: Vec3d = ((start - end) / 2).withY(0)
 ) : InterpFunction<Vec3d> {
+    
+    private val absoluteStartControl = start + startControl
+    private val absoluteEndControl = end + endControl
+    
     override fun get(i: Float): Vec3d {
         return Vec3d(
-                getBezierComponent(i.toDouble(), start.xCoord, end.xCoord, startControl.xCoord, endControl.xCoord),
-                getBezierComponent(i.toDouble(), start.yCoord, end.yCoord, startControl.yCoord, endControl.yCoord),
-                getBezierComponent(i.toDouble(), start.zCoord, end.zCoord, startControl.zCoord, endControl.zCoord)
+                getBezierComponent(i.toDouble(), start.xCoord, end.xCoord, absoluteStartControl.xCoord, absoluteEndControl.xCoord),
+                getBezierComponent(i.toDouble(), start.yCoord, end.yCoord, absoluteStartControl.yCoord, absoulteEndControl.yCoord),
+                getBezierComponent(i.toDouble(), start.zCoord, end.zCoord, absoluteStartControl.zCoord, absoluteEndControl.zCoord)
         )
     }
 
