@@ -106,6 +106,8 @@ import java.util.*
  * - [SetDataEvent] - Fired before data is set
  * - [RemoveDataEvent] - Fired before data is removed
  * - [GetDataEvent] - Fired when data is queried
+ * - [GetDataKeysEvent] - Fired when the data key set is queried
+ * - [GetDataClassesEvent] - Fired when the data class set is queried
  * - ---
  * - [HasTagEvent] - Fired when the component is checked for a tag
  * - [AddTagEvent] - Fired before a tag is added to the component
@@ -162,6 +164,8 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     class SetDataEvent<T : GuiComponent<T>, D>(val component: T, val clazz: Class<D>, val key: String, val value: D) : EventCancelable()
     class RemoveDataEvent<T : GuiComponent<T>, D>(val component: T, val clazz: Class<D>, val key: String, val value: D?) : EventCancelable()
     class GetDataEvent<T : GuiComponent<T>, D>(val component: T, val clazz: Class<D>, val key: String, val value: D?) : Event()
+    class GetDataKeysEvent<T : GuiComponent<T>, D>(val component: T, val clazz: Class<D>, val value: MutableSet<String>) : Event()
+    class GetDataClassesEvent<T : GuiComponent<T>, D>(val component: T, val value: MutableSet<Class<*>>) : Event()
 
     class HasTagEvent<T : GuiComponent<T>>(val component: T, val tag: Any, var hasTag: Boolean) : Event()
     class AddTagEvent<T : GuiComponent<T>>(val component: T, val tag: Any) : EventCancelable()
@@ -793,6 +797,22 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
     open fun sendMessage(data: Any, ripple: EnumRippleType) {
         // NO-OP
+    }
+    
+    /**
+     * Returns all valid data keys for [clazz]. Not guaranteed to be complete.
+     */
+    fun <D : Any> getAllDataKeys(clazz: Class<D>): Set<String> {
+        if(!data.containsKey(clazz))
+            return setOf()
+        return BUS.fire(GetDataKeysEvent(thiz(), clazz, data.get(clazz).keys.toMutableSet())).value
+    }
+    
+    /**
+     * Returns all classes for data that contain at least one value. Not guaranteed to be complete.
+     */
+    fun getAllDataClasses(): Set<Class<*>> {
+        return BUS.fire(GetDataClassesEvent(thiz(), clazz, data.entries.filter { it.value.isNotEmpty() }.map { it.key }.toMutableSet())).value
     }
 
     /**
