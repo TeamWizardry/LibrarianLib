@@ -122,6 +122,8 @@ object ParticleRenderManager {
     fun tick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START)
             return
+        if (Minecraft.getMinecraft().currentScreen?.doesGuiPauseGame() ?: false)
+            return
         val profiler = Minecraft.getMinecraft().mcProfiler
         profiler.startSection("liblib_particles")
 
