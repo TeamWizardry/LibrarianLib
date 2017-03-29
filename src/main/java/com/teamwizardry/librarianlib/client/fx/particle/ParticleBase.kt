@@ -29,6 +29,7 @@ open class ParticleBase internal constructor(
         val tickFunc: TickFunction?,
         val movementMode: EnumMovementMode,
         val scaleFunc: InterpFunction<Float>,
+        val rotationFunc: InterpFunction<Float>,
         val motionEnabled: Boolean,
         val positionEnabled: Boolean,
         var canCollide: Boolean,
@@ -142,7 +143,7 @@ open class ParticleBase internal constructor(
 
         renderFunc.render(i, this, colorFunc.get(i), alphaFunc.get(i), worldRendererIn, info.entityIn, info.partialTicks,
                 info.rotationX, info.rotationZ, info.rotationYZ, info.rotationXY, info.rotationXZ,
-                scaleFunc.get(i), pos, skyLight, blockLight)
+                scaleFunc.get(i), rotationFunc.get(i), pos, skyLight, blockLight)
     }
 
     /*

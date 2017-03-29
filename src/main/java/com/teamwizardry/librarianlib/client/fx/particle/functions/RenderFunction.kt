@@ -18,5 +18,5 @@ abstract class RenderFunction(protected var theLayer: ParticleRenderLayer) {
 
     abstract fun render(i: Float, particle: ParticleBase, color: Color, alpha: Float,
                         worldRendererIn: VertexBuffer, entityIn: Entity?, partialTicks: Float, rotationX: Float, rotationZ: Float, rotationYZ: Float, rotationXY: Float, rotationXZ: Float,
-                        scale: Float, pos: Vec3d, skyLight: Int, blockLight: Int)
+                        scale: Float, rotation: Float, pos: Vec3d, skyLight: Int, blockLight: Int)
 }

@@ -142,6 +142,16 @@ class ParticleBuilder(private var lifetime: Int) {
     }
     // endregion
 
+    fun setRotation(value: Float): ParticleBuilder {
+        rotationFunc = StaticInterp(value)
+        return this
+    }
+
+    fun setRotation(interp: InterpFunction<Float>): ParticleBuilder {
+        rotationFunc = interp
+        return this
+    }
+
     // endregion
 
     // region Position function
@@ -475,6 +485,8 @@ class ParticleBuilder(private var lifetime: Int) {
         private set
     var scaleFunc: InterpFunction<Float> = StaticInterp(1f)
         private set
+    var rotationFunc: InterpFunction<Float> = StaticInterp(0f)
+        private set
 
     // pos func
     var positionEnabled: Boolean = false
@@ -568,7 +580,7 @@ class ParticleBuilder(private var lifetime: Int) {
 
         return ParticleBase(world, pos_, lifetime_, animStart_, animEnd_,
                 positionFunc ?: StaticInterp(Vec3d.ZERO), colorFunc ?: StaticInterp(Color.WHITE), alphaFunc,
-                renderFunc_, tickFunction, movementMode, scaleFunc,
+                renderFunc_, tickFunction, movementMode, scaleFunc, rotationFunc,
                 motionCalculation, positionEnabled, canCollide, motion_, acceleration, deceleration, friction, jitterMagnitude, jitterChance)
     }
 

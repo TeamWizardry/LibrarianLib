@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.test.fx
 import com.teamwizardry.librarianlib.client.fx.particle.ParticleBuilder
 import com.teamwizardry.librarianlib.client.fx.particle.ParticleSpawner
 import com.teamwizardry.librarianlib.common.base.item.ItemMod
+import com.teamwizardry.librarianlib.common.util.math.interpolate.float.InterpLinearFloat
 import com.teamwizardry.librarianlib.common.util.math.interpolate.position.InterpLine
 import com.teamwizardry.librarianlib.common.util.vec
 import net.minecraft.entity.player.EntityPlayer
@@ -33,6 +34,7 @@ class ItemBasicParticles : ItemMod("basic_particle") {
             } else {
                 builder.setRenderNormalLayer(loc)
             }
+            builder.setRotation(InterpLinearFloat(0f, 3*Math.PI.toFloat()))
 
             ParticleSpawner.spawn(builder, worldIn, InterpLine(playerIn.positionVector, playerIn.getPositionEyes(1f)), 5)
         }
