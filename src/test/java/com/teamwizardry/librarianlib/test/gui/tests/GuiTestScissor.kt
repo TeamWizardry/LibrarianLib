@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.test.gui.tests
 
-import com.teamwizardry.librarianlib.client.gui.GuiBase
-import com.teamwizardry.librarianlib.client.gui.components.ComponentRect
-import com.teamwizardry.librarianlib.client.gui.components.ComponentVoid
-import com.teamwizardry.librarianlib.client.gui.mixin.ScissorMixin
+import com.teamwizardry.librarianlib.features.gui.GuiBase
+import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
+import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
+import com.teamwizardry.librarianlib.features.gui.mixin.ScissorMixin
 import java.awt.Color
 
 /**

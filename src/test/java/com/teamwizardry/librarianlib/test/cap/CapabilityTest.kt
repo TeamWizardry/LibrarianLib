@@ -1,14 +1,14 @@
 package com.teamwizardry.librarianlib.test.cap
 
-import com.teamwizardry.librarianlib.common.base.block.BlockMod
-import com.teamwizardry.librarianlib.common.base.block.TileMod
-import com.teamwizardry.librarianlib.common.base.capability.CapabilityMod
-import com.teamwizardry.librarianlib.common.base.capability.ICapabilityObjectProvider
-import com.teamwizardry.librarianlib.common.util.autoregister.TileRegister
-import com.teamwizardry.librarianlib.common.util.saving.CapabilityProvide
-import com.teamwizardry.librarianlib.common.util.saving.Save
-import com.teamwizardry.librarianlib.common.util.toComponent
-import com.teamwizardry.librarianlib.common.util.toRl
+import com.teamwizardry.librarianlib.features.autoregister.TileRegister
+import com.teamwizardry.librarianlib.features.base.block.BlockMod
+import com.teamwizardry.librarianlib.features.base.block.TileMod
+import com.teamwizardry.librarianlib.features.base.capability.CapabilityMod
+import com.teamwizardry.librarianlib.features.base.capability.ICapabilityObjectProvider
+import com.teamwizardry.librarianlib.features.kotlin.toComponent
+import com.teamwizardry.librarianlib.features.kotlin.toRl
+import com.teamwizardry.librarianlib.features.saving.CapabilityProvide
+import com.teamwizardry.librarianlib.features.saving.Save
 import com.teamwizardry.librarianlib.test.testcore.TestMod
 import net.minecraft.block.ITileEntityProvider
 import net.minecraft.block.material.Material

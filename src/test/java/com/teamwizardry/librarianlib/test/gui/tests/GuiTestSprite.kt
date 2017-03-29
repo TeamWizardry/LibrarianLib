@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.test.gui.tests
 
-import com.teamwizardry.librarianlib.client.gui.GuiBase
-import com.teamwizardry.librarianlib.client.gui.components.ComponentSprite
-import com.teamwizardry.librarianlib.client.sprite.Sprite
+import com.teamwizardry.librarianlib.features.gui.GuiBase
+import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
+import com.teamwizardry.librarianlib.features.sprite.Sprite
 import net.minecraft.util.ResourceLocation
 
 /**

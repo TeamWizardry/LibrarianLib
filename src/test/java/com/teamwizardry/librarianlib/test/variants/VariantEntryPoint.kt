@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.test.variants
 
-import com.teamwizardry.librarianlib.common.base.block.*
-import com.teamwizardry.librarianlib.common.base.item.ItemModArrow
-import com.teamwizardry.librarianlib.common.util.sendSpamlessMessage
+import com.teamwizardry.librarianlib.features.base.block.*
+import com.teamwizardry.librarianlib.features.base.item.ItemModArrow
+import com.teamwizardry.librarianlib.features.kotlin.sendSpamlessMessage
 import com.teamwizardry.librarianlib.test.testcore.TestEntryPoint
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState

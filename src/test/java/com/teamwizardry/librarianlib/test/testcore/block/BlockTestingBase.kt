@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.test.testcore.block
 
-import com.teamwizardry.librarianlib.common.base.block.BlockMod
+import com.teamwizardry.librarianlib.features.base.block.BlockMod
 import net.minecraft.block.material.Material
 
 /**

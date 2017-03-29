@@ -1,11 +1,11 @@
 package com.teamwizardry.librarianlib.test.saving
 
-import com.teamwizardry.librarianlib.common.base.block.BlockMod
-import com.teamwizardry.librarianlib.common.base.block.TileMod
-import com.teamwizardry.librarianlib.common.util.autoregister.TileRegister
-import com.teamwizardry.librarianlib.common.util.saving.Savable
-import com.teamwizardry.librarianlib.common.util.saving.Save
-import com.teamwizardry.librarianlib.common.util.sendMessage
+import com.teamwizardry.librarianlib.features.base.block.BlockMod
+import com.teamwizardry.librarianlib.features.base.block.TileMod
+import com.teamwizardry.librarianlib.features.autoregister.TileRegister
+import com.teamwizardry.librarianlib.features.saving.Savable
+import com.teamwizardry.librarianlib.features.saving.Save
+import com.teamwizardry.librarianlib.features.kotlin.sendMessage
 import net.minecraft.block.ITileEntityProvider
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState

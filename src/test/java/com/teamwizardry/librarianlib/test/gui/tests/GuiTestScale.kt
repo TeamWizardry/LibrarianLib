@@ -1,12 +1,12 @@
 package com.teamwizardry.librarianlib.test.gui.tests
 
-import com.teamwizardry.librarianlib.client.gui.GuiBase
-import com.teamwizardry.librarianlib.client.gui.GuiComponent
-import com.teamwizardry.librarianlib.client.gui.components.ComponentRect
-import com.teamwizardry.librarianlib.client.gui.components.ComponentVoid
-import com.teamwizardry.librarianlib.client.gui.mixin.ScissorMixin
-import com.teamwizardry.librarianlib.common.util.plus
-import com.teamwizardry.librarianlib.common.util.vec
+import com.teamwizardry.librarianlib.features.gui.GuiBase
+import com.teamwizardry.librarianlib.features.gui.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
+import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
+import com.teamwizardry.librarianlib.features.gui.mixin.ScissorMixin
+import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.kotlin.plus
 import java.awt.Color
 
 /**

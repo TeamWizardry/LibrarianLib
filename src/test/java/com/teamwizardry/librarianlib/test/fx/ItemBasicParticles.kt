@@ -1,11 +1,11 @@
 package com.teamwizardry.librarianlib.test.fx
 
-import com.teamwizardry.librarianlib.client.fx.particle.ParticleBuilder
-import com.teamwizardry.librarianlib.client.fx.particle.ParticleSpawner
-import com.teamwizardry.librarianlib.common.base.item.ItemMod
-import com.teamwizardry.librarianlib.common.util.math.interpolate.float.InterpLinearFloat
-import com.teamwizardry.librarianlib.common.util.math.interpolate.position.InterpLine
-import com.teamwizardry.librarianlib.common.util.vec
+import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.base.item.ItemMod
+import com.teamwizardry.librarianlib.features.math.interpolate.float.InterpLinearFloat
+import com.teamwizardry.librarianlib.features.math.interpolate.position.InterpLine
+import com.teamwizardry.librarianlib.features.particle.ParticleBuilder
+import com.teamwizardry.librarianlib.features.particle.ParticleSpawner
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ActionResult

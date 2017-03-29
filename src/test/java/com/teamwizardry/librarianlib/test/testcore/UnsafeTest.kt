@@ -1,11 +1,9 @@
 package com.teamwizardry.librarianlib.test.testcore
 
-import com.teamwizardry.librarianlib.LibrarianLib
-import com.teamwizardry.librarianlib.LibrarianLog
-import com.teamwizardry.librarianlib.common.util.getUnsafe
-import com.teamwizardry.librarianlib.common.util.hookIntoUnsafe
+import com.teamwizardry.librarianlib.core.LibrarianLog
+import com.teamwizardry.librarianlib.features.utilities.getUnsafe
+import com.teamwizardry.librarianlib.features.utilities.hookIntoUnsafe
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
-import net.minecraftforge.fml.common.event.FMLInterModComms
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 

@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.test.gui
 
-import com.teamwizardry.librarianlib.common.base.item.ItemMod
-import com.teamwizardry.librarianlib.common.util.localize
+import com.teamwizardry.librarianlib.features.base.item.ItemMod
+import com.teamwizardry.librarianlib.features.kotlin.localize
 import com.teamwizardry.librarianlib.test.gui.tests.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen

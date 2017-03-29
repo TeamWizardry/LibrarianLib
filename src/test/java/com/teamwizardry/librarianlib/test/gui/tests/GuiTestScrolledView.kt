@@ -1,12 +1,12 @@
 package com.teamwizardry.librarianlib.test.gui.tests
 
-import com.teamwizardry.librarianlib.client.gui.GuiBase
-import com.teamwizardry.librarianlib.client.gui.GuiComponent
-import com.teamwizardry.librarianlib.client.gui.components.ComponentRect
-import com.teamwizardry.librarianlib.client.gui.components.ComponentScrolledView
-import com.teamwizardry.librarianlib.client.gui.components.ComponentSprite
-import com.teamwizardry.librarianlib.client.sprite.Sprite
-import com.teamwizardry.librarianlib.common.util.vec
+import com.teamwizardry.librarianlib.features.gui.GuiBase
+import com.teamwizardry.librarianlib.features.gui.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
+import com.teamwizardry.librarianlib.features.gui.components.ComponentScrolledView
+import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
+import com.teamwizardry.librarianlib.features.sprite.Sprite
+import com.teamwizardry.librarianlib.features.helpers.vec
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
 
