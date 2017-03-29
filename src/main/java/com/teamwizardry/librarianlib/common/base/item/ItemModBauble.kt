@@ -52,7 +52,7 @@ abstract class ItemModBauble(name: String, vararg variants: String) : ItemMod(na
                                 player.inventory.setInventorySlotContents(player.inventory.currentItem, null)
                         }
 
-                        if (stackInSlot.isEmpty) {
+                        if (!stackInSlot.isEmpty) {
                             (stackInSlot.item as IBauble).onUnequipped(stackInSlot, player)
                             return ActionResult.newResult(EnumActionResult.SUCCESS, stackInSlot.copy())
                         }

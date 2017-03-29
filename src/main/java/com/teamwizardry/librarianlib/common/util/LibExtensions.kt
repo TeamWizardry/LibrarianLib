@@ -130,6 +130,15 @@ operator fun Vec2d.plus(other: Vec2d) = this.add(other)
 operator fun Vec2d.minus(other: Vec2d) = this.add(other)
 operator fun Vec2d.unaryMinus() = this * -1
 
+fun Vec2d.withX(other: Double) = Vec2d(other, this.y)
+fun Vec2d.withY(other: Double) = Vec2d(this.x, other)
+
+fun Vec2d.withX(other: Float) = this.withX(other.toDouble())
+fun Vec2d.withY(other: Float) = this.withY(other.toDouble())
+
+fun Vec2d.withX(other: Int) = this.withX(other.toDouble())
+fun Vec2d.withY(other: Int) = this.withY(other.toDouble())
+
 // BlockPos ============================================================================================================
 
 operator fun BlockPos.times(other: BlockPos) = BlockPos(this.x * other.x, this.y * other.y, this.z * other.z)
