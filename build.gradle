@@ -82,7 +82,7 @@ dependencies {
 // todo once mcmultipart is 1.11
 //    deobfCompile "MCMultiPart:MCMultiPart:1.2.1:universal"
     compile "net.shadowfacts:Forgelin:1.4.0"
-    required "org.jgrapht:jgrapht-core:1.0.1"
+//    required "org.jgrapht:jgrapht-core:1.0.1"
 }
 
 reobf {
