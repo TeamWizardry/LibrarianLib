@@ -76,7 +76,7 @@ open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, to
     open val creativeTab: ModCreativeTab?
         get() = ModCreativeTab.defaultTabs[modId]
 
-    override fun getHarvestLevel(stack: ItemStack, toolClass: String, player: net.minecraft.entity.player.EntityPlayer?, blockState: IBlockState?): Int {
+    override fun getHarvestLevel(stack: ItemStack, toolClass: String, player: EntityPlayer?, blockState: IBlockState?): Int {
         val level = super.getHarvestLevel(stack, toolClass, player, blockState)
         return if (level == -1 && toolClass == this.toolClass) this.toolMaterial.harvestLevel else level
     }
