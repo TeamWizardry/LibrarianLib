@@ -51,8 +51,8 @@ open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, to
                 -3.1f
             else
                 -3.0f
-            "shovel" -> 1.5f
-            "pickaxe" -> 1.0f
+            "shovel" -> -3.0f
+            "pickaxe" -> -2.8f
             else -> 0f
         }
     }
