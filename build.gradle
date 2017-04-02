@@ -78,7 +78,6 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     //required "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     //required 'com.github.Eladkay:Mixin:-SNAPSHOT'
-    compile 'org.spongepowered:mixin:0.6.8-SNAPSHOT'
 // todo once mcmultipart is 1.11
 //    deobfCompile "MCMultiPart:MCMultiPart:1.2.1:universal"
     compile "net.shadowfacts:Forgelin:1.4.0"
