@@ -49,7 +49,7 @@ abstract class ItemModBauble(name: String, vararg variants: String) : ItemMod(na
                         if (!world.isRemote) {
                             baubles.setStackInSlot(i, stack.copy())
                             if (!player.capabilities.isCreativeMode)
-                                player.inventory.setInventorySlotContents(player.inventory.currentItem, null)
+                                player.inventory.setInventorySlotContents(player.inventory.currentItem, ItemStack.EMPTY)
                         }
 
                         if (!stackInSlot.isEmpty) {
