@@ -304,7 +304,7 @@ object ModelHandler {
             file.parentFile.mkdirs()
             if (file.createNewFile()) {
                 file.writeText(serialize(model))
-                log("$namePad | Creating file for variant of ${holder.providedItem.registryName.resourcePath}")
+                log("$namePad | Creating ${file.name} for item model of ${holder.providedItem.registryName.resourcePath}")
                 generatedFiles.add(path)
             }
         }
@@ -336,7 +336,7 @@ object ModelHandler {
             stateFile.parentFile.mkdirs()
             if (stateFile.createNewFile()) {
                 stateFile.writeText(serialize(model))
-                ModelHandler.log("${namePad} | Creating a file for blockstate of ${holder.providedBlock.registryName.resourcePath}")
+                ModelHandler.log("$namePad | Creating ${stateFile.name} for blockstate of ${holder.providedBlock.registryName.resourcePath}")
                 ModelHandler.generatedFiles.add(path)
                 flag = true
             }
@@ -348,7 +348,7 @@ object ModelHandler {
                 modelFile.parentFile.mkdirs()
                 if (modelFile.createNewFile()) {
                     modelFile.writeText(serialize(model))
-                    ModelHandler.log("${ModelHandler.namePad} | Creating file for block ${holder.providedBlock.registryName.resourcePath}")
+                    ModelHandler.log("$namePad | Creating ${modelFile.name} for block model of ${holder.providedBlock.registryName.resourcePath}")
                     ModelHandler.generatedFiles.add(path)
                 }
             }
