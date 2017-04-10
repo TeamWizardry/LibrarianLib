@@ -25,6 +25,7 @@ import net.minecraft.world.World
 open class ItemModShield(name: String, durability: Int = 336) : ItemMod(name), IShieldItem, IModelGenerator {
     init {
         maxDamage = durability
+        maxStackSize = 1
         this.addPropertyOverride(ResourceLocation("blocking")) { stack, _, entityIn ->
             if (entityIn != null && entityIn.isHandActive && entityIn.activeItemStack == stack) 1.0f else 0.0f
         }
