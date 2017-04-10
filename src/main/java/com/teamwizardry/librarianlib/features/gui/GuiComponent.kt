@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
 import com.teamwizardry.librarianlib.features.gui.GuiComponent.*
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.div
+import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.math.BoundingBox2D

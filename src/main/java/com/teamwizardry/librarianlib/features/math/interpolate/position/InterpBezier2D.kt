@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.math.interpolate.position
 
 import com.teamwizardry.librarianlib.features.kotlin.div
+import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.withY
 import com.teamwizardry.librarianlib.features.math.Vec2d
