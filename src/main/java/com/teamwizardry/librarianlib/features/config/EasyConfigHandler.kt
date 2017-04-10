@@ -68,7 +68,7 @@ object EasyConfigHandler {
 
     @JvmStatic
     @JvmOverloads
-    fun init(modid: String = currentModId, configf: File? = if (loaded) File(CONFIG_DIR, "${currentModId}.cfg") else null) {
+    fun init(modid: String = currentModId, configf: File? = if (loaded) File(CONFIG_DIR, "$currentModId.cfg") else null) {
         if (!loaded) {
             toLoad.add(modid to configf)
             return
@@ -177,7 +177,7 @@ object EasyConfigHandler {
     private fun <T> shouldUse(it: Triple<String, (T) -> Unit, AnnotationInfo>): Boolean {
         if (it.third.getBoolean("devOnly") && !LibrarianLib.DEV_ENVIRONMENT) return false
         val modid = it.third.getString("modid")
-        return workingId == modid || modid == noModId && modid == it.first
+        return workingId == modid || (modid == noModId && workingId == it.first)
     }
 }
 
