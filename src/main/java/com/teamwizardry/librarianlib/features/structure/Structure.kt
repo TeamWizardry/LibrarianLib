@@ -2,8 +2,8 @@ package com.teamwizardry.librarianlib.features.structure
 
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
-import com.teamwizardry.librarianlib.features.utilities.NBTTypes
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
+import com.teamwizardry.librarianlib.features.utilities.NBTTypes
 import net.minecraft.block.*
 import net.minecraft.block.properties.IProperty
 import net.minecraft.init.Blocks

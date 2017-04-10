@@ -172,7 +172,7 @@ object MethodHandleHelper {
 
         val wrapper = InvocationWrapper(remapped)
         if (count == 1)
-            return { obj, args -> wrapper(obj) }
+            return { obj, _ -> wrapper(obj) }
 
         return { obj, args -> wrapper.invokeArity(arrayOf(obj, *args)) }
     }

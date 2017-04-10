@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.features.structure
 
 import com.teamwizardry.librarianlib.features.utilities.client.BlockRenderUtils
-import com.teamwizardry.librarianlib.features.structure.Structure
 import net.minecraft.client.renderer.VertexBuffer
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.BlockRenderLayer

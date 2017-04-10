@@ -3,16 +3,16 @@ package com.teamwizardry.librarianlib.features.gui
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.core.client.ClientTickHandler
-import com.teamwizardry.librarianlib.features.gui.GuiComponent.*
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventBus
 import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
-import com.teamwizardry.librarianlib.features.math.BoundingBox2D
-import com.teamwizardry.librarianlib.features.math.Vec2d
+import com.teamwizardry.librarianlib.features.gui.GuiComponent.*
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.div
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.times
+import com.teamwizardry.librarianlib.features.math.BoundingBox2D
+import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
@@ -258,7 +258,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     var isAnimating = true
 
     protected var mouseButtonsDown = BooleanArray(EnumMouseButton.values().size)
-    protected var keysDown: MutableMap<Key, Boolean> = HashMap<Key, Boolean>().withDefault({ k -> false })
+    protected var keysDown: MutableMap<Key, Boolean> = HashMap<Key, Boolean>().withDefault({ false })
     private val data: MutableMap<Class<*>, MutableMap<String, Any>> = mutableMapOf()
 
     var tooltipText: List<String>? = null
@@ -798,16 +798,16 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     open fun sendMessage(data: Any, ripple: EnumRippleType) {
         // NO-OP
     }
-    
+
     /**
      * Returns all valid data keys for [clazz]. Not guaranteed to be complete.
      */
     fun <D : Any> getAllDataKeys(clazz: Class<D>): Set<String> {
-        if(!data.containsKey(clazz))
+        if (!data.containsKey(clazz))
             return setOf()
         return BUS.fire(GetDataKeysEvent(thiz(), clazz, data.get(clazz)?.keys?.toMutableSet() ?: mutableSetOf())).value
     }
-    
+
     /**
      * Returns all classes for data that contain at least one value. Not guaranteed to be complete.
      */

@@ -3,11 +3,11 @@ package com.teamwizardry.librarianlib.features.multilayermodel
 import com.google.common.base.Function
 import com.google.common.base.Optional
 import com.google.common.collect.*
+import com.teamwizardry.librarianlib.features.methodhandles.mhStaticGetter
+import com.teamwizardry.librarianlib.features.methodhandles.mhValDelegate
 import com.teamwizardry.librarianlib.features.multilayermodel.data.LayeredBakedModel
 import com.teamwizardry.librarianlib.features.multilayermodel.data.LibLibBlockPart
 import com.teamwizardry.librarianlib.features.multilayermodel.data.LibLibBlockPartFace
-import com.teamwizardry.librarianlib.features.methodhandles.mhStaticGetter
-import com.teamwizardry.librarianlib.features.methodhandles.mhValDelegate
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.*
 import net.minecraft.client.renderer.texture.TextureAtlasSprite

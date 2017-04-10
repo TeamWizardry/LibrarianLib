@@ -1,9 +1,7 @@
 package com.teamwizardry.librarianlib.features.base.item
 
-import com.sun.tools.doclets.internal.toolkit.util.DocPath.parent
 import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.features.base.IModelGenerator
-import com.teamwizardry.librarianlib.features.kotlin.JSON
 import com.teamwizardry.librarianlib.features.kotlin.json
 import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
 import net.minecraft.block.BlockDispenser
@@ -27,7 +25,7 @@ import net.minecraft.world.World
 open class ItemModShield(name: String, durability: Int = 336) : ItemMod(name), IShieldItem, IModelGenerator {
     init {
         maxDamage = durability
-        this.addPropertyOverride(ResourceLocation("blocking")) { stack, worldIn, entityIn ->
+        this.addPropertyOverride(ResourceLocation("blocking")) { stack, _, entityIn ->
             if (entityIn != null && entityIn.isHandActive && entityIn.activeItemStack == stack) 1.0f else 0.0f
         }
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, DispenseBehavior)
@@ -78,20 +76,20 @@ open class ItemModShield(name: String, durability: Int = 336) : ItemMod(name), I
     override fun generateMissingItem(variant: String): Boolean {
         ModelHandler.generateItemJson(this) {
             mapOf(JsonGenerationUtils.getPathForItemModel(this, variant) to json {
-                        obj(
-                                "parent" to "item/generated",
-                                "textures" to obj(
-                                        "layer0" to "${registryName.resourceDomain}:items/$variant"
-                                ),
-                                "overrides" to array(
-                                        obj(
-                                                "predicate" to obj(
-                                                        "blocking" to 1
-                                                ),
-                                                "model" to "${registryName.resourceDomain}:item/${variant}_blocking"
-                                        )
+                obj(
+                        "parent" to "item/generated",
+                        "textures" to obj(
+                                "layer0" to "${registryName.resourceDomain}:items/$variant"
+                        ),
+                        "overrides" to array(
+                                obj(
+                                        "predicate" to obj(
+                                                "blocking" to 1
+                                        ),
+                                        "model" to "${registryName.resourceDomain}:item/${variant}_blocking"
                                 )
                         )
+                )
             },
                     JsonGenerationUtils.getPathForItemModel(this, "${variant}_blocking") to json {
                         obj(
@@ -106,7 +104,7 @@ open class ItemModShield(name: String, durability: Int = 336) : ItemMod(name), I
                                                 "translation" to array(-1, 1.75, 0)
                                         )
                                 )
-                                )
+                        )
                     })
         }
         return true

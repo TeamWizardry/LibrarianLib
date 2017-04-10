@@ -43,7 +43,7 @@ class ContainerTest(player: EntityPlayer, tile: TEContainer) : ContainerBase(pla
         val NAME = ResourceLocation("librarianlibtest:container")
 
         init {
-            GuiHandler.registerBasicContainer(NAME, { player, pos, tile -> ContainerTest(player, tile as TEContainer) }, { player, container -> GuiContainerTest(container) })
+            GuiHandler.registerBasicContainer(NAME, { player, _, tile -> ContainerTest(player, tile as TEContainer) }, { _, container -> GuiContainerTest(container) })
         }
     }
 }

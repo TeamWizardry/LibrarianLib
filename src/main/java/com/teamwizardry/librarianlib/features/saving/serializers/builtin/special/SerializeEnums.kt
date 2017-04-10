@@ -24,7 +24,7 @@ object SerializeEnums {
             val constantsMap = constants.associateBy { it.name }
             val constSize = constants.size
 
-            Targets.NBT.impl<Enum<*>>({ nbt, existing, syncing ->
+            Targets.NBT.impl<Enum<*>>({ nbt, _, syncing ->
                 if (syncing || nbt is NBTPrimitive) {
                     nbt.safeCast(NBTPrimitive::class.java).let {
                         if (constSize <= 256) {
@@ -56,13 +56,13 @@ object SerializeEnums {
             val constants = type.clazz.enumConstants as Array<Enum<*>>
             val constSize = constants.size
 
-            Targets.BYTES.impl<Enum<*>>({ buf, existing, syncing ->
+            Targets.BYTES.impl<Enum<*>>({ buf, _, _ ->
                 if (constSize <= 256) {
                     constants[buf.readByte().toInt()]
                 } else {
                     constants[buf.readShort().toInt()]
                 }
-            }, { buf, value, syncing ->
+            }, { buf, value, _ ->
                 if (constSize <= 256) {
                     buf.writeByte(value.ordinal)
                 } else {

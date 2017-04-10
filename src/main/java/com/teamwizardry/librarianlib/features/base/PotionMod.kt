@@ -17,12 +17,10 @@ open class PotionMod(name: String, badEffect: Boolean, color: Int) : Potion(badE
     val iconX: Int
     val iconY: Int
 
-    private val modid: String
-    private val resource: ResourceLocation
+    private val modid: String = currentModId
+    private val resource: ResourceLocation = ResourceLocation(modid, "textures/gui/potions.png")
 
     init {
-        modid = currentModId
-        resource = ResourceLocation(modid, "textures/gui/potions.png")
 
         val iconIndex = (iconIndexByModId[modid] ?: 0) + 1
         iconIndexByModId[modid] = iconIndex

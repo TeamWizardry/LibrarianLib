@@ -1,11 +1,11 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
+import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.gui.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.Option
-import com.teamwizardry.librarianlib.features.sprite.Sprite
-import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.kotlin.glColor
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import com.teamwizardry.librarianlib.features.sprite.Sprite
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 

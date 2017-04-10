@@ -1,9 +1,6 @@
 package com.teamwizardry.librarianlib.features.saving.serializers.builtin.generics
 
-import com.teamwizardry.librarianlib.features.kotlin.forEachIndexed
-import com.teamwizardry.librarianlib.features.kotlin.readVarInt
-import com.teamwizardry.librarianlib.features.kotlin.safeCast
-import com.teamwizardry.librarianlib.features.kotlin.writeVarInt
+import com.teamwizardry.librarianlib.features.kotlin.*
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.saving.FieldTypeGeneric
 import com.teamwizardry.librarianlib.features.saving.serializers.Serializer
@@ -31,7 +28,7 @@ object SerializeSets {
 
             @Suppress("UNCHECKED_CAST")
             val constructorMH = (if (EnumSet::class.java.isAssignableFrom(type.clazz))
-                { arr -> RawEnumSetCreator.create(type.clazz) }
+                { RawEnumSetCreator.create(type.clazz) }
             else
                 MethodHandleHelper.wrapperForConstructor(type.clazz.getConstructor())
                     ) as (Array<Any>) -> MutableSet<Any?>
@@ -46,8 +43,8 @@ object SerializeSets {
                 set.clear()
                 if (nullFlag)
                     set.add(null)
-                list.forEachIndexed<NBTTagCompound> { i, tag ->
-                    val v = subSerializer().read(tag, null, syncing)
+                list.forEach<NBTTagCompound> {
+                    val v = subSerializer().read(it, null, syncing)
                     set.add(v)
                 }
 
@@ -73,7 +70,7 @@ object SerializeSets {
 
             @Suppress("UNCHECKED_CAST")
             val constructorMH = (if (EnumSet::class.java.isAssignableFrom(type.clazz))
-                { arr -> RawEnumSetCreator.create(type.clazz) }
+                { RawEnumSetCreator.create(type.clazz) }
             else
                 MethodHandleHelper.wrapperForConstructor(type.clazz.getConstructor())
                     ) as (Array<Any>) -> MutableSet<Any?>

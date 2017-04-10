@@ -1,11 +1,11 @@
 package com.teamwizardry.librarianlib.features.base.block
 
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
 import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.features.base.IModelGenerator
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
-import com.teamwizardry.librarianlib.features.kotlin.json
 import com.teamwizardry.librarianlib.features.helpers.threadLocal
+import com.teamwizardry.librarianlib.features.kotlin.json
+import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
 import net.minecraft.block.Block
 import net.minecraft.block.material.MapColor
 import net.minecraft.block.material.Material

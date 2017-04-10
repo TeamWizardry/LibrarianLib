@@ -95,16 +95,16 @@ data class NBTSerializer(val reader: (NBTBase, Any?) -> Any, val writer: (Any) -
 private object BasicNBTSerializers {
 
     fun primitives() {
-        NBTSerializationHandlers.mapHandler(Char::class.javaPrimitiveType!!, { NBTTagByte(it.toByte()) }, { it, existing -> it.safeCast(NBTPrimitive::class.java).byte.toChar() })
-        NBTSerializationHandlers.mapHandler(Byte::class.javaPrimitiveType!!, ::NBTTagByte, { it, existing -> it.safeCast(NBTPrimitive::class.java).byte })
-        NBTSerializationHandlers.mapHandler(Short::class.javaPrimitiveType!!, ::NBTTagShort, { it, existing -> it.safeCast(NBTPrimitive::class.java).short })
-        NBTSerializationHandlers.mapHandler(Int::class.javaPrimitiveType!!, ::NBTTagInt, { it, existing -> it.safeCast(NBTPrimitive::class.java).int })
-        NBTSerializationHandlers.mapHandler(Long::class.javaPrimitiveType!!, ::NBTTagLong, { it, existing -> it.safeCast(NBTPrimitive::class.java).long })
+        NBTSerializationHandlers.mapHandler(Char::class.javaPrimitiveType!!, { NBTTagByte(it.toByte()) }, { it, _ -> it.safeCast(NBTPrimitive::class.java).byte.toChar() })
+        NBTSerializationHandlers.mapHandler(Byte::class.javaPrimitiveType!!, ::NBTTagByte, { it, _ -> it.safeCast(NBTPrimitive::class.java).byte })
+        NBTSerializationHandlers.mapHandler(Short::class.javaPrimitiveType!!, ::NBTTagShort, { it, _ -> it.safeCast(NBTPrimitive::class.java).short })
+        NBTSerializationHandlers.mapHandler(Int::class.javaPrimitiveType!!, ::NBTTagInt, { it, _ -> it.safeCast(NBTPrimitive::class.java).int })
+        NBTSerializationHandlers.mapHandler(Long::class.javaPrimitiveType!!, ::NBTTagLong, { it, _ -> it.safeCast(NBTPrimitive::class.java).long })
 
-        NBTSerializationHandlers.mapHandler(Float::class.javaPrimitiveType!!, ::NBTTagFloat, { it, existing -> it.safeCast(NBTPrimitive::class.java).float })
-        NBTSerializationHandlers.mapHandler(Double::class.javaPrimitiveType!!, ::NBTTagDouble, { it, existing -> it.safeCast(NBTPrimitive::class.java).double })
-        NBTSerializationHandlers.mapHandler(Boolean::class.javaPrimitiveType!!, { NBTTagByte(if (it) 1 else 0) }, { it, existing -> it.safeCast(NBTPrimitive::class.java).byte == 1.toByte() })
-        NBTSerializationHandlers.mapHandler(String::class.java, ::NBTTagString, { it, existing -> it.safeCast(NBTTagString::class.java).string })
+        NBTSerializationHandlers.mapHandler(Float::class.javaPrimitiveType!!, ::NBTTagFloat, { it, _ -> it.safeCast(NBTPrimitive::class.java).float })
+        NBTSerializationHandlers.mapHandler(Double::class.javaPrimitiveType!!, ::NBTTagDouble, { it, _ -> it.safeCast(NBTPrimitive::class.java).double })
+        NBTSerializationHandlers.mapHandler(Boolean::class.javaPrimitiveType!!, { NBTTagByte(if (it) 1 else 0) }, { it, _ -> it.safeCast(NBTPrimitive::class.java).byte == 1.toByte() })
+        NBTSerializationHandlers.mapHandler(String::class.java, ::NBTTagString, { it, _ -> it.safeCast(NBTTagString::class.java).string })
 
         NBTSerializationHandlers.aliasAs(Char::class.javaPrimitiveType!!, Char::class.javaObjectType)
         NBTSerializationHandlers.aliasAs(Byte::class.javaPrimitiveType!!, Byte::class.javaObjectType)
@@ -118,14 +118,14 @@ private object BasicNBTSerializers {
     }
 
     fun primitiveArrays() {
-        NBTSerializationHandlers.mapHandler(CharArray::class.java, { NBTTagIntArray(it.map(Char::toInt).toIntArray()) }, { it, existing -> it.safeCast(NBTTagIntArray::class.java).intArray.map(Int::toChar).toCharArray() })
-        NBTSerializationHandlers.mapHandler(ShortArray::class.java, { NBTTagIntArray(it.map(Short::toInt).toIntArray()) }, { it, existing -> it.safeCast(NBTTagIntArray::class.java).intArray.map(Int::toShort).toShortArray() })
-        NBTSerializationHandlers.mapHandler(ByteArray::class.java, ::NBTTagByteArray, { it, existing -> it.safeCast(NBTTagByteArray::class.java).byteArray })
-        NBTSerializationHandlers.mapHandler(IntArray::class.java, ::NBTTagIntArray, { it, existing -> it.safeCast(NBTTagIntArray::class.java).intArray })
+        NBTSerializationHandlers.mapHandler(CharArray::class.java, { NBTTagIntArray(it.map(Char::toInt).toIntArray()) }, { it, _ -> it.safeCast(NBTTagIntArray::class.java).intArray.map(Int::toChar).toCharArray() })
+        NBTSerializationHandlers.mapHandler(ShortArray::class.java, { NBTTagIntArray(it.map(Short::toInt).toIntArray()) }, { it, _ -> it.safeCast(NBTTagIntArray::class.java).intArray.map(Int::toShort).toShortArray() })
+        NBTSerializationHandlers.mapHandler(ByteArray::class.java, ::NBTTagByteArray, { it, _ -> it.safeCast(NBTTagByteArray::class.java).byteArray })
+        NBTSerializationHandlers.mapHandler(IntArray::class.java, ::NBTTagIntArray, { it, _ -> it.safeCast(NBTTagIntArray::class.java).intArray })
         NBTSerializationHandlers.mapHandler(LongArray::class.java, {
             val tag = NBTTagList()
-            it.forEachIndexed { i, l ->
-                tag.appendTag(NBTTagLong(l))
+            it.forEach {
+                tag.appendTag(NBTTagLong(it))
             }
             tag
         }, { it, existing ->
@@ -139,8 +139,8 @@ private object BasicNBTSerializers {
 
         NBTSerializationHandlers.mapHandler(FloatArray::class.java, {
             val tag = NBTTagList()
-            it.forEachIndexed { i, f ->
-                tag.appendTag(NBTTagFloat(f))
+            it.forEach {
+                tag.appendTag(NBTTagFloat(it))
             }
             tag
         }, { it, existing ->
@@ -153,8 +153,8 @@ private object BasicNBTSerializers {
         })
         NBTSerializationHandlers.mapHandler(DoubleArray::class.java, {
             val tag = NBTTagList()
-            it.forEachIndexed { i, d ->
-                tag.appendTag(NBTTagDouble(d))
+            it.forEach {
+                tag.appendTag(NBTTagDouble(it))
             }
             tag
         }, { it, existing ->
@@ -188,15 +188,15 @@ private object BasicNBTSerializers {
     }
 
     fun misc() {
-        NBTSerializationHandlers.mapHandler(Color::class.java, { NBTTagInt(it.rgb) }, { it, existing -> Color(it.safeCast(NBTPrimitive::class.java).int, true) })
-        NBTSerializationHandlers.mapHandler(NBTTagCompound::class.java, { it }, { it, existing -> it.safeCast(NBTTagCompound::class.java) })
+        NBTSerializationHandlers.mapHandler(Color::class.java, { NBTTagInt(it.rgb) }, { it, _ -> Color(it.safeCast(NBTPrimitive::class.java).int, true) })
+        NBTSerializationHandlers.mapHandler(NBTTagCompound::class.java, { it }, { it, _ -> it.safeCast(NBTTagCompound::class.java) })
 
         // Item Handlers
-        NBTSerializationHandlers.mapHandler(ItemStack::class.java, { it.serializeNBT() ?: NBTTagCompound() }, { it, existing ->
+        NBTSerializationHandlers.mapHandler(ItemStack::class.java, { it.serializeNBT() ?: NBTTagCompound() }, { it, _ ->
             val compound = it.safeCast(NBTTagCompound::class.java)
             ItemStack(compound)
         })
-        NBTSerializationHandlers.mapHandler(ItemStackHandler::class.java, { it.serializeNBT() ?: NBTTagCompound() }, { it, existing ->
+        NBTSerializationHandlers.mapHandler(ItemStackHandler::class.java, { it.serializeNBT() ?: NBTTagCompound() }, { it, _ ->
             val handler = ItemStackHandler()
             val compound = it.safeCast(NBTTagCompound::class.java)
             handler.deserializeNBT(compound)
@@ -211,7 +211,7 @@ private object BasicNBTSerializers {
             list.appendTag(NBTTagDouble(it.yCoord))
             list.appendTag(NBTTagDouble(it.zCoord))
             list
-        }, { it, existing ->
+        }, { it, _ ->
             val tag = it.safeCast(NBTTagList::class.java)
             val x = tag.getDoubleAt(0)
             val y = tag.getDoubleAt(1)
@@ -224,7 +224,7 @@ private object BasicNBTSerializers {
             list.appendTag(NBTTagInt(it.y))
             list.appendTag(NBTTagInt(it.z))
             list
-        }, { it, existing ->
+        }, { it, _ ->
             val tag = it.safeCast(NBTTagList::class.java)
             val x = tag.getIntAt(0)
             val y = tag.getIntAt(1)
@@ -236,13 +236,13 @@ private object BasicNBTSerializers {
             list.appendTag(NBTTagDouble(it.x))
             list.appendTag(NBTTagDouble(it.y))
             list
-        }, { it, existing ->
+        }, { it, _ ->
             val tag = it.safeCast(NBTTagList::class.java)
             val x = tag.getDoubleAt(0)
             val y = tag.getDoubleAt(1)
             Vec2d(x, y)
         })
-        NBTSerializationHandlers.mapHandler(BlockPos::class.java, { NBTTagLong(it.toLong()) }, { it, existing -> BlockPos.fromLong(it.safeCast(NBTPrimitive::class.java).long) })
+        NBTSerializationHandlers.mapHandler(BlockPos::class.java, { NBTTagLong(it.toLong()) }, { it, _ -> BlockPos.fromLong(it.safeCast(NBTPrimitive::class.java).long) })
     }
 }
 
@@ -351,8 +351,8 @@ private object SpecialNBTSerializers {
             return null
 
         val values = type.clazz.enumConstants
-        val serializer = NBTSerializer(reader@ { nbt, existing ->
-            values[nbt.safeCast(NBTTagShort::class.java).short.toInt()]
+        val serializer = NBTSerializer(reader@ { nbt, _ ->
+            values[nbt.safeCast(NBTPrimitive::class.java).short.toInt()]
         }, writer@ { obj ->
             NBTTagShort((obj as Enum<*>).ordinal.toShort())
         })

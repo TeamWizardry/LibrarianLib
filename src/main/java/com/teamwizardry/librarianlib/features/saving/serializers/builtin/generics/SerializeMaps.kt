@@ -1,9 +1,6 @@
 package com.teamwizardry.librarianlib.features.saving.serializers.builtin.generics
 
-import com.teamwizardry.librarianlib.features.kotlin.forEachIndexed
-import com.teamwizardry.librarianlib.features.kotlin.readVarInt
-import com.teamwizardry.librarianlib.features.kotlin.safeCast
-import com.teamwizardry.librarianlib.features.kotlin.writeVarInt
+import com.teamwizardry.librarianlib.features.kotlin.*
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.saving.FieldTypeGeneric
 import com.teamwizardry.librarianlib.features.saving.serializers.Serializer
@@ -35,9 +32,9 @@ object SerializeMaps {
                 val list = nbt.safeCast(NBTTagList::class.java)
                 val map = constructorMH(arrayOf())
 
-                list.forEachIndexed<NBTTagCompound> { i, container ->
-                    val keyTag = container.getTag("k")
-                    val valTag = container.getTag("v")
+                list.forEach<NBTTagCompound> {
+                    val keyTag = it.getTag("k")
+                    val valTag = it.getTag("v")
                     val k = if (keyTag == null) null else keySerializer().read(keyTag, null, syncing)
                     val v = if (valTag == null) null else valueSerializer().read(valTag, existing?.get(k), syncing)
                     map[k] = v

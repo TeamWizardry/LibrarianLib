@@ -95,16 +95,16 @@ data class BufferSerializer(val read: (ByteBuf, Any?) -> Any, val write: (ByteBu
 private object BasicByteBufSerializers {
 
     fun primitives() {
-        ByteBufSerializationHandlers.mapHandler(Char::class.javaPrimitiveType!!, { buf, obj -> buf.writeChar(obj.toInt()) }, { buf, existing -> buf.readChar() })
-        ByteBufSerializationHandlers.mapHandler(Byte::class.javaPrimitiveType!!, { buf, obj -> buf.writeByte(obj.toInt()) }, { buf, existing -> buf.readByte() })
-        ByteBufSerializationHandlers.mapHandler(Short::class.javaPrimitiveType!!, { buf, obj -> buf.writeShort(obj.toInt()) }, { buf, existing -> buf.readShort() })
-        ByteBufSerializationHandlers.mapHandler(Int::class.javaPrimitiveType!!, ByteBuf::writeInt, { buf, existing -> buf.readInt() })
-        ByteBufSerializationHandlers.mapHandler(Long::class.javaPrimitiveType!!, ByteBuf::writeLong, { buf, existing -> buf.readLong() })
+        ByteBufSerializationHandlers.mapHandler(Char::class.javaPrimitiveType!!, { buf, obj -> buf.writeChar(obj.toInt()) }, { buf, _ -> buf.readChar() })
+        ByteBufSerializationHandlers.mapHandler(Byte::class.javaPrimitiveType!!, { buf, obj -> buf.writeByte(obj.toInt()) }, { buf, _ -> buf.readByte() })
+        ByteBufSerializationHandlers.mapHandler(Short::class.javaPrimitiveType!!, { buf, obj -> buf.writeShort(obj.toInt()) }, { buf, _ -> buf.readShort() })
+        ByteBufSerializationHandlers.mapHandler(Int::class.javaPrimitiveType!!, ByteBuf::writeInt, { buf, _ -> buf.readInt() })
+        ByteBufSerializationHandlers.mapHandler(Long::class.javaPrimitiveType!!, ByteBuf::writeLong, { buf, _ -> buf.readLong() })
 
-        ByteBufSerializationHandlers.mapHandler(Float::class.javaPrimitiveType!!, ByteBuf::writeFloat, { buf, existing -> buf.readFloat() })
-        ByteBufSerializationHandlers.mapHandler(Double::class.javaPrimitiveType!!, ByteBuf::writeDouble, { buf, existing -> buf.readDouble() })
-        ByteBufSerializationHandlers.mapHandler(Boolean::class.javaPrimitiveType!!, ByteBuf::writeBoolean, { buf, existing -> buf.readBoolean() })
-        ByteBufSerializationHandlers.mapHandler(String::class.java, ByteBuf::writeString, { buf, existing -> buf.readString() })
+        ByteBufSerializationHandlers.mapHandler(Float::class.javaPrimitiveType!!, ByteBuf::writeFloat, { buf, _ -> buf.readFloat() })
+        ByteBufSerializationHandlers.mapHandler(Double::class.javaPrimitiveType!!, ByteBuf::writeDouble, { buf, _ -> buf.readDouble() })
+        ByteBufSerializationHandlers.mapHandler(Boolean::class.javaPrimitiveType!!, ByteBuf::writeBoolean, { buf, _ -> buf.readBoolean() })
+        ByteBufSerializationHandlers.mapHandler(String::class.java, ByteBuf::writeString, { buf, _ -> buf.readString() })
 
         ByteBufSerializationHandlers.aliasAs(Char::class.javaPrimitiveType!!, Char::class.javaObjectType)
         ByteBufSerializationHandlers.aliasAs(Byte::class.javaPrimitiveType!!, Byte::class.javaObjectType)
@@ -233,9 +233,9 @@ private object BasicByteBufSerializers {
     }
 
     fun misc() {
-        ByteBufSerializationHandlers.mapHandler(Color::class.java, { buf, obj -> buf.writeInt(obj.rgb) }, { buf, existing -> Color(buf.readInt(), true) })
-        ByteBufSerializationHandlers.mapHandler(NBTTagCompound::class.java, ByteBuf::writeTag, { buf, existing -> buf.readTag() })
-        ByteBufSerializationHandlers.mapHandler(ItemStack::class.java, ByteBuf::writeStack, { buf, existing -> buf.readStack() })
+        ByteBufSerializationHandlers.mapHandler(Color::class.java, { buf, obj -> buf.writeInt(obj.rgb) }, { buf, _ -> Color(buf.readInt(), true) })
+        ByteBufSerializationHandlers.mapHandler(NBTTagCompound::class.java, ByteBuf::writeTag, { buf, _ -> buf.readTag() })
+        ByteBufSerializationHandlers.mapHandler(ItemStack::class.java, ByteBuf::writeStack, { buf, _ -> buf.readStack() })
         ByteBufSerializationHandlers.mapHandler(ItemStackHandler::class.java, {
             buf, obj ->
             buf.writeTag(obj.serializeNBT())
@@ -258,22 +258,22 @@ private object BasicByteBufSerializers {
         ByteBufSerializationHandlers.mapHandler(Vec3d::class.java, {
             buf, obj ->
             buf.writeDouble(obj.xCoord).writeDouble(obj.yCoord).writeDouble(obj.zCoord)
-        }, { buf, existing ->
+        }, { buf, _ ->
             Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble())
         })
         ByteBufSerializationHandlers.mapHandler(Vec3i::class.java, {
             buf, obj ->
             buf.writeInt(obj.x).writeInt(obj.y).writeInt(obj.z)
-        }, { buf, existing ->
+        }, { buf, _ ->
             Vec3i(buf.readInt(), buf.readInt(), buf.readInt())
         })
         ByteBufSerializationHandlers.mapHandler(Vec2d::class.java, {
             buf, obj ->
             buf.writeDouble(obj.x).writeDouble(obj.y)
-        }, { buf, existing ->
+        }, { buf, _ ->
             Vec2d(buf.readDouble(), buf.readDouble())
         })
-        ByteBufSerializationHandlers.mapHandler(BlockPos::class.java, { buf, obj -> buf.writeLong(obj.toLong()) }, { buf, existing -> BlockPos.fromLong(buf.readLong()) })
+        ByteBufSerializationHandlers.mapHandler(BlockPos::class.java, { buf, obj -> buf.writeLong(obj.toLong()) }, { buf, _ -> BlockPos.fromLong(buf.readLong()) })
     }
 }
 
@@ -295,7 +295,7 @@ private object SpecialByteBufSerializers {
 
         val values = type.clazz.enumConstants
         val size = values.size
-        val serializer = BufferSerializer(reader@ { buf, existing ->
+        val serializer = BufferSerializer(reader@ { buf, _ ->
             if (size > 256)
                 values[buf.readShort().toInt()]
             else

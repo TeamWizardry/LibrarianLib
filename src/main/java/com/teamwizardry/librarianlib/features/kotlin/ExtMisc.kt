@@ -38,8 +38,6 @@ import java.util.*
 fun Int.abs() = if (this < 0) -this else this
 
 operator fun TextFormatting.plus(str: String) = "$this$str"
-
-operator fun String.plus(form: TextFormatting) = "$this$form"
 operator fun TextFormatting.plus(other: TextFormatting) = "$this$other"
 
 fun String.localize(vararg parameters: Any): String {

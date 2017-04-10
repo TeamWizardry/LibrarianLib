@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.features.particle
 
-import com.teamwizardry.librarianlib.features.particle.functions.RenderFunction
-import com.teamwizardry.librarianlib.features.particle.functions.TickFunction
 import com.teamwizardry.librarianlib.features.kotlin.*
 import com.teamwizardry.librarianlib.features.math.interpolate.InterpFunction
+import com.teamwizardry.librarianlib.features.particle.functions.RenderFunction
+import com.teamwizardry.librarianlib.features.particle.functions.TickFunction
 import net.minecraft.client.particle.Particle
 import net.minecraft.client.renderer.VertexBuffer
 import net.minecraft.util.math.AxisAlignedBB

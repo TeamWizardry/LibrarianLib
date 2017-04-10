@@ -1,11 +1,11 @@
 package com.teamwizardry.librarianlib.features.base.block
 
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
 import com.teamwizardry.librarianlib.core.client.ModelHandler
+import com.teamwizardry.librarianlib.core.common.LibLibConfig
 import com.teamwizardry.librarianlib.features.base.IModelGenerator
 import com.teamwizardry.librarianlib.features.base.item.IModItemProvider
-import com.teamwizardry.librarianlib.core.common.LibLibConfig
 import com.teamwizardry.librarianlib.features.kotlin.json
+import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
 import net.minecraft.block.Block
 import net.minecraft.block.IGrowable
 import net.minecraft.block.SoundType

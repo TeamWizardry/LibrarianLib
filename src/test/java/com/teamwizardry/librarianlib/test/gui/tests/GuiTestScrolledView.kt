@@ -37,16 +37,16 @@ class GuiTestScrolledView : GuiBase(100, 100) {
         scroll.add(gold)
         mainComponents.add(scroll)
 
-        left.BUS.hook(GuiComponent.MouseClickEvent::class.java) { e ->
+        left.BUS.hook(GuiComponent.MouseClickEvent::class.java) {
             scroll.scrollOffset(vec(-1, 0))
         }
-        right.BUS.hook(GuiComponent.MouseClickEvent::class.java) { e ->
+        right.BUS.hook(GuiComponent.MouseClickEvent::class.java) {
             scroll.scrollOffset(vec(1, 0))
         }
-        up.BUS.hook(GuiComponent.MouseClickEvent::class.java) { e ->
+        up.BUS.hook(GuiComponent.MouseClickEvent::class.java) {
             scroll.scrollOffset(vec(0, 1))
         }
-        down.BUS.hook(GuiComponent.MouseClickEvent::class.java) { e ->
+        down.BUS.hook(GuiComponent.MouseClickEvent::class.java) {
             scroll.scrollOffset(vec(0, -1))
         }
 

@@ -1,10 +1,10 @@
 package com.teamwizardry.librarianlib.features.guicontainer.builtin
 
-import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
-import com.teamwizardry.librarianlib.features.guicontainer.ComponentSlot
 import com.teamwizardry.librarianlib.features.container.InventoryWrapper
 import com.teamwizardry.librarianlib.features.container.builtin.BaseWrappers
 import com.teamwizardry.librarianlib.features.container.internal.SlotBase
+import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
+import com.teamwizardry.librarianlib.features.guicontainer.ComponentSlot
 
 /**
  * Created by TheCodeWarrior

@@ -28,16 +28,16 @@ object SerializePrimitives {
         SerializerRegistry.register("java:char", Serializer(Char::class.javaPrimitiveType!!, Char::class.javaObjectType))
 
         SerializerRegistry["java:char"]?.register(Targets.NBT, Targets.NBT.impl<Char>
-        ({ nbt, existing, syncing ->
+        ({ nbt, _, _ ->
             nbt.safeCast(NBTPrimitive::class.java).short.toChar()
-        }, { value, syncing ->
+        }, { value, _ ->
             NBTTagShort(value.toShort())
         }))
 
         SerializerRegistry["java:char"]?.register(Targets.BYTES, Targets.BYTES.impl<Char>
-        ({ buf, existing, syncing ->
+        ({ buf, _, _ ->
             buf.readChar()
-        }, { buf, value, syncing ->
+        }, { buf, value, _ ->
             buf.writeChar(value.toInt())
         }))
     }
@@ -46,16 +46,16 @@ object SerializePrimitives {
         SerializerRegistry.register("java:byte", Serializer(Byte::class.javaPrimitiveType!!, Byte::class.javaObjectType))
 
         SerializerRegistry["java:byte"]?.register(Targets.NBT, Targets.NBT.impl<Byte>
-        ({ nbt, existing, syncing ->
+        ({ nbt, _, _ ->
             nbt.safeCast(NBTPrimitive::class.java).byte
-        }, { value, syncing ->
+        }, { value, _ ->
             NBTTagByte(value)
         }))
 
         SerializerRegistry["java:byte"]?.register(Targets.BYTES, Targets.BYTES.impl<Byte>
-        ({ buf, existing, syncing ->
+        ({ buf, _, _ ->
             buf.readByte()
-        }, { buf, value, syncing ->
+        }, { buf, value, _ ->
             buf.writeByte(value.toInt())
         }))
     }
@@ -64,16 +64,16 @@ object SerializePrimitives {
         SerializerRegistry.register("java:short", Serializer(Short::class.javaPrimitiveType!!, Short::class.javaObjectType))
 
         SerializerRegistry["java:short"]?.register(Targets.NBT, Targets.NBT.impl<Short>
-        ({ nbt, existing, syncing ->
+        ({ nbt, _, _ ->
             nbt.safeCast(NBTPrimitive::class.java).short
-        }, { value, syncing ->
+        }, { value, _ ->
             NBTTagShort(value)
         }))
 
         SerializerRegistry["java:short"]?.register(Targets.BYTES, Targets.BYTES.impl<Short>
-        ({ buf, existing, syncing ->
+        ({ buf, _, _ ->
             buf.readShort()
-        }, { buf, value, syncing ->
+        }, { buf, value, _ ->
             buf.writeShort(value.toInt())
         }))
     }
@@ -82,16 +82,16 @@ object SerializePrimitives {
         SerializerRegistry.register("java:int", Serializer(Int::class.javaPrimitiveType!!, Int::class.javaObjectType))
 
         SerializerRegistry["java:int"]?.register(Targets.NBT, Targets.NBT.impl<Int>
-        ({ nbt, existing, syncing ->
+        ({ nbt, _, _ ->
             nbt.safeCast(NBTPrimitive::class.java).int
-        }, { value, syncing ->
+        }, { value, _ ->
             NBTTagInt(value)
         }))
 
         SerializerRegistry["java:int"]?.register(Targets.BYTES, Targets.BYTES.impl<Int>
-        ({ buf, existing, syncing ->
+        ({ buf, _, _ ->
             buf.readInt()
-        }, { buf, value, syncing ->
+        }, { buf, value, _ ->
             buf.writeInt(value)
         }))
     }
@@ -100,16 +100,16 @@ object SerializePrimitives {
         SerializerRegistry.register("java:long", Serializer(Long::class.javaPrimitiveType!!, Long::class.javaObjectType))
 
         SerializerRegistry["java:long"]?.register(Targets.NBT, Targets.NBT.impl<Long>
-        ({ nbt, existing, syncing ->
+        ({ nbt, _, _ ->
             nbt.safeCast(NBTPrimitive::class.java).long
-        }, { value, syncing ->
+        }, { value, _ ->
             NBTTagLong(value)
         }))
 
         SerializerRegistry["java:long"]?.register(Targets.BYTES, Targets.BYTES.impl<Long>
-        ({ buf, existing, syncing ->
+        ({ buf, _, _ ->
             buf.readLong()
-        }, { buf, value, syncing ->
+        }, { buf, value, _ ->
             buf.writeLong(value)
         }))
     }
@@ -118,16 +118,16 @@ object SerializePrimitives {
         SerializerRegistry.register("java:float", Serializer(Float::class.javaPrimitiveType!!, Float::class.javaObjectType))
 
         SerializerRegistry["java:float"]?.register(Targets.NBT, Targets.NBT.impl<Float>
-        ({ nbt, existing, syncing ->
+        ({ nbt, _, _ ->
             nbt.safeCast(NBTPrimitive::class.java).float
-        }, { value, syncing ->
+        }, { value, _ ->
             NBTTagFloat(value)
         }))
 
         SerializerRegistry["java:float"]?.register(Targets.BYTES, Targets.BYTES.impl<Float>
-        ({ buf, existing, syncing ->
+        ({ buf, _, _ ->
             buf.readFloat()
-        }, { buf, value, syncing ->
+        }, { buf, value, _ ->
             buf.writeFloat(value)
         }))
     }
@@ -136,16 +136,16 @@ object SerializePrimitives {
         SerializerRegistry.register("java:double", Serializer(Double::class.javaPrimitiveType!!, Double::class.javaObjectType))
 
         SerializerRegistry["java:double"]?.register(Targets.NBT, Targets.NBT.impl<Double>
-        ({ nbt, existing, syncing ->
+        ({ nbt, _, _ ->
             nbt.safeCast(NBTPrimitive::class.java).double
-        }, { value, syncing ->
+        }, { value, _ ->
             NBTTagDouble(value)
         }))
 
         SerializerRegistry["java:double"]?.register(Targets.BYTES, Targets.BYTES.impl<Double>
-        ({ buf, existing, syncing ->
+        ({ buf, _, _ ->
             buf.readDouble()
-        }, { buf, value, syncing ->
+        }, { buf, value, _ ->
             buf.writeDouble(value)
         }))
     }
@@ -154,16 +154,16 @@ object SerializePrimitives {
         SerializerRegistry.register("java:boolean", Serializer(Boolean::class.javaPrimitiveType!!, Boolean::class.javaObjectType))
 
         SerializerRegistry["java:boolean"]?.register(Targets.NBT, Targets.NBT.impl<Boolean>
-        ({ nbt, existing, syncing ->
+        ({ nbt, _, _ ->
             nbt.safeCast(NBTPrimitive::class.java).byte == 1.toByte()
-        }, { value, syncing ->
+        }, { value, _ ->
             NBTTagByte(if (value) 1 else 0)
         }))
 
         SerializerRegistry["java:boolean"]?.register(Targets.BYTES, Targets.BYTES.impl<Boolean>
-        ({ buf, existing, syncing ->
+        ({ buf, _, _ ->
             buf.readBoolean()
-        }, { buf, value, syncing ->
+        }, { buf, value, _ ->
             buf.writeBoolean(value)
         }))
     }
@@ -172,16 +172,16 @@ object SerializePrimitives {
         SerializerRegistry.register("java:string", Serializer(String::class.java))
 
         SerializerRegistry["java:string"]?.register(Targets.NBT, Targets.NBT.impl<String>
-        ({ nbt, existing, syncing ->
+        ({ nbt, _, _ ->
             nbt.safeCast(NBTTagString::class.java).string
-        }, { value, syncing ->
+        }, { value, _ ->
             NBTTagString(value)
         }))
 
         SerializerRegistry["java:string"]?.register(Targets.BYTES, Targets.BYTES.impl<String>
-        ({ buf, existing, syncing ->
+        ({ buf, _, _ ->
             buf.readString()
-        }, { buf, value, syncing ->
+        }, { buf, value, _ ->
             buf.writeString(value)
         }))
     }

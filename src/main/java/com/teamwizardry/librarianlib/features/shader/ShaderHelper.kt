@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.features.shader
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
-import com.teamwizardry.librarianlib.features.forgeevents.ResourceReloadEvent
 import com.teamwizardry.librarianlib.core.common.LibLibConfig
+import com.teamwizardry.librarianlib.features.forgeevents.ResourceReloadEvent
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.FMLCommonHandler

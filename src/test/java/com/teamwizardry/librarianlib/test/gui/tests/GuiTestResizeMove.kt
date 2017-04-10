@@ -17,7 +17,7 @@ class GuiTestResizeMove : GuiBase(100, 100) {
         c.color.setValue(Color.RED)
         mainComponents.add(c)
 
-        c.BUS.hook(GuiComponent.MouseClickEvent::class.java) { e ->
+        c.BUS.hook(GuiComponent.MouseClickEvent::class.java) {
             c.pos += vec(1, 1)
             c.size += vec(1, 0)
         }

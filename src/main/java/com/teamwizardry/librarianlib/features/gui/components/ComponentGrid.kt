@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.gui.GuiComponent
-import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.math.Vec2d
 
 class ComponentGrid(posX: Int, posY: Int, var cellWidth: Int, var cellHeight: Int, var gridColumns: Int) : GuiComponent<ComponentGrid>(posX, posY) {
 

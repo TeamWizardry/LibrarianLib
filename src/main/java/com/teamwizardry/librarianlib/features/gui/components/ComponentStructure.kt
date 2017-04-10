@@ -3,9 +3,9 @@ package com.teamwizardry.librarianlib.features.gui.components
 import com.teamwizardry.librarianlib.features.gui.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.Option
 import com.teamwizardry.librarianlib.features.gui.mixin.gl.GlMixin
-import com.teamwizardry.librarianlib.features.structure.StructureRenderUtil
-import com.teamwizardry.librarianlib.features.structure.Structure
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import com.teamwizardry.librarianlib.features.structure.Structure
+import com.teamwizardry.librarianlib.features.structure.StructureRenderUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -20,7 +20,7 @@ class ComponentStructure(posX: Int, posY: Int, var structure: Structure?) : GuiC
     val color = Option<ComponentStructure, Color>(Color.WHITE)
 
     init {
-        GlMixin.transform(this).func { c -> Vec3d(this.pos.x, this.pos.y, 0.0) }
+        GlMixin.transform(this).func { Vec3d(this.pos.x, this.pos.y, 0.0) }
         initStructure()
     }
 

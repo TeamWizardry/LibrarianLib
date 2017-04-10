@@ -2,8 +2,8 @@ package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.core.client.ClientTickHandler
 import com.teamwizardry.librarianlib.features.gui.GuiComponent
-import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.math.Vec2d
 
 class ComponentSliderTray(posX: Int, posY: Int, internal var offsetX: Int, internal var offsetY: Int) : GuiComponent<ComponentSliderTray>(posX, posY) {
 

@@ -17,10 +17,10 @@ class InterpBezier3D @JvmOverloads constructor(
         val start: Vec3d, val end: Vec3d,
         val startControl: Vec3d = ((end - start) / 2).withY(0), val endControl: Vec3d = ((start - end) / 2).withY(0)
 ) : InterpFunction<Vec3d> {
-    
+
     private val absoluteStartControl = start + startControl
     private val absoluteEndControl = end + endControl
-    
+
     override fun get(i: Float): Vec3d {
         return Vec3d(
                 getBezierComponent(i.toDouble(), start.xCoord, end.xCoord, absoluteStartControl.xCoord, absoluteEndControl.xCoord),

@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.features.saving
 
+import com.teamwizardry.librarianlib.features.kotlin.withRealDefault
 import com.teamwizardry.librarianlib.features.saving.serializers.SerializerImpl
 import com.teamwizardry.librarianlib.features.saving.serializers.SerializerRegistry
 import com.teamwizardry.librarianlib.features.saving.serializers.builtin.Targets
-import com.teamwizardry.librarianlib.features.kotlin.withRealDefault
 import io.netty.buffer.ByteBuf
 import net.minecraft.nbt.NBTBase
 import net.minecraft.util.EnumFacing
@@ -47,7 +47,7 @@ object AbstractSaveHandler {
 
     @JvmStatic
     fun <T : Any> getCapability(instance: Any, cap: Capability<T>, side: EnumFacing?): T? {
-        for ((key, value) in SavingFieldCache.getClassFields(instance.javaClass)) {
+        for ((_, value) in SavingFieldCache.getClassFields(instance.javaClass)) {
             val inst = value.getCapability(instance, cap, side)
             if (inst != null) return inst
         }

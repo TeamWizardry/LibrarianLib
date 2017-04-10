@@ -1,12 +1,12 @@
 package com.teamwizardry.librarianlib.features.saving.serializers.builtin.special
 
+import com.teamwizardry.librarianlib.features.kotlin.readBooleanArray
+import com.teamwizardry.librarianlib.features.kotlin.safeCast
+import com.teamwizardry.librarianlib.features.kotlin.writeBooleanArray
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.saving.*
 import com.teamwizardry.librarianlib.features.saving.serializers.*
 import com.teamwizardry.librarianlib.features.saving.serializers.builtin.Targets
-import com.teamwizardry.librarianlib.features.kotlin.readBooleanArray
-import com.teamwizardry.librarianlib.features.kotlin.safeCast
-import com.teamwizardry.librarianlib.features.kotlin.writeBooleanArray
 import net.minecraft.nbt.NBTTagCompound
 import java.lang.reflect.Constructor
 import java.util.*
@@ -223,7 +223,7 @@ class SerializerAnalysis<R, W>(val type: FieldType, val target: SerializerTarget
                 }
         constructorArgOrder = constructor.getDeclaredAnnotation(SavableConstructorOrder::class.java)?.params?.asList() ?: constructor.parameters.map { it.name }
         constructorMH = if (inPlaceSavable) {
-            { arr -> throw SerializerException("Cannot create instance of class marked with @SaveInPlace") }
+            { throw SerializerException("Cannot create instance of class marked with @SaveInPlace") }
         } else {
             MethodHandleHelper.wrapperForConstructor(constructor)
         }

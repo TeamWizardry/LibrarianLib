@@ -67,7 +67,7 @@ object SavingFieldCache {
             }
 
             val setterLambda: (Any, Any?) -> Unit = if (meta.hasFlag(SavingFieldFlag.FINAL)) {
-                { obj, inp -> throw IllegalAccessException("Tried to set final property $name for class ${clazz.simpleName} (final field)") }
+                { _, _ -> throw IllegalAccessException("Tried to set final property $name for class ${clazz.simpleName} (final field)") }
             } else {
                 MethodHandleHelper.wrapperForSetter<Any>(field)
             }
@@ -152,7 +152,7 @@ object SavingFieldCache {
                 meta.addFlag(SavingFieldFlag.FINAL)
 
             val setterLambda: (Any, Any?) -> Unit = if (wrapperForSetter == null)
-                { obj, inp -> throw IllegalAccessException("Tried to set final property $name for class ${clazz.simpleName} (no save setter)") }
+                { _, _ -> throw IllegalAccessException("Tried to set final property $name for class ${clazz.simpleName} (no save setter)") }
             else
                 { obj, inp -> wrapperForSetter(obj, arrayOf(inp)) }
 
@@ -201,7 +201,7 @@ object SavingFieldCache {
     private val errorList = mutableMapOf<Class<*>, DefaultedMutableMap<String, MutableList<String>>>().withRealDefault { mutableMapOf<String, MutableList<String>>().withRealDefault { mutableListOf<String>() } }
 
     fun handleErrors() {
-        if (errorList.size == 0)
+        if (errorList.isEmpty())
             return
 
         val lines = mutableListOf<String>()
