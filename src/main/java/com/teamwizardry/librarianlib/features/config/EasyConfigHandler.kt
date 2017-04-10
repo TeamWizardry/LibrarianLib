@@ -131,7 +131,7 @@ object EasyConfigHandler {
                 try {
                     s.toLong()
                 } catch (e: NumberFormatException) {
-                    arr[i]
+                    if (arr.size > i) arr[i] else 0L
                 }
             }.toLongArray())
         }
