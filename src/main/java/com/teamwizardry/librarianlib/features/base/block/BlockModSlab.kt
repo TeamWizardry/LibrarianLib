@@ -89,9 +89,9 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
 
     }
 
-    val doubleBlock: BlockModSlab
 
-    override val variants: Array<out String>
+    override val variants = VariantHelper.beginSetupBlock(name, arrayOf())
+    val doubleBlock: BlockSlab = if (!isDouble) createDoubleForm(name) else this
 
     override val bareName: String = VariantHelper.toSnakeCase(name)
     val modId = currentModId
@@ -99,12 +99,9 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
     val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
-        this.variants = VariantHelper.beginSetupBlock(name, arrayOf())
-
-        doubleBlock = if (!isDouble) BlockDouble(name + "_full", parent) else this
-
         VariantHelper.finishSetupBlock(this, bareName, itemForm, creativeTab)
     }
+
 
     override fun setUnlocalizedName(name: String): Block {
         super.setUnlocalizedName(name)
@@ -119,6 +116,14 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
         return if (isDouble) null else ItemModSlab(this)
     }
 
+
+    /**
+     * Override this to have a custom BlockDouble implementation.
+     */
+    protected open fun createDoubleForm(name: String): BlockDouble {
+        return BlockDouble(name + "_full", parent)
+    }
+
     /**
      * Override this to have a custom creative tab. Leave blank to have a default tab (or none if no default tab is set).
      */
@@ -127,7 +132,9 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
 
 
     override fun getExplosionResistance(world: World, pos: BlockPos, exploder: Entity, explosion: Explosion) = parent.block.getExplosionResistance(world, pos, exploder, explosion)
+    @Suppress("OverridingDeprecatedMember")
     override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
+    @Suppress("OverridingDeprecatedMember")
     @SideOnly(Side.CLIENT) override fun isTranslucent(state: IBlockState?) = parent.isTranslucent
     override fun isToolEffective(type: String?, state: IBlockState) = parent.block.isToolEffective(type, parent) || (blockMaterial == FAKE_WOOD && type == "axe")
     override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent) ?: if (blockMaterial == FAKE_WOOD) "axe" else null
@@ -151,7 +158,8 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
         return singleBlock.itemForm
     }
 
-    override fun getStateFromMeta(meta: Int)
+    @Suppress("OverridingDeprecatedMember")
+    override fun getStateFromMeta(meta: Int): IBlockState
             = if (isDouble) defaultState
     else defaultState.withProperty(BlockSlab.HALF, if (meta == 8) EnumBlockHalf.TOP else EnumBlockHalf.BOTTOM)
 
