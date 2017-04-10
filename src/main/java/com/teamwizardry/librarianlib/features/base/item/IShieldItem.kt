@@ -81,7 +81,7 @@ interface IShieldItem {
         }
 
         fun damageItem(stack: ItemStack, player: EntityPlayer, indirectSource: Entity?, directSource: Entity?, amount: Float, source: DamageSource, damageAmount: Int) {
-            if (stack.item is IShieldItem || !(stack.item as IShieldItem).damageItem(stack, player, indirectSource, directSource, amount, source, damageAmount))
+            if (stack.item !is IShieldItem || !(stack.item as IShieldItem).damageItem(stack, player, indirectSource, directSource, amount, source, damageAmount))
                 stack.damageItem(damageAmount, player)
         }
     }
