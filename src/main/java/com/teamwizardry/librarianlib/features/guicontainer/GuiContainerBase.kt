@@ -156,6 +156,7 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         }
 
         @SubscribeEvent
+        @Suppress("UNUSED_PARAMETER")
         fun tick(e: TickEvent.ClientTickEvent) {
             val gui = Minecraft.getMinecraft().currentScreen
             if (gui is GuiContainerBase) {

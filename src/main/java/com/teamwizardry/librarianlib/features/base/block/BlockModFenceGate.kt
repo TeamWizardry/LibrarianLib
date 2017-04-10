@@ -66,6 +66,7 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
         get() = ModCreativeTab.defaultTabs[modId]
 
 
+    @Suppress("OverridingDeprecatedMember", "DEPRECATION")
     override fun getActualState(state: IBlockState, worldIn: IBlockAccess, pos: BlockPos): IBlockState {
         val actual = super.getActualState(state, worldIn, pos)
         if (actual.getValue(IN_WALL)) return actual

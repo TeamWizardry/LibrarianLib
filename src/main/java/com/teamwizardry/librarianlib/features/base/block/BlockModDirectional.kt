@@ -54,10 +54,12 @@ open class BlockModDirectional(name: String, material: Material, vararg directio
         return BlockStateContainer(this, property)
     }
 
+    @Suppress("OverridingDeprecatedMember", "DEPRECATION")
     override fun getStateForPlacement(worldIn: World?, pos: BlockPos?, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float, meta: Int, placer: EntityLivingBase?): IBlockState {
         return this.getStateFromMeta(meta).withProperty(property, facing)
     }
 
+    @Suppress("OverridingDeprecatedMember")
     override fun withRotation(state: IBlockState, rot: Rotation): IBlockState {
         return when (rot) {
             Rotation.COUNTERCLOCKWISE_90, Rotation.CLOCKWISE_90 -> {
@@ -74,6 +76,7 @@ open class BlockModDirectional(name: String, material: Material, vararg directio
         return true
     }
 
+    @Suppress("OverridingDeprecatedMember")
     override fun getStateFromMeta(meta: Int): IBlockState {
         val prop = directions[meta % directions.size]
 

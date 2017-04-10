@@ -135,7 +135,7 @@ abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod
         if (!worldIn.isRemote) {
             checkAndDropBlock(worldIn, pos)
 
-            if (worldIn.getLightFromNeighbors(pos.up()) >= 9 && rand.nextInt(7) === 0) {
+            if (worldIn.getLightFromNeighbors(pos.up()) >= 9 && rand.nextInt(7) == 0) {
                 this.grow(worldIn, pos, state, rand)
             }
         }

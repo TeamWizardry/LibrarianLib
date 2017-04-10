@@ -28,7 +28,7 @@ object SerializeSets {
 
             @Suppress("UNCHECKED_CAST")
             val constructorMH = (if (EnumSet::class.java.isAssignableFrom(type.clazz))
-                { RawEnumSetCreator.create(type.clazz) }
+                { _ -> RawEnumSetCreator.create(type.clazz) }
             else
                 MethodHandleHelper.wrapperForConstructor(type.clazz.getConstructor())
                     ) as (Array<Any>) -> MutableSet<Any?>
@@ -70,7 +70,7 @@ object SerializeSets {
 
             @Suppress("UNCHECKED_CAST")
             val constructorMH = (if (EnumSet::class.java.isAssignableFrom(type.clazz))
-                { RawEnumSetCreator.create(type.clazz) }
+                { _ -> RawEnumSetCreator.create(type.clazz) }
             else
                 MethodHandleHelper.wrapperForConstructor(type.clazz.getConstructor())
                     ) as (Array<Any>) -> MutableSet<Any?>

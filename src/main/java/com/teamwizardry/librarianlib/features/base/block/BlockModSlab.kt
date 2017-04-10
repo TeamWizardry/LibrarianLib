@@ -139,6 +139,7 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
     override val ignoredProperties: Array<IProperty<*>>?
         get() = arrayOf(DUMMY_PROP)
 
+    @Suppress("DEPRECATION")
     override fun isSideSolid(base_state: IBlockState, world: IBlockAccess, pos: BlockPos, side: EnumFacing?): Boolean {
         val state = getActualState(base_state, world, pos)
         return isDouble

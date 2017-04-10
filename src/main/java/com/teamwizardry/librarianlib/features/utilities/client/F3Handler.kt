@@ -49,6 +49,7 @@ object F3Handler {
     }
 
     @SubscribeEvent
+    @Suppress("UNUSED_PARAMETER")
     fun key(e: InputEvent.KeyInputEvent) {
         if (Minecraft.getMinecraft().currentScreen != null) return
 

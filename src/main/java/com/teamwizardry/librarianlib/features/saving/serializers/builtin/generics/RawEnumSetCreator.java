@@ -6,7 +6,8 @@ import java.util.EnumSet;
  * Created by TheCodeWarrior
  */
 public class RawEnumSetCreator {
+    @SuppressWarnings("unchecked")
     public static EnumSet create(Class clazz) {
-        return EnumSet.noneOf(clazz);
+        return EnumSet.noneOf((Class<Enum>) clazz);
     }
 }
