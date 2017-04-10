@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.test.variants
 
 import com.teamwizardry.librarianlib.features.base.block.*
 import com.teamwizardry.librarianlib.features.base.item.ItemModArrow
+import com.teamwizardry.librarianlib.features.base.item.ItemModShield
 import com.teamwizardry.librarianlib.features.kotlin.sendSpamlessMessage
 import com.teamwizardry.librarianlib.test.testcore.TestEntryPoint
 import net.minecraft.block.material.Material
@@ -69,6 +70,8 @@ object VariantEntryPoint : TestEntryPoint {
         BlockModFence("a_fence", block.defaultState)
         BlockModWall("a_wall", block.defaultState)
         BlockModFenceGate("a_gate", block.defaultState)
+
+        ItemModShield("shield")
 
         val wood = BlockModLog("log")
         val leaves = object : BlockModLeaves("leaves") {
