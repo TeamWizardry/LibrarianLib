@@ -8,8 +8,8 @@ import java.util.*
  * @author WireSegal
  * Created at 4:31 PM on 1/8/17.
  */
-open class PropertyString(name: String, open val values: SortedSet<String>) : PropertyHelper<String>(name, String::class.java) {
-    constructor(name: String, vararg values: String) : this(name, values.toSortedSet())
+open class PropertyString(name: String, open val values: HashSet<String>) : PropertyHelper<String>(name, String::class.java) {
+    constructor(name: String, vararg values: String) : this(name, values.toHashSet())
 
     init {
         @Suppress("LeakingThis")

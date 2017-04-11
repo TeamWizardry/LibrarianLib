@@ -13,6 +13,8 @@ import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import java.util.*
+import kotlin.collections.LinkedHashMap
+import kotlin.collections.LinkedHashSet
 
 /**
  * The default implementation for an IModBlock that defines its variants based on item variants.
@@ -23,8 +25,8 @@ open class BlockModVariant(name: String, materialIn: Material, color: MapColor, 
     constructor(name: String, materialIn: Material, vararg variants: String) : this(name, materialIn, materialIn.materialMapColor, *variants)
 
     companion object {
-        private var lastNames: SortedSet<String> by threadLocal {
-            sortedSetOf<String>()
+        private var lastNames: HashSet<String> by threadLocal {
+            hashSetOf<String>()
         }
 
         /**
@@ -35,7 +37,7 @@ open class BlockModVariant(name: String, materialIn: Material, color: MapColor, 
          * created by first access in [createBlockState].
          */
         private fun injectNames(name: String, variants: Array<out String>): Array<out String> {
-            lastNames = VariantHelper.beginSetupBlock(name, variants).toSortedSet()
+            lastNames = VariantHelper.beginSetupBlock(name, variants).toHashSet()
             return variants
         }
     }
