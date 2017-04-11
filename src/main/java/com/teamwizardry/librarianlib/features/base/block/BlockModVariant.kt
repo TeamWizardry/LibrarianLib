@@ -25,8 +25,8 @@ open class BlockModVariant(name: String, materialIn: Material, color: MapColor, 
     constructor(name: String, materialIn: Material, vararg variants: String) : this(name, materialIn, materialIn.materialMapColor, *variants)
 
     companion object {
-        private var lastNames: HashSet<String> by threadLocal {
-            hashSetOf<String>()
+        private var lastNames: Array<out String> by threadLocal {
+            arrayOf<String>()
         }
 
         /**
@@ -37,7 +37,7 @@ open class BlockModVariant(name: String, materialIn: Material, color: MapColor, 
          * created by first access in [createBlockState].
          */
         private fun injectNames(name: String, variants: Array<out String>): Array<out String> {
-            lastNames = VariantHelper.beginSetupBlock(name, variants).toHashSet()
+            lastNames = VariantHelper.beginSetupBlock(name, variants)
             return variants
         }
     }
@@ -46,7 +46,7 @@ open class BlockModVariant(name: String, materialIn: Material, color: MapColor, 
         private set
 
     override fun createBlockState(): BlockStateContainer {
-        property = PropertyString("variant", lastNames)
+        property = PropertyString("variant", *lastNames)
         return BlockStateContainer(this, property)
     }
 
