@@ -39,8 +39,6 @@ open class LibCommonProxy {
     open fun pre(e: FMLPreInitializationEvent) {
         EasyConfigHandler.init()
 
-        IShieldItem
-
         if (LibrarianLib.DEV_ENVIRONMENT && unsafeAllowedModIds.isNotEmpty()) {
             LibrarianLog.info(LibrarianLib.MODID + " | Unsafe-allowed mod IDs:")
             unsafeAllowedModIds.forEach { "${" " * LibrarianLib.MODID.length} | $it" }
@@ -67,6 +65,9 @@ open class LibCommonProxy {
 
     open fun latePost(e: FMLPostInitializationEvent) {
         SavingFieldCache.handleErrors()
+
+        // Late-post because we want to intercept damage at the absolute lowest possible priority
+        IShieldItem
     }
 
     // End internal methods

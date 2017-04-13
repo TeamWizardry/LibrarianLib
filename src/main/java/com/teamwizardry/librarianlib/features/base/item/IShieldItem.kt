@@ -15,6 +15,7 @@ import net.minecraft.util.math.MathHelper
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.entity.living.LivingAttackEvent
+import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 /**
@@ -29,7 +30,7 @@ interface IShieldItem {
 
         val canBlockDamageSource = MethodHandleHelper.wrapperForMethod(EntityLivingBase::class.java, arrayOf("e", "func_184583_d", "canBlockDamageSource"), DamageSource::class.java)
 
-        @SubscribeEvent
+        @SubscribeEvent(priority = EventPriority.LOWEST)
         fun onLivingAttack(e: LivingAttackEvent) {
             val attacked = e.entityLiving
             val source = e.source
