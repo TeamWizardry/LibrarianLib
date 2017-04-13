@@ -8,6 +8,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.text.Style
 import net.minecraft.util.text.TextFormatting
 import net.minecraft.world.World
+import net.minecraftforge.fml.common.FMLCommonHandler
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 
@@ -112,5 +113,6 @@ abstract class LoggerBase protected constructor(name: String) {
             }
         }
         warn(titleStarred)
+        FMLCommonHandler.instance().handleExit(0)
     }
 }

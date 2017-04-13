@@ -1,76 +1,60 @@
 package com.teamwizardry.librarianlib.features.saving.serializers
 
 import com.teamwizardry.librarianlib.features.saving.FieldType
+import com.teamwizardry.librarianlib.features.saving.serializers.SerializerRegistry.register
 
 /**
- * Created by TheCodeWarrior
+ * This class manages caching and creation of [Serializer]s.
+ *
+ * Creation is managed through [SerializerFactory]s. When a serializer is created, [SerializerFactory.canApply] is
+ * called for each factory registered with [register], and the one with the most specific match creates the serializer.
+ *
+ * If a serializer does not have any variation (e.g. it doesn't have any generics and doesn't apply to subclasses) it
+ * can be registered with []
  */
 object SerializerRegistry {
-    private val cached = mutableMapOf<SerializerTarget<*, *>, MutableMap<FieldType, SerializerImpl<*, *>?>>()
-    private val serializers = linkedMapOf<String, Serializer>()
+    private val serializers = mutableMapOf<FieldType, Serializer<Any>>()
+    private val factories = linkedMapOf<String, SerializerFactory>()
 
-    fun register(name: String, serializer: Serializer) {
-        serializers.put(name, serializer)
+    fun register(factory: SerializerFactory) {
+        factories.put(factory.name, factory)
     }
 
-    operator fun get(loc: String) = serializers[loc]
+    fun register(type: FieldType, serializer: Serializer<*>) {
+        @Suppress("UNCHECKED_CAST")
+        serializers.put(type, serializer as Serializer<Any>)
+    }
 
     /**
      * Get the serializer implementation for the given type.
      *
-     * _**DO NOT USE IN SERIALIZER GENERATORS!!!**_ Use [lazyImpl] instead
-     *
-     * @throws
+     * _**DO NOT USE IN SERIALIZER GENERATORS!!!**_ Use [lazy] instead
      */
-    @Suppress("UNCHECKED_CAST")
-    fun <R, W> impl(target: SerializerTarget<R, W>, type: FieldType): SerializerImpl<R, W> {
-        return implInternal(target, type)
+    fun getOrCreate(type: FieldType): Serializer<Any> {
+        return serializers.getOrPut(type, { createSerializerForType(type) })
     }
 
     /**
      * Get a lazy getter for the serializer for the given type.
      *
-     * Use this in serializer generators and invoke the returned value only when
-     * needed. This allows self-nesting (e.g. `ArrayList<ArrayList<Value>>`)
+     * Use this in serializers and access only when needed.
+     * This allows recursive nesting (e.g. `ArrayList<ArrayList<Value>>` or `class FooBar { val bar: FooBar? }`)
      */
-    @Suppress("UNCHECKED_CAST")
-    fun <R, W> lazyImpl(target: SerializerTarget<R, W>, type: FieldType): () -> SerializerImpl<R, W> {
-        val cachedImpl = cached.getOrPut(target, { mutableMapOf() }).get(type)
-        if (cachedImpl != null) {
-            return { cachedImpl as SerializerImpl<R, W> }
-        }
-
-        var lazyInstance: SerializerImpl<R, W>? = null
-        return {
-            if (lazyInstance == null) {
-                lazyInstance = implInternal(target, type)
-            }
-            lazyInstance!!
-        }
+    fun lazy(type: FieldType): Lazy<Serializer<Any>> {
+        return kotlin.lazy { getOrCreate(type) }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    private fun <R, W> implInternal(target: SerializerTarget<R, W>, type: FieldType): SerializerImpl<R, W> {
-        return cached.getOrPut(target, { mutableMapOf() }).getOrPut(type, l@ {
-            var impl: SerializerImpl<*, *>? = null
-            val ser = serializers.values.maxBy {
-                if (target in it && it.canApply(type))
-                    it.priority.ordinal
-                else
-                    -1000
-            }
-            if (ser != null && target in ser && ser.canApply(type)) {
-                impl = ser[target](type)
-            }
-            impl ?: throw NoSuchSerializerError(target, type)
-        }) as SerializerImpl<R, W>
+    private fun createSerializerForType(type: FieldType): Serializer<Any> {
+        val factory = factories.values.maxBy {
+            it.canApply(type)
+        }
+
+        if(factory == null || factory.canApply(type) == SerializerFactoryMatch.NONE)
+            throw NoSuchSerializerError(type)
+        else
+            @Suppress("UNCHECKED_CAST")
+            return factory.create(type) as Serializer<Any>
     }
 }
 
-class NoSuchSerializerError(target: SerializerTarget<*, *>, type: FieldType) : RuntimeException(calcMessage(target, type)) {
-    companion object {
-        fun calcMessage(target: SerializerTarget<*, *>, type: FieldType): String {
-            return "type " + type.toString() + " for target " + target.name
-        }
-    }
-}
+class NoSuchSerializerError(type: FieldType) : RuntimeException("No serializer for type ${type}")

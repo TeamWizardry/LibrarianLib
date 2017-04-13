@@ -7,10 +7,15 @@ import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import net.minecraft.util.EnumFacing
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.CapabilityManager
+import org.jetbrains.annotations.NotNull
+import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.*
+import kotlin.reflect.jvm.javaMethod
+import kotlin.reflect.jvm.kotlinFunction
+import kotlin.reflect.jvm.kotlinProperty
 
 /**
  * @author WireSegal
@@ -18,92 +23,139 @@ import java.util.*
  */
 object SavingFieldCache {
 
-    val atSaveMap = LinkedHashMap<Class<*>, Map<String, FieldCache>>()
+    val atSaveMap = LinkedHashMap<FieldType, Map<String, FieldCache>>()
 
     @JvmStatic
-    fun getClassFields(clazz: Class<*>): Map<String, FieldCache> {
-        val existing = atSaveMap[clazz]
+    fun getClassFields(type: FieldType): Map<String, FieldCache> {
+        val existing = atSaveMap[type]
         if (existing != null) return existing
 
         val map = linkedMapOf<String, FieldCache>()
-        buildClassFields(clazz, map)
-        buildClassGetSetters(clazz, map)
+        buildClassFields(type, map)
+        buildClassGetSetters(type, map)
         alreadyDone.clear()
 
-        atSaveMap.put(clazz, map)
+        atSaveMap.put(type, map)
 
         return map
     }
 
-    fun buildClassFields(clazz: Class<*>, map: MutableMap<String, FieldCache>) {
-        val fields = clazz.declaredFields.filter {
+    fun buildClassFields(type: FieldType, map: MutableMap<String, FieldCache>) {
+        val fields = type.clazz.declaredFields.filter {
             it.declaredAnnotations
             !Modifier.isStatic(it.modifiers)
         }
 
         fields.map {
-            getNameFromField(clazz, it) to it
+            getNameFromField(type, it) to it
         }.forEach {
             val (name, field) = it
             field.isAccessible = true
 
-            val mods = field.modifiers
-            val meta = FieldMetadata(FieldType.create(field), SavingFieldFlag.FIELD)
-            if (Modifier.isFinal(mods)) meta.addFlag(SavingFieldFlag.FINAL)
-            if (Modifier.isTransient(mods)) meta.addFlag(SavingFieldFlag.TRANSIENT)
-            if (field.isAnnotationPresent(Save::class.java)) meta.addFlag(SavingFieldFlag.ANNOTATED)
-            if (field.isAnnotationPresent(NotNullAcceptor::class.java)) meta.addFlag(SavingFieldFlag.NONNULL)
-            if (field.type.isPrimitive) meta.addFlag(SavingFieldFlag.NONNULL)
-            if (field.isAnnotationPresent(NoSync::class.java)) meta.addFlag(SavingFieldFlag.NO_SYNC)
-            if (field.isAnnotationPresent(CapabilityProvide::class.java)) {
-                meta.addFlag(SavingFieldFlag.CAPABILITY)
-                val annot = field.getAnnotation(CapabilityProvide::class.java)
-                if (EnumFacing.UP in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_UP)
-                if (EnumFacing.DOWN in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_DOWN)
-                if (EnumFacing.NORTH in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_NORTH)
-                if (EnumFacing.SOUTH in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_SOUTH)
-                if (EnumFacing.EAST in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_EAST)
-                if (EnumFacing.WEST in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_WEST)
-            }
+            val meta = createMetaForField(field, type)
 
-            val setterLambda: (Any, Any?) -> Unit = if (meta.hasFlag(SavingFieldFlag.FINAL)) {
-                { obj, inp -> throw IllegalAccessException("Tried to set final property $name for class ${clazz.simpleName} (final field)") }
-            } else {
-                MethodHandleHelper.wrapperForSetter<Any>(field)
-            }
-
-            map.put(name, FieldCache(meta,
-                    MethodHandleHelper.wrapperForGetter<Any>(field),
-                    setterLambda,
-                    field.name))
+            map.put(name,
+                    FieldCache(
+                            meta,
+                            getFieldGetter(field),
+                            getFieldSetter(field, type),
+                            field.name
+                    )
+            )
         }
     }
 
-    fun buildClassGetSetters(clazz: Class<*>, map: MutableMap<String, FieldCache>) {
+    fun getFieldGetter(field: Field): (Any) -> Any? {
+        return getKotlinFieldGetter(field) ?: getJavaFieldGetter(field)
+    }
+
+    fun getKotlinFieldGetter(field: Field): ((Any) -> Any?)? {
+        val property = field.kotlinProperty
+        if(property == null)
+            return null
+        val method = property.getter.javaMethod
+        if(method == null)
+            return null
+        val handle = MethodHandleHelper.wrapperForMethod<Any>(method)
+        return { obj -> handle(obj, arrayOf()) }
+    }
+
+    fun getJavaFieldGetter(field: Field) = MethodHandleHelper.wrapperForGetter<Any>(field)
+
+    fun getFieldSetter(field: Field, enclosing: FieldType): (Any, Any?) -> Unit {
+        if(Modifier.isFinal(field.modifiers)) {
+            return getFinalFieldSetter(field, enclosing)
+        } else {
+            return getJavaFieldSetter(field)
+        }
+    }
+
+    fun getJavaFieldSetter(field: Field) = MethodHandleHelper.wrapperForSetter<Any>(field)
+
+    fun getFinalFieldSetter(field: Field, enclosing: FieldType): (Any, Any?) -> Unit =
+            { obj, inp -> throw IllegalAccessException("Tried to set final field/property ${field.name} for class $enclosing (final field)") }
+
+    fun createMetaForField(field: Field, enclosing: FieldType): FieldMetadata {
+        val resolved = enclosing.resolve(field.genericType)
+
+        val meta = FieldMetadata(resolved, SavingFieldFlag.FIELD)
+
+        addJavaFlagsForField(field, meta)
+        addAnnotationFlagsForField(field, meta)
+
+        return meta
+    }
+
+    fun addJavaFlagsForField(field: Field, meta: FieldMetadata) {
+        val mods = field.modifiers
+
+        if (Modifier.isFinal(mods)) meta.addFlag(SavingFieldFlag.FINAL)
+        if (Modifier.isTransient(mods)) meta.addFlag(SavingFieldFlag.TRANSIENT)
+        if (field.type.isPrimitive) meta.addFlag(SavingFieldFlag.NONNULL)
+    }
+
+    fun addAnnotationFlagsForField(field: AccessibleObject, meta: FieldMetadata) {
+        if (field.isAnnotationPresent(Save::class.java)) meta.addFlag(SavingFieldFlag.ANNOTATED)
+        if (field.isAnnotationPresent(NotNull::class.java)) meta.addFlag(SavingFieldFlag.NONNULL)
+        if (field.isAnnotationPresent(NoSync::class.java)) meta.addFlag(SavingFieldFlag.NO_SYNC)
+        if (field.isAnnotationPresent(NonPersistent::class.java)) meta.addFlag(SavingFieldFlag.NON_PERSISTENT)
+        if (field.isAnnotationPresent(CapabilityProvide::class.java)) {
+            meta.addFlag(SavingFieldFlag.CAPABILITY)
+            val annot = field.getAnnotation(CapabilityProvide::class.java)
+            if (EnumFacing.UP in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_UP)
+            if (EnumFacing.DOWN in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_DOWN)
+            if (EnumFacing.NORTH in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_NORTH)
+            if (EnumFacing.SOUTH in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_SOUTH)
+            if (EnumFacing.EAST in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_EAST)
+            if (EnumFacing.WEST in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_WEST)
+        }
+    }
+
+    fun buildClassGetSetters(type: FieldType, map: MutableMap<String, FieldCache>) {
         val getters = mutableMapOf<String, Method>()
         val setters = mutableMapOf<String, Method>()
 
 
-        clazz.declaredMethods.forEach {
+        type.clazz.declaredMethods.forEach {
             it.declaredAnnotations
             val mods = it.modifiers
             if (!Modifier.isStatic(mods)) {
                 if (it.isAnnotationPresent(SaveMethodGetter::class.java)) {
                     val types = it.parameterTypes
-                    val name = getNameFromMethod(clazz, it, true)
+                    val name = getNameFromMethod(type, it, true)
                     if (types.isEmpty()) {
                         getters.put(name, it)
                     } else {
-                        errorList[clazz][name].add("Getter has parameters")
+                        errorList[type][name].add("Getter has parameters")
                     }
                 }
                 if (it.isAnnotationPresent(SaveMethodSetter::class.java)) {
                     val types = it.parameterTypes
-                    val name = getNameFromMethod(clazz, it, false)
+                    val name = getNameFromMethod(type, it, false)
                     if (types.size == 1) {
                         setters.put(name, it)
                     } else {
-                        errorList[clazz][name].add("Setter has ${types.size} parameters, they must have exactly 1")
+                        errorList[type][name].add("Setter has ${types.size} parameters, they must have exactly 1")
                     }
                 }
             }
@@ -115,17 +167,19 @@ object SavingFieldCache {
             val getReturnType = getter.returnType
             if (name in setters) {
                 val setter = setters[name]!!
+                if(setter.parameterCount == 0)
+                    errorList[type][name].add("Setter has no parameters")
                 val setReturnType = setter.parameterTypes[0]
                 if (getReturnType == setReturnType)
                     pairs.put(name, Triple(getter, setter, getReturnType))
                 else
-                    errorList[clazz][name].add("Getter and setter have mismatched types")
+                    errorList[type][name].add("Getter and setter have mismatched types")
             }
         }
 
         setters.filterKeys { it !in getters }.forEach {
             val name = it.key
-            errorList[clazz][name].add("Setter has no getter")
+            errorList[type][name].add("Setter has no getter")
         }
 
 
@@ -133,7 +187,7 @@ object SavingFieldCache {
             it.first
         }.forEach {
             val (name, triple) = it
-            val (getter, setter, type) = triple
+            val (getter, setter, propertyType) = triple
             getter.isAccessible = true
             setter?.isAccessible = true
 
@@ -142,17 +196,22 @@ object SavingFieldCache {
 
             val meta = FieldMetadata(FieldType.create(getter), SavingFieldFlag.ANNOTATED, SavingFieldFlag.METHOD)
 
-            if (getter.isAnnotationPresent(NotNullAcceptor::class.java) && (setter == null || setter.parameterAnnotations[0].any { it is NotNullAcceptor }))
+            if (isGetSetPairNotNull(getter, setter))
                 meta.addFlag(SavingFieldFlag.NONNULL)
-            if (type.isPrimitive)
+            if (propertyType.isPrimitive)
                 meta.addFlag(SavingFieldFlag.NONNULL)
             if (getter.isAnnotationPresent(NoSync::class.java) && (setter == null || setter.isAnnotationPresent(NoSync::class.java)))
                 meta.addFlag(SavingFieldFlag.NO_SYNC)
+            if (getter.isAnnotationPresent(NonPersistent::class.java) && (setter == null || setter.isAnnotationPresent(NonPersistent::class.java)))
+                meta.addFlag(SavingFieldFlag.NON_PERSISTENT)
             if (setter == null)
                 meta.addFlag(SavingFieldFlag.FINAL)
 
-            val setterLambda: (Any, Any?) -> Unit = if (wrapperForSetter == null)
-                { obj, inp -> throw IllegalAccessException("Tried to set final property $name for class ${clazz.simpleName} (no save setter)") }
+            if(meta.hasFlag(SavingFieldFlag.NO_SYNC) && meta.hasFlag(SavingFieldFlag.NON_PERSISTENT))
+                errorList[type][name].add("Annotated with both @NoSync and @NonPersistent. This field will never be used.")
+
+            val setterLambda: (Any, Any?) -> Unit = if(wrapperForSetter == null)
+                { obj, inp -> throw IllegalAccessException("Tried to set final property $name for class $type (no save setter)") }
             else
                 { obj, inp -> wrapperForSetter(obj, arrayOf(inp)) }
 
@@ -162,12 +221,26 @@ object SavingFieldCache {
         }
     }
 
+    private fun isGetSetPairNotNull(getter: Method, setter: Method?): Boolean {
+        return isGetterMethodNotNull(getter) && (setter == null || isSetterMethodNotNull(setter))
+    }
+
+    private fun isGetterMethodNotNull(getter: Method): Boolean {
+        val kt = getter.kotlinFunction
+        return getter.isAnnotationPresent(NotNull::class.java) || (kt != null && !kt.returnType.isMarkedNullable)
+    }
+
+    private fun isSetterMethodNotNull(setter: Method): Boolean {
+        val kt = setter.kotlinFunction
+        return setter.parameterAnnotations[0].any { it is NotNull } || (kt != null && !kt.parameters[0].type.isMarkedNullable)
+    }
+
     private val alreadyDone = mutableListOf<String>()
     private val ILLEGAL_NAMES = listOf("id", "x", "y", "z", "ForgeData", "ForgeCaps")
 
     private val nameMap = mutableMapOf<Field, String>()
 
-    private fun getNameFromField(clazz: Class<*>, f: Field): String {
+    private fun getNameFromField(type: FieldType, f: Field): String {
         val got = nameMap[f]
         if (got != null) return got
 
@@ -176,15 +249,15 @@ object SavingFieldCache {
 
         if (name in ILLEGAL_NAMES)
             name += "X"
-        if (name in alreadyDone)
-            errorList[clazz][name].add("Name already in use for field")
+        if(name in alreadyDone)
+            errorList[type][name].add("Name already in use for field")
 
         alreadyDone.add(name)
         nameMap[f] = name
         return name
     }
 
-    private fun getNameFromMethod(clazz: Class<*>, m: Method, getter: Boolean): String {
+    private fun getNameFromMethod(type: FieldType, m: Method, getter: Boolean): String {
         var name = if (getter)
             m.getAnnotation(SaveMethodGetter::class.java).saveName
         else
@@ -192,13 +265,13 @@ object SavingFieldCache {
 
         if (name in ILLEGAL_NAMES)
             name += "X"
-        if (name in alreadyDone)
-            errorList[clazz][name].add("Name already in use for ${if (getter) "getter" else "setter"}")
+        if(name in alreadyDone)
+            errorList[type][name].add("Name already in use for ${if(getter) "getter" else "setter"}")
         alreadyDone.add(name)
         return name
     }
 
-    private val errorList = mutableMapOf<Class<*>, DefaultedMutableMap<String, MutableList<String>>>().withRealDefault { mutableMapOf<String, MutableList<String>>().withRealDefault { mutableListOf<String>() } }
+    private val errorList = mutableMapOf<FieldType, DefaultedMutableMap<String, MutableList<String>>>().withRealDefault { mutableMapOf<String, MutableList<String>>().withRealDefault { mutableListOf<String>() } }
 
     fun handleErrors() {
         if (errorList.size == 0)
@@ -208,7 +281,7 @@ object SavingFieldCache {
 
         errorList.forEach {
             val (clazz, props) = it
-            lines.add("- ${clazz.simpleName}")
+            lines.add("- ${it.key}")
 
             props.forEach {
                 val (name, errors) = it
@@ -288,6 +361,6 @@ data class FieldMetadata private constructor(val type: FieldType, private var fl
 }
 
 enum class SavingFieldFlag {
-    FIELD, METHOD, ANNOTATED, NONNULL, NO_SYNC, TRANSIENT, FINAL,
+    FIELD, METHOD, ANNOTATED, NONNULL, NO_SYNC, NON_PERSISTENT, TRANSIENT, FINAL,
     CAPABILITY, CAPABILITY_UP, CAPABILITY_DOWN, CAPABILITY_NORTH, CAPABILITY_SOUTH, CAPABILITY_EAST, CAPABILITY_WEST
 }

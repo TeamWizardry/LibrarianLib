@@ -1,12 +1,29 @@
 package com.teamwizardry.librarianlib.features.saving
 
+import com.google.gson.internal.`$Gson$Types`
+import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import java.lang.reflect.*
 import java.util.*
 
-abstract class FieldType protected constructor(open val clazz: Class<*>) {
+val getGenericSuperclassMH = MethodHandleHelper.wrapperForStaticMethod(`$Gson$Types`::class.java, arrayOf("getGenericSupertype"), Type::class.java, Class::class.java, Class::class.java)
+
+abstract class FieldType protected constructor(val type: Type, open val clazz: Class<*>) {
 
     open val interfaces: Array<out Class<*>>
         get() = arrayOf()
+
+    fun resolve(type: Type): FieldType {
+        return FieldType.create(`$Gson$Types`.resolve(this.type, this.clazz, type))
+    }
+
+    fun resolveGeneric(iface: Class<*>, index: Int): FieldType {
+        val superclass = this.genericSuperclass(iface) as FieldTypeGeneric
+        return this.resolve(superclass.generic(index).type)
+    }
+
+    fun genericSuperclass(clazz: Class<*>): FieldType {
+        return FieldType.create(getGenericSuperclassMH(arrayOf(this.type, this.clazz, clazz)) as Type)
+    }
 
     companion object {
         @JvmStatic
@@ -30,36 +47,38 @@ abstract class FieldType protected constructor(open val clazz: Class<*>) {
                         else
                             createPlain(type)
                     else
-                        FieldTypeError()
+                        FieldTypeError(type)
 
             return fType
         }
 
         private fun createPlain(type: Class<*>): FieldType {
-            return FieldTypeClass(type)
+            return FieldTypeClass(type, type)
         }
 
         private fun createArray(type: Class<*>): FieldType {
-            return FieldTypeArray(create(type.componentType))
+            return FieldTypeArray(type, create(type.componentType))
         }
 
         private fun createGeneric(type: ParameterizedType): FieldType {
-            return FieldTypeGeneric(type.rawType as Class<*>, type.actualTypeArguments.map { create(it) }.toTypedArray())
+            return FieldTypeGeneric(type, type.rawType as Class<*>, type.actualTypeArguments.map { create(it) }.toTypedArray())
         }
 
         private fun createGenericArray(type: GenericArrayType): FieldType {
-            return FieldTypeArray(create(type.genericComponentType))
+            return FieldTypeArray(type, create(type.genericComponentType))
         }
 
         private fun createVariable(type: TypeVariable<*>): FieldType {
-            return FieldTypeVariable(type.genericDeclaration as Class<*>, type.name, type.genericDeclaration.typeParameters.indexOfFirst { it.name == type.name })
+            return FieldTypeVariable(type, type.genericDeclaration as Class<*>, type.name, type.genericDeclaration.typeParameters.indexOfFirst { it.name == type.name })
         }
     }
 }
 
-class FieldTypeError : FieldType(Any::class.java)
+class FieldTypeError(type: Type) : FieldType(type, Any::class.java) {
 
-class FieldTypeClass(clazz: Class<*>) : FieldType(clazz) {
+}
+
+class FieldTypeClass(type: Type, clazz: Class<*>) : FieldType(type, clazz) {
 
     override val interfaces: Array<out Class<*>> = if (clazz.isInterface) arrayOf(*clazz.interfaces, clazz) else clazz.interfaces
 
@@ -81,7 +100,7 @@ class FieldTypeClass(clazz: Class<*>) : FieldType(clazz) {
     }
 }
 
-class FieldTypeArray(val componentType: FieldType) : FieldType(getArrayType(componentType)) {
+class FieldTypeArray(type: Type, val componentType: FieldType) : FieldType(type, getArrayType(componentType)) {
 
 
     override fun equals(other: Any?): Boolean {
@@ -108,10 +127,14 @@ class FieldTypeArray(val componentType: FieldType) : FieldType(getArrayType(comp
     }
 }
 
-class FieldTypeGeneric(clazz: Class<*>, val generics: Array<FieldType>) : FieldType(clazz) {
+class FieldTypeGeneric(type: Type, clazz: Class<*>, val generics: Array<FieldType>) : FieldType(type, clazz) {
 
-    fun generic(i: Int): FieldType? {
-        if (i < 0 || i >= generics.size)
+    fun generic(i: Int): FieldType {
+        return generics[i]
+    }
+
+    fun genericOrNull(i: Int): FieldType? {
+        if(i < 0 || i >= generics.size)
             return null
         return generics[i]
     }
@@ -137,7 +160,7 @@ class FieldTypeGeneric(clazz: Class<*>, val generics: Array<FieldType>) : FieldT
     }
 }
 
-class FieldTypeVariable(val parent: Class<*>, val name: String, val index: Int) : FieldType(Any::class.java) {
+class FieldTypeVariable(type: Type, val parent: Class<*>, val name: String, val index: Int) : FieldType(type, Any::class.java) {
     override val clazz: Class<*>
         get() = throw UnsupportedOperationException("Cannot get class from variable field type!")
 

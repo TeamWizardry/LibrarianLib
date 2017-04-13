@@ -31,6 +31,7 @@ import net.minecraft.world.World
 import net.minecraft.world.chunk.Chunk
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.ICapabilityProvider
+import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.util.*
@@ -118,6 +119,52 @@ fun <T> Class<T>.genericClass(index: Int): Class<*>? {
 @Suppress("UNCHECKED_CAST")
 fun <T, O> Class<T>.genericClassTyped(index: Int) = genericClass(index) as Class<O>?
 
+private val singletonMap = IdentityHashMap<Class<*>, Any?>()
+
+/**
+ * Searches for one of a few things:
+ *
+ * * If the class is a Kotlin object it will get the instance of it
+ * * If the class has a static final field named `INSTANCE` with the same type as this class, gets the value of that field (if it is null, returns null)
+ * * If the class has a zero-argument constructor, instantiates an instance of the class
+ * * If none of these requirements was fulfilled or if the `INSTANCE` field contained null, returns null.
+ *
+ * After the first time this property is accessed for a class, its instance is cached for faster lookups.
+ */
+val <T: Any> Class<T>.singletonInstance: T?
+    get() {
+        @Suppress("UNCHECKED_CAST")
+        if(this in singletonMap) return singletonMap[this] as T?
+
+        val kt = this.kotlin.objectInstance
+        if(kt != null) {
+            singletonMap[this] = kt
+            return kt
+        }
+
+        val field = this.declaredFields.find {
+            Modifier.isStatic(it.modifiers) && Modifier.isFinal(it.modifiers) && it.name == "INSTANCE" && it.type == this
+        }
+
+        if(field != null) {
+            val value = field.get(null)
+            singletonMap[this] = value
+            @Suppress("UNCHECKED_CAST")
+            return value as T?
+        }
+
+        try {
+            val constructor = this.getConstructor()
+            val value = constructor.newInstance()
+            singletonMap[this] = value
+            return value
+        } catch(e: NoSuchMethodException) {
+            // NOOP
+        }
+
+        singletonMap[this] = null
+        return null
+    }
 // Player ==============================================================================================================
 
 fun EntityPlayer.sendMessage(str: String, actionBar: Boolean = false)

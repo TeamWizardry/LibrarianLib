@@ -38,6 +38,8 @@ fun <T : NBTBase> NBTTagList.forEachIndexed(run: (Int, T) -> Unit) {
 
 // NBT
 
+inline fun <reified T : NBTBase> NBTBase.safeCast(): T = this.safeCast(T::class.java)
+
 @Suppress("UNCHECKED_CAST")
 fun <T : NBTBase> NBTBase.safeCast(clazz: Class<T>): T {
     return (

@@ -4,7 +4,7 @@ package com.teamwizardry.librarianlib.core.common
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
-import com.teamwizardry.librarianlib.features.autoregister.AutoRegisterHandler
+import com.teamwizardry.librarianlib.features.autoregister.AnnotationMarkersHandler
 import com.teamwizardry.librarianlib.features.config.EasyConfigHandler
 import com.teamwizardry.librarianlib.features.container.GuiHandler
 import com.teamwizardry.librarianlib.features.kotlin.sendSpamlessMessage
@@ -45,7 +45,7 @@ open class LibCommonProxy {
     }
 
     open fun latePre(e: FMLPreInitializationEvent) {
-        AutoRegisterHandler.handle(e)
+        AnnotationMarkersHandler.preInit(e)
         EasyConfigHandler.bootstrap(e.asmData, e.modConfigurationDirectory)
         asmDataTable = e.asmData
     }
