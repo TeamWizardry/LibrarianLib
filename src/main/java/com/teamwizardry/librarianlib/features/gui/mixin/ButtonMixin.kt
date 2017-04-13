@@ -1,10 +1,10 @@
 package com.teamwizardry.librarianlib.features.gui.mixin
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
-import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
+import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
+import com.teamwizardry.librarianlib.features.gui.GuiComponent
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
 class ButtonMixin<T : GuiComponent<T>>(val component: GuiComponent<T>, init: Runnable) {

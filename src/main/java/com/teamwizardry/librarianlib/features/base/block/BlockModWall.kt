@@ -64,15 +64,19 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
 
     override fun getMetaFromState(state: IBlockState) = 0
 
+    @Suppress("OverridingDeprecatedMember", "DEPRECATION")
     override fun getBoundingBox(state: IBlockState, source: IBlockAccess, pos: BlockPos)
             = AABB_BY_INDEX[getAABBIndex(getActualState(state, source, pos))]
 
+    @Suppress("OverridingDeprecatedMember", "DEPRECATION")
     override fun getCollisionBoundingBox(blockState: IBlockState, worldIn: IBlockAccess, pos: BlockPos): AxisAlignedBB
             = CLIP_AABB_BY_INDEX[getAABBIndex(getActualState(blockState, worldIn, pos))]
 
     override fun canPlaceTorchOnTop(state: IBlockState, world: IBlockAccess, pos: BlockPos) = true
+    @Suppress("OverridingDeprecatedMember")
     override fun isFullCube(state: IBlockState?) = false
     override fun isPassable(worldIn: IBlockAccess?, pos: BlockPos?) = false
+    @Suppress("OverridingDeprecatedMember")
     override fun isOpaqueCube(state: IBlockState?) = false
 
     private fun canConnectTo(worldIn: IBlockAccess, pos: BlockPos): Boolean {
@@ -90,15 +94,18 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
 
 
     override fun getExplosionResistance(world: World, pos: BlockPos, exploder: Entity, explosion: Explosion) = parent.block.getExplosionResistance(world, pos, exploder, explosion)
+    @Suppress("OverridingDeprecatedMember")
     override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
     override fun isToolEffective(type: String?, state: IBlockState) = parent.block.isToolEffective(type, parent)
     override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent)
 
+    @Suppress("OverridingDeprecatedMember", "DEPRECATION")
     @SideOnly(Side.CLIENT)
     override fun shouldSideBeRendered(blockState: IBlockState, blockAccess: IBlockAccess, pos: BlockPos, side: EnumFacing): Boolean {
         return if (side == EnumFacing.DOWN) super.shouldSideBeRendered(blockState, blockAccess, pos, side) else true
     }
 
+    @Suppress("OverridingDeprecatedMember")
     override fun getActualState(state: IBlockState, worldIn: IBlockAccess, pos: BlockPos): IBlockState {
         val flag = canConnectTo(worldIn, pos.north())
         val flag1 = canConnectTo(worldIn, pos.east())

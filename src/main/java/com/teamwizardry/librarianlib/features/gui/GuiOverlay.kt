@@ -67,6 +67,7 @@ object GuiOverlay {
     }
 
     @SubscribeEvent
+    @Suppress("UNUSED_PARAMETER")
     fun tick(e: TickEvent.ClientTickEvent) {
         newlyRegistered.forEach {
             it.reinit(mainComp)
@@ -77,7 +78,7 @@ object GuiOverlay {
 
     private class ComponentVisiblePredicate(val predicate: BooleanSupplier) : GuiComponent<ComponentVisiblePredicate>(0, 0) {
         override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
-            // noop
+            // NO-OP
         }
 
         override fun onTick() {

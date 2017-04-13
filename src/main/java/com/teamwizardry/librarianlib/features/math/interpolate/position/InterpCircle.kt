@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.features.math.interpolate.position
 
-import com.teamwizardry.librarianlib.features.math.interpolate.InterpFunction
 import com.teamwizardry.librarianlib.features.kotlin.cross
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.times
+import com.teamwizardry.librarianlib.features.math.interpolate.InterpFunction
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 

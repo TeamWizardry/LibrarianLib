@@ -1,14 +1,13 @@
 package com.teamwizardry.librarianlib.features.shader
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
+import com.teamwizardry.librarianlib.features.helpers.VariantHelper
+import com.teamwizardry.librarianlib.features.helpers.currentModId
 import com.teamwizardry.librarianlib.features.shader.uniforms.FloatTypes
 import com.teamwizardry.librarianlib.features.shader.uniforms.Uniform
 import com.teamwizardry.librarianlib.features.shader.uniforms.UniformType
-import com.teamwizardry.librarianlib.features.helpers.VariantHelper
-import com.teamwizardry.librarianlib.features.helpers.currentModId
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
-
 import org.lwjgl.opengl.GL20
 
 @SideOnly(Side.CLIENT)

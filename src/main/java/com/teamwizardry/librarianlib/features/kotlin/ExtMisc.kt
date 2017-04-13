@@ -39,8 +39,6 @@ import java.util.*
 fun Int.abs() = if (this < 0) -this else this
 
 operator fun TextFormatting.plus(str: String) = "$this$str"
-
-operator fun String.plus(form: TextFormatting) = "$this$form"
 operator fun TextFormatting.plus(other: TextFormatting) = "$this$other"
 
 fun String.localize(vararg parameters: Any): String {
@@ -244,6 +242,8 @@ fun <C : ICapabilityProvider, T, R> C.forCap(capability: Capability<T>?, facing:
         return callback(this.getCapability(capability, facing)!!)
     return null
 }
+
+val ItemStack.toolClasses: Set<String> get() = item.getToolClasses(this)
 
 // Item ===========================================================================================================
 

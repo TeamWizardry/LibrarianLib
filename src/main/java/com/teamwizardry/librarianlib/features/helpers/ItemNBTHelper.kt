@@ -44,6 +44,7 @@ object ItemNBTHelper {
         appendTag(NBTTagLong(uuid.leastSignificantBits))
         appendTag(NBTTagLong(uuid.mostSignificantBits))
     })
+
     @JvmStatic fun set(stack: ItemStack, tag: String, value: NBTBase) = getNBT(stack).setTag(tag, value)
 
 

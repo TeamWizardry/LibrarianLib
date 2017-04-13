@@ -1,13 +1,13 @@
 package com.teamwizardry.librarianlib.features.base.block
 
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
 import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.features.base.IModelGenerator
 import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
-import com.teamwizardry.librarianlib.features.kotlin.json
 import com.teamwizardry.librarianlib.features.helpers.currentModId
+import com.teamwizardry.librarianlib.features.kotlin.json
+import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
 import net.minecraft.block.Block
 import net.minecraft.block.BlockFenceGate
 import net.minecraft.block.BlockPlanks
@@ -66,6 +66,7 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
         get() = ModCreativeTab.defaultTabs[modId]
 
 
+    @Suppress("OverridingDeprecatedMember", "DEPRECATION")
     override fun getActualState(state: IBlockState, worldIn: IBlockAccess, pos: BlockPos): IBlockState {
         val actual = super.getActualState(state, worldIn, pos)
         if (actual.getValue(IN_WALL)) return actual

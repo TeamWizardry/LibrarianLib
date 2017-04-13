@@ -32,10 +32,12 @@ open class BlockModPillar(name: String, material: Material, vararg variants: Str
         defaultState = defaultState.withProperty(AXIS, BlockLog.EnumAxis.Y)
     }
 
+    @Suppress("OverridingDeprecatedMember", "DEPRECATION")
     override fun getStateForPlacement(worldIn: World?, pos: BlockPos?, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float, meta: Int, placer: EntityLivingBase?): IBlockState {
         return this.getStateFromMeta(meta).withProperty(AXIS, BlockLog.EnumAxis.fromFacingAxis(facing.axis))
     }
 
+    @Suppress("OverridingDeprecatedMember")
     override fun withRotation(state: IBlockState, rot: Rotation): IBlockState {
         when (rot) {
             Rotation.COUNTERCLOCKWISE_90, Rotation.CLOCKWISE_90 -> {
@@ -57,6 +59,7 @@ open class BlockModPillar(name: String, material: Material, vararg variants: Str
         return true
     }
 
+    @Suppress("OverridingDeprecatedMember")
     override fun getStateFromMeta(meta: Int): IBlockState {
         var axis = BlockLog.EnumAxis.Y
         val i = meta and 12

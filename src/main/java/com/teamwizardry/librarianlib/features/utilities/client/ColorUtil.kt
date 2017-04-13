@@ -21,7 +21,7 @@ fun Color.pulseColor(variance: Int = 24, pulseSpeed: Float = 0.2f): Color {
     return newColor
 }
 
-fun rainbow(saturation: Float) = Color(Color.HSBtoRGB((ClientTickHandler.ticksInGame * 2L % 360L).toFloat() / 360.0f, saturation, 1.0f))
+fun rainbow(saturation: Float) = Color(Color.HSBtoRGB(((ClientTickHandler.ticksInGame * 2L) % 360L).toFloat() / 360.0f, saturation, 1.0f))
 
 fun rainbow(speed: Float, saturation: Float): Color {
     val time = ClientTickHandler.ticksInGame.toFloat() + ClientTickHandler.partialTicks

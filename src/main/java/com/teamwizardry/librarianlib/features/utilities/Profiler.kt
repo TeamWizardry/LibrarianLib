@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.features.utilities
 
-import com.teamwizardry.librarianlib.features.utilities.ClientRunnable
 import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.relauncher.Side

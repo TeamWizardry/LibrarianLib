@@ -1,17 +1,17 @@
 package com.teamwizardry.librarianlib.test.container
 
-import com.teamwizardry.librarianlib.features.container.ContainerBase
-import com.teamwizardry.librarianlib.features.container.GuiHandler
-import com.teamwizardry.librarianlib.features.container.InventoryWrapper
-import com.teamwizardry.librarianlib.features.container.builtin.BaseWrappers
-import com.teamwizardry.librarianlib.features.container.builtin.SlotTypeGhost
 import com.teamwizardry.librarianlib.features.gui.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.guicontainer.GuiContainerBase
 import com.teamwizardry.librarianlib.features.guicontainer.builtin.BaseLayouts
-import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.sprite.Texture
+import com.teamwizardry.librarianlib.features.container.ContainerBase
+import com.teamwizardry.librarianlib.features.container.GuiHandler
+import com.teamwizardry.librarianlib.features.container.InventoryWrapper
+import com.teamwizardry.librarianlib.features.container.builtin.BaseWrappers
+import com.teamwizardry.librarianlib.features.container.builtin.SlotTypeGhost
+import com.teamwizardry.librarianlib.features.helpers.vec
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Items
 import net.minecraft.util.ResourceLocation
@@ -43,8 +43,7 @@ class ContainerTest(player: EntityPlayer, tile: TEContainer) : ContainerBase(pla
         val NAME = ResourceLocation("librarianlibtest:container")
 
         init {
-            GuiHandler.registerBasicContainer(NAME, { player, pos, tile -> ContainerTest(player, tile as TEContainer) },
-                    { player, container -> GuiContainerTest(container) })
+            GuiHandler.registerBasicContainer(NAME, { player, _, tile -> ContainerTest(player, tile as TEContainer) }, { _, container -> GuiContainerTest(container) })
         }
     }
 }

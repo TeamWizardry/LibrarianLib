@@ -2,9 +2,9 @@ package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.gui.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.Option
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.BoundingBox2D
 import com.teamwizardry.librarianlib.features.math.Vec2d
-import com.teamwizardry.librarianlib.features.helpers.vec
 import net.minecraft.client.Minecraft
 import java.awt.Color
 

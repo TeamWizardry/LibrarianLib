@@ -5,6 +5,7 @@ package com.teamwizardry.librarianlib.core.common
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.autoregister.AnnotationMarkersHandler
+import com.teamwizardry.librarianlib.features.base.item.IShieldItem
 import com.teamwizardry.librarianlib.features.config.EasyConfigHandler
 import com.teamwizardry.librarianlib.features.container.GuiHandler
 import com.teamwizardry.librarianlib.features.kotlin.sendSpamlessMessage
@@ -64,6 +65,9 @@ open class LibCommonProxy {
 
     open fun latePost(e: FMLPostInitializationEvent) {
         SavingFieldCache.handleErrors()
+
+        // Late-post because we want to intercept damage at the absolute lowest possible priority
+        IShieldItem
     }
 
     // End internal methods

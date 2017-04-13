@@ -12,10 +12,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 @FunctionalInterface
 public interface ClientRunnable {
-    @SideOnly(Side.CLIENT)
-    void runIfClient();
-
     static void run(ClientRunnable runnable) {
         LibrarianLib.PROXY.runIfClient(runnable);
     }
+
+    @SideOnly(Side.CLIENT)
+    void runIfClient();
 }

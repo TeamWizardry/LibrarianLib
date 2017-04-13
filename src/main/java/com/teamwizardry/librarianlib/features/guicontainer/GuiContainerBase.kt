@@ -1,13 +1,13 @@
 package com.teamwizardry.librarianlib.features.guicontainer
 
+import com.teamwizardry.librarianlib.features.container.ContainerBase
+import com.teamwizardry.librarianlib.features.container.internal.ContainerImpl
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
-import com.teamwizardry.librarianlib.features.container.ContainerBase
-import com.teamwizardry.librarianlib.features.container.internal.ContainerImpl
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.network.PacketHandler
 import com.teamwizardry.librarianlib.features.network.PacketSyncSlotVisibility
-import com.teamwizardry.librarianlib.features.helpers.vec
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.renderer.GlStateManager
@@ -156,6 +156,7 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         }
 
         @SubscribeEvent
+        @Suppress("UNUSED_PARAMETER")
         fun tick(e: TickEvent.ClientTickEvent) {
             val gui = Minecraft.getMinecraft().currentScreen
             if (gui is GuiContainerBase) {

@@ -54,7 +54,7 @@ object ParticleSpawner {
      */
     @JvmStatic
     @JvmOverloads
-    fun spawn(builder: ParticleBuilder, world: World, curve: InterpFunction<Vec3d>, particleCount: Int, travelTime: Int = 0, callback: BiConsumer<Float, ParticleBuilder> = BiConsumer { t, u -> }) {
+    fun spawn(builder: ParticleBuilder, world: World, curve: InterpFunction<Vec3d>, particleCount: Int, travelTime: Int = 0, callback: BiConsumer<Float, ParticleBuilder> = BiConsumer { _, _ -> }) {
         val actualParticleCount = modifyParticleCount(particleCount)
 
         InterpListGenerator.getIndexList(actualParticleCount).forEach { t ->
@@ -91,6 +91,6 @@ private data class ParticleSpawn private constructor(val particle: ParticleBase)
 /**
  * Kotlin wrapper for [spawn]. Uses kotlin lambdas instead of SAM classes
  */
-fun ParticleSpawner.spawn(builder: ParticleBuilder, world: World, curve: InterpFunction<Vec3d>, particleCount: Int, travelTime: Int = 0, callback: (Float, ParticleBuilder) -> Unit = { a, b -> }) {
+fun ParticleSpawner.spawn(builder: ParticleBuilder, world: World, curve: InterpFunction<Vec3d>, particleCount: Int, travelTime: Int = 0, callback: (Float, ParticleBuilder) -> Unit = { _, _ -> }) {
     spawn(builder, world, curve, particleCount, travelTime, BiConsumer<Float, ParticleBuilder>(callback))
 }

@@ -274,7 +274,7 @@ object SavingFieldCache {
     private val errorList = mutableMapOf<FieldType, DefaultedMutableMap<String, MutableList<String>>>().withRealDefault { mutableMapOf<String, MutableList<String>>().withRealDefault { mutableListOf<String>() } }
 
     fun handleErrors() {
-        if (errorList.size == 0)
+        if (errorList.isEmpty())
             return
 
         val lines = mutableListOf<String>()

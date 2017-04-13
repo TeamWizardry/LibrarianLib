@@ -281,6 +281,7 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
         return BlockStateContainer(this, DECAYABLE, CHECK_DECAY)
     }
 
+    @Suppress("OverridingDeprecatedMember", "DEPRECATION")
     @SideOnly(Side.CLIENT)
     override fun shouldSideBeRendered(blockState: IBlockState, blockAccess: IBlockAccess, pos: BlockPos, side: EnumFacing): Boolean {
         return if (!fancyLeaves && canBeOpaque && blockAccess.getBlockState(pos.offset(side)).block === this) false else super.shouldSideBeRendered(blockState, blockAccess, pos, side)

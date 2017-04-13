@@ -43,8 +43,8 @@ object AbstractSaveHandler {
     }
 
     @JvmStatic
-    fun <T: Any> getCapability(instance: Any, cap: Capability<T>, side: EnumFacing?): T? {
-        for ((key, value) in SavingFieldCache.getClassFields(FieldType.create(instance.javaClass))) {
+    fun <T : Any> getCapability(instance: Any, cap: Capability<T>, side: EnumFacing?): T? {
+        for ((_, value) in SavingFieldCache.getClassFields(FieldType.create(instance.javaClass))) {
             val inst = value.getCapability(instance, cap, side)
             if (inst != null) return inst
         }

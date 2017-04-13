@@ -2,8 +2,8 @@ package com.teamwizardry.librarianlib.features.container
 
 import com.google.common.collect.HashBiMap
 import com.teamwizardry.librarianlib.core.LibrarianLib
-import com.teamwizardry.librarianlib.features.guicontainer.GuiContainerBase
 import com.teamwizardry.librarianlib.features.container.internal.ContainerImpl
+import com.teamwizardry.librarianlib.features.guicontainer.GuiContainerBase
 import com.teamwizardry.librarianlib.features.kotlin.getTileEntitySafely
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.tileentity.TileEntity

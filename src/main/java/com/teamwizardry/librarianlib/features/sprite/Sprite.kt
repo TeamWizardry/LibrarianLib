@@ -91,28 +91,28 @@ open class Sprite {
      * The minimum U coordinate (0-1)
      */
     @JvmOverloads fun minU(animFrames: Int = 0): Float {
-        return (u + offsetU * if (frames.size == 0) 0 else frames[animFrames % frames.size]).toFloat() / tex.width.toFloat()
+        return (u + offsetU * if (frames.isEmpty()) 0 else frames[animFrames % frames.size]).toFloat() / tex.width.toFloat()
     }
 
     /**
      * The minimum V coordinate (0-1)
      */
     @JvmOverloads fun minV(animFrames: Int = 0): Float {
-        return (v + offsetV * if (frames.size == 0) 0 else frames[animFrames % frames.size]).toFloat() / tex.height.toFloat()
+        return (v + offsetV * if (frames.isEmpty()) 0 else frames[animFrames % frames.size]).toFloat() / tex.height.toFloat()
     }
 
     /**
      * The maximum U coordinate (0-1)
      */
     @JvmOverloads fun maxU(animFrames: Int = 0): Float {
-        return (u + uvWidth + offsetU * if (frames.size == 0) 0 else frames[animFrames % frames.size]).toFloat() / tex.width.toFloat()
+        return (u + uvWidth + offsetU * if (frames.isEmpty()) 0 else frames[animFrames % frames.size]).toFloat() / tex.width.toFloat()
     }
 
     /**
      * The maximum V coordinate (0-1)
      */
     @JvmOverloads fun maxV(animFrames: Int = 0): Float {
-        return (v + uvHeight + offsetV * if (frames.size == 0) 0 else frames[animFrames % frames.size]).toFloat() / tex.height.toFloat()
+        return (v + uvHeight + offsetV * if (frames.isEmpty()) 0 else frames[animFrames % frames.size]).toFloat() / tex.height.toFloat()
     }
 
     fun getSubSprite(u: Int, v: Int, width: Int, height: Int): Sprite {

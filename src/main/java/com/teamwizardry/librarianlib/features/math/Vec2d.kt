@@ -4,17 +4,10 @@ import net.minecraft.util.math.MathHelper
 
 class Vec2d(val x: Double, val y: Double) {
 
-    @Transient val xf: Float
-    @Transient val yf: Float
-    @Transient val xi: Int
-    @Transient val yi: Int
-
-    init {
-        this.xf = x.toFloat()
-        this.yf = y.toFloat()
-        this.xi = Math.floor(x).toInt()
-        this.yi = Math.floor(y).toInt()
-    }
+    @Transient val xf: Float = x.toFloat()
+    @Transient val yf: Float = y.toFloat()
+    @Transient val xi: Int = Math.floor(x).toInt()
+    @Transient val yi: Int = Math.floor(y).toInt()
 
     fun floor(): Vec2d {
         return Vec2d(Math.floor(x), Math.floor(y))
@@ -40,7 +33,6 @@ class Vec2d(val x: Double, val y: Double) {
         return Vec2d(x + otherX, y + otherY)
     }
 
-    operator fun minus(other: Vec2d) = this.sub(other)
     fun sub(other: Vec2d): Vec2d {
         return Vec2d(x - other.x, y - other.y)
     }

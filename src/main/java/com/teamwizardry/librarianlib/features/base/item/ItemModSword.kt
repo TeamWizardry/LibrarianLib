@@ -1,11 +1,11 @@
 package com.teamwizardry.librarianlib.features.base.item
 
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
 import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.features.base.IModelGenerator
 import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.currentModId
+import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack

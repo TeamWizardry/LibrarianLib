@@ -1,7 +1,5 @@
 package com.teamwizardry.librarianlib.features.structure
 
-import com.teamwizardry.librarianlib.features.structure.Structure
-import com.teamwizardry.librarianlib.features.structure.StructureMatchResult
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator

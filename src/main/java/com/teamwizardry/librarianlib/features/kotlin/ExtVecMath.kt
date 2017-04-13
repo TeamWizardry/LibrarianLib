@@ -53,7 +53,7 @@ operator fun Vec2d.div(other: Float) = this / other.toDouble()
 operator fun Vec2d.div(other: Int) = this / other.toDouble()
 
 operator fun Vec2d.plus(other: Vec2d) = this.add(other)
-operator fun Vec2d.minus(other: Vec2d) = this.add(other)
+operator fun Vec2d.minus(other: Vec2d) = this.sub(other)
 operator fun Vec2d.unaryMinus() = this * -1
 
 fun Vec2d.withX(other: Double) = Vec2d(other, this.y)

@@ -1,8 +1,9 @@
 package com.teamwizardry.librarianlib.features.gui.mixin
 
 import com.teamwizardry.librarianlib.features.gui.GuiComponent
-import com.teamwizardry.librarianlib.features.utilities.client.ScissorUtil
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.kotlin.minus
+import com.teamwizardry.librarianlib.features.utilities.client.ScissorUtil
 
 object ScissorMixin {
 

@@ -1,10 +1,11 @@
 package com.teamwizardry.librarianlib.features.math.interpolate.position
 
-import com.teamwizardry.librarianlib.features.math.Vec2d
-import com.teamwizardry.librarianlib.features.math.interpolate.InterpFunction
 import com.teamwizardry.librarianlib.features.kotlin.div
+import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.withY
+import com.teamwizardry.librarianlib.features.math.Vec2d
+import com.teamwizardry.librarianlib.features.math.interpolate.InterpFunction
 
 /**
  * Create a Bézier curve from [start] to [end] with [startControl] and [endControl] as handles for the curvature
@@ -17,10 +18,10 @@ class InterpBezier2D @JvmOverloads constructor(
         val startControl: Vec2d = ((end - start) / 2).withY(0),
         val endControl: Vec2d = ((start - end) / 2).withY(0)
 ) : InterpFunction<Vec2d> {
-    
+
     private val absoluteStartControl = start + startControl
     private val absoluteEndControl = end + endControl
-    
+
     override fun get(i: Float): Vec2d {
         return Vec2d(
                 getBezierComponent(i.toDouble(), start.x, end.x, absoluteStartControl.x, absoluteEndControl.x),

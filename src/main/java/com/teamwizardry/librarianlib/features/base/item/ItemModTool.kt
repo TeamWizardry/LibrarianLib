@@ -1,11 +1,11 @@
 package com.teamwizardry.librarianlib.features.base.item
 
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
 import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.features.base.IModelGenerator
 import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.currentModId
+import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.creativetab.CreativeTabs
@@ -63,8 +63,9 @@ open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, to
     constructor(name: String, attackDamage: Float, attackSpeed: Float, toolMaterial: ToolMaterial, toolClass: String) : this(name, attackDamage, attackSpeed, toolMaterial, blocksClassIsEffectiveOn(toolClass)) {
         this.toolClass = toolClass
     }
+
     constructor(name: String, toolMaterial: ToolMaterial, effectiveBlocks: Set<Block>) : this(name, 0F, 0F, toolMaterial, effectiveBlocks)
-    constructor(name: String, toolMaterial: ToolMaterial, toolClass: String) : this(name, classAttackDamage(toolClass, toolMaterial), classAttackSpeed(toolClass, toolMaterial), toolMaterial, blocksClassIsEffectiveOn(toolClass))  {
+    constructor(name: String, toolMaterial: ToolMaterial, toolClass: String) : this(name, classAttackDamage(toolClass, toolMaterial), classAttackSpeed(toolClass, toolMaterial), toolMaterial, blocksClassIsEffectiveOn(toolClass)) {
         this.toolClass = toolClass
     }
 

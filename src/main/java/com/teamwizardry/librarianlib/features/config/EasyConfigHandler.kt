@@ -11,8 +11,6 @@ import com.teamwizardry.librarianlib.features.utilities.AnnotationInfo
 import net.minecraftforge.common.config.Configuration
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import java.io.File
-import java.lang.Class
-import java.lang.NumberFormatException
 import java.lang.reflect.Field
 import kotlin.Boolean
 import kotlin.Double
@@ -70,7 +68,7 @@ object EasyConfigHandler {
 
     @JvmStatic
     @JvmOverloads
-    fun init(modid: String = currentModId, configf: File? = if (loaded) File(CONFIG_DIR, "${currentModId}.cfg") else null) {
+    fun init(modid: String = currentModId, configf: File? = if (loaded) File(CONFIG_DIR, "$currentModId.cfg") else null) {
         if (!loaded) {
             toLoad.add(modid to configf)
             return
@@ -133,7 +131,7 @@ object EasyConfigHandler {
                 try {
                     s.toLong()
                 } catch (e: NumberFormatException) {
-                    arr[i]
+                    if (arr.size > i) arr[i] else 0L
                 }
             }.toLongArray())
         }
@@ -179,7 +177,7 @@ object EasyConfigHandler {
     private fun <T> shouldUse(it: Triple<String, (T) -> Unit, AnnotationInfo>): Boolean {
         if (it.third.getBoolean("devOnly") && !LibrarianLib.DEV_ENVIRONMENT) return false
         val modid = it.third.getString("modid")
-        return workingId == modid || modid == noModId && modid == it.first
+        return workingId == modid || (modid == noModId && workingId == it.first)
     }
 }
 

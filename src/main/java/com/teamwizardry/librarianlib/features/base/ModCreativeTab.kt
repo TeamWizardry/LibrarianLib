@@ -49,9 +49,9 @@ abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(currentMod
         val tempList = nonnullListOf<ItemStack>()
         item.getSubItems(item, this, tempList)
         if (item == tabIconItem.item)
-            this.list.addAll(0, tempList)
+            this.list.addAll(0, list.filterNot { it.isEmpty })
         else
-            this.list.addAll(tempList)
+            tempList.filterNotTo(list) { it.isEmpty }
     }
 
     private val items = ArrayList<Item>()

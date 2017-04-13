@@ -3,13 +3,14 @@ package com.teamwizardry.librarianlib.features.base.block
 import com.google.common.base.Optional
 import net.minecraft.block.properties.PropertyHelper
 import java.util.*
+import kotlin.collections.LinkedHashSet
 
 /**
  * @author WireSegal
  * Created at 4:31 PM on 1/8/17.
  */
-open class PropertyString(name: String, open val values: SortedSet<String>) : PropertyHelper<String>(name, String::class.java) {
-    constructor(name: String, vararg values: String) : this(name, values.toSortedSet())
+open class PropertyString(name: String, open val values: LinkedHashSet<String>) : PropertyHelper<String>(name, String::class.java) {
+    constructor(name: String, vararg values: String) : this(name, LinkedHashSet(values.toList()))
 
     init {
         @Suppress("LeakingThis")
