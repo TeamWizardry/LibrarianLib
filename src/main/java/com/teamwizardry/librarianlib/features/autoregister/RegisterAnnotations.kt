@@ -4,6 +4,7 @@ package com.teamwizardry.librarianlib.features.autoregister
 //import com.teamwizardry.librarianlib.common.base.multipart.PartMod
 import com.teamwizardry.librarianlib.features.network.PacketBase
 import com.teamwizardry.librarianlib.features.saving.serializers.Serializer
+import com.teamwizardry.librarianlib.features.saving.serializers.SerializerFactory
 import net.minecraft.tileentity.TileEntity
 import net.minecraftforge.fml.relauncher.Side
 import kotlin.reflect.KClass
@@ -65,7 +66,7 @@ annotation class SerializerFactoryRegister()
 
 
 /**
- * Apply this to [AnnotationMarkerProcessor]s
+ * Apply this to [AnnotationMarkerProcessor]s.
  */
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented

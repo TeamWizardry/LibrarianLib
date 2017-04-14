@@ -18,45 +18,11 @@ class ExpandedItemStackHandler : ItemStackHandler {
     constructor(stacks: Array<ItemStack>) : super(stacks.toNonnullList())
     constructor(stacks: Iterable<ItemStack>) : super(stacks.toNonnullList())
 
-    override fun insertItem(slot: Int, stack: ItemStack, simulate: Boolean): ItemStack {
-        if (stack.isEmpty)
-            return ItemStack.EMPTY
+    override fun getStackLimit(slot: Int, stack: ItemStack)
+            = if (canInsertIntoSlot(slot, stack)) super.getStackLimit(slot, stack) else 0
 
-        validateSlotIndex(slot)
-
-        val existing = this.stacks[slot]
-
-        var limit = getStackLimit(slot, stack)
-        val canInsert = canInsertIntoSlot(slot, stack)
-        if (!canInsert) return stack
-
-        if (!existing.isEmpty) {
-            if (!ItemHandlerHelper.canItemStacksStack(stack, existing))
-                return stack
-
-            limit -= existing.count
-        }
-
-        if (limit <= 0)
-            return stack
-
-        val reachedLimit = stack.count > limit
-
-        if (!simulate) {
-            if (existing.isEmpty) {
-                this.stacks[slot] = if (reachedLimit) ItemHandlerHelper.copyStackWithSize(stack, limit) else stack
-            } else {
-                existing.grow(if (reachedLimit) limit else stack.count)
-            }
-            onContentsChanged(slot)
-        }
-
-        return if (reachedLimit) ItemHandlerHelper.copyStackWithSize(stack, stack.count - limit) else ItemStack.EMPTY
-    }
-
-    fun canInsertIntoSlot(slot: Int, stack: ItemStack): Boolean {
-        return slotPredicate?.invoke(this, slot, stack) ?: true
-    }
+    fun canInsertIntoSlot(slot: Int, stack: ItemStack)
+            = slotPredicate?.invoke(this, slot, stack) ?: true
 
     override fun onContentsChanged(slot: Int) {
         changedCallback?.invoke(this, slot)

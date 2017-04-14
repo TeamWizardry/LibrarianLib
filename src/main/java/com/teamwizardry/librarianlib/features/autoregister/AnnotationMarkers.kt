@@ -45,7 +45,7 @@ object AnnotationMarkersHandler {
                 build.add("-+ Errors for @${annot.typeName}")
                 for((error, affected) in map.asMap()) {
                     var errorList = error.split("\\r\\n|\\n|\\r")
-                    if(errorList.size == 0)
+                    if(errorList.isEmpty())
                         errorList = listOf("<<ERR: Empty Stacktrace!>>")
                     build.add(" |-+ Affected classes:")
                     affected.forEach {

@@ -11,7 +11,7 @@ import com.teamwizardry.librarianlib.features.container.GuiHandler
 import com.teamwizardry.librarianlib.features.kotlin.sendSpamlessMessage
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.saving.SavingFieldCache
-import com.teamwizardry.librarianlib.features.utilities.ClientRunnable
+import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import com.teamwizardry.librarianlib.features.utilities.unsafeAllowedModIds
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.text.ITextComponent
@@ -111,12 +111,6 @@ open class LibCommonProxy {
      * Used for clientside code rather than proxying.
      */
     open fun getClientPlayer(): EntityPlayer = throw UnsupportedOperationException("No client player on server side!")
-
-    @Suppress("unused")
-    @Deprecated("Spamless messages are no longer proxied.",
-            ReplaceWith("player.sendSpamlessMessage(msg, uniqueId)", "com.teamwizardry.librarianlib.common.util.sendSpamlessMessage"),
-            level = DeprecationLevel.HIDDEN)
-    fun sendSpamlessMessage(player: EntityPlayer, msg: ITextComponent, uniqueId: Int) = player.sendSpamlessMessage(msg, uniqueId)
 
     /**
      * Gets the working minecraft data folder. A reasonable guess is made that the CWD is the data folder on serverside.

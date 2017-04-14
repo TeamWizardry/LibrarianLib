@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.features.network
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.autoregister.PacketRegister
 import com.teamwizardry.librarianlib.features.saving.Save
-import com.teamwizardry.librarianlib.features.utilities.ClientRunnable
+import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import net.minecraft.client.Minecraft
 import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext

@@ -14,7 +14,7 @@ import com.teamwizardry.librarianlib.features.shader.ShaderHelper
 import com.teamwizardry.librarianlib.features.sprite.SpritesMetadataSection
 import com.teamwizardry.librarianlib.features.sprite.SpritesMetadataSectionSerializer
 import com.teamwizardry.librarianlib.features.sprite.Texture
-import com.teamwizardry.librarianlib.features.utilities.ClientRunnable
+import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import com.teamwizardry.librarianlib.features.utilities.client.F3Handler
 import com.teamwizardry.librarianlib.features.utilities.client.ScissorUtil
 import net.minecraft.client.Minecraft
