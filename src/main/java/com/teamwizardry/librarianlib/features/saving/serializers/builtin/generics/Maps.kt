@@ -38,9 +38,9 @@ object SerializeMapFactory : SerializerFactory("Map") {
             val list = nbt.safeCast<NBTTagList>()
             val map = constructor()
 
-            list.forEachIndexed<NBTTagCompound> { i, container ->
-                val keyTag = container.getTag("k")
-                val valTag = container.getTag("v")
+            list.forEach<NBTTagCompound> {
+                val keyTag = it.getTag("k")
+                val valTag = it.getTag("v")
                 val k = if (keyTag == null) null else serKey.read(keyTag, null, syncing)
                 val v = if (valTag == null) null else serValue.read(valTag, existing?.get(k), syncing)
                 map[k] = v

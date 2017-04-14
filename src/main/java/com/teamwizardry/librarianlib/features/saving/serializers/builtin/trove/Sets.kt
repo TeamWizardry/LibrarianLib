@@ -1,10 +1,7 @@
 package com.teamwizardry.librarianlib.features.saving.serializers.builtin.trove
 
 import com.teamwizardry.librarianlib.features.autoregister.SerializerFactoryRegister
-import com.teamwizardry.librarianlib.features.kotlin.forEachIndexed
-import com.teamwizardry.librarianlib.features.kotlin.readVarInt
-import com.teamwizardry.librarianlib.features.kotlin.safeCast
-import com.teamwizardry.librarianlib.features.kotlin.writeVarInt
+import com.teamwizardry.librarianlib.features.kotlin.*
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.saving.FieldType
 import com.teamwizardry.librarianlib.features.saving.FieldTypeGeneric
@@ -61,8 +58,8 @@ object SerializeTroveSetsFactory : SerializerFactory("TroveSets") {
             set_w.clear()
             if (nullFlag)
                 set_w.add(null)
-            list.forEachIndexed<NBTTagCompound> { i, tag ->
-                val v = serValue.read(tag, null, syncing)
+            list.forEach<NBTTagCompound> {
+                val v = serValue.read(it, null, syncing)
                 set_w.add(v)
             }
 

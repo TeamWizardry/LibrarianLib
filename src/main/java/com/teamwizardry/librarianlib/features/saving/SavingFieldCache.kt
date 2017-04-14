@@ -93,7 +93,7 @@ object SavingFieldCache {
     fun getJavaFieldSetter(field: Field) = MethodHandleHelper.wrapperForSetter<Any>(field)
 
     fun getFinalFieldSetter(field: Field, enclosing: FieldType): (Any, Any?) -> Unit =
-            { obj, inp -> throw IllegalAccessException("Tried to set final field/property ${field.name} for class $enclosing (final field)") }
+            { _, _ -> throw IllegalAccessException("Tried to set final field/property ${field.name} for class $enclosing (final field)") }
 
     fun createMetaForField(field: Field, enclosing: FieldType): FieldMetadata {
         val resolved = enclosing.resolve(field.genericType)
@@ -211,7 +211,7 @@ object SavingFieldCache {
                 errorList[type][name].add("Annotated with both @NoSync and @NonPersistent. This field will never be used.")
 
             val setterLambda: (Any, Any?) -> Unit = if(wrapperForSetter == null)
-                { obj, inp -> throw IllegalAccessException("Tried to set final property $name for class $type (no save setter)") }
+                { _, _ -> throw IllegalAccessException("Tried to set final property $name for class $type (no save setter)") }
             else
                 { obj, inp -> wrapperForSetter(obj, arrayOf(inp)) }
 
@@ -280,7 +280,7 @@ object SavingFieldCache {
         val lines = mutableListOf<String>()
 
         errorList.forEach {
-            val (clazz, props) = it
+            val (_, props) = it
             lines.add("- ${it.key}")
 
             props.forEach {

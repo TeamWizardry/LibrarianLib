@@ -1,10 +1,7 @@
 package com.teamwizardry.librarianlib.features.saving.serializers.builtin.trove
 
 import com.teamwizardry.librarianlib.features.autoregister.SerializerFactoryRegister
-import com.teamwizardry.librarianlib.features.kotlin.forEachIndexed
-import com.teamwizardry.librarianlib.features.kotlin.readVarInt
-import com.teamwizardry.librarianlib.features.kotlin.safeCast
-import com.teamwizardry.librarianlib.features.kotlin.writeVarInt
+import com.teamwizardry.librarianlib.features.kotlin.*
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.saving.FieldType
 import com.teamwizardry.librarianlib.features.saving.FieldTypeGeneric
@@ -68,9 +65,9 @@ object SerializeTroveMapsFactory : SerializerFactory("TroveMaps") {
 
             val existing_w = existing?.wrap()
 
-            list.forEachIndexed<NBTTagCompound> { i, container ->
-                val keyTag = container.getTag("k")
-                val valTag = container.getTag("v")
+            list.forEach<NBTTagCompound> {
+                val keyTag = it.getTag("k")
+                val valTag = it.getTag("v")
                 val k = if (keyTag == null) null else serKey.read(keyTag, null, syncing)
                 val v = if (valTag == null) null else serValue.read(valTag, existing_w?.get(k), syncing)
                 map_w[k] = v

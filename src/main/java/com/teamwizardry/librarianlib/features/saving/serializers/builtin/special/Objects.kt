@@ -40,23 +40,23 @@ object SerializeObjectFactory : SerializerFactory("Object") {
 
     class SerializeObject(type: FieldType, val analysis: SerializerAnalysis) : Serializer<Any>(type) {
 
-        override fun readNBT(nbt: NBTBase, existing: Any?, sync: Boolean): Any {
+        override fun readNBT(nbt: NBTBase, existing: Any?, syncing: Boolean): Any {
             val tag = nbt.safeCast(NBTTagCompound::class.java)
 
             if (analysis.mutable) {
                 val instance = existing ?: analysis.constructorMH(arrayOf())
-                readFields(analysis.alwaysFields, tag, instance, sync)
+                readFields(analysis.alwaysFields, tag, instance, syncing)
 
-                if (!sync) {
-                    readFields(analysis.noSyncFields, tag, instance, sync)
+                if (!syncing) {
+                    readFields(analysis.noSyncFields, tag, instance, syncing)
                 } else {
-                    readFields(analysis.nonPersistentFields, tag, instance, sync)
+                    readFields(analysis.nonPersistentFields, tag, instance, syncing)
                 }
                 return instance
             } else {
                 return analysis.constructorMH(analysis.constructorArgOrder.map {
                     if (tag.hasKey(it))
-                        analysis.serializers[it]!!.value.read(tag.getTag(it), null, sync)
+                        analysis.serializers[it]!!.value.read(tag.getTag(it), null, syncing)
                     else
                         null
                 }.toTypedArray())
@@ -258,7 +258,7 @@ class SerializerAnalysis(val type: FieldType) {
                 }
         constructorArgOrder = constructor.getDeclaredAnnotation(SavableConstructorOrder::class.java)?.params?.asList() ?: constructor.parameters.map { it.name }
         constructorMH = if (inPlaceSavable) {
-            { arr -> throw SerializerException("Cannot create instance of class marked with @SaveInPlace") }
+            { _ -> throw SerializerException("Cannot create instance of class marked with @SaveInPlace") }
         } else {
             MethodHandleHelper.wrapperForConstructor(constructor)
         }

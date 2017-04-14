@@ -62,7 +62,7 @@ object SerializeNBTTagCompound : Serializer<NBTTagCompound>(FieldType.create(NBT
     }
 
     override fun writeBytes(buf: ByteBuf, value: NBTTagCompound, syncing: Boolean) {
-        buf.writeTag(value as NBTTagCompound)
+        buf.writeTag(value)
     }
 }
 
