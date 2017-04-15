@@ -32,9 +32,7 @@ import net.minecraft.world.chunk.Chunk
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.ICapabilityProvider
 import java.lang.reflect.*
-import java.lang.reflect.Array
 import java.util.*
-import java.util.List
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.KVisibility
@@ -320,7 +318,7 @@ val Method.kotlinFunctionSafe: KFunction<*>?
     }
 
 /**
- * Checks whether a [Parameter] [Array] matches a [KParameter] [List]
+ * Checks whether a [Parameter] [kotlin.Array] matches a [KParameter] [kotlin.collections.List]
  */
 fun kotlin.Array<Parameter>.mathes(other: kotlin.collections.List<KParameter>): Boolean {
     if (size != other.size) return false
