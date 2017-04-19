@@ -92,8 +92,17 @@ open class BlockModDirectional(name: String, material: Material, vararg directio
             JsonGenerationUtils.generateBlockStates(this, mapper) {
                 val facing = "${property.name}=(\\w+)".toRegex().find(it)?.groupValues?.get(1)?.toUpperCase()
                 val dir = EnumFacing.byName(facing)
-                val x = if (dir == EnumFacing.DOWN) 180 else if (dir == EnumFacing.SOUTH) 270 else if (dir == EnumFacing.UP) 0 else 90
-                val y = if (dir == EnumFacing.EAST) 90 else if (dir == EnumFacing.WEST) 270 else 0
+                val x = when (dir) {
+                    EnumFacing.DOWN -> 270
+                    EnumFacing.UP -> 90
+                    else -> 0
+                }
+                val y = when (dir) {
+                    EnumFacing.SOUTH -> 180
+                    EnumFacing.WEST -> 270
+                    EnumFacing.EAST -> 90
+                    else -> 0
+                }
                 json {
                     obj(
                             "model" to registryName.toString(),
