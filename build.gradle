@@ -55,6 +55,11 @@ repositories {
     }
 }
 
+sourceSets.main {
+    java.srcDirs += 'src/test/java'
+    resources.srcDirs += 'src/test/resources'
+}
+
 minecraft {
     version = "${config.mc_version}-${config.forge_version}"
     runDir = "run"
@@ -67,7 +72,6 @@ minecraft {
 }
 
 configurations {
-
     required
     compile.extendsFrom(required)
 }
@@ -96,7 +100,8 @@ compileKotlin {
 }
 
 jar {
-    // We need to make sure we package kotlin runtimes.
+    exclude 'com/teamwizardry/librarianlib/test', 'assets/librarianlibtest'
+    from sourceSets.main.output
 
     archiveName "${archivesBaseName}-${version}.jar"
     dependsOn configurations.compile
@@ -114,6 +119,7 @@ jar {
 
 task sourceJar(type: Jar, dependsOn: "sourceMainJava", overwrite: true) {
     from "src/main/java"
+    from "src/test/java"
     classifier = 'sources'
 }
 
@@ -138,8 +144,6 @@ def parseConfig(File config) {
 idea {
     module {
         inheritOutputDirs = true
-        sourceDirs += file('src/test/java')
-        sourceDirs += file('src/test/resources')
 
         testSourceDirs -= file('src/test/java')
         testSourceDirs -= file('src/test/resources')
