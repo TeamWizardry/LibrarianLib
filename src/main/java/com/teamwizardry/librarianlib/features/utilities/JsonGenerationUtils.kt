@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.utilities
 
 import com.google.gson.JsonElement
+import com.teamwizardry.librarianlib.features.helpers.currentModId
 import com.teamwizardry.librarianlib.features.kotlin.json
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
@@ -20,6 +21,21 @@ import java.nio.file.Paths
  * This works in the default dev environment.
  */
 object JsonGenerationUtils {
+
+    /**
+     * Sets your mod's default path prefix. By default, paths are `src/main/resources/assets`.
+     * Trailing and leading slashes will be removed. Do not use backslashes.
+     */
+    @JvmStatic
+    fun setPathPrefix(prefix: String) {
+        paths[currentModId] = prefix.trim('/')
+    }
+
+    fun getPathPrefix(modid: String): String {
+        return paths[modid] ?: "src/main/resources/assets"
+    }
+
+    private val paths = mutableMapOf<String, String>()
 
     private val s = File.separator
 
@@ -59,7 +75,7 @@ object JsonGenerationUtils {
     }
 
     fun getAssetPath(modid: String): String {
-        return Paths.get(Minecraft.getMinecraft().mcDataDir.absolutePath).parent.parent.toString() + +"/src/main/resources/assets/$modid"
+        return Paths.get(Minecraft.getMinecraft().mcDataDir.absolutePath).parent.parent.toString() + +"/${getPathPrefix(modid)}/$modid"
     }
 
     fun generateBaseItemModel(item: Item, variantName: String? = null, parent: String = "item/generated"): JsonElement {
