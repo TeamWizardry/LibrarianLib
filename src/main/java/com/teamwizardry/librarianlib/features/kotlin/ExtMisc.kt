@@ -312,7 +312,7 @@ val Method.kotlinFunctionSafe: KFunction<*>?
 
         val protected = Modifier.isProtected(modifiers)
         return declaringClass.kotlin.functions.firstOrNull {
-            if (protected && it.visibility == KVisibility.PROTECTED) it.name == name && parameters.mathes(it.parameters.drop(1))
+            if (protected && it.visibility == KVisibility.PROTECTED) it.name == name && parameters.matches(it.parameters.drop(1))
             else it.visibility != KVisibility.PROTECTED && it.javaMethod == this
         }
     }
@@ -320,7 +320,7 @@ val Method.kotlinFunctionSafe: KFunction<*>?
 /**
  * Checks whether a [Parameter] [kotlin.Array] matches a [KParameter] [kotlin.collections.List]
  */
-fun kotlin.Array<Parameter>.mathes(other: kotlin.collections.List<KParameter>): Boolean {
+fun kotlin.Array<Parameter>.matches(other: kotlin.collections.List<KParameter>): Boolean {
     if (size != other.size) return false
     var ok = true
     this.forEachIndexed { i, it ->
