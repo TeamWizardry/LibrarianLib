@@ -25,8 +25,4 @@ run
 .DS_Store
 *.hprof
 
-**/models/*
-**/blockstates/*
-**/librarianlibtest/**/*
-**/librarianliblate/**/*
-**/textures/items/*
+src/main/resources/assets/librarianlibtest

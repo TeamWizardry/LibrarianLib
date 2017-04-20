@@ -1,0 +1,5 @@
+item.librarianlibtest:guiopener.name=Gui tester %s
+
+item_group.librarianlibtest=Liblib Test
+
+tile.librarianlibtest:powered_machine.name=Powered Machine
