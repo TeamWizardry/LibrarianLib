@@ -1,17 +1,17 @@
 package com.teamwizardry.librarianlib.test.container
 
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
-import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
-import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
-import com.teamwizardry.librarianlib.features.guicontainer.GuiContainerBase
-import com.teamwizardry.librarianlib.features.guicontainer.builtin.BaseLayouts
-import com.teamwizardry.librarianlib.features.sprite.Texture
 import com.teamwizardry.librarianlib.features.container.ContainerBase
 import com.teamwizardry.librarianlib.features.container.GuiHandler
 import com.teamwizardry.librarianlib.features.container.InventoryWrapper
 import com.teamwizardry.librarianlib.features.container.builtin.BaseWrappers
 import com.teamwizardry.librarianlib.features.container.builtin.SlotTypeGhost
+import com.teamwizardry.librarianlib.features.gui.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
+import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
+import com.teamwizardry.librarianlib.features.guicontainer.GuiContainerBase
+import com.teamwizardry.librarianlib.features.guicontainer.builtin.BaseLayouts
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.sprite.Texture
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Items
 import net.minecraft.util.ResourceLocation
@@ -53,15 +53,16 @@ class TestWrapper(te: TEContainer) : InventoryWrapper(te) {
     val small = slots[27..35]
 
     init {
-        small.forEach { it.type = SlotTypeGhost(32, true)}
+        small.forEach { it.type = SlotTypeGhost(32, true) }
     }
 }
 
 class GuiContainerTest(container: ContainerTest) : GuiContainerBase(container, 197, 166) {
-
-    val TEXTURE = Texture(ResourceLocation("librarianlibtest:textures/gui/containerTest.png"))
-    val bg = TEXTURE.getSprite("bg", 197, 166)
-    val slider = TEXTURE.getSprite("slider", 60, 62)
+    companion object {
+        val TEXTURE = Texture(ResourceLocation("librarianlibtest:textures/gui/containerTest.png"))
+        val bg = TEXTURE.getSprite("bg", 197, 166)
+        val slider = TEXTURE.getSprite("slider", 60, 62)
+    }
 
     init {
         val b = ComponentSprite(bg, 0, 0)
