@@ -13,6 +13,7 @@ import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.*
+import kotlin.reflect.KMutableProperty
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.kotlinFunction
 import kotlin.reflect.jvm.kotlinProperty
@@ -76,6 +77,7 @@ object SavingFieldCache {
         val method = property.getter.javaMethod
         if(method == null)
             return null
+        method.isAccessible = true
         val handle = MethodHandleHelper.wrapperForMethod<Any>(method)
         return { obj -> handle(obj, arrayOf()) }
     }
@@ -86,8 +88,20 @@ object SavingFieldCache {
         if(Modifier.isFinal(field.modifiers)) {
             return getFinalFieldSetter(field, enclosing)
         } else {
-            return getJavaFieldSetter(field)
+            return getKotlinFieldSetter(field) ?: getJavaFieldSetter(field)
         }
+    }
+
+    fun getKotlinFieldSetter(field: Field): ((Any, Any?) -> Unit)? {
+        val property = field.kotlinProperty
+        if(property == null || property !is KMutableProperty<*>)
+            return null
+        val method = property.setter.javaMethod
+        if(method == null)
+            return null
+        method.isAccessible = true
+        val handle = MethodHandleHelper.wrapperForMethod<Any>(method)
+        return { obj, value -> handle(obj, arrayOf(value)) }
     }
 
     fun getJavaFieldSetter(field: Field) = MethodHandleHelper.wrapperForSetter<Any>(field)

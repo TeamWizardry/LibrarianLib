@@ -35,7 +35,7 @@ object SerializeTroveMapsFactory : SerializerFactory("TroveMaps") {
     private fun getKeyType(type: FieldType): FieldType {
         if(TMap::class.java.isAssignableFrom(type.clazz))
             return (type.genericSuperclass(TMap::class.java) as FieldTypeGeneric).generic(0)
-        val setter = type.clazz.methods.filter { it.name == "set" }.first()
+        val setter = type.clazz.methods.filter { it.name == "put" }.first()
         val keyClass = setter.parameterTypes[0]
 
         return type.resolve(keyClass)
@@ -44,7 +44,7 @@ object SerializeTroveMapsFactory : SerializerFactory("TroveMaps") {
     private fun getValueType(type: FieldType): FieldType {
         if(TMap::class.java.isAssignableFrom(type.clazz))
             return (type.genericSuperclass(TMap::class.java) as FieldTypeGeneric).generic(1)
-        val setter = type.clazz.methods.filter { it.name == "set" }.first()
+        val setter = type.clazz.methods.filter { it.name == "put" }.first()
         val keyClass = setter.parameterTypes[1]
 
         return type.resolve(keyClass)

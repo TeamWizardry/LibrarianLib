@@ -75,7 +75,18 @@ abstract class FieldType protected constructor(val type: Type, open val clazz: C
 }
 
 class FieldTypeError(type: Type) : FieldType(type, Any::class.java) {
+    override fun equals(other: Any?): Boolean {
+        if(other == null || other !is FieldType) return false
+        return type.equals(other.type)
+    }
 
+    override fun hashCode(): Int {
+        return type.hashCode()
+    }
+
+    override fun toString(): String {
+        return "ERR(" + type.toString() + ")"
+    }
 }
 
 class FieldTypeClass(type: Type, clazz: Class<*>) : FieldType(type, clazz) {

@@ -43,7 +43,7 @@ object SerializeSetFactory : SerializerFactory("Set") {
             set.clear()
             if (nullFlag)
                 set.add(null)
-            list.forEach<NBTTagCompound> {
+            list.forEach<NBTBase> {
                 val v = serValue.read(it, null, syncing)
                 set.add(v)
             }

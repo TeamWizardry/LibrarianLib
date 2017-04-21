@@ -41,4 +41,9 @@ class ContainerImpl(val container: ContainerBase) : Container() {
     override public fun addSlotToContainer(slotIn: Slot?): Slot {
         return super.addSlotToContainer(slotIn)
     }
+
+    override fun onContainerClosed(playerIn: EntityPlayer?) {
+        container.onClosed()
+        super.onContainerClosed(playerIn)
+    }
 }

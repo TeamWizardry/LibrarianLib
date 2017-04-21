@@ -40,6 +40,7 @@ object BaseLayouts {
     class PlayerLayout(player: BaseWrappers.InventoryWrapperPlayer) {
         val root: ComponentVoid
         val armor: ComponentVoid
+        val mainWrapper: ComponentVoid
         val main: ComponentVoid
         val hotbar: ComponentVoid
         val offhand: ComponentVoid
@@ -60,6 +61,8 @@ object BaseLayouts {
                     ComponentSlot(player.offhand, 0, 0)
             )
 
+            mainWrapper = ComponentVoid(0, 0)
+
             main = ComponentVoid(0, 0)
             for (row in 0..2) {
                 for (column in 0..8) {
@@ -71,10 +74,10 @@ object BaseLayouts {
             for (column in 0..8) {
                 hotbar.add(ComponentSlot(player.hotbar[column], column * 18, 0))
             }
-            main.add(hotbar)
+            mainWrapper.add(main, hotbar)
 
             root = ComponentVoid(0, 0)
-            root.add(armor, main, offhand)
+            root.add(armor, mainWrapper, offhand)
         }
     }
 }

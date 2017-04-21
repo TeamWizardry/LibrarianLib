@@ -239,21 +239,21 @@ class SerializerAnalysis(val type: FieldType) {
                 if (inPlaceSavable) {
                     nullConstructor
                 } else {
-                    type.clazz.declaredConstructors.find { it.parameterCount == 0 } ?:
-                            type.clazz.declaredConstructors.find {
-                                val paramsToFind = HashMap(fields)
-                                val customParamNames = it.getDeclaredAnnotation(SavableConstructorOrder::class.java)?.params
-                                var i = 0
-                                it.parameters.all {
-                                    val ret =
-                                            if(customParamNames != null && i < customParamNames.size)
-                                                paramsToFind.remove(customParamNames[i])?.meta?.type?.equals(FieldType.create(it.parameterizedType)) ?: false
-                                            else
-                                                paramsToFind.remove(it.name)?.meta?.type?.equals(FieldType.create(it.parameterizedType)) ?: false
-                                    i++
-                                    ret
-                                }
-                            } ?:
+                    type.clazz.declaredConstructors.find {
+                        val paramsToFind = HashMap(fields)
+                        val customParamNames = it.getDeclaredAnnotation(SavableConstructorOrder::class.java)?.params
+                        var i = 0
+                        it.parameters.all {
+                            val ret =
+                                    if(customParamNames != null && i < customParamNames.size)
+                                        paramsToFind.remove(customParamNames[i])?.meta?.type?.equals(FieldType.create(it.parameterizedType)) ?: false
+                                    else
+                                        paramsToFind.remove(it.name)?.meta?.type?.equals(FieldType.create(it.parameterizedType)) ?: false
+                            i++
+                            ret
+                        }
+                    } ?:
+                            type.clazz.declaredConstructors.find { it.parameterCount == 0 } ?:
                             throw SerializerException("Couldn't find zero-argument constructor or constructor with parameters (${fields.map { it.value.meta.type.toString() + " " + it.key }.joinToString(", ")}) for immutable type ${type.clazz.canonicalName}")
                 }
         constructorArgOrder = constructor.getDeclaredAnnotation(SavableConstructorOrder::class.java)?.params?.asList() ?: constructor.parameters.map { it.name }

@@ -15,6 +15,8 @@ abstract class ContainerBase(val player: EntityPlayer) {
 
     lateinit var impl: ContainerImpl // hopefully people don't do anything screwy, cause lateinit would cause problems.
 
+    open fun onClosed() {}
+
     protected fun addSlots(wrapper: InventoryWrapper) {
         wrapper.slotArray.forEach {
             allSlots.add(it)
