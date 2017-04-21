@@ -66,7 +66,7 @@ object AnnotationMarkersHandler {
 
         val annotationClassName = annotationClass.canonicalName
         val asmDatas = asmDataTable.getAll(annotationClassName)
-        for (asmData in asmDatas) {
+        for (asmData in asmDatas.sortedBy { it.className }) {
             val clazz = try {
                 Class.forName(asmData.className)
             } catch (e: ClassNotFoundException) {
