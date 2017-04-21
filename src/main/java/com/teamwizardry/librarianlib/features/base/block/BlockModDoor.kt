@@ -40,7 +40,7 @@ open class BlockModDoor(name: String, val parent: IBlockState) : BlockDoor(paren
     init {
         doorItemForm = createDoorItemForm()
         this.variants = VariantHelper.beginSetupBlock(name, arrayOf())
-        VariantHelper.finishSetupBlock(this, bareName, itemForm, creativeTab)
+        VariantHelper.finishSetupBlock(this, bareName, itemForm, this::creativeTab)
     }
 
     override fun setUnlocalizedName(name: String): Block {

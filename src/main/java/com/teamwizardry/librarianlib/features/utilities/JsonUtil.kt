@@ -7,10 +7,6 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 
-/**
- *
- */
-
 private val MATCHER = "(?:(?:(?:\\[\\d+\\])|(?:[^.\\[\\]]+))(\\.|$|(?=\\[)))+".toRegex()
 
 private val TOKENIZER = "((?:\\[\\d+\\])|(?:[^.\\[\\]]+))(?=[.\\[]|$)".toRegex()

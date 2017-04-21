@@ -99,7 +99,7 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
     val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
-        VariantHelper.finishSetupBlock(this, bareName, itemForm, creativeTab)
+        VariantHelper.finishSetupBlock(this, bareName, itemForm, this::creativeTab)
     }
 
 

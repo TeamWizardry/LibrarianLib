@@ -1,6 +1,4 @@
 buildscript {
-    ext.kotlin_version = '1.1.1'
-    ext.dokka_version = '0.9.9'
     repositories {
         jcenter()
         maven {
@@ -57,6 +55,11 @@ repositories {
     }
 }
 
+sourceSets.main {
+    java.srcDirs += 'src/test/java'
+    resources.srcDirs += 'src/test/resources'
+}
+
 minecraft {
     version = "${config.mc_version}-${config.forge_version}"
     runDir = "run"
@@ -69,14 +72,13 @@ minecraft {
 }
 
 configurations {
-
     required
     compile.extendsFrom(required)
 }
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    //required "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    required "org.jetbrains:annotations:$annotations_version"
     //required 'com.github.Eladkay:Mixin:-SNAPSHOT'
 // todo once mcmultipart is 1.11
 //    deobfCompile "MCMultiPart:MCMultiPart:1.2.1:universal"
@@ -90,8 +92,16 @@ reobf {
     }
 }
 
+compileKotlin {
+    kotlinOptions {
+        javaParameters = true
+        jvmTarget = 1.8
+    }
+}
+
 jar {
-    // We need to make sure we package kotlin runtimes.
+    exclude 'com/teamwizardry/librarianlib/test', 'assets/librarianlibtest'
+    from sourceSets.main.output
 
     archiveName "${archivesBaseName}-${version}.jar"
     dependsOn configurations.compile
@@ -107,6 +117,22 @@ jar {
 
 }
 
+task sourceJar(type: Jar, dependsOn: "sourceMainJava", overwrite: true) {
+    from "src/main/java"
+    from "src/test/java"
+    classifier = 'sources'
+}
+
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = 'deobf'
+}
+
+artifacts {
+    archives sourceJar
+    archives deobfJar
+}
+
 def parseConfig(File config) {
     config.withReader {
         def prop = new Properties()
@@ -118,8 +144,6 @@ def parseConfig(File config) {
 idea {
     module {
         inheritOutputDirs = true
-        sourceDirs += file('src/test/java')
-        sourceDirs += file('src/test/resources')
 
         testSourceDirs -= file('src/test/java')
         testSourceDirs -= file('src/test/resources')

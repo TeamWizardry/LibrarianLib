@@ -60,13 +60,12 @@ public class SerializeCellFactory extends SerializerFactory {
 		// The general rule is, if you want to get the types of a Map, getGenericSuperclass(Map.class), same for List, etc.
 		// Don't trust the generic types of the passed class, always use genericSuperclass.
 		FieldTypeGeneric cellType = (FieldTypeGeneric)type.genericSuperclass(Cell.class);
-		
-		FieldType valueType = cellType.generic(0); // get the first (and only) type parameter
-		
-		return valueType;
+
+		return cellType.generic(0);
 	}
-	
+
 	@NotNull
+	@SuppressWarnings("unchecked")
 	private Function1<Object, Object> getConstructor(FieldType type, FieldType componentType) {
 		// see above method
 		FieldTypeGeneric genericType = (FieldTypeGeneric)type;

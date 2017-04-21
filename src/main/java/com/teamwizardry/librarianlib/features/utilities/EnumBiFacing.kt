@@ -1,15 +1,14 @@
 package com.teamwizardry.librarianlib.features.utilities
 
+import com.teamwizardry.librarianlib.features.base.block.EnumStringSerializable
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumFacing.*
-import net.minecraft.util.IStringSerializable
-import java.util.*
 
 /**
  * @author WireSegal
  * Created at 5:32 PM on 11/17/16.
  */
-enum class EnumBiFacing(val primary: EnumFacing, val secondary: EnumFacing) : IStringSerializable {
+enum class EnumBiFacing(val primary: EnumFacing, val secondary: EnumFacing) : EnumStringSerializable {
     UP_NORTH(UP, NORTH),
     UP_SOUTH(UP, SOUTH),
     UP_WEST(UP, WEST),
@@ -26,10 +25,6 @@ enum class EnumBiFacing(val primary: EnumFacing, val secondary: EnumFacing) : IS
     EAST_SOUTH(EAST, SOUTH),
     NORTH_SOUTH(NORTH, SOUTH);
 
-    override fun getName(): String {
-        return name.toLowerCase(Locale.ROOT)
-    }
-
     operator fun contains(f: EnumFacing): Boolean {
         return primary == f || secondary == f
     }
@@ -42,7 +37,7 @@ enum class EnumBiFacing(val primary: EnumFacing, val secondary: EnumFacing) : IS
     companion object {
         @JvmStatic
         fun getBiForFacings(a: EnumFacing, b: EnumFacing): EnumBiFacing {
-            return values().filter { it.primary == a && it.secondary == b || it.secondary == a && it.primary == b }.firstOrNull() ?:
+            return values().firstOrNull { it.primary == a && it.secondary == b || it.secondary == a && it.primary == b } ?:
                     throw IllegalArgumentException("Someone tried to make a bifacing out of " + a.name + " and " + b.name)
         }
     }

@@ -29,18 +29,17 @@ import net.minecraftforge.fml.relauncher.SideOnly
 @Suppress("LeakingThis")
 open class BlockModStairs(name: String, val parent: IBlockState) : BlockStairs(parent), IModBlock, IModelGenerator {
 
-    override val variants: Array<out String>
 
     private val parentName = parent.block.registryName
 
     override val bareName: String = VariantHelper.toSnakeCase(name)
     val modId = currentModId
+    override val variants: Array<out String> = VariantHelper.beginSetupBlock(name, arrayOf())
 
     val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
-        this.variants = VariantHelper.beginSetupBlock(name, arrayOf())
-        VariantHelper.finishSetupBlock(this, bareName, itemForm, creativeTab)
+        VariantHelper.finishSetupBlock(this, bareName, itemForm, this::creativeTab)
     }
 
     override fun setUnlocalizedName(name: String): Block {

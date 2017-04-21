@@ -11,12 +11,8 @@ import com.teamwizardry.librarianlib.features.utilities.AnnotationInfo
 import net.minecraftforge.common.config.Configuration
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import java.io.File
+import java.lang.Class
 import java.lang.reflect.Field
-import kotlin.Boolean
-import kotlin.Double
-import kotlin.Int
-import kotlin.Long
-import kotlin.String
 
 
 /**

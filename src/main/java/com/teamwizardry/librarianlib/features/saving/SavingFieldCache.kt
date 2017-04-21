@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.saving
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.kotlin.DefaultedMutableMap
+import com.teamwizardry.librarianlib.features.kotlin.kotlinFunctionSafe
 import com.teamwizardry.librarianlib.features.kotlin.withRealDefault
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import net.minecraft.util.EnumFacing
@@ -15,7 +16,6 @@ import java.lang.reflect.Modifier
 import java.util.*
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.jvm.javaMethod
-import kotlin.reflect.jvm.kotlinFunction
 import kotlin.reflect.jvm.kotlinProperty
 
 /**
@@ -240,12 +240,12 @@ object SavingFieldCache {
     }
 
     private fun isGetterMethodNotNull(getter: Method): Boolean {
-        val kt = getter.kotlinFunction
+        val kt = getter.kotlinFunctionSafe
         return getter.isAnnotationPresent(NotNull::class.java) || (kt != null && !kt.returnType.isMarkedNullable)
     }
 
     private fun isSetterMethodNotNull(setter: Method): Boolean {
-        val kt = setter.kotlinFunction
+        val kt = setter.kotlinFunctionSafe
         return setter.parameterAnnotations[0].any { it is NotNull } || (kt != null && !kt.parameters[0].type.isMarkedNullable)
     }
 

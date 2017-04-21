@@ -23,11 +23,9 @@ import net.minecraft.world.World
  * Created at 10:36 AM on 5/7/16.
  */
 @Suppress("LeakingThis")
-open class BlockModDirectional(name: String, material: Material, vararg directions: EnumFacing) : BlockMod(name, injectDirections(material, directions)), IModelGenerator {
+open class BlockModDirectional(name: String, material: Material, horizontal: Boolean, vararg variants: String) : BlockMod(name, injectDirections(material, horizontal), *variants), IModelGenerator {
     companion object {
-        private var lastDirections: Array<out EnumFacing> by threadLocal {
-            arrayOf<EnumFacing>()
-        }
+        private var lastHorizontalState: Boolean by threadLocal { false }
 
         /**
          * Hacky nonsense required because constructor and associated arguments
@@ -36,27 +34,30 @@ open class BlockModDirectional(name: String, material: Material, vararg directio
          * This captures the directions during construction and injects them into the [property]
          * created by first access in [createBlockState].
          */
-        private fun injectDirections(material: Material, directions: Array<out EnumFacing>): Material {
-            lastDirections = if (directions.isEmpty()) EnumFacing.VALUES else directions
+        private fun injectDirections(material: Material, directions: Boolean): Material {
+            lastHorizontalState = directions
             return material
         }
     }
 
-    lateinit var directions: Array<out EnumFacing>
+    var isHorizontal: Boolean = false
         private set
 
     lateinit var property: PropertyDirection
         private set
 
     override fun createBlockState(): BlockStateContainer {
-        directions = lastDirections
-        property = PropertyDirection.create("facing", directions.toList())
+        isHorizontal = lastHorizontalState
+        property = PropertyDirection.create("facing") {
+            !isHorizontal || it?.horizontalIndex != -1
+        }
+
         return BlockStateContainer(this, property)
     }
 
     @Suppress("OverridingDeprecatedMember", "DEPRECATION")
-    override fun getStateForPlacement(worldIn: World?, pos: BlockPos?, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float, meta: Int, placer: EntityLivingBase?): IBlockState {
-        return this.getStateFromMeta(meta).withProperty(property, facing)
+    override fun getStateForPlacement(worldIn: World?, pos: BlockPos?, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float, meta: Int, placer: EntityLivingBase): IBlockState {
+        return this.getStateFromMeta(meta).withProperty(property, if (isHorizontal) placer.horizontalFacing.opposite else facing)
     }
 
     @Suppress("OverridingDeprecatedMember")
@@ -78,22 +79,27 @@ open class BlockModDirectional(name: String, material: Material, vararg directio
 
     @Suppress("OverridingDeprecatedMember")
     override fun getStateFromMeta(meta: Int): IBlockState {
-        val prop = directions[meta % directions.size]
+        val prop = if (isHorizontal) EnumFacing.getHorizontal(meta and 0b11) else EnumFacing.getFront(meta and 0b111)
 
         return this.defaultState.withProperty(property, prop)
     }
 
     override fun getMetaFromState(state: IBlockState): Int {
-        return directions.indexOf(state[property])
+        return if (isHorizontal) state.getValue(property).horizontalIndex else state.getValue(property).ordinal
     }
 
     override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
         ModelHandler.generateBlockJson(this, {
             JsonGenerationUtils.generateBlockStates(this, mapper) {
                 val facing = "${property.name}=(\\w+)".toRegex().find(it)?.groupValues?.get(1)?.toUpperCase()
-                val dir = EnumFacing.byName(facing)
-                val x = if (dir == EnumFacing.DOWN) 180 else if (dir == EnumFacing.SOUTH) 270 else if (dir == EnumFacing.UP) 0 else 90
-                val y = if (dir == EnumFacing.EAST) 90 else if (dir == EnumFacing.WEST) 270 else 0
+                val dir = EnumFacing.byName(facing) ?: EnumFacing.DOWN
+                val x = when (dir) {
+                    EnumFacing.DOWN -> 270
+                    EnumFacing.UP -> 90
+                    else -> 0
+                }
+                val y = if (dir.horizontalIndex != -1) (dir.horizontalAngle.toInt() - 180) % 360 else 0
+
                 json {
                     obj(
                             "model" to registryName.toString(),

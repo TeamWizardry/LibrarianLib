@@ -82,6 +82,13 @@ open class ItemModShield(name: String, durability: Int = 336) : ItemMod(name), I
                         "textures" to obj(
                                 "layer0" to "${registryName.resourceDomain}:items/$variant"
                         ),
+                        "display" to obj(
+                                "thirdperson_righthand" to obj(
+                                        "rotation" to array(0, 90, 0),
+                                        "translation" to array(1.95, -1.25, 1),
+                                        "scale" to array(0.75, 0.75, 0.75)
+                                )
+                        ),
                         "overrides" to array(
                                 obj(
                                         "predicate" to obj(
@@ -97,10 +104,6 @@ open class ItemModShield(name: String, durability: Int = 336) : ItemMod(name), I
                                 "parent" to "${registryName.resourceDomain}:item/$variant",
                                 "display" to obj(
                                         "firstperson_righthand" to obj(
-                                                "rotation" to array(0, -45, 25),
-                                                "translation" to array(-1, 1.75, 0)
-                                        ),
-                                        "firstperson_lefthand" to obj(
                                                 "rotation" to array(0, -45, 25),
                                                 "translation" to array(-1, 1.75, 0)
                                         )

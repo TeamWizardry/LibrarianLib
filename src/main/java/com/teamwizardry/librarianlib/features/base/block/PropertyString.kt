@@ -2,8 +2,6 @@ package com.teamwizardry.librarianlib.features.base.block
 
 import com.google.common.base.Optional
 import net.minecraft.block.properties.PropertyHelper
-import java.util.*
-import kotlin.collections.LinkedHashSet
 
 /**
  * @author WireSegal

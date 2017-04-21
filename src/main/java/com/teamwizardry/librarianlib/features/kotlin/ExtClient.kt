@@ -1,3 +1,4 @@
+@file:SideOnly(Side.CLIENT)
 @file:JvmName("ClientUtilMethods")
 
 package com.teamwizardry.librarianlib.features.kotlin
@@ -11,7 +12,6 @@ import java.awt.Color
 
 // Color ===============================================================================================================
 
-@SideOnly(Side.CLIENT)
 fun Color.glColor() = GlStateManager.color(red / 255f, green / 255f, blue / 255f, alpha / 255f)
 
 // VertexBuffer ========================================================================================================

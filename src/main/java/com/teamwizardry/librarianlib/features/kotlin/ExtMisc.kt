@@ -31,10 +31,15 @@ import net.minecraft.world.World
 import net.minecraft.world.chunk.Chunk
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.ICapabilityProvider
-import java.lang.reflect.Modifier
-import java.lang.reflect.ParameterizedType
-import java.lang.reflect.Type
+import java.lang.reflect.*
 import java.util.*
+import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
+import kotlin.reflect.KVisibility
+import kotlin.reflect.full.functions
+import kotlin.reflect.full.starProjectedType
+import kotlin.reflect.jvm.javaMethod
+import kotlin.reflect.jvm.kotlinFunction
 
 fun Int.abs() = if (this < 0) -this else this
 
@@ -128,13 +133,13 @@ private val singletonMap = IdentityHashMap<Class<*>, Any?>()
  *
  * After the first time this property is accessed for a class, its instance is cached for faster lookups.
  */
-val <T: Any> Class<T>.singletonInstance: T?
+val <T : Any> Class<T>.singletonInstance: T?
     get() {
         @Suppress("UNCHECKED_CAST")
-        if(this in singletonMap) return singletonMap[this] as T?
+        if (this in singletonMap) return singletonMap[this] as T?
 
         val kt = this.kotlin.objectInstance
-        if(kt != null) {
+        if (kt != null) {
             singletonMap[this] = kt
             return kt
         }
@@ -143,7 +148,7 @@ val <T: Any> Class<T>.singletonInstance: T?
             Modifier.isStatic(it.modifiers) && Modifier.isFinal(it.modifiers) && it.name == "INSTANCE" && it.type == this
         }
 
-        if(field != null) {
+        if (field != null) {
             val value = field.get(null)
             singletonMap[this] = value
             @Suppress("UNCHECKED_CAST")
@@ -216,8 +221,8 @@ private class FakeNonnullList<T : Any>(delegate: MutableList<T>) : NonNullList<T
 
 fun <T : Any> Iterable<T>.toNonnullList() = toMutableList().asNonnullList()
 fun <T : Any> Iterable<T?>.toNonnullList(default: T): NonNullList<T> = toMutableList().asNonnullList(default)
-fun <T : Any> Array<T>.toNonnullList() = toMutableList().asNonnullList()
-fun <T : Any> Array<T?>.toNonnullList(default: T): NonNullList<T> = toMutableList().asNonnullList(default)
+fun <T : Any> kotlin.Array<T>.toNonnullList() = toMutableList().asNonnullList()
+fun <T : Any> kotlin.Array<T?>.toNonnullList(default: T): NonNullList<T> = toMutableList().asNonnullList(default)
 fun ByteArray.toNonnullList() = toMutableList().asNonnullList()
 fun ShortArray.toNonnullList() = toMutableList().asNonnullList()
 fun IntArray.toNonnullList() = toMutableList().asNonnullList()
@@ -231,7 +236,7 @@ fun <T : Any> MutableList<T>.asNonnullList(): NonNullList<T> = FakeNonnullList(t
 fun <T : Any> MutableList<T?>.asNonnullList(default: T): NonNullList<T> = FakeNonnullList(this, default)
 
 fun <T : Any> Iterable<T>.nullable() = toMutableList<T?>()
-fun <T : Any> Array<T>.nullable() = toMutableList<T?>()
+fun <T : Any> kotlin.Array<T>.nullable() = toMutableList<T?>()
 
 
 // ItemStack ===========================================================================================================
@@ -288,3 +293,38 @@ fun <T : Any, E : Any, R : Collection<T>, F : Collection<E>> R.instanceOf(collec
 // IBlockState =========================================================================================================
 
 operator fun <T : Comparable<T>> IBlockState.get(value: IProperty<T>): T = getValue(value)
+
+/**
+ * Replaces [kotlin.reflect.jvm]'s Method.kotlinFunction to fix a crash with protected methods.
+ * Effectiveness on protected methods might be a bit approximate (should be pretty accurate for most cases though),
+ *  but is still better than an outright crash (imo).
+ *
+ * TODO: replace with Method.kotlinFunction once https://youtrack.jetbrains.com/issue/KT-17423 is resolved
+ */
+val Method.kotlinFunctionSafe: KFunction<*>?
+    get() {
+        if (isSynthetic) return null
+
+        if (Modifier.isStatic(modifiers)) {
+            return kotlinFunction
+        }
+
+        val protected = Modifier.isProtected(modifiers)
+        return declaringClass.kotlin.functions.firstOrNull {
+            if (protected && it.visibility == KVisibility.PROTECTED) it.name == name && parameters.matches(it.parameters.drop(1))
+            else it.visibility != KVisibility.PROTECTED && it.javaMethod == this
+        }
+    }
+
+/**
+ * Checks whether a [Parameter] [kotlin.Array] matches a [KParameter] [kotlin.collections.List]
+ */
+fun kotlin.Array<Parameter>.matches(other: kotlin.collections.List<KParameter>): Boolean {
+    if (size != other.size) return false
+    var ok = true
+    this.forEachIndexed { i, it ->
+        ok = other[i].type == it.type.kotlin.starProjectedType
+        if (!ok) return@forEachIndexed
+    }
+    return ok
+}

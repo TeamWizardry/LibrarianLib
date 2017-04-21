@@ -74,7 +74,7 @@ open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, to
 
     private val bareName = VariantHelper.toSnakeCase(name)
     private val modId = currentModId
-    override val variants = VariantHelper.setupItem(this, bareName, arrayOf(), creativeTab)
+    override val variants = VariantHelper.setupItem(this, bareName, arrayOf(), this::creativeTab)
 
     override fun setUnlocalizedName(name: String): Item {
         VariantHelper.setUnlocalizedNameForItem(this, modId, name)

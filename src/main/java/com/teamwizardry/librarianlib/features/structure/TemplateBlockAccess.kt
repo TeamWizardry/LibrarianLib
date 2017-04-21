@@ -43,13 +43,9 @@ open class TemplateBlockAccess(protected var template: Template?) : IBlockAccess
         if (template == null || templateBlocks == null)
             return null
 
-        var state: IBlockState? = null
-        for (info in templateBlocks!!) {
-            if (info.pos == pos) {
-                state = info.blockState
-                break
-            }
-        }
+        val state: IBlockState? = templateBlocks!!
+                .firstOrNull { it.pos == pos }
+                ?.blockState
 
         return state
     }

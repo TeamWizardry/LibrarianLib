@@ -36,7 +36,7 @@ open class BlockModFence(name: String, val parent: IBlockState) : BlockFence(par
 
     init {
         this.variants = VariantHelper.beginSetupBlock(name, arrayOf())
-        VariantHelper.finishSetupBlock(this, bareName, itemForm, creativeTab)
+        VariantHelper.finishSetupBlock(this, bareName, itemForm, this::creativeTab)
     }
 
     override fun setUnlocalizedName(name: String): Block {

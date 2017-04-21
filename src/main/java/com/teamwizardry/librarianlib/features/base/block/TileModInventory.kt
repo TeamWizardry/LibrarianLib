@@ -104,7 +104,6 @@ open class TileModInventory(val size: Int) : TileMod(), IItemHandlerModifiable {
         return stacks.size
     }
 
-
     protected fun validateSlotIndex(slot: Int) {
         if (slot < 0 || slot >= stacks.size)
             throw RuntimeException("Slot $slot not in valid range - [0,${stacks.size})")
