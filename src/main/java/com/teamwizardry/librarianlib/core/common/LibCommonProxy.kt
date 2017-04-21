@@ -5,6 +5,7 @@ package com.teamwizardry.librarianlib.core.common
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.autoregister.AnnotationMarkersHandler
+import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.base.item.IShieldItem
 import com.teamwizardry.librarianlib.features.config.EasyConfigHandler
 import com.teamwizardry.librarianlib.features.container.GuiHandler
@@ -46,6 +47,7 @@ open class LibCommonProxy {
     open fun latePre(e: FMLPreInitializationEvent) {
         AnnotationMarkersHandler.preInit(e)
         EasyConfigHandler.bootstrap(e.asmData, e.modConfigurationDirectory)
+        ModCreativeTab.latePre()
         asmDataTable = e.asmData
     }
 
