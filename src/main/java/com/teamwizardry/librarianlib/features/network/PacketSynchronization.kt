@@ -37,6 +37,7 @@ class PacketSynchronization(var tile: TileMod? = null /* Tile is always null on 
 
         AbstractSaveHandler.readAutoBytes(tile, b, true)
         tile.readCustomBytes(b)
+        b.release()
     }
 
     override fun readCustomBytes(buf: ByteBuf) {
