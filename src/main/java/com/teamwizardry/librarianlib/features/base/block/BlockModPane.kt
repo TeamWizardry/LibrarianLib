@@ -39,7 +39,7 @@ open class BlockModPane(name: String, canDrop: Boolean, val parent: IBlockState)
     val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
-        VariantHelper.finishSetupBlock(this, bareName, itemForm, creativeTab)
+        VariantHelper.finishSetupBlock(this, bareName, itemForm, this::creativeTab)
     }
 
     override fun setUnlocalizedName(name: String): Block {

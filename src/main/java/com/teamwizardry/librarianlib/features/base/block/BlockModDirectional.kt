@@ -23,7 +23,7 @@ import net.minecraft.world.World
  * Created at 10:36 AM on 5/7/16.
  */
 @Suppress("LeakingThis")
-open class BlockModDirectional(name: String, material: Material, horizontal: Boolean) : BlockMod(name, injectDirections(material, horizontal)), IModelGenerator {
+open class BlockModDirectional(name: String, material: Material, horizontal: Boolean, vararg variants: String) : BlockMod(name, injectDirections(material, horizontal), *variants), IModelGenerator {
     companion object {
         private var lastHorizontalState: Boolean by threadLocal { false }
 

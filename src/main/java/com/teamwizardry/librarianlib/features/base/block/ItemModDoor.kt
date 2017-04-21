@@ -21,7 +21,7 @@ open class ItemModDoor(block: BlockModDoor, name: String, vararg variants: Strin
 
     private val bareName = VariantHelper.toSnakeCase(name)
     private val modId = currentModId
-    override val variants = VariantHelper.setupItem(this, bareName, variants, creativeTab)
+    override val variants = VariantHelper.setupItem(this, bareName, variants, this::creativeTab)
 
 
     override fun setUnlocalizedName(name: String): Item {
