@@ -9,7 +9,7 @@
   "updateUrl": "",
   "authorList": ["thecodewarrior", "wiresegal", "LordSaad44", "Elucent", "Eladkay", "murapix", "werty1124", "Leviathan143"],
   "credits": "Team Wizardry",
-  "logoFile": "",
+  "logoFile": "/logo_LibrarianLib.png",
   "screenshots": [],
   "dependencies": []
 }
