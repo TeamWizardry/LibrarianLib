@@ -69,7 +69,7 @@ class TEPoweredMachine : TileModInventory(2), ITickable {
      * This could use [net.minecraftforge.energy.EnergyStorage] if/when we make a serializer for it.
      */
     @Save
-    @CapabilityProvide(DOWN, UP, NORTH, SOUTH, WEST, EAST) // TODO: check whether this way of providing a capability works as intended
+    @CapabilityProvide(DOWN, UP, NORTH, SOUTH, WEST, EAST)
     val energyHandler = MyEnergyStorage()
 
     @CapabilityProvide(DOWN, UP, NORTH, SOUTH, WEST, EAST)

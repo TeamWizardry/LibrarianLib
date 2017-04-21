@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.features.guicontainer
 import com.teamwizardry.librarianlib.features.container.internal.SlotBase
 import com.teamwizardry.librarianlib.features.gui.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
-import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
 /**
@@ -11,6 +10,7 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
  */
 class ComponentSlot(val slot: SlotBase, x: Int, y: Int) : GuiComponent<ComponentSlot>(x, y) {
     val background = ComponentVoid(0, 0)
+    var scaler: GuiComponent<*>? = null
 
     init {
         this.add(background)
@@ -22,9 +22,12 @@ class ComponentSlot(val slot: SlotBase, x: Int, y: Int) : GuiComponent<Component
     }
 
     override fun onTick() {
-        val p = parent!!.unTransformRoot(this, vec(0, 0))
+        val p = parent!!.unTransformRoot(this, Vec2d.ZERO)
 
-        slot.xPos = p.xi
-        slot.yPos = p.yi
+        if (scaler == null) scaler = this.root.children.firstOrNull()
+        val s = scaler?.pos?: Vec2d.ZERO
+
+        slot.xPos = p.xi - s.xi
+        slot.yPos = p.yi - s.yi
     }
 }

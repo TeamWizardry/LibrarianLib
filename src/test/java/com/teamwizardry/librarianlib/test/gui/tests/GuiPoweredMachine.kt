@@ -10,14 +10,10 @@ import com.teamwizardry.librarianlib.features.gui.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.gui.components.ComponentSpriteProgressBar
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
-import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.guicontainer.ComponentSlot
 import com.teamwizardry.librarianlib.features.guicontainer.GuiContainerBase
 import com.teamwizardry.librarianlib.features.guicontainer.builtin.BaseLayouts
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.minus
-import com.teamwizardry.librarianlib.features.kotlin.plus
-import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.sprite.Texture
 import com.teamwizardry.librarianlib.test.container.PoweredMachineContainer
 import com.teamwizardry.librarianlib.test.container.TEPoweredMachine
@@ -31,11 +27,6 @@ import net.minecraft.util.ResourceLocation
  */
 open class GuiPoweredMachine(inventorySlotsIn: PoweredMachineContainer) : GuiContainerBase(inventorySlotsIn, 176, 166) {
 
-    // Dirty hack till I fix that -> TODO
-    @Suppress("LeakingThis")
-    private val comp = MethodHandleHelper.wrapperForGetter(GuiContainerBase::class.java, "mainScaleWrapper")(this) as ComponentVoid
-    private val slots = mutableListOf<GuiComponent<*>>()
-
     init {
         val te = inventorySlotsIn.invBlock.inventory as TEPoweredMachine
         val bg = ComponentSprite(BG, 0, 0)
@@ -43,18 +34,15 @@ open class GuiPoweredMachine(inventorySlotsIn: PoweredMachineContainer) : GuiCon
 
         val inventory = BaseLayouts.player(inventorySlotsIn.invPlayer)
         bg.add(inventory.root)
-        slots.add(inventory.root)
         inventory.main.pos = vec(8, 84)
 
         bg.add(ComponentSprite(SLOT, 50, 33))
         bg.add(ComponentSprite(SLOT, 100, 33))
 
         val input = ComponentSlot(inventorySlotsIn.invBlock.input, 51, 34)
-        slots.add(input)
         bg.add(input)
 
         val output = ComponentSlot(inventorySlotsIn.invBlock.output, 101, 34)
-        slots.add(output)
         bg.add(output)
 
         val state = te.world.getBlockState(te.pos)
@@ -73,18 +61,6 @@ open class GuiPoweredMachine(inventorySlotsIn: PoweredMachineContainer) : GuiCon
         powerBar.progress.func { te.energyHandler.energyStored.toFloat() / te.energyHandler.maxEnergyStored }
         powerBar.tooltip { I18n.format("llt:gui.energy", te.energyHandler.energyStored, te.energyHandler.maxEnergyStored) }
         bg.add(powerBar)
-    }
-
-    override fun initGui() {
-        var pos = comp.pos
-        slots.forEach { it.pos += pos }
-
-        super.initGui()
-
-        pos = comp.pos
-        guiLeft = pos.xi
-        guiTop = pos.yi
-        slots.forEach { it.pos -= pos }
     }
 
     companion object {
