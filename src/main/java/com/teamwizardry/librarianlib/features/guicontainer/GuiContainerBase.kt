@@ -43,8 +43,6 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
 
     override fun initGui() {
         super.initGui()
-        guiLeft = 0
-        guiTop = 0
         var s = 1.0
         if (!adjustGuiSize()) {
             var i = 1
@@ -62,6 +60,8 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
             mainScaleWrapper.pos = vec(left, top)
             mainScaleWrapper.childScale = s
             mainScaleWrapper.size = vec(guiWidth * s, guiHeight * s)
+            guiLeft = left
+            guiTop = top
         }
 
         fullscreenComponents.size = vec(width, height)
