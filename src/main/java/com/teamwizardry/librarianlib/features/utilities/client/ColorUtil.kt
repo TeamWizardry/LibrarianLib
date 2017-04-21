@@ -1,3 +1,4 @@
+@file:SideOnly(Side.CLIENT)
 @file:JvmName("ColorUtils")
 
 package com.teamwizardry.librarianlib.features.utilities.client
@@ -9,7 +10,6 @@ import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.awt.Color
 
-@SideOnly(Side.CLIENT)
 @JvmName("pulseColor")
 @JvmOverloads
 fun Color.pulseColor(variance: Int = 24, pulseSpeed: Float = 0.2f): Color {

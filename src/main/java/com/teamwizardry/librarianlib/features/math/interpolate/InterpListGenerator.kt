@@ -15,7 +15,7 @@ object InterpListGenerator {
         if (points <= 0)
             return mutableListOf()
 
-        var list = mutableListOf<Float>()
+        val list = mutableListOf<Float>()
 
         if (points == 1) {
             list.add(0.5f)

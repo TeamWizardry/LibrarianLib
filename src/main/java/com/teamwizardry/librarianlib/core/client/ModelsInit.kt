@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.core.client
 
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.teamwizardry.librarianlib.features.multilayermodel.LibLibModelBlockLoader
 import com.teamwizardry.librarianlib.features.multilayermodel.data.LibLibBlockPartDeserializer
@@ -16,13 +17,11 @@ object ModelsInit {
     }
 
     @Suppress("DEPRECATION")
-    val SERIALIZER = GsonBuilder()
+    val SERIALIZER: Gson = GsonBuilder()
             .registerTypeAdapter(BlockPartFace::class.java, LibLibBlockPartFaceDeserializer())
             .registerTypeAdapter(BlockPart::class.java, LibLibBlockPartDeserializer())
             .registerTypeAdapter(ModelBlock::class.java, ModelBlock.Deserializer())
-//            .registerTypeAdapter(BlockPart::class.java, createInstance("net.minecraft.client.renderer.block.model.BlockPart${'$'}Deserializer"))
             .registerTypeAdapter(BlockFaceUV::class.java, createInstance("net.minecraft.client.renderer.block.model.BlockFaceUV${'$'}Deserializer"))
-            //todo fix deprecation
             .registerTypeAdapter(ItemTransformVec3f::class.java, createInstance("net.minecraft.client.renderer.block.model.ItemTransformVec3f${'$'}Deserializer"))
             .registerTypeAdapter(ItemCameraTransforms::class.java, createInstance("net.minecraft.client.renderer.block.model.ItemCameraTransforms${'$'}Deserializer"))
             .registerTypeAdapter(ItemOverride::class.java, createInstance("net.minecraft.client.renderer.block.model.ItemOverride${'$'}Deserializer"))

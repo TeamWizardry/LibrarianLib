@@ -1,10 +1,12 @@
 package com.teamwizardry.librarianlib.features.saving.serializers.builtin.trove
 
 import com.teamwizardry.librarianlib.features.autoregister.SerializerFactoryRegister
-import com.teamwizardry.librarianlib.features.kotlin.*
+import com.teamwizardry.librarianlib.features.kotlin.forEach
+import com.teamwizardry.librarianlib.features.kotlin.readVarInt
+import com.teamwizardry.librarianlib.features.kotlin.safeCast
+import com.teamwizardry.librarianlib.features.kotlin.writeVarInt
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.saving.FieldType
-import com.teamwizardry.librarianlib.features.saving.FieldTypeGeneric
 import com.teamwizardry.librarianlib.features.saving.serializers.Serializer
 import com.teamwizardry.librarianlib.features.saving.serializers.SerializerFactory
 import com.teamwizardry.librarianlib.features.saving.serializers.SerializerFactoryMatch

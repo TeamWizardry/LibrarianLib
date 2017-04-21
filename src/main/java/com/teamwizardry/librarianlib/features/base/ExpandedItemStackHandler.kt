@@ -2,7 +2,6 @@ package com.teamwizardry.librarianlib.features.base
 
 import com.teamwizardry.librarianlib.features.kotlin.toNonnullList
 import net.minecraft.item.ItemStack
-import net.minecraftforge.items.ItemHandlerHelper
 import net.minecraftforge.items.ItemStackHandler
 
 /**
