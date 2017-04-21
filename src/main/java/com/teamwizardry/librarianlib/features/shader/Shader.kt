@@ -13,8 +13,8 @@ import org.lwjgl.opengl.GL20
 @SideOnly(Side.CLIENT)
 open class Shader(vert: String?, frag: String?) {
 
-    val vert: String? = if (vert == null) null else "/assets/${currentModId}/${VariantHelper.pathToSnakeCase(vert).removePrefix("/")}"
-    val frag: String? = if (frag == null) null else "/assets/${currentModId}/${VariantHelper.pathToSnakeCase(frag).removePrefix("/")}"
+    val vert: String? = if (vert == null) null else "/assets/$currentModId/${VariantHelper.pathToSnakeCase(vert).removePrefix("/")}"
+    val frag: String? = if (frag == null) null else "/assets/$currentModId/${VariantHelper.pathToSnakeCase(frag).removePrefix("/")}"
 
     var time: FloatTypes.FloatUniform? = null
 

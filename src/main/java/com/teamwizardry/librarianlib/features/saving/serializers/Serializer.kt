@@ -2,7 +2,6 @@ package com.teamwizardry.librarianlib.features.saving.serializers
 
 import com.teamwizardry.librarianlib.features.saving.FieldType
 import com.teamwizardry.librarianlib.features.saving.FieldTypeGeneric
-import com.teamwizardry.librarianlib.features.saving.FieldTypeVariable
 import io.netty.buffer.ByteBuf
 import net.minecraft.nbt.NBTBase
 

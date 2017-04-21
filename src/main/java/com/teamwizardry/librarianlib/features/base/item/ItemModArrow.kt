@@ -28,7 +28,7 @@ abstract class ItemModArrow(name: String, vararg variants: String) : ItemArrow()
 
     private val bareName = VariantHelper.toSnakeCase(name)
     private val modId = currentModId
-    override val variants = VariantHelper.setupItem(this, bareName, variants, creativeTab)
+    override val variants = VariantHelper.setupItem(this, bareName, variants, this::creativeTab)
 
     init {
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, object : BehaviorProjectileDispense() {

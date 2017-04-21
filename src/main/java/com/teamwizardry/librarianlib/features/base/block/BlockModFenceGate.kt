@@ -34,16 +34,15 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
 
     private val parentName = parent.block.registryName
 
-    override val variants: Array<out String>
 
-    override val bareName: String = VariantHelper.toSnakeCase(name)
     val modId = currentModId
+    override val bareName: String = VariantHelper.toSnakeCase(name)
+    override val variants: Array<out String> = VariantHelper.beginSetupBlock(name, arrayOf())
 
     val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
-        this.variants = VariantHelper.beginSetupBlock(name, arrayOf())
-        VariantHelper.finishSetupBlock(this, bareName, itemForm, creativeTab)
+        VariantHelper.finishSetupBlock(this, bareName, itemForm, this::creativeTab)
     }
 
     override fun setUnlocalizedName(name: String): Block {

@@ -16,21 +16,32 @@ abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(currentMod
 
     companion object {
         val defaultTabs = mutableMapOf<String, ModCreativeTab>()
+
+        val itemsToTab = mutableMapOf<Item, () -> ModCreativeTab?>()
+        val blocksToTab = mutableMapOf<Block, () -> ModCreativeTab?>()
+
+        fun latePre() {
+            for ((item, function) in itemsToTab) function()?.set(item)
+            for ((block, function) in blocksToTab) function()?.set(block)
+        }
+    }
+
+    init {
+        if (postFix == null) registerDefaultTab()
     }
 
     /**
      * Calling this during mod construction will make items from this mod prefer this tab.
+     * If the postFix specified in the constructor is null, this will be called by default.
      */
     protected fun registerDefaultTab() {
         defaultTabs.put(currentModId, this)
     }
 
     @SideOnly(Side.CLIENT)
-    override fun getTranslatedTabLabel(): String {
-        return "item_group.$tabLabel"
-    }
+    override fun getTranslatedTabLabel(): String = "item_group.$tabLabel"
 
-    internal lateinit var list: NonNullList<ItemStack>
+    private lateinit var list: NonNullList<ItemStack>
 
     abstract val iconStack: ItemStack
 
@@ -47,7 +58,7 @@ abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(currentMod
         val tempList = nonnullListOf<ItemStack>()
         item.getSubItems(item, this, tempList)
         if (item == tabIconItem.item)
-            this.list.addAll(0, list.filterNot { it.isEmpty })
+            this.list.addAll(0, tempList.filterNot { it.isEmpty })
         else
             tempList.filterNotTo(list) { it.isEmpty }
     }

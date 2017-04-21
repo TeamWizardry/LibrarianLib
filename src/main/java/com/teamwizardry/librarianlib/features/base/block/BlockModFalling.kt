@@ -21,7 +21,7 @@ open class BlockModFalling(name: String, materialIn: Material, vararg variants: 
     val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
-        VariantHelper.finishSetupBlock(this, bareName, itemForm, creativeTab)
+        VariantHelper.finishSetupBlock(this, bareName, itemForm, this::creativeTab)
     }
 
     override fun setUnlocalizedName(name: String): Block {

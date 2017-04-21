@@ -21,7 +21,7 @@ open class ItemModArmor(name: String, material: ArmorMaterial, slot: EntityEquip
 
     private val bareName = VariantHelper.toSnakeCase(name)
     private val modId = currentModId
-    override val variants = VariantHelper.setupItem(this, bareName, variants, creativeTab)
+    override val variants = VariantHelper.setupItem(this, bareName, variants, this::creativeTab)
 
     override fun setUnlocalizedName(name: String): Item {
         VariantHelper.setUnlocalizedNameForItem(this, modId, name)

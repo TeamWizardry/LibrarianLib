@@ -19,7 +19,7 @@ open class ItemMod(name: String, vararg variants: String) : Item(), IModItemProv
 
     private val bareName = VariantHelper.toSnakeCase(name)
     private val modId = currentModId
-    override val variants = VariantHelper.setupItem(this, bareName, variants, creativeTab)
+    override val variants = VariantHelper.setupItem(this, bareName, variants, this::creativeTab)
 
     override fun setUnlocalizedName(name: String): Item {
         VariantHelper.setUnlocalizedNameForItem(this, modId, name)

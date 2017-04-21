@@ -5,16 +5,15 @@ package com.teamwizardry.librarianlib.core.common
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.autoregister.AnnotationMarkersHandler
+import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.base.item.IShieldItem
 import com.teamwizardry.librarianlib.features.config.EasyConfigHandler
 import com.teamwizardry.librarianlib.features.container.GuiHandler
-import com.teamwizardry.librarianlib.features.kotlin.sendSpamlessMessage
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.saving.SavingFieldCache
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import com.teamwizardry.librarianlib.features.utilities.unsafeAllowedModIds
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.translation.I18n
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.discovery.ASMDataTable
@@ -48,6 +47,7 @@ open class LibCommonProxy {
     open fun latePre(e: FMLPreInitializationEvent) {
         AnnotationMarkersHandler.preInit(e)
         EasyConfigHandler.bootstrap(e.asmData, e.modConfigurationDirectory)
+        ModCreativeTab.latePre()
         asmDataTable = e.asmData
     }
 

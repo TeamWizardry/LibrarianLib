@@ -24,7 +24,7 @@ open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg 
     val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
-        VariantHelper.finishSetupBlock(this, bareName, itemForm, creativeTab)
+        VariantHelper.finishSetupBlock(this, bareName, itemForm, this::creativeTab)
     }
 
     override fun setUnlocalizedName(name: String): Block {

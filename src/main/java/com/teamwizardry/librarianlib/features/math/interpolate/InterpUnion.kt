@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.features.math.interpolate
 
 class InterpUnionImpl<T> internal constructor(val list: MutableList<UnionEntry<T>>) : InterpFunction<T> {
     override fun get(i: Float): T {
-        var floored = Math.floor(i.toDouble()).toFloat()
+        val floored = Math.floor(i.toDouble()).toFloat()
         val fract = if (floored == i && i > 0) 1f else i - floored
         val func = list.first { fract >= it.start && fract <= it.end }
         val span = func.end - func.start

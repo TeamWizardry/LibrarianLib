@@ -16,14 +16,14 @@ import net.minecraft.util.NonNullList
  * The default implementation for an IVariantHolder sword.
  */
 @Suppress("LeakingThis")
-open class ItemModSword(name: String, material: ToolMaterial, vararg variants: String) : ItemSword(material), IModItemProvider, IModelGenerator {
+open class ItemModSword(name: String, material: ToolMaterial) : ItemSword(material), IModItemProvider, IModelGenerator {
 
     override val providedItem: Item
         get() = this
 
     private val bareName = VariantHelper.toSnakeCase(name)
     private val modId = currentModId
-    override val variants = VariantHelper.setupItem(this, bareName, variants, creativeTab)
+    override val variants = VariantHelper.setupItem(this, bareName, arrayOf(), this::creativeTab)
 
     override fun setUnlocalizedName(name: String): Item {
         VariantHelper.setUnlocalizedNameForItem(this, modId, name)

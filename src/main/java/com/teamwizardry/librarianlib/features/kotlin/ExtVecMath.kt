@@ -75,7 +75,7 @@ operator fun BlockPos.div(other: BlockPos) = BlockPos(this.x / other.x, this.y /
 operator fun BlockPos.div(other: Vec3d) = BlockPos((this.x / other.xCoord).toInt(), (this.y / other.yCoord).toInt(), (this.z / other.zCoord).toInt())
 operator fun BlockPos.div(other: Number) = BlockPos((this.x / other.toDouble()).toInt(), (this.y / other.toDouble()).toInt(), (this.z / other.toDouble()).toInt())
 
-operator fun BlockPos.plus(other: BlockPos) = this.add(other)
-operator fun BlockPos.minus(other: BlockPos) = this.subtract(other)
+operator fun BlockPos.plus(other: BlockPos): BlockPos = this.add(other)
+operator fun BlockPos.minus(other: BlockPos): BlockPos = this.subtract(other)
 
 operator fun BlockPos.unaryMinus() = this * -1

@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.features.utilities.client;
 
 import com.teamwizardry.librarianlib.core.LibrarianLib;
-import com.teamwizardry.librarianlib.core.common.LibCommonProxy;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.mutable.MutableObject;

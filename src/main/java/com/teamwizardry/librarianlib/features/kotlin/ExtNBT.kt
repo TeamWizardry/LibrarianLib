@@ -45,9 +45,14 @@ fun <T : NBTBase> NBTBase.safeCast(clazz: Class<T>): T {
     return (
             if (clazz.isAssignableFrom(this.javaClass))
                 this
-            else if (clazz == NBTPrimitive::class.java)
-                NBTTagByte(0)
-            else if (clazz == NBTTagByteArray::class.java)
+            else if (NBTPrimitive::class.java.isAssignableFrom(clazz)) when (clazz) {
+                NBTTagLong::class.java -> NBTTagLong(0)
+                NBTTagInt::class.java -> NBTTagInt(0)
+                NBTTagShort::class.java -> NBTTagShort(0)
+                NBTTagDouble::class.java -> NBTTagDouble(0.0)
+                NBTTagFloat::class.java -> NBTTagFloat(0f)
+                else -> NBTTagByte(0)
+            } else if (clazz == NBTTagByteArray::class.java)
                 NBTTagByteArray(ByteArray(0))
             else if (clazz == NBTTagString::class.java)
                 NBTTagString("")

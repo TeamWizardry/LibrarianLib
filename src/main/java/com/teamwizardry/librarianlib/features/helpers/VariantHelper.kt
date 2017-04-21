@@ -56,8 +56,7 @@ object VariantHelper {
      * All items which use this method in their constructor should implement the setUnlocalizedNameForItem provided below in their setUnlocalizedName.
      */
     @JvmStatic
-    @JvmOverloads
-    fun <T> setupItem(item: T, name: String, variants: Array<out String>, creativeTab: ModCreativeTab? = null): Array<out String> where T : Item, T : IVariantHolder {
+    fun <T> setupItem(item: T, name: String, variants: Array<out String>, modCreativeTab: (() -> ModCreativeTab?)? = null): Array<out String> where T : Item, T : IVariantHolder {
         var variantTemp = variants.map { toSnakeCase(it) }.toTypedArray()
         item.unlocalizedName = name
         if (variantTemp.size > 1)
@@ -67,7 +66,9 @@ object VariantHelper {
             variantTemp = arrayOf(toSnakeCase(name))
 
         ModelHandler.registerVariantHolder(item)
-        creativeTab?.set(item)
+
+        if (modCreativeTab != null)
+            ModCreativeTab.itemsToTab.put(item, modCreativeTab)
         return variantTemp
     }
 
@@ -85,11 +86,12 @@ object VariantHelper {
 
     @JvmStatic
     @JvmOverloads
-    fun <T> finishSetupBlock(block: T, name: String, itemForm: ItemBlock?, creativeTab: ModCreativeTab? = null) where T : Block, T : IVariantHolder {
+    fun <T> finishSetupBlock(block: T, name: String, itemForm: ItemBlock?, modCreativeTab: (() -> ModCreativeTab?)? = null) where T : Block, T : IVariantHolder {
         block.unlocalizedName = name
         if (itemForm == null)
             ModelHandler.registerVariantHolder(block)
-        creativeTab?.set(block)
+        if (modCreativeTab != null)
+            ModCreativeTab.blocksToTab.put(block, modCreativeTab)
     }
 
     @JvmStatic
