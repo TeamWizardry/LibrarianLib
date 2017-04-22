@@ -35,6 +35,8 @@ object SavingFieldCache {
         buildClassFields(type, map)
         buildClassGetSetters(type, map)
         alreadyDone.clear()
+        methodGettersWOSetters.clear()
+        methodSettersWOGetters.clear()
 
         atSaveMap.put(type, map)
 
@@ -250,6 +252,9 @@ object SavingFieldCache {
     }
 
     private val alreadyDone = mutableListOf<String>()
+    private val methodGettersWOSetters = mutableSetOf<String>()
+    private val methodSettersWOGetters = mutableSetOf<String>()
+
     private val ILLEGAL_NAMES = listOf("id", "x", "y", "z", "ForgeData", "ForgeCaps")
 
     private val nameMap = mutableMapOf<Field, String>()
@@ -279,8 +284,26 @@ object SavingFieldCache {
 
         if (name in ILLEGAL_NAMES)
             name += "X"
-        if(name in alreadyDone)
+
+        var partOfUnmatchedPair = false
+
+        partOfUnmatchedPair = partOfUnmatchedPair || getter && name in methodSettersWOGetters
+        partOfUnmatchedPair = partOfUnmatchedPair || !getter && name in methodGettersWOSetters
+
+        if(!partOfUnmatchedPair && name in alreadyDone)
             errorList[type][name].add("Name already in use for ${if(getter) "getter" else "setter"}")
+
+        if(partOfUnmatchedPair) {
+            methodSettersWOGetters.remove(name)
+            methodGettersWOSetters.remove(name)
+        } else {
+            if(getter) {
+                methodGettersWOSetters.add(name)
+            } else {
+                methodSettersWOGetters.add(name)
+            }
+        }
+
         alreadyDone.add(name)
         return name
     }
