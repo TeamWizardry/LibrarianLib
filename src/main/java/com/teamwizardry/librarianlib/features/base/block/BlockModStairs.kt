@@ -68,8 +68,8 @@ open class BlockModStairs(name: String, val parent: IBlockState) : BlockStairs(p
         get() = ModCreativeTab.defaultTabs[modId]
 
     override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
-        val name = ResourceLocation(parentName.resourceDomain, "blocks/${parentName.resourcePath}").toString()
-        val simpleName = registryName.resourcePath
+        val name = ResourceLocation(parentName!!.resourceDomain, "blocks/${parentName!!.resourcePath}").toString()
+        val simpleName = registryName!!.resourcePath
 
         ModelHandler.generateBlockJson(this, {
             JsonGenerationUtils.generateBlockStates(this, mapper) {

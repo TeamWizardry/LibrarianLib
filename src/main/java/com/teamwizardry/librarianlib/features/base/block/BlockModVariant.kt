@@ -56,7 +56,7 @@ open class BlockModVariant(name: String, materialIn: Material, color: MapColor, 
     override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
         ModelHandler.generateBlockJson(this, {
             JsonGenerationUtils.generateBlockStates(this, mapper) {
-                json { obj("model" to registryName.resourceDomain + ":" + it.replace("variant=", "")) }
+                json { obj("model" to registryName!!.resourceDomain + ":" + it.replace("variant=", "")) }
             }
         }, {
             variants.associate { JsonGenerationUtils.getPathForBlockModel(this, it) to JsonGenerationUtils.generateBaseBlockModel(this, it) }

@@ -195,7 +195,7 @@ abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod
                 obj(
                         "parent" to "block/cross",
                         "textures" to obj(
-                                "cross" to "${registryName.resourceDomain}:blocks/${registryName.resourcePath}"
+                                "cross" to "${registryName!!.resourceDomain}:blocks/${registryName!!.resourcePath}"
                         )
                 )
             })

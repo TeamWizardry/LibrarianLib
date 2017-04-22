@@ -87,8 +87,8 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
     override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent)
 
     override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
-        val name = ResourceLocation(parentName.resourceDomain, "blocks/${parentName.resourcePath}").toString()
-        val simpleName = registryName.resourcePath
+        val name = ResourceLocation(parentName!!.resourceDomain, "blocks/${parentName!!.resourcePath}").toString()
+        val simpleName = registryName!!.resourcePath
 
         ModelHandler.generateBlockJson(this, {
             JsonGenerationUtils.generateBlockStates(this, mapper) {
@@ -155,7 +155,7 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
         val item = itemForm as? IModItemProvider ?: return false
         ModelHandler.generateItemJson(item) {
             mapOf(JsonGenerationUtils.getPathForItemModel(item.providedItem)
-                    to JsonGenerationUtils.generateBaseItemModel(item.providedItem, "${registryName.resourcePath}_fence_closed"))
+                    to JsonGenerationUtils.generateBaseItemModel(item.providedItem, "${registryName!!.resourcePath}_fence_closed"))
         }
         return true
     }

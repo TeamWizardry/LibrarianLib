@@ -45,7 +45,7 @@ object JsonGenerationUtils {
 
     fun getPathForBaseBlockstate(block: IForgeRegistryEntry<*>): String {
         val registryName = block.registryName
-        return getAssetPath(registryName.resourceDomain) + +"/blockstates/${registryName.resourcePath}.json"
+        return getAssetPath(registryName!!.resourceDomain) + +"/blockstates/${registryName!!.resourcePath}.json"
     }
 
     fun getPathsForBlockstate(block: Block, stateMapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)? = null): Array<String> {
@@ -61,17 +61,17 @@ object JsonGenerationUtils {
     }
 
     fun getPathForBlockModel(block: Block): String {
-        return getPathForBlockModel(block, block.registryName.resourcePath)
+        return getPathForBlockModel(block, block.registryName!!.resourcePath)
     }
 
     fun getPathForBlockModel(block: Block, variant: String): String {
-        return getAssetPath(block.registryName.resourceDomain) + +"/models/block/$variant.json"
+        return getAssetPath(block.registryName!!.resourceDomain) + +"/models/block/$variant.json"
     }
 
     fun getPathForItemModel(item: Item, variantName: String? = null): String {
         val registryName = item.registryName
-        val varname = variantName ?: registryName.resourcePath
-        return getAssetPath(registryName.resourceDomain) + +"/models/item/$varname.json"
+        val varname = variantName ?: registryName!!.resourcePath
+        return getAssetPath(registryName!!.resourceDomain) + +"/models/item/$varname.json"
     }
 
     fun getAssetPath(modid: String): String {
@@ -80,26 +80,26 @@ object JsonGenerationUtils {
 
     fun generateBaseItemModel(item: Item, variantName: String? = null, parent: String = "item/generated"): JsonElement {
         val registryName = item.registryName
-        val varname = variantName ?: registryName.resourcePath
-        if (item is ItemBlock) return json { obj("parent" to "${registryName.resourceDomain}:block/$varname") }
+        val varname = variantName ?: registryName!!.resourcePath
+        if (item is ItemBlock) return json { obj("parent" to "${registryName!!.resourceDomain}:block/$varname") }
         return generateRegularItemModel(item, variantName, parent)
     }
 
     fun generateRegularItemModel(item: Item, variantName: String? = null, parent: String = "item/generated"): JsonElement {
         val registryName = item.registryName
-        val varname = variantName ?: registryName.resourcePath
+        val varname = variantName ?: registryName!!.resourcePath
         return json {
             obj(
                     "parent" to parent,
                     "textures" to obj(
-                            "layer0" to "${registryName.resourceDomain}:items/$varname"
+                            "layer0" to "${registryName!!.resourceDomain}:items/$varname"
                     )
             )
         }
     }
 
     fun generateBaseBlockModel(block: Block): JsonElement {
-        return generateBaseBlockModel(block, block.registryName.resourcePath)
+        return generateBaseBlockModel(block, block.registryName!!.resourcePath)
     }
 
     fun generateBaseBlockModel(block: Block, variant: String): JsonElement {
@@ -108,7 +108,7 @@ object JsonGenerationUtils {
             obj(
                     "parent" to "block/cube_all",
                     "textures" to obj(
-                            "all" to "${registryName.resourceDomain}:blocks/$variant"
+                            "all" to "${registryName!!.resourceDomain}:blocks/$variant"
                     )
             )
         }

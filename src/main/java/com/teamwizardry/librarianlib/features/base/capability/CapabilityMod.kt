@@ -35,9 +35,12 @@ abstract class CapabilityMod(val name: ResourceLocation) {
         @SubscribeEvent
         fun onDeath(playerCloneEvent: PlayerEvent.Clone) {
             if (playerCloneEvent.isWasDeath)
-                for (cap in capabilities.values)
-                    (playerCloneEvent.entityPlayer.getCapability(cap(), null) as CapabilityMod)
-                            .readFromNBT((playerCloneEvent.original.getCapability(cap(), null) as CapabilityMod).writeToNBT(NBTTagCompound()))
+                for (cap in capabilities.values) {
+                    val newCap = playerCloneEvent.entityPlayer.getCapability(cap(), null) as CapabilityMod?
+                    val oldCap = playerCloneEvent.original.getCapability(cap(), null) as CapabilityMod?
+                    if(oldCap != null && newCap != null)
+                        newCap.readFromNBT(oldCap.writeToNBT(NBTTagCompound()))
+                }
         }
 
         fun <T : CapabilityMod> register(capClass: Class<T>, capObj: ICapabilityObjectProvider<T>) {

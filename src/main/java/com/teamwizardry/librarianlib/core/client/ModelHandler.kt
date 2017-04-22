@@ -95,7 +95,7 @@ object ModelHandler {
         for ((modid, holders) in variantCache) {
             modName = modid
             log("$modName | Registering models")
-            for (holder in holders.sortedBy { (255 - it.variants.size).toChar() + if (it is IModBlockProvider) "b" else "I" + if (it is IModItemProvider) it.providedItem.registryName.resourcePath else "" }) {
+            for (holder in holders.sortedBy { (255 - it.variants.size).toChar() + if (it is IModBlockProvider) "b" else "I" + if (it is IModItemProvider) it.providedItem.registryName!!.resourcePath else "" }) {
                 registerModels(holder)
             }
         }
@@ -132,7 +132,7 @@ object ModelHandler {
                             log("$modName | Registering colors")
                             flag = true
                         }
-                        log("$namePad | Registering item color for ${holder.providedItem.registryName.resourcePath}")
+                        log("$namePad | Registering item color for ${holder.providedItem.registryName!!.resourcePath}")
                         itemColors.registerItemColorHandler(IItemColor(color), holder.providedItem)
                     }
                 }
@@ -144,7 +144,7 @@ object ModelHandler {
                             log("$modName | Registering colors")
                             flag = true
                         }
-                        log("$namePad | Registering block color for ${holder.providedBlock.registryName.resourcePath}")
+                        log("$namePad | Registering block color for ${holder.providedBlock.registryName!!.resourcePath}")
                         blockColors.registerBlockColorHandler(IBlockColor(color), holder.providedBlock)
                     }
                 }
@@ -188,11 +188,11 @@ object ModelHandler {
                 if (index == 0) {
                     var print = "${namePad} | Registering "
 
-                    if (variant != item.registryName.resourcePath || variants.size != 1 || extra)
+                    if (variant != item.registryName!!.resourcePath || variants.size != 1 || extra)
                         print += "${if (extra) "extra " else ""}variant${if (variants.size == 1) "" else "s"} of "
 
                     print += if (item is IModBlockProvider) "block" else "item"
-                    print += " ${item.registryName.resourcePath}"
+                    print += " ${item.registryName!!.resourcePath}"
                     log(print)
                 }
 
@@ -201,7 +201,7 @@ object ModelHandler {
                     continue
                 }
 
-                if ((variant != item.registryName.resourcePath || variants.size != 1))
+                if ((variant != item.registryName!!.resourcePath || variants.size != 1))
                     log("$namePad |  Variant #${index + 1}: $variant")
 
                 if (shouldGenItemJson(holder)) generateItemJson(holder, variant)
@@ -241,7 +241,7 @@ object ModelHandler {
                         if (!flag) {
                             var print = "${namePad} | Applying special model rules for "
                             print += if (item is IModBlockProvider) "block " else "item "
-                            print += item.registryName.resourcePath
+                            print += item.registryName!!.resourcePath
                             log(print)
                             flag = true
                         }
@@ -283,7 +283,7 @@ object ModelHandler {
                 isForge = marker.asInt != 0
         }
         if (isForge)
-            log("$namePad | Assuming forge override for ${entry.getRegistryName().resourcePath} item model")
+            log("$namePad | Assuming forge override for ${entry.getRegistryName()!!.resourcePath} item model")
         return !isForge
     }
 
@@ -337,7 +337,7 @@ object ModelHandler {
             stateFile.parentFile.mkdirs()
             if (stateFile.createNewFile()) {
                 stateFile.writeText(serialize(model))
-                ModelHandler.log("$namePad | Creating ${stateFile.name} for blockstate of block ${holder.providedBlock.registryName.resourcePath}")
+                ModelHandler.log("$namePad | Creating ${stateFile.name} for blockstate of block ${holder.providedBlock.registryName!!.resourcePath}")
                 ModelHandler.generatedFiles.add(path)
                 flag = true
             }
@@ -349,7 +349,7 @@ object ModelHandler {
                 modelFile.parentFile.mkdirs()
                 if (modelFile.createNewFile()) {
                     modelFile.writeText(serialize(model))
-                    ModelHandler.log("$namePad | Creating ${modelFile.name} for block model of block ${holder.providedBlock.registryName.resourcePath}")
+                    ModelHandler.log("$namePad | Creating ${modelFile.name} for block model of block ${holder.providedBlock.registryName!!.resourcePath}")
                     ModelHandler.generatedFiles.add(path)
                 }
             }
@@ -358,7 +358,7 @@ object ModelHandler {
 
     fun getNameForItemProvider(provider: IModItemProvider): String {
         val item = provider.providedItem
-        return (if (item is ItemBlock) "block " else "item ") + item.registryName.resourcePath
+        return (if (item is ItemBlock) "block " else "item ") + item.registryName!!.resourcePath
     }
 
     @JvmStatic

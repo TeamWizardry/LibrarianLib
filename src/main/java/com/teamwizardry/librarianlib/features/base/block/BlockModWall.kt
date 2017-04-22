@@ -119,8 +119,8 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
 
 
     override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
-        val name = ResourceLocation(parentName.resourceDomain, "blocks/${parentName.resourcePath}").toString()
-        val simpleName = registryName.resourcePath
+        val name = ResourceLocation(parentName!!.resourceDomain, "blocks/${parentName!!.resourcePath}").toString()
+        val simpleName = registryName!!.resourcePath
 
         ModelHandler.generateBlockJson(this, {
             JsonGenerationUtils.getPathsForBlockstate(this, mapper).associateInPlace {
@@ -202,7 +202,7 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
     }
 
     override fun generateMissingItem(variant: String): Boolean {
-        val name = ResourceLocation(parentName.resourceDomain, "block/${parentName.resourcePath}").toString()
+        val name = ResourceLocation(parentName!!.resourceDomain, "block/${parentName!!.resourcePath}").toString()
         val item = itemForm as? IModItemProvider ?: return false
         ModelHandler.generateItemJson(item) {
             mapOf(JsonGenerationUtils.getPathForItemModel(item.providedItem)

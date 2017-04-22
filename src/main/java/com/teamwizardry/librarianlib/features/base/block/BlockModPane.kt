@@ -68,8 +68,8 @@ open class BlockModPane(name: String, canDrop: Boolean, val parent: IBlockState)
         get() = ModCreativeTab.defaultTabs[modId]
 
     override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
-        val name = ResourceLocation(parentName.resourceDomain, "blocks/${parentName.resourcePath}").toString()
-        val simpleName = registryName.resourcePath
+        val name = ResourceLocation(parentName!!.resourceDomain, "blocks/${parentName!!.resourcePath}").toString()
+        val simpleName = registryName!!.resourcePath
 
         ModelHandler.generateBlockJson(this, {
             mapOf(JsonGenerationUtils.getPathForBaseBlockstate(this) to json {

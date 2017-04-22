@@ -1,0 +1,85 @@
+Information:Kotlin: Kotlin JPS plugin version 1.1.2-eap-69
+Information:Kotlin: Plugin loaded: KotlinAndroidJpsPlugin
+Information:Kotlin: Using kotlin-home = /Users/piercecorcoran/Library/Application Support/IdeaIC2017.1/Kotlin/kotlinc
+Information:Kotlin: Kotlin Compiler version 1.1.2-eap-69
+Information:Module "LibrarianLib" was fully rebuilt due to project configuration/dependencies changes
+Information:4/21/17, 11:46 PM - Compilation completed with 62 errors and 2 warnings in 2m 14s 177ms
+Warning:Kotlin: Some JAR files in the classpath have the Kotlin Runtime library bundled into them. This may cause difficult to debug problems if there's a different version of the Kotlin Runtime library in the classpath. Consider removing these libraries from the classpath or use '-Xskip-runtime-version-check' to suppress this warning
+/Users/piercecorcoran/.gradle/caches/modules-2/files-2.1/net.shadowfacts/Forgelin/1.4.1/b13772ea34b948980165b0541adbca24ce80b2be/Forgelin-1.4.1.jar
+    Warning:Warning:Kotlin: Library has Kotlin runtime bundled into it
+/Users/piercecorcoran/Desktop/Programming/1.Minecraft/1.Minecraft_Forge/mods/1.8.8/LibrarianLib/src/main/java/com/teamwizardry/librarianlib/core/client/ModelHandler.kt
+    Error:Error:line (98)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (135)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (147)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (191)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (195)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (204)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (244)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (286)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (340)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (352)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (361)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+/Users/piercecorcoran/Desktop/Programming/1.Minecraft/1.Minecraft_Forge/mods/1.8.8/LibrarianLib/src/main/java/com/teamwizardry/librarianlib/features/base/block/BlockModDoor.kt
+    Error:Error:line (79)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (79)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (80)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+/Users/piercecorcoran/Desktop/Programming/1.Minecraft/1.Minecraft_Forge/mods/1.8.8/LibrarianLib/src/main/java/com/teamwizardry/librarianlib/features/base/block/BlockModFence.kt
+    Error:Error:line (67)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (67)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (68)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (147)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (147)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+/Users/piercecorcoran/Desktop/Programming/1.Minecraft/1.Minecraft_Forge/mods/1.8.8/LibrarianLib/src/main/java/com/teamwizardry/librarianlib/features/base/block/BlockModFenceGate.kt
+    Error:Error:line (90)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (90)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (91)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (158)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+/Users/piercecorcoran/Desktop/Programming/1.Minecraft/1.Minecraft_Forge/mods/1.8.8/LibrarianLib/src/main/java/com/teamwizardry/librarianlib/features/base/block/BlockModPane.kt
+    Error:Error:line (71)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (71)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (72)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+/Users/piercecorcoran/Desktop/Programming/1.Minecraft/1.Minecraft_Forge/mods/1.8.8/LibrarianLib/src/main/java/com/teamwizardry/librarianlib/features/base/block/BlockModSapling.kt
+    Error:Error:line (198)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (198)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+/Users/piercecorcoran/Desktop/Programming/1.Minecraft/1.Minecraft_Forge/mods/1.8.8/LibrarianLib/src/main/java/com/teamwizardry/librarianlib/features/base/block/BlockModSlab.kt
+    Error:Error:line (182)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (182)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (183)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (224)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+/Users/piercecorcoran/Desktop/Programming/1.Minecraft/1.Minecraft_Forge/mods/1.8.8/LibrarianLib/src/main/java/com/teamwizardry/librarianlib/features/base/block/BlockModStairs.kt
+    Error:Error:line (71)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (71)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (72)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+/Users/piercecorcoran/Desktop/Programming/1.Minecraft/1.Minecraft_Forge/mods/1.8.8/LibrarianLib/src/main/java/com/teamwizardry/librarianlib/features/base/block/BlockModTrapdoor.kt
+    Error:Error:line (71)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (71)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (72)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (150)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (150)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+/Users/piercecorcoran/Desktop/Programming/1.Minecraft/1.Minecraft_Forge/mods/1.8.8/LibrarianLib/src/main/java/com/teamwizardry/librarianlib/features/base/block/BlockModVariant.kt
+    Error:Error:line (59)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+/Users/piercecorcoran/Desktop/Programming/1.Minecraft/1.Minecraft_Forge/mods/1.8.8/LibrarianLib/src/main/java/com/teamwizardry/librarianlib/features/base/block/BlockModWall.kt
+    Error:Error:line (122)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (122)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (123)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (205)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (205)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+/Users/piercecorcoran/Desktop/Programming/1.Minecraft/1.Minecraft_Forge/mods/1.8.8/LibrarianLib/src/main/java/com/teamwizardry/librarianlib/features/base/item/ItemModShield.kt
+    Error:Error:line (83)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (97)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (104)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+/Users/piercecorcoran/Desktop/Programming/1.Minecraft/1.Minecraft_Forge/mods/1.8.8/LibrarianLib/src/main/java/com/teamwizardry/librarianlib/features/kotlin/ExtByteBuf.kt
+    Error:Error:line (20)Kotlin: Type mismatch: inferred type is NBTTagCompound? but NBTTagCompound was expected
+/Users/piercecorcoran/Desktop/Programming/1.Minecraft/1.Minecraft_Forge/mods/1.8.8/LibrarianLib/src/main/java/com/teamwizardry/librarianlib/features/utilities/JsonGenerationUtils.kt
+    Error:Error:line (48)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (48)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (64)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (68)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (73)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (74)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (83)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (84)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (90)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (95)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (102)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?
+    Error:Error:line (111)Kotlin: Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ResourceLocation?

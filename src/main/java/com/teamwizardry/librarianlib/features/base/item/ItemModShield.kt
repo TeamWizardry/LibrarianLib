@@ -80,7 +80,7 @@ open class ItemModShield(name: String, durability: Int = 336) : ItemMod(name), I
                 obj(
                         "parent" to "item/generated",
                         "textures" to obj(
-                                "layer0" to "${registryName.resourceDomain}:items/$variant"
+                                "layer0" to "${registryName!!.resourceDomain}:items/$variant"
                         ),
                         "display" to obj(
                                 "thirdperson_righthand" to obj(
@@ -94,14 +94,14 @@ open class ItemModShield(name: String, durability: Int = 336) : ItemMod(name), I
                                         "predicate" to obj(
                                                 "blocking" to 1
                                         ),
-                                        "model" to "${registryName.resourceDomain}:item/${variant}_blocking"
+                                        "model" to "${registryName!!.resourceDomain}:item/${variant}_blocking"
                                 )
                         )
                 )
             },
                     JsonGenerationUtils.getPathForItemModel(this, "${variant}_blocking") to json {
                         obj(
-                                "parent" to "${registryName.resourceDomain}:item/$variant",
+                                "parent" to "${registryName!!.resourceDomain}:item/$variant",
                                 "display" to obj(
                                         "firstperson_righthand" to obj(
                                                 "rotation" to array(0, -45, 25),
