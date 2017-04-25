@@ -7,6 +7,8 @@ package com.teamwizardry.librarianlib.test.gui.tests
  */
 
 import com.teamwizardry.librarianlib.features.gui.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.Option
+import com.teamwizardry.librarianlib.features.gui.components.ComponentProgressBar
 import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.gui.components.ComponentSpriteProgressBar
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
@@ -48,17 +50,15 @@ open class GuiPoweredMachine(inventorySlotsIn: PoweredMachineContainer) : GuiCon
         val state = te.world.getBlockState(te.pos)
         bg.add(ComponentText(88, 6, horizontal = ComponentText.TextAlignH.CENTER).`val`(I18n.format(ItemStack(state.block, 1, state.block.damageDropped(state)).displayName)))
 
-        bg.add(ComponentSprite(PROGRESS_BG, 77, 37))
-        val progressBar = ComponentSpriteProgressBar(PROGRESS_FG, 78, 38)
-        progressBar.direction.setValue(ComponentSpriteProgressBar.ProgressDirection.X_POS)
-        progressBar.progress.func { te.currentOperation?.progress ?: 0f }
+        val progressBar = ComponentProgressBar(PROGRESS_FG, PROGRESS_BG, 77, 37,
+                direction = Option(ComponentSpriteProgressBar.ProgressDirection.X_POS),
+                progress = Option(0f, { te.currentOperation?.progress ?: 0f }))
         progressBar.tooltip { I18n.format("llt:gui.progress", ((te.currentOperation?.progress ?: 0f) * 100).toInt()) }
         bg.add(progressBar)
 
-        bg.add(ComponentSprite(POWER_BG, 15, 15))
-        val powerBar = ComponentSpriteProgressBar(POWER_FG, 15, 15)
-        powerBar.direction.setValue(ComponentSpriteProgressBar.ProgressDirection.Y_NEG)
-        powerBar.progress.func { te.energyHandler.energyStored.toFloat() / te.energyHandler.maxEnergyStored }
+        val powerBar = ComponentProgressBar(POWER_FG, POWER_BG, 15, 15,
+                direction = Option(ComponentSpriteProgressBar.ProgressDirection.Y_NEG),
+                progress = Option(0f, { te.energyHandler.energyStored.toFloat() / te.energyHandler.maxEnergyStored }))
         powerBar.tooltip { I18n.format("llt:gui.energy", te.energyHandler.energyStored, te.energyHandler.maxEnergyStored) }
         bg.add(powerBar)
     }
