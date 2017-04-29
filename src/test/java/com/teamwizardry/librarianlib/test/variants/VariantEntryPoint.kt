@@ -1,12 +1,15 @@
 package com.teamwizardry.librarianlib.test.variants
 
+import com.teamwizardry.librarianlib.core.client.IGlowingItem
 import com.teamwizardry.librarianlib.features.base.block.*
+import com.teamwizardry.librarianlib.features.base.item.ItemMod
 import com.teamwizardry.librarianlib.features.base.item.ItemModArrow
 import com.teamwizardry.librarianlib.features.base.item.ItemModShield
 import com.teamwizardry.librarianlib.features.kotlin.sendSpamlessMessage
 import com.teamwizardry.librarianlib.test.testcore.TestEntryPoint
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
+import net.minecraft.client.renderer.block.model.IBakedModel
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.projectile.EntityArrow
@@ -24,6 +27,8 @@ import net.minecraft.world.World
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import java.util.*
 
 /**
@@ -52,12 +57,18 @@ object VariantEntryPoint : TestEntryPoint {
             }
         }
 
+        val glow = object : ItemMod("glow"), IGlowingItem {
+            @SideOnly(Side.CLIENT)
+            override fun transformToGlow(itemStack: ItemStack, model: IBakedModel): IBakedModel? = model
+        }
+
         val block = object : BlockModVariant("variant", Material.ROCK, "a", "b", "c") {
             override fun onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer, hand: EnumHand, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
                 playerIn.sendSpamlessMessage(state.getValue(property), 0x8008)
                 return true
             }
         }
+
         BlockModPane("a_pane", true, block.defaultState)
         BlockModTrapdoor("a_trap", block.defaultState)
         BlockModDoor("a_door", block.defaultState)

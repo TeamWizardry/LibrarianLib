@@ -1,6 +1,10 @@
 package com.teamwizardry.librarianlib.asm;
 
+import com.teamwizardry.librarianlib.core.client.GlowingHandler;
+import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * @author WireSegal
@@ -8,7 +12,8 @@ import net.minecraft.item.ItemStack;
  */
 @SuppressWarnings("unused")
 public class LibLibAsmHooks {
-    public static void renderGlow(ItemStack stack) {
-        // NO-OP
+    @SideOnly(Side.CLIENT)
+    public static void renderGlow(ItemStack stack, IBakedModel model) {
+        GlowingHandler.glow(stack, model);
     }
 }

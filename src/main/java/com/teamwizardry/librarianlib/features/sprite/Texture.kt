@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.features.sprite
 
-import com.teamwizardry.librarianlib.features.forgeevents.ResourceReloadEvent
+import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.MinecraftForge
@@ -121,20 +121,16 @@ class Texture(
     companion object {
 
         internal fun register() {
-            MinecraftForge.EVENT_BUS.register(this)
-        }
+            ClientRunnable.registerReloadHandler {
+                val newList = ArrayList<WeakReference<Texture>>()
 
-        @SubscribeEvent
-        @Suppress("UNUSED_PARAMETER")
-        fun onResourceManagerReload(e: ResourceReloadEvent) {
-            val newList = ArrayList<WeakReference<Texture>>()
+                for (tex in Texture.textures) {
+                    tex.get()?.loadSpriteData()
+                    if (tex.get() != null) newList.add(tex)
+                }
 
-            for (tex in Texture.textures) {
-                tex.get()?.loadSpriteData()
-                if (tex.get() != null) newList.add(tex)
+                Texture.textures = newList
             }
-
-            Texture.textures = newList
         }
 
         var textures: MutableList<WeakReference<Texture>> = ArrayList()

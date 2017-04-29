@@ -45,16 +45,18 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                 "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model/IBakedModel;)V");
 
         MethodSignature target = new MethodSignature("renderModel", "func_175045_a", "a",
-                "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model/IBakedModel;)V");
+                "(Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/item/ItemStack;)V");
 
         return transform(basicClass, sig, combine(
                 (AbstractInsnNode node) -> { // Filter
-                    return node.getOpcode() == INVOKEVIRTUAL && target.matches((MethodInsnNode) node);
+                    return node.getOpcode() == INVOKESPECIAL && target.matches((MethodInsnNode) node);
                 }, (MethodNode method, AbstractInsnNode node) -> { // Action
                     InsnList newInstructions = new InsnList();
 
                     newInstructions.add(new VarInsnNode(ALOAD, 1));
-                    newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderGlow", "(Lnet/minecraft/item/ItemStack;)V", false));
+                    newInstructions.add(new VarInsnNode(ALOAD, 2));
+                    newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderGlow",
+                            "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model/IBakedModel;)V", false));
 
                     method.instructions.insert(node, newInstructions);
                     return true;
@@ -95,7 +97,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                 log("Located Method, patching...");
 
                 boolean finish = pred.test(method);
-                log("Patch result: " + finish);
+                log("Patch result: " + (finish ? "Success" : "!!!!!!! Failure !!!!!!!"));
 
                 return finish;
             }
@@ -105,7 +107,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     }
 
     public static MethodAction combine(NodeFilter filter, NodeAction action) {
-        return (MethodNode mnode) -> applyOnNode(mnode, filter, action);
+        return (MethodNode node) -> applyOnNode(node, filter, action);
     }
 
     public static boolean applyOnNode(MethodNode method, NodeFilter filter, NodeAction action) {
@@ -125,7 +127,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     }
 
     private static void log(String str) {
-        FMLLog.info("[Quark ASM] %s", str);
+        FMLLog.info("[LibrarianLib ASM] %s", str);
     }
 
     private static void prettyPrint(AbstractInsnNode node) {

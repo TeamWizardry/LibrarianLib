@@ -32,6 +32,7 @@ targetCompatibility = 1.8
 
 ext.configFile = file('build.properties')
 ext.config = parseConfig(configFile)
+ext.corePlugin = config.core_plugin
 
 version = "${config.version}.${config.build_number}"
 group = config.group
@@ -64,6 +65,9 @@ minecraft {
     version = "${config.mc_version}-${config.forge_version}"
     runDir = "run"
     mappings = config.mc_mappings
+
+    clientJvmArgs = ["-Dfml.coreMods.load=$corePlugin"]
+    serverJvmArgs = ["-Dfml.coreMods.load=$corePlugin"]
 
     replace 'GRADLE:BUILD', config.build_number
     replace 'GRADLE:VERSION', config.version
