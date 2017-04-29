@@ -281,5 +281,4 @@ fun <T: Any, V> Class<T>.mhStaticVarDelegate(vararg names: String) = MethodHandl
 fun <T: Any> Class<T>.mhMethod(names: Array<String>, vararg params: Class<*>) = MethodHandleHelper.wrapperForMethod(this, names, *params)
 fun <T: Any> Class<T>.mhStaticMethod(names: Array<String>, vararg params: Class<*>) = MethodHandleHelper.wrapperForStaticMethod(this, names, *params)
 
-
 //endregion
