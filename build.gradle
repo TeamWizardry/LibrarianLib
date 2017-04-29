@@ -99,6 +99,7 @@ compileKotlin {
     }
 }
 
+
 jar {
     exclude 'com/teamwizardry/librarianlib/test', 'assets/librarianlibtest'
     from sourceSets.main.output
@@ -111,8 +112,7 @@ jar {
         }
     }
     manifest {
-        attributes 'FMLAT': 'librarianlib_at.cfg'
-        //todo add fmlloadingplugin attribute
+        attributes("FMLCorePluginContainsFMLMod": "true", "FMLCorePlugin": "com.teamwizardry.librarianlib.asm.LibLibCorePlugin")
     }
 
 }
