@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.core.client
 
+import com.teamwizardry.librarianlib.features.base.item.IGlowingItem
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.utilities.client.GlUtils
 import net.minecraft.client.Minecraft
@@ -24,7 +25,7 @@ object GlowingHandler {
     fun glow(stack: ItemStack, model: IBakedModel) {
         val item = stack.item as? IGlowingItem ?: return
         val newModel = item.transformToGlow(stack, model)
-        if (newModel != null) GlUtils.withLighting(item.shouldDisableLightingForGlow(stack, model)) {
+        if (newModel != null) GlUtils.withLighting(!item.shouldDisableLightingForGlow(stack, model)) {
             GlUtils.useLightmap(240f, 240f) {
                 renderModel(Minecraft.getMinecraft().renderItem, arrayOf(newModel, stack))
             }

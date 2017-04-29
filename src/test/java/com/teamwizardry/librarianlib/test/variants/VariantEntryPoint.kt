@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.test.variants
 
-import com.teamwizardry.librarianlib.core.client.IGlowingItem
 import com.teamwizardry.librarianlib.features.base.block.*
+import com.teamwizardry.librarianlib.features.base.item.IGlowingItem
 import com.teamwizardry.librarianlib.features.base.item.ItemMod
 import com.teamwizardry.librarianlib.features.base.item.ItemModArrow
 import com.teamwizardry.librarianlib.features.base.item.ItemModShield
@@ -57,9 +57,13 @@ object VariantEntryPoint : TestEntryPoint {
             }
         }
 
-        val glow = object : ItemMod("glow"), IGlowingItem {
+        object : ItemMod("glow"), IGlowingItem {
             @SideOnly(Side.CLIENT)
-            override fun transformToGlow(itemStack: ItemStack, model: IBakedModel): IBakedModel? = model
+            override fun transformToGlow(itemStack: ItemStack, model: IBakedModel): IBakedModel? = IGlowingItem.Helper.wrapperBake(model, false, 1)
+
+            override fun shouldDisableLightingForGlow(itemStack: ItemStack, model: IBakedModel): Boolean {
+                return true
+            }
         }
 
         val block = object : BlockModVariant("variant", Material.ROCK, "a", "b", "c") {
