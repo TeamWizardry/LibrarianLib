@@ -14,6 +14,9 @@ interface IGlowingItem {
     @SideOnly(Side.CLIENT)
     fun transformToGlow(itemStack: ItemStack, model: IBakedModel): IBakedModel?
 
+    @SideOnly(Side.CLIENT)
+    fun shouldDisableLightingForGlow(itemStack: ItemStack, model: IBakedModel): Boolean = true
+
     object Helper {
         @SideOnly(Side.CLIENT)
         fun simpleBake(itemStack: ItemStack): IBakedModel {

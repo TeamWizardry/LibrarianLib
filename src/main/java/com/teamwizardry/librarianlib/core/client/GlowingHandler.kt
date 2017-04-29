@@ -1,8 +1,6 @@
 package com.teamwizardry.librarianlib.core.client
 
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
-import com.teamwizardry.librarianlib.features.shader.Shader
-import com.teamwizardry.librarianlib.features.shader.ShaderHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
@@ -23,15 +21,16 @@ object GlowingHandler {
 
     @JvmStatic
     fun glow(stack: ItemStack, model: IBakedModel) {
-        if (stack.item is IGlowingItem) {
-            val newModel = (stack.item as IGlowingItem).transformToGlow(stack, model)
-            if (newModel != null) {
-                val prevX = OpenGlHelper.lastBrightnessX
-                val prevY = OpenGlHelper.lastBrightnessY
-                OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f)
-                renderModel(Minecraft.getMinecraft().renderItem, arrayOf(newModel, stack))
-                OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevX, prevY)
-            }
+        val item = stack.item as? IGlowingItem ?: return
+        val newModel = item.transformToGlow(stack, model)
+        if (newModel != null) {
+            val prevX = OpenGlHelper.lastBrightnessX
+            val prevY = OpenGlHelper.lastBrightnessY
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f)
+            if (item.shouldDisableLightingForGlow(stack, model)) GlStateManager.disableLighting()
+            renderModel(Minecraft.getMinecraft().renderItem, arrayOf(newModel, stack))
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevX, prevY)
+            if (item.shouldDisableLightingForGlow(stack, model)) GlStateManager.enableLighting()
         }
     }
 }
