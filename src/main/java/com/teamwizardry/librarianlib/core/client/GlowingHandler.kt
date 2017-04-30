@@ -18,6 +18,7 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import java.io.IOException
 
 /**
  * @author WireSegal
@@ -51,7 +52,7 @@ object GlowingHandler {
     private var potionGlow = false
 
     @JvmStatic
-    @ConfigPropertyBoolean("librarianlib", "client", "enchantmnet_glow", "Whether to make enchantments use the glow handler.", true)
+    @ConfigPropertyBoolean("librarianlib", "client", "enchantment_glow", "Whether to make enchantments use the glow handler.", true)
     var enchantmentGlow = false
         private set
 
@@ -98,11 +99,13 @@ object GlowingHandler {
         for (i in glowingItems) parseLine(i)
 
         val resourceManager = Minecraft.getMinecraft().resourceManager
-        resourceManager.resourceDomains
-                .flatMap { resourceManager.getAllResources(ResourceLocation(it, "glow.cfg")) }
-                .map { it.inputStream.reader() }
-                .flatMap { it.readLines() }
-                .forEach { parseLine(it) }
+        try {
+            resourceManager.resourceDomains
+                    .flatMap { resourceManager.getAllResources(ResourceLocation(it, "glow.cfg")) }
+                    .map { it.inputStream.reader() }
+                    .flatMap { it.readLines() }
+                    .forEach(::parseLine)
+        } catch (e: IOException) { /* NO-OP */ }
 
         for ((name, map) in names) {
             val item = ForgeRegistries.ITEMS.getValue(ResourceLocation(name)) ?: continue
