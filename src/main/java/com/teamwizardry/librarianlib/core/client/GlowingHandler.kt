@@ -114,7 +114,7 @@ object GlowingHandler {
             val item = ForgeRegistries.ITEMS.getValue(ResourceLocation(name)) ?: continue
             val entries = map.entries.toList()
             val indices = entries.associate { it.key.toInt() to (it.value.first.map(String::toInt) to it.value.second) }
-            registerCustomGlowHandler(item, {
+            registerReloadableGlowHandler(item, {
                 stack, model ->
                 val array = intArrayOf(*(indices[stack.itemDamage]?.first?.toTypedArray()?.toIntArray() ?: intArrayOf()),
                         *(indices[-1]?.first?.toTypedArray()?.toIntArray() ?: intArrayOf()))
