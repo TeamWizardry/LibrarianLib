@@ -34,7 +34,7 @@ object GlowingHandler {
             "If meta is -1, it'll act as a wildcard. If no tint indices are supplied, it'll use any.\n\n" +
             "Resource packs can specify items to glow in a `glow.cfg` file under any /assets/modid/ folder.\n" +
             "An example of such a file's contents:\n\n" +
-            "botania:resource@5\nbotania:resource@14,psi:cad,1\nbotania:bifrostperm|false",
+            "botania:resource@5\nbotania:resource@14\npsi:cad,1\nbotania:bifrostperm|false",
             arrayOf("minecraft:glowstone|false",
                     "minecraft:glowstone_dust",
                     "minecraft:blaze_rod",
