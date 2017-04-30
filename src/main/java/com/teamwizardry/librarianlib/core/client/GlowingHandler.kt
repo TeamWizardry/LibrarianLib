@@ -10,6 +10,7 @@ import com.teamwizardry.librarianlib.features.utilities.client.GlUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.RenderItem
 import net.minecraft.client.renderer.block.model.IBakedModel
+import net.minecraft.client.resources.IResource
 import net.minecraft.init.Items
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -99,13 +100,15 @@ object GlowingHandler {
         for (i in glowingItems) parseLine(i)
 
         val resourceManager = Minecraft.getMinecraft().resourceManager
-        try {
-            resourceManager.resourceDomains
-                    .flatMap { resourceManager.getAllResources(ResourceLocation(it, "glow.cfg")) }
-                    .map { it.inputStream.reader() }
-                    .flatMap { it.readLines() }
-                    .forEach(::parseLine)
-        } catch (e: IOException) { /* NO-OP */ }
+        resourceManager.resourceDomains
+                .flatMap { try {
+                    resourceManager.getAllResources(ResourceLocation(it, "glow.cfg"))
+                } catch(e: IOException) {
+                    emptyList<IResource>()
+                } }
+                .map { it.inputStream.reader() }
+                .flatMap { it.readLines() }
+                .forEach(::parseLine)
 
         for ((name, map) in names) {
             val item = ForgeRegistries.ITEMS.getValue(ResourceLocation(name)) ?: continue
