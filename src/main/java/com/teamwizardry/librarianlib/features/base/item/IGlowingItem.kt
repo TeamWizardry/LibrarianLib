@@ -52,6 +52,11 @@ interface IGlowingItem {
         @JvmStatic
         fun wrapperBake(model: IBakedModel, allowUntinted: Boolean, vararg allowedTintIndices: Int): IBakedModel {
             val modelEntry = ModelEntry(model, allowUntinted, allowedTintIndices)
+            
+            if (allowedTintIndices.isEmpty()) return wrappedModels.getOrPut(modelEntry) {
+                ModelWrapper(model, allowUntinted) { true }
+            }
+
             return wrappedModels.getOrPut(modelEntry) {
                 ModelWrapper(model, allowUntinted) { it in allowedTintIndices }
             }

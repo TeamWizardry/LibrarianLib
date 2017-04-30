@@ -77,6 +77,8 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
     override fun lateInit(e: FMLInitializationEvent) {
         super.lateInit(e)
         ModelHandler.init()
+
+        GlowingHandler.init()
     }
 
     override fun translate(s: String, vararg format: Any?): String {
