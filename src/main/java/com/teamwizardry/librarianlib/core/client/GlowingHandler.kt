@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.block.model.IBakedModel
 import net.minecraft.init.Items
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import net.minecraft.potion.PotionUtils
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.fml.relauncher.Side
@@ -74,16 +75,16 @@ object GlowingHandler {
 
         if (potionGlow) {
             registerCustomGlowHandler(Items.POTIONITEM, { stack, model ->
-                if (stack.hasEffect()) IGlowingItem.Helper.wrapperBake(model, false, 0) else null
+                if (PotionUtils.getEffectsFromStack(stack).isNotEmpty()) IGlowingItem.Helper.wrapperBake(model, false, 0) else null
             }, { _, _ -> true})
             registerCustomGlowHandler(Items.SPLASH_POTION, { stack, model ->
-                if (stack.hasEffect()) IGlowingItem.Helper.wrapperBake(model, false, 0) else null
+                if (PotionUtils.getEffectsFromStack(stack).isNotEmpty()) IGlowingItem.Helper.wrapperBake(model, false, 0) else null
             }, { _, _ -> true})
             registerCustomGlowHandler(Items.LINGERING_POTION, { stack, model ->
-                if (stack.hasEffect()) IGlowingItem.Helper.wrapperBake(model, false, 0) else null
+                if (PotionUtils.getEffectsFromStack(stack).isNotEmpty()) IGlowingItem.Helper.wrapperBake(model, false, 0) else null
             }, { _, _ -> true})
             registerCustomGlowHandler(Items.TIPPED_ARROW, { stack, model ->
-                if (stack.hasEffect()) IGlowingItem.Helper.wrapperBake(model, false, 0) else null
+                if (PotionUtils.getEffectsFromStack(stack).isNotEmpty()) IGlowingItem.Helper.wrapperBake(model, false, 0) else null
             }, { _, _ -> true})
         }
     }
