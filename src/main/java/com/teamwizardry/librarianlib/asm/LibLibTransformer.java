@@ -49,7 +49,8 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
         return transform(basicClass, sig, combine(
                 (AbstractInsnNode node) -> { // Filter
-                    return node.getOpcode() == INVOKESPECIAL && target.matches((MethodInsnNode) node);
+                    return (node.getOpcode() == INVOKESPECIAL || node.getOpcode() == INVOKEVIRTUAL)
+                            && target.matches((MethodInsnNode) node);
                 }, (MethodNode method, AbstractInsnNode node) -> { // Action
                     InsnList newInstructions = new InsnList();
 
