@@ -31,16 +31,20 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     public static final ClassnameMap CLASS_MAPPINGS = new ClassnameMap(
             "net/minecraft/item/ItemStack", "afj",
             "net/minecraft/client/renderer/block/model/IBakedModel", "cbh",
-            "net/minecraft/client/renderer/RenderItem", "bve"
+            "net/minecraft/client/renderer/RenderItem", "bve",
+            "net/minecraft/client/renderer/entity/layers/LayerArmorBase", "bww",
+            "net/minecraft/entity/EntityLivingBase", "sw",
+            "net/minecraft/client/renderer/entity/RenderLivingBase", "bvl",
+            "net/minecraft/client/model/ModelBase", "blv"
     );
 
 
     static {
         transformers.put("net.minecraft.client.renderer.RenderItem", LibLibTransformer::transformRenderItem);
+        transformers.put("net.minecraft.client.renderer.entity.layers.LayerArmorBase", LibLibTransformer::transformLayerArmorBase);
     }
 
     private static byte[] transformRenderItem(byte[] basicClass) {
-        log("Transforming RenderItem");
         MethodSignature sig1 = new MethodSignature("renderItem", "func_180454_a", "a",
                 "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model/IBakedModel;)V");
 
@@ -66,12 +70,26 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                     return true;
                 }));
 
-        return transform(transformedClass, sig2, (MethodNode method) -> {
+        return transform(transformedClass, sig2, combine((AbstractInsnNode node) -> node.getOpcode() == RETURN,
+                (MethodNode method, AbstractInsnNode node) -> {
             InsnList instructions = method.instructions;
             instructions.insertBefore(instructions.getFirst(), new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
-            instructions.insert(instructions.getLast(), new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "returnGlowLightmap", "()V", false));
+            instructions.insertBefore(node, new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "returnGlowLightmap", "()V", false));
             return true;
-        });
+        }));
+    }
+
+    private static byte[] transformLayerArmorBase(byte[] basicClass) {
+        MethodSignature sig = new MethodSignature("renderEnchantedGlint", "func_188364_a", "a",
+                "(Lnet/minecraft/client/renderer/entity/RenderLivingBase;Lnet/minecraft/entity/EntityLivingBase;Lnet/minecraft/client/model/ModelBase;FFFFFFF)V");
+
+        return transform(basicClass, sig, combine((AbstractInsnNode node) -> node.getOpcode() == RETURN,
+                (MethodNode method, AbstractInsnNode node) -> {
+                    InsnList instructions = method.instructions;
+                    instructions.insertBefore(instructions.getFirst(), new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
+                    instructions.insertBefore(node, new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "returnGlowLightmap", "()V", false));
+                    return true;
+                }));
     }
 
 
@@ -79,8 +97,11 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if(transformers.containsKey(transformedName))
+        if(transformers.containsKey(transformedName)) {
+            String[] arr = transformedName.split("\\.");
+            log("Transforming " + arr[arr.length - 1]);
             return transformers.get(transformedName).apply(basicClass);
+        }
 
         return basicClass;
     }

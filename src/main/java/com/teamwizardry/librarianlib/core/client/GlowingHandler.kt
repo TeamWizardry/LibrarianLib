@@ -33,7 +33,8 @@ object GlowingHandler {
                     "minecraft:blaze_powder",
                     "minecraft:sea_lantern|false",
                     "minecraft:prismarine_crystals",
-                    "minecraft:end_rod|false"))
+                    "minecraft:end_rod|false",
+                    "quark:blaze_lantern|false"))
     private var glowingItems = arrayOf<String>()
 
 
