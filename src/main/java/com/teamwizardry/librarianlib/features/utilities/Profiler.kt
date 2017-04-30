@@ -12,10 +12,10 @@ object Profiler {
     @JvmStatic
     fun profile(name: String, targetSide: Side, code: () -> Unit) {
         if (targetSide == Side.CLIENT) ClientRunnable.run { Minecraft.getMinecraft().mcProfiler.startSection(name) }
-        else FMLCommonHandler.instance().minecraftServerInstance.theProfiler.startSection(name)
+        else FMLCommonHandler.instance().minecraftServerInstance.profiler.startSection(name)
         code()
         if (targetSide == Side.CLIENT) ClientRunnable.run { Minecraft.getMinecraft().mcProfiler.endSection() }
-        else FMLCommonHandler.instance().minecraftServerInstance.theProfiler.endSection()
+        else FMLCommonHandler.instance().minecraftServerInstance.profiler.endSection()
     }
 }
 

@@ -186,7 +186,7 @@ object ModelHandler {
                 val variant = VariantHelper.toSnakeCase(variantName)
 
                 if (index == 0) {
-                    var print = "${namePad} | Registering "
+                    var print = "$namePad | Registering "
 
                     if (variant != item.registryName!!.resourcePath || variants.size != 1 || extra)
                         print += "${if (extra) "extra " else ""}variant${if (variants.size == 1) "" else "s"} of "
@@ -239,7 +239,7 @@ object ModelHandler {
                             hasRegisteredAny = true
                         }
                         if (!flag) {
-                            var print = "${namePad} | Applying special model rules for "
+                            var print = "$namePad | Applying special model rules for "
                             print += if (item is IModBlockProvider) "block " else "item "
                             print += item.registryName!!.resourcePath
                             log(print)

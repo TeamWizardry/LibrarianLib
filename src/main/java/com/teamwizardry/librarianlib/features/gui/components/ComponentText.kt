@@ -57,7 +57,7 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
     }
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
-        val fr = Minecraft.getMinecraft().fontRendererObj
+        val fr = Minecraft.getMinecraft().fontRenderer
 
         val fullText = text.getValue(this)
         val colorHex = color.getValue(this).rgb
@@ -115,7 +115,7 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
 
             val size: Vec2d
 
-            val fr = Minecraft.getMinecraft().fontRendererObj
+            val fr = Minecraft.getMinecraft().fontRenderer
 
             val enableFlags = unicode.getValue(this)
 
