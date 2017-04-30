@@ -41,13 +41,16 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
     private static byte[] transformRenderItem(byte[] basicClass) {
         log("Transforming RenderItem");
-        MethodSignature sig = new MethodSignature("renderItem", "func_180454_a", "a",
+        MethodSignature sig1 = new MethodSignature("renderItem", "func_180454_a", "a",
                 "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model/IBakedModel;)V");
+
+        MethodSignature sig2 = new MethodSignature("renderEffect", "func_180451_a", "a",
+                "(Lnet/minecraft/client/renderer/block/model/IBakedModel;)V");
 
         MethodSignature target = new MethodSignature("renderModel", "func_175045_a", "a",
                 "(Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/item/ItemStack;)V");
 
-        return transform(basicClass, sig, combine(
+        byte[] transformedClass = transform(basicClass, sig1, combine(
                 (AbstractInsnNode node) -> { // Filter
                     return (node.getOpcode() == INVOKESPECIAL || node.getOpcode() == INVOKEVIRTUAL)
                             && target.matches((MethodInsnNode) node);
@@ -62,6 +65,13 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                     method.instructions.insert(node, newInstructions);
                     return true;
                 }));
+
+        return transform(transformedClass, sig2, (MethodNode method) -> {
+            InsnList instructions = method.instructions;
+            instructions.insertBefore(instructions.getFirst(), new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
+            instructions.insert(instructions.getLast(), new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "returnGlowLightmap", "()V", false));
+            return true;
+        });
     }
 
 
@@ -103,6 +113,9 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                 return finish;
             }
         }
+
+        log("Couldn't locate method!");
+        log("Patch result: !!!!!!! Failure !!!!!!!");
 
         return false;
     }

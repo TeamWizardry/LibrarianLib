@@ -16,6 +16,9 @@ interface IGlowingItem {
     fun transformToGlow(itemStack: ItemStack, model: IBakedModel): IBakedModel?
 
     @SideOnly(Side.CLIENT)
+    fun packedGlowCoords(itemStack: ItemStack, model: IBakedModel): Int = 0xf000f0
+
+    @SideOnly(Side.CLIENT)
     fun shouldDisableLightingForGlow(itemStack: ItemStack, model: IBakedModel): Boolean = false
 
     @SideOnly(Side.CLIENT)
@@ -52,7 +55,7 @@ interface IGlowingItem {
         @JvmStatic
         fun wrapperBake(model: IBakedModel, allowUntinted: Boolean, vararg allowedTintIndices: Int): IBakedModel {
             val modelEntry = ModelEntry(model, allowUntinted, allowedTintIndices)
-            
+
             if (allowedTintIndices.isEmpty()) return wrappedModels.getOrPut(modelEntry) {
                 ModelWrapper(model, allowUntinted) { true }
             }

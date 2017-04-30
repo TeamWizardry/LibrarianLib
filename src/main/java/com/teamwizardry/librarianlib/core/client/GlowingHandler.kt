@@ -41,6 +41,11 @@ object GlowingHandler {
     @ConfigPropertyBoolean("librarianlib", "client", "potion_glow", "Whether to use the custom potion glow handler.", true)
     private var potionGlow = false
 
+    @JvmStatic
+    @ConfigPropertyBoolean("librarianlib", "client", "enchantmnet_glow", "Whether to make enchantments use the glow handler.", true)
+    var enchantmentGlow = false
+        private set
+
     fun init() {
         val names = mutableMapOf<String, MutableMap<String, Pair<List<String>, Boolean?>>>()
         for (i in glowingItems) {
@@ -109,7 +114,8 @@ object GlowingHandler {
         if (item != null) {
             val newModel = item.transformToGlow(stack, model)
             if (newModel != null) GlUtils.withLighting(!item.shouldDisableLightingForGlow(stack, model)) {
-                GlUtils.useLightmap(240f, 240f) {
+                val packed = item.packedGlowCoords(stack, model)
+                GlUtils.useLightmap(packed) {
                     renderModel(Minecraft.getMinecraft().renderItem, arrayOf(newModel, stack))
                 }
             }
