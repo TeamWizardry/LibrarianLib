@@ -19,6 +19,8 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static com.sun.tools.doclets.formats.html.markup.HtmlStyle.block;
+
 // Boilerplate code taken with love from Vazkii's Quark mod
 // Quark is distrubted at https://github.com/Vazkii/Quark
 
@@ -35,13 +37,20 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
             "net/minecraft/client/renderer/entity/layers/LayerArmorBase", "bww",
             "net/minecraft/entity/EntityLivingBase", "sw",
             "net/minecraft/client/renderer/entity/RenderLivingBase", "bvl",
-            "net/minecraft/client/model/ModelBase", "blv"
+            "net/minecraft/client/model/ModelBase", "blv",
+            "net/minecraft/client/renderer/BlockRendererDispatcher", "bqy",
+            "net/minecraft/client/renderer/BlockModelRenderer", "bra",
+            "net/minecraft/block/state/IBlockState", "atj",
+            "net/minecraft/util/math/BlockPos", "co",
+            "net/minecraft/world/IBlockAccess", "aju",
+            "net/minecraft/client/renderer/VertexBuffer", "bpw"
     );
 
 
     static {
         transformers.put("net.minecraft.client.renderer.RenderItem", LibLibTransformer::transformRenderItem);
         transformers.put("net.minecraft.client.renderer.entity.layers.LayerArmorBase", LibLibTransformer::transformLayerArmorBase);
+        transformers.put("net.minecraft.client.renderer.BlockRendererDispatcher", LibLibTransformer::transformBlockRenderDispatcher);
     }
 
     private static byte[] transformRenderItem(byte[] basicClass) {
@@ -55,10 +64,8 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                 "(Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/item/ItemStack;)V");
 
         byte[] transformedClass = transform(basicClass, sig1, combine(
-                (AbstractInsnNode node) -> { // Filter
-                    return (node.getOpcode() == INVOKESPECIAL || node.getOpcode() == INVOKEVIRTUAL)
-                            && target.matches((MethodInsnNode) node);
-                }, (MethodNode method, AbstractInsnNode node) -> { // Action
+                (AbstractInsnNode node) -> (node.getOpcode() == INVOKESPECIAL || node.getOpcode() == INVOKEVIRTUAL) // Filter
+                        && target.matches((MethodInsnNode) node), (MethodNode method, AbstractInsnNode node) -> { // Action
                     InsnList newInstructions = new InsnList();
 
                     newInstructions.add(new VarInsnNode(ALOAD, 1));
@@ -70,8 +77,8 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                     return true;
                 }));
 
-        return transform(transformedClass, sig2, combine((AbstractInsnNode node) -> node.getOpcode() == RETURN,
-                (MethodNode method, AbstractInsnNode node) -> {
+        return transform(transformedClass, sig2, combine((AbstractInsnNode node) -> node.getOpcode() == RETURN, // Filter
+                (MethodNode method, AbstractInsnNode node) -> { // Action
             InsnList instructions = method.instructions;
             instructions.insertBefore(instructions.getFirst(), new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
             instructions.insertBefore(node, new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "returnGlowLightmap", "()V", false));
@@ -83,11 +90,41 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         MethodSignature sig = new MethodSignature("renderEnchantedGlint", "func_188364_a", "a",
                 "(Lnet/minecraft/client/renderer/entity/RenderLivingBase;Lnet/minecraft/entity/EntityLivingBase;Lnet/minecraft/client/model/ModelBase;FFFFFFF)V");
 
-        return transform(basicClass, sig, combine((AbstractInsnNode node) -> node.getOpcode() == RETURN,
-                (MethodNode method, AbstractInsnNode node) -> {
+        return transform(basicClass, sig, combine((AbstractInsnNode node) -> node.getOpcode() == RETURN, // Filter
+                (MethodNode method, AbstractInsnNode node) -> { // Action
                     InsnList instructions = method.instructions;
                     instructions.insertBefore(instructions.getFirst(), new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
                     instructions.insertBefore(node, new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "returnGlowLightmap", "()V", false));
+                    return true;
+                }));
+    }
+
+    private static byte[] transformBlockRenderDispatcher(byte[] basicClass) {
+        MethodSignature sig = new MethodSignature("renderBlock", "func_175018_a", "a",
+                "(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/VertexBuffer;)Z");
+
+        MethodSignature target = new MethodSignature("renderModel", "func_178267_a", "a",
+                "(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/VertexBuffer;Z)Z");
+
+        return transform(basicClass, sig, combine((AbstractInsnNode node) -> node.getOpcode() == INVOKEVIRTUAL &&
+                target.matches((MethodInsnNode) node),
+                (MethodNode method, AbstractInsnNode node) -> { // Action
+                    InsnList newInstructions = new InsnList();
+
+                    newInstructions.add(new VarInsnNode(ALOAD, 0));
+                    newInstructions.add(new FieldInsnNode(GETFIELD, "net/minecraft/client/renderer/BlockRendererDispatcher",
+                            "blockModelRenderer", "Lnet/minecraft/client/renderer/BlockModelRenderer;"));
+                    newInstructions.add(new VarInsnNode(ALOAD, 3));
+                    newInstructions.add(new VarInsnNode(ALOAD, 6));
+                    newInstructions.add(new VarInsnNode(ALOAD, 1));
+                    newInstructions.add(new VarInsnNode(ALOAD, 2));
+                    newInstructions.add(new VarInsnNode(ALOAD, 4));
+                    newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderGlow",
+                            "(Lnet/minecraft/client/renderer/BlockModelRenderer;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/VertexBuffer;)Z", false));
+                    newInstructions.add(new InsnNode(IOR));
+
+                    method.instructions.insert(node, newInstructions);
+
                     return true;
                 }));
     }

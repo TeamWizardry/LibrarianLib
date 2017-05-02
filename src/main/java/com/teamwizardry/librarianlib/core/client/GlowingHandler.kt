@@ -1,14 +1,18 @@
 package com.teamwizardry.librarianlib.core.client
 
-import com.teamwizardry.librarianlib.core.LibrarianLib
+import com.teamwizardry.librarianlib.features.base.block.IGlowingBlock
 import com.teamwizardry.librarianlib.features.base.item.IGlowingItem
 import com.teamwizardry.librarianlib.features.config.ConfigPropertyBoolean
 import com.teamwizardry.librarianlib.features.config.ConfigPropertyStringArray
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import com.teamwizardry.librarianlib.features.utilities.client.GlUtils
+import net.minecraft.block.Block
+import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.BlockModelRenderer
 import net.minecraft.client.renderer.RenderItem
+import net.minecraft.client.renderer.VertexBuffer
 import net.minecraft.client.renderer.block.model.IBakedModel
 import net.minecraft.client.resources.IResource
 import net.minecraft.init.Items
@@ -16,6 +20,9 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.potion.PotionUtils
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.math.BlockPos
+import net.minecraft.world.IBlockAccess
+import net.minecraftforge.common.ForgeModContainer
 import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -28,11 +35,12 @@ import java.io.IOException
 @SideOnly(Side.CLIENT)
 object GlowingHandler {
 
-    val parser = "(\\w+:\\w+)(?:@(-1|\\d+))?((?:,(?:-1|\\d+))+,?)?(?:\\|(false|true))?".toRegex()
+    val parser = "(\\w+:\\w+)\\s*(?:@(-1|\\d+))?\\s*((?:,(?:-1|\\d+))+,?)?\\s*(?:\\|\\s*(false|true))?".toRegex()
+    val blockParser = "block:\\s*(\\w+:\\w+)\\s*(?:@(-1|\\d+))?\\s*((?:,(?:-1|\\d+))+,?)?\\s*(?:\\|\\s*(false|true))?".toRegex()
 
     @JvmStatic
     @ConfigPropertyStringArray("librarianlib", "client", "glowing", "Items that should glow.\n" +
-            "Format: modid:item@meta,tintindex1,tintindex2|disableLighting, with -1 being untinted. You can have as many tintindexes as you want.\n" +
+            "Format: (block:)modid:item@meta,tintindex1,tintindex2|disableLighting, with -1 being untinted. You can have as many tintindexes as you want.\n" +
             "If meta is -1, it'll act as a wildcard. If no tint indices are supplied, it'll use any.\n\n" +
             "Resource packs can specify items to glow in a `glow.cfg` file under any /assets/modid/ folder.\n" +
             "An example of such a file's contents:\n\n" +
@@ -85,6 +93,7 @@ object GlowingHandler {
         removableGlows.clear()
 
         val names = mutableMapOf<String, MutableMap<String, Pair<List<String>, Boolean?>>>()
+        val blockNames = mutableMapOf<String, MutableMap<String, Pair<List<String>, Boolean?>>>()
 
         fun parseLine(line: String) {
             val match = parser.matchEntire(line.trim())
@@ -94,6 +103,15 @@ object GlowingHandler {
                 if (meta.isBlank()) meta = "-1"
                 val tintIndices = match.groupValues[3].split(",").filterNot(String::isBlank)
                 names.getOrPut(name) { mutableMapOf() }.put(meta, tintIndices to (if (match.groupValues[4].isEmpty()) null else match.groupValues[4] != "false"))
+            } else {
+                val blockMatch = blockParser.matchEntire(line.trim())
+                if (blockMatch != null) {
+                    val name = blockMatch.groupValues[1]
+                    var meta = blockMatch.groupValues[2]
+                    if (meta.isBlank()) meta = "-1"
+                    val tintIndices = blockMatch.groupValues[3].split(",").filterNot(String::isBlank)
+                    blockNames.getOrPut(name) { mutableMapOf() }.put(meta, tintIndices to (if (blockMatch.groupValues[4].isEmpty()) null else blockMatch.groupValues[4] != "false"))
+                }
             }
         }
 
@@ -102,7 +120,7 @@ object GlowingHandler {
         val resourceManager = Minecraft.getMinecraft().resourceManager
         resourceManager.resourceDomains
                 .flatMap { try {
-                    resourceManager.getAllResources(ResourceLocation(it, "glow.cfg"))
+                    resourceManager.getAllResources(ResourceLocation(it, "liblib_glow.cfg"))
                 } catch(e: IOException) {
                     emptyList<IResource>()
                 } }
@@ -121,12 +139,47 @@ object GlowingHandler {
                 IGlowingItem.Helper.wrapperBake(model, array.isEmpty() || array.contains(-1), *array)
             }, { stack, _ -> indices[stack.itemDamage]?.second ?: indices[-1]?.second ?: true })
         }
+
+        for ((name, map) in blockNames) {
+            val block = ForgeRegistries.BLOCKS.getValue(ResourceLocation(name)) ?: continue
+            val entries = map.entries.toList()
+            val indices = entries.associate { it.key.toInt() to (it.value.first.map(String::toInt) to it.value.second) }
+            registerReloadableGlowHandler(block) {
+                _, model, state, _ ->
+                val array = intArrayOf(*(indices[state.block.getMetaFromState(state)]?.first?.toTypedArray()?.toIntArray() ?: intArrayOf()),
+                        *(indices[-1]?.first?.toTypedArray()?.toIntArray() ?: intArrayOf()))
+                IGlowingItem.Helper.wrapperBake(model, array.isEmpty() || array.contains(-1), *array)
+            }
+        }
     }
 
     private val renderModel = MethodHandleHelper.wrapperForMethod(RenderItem::class.java, arrayOf("renderModel", "func_175045_a", "a"), IBakedModel::class.java, ItemStack::class.java)
 
     private val removableGlows = mutableListOf<IGlowingItem>()
     private val renderSpecialHandlers = mutableMapOf<Item, IGlowingItem>()
+    private val removableGlowBlocks = mutableListOf<IGlowingBlock>()
+    private val blockRenderSpecialHandlers = mutableMapOf<Block, IGlowingBlock>()
+
+    private fun registerReloadableGlowHandler(block: Block,
+                                              modelTransformer: (IBlockAccess, IBakedModel, IBlockState, BlockPos) -> IBakedModel?) {
+        val glow = object : IGlowingBlock {
+            override fun transformToGlow(world: IBlockAccess, model: IBakedModel, state: IBlockState, pos: BlockPos): IBakedModel? {
+                return modelTransformer(world, model, state, pos)
+            }
+        }
+        blockRenderSpecialHandlers.put(block, glow)
+        removableGlowBlocks.add(glow)
+    }
+
+    @JvmStatic
+    fun registerCustomGlowHandler(block: Block,
+                                  modelTransformer: (IBlockAccess, IBakedModel, IBlockState, BlockPos) -> IBakedModel?) {
+        blockRenderSpecialHandlers.put(block, object : IGlowingBlock {
+            override fun transformToGlow(world: IBlockAccess, model: IBakedModel, state: IBlockState, pos: BlockPos): IBakedModel? {
+                return modelTransformer(world, model, state, pos)
+            }
+        })
+    }
 
     private fun registerReloadableGlowHandler(item: Item,
                                   modelTransformer: (ItemStack, IBakedModel) -> IBakedModel?,
@@ -173,5 +226,27 @@ object GlowingHandler {
                 }
             }
         }
+    }
+
+    @JvmStatic
+    fun glow(blockModelRenderer: BlockModelRenderer, world: IBlockAccess, model: IBakedModel, state: IBlockState, pos: BlockPos, buf: VertexBuffer): Boolean {
+        val block = state.block as? IGlowingBlock ?: blockRenderSpecialHandlers[state.block]
+
+        if (block != null) {
+            val newModel = block.transformToGlow(world, model, state, pos)
+            if (newModel != null) {
+                val prev = ForgeModContainer.forgeLightPipelineEnabled
+                ForgeModContainer.forgeLightPipelineEnabled = false
+                val ret = blockModelRenderer.renderModel(world, newModel, object : IBlockState by state {
+                    override fun getPackedLightmapCoords(source: IBlockAccess, pos: BlockPos): Int {
+                        return block.packedGlowCoords(source, source.getBlockState(pos), pos)
+                    }
+                }, pos, buf, true)
+                ForgeModContainer.forgeLightPipelineEnabled = prev
+                return ret
+            }
+        }
+
+        return true
     }
 }

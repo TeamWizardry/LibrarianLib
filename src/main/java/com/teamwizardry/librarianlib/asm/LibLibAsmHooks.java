@@ -1,9 +1,14 @@
 package com.teamwizardry.librarianlib.asm;
 
 import com.teamwizardry.librarianlib.core.client.GlowingHandler;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.BlockModelRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -16,6 +21,11 @@ public class LibLibAsmHooks {
     @SideOnly(Side.CLIENT)
     public static void renderGlow(ItemStack stack, IBakedModel model) {
         GlowingHandler.glow(stack, model);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static boolean renderGlow(BlockModelRenderer blockModelRenderer, IBlockAccess world, IBakedModel model, IBlockState state, BlockPos pos, VertexBuffer vertexBuffer) {
+        return GlowingHandler.glow(blockModelRenderer, world, model, state, pos, vertexBuffer);
     }
 
     private static float x, y;
