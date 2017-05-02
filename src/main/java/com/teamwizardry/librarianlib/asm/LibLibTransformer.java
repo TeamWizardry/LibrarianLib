@@ -77,11 +77,11 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
         return transform(transformedClass, sig2, combine((AbstractInsnNode node) -> node.getOpcode() == RETURN, // Filter
                 (MethodNode method, AbstractInsnNode node) -> { // Action
-            InsnList instructions = method.instructions;
-            instructions.insertBefore(instructions.getFirst(), new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
-            instructions.insertBefore(node, new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "returnGlowLightmap", "()V", false));
-            return true;
-        }));
+                    InsnList instructions = method.instructions;
+                    instructions.insertBefore(instructions.getFirst(), new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
+                    instructions.insertBefore(node, new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "returnGlowLightmap", "()V", false));
+                    return true;
+                }));
     }
 
     private static byte[] transformLayerArmorBase(byte[] basicClass) {
@@ -107,7 +107,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                 "(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/VertexBuffer;Z)Z");
 
         byte[] transformedClass = transform(basicClass, sig, combine((AbstractInsnNode node) -> node.getOpcode() == INVOKEVIRTUAL &&
-                target1.matches((MethodInsnNode) node), // Filter
+                        target1.matches((MethodInsnNode) node), // Filter
                 (MethodNode method, AbstractInsnNode node) -> { // Action
                     InsnList newInstructions = new InsnList();
 
@@ -122,7 +122,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                     newInstructions.add(new VarInsnNode(ALOAD, 2));
                     newInstructions.add(new VarInsnNode(ALOAD, 4));
                     // BlockModelRenderer, IBlockAccess, IBakedModel, IBlockState, BlockPos, VertexBuffer
-                    
+
                     newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderGlow",
                             "(Lnet/minecraft/client/renderer/BlockModelRenderer;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/VertexBuffer;)Z", false));
                     newInstructions.add(new InsnNode(IOR));
@@ -171,7 +171,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if(transformers.containsKey(transformedName)) {
+        if (transformers.containsKey(transformedName)) {
             String[] arr = transformedName.split("\\.");
             log("Transforming " + arr[arr.length - 1]);
             return transformers.get(transformedName).apply(basicClass);
@@ -188,7 +188,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         log("Applying Transformation to method (" + sig + ")");
         boolean didAnything = findMethodAndTransform(node, sig, action);
 
-        if(didAnything) {
+        if (didAnything) {
             ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
             node.accept(writer);
             return writer.toByteArray();
@@ -198,8 +198,8 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     }
 
     public static boolean findMethodAndTransform(ClassNode node, MethodSignature sig, MethodAction pred) {
-        for(MethodNode method : node.methods) {
-            if(sig.matches(method)) {
+        for (MethodNode method : node.methods) {
+            if (sig.matches(method)) {
                 log("Located Method, patching...");
 
                 boolean finish = pred.test(method);
@@ -223,11 +223,11 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
 
         boolean didAny = false;
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             AbstractInsnNode anode = iterator.next();
-            if(filter.test(anode)) {
+            if (filter.test(anode)) {
                 didAny = true;
-                if(action.test(method, anode))
+                if (action.test(method, anode))
                     break;
             }
         }
@@ -269,8 +269,8 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         }
 
         private static String obfuscate(String desc) {
-            for(String s : CLASS_MAPPINGS.keySet())
-                if(desc.contains(s))
+            for (String s : CLASS_MAPPINGS.keySet())
+                if (desc.contains(s))
                     desc = desc.replaceAll(s, CLASS_MAPPINGS.get(s));
 
             return desc;
@@ -292,8 +292,20 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     }
 
     // Basic interface aliases to not have to clutter up the code with generics over and over again
-    private interface Transformer extends Function<byte[], byte[]> { }
-    private interface MethodAction extends Predicate<MethodNode> { }
-    private interface NodeFilter extends Predicate<AbstractInsnNode> { }
-    private interface NodeAction extends BiPredicate<MethodNode, AbstractInsnNode> { }
+    
+    private interface Transformer extends Function<byte[], byte[]> {
+        // NO-OP
+    }
+
+    private interface MethodAction extends Predicate<MethodNode> {
+        // NO-OP
+    }
+
+    private interface NodeFilter extends Predicate<AbstractInsnNode> {
+        // NO-OP
+    }
+
+    private interface NodeAction extends BiPredicate<MethodNode, AbstractInsnNode> {
+        // NO-OP
+    }
 }
