@@ -114,11 +114,15 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                     newInstructions.add(new VarInsnNode(ALOAD, 0));
                     newInstructions.add(new FieldInsnNode(GETFIELD, "net/minecraft/client/renderer/BlockRendererDispatcher",
                             "blockModelRenderer", "Lnet/minecraft/client/renderer/BlockModelRenderer;"));
+                    // BlockModelRenderer
+
                     newInstructions.add(new VarInsnNode(ALOAD, 3));
                     newInstructions.add(new VarInsnNode(ALOAD, 6));
                     newInstructions.add(new VarInsnNode(ALOAD, 1));
                     newInstructions.add(new VarInsnNode(ALOAD, 2));
                     newInstructions.add(new VarInsnNode(ALOAD, 4));
+                    // BlockModelRenderer, IBlockAccess, IBakedModel, IBlockState, BlockPos, VertexBuffer
+                    
                     newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderGlow",
                             "(Lnet/minecraft/client/renderer/BlockModelRenderer;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/VertexBuffer;)Z", false));
                     newInstructions.add(new InsnNode(IOR));
@@ -136,16 +140,22 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                     newInstructions.add(new VarInsnNode(ALOAD, 0));
                     newInstructions.add(new FieldInsnNode(GETFIELD, "net/minecraft/client/renderer/BlockRendererDispatcher",
                             "blockModelRenderer", "Lnet/minecraft/client/renderer/BlockModelRenderer;"));
+                    // BlockModelRenderer
+
                     newInstructions.add(new VarInsnNode(ALOAD, 3));
+                    // BlockModelRenderer, IBlockAccess
 
                     newInstructions.add(new VarInsnNode(ALOAD, 0));
                     newInstructions.add(new VarInsnNode(ALOAD, 1));
                     newInstructions.add(new MethodInsnNode(INVOKEVIRTUAL, "net/minecraft/client/renderer/BlockRendererDispatcher", "getModelFromState",
                             "(Lnet/minecraft/block/state/IBlockState;)Lnet/minecraft/client/renderer/block/model/IBakedModel;", false));
+                    // BlockModelRenderer, IBlockAccess, IBakedModel
 
                     newInstructions.add(new VarInsnNode(ALOAD, 1));
                     newInstructions.add(new VarInsnNode(ALOAD, 2));
                     newInstructions.add(new VarInsnNode(ALOAD, 4));
+                    // BlockModelRenderer, IBlockAccess, IBakedModel, IBlockState, BlockPos, VertexBuffer
+
                     newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderGlow",
                             "(Lnet/minecraft/client/renderer/BlockModelRenderer;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/VertexBuffer;)Z", false));
                     newInstructions.add(new InsnNode(IOR));
