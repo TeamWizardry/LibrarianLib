@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.container
 
 import com.teamwizardry.librarianlib.features.container.internal.SlotBase
+import com.teamwizardry.librarianlib.features.kotlin.isNotEmpty
 import net.minecraft.item.ItemStack
 
 /**
@@ -81,5 +82,5 @@ interface ITransferRule {
             /**
              * whether the rest of the stack should be tried in the other slots
              */
-            val shouldContinue: Boolean = !remainingStack.isEmpty)
+            val shouldContinue: Boolean = remainingStack.isNotEmpty)
 }

@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.container.ContainerBase
 import com.teamwizardry.librarianlib.features.container.ITransferRule
 import com.teamwizardry.librarianlib.features.container.SlotType
 import com.teamwizardry.librarianlib.features.container.internal.SlotBase
+import com.teamwizardry.librarianlib.features.kotlin.isNotEmpty
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.ClickType
 import net.minecraft.inventory.EntityEquipmentSlot
@@ -22,15 +23,15 @@ open class SlotTypeGhost(val maxStackSize: Int = 1, val overstack: Boolean = fal
 
         if (clickType == ClickType.QUICK_MOVE && playerStack.isEmpty) {
             slot.putStack(ItemStack.EMPTY)
-        } else if (!slotStack.isEmpty && (areEqual || playerStack.isEmpty)) {
+        } else if (slotStack.isNotEmpty && (areEqual || playerStack.isEmpty)) {
             if (dragType == 1)
-                if (!playerStack.isEmpty) slotStack.count++ else slotStack.count--
+                if (playerStack.isNotEmpty) slotStack.count++ else slotStack.count--
             else
                 slotStack.count += playerStack.count
             if (slotStack.count > maxStackSize) slotStack.count = maxStackSize
             if (!overstack && slotStack.count > slotStack.maxStackSize) slotStack.count = slotStack.maxStackSize
             if (slotStack.count <= 0) slot.putStack(ItemStack.EMPTY)
-        } else if (!slotStack.isEmpty && !playerStack.isEmpty) {
+        } else if (slotStack.isNotEmpty && playerStack.isNotEmpty) {
             val copy = playerStack.copy()
             if (dragType == 1) copy.count = 1
             copy.count = Math.min(copy.count, maxStackSize)

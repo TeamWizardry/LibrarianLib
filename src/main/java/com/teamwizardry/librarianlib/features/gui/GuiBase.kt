@@ -6,7 +6,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.fml.client.config.GuiUtils
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
@@ -71,12 +70,7 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         val relPos = vec(mouseX, mouseY)
         fullscreenComponents.calculateMouseOver(relPos)
         fullscreenComponents.draw(relPos, partialTicks)
-
-        if (fullscreenComponents.tooltipText != null) {
-            GuiUtils.drawHoveringText(fullscreenComponents.tooltipText, mouseX, mouseY, width, height, -1, if (fullscreenComponents.tooltipFont == null) mc.fontRendererObj else fullscreenComponents.tooltipFont)
-            fullscreenComponents.tooltipText = null
-            fullscreenComponents.tooltipFont = null
-        }
+        fullscreenComponents.drawLate(relPos, partialTicks)
     }
 
     @Throws(IOException::class)

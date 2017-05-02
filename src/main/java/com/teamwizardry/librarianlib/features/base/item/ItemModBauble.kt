@@ -6,6 +6,7 @@ import baubles.api.IBauble
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.common.LibLibSoundEvents
 import com.teamwizardry.librarianlib.features.helpers.ItemNBTHelper
+import com.teamwizardry.librarianlib.features.kotlin.isNotEmpty
 import com.teamwizardry.librarianlib.features.utilities.client.TooltipHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.EntityLivingBase
@@ -52,7 +53,7 @@ abstract class ItemModBauble(name: String, vararg variants: String) : ItemMod(na
                                 player.inventory.setInventorySlotContents(player.inventory.currentItem, ItemStack.EMPTY)
                         }
 
-                        if (!stackInSlot.isEmpty) {
+                        if (stackInSlot.isNotEmpty) {
                             (stackInSlot.item as IBauble).onUnequipped(stackInSlot, player)
                             return ActionResult.newResult(EnumActionResult.SUCCESS, stackInSlot.copy())
                         }
