@@ -6,7 +6,6 @@ package com.teamwizardry.librarianlib.test.gui.tests
  * (a copy of which can be found at the repo root)
  */
 
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.Option
 import com.teamwizardry.librarianlib.features.gui.components.ComponentProgressBar
 import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
@@ -53,13 +52,13 @@ open class GuiPoweredMachine(inventorySlotsIn: PoweredMachineContainer) : GuiCon
         val progressBar = ComponentProgressBar(PROGRESS_FG, PROGRESS_BG, 77, 37,
                 direction = Option(ComponentSpriteProgressBar.ProgressDirection.X_POS),
                 progress = Option(0f, { te.currentOperation?.progress ?: 0f }))
-        progressBar.tooltip { I18n.format("llt:gui.progress", ((te.currentOperation?.progress ?: 0f) * 100).toInt()) }
+        progressBar.tooltip { listOf(I18n.format("llt:gui.progress", ((te.currentOperation?.progress ?: 0f) * 100).toInt())) }
         bg.add(progressBar)
 
         val powerBar = ComponentProgressBar(POWER_FG, POWER_BG, 15, 15,
                 direction = Option(ComponentSpriteProgressBar.ProgressDirection.Y_NEG),
                 progress = Option(0f, { te.energyHandler.energyStored.toFloat() / te.energyHandler.maxEnergyStored }))
-        powerBar.tooltip { I18n.format("llt:gui.energy", te.energyHandler.energyStored, te.energyHandler.maxEnergyStored) }
+        powerBar.tooltip { listOf(I18n.format("llt:gui.energy", te.energyHandler.energyStored, te.energyHandler.maxEnergyStored)) }
         bg.add(powerBar)
     }
 
@@ -74,17 +73,5 @@ open class GuiPoweredMachine(inventorySlotsIn: PoweredMachineContainer) : GuiCon
         private val POWER_FG = TEX.getSprite("power_fg", 8, 56)
 
         private val SLOT = TEX.getSprite("slot", 18, 18)
-    }
-}
-
-inline fun GuiComponent<*>.tooltip(crossinline callback: () -> String) {
-    this.BUS.hook(GuiComponent.PostDrawEvent::class.java) {
-        if (this.mouseOver) this.setTooltip(kotlin.collections.listOf(callback()))
-    }
-}
-
-fun GuiComponent<*>.tooltip(text: String) {
-    this.BUS.hook(GuiComponent.PostDrawEvent::class.java) {
-        if (this.mouseOver) this.setTooltip(kotlin.collections.listOf(text))
     }
 }

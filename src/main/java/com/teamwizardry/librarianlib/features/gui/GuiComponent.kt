@@ -19,6 +19,7 @@ import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraftforge.fml.client.config.GuiUtils
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.input.Keyboard
@@ -250,6 +251,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             }
             field = value
         }
+
     /**
      * Returns true if this component is invalid and it should be removed from it's parent
      * @return
@@ -262,7 +264,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     protected var keysDown: MutableMap<Key, Boolean> = HashMap<Key, Boolean>().withDefault({ false })
     private val data: MutableMap<Class<*>, MutableMap<String, Any>> = mutableMapOf()
 
-    var tooltipText: List<String>? = null
+    var tooltip: Option<GuiComponent<T>, List<String>?> = Option(null)
     var tooltipFont: FontRenderer? = null
 
     /**
@@ -508,8 +510,8 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
     /**
      * Draw this component, don't override in subclasses unless you know what you're doing.
+     *
      * @param mousePos Mouse position relative to the position of this component
-     * *
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
     override fun draw(mousePos: Vec2d, partialTicks: Float) {
@@ -573,14 +575,30 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
         BUS.fire(PreChildrenDrawEvent(thiz(), mousePos, partialTicks))
 
-        forEachChild { component ->
-            component.draw(transformChildPos(component, mousePos), partialTicks)
-        }
+        forEachChild { it.draw(transformChildPos(it, mousePos), partialTicks) }
 
         GlStateManager.popAttrib()
         GlStateManager.popMatrix()
 
         BUS.fire(PostDrawEvent(thiz(), mousePos, partialTicks))
+    }
+
+    /**
+     * Draw late stuff this component, like tooltips.
+     *
+     * @param mousePos Mouse position
+     * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
+     */
+    fun drawLate(mousePos: Vec2d, partialTicks: Float) {
+        if (mouseOver) {
+            val tt = tooltip(this)
+            if (tt?.isNotEmpty() ?: false) {
+                GuiUtils.drawHoveringText(tt, mousePos.xi, mousePos.yi, root.size.xi, root.size.yi, -1,
+                        tooltipFont ?: Minecraft.getMinecraft().fontRendererObj)
+            }
+        }
+
+        forEachChild { it.drawLate(mousePos, partialTicks) }
     }
 
     open fun onTick() {}
@@ -743,20 +761,15 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     /**
      * Sets the tooltip to be drawn, overriding the existing value. Pass null for the font to use the default font renderer.
      */
-    fun setTooltip(text: List<String>, font: FontRenderer) {
-        val component = root
-        component.tooltipText = text
-        component.tooltipFont = font
+    fun setTooltip(text: List<String>, font: FontRenderer?) {
+        tooltip(text)
+        tooltipFont = font
     }
 
     /**
      * Sets the tooltip to be drawn, overriding the existing value and using the default font renderer.
      */
-    fun setTooltip(text: List<String>) {
-        val component = root
-        component.tooltipText = text
-        component.tooltipFont = null
-    }
+    fun setTooltip(text: List<String>) = setTooltip(text, null)
 
     //=============================================================================
     init {/* Assorted info */
