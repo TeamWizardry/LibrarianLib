@@ -19,8 +19,6 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static com.sun.tools.doclets.formats.html.markup.HtmlStyle.block;
-
 // Boilerplate code taken with love from Vazkii's Quark mod
 // Quark is distrubted at https://github.com/Vazkii/Quark
 
