@@ -101,11 +101,13 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         MethodSignature sig = new MethodSignature("renderBlock", "func_175018_a", "a",
                 "(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/VertexBuffer;)Z");
 
-        MethodSignature target = new MethodSignature("renderModel", "func_178267_a", "a",
+        MethodSignature target1 = new MethodSignature("renderModel", "func_178267_a", "a",
+                "(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/VertexBuffer;Z)Z");
+        MethodSignature target2 = new MethodSignature("renderFluid", "func_178270_a", "a",
                 "(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/VertexBuffer;Z)Z");
 
-        return transform(basicClass, sig, combine((AbstractInsnNode node) -> node.getOpcode() == INVOKEVIRTUAL &&
-                target.matches((MethodInsnNode) node),
+        byte[] transformedClass = transform(basicClass, sig, combine((AbstractInsnNode node) -> node.getOpcode() == INVOKEVIRTUAL &&
+                target1.matches((MethodInsnNode) node), // Filter
                 (MethodNode method, AbstractInsnNode node) -> { // Action
                     InsnList newInstructions = new InsnList();
 
@@ -114,6 +116,33 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                             "blockModelRenderer", "Lnet/minecraft/client/renderer/BlockModelRenderer;"));
                     newInstructions.add(new VarInsnNode(ALOAD, 3));
                     newInstructions.add(new VarInsnNode(ALOAD, 6));
+                    newInstructions.add(new VarInsnNode(ALOAD, 1));
+                    newInstructions.add(new VarInsnNode(ALOAD, 2));
+                    newInstructions.add(new VarInsnNode(ALOAD, 4));
+                    newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderGlow",
+                            "(Lnet/minecraft/client/renderer/BlockModelRenderer;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/VertexBuffer;)Z", false));
+                    newInstructions.add(new InsnNode(IOR));
+
+                    method.instructions.insert(node, newInstructions);
+
+                    return true;
+                }));
+
+        return transform(transformedClass, sig, combine((AbstractInsnNode node) -> node.getOpcode() == INVOKEVIRTUAL &&
+                        target2.matches((MethodInsnNode) node), // Filter
+                (MethodNode method, AbstractInsnNode node) -> { // Action
+                    InsnList newInstructions = new InsnList();
+
+                    newInstructions.add(new VarInsnNode(ALOAD, 0));
+                    newInstructions.add(new FieldInsnNode(GETFIELD, "net/minecraft/client/renderer/BlockRendererDispatcher",
+                            "blockModelRenderer", "Lnet/minecraft/client/renderer/BlockModelRenderer;"));
+                    newInstructions.add(new VarInsnNode(ALOAD, 3));
+
+                    newInstructions.add(new VarInsnNode(ALOAD, 0));
+                    newInstructions.add(new VarInsnNode(ALOAD, 1));
+                    newInstructions.add(new MethodInsnNode(INVOKEVIRTUAL, "net/minecraft/client/renderer/BlockRendererDispatcher", "getModelFromState",
+                            "(Lnet/minecraft/block/state/IBlockState;)Lnet/minecraft/client/renderer/block/model/IBakedModel;", false));
+
                     newInstructions.add(new VarInsnNode(ALOAD, 1));
                     newInstructions.add(new VarInsnNode(ALOAD, 2));
                     newInstructions.add(new VarInsnNode(ALOAD, 4));
