@@ -247,6 +247,6 @@ object GlowingHandler {
             }
         }
 
-        return true
+        return false
     }
 }
