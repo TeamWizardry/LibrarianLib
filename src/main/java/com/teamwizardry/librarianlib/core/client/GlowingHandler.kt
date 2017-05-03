@@ -230,7 +230,7 @@ object GlowingHandler {
     }
 
     @JvmStatic
-    fun glow(blockModelRenderer: BlockModelRenderer, world: IBlockAccess, model: IBakedModel, state: IBlockState, pos: BlockPos, buf: VertexBuffer): Boolean {
+    fun glow(blockModelRenderer: BlockModelRenderer, world: IBlockAccess, model: IBakedModel, state: IBlockState, pos: BlockPos, buf: VertexBuffer) {
         val block = state.block as? IGlowingBlock ?: blockRenderSpecialHandlers[state.block]
 
         if (block != null) {
@@ -238,16 +238,13 @@ object GlowingHandler {
             if (newModel != null) {
                 val prev = ForgeModContainer.forgeLightPipelineEnabled
                 ForgeModContainer.forgeLightPipelineEnabled = false
-                val ret = blockModelRenderer.renderModel(world, newModel, object : ExtendedStateWrapper(state, world, pos) {
+                blockModelRenderer.renderModel(world, newModel, object : ExtendedStateWrapper(state, world, pos) {
                     override fun getPackedLightmapCoords(source: IBlockAccess, pos: BlockPos): Int {
                         return block.packedGlowCoords(source, source.getBlockState(pos), pos)
                     }
                 }, pos, buf, true)
                 ForgeModContainer.forgeLightPipelineEnabled = prev
-                return ret
             }
         }
-
-        return false
     }
 }

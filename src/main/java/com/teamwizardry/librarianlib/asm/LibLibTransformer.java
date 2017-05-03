@@ -68,7 +68,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
                     newInstructions.add(new VarInsnNode(ALOAD, 1));
                     newInstructions.add(new VarInsnNode(ALOAD, 2));
-                    newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderGlow",
+                    newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderHook",
                             "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model/IBakedModel;)V", false));
 
                     method.instructions.insert(node, newInstructions);
@@ -104,7 +104,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         MethodSignature target1 = new MethodSignature("renderModel", "func_178267_a", "a",
                 "(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/VertexBuffer;Z)Z");
         MethodSignature target2 = new MethodSignature("renderFluid", "func_178270_a", "a",
-                "(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/VertexBuffer;Z)Z");
+                "(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/VertexBuffer;Z)Z");
 
         byte[] transformedClass = transform(basicClass, sig, combine((AbstractInsnNode node) -> node.getOpcode() == INVOKEVIRTUAL &&
                         target1.matches((MethodInsnNode) node), // Filter
@@ -123,9 +123,8 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                     newInstructions.add(new VarInsnNode(ALOAD, 4));
                     // BlockModelRenderer, IBlockAccess, IBakedModel, IBlockState, BlockPos, VertexBuffer
 
-                    newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderGlow",
-                            "(Lnet/minecraft/client/renderer/BlockModelRenderer;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/VertexBuffer;)Z", false));
-                    newInstructions.add(new InsnNode(IOR));
+                    newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderHook",
+                            "(Lnet/minecraft/client/renderer/BlockModelRenderer;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/VertexBuffer;)V", false));
 
                     method.instructions.insert(node, newInstructions);
 
@@ -156,7 +155,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                     newInstructions.add(new VarInsnNode(ALOAD, 4));
                     // BlockModelRenderer, IBlockAccess, IBakedModel, IBlockState, BlockPos, VertexBuffer
 
-                    newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderGlow",
+                    newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderHook",
                             "(Lnet/minecraft/client/renderer/BlockModelRenderer;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/VertexBuffer;)Z", false));
                     newInstructions.add(new InsnNode(IOR));
 
