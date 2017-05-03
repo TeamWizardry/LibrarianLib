@@ -292,7 +292,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     }
 
     // Basic interface aliases to not have to clutter up the code with generics over and over again
-    
+
     private interface Transformer extends Function<byte[], byte[]> {
         // NO-OP
     }

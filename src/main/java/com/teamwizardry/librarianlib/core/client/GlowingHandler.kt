@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.features.base.item.IGlowingItem
 import com.teamwizardry.librarianlib.features.config.ConfigPropertyBoolean
 import com.teamwizardry.librarianlib.features.config.ConfigPropertyStringArray
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
+import com.teamwizardry.librarianlib.features.utilities.ExtendedStateWrapper
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import com.teamwizardry.librarianlib.features.utilities.client.GlUtils
 import net.minecraft.block.Block
@@ -237,7 +238,7 @@ object GlowingHandler {
             if (newModel != null) {
                 val prev = ForgeModContainer.forgeLightPipelineEnabled
                 ForgeModContainer.forgeLightPipelineEnabled = false
-                val ret = blockModelRenderer.renderModel(world, newModel, object : IBlockState by state {
+                val ret = blockModelRenderer.renderModel(world, newModel, object : ExtendedStateWrapper(state, world, pos) {
                     override fun getPackedLightmapCoords(source: IBlockAccess, pos: BlockPos): Int {
                         return block.packedGlowCoords(source, source.getBlockState(pos), pos)
                     }
