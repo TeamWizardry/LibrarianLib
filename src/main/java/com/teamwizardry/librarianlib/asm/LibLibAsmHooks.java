@@ -29,6 +29,11 @@ public class LibLibAsmHooks {
         RenderHookHandler.runBlockHook(blockModelRenderer, world, model, state, pos, vertexBuffer);
     }
 
+    @SideOnly(Side.CLIENT)
+    public static void renderHook(BlockModelRenderer blockModelRenderer, IBlockAccess world, IBlockState state, BlockPos pos, VertexBuffer vertexBuffer) {
+        RenderHookHandler.runFluidHook(blockModelRenderer, world, state, pos, vertexBuffer);
+    }
+
     private static float x, y;
 
     @SideOnly(Side.CLIENT)

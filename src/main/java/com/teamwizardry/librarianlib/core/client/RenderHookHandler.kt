@@ -15,6 +15,7 @@ import net.minecraft.world.IBlockAccess
 object RenderHookHandler {
     private val itemHooks = mutableListOf<ItemHook>(GlowingHandler::glow)
     private val blockHooks = mutableListOf<BlockHook>(GlowingHandler::glow)
+    private val fluidHooks = mutableListOf<FluidHook>()
 
 
     @JvmStatic
@@ -28,6 +29,11 @@ object RenderHookHandler {
     }
 
     @JvmStatic
+    fun registerFluidHook(hook: FluidHook) {
+        fluidHooks.add(hook)
+    }
+
+    @JvmStatic
     fun runItemHook(itemStack: ItemStack, bakedModel: IBakedModel) {
         itemHooks.forEach { it(itemStack, bakedModel) }
     }
@@ -37,8 +43,14 @@ object RenderHookHandler {
         blockHooks.forEach { it(blockModelRenderer, world, model, state, pos, vertexBuffer) }
     }
 
+    @JvmStatic
+    fun runFluidHook(blockModelRenderer: BlockModelRenderer, world: IBlockAccess, state: IBlockState, pos: BlockPos, vertexBuffer: VertexBuffer) {
+        fluidHooks.forEach { it(blockModelRenderer, world, state, pos, vertexBuffer) }
+    }
+
 
 }
 
 typealias ItemHook = (ItemStack, IBakedModel) -> Unit
 typealias BlockHook = (BlockModelRenderer, IBlockAccess, IBakedModel, IBlockState, BlockPos, VertexBuffer) -> Unit
+typealias FluidHook = (BlockModelRenderer, IBlockAccess, IBlockState, BlockPos, VertexBuffer) -> Unit
