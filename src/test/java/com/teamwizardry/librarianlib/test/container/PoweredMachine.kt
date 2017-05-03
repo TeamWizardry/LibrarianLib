@@ -15,7 +15,6 @@ import com.teamwizardry.librarianlib.features.saving.Savable
 import com.teamwizardry.librarianlib.features.saving.Save
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
-import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
@@ -32,7 +31,7 @@ import net.minecraftforge.items.IItemHandler
  * The block for our powered machine.
  * It's an object, because, duh! Why not.
  */
-object BlockPoweredMachine : BlockModDirectional("powered_machine", Material.IRON, *HORIZONTALS) {
+object BlockPoweredMachine : BlockModDirectional("powered_machine", Material.IRON) {
 
     override fun hasTileEntity(state: IBlockState?) = true
 
@@ -51,9 +50,6 @@ object BlockPoweredMachine : BlockModDirectional("powered_machine", Material.IRO
      * Returning our custom TE here.
      */
     override fun createTileEntity(world: World, state: IBlockState) = TEPoweredMachine()
-
-    override fun getStateForPlacement(world: World?, pos: BlockPos?, facing: EnumFacing?, hitX: Float, hitY: Float, hitZ: Float, meta: Int, placer: EntityLivingBase?, hand: EnumHand?) =
-            this.getStateFromMeta(meta).withProperty(property, placer!!.horizontalFacing.opposite)!!
 }
 
 /**
