@@ -27,5 +27,6 @@ object ContainerBlocks {
 
     init {
         BlockPoweredMachine
+        BlockFluidTank
     }
 }

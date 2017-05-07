@@ -26,6 +26,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.energy.IEnergyStorage
 import net.minecraftforge.items.IItemHandler
+import net.minecraftforge.items.IItemHandlerModifiable
 
 /**
  * The block for our powered machine.
@@ -40,10 +41,8 @@ object BlockPoweredMachine : BlockModDirectional("powered_machine", Material.IRO
      * We tell the [GuiHandler] to open our container for the player.
      */
     override fun onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer, hand: EnumHand, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
-        return if (hasTileEntity(state)) {
-            GuiHandler.open(PoweredMachineContainer.NAME, playerIn, pos)
-            true
-        } else false
+        GuiHandler.open(PoweredMachineContainer.NAME, playerIn, pos)
+        return true
     }
 
     /**
@@ -69,7 +68,7 @@ class TEPoweredMachine : TileModInventory(2), ITickable {
     val energyHandler = MyEnergyStorage()
 
     @CapabilityProvide(DOWN, UP, NORTH, SOUTH, WEST, EAST)
-    val worldInteraction: IItemHandler = WorldItemHandler(this)
+    val worldInteraction: IItemHandler = WorldItemHandler(this, SLOT_IN, SLOT_OUT)
 
     /**
      * The current operation in progress, if any.
@@ -258,9 +257,11 @@ class MyEnergyStorage : IEnergyStorage {
 }
 
 /**
- * Used to restrict world interactions/automation with our [TEPoweredMachine].
+ * Used to restrict world interactions/automation.
  */
-class WorldItemHandler(val te: TEPoweredMachine) : IItemHandler {
+class WorldItemHandler(val te: IItemHandlerModifiable, val inputSlots: IntRange, val outputSlots: IntRange) : IItemHandler {
+
+    constructor(te: IItemHandlerModifiable, inputSlot: Int, outputSlot: Int): this(te, inputSlot..inputSlot, outputSlot..outputSlot)
 
     /**
      * Nothing to change, pure delegation.
@@ -268,9 +269,10 @@ class WorldItemHandler(val te: TEPoweredMachine) : IItemHandler {
     override fun getSlotLimit(slot: Int) = te.getSlotLimit(slot)
 
     /**
-     * Our TE already handles the inserting right, delegating.
+     * We wanna make sure only to allow automatic insertion to the input slot.
      */
-    override fun insertItem(slot: Int, stack: ItemStack, simulate: Boolean) = te.insertItem(slot, stack, simulate)
+    override fun insertItem(slot: Int, stack: ItemStack, simulate: Boolean) =
+            if (slot in inputSlots) te.insertItem(slot, stack, simulate) else stack
 
     /**
      * Nothing to change, pure delegation.
@@ -286,5 +288,5 @@ class WorldItemHandler(val te: TEPoweredMachine) : IItemHandler {
      * We wanna make sure only to allow automatic extraction from the output slot.
      */
     override fun extractItem(slot: Int, amount: Int, simulate: Boolean): ItemStack =
-            if (slot == TEPoweredMachine.SLOT_OUT) te.extractItem(slot, amount, simulate) else ItemStack.EMPTY
+            if (slot in outputSlots) te.extractItem(slot, amount, simulate) else ItemStack.EMPTY
 }

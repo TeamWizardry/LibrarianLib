@@ -15,6 +15,7 @@ import net.minecraft.network.PacketBuffer
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.TextComponentString
+import net.minecraftforge.fluids.FluidRegistry
 import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.items.ItemStackHandler
 import java.awt.Color
@@ -89,13 +90,13 @@ object SerializeItemStack : Serializer<ItemStack>(FieldType.create(ItemStack::cl
 @SerializerRegister(FluidStack::class)
 object SerializeFluidStack : Serializer<FluidStack>(FieldType.create(FluidStack::class.java)) {
     override fun readNBT(nbt: NBTBase, existing: FluidStack?, syncing: Boolean) =
-            FluidStack.loadFluidStackFromNBT(nbt.safeCast())
+            FluidStack.loadFluidStackFromNBT(nbt.safeCast())!!
 
     override fun writeNBT(value: FluidStack, syncing: Boolean) =
-            value.writeToNBT(NBTTagCompound())
+            value.writeToNBT(NBTTagCompound())!!
 
     override fun readBytes(buf: ByteBuf, existing: FluidStack?, syncing: Boolean) =
-            buf.readFluidStack()!!
+            buf.readFluidStack()?: FluidStack(FluidRegistry.WATER, 0)
 
     override fun writeBytes(buf: ByteBuf, value: FluidStack, syncing: Boolean) =
             buf.writeFluidStack(value)
