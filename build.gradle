@@ -192,48 +192,48 @@ task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
     outputFormat = "javadoc"
     outputDirectory = "$buildDir/dokkaJavadoc"
 }
-//
-//uploadArchives {
-//	repositories {
-//		mavenDeployer {
-//			repository(url: "file://" + System.getenv("bamboo_local_maven"))
-//			pom {
-//				groupId = project.group
-//				version
-//				artifactId = project.archivesBaseName
-//				project {
-//					name project.archivesBaseName
-//					packaging 'jar'
-//					description 'LibrarianLib'
-//					url 'https://github.com/TeamWizardry/LibrarianLib'
-//					scm {
-//						url 'https://github.com/TeamWizardry/LibrarianLib.git'
-//						connection 'scm:git:git@github.com:TeamWizardry/LibrarianLib.git'
-//						developerConnection 'scm:git:git@github.com:TeamWizardry/LibrarianLib.git'
-//					}
-//					issueManagement {
-//						system 'github'
-//						url 'https://github.com/TeamWizardry/LibrarianLib/issues'
-//					}
-//					developers {
-//						developer {
-//							id 'thecodewarrior'
-//							name 'thecodewarrior'
-//							roles { role 'developer' }
-//						}
-//						developer {
-//							id 'wiresegal'
-//							name 'wiresegal'
-//							roles { role 'developer' }
-//						}
-//                        developer {
-//                            id 'eladkay'
-//                            name 'eladkay'
-//                            roles { role 'developer' }
-//                        }
-//					}
-//				}
-//			}
-//		}
-//	}
-//}
+
+uploadArchives {
+	repositories {
+		mavenDeployer {
+            repository(url: "file://" + (System.getenv("local_maven") != null ? System.getenv("local_maven") : System.getenv("bamboo_local_maven")))
+			pom {
+				groupId = project.group
+				version
+				artifactId = project.archivesBaseName
+				project {
+					name project.archivesBaseName
+					packaging 'jar'
+					description 'LibrarianLib'
+					url 'https://github.com/TeamWizardry/LibrarianLib'
+					scm {
+						url 'https://github.com/TeamWizardry/LibrarianLib.git'
+						connection 'scm:git:git@github.com:TeamWizardry/LibrarianLib.git'
+						developerConnection 'scm:git:git@github.com:TeamWizardry/LibrarianLib.git'
+					}
+					issueManagement {
+						system 'github'
+						url 'https://github.com/TeamWizardry/LibrarianLib/issues'
+					}
+					developers {
+						developer {
+							id 'thecodewarrior'
+							name 'thecodewarrior'
+							roles { role 'developer' }
+						}
+						developer {
+							id 'wiresegal'
+							name 'wiresegal'
+							roles { role 'developer' }
+						}
+                        developer {
+                            id 'eladkay'
+                            name 'eladkay'
+                            roles { role 'developer' }
+                        }
+					}
+				}
+			}
+		}
+	}
+}
