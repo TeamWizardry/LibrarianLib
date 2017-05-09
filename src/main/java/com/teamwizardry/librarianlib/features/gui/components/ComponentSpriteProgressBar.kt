@@ -5,11 +5,11 @@ import com.teamwizardry.librarianlib.features.gui.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.Option
 import com.teamwizardry.librarianlib.features.kotlin.glColor
 import com.teamwizardry.librarianlib.features.math.Vec2d
-import com.teamwizardry.librarianlib.features.sprite.Sprite
+import com.teamwizardry.librarianlib.features.sprite.ISprite
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: Sprite?, x: Int, y: Int, width: Int = sprite?.width ?: 16, height: Int = sprite?.height ?: 16) : GuiComponent<ComponentSprite>(x, y, width, height) {
+class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: ISprite?, x: Int, y: Int, width: Int = sprite?.width ?: 16, height: Int = sprite?.height ?: 16) : GuiComponent<ComponentSprite>(x, y, width, height) {
 
     class AnimationLoopEvent(val component: ComponentSpriteProgressBar) : Event()
     enum class ProgressDirection { Y_POS, Y_NEG, X_POS, X_NEG }
@@ -38,7 +38,7 @@ class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: Sprite?, 
         }
         lastAnim = animationTicks
         color.getValue(this).glColor()
-        sp.tex.bind()
+        sp.bind()
 
         var w = size.xi
         var h = size.yi
@@ -49,9 +49,6 @@ class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: Sprite?, 
             h = (h * progress).toInt()
         if (dir == ProgressDirection.X_POS || dir == ProgressDirection.X_NEG)
             w = (w * progress).toInt()
-
-        var posX = if (dir == ProgressDirection.X_NEG) (pos.xf + size.xi) - w else pos.xf
-        var posY = if (dir == ProgressDirection.Y_NEG) (pos.yf + size.yi) - h else pos.yf
 
         sp.drawClipped(animationTicks, pos.xf, pos.yf, w, h, dir == ProgressDirection.X_NEG, dir == ProgressDirection.Y_NEG)
         if (alwaysTop)

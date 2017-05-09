@@ -41,7 +41,7 @@ object DrawingUtil {
      * *
      * @param height The height to draw the sprite
      */
-    fun draw(sprite: Sprite, animFrames: Int, x: Float, y: Float, width: Float, height: Float) {
+    fun draw(sprite: ISprite, animFrames: Int, x: Float, y: Float, width: Float, height: Float) {
 
         val minX = x
         val minY = y
@@ -78,15 +78,15 @@ object DrawingUtil {
      * *
      * @param height The height to draw the sprite
      */
-    fun drawClipped(sprite: Sprite, animTicks: Int, x: Float, y: Float, width: Int, height: Int, reverseX: Boolean, reverseY: Boolean) {
+    fun drawClipped(sprite: ISprite, animTicks: Int, x: Float, y: Float, width: Int, height: Int, reverseX: Boolean, reverseY: Boolean) {
         if (!isDrawing) {
-            val hor = Math.ceil(width / sprite.width.toDouble()).toInt()
+            val hor = Math.ceil((width) / sprite.width.toDouble()).toInt()
             val vert = Math.ceil(height / sprite.height.toDouble()).toInt()
 
             for (xIndex in 0 until hor) {
                 for (yIndex in 0 until vert) {
-                    val croppedX = (reverseX && xIndex == 0) || xIndex == hor - 1
-                    val croppedY = (reverseY && yIndex == 0) || yIndex == vert - 1
+                    val croppedX = (reverseX && xIndex == 0) || (!reverseX && xIndex == hor - 1)
+                    val croppedY = (reverseY && yIndex == 0) || (!reverseY && yIndex == vert - 1)
 
                     var cropW = if (croppedX) sprite.width - width % sprite.width else 0
                     if (cropW == sprite.width) cropW = 0
@@ -96,8 +96,8 @@ object DrawingUtil {
                     val sX = x + xIndex * sprite.width
                     val sY = y + yIndex * sprite.height
 
-                    val realX = (if (reverseX) sX + cropW else sX).toDouble()
-                    val realY = (if (reverseY) sY + cropH else sY).toDouble()
+                    val realX = (if (reverseX) sX + cropW + sprite.inWidth - sprite.height * hor else sX).toDouble()
+                    val realY = (if (reverseY) sY + cropH + sprite.inHeight - sprite.height * vert else sY).toDouble()
 
                     val maxX = realX + if (croppedX) sprite.width - cropW else sprite.width
                     val maxY = realY + if (croppedY) sprite.height - cropH else sprite.height

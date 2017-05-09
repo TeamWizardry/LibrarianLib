@@ -1,16 +1,24 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
-import com.teamwizardry.librarianlib.features.gui.Option
-import com.teamwizardry.librarianlib.features.math.Vec2d
-import com.teamwizardry.librarianlib.features.sprite.Sprite
-
-/**
+/*
  * Created by bluexin.
  * Made for LibrarianLib, under GNU LGPL v3.0
  * (a copy of which can be found at the repo root)
  */
-class ComponentProgressBar @JvmOverloads constructor(fgSprite: Sprite?, bgSprite: Sprite?,
+
+import com.teamwizardry.librarianlib.features.gui.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.Option
+import com.teamwizardry.librarianlib.features.math.Vec2d
+import com.teamwizardry.librarianlib.features.sprite.ISprite
+import com.teamwizardry.librarianlib.features.sprite.Sprite
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
+
+/**
+ * Easy way to render a progress bar with a foreground [Sprite], used to show the progress, as well as a background [Sprite].
+ */
+@SideOnly(Side.CLIENT)
+class ComponentProgressBar @JvmOverloads constructor(fgSprite: ISprite?, bgSprite: ISprite?,
                                                      x: Int, y: Int,
                                                      fgWidth: Int = fgSprite?.width ?: 16, fgHeight: Int = fgSprite?.height ?: 16,
                                                      bgWidth: Int = bgSprite?.width ?: 16, bgHeight: Int = bgSprite?.height ?: 16,

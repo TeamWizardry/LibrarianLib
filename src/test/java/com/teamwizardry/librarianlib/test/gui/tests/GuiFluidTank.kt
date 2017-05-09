@@ -7,7 +7,7 @@ package com.teamwizardry.librarianlib.test.gui.tests
  */
 
 import com.teamwizardry.librarianlib.features.gui.Option
-import com.teamwizardry.librarianlib.features.gui.components.ComponentProgressBar
+import com.teamwizardry.librarianlib.features.gui.components.ComponentFluidStack
 import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.gui.components.ComponentSpriteProgressBar
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
@@ -49,9 +49,10 @@ open class GuiFluidTank(inventorySlotsIn: FluidTankContainer) : GuiContainerBase
         val state = te.world.getBlockState(te.pos)
         bg.add(ComponentText(88, 6, horizontal = ComponentText.TextAlignH.CENTER).`val`(I18n.format(ItemStack(state.block, 1, state.block.damageDropped(state)).displayName)))
 
-        val fluidBar = ComponentProgressBar(POWER_FG, POWER_BG, 15, 15,
+        val fluidBar = ComponentFluidStack(null, FLUID_BG, 15, 15,
+                bgWidth = 16,
                 direction = Option(ComponentSpriteProgressBar.ProgressDirection.Y_NEG),
-                progress = Option(0f, { te.fluidHandler.fluidAmount.toFloat() / te.fluidHandler.capacity }))
+                tankProps = te.fluidHandler.tankPropertiesImpl[0])
         fluidBar.tooltip {
             val f = te.fluidHandler.fluid
             listOf(if (f != null) I18n.format("llt:gui.fluid", f.localizedName, f.amount) else I18n.format("llt:gui.fluidEmpty"))
@@ -63,8 +64,7 @@ open class GuiFluidTank(inventorySlotsIn: FluidTankContainer) : GuiContainerBase
         private val TEX = Texture(ResourceLocation("librarianlibtest", "textures/guis/gui_powered_machine.png"))
         private val BG = TEX.getSprite("bg", 176, 166)
 
-        private val POWER_BG = TEX.getSprite("power_bg", 8, 56)
-        private val POWER_FG = TEX.getSprite("power_fg", 8, 56)
+        private val FLUID_BG = TEX.getSprite("power_bg", 8, 56)
 
         private val SLOT = TEX.getSprite("slot", 18, 18)
     }
