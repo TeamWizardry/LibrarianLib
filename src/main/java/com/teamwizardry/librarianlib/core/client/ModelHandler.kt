@@ -158,8 +158,17 @@ object ModelHandler {
         if (holder is IExtraVariantHolder)
             registerModels(holder, holder.extraVariants, true)
 
+        if (holder is IModBlockProvider) {
+            val mapper = holder.stateMapper
+            if (mapper != null)
+                ModelLoader.setCustomStateMapper(holder.providedBlock, mapper)
+
+            if (shouldGenerateAnyJson()) generateBlockJson(holder, mapper)
+        }
+
         if (holder is IModItemProvider) {
             val meshDef = holder.meshDefinition
+
             if (meshDef != null) {
                 ModelLoader.setCustomMeshDefinition(holder.providedItem, ItemMeshDefinition(meshDef))
                 return
@@ -172,14 +181,6 @@ object ModelHandler {
 
     @SideOnly(Side.CLIENT)
     fun registerModels(holder: IVariantHolder, variants: Array<out String>, extra: Boolean) {
-        if (holder is IModBlockProvider && !extra) {
-            val mapper = holder.stateMapper
-            if (mapper != null)
-                ModelLoader.setCustomStateMapper(holder.providedBlock, mapper)
-
-            if (shouldGenerateAnyJson()) generateBlockJson(holder, mapper)
-        }
-
         if (holder is IModItemProvider) {
             val item = holder.providedItem
             for ((index, variantName) in variants.withIndex()) {
