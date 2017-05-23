@@ -15,7 +15,7 @@ import net.minecraftforge.fml.relauncher.FMLLaunchHandler
 import net.minecraftforge.fml.relauncher.Side
 
 @PacketRegister(Side.CLIENT)
-class PacketSynchronization(var tile: TileMod? = null /* Tile is always null on clientside */) : PacketBase() {
+class PacketTileSynchronization(var tile: TileMod? = null /* Tile is always null on clientside */) : PacketBase() {
 
     @Save var pos: BlockPos? = null
 

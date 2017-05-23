@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.features.base.block
 
 import com.teamwizardry.librarianlib.features.network.PacketHandler
-import com.teamwizardry.librarianlib.features.network.PacketSynchronization
+import com.teamwizardry.librarianlib.features.network.PacketTileSynchronization
 import com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler
 import com.teamwizardry.librarianlib.features.saving.SaveInPlace
 import io.netty.buffer.ByteBuf
@@ -149,7 +149,7 @@ abstract class TileMod : TileEntity() {
      */
     open fun sendUpdatePacket(player: EntityPlayerMP) {
         if (useFastSync)
-            PacketHandler.NETWORK.sendTo(PacketSynchronization(this), player)
+            PacketHandler.NETWORK.sendTo(PacketTileSynchronization(this), player)
         else
             player.connection.sendPacket(updatePacket)
     }

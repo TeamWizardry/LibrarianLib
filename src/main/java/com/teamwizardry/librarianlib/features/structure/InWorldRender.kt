@@ -20,8 +20,8 @@ import org.lwjgl.opengl.GL11
 @SideOnly(Side.CLIENT)
 object InWorldRender {
 
-    var pos: BlockPos? = null
-    var rot: Rotation? = null
+    private var pos: BlockPos? = null
+    private var rot: Rotation? = null
     var structure: Structure? = null
     var verts: IntArray? = null
     var match: StructureMatchResult? = null

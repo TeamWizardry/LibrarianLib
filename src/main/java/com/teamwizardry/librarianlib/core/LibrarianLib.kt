@@ -25,6 +25,8 @@ import com.teamwizardry.librarianlib.features.saving.Save
 import com.teamwizardry.librarianlib.features.structure.Structure
 import com.teamwizardry.librarianlib.features.utilities.LoggerBase
 import com.teamwizardry.librarianlib.features.utilities.client.F3Handler
+import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
+import com.teamwizardry.librarianlib.features.utilities.getUnsafe
 import net.minecraft.launchwrapper.Launch
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.SidedProxy
