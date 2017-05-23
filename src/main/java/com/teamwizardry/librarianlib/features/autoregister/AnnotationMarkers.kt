@@ -7,9 +7,7 @@ import com.teamwizardry.librarianlib.features.kotlin.singletonInstance
 import com.teamwizardry.librarianlib.features.kotlin.withRealDefault
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
-import java.io.PrintWriter
-import java.io.StringWriter
-
+import org.apache.commons.lang3.exception.ExceptionUtils
 
 
 /**
@@ -53,7 +51,10 @@ object AnnotationMarkersHandler {
                     }
                     build.add(" |-+ Stacktrace:")
                     errorList.forEach {
-                        build.add(" | | $it")
+                        build.add(
+                                " | | ============================================================\n"
+                                        + it +
+                                        " | | ============================================================")
                     }
                 }
             }
@@ -84,9 +85,7 @@ object AnnotationMarkersHandler {
                 try {
                     processor.process(clazz, annot)
                 } catch (e: Throwable) {
-                    val writer = StringWriter()
-                    e.printStackTrace(PrintWriter(writer))
-                    val str = errors.toString()
+                    val str = ExceptionUtils.getStackTrace(e)
                     errors[annotationClass].put(str, clazz)
                 }
             }

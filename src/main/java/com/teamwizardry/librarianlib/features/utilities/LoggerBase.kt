@@ -91,7 +91,13 @@ abstract class LoggerBase protected constructor(name: String) {
      * The title will never print more than 25 characters from the left
      */
     fun bigDie(title: String, lines: List<String>, endStar: Boolean = true) {
-        val maxWidth = lines.fold(0, { cur, value -> Math.max(cur, value.length) })
+        val maxWidth = lines.fold(0, { cur, value ->
+            Math.max(cur,
+                    value.split("\n").fold(0, { curS, valueS ->
+                        Math.max(curS, valueS.length)
+                    })
+            )
+        })
 
         var titleStarred = " **** $title **** "
         var starPadLeft = (maxWidth + 4 - titleStarred.length) / 2
@@ -104,15 +110,23 @@ abstract class LoggerBase protected constructor(name: String) {
 
         titleStarred = "*" * starPadLeft + titleStarred + "*" * starPadRight
 
-        warn(titleStarred)
-        lines.forEach {
+        val text = mutableListOf<String>()
+
+        text.add("")
+        text.add(titleStarred)
+
+        text.addAll(lines.flatMap { it.split("\n") }.map {
             if (endStar) {
-                warn("* " + it.padEnd(maxWidth, ' ') + " *")
+                "* " + it.padEnd(maxWidth, ' ') + " *"
             } else {
-                warn("* " + it)
+                "* " + it
             }
-        }
-        warn(titleStarred)
+        })
+
+        text.add(titleStarred)
+
+        warn(text.joinToString("\n"))
+
         FMLCommonHandler.instance().handleExit(0)
     }
 }
