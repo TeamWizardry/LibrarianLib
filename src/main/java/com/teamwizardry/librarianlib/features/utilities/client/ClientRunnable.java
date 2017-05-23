@@ -37,8 +37,12 @@ public interface ClientRunnable {
     @Nullable
     static <T> T produce(ClientSupplier<T> supplier) {
         MutableObject<T> holder = new MutableObject<>();
-        LibrarianLib.PROXY.runIfClient(() -> holder.setValue(supplier.produceIfClient()));
+        run(() -> holder.setValue(supplier.produceIfClient()));
         return holder.getValue();
+    }
+
+    static void registerReloadHandler(ClientRunnable runnable) {
+        LibrarianLib.PROXY.addReloadHandler(runnable);
     }
 
     @SideOnly(Side.CLIENT)

@@ -32,6 +32,7 @@ targetCompatibility = 1.8
 
 ext.configFile = file('build.properties')
 ext.config = parseConfig(configFile)
+ext.corePlugin = config.core_plugin
 
 version = "${config.version}.${config.build_number}"
 group = config.group
@@ -64,6 +65,9 @@ minecraft {
     version = "${config.mc_version}-${config.forge_version}"
     runDir = "run"
     mappings = config.mc_mappings
+
+    clientJvmArgs = ["-Dfml.coreMods.load=$corePlugin"]
+    serverJvmArgs = ["-Dfml.coreMods.load=$corePlugin"]
 
     replace 'GRADLE:BUILD', config.build_number
     replace 'GRADLE:VERSION', config.version
@@ -99,6 +103,7 @@ compileKotlin {
     }
 }
 
+
 jar {
     exclude 'com/teamwizardry/librarianlib/test', 'assets/librarianlibtest'
     from sourceSets.main.output
@@ -111,8 +116,7 @@ jar {
         }
     }
     manifest {
-        attributes 'FMLAT': 'librarianlib_at.cfg'
-        //todo add fmlloadingplugin attribute
+        attributes("FMLCorePluginContainsFMLMod": "true", "FMLCorePlugin": "com.teamwizardry.librarianlib.asm.LibLibCorePlugin")
     }
 
 }
@@ -188,48 +192,48 @@ task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
     outputFormat = "javadoc"
     outputDirectory = "$buildDir/dokkaJavadoc"
 }
-//
-//uploadArchives {
-//	repositories {
-//		mavenDeployer {
-//			repository(url: "file://" + System.getenv("bamboo_local_maven"))
-//			pom {
-//				groupId = project.group
-//				version
-//				artifactId = project.archivesBaseName
-//				project {
-//					name project.archivesBaseName
-//					packaging 'jar'
-//					description 'LibrarianLib'
-//					url 'https://github.com/TeamWizardry/LibrarianLib'
-//					scm {
-//						url 'https://github.com/TeamWizardry/LibrarianLib.git'
-//						connection 'scm:git:git@github.com:TeamWizardry/LibrarianLib.git'
-//						developerConnection 'scm:git:git@github.com:TeamWizardry/LibrarianLib.git'
-//					}
-//					issueManagement {
-//						system 'github'
-//						url 'https://github.com/TeamWizardry/LibrarianLib/issues'
-//					}
-//					developers {
-//						developer {
-//							id 'thecodewarrior'
-//							name 'thecodewarrior'
-//							roles { role 'developer' }
-//						}
-//						developer {
-//							id 'wiresegal'
-//							name 'wiresegal'
-//							roles { role 'developer' }
-//						}
-//                        developer {
-//                            id 'eladkay'
-//                            name 'eladkay'
-//                            roles { role 'developer' }
-//                        }
-//					}
-//				}
-//			}
-//		}
-//	}
-//}
+
+uploadArchives {
+	repositories {
+		mavenDeployer {
+            repository(url: "file://" + (System.getenv("local_maven") != null ? System.getenv("local_maven") : System.getenv("bamboo_local_maven")))
+			pom {
+				groupId = project.group
+				version
+				artifactId = project.archivesBaseName
+				project {
+					name project.archivesBaseName
+					packaging 'jar'
+					description 'LibrarianLib'
+					url 'https://github.com/TeamWizardry/LibrarianLib'
+					scm {
+						url 'https://github.com/TeamWizardry/LibrarianLib.git'
+						connection 'scm:git:git@github.com:TeamWizardry/LibrarianLib.git'
+						developerConnection 'scm:git:git@github.com:TeamWizardry/LibrarianLib.git'
+					}
+					issueManagement {
+						system 'github'
+						url 'https://github.com/TeamWizardry/LibrarianLib/issues'
+					}
+					developers {
+						developer {
+							id 'thecodewarrior'
+							name 'thecodewarrior'
+							roles { role 'developer' }
+						}
+						developer {
+							id 'wiresegal'
+							name 'wiresegal'
+							roles { role 'developer' }
+						}
+                        developer {
+                            id 'eladkay'
+                            name 'eladkay'
+                            roles { role 'developer' }
+                        }
+					}
+				}
+			}
+		}
+	}
+}

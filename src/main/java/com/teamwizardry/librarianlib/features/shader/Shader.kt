@@ -6,15 +6,19 @@ import com.teamwizardry.librarianlib.features.helpers.currentModId
 import com.teamwizardry.librarianlib.features.shader.uniforms.FloatTypes
 import com.teamwizardry.librarianlib.features.shader.uniforms.Uniform
 import com.teamwizardry.librarianlib.features.shader.uniforms.UniformType
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.opengl.GL20
 
 @SideOnly(Side.CLIENT)
-open class Shader(vert: String?, frag: String?) {
+open class Shader(vert: ResourceLocation?, frag: ResourceLocation?) {
 
-    val vert: String? = if (vert == null) null else "/assets/$currentModId/${VariantHelper.pathToSnakeCase(vert).removePrefix("/")}"
-    val frag: String? = if (frag == null) null else "/assets/$currentModId/${VariantHelper.pathToSnakeCase(frag).removePrefix("/")}"
+    constructor(vert: String?, frag: String?)
+            : this(vert?.let { ResourceLocation(currentModId, it) }, frag?.let { ResourceLocation(currentModId, it) })
+
+    val vert: String? = if (vert == null) null else "/assets/${vert.resourceDomain}/${VariantHelper.pathToSnakeCase(vert.resourcePath).removePrefix("/")}"
+    val frag: String? = if (frag == null) null else "/assets/${frag.resourceDomain}/${VariantHelper.pathToSnakeCase(frag.resourcePath).removePrefix("/")}"
 
     var time: FloatTypes.FloatUniform? = null
 
@@ -77,6 +81,6 @@ open class Shader(vert: String?, frag: String?) {
     }
 
     companion object {
-        val NONE = Shader(null, null)
+        val NONE = Shader(null as ResourceLocation?, null)
     }
 }

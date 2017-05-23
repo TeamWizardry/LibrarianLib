@@ -31,7 +31,7 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent<ComponentStack>(p
             itemRender.zLevel = 200.0f
 
             itemRender.renderItemAndEffectIntoGUI(stack, pos.xi, pos.yi)
-            itemRender.renderItemOverlayIntoGUI(stack.item.getFontRenderer(stack) ?: Minecraft.getMinecraft().fontRendererObj, stack, pos.xi, pos.yi, str)
+            itemRender.renderItemOverlayIntoGUI(stack.item.getFontRenderer(stack) ?: Minecraft.getMinecraft().fontRenderer, stack, pos.xi, pos.yi, str)
 
             itemRender.zLevel = 0.0f
 
@@ -58,7 +58,7 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent<ComponentStack>(p
         itemInfo.fireAll { h -> h(this, list) }
 
         val font = stack.item.getFontRenderer(stack)
-        setTooltip(list, font ?: Minecraft.getMinecraft().fontRendererObj)
+        setTooltip(list, font ?: Minecraft.getMinecraft().fontRenderer)
     }
 
 }

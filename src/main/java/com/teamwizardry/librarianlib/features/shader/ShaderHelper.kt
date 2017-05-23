@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.features.shader
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.core.common.LibLibConfig
-import com.teamwizardry.librarianlib.features.forgeevents.ResourceReloadEvent
+import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.FMLCommonHandler
@@ -24,13 +24,7 @@ object ShaderHelper {
 
     fun init() {
         initShaders()
-        MinecraftForge.EVENT_BUS.register(this)
-    }
-
-    @SubscribeEvent
-    @Suppress("UNUSED_PARAMETER")
-    fun onResourceManagerReload(e: ResourceReloadEvent) {
-        initShaders()
+        ClientRunnable.registerReloadHandler { initShaders() }
     }
 
     private val VERT = ARBVertexShader.GL_VERTEX_SHADER_ARB

@@ -158,8 +158,17 @@ object ModelHandler {
         if (holder is IExtraVariantHolder)
             registerModels(holder, holder.extraVariants, true)
 
+        if (holder is IModBlockProvider) {
+            val mapper = holder.stateMapper
+            if (mapper != null)
+                ModelLoader.setCustomStateMapper(holder.providedBlock, mapper)
+
+            if (shouldGenerateAnyJson()) generateBlockJson(holder, mapper)
+        }
+
         if (holder is IModItemProvider) {
             val meshDef = holder.meshDefinition
+
             if (meshDef != null) {
                 ModelLoader.setCustomMeshDefinition(holder.providedItem, ItemMeshDefinition(meshDef))
                 return
@@ -172,21 +181,13 @@ object ModelHandler {
 
     @SideOnly(Side.CLIENT)
     fun registerModels(holder: IVariantHolder, variants: Array<out String>, extra: Boolean) {
-        if (holder is IModBlockProvider && !extra) {
-            val mapper = holder.stateMapper
-            if (mapper != null)
-                ModelLoader.setCustomStateMapper(holder.providedBlock, mapper)
-
-            if (shouldGenerateAnyJson()) generateBlockJson(holder, mapper)
-        }
-
         if (holder is IModItemProvider) {
             val item = holder.providedItem
             for ((index, variantName) in variants.withIndex()) {
                 val variant = VariantHelper.toSnakeCase(variantName)
 
                 if (index == 0) {
-                    var print = "${namePad} | Registering "
+                    var print = "$namePad | Registering "
 
                     if (variant != item.registryName!!.resourcePath || variants.size != 1 || extra)
                         print += "${if (extra) "extra " else ""}variant${if (variants.size == 1) "" else "s"} of "
@@ -239,7 +240,7 @@ object ModelHandler {
                             hasRegisteredAny = true
                         }
                         if (!flag) {
-                            var print = "${namePad} | Applying special model rules for "
+                            var print = "$namePad | Applying special model rules for "
                             print += if (item is IModBlockProvider) "block " else "item "
                             print += item.registryName!!.resourcePath
                             log(print)

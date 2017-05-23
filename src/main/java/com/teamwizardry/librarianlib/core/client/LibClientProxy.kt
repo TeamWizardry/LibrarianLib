@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.core.client
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.common.LibCommonProxy
 import com.teamwizardry.librarianlib.features.forgeevents.CustomWorldRenderEvent
-import com.teamwizardry.librarianlib.features.forgeevents.ResourceReloadEvent
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.times
@@ -63,9 +62,6 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
         Texture.register()
 
-        (Minecraft.getMinecraft().resourceManager as IReloadableResourceManager).registerReloadListener(this)
-        onResourceManagerReload(Minecraft.getMinecraft().resourceManager)
-
         if (LibrarianLib.DEV_ENVIRONMENT)
             TextureMapExporter
     }
@@ -73,6 +69,11 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
     override fun latePre(e: FMLPreInitializationEvent) {
         super.latePre(e)
         ModelHandler.preInit()
+
+        GlowingHandler.init()
+
+        (Minecraft.getMinecraft().resourceManager as IReloadableResourceManager).registerReloadListener(this)
+        onResourceManagerReload(Minecraft.getMinecraft().resourceManager)
     }
 
     override fun lateInit(e: FMLInitializationEvent) {
@@ -99,6 +100,12 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
     override fun runIfClient(clientRunnable: ClientRunnable) = clientRunnable.runIfClient()
 
+    private val reloadHandlers = mutableListOf<ClientRunnable>()
+
+    override fun addReloadHandler(clientRunnable: ClientRunnable) {
+        reloadHandlers.add(clientRunnable)
+    }
+
     override fun getClientPlayer(): EntityPlayer = Minecraft.getMinecraft().player
 
     override fun getDataFolder(): File = Minecraft.getMinecraft().mcDataDir
@@ -106,7 +113,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
     // Custom events
 
     override fun onResourceManagerReload(resourceManager: IResourceManager) {
-        MinecraftForge.EVENT_BUS.post(ResourceReloadEvent(resourceManager))
+        for (it in reloadHandlers) ClientRunnable.run(it)
     }
 
     @SubscribeEvent

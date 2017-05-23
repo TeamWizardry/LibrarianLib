@@ -91,7 +91,7 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         fullscreenComponents.draw(relPos, partialTicks)
 
         if (fullscreenComponents.tooltipText != null) {
-            GuiUtils.drawHoveringText(fullscreenComponents.tooltipText, mouseX, mouseY, width, height, -1, if (fullscreenComponents.tooltipFont == null) mc.fontRendererObj else fullscreenComponents.tooltipFont)
+            GuiUtils.drawHoveringText(fullscreenComponents.tooltipText, mouseX, mouseY, width, height, -1, if (fullscreenComponents.tooltipFont == null) mc.fontRenderer else fullscreenComponents.tooltipFont)
             fullscreenComponents.tooltipText = null
             fullscreenComponents.tooltipFont = null
         }

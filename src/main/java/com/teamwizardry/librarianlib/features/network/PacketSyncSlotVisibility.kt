@@ -13,7 +13,7 @@ import net.minecraftforge.fml.relauncher.Side
 class PacketSyncSlotVisibility(@Save var visibility: BooleanArray = BooleanArray(0)) : PacketBase() {
 
     override fun handle(ctx: MessageContext) {
-        (ctx.serverHandler.playerEntity.openContainer as? ContainerImpl)?.container?.allSlots?.forEachIndexed { i, slot ->
+        (ctx.serverHandler.player.openContainer as? ContainerImpl)?.container?.allSlots?.forEachIndexed { i, slot ->
             if (i < visibility.size)
                 slot.visible = visibility[i]
         }

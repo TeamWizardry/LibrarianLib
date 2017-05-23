@@ -2,10 +2,7 @@ package com.teamwizardry.librarianlib.features.helpers
 
 import com.teamwizardry.librarianlib.features.kotlin.get
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NBTBase
-import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.nbt.NBTTagList
-import net.minecraft.nbt.NBTTagLong
+import net.minecraft.nbt.*
 import net.minecraftforge.common.util.Constants
 import java.util.*
 
@@ -85,13 +82,13 @@ object ItemNBTHelper {
             if (verifyExistence(stack, tag)) getNBT(stack, false).getTagList(tag, objType) else null
 
     @JvmStatic fun getUUID(stack: ItemStack, tag: String) =
-            if (verifyUUIDExistence(stack, tag)) fromList(getNBT(stack, false).getTagList(tag, Constants.NBT.TAG_LONG)) else null
+            if (verifyUUIDExistence(stack, tag)) fromList(getNBT(stack, false).getTagList(tag, Constants.NBT.TAG_ANY_NUMERIC)) else null
 
     @JvmStatic fun get(stack: ItemStack, tag: String) = getNBT(stack, false)[tag]
 
     private fun fromList(list: NBTTagList): UUID? {
-        if (list.tagType != Constants.NBT.TAG_LONG || list.tagCount() != 2) return null
-        return UUID((list.get(0) as NBTTagLong).long, (list.get(1) as NBTTagLong).long)
+        if (list.tagCount() != 2 || list.get(0) !is NBTPrimitive) return null
+        return UUID((list.get(0) as NBTPrimitive).long, (list.get(1) as NBTPrimitive).long)
     }
 
 }

@@ -107,6 +107,10 @@ open class LibCommonProxy {
         // NO-OP
     }
 
+    open fun addReloadHandler(clientRunnable: ClientRunnable) {
+        // NO-OP
+    }
+
     /**
      * Used for clientside code rather than proxying.
      */
