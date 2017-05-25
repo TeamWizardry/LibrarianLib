@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.core.common
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.config.ConfigPropertyBoolean
+import com.teamwizardry.librarianlib.features.config.ConfigPropertyInt
 import net.minecraftforge.common.config.Configuration
 
 object LibLibConfig {
@@ -21,4 +22,7 @@ object LibLibConfig {
     @ConfigPropertyBoolean(LibrarianLib.MODID, Configuration.CATEGORY_GENERAL, "one_bonemeal", "Only require one bonemeal to grow LibrarianLib saplings.", false)
     var oneBonemeal = false
 
+    @JvmStatic
+    @ConfigPropertyInt(LibrarianLib.MODID, Configuration.CATEGORY_CLIENT, "maximum_particle_count", "The maximum amount of particles that can exist at a time from the particle system.", 10000)
+    var maxParticleCount = 10000
 }

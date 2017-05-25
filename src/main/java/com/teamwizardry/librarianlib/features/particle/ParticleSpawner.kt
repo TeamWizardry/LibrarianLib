@@ -1,7 +1,9 @@
 package com.teamwizardry.librarianlib.features.particle
 
+import com.teamwizardry.librarianlib.core.common.LibLibConfig
 import com.teamwizardry.librarianlib.features.math.interpolate.InterpFunction
 import com.teamwizardry.librarianlib.features.math.interpolate.InterpListGenerator
+import com.typesafe.config.ConfigValue
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
@@ -55,18 +57,24 @@ object ParticleSpawner {
     @JvmStatic
     @JvmOverloads
     fun spawn(builder: ParticleBuilder, world: World, curve: InterpFunction<Vec3d>, particleCount: Int, travelTime: Int = 0, callback: BiConsumer<Float, ParticleBuilder> = BiConsumer { _, _ -> }) {
-        val actualParticleCount = modifyParticleCount(particleCount)
+        val mc = Minecraft.getMinecraft()
+        val gui = mc.currentScreen
+        val currentCount = ParticleRenderManager.LAYER_BLOCK_MAP.particleList.size + ParticleRenderManager.LAYER_BLOCK_MAP_ADDITIVE.particleList.size
+        if (gui == null || !gui.doesGuiPauseGame() || currentCount < LibLibConfig.maxParticleCount) {
 
-        InterpListGenerator.getIndexList(actualParticleCount).forEach { t ->
-            val tick = Math.floor(t * travelTime.toDouble()).toInt()
-            callback.accept(t, builder)
-            val particle = builder.build(world, curve.get(t))
-            if (particle != null)
-                pending.add(ParticleSpawn(particle, tick))
+            val actualParticleCount = modifyParticleCount(particleCount, LibLibConfig.maxParticleCount - currentCount)
+
+            InterpListGenerator.getIndexList(actualParticleCount).forEach { t ->
+                val tick = Math.floor(t * travelTime.toDouble()).toInt()
+                callback.accept(t, builder)
+                val particle = builder.build(world, curve.get(t))
+                if (particle != null)
+                    pending.add(ParticleSpawn(particle, tick))
+            }
         }
     }
 
-    private fun modifyParticleCount(particleCount: Int): Int {
+    private fun modifyParticleCount(particleCount: Int, cappedParticleCount: Int): Int {
         val mul: Float =
                 when (Minecraft.getMinecraft().gameSettings.particleSetting) {
                     0 -> 1f
@@ -74,10 +82,8 @@ object ParticleSpawner {
                     2 -> 0.25f
                     else -> 1f
                 }
-        return Math.max(2f, particleCount.toFloat() * mul).toInt()
+        return Math.min(cappedParticleCount, Math.max(2f, particleCount.toFloat() * mul).toInt())
     }
-
-
 }
 
 private data class ParticleSpawn private constructor(val particle: ParticleBase) {
@@ -92,5 +98,5 @@ private data class ParticleSpawn private constructor(val particle: ParticleBase)
  * Kotlin wrapper for [spawn]. Uses kotlin lambdas instead of SAM classes
  */
 fun ParticleSpawner.spawn(builder: ParticleBuilder, world: World, curve: InterpFunction<Vec3d>, particleCount: Int, travelTime: Int = 0, callback: (Float, ParticleBuilder) -> Unit = { _, _ -> }) {
-    spawn(builder, world, curve, particleCount, travelTime, BiConsumer<Float, ParticleBuilder>(callback))
+    spawn(builder, world, curve, particleCount, travelTime, BiConsumer(callback))
 }
