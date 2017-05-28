@@ -1,0 +1,14 @@
+{
+  "spritesheet": {
+    "textureWidth": 256,
+    "textureHeight": 256,
+    "sprites": {
+      "bg": [0, 0, 176, 166],
+      "progression_bg": [180, 6, 14, 10],
+      "progression_fg": [197, 7, 12, 8],
+      "power_bg": [180, 24, 8, 56],
+      "power_fg": [192, 24, 8, 56],
+      "slot": [215, 3, 18, 18]
+    }
+  }
+}

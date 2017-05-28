@@ -3,3 +3,7 @@ item.librarianlibtest:guiopener.name=Gui tester %s
 item_group.librarianlibtest=Liblib Test
 
 tile.librarianlibtest:powered_machine.name=Powered Machine
+
+llt:gui.progress=Progress: %1$d%%
+llt:gui.energy=Energy: %1$d/%2$d
+llt:gui.fluid=%1$s (%2$dmb)

@@ -5,11 +5,11 @@ import com.teamwizardry.librarianlib.features.gui.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.Option
 import com.teamwizardry.librarianlib.features.kotlin.glColor
 import com.teamwizardry.librarianlib.features.math.Vec2d
-import com.teamwizardry.librarianlib.features.sprite.Sprite
+import com.teamwizardry.librarianlib.features.sprite.ISprite
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class ComponentSprite @JvmOverloads constructor(var sprite: Sprite?, x: Int, y: Int, width: Int = sprite?.width ?: 16, height: Int = sprite?.height ?: 16) : GuiComponent<ComponentSprite>(x, y, width, height) {
+class ComponentSprite @JvmOverloads constructor(var sprite: ISprite?, x: Int, y: Int, width: Int = sprite?.width ?: 16, height: Int = sprite?.height ?: 16) : GuiComponent<ComponentSprite>(x, y, width, height) {
 
     class AnimationLoopEvent(val component: ComponentSprite) : Event()
 
@@ -37,7 +37,7 @@ class ComponentSprite @JvmOverloads constructor(var sprite: Sprite?, x: Int, y: 
         }
         lastAnim = animationTicks
         color.getValue(this).glColor()
-        sp.tex.bind()
+        sp.bind()
         sp.draw(animationTicks, pos.xf, pos.yf, size.xi.toFloat(), size.yi.toFloat())
         if (alwaysTop)
             GL11.glPopAttrib()

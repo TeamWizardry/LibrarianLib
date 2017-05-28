@@ -24,4 +24,9 @@ object ContainerEntryPoint : TestEntryPoint {
 
 object ContainerBlocks {
     val test = BlockContainerTest()
+
+    init {
+        BlockPoweredMachine
+        BlockFluidTank
+    }
 }
