@@ -349,7 +349,6 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             return
         components.add(component)
         component.parent = this
-        components.sortBy { it.zIndex }
     }
 
     operator fun contains(component: GuiComponent<*>): Boolean {
@@ -520,6 +519,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
     override fun draw(mousePos: Vec2d, partialTicks: Float) {
+        components.sortBy { it.zIndex }
         if (!isVisible) return
 
         if (isAnimating) {
