@@ -28,6 +28,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.io.IOException
+import java.util.*
 
 /**
  * @author WireSegal
@@ -154,7 +155,7 @@ object GlowingHandler {
         }
     }
 
-    private val renderModel = MethodHandleHelper.wrapperForMethod(RenderItem::class.java, arrayOf("renderModel", "func_175045_a", "a"), IBakedModel::class.java, ItemStack::class.java)
+    private val renderModel = MethodHandleHelper.wrapperForMethod(RenderItem::class.java, arrayOf("renderModel", "func_175036_a", "a"), IBakedModel::class.java, ItemStack::class.java)
 
     private val removableGlows = mutableListOf<IGlowingItem>()
     private val renderSpecialHandlers = mutableMapOf<Item, IGlowingItem>()
