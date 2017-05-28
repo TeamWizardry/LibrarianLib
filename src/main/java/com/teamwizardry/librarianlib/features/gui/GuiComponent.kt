@@ -594,7 +594,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             val tt = tooltip(this)
             if (tt?.isNotEmpty() ?: false) {
                 GuiUtils.drawHoveringText(tt, mousePos.xi, mousePos.yi, root.size.xi, root.size.yi, -1,
-                        tooltipFont ?: Minecraft.getMinecraft().fontRendererObj)
+                        tooltipFont ?: Minecraft.getMinecraft().fontRenderer)
             }
         }
 
