@@ -7,7 +7,7 @@ import java.util.Map;
 //-Dfml.coreMods.load=com.teamwizardry.librarianlib.asm.LibLibCorePlugin
 
 @IFMLLoadingPlugin.Name("LibrarianLib Plugin")
-@IFMLLoadingPlugin.TransformerExclusions("com.teamwizardry.librarianlib")
+@IFMLLoadingPlugin.TransformerExclusions("com.teamwizardry.librarianlib.asm")
 public class LibLibCorePlugin implements IFMLLoadingPlugin {
 
     public static boolean runtimeDeobf = false;
