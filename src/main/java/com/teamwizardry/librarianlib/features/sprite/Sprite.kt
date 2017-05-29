@@ -8,7 +8,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
  * This class represents a section of a [Texture]
  */
 @SideOnly(Side.CLIENT)
-open class Sprite {
+open class Sprite: ISprite {
 
     /**
      * The [Texture] that this sprite is a part of
@@ -39,7 +39,7 @@ open class Sprite {
     protected var frames: IntArray = IntArray(0)
     protected var offsetU: Int = 0
     protected var offsetV: Int = 0
-    val frameCount: Int
+    override val frameCount: Int
         get() = frames.size
 
     /**
@@ -47,14 +47,14 @@ open class Sprite {
 
      * Public for easy and concise access. Set to 1 by default.
      */
-    var width = 1
+    override var width = 1
 
     /**
      * The height on screen of the sprite.
 
      * Public for easy and concise access. Set to 1 by default.
      */
-    var height = 1
+    override var height = 1
 
     constructor(tex: Texture, u: Int, v: Int, width: Int, height: Int, frames: IntArray, offsetU: Int, offsetV: Int) {
         this.tex = tex
@@ -90,28 +90,28 @@ open class Sprite {
     /**
      * The minimum U coordinate (0-1)
      */
-    @JvmOverloads fun minU(animFrames: Int = 0): Float {
+    override fun minU(animFrames: Int): Float {
         return (u + offsetU * if (frames.isEmpty()) 0 else frames[animFrames % frames.size]).toFloat() / tex.width.toFloat()
     }
 
     /**
      * The minimum V coordinate (0-1)
      */
-    @JvmOverloads fun minV(animFrames: Int = 0): Float {
+    override fun minV(animFrames: Int): Float {
         return (v + offsetV * if (frames.isEmpty()) 0 else frames[animFrames % frames.size]).toFloat() / tex.height.toFloat()
     }
 
     /**
      * The maximum U coordinate (0-1)
      */
-    @JvmOverloads fun maxU(animFrames: Int = 0): Float {
+    override fun maxU(animFrames: Int): Float {
         return (u + uvWidth + offsetU * if (frames.isEmpty()) 0 else frames[animFrames % frames.size]).toFloat() / tex.width.toFloat()
     }
 
     /**
      * The maximum V coordinate (0-1)
      */
-    @JvmOverloads fun maxV(animFrames: Int = 0): Float {
+    override fun maxV(animFrames: Int): Float {
         return (v + uvHeight + offsetV * if (frames.isEmpty()) 0 else frames[animFrames % frames.size]).toFloat() / tex.height.toFloat()
     }
 
@@ -124,43 +124,5 @@ open class Sprite {
         return s
     }
 
-    /**
-     * Draws the sprite to the screen
-     * @param x The x position to draw at
-     * *
-     * @param y The y position to draw at
-     */
-    fun draw(animTicks: Int, x: Float, y: Float) {
-        DrawingUtil.draw(this, animTicks, x, y, width.toFloat(), height.toFloat())
-    }
-
-    /**
-     * Draws the sprite to the screen with a custom width and height
-     * @param x The x position to draw at
-     * *
-     * @param y The y position to draw at
-     * *
-     * @param width The width to draw the sprite
-     * *
-     * @param height The height to draw the sprite
-     */
-    fun draw(animTicks: Int, x: Float, y: Float, width: Float, height: Float) {
-        DrawingUtil.draw(this, animTicks, x, y, width, height)
-    }
-
-    /**
-     * Draws the sprite to the screen with a custom width and height by clipping or tiling instead of stretching/squashing
-     * @param x
-     * *
-     * @param y
-     * *
-     * @param width
-     * *
-     * @param height
-     */
-    @JvmOverloads
-    fun drawClipped(animTicks: Int, x: Float, y: Float, width: Int, height: Int, reverseX: Boolean = false, reverseY: Boolean = false) {
-        DrawingUtil.drawClipped(this, animTicks, x, y, width, height, reverseX, reverseY)
-    }
-
+    override fun bind() = tex.bind()
 }

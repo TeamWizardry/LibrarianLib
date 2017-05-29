@@ -18,6 +18,7 @@ import com.teamwizardry.librarianlib.features.kotlin.json
 import com.teamwizardry.librarianlib.features.kotlin.nbt
 import com.teamwizardry.librarianlib.features.math.Matrix4
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.network.PacketBase
 import com.teamwizardry.librarianlib.features.particle.ParticleBuilder
 import com.teamwizardry.librarianlib.features.particle.ParticleSpawner
@@ -25,7 +26,6 @@ import com.teamwizardry.librarianlib.features.saving.Save
 import com.teamwizardry.librarianlib.features.structure.Structure
 import com.teamwizardry.librarianlib.features.utilities.LoggerBase
 import com.teamwizardry.librarianlib.features.utilities.client.F3Handler
-import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.utilities.getUnsafe
 import net.minecraft.launchwrapper.Launch
 import net.minecraftforge.fml.common.Mod
@@ -79,7 +79,7 @@ object LibrarianLib {
 
     const val MODID = "librarianlib"
     const val MODNAME = "LibrarianLib"
-    const val VERSION = "3.1.4"
+    const val VERSION = "3.1.5"
     const val ALLOWED = "[1.11,)"
     const val CLIENT = "com.teamwizardry.librarianlib.core.client.LibClientProxy"
     const val SERVER = "com.teamwizardry.librarianlib.core.common.LibCommonProxy"

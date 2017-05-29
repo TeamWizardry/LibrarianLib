@@ -23,7 +23,7 @@ import net.minecraft.world.World
  * Created at 10:36 AM on 5/7/16.
  */
 @Suppress("LeakingThis")
-open class BlockModDirectional(name: String, material: Material, horizontal: Boolean, vararg variants: String) : BlockMod(name, injectDirections(material, horizontal), *variants), IModelGenerator {
+open class BlockModDirectional(name: String, material: Material, horizontal: Boolean = true, vararg variants: String) : BlockMod(name, injectDirections(material, horizontal), *variants), IModelGenerator {
     companion object {
         private var lastHorizontalState: Boolean by threadLocal { false }
 
@@ -72,8 +72,8 @@ open class BlockModDirectional(name: String, material: Material, horizontal: Boo
     }
 
     override fun rotateBlock(world: World, pos: BlockPos, axis: EnumFacing?): Boolean {
-        val state = world.getBlockState(pos)
-        world.setBlockState(pos, state.withProperty(property, axis))
+        if (!isHorizontal || axis?.horizontalIndex?: -1 >= 0)
+            world.setBlockState(pos, world.getBlockState(pos).withProperty(property, axis))
         return true
     }
 

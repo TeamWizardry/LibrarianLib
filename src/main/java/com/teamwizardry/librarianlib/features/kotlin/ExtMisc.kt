@@ -249,6 +249,8 @@ fun <C : ICapabilityProvider, T, R> C.forCap(capability: Capability<T>?, facing:
 
 val ItemStack.toolClasses: Set<String> get() = item.getToolClasses(this)
 
+val ItemStack.isNotEmpty get() = !this.isEmpty
+
 // Item ===========================================================================================================
 
 fun Item.toStack(amount: Int = 1, meta: Int = 0) = ItemStack(this, amount, meta)

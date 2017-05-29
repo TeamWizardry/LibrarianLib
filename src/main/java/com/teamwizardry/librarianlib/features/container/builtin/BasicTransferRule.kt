@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.container.builtin
 
 import com.teamwizardry.librarianlib.features.container.ITransferRule
 import com.teamwizardry.librarianlib.features.container.internal.SlotBase
+import com.teamwizardry.librarianlib.features.kotlin.isNotEmpty
 import net.minecraft.item.ItemStack
 
 /**
@@ -41,10 +42,8 @@ open class BasicTransferRule : ITransferRule {
     }
 
     override fun putStack(stack: ItemStack)
-            = targets
-            .map { target -> ITransferRule.mergeIntoRegion(stack, target.filter { it.visible }) }
-            .firstOrNull { it.foundSpot }
-            ?.remainingStack
-            ?: stack
-
+            = targets.fold(stack) { stack, target ->
+        if (stack.isNotEmpty) ITransferRule.mergeIntoRegion(stack, target.filter { it.visible }).remainingStack
+        else return ItemStack.EMPTY
+    }
 }

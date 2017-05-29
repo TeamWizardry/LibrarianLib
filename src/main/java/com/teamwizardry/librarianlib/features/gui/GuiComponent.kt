@@ -19,6 +19,7 @@ import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraftforge.fml.client.config.GuiUtils
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.input.Keyboard
@@ -208,7 +209,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
     var mouseOver = false
     var mousePosThisFrame = Vec2d.ZERO
-    protected var tagStorage: MutableSet<Any> = HashSet<Any>()
+    protected var tagStorage: MutableSet<Any> = HashSet()
     /**
      * Do not use this to check if a component has a tag, as event hooks can add virtual tags to components. Use [hasTag] instead.
      *
@@ -216,7 +217,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      *
      * You should use [addTag] and [removeTag] to modify the tag set.
      */
-    fun getTags() = Collections.unmodifiableSet<Any>(tagStorage)
+    fun getTags() = Collections.unmodifiableSet<Any>(tagStorage)!!
 
 
     var animationTicks = 0
@@ -250,6 +251,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             }
             field = value
         }
+
     /**
      * Returns true if this component is invalid and it should be removed from it's parent
      * @return
@@ -262,7 +264,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     protected var keysDown: MutableMap<Key, Boolean> = HashMap<Key, Boolean>().withDefault({ false })
     private val data: MutableMap<Class<*>, MutableMap<String, Any>> = mutableMapOf()
 
-    var tooltipText: List<String>? = null
+    var tooltip: Option<GuiComponent<T>, List<String>?> = Option(null)
     var tooltipFont: FontRenderer? = null
 
     /**
@@ -349,15 +351,10 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             return
         components.add(component)
         component.parent = this
-        components.sortBy { it.zIndex }
     }
 
-    operator fun contains(component: GuiComponent<*>): Boolean {
-        if (component in components)
-            return true
-        components.forEach { if (component in it) return true }
-        return false
-    }
+    operator fun contains(component: GuiComponent<*>): Boolean =
+            component in components || components.any { component in it }
 
     /**
      * Removes the supplied component
@@ -423,10 +420,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     }
 
     protected fun addByTag(tag: Any, list: MutableList<GuiComponent<*>>) {
-        for (component in components) {
-            if (component.hasTag(tag))
-                list.add(component)
-        }
+        components.filterTo(list) { it.hasTag(tag) }
     }
 
     /**
@@ -480,7 +474,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     }
 
     /**
-     * Recursivly reverses [transformChildPos], expressing the passed position relative to the root component.
+     * Recursively reverses [transformChildPos], expressing the passed position relative to the root component.
      *
      * If [screenRoot] is set, then the root component's position is accounted for, making the position relative to the
      * GL context of the root caller. Generally meaning the pos is relative to the screen.
@@ -515,11 +509,12 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
     /**
      * Draw this component, don't override in subclasses unless you know what you're doing.
+     *
      * @param mousePos Mouse position relative to the position of this component
-     * *
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
     override fun draw(mousePos: Vec2d, partialTicks: Float) {
+        components.sortBy { it.zIndex }
         if (!isVisible) return
 
         if (isAnimating) {
@@ -580,9 +575,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
         BUS.fire(PreChildrenDrawEvent(thiz(), mousePos, partialTicks))
 
-        forEachChild { component ->
-            component.draw(transformChildPos(component, mousePos), partialTicks)
-        }
+        forEachChild { it.draw(transformChildPos(it, mousePos), partialTicks) }
 
         GlStateManager.popAttrib()
         GlStateManager.popMatrix()
@@ -590,14 +583,30 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         BUS.fire(PostDrawEvent(thiz(), mousePos, partialTicks))
     }
 
+    /**
+     * Draw late stuff this component, like tooltips.
+     *
+     * @param mousePos Mouse position
+     * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
+     */
+    fun drawLate(mousePos: Vec2d, partialTicks: Float) {
+        if (mouseOver) {
+            val tt = tooltip(this)
+            if (tt?.isNotEmpty() ?: false) {
+                GuiUtils.drawHoveringText(tt, mousePos.xi, mousePos.yi, root.size.xi, root.size.yi, -1,
+                        tooltipFont ?: Minecraft.getMinecraft().fontRenderer)
+            }
+        }
+
+        forEachChild { it.drawLate(mousePos, partialTicks) }
+    }
+
     open fun onTick() {}
 
     fun tick() {
         BUS.fire(ComponentTickEvent(thiz()))
         onTick()
-        forEachChild { child ->
-            child.tick()
-        }
+        forEachChild(GuiComponent<*>::tick)
     }
 
     /**
@@ -684,7 +693,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         if (BUS.fire(KeyDownEvent(thiz(), key, keyCode)).isCanceled())
             return
 
-        keysDown.put(Key.get(key, keyCode), true)
+        keysDown.put(Key[key, keyCode], true)
 
         forEachChild { child ->
             child.keyPressed(key, keyCode)
@@ -699,7 +708,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      */
     fun keyReleased(key: Char, keyCode: Int) {
         if (!isVisible) return
-        keysDown.put(Key.get(key, keyCode), false) // do this before so we don't have lingering keyDown entries
+        keysDown.put(Key[key, keyCode], false) // do this before so we don't have lingering keyDown entries
 
         if (BUS.fire(KeyUpEvent(thiz(), key, keyCode)).isCanceled())
             return
@@ -752,20 +761,15 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     /**
      * Sets the tooltip to be drawn, overriding the existing value. Pass null for the font to use the default font renderer.
      */
-    fun setTooltip(text: List<String>, font: FontRenderer) {
-        val component = root
-        component.tooltipText = text
-        component.tooltipFont = font
+    fun setTooltip(text: List<String>, font: FontRenderer?) {
+        tooltip(text)
+        tooltipFont = font
     }
 
     /**
      * Sets the tooltip to be drawn, overriding the existing value and using the default font renderer.
      */
-    fun setTooltip(text: List<String>) {
-        val component = root
-        component.tooltipText = text
-        component.tooltipFont = null
-    }
+    fun setTooltip(text: List<String>) = setTooltip(text, null)
 
     //=============================================================================
     init {/* Assorted info */
@@ -806,7 +810,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     fun <D : Any> getAllDataKeys(clazz: Class<D>): Set<String> {
         if (!data.containsKey(clazz))
             return setOf()
-        return BUS.fire(GetDataKeysEvent(thiz(), clazz, data.get(clazz)?.keys?.toMutableSet() ?: mutableSetOf())).value
+        return BUS.fire(GetDataKeysEvent(thiz(), clazz, data[clazz]?.keys?.toMutableSet() ?: mutableSetOf())).value
     }
 
     /**
@@ -823,7 +827,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         if (!data.containsKey(clazz))
             data.put(clazz, mutableMapOf())
         if (!BUS.fire(SetDataEvent(thiz(), clazz, key, value)).isCanceled())
-            data.get(clazz)?.put(key, value)
+            data[clazz]?.put(key, value)
     }
 
     /**
@@ -833,7 +837,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         if (!data.containsKey(clazz))
             data.put(clazz, mutableMapOf())
         if (!BUS.fire(RemoveDataEvent(thiz(), clazz, key, getData(clazz, key))).isCanceled())
-            data.get(clazz)?.remove(key)
+            data[clazz]?.remove(key)
     }
 
     /**
@@ -844,7 +848,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     fun <D> getData(clazz: Class<D>, key: String): D? {
         if (!data.containsKey(clazz))
             data.put(clazz, HashMap<String, Any>())
-        return BUS.fire(GetDataEvent(thiz(), clazz, key, data.get(clazz)?.get(key) as D?)).value
+        return BUS.fire(GetDataEvent(thiz(), clazz, key, data[clazz]?.get(key) as D?)).value
     }
 
     /**

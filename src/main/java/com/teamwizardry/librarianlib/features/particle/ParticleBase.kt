@@ -90,7 +90,7 @@ open class ParticleBase internal constructor(
             this.setExpired()
         }
 
-        var interpPos = positionFunc.get(Math.max(Math.min(animPos(), 1f), 0f))
+        val interpPos = positionFunc.get(Math.max(Math.min(animPos(), 1f), 0f))
         var jitter = Vec3d.ZERO
 
         if (ThreadLocalRandom.current().nextDouble() < jitterChance)
@@ -106,7 +106,7 @@ open class ParticleBase internal constructor(
             if (movementMode == EnumMovementMode.TOWARD_POINT)
                 velocity = interpPos + position - pos
             if (movementMode == EnumMovementMode.IN_DIRECTION) {
-                var interpMotion = interpPos - lastInterp
+                val interpMotion = interpPos - lastInterp
                 velocity += interpMotion - lastInterpMotion
                 lastInterpMotion = interpMotion
             }
@@ -124,9 +124,7 @@ open class ParticleBase internal constructor(
 
         }
 
-        tickFunc?.let {
-            it.tick(this)
-        }
+        tickFunc?.tick(this)
 
         tickLast()
     }
