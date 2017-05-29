@@ -24,7 +24,7 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent<ComponentStack>(p
         GlStateManager.enableRescaleNormal()
 
         val stack = this.stack.getValue(this)
-        if (!stack.isNotEmpty) {
+        if (stack.isNotEmpty) {
             var str = "" + stack.count
             str = quantityText.fireModifier(str, { h, v -> h(this, v) }) ?: ""
 
