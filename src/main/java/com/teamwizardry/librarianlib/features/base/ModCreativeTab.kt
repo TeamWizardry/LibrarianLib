@@ -45,7 +45,9 @@ abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(currentMod
 
     abstract val iconStack: ItemStack
 
-    override fun getTabIconItem(): ItemStack = iconStack
+    private val lazyStack by lazy { iconStack }
+
+    override fun getTabIconItem(): ItemStack = lazyStack
 
     override fun displayAllRelevantItems(list: NonNullList<ItemStack>) {
         this.list = list
