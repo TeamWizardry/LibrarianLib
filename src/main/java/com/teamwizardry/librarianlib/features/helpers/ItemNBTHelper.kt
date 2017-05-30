@@ -37,8 +37,8 @@ object ItemNBTHelper {
     @JvmStatic fun setString(stack: ItemStack, tag: String, s: String) = getNBT(stack).setString(tag, s)
     @JvmStatic fun setList(stack: ItemStack, tag: String, list: NBTTagList) = set(stack, tag, list)
     @JvmStatic fun setUUID(stack: ItemStack, tag: String, uuid: UUID) = set(stack, tag, NBTTagList().apply {
-        appendTag(NBTTagLong(uuid.leastSignificantBits))
         appendTag(NBTTagLong(uuid.mostSignificantBits))
+        appendTag(NBTTagLong(uuid.leastSignificantBits))
     })
 
     @JvmStatic fun set(stack: ItemStack, tag: String, value: NBTBase) = getNBT(stack).setTag(tag, value)
