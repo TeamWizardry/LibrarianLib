@@ -18,10 +18,8 @@ object ItemNBTHelper {
     }
 
     @JvmStatic fun removeEntry(stack: ItemStack, tag: String) = getNBT(stack).removeTag(tag)
-    @JvmStatic fun removeUUID(stack: ItemStack, tag: String) {
-        getNBT(stack).removeTag(tag + "Most")
-        getNBT(stack).removeTag(tag + "Least")
-    }
+    @Deprecated("No longer functionally different from removeEntry", ReplaceWith("removeEntry(stack, tag)", "com.teamwizardry.librarianlib.features.helpers.ItemNBTHelper.removeEntry"))
+    @JvmStatic fun removeUUID(stack: ItemStack, tag: String) = removeEntry(stack, tag)
 
     @JvmStatic fun verifyExistence(stack: ItemStack, tag: String) = getNBT(stack).hasKey(tag)
     @JvmStatic fun verifyUUIDExistence(stack: ItemStack, tag: String) = verifyExistence(stack, tag + "Most") && verifyExistence(stack, tag + "Least")
@@ -43,7 +41,6 @@ object ItemNBTHelper {
     })
 
     @JvmStatic fun set(stack: ItemStack, tag: String, value: NBTBase) = getNBT(stack).setTag(tag, value)
-
 
     @JvmStatic fun getBoolean(stack: ItemStack, tag: String, defaultExpected: Boolean) =
             if (verifyExistence(stack, tag)) getNBT(stack, false).getBoolean(tag) else defaultExpected
@@ -82,11 +79,13 @@ object ItemNBTHelper {
             if (verifyExistence(stack, tag)) getNBT(stack, false).getTagList(tag, objType) else null
 
     @JvmStatic fun getUUID(stack: ItemStack, tag: String) =
-            if (verifyUUIDExistence(stack, tag)) fromList(getNBT(stack, false).getTagList(tag, Constants.NBT.TAG_ANY_NUMERIC)) else null
+            if (verifyUUIDExistence(stack, tag)) fromList(getNBT(stack, false), tag) else null
 
     @JvmStatic fun get(stack: ItemStack, tag: String) = getNBT(stack, false)[tag]
 
-    private fun fromList(list: NBTTagList): UUID? {
+    private fun fromList(compound: NBTTagCompound, key: String): UUID? {
+        val list = compound.getTag(key) as? NBTTagList ?: return null
+
         if (list.tagCount() != 2 || list.get(0) !is NBTPrimitive) return null
         return UUID((list.get(0) as NBTPrimitive).long, (list.get(1) as NBTPrimitive).long)
     }
