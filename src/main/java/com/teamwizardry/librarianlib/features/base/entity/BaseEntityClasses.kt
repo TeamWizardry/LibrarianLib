@@ -28,19 +28,22 @@ abstract class EntityMod(world: World) : Entity(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
         // NO-OP
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
         // NO-OP
     }
 }
@@ -49,20 +52,23 @@ abstract class LivingEntityMod(world: World) : EntityLiving(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
+        super.writeEntityToNBT(compound)
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
+        super.readEntityFromNBT(compound)
     }
 }
 
@@ -70,20 +76,23 @@ abstract class LivingBaseEntityMod(world: World) : EntityLivingBase(world), IMod
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
+        super.writeEntityToNBT(compound)
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
+        super.readEntityFromNBT(compound)
     }
 }
 
@@ -91,20 +100,23 @@ abstract class AgeableEntityMod(world: World) : EntityAgeable(world), IModEntity
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
+        super.writeEntityToNBT(compound)
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
+        super.readEntityFromNBT(compound)
     }
 }
 
@@ -112,20 +124,23 @@ abstract class CreatureEntityMod(world: World) : EntityCreature(world), IModEnti
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
+        super.writeEntityToNBT(compound)
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
+        super.readEntityFromNBT(compound)
     }
 }
 
@@ -133,20 +148,23 @@ abstract class FlyingEntityMod(world: World) : EntityFlying(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
+        super.writeEntityToNBT(compound)
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
+        super.readEntityFromNBT(compound)
     }
 }
 
@@ -154,20 +172,23 @@ abstract class MobEntityMod(world: World) : EntityMob(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
+        super.writeEntityToNBT(compound)
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
+        super.readEntityFromNBT(compound)
     }
 }
 
@@ -175,20 +196,23 @@ abstract class AnimalEntityMod(world: World) : EntityAnimal(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
+        super.writeEntityToNBT(compound)
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
+        super.readEntityFromNBT(compound)
     }
 }
 
@@ -196,20 +220,23 @@ abstract class TameableEntityMod(world: World) : EntityTameable(world), IModEnti
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
+        super.writeEntityToNBT(compound)
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
+        super.readEntityFromNBT(compound)
     }
 }
 
@@ -217,20 +244,23 @@ abstract class WaterMobEntityMod(world: World) : EntityWaterMob(world), IModEnti
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
+        super.writeEntityToNBT(compound)
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
+        super.readEntityFromNBT(compound)
     }
 }
 
@@ -238,20 +268,23 @@ abstract class SkeletonEntityMod(world: World) : AbstractSkeleton(world), IModEn
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
+        super.writeEntityToNBT(compound)
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
+        super.readEntityFromNBT(compound)
     }
 }
 
@@ -259,20 +292,23 @@ abstract class GolemEntityMod(world: World) : EntityGolem(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
+        super.writeEntityToNBT(compound)
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
+        super.readEntityFromNBT(compound)
     }
 }
 
@@ -280,20 +316,23 @@ abstract class HorseEntityMod(world: World) : EntityHorse(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
+        super.writeEntityToNBT(compound)
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
+        super.readEntityFromNBT(compound)
     }
 }
 
@@ -301,20 +340,23 @@ abstract class ChestHorseEntityMod(world: World) : AbstractChestHorse(world), IM
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
+        super.writeEntityToNBT(compound)
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
+        super.readEntityFromNBT(compound)
     }
 }
 
@@ -327,20 +369,23 @@ abstract class ArrowEntityMod : EntityArrow, IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
+        super.writeEntityToNBT(compound)
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
+        super.readEntityFromNBT(compound)
     }
 }
 
@@ -351,20 +396,23 @@ abstract class MinecartEntityMod : EntityMinecart, IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
+        super.writeEntityToNBT(compound)
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
+        super.readEntityFromNBT(compound)
     }
 }
 
@@ -375,20 +423,23 @@ abstract class MinecartContainerEntityMod : EntityMinecartContainer, IModEntity 
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
+        super.writeEntityToNBT(compound)
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
+        super.readEntityFromNBT(compound)
     }
 }
 
@@ -400,20 +451,23 @@ abstract class ThrowableEntityMod : EntityThrowable, IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
+        super.writeEntityToNBT(compound)
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
+        super.readEntityFromNBT(compound)
     }
 }
 
@@ -425,20 +479,23 @@ abstract class ItemEntityMod : EntityItem, IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
+        super.writeEntityToNBT(compound)
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
+        super.readEntityFromNBT(compound)
     }
 }
 
@@ -450,20 +507,23 @@ abstract class FireballEntityMod : EntityFireball, IModEntity  {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
+        super.writeEntityToNBT(compound)
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
+        super.readEntityFromNBT(compound)
     }
 }
 
@@ -474,19 +534,22 @@ abstract class HangingEntityMod : EntityHanging, IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
         compound.setTag("auto", comp)
+        val comp2 = NBTTagCompound().apply { writeCustomNBT(this) }
+        compound.setTag("custom", comp2)
         return super.writeToNBT(compound)
     }
 
     override fun readFromNBT(compound: NBTTagCompound) {
-        AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+        AbstractSaveHandler.readAutoNBT(this, compound.getCompoundTag("auto"), false)
+        readCustomNBT(compound.getCompoundTag("custom"))
         super.readFromNBT(compound)
     }
 
-    override fun writeEntityToNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun writeEntityToNBT(compound: NBTTagCompound) {
+        super.writeEntityToNBT(compound)
     }
 
-    override fun readEntityFromNBT(compound: NBTTagCompound?) {
-        // NO-OP
+    override final fun readEntityFromNBT(compound: NBTTagCompound) {
+        super.readEntityFromNBT(compound)
     }
 }
