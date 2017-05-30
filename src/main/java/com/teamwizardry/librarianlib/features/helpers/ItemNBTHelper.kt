@@ -8,8 +8,6 @@ import java.util.*
 
 object ItemNBTHelper {
 
-    private val EMPTY_INT_ARRAY = IntArray(0)
-
     @JvmStatic fun detectNBT(stack: ItemStack) = stack.hasTagCompound()
     @JvmStatic @JvmOverloads fun getNBT(stack: ItemStack, modify: Boolean = true): NBTTagCompound {
         if (modify && !detectNBT(stack))
@@ -30,6 +28,7 @@ object ItemNBTHelper {
     @JvmStatic fun setShort(stack: ItemStack, tag: String, s: Short) = getNBT(stack).setShort(tag, s)
     @JvmStatic fun setInt(stack: ItemStack, tag: String, i: Int) = getNBT(stack).setInteger(tag, i)
     @JvmStatic fun setIntArray(stack: ItemStack, tag: String, arr: IntArray) = getNBT(stack).setIntArray(tag, arr)
+    @JvmStatic fun setIntArray(stack: ItemStack, tag: String, arr: ByteArray) = getNBT(stack).setByteArray(tag, arr)
     @JvmStatic fun setLong(stack: ItemStack, tag: String, l: Long) = getNBT(stack).setLong(tag, l)
     @JvmStatic fun setFloat(stack: ItemStack, tag: String, f: Float) = getNBT(stack).setFloat(tag, f)
     @JvmStatic fun setDouble(stack: ItemStack, tag: String, d: Double) = getNBT(stack).setDouble(tag, d)
@@ -56,7 +55,10 @@ object ItemNBTHelper {
             if (verifyExistence(stack, tag)) getNBT(stack, false).getInteger(tag) else defaultExpected
 
     @JvmStatic fun getIntArray(stack: ItemStack, tag: String) =
-            if (verifyExistence(stack, tag)) getNBT(stack, false).getIntArray(tag) else EMPTY_INT_ARRAY
+            if (verifyExistence(stack, tag)) getNBT(stack, false).getIntArray(tag) else null
+
+    @JvmStatic fun getByteArray(stack: ItemStack, tag: String) =
+            if (verifyExistence(stack, tag)) getNBT(stack, false).getByteArray(tag) else null
 
     @JvmStatic fun getLong(stack: ItemStack, tag: String, defaultExpected: Long) =
             if (verifyExistence(stack, tag)) getNBT(stack, false).getLong(tag) else defaultExpected
