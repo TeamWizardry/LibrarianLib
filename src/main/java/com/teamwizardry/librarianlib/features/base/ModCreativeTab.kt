@@ -12,7 +12,7 @@ import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.util.*
 
-abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(currentModId + if (postFix == null) "" else ".${VariantHelper.toSnakeCase(postFix)}") {
+class ModCreativeTab @JvmOverloads constructor(postFix: String? = null) : CreativeTabs(currentModId + if (postFix == null) "" else ".${VariantHelper.toSnakeCase(postFix)}") {
 
     companion object {
         val defaultTabs = mutableMapOf<String, ModCreativeTab>()
