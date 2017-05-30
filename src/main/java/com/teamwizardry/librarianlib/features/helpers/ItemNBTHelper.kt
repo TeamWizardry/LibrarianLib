@@ -22,7 +22,8 @@ object ItemNBTHelper {
     @JvmStatic fun removeUUID(stack: ItemStack, tag: String) = removeEntry(stack, tag)
 
     @JvmStatic fun verifyExistence(stack: ItemStack, tag: String) = getNBT(stack).hasKey(tag)
-    @JvmStatic fun verifyUUIDExistence(stack: ItemStack, tag: String) = verifyExistence(stack, tag + "Most") && verifyExistence(stack, tag + "Least")
+    @Deprecated("No longer functionally different from verifyUUIDExistence", ReplaceWith("verifyExistence(stack, tag)", "com.teamwizardry.librarianlib.features.helpers.ItemNBTHelper.verifyExistence"))
+    @JvmStatic fun verifyUUIDExistence(stack: ItemStack, tag: String) = verifyExistence(stack, tag)
 
     @JvmStatic fun setBoolean(stack: ItemStack, tag: String, b: Boolean) = getNBT(stack).setBoolean(tag, b)
     @JvmStatic fun setByte(stack: ItemStack, tag: String, b: Byte) = getNBT(stack).setByte(tag, b)
@@ -79,7 +80,7 @@ object ItemNBTHelper {
             if (verifyExistence(stack, tag)) getNBT(stack, false).getTagList(tag, objType) else null
 
     @JvmStatic fun getUUID(stack: ItemStack, tag: String) =
-            if (verifyUUIDExistence(stack, tag)) fromList(getNBT(stack, false), tag) else null
+            if (verifyExistence(stack, tag)) fromList(getNBT(stack, false), tag) else null
 
     @JvmStatic fun get(stack: ItemStack, tag: String) = getNBT(stack, false)[tag]
 
