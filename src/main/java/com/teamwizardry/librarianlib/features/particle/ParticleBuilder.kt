@@ -520,6 +520,8 @@ class ParticleBuilder(private var lifetime: Int) {
         private set
     var canCollide: Boolean = false
         private set
+    var canBounce: Boolean = false
+    var bounceMagnitude: Double = 0.9
 
     // randomization
     var jitterMagnitude: Vec3d = Vec3d(0.05, 0.05, 0.05)
@@ -587,7 +589,8 @@ class ParticleBuilder(private var lifetime: Int) {
         return ParticleBase(world, pos_, lifetime_, animStart_, animEnd_,
                 positionFunc ?: StaticInterp(Vec3d.ZERO), colorFunc ?: StaticInterp(Color.WHITE), alphaFunc,
                 renderFunc_, tickFunction, movementMode, scaleFunc, rotationFunc,
-                motionCalculation, positionEnabled, canCollide, motion_, acceleration, deceleration, friction, jitterMagnitude, jitterChance)
+                motionCalculation, positionEnabled, canCollide, motion_, acceleration, deceleration, friction, jitterMagnitude, jitterChance,
+                canBounce, bounceMagnitude)
     }
 
     /**
@@ -633,6 +636,8 @@ class ParticleBuilder(private var lifetime: Int) {
         // plain ol' position
         v.positionOffset = this.positionOffset
         v.canCollide = this.canCollide
+        v.canBounce = this.canBounce
+        v.bounceMagnitude = this.bounceMagnitude
 
         // randomization
         v.jitterMagnitude = this.jitterMagnitude
