@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.features.particle
 
-import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.*
 import com.teamwizardry.librarianlib.features.math.interpolate.InterpFunction
 import com.teamwizardry.librarianlib.features.particle.functions.RenderFunction
@@ -191,43 +190,22 @@ open class ParticleBase internal constructor(
         if (x != velocity.xCoord) {
             this.isCollided = true
 
-            if (!canBounce) {
-                this.velocity = this.velocity.withX(0)
-            } else {
-                val normal = vec(1, 0, 0)
-                val incident = this.velocity
-                val reflected = (incident - (normal * 2 * (incident dot normal))) * bounceMagnitude
-
-                this.velocity = reflected
-            }
+            if (canBounce) this.velocity = this.velocity.withX(this.velocity.xCoord * -bounceMagnitude)
+            else this.velocity = this.velocity.withX(0)
         }
 
         if (y != velocity.yCoord) {
             this.isCollided = true
 
-            if (!canBounce) {
-                this.velocity = this.velocity.withY(0)
-            } else {
-                val normal = vec(0, 1, 0)
-                val incident = this.velocity
-                val reflected = (incident - (normal * 2 * (incident dot normal))) * bounceMagnitude
-
-                this.velocity = reflected
-            }
+            if (canBounce) this.velocity = this.velocity.withY(this.velocity.yCoord * -bounceMagnitude)
+            else this.velocity = this.velocity.withY(0)
         }
 
         if (z != velocity.zCoord) {
             this.isCollided = true
 
-            if (!canBounce) {
-                this.velocity = this.velocity.withZ(0)
-            } else {
-                val normal = vec(0, 0, 1)
-                val incident = this.velocity
-                val reflected = (incident - (normal * 2 * (incident dot normal))) * bounceMagnitude
-
-                this.velocity = reflected
-            }
+            if (canBounce) this.velocity = this.velocity.withZ(this.velocity.zCoord * -bounceMagnitude)
+            else this.velocity = this.velocity.withZ(0)
         }
     }
 
