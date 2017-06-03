@@ -71,16 +71,16 @@ object GlowingHandler {
         if (potionGlow) {
             registerCustomGlowHandler(Items.POTIONITEM, { stack, model ->
                 if (PotionUtils.getEffectsFromStack(stack).isNotEmpty()) IGlowingItem.Helper.wrapperBake(model, false, 0) else null
-            }, { _, _ -> true})
+            }, { _, _ -> true })
             registerCustomGlowHandler(Items.SPLASH_POTION, { stack, model ->
                 if (PotionUtils.getEffectsFromStack(stack).isNotEmpty()) IGlowingItem.Helper.wrapperBake(model, false, 0) else null
-            }, { _, _ -> true})
+            }, { _, _ -> true })
             registerCustomGlowHandler(Items.LINGERING_POTION, { stack, model ->
                 if (PotionUtils.getEffectsFromStack(stack).isNotEmpty()) IGlowingItem.Helper.wrapperBake(model, false, 0) else null
-            }, { _, _ -> true})
+            }, { _, _ -> true })
             registerCustomGlowHandler(Items.TIPPED_ARROW, { stack, model ->
                 if (PotionUtils.getEffectsFromStack(stack).isNotEmpty()) IGlowingItem.Helper.wrapperBake(model, false, 0) else null
-            }, { _, _ -> true})
+            }, { _, _ -> true })
         }
         ClientRunnable.registerReloadHandler { onResourceReload() }
     }
@@ -121,11 +121,13 @@ object GlowingHandler {
 
         val resourceManager = Minecraft.getMinecraft().resourceManager
         resourceManager.resourceDomains
-                .flatMap { try {
-                    resourceManager.getAllResources(ResourceLocation(it, "liblib_glow.cfg"))
-                } catch(e: IOException) {
-                    emptyList<IResource>()
-                } }
+                .flatMap {
+                    try {
+                        resourceManager.getAllResources(ResourceLocation(it, "liblib_glow.cfg"))
+                    } catch(e: IOException) {
+                        emptyList<IResource>()
+                    }
+                }
                 .map { it.inputStream.reader() }
                 .flatMap { it.readLines() }
                 .forEach(::parseLine)
@@ -155,7 +157,9 @@ object GlowingHandler {
         }
     }
 
-    private val renderModel = MethodHandleHelper.wrapperForMethod(RenderItem::class.java, arrayOf("renderModel", "func_175036_a", "a"), IBakedModel::class.java, ItemStack::class.java)
+    private val renderModel = ClientRunnable.produce {
+        MethodHandleHelper.wrapperForMethod(RenderItem::class.java, arrayOf("renderModel", "func_175036_a", "a"), IBakedModel::class.java, ItemStack::class.java)
+    }
 
     private val removableGlows = mutableListOf<IGlowingItem>()
     private val renderSpecialHandlers = mutableMapOf<Item, IGlowingItem>()
@@ -184,8 +188,8 @@ object GlowingHandler {
     }
 
     private fun registerReloadableGlowHandler(item: Item,
-                                  modelTransformer: (ItemStack, IBakedModel) -> IBakedModel?,
-                                  shouldDisableLighting: ((ItemStack, IBakedModel) -> Boolean) = { _, _ -> false }) {
+                                              modelTransformer: (ItemStack, IBakedModel) -> IBakedModel?,
+                                              shouldDisableLighting: ((ItemStack, IBakedModel) -> Boolean) = { _, _ -> false }) {
         val glow = object : IGlowingItem {
             override fun transformToGlow(itemStack: ItemStack, model: IBakedModel): IBakedModel? {
                 return modelTransformer(itemStack, model)
@@ -202,8 +206,8 @@ object GlowingHandler {
     @JvmStatic
     @JvmOverloads
     fun registerCustomGlowHandler(item: Item,
-                        modelTransformer: (ItemStack, IBakedModel) -> IBakedModel?,
-                        shouldDisableLighting: ((ItemStack, IBakedModel) -> Boolean) = { _, _ -> false }) {
+                                  modelTransformer: (ItemStack, IBakedModel) -> IBakedModel?,
+                                  shouldDisableLighting: ((ItemStack, IBakedModel) -> Boolean) = { _, _ -> false }) {
         renderSpecialHandlers.put(item, object : IGlowingItem {
             override fun transformToGlow(itemStack: ItemStack, model: IBakedModel): IBakedModel? {
                 return modelTransformer(itemStack, model)
@@ -224,7 +228,7 @@ object GlowingHandler {
             if (newModel != null) GlUtils.withLighting(!item.shouldDisableLightingForGlow(stack, model)) {
                 val packed = item.packedGlowCoords(stack, model)
                 GlUtils.useLightmap(packed) {
-                    renderModel(Minecraft.getMinecraft().renderItem, arrayOf(newModel, stack))
+                    renderModel?.invoke(Minecraft.getMinecraft().renderItem, arrayOf(newModel, stack))
                 }
             }
         }
@@ -249,3 +253,4 @@ object GlowingHandler {
         }
     }
 }
+

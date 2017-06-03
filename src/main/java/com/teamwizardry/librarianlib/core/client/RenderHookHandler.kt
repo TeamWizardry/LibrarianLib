@@ -7,11 +7,14 @@ import net.minecraft.client.renderer.block.model.IBakedModel
 import net.minecraft.item.ItemStack
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.IBlockAccess
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 
 /**
  * @author WireSegal
  * Created at 9:48 AM on 5/3/17.
  */
+@SideOnly(Side.CLIENT)
 object RenderHookHandler {
     private val itemHooks = mutableListOf<ItemHook>(GlowingHandler::glow)
     private val blockHooks = mutableListOf<BlockHook>(GlowingHandler::glow)

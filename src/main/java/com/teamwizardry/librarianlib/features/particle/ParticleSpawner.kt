@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.features.particle
 import com.teamwizardry.librarianlib.core.common.LibLibConfig
 import com.teamwizardry.librarianlib.features.math.interpolate.InterpFunction
 import com.teamwizardry.librarianlib.features.math.interpolate.InterpListGenerator
-import com.typesafe.config.ConfigValue
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
@@ -36,7 +35,7 @@ object ParticleSpawner {
         if (event.phase == TickEvent.Phase.END) {
             val mc = Minecraft.getMinecraft()
             val gui = mc.currentScreen
-            if (gui == null || !gui.doesGuiPauseGame()) {
+            if ((gui == null || !gui.doesGuiPauseGame()) && mc.inGameHasFocus && !mc.isGamePaused) {
                 tick()
             }
         }
@@ -60,7 +59,7 @@ object ParticleSpawner {
         val mc = Minecraft.getMinecraft()
         val gui = mc.currentScreen
         val currentCount = ParticleRenderManager.LAYER_BLOCK_MAP.particleList.size + ParticleRenderManager.LAYER_BLOCK_MAP_ADDITIVE.particleList.size
-        if (gui == null || !gui.doesGuiPauseGame() || currentCount < LibLibConfig.maxParticleCount) {
+        if ((gui == null || !gui.doesGuiPauseGame()) && currentCount < LibLibConfig.maxParticleCount && mc.inGameHasFocus && !mc.isGamePaused) {
 
             val actualParticleCount = modifyParticleCount(particleCount, LibLibConfig.maxParticleCount - currentCount)
 

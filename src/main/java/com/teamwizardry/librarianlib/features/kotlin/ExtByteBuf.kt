@@ -6,6 +6,8 @@ package com.teamwizardry.librarianlib.features.kotlin
 import io.netty.buffer.ByteBuf
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraftforge.fluids.FluidRegistry
+import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.fml.common.network.ByteBufUtils
 
 // ByteBuf =============================================================================================================
@@ -17,7 +19,7 @@ fun ByteBuf.writeStack(value: ItemStack) = ByteBufUtils.writeItemStack(this, val
 fun ByteBuf.readStack(): ItemStack = ByteBufUtils.readItemStack(this)
 
 fun ByteBuf.writeTag(value: NBTTagCompound) = ByteBufUtils.writeTag(this, value)
-fun ByteBuf.readTag(): NBTTagCompound = ByteBufUtils.readTag(this)!!
+fun ByteBuf.readTag(): NBTTagCompound? = ByteBufUtils.readTag(this)
 
 fun ByteBuf.writeVarInt(value: Int) {
     var input = value
@@ -85,11 +87,9 @@ fun ByteBuf.writeBooleanArray(value: BooleanArray) {
 
     val toReturn = ByteArray((len + 7) / 8) // +7 to round up
     for (entry in toReturn.indices) {
-        for (bit in 0..7) {
-            if (entry * 8 + bit < len && value[entry * 8 + bit]) {
-                toReturn[entry] = (toReturn[entry].toInt() or (128 shr bit)).toByte()
-            }
-        }
+        (0..7)
+                .filter { entry * 8 + it < len && value[entry * 8 + it] }
+                .forEach { toReturn[entry] = (toReturn[entry].toInt() or (128 shr it)).toByte() }
     }
     this.writeBytes(toReturn)
 }
@@ -121,3 +121,19 @@ fun ByteBuf.writeNonnullSignature() {
 
 fun ByteBuf.hasNullSignature(): Boolean = readBoolean()
 
+fun ByteBuf.writeFluidStack(value: FluidStack) {
+    this.writeString(FluidRegistry.getFluidName(value.fluid))
+    this.writeInt(value.amount)
+    if (value.tag != null) {
+        this.writeBoolean(true)
+        this.writeTag(value.tag)
+    } else this.writeBoolean(false)
+}
+
+fun ByteBuf.readFluidStack(): FluidStack? {
+    val fluid = FluidRegistry.getFluid(this.readString())
+    return if (fluid != null) {
+        val amount = this.readInt()
+        if (this.readBoolean()) FluidStack(fluid, amount, this.readTag()) else FluidStack(fluid, amount)
+    } else null
+}

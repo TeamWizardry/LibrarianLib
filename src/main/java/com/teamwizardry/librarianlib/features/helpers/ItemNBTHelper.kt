@@ -8,8 +8,6 @@ import java.util.*
 
 object ItemNBTHelper {
 
-    private val EMPTY_INT_ARRAY = IntArray(0)
-
     @JvmStatic fun detectNBT(stack: ItemStack) = stack.hasTagCompound()
     @JvmStatic @JvmOverloads fun getNBT(stack: ItemStack, modify: Boolean = true): NBTTagCompound {
         if (modify && !detectNBT(stack))
@@ -18,19 +16,19 @@ object ItemNBTHelper {
     }
 
     @JvmStatic fun removeEntry(stack: ItemStack, tag: String) = getNBT(stack).removeTag(tag)
-    @JvmStatic fun removeUUID(stack: ItemStack, tag: String) {
-        getNBT(stack).removeTag(tag + "Most")
-        getNBT(stack).removeTag(tag + "Least")
-    }
+    @Deprecated("No longer functionally different from removeEntry", ReplaceWith("removeEntry(stack, tag)", "com.teamwizardry.librarianlib.features.helpers.ItemNBTHelper.removeEntry"))
+    @JvmStatic fun removeUUID(stack: ItemStack, tag: String) = removeEntry(stack, tag)
 
     @JvmStatic fun verifyExistence(stack: ItemStack, tag: String) = getNBT(stack).hasKey(tag)
-    @JvmStatic fun verifyUUIDExistence(stack: ItemStack, tag: String) = verifyExistence(stack, tag + "Most") && verifyExistence(stack, tag + "Least")
+    @Deprecated("No longer functionally different from verifyUUIDExistence", ReplaceWith("verifyExistence(stack, tag)", "com.teamwizardry.librarianlib.features.helpers.ItemNBTHelper.verifyExistence"))
+    @JvmStatic fun verifyUUIDExistence(stack: ItemStack, tag: String) = verifyExistence(stack, tag)
 
     @JvmStatic fun setBoolean(stack: ItemStack, tag: String, b: Boolean) = getNBT(stack).setBoolean(tag, b)
     @JvmStatic fun setByte(stack: ItemStack, tag: String, b: Byte) = getNBT(stack).setByte(tag, b)
     @JvmStatic fun setShort(stack: ItemStack, tag: String, s: Short) = getNBT(stack).setShort(tag, s)
     @JvmStatic fun setInt(stack: ItemStack, tag: String, i: Int) = getNBT(stack).setInteger(tag, i)
     @JvmStatic fun setIntArray(stack: ItemStack, tag: String, arr: IntArray) = getNBT(stack).setIntArray(tag, arr)
+    @JvmStatic fun setIntArray(stack: ItemStack, tag: String, arr: ByteArray) = getNBT(stack).setByteArray(tag, arr)
     @JvmStatic fun setLong(stack: ItemStack, tag: String, l: Long) = getNBT(stack).setLong(tag, l)
     @JvmStatic fun setFloat(stack: ItemStack, tag: String, f: Float) = getNBT(stack).setFloat(tag, f)
     @JvmStatic fun setDouble(stack: ItemStack, tag: String, d: Double) = getNBT(stack).setDouble(tag, d)
@@ -38,12 +36,11 @@ object ItemNBTHelper {
     @JvmStatic fun setString(stack: ItemStack, tag: String, s: String) = getNBT(stack).setString(tag, s)
     @JvmStatic fun setList(stack: ItemStack, tag: String, list: NBTTagList) = set(stack, tag, list)
     @JvmStatic fun setUUID(stack: ItemStack, tag: String, uuid: UUID) = set(stack, tag, NBTTagList().apply {
-        appendTag(NBTTagLong(uuid.leastSignificantBits))
         appendTag(NBTTagLong(uuid.mostSignificantBits))
+        appendTag(NBTTagLong(uuid.leastSignificantBits))
     })
 
     @JvmStatic fun set(stack: ItemStack, tag: String, value: NBTBase) = getNBT(stack).setTag(tag, value)
-
 
     @JvmStatic fun getBoolean(stack: ItemStack, tag: String, defaultExpected: Boolean) =
             if (verifyExistence(stack, tag)) getNBT(stack, false).getBoolean(tag) else defaultExpected
@@ -58,7 +55,10 @@ object ItemNBTHelper {
             if (verifyExistence(stack, tag)) getNBT(stack, false).getInteger(tag) else defaultExpected
 
     @JvmStatic fun getIntArray(stack: ItemStack, tag: String) =
-            if (verifyExistence(stack, tag)) getNBT(stack, false).getIntArray(tag) else EMPTY_INT_ARRAY
+            if (verifyExistence(stack, tag)) getNBT(stack, false).getIntArray(tag) else null
+
+    @JvmStatic fun getByteArray(stack: ItemStack, tag: String) =
+            if (verifyExistence(stack, tag)) getNBT(stack, false).getByteArray(tag) else null
 
     @JvmStatic fun getLong(stack: ItemStack, tag: String, defaultExpected: Long) =
             if (verifyExistence(stack, tag)) getNBT(stack, false).getLong(tag) else defaultExpected
@@ -82,11 +82,13 @@ object ItemNBTHelper {
             if (verifyExistence(stack, tag)) getNBT(stack, false).getTagList(tag, objType) else null
 
     @JvmStatic fun getUUID(stack: ItemStack, tag: String) =
-            if (verifyUUIDExistence(stack, tag)) fromList(getNBT(stack, false).getTagList(tag, Constants.NBT.TAG_ANY_NUMERIC)) else null
+            if (verifyExistence(stack, tag)) fromList(getNBT(stack, false), tag) else null
 
     @JvmStatic fun get(stack: ItemStack, tag: String) = getNBT(stack, false)[tag]
 
-    private fun fromList(list: NBTTagList): UUID? {
+    private fun fromList(compound: NBTTagCompound, key: String): UUID? {
+        val list = compound.getTag(key) as? NBTTagList ?: return null
+
         if (list.tagCount() != 2 || list.get(0) !is NBTPrimitive) return null
         return UUID((list.get(0) as NBTPrimitive).long, (list.get(1) as NBTPrimitive).long)
     }

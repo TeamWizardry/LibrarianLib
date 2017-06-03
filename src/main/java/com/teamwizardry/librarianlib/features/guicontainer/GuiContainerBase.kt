@@ -12,7 +12,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.fml.client.config.GuiUtils
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
@@ -43,8 +42,6 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
 
     override fun initGui() {
         super.initGui()
-        guiLeft = 0
-        guiTop = 0
         var s = 1.0
         if (!adjustGuiSize()) {
             var i = 1
@@ -62,6 +59,8 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
             mainScaleWrapper.pos = vec(left, top)
             mainScaleWrapper.childScale = s
             mainScaleWrapper.size = vec(guiWidth * s, guiHeight * s)
+            guiLeft = left
+            guiTop = top
         }
 
         fullscreenComponents.size = vec(width, height)
@@ -90,11 +89,6 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         fullscreenComponents.calculateMouseOver(relPos)
         fullscreenComponents.draw(relPos, partialTicks)
 
-        if (fullscreenComponents.tooltipText != null) {
-            GuiUtils.drawHoveringText(fullscreenComponents.tooltipText, mouseX, mouseY, width, height, -1, if (fullscreenComponents.tooltipFont == null) mc.fontRenderer else fullscreenComponents.tooltipFont)
-            fullscreenComponents.tooltipText = null
-            fullscreenComponents.tooltipFont = null
-        }
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
         GlStateManager.popAttrib()
@@ -106,6 +100,7 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         container.allSlots.filter { !it.visible }.forEach { it.xPos = -1000; it.yPos = -1000 }
 
         super.drawScreen(mouseX, mouseY, partialTicks)
+        fullscreenComponents.drawLate(relPos, partialTicks)
     }
 
     @Throws(IOException::class)

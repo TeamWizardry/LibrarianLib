@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.core.client
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.common.LibCommonProxy
 import com.teamwizardry.librarianlib.features.forgeevents.CustomWorldRenderEvent
+import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.times
@@ -36,6 +37,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
+import java.util.*
 
 /**
  * Prefixed with Lib so code suggestion in dependent projects doesn't suggest it
@@ -90,9 +92,12 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
     }
 
     override fun getResource(modId: String, path: String): InputStream? {
+        val fixedModId = modId.toLowerCase(Locale.ROOT)
+        val fixedPath = VariantHelper.pathToSnakeCase(path).removePrefix("/")
+
         val resourceManager = Minecraft.getMinecraft().resourceManager
         try {
-            return resourceManager.getResource(ResourceLocation(modId, path)).inputStream
+            return resourceManager.getResource(ResourceLocation(fixedModId, fixedPath)).inputStream
         } catch (e: IOException) {
             return null
         }

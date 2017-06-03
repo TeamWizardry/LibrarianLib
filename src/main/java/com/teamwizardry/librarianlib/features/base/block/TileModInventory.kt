@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.base.block
 
+import com.teamwizardry.librarianlib.features.kotlin.isNotEmpty
 import com.teamwizardry.librarianlib.features.saving.SaveMethodGetter
 import com.teamwizardry.librarianlib.features.saving.SaveMethodSetter
 import net.minecraft.item.ItemStack
@@ -47,7 +48,7 @@ open class TileModInventory(val size: Int) : TileMod(), IItemHandlerModifiable {
 
         var limit = getStackLimit(slot, stack)
 
-        if (!existing.isEmpty) {
+        if (existing.isNotEmpty) {
             if (!ItemHandlerHelper.canItemStacksStack(stack, existing))
                 return stack
 

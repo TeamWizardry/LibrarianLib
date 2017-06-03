@@ -80,8 +80,17 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                 combine((AbstractInsnNode node) -> node.getOpcode() == RETURN, // Filter
                 (MethodNode method, AbstractInsnNode node) -> { // Action
                     InsnList instructions = method.instructions;
-                    instructions.insertBefore(instructions.getFirst(), new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
-                    instructions.insertBefore(node, new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "returnGlowLightmap", "()V", false));
+                    InsnList before = new InsnList();
+                    InsnList end = new InsnList();
+
+                    before.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
+                    before.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
+
+                    end.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
+                    end.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "returnGlowLightmap", "()V", false));
+
+                    instructions.insertBefore(instructions.getFirst(), before);
+                    instructions.insertBefore(node, end);
                     return true;
                 }));
     }
@@ -94,8 +103,17 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                 combine((AbstractInsnNode node) -> node.getOpcode() == RETURN, // Filter
                 (MethodNode method, AbstractInsnNode node) -> { // Action
                     InsnList instructions = method.instructions;
-                    instructions.insertBefore(instructions.getFirst(), new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
-                    instructions.insertBefore(node, new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "returnGlowLightmap", "()V", false));
+                    InsnList before = new InsnList();
+                    InsnList end = new InsnList();
+
+                    before.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
+                    before.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
+
+                    end.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
+                    end.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "returnGlowLightmap", "()V", false));
+
+                    instructions.insertBefore(instructions.getFirst(), before);
+                    instructions.insertBefore(node, end);
                     return true;
                 }));
     }

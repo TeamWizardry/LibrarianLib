@@ -19,6 +19,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 @SuppressWarnings("unused")
 public class LibLibAsmHooks {
+    public static final LibLibAsmHooks INSTANCE = new LibLibAsmHooks();
+
     @SideOnly(Side.CLIENT)
     public static void renderHook(ItemStack stack, IBakedModel model) {
         RenderHookHandler.runItemHook(stack, model);
@@ -37,7 +39,7 @@ public class LibLibAsmHooks {
     private static float x, y;
 
     @SideOnly(Side.CLIENT)
-    public static void maximizeGlowLightmap() {
+    public void maximizeGlowLightmap() {
         if (GlowingHandler.getEnchantmentGlow()) {
             x = OpenGlHelper.lastBrightnessX;
             y = OpenGlHelper.lastBrightnessY;
@@ -46,7 +48,7 @@ public class LibLibAsmHooks {
     }
 
     @SideOnly(Side.CLIENT)
-    public static void returnGlowLightmap() {
+    public void returnGlowLightmap() {
         if (GlowingHandler.getEnchantmentGlow())
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, x, y);
     }

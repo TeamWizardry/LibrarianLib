@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler
  */
 object Profiler {
     @JvmStatic
-    fun profile(name: String, code: () -> Unit) {
+    inline fun profile(name: String, code: () -> Unit) {
         ClientRunnable.run { Minecraft.getMinecraft().mcProfiler.startSection(name) }
         FMLCommonHandler.instance().minecraftServerInstance.profiler.startSection(name)
         code()
@@ -18,6 +18,6 @@ object Profiler {
     }
 }
 
-fun profile(name: String, code: () -> Unit) {
+inline fun profile(name: String, code: () -> Unit) {
     Profiler.profile(name, code)
 }

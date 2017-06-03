@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.particle
 
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.*
 import com.teamwizardry.librarianlib.features.math.interpolate.InterpFunction
 import com.teamwizardry.librarianlib.features.particle.functions.RenderFunction
@@ -38,7 +39,9 @@ open class ParticleBase internal constructor(
         var deceleration: Vec3d,
         var friction: Vec3d,
         var jitterMagnitude: Vec3d = Vec3d(0.05, 0.05, 0.05),
-        var jitterChance: Float = 0.1f
+        var jitterChance: Float = 0.1f,
+        var canBounce: Boolean = false,
+        var bounceMagnitude: Double = 0.9
 ) {
 
     open fun tickFirst() {
@@ -83,10 +86,9 @@ open class ParticleBase internal constructor(
     fun onUpdate() {
         tickFirst()
 
-        age++
         prevPos = pos
 
-        if (age > lifetime) {
+        if (++age > lifetime) {
             this.setExpired()
         }
 
@@ -188,17 +190,44 @@ open class ParticleBase internal constructor(
 
         if (x != velocity.xCoord) {
             this.isCollided = true
-            this.velocity = this.velocity.withX(0)
+
+            if (!canBounce) {
+                this.velocity = this.velocity.withX(0)
+            } else {
+                val normal = vec(1, 0, 0)
+                val incident = this.velocity
+                val reflected = (incident - (normal * 2 * (incident dot normal))) * bounceMagnitude
+
+                this.velocity = reflected
+            }
         }
 
         if (y != velocity.yCoord) {
             this.isCollided = true
-            this.velocity = this.velocity.withY(0)
+
+            if (!canBounce) {
+                this.velocity = this.velocity.withY(0)
+            } else {
+                val normal = vec(0, 1, 0)
+                val incident = this.velocity
+                val reflected = (incident - (normal * 2 * (incident dot normal))) * bounceMagnitude
+
+                this.velocity = reflected
+            }
         }
 
         if (z != velocity.zCoord) {
             this.isCollided = true
-            this.velocity = this.velocity.withZ(0)
+
+            if (!canBounce) {
+                this.velocity = this.velocity.withZ(0)
+            } else {
+                val normal = vec(0, 0, 1)
+                val incident = this.velocity
+                val reflected = (incident - (normal * 2 * (incident dot normal))) * bounceMagnitude
+
+                this.velocity = reflected
+            }
         }
     }
 

@@ -1,0 +1,53 @@
+{
+  "parent": "block/cube_all",
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "down": {
+          "texture": "#down",
+          "cullface": "down"
+        },
+        "up": {
+          "texture": "#up",
+          "cullface": "up",
+          "rotation": 180
+        },
+        "north": {
+          "texture": "#front",
+          "cullface": "north"
+        },
+        "south": {
+          "texture": "#back",
+          "cullface": "south"
+        },
+        "west": {
+          "texture": "#sides",
+          "cullface": "west"
+        },
+        "east": {
+          "texture": "#sides",
+          "cullface": "east"
+        }
+      }
+    }
+  ],
+  "textures": {
+    "sides": "librarianlibtest:blocks/powered_machine/sides",
+    "front": "librarianlibtest:blocks/powered_machine/front",
+    "back": "librarianlibtest:blocks/powered_machine/sides",
+    "up": "librarianlibtest:blocks/powered_machine/top",
+    "down": "librarianlibtest:blocks/powered_machine/bottom",
+    "particle": "librarianlibtest:blocks/powered_machine/bottom"
+  }
+}
+

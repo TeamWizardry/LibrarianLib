@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.gui.components
 import com.teamwizardry.librarianlib.features.gui.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.HandlerList
 import com.teamwizardry.librarianlib.features.gui.Option
+import com.teamwizardry.librarianlib.features.kotlin.isNotEmpty
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.Minecraft
@@ -13,8 +14,8 @@ import net.minecraft.util.text.TextFormatting
 
 open class ComponentStack(posX: Int, posY: Int) : GuiComponent<ComponentStack>(posX, posY, 16, 16) {
 
-    val stack = Option<ComponentStack, ItemStack?>(null)
-    val tooltip = Option<ComponentStack, Boolean>(true)
+    val stack = Option<ComponentStack, ItemStack>(ItemStack.EMPTY)
+    val enableTooltip = Option<ComponentStack, Boolean>(true)
     val quantityText = HandlerList<(ComponentStack, String?) -> String?>()
     val itemInfo = HandlerList<(ComponentStack, MutableList<String>) -> Unit>()
 
@@ -23,7 +24,7 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent<ComponentStack>(p
         GlStateManager.enableRescaleNormal()
 
         val stack = this.stack.getValue(this)
-        if (stack != null) {
+        if (stack.isNotEmpty) {
             var str = "" + stack.count
             str = quantityText.fireModifier(str, { h, v -> h(this, v) }) ?: ""
 
@@ -35,8 +36,7 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent<ComponentStack>(p
 
             itemRender.zLevel = 0.0f
 
-
-            if (mouseOver && tooltip.getValue(this))
+            if (mouseOver && enableTooltip.getValue(this))
                 drawTooltip(stack)
         }
 

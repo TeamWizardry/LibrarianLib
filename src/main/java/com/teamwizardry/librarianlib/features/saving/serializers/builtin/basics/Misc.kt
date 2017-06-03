@@ -16,6 +16,8 @@ import net.minecraft.network.PacketBuffer
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.TextComponentString
+import net.minecraftforge.fluids.FluidRegistry
+import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.items.ItemStackHandler
 import java.awt.Color
 import java.util.*
@@ -67,7 +69,7 @@ object SerializeNBTTagCompound : Serializer<NBTTagCompound>(FieldType.create(NBT
     }
 
     override fun readBytes(buf: ByteBuf, existing: NBTTagCompound?, syncing: Boolean): NBTTagCompound {
-        return buf.readTag()
+        return buf.readTag() ?: NBTTagCompound()
     }
 
     override fun writeBytes(buf: ByteBuf, value: NBTTagCompound, syncing: Boolean) {
@@ -98,6 +100,21 @@ object SerializeItemStack : Serializer<ItemStack>(FieldType.create(ItemStack::cl
     }
 }
 
+@SerializerRegister(FluidStack::class)
+object SerializeFluidStack : Serializer<FluidStack>(FieldType.create(FluidStack::class.java)) {
+    override fun readNBT(nbt: NBTBase, existing: FluidStack?, syncing: Boolean) =
+            FluidStack.loadFluidStackFromNBT(nbt.safeCast())!!
+
+    override fun writeNBT(value: FluidStack, syncing: Boolean) =
+            value.writeToNBT(NBTTagCompound())!!
+
+    override fun readBytes(buf: ByteBuf, existing: FluidStack?, syncing: Boolean) =
+            buf.readFluidStack()?: FluidStack(FluidRegistry.WATER, 0)
+
+    override fun writeBytes(buf: ByteBuf, value: FluidStack, syncing: Boolean) =
+            buf.writeFluidStack(value)
+}
+
 @SerializerRegister(ItemStackHandler::class)
 object SerializeItemStackHandler : Serializer<ItemStackHandler>(FieldType.create(ItemStackHandler::class.java)) {
     override fun getDefault(): ItemStackHandler {
@@ -116,7 +133,7 @@ object SerializeItemStackHandler : Serializer<ItemStackHandler>(FieldType.create
 
     override fun readBytes(buf: ByteBuf, existing: ItemStackHandler?, syncing: Boolean): ItemStackHandler {
         val handler = existing ?: ItemStackHandler()
-        handler.deserializeNBT(buf.readTag())
+        handler.deserializeNBT(buf.readTag() ?: NBTTagCompound())
         return handler
     }
 

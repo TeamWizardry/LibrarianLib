@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.base.item.IShieldItem
 import com.teamwizardry.librarianlib.features.config.EasyConfigHandler
 import com.teamwizardry.librarianlib.features.container.GuiHandler
+import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.saving.SavingFieldCache
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
@@ -23,6 +24,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.common.network.NetworkRegistry
 import java.io.File
 import java.io.InputStream
+import java.util.*
 
 /**
  * @author WireSegal
@@ -94,10 +96,11 @@ open class LibCommonProxy {
      * [path] should be of the format `path/to/file.extension`. Leading slashes will be ignored. Do not use backslashes.
      */
     open fun getResource(modId: String, path: String): InputStream? {
-        val fixPath = path.removePrefix("/")
+        val fixedModId = modId.toLowerCase(Locale.ROOT)
+        val fixedPath = VariantHelper.pathToSnakeCase(path).removePrefix("/")
         val mods = Loader.instance().indexedModList
-        val mod = mods[modId] ?: return null
-        return mod.mod.javaClass.getResourceAsStream("/assets/$modId/$fixPath")
+        val mod = mods[fixedModId] ?: return null
+        return mod.mod.javaClass.getResourceAsStream("/assets/$fixedModId/$fixedPath")
     }
 
     /**

@@ -16,6 +16,10 @@ open class Option<P, T>(protected var defaultValue: T) {
     private var value: T = defaultValue
     protected var callback: Function<P, T>? = null
 
+    constructor(defaultValue: T, callback: ((P) -> T)?) : this(defaultValue) {
+        this.func(callback)
+    }
+
     fun getValue(param: P): T {
         val tmp = callback
         if (tmp != null) {
@@ -28,7 +32,7 @@ open class Option<P, T>(protected var defaultValue: T) {
         if (callback == null)
             func(null as Function<P, T>?)
         else
-            func(Function<P, T>(callback))
+            func(Function(callback))
     }
 
     fun func(callback: Function<P, T>?) {
