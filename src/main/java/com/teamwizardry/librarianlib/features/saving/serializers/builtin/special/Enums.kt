@@ -24,7 +24,11 @@ object SerializeEnumFactory : SerializerFactory("Enum") {
     }
 
     class SerializeEnum(type: FieldType, val constants: Array<Enum<*>>) : Serializer<Enum<*>>(type) {
+        override fun getDefault(): Enum<*> {
+            return defaultConstant
+        }
 
+        val defaultConstant = constants.first()
         val constantsMap = constants.associateBy { it.name }
         val constSize = constants.size
 

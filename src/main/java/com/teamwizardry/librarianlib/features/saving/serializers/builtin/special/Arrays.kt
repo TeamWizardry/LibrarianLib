@@ -33,6 +33,9 @@ object SerializeArrayFactory : SerializerFactory("Array") {
     }
 
     class SerializeArray(type: FieldType, val componentType: FieldType) : Serializer<Array<Any?>>(type) {
+        override fun getDefault(): Array<Any?> {
+            return Array(0) {}
+        }
 
         val serComponent: Serializer<Any> by SerializerRegistry.lazy(componentType)
 

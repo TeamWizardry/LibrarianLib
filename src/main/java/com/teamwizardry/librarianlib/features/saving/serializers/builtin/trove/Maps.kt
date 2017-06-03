@@ -63,6 +63,10 @@ object SerializeTroveMapsFactory : SerializerFactory("TroveMaps") {
     }
 
     class SerializeTroveMap(type: FieldType, troveData: TroveMapData<Any>, keyType: FieldType, valueType: FieldType) : Serializer<Any>(type) {
+        override fun getDefault(): Any {
+            return constructor()
+        }
+
         val serKey: Serializer<Any> by SerializerRegistry.lazy(keyType)
         val serValue: Serializer<Any> by SerializerRegistry.lazy(valueType)
 

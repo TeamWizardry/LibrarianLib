@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.features.saving.serializers.builtin.generi
 import java.util.EnumSet;
 
 /**
- * Created by TheCodeWarrior
+ * Created by TheCodeWarrior because kotlin won't let me do this kinda shit
  */
 public class RawEnumSetCreator {
     @SuppressWarnings("unchecked")

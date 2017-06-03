@@ -31,6 +31,10 @@ object SerializeListFactory : SerializerFactory("List") {
 
     class SerializeList(type: FieldType, val generic: FieldType) : Serializer<MutableList<Any?>>(type) {
 
+        override fun getDefault(): MutableList<Any?> {
+            return mutableListOf()
+        }
+
         val serGeneric: Serializer<Any> by SerializerRegistry.lazy(generic)
         val constructor = createConstructorMH()
 

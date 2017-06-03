@@ -26,12 +26,23 @@ object SerializerRegistry {
     }
 
     /**
+     * Get the default value for a type from its serializer
+     *
+     * @throws NoSuchSerializerError if there is no serializer for the passed type
+     */
+    fun getDefault(type: FieldType): Any {
+        return getOrCreate(type).getDefault()
+    }
+
+    /**
      * Get the serializer implementation for the given type.
      *
      * _**DO NOT USE IN SERIALIZER GENERATORS!!!**_ Use [lazy] instead
+     *
+     * @throws NoSuchSerializerError if there is no serializer registered for the passed type
      */
     fun getOrCreate(type: FieldType): Serializer<Any> {
-        return serializers.getOrPut(type, { createSerializerForType(type) })
+        return serializers.getOrPut(type, { findFactoryForType(type).create(type) as Serializer<Any> })
     }
 
     /**
@@ -39,21 +50,27 @@ object SerializerRegistry {
      *
      * Use this in serializers and access only when needed.
      * This allows recursive nesting (e.g. `ArrayList<ArrayList<Value>>` or `class FooBar { val bar: FooBar? }`)
+     *
+     * @throws NoSuchSerializerError if there is no serializer registered for the passed type
      */
     fun lazy(type: FieldType): Lazy<Serializer<Any>> {
+        if(type !in serializers) findFactoryForType(type) // throw an error immediately if there is no serializer
         return kotlin.lazy { getOrCreate(type) }
     }
 
-    private fun createSerializerForType(type: FieldType): Serializer<Any> {
+    /**
+     * Find an applicable factory for passed type
+     *
+     * @throws NoSuchSerializerError if there is no factory that can handle the passed type
+     */
+    private fun findFactoryForType(type: FieldType): SerializerFactory {
         val factory = factories.values.maxBy {
             it.canApply(type)
         }
 
         if(factory == null || factory.canApply(type) == SerializerFactoryMatch.NONE)
             throw NoSuchSerializerError(type)
-        else
-            @Suppress("UNCHECKED_CAST")
-            return factory.create(type) as Serializer<Any>
+        return factory
     }
 }
 

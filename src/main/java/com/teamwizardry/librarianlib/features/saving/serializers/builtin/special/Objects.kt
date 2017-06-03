@@ -39,6 +39,11 @@ object SerializeObjectFactory : SerializerFactory("Object") {
     }
 
     class SerializeObject(type: FieldType, val analysis: SerializerAnalysis) : Serializer<Any>(type) {
+        override fun getDefault(): Any {
+            return analysis.constructorMH(analysis.constructorArgOrder.map {
+                analysis.serializers[it]!!.value.getDefault()
+            }.toTypedArray())
+        }
 
         override fun readNBT(nbt: NBTBase, existing: Any?, syncing: Boolean): Any {
             val tag = nbt.safeCast(NBTTagCompound::class.java)
