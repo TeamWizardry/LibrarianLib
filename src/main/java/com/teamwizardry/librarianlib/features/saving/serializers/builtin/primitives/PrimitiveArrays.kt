@@ -9,6 +9,10 @@ import net.minecraft.nbt.*
 
 @SerializerRegister(ByteArray::class)
 object SerializeByteArray : Serializer<ByteArray>(FieldType.create(ByteArray::class.java)) {
+    override fun getDefault(): ByteArray {
+        return ByteArray(0)
+    }
+
     override fun readNBT(nbt: NBTBase, existing: ByteArray?, syncing: Boolean): ByteArray {
         return nbt.safeCast(NBTTagByteArray::class.java).byteArray
     }
@@ -33,6 +37,10 @@ object SerializeByteArray : Serializer<ByteArray>(FieldType.create(ByteArray::cl
 
 @SerializerRegister(CharArray::class)
 object SerializeCharArray : Serializer<CharArray>(FieldType.create(CharArray::class.java)) {
+    override fun getDefault(): CharArray {
+        return CharArray(0)
+    }
+
     override fun readNBT(nbt: NBTBase, existing: CharArray?, syncing: Boolean): CharArray {
         val list = nbt.safeCast(NBTTagList::class.java)
         val array = if (existing != null && existing.size == list.tagCount()) existing else CharArray(list.tagCount())
@@ -65,6 +73,10 @@ object SerializeCharArray : Serializer<CharArray>(FieldType.create(CharArray::cl
 
 @SerializerRegister(ShortArray::class)
 object SerializeShortArray : Serializer<ShortArray>(FieldType.create(ShortArray::class.java)) {
+    override fun getDefault(): ShortArray {
+        return ShortArray(0)
+    }
+
     override fun readNBT(nbt: NBTBase, existing: ShortArray?, syncing: Boolean): ShortArray {
         val list = nbt.safeCast(NBTTagList::class.java)
         val array = if (existing != null && existing.size == list.tagCount()) existing else ShortArray(list.tagCount())
@@ -97,6 +109,10 @@ object SerializeShortArray : Serializer<ShortArray>(FieldType.create(ShortArray:
 
 @SerializerRegister(IntArray::class)
 object SerializeIntArray : Serializer<IntArray>(FieldType.create(IntArray::class.java)) {
+    override fun getDefault(): IntArray {
+        return IntArray(0)
+    }
+
     override fun readNBT(nbt: NBTBase, existing: IntArray?, syncing: Boolean): IntArray {
         return nbt.safeCast(NBTTagIntArray::class.java).intArray
     }
@@ -121,6 +137,10 @@ object SerializeIntArray : Serializer<IntArray>(FieldType.create(IntArray::class
 
 @SerializerRegister(LongArray::class)
 object SerializeLongArray : Serializer<LongArray>(FieldType.create(LongArray::class.java)) {
+    override fun getDefault(): LongArray {
+        return LongArray(0)
+    }
+
     override fun readNBT(nbt: NBTBase, existing: LongArray?, syncing: Boolean): LongArray {
         val list = nbt.safeCast(NBTTagList::class.java)
         val array = if (existing != null && existing.size == list.tagCount()) existing else LongArray(list.tagCount())
@@ -153,6 +173,10 @@ object SerializeLongArray : Serializer<LongArray>(FieldType.create(LongArray::cl
 
 @SerializerRegister(FloatArray::class)
 object SerializeFloatArray : Serializer<FloatArray>(FieldType.create(FloatArray::class.java)) {
+    override fun getDefault(): FloatArray {
+        return FloatArray(0)
+    }
+
     override fun readNBT(nbt: NBTBase, existing: FloatArray?, syncing: Boolean): FloatArray {
         val list = nbt.safeCast(NBTTagList::class.java)
         val array = if (existing != null && existing.size == list.tagCount()) existing else FloatArray(list.tagCount())
@@ -185,6 +209,10 @@ object SerializeFloatArray : Serializer<FloatArray>(FieldType.create(FloatArray:
 
 @SerializerRegister(DoubleArray::class)
 object SerializeDoubleArray : Serializer<DoubleArray>(FieldType.create(DoubleArray::class.java)) {
+    override fun getDefault(): DoubleArray {
+        return DoubleArray(0)
+    }
+
     override fun readNBT(nbt: NBTBase, existing: DoubleArray?, syncing: Boolean): DoubleArray {
         val list = nbt.safeCast(NBTTagList::class.java)
         val array = if (existing != null && existing.size == list.tagCount()) existing else DoubleArray(list.tagCount())
@@ -217,6 +245,10 @@ object SerializeDoubleArray : Serializer<DoubleArray>(FieldType.create(DoubleArr
 
 @SerializerRegister(BooleanArray::class)
 object SerializeBooleanArray : Serializer<BooleanArray>(FieldType.create(BooleanArray::class.java)) {
+    override fun getDefault(): BooleanArray {
+        return BooleanArray(0)
+    }
+
     override fun readNBT(nbt: NBTBase, existing: BooleanArray?, syncing: Boolean): BooleanArray {
         val list = nbt.safeCast(NBTTagList::class.java)
         val array = if (existing != null && existing.size == list.tagCount()) existing else BooleanArray(list.tagCount())
@@ -249,6 +281,10 @@ object SerializeBooleanArray : Serializer<BooleanArray>(FieldType.create(Boolean
 
 @SerializerRegister(Array<String>::class)
 object SerializeStringArray : Serializer<Array<String>>(FieldType.create(Array<String>::class.java)) {
+    override fun getDefault(): Array<String> {
+        return Array(0) { "" }
+    }
+
     override fun readNBT(nbt: NBTBase, existing: Array<String>?, syncing: Boolean): Array<String> {
         val list = nbt.safeCast(NBTTagList::class.java)
         if(existing != null && existing.size == list.tagCount()) {

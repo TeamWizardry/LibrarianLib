@@ -56,9 +56,12 @@ object SerializePairFactory : SerializerFactory("Pair") {
     }
 
     class SerializePair(type: FieldType, firstType: FieldType, secondType: FieldType) : Serializer<Pair<Any?, Any?>>(type) {
-
         val serFirst: Serializer<Any> by SerializerRegistry.lazy(firstType)
         val serSecond: Serializer<Any> by SerializerRegistry.lazy(secondType)
+
+        override fun getDefault(): Pair<Any?, Any?> {
+            return Pair(serFirst.getDefault(), serSecond.getDefault())
+        }
 
         override fun readNBT(nbt: NBTBase, existing: Pair<Any?, Any?>?, syncing: Boolean): Pair<Any?, Any?> {
             val tag = nbt.safeCast<NBTTagCompound>()

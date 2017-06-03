@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.features.saving.FieldType
 import com.teamwizardry.librarianlib.features.saving.serializers.Serializer
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
+import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTTagByteArray
@@ -23,6 +24,10 @@ import java.util.*
 
 @SerializerRegister(Color::class)
 object SerializeColor : Serializer<Color>(FieldType.create(Color::class.java)) {
+    override fun getDefault(): Color {
+        return Color(0, 0, 0, 0)
+    }
+
     override fun readNBT(nbt: NBTBase, existing: Color?, syncing: Boolean): Color {
         val tag = nbt.safeCast<NBTTagCompound>()
 
@@ -51,6 +56,10 @@ object SerializeColor : Serializer<Color>(FieldType.create(Color::class.java)) {
 
 @SerializerRegister(NBTTagCompound::class)
 object SerializeNBTTagCompound : Serializer<NBTTagCompound>(FieldType.create(NBTTagCompound::class.java)) {
+    override fun getDefault(): NBTTagCompound {
+        return NBTTagCompound()
+    }
+
     override fun readNBT(nbt: NBTBase, existing: NBTTagCompound?, syncing: Boolean): NBTTagCompound {
         return nbt.copy().safeCast<NBTTagCompound>()
     }
@@ -70,6 +79,10 @@ object SerializeNBTTagCompound : Serializer<NBTTagCompound>(FieldType.create(NBT
 
 @SerializerRegister(ItemStack::class)
 object SerializeItemStack : Serializer<ItemStack>(FieldType.create(ItemStack::class.java)) {
+    override fun getDefault(): ItemStack {
+        return ItemStack(Items.AIR)
+    }
+
     override fun readNBT(nbt: NBTBase, existing: ItemStack?, syncing: Boolean): ItemStack {
         return ItemStack(nbt.safeCast(NBTTagCompound::class.java))
     }
@@ -104,6 +117,10 @@ object SerializeFluidStack : Serializer<FluidStack>(FieldType.create(FluidStack:
 
 @SerializerRegister(ItemStackHandler::class)
 object SerializeItemStackHandler : Serializer<ItemStackHandler>(FieldType.create(ItemStackHandler::class.java)) {
+    override fun getDefault(): ItemStackHandler {
+        return ItemStackHandler()
+    }
+
     override fun readNBT(nbt: NBTBase, existing: ItemStackHandler?, syncing: Boolean): ItemStackHandler {
         val handler = ItemStackHandler()
         handler.deserializeNBT(nbt.safeCast(NBTTagCompound::class.java))
@@ -127,6 +144,10 @@ object SerializeItemStackHandler : Serializer<ItemStackHandler>(FieldType.create
 
 @SerializerRegister(UUID::class)
 object SerializeUUID : Serializer<UUID>(FieldType.create(UUID::class.java)) {
+    override fun getDefault(): UUID {
+        return UUID(0, 0)
+    }
+
     override fun readNBT(nbt: NBTBase, existing: UUID?, syncing: Boolean): UUID {
         val tag = nbt as? NBTTagString
         return if (tag == null)
@@ -151,6 +172,10 @@ object SerializeUUID : Serializer<UUID>(FieldType.create(UUID::class.java)) {
 
 @SerializerRegister(ITextComponent::class)
 object SerializeITextComponent : Serializer<ITextComponent>(FieldType.create(ITextComponent::class.java)) {
+    override fun getDefault(): ITextComponent {
+        return TextComponentString("NULL")
+    }
+
     override fun readNBT(nbt: NBTBase, existing: ITextComponent?, syncing: Boolean): ITextComponent {
         return ITextComponent.Serializer.jsonToComponent(nbt.safeCast<NBTTagString>().string)
     }
@@ -170,6 +195,10 @@ object SerializeITextComponent : Serializer<ITextComponent>(FieldType.create(ITe
 
 @SerializerRegister(ResourceLocation::class)
 object SerializeResourceLocation : Serializer<ResourceLocation>(FieldType.create(ResourceLocation::class.java)) {
+    override fun getDefault(): ResourceLocation {
+        return ResourceLocation("minecraft:missingno")
+    }
+
     override fun readNBT(nbt: NBTBase, existing: ResourceLocation?, syncing: Boolean): ResourceLocation {
         val tag = nbt as? NBTTagString
         return if (tag == null)
@@ -193,6 +222,10 @@ object SerializeResourceLocation : Serializer<ResourceLocation>(FieldType.create
 
 @SerializerRegister(ByteBuf::class)
 object SerializeByteBuf : Serializer<ByteBuf>(FieldType.create(ByteBuf::class.java)) {
+    override fun getDefault(): ByteBuf {
+        return Unpooled.buffer()
+    }
+
     override fun readNBT(nbt: NBTBase, existing: ByteBuf?, syncing: Boolean): ByteBuf {
         val tag = nbt as? NBTTagByteArray
         return if (tag == null)

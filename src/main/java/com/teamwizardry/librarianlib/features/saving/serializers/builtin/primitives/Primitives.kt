@@ -15,6 +15,10 @@ import net.minecraft.nbt.*
 
 @SerializerRegister(Byte::class)
 object SerializeByte: Serializer<Byte>(FieldType.create(Byte::class.javaPrimitiveType!!)) {
+    override fun getDefault(): Byte {
+        return 0
+    }
+
     override fun readBytes(buf: ByteBuf, existing: Byte?, syncing: Boolean): Byte {
         return buf.readByte()
     }
@@ -34,6 +38,10 @@ object SerializeByte: Serializer<Byte>(FieldType.create(Byte::class.javaPrimitiv
 
 @SerializerRegister(Char::class)
 object SerializeChar : Serializer<Char>(FieldType.create(Char::class.javaPrimitiveType!!)) {
+    override fun getDefault(): Char {
+        return 0.toChar()
+    }
+
     override fun readBytes(buf: ByteBuf, existing: Char?, syncing: Boolean): Char {
         return buf.readChar()
     }
@@ -53,6 +61,10 @@ object SerializeChar : Serializer<Char>(FieldType.create(Char::class.javaPrimiti
 
 @SerializerRegister(Short::class)
 object SerializeShort: Serializer<Short>(FieldType.create(Short::class.javaPrimitiveType!!)) {
+    override fun getDefault(): Short {
+        return 0
+    }
+
     override fun readBytes(buf: ByteBuf, existing: Short?, syncing: Boolean): Short {
         return buf.readShort()
     }
@@ -72,6 +84,10 @@ object SerializeShort: Serializer<Short>(FieldType.create(Short::class.javaPrimi
 
 @SerializerRegister(Int::class)
 object SerializeInt: Serializer<Int>(FieldType.create(Int::class.javaPrimitiveType!!)) {
+    override fun getDefault(): Int {
+        return 0
+    }
+
     override fun readBytes(buf: ByteBuf, existing: Int?, syncing: Boolean): Int {
         return buf.readInt()
     }
@@ -91,6 +107,10 @@ object SerializeInt: Serializer<Int>(FieldType.create(Int::class.javaPrimitiveTy
 
 @SerializerRegister(Long::class)
 object SerializeLong: Serializer<Long>(FieldType.create(Long::class.javaPrimitiveType!!)) {
+    override fun getDefault(): Long {
+        return 0
+    }
+
     override fun readBytes(buf: ByteBuf, existing: Long?, syncing: Boolean): Long {
         return buf.readLong()
     }
@@ -110,6 +130,10 @@ object SerializeLong: Serializer<Long>(FieldType.create(Long::class.javaPrimitiv
 
 @SerializerRegister(Float::class)
 object SerializeFloat: Serializer<Float>(FieldType.create(Float::class.javaPrimitiveType!!)) {
+    override fun getDefault(): Float {
+        return 0.0f
+    }
+
     override fun readBytes(buf: ByteBuf, existing: Float?, syncing: Boolean): Float {
         return buf.readFloat()
     }
@@ -129,6 +153,10 @@ object SerializeFloat: Serializer<Float>(FieldType.create(Float::class.javaPrimi
 
 @SerializerRegister(Double::class)
 object SerializeDouble: Serializer<Double>(FieldType.create(Double::class.javaPrimitiveType!!)) {
+    override fun getDefault(): Double {
+        return 0.0
+    }
+
     override fun readBytes(buf: ByteBuf, existing: Double?, syncing: Boolean): Double {
         return buf.readDouble()
     }
@@ -148,6 +176,10 @@ object SerializeDouble: Serializer<Double>(FieldType.create(Double::class.javaPr
 
 @SerializerRegister(Boolean::class)
 object SerializeBoolean: Serializer<Boolean>(FieldType.create(Boolean::class.javaPrimitiveType!!)) {
+    override fun getDefault(): Boolean {
+        return false
+    }
+
     override fun readBytes(buf: ByteBuf, existing: Boolean?, syncing: Boolean): Boolean {
         return buf.readBoolean()
     }
@@ -167,6 +199,10 @@ object SerializeBoolean: Serializer<Boolean>(FieldType.create(Boolean::class.jav
 
 @SerializerRegister(String::class)
 object SerializeString: Serializer<String>(FieldType.create(String::class.java)) {
+    override fun getDefault(): String {
+        return ""
+    }
+
     override fun readBytes(buf: ByteBuf, existing: String?, syncing: Boolean): String {
         return buf.readString()
     }

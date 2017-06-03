@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.features.kotlin.DefaultedMutableMap
 import com.teamwizardry.librarianlib.features.kotlin.kotlinFunctionSafe
 import com.teamwizardry.librarianlib.features.kotlin.withRealDefault
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
+import com.teamwizardry.librarianlib.features.saving.serializers.SerializerRegistry
 import net.minecraft.util.EnumFacing
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.CapabilityManager
@@ -337,7 +338,7 @@ data class FieldCache(val meta: FieldMetadata, val getter: (Any) -> Any?, privat
     val setter = if (meta.hasFlag(SavingFieldFlag.NONNULL)) {
         { instance: Any, value: Any? ->
             if (value == null) {
-                setter_(instance, DefaultValues.getDefaultValue(meta.type))
+                setter_(instance, SerializerRegistry.getDefault(meta.type))
             } else {
                 setter_(instance, value)
             }

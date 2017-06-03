@@ -90,7 +90,6 @@ public class SerializeCellFactory extends SerializerFactory {
 	
 	
 	class SerializeCell extends Serializer<Cell> {
-		
 		FieldType component;
 		Function1<Object, Object> constructor;
 		Lazy<Serializer<Object>> componentSerializer;
@@ -165,6 +164,12 @@ public class SerializeCellFactory extends SerializerFactory {
 			if(value.value != null) {
 				componentSerializer.getValue().write(buf, value.value, syncing);
 			}
+		}
+		
+		@NotNull
+		@Override
+		public Cell getDefault() {
+			return new Cell(componentSerializer.getValue().getDefault());
 		}
 	}
 }

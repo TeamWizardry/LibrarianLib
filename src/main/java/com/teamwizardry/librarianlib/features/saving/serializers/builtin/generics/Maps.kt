@@ -28,6 +28,9 @@ object SerializeMapFactory : SerializerFactory("Map") {
     }
 
     class SerializeMap(type: FieldType, keyType: FieldType, valueType: FieldType) : Serializer<MutableMap<Any?, Any?>>(type) {
+        override fun getDefault(): MutableMap<Any?, Any?> {
+            return mutableMapOf()
+        }
 
         val serKey: Serializer<Any> by SerializerRegistry.lazy(keyType)
         val serValue: Serializer<Any> by SerializerRegistry.lazy(valueType)

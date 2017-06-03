@@ -31,6 +31,9 @@ object SerializeSetFactory : SerializerFactory("Set") {
     }
 
     class SerializeSet(type: FieldType, valueType: FieldType) : Serializer<MutableSet<Any?>>(type) {
+        override fun getDefault(): MutableSet<Any?> {
+            return mutableSetOf()
+        }
 
         val serValue: Serializer<Any> by SerializerRegistry.lazy(valueType)
 
