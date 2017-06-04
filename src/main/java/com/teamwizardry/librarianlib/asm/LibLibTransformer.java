@@ -88,13 +88,13 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
             return true;
         });
 
-        return transform(transformedClass, sig2, "Enchantment glint glow return", combineByAll((AbstractInsnNode node) -> node.getOpcode() == RETURN,
+        return transform(transformedClass, sig2, "Enchantment glint glow return", combine((AbstractInsnNode node) -> node.getOpcode() == RETURN,
                 (MethodNode method, AbstractInsnNode node) -> {
                     InsnList newInstructions = new InsnList();
                     newInstructions.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
                     newInstructions.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "returnGlowLightmap", "()V", false));
                     method.instructions.insertBefore(node, newInstructions);
-                    return true;
+                    return false;
                 }));
     }
 
@@ -113,13 +113,13 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                 return true;
             });
 
-        return transform(transformedClass, sig, "Enchantment glint glow return", combineByAll((AbstractInsnNode node) -> node.getOpcode() == RETURN,
+        return transform(transformedClass, sig, "Enchantment glint glow return", combine((AbstractInsnNode node) -> node.getOpcode() == RETURN,
                 (MethodNode method, AbstractInsnNode node) -> {
                     InsnList newInstructions = new InsnList();
                     newInstructions.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
                     newInstructions.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "returnGlowLightmap", "()V", false));
                     method.instructions.insertBefore(node, newInstructions);
-                    return true;
+                    return false;
                 }));
     }
 
@@ -267,25 +267,6 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                 didAny = true;
                 if (action.test(method, anode))
                     break;
-            }
-        }
-
-        return didAny;
-    }
-
-    public static MethodAction combineByAll(NodeFilter filter, NodeAction action) {
-        return (MethodNode node) -> applyOnNodeByAll(node, filter, action);
-    }
-
-    public static boolean applyOnNodeByAll(MethodNode method, NodeFilter filter, NodeAction action) {
-        Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
-
-        boolean didAny = false;
-        while (iterator.hasNext()) {
-            AbstractInsnNode anode = iterator.next();
-            if (filter.test(anode)) {
-                didAny = true;
-                action.test(method, anode);
             }
         }
 
