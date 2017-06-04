@@ -327,6 +327,60 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         return didAny;
     }
 
+    public static MethodAction combineFrontFocus(NodeFilter focus, NodeFilter filter, NodeAction action) {
+        return (MethodNode node) -> applyOnNodeFrontFocus(node, focus, filter, action);
+    }
+
+    public static boolean applyOnNodeFrontFocus(MethodNode method, NodeFilter focus, NodeFilter filter, NodeAction action) {
+        ListIterator<AbstractInsnNode> iterator = method.instructions.iterator();
+
+        boolean didAny = false;
+        while (iterator.hasNext()) {
+            AbstractInsnNode focusTest = iterator.next();
+            if (focus.test(focusTest)) {
+                log("Found focus:");
+                prettyPrint(focusTest);
+                while (iterator.hasNext()) {
+                    AbstractInsnNode anode = iterator.next();
+                    if (filter.test(anode)) {
+                        didAny = true;
+                        if (action.test(method, anode))
+                            break;
+                    }
+                }
+            }
+        }
+
+        return didAny;
+    }
+
+    public static MethodAction combineBackFocus(NodeFilter focus, NodeFilter filter, NodeAction action) {
+        return (MethodNode node) -> applyOnNodeBackFocus(node, focus, filter, action);
+    }
+
+    public static boolean applyOnNodeBackFocus(MethodNode method, NodeFilter focus, NodeFilter filter, NodeAction action) {
+        ListIterator<AbstractInsnNode> iterator = method.instructions.iterator(method.instructions.size());
+
+        boolean didAny = false;
+        while (iterator.hasPrevious()) {
+            AbstractInsnNode focusTest = iterator.previous();
+            if (focus.test(focusTest)) {
+                log("Found focus:");
+                prettyPrint(focusTest);
+                while (iterator.hasPrevious()) {
+                    AbstractInsnNode anode = iterator.previous();
+                    if (filter.test(anode)) {
+                        didAny = true;
+                        if (action.test(method, anode))
+                            break;
+                    }
+                }
+            }
+        }
+
+        return didAny;
+    }
+
     private static void log(String str) {
         FMLLog.info("[LibrarianLib ASM] %s", str);
     }
