@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -76,21 +77,23 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                     return true;
                 }));
 
-        return transform(transformedClass, sig2, "Enchantment glint glow",
-                combine((AbstractInsnNode node) -> node.getOpcode() == RETURN, // Filter
-                (MethodNode method, AbstractInsnNode node) -> { // Action
-                    InsnList instructions = method.instructions;
-                    InsnList before = new InsnList();
-                    InsnList end = new InsnList();
+        transformedClass = transform(transformedClass, sig2, "Enchantment glint glow activation", (MethodNode method) -> { // Action
+            InsnList instructions = method.instructions;
 
-                    before.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
-                    before.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
+            InsnList newInstructions = new InsnList();
+            newInstructions.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
+            newInstructions.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
 
-                    end.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
-                    end.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "returnGlowLightmap", "()V", false));
+            instructions.insertBefore(instructions.getFirst(), newInstructions);
+            return true;
+        });
 
-                    instructions.insertBefore(instructions.getFirst(), before);
-                    instructions.insertBefore(node, end);
+        return transform(transformedClass, sig2, "Enchantment glint glow return", combineByAll((AbstractInsnNode node) -> node.getOpcode() == RETURN,
+                (MethodNode method, AbstractInsnNode node) -> {
+                    InsnList newInstructions = new InsnList();
+                    newInstructions.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
+                    newInstructions.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "returnGlowLightmap", "()V", false));
+                    method.instructions.insertBefore(node, newInstructions);
                     return true;
                 }));
     }
@@ -99,21 +102,23 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         MethodSignature sig = new MethodSignature("renderEnchantedGlint", "func_188364_a", "a",
                 "(Lnet/minecraft/client/renderer/entity/RenderLivingBase;Lnet/minecraft/entity/EntityLivingBase;Lnet/minecraft/client/model/ModelBase;FFFFFFF)V");
 
-        return transform(basicClass, sig, "Enchantment glint glow",
-                combine((AbstractInsnNode node) -> node.getOpcode() == RETURN, // Filter
-                (MethodNode method, AbstractInsnNode node) -> { // Action
-                    InsnList instructions = method.instructions;
-                    InsnList before = new InsnList();
-                    InsnList end = new InsnList();
+        byte[] transformedClass = transform(basicClass, sig, "Enchantment glint glow activation", (MethodNode method) -> { // Action
+                InsnList instructions = method.instructions;
 
-                    before.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
-                    before.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
+                InsnList newInstructions = new InsnList();
+                newInstructions.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
+                newInstructions.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
 
-                    end.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
-                    end.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "returnGlowLightmap", "()V", false));
+                instructions.insertBefore(instructions.getFirst(), newInstructions);
+                return true;
+            });
 
-                    instructions.insertBefore(instructions.getFirst(), before);
-                    instructions.insertBefore(node, end);
+        return transform(transformedClass, sig, "Enchantment glint glow return", combineByAll((AbstractInsnNode node) -> node.getOpcode() == RETURN,
+                (MethodNode method, AbstractInsnNode node) -> {
+                    InsnList newInstructions = new InsnList();
+                    newInstructions.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
+                    newInstructions.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "returnGlowLightmap", "()V", false));
+                    method.instructions.insertBefore(node, newInstructions);
                     return true;
                 }));
     }
@@ -211,6 +216,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         return basicClass;
     }
 
+
     public static boolean findMethodAndTransform(ClassNode node, MethodSignature sig, MethodAction pred) {
         for (MethodNode method : node.methods) {
             if (sig.matches(method)) {
@@ -241,6 +247,45 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                 didAny = true;
                 if (action.test(method, anode))
                     break;
+            }
+        }
+
+        return didAny;
+    }
+
+    public static MethodAction combineByLast(NodeFilter filter, NodeAction action) {
+        return (MethodNode node) -> applyOnNodeByLast(node, filter, action);
+    }
+
+    public static boolean applyOnNodeByLast(MethodNode method, NodeFilter filter, NodeAction action) {
+        ListIterator<AbstractInsnNode> iterator = method.instructions.iterator(method.instructions.size());
+
+        boolean didAny = false;
+        while (iterator.hasPrevious()) {
+            AbstractInsnNode anode = iterator.previous();
+            if (filter.test(anode)) {
+                didAny = true;
+                if (action.test(method, anode))
+                    break;
+            }
+        }
+
+        return didAny;
+    }
+
+    public static MethodAction combineByAll(NodeFilter filter, NodeAction action) {
+        return (MethodNode node) -> applyOnNodeByAll(node, filter, action);
+    }
+
+    public static boolean applyOnNodeByAll(MethodNode method, NodeFilter filter, NodeAction action) {
+        Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
+
+        boolean didAny = false;
+        while (iterator.hasNext()) {
+            AbstractInsnNode anode = iterator.next();
+            if (filter.test(anode)) {
+                didAny = true;
+                action.test(method, anode);
             }
         }
 
