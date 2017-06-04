@@ -284,8 +284,6 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         while (iterator.hasNext()) {
             AbstractInsnNode pivotTest = iterator.next();
             if (pivot.test(pivotTest)) {
-                log("Found pivot:");
-                prettyPrint(pivotTest);
                 while (iterator.hasPrevious()) {
                     AbstractInsnNode anode = iterator.previous();
                     if (filter.test(anode)) {
@@ -311,8 +309,6 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         while (iterator.hasPrevious()) {
             AbstractInsnNode pivotTest = iterator.previous();
             if (pivot.test(pivotTest)) {
-                log("Found pivot:");
-                prettyPrint(pivotTest);
                 while (iterator.hasNext()) {
                     AbstractInsnNode anode = iterator.next();
                     if (filter.test(anode)) {
@@ -338,8 +334,6 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         while (iterator.hasNext()) {
             AbstractInsnNode focusTest = iterator.next();
             if (focus.test(focusTest)) {
-                log("Found focus:");
-                prettyPrint(focusTest);
                 while (iterator.hasNext()) {
                     AbstractInsnNode anode = iterator.next();
                     if (filter.test(anode)) {
@@ -365,8 +359,6 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         while (iterator.hasPrevious()) {
             AbstractInsnNode focusTest = iterator.previous();
             if (focus.test(focusTest)) {
-                log("Found focus:");
-                prettyPrint(focusTest);
                 while (iterator.hasPrevious()) {
                     AbstractInsnNode anode = iterator.previous();
                     if (filter.test(anode)) {
