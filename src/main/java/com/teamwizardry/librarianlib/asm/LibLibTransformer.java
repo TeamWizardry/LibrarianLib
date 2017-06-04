@@ -198,7 +198,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         return basicClass;
     }
 
-    private static byte[] transform(byte[] basicClass, MethodSignature sig, String simpleDesc, MethodAction action) {
+    public static byte[] transform(byte[] basicClass, MethodSignature sig, String simpleDesc, MethodAction action) {
         ClassReader reader = new ClassReader(basicClass);
         ClassNode node = new ClassNode();
         reader.accept(node, 0);
@@ -267,6 +267,60 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                 didAny = true;
                 if (action.test(method, anode))
                     break;
+            }
+        }
+
+        return didAny;
+    }
+
+    public static MethodAction combineFrontPivot(NodeFilter pivot, NodeFilter filter, NodeAction action) {
+        return (MethodNode node) -> applyOnNodeFrontPivot(node, pivot, filter, action);
+    }
+
+    public static boolean applyOnNodeFrontPivot(MethodNode method, NodeFilter pivot, NodeFilter filter, NodeAction action) {
+        ListIterator<AbstractInsnNode> iterator = method.instructions.iterator();
+
+        boolean didAny = false;
+        while (iterator.hasNext()) {
+            AbstractInsnNode pivotTest = iterator.next();
+            if (pivot.test(pivotTest)) {
+                log("Found pivot:");
+                prettyPrint(pivotTest);
+                while (iterator.hasPrevious()) {
+                    AbstractInsnNode anode = iterator.previous();
+                    if (filter.test(anode)) {
+                        didAny = true;
+                        if (action.test(method, anode))
+                            break;
+                    }
+                }
+            }
+        }
+
+        return didAny;
+    }
+
+    public static MethodAction combineBackPivot(NodeFilter pivot, NodeFilter filter, NodeAction action) {
+        return (MethodNode node) -> applyOnNodeBackPivot(node, pivot, filter, action);
+    }
+
+    public static boolean applyOnNodeBackPivot(MethodNode method, NodeFilter pivot, NodeFilter filter, NodeAction action) {
+        ListIterator<AbstractInsnNode> iterator = method.instructions.iterator(method.instructions.size());
+
+        boolean didAny = false;
+        while (iterator.hasPrevious()) {
+            AbstractInsnNode pivotTest = iterator.previous();
+            if (pivot.test(pivotTest)) {
+                log("Found pivot:");
+                prettyPrint(pivotTest);
+                while (iterator.hasNext()) {
+                    AbstractInsnNode anode = iterator.next();
+                    if (filter.test(anode)) {
+                        didAny = true;
+                        if (action.test(method, anode))
+                            break;
+                    }
+                }
             }
         }
 
