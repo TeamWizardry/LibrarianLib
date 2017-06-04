@@ -280,12 +280,16 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     public static boolean applyOnNodeFrontPivot(MethodNode method, NodeFilter pivot, NodeFilter filter, NodeAction action) {
         ListIterator<AbstractInsnNode> iterator = method.instructions.iterator();
 
+        int pos = 0;
+
         boolean didAny = false;
         while (iterator.hasNext()) {
+            pos++;
             AbstractInsnNode pivotTest = iterator.next();
             if (pivot.test(pivotTest)) {
-                while (iterator.hasPrevious()) {
-                    AbstractInsnNode anode = iterator.previous();
+                ListIterator<AbstractInsnNode> internal = method.instructions.iterator(pos);
+                while (internal.hasPrevious()) {
+                    AbstractInsnNode anode = internal.previous();
                     if (filter.test(anode)) {
                         didAny = true;
                         if (action.test(method, anode))
@@ -305,12 +309,16 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     public static boolean applyOnNodeBackPivot(MethodNode method, NodeFilter pivot, NodeFilter filter, NodeAction action) {
         ListIterator<AbstractInsnNode> iterator = method.instructions.iterator(method.instructions.size());
 
+        int pos = method.instructions.size();
+
         boolean didAny = false;
         while (iterator.hasPrevious()) {
+            pos--;
             AbstractInsnNode pivotTest = iterator.previous();
             if (pivot.test(pivotTest)) {
-                while (iterator.hasNext()) {
-                    AbstractInsnNode anode = iterator.next();
+                ListIterator<AbstractInsnNode> internal = method.instructions.iterator(pos);
+                while (internal.hasNext()) {
+                    AbstractInsnNode anode = internal.next();
                     if (filter.test(anode)) {
                         didAny = true;
                         if (action.test(method, anode))
@@ -330,12 +338,16 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     public static boolean applyOnNodeFrontFocus(MethodNode method, NodeFilter focus, NodeFilter filter, NodeAction action) {
         ListIterator<AbstractInsnNode> iterator = method.instructions.iterator();
 
+        int pos = method.instructions.size();
+
         boolean didAny = false;
         while (iterator.hasNext()) {
+            pos++;
             AbstractInsnNode focusTest = iterator.next();
             if (focus.test(focusTest)) {
-                while (iterator.hasNext()) {
-                    AbstractInsnNode anode = iterator.next();
+                ListIterator<AbstractInsnNode> internal = method.instructions.iterator(pos);
+                while (internal.hasNext()) {
+                    AbstractInsnNode anode = internal.next();
                     if (filter.test(anode)) {
                         didAny = true;
                         if (action.test(method, anode))
@@ -355,12 +367,16 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     public static boolean applyOnNodeBackFocus(MethodNode method, NodeFilter focus, NodeFilter filter, NodeAction action) {
         ListIterator<AbstractInsnNode> iterator = method.instructions.iterator(method.instructions.size());
 
+        int pos = method.instructions.size();
+
         boolean didAny = false;
         while (iterator.hasPrevious()) {
+            pos--;
             AbstractInsnNode focusTest = iterator.previous();
             if (focus.test(focusTest)) {
-                while (iterator.hasPrevious()) {
-                    AbstractInsnNode anode = iterator.previous();
+                ListIterator<AbstractInsnNode> internal = method.instructions.iterator(pos);
+                while (internal.hasPrevious()) {
+                    AbstractInsnNode anode = internal.previous();
                     if (filter.test(anode)) {
                         didAny = true;
                         if (action.test(method, anode))
