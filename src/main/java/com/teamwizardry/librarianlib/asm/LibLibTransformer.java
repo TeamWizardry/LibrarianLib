@@ -238,7 +238,8 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     }
 
     public static boolean applyOnNode(MethodNode method, NodeFilter filter, NodeAction action) {
-        Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
+        AbstractInsnNode[] nodes = method.instructions.toArray();
+        Iterator<AbstractInsnNode> iterator = new InsnArrayIterator(nodes);
 
         boolean didAny = false;
         while (iterator.hasNext()) {
@@ -258,7 +259,8 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     }
 
     public static boolean applyOnNodeByLast(MethodNode method, NodeFilter filter, NodeAction action) {
-        ListIterator<AbstractInsnNode> iterator = method.instructions.iterator(method.instructions.size());
+        AbstractInsnNode[] nodes = method.instructions.toArray();
+        ListIterator<AbstractInsnNode> iterator = new InsnArrayIterator(nodes, method.instructions.size());
 
         boolean didAny = false;
         while (iterator.hasPrevious()) {
@@ -278,7 +280,8 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     }
 
     public static boolean applyOnNodeFrontPivot(MethodNode method, NodeFilter pivot, NodeFilter filter, NodeAction action) {
-        ListIterator<AbstractInsnNode> iterator = method.instructions.iterator();
+        AbstractInsnNode[] nodes = method.instructions.toArray();
+        ListIterator<AbstractInsnNode> iterator = new InsnArrayIterator(nodes);
 
         int pos = 0;
 
@@ -287,7 +290,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
             pos++;
             AbstractInsnNode pivotTest = iterator.next();
             if (pivot.test(pivotTest)) {
-                ListIterator<AbstractInsnNode> internal = method.instructions.iterator(pos);
+                ListIterator<AbstractInsnNode> internal = new InsnArrayIterator(nodes, pos);
                 while (internal.hasPrevious()) {
                     AbstractInsnNode anode = internal.previous();
                     if (filter.test(anode)) {
@@ -307,7 +310,8 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     }
 
     public static boolean applyOnNodeBackPivot(MethodNode method, NodeFilter pivot, NodeFilter filter, NodeAction action) {
-        ListIterator<AbstractInsnNode> iterator = method.instructions.iterator(method.instructions.size());
+        AbstractInsnNode[] nodes = method.instructions.toArray();
+        ListIterator<AbstractInsnNode> iterator = new InsnArrayIterator(nodes, method.instructions.size());
 
         int pos = method.instructions.size();
 
@@ -316,7 +320,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
             pos--;
             AbstractInsnNode pivotTest = iterator.previous();
             if (pivot.test(pivotTest)) {
-                ListIterator<AbstractInsnNode> internal = method.instructions.iterator(pos);
+                ListIterator<AbstractInsnNode> internal = new InsnArrayIterator(nodes, pos);
                 while (internal.hasNext()) {
                     AbstractInsnNode anode = internal.next();
                     if (filter.test(anode)) {
@@ -336,7 +340,8 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     }
 
     public static boolean applyOnNodeFrontFocus(MethodNode method, NodeFilter focus, NodeFilter filter, NodeAction action) {
-        ListIterator<AbstractInsnNode> iterator = method.instructions.iterator();
+        AbstractInsnNode[] nodes = method.instructions.toArray();
+        ListIterator<AbstractInsnNode> iterator = new InsnArrayIterator(nodes);
 
         int pos = method.instructions.size();
 
@@ -345,7 +350,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
             pos++;
             AbstractInsnNode focusTest = iterator.next();
             if (focus.test(focusTest)) {
-                ListIterator<AbstractInsnNode> internal = method.instructions.iterator(pos);
+                ListIterator<AbstractInsnNode> internal = new InsnArrayIterator(nodes, pos);
                 while (internal.hasNext()) {
                     AbstractInsnNode anode = internal.next();
                     if (filter.test(anode)) {
@@ -365,7 +370,8 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     }
 
     public static boolean applyOnNodeBackFocus(MethodNode method, NodeFilter focus, NodeFilter filter, NodeAction action) {
-        ListIterator<AbstractInsnNode> iterator = method.instructions.iterator(method.instructions.size());
+        AbstractInsnNode[] nodes = method.instructions.toArray();
+        ListIterator<AbstractInsnNode> iterator = new InsnArrayIterator(nodes, method.instructions.size());
 
         int pos = method.instructions.size();
 
@@ -374,7 +380,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
             pos--;
             AbstractInsnNode focusTest = iterator.previous();
             if (focus.test(focusTest)) {
-                ListIterator<AbstractInsnNode> internal = method.instructions.iterator(pos);
+                ListIterator<AbstractInsnNode> internal = new InsnArrayIterator(nodes, pos);
                 while (internal.hasPrevious()) {
                     AbstractInsnNode anode = internal.previous();
                     if (filter.test(anode)) {
@@ -406,7 +412,71 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         log(sw.toString().replaceAll("\n", ""));
     }
 
-    private static class MethodSignature {
+    private static class InsnArrayIterator implements ListIterator<AbstractInsnNode> {
+
+        private int index;
+        private final AbstractInsnNode[] array;
+
+        public InsnArrayIterator(AbstractInsnNode[] array) {
+            this(array, 0);
+        }
+
+        public InsnArrayIterator(AbstractInsnNode[] array, int index) {
+            this.array = array;
+            this.index = index;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return array.length > index + 1;
+        }
+
+        @Override
+        public AbstractInsnNode next() {
+            if (hasNext())
+                return array[index++];
+            return null;
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            return index > 0;
+        }
+
+        @Override
+        public AbstractInsnNode previous() {
+            if (hasPrevious())
+                return array[index--];
+            return null;
+        }
+
+        @Override
+        public int nextIndex() {
+            return hasNext() ? index + 1 : index;
+        }
+
+        @Override
+        public int previousIndex() {
+            return hasPrevious() ? index - 1 : index;
+        }
+
+        @Override
+        public void remove() {
+            throw new Error("Unimplemented");
+        }
+
+        @Override
+        public void set(AbstractInsnNode e) {
+            throw new Error("Unimplemented");
+        }
+
+        @Override
+        public void add(AbstractInsnNode e) {
+            throw new Error("Unimplemented");
+        }
+    }
+
+    public static class MethodSignature {
         private final String funcName, srgName, obfName, funcDesc, obfDesc;
 
         public MethodSignature(String funcName, String srgName, String obfName, String funcDesc) {
@@ -430,16 +500,16 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
             return desc;
         }
 
-        private boolean matches(String methodName, String methodDesc) {
+        public boolean matches(String methodName, String methodDesc) {
             return (methodName.equals(funcName) || methodName.equals(obfName) || methodName.equals(srgName))
                     && (methodDesc.equals(funcDesc) || methodDesc.equals(obfDesc));
         }
 
-        private boolean matches(MethodNode method) {
+        public boolean matches(MethodNode method) {
             return matches(method.name, method.desc);
         }
 
-        private boolean matches(MethodInsnNode method) {
+        public boolean matches(MethodInsnNode method) {
             return matches(method.name, method.desc);
         }
 
@@ -447,19 +517,19 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
     // Basic interface aliases to not have to clutter up the code with generics over and over again
 
-    private interface Transformer extends Function<byte[], byte[]> {
+    public interface Transformer extends Function<byte[], byte[]> {
         // NO-OP
     }
 
-    private interface MethodAction extends Predicate<MethodNode> {
+    public interface MethodAction extends Predicate<MethodNode> {
         // NO-OP
     }
 
-    private interface NodeFilter extends Predicate<AbstractInsnNode> {
+    public interface NodeFilter extends Predicate<AbstractInsnNode> {
         // NO-OP
     }
 
-    private interface NodeAction extends BiPredicate<MethodNode, AbstractInsnNode> {
+    public interface NodeAction extends BiPredicate<MethodNode, AbstractInsnNode> {
         // NO-OP
     }
 }

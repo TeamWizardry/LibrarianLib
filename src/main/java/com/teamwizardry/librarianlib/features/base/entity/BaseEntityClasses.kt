@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.base.entity
 
 import com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler
+import com.teamwizardry.librarianlib.features.saving.SaveInPlace
 import net.minecraft.entity.*
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.item.EntityMinecart
@@ -24,6 +25,8 @@ import net.minecraft.world.World
  * One exists for each abstract saved-to-world non-player entity class.
  * They're trivial to implement yourself, though.
  */
+
+@SaveInPlace
 abstract class EntityMod(world: World) : Entity(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
@@ -48,6 +51,7 @@ abstract class EntityMod(world: World) : Entity(world), IModEntity {
     }
 }
 
+@SaveInPlace
 abstract class LivingEntityMod(world: World) : EntityLiving(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
@@ -72,6 +76,7 @@ abstract class LivingEntityMod(world: World) : EntityLiving(world), IModEntity {
     }
 }
 
+@SaveInPlace
 abstract class LivingBaseEntityMod(world: World) : EntityLivingBase(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
@@ -96,6 +101,7 @@ abstract class LivingBaseEntityMod(world: World) : EntityLivingBase(world), IMod
     }
 }
 
+@SaveInPlace
 abstract class AgeableEntityMod(world: World) : EntityAgeable(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
@@ -120,6 +126,7 @@ abstract class AgeableEntityMod(world: World) : EntityAgeable(world), IModEntity
     }
 }
 
+@SaveInPlace
 abstract class CreatureEntityMod(world: World) : EntityCreature(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
@@ -144,6 +151,7 @@ abstract class CreatureEntityMod(world: World) : EntityCreature(world), IModEnti
     }
 }
 
+@SaveInPlace
 abstract class FlyingEntityMod(world: World) : EntityFlying(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
@@ -168,6 +176,7 @@ abstract class FlyingEntityMod(world: World) : EntityFlying(world), IModEntity {
     }
 }
 
+@SaveInPlace
 abstract class MobEntityMod(world: World) : EntityMob(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
@@ -192,6 +201,7 @@ abstract class MobEntityMod(world: World) : EntityMob(world), IModEntity {
     }
 }
 
+@SaveInPlace
 abstract class AnimalEntityMod(world: World) : EntityAnimal(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
@@ -216,6 +226,7 @@ abstract class AnimalEntityMod(world: World) : EntityAnimal(world), IModEntity {
     }
 }
 
+@SaveInPlace
 abstract class TameableEntityMod(world: World) : EntityTameable(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
@@ -240,6 +251,7 @@ abstract class TameableEntityMod(world: World) : EntityTameable(world), IModEnti
     }
 }
 
+@SaveInPlace
 abstract class WaterMobEntityMod(world: World) : EntityWaterMob(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
@@ -264,6 +276,7 @@ abstract class WaterMobEntityMod(world: World) : EntityWaterMob(world), IModEnti
     }
 }
 
+@SaveInPlace
 abstract class SkeletonEntityMod(world: World) : AbstractSkeleton(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
@@ -288,6 +301,7 @@ abstract class SkeletonEntityMod(world: World) : AbstractSkeleton(world), IModEn
     }
 }
 
+@SaveInPlace
 abstract class GolemEntityMod(world: World) : EntityGolem(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
@@ -312,6 +326,7 @@ abstract class GolemEntityMod(world: World) : EntityGolem(world), IModEntity {
     }
 }
 
+@SaveInPlace
 abstract class HorseEntityMod(world: World) : EntityHorse(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
@@ -336,6 +351,7 @@ abstract class HorseEntityMod(world: World) : EntityHorse(world), IModEntity {
     }
 }
 
+@SaveInPlace
 abstract class ChestHorseEntityMod(world: World) : AbstractChestHorse(world), IModEntity {
     override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
         val comp = AbstractSaveHandler.writeAutoNBT(this, false)
@@ -361,6 +377,7 @@ abstract class ChestHorseEntityMod(world: World) : AbstractChestHorse(world), IM
 }
 
 
+@SaveInPlace
 abstract class ArrowEntityMod : EntityArrow, IModEntity {
     constructor(world: World) : super(world)
     constructor(world: World, x: Double, y: Double, z: Double) : super(world, x, y, z)
@@ -389,6 +406,7 @@ abstract class ArrowEntityMod : EntityArrow, IModEntity {
     }
 }
 
+@SaveInPlace
 abstract class MinecartEntityMod : EntityMinecart, IModEntity {
     constructor(world: World) : super(world)
     constructor(world: World, x: Double, y: Double, z: Double) : super(world, x, y, z)
@@ -416,6 +434,7 @@ abstract class MinecartEntityMod : EntityMinecart, IModEntity {
     }
 }
 
+@SaveInPlace
 abstract class MinecartContainerEntityMod : EntityMinecartContainer, IModEntity {
     constructor(world: World) : super(world)
     constructor(world: World, x: Double, y: Double, z: Double) : super(world, x, y, z)
@@ -443,6 +462,7 @@ abstract class MinecartContainerEntityMod : EntityMinecartContainer, IModEntity 
     }
 }
 
+@SaveInPlace
 abstract class ThrowableEntityMod : EntityThrowable, IModEntity {
     constructor(world: World) : super(world)
     constructor(world: World, x: Double, y: Double, z: Double) : super(world, x, y, z)
@@ -471,6 +491,7 @@ abstract class ThrowableEntityMod : EntityThrowable, IModEntity {
     }
 }
 
+@SaveInPlace
 abstract class ItemEntityMod : EntityItem, IModEntity {
     constructor(world: World) : super(world)
     constructor(world: World, x: Double, y: Double, z: Double) : super(world, x, y, z)
@@ -499,6 +520,7 @@ abstract class ItemEntityMod : EntityItem, IModEntity {
     }
 }
 
+@SaveInPlace
 abstract class FireballEntityMod : EntityFireball, IModEntity  {
     constructor(world: World) : super(world)
     constructor(world: World, x: Double, y: Double, z: Double, accelX: Double, accelY: Double, accelZ: Double) : super(world, x, y, z, accelX, accelY, accelZ)
@@ -527,6 +549,7 @@ abstract class FireballEntityMod : EntityFireball, IModEntity  {
     }
 }
 
+@SaveInPlace
 abstract class HangingEntityMod : EntityHanging, IModEntity {
     constructor(world: World) : super(world)
     constructor(world: World, pos: BlockPos) : super(world, pos)
