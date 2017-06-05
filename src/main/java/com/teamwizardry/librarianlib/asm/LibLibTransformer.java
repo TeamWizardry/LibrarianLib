@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -76,22 +77,24 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                     return true;
                 }));
 
-        return transform(transformedClass, sig2, "Enchantment glint glow",
-                combine((AbstractInsnNode node) -> node.getOpcode() == RETURN, // Filter
-                (MethodNode method, AbstractInsnNode node) -> { // Action
-                    InsnList instructions = method.instructions;
-                    InsnList before = new InsnList();
-                    InsnList end = new InsnList();
+        transformedClass = transform(transformedClass, sig2, "Enchantment glint glow activation", (MethodNode method) -> { // Action
+            InsnList instructions = method.instructions;
 
-                    before.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
-                    before.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
+            InsnList newInstructions = new InsnList();
+            newInstructions.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
+            newInstructions.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
 
-                    end.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
-                    end.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "returnGlowLightmap", "()V", false));
+            instructions.insertBefore(instructions.getFirst(), newInstructions);
+            return true;
+        });
 
-                    instructions.insertBefore(instructions.getFirst(), before);
-                    instructions.insertBefore(node, end);
-                    return true;
+        return transform(transformedClass, sig2, "Enchantment glint glow return", combine((AbstractInsnNode node) -> node.getOpcode() == RETURN,
+                (MethodNode method, AbstractInsnNode node) -> {
+                    InsnList newInstructions = new InsnList();
+                    newInstructions.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
+                    newInstructions.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "returnGlowLightmap", "()V", false));
+                    method.instructions.insertBefore(node, newInstructions);
+                    return false;
                 }));
     }
 
@@ -99,22 +102,24 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         MethodSignature sig = new MethodSignature("renderEnchantedGlint", "func_188364_a", "a",
                 "(Lnet/minecraft/client/renderer/entity/RenderLivingBase;Lnet/minecraft/entity/EntityLivingBase;Lnet/minecraft/client/model/ModelBase;FFFFFFF)V");
 
-        return transform(basicClass, sig, "Enchantment glint glow",
-                combine((AbstractInsnNode node) -> node.getOpcode() == RETURN, // Filter
-                (MethodNode method, AbstractInsnNode node) -> { // Action
-                    InsnList instructions = method.instructions;
-                    InsnList before = new InsnList();
-                    InsnList end = new InsnList();
+        byte[] transformedClass = transform(basicClass, sig, "Enchantment glint glow activation", (MethodNode method) -> { // Action
+                InsnList instructions = method.instructions;
 
-                    before.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
-                    before.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
+                InsnList newInstructions = new InsnList();
+                newInstructions.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
+                newInstructions.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
 
-                    end.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
-                    end.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "returnGlowLightmap", "()V", false));
+                instructions.insertBefore(instructions.getFirst(), newInstructions);
+                return true;
+            });
 
-                    instructions.insertBefore(instructions.getFirst(), before);
-                    instructions.insertBefore(node, end);
-                    return true;
+        return transform(transformedClass, sig, "Enchantment glint glow return", combine((AbstractInsnNode node) -> node.getOpcode() == RETURN,
+                (MethodNode method, AbstractInsnNode node) -> {
+                    InsnList newInstructions = new InsnList();
+                    newInstructions.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
+                    newInstructions.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "returnGlowLightmap", "()V", false));
+                    method.instructions.insertBefore(node, newInstructions);
+                    return false;
                 }));
     }
 
@@ -193,7 +198,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         return basicClass;
     }
 
-    private static byte[] transform(byte[] basicClass, MethodSignature sig, String simpleDesc, MethodAction action) {
+    public static byte[] transform(byte[] basicClass, MethodSignature sig, String simpleDesc, MethodAction action) {
         ClassReader reader = new ClassReader(basicClass);
         ClassNode node = new ClassNode();
         reader.accept(node, 0);
@@ -210,6 +215,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
         return basicClass;
     }
+
 
     public static boolean findMethodAndTransform(ClassNode node, MethodSignature sig, MethodAction pred) {
         for (MethodNode method : node.methods) {
@@ -241,6 +247,142 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                 didAny = true;
                 if (action.test(method, anode))
                     break;
+            }
+        }
+
+        return didAny;
+    }
+
+    public static MethodAction combineByLast(NodeFilter filter, NodeAction action) {
+        return (MethodNode node) -> applyOnNodeByLast(node, filter, action);
+    }
+
+    public static boolean applyOnNodeByLast(MethodNode method, NodeFilter filter, NodeAction action) {
+        ListIterator<AbstractInsnNode> iterator = method.instructions.iterator(method.instructions.size());
+
+        boolean didAny = false;
+        while (iterator.hasPrevious()) {
+            AbstractInsnNode anode = iterator.previous();
+            if (filter.test(anode)) {
+                didAny = true;
+                if (action.test(method, anode))
+                    break;
+            }
+        }
+
+        return didAny;
+    }
+
+    public static MethodAction combineFrontPivot(NodeFilter pivot, NodeFilter filter, NodeAction action) {
+        return (MethodNode node) -> applyOnNodeFrontPivot(node, pivot, filter, action);
+    }
+
+    public static boolean applyOnNodeFrontPivot(MethodNode method, NodeFilter pivot, NodeFilter filter, NodeAction action) {
+        ListIterator<AbstractInsnNode> iterator = method.instructions.iterator();
+
+        int pos = 0;
+
+        boolean didAny = false;
+        while (iterator.hasNext()) {
+            pos++;
+            AbstractInsnNode pivotTest = iterator.next();
+            if (pivot.test(pivotTest)) {
+                ListIterator<AbstractInsnNode> internal = method.instructions.iterator(pos);
+                while (internal.hasPrevious()) {
+                    AbstractInsnNode anode = internal.previous();
+                    if (filter.test(anode)) {
+                        didAny = true;
+                        if (action.test(method, anode))
+                            break;
+                    }
+                }
+            }
+        }
+
+        return didAny;
+    }
+
+    public static MethodAction combineBackPivot(NodeFilter pivot, NodeFilter filter, NodeAction action) {
+        return (MethodNode node) -> applyOnNodeBackPivot(node, pivot, filter, action);
+    }
+
+    public static boolean applyOnNodeBackPivot(MethodNode method, NodeFilter pivot, NodeFilter filter, NodeAction action) {
+        ListIterator<AbstractInsnNode> iterator = method.instructions.iterator(method.instructions.size());
+
+        int pos = method.instructions.size();
+
+        boolean didAny = false;
+        while (iterator.hasPrevious()) {
+            pos--;
+            AbstractInsnNode pivotTest = iterator.previous();
+            if (pivot.test(pivotTest)) {
+                ListIterator<AbstractInsnNode> internal = method.instructions.iterator(pos);
+                while (internal.hasNext()) {
+                    AbstractInsnNode anode = internal.next();
+                    if (filter.test(anode)) {
+                        didAny = true;
+                        if (action.test(method, anode))
+                            break;
+                    }
+                }
+            }
+        }
+
+        return didAny;
+    }
+
+    public static MethodAction combineFrontFocus(NodeFilter focus, NodeFilter filter, NodeAction action) {
+        return (MethodNode node) -> applyOnNodeFrontFocus(node, focus, filter, action);
+    }
+
+    public static boolean applyOnNodeFrontFocus(MethodNode method, NodeFilter focus, NodeFilter filter, NodeAction action) {
+        ListIterator<AbstractInsnNode> iterator = method.instructions.iterator();
+
+        int pos = method.instructions.size();
+
+        boolean didAny = false;
+        while (iterator.hasNext()) {
+            pos++;
+            AbstractInsnNode focusTest = iterator.next();
+            if (focus.test(focusTest)) {
+                ListIterator<AbstractInsnNode> internal = method.instructions.iterator(pos);
+                while (internal.hasNext()) {
+                    AbstractInsnNode anode = internal.next();
+                    if (filter.test(anode)) {
+                        didAny = true;
+                        if (action.test(method, anode))
+                            break;
+                    }
+                }
+            }
+        }
+
+        return didAny;
+    }
+
+    public static MethodAction combineBackFocus(NodeFilter focus, NodeFilter filter, NodeAction action) {
+        return (MethodNode node) -> applyOnNodeBackFocus(node, focus, filter, action);
+    }
+
+    public static boolean applyOnNodeBackFocus(MethodNode method, NodeFilter focus, NodeFilter filter, NodeAction action) {
+        ListIterator<AbstractInsnNode> iterator = method.instructions.iterator(method.instructions.size());
+
+        int pos = method.instructions.size();
+
+        boolean didAny = false;
+        while (iterator.hasPrevious()) {
+            pos--;
+            AbstractInsnNode focusTest = iterator.previous();
+            if (focus.test(focusTest)) {
+                ListIterator<AbstractInsnNode> internal = method.instructions.iterator(pos);
+                while (internal.hasPrevious()) {
+                    AbstractInsnNode anode = internal.previous();
+                    if (filter.test(anode)) {
+                        didAny = true;
+                        if (action.test(method, anode))
+                            break;
+                    }
+                }
             }
         }
 
