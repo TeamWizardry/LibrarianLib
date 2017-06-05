@@ -428,36 +428,36 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
         @Override
         public boolean hasNext() {
-            return array.length > index + 1;
+            return array.length > index + 1 && index >= 0;
         }
 
         @Override
         public AbstractInsnNode next() {
             if (hasNext())
-                return array[index++];
+                return array[++index];
             return null;
         }
 
         @Override
         public boolean hasPrevious() {
-            return index > 0;
+            return index > 0 && index <= array.length;
         }
 
         @Override
         public AbstractInsnNode previous() {
             if (hasPrevious())
-                return array[index--];
+                return array[--index];
             return null;
         }
 
         @Override
         public int nextIndex() {
-            return hasNext() ? index + 1 : index;
+            return hasNext() ? index + 1 : array.length;
         }
 
         @Override
         public int previousIndex() {
-            return hasPrevious() ? index - 1 : index;
+            return hasPrevious() ? index - 1 : 0;
         }
 
         @Override
