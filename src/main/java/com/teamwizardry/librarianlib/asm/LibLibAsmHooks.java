@@ -52,4 +52,9 @@ public class LibLibAsmHooks {
         if (GlowingHandler.getEnchantmentGlow())
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, x, y);
     }
+
+    @SideOnly(Side.CLIENT)
+    public boolean usePotionGlow() {
+        return GlowingHandler.getPotionGlow();
+    }
 }

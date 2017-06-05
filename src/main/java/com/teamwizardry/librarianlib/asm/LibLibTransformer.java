@@ -42,7 +42,9 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
             "net/minecraft/block/state/IBlockState", "atj",
             "net/minecraft/util/math/BlockPos", "co",
             "net/minecraft/world/IBlockAccess", "aju",
-            "net/minecraft/client/renderer/VertexBuffer", "bpw"
+            "net/minecraft/client/renderer/VertexBuffer", "bpw",
+            "net/minecraft/client/particle/Particle", "bos",
+            "net/minecraft/client/particle/ParticleSpell", "bpb"
     );
 
 
@@ -50,6 +52,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         transformers.put("net.minecraft.client.renderer.RenderItem", LibLibTransformer::transformRenderItem);
         transformers.put("net.minecraft.client.renderer.entity.layers.LayerArmorBase", LibLibTransformer::transformLayerArmorBase);
         transformers.put("net.minecraft.client.renderer.BlockRendererDispatcher", LibLibTransformer::transformBlockRenderDispatcher);
+        transformers.put("net.minecraft.client.particle.Particle", LibLibTransformer::transformParticle);
     }
 
     private static byte[] transformRenderItem(byte[] basicClass) {
@@ -182,6 +185,34 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
                     return true;
                 }));
+    }
+
+    private static byte[] transformParticle(byte[] basicClass) {
+        MethodSignature sig = new MethodSignature("getBrightnessForRender", "func_189214_a", "a",
+                "(F)I");
+
+        return transform(basicClass, sig, "Potion particle glow", (MethodNode method) -> { // Action
+            InsnList instructions = method.instructions;
+
+            InsnList newInstructions = new InsnList();
+
+            LabelNode node = new LabelNode();
+
+            newInstructions.add(new VarInsnNode(ALOAD, 0));
+            newInstructions.add(new TypeInsnNode(INSTANCEOF, "net/minecraft/client/particle/ParticleSpell"));
+            newInstructions.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
+            newInstructions.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "usePotionGlow", "()Z", false));
+            newInstructions.add(new InsnNode(IAND));
+            newInstructions.add(new JumpInsnNode(IFEQ, node));
+
+            newInstructions.add(new LdcInsnNode(0xf000f0));
+            newInstructions.add(new InsnNode(IRETURN));
+            newInstructions.add(node);
+
+            instructions.insertBefore(instructions.getFirst(), newInstructions);
+            instructions.resetLabels();
+            return true;
+        });
     }
 
 
@@ -395,11 +426,11 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         return didAny;
     }
 
-    private static void log(String str) {
+    public static void log(String str) {
         FMLLog.info("[LibrarianLib ASM] %s", str);
     }
 
-    private static void prettyPrint(AbstractInsnNode node) {
+    public static void prettyPrint(MethodNode node) {
         Printer printer = new Textifier();
 
         TraceMethodVisitor visitor = new TraceMethodVisitor(printer);
@@ -409,7 +440,20 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         printer.print(new PrintWriter(sw));
         printer.getText().clear();
 
-        log(sw.toString().replaceAll("\n", ""));
+        log(sw.toString());
+    }
+
+    public static void prettyPrint(AbstractInsnNode node) {
+        Printer printer = new Textifier();
+
+        TraceMethodVisitor visitor = new TraceMethodVisitor(printer);
+        node.accept(visitor);
+
+        StringWriter sw = new StringWriter();
+        printer.print(new PrintWriter(sw));
+        printer.getText().clear();
+
+        log(sw.toString());
     }
 
     private static class InsnArrayIterator implements ListIterator<AbstractInsnNode> {

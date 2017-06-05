@@ -46,7 +46,7 @@ object GlowingHandler {
             "If meta is -1, it'll act as a wildcard. If no tint indices are supplied, it'll use any.\n\n" +
             "Resource packs can specify items to glow in a `glow.cfg` file under any /assets/modid/ folder.\n" +
             "An example of such a file's contents:\n\n" +
-            "botania:resource@5\nbotania:resource@14\npsi:cad,1\nbotania:bifrostperm|false",
+            "botania:resource@5\nbotania:resource@14\npsi:cad,1\nbotania:bifrostperm|false\nblock:minecraft:grass,0",
             arrayOf("minecraft:glowstone|false",
                     "minecraft:glowstone_dust",
                     "minecraft:blaze_rod",
@@ -54,13 +54,15 @@ object GlowingHandler {
                     "minecraft:sea_lantern|false",
                     "minecraft:prismarine_crystals",
                     "minecraft:end_rod|false",
+                    "minecraft:experience_bottle",
                     "quark:blaze_lantern|false"))
     private var glowingItems = arrayOf<String>()
 
 
     @JvmStatic
     @ConfigPropertyBoolean("librarianlib", "client", "potion_glow", "Whether to use the custom potion glow handler.", true)
-    private var potionGlow = false
+    var potionGlow = false
+        private set
 
     @JvmStatic
     @ConfigPropertyBoolean("librarianlib", "client", "enchantment_glow", "Whether to make enchantments use the glow handler.", true)
