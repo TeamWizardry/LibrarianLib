@@ -102,32 +102,32 @@ object EasyConfigHandler {
         config.load()
         toLog.clear()
 
-        fieldMapStr.sortBy { it.sortingId }.filter { shouldUse(it) }.forEach {
+        fieldMapStr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
             it.setter(config.get(it.category, it.identifier, it.defaultValue ?: "", it.comment).string)
         }
-        fieldMapInt.sortBy { it.sortingId }.filter { shouldUse(it) }.forEach {
+        fieldMapInt.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
             it.setter(config.get(it.category, it.identifier, it.defaultValue ?: 0, it.comment, it.min ?: Int.MIN_VALUE, it.max ?: Int.MIN_VALUE).int)
         }
-        fieldMapBoolean.sortBy { it.sortingId }.filter { shouldUse(it) }.forEach {
+        fieldMapBoolean.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
             it.setter(config.get(it.category, it.identifier, it.defaultValue ?: false, it.comment).boolean)
         }
-        fieldMapDouble.sortBy { it.sortingId }.filter { shouldUse(it) }.forEach {
+        fieldMapDouble.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
             it.setter(config.get(it.category, it.identifier, it.defaultValue ?: 0.0, it.comment, it.min ?: Double.MIN_VALUE, it.max ?: Double.MAX_VALUE).double)
         }
-        fieldMapLong.sortBy { it.sortingId }.filter { shouldUse(it) }.forEach {
+        fieldMapLong.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
             it.setter(config.get(it.category, it.identifier, (it.defaultValue ?: 0L).toString(), it.comment).long)
         }
 
-        fieldMapStrArr.sortBy { it.sortingId }.filter { shouldUse(it) }.forEach {
+        fieldMapStrArr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
             it.setter(config.get(it.category, it.identifier, it.defaultValue ?: arrayOf(), it.comment).stringList)
         }
-        fieldMapIntArr.sortBy { it.sortingId }.filter { shouldUse(it) }.forEach {
+        fieldMapIntArr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
             val maxArr = it.max ?: intArrayOf()
             val max = if (maxArr.isEmpty()) Int.MAX_VALUE else maxArr[0]
@@ -135,11 +135,11 @@ object EasyConfigHandler {
             val min = if (minArr.isEmpty()) Int.MIN_VALUE else minArr[0]
             it.setter(config.get(it.category, it.identifier, it.defaultValue ?: intArrayOf(), it.comment, min, max).intList)
         }
-        fieldMapBooleanArr.sortBy { it.sortingId }.filter { shouldUse(it) }.forEach {
+        fieldMapBooleanArr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
             it.setter(config.get(it.category, it.identifier, it.defaultValue ?: booleanArrayOf(), it.comment).booleanList)
         }
-        fieldMapDoubleArr.sortBy { it.sortingId }.filter { shouldUse(it) }.forEach {
+        fieldMapDoubleArr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
             val maxArr = it.max ?: doubleArrayOf()
             val max = if (maxArr.isEmpty()) Double.MAX_VALUE else maxArr[0]
@@ -147,7 +147,7 @@ object EasyConfigHandler {
             val min = if (minArr.isEmpty()) Double.MIN_VALUE else minArr[0]
             it.setter(config.get(it.category, it.identifier, it.defaultValue ?: doubleArrayOf(), it.comment, min, max).doubleList)
         }
-        fieldMapLongArr.sortBy { it.sortingId }.filter { shouldUse(it) }.forEach {
+        fieldMapLongArr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
             val arr = it.defaultValue ?: longArrayOf()
             it.setter(config.get(it.category, it.identifier, arr.map(Long::toString).toTypedArray(), it.comment).stringList.mapIndexed { i, s ->
