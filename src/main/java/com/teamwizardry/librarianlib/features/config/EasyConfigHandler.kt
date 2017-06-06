@@ -217,7 +217,7 @@ object EasyConfigHandler {
         var identifier = info.getString("identifier")
         if (identifier.isBlank()) identifier = VariantHelper.toSnakeCase(field.name)
 
-        val fieldEntry = makeFieldEntry(modid, inst, field, identifier, info, null, null, info.getInt("sortingId"))
+        val fieldEntry = makeFieldEntry(modid, inst, field, identifier, info)
         target.add(fieldEntry)
         allFields.put(fieldEntry, name to "${field.declaringClass.typeName}.${field.name}")
     }
@@ -225,7 +225,7 @@ object EasyConfigHandler {
     private inline fun <reified T> makeFieldEntryDefault(modid: String, inst: Any?, field: Field, identifier: String, info: AnnotationInfo): FieldEntry<T> {
         return FieldEntry(modid, { it: T -> field.set(inst, it) }, field.get(inst) as T,
                 field.isAnnotationPresent(ConfigDevOnly::class.java),
-                info.getString("comment"), info.getString("category"), identifier)
+                info.getString("comment"), info.getString("category"), identifier, null, null, info.getInt("sortingId"))
     }
 
     private fun <T> logFieldName(it: FieldEntry<T>) {
