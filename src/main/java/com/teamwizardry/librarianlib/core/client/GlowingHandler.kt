@@ -44,7 +44,7 @@ object GlowingHandler {
     @ConfigProperty("client", "Items that should glow.\n" +
             "Format: (block:)modid:item@meta,tintindex1,tintindex2|disableLighting, with -1 being untinted. You can have as many tintindexes as you want.\n" +
             "If meta is -1, it'll act as a wildcard. If no tint indices are supplied, it'll use any.\n\n" +
-            "Resource packs can specify items to glow in a `glow.cfg` file under any /assets/modid/ folder.\n" +
+            "Resource packs can specify items to glow in a `liblib_glow.cfg` file under any /assets/modid/ folder.\n" +
             "An example of such a file's contents:\n\n" +
             "botania:resource@5\nbotania:resource@14\npsi:cad,1\nbotania:bifrostperm|false\nblock:minecraft:grass,0",
             configId = LibrarianLib.MODID)
