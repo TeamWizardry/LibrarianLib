@@ -50,7 +50,9 @@ object EasyConfigHandler {
                                      val devOnly: Boolean,
                                      val comment: String,
                                      val category: String,
-                                     val identifier: String)
+                                     val identifier: String,
+                                     val max: T? = null,
+                                     val min: T? = null)
 
     @Suppress("DEPRECATION")
     internal fun bootstrap(asm: ASMDataTable, dir: File) {
@@ -105,7 +107,7 @@ object EasyConfigHandler {
         }
         fieldMapInt.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: 0, it.comment).int)
+            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: 0, it.comment, it.min ?: Int.MIN_VALUE, it.max ?: Int.MIN_VALUE).int)
         }
         fieldMapBoolean.filter { shouldUse(it) }.forEach {
             logFieldName(it)
@@ -113,7 +115,7 @@ object EasyConfigHandler {
         }
         fieldMapDouble.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: 0.0, it.comment).double)
+            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: 0.0, it.comment, it.min ?: Double.MIN_VALUE, it.max ?: Double.MAX_VALUE).double)
         }
         fieldMapLong.filter { shouldUse(it) }.forEach {
             logFieldName(it)
@@ -126,7 +128,11 @@ object EasyConfigHandler {
         }
         fieldMapIntArr.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: intArrayOf(), it.comment).intList)
+            val maxArr = it.max ?: intArrayOf()
+            val max = if (maxArr.isEmpty()) Int.MAX_VALUE else maxArr[0]
+            val minArr = it.min ?: intArrayOf()
+            val min = if (minArr.isEmpty()) Int.MIN_VALUE else minArr[0]
+            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: intArrayOf(), it.comment, min, max).intList)
         }
         fieldMapBooleanArr.filter { shouldUse(it) }.forEach {
             logFieldName(it)
@@ -134,7 +140,11 @@ object EasyConfigHandler {
         }
         fieldMapDoubleArr.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: doubleArrayOf(), it.comment).doubleList)
+            val maxArr = it.max ?: doubleArrayOf()
+            val max = if (maxArr.isEmpty()) Double.MAX_VALUE else maxArr[0]
+            val minArr = it.min ?: doubleArrayOf()
+            val min = if (minArr.isEmpty()) Double.MIN_VALUE else minArr[0]
+            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: doubleArrayOf(), it.comment, min, max).doubleList)
         }
         fieldMapLongArr.filter { shouldUse(it) }.forEach {
             logFieldName(it)
@@ -168,28 +178,53 @@ object EasyConfigHandler {
 
             when (field.type) {
                 String::class.java -> addToMaps("String", inst, modid, field, info, fieldMapStr)
-                Int::class.java -> addToMaps("Int", inst, modid, field, info, fieldMapInt)
-                Double::class.java -> addToMaps("Double", inst, modid, field, info, fieldMapDouble)
+                Int::class.java -> addToMaps("Int", inst, modid, field, info, fieldMapInt) { modid, inst, field, identifier, info ->
+                    val annot = field.getAnnotation(ConfigIntRange::class.java)
+                    FieldEntry(modid, { it: Int -> field.set(inst, it) }, field.get(inst) as Int,
+                            field.isAnnotationPresent(ConfigDevOnly::class.java),
+                            info.getString("comment"), info.getString("category"), identifier, annot?.max ?: Int.MAX_VALUE, annot?.min ?: Int.MIN_VALUE)
+                }
+                Double::class.java -> addToMaps("Double", inst, modid, field, info, fieldMapDouble) { modid, inst, field, identifier, info ->
+                    val annot = field.getAnnotation(ConfigDoubleRange::class.java)
+                    FieldEntry(modid, { it: Double -> field.set(inst, it) }, field.get(inst) as Double,
+                            field.isAnnotationPresent(ConfigDevOnly::class.java),
+                            info.getString("comment"), info.getString("category"), identifier, annot?.max ?: Double.MAX_VALUE, annot?.min ?: Double.MIN_VALUE)
+                }
                 Boolean::class.java -> addToMaps("Boolean", inst, modid, field, info, fieldMapBoolean)
                 Long::class.java -> addToMaps("Long", inst, modid, field, info, fieldMapLong)
                 Array<String>::class.java -> addToMaps("StringArray", inst, modid, field, info, fieldMapStrArr)
-                IntArray::class.java -> addToMaps("IntArray", inst, modid, field, info, fieldMapIntArr)
-                DoubleArray::class.java -> addToMaps("DoubleArray", inst, modid, field, info, fieldMapDoubleArr)
+                IntArray::class.java -> addToMaps("IntArray", inst, modid, field, info, fieldMapIntArr) { modid, inst, field, identifier, info ->
+                    val annot = field.getAnnotation(ConfigIntRange::class.java)
+                    FieldEntry(modid, { it: IntArray -> field.set(inst, it) }, field.get(inst) as IntArray,
+                            field.isAnnotationPresent(ConfigDevOnly::class.java),
+                            info.getString("comment"), info.getString("category"), identifier, intArrayOf(annot?.max ?: Int.MAX_VALUE), intArrayOf(annot?.min ?: Int.MIN_VALUE))
+                }
+                DoubleArray::class.java -> addToMaps("DoubleArray", inst, modid, field, info, fieldMapDoubleArr) { modid, inst, field, identifier, info ->
+                    val annot = field.getAnnotation(ConfigDoubleRange::class.java)
+                    FieldEntry(modid, { it: DoubleArray -> field.set(inst, it) }, field.get(inst) as DoubleArray,
+                            field.isAnnotationPresent(ConfigDevOnly::class.java),
+                            info.getString("comment"), info.getString("category"), identifier, doubleArrayOf(annot?.max ?: Double.MAX_VALUE), doubleArrayOf(annot?.min ?: Double.MIN_VALUE))
+                }
                 BooleanArray::class.java -> addToMaps("BooleanArray", inst, modid, field, info, fieldMapBooleanArr)
                 LongArray::class.java -> addToMaps("LongArray", inst, modid, field, info, fieldMapLongArr)
             }
         }
     }
 
-    private inline fun <reified T> addToMaps(name: String, inst: Any?, modid: String, field: Field, info: AnnotationInfo, target: MutableList<FieldEntry<T>>) {
+    private inline fun <reified T> addToMaps(name: String, inst: Any?, modid: String, field: Field, info: AnnotationInfo, target: MutableList<FieldEntry<T>>,
+                                             noinline makeFieldEntry: (String, Any?, Field, String, AnnotationInfo) -> FieldEntry<T> = EasyConfigHandler::makeFieldEntryDefault) {
         var identifier = info.getString("identifier")
         if (identifier.isBlank()) identifier = VariantHelper.toSnakeCase(field.name)
 
-        val fieldEntry = FieldEntry(modid, { it: T -> field.set(inst, it) }, field.get(inst) as T,
-                field.isAnnotationPresent(ConfigDevOnly::class.java),
-                info.getString("comment"), info.getString("category"), identifier)
+        val fieldEntry = makeFieldEntry(modid, inst, field, identifier, info)
         target.add(fieldEntry)
         allFields.put(fieldEntry, name to "${field.declaringClass.typeName}.${field.name}")
+    }
+
+    private inline fun <reified T> makeFieldEntryDefault(modid: String, inst: Any?, field: Field, identifier: String, info: AnnotationInfo): FieldEntry<T> {
+        return FieldEntry(modid, { it: T -> field.set(inst, it) }, field.get(inst) as T,
+                field.isAnnotationPresent(ConfigDevOnly::class.java),
+                info.getString("comment"), info.getString("category"), identifier)
     }
 
     private fun <T> logFieldName(it: FieldEntry<T>) {
@@ -247,9 +282,23 @@ annotation class ConfigProperty(val category: String,
 /**
  * Apply this to an @[ConfigProperty] to have it only be loaded in the dev environment.
  */
+@MustBeDocumented
 @Target(AnnotationTarget.FIELD)
 annotation class ConfigDevOnly
 
+/**
+ * Apply this to a @[ConfigProperty] double or double array field to clamp its min and max values.
+ */
+@MustBeDocumented
+@Target(AnnotationTarget.FIELD)
+annotation class ConfigDoubleRange(val min: Double, val max: Double)
+
+/**
+ * Apply this to a @[ConfigProperty] int or int array field to clamp its min and max values.
+ */
+@MustBeDocumented
+@Target(AnnotationTarget.FIELD)
+annotation class ConfigIntRange(val min: Int, val max: Int)
 
 
 
