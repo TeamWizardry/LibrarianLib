@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.test.testcore
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.base.item.ItemMod
 import com.teamwizardry.librarianlib.features.config.*
@@ -105,34 +106,44 @@ class TestMod {
 }
 
 object Config {
-    @ConfigPropertyBoolean(TestMod.MODID, "general", "boolean", "it's a boolean", false)
+    @ConfigProperty("general", "it's a boolean",
+            configId = TestMod.MODID)
     var boolean = false
 
-    @ConfigPropertyInt(TestMod.MODID, "general", "int", "it's an int", 0)
+    @ConfigProperty("general", "it's an int",
+            configId = TestMod.MODID)
     var int = 0
 
-    @ConfigPropertyDouble(TestMod.MODID, "general", "double", "it's a double", 0.0)
+    @ConfigProperty("general", "it's a double",
+            configId = TestMod.MODID)
     var double = 0.0
 
-    @ConfigPropertyString(TestMod.MODID, "general", "string", "it's a string", "")
+    @ConfigProperty("general", "it's a string",
+            configId = TestMod.MODID)
     var string = ""
 
-    @ConfigPropertyLong(TestMod.MODID, "general", "long", "it's a long", 0L)
+    @ConfigProperty("general", "it's a long",
+            configId = TestMod.MODID)
     var long = 0L
 
-    @ConfigPropertyBooleanArray(TestMod.MODID, "general", "booleanArr", "it's a boolean array", booleanArrayOf(false))
+    @ConfigProperty("general", "it's a boolean array",
+            configId = TestMod.MODID)
     var booleanArr = booleanArrayOf(false)
 
-    @ConfigPropertyIntArray(TestMod.MODID, "general", "intArr", "it's an int array", intArrayOf(0))
+    @ConfigProperty("general", "it's an int array",
+            configId = TestMod.MODID)
     var intArr = intArrayOf(0)
 
-    @ConfigPropertyDoubleArray(TestMod.MODID, "general", "doubleArr", "it's a double array", doubleArrayOf(0.0))
+    @ConfigProperty("general", "it's a double array",
+            configId = TestMod.MODID)
     var doubleArr = doubleArrayOf(0.0)
 
-    @ConfigPropertyStringArray(TestMod.MODID, "general", "stringArr", "it's a string array", arrayOf(""))
+    @ConfigProperty("general", "it's a string array",
+            configId = TestMod.MODID)
     var stringArr = arrayOf("")
 
-    @ConfigPropertyLongArray(TestMod.MODID, "general", "longArr", "it's a long array", longArrayOf(0L))
+    @ConfigProperty("general", "it's a long array",
+            configId = TestMod.MODID)
     var longArr = longArrayOf(0L)
 }
 

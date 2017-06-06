@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.core.client
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.base.block.IGlowingBlock
 import com.teamwizardry.librarianlib.features.base.item.IGlowingItem
-import com.teamwizardry.librarianlib.features.config.ConfigPropertyBoolean
-import com.teamwizardry.librarianlib.features.config.ConfigPropertyStringArray
+import com.teamwizardry.librarianlib.features.config.ConfigProperty
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.utilities.ExtendedStateWrapper
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
@@ -41,33 +41,35 @@ object GlowingHandler {
     val blockParser = "block:\\s*(\\w+:\\w+)\\s*(?:@(-1|\\d+))?\\s*((?:,(?:-1|\\d+))+,?)?\\s*(?:\\|\\s*(false|true))?".toRegex()
 
     @JvmStatic
-    @ConfigPropertyStringArray("librarianlib", "client", "glowing", "Items that should glow.\n" +
+    @ConfigProperty("client", "Items that should glow.\n" +
             "Format: (block:)modid:item@meta,tintindex1,tintindex2|disableLighting, with -1 being untinted. You can have as many tintindexes as you want.\n" +
             "If meta is -1, it'll act as a wildcard. If no tint indices are supplied, it'll use any.\n\n" +
             "Resource packs can specify items to glow in a `glow.cfg` file under any /assets/modid/ folder.\n" +
             "An example of such a file's contents:\n\n" +
             "botania:resource@5\nbotania:resource@14\npsi:cad,1\nbotania:bifrostperm|false\nblock:minecraft:grass,0",
-            arrayOf("minecraft:glowstone|false",
-                    "minecraft:glowstone_dust",
-                    "minecraft:blaze_rod",
-                    "minecraft:blaze_powder",
-                    "minecraft:sea_lantern|false",
-                    "minecraft:prismarine_crystals",
-                    "minecraft:end_rod|false",
-                    "minecraft:experience_bottle",
-                    "quark:blaze_lantern|false"))
-    private var glowingItems = arrayOf<String>()
+            configId = LibrarianLib.MODID)
+    private var glowing = arrayOf("minecraft:glowstone|false",
+            "minecraft:glowstone_dust",
+            "minecraft:blaze_rod",
+            "minecraft:blaze_powder",
+            "minecraft:sea_lantern|false",
+            "minecraft:prismarine_crystals",
+            "minecraft:end_rod|false",
+            "minecraft:experience_bottle",
+            "quark:blaze_lantern|false")
 
 
-    @JvmStatic
-    @ConfigPropertyBoolean("librarianlib", "client", "potion_glow", "Whether to use the custom potion glow handler.", true)
-    var potionGlow = false
+    @ConfigProperty("client", "Whether to use the custom potion glow handler.",
+            configId = LibrarianLib.MODID)
+    var potionGlow = true
         private set
+        @JvmStatic get
 
-    @JvmStatic
-    @ConfigPropertyBoolean("librarianlib", "client", "enchantment_glow", "Whether to make enchantments use the glow handler.", true)
-    var enchantmentGlow = false
+    @ConfigProperty("client", "Whether to make enchantments use the glow handler.",
+            configId = LibrarianLib.MODID)
+    var enchantmentGlow = true
         private set
+        @JvmStatic get
 
     fun init() {
         if (potionGlow) {
@@ -119,7 +121,7 @@ object GlowingHandler {
             }
         }
 
-        for (i in glowingItems) parseLine(i)
+        for (i in glowing) parseLine(i)
 
         val resourceManager = Minecraft.getMinecraft().resourceManager
         resourceManager.resourceDomains
