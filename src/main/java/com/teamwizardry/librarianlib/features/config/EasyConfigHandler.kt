@@ -19,7 +19,7 @@ import java.lang.reflect.Field
 /**
  * Created by Elad on 10/14/2016.
  * This object contains utilities for the automatic config system. Its [init] method should be invoked at
- * pre-initialization time.
+ * pre-initialization or initialization time.
  */
 object EasyConfigHandler {
     private lateinit var CONFIG_DIR: File
@@ -74,7 +74,6 @@ object EasyConfigHandler {
         findByClass(LongArray::class.java, ConfigPropertyLongArray::class.java, fieldMapLongArr, asm)
         // End Legacy Support
 
-
         findAllProperties(asm)
 
         toLoad.forEach { init(it.first, it.second) }
@@ -108,7 +107,7 @@ object EasyConfigHandler {
         }
         fieldMapInt.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: 0, it.comment, it.min ?: Int.MIN_VALUE, it.max ?: Int.MIN_VALUE).int)
+            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: 0, it.comment, it.min ?: -Int.MAX_VALUE, it.max ?: Int.MIN_VALUE).int)
         }
         fieldMapBoolean.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
@@ -116,7 +115,7 @@ object EasyConfigHandler {
         }
         fieldMapDouble.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: 0.0, it.comment, it.min ?: Double.MIN_VALUE, it.max ?: Double.MAX_VALUE).double)
+            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: 0.0, it.comment, it.min ?: -Double.MAX_VALUE, it.max ?: Double.MAX_VALUE).double)
         }
         fieldMapLong.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
@@ -132,7 +131,7 @@ object EasyConfigHandler {
             val maxArr = it.max ?: intArrayOf()
             val max = if (maxArr.isEmpty()) Int.MAX_VALUE else maxArr[0]
             val minArr = it.min ?: intArrayOf()
-            val min = if (minArr.isEmpty()) Int.MIN_VALUE else minArr[0]
+            val min = if (minArr.isEmpty()) -Int.MAX_VALUE else minArr[0]
             it.setter(config.get(it.category, it.identifier, it.defaultValue ?: intArrayOf(), it.comment, min, max).intList)
         }
         fieldMapBooleanArr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
@@ -144,7 +143,7 @@ object EasyConfigHandler {
             val maxArr = it.max ?: doubleArrayOf()
             val max = if (maxArr.isEmpty()) Double.MAX_VALUE else maxArr[0]
             val minArr = it.min ?: doubleArrayOf()
-            val min = if (minArr.isEmpty()) Double.MIN_VALUE else minArr[0]
+            val min = if (minArr.isEmpty()) -Double.MAX_VALUE else minArr[0]
             it.setter(config.get(it.category, it.identifier, it.defaultValue ?: doubleArrayOf(), it.comment, min, max).doubleList)
         }
         fieldMapLongArr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
