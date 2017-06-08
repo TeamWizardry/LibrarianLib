@@ -4,9 +4,7 @@ import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.core.common.LibLibConfig
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import net.minecraft.client.renderer.OpenGlHelper
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.FMLCommonHandler
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.opengl.*
@@ -83,7 +81,7 @@ object ShaderHelper {
     //http://hastebin.com/ameremuqev.avrasm
     fun useShaders(): Boolean {
         try {
-            return FMLCommonHandler.instance().effectiveSide == Side.CLIENT && LibLibConfig.useShaders && OpenGlHelper.shadersSupported
+            return FMLCommonHandler.instance().effectiveSide == Side.CLIENT && LibLibConfig.shaders && OpenGlHelper.shadersSupported
         } catch (ignored: NoSuchFieldError) {
             return false
         }

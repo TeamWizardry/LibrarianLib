@@ -17,7 +17,7 @@ object AnnotationHelper {
      * Find all annotated fields of super-type [objClass] with annotation [annotationClass] from data table [table]
      * and send them to the callback [callback].
      */
-    fun <T> findAnnotatedObjects(table: ASMDataTable, objClass: Class<T>, annotationClass: Class<*>, callback: (Field, AnnotationInfo) -> Unit) {
+    fun findAnnotatedObjects(table: ASMDataTable, objClass: Class<*>?, annotationClass: Class<*>, callback: (Field, AnnotationInfo) -> Unit) {
         for (data in table.getAll(annotationClass.name)) {
             try {
                 val index = data.objectName.indexOf('(')
@@ -28,7 +28,7 @@ object AnnotationHelper {
 
                 val field = Class.forName(data.className).getDeclaredField(data.objectName)
 
-                if (field == null || !objClass.isAssignableFrom(field.type)) {
+                if (field == null || !(objClass?.isAssignableFrom(field.type) ?: true)) {
                     continue
                 }
 
@@ -139,5 +139,19 @@ data class AnnotationInfo(val map: Map<String, Any>) {
     fun getLongArray(id: String): LongArray {
         val value = map[id]
         return value as? LongArray ?: ((value as? List<*>)?.map(Any?::toString)?.map(String::toLong)?.toLongArray() ?: longArrayOf())
+    }
+
+    inline fun <reified T> get(id: String) = when (T::class.java) {
+        String::class.java -> getString(id) as T
+        Int::class.java -> getInt(id) as T
+        Double::class.java -> getDouble(id) as T
+        Boolean::class.java -> getBoolean(id) as T
+        Long::class.java -> getLong(id) as T
+        Array<String>::class.java -> getStringArray(id) as T
+        IntArray::class.java -> getIntArray(id) as T
+        DoubleArray::class.java -> getDoubleArray(id) as T
+        BooleanArray::class.java -> getBooleanArray(id) as T
+        LongArray::class.java -> getLongArray(id) as T
+        else -> null
     }
 }

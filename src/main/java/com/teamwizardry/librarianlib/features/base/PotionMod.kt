@@ -21,9 +21,8 @@ open class PotionMod(name: String, badEffect: Boolean, color: Int) : Potion(badE
     private val resource: ResourceLocation = ResourceLocation(modid, "textures/gui/potions.png")
 
     init {
-
-        val iconIndex = (iconIndexByModId[modid] ?: 0) + 1
-        iconIndexByModId[modid] = iconIndex
+        val iconIndex = (iconIndexByModId[modid] ?: 0)
+        iconIndexByModId[modid] = iconIndex + 1
         iconX = iconIndex % 8
         iconY = iconIndex / 8
 
