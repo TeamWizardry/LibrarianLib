@@ -35,7 +35,7 @@ object ParticleSpawner {
         if (event.phase == TickEvent.Phase.END) {
             val mc = Minecraft.getMinecraft()
             val gui = mc.currentScreen
-            if ((gui == null || !gui.doesGuiPauseGame()) && mc.inGameHasFocus && !mc.isGamePaused) {
+            if ((gui == null || !gui.doesGuiPauseGame()) && !mc.isGamePaused) {
                 tick()
             }
         }
@@ -59,7 +59,7 @@ object ParticleSpawner {
         val mc = Minecraft.getMinecraft()
         val gui = mc.currentScreen
         val currentCount = ParticleRenderManager.LAYER_BLOCK_MAP.particleList.size + ParticleRenderManager.LAYER_BLOCK_MAP_ADDITIVE.particleList.size
-        if ((gui == null || !gui.doesGuiPauseGame()) && currentCount < LibLibConfig.maxParticleCount && mc.inGameHasFocus && !mc.isGamePaused) {
+        if ((gui == null || !gui.doesGuiPauseGame()) && currentCount < LibLibConfig.maxParticleCount && !mc.isGamePaused) {
 
             val actualParticleCount = modifyParticleCount(particleCount, LibLibConfig.maxParticleCount - currentCount)
 
