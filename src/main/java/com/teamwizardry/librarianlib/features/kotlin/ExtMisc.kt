@@ -198,8 +198,13 @@ fun Entity.setVelocityAndUpdate(x: Double = motionX, y: Double = motionY, z: Dou
         connection.sendPacket(SPacketEntityVelocity(this))
 }
 
-val Entity.motionVec: Vec3d
+var Entity.motionVec: Vec3d
     get() = Vec3d(motionX, motionY, motionZ)
+    set(value) {
+        this.motionX = value.xCoord
+        this.motionY = value.yCoord
+        this.motionZ = value.zCoord
+    }
 
 // String ==============================================================================================================
 
