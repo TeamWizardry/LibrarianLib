@@ -77,17 +77,17 @@ private class RealDefaultImpl<K, V>(val map: MutableMap<K, V>, val default: (K) 
 // AxisAlignedBB =======================================================================================================
 
 operator fun AxisAlignedBB.contains(other: Vec3d) =
-        this.minX <= other.xCoord && this.maxX >= other.xCoord &&
-                this.minY <= other.yCoord && this.maxY >= other.yCoord &&
-                this.minZ <= other.zCoord && this.maxZ >= other.zCoord
+        this.minX <= other.x && this.maxX >= other.x &&
+                this.minY <= other.y && this.maxY >= other.y &&
+                this.minZ <= other.z && this.maxZ >= other.z
 
 // World
 
 fun World.collideAABB(boundingBox: AxisAlignedBB, offset: Vec3d, entity: Entity? = null): Vec3d {
     var bbSoFar = boundingBox
-    var x = offset.xCoord
-    var y = offset.yCoord
-    var z = offset.zCoord
+    var x = offset.x
+    var y = offset.y
+    var z = offset.z
 
     val list1 = this.getCollisionBoxes(entity, boundingBox.addCoord(x, y, z))
 
@@ -189,7 +189,7 @@ fun EntityPlayer.sendSpamlessMessage(comp: ITextComponent, uniqueId: Int) {
         LibrarianLib.PROXY.runIfClient(packet)
 }
 
-fun Entity.setVelocityAndUpdate(vec: Vec3d) = setVelocityAndUpdate(vec.xCoord, vec.yCoord, vec.zCoord)
+fun Entity.setVelocityAndUpdate(vec: Vec3d) = setVelocityAndUpdate(vec.x, vec.y, vec.z)
 fun Entity.setVelocityAndUpdate(x: Double = motionX, y: Double = motionY, z: Double = motionZ) {
     motionX = x
     motionY = y
@@ -201,9 +201,9 @@ fun Entity.setVelocityAndUpdate(x: Double = motionX, y: Double = motionY, z: Dou
 var Entity.motionVec: Vec3d
     get() = Vec3d(motionX, motionY, motionZ)
     set(value) {
-        this.motionX = value.xCoord
-        this.motionY = value.yCoord
-        this.motionZ = value.zCoord
+        this.motionX = value.x
+        this.motionY = value.y
+        this.motionZ = value.z
     }
 
 // String ==============================================================================================================

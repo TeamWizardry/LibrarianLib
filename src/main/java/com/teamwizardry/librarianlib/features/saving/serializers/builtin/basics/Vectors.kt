@@ -3,6 +3,9 @@ package com.teamwizardry.librarianlib.features.saving.serializers.builtin.basics
 import com.teamwizardry.librarianlib.features.autoregister.SerializerRegister
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.safeCast
+import com.teamwizardry.librarianlib.features.kotlin.x
+import com.teamwizardry.librarianlib.features.kotlin.y
+import com.teamwizardry.librarianlib.features.kotlin.z
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.saving.FieldType
 import com.teamwizardry.librarianlib.features.saving.serializers.Serializer
@@ -30,9 +33,9 @@ object SerializeVec3d : Serializer<Vec3d>(FieldType.create(Vec3d::class.java)) {
 
     override fun writeNBT(value: Vec3d, syncing: Boolean): NBTBase {
         val tag = NBTTagCompound()
-        tag.setDouble("x", value.xCoord)
-        tag.setDouble("y", value.yCoord)
-        tag.setDouble("z", value.zCoord)
+        tag.setDouble("x", value.x)
+        tag.setDouble("y", value.y)
+        tag.setDouble("z", value.z)
         return tag
     }
 
@@ -41,9 +44,9 @@ object SerializeVec3d : Serializer<Vec3d>(FieldType.create(Vec3d::class.java)) {
     }
 
     override fun writeBytes(buf: ByteBuf, value: Vec3d, syncing: Boolean) {
-        buf.writeDouble(value.xCoord)
-        buf.writeDouble(value.yCoord)
-        buf.writeDouble(value.zCoord)
+        buf.writeDouble(value.x)
+        buf.writeDouble(value.y)
+        buf.writeDouble(value.z)
     }
 }
 

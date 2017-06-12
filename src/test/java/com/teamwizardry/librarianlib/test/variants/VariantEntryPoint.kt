@@ -6,6 +6,9 @@ import com.teamwizardry.librarianlib.features.base.item.ItemMod
 import com.teamwizardry.librarianlib.features.base.item.ItemModArrow
 import com.teamwizardry.librarianlib.features.base.item.ItemModShield
 import com.teamwizardry.librarianlib.features.kotlin.sendSpamlessMessage
+import com.teamwizardry.librarianlib.features.kotlin.x
+import com.teamwizardry.librarianlib.features.kotlin.y
+import com.teamwizardry.librarianlib.features.kotlin.z
 import com.teamwizardry.librarianlib.test.testcore.TestEntryPoint
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
@@ -43,7 +46,7 @@ object VariantEntryPoint : TestEntryPoint {
         object : ItemModArrow("arrow") {
             override fun generateArrowEntity(worldIn: World, stack: ItemStack, position: Vec3d, shooter: EntityLivingBase?): EntityArrow {
                 val arrow = if (shooter != null) EntityTippedArrow(worldIn, shooter)
-                else EntityTippedArrow(worldIn, position.xCoord, position.yCoord, position.zCoord)
+                else EntityTippedArrow(worldIn, position.x, position.y, position.z)
 
                 val s = ItemStack(Items.TIPPED_ARROW)
                 PotionUtils.addPotionToItemStack(s, PotionTypes.INVISIBILITY)

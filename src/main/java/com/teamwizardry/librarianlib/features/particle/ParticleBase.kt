@@ -156,9 +156,9 @@ open class ParticleBase internal constructor(
     }
 
     fun moveEntity() {
-        var x = this.velocity.xCoord
-        var y = this.velocity.yCoord
-        var z = this.velocity.zCoord
+        var x = this.velocity.x
+        var y = this.velocity.y
+        var z = this.velocity.z
 
         if (this.canCollide) {
             val list = this.world.getCollisionBoxes(null, this.entityBoundingBox.addCoord(x, y, z))
@@ -187,24 +187,24 @@ open class ParticleBase internal constructor(
         this.resetPositionToBB()
         this.isCollided = false
 
-        if (x != velocity.xCoord) {
+        if (x != velocity.x) {
             this.isCollided = true
 
-            if (canBounce) this.velocity = this.velocity.withX(this.velocity.xCoord * -bounceMagnitude)
+            if (canBounce) this.velocity = this.velocity.withX(this.velocity.x * -bounceMagnitude)
             else this.velocity = this.velocity.withX(0)
         }
 
-        if (y != velocity.yCoord) {
+        if (y != velocity.y) {
             this.isCollided = true
 
-            if (canBounce) this.velocity = this.velocity.withY(this.velocity.yCoord * -bounceMagnitude)
+            if (canBounce) this.velocity = this.velocity.withY(this.velocity.y * -bounceMagnitude)
             else this.velocity = this.velocity.withY(0)
         }
 
-        if (z != velocity.zCoord) {
+        if (z != velocity.z) {
             this.isCollided = true
 
-            if (canBounce) this.velocity = this.velocity.withZ(this.velocity.zCoord * -bounceMagnitude)
+            if (canBounce) this.velocity = this.velocity.withZ(this.velocity.z * -bounceMagnitude)
             else this.velocity = this.velocity.withZ(0)
         }
     }
@@ -219,7 +219,7 @@ open class ParticleBase internal constructor(
     }
 
     fun getBrightnessForRender(): Int {
-        val blockpos = BlockPos(this.pos.xCoord, this.pos.yCoord, this.pos.zCoord)
+        val blockpos = BlockPos(this.pos.x, this.pos.y, this.pos.z)
         return if (this.world.isBlockLoaded(blockpos)) this.world.getCombinedLight(blockpos, 0) else 0
     }
 
@@ -231,7 +231,7 @@ open class ParticleBase internal constructor(
     }
 
     fun createBB(min: Vec3d, max: Vec3d): AxisAlignedBB {
-        return AxisAlignedBB(min.xCoord, min.yCoord, min.zCoord, max.xCoord, max.yCoord, max.zCoord)
+        return AxisAlignedBB(min.x, min.y, min.z, max.x, max.y, max.z)
     }
 }
 

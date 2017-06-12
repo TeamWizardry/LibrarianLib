@@ -1,5 +1,8 @@
 package com.teamwizardry.librarianlib.features.utilities
 
+import com.teamwizardry.librarianlib.features.kotlin.x
+import com.teamwizardry.librarianlib.features.kotlin.y
+import com.teamwizardry.librarianlib.features.kotlin.z
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.math.RayTraceResult
@@ -58,9 +61,9 @@ object RaycastUtils {
         }
 
         val lookVector = e.lookVec
-        val reachVector = positionVector.addVector(lookVector.xCoord * maxDistance, lookVector.yCoord * maxDistance, lookVector.zCoord * maxDistance)
+        val reachVector = positionVector.addVector(lookVector.x * maxDistance, lookVector.y * maxDistance, lookVector.z * maxDistance)
         var lookedEntity: Entity? = null
-        val entitiesInBoundingBox = e.world.getEntitiesWithinAABBExcludingEntity(e, e.entityBoundingBox.addCoord(lookVector.xCoord * maxDistance, lookVector.yCoord * maxDistance, lookVector.zCoord * maxDistance).expand(1.0, 1.0, 1.0))
+        val entitiesInBoundingBox = e.world.getEntitiesWithinAABBExcludingEntity(e, e.entityBoundingBox.addCoord(lookVector.x * maxDistance, lookVector.y * maxDistance, lookVector.z * maxDistance).expand(1.0, 1.0, 1.0))
         var minDistance = distance
         val var14 = entitiesInBoundingBox.iterator()
 

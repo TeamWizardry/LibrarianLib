@@ -16,7 +16,7 @@ fun Color.glColor() = GlStateManager.color(red / 255f, green / 255f, blue / 255f
 
 // VertexBuffer ========================================================================================================
 
-fun VertexBuffer.pos(pos: Vec3d): VertexBuffer = this.pos(pos.xCoord, pos.yCoord, pos.zCoord)
+fun VertexBuffer.pos(pos: Vec3d): VertexBuffer = this.pos(pos.x, pos.y, pos.z)
 
 fun VertexBuffer.color(color: Color): VertexBuffer = this.color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f)
 

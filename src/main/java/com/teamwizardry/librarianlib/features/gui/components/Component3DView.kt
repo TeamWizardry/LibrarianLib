@@ -2,6 +2,9 @@ package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.GuiComponent
+import com.teamwizardry.librarianlib.features.kotlin.x
+import com.teamwizardry.librarianlib.features.kotlin.y
+import com.teamwizardry.librarianlib.features.kotlin.z
 import com.teamwizardry.librarianlib.features.math.Matrix4
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
@@ -95,7 +98,7 @@ class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
         GlStateManager.rotate(this.rotX.toFloat(), 1f, 0f, 0f)
         GlStateManager.rotate(this.rotY.toFloat(), 0f, 1f, 0f)
         GlStateManager.rotate(this.rotZ.toFloat(), 0f, 0f, 1f)
-        GlStateManager.translate(this.offset.xCoord, this.offset.yCoord, this.offset.zCoord)
+        GlStateManager.translate(this.offset.x, this.offset.y, this.offset.z)
 
         this.offset = offset
         this.rotZ = rotZ
@@ -115,12 +118,12 @@ class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
 
             val light = 0.3f
             val ambiant = 0.7f
-            GlStateManager.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, RenderHelper.setColorBuffer(LIGHT0_POS.xCoord.toFloat(), LIGHT0_POS.yCoord.toFloat(), LIGHT0_POS.zCoord.toFloat(), 0.0f))
+            GlStateManager.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, RenderHelper.setColorBuffer(LIGHT0_POS.x.toFloat(), LIGHT0_POS.y.toFloat(), LIGHT0_POS.z.toFloat(), 0.0f))
             GlStateManager.glLight(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, RenderHelper.setColorBuffer(light, light, light, 1.0f))
             GlStateManager.glLight(GL11.GL_LIGHT0, GL11.GL_AMBIENT, RenderHelper.setColorBuffer(0.0f, 0.0f, 0.0f, 1.0f))
             GlStateManager.glLight(GL11.GL_LIGHT0, GL11.GL_SPECULAR, RenderHelper.setColorBuffer(0.0f, 0.0f, 0.0f, 1.0f))
 
-            GlStateManager.glLight(GL11.GL_LIGHT1, GL11.GL_POSITION, RenderHelper.setColorBuffer(LIGHT1_POS.xCoord.toFloat(), LIGHT1_POS.yCoord.toFloat(), LIGHT1_POS.zCoord.toFloat(), 0.0f))
+            GlStateManager.glLight(GL11.GL_LIGHT1, GL11.GL_POSITION, RenderHelper.setColorBuffer(LIGHT1_POS.x.toFloat(), LIGHT1_POS.y.toFloat(), LIGHT1_POS.z.toFloat(), 0.0f))
             GlStateManager.glLight(GL11.GL_LIGHT1, GL11.GL_DIFFUSE, RenderHelper.setColorBuffer(light, light, light, 1.0f))
             GlStateManager.glLight(GL11.GL_LIGHT1, GL11.GL_AMBIENT, RenderHelper.setColorBuffer(0.0f, 0.0f, 0.0f, 1.0f))
             GlStateManager.glLight(GL11.GL_LIGHT1, GL11.GL_SPECULAR, RenderHelper.setColorBuffer(0.0f, 0.0f, 0.0f, 1.0f))
