@@ -3,8 +3,6 @@ package com.teamwizardry.librarianlib.core.common
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.config.ConfigDevOnly
 import com.teamwizardry.librarianlib.features.config.ConfigProperty
-import com.teamwizardry.librarianlib.features.config.ConfigPropertyBoolean
-import com.teamwizardry.librarianlib.features.config.ConfigPropertyInt
 import net.minecraftforge.common.config.Configuration
 
 object LibLibConfig {
