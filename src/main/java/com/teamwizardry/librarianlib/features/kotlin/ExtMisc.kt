@@ -77,19 +77,19 @@ private class RealDefaultImpl<K, V>(val map: MutableMap<K, V>, val default: (K) 
 // AxisAlignedBB =======================================================================================================
 
 operator fun AxisAlignedBB.contains(other: Vec3d) =
-        this.minX <= other.xCoord && this.maxX >= other.xCoord &&
-                this.minY <= other.yCoord && this.maxY >= other.yCoord &&
-                this.minZ <= other.zCoord && this.maxZ >= other.zCoord
+        this.minX <= other.x && this.maxX >= other.x &&
+                this.minY <= other.y && this.maxY >= other.y &&
+                this.minZ <= other.z && this.maxZ >= other.z
 
 // World
 
 fun World.collideAABB(boundingBox: AxisAlignedBB, offset: Vec3d, entity: Entity? = null): Vec3d {
     var bbSoFar = boundingBox
-    var x = offset.xCoord
-    var y = offset.yCoord
-    var z = offset.zCoord
+    var x = offset.x
+    var y = offset.y
+    var z = offset.z
 
-    val list1 = this.getCollisionBoxes(entity, boundingBox.addCoord(x, y, z))
+    val list1 = this.getCollisionBoxes(entity, boundingBox.expand(x, y, z))
 
     list1.forEach { y = it.calculateYOffset(bbSoFar, y) }
     bbSoFar = bbSoFar.offset(0.0, y, 0.0)
@@ -189,7 +189,7 @@ fun EntityPlayer.sendSpamlessMessage(comp: ITextComponent, uniqueId: Int) {
         LibrarianLib.PROXY.runIfClient(packet)
 }
 
-fun Entity.setVelocityAndUpdate(vec: Vec3d) = setVelocityAndUpdate(vec.xCoord, vec.yCoord, vec.zCoord)
+fun Entity.setVelocityAndUpdate(vec: Vec3d) = setVelocityAndUpdate(vec.x, vec.y, vec.z)
 fun Entity.setVelocityAndUpdate(x: Double = motionX, y: Double = motionY, z: Double = motionZ) {
     motionX = x
     motionY = y

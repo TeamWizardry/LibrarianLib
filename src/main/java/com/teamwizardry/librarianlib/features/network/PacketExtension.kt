@@ -11,5 +11,5 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper
  */
 
 fun SimpleNetworkWrapper.sendToAllAround(packet: IMessage, world: World, pos: Vec3d, radius: Number) {
-    this.sendToAllAround(packet, NetworkRegistry.TargetPoint(world.provider.dimension, pos.xCoord, pos.yCoord, pos.zCoord, radius.toDouble()))
+    this.sendToAllAround(packet, NetworkRegistry.TargetPoint(world.provider.dimension, pos.x, pos.y, pos.z, radius.toDouble()))
 }

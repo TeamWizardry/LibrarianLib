@@ -23,9 +23,9 @@ class InterpBezier3D @JvmOverloads constructor(
 
     override fun get(i: Float): Vec3d {
         return Vec3d(
-                getBezierComponent(i.toDouble(), start.xCoord, end.xCoord, absoluteStartControl.xCoord, absoluteEndControl.xCoord),
-                getBezierComponent(i.toDouble(), start.yCoord, end.yCoord, absoluteStartControl.yCoord, absoluteEndControl.yCoord),
-                getBezierComponent(i.toDouble(), start.zCoord, end.zCoord, absoluteStartControl.zCoord, absoluteEndControl.zCoord)
+                getBezierComponent(i.toDouble(), start.x, end.x, absoluteStartControl.x, absoluteEndControl.x),
+                getBezierComponent(i.toDouble(), start.y, end.y, absoluteStartControl.y, absoluteEndControl.y),
+                getBezierComponent(i.toDouble(), start.z, end.z, absoluteStartControl.z, absoluteEndControl.z)
         )
     }
 

@@ -88,27 +88,27 @@ class Matrix4 {
     }
 
     fun translate(vec: Vec3d): Matrix4 {
-        m03 += m00 * vec.xCoord + m01 * vec.yCoord + m02 * vec.zCoord
-        m13 += m10 * vec.xCoord + m11 * vec.yCoord + m12 * vec.zCoord
-        m23 += m20 * vec.xCoord + m21 * vec.yCoord + m22 * vec.zCoord
-        m33 += m30 * vec.xCoord + m31 * vec.yCoord + m32 * vec.zCoord
+        m03 += m00 * vec.x + m01 * vec.y + m02 * vec.z
+        m13 += m10 * vec.x + m11 * vec.y + m12 * vec.z
+        m23 += m20 * vec.x + m21 * vec.y + m22 * vec.z
+        m33 += m30 * vec.x + m31 * vec.y + m32 * vec.z
 
         return this
     }
 
     fun scale(vec: Vec3d): Matrix4 {
-        m00 *= vec.xCoord
-        m10 *= vec.xCoord
-        m20 *= vec.xCoord
-        m30 *= vec.xCoord
-        m01 *= vec.yCoord
-        m11 *= vec.yCoord
-        m21 *= vec.yCoord
-        m31 *= vec.yCoord
-        m02 *= vec.zCoord
-        m12 *= vec.zCoord
-        m22 *= vec.zCoord
-        m32 *= vec.zCoord
+        m00 *= vec.x
+        m10 *= vec.x
+        m20 *= vec.x
+        m30 *= vec.x
+        m01 *= vec.y
+        m11 *= vec.y
+        m21 *= vec.y
+        m31 *= vec.y
+        m02 *= vec.z
+        m12 *= vec.z
+        m22 *= vec.z
+        m32 *= vec.z
 
         return this
     }
@@ -117,24 +117,24 @@ class Matrix4 {
         val c = Math.cos(angle)
         val s = Math.sin(angle)
         val mc = 1.0f - c
-        val xy = axis.xCoord * axis.yCoord
-        val yz = axis.yCoord * axis.zCoord
-        val xz = axis.xCoord * axis.zCoord
-        val xs = axis.xCoord * s
-        val ys = axis.yCoord * s
-        val zs = axis.zCoord * s
+        val xy = axis.x * axis.y
+        val yz = axis.y * axis.z
+        val xz = axis.x * axis.z
+        val xs = axis.x * s
+        val ys = axis.y * s
+        val zs = axis.z * s
 
-        val f00 = axis.xCoord * axis.xCoord * mc + c
+        val f00 = axis.x * axis.x * mc + c
         val f10 = xy * mc + zs
         val f20 = xz * mc - ys
 
         val f01 = xy * mc - zs
-        val f11 = axis.yCoord * axis.yCoord * mc + c
+        val f11 = axis.y * axis.y * mc + c
         val f21 = yz * mc + xs
 
         val f02 = xz * mc + ys
         val f12 = yz * mc - xs
-        val f22 = axis.zCoord * axis.zCoord * mc + c
+        val f22 = axis.z * axis.z * mc + c
 
         val t00 = m00 * f00 + m01 * f10 + m02 * f20
         val t10 = m10 * f00 + m11 * f10 + m12 * f20
@@ -304,9 +304,9 @@ class Matrix4 {
     }
 
     private fun mult3x3(vec: Vec3d): Vec3d {
-        val x = m00 * vec.xCoord + m01 * vec.yCoord + m02 * vec.zCoord
-        val y = m10 * vec.xCoord + m11 * vec.yCoord + m12 * vec.zCoord
-        val z = m20 * vec.xCoord + m21 * vec.yCoord + m22 * vec.zCoord
+        val x = m00 * vec.x + m01 * vec.y + m02 * vec.z
+        val y = m10 * vec.x + m11 * vec.y + m12 * vec.z
+        val z = m20 * vec.x + m21 * vec.y + m22 * vec.z
 
         return Vec3d(x, y, z)
     }

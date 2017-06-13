@@ -43,7 +43,7 @@ object VariantEntryPoint : TestEntryPoint {
         object : ItemModArrow("arrow") {
             override fun generateArrowEntity(worldIn: World, stack: ItemStack, position: Vec3d, shooter: EntityLivingBase?): EntityArrow {
                 val arrow = if (shooter != null) EntityTippedArrow(worldIn, shooter)
-                else EntityTippedArrow(worldIn, position.xCoord, position.yCoord, position.zCoord)
+                else EntityTippedArrow(worldIn, position.x, position.y, position.z)
 
                 val s = ItemStack(Items.TIPPED_ARROW)
                 PotionUtils.addPotionToItemStack(s, PotionTypes.INVISIBILITY)

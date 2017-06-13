@@ -131,7 +131,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         val partialOffset = (player.positionVector - lastPos) * (1 - Animation.getPartialTickTime())
 
         val globalize = -(player.positionVector - partialOffset)
-        GlStateManager.translate(globalize.xCoord, globalize.yCoord, globalize.zCoord)
+        GlStateManager.translate(globalize.x, globalize.y, globalize.z)
 
 
         GlStateManager.disableTexture2D()

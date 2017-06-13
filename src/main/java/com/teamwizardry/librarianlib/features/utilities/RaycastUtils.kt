@@ -58,9 +58,9 @@ object RaycastUtils {
         }
 
         val lookVector = e.lookVec
-        val reachVector = positionVector.addVector(lookVector.xCoord * maxDistance, lookVector.yCoord * maxDistance, lookVector.zCoord * maxDistance)
+        val reachVector = positionVector.addVector(lookVector.x * maxDistance, lookVector.y * maxDistance, lookVector.z * maxDistance)
         var lookedEntity: Entity? = null
-        val entitiesInBoundingBox = e.world.getEntitiesWithinAABBExcludingEntity(e, e.entityBoundingBox.addCoord(lookVector.xCoord * maxDistance, lookVector.yCoord * maxDistance, lookVector.zCoord * maxDistance).expand(1.0, 1.0, 1.0))
+        val entitiesInBoundingBox = e.world.getEntitiesWithinAABBExcludingEntity(e, e.entityBoundingBox.expand(lookVector.x * maxDistance, lookVector.y * maxDistance, lookVector.z * maxDistance).expand(1.0, 1.0, 1.0))
         var minDistance = distance
         val var14 = entitiesInBoundingBox.iterator()
 
@@ -75,7 +75,7 @@ object RaycastUtils {
                         val collisionBorderSize = next.collisionBorderSize
                         val hitbox = next.entityBoundingBox.expand(collisionBorderSize.toDouble(), collisionBorderSize.toDouble(), collisionBorderSize.toDouble())
                         val interceptPosition = hitbox.calculateIntercept(positionVector, reachVector)
-                        if (hitbox.isVecInside(positionVector)) {
+                        if (hitbox.contains(positionVector)) {
                             if (0.0 < minDistance || minDistance == 0.0) {
                                 lookedEntity = next
                                 minDistance = 0.0

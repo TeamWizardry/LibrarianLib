@@ -5,6 +5,8 @@ import com.teamwizardry.librarianlib.features.container.SlotType
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.ClickType
 import net.minecraft.item.ItemStack
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import net.minecraftforge.items.IItemHandler
 import net.minecraftforge.items.SlotItemHandler
 
@@ -45,7 +47,8 @@ class SlotBase(handler: IItemHandler, index: Int) : SlotItemHandler(handler, ind
         return if (visible) type.canTake(this, playerIn, stack, super.canTakeStack(playerIn)) else false
     }
 
-    override fun canBeHovered(): Boolean {
+    @SideOnly(Side.CLIENT)
+    override fun isEnabled(): Boolean {
         return if (visible) type.canHover(this) else false
     }
 

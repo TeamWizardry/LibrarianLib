@@ -67,7 +67,7 @@ object GlMixin {
             val o = Option<T, Vec3d>(Vec3d.ZERO)
             component.BUS.hook(GuiComponent.PreDrawEvent::class.java) {
                 val v = o.getValue(component)
-                GlStateManager.translate(v.xCoord, v.yCoord, v.zCoord)
+                GlStateManager.translate(v.x, v.y, v.z)
             }
             o
         })
@@ -82,7 +82,7 @@ object GlMixin {
             val o = Option<T, Vec3d>(Vec3d(1.0, 1.0, 1.0))
             component.BUS.hook(GuiComponent.PreDrawEvent::class.java) {
                 val v = o.getValue(component)
-                GlStateManager.scale(v.xCoord, v.yCoord, v.zCoord)
+                GlStateManager.scale(v.x, v.y, v.z)
             }
             o
         })
@@ -97,9 +97,9 @@ object GlMixin {
             val o = Option<T, Vec3d>(Vec3d.ZERO)
             component.BUS.hook(GuiComponent.PreDrawEvent::class.java) {
                 val v = o.getValue(component)
-                GlStateManager.rotate(v.xCoord.toFloat(), 1f, 0f, 0f)
-                GlStateManager.rotate(v.yCoord.toFloat(), 0f, 1f, 0f)
-                GlStateManager.rotate(v.zCoord.toFloat(), 0f, 0f, 1f)
+                GlStateManager.rotate(v.x.toFloat(), 1f, 0f, 0f)
+                GlStateManager.rotate(v.y.toFloat(), 0f, 1f, 0f)
+                GlStateManager.rotate(v.z.toFloat(), 0f, 0f, 1f)
             }
             o
         })
