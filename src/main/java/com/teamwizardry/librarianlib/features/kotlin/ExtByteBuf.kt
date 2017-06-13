@@ -19,7 +19,7 @@ fun ByteBuf.writeStack(value: ItemStack) = ByteBufUtils.writeItemStack(this, val
 fun ByteBuf.readStack(): ItemStack = ByteBufUtils.readItemStack(this)
 
 fun ByteBuf.writeTag(value: NBTTagCompound) = ByteBufUtils.writeTag(this, value)
-fun ByteBuf.readTag(): NBTTagCompound = ByteBufUtils.readTag(this)
+fun ByteBuf.readTag(): NBTTagCompound = ByteBufUtils.readTag(this) ?: NBTTagCompound()
 
 fun ByteBuf.writeVarInt(value: Int) {
     var input = value
