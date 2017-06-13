@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.base.block
 
+import com.teamwizardry.librarianlib.features.base.block.module.ITileModule
 import com.teamwizardry.librarianlib.features.kotlin.forEach
 import com.teamwizardry.librarianlib.features.kotlin.nbt
 import com.teamwizardry.librarianlib.features.network.PacketHandler
@@ -44,8 +45,7 @@ abstract class TileMod : TileEntity() {
     private fun writeModuleNBT(sync: Boolean) = nbt {
         comp(
             *modules.map {
-                val compound = NBTTagCompound()
-                it.key to it.value.writeToNBT(compound, sync)
+                it.key to it.value.writeToNBT(sync)
             }.toTypedArray()
         )
     }
