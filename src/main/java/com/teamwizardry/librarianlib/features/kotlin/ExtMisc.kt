@@ -76,14 +76,6 @@ private class RealDefaultImpl<K, V>(val map: MutableMap<K, V>, val default: (K) 
     }
 }
 
-
-// AxisAlignedBB =======================================================================================================
-
-operator fun AxisAlignedBB.contains(other: Vec3d) =
-        this.minX <= other.x && this.maxX >= other.x &&
-                this.minY <= other.y && this.maxY >= other.y &&
-                this.minZ <= other.z && this.maxZ >= other.z
-
 // World
 
 fun World.collideAABB(boundingBox: AxisAlignedBB, offset: Vec3d, entity: Entity? = null): Vec3d {
