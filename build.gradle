@@ -197,7 +197,7 @@ uploadArchives {
     repositories {
         if (System.getenv('REPO_PWD') != null) {
             repositories.mavenDeployer {
-                repository(url: "http://maven.bluexin.be/repository/releases/") {
+                repository(url: "http://maven.bluexin.be/" + (((String) project.version).contains("SNAPSHOT") ? "snapshots" : "releases") + "/releases/") {
                     authentication(userName: "travis", password: System.getenv('REPO_PWD'))
                 }
             }
