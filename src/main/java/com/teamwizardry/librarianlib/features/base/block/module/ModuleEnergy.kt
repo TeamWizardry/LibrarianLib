@@ -6,6 +6,7 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumFacing
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.util.INBTSerializable
+import net.minecraftforge.energy.CapabilityEnergy
 import net.minecraftforge.energy.EnergyStorage
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler
 
@@ -31,11 +32,11 @@ class ModuleEnergy(val handler: MutableEnergyStorage) : ITileModule {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> getCapability(capability: Capability<T>, facing: EnumFacing?): T? {
-        return if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && facing in allowedSides) handler as T else null
+        return if (capability == CapabilityEnergy.ENERGY && facing in allowedSides) handler as T else null
     }
 
     override fun hasCapability(capability: Capability<*>, facing: EnumFacing?): Boolean {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && facing in allowedSides
+        return capability == CapabilityEnergy.ENERGY && facing in allowedSides
     }
 }
 
