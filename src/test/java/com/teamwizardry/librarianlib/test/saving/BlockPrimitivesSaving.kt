@@ -22,7 +22,7 @@ import net.minecraft.world.World
  * Created by TheCodeWarrior
  */
 class BlockPrimitivesSaving : BlockMod("saving_primitives", Material.CACTUS), ITileEntityProvider {
-    override fun onBlockActivated(worldIn: World, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer, hand: EnumHand?, side: EnumFacing?, hitX: Float, hitY: Float, hitZ: Float): Boolean {
+    override fun onBlockActivated(worldIn: World, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer, hand: EnumHand?, facing: EnumFacing?, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         val te = worldIn.getTileEntity(pos!!)!! as TETest
         if (!worldIn.isRemote) {
             te.coolBoolean = !te.coolBoolean

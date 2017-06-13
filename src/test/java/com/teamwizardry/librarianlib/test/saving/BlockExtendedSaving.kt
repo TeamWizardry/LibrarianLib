@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.test.saving
 
 import com.teamwizardry.librarianlib.features.autoregister.TileRegister
 import com.teamwizardry.librarianlib.features.base.block.BlockMod
+import com.teamwizardry.librarianlib.features.base.block.BlockModContainer
 import com.teamwizardry.librarianlib.features.base.block.TileMod
 import com.teamwizardry.librarianlib.features.kotlin.sendMessage
 import com.teamwizardry.librarianlib.features.saving.Save
@@ -19,9 +20,9 @@ import net.minecraft.world.World
 /**
  * Created by TheCodeWarrior
  */
-class BlockExtendedSaving : BlockMod("saving_extended", Material.CACTUS), ITileEntityProvider {
-    override fun onBlockActivated(worldIn: World, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer, hand: EnumHand?, side: EnumFacing?, hitX: Float, hitY: Float, hitZ: Float): Boolean {
-        val te = worldIn.getTileEntity(pos!!)!! as TETest
+class BlockExtendedSaving : BlockModContainer("saving_extended", Material.CACTUS) {
+    override fun onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer, hand: EnumHand, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
+        val te = worldIn.getTileEntity(pos) as TETest
         if (!worldIn.isRemote) {
             te.baseInt++
             te.extInt--
@@ -35,8 +36,7 @@ class BlockExtendedSaving : BlockMod("saving_extended", Material.CACTUS), ITileE
         return true
     }
 
-
-    override fun createNewTileEntity(worldIn: World?, meta: Int): TileEntity? {
+    override fun createTileEntity(world: World, state: IBlockState): TileEntity? {
         return TETest()
     }
 

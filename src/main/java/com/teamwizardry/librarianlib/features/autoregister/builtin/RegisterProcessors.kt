@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.autoregister.builtin
 
 import com.teamwizardry.librarianlib.core.common.OwnershipHandler
 import com.teamwizardry.librarianlib.features.autoregister.*
+import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.kotlin.singletonInstance
 import com.teamwizardry.librarianlib.features.kotlin.toRl
 import com.teamwizardry.librarianlib.features.network.PacketBase
@@ -25,7 +26,7 @@ object TileRegisterProcessor : AnnotationMarkerProcessor<TileRegister, TileEntit
         val name = annotation.value
         val owner = OwnershipHandler.getModId(clazz)
         var loc: ResourceLocation =
-                if (name == "") clazz.canonicalName.toLowerCase().toRl()
+                if (name == "") VariantHelper.toSnakeCase(clazz.simpleName).toRl()
                 else ResourceLocation(name)
 
         if (loc.resourceDomain == "minecraft" && owner == null)

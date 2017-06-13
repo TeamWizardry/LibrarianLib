@@ -20,10 +20,10 @@ import java.util.*
  * Created by TheCodeWarrior
  */
 class BlockPrimitiveGenericsSaving : BlockMod("saving_primitiveGenerics", Material.CACTUS), ITileEntityProvider {
-    override fun onBlockActivated(worldIn: World, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer, hand: EnumHand?, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
+    override fun onBlockActivated(worldIn: World, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer, hand: EnumHand?, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         val te = worldIn.getTileEntity(pos!!)!! as TETest
         if (!worldIn.isRemote) {
-            te.map[side] = (te.map[side] ?: 0) + 1
+            te.map[facing] = (te.map[facing] ?: 0) + 1
             te.markDirty()
         } else {
             playerIn.sendMessage("HashMap<EnumFacing, Int>: [" + te.map.map { "${it.key}:${it.value}" }.joinToString(", ") + "]")

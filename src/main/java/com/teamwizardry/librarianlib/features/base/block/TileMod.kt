@@ -4,20 +4,24 @@ import com.teamwizardry.librarianlib.features.base.block.module.ITileModule
 import com.teamwizardry.librarianlib.features.kotlin.forEach
 import com.teamwizardry.librarianlib.features.kotlin.nbt
 import com.teamwizardry.librarianlib.features.network.PacketHandler
+import com.teamwizardry.librarianlib.features.network.PacketModuleSync
 import com.teamwizardry.librarianlib.features.network.PacketTileSynchronization
 import com.teamwizardry.librarianlib.features.saving.*
 import io.netty.buffer.ByteBuf
 import net.minecraft.block.state.IBlockState
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.network.NetworkManager
 import net.minecraft.network.play.server.SPacketUpdateTileEntity
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.EnumFacing
+import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraft.world.WorldServer
 import net.minecraftforge.common.capabilities.Capability
+import sun.audio.AudioPlayer.player
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.filter
@@ -40,7 +44,31 @@ abstract class TileMod : TileEntity() {
     protected fun initModule(name: String, module: ITileModule) = modules.put(name, module)
 
     fun onBreak() = modules.forEach { it.value.onBreak(this) }
-    override fun onLoad() = modules.forEach { it.value.onLoad(this) }
+
+    override fun onLoad() {
+        for ((name, field) in SavingFieldCache.getClassFields(FieldType.create(javaClass))) {
+            if (field.meta.hasFlag(SavingFieldFlag.MODULE)) {
+                @Suppress("LeakingThis")
+                val module = field.getter(this) as? ITileModule
+                module?.let { initModule(name, it) }
+            }
+        }
+
+        modules.forEach { it.value.onLoad(this) }
+    }
+
+    fun syncModule(module: ITileModule) {
+        val name = modules.entries.firstOrNull { it.value === module }?.key ?: return
+        val ws = world as? WorldServer ?: return
+        ws.playerEntities
+                .filterIsInstance<EntityPlayerMP>()
+                .filter { it.getDistanceSq(getPos()) < 64 * 64 && ws.playerChunkMap.isPlayerWatchingChunk(it, pos.x shr 4, pos.z shr 4) }
+                .forEach { PacketHandler.NETWORK.sendTo(PacketModuleSync(module.writeToNBT(true), name, pos), it) }
+    }
+
+    fun onClicked(player: EntityPlayer, hand: EnumHand, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float) = modules
+            .map { it.value.onClicked(this, player, hand, side, hitX, hitY, hitZ) }
+            .any { it }
 
     fun writeModuleNBT(sync: Boolean) = nbt {
         comp(
@@ -53,20 +81,14 @@ abstract class TileMod : TileEntity() {
     fun readModuleNBT(nbt: NBTTagCompound) {
         nbt.forEach { key, value ->
             if (value is NBTTagCompound) {
-                val module = modules[key]
-                module?.readFromNBT(value)
+                readSingleModuleNBT(key, value)
             }
         }
     }
 
-    init {
-        for ((name, field) in SavingFieldCache.getClassFields(FieldType.create(javaClass))) {
-            if (field.meta.hasFlag(SavingFieldFlag.MODULE)) {
-                @Suppress("LeakingThis")
-                val module = field.getter(this) as? ITileModule
-                module?.let { initModule(name, it) }
-            }
-        }
+    fun readSingleModuleNBT(key: String, value: NBTTagCompound) {
+        val module = modules[key]
+        module?.readFromNBT(value)
     }
 
     /**

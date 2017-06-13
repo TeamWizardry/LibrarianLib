@@ -41,7 +41,7 @@ object BlockPoweredMachine : BlockModDirectional("powered_machine", Material.IRO
      * Called when the block is right-clicked.
      * We tell the [GuiHandler] to open our container for the player.
      */
-    override fun onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer, hand: EnumHand, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
+    override fun onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer, hand: EnumHand, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         GuiHandler.open(PoweredMachineContainer.NAME, playerIn, pos)
         return true
     }
