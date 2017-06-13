@@ -6,6 +6,7 @@ package com.teamwizardry.librarianlib.features.kotlin
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.Vec3i
 
 // Vec3d ===============================================================================================================
 
@@ -39,6 +40,14 @@ fun Vec3d.withX(other: Int) = this.withX(other.toDouble())
 fun Vec3d.withY(other: Int) = this.withY(other.toDouble())
 fun Vec3d.withZ(other: Int) = this.withZ(other.toDouble())
 
+operator fun Vec3d.component1() = x
+operator fun Vec3d.component2() = y
+operator fun Vec3d.component3() = z
+
+operator fun Vec3i.component1() = x
+operator fun Vec3i.component2() = y
+operator fun Vec3i.component3() = z
+
 
 // Vec2d ===============================================================================================================
 
@@ -64,6 +73,9 @@ fun Vec2d.withY(other: Float) = this.withY(other.toDouble())
 
 fun Vec2d.withX(other: Int) = this.withX(other.toDouble())
 fun Vec2d.withY(other: Int) = this.withY(other.toDouble())
+
+operator fun Vec2d.component1() = x
+operator fun Vec2d.component2() = y
 
 // BlockPos ============================================================================================================
 

@@ -5,9 +5,7 @@ import com.teamwizardry.librarianlib.core.common.LibCommonProxy
 import com.teamwizardry.librarianlib.features.forgeevents.CustomWorldRenderEvent
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.minus
-import com.teamwizardry.librarianlib.features.kotlin.times
-import com.teamwizardry.librarianlib.features.kotlin.unaryMinus
+import com.teamwizardry.librarianlib.features.kotlin.*
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.shader.LibShaders
 import com.teamwizardry.librarianlib.features.shader.ShaderHelper
