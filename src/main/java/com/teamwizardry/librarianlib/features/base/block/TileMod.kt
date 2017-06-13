@@ -42,15 +42,15 @@ abstract class TileMod : TileEntity() {
     fun onBreak() = modules.forEach { it.value.onBreak(this) }
     override fun onLoad() = modules.forEach { it.value.onLoad(this) }
 
-    private fun writeModuleNBT(sync: Boolean) = nbt {
+    fun writeModuleNBT(sync: Boolean) = nbt {
         comp(
             *modules.map {
                 it.key to it.value.writeToNBT(sync)
             }.toTypedArray()
         )
-    }
+    } as NBTTagCompound
 
-    private fun readModuleNBT(nbt: NBTTagCompound) {
+    fun readModuleNBT(nbt: NBTTagCompound) {
         nbt.forEach { key, value ->
             if (value is NBTTagCompound) {
                 val module = modules[key]

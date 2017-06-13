@@ -14,24 +14,28 @@ import net.minecraftforge.items.ItemStackHandler
  * @author WireSegal
  * Created at 10:41 AM on 6/13/17.
  */
-class ModuleInventory : ITileModule {
-    constructor() { handler = ItemStackHandler() }
-    constructor(size: Int) { handler = ItemStackHandler(size) }
-    constructor(stacks: NonNullList<ItemStack>) { handler = ItemStackHandler(stacks) }
-    constructor(handler: ItemStackHandler) { this.handler = handler }
+class ModuleInventory(val handler: ItemStackHandler) : ITileModule {
+    constructor() : this(ItemStackHandler())
+    constructor(size: Int) : this(ItemStackHandler(size))
+    constructor(stacks: NonNullList<ItemStack>) : this(ItemStackHandler(stacks))
 
-    val handler: ItemStackHandler
+    fun disallowSides(vararg sides: EnumFacing?): ModuleInventory {
+        allowedSides.removeAll { it in sides }
+        return this
+    }
+
+    private val allowedSides = mutableSetOf(*EnumFacing.VALUES, null)
 
     override fun readFromNBT(compound: NBTTagCompound) = handler.deserializeNBT(compound)
     override fun writeToNBT(sync: Boolean): NBTTagCompound = handler.serializeNBT()
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> getCapability(capability: Capability<T>, facing: EnumFacing?): T? {
-        return if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) handler as T else null
+        return if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && facing in allowedSides) handler as T else null
     }
 
     override fun hasCapability(capability: Capability<*>, facing: EnumFacing?): Boolean {
-        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
+        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && facing in allowedSides
     }
 
     override fun onBreak(tile: TileMod) {
