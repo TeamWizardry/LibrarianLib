@@ -21,10 +21,7 @@ class ModuleFluid(val handler: FluidTank) : ITileModule {
     constructor(stack: FluidStack, capacity: Int) : this(FluidTank(stack, capacity))
     constructor(fluid: Fluid, amount: Int, capacity: Int) : this(FluidTank(fluid, amount, capacity))
 
-    fun disallowSides(vararg sides: EnumFacing?): ModuleFluid {
-        allowedSides.removeAll { it in sides }
-        return this
-    }
+    fun disallowSides(vararg sides: EnumFacing?) = apply { allowedSides.removeAll { it in sides } }
 
     override fun onClicked(tile: TileMod, player: EntityPlayer, hand: EnumHand, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         if (side !in allowedSides) return false

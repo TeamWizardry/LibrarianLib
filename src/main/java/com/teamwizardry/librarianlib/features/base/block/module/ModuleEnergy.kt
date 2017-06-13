@@ -20,10 +20,7 @@ class ModuleEnergy(val handler: MutableEnergyStorage) : ITileModule {
     constructor(capacity: Int, maxReceive: Int, maxExtract: Int) : this(MutableEnergyStorage(capacity, maxReceive, maxExtract))
     constructor(capacity: Int, maxReceive: Int, maxExtract: Int, energy: Int) : this(MutableEnergyStorage(capacity, maxReceive, maxExtract, energy))
 
-    fun disallowSides(vararg sides: EnumFacing?): ModuleEnergy {
-        allowedSides.removeAll { it in sides }
-        return this
-    }
+    fun disallowSides(vararg sides: EnumFacing?) = apply { allowedSides.removeAll { it in sides } }
 
     private val allowedSides = mutableSetOf(*EnumFacing.VALUES, null)
 

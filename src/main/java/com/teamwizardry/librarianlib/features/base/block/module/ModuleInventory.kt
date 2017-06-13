@@ -19,10 +19,7 @@ class ModuleInventory(val handler: ItemStackHandler) : ITileModule {
     constructor(size: Int) : this(ItemStackHandler(size))
     constructor(stacks: NonNullList<ItemStack>) : this(ItemStackHandler(stacks))
 
-    fun disallowSides(vararg sides: EnumFacing?): ModuleInventory {
-        allowedSides.removeAll { it in sides }
-        return this
-    }
+    fun disallowSides(vararg sides: EnumFacing?) = apply { allowedSides.removeAll { it in sides } }
 
     private val allowedSides = mutableSetOf(*EnumFacing.VALUES, null)
 
