@@ -6,6 +6,7 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
 import net.minecraftforge.common.capabilities.Capability
+import net.minecraftforge.common.util.INBTSerializable
 import net.minecraftforge.fluids.Fluid
 import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.fluids.FluidTank
@@ -16,12 +17,10 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler
  * @author WireSegal
  * Created at 10:41 AM on 6/13/17.
  */
-class ModuleFluid(val handler: FluidTank) : ITileModule {
-    constructor(capacity: Int) : this(FluidTank(capacity))
-    constructor(stack: FluidStack, capacity: Int) : this(FluidTank(stack, capacity))
-    constructor(fluid: Fluid, amount: Int, capacity: Int) : this(FluidTank(fluid, amount, capacity))
-
-    fun disallowSides(vararg sides: EnumFacing?) = apply { allowedSides.removeAll { it in sides } }
+class ModuleFluid(handler: SerializableFluidTank) : ModuleCapability<ModuleFluid.SerializableFluidTank>(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, handler) {
+    constructor(capacity: Int) : this(SerializableFluidTank(capacity))
+    constructor(stack: FluidStack, capacity: Int) : this(SerializableFluidTank(stack, capacity))
+    constructor(fluid: Fluid, amount: Int, capacity: Int) : this(SerializableFluidTank(fluid, amount, capacity))
 
     override fun onClicked(tile: TileMod, player: EntityPlayer, hand: EnumHand, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         if (side !in allowedSides) return false
@@ -32,17 +31,12 @@ class ModuleFluid(val handler: FluidTank) : ITileModule {
         return FluidUtil.getFluidHandler(stack) != null
     }
 
-    private val allowedSides = mutableSetOf(*EnumFacing.VALUES, null)
+    class SerializableFluidTank : FluidTank, INBTSerializable<NBTTagCompound> {
+        constructor(capacity: Int) : super(capacity)
+        constructor(stack: FluidStack, capacity: Int) : super(stack, capacity)
+        constructor(fluid: Fluid, amount: Int, capacity: Int) : super(fluid, amount, capacity)
 
-    override fun readFromNBT(compound: NBTTagCompound) { handler.readFromNBT(compound) }
-    override fun writeToNBT(sync: Boolean): NBTTagCompound = handler.writeToNBT(NBTTagCompound())
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : Any> getCapability(capability: Capability<T>, facing: EnumFacing?): T? {
-        return if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && facing in allowedSides) handler as T else null
-    }
-
-    override fun hasCapability(capability: Capability<*>, facing: EnumFacing?): Boolean {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && facing in allowedSides
+        override fun deserializeNBT(nbt: NBTTagCompound) { readFromNBT(nbt) }
+        override fun serializeNBT(): NBTTagCompound = writeToNBT(NBTTagCompound())
     }
 }

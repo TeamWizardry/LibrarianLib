@@ -14,58 +14,31 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler
  * @author WireSegal
  * Created at 10:41 AM on 6/13/17.
  */
-class ModuleEnergy(val handler: MutableEnergyStorage) : ITileModule {
-    constructor(capacity: Int) : this(MutableEnergyStorage(capacity))
-    constructor(capacity: Int, maxTransfer: Int) : this(MutableEnergyStorage(capacity, maxTransfer))
-    constructor(capacity: Int, maxReceive: Int, maxExtract: Int) : this(MutableEnergyStorage(capacity, maxReceive, maxExtract))
-    constructor(capacity: Int, maxReceive: Int, maxExtract: Int, energy: Int) : this(MutableEnergyStorage(capacity, maxReceive, maxExtract, energy))
+class ModuleEnergy(handler: SerializableEnergyStorage) : ModuleCapability<ModuleEnergy.SerializableEnergyStorage>(CapabilityEnergy.ENERGY, handler) {
+    constructor(capacity: Int) : this(SerializableEnergyStorage(capacity))
+    constructor(capacity: Int, maxTransfer: Int) : this(SerializableEnergyStorage(capacity, maxTransfer))
+    constructor(capacity: Int, maxReceive: Int, maxExtract: Int) : this(SerializableEnergyStorage(capacity, maxReceive, maxExtract))
+    constructor(capacity: Int, maxReceive: Int, maxExtract: Int, energy: Int) : this(SerializableEnergyStorage(capacity, maxReceive, maxExtract, energy))
 
-    fun disallowSides(vararg sides: EnumFacing?) = apply { allowedSides.removeAll { it in sides } }
+    open class SerializableEnergyStorage : EnergyStorage, INBTSerializable<NBTTagCompound> {
 
-    private val allowedSides = mutableSetOf(*EnumFacing.VALUES, null)
+        constructor(capacity: Int) : super(capacity)
+        constructor(capacity: Int, maxTransfer: Int) : super(capacity, maxTransfer)
+        constructor(capacity: Int, maxReceive: Int, maxExtract: Int) : super(capacity, maxReceive, maxExtract)
+        constructor(capacity: Int, maxReceive: Int, maxExtract: Int, energy: Int) : super(capacity, maxReceive, maxExtract, energy)
 
-    override fun readFromNBT(compound: NBTTagCompound) { handler.deserializeNBT(compound) }
-    override fun writeToNBT(sync: Boolean): NBTTagCompound = handler.serializeNBT()
+        override fun deserializeNBT(nbt: NBTTagCompound) {
+            energy = nbt.getInteger("Energy")
+            maxExtract = nbt.getInteger("Extract")
+            maxReceive = nbt.getInteger("Receive")
+            capacity = nbt.getInteger("Capacity")
+        }
 
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : Any> getCapability(capability: Capability<T>, facing: EnumFacing?): T? {
-        return if (capability == CapabilityEnergy.ENERGY && facing in allowedSides) handler as T else null
-    }
-
-    override fun hasCapability(capability: Capability<*>, facing: EnumFacing?): Boolean {
-        return capability == CapabilityEnergy.ENERGY && facing in allowedSides
-    }
-}
-
-
-open class MutableEnergyStorage @JvmOverloads constructor(capacity: Int, maxIn: Int = capacity, maxOut: Int = maxIn, energy: Int = 0): EnergyStorage(capacity, maxIn, maxOut, energy), INBTSerializable<NBTTagCompound> {
-    fun setEnergy(energy: Int) {
-        this.energy = energy
-    }
-
-    var receiveRate: Int
-        get() = maxReceive
-        set(value) { maxReceive = value }
-
-    var extractRate: Int
-        get() = maxExtract
-        set(value) { maxExtract = value }
-
-    override fun deserializeNBT(nbt: NBTTagCompound) {
-        energy = nbt.getInteger("energy")
-        maxExtract = nbt.getInteger("extract")
-        maxReceive = nbt.getInteger("receive")
-        capacity = nbt.getInteger("capacity")
-    }
-
-    override fun serializeNBT(): NBTTagCompound {
-        return nbt {
-            comp(
-                    "energy" to energy,
-                    "extract" to maxExtract,
-                    "receive" to maxReceive,
-                    "capacity" to capacity
-            )
-        } as NBTTagCompound
+        override fun serializeNBT() = NBTTagCompound().apply {
+            setInteger("Energy", energy)
+            setInteger("Extract", maxExtract)
+            setInteger("Receive", maxReceive)
+            setInteger("Capacity", capacity)
+        }
     }
 }
