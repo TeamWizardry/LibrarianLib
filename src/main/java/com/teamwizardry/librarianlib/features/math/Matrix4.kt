@@ -16,22 +16,22 @@ import java.nio.ByteOrder
 class Matrix4 {
 
     //m<row><column>
-    var m00: Double = 0.toDouble()
-    var m01: Double = 0.toDouble()
-    var m02: Double = 0.toDouble()
-    var m03: Double = 0.toDouble()
-    var m10: Double = 0.toDouble()
-    var m11: Double = 0.toDouble()
-    var m12: Double = 0.toDouble()
-    var m13: Double = 0.toDouble()
-    var m20: Double = 0.toDouble()
-    var m21: Double = 0.toDouble()
-    var m22: Double = 0.toDouble()
-    var m23: Double = 0.toDouble()
-    var m30: Double = 0.toDouble()
-    var m31: Double = 0.toDouble()
-    var m32: Double = 0.toDouble()
-    var m33: Double = 0.toDouble()
+    var m00: Double = 0.0
+    var m01: Double = 0.0
+    var m02: Double = 0.0
+    var m03: Double = 0.0
+    var m10: Double = 0.0
+    var m11: Double = 0.0
+    var m12: Double = 0.0
+    var m13: Double = 0.0
+    var m20: Double = 0.0
+    var m21: Double = 0.0
+    var m22: Double = 0.0
+    var m23: Double = 0.0
+    var m30: Double = 0.0
+    var m31: Double = 0.0
+    var m32: Double = 0.0
+    var m33: Double = 0.0
 
     constructor() {
         m00 = 1.0

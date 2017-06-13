@@ -15,6 +15,9 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NBTBase
+import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.nbt.NBTTagList
 import net.minecraft.network.play.server.SPacketEntityVelocity
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.NonNullList
@@ -334,4 +337,25 @@ fun kotlin.Array<Parameter>.matches(other: kotlin.collections.List<KParameter>):
         if (!ok) return@forEachIndexed
     }
     return ok
+}
+
+inline fun <T: NBTBase> NBTTagList(size: Int, generator: (Int) -> T): NBTTagList {
+    val list = NBTTagList()
+    for (i in 0 until size)
+        list.appendTag(generator(i))
+    return list
+}
+
+inline fun NBTTagCompound(size: Int, generator: (Int) -> Pair<String, NBTBase>): NBTTagCompound {
+    val list = NBTTagCompound()
+    for (i in 0 until size) {
+        val (key, value) = generator(i)
+        list.setTag(key, value)
+    }
+    return list
+}
+
+inline fun NBTTagCompound.forEach(code: (key: String, value: NBTBase) -> Unit) {
+    for (key in keySet)
+        code(key, getTag(key))
 }

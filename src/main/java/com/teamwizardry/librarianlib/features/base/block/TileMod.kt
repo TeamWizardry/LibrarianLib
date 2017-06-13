@@ -1,9 +1,10 @@
 package com.teamwizardry.librarianlib.features.base.block
 
+import com.teamwizardry.librarianlib.features.kotlin.forEach
+import com.teamwizardry.librarianlib.features.kotlin.nbt
 import com.teamwizardry.librarianlib.features.network.PacketHandler
 import com.teamwizardry.librarianlib.features.network.PacketTileSynchronization
-import com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler
-import com.teamwizardry.librarianlib.features.saving.SaveInPlace
+import com.teamwizardry.librarianlib.features.saving.*
 import io.netty.buffer.ByteBuf
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayerMP
@@ -16,6 +17,15 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraft.world.WorldServer
 import net.minecraftforge.common.capabilities.Capability
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.filter
+import kotlin.collections.filterIsInstance
+import kotlin.collections.forEach
+import kotlin.collections.iterator
+import kotlin.collections.map
+import kotlin.collections.mutableMapOf
+import kotlin.collections.toTypedArray
 
 /**
  * @author WireSegal
@@ -23,6 +33,41 @@ import net.minecraftforge.common.capabilities.Capability
  */
 @SaveInPlace
 abstract class TileMod : TileEntity() {
+
+    protected val modules = mutableMapOf<String, ITileModule>()
+
+    protected fun initModule(name: String, module: ITileModule) = modules.put(name, module)
+
+    fun onBreak() = modules.forEach { it.value.onBreak(this) }
+    override fun onLoad() = modules.forEach { it.value.onLoad(this) }
+
+    private fun writeModuleNBT(sync: Boolean) = nbt {
+        comp(
+            *modules.map {
+                val compound = NBTTagCompound()
+                it.key to it.value.writeToNBT(compound, sync)
+            }.toTypedArray()
+        )
+    }
+
+    private fun readModuleNBT(nbt: NBTTagCompound) {
+        nbt.forEach { key, value ->
+            if (value is NBTTagCompound) {
+                val module = modules[key]
+                module?.readFromNBT(value)
+            }
+        }
+    }
+
+    init {
+        for ((name, field) in SavingFieldCache.getClassFields(FieldType.create(javaClass))) {
+            if (field.meta.hasFlag(SavingFieldFlag.MODULE)) {
+                @Suppress("LeakingThis")
+                val module = field.getter(this) as? ITileModule
+                module?.let { initModule(name, it) }
+            }
+        }
+    }
 
     /**
      * Using fast synchronization is quicker and less expensive than the NBT packet default.
@@ -41,6 +86,7 @@ abstract class TileMod : TileEntity() {
         writeCustomNBT(customTag, false)
         compound.setTag("custom", customTag)
         compound.setTag("auto", AbstractSaveHandler.writeAutoNBT(this, false))
+        compound.setTag("module", writeModuleNBT(false))
         compound.setInteger("_v", 2)
         super.writeToNBT(compound)
 
@@ -49,6 +95,7 @@ abstract class TileMod : TileEntity() {
 
     override fun readFromNBT(compound: NBTTagCompound) {
         readCustomNBT(compound.getCompoundTag("custom"))
+        readModuleNBT(compound.getCompoundTag("module"))
         if (!compound.hasKey("_v"))
             AbstractSaveHandler.readAutoNBT(this, compound, false)
         else {
@@ -65,6 +112,7 @@ abstract class TileMod : TileEntity() {
         writeCustomNBT(customTag, true)
         compound.setTag("custom", customTag)
         compound.setTag("auto", AbstractSaveHandler.writeAutoNBT(this, true))
+        compound.setTag("module", writeModuleNBT(true))
         super.writeToNBT(compound)
 
         return compound
@@ -127,6 +175,7 @@ abstract class TileMod : TileEntity() {
     override fun handleUpdateTag(tag: NBTTagCompound) {
         readCustomNBT(tag.getCompoundTag("custom"))
         AbstractSaveHandler.readAutoNBT(this, tag.getTag("auto"), true)
+        readModuleNBT(tag.getCompoundTag("module"))
     }
 
     /**
@@ -155,10 +204,14 @@ abstract class TileMod : TileEntity() {
     }
 
     override fun <T : Any> getCapability(capability: Capability<T>, facing: EnumFacing?): T? {
-        return AbstractSaveHandler.getCapability(this, capability, facing) ?: super.getCapability(capability, facing)
+        return modules.values.mapNotNull { it.getCapability(capability, facing) }.firstOrNull() ?:
+            AbstractSaveHandler.getCapability(this, capability, facing) ?:
+                super.getCapability(capability, facing)
     }
 
     override fun hasCapability(capability: Capability<*>, facing: EnumFacing?): Boolean {
-        return AbstractSaveHandler.hasCapability(this, capability, facing) || super.hasCapability(capability, facing)
+        return modules.values.any { it.hasCapability(capability, facing) } ||
+            AbstractSaveHandler.hasCapability(this, capability, facing) ||
+                super.hasCapability(capability, facing)
     }
 }

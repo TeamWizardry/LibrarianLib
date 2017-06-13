@@ -9,6 +9,7 @@ package com.teamwizardry.librarianlib.test.container
 import com.teamwizardry.librarianlib.features.autoregister.TileRegister
 import com.teamwizardry.librarianlib.features.base.block.BlockModContainer
 import com.teamwizardry.librarianlib.features.base.block.TileModInventory
+import com.teamwizardry.librarianlib.features.base.block.TileModInventoryTickable
 import com.teamwizardry.librarianlib.features.container.GuiHandler
 import com.teamwizardry.librarianlib.features.saving.CapabilityProvide
 import com.teamwizardry.librarianlib.features.saving.Savable
@@ -50,7 +51,7 @@ object BlockFluidTank : BlockModContainer("fluid_tank", Material.IRON) {
 
 @Savable
 @TileRegister("te_fluid_tank")
-class TEFluidTank : TileModInventory(2), ITickable {
+class TEFluidTank : TileModInventoryTickable(2) {
 
     @Save
     @CapabilityProvide(EnumFacing.DOWN, EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST)
@@ -63,7 +64,7 @@ class TEFluidTank : TileModInventory(2), ITickable {
         fluidHandler.setTileEntity(this)
     }
 
-    override fun update() {
+    override fun tick() {
         if (!world.isRemote) {
             if (getStackInSlot(SLOT_OUT).isEmpty) {
                 val s = getStackInSlot(SLOT_IN).copy()
