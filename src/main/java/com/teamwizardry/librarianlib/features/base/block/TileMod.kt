@@ -46,14 +46,7 @@ abstract class TileMod : TileEntity() {
     fun onBreak() = modules.forEach { it.value.onBreak(this) }
 
     override fun onLoad() {
-        for ((name, field) in SavingFieldCache.getClassFields(FieldType.create(javaClass))) {
-            if (field.meta.hasFlag(SavingFieldFlag.MODULE)) {
-                @Suppress("LeakingThis")
-                val module = field.getter(this) as? ITileModule
-                module?.let { initModule(name, it) }
-            }
-        }
-
+        createModules()
         modules.forEach { it.value.onLoad(this) }
     }
 
@@ -66,19 +59,39 @@ abstract class TileMod : TileEntity() {
                 .forEach { PacketHandler.NETWORK.sendTo(PacketModuleSync(module.writeToNBT(true), name, pos), it) }
     }
 
+    private var modulesSetUp = false
+
+    fun createModules() {
+        if (modulesSetUp) return
+        modulesSetUp = true
+
+        for ((name, field) in SavingFieldCache.getClassFields(FieldType.create(javaClass))) {
+            if (field.meta.hasFlag(SavingFieldFlag.MODULE)) {
+                @Suppress("LeakingThis")
+                val module = field.getter(this) as? ITileModule
+                module?.let { initModule(name, it) }
+            }
+        }
+
+    }
+
     fun onClicked(player: EntityPlayer, hand: EnumHand, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float) = modules
             .map { it.value.onClicked(this, player, hand, side, hitX, hitY, hitZ) }
             .any { it }
 
-    fun writeModuleNBT(sync: Boolean) = nbt {
-        comp(
-            *modules.map {
-                it.key to it.value.writeToNBT(sync)
-            }.toTypedArray()
-        )
-    } as NBTTagCompound
+    fun writeModuleNBT(sync: Boolean): NBTTagCompound {
+        createModules()
+        return nbt {
+            comp(
+                    *modules.map {
+                        it.key to it.value.writeToNBT(sync)
+                    }.toTypedArray()
+            )
+        } as NBTTagCompound
+    }
 
     fun readModuleNBT(nbt: NBTTagCompound) {
+        createModules()
         nbt.forEach { key, value ->
             if (value is NBTTagCompound) {
                 readSingleModuleNBT(key, value)
