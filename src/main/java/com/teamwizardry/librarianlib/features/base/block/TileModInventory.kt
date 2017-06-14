@@ -7,6 +7,6 @@ import net.minecraftforge.items.IItemHandlerModifiable
 /**
  * Created by TheCodeWarrior
  */
-open class TileModInventory protected constructor(@Module val module: ModuleInventory) : TileMod(), IItemHandlerModifiable by module.handler {
+open class TileModInventory(@Module val module: ModuleInventory) : TileMod(), IItemHandlerModifiable by module.handler {
     constructor(size: Int) : this(ModuleInventory(size))
 }
