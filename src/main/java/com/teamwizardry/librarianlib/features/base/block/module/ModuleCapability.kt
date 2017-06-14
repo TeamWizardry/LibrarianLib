@@ -21,6 +21,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler
 open class ModuleCapability<CAP : INBTSerializable<NBTTagCompound>>(val capability: Capability<in CAP>, val handler: CAP) : ITileModule {
 
     fun disallowSides(vararg sides: EnumFacing?) = apply { allowedSides.removeAll { it in sides } }
+    fun setSides(vararg sides: EnumFacing?) = apply { allowedSides.clear(); allowedSides.addAll(sides) }
 
     protected val allowedSides = mutableSetOf(*EnumFacing.VALUES, null)
 
