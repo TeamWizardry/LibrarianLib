@@ -3,14 +3,18 @@ package com.teamwizardry.librarianlib.features.config
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.core.common.OwnershipHandler
-import com.teamwizardry.librarianlib.features.config.EasyConfigHandler.init
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.currentModId
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.utilities.AnnotationHelper
 import com.teamwizardry.librarianlib.features.utilities.AnnotationInfo
 import net.minecraftforge.common.config.Configuration
+import net.minecraftforge.fml.common.FMLLog
 import net.minecraftforge.fml.common.discovery.ASMDataTable
+import org.apache.logging.log4j.Level
+import scala.annotation.meta.field
+import scala.inline
+import java.awt.SystemColor.info
 import java.io.File
 import java.lang.Class
 import java.lang.reflect.Field
@@ -18,15 +22,15 @@ import java.lang.reflect.Field
 
 /**
  * Created by Elad on 10/14/2016.
- * This object contains utilities for the automatic config system. Its [init] method should be invoked at
- * pre-initialization or initialization time.
+ * This object contains utilities for the automatic config system.
  */
 object EasyConfigHandler {
     private lateinit var CONFIG_DIR: File
 
     private var workingId = currentModId
 
-    private val toLoad = mutableListOf<Pair<String, File?>>()
+    private val allIds = mutableSetOf<String>()
+    private val toLoad = mutableMapOf<String, File?>()
     private var loaded = false
 
     private val allFields: MutableMap<FieldEntry<*>, Pair<String, String>> = mutableMapOf()
@@ -76,18 +80,22 @@ object EasyConfigHandler {
 
         findAllProperties(asm)
 
-        toLoad.forEach { init(it.first, it.second) }
+
+        allIds.forEach {
+            initInternal(it, toLoad[it])
+        }
         toLoad.clear()
     }
 
     @JvmStatic
     @JvmOverloads
     fun init(modid: String = currentModId, configf: File? = if (loaded) File(CONFIG_DIR, "$currentModId.cfg") else null) {
-        if (!loaded) {
-            toLoad.add(modid to configf)
-            return
-        }
+        if (!loaded)
+            toLoad.put(modid, configf)
+        else LibrarianLog.error("Trying to activate the config file override too late. Call it in init. Mod: $modid")
+    }
 
+    private fun initInternal(modid: String, configf: File?) {
         if (LibrarianLib.DEV_ENVIRONMENT)
             LibrarianLog.info("$modid | All config properties found:")
 
@@ -213,8 +221,10 @@ object EasyConfigHandler {
 
     private inline fun <reified T> addToMaps(name: String, inst: Any?, modid: String, field: Field, info: AnnotationInfo, target: MutableList<FieldEntry<T>>,
                                              noinline makeFieldEntry: (String, Any?, Field, String, AnnotationInfo) -> FieldEntry<T> = EasyConfigHandler::makeFieldEntryDefault) {
-        var identifier = info.getString("identifier")
+        var identifier = info.getString("name")
         if (identifier.isBlank()) identifier = VariantHelper.toSnakeCase(field.name)
+
+        allIds.add(modid)
 
         val fieldEntry = makeFieldEntry(modid, inst, field, identifier, info)
         target.add(fieldEntry)
@@ -252,6 +262,7 @@ object EasyConfigHandler {
         var modid = info.getString("modid")
         if (modid.isBlank())
             modid = OwnershipHandler.getModId(field.declaringClass) ?: "unknown"
+        allIds.add(modid)
 
         val fieldEntry = FieldEntry(modid, { it: T -> field.set(inst, it) }, info.get<T>("defaultValue"),
                 info.getBoolean("devOnly"),
