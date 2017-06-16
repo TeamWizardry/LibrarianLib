@@ -28,6 +28,11 @@ object AbstractSaveHandler {
     }
 
     @JvmStatic
+    fun readAutoNBTByClass(clazz: Class<*>, tag: NBTBase, sync: Boolean): Any {
+        return nbtCache[clazz].read(tag, null, sync)
+    }
+
+    @JvmStatic
     fun writeAutoBytes(instance: Any, buf: ByteBuf, sync: Boolean) {
         byteCache[instance.javaClass].write(buf, instance, sync)
     }
@@ -35,6 +40,11 @@ object AbstractSaveHandler {
     @JvmStatic
     fun readAutoBytes(instance: Any, buf: ByteBuf, sync: Boolean): Any {
         return byteCache[instance.javaClass].read(buf, instance, sync)
+    }
+
+    @JvmStatic
+    fun readAutoBytesByClass(clazz: Class<*>, buf: ByteBuf, sync: Boolean): Any {
+        return nbtCache[clazz].read(buf, null, sync)
     }
 
     @JvmStatic

@@ -4,6 +4,7 @@
 package com.teamwizardry.librarianlib.features.kotlin
 
 import com.teamwizardry.librarianlib.features.helpers.ItemNBTHelper
+import com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.*
 
@@ -82,6 +83,13 @@ class NBTWrapper(val contained: ItemStack) {
 val ItemStack.nbt: NBTWrapper
     get() = NBTWrapper(this)
 
+fun <T: Any> T.toNBT(sync: Boolean = false): NBTBase {
+    return AbstractSaveHandler.writeAutoNBT(this, sync)
+}
+
+inline fun <reified T: Any> NBTBase.fromNBT(sync: Boolean = false): T {
+    return AbstractSaveHandler.readAutoNBTByClass(T::class.java, this, sync) as T
+}
 // NBTTagCompound ======================================================================================================
 
 operator fun NBTTagCompound.iterator(): Iterator<Pair<String, NBTBase>> {

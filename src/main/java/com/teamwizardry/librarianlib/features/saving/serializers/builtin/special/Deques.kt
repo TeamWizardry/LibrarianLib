@@ -45,7 +45,7 @@ object SerializeDequeFactory : SerializerFactory("Deque") {
 
             list.forEachIndexed<NBTTagCompound> { i, container ->
                 val tag = container.getTag("-")
-                deque.addLast(
+                deque.push(
                         if (tag == null)
                             null
                         else
@@ -76,7 +76,7 @@ object SerializeDequeFactory : SerializerFactory("Deque") {
             deque.clear()
 
             for (i in 0..nullsig.size - 1) {
-                deque.addLast(if (nullsig[i]) null else serComponent.read(buf, null, syncing))
+                deque.push(if (nullsig[i]) null else serComponent.read(buf, null, syncing))
             }
 
             return deque
