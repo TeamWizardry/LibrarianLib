@@ -148,8 +148,8 @@ object SerializeChunkPos : Serializer<ChunkPos>(FieldType.create(ChunkPos::class
 
     override fun writeNBT(value: ChunkPos, syncing: Boolean): NBTBase {
         val tag = NBTTagCompound()
-        tag.setInteger("x", value.chunkXPos)
-        tag.setInteger("z", value.chunkZPos)
+        tag.setInteger("x", value.x)
+        tag.setInteger("z", value.z)
         return tag
     }
 
@@ -158,7 +158,7 @@ object SerializeChunkPos : Serializer<ChunkPos>(FieldType.create(ChunkPos::class
     }
 
     override fun writeBytes(buf: ByteBuf, value: ChunkPos, syncing: Boolean) {
-        buf.writeInt(value.chunkXPos)
-        buf.writeInt(value.chunkZPos)
+        buf.writeInt(value.x)
+        buf.writeInt(value.z)
     }
 }

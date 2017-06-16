@@ -39,7 +39,7 @@ open class ChunkData(chunk: Chunk) {
             val packet = PacketCustomChunkData(pos, name!!, this)
             world.playerEntities.forEach {
                 it as EntityPlayerMP
-                if(world.playerChunkMap.isPlayerWatchingChunk(it, pos.chunkXPos, pos.chunkZPos)) {
+                if(world.playerChunkMap.isPlayerWatchingChunk(it, pos.x, pos.z)) {
                     PacketHandler.NETWORK.sendTo(packet, it)
                 }
             }
