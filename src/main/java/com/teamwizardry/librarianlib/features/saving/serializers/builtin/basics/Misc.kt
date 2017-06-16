@@ -71,7 +71,7 @@ object SerializeNBTTagCompound : Serializer<NBTTagCompound>(FieldType.create(NBT
     }
 
     override fun readBytes(buf: ByteBuf, existing: NBTTagCompound?, syncing: Boolean): NBTTagCompound {
-        return buf.readTag() ?: NBTTagCompound()
+        return buf.readTag()
     }
 
     override fun writeBytes(buf: ByteBuf, value: NBTTagCompound, syncing: Boolean) {
@@ -139,7 +139,7 @@ object SerializeItemStackHandler : Serializer<ItemStackHandler>(FieldType.create
 
     override fun readBytes(buf: ByteBuf, existing: ItemStackHandler?, syncing: Boolean): ItemStackHandler {
         val handler = existing ?: ItemStackHandler()
-        handler.deserializeNBT(buf.readTag() ?: NBTTagCompound())
+        handler.deserializeNBT(buf.readTag())
         return handler
     }
 

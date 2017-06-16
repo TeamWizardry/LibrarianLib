@@ -2,9 +2,7 @@ package com.teamwizardry.librarianlib.features.network
 
 import com.teamwizardry.librarianlib.features.autoregister.PacketRegister
 import com.teamwizardry.librarianlib.features.base.block.TileMod
-import com.teamwizardry.librarianlib.features.kotlin.hasNullSignature
-import com.teamwizardry.librarianlib.features.kotlin.writeNonnullSignature
-import com.teamwizardry.librarianlib.features.kotlin.writeNullSignature
+import com.teamwizardry.librarianlib.features.kotlin.*
 import com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler
 import com.teamwizardry.librarianlib.features.saving.Save
 import io.netty.buffer.ByteBuf
@@ -36,6 +34,7 @@ class PacketTileSynchronization(var tile: TileMod? = null /* Tile is always null
         if (b == null || tile == null || tile !is TileMod) return
 
         AbstractSaveHandler.readAutoBytes(tile, b, true)
+        tile.readModuleNBT(b.readTag())
         tile.readCustomBytes(b)
         b.release()
     }
@@ -53,6 +52,7 @@ class PacketTileSynchronization(var tile: TileMod? = null /* Tile is always null
             buf.writeNonnullSignature()
 
             AbstractSaveHandler.writeAutoBytes(te, buf, true)
+            buf.writeTag(te.writeModuleNBT(true))
             te.writeCustomBytes(buf, true)
         }
     }

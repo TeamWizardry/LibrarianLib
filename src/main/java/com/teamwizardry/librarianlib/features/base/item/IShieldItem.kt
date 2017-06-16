@@ -34,8 +34,8 @@ interface IShieldItem {
         fun onLivingAttack(e: LivingAttackEvent) {
             val attacked = e.entityLiving
             val source = e.source
-            val indirectSource = source.entity
-            val directSource = source.sourceOfDamage
+            val indirectSource = source.trueSource
+            val directSource = source.immediateSource
 
             if (attacked is EntityPlayer && !source.isUnblockable) {
                 val activeItem = attacked.activeItemStack

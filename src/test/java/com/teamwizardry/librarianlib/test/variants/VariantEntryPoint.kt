@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.features.base.item.ItemMod
 import com.teamwizardry.librarianlib.features.base.item.ItemModArrow
 import com.teamwizardry.librarianlib.features.base.item.ItemModShield
 import com.teamwizardry.librarianlib.features.kotlin.sendSpamlessMessage
+import com.teamwizardry.librarianlib.test.module.BlockModule
 import com.teamwizardry.librarianlib.test.testcore.TestEntryPoint
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
@@ -43,7 +44,7 @@ object VariantEntryPoint : TestEntryPoint {
         object : ItemModArrow("arrow") {
             override fun generateArrowEntity(worldIn: World, stack: ItemStack, position: Vec3d, shooter: EntityLivingBase?): EntityArrow {
                 val arrow = if (shooter != null) EntityTippedArrow(worldIn, shooter)
-                else EntityTippedArrow(worldIn, position.xCoord, position.yCoord, position.zCoord)
+                else EntityTippedArrow(worldIn, position.x, position.y, position.z)
 
                 val s = ItemStack(Items.TIPPED_ARROW)
                 PotionUtils.addPotionToItemStack(s, PotionTypes.INVISIBILITY)
@@ -67,7 +68,7 @@ object VariantEntryPoint : TestEntryPoint {
         }
 
         val block = object : BlockModVariant("variant", Material.ROCK, "a", "b", "c") {
-            override fun onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer, hand: EnumHand, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
+            override fun onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer, hand: EnumHand, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
                 playerIn.sendSpamlessMessage(state.getValue(property), 0x8008)
                 return true
             }
@@ -85,6 +86,8 @@ object VariantEntryPoint : TestEntryPoint {
         BlockModFence("a_fence", block.defaultState)
         BlockModWall("a_wall", block.defaultState)
         BlockModFenceGate("a_gate", block.defaultState)
+
+        BlockModule()
 
         ItemModShield("shield")
 

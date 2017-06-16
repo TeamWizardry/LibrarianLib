@@ -22,6 +22,7 @@ object MethodHandleHelper {
      */
     @JvmStatic
     fun <T: Any> handleForMethod(clazz: Class<T>, methodNames: Array<String>, vararg methodClasses: Class<*>): MethodHandle {
+        @Suppress("DEPRECATION")
         val m = ReflectionHelper.findMethod<T>(clazz, null, methodNames, *methodClasses)
         return publicLookup().unreflect(m)
     }

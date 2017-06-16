@@ -21,7 +21,7 @@ class BlockContainerTest : BlockModContainer("container", Material.ROCK) {
         return TEContainer()
     }
 
-    override fun onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer, hand: EnumHand?, side: EnumFacing?, hitX: Float, hitY: Float, hitZ: Float): Boolean {
+    override fun onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer, hand: EnumHand, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         GuiHandler.open(ContainerTest.NAME, playerIn, pos)
         return true
     }

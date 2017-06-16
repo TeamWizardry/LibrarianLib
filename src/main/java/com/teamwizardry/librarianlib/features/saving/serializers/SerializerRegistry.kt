@@ -42,6 +42,7 @@ object SerializerRegistry {
      * @throws NoSuchSerializerError if there is no serializer registered for the passed type
      */
     fun getOrCreate(type: FieldType): Serializer<Any> {
+        @Suppress("UNCHECKED_CAST")
         return serializers.getOrPut(type, { findFactoryForType(type).create(type) as Serializer<Any> })
     }
 
@@ -74,4 +75,4 @@ object SerializerRegistry {
     }
 }
 
-class NoSuchSerializerError(type: FieldType) : RuntimeException("No serializer for type ${type}")
+class NoSuchSerializerError(type: FieldType) : RuntimeException("No serializer for type $type")

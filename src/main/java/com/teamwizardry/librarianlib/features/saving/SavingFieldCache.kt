@@ -99,9 +99,7 @@ object SavingFieldCache {
         val property = field.kotlinProperty
         if(property == null || property !is KMutableProperty<*>)
             return null
-        val method = property.setter.javaMethod
-        if(method == null)
-            return null
+        val method = property.setter.javaMethod ?: return null
         method.isAccessible = true
         val handle = MethodHandleHelper.wrapperForMethod<Any>(method)
         return { obj, value -> handle(obj, arrayOf(value)) }
@@ -133,6 +131,7 @@ object SavingFieldCache {
 
     fun addAnnotationFlagsForField(field: AccessibleObject, meta: FieldMetadata) {
         if (field.isAnnotationPresent(Save::class.java)) meta.addFlag(SavingFieldFlag.ANNOTATED)
+        if (field.isAnnotationPresent(Module::class.java)) meta.addFlag(SavingFieldFlag.MODULE)
         if (field.isAnnotationPresent(NotNull::class.java)) meta.addFlag(SavingFieldFlag.NONNULL)
         if (field.isAnnotationPresent(NoSync::class.java)) meta.addFlag(SavingFieldFlag.NO_SYNC)
         if (field.isAnnotationPresent(NonPersistent::class.java)) meta.addFlag(SavingFieldFlag.NON_PERSISTENT)
@@ -384,7 +383,7 @@ data class FieldCache(val meta: FieldMetadata, val getter: (Any) -> Any?, privat
     }
 }
 
-data class FieldMetadata private constructor(val type: FieldType, private var flagsInternal: MutableSet<SavingFieldFlag>) {
+data class FieldMetadata(val type: FieldType, private var flagsInternal: MutableSet<SavingFieldFlag>) {
     constructor(type: FieldType, vararg flags: SavingFieldFlag) : this(type, EnumSet.noneOf(SavingFieldFlag::class.java).let { it.addAll(flags); it })
 
     val flags: Set<SavingFieldFlag>
@@ -400,5 +399,6 @@ data class FieldMetadata private constructor(val type: FieldType, private var fl
 
 enum class SavingFieldFlag {
     FIELD, METHOD, ANNOTATED, NONNULL, NO_SYNC, NON_PERSISTENT, TRANSIENT, FINAL,
-    CAPABILITY, CAPABILITY_UP, CAPABILITY_DOWN, CAPABILITY_NORTH, CAPABILITY_SOUTH, CAPABILITY_EAST, CAPABILITY_WEST
+    CAPABILITY, CAPABILITY_UP, CAPABILITY_DOWN, CAPABILITY_NORTH, CAPABILITY_SOUTH, CAPABILITY_EAST, CAPABILITY_WEST,
+    MODULE
 }

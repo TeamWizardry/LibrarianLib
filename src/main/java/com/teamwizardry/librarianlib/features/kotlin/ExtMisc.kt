@@ -15,6 +15,9 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NBTBase
+import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.nbt.NBTTagList
 import net.minecraft.network.play.server.SPacketEntityVelocity
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.NonNullList
@@ -74,23 +77,15 @@ private class RealDefaultImpl<K, V>(val map: MutableMap<K, V>, val default: (K) 
     }
 }
 
-
-// AxisAlignedBB =======================================================================================================
-
-operator fun AxisAlignedBB.contains(other: Vec3d) =
-        this.minX <= other.xCoord && this.maxX >= other.xCoord &&
-                this.minY <= other.yCoord && this.maxY >= other.yCoord &&
-                this.minZ <= other.zCoord && this.maxZ >= other.zCoord
-
 // World
 
 fun World.collideAABB(boundingBox: AxisAlignedBB, offset: Vec3d, entity: Entity? = null): Vec3d {
     var bbSoFar = boundingBox
-    var x = offset.xCoord
-    var y = offset.yCoord
-    var z = offset.zCoord
+    var x = offset.x
+    var y = offset.y
+    var z = offset.z
 
-    val list1 = this.getCollisionBoxes(entity, boundingBox.addCoord(x, y, z))
+    val list1 = this.getCollisionBoxes(entity, boundingBox.expand(x, y, z))
 
     list1.forEach { y = it.calculateYOffset(bbSoFar, y) }
     bbSoFar = bbSoFar.offset(0.0, y, 0.0)
@@ -190,7 +185,7 @@ fun EntityPlayer.sendSpamlessMessage(comp: ITextComponent, uniqueId: Int) {
         LibrarianLib.PROXY.runIfClient(packet)
 }
 
-fun Entity.setVelocityAndUpdate(vec: Vec3d) = setVelocityAndUpdate(vec.xCoord, vec.yCoord, vec.zCoord)
+fun Entity.setVelocityAndUpdate(vec: Vec3d) = setVelocityAndUpdate(vec.x, vec.y, vec.z)
 fun Entity.setVelocityAndUpdate(x: Double = motionX, y: Double = motionY, z: Double = motionZ) {
     motionX = x
     motionY = y
@@ -202,9 +197,9 @@ fun Entity.setVelocityAndUpdate(x: Double = motionX, y: Double = motionY, z: Dou
 var Entity.motionVec: Vec3d
     get() = Vec3d(motionX, motionY, motionZ)
     set(value) {
-        this.motionX = value.xCoord
-        this.motionY = value.yCoord
-        this.motionZ = value.zCoord
+        this.motionX = value.x
+        this.motionY = value.y
+        this.motionZ = value.z
     }
 
 // String ==============================================================================================================
@@ -335,4 +330,25 @@ fun kotlin.Array<Parameter>.matches(other: kotlin.collections.List<KParameter>):
         if (!ok) return@forEachIndexed
     }
     return ok
+}
+
+inline fun <T: NBTBase> NBTTagList(size: Int, generator: (Int) -> T): NBTTagList {
+    val list = NBTTagList()
+    for (i in 0 until size)
+        list.appendTag(generator(i))
+    return list
+}
+
+inline fun NBTTagCompound(size: Int, generator: (Int) -> Pair<String, NBTBase>): NBTTagCompound {
+    val list = NBTTagCompound()
+    for (i in 0 until size) {
+        val (key, value) = generator(i)
+        list.setTag(key, value)
+    }
+    return list
+}
+
+inline fun NBTTagCompound.forEach(code: (key: String, value: NBTBase) -> Unit) {
+    for (key in keySet)
+        code(key, getTag(key))
 }

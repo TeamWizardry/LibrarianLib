@@ -9,6 +9,7 @@ package com.teamwizardry.librarianlib.test.container
 import com.teamwizardry.librarianlib.features.autoregister.TileRegister
 import com.teamwizardry.librarianlib.features.base.block.BlockModDirectional
 import com.teamwizardry.librarianlib.features.base.block.TileModInventory
+import com.teamwizardry.librarianlib.features.base.block.TileModInventoryTickable
 import com.teamwizardry.librarianlib.features.container.GuiHandler
 import com.teamwizardry.librarianlib.features.saving.CapabilityProvide
 import com.teamwizardry.librarianlib.features.saving.Savable
@@ -40,7 +41,7 @@ object BlockPoweredMachine : BlockModDirectional("powered_machine", Material.IRO
      * Called when the block is right-clicked.
      * We tell the [GuiHandler] to open our container for the player.
      */
-    override fun onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer, hand: EnumHand, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
+    override fun onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer, hand: EnumHand, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         GuiHandler.open(PoweredMachineContainer.NAME, playerIn, pos)
         return true
     }
@@ -56,7 +57,7 @@ object BlockPoweredMachine : BlockModDirectional("powered_machine", Material.IRO
  */
 @Savable
 @TileRegister("te_powered_machine")
-class TEPoweredMachine : TileModInventory(2), ITickable {
+class TEPoweredMachine : TileModInventoryTickable(2) {
 
     /**
      * Forge Energy handler for this machine.
@@ -86,7 +87,7 @@ class TEPoweredMachine : TileModInventory(2), ITickable {
      *      then check whether it is completed and try to output to our output slot
      *      once everything has been output, we remove the current recipe
      */
-    override fun update() {
+    override fun tick() {
         if (!world.isRemote) {
             this.generateEnergy()
 

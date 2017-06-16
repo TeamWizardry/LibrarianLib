@@ -59,11 +59,11 @@ class CapabilityTest : CapabilityMod("${TestMod.MODID}:CapTest".toRl()) {
 }
 
 class BlockCapTest : BlockMod("hi", Material.ROCK), ITileEntityProvider {
-    override fun onBlockActivated(worldIn: World?, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer?, hand: EnumHand?, side: EnumFacing?, hitX: Float, hitY: Float, hitZ: Float): Boolean {
+    override fun onBlockActivated(worldIn: World?, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer?, hand: EnumHand?, facing: EnumFacing?, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         (worldIn?.getTileEntity(pos) as? TileEntityCapTest?)?.cap?.test = (worldIn?.getTileEntity(pos) as? TileEntityCapTest?)?.cap?.test?.plus(1) ?: 0
         //(worldIn?.getTileEntity(pos) as? TileEntityCapTest?)?.cap?.markDirty()
         playerIn?.sendStatusMessage((worldIn?.getTileEntity(pos) as? TileEntityCapTest?)?.cap?.test.toString().toComponent(), false)
-        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, side, hitX, hitY, hitZ)
+        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)
     }
 
     override fun createNewTileEntity(worldIn: World?, meta: Int): TileEntity {

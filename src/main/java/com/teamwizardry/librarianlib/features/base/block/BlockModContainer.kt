@@ -2,7 +2,10 @@ package com.teamwizardry.librarianlib.features.base.block
 
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
@@ -20,4 +23,15 @@ abstract class BlockModContainer(name: String, materialIn: Material, vararg vari
     override fun hasTileEntity(state: IBlockState?) = true
 
     override abstract fun createTileEntity(world: World, state: IBlockState): TileEntity?
+
+    override fun breakBlock(worldIn: World, pos: BlockPos, state: IBlockState) {
+        val tile = worldIn.getTileEntity(pos)
+        if (tile is TileMod) tile.onBreak()
+        super.breakBlock(worldIn, pos, state)
+    }
+
+    override fun onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer, hand: EnumHand, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
+        val tile = worldIn.getTileEntity(pos)
+        return tile is TileMod && tile.onClicked(playerIn, hand, facing, hitX, hitY, hitZ)
+    }
 }

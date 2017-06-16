@@ -41,7 +41,7 @@ import java.util.*
  * Created at 10:13 PM on 5/27/16.
  */
 @Suppress("LeakingThis")
-abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod(name, Material.PLANTS, *variants), IPlantable, IGrowable, IModelGenerator {
+abstract class BlockModSapling(name: String, vararg variants: String) : BlockModBush(name, *variants), IGrowable {
 
     companion object : IFuelHandler {
         override fun getBurnTime(fuel: ItemStack)
@@ -67,23 +67,11 @@ abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod
         }
     }
 
-    val AABB = AxisAlignedBB(0.1, 0.0, 0.1, 0.9, 0.8, 0.9)
-
     init {
         this.tickRandomly = true
-        soundType = SoundType.PLANT
         if (itemForm != null)
             for (variant in this.variants.indices)
                 OreDictionary.registerOre("treeSapling", ItemStack(this, 1, variant))
-    }
-
-    override fun canPlaceBlockAt(worldIn: World, pos: BlockPos): Boolean {
-        val soil = worldIn.getBlockState(pos.down())
-        return super.canPlaceBlockAt(worldIn, pos) && soil.block.canSustainPlant(soil, worldIn, pos.down(), EnumFacing.UP, this)
-    }
-
-    open fun canSustain(state: IBlockState): Boolean {
-        return false
     }
 
     override fun onNeighborChange(worldIn: IBlockAccess, pos: BlockPos, neighborBlock: BlockPos) {
@@ -103,22 +91,6 @@ abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod
     override val ignoredProperties: Array<IProperty<*>>?
         get() = arrayOf(STAGE)
 
-    fun canBlockStay(worldIn: World, pos: BlockPos, state: IBlockState): Boolean {
-        if (state.block === this) {
-            val soil = worldIn.getBlockState(pos.down())
-            return canSustain(soil) || soil.block.canSustainPlant(soil, worldIn, pos.down(), EnumFacing.UP, this)
-        }
-        return this.canSustain(worldIn.getBlockState(pos.down()))
-    }
-
-    override fun getBoundingBox(state: IBlockState?, source: IBlockAccess?, pos: BlockPos?): AxisAlignedBB {
-        return AABB
-    }
-
-    override fun getCollisionBoundingBox(blockState: IBlockState, worldIn: IBlockAccess, pos: BlockPos): AxisAlignedBB? {
-        return NULL_AABB
-    }
-
     override fun canGrow(worldIn: World, pos: BlockPos, state: IBlockState, isClient: Boolean): Boolean {
         return true
     }
@@ -135,18 +107,15 @@ abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod
         if (!worldIn.isRemote) {
             checkAndDropBlock(worldIn, pos)
 
-            if (worldIn.getLightFromNeighbors(pos.up()) >= 9 && rand.nextInt(7) == 0) {
+            if (worldIn.getLightFromNeighbors(pos.up()) >= 9 && rand.nextInt(7) == 0)
                 this.grow(worldIn, pos, state, rand)
-            }
         }
     }
 
     fun grow(worldIn: World, pos: BlockPos, state: IBlockState, rand: Random) {
-        if (!LibLibConfig.oneBonemeal && (state.getValue(STAGE) as Int).toInt() == 0) {
+        if (!LibLibConfig.oneBonemeal && (state.getValue(STAGE) as Int).toInt() == 0)
             worldIn.setBlockState(pos, state.cycleProperty(STAGE), 4)
-        } else {
-            this.generateTree(worldIn, pos, state, rand)
-        }
+        else this.generateTree(worldIn, pos, state, rand)
     }
 
     abstract fun generateTree(worldIn: World, pos: BlockPos, state: IBlockState, rand: Random)
@@ -159,18 +128,6 @@ abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod
         return (state ?: return 0).getValue(STAGE)
     }
 
-    override fun isOpaqueCube(state: IBlockState?): Boolean {
-        return false
-    }
-
-    override fun isFullCube(state: IBlockState?): Boolean {
-        return false
-    }
-
-    override fun getPlantType(world: IBlockAccess, pos: BlockPos): EnumPlantType {
-        return EnumPlantType.Plains
-    }
-
     override fun getPlant(world: IBlockAccess, pos: BlockPos): IBlockState {
         val state = world.getBlockState(pos)
         if (state.block !== this) return defaultState
@@ -179,37 +136,6 @@ abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod
 
     override fun createBlockState(): BlockStateContainer? {
         return BlockStateContainer(this, STAGE)
-    }
-
-    @SideOnly(Side.CLIENT)
-    override fun getBlockLayer(): BlockRenderLayer {
-        return BlockRenderLayer.CUTOUT
-    }
-
-    override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
-        ModelHandler.generateBlockJson(this, {
-            JsonGenerationUtils.generateBaseBlockStates(this, mapper)
-        }, {
-            mapOf(JsonGenerationUtils.getPathForBlockModel(this)
-                    to json {
-                obj(
-                        "parent" to "block/cross",
-                        "textures" to obj(
-                                "cross" to "${registryName!!.resourceDomain}:blocks/${registryName!!.resourcePath}"
-                        )
-                )
-            })
-        })
-        return true
-    }
-
-    override fun generateMissingItem(variant: String): Boolean {
-        val item = itemForm as? IModItemProvider ?: return false
-        ModelHandler.generateItemJson(item) {
-            mapOf(JsonGenerationUtils.getPathForItemModel(item as Item, variant) to
-                    JsonGenerationUtils.generateRegularItemModel(item, variant))
-        }
-        return true
     }
 }
 

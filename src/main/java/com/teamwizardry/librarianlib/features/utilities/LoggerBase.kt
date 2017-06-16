@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 
-abstract class LoggerBase protected constructor(name: String) {
+abstract class LoggerBase(name: String) {
     val debugMode = LibrarianLib.DEV_ENVIRONMENT
     private val logger = LogManager.getLogger(name)
 

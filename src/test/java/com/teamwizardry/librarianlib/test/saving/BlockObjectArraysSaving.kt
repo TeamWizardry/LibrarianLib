@@ -29,7 +29,7 @@ import java.util.concurrent.ThreadLocalRandom
  * Created by TheCodeWarrior
  */
 class BlockObjectArraysSaving : BlockMod("saving_objectArrays", Material.CACTUS), ITileEntityProvider {
-    override fun onBlockActivated(worldIn: World, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer, hand: EnumHand?, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
+    override fun onBlockActivated(worldIn: World, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer, hand: EnumHand?, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         val te = worldIn.getTileEntity(pos!!)!! as TETest
         if (!worldIn.isRemote) {
             if (playerIn.isSneaking) {
@@ -44,7 +44,7 @@ class BlockObjectArraysSaving : BlockMod("saving_objectArrays", Material.CACTUS)
                 te.vec3i[te.index] = pos
                 te.vec2d[te.index] = Vec2d(hitX.toDouble(), hitZ.toDouble())
 
-                te.enum[te.index] = side
+                te.enum[te.index] = facing
             }
             te.markDirty()
         } else {

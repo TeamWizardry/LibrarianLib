@@ -20,10 +20,10 @@ import java.util.*
  * Created by TheCodeWarrior
  */
 class BlockPrimitiveDeepArraysSaving : BlockMod("saving_primitiveDeepArrays", Material.CACTUS), ITileEntityProvider {
-    override fun onBlockActivated(worldIn: World, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer, hand: EnumHand?, side: EnumFacing?, hitX: Float, hitY: Float, hitZ: Float): Boolean {
+    override fun onBlockActivated(worldIn: World, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer, hand: EnumHand?, facing: EnumFacing?, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         val te = worldIn.getTileEntity(pos!!)!! as TETest
         if (!worldIn.isRemote) {
-            if (side == EnumFacing.UP) {
+            if (facing == EnumFacing.UP) {
                 if (playerIn.isSneaking) {
                     te.index2 = (te.index2 + 1) % 3
                 } else {

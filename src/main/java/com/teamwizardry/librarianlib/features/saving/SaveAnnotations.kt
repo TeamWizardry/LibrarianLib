@@ -131,3 +131,13 @@ annotation class SaveInPlace
 @Target(CONSTRUCTOR)
 @MustBeDocumented
 annotation class SavableConstructorOrder(vararg val params: String)
+
+/**
+ * @author WireSegal
+ * Created at 10:27 PM on 6/13/17.
+ *
+ * Apply this to a non-code-deterministic module to have it be automatically added to the modules of this tile entity.
+ */
+@Target(FIELD)
+@MustBeDocumented
+annotation class Module

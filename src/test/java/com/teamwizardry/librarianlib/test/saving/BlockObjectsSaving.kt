@@ -29,7 +29,7 @@ import java.util.concurrent.ThreadLocalRandom
  * Created by TheCodeWarrior
  */
 class BlockObjectsSaving : BlockMod("saving_objects", Material.CACTUS), ITileEntityProvider {
-    override fun onBlockActivated(worldIn: World, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer, hand: EnumHand?, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
+    override fun onBlockActivated(worldIn: World, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer, hand: EnumHand?, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         val te = worldIn.getTileEntity(pos!!)!! as TETest
         if (!worldIn.isRemote) {
             te.color = kolors[ThreadLocalRandom.current().nextInt(kolors.size)]
@@ -40,7 +40,7 @@ class BlockObjectsSaving : BlockMod("saving_objects", Material.CACTUS), ITileEnt
             te.vec3d = vec(hitX, hitY, hitZ)
             te.vec3i = pos
             te.vec2d = vec(hitX, hitZ)
-            te.enum = side
+            te.enum = facing
 
             te.markDirty()
         } else {

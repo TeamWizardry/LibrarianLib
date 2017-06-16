@@ -31,9 +31,9 @@ object SerializeVec3d : Serializer<Vec3d>(FieldType.create(Vec3d::class.java)) {
 
     override fun writeNBT(value: Vec3d, syncing: Boolean): NBTBase {
         val tag = NBTTagCompound()
-        tag.setDouble("x", value.xCoord)
-        tag.setDouble("y", value.yCoord)
-        tag.setDouble("z", value.zCoord)
+        tag.setDouble("x", value.x)
+        tag.setDouble("y", value.y)
+        tag.setDouble("z", value.z)
         return tag
     }
 
@@ -42,9 +42,9 @@ object SerializeVec3d : Serializer<Vec3d>(FieldType.create(Vec3d::class.java)) {
     }
 
     override fun writeBytes(buf: ByteBuf, value: Vec3d, syncing: Boolean) {
-        buf.writeDouble(value.xCoord)
-        buf.writeDouble(value.yCoord)
-        buf.writeDouble(value.zCoord)
+        buf.writeDouble(value.x)
+        buf.writeDouble(value.y)
+        buf.writeDouble(value.z)
     }
 }
 
