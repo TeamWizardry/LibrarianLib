@@ -128,12 +128,6 @@ abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod
         return (state ?: return 0).getValue(STAGE)
     }
 
-    override fun getPlant(world: IBlockAccess, pos: BlockPos): IBlockState {
-        val state = world.getBlockState(pos)
-        if (state.block !== this) return defaultState
-        return state
-    }
-
     override fun createBlockState(): BlockStateContainer? {
         return BlockStateContainer(this, STAGE)
     }
