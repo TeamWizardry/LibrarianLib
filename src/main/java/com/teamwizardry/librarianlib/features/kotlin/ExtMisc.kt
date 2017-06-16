@@ -55,6 +55,7 @@ fun String.canLocalize(): Boolean {
 }
 
 fun String.toRl(): ResourceLocation = ResourceLocation(this)
+val missingno = ResourceLocation("minecraft:missingno")
 
 fun <K, V> MutableMap<K, V>.withRealDefault(default: (K) -> V): DefaultedMutableMap<K, V> {
     return when (this) {

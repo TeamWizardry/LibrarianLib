@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.features.base.item.ItemMod
 import com.teamwizardry.librarianlib.features.config.*
 import com.teamwizardry.librarianlib.features.utilities.LoggerBase
 import com.teamwizardry.librarianlib.test.cap.CapabilityTest
+import com.teamwizardry.librarianlib.test.chunkdata.ChunkDataEntryPoint
 import com.teamwizardry.librarianlib.test.container.ContainerEntryPoint
 import com.teamwizardry.librarianlib.test.fx.FXEntryPoint
 import com.teamwizardry.librarianlib.test.gui.GuiEntryPoint
@@ -90,7 +91,8 @@ class TestMod {
                 GuiEntryPoint,
                 VariantEntryPoint,
                 UnsafeTest,
-                ContainerEntryPoint
+                ContainerEntryPoint,
+                ChunkDataEntryPoint
         )
 
         object Tab : ModCreativeTab() {
