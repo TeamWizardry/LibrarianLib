@@ -42,7 +42,8 @@ val currentModId: String
             OwnershipHandler.getModId(Class.forName(Throwable().stackTrace[2].className)) ?:
             ""
 
-fun <T> threadLocal(initial: (() -> T)? = null) = ThreadLocalDelegate(initial)
+fun <T: Any?> threadLocal() = ThreadLocalDelegate<T>(null)
+fun <T> threadLocal(initial: () -> T) = ThreadLocalDelegate(initial)
 
 class ThreadLocalDelegate<T>(initial: (() -> T)?) : ReadWriteProperty<Any, T> {
     private val local = if (initial == null) ThreadLocal<T>() else ThreadLocal.withInitial(initial)
