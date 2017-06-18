@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.threadLocal
 import com.teamwizardry.librarianlib.features.kotlin.json
 import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
+import jline.console.internal.ConsoleRunner.property
 import net.minecraft.block.Block
 import net.minecraft.block.material.MapColor
 import net.minecraft.block.material.Material
@@ -20,7 +21,7 @@ import net.minecraft.util.IStringSerializable
  */
 @Suppress("LeakingThis", "UNCHECKED_CAST")
 open class BlockModEnumerated<T> @JvmOverloads constructor(name: String, materialIn: Material, color: MapColor, clazz: Class<T>, predicate: ((T) -> Boolean)? = null)
-    : BlockMod(name, materialIn, color, *injectNames(name, clazz, predicate as (Enum<*>) -> Boolean)), IModBlock, IModelGenerator where T : Enum<T>, T : IStringSerializable {
+    : BlockMod(name, materialIn, color, *injectNames(name, clazz, predicate as ((Enum<*>) -> Boolean)?)), IModBlock, IModelGenerator where T : Enum<T>, T : IStringSerializable {
 
     @JvmOverloads constructor(name: String, materialIn: Material, clazz: Class<T>, predicate: ((T) -> Boolean)? = null) : this(name, materialIn, materialIn.materialMapColor, clazz, predicate)
 
@@ -37,8 +38,8 @@ open class BlockModEnumerated<T> @JvmOverloads constructor(name: String, materia
          * This captures the variants during construction and injects them into the [property]
          * created by first access in [createBlockState].
          */
-        private fun injectNames(name: String, clazz: Class<out Enum<*>>, predicate: (Enum<*>) -> Boolean): Array<out String> {
-            val variants = VariantHelper.beginSetupBlock(name, clazz.enumConstants.map { name + "_" + VariantHelper.toSnakeCase(it.name) }.toTypedArray())
+        private fun injectNames(name: String, clazz: Class<out Enum<*>>, predicate: ((Enum<*>) -> Boolean)?): Array<out String> {
+            val variants = VariantHelper.beginSetupBlock(name, clazz.enumConstants.filter(predicate ?: { true }).map { name + "_" + VariantHelper.toSnakeCase(it.name) }.toTypedArray())
             lastClass = clazz
             lastPredicate = predicate
             return variants
