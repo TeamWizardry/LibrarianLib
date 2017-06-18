@@ -48,12 +48,11 @@ open class BlockModEnumerated<T> @JvmOverloads constructor(name: String, materia
     lateinit var property: PropertyEnum<T>
         private set
 
-    private val values: Array<out T> by lazy {
-        property.valueClass.enumConstants
+    private val values by lazy {
+        property.valueClass.enumConstants.filter(predicate ?: { true })
     }
 
     override fun createBlockState(): BlockStateContainer {
-
         val predicate = lastPredicate
         property = if (predicate == null)
             PropertyEnum.create("variant", lastClass as Class<T>)
