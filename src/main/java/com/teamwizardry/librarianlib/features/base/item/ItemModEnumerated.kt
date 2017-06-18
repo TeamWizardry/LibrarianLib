@@ -23,5 +23,7 @@ class ItemModEnumerated<T>(name: String, enumClass: Class<T>, predicate: ((T) ->
     private val values = enumClass.enumConstants.filter(predicate ?: { true })
 
     fun variantOfStack(stack: ItemStack): T = values[stack.itemDamage % values.size]
-    fun stackOfVariant(variant: T) = ItemStack(this, 1, values.indexOf(variant))
+
+    @JvmOverloads
+    fun stackOfVariant(variant: T, size: Int = 1) = ItemStack(this, size, values.indexOf(variant))
 }
