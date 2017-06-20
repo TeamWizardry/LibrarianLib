@@ -279,7 +279,23 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      */
     var outOfFlow = false
     protected val components = mutableListOf<GuiComponent<*>>()
+    /**
+     * An unmodifiable collection of all the direct children of this component
+     */
     val children: Collection<GuiComponent<*>> = Collections.unmodifiableCollection(components)
+    /**
+     * An unmodifiable collection of all the children of this component, recursively.
+     */
+    val allChildren: Collection<GuiComponent<*>>
+        get() {
+            val list = mutableListOf<GuiComponent<*>>()
+            addChildrenRecursively(list)
+            return Collections.unmodifiableCollection(list)
+        }
+    private fun addChildrenRecursively(list: MutableList<GuiComponent<*>>) {
+        list.addAll(components)
+        components.forEach { it.addChildrenRecursively(list) }
+    }
     var parent: GuiComponent<*>? = null
         private set(value) {
             parents.clear()
