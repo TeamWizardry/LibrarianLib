@@ -505,6 +505,12 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         this.mouseOver = BUS.fire(MouseOverEvent(thiz(), mousePos, this.mouseOver)).isOver
     }
 
+    open fun calculateMouseOverSelfOnly(mousePos: Vec2d) {
+        if (isVisible) mouseOver = mousePos.x >= 0 && mousePos.x <= size.x && mousePos.y >= 0 && mousePos.y <= size.y
+
+        this.mouseOver = BUS.fire(MouseOverEvent(thiz(), mousePos, this.mouseOver)).isOver
+    }
+
     private var wasMouseOver = false
 
     /**
