@@ -78,8 +78,8 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
             fr.unicodeFlag = true
         }
 
-        val x = pos.xi
-        var y = pos.yi
+        val x = pos.xi / scale
+        var y = pos.yi / scale
 
         val lines: List<String>
 
