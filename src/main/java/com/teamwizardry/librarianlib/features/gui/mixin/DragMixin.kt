@@ -9,7 +9,7 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 class DragMixin<T : GuiComponent<T>>(protected var component: T, protected var constraints: (Vec2d) -> Vec2d) {
 
     class DragPickupEvent<T : GuiComponent<*>>(val component: T, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
-    class DragDropEvent<T : GuiComponent<*>>(val component: T, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
+    class DragDropEvent<T : GuiComponent<*>>(val component: T, val mousePos: Vec2d, val button: EnumMouseButton, val previousPos: Vec2d) : EventCancelable()
     class DragMoveEvent<T : GuiComponent<*>>(val component: T, val mousePos: Vec2d, val clickedPoint: Vec2d, val pos: Vec2d, var newPos: Vec2d, val button: EnumMouseButton) : Event()
 
     var mouseDown: EnumMouseButton? = null
@@ -28,7 +28,7 @@ class DragMixin<T : GuiComponent<T>>(protected var component: T, protected var c
             }
         }
         component.BUS.hook(GuiComponent.MouseUpEvent::class.java) { event ->
-            if (mouseDown == event.button && !component.BUS.fire(DragDropEvent(event.component, event.mousePos, event.button)).isCanceled()) {
+            if (mouseDown == event.button && !component.BUS.fire(DragDropEvent(event.component, event.mousePos, event.button, clickPos)).isCanceled()) {
                 mouseDown = null
                 event.cancel()
             }
