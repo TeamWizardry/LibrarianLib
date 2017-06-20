@@ -13,8 +13,8 @@ import org.lwjgl.input.Mouse
 import java.io.IOException
 
 open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : GuiScreen() {
-    val mainComponents: ComponentVoid = ComponentVoid(0, 0)
-    val fullscreenComponents: ComponentVoid = ComponentVoid(0, 0)
+    open val mainComponents: ComponentVoid = ComponentVoid(0, 0)
+    open val fullscreenComponents: ComponentVoid = ComponentVoid(0, 0)
     private val mainScaleWrapper: ComponentVoid = ComponentVoid(0, 0)
 //    protected var top: Int = 0
 //    protected var left: Int = 0
