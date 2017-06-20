@@ -208,6 +208,8 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     var marginBottom: Double = 0.0
 
     var mouseOver = false
+    var mouseOverNoOcclusion = false
+
     var mousePosThisFrame = Vec2d.ZERO
     protected var tagStorage: MutableSet<Any> = HashSet()
     /**
@@ -491,24 +493,25 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             components.asReversed().forEach { child ->
                 child.calculateMouseOver(transformChildPos(child, mousePos))
                 if (mouseOver) {
-                    child.mouseOver = false
+                    child.mouseOver = false // occlusion
                 }
                 if (child.mouseOver) {
-                    mouseOver = true
+                    mouseOver = true // mouseover upward transfer
                 }
 
             }
 
-            mouseOver = mouseOver || (calculateOwnHover &&
-                    (mousePos.x >= 0 && mousePos.x <= size.x && mousePos.y >= 0 && mousePos.y <= size.y))
+            mouseOver = mouseOver || (calculateOwnHover && calculateOwnHover(mousePos))
         }
         this.mouseOver = BUS.fire(MouseOverEvent(thiz(), mousePos, this.mouseOver)).isOver
+        this.mouseOverNoOcclusion = this.mouseOver
     }
 
-    open fun calculateMouseOverSelfOnly(mousePos: Vec2d) {
-        if (isVisible) mouseOver = mousePos.x >= 0 && mousePos.x <= size.x && mousePos.y >= 0 && mousePos.y <= size.y
-
-        this.mouseOver = BUS.fire(MouseOverEvent(thiz(), mousePos, this.mouseOver)).isOver
+    /**
+     * Override this to change the shape of a hover. For instance making a per-pixel sprite hover
+     */
+    open fun calculateOwnHover(mousePos: Vec2d): Boolean {
+        return mousePos.x >= 0 && mousePos.x <= size.x && mousePos.y >= 0 && mousePos.y <= size.y
     }
 
     private var wasMouseOver = false
