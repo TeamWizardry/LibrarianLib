@@ -279,7 +279,23 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      */
     var outOfFlow = false
     protected val components = mutableListOf<GuiComponent<*>>()
+    /**
+     * An unmodifiable collection of all the direct children of this component
+     */
     val children: Collection<GuiComponent<*>> = Collections.unmodifiableCollection(components)
+    /**
+     * An unmodifiable collection of all the children of this component, recursively.
+     */
+    val allChildren: Collection<GuiComponent<*>>
+        get() {
+            val list = mutableListOf<GuiComponent<*>>()
+            addChildrenRecursively(list)
+            return Collections.unmodifiableCollection(list)
+        }
+    private fun addChildrenRecursively(list: MutableList<GuiComponent<*>>) {
+        list.addAll(components)
+        components.forEach { it.addChildrenRecursively(list) }
+    }
     var parent: GuiComponent<*>? = null
         private set(value) {
             parents.clear()
@@ -459,6 +475,18 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     //=============================================================================
     /* Events/checks */
     //=============================================================================
+
+    /**
+     * Transforms the position [pos] from the context of this component to the context of [targetContext]
+     */
+    fun unTransform(pos: Vec2d, targetContext: GuiComponent<*>): Vec2d {
+        val this_parent = this.parent
+        if(this_parent == null)
+            return pos
+        if(this_parent == parent)
+            return this_parent.unTransformChildPos(this, pos)
+        return this_parent.unTransform(this_parent.unTransformChildPos(this, pos), targetContext)
+    }
 
     /**
      * Allows the component to modify the mouse position before it is passed to a child element.
