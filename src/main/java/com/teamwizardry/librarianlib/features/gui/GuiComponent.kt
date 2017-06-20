@@ -477,6 +477,18 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     //=============================================================================
 
     /**
+     * Transforms the position [pos] from the context of this component to the context of [targetContext]
+     */
+    fun unTransform(pos: Vec2d, targetContext: GuiComponent<*>): Vec2d {
+        val this_parent = this.parent
+        if(this_parent == null)
+            return pos
+        if(this_parent == parent)
+            return this_parent.unTransformChildPos(this, pos)
+        return this_parent.unTransform(this_parent.unTransformChildPos(this, pos), targetContext)
+    }
+
+    /**
      * Allows the component to modify the mouse position before it is passed to a child element.
      */
     fun transformChildPos(child: GuiComponent<*>, pos: Vec2d): Vec2d {
