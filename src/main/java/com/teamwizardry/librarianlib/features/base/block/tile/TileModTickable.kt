@@ -6,7 +6,7 @@ import net.minecraft.util.ITickable
  * @author WireSegal
  * Created at 11:06 AM on 8/4/16.
  */
-abstract class TileModTickable : com.teamwizardry.librarianlib.features.base.block.TileMod(), ITickable {
+abstract class TileModTickable : TileMod(), ITickable {
     abstract fun tick()
 
     override final fun update() {
