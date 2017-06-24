@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.test.cap
 
 import com.teamwizardry.librarianlib.features.autoregister.TileRegister
 import com.teamwizardry.librarianlib.features.base.block.BlockMod
-import com.teamwizardry.librarianlib.features.base.block.TileMod
+import com.teamwizardry.librarianlib.features.base.block.tile.TileMod
 import com.teamwizardry.librarianlib.features.base.capability.CapabilityMod
 import com.teamwizardry.librarianlib.features.base.capability.ICapabilityObjectProvider
 import com.teamwizardry.librarianlib.features.kotlin.toComponent

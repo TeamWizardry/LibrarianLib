@@ -1,6 +1,6 @@
-package com.teamwizardry.librarianlib.features.base.block.module
+package com.teamwizardry.librarianlib.features.base.block.tile.module
 
-import com.teamwizardry.librarianlib.features.base.block.TileMod
+import com.teamwizardry.librarianlib.features.base.block.tile.TileMod
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumFacing

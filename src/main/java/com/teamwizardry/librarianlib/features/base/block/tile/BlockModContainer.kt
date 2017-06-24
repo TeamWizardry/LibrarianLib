@@ -1,5 +1,7 @@
-package com.teamwizardry.librarianlib.features.base.block
+package com.teamwizardry.librarianlib.features.base.block.tile
 
+import com.teamwizardry.librarianlib.features.base.block.BlockMod
+import com.teamwizardry.librarianlib.features.base.block.tile.TileMod
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayer

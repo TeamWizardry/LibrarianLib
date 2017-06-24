@@ -1,11 +1,10 @@
-package com.teamwizardry.librarianlib.features.base.block.module
+package com.teamwizardry.librarianlib.features.base.block.tile.module
 
-import com.teamwizardry.librarianlib.features.base.block.TileMod
+import com.teamwizardry.librarianlib.features.base.block.tile.TileMod
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
-import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.util.INBTSerializable
 import net.minecraftforge.fluids.Fluid
 import net.minecraftforge.fluids.FluidStack

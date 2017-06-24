@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.test.saving
 
 import com.teamwizardry.librarianlib.features.base.block.BlockMod
-import com.teamwizardry.librarianlib.features.base.block.TileMod
+import com.teamwizardry.librarianlib.features.base.block.tile.TileMod
 import com.teamwizardry.librarianlib.features.autoregister.TileRegister
 import com.teamwizardry.librarianlib.features.saving.Savable
 import com.teamwizardry.librarianlib.features.saving.Save
@@ -10,7 +10,6 @@ import net.minecraft.block.ITileEntityProvider
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.BlockRenderLayer
 import net.minecraft.util.EnumFacing

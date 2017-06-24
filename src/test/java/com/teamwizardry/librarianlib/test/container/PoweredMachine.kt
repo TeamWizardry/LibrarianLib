@@ -8,8 +8,7 @@ package com.teamwizardry.librarianlib.test.container
 
 import com.teamwizardry.librarianlib.features.autoregister.TileRegister
 import com.teamwizardry.librarianlib.features.base.block.BlockModDirectional
-import com.teamwizardry.librarianlib.features.base.block.TileModInventory
-import com.teamwizardry.librarianlib.features.base.block.TileModInventoryTickable
+import com.teamwizardry.librarianlib.features.base.block.tile.TileModInventoryTickable
 import com.teamwizardry.librarianlib.features.container.GuiHandler
 import com.teamwizardry.librarianlib.features.saving.CapabilityProvide
 import com.teamwizardry.librarianlib.features.saving.Savable
@@ -22,7 +21,6 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumFacing.*
 import net.minecraft.util.EnumHand
-import net.minecraft.util.ITickable
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.energy.IEnergyStorage

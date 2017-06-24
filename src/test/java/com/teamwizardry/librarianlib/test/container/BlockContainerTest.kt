@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.test.container
 
 import com.teamwizardry.librarianlib.features.autoregister.TileRegister
-import com.teamwizardry.librarianlib.features.base.block.BlockModContainer
-import com.teamwizardry.librarianlib.features.base.block.TileModInventory
+import com.teamwizardry.librarianlib.features.base.block.tile.BlockModContainer
+import com.teamwizardry.librarianlib.features.base.block.tile.TileModInventory
 import com.teamwizardry.librarianlib.features.container.GuiHandler
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState

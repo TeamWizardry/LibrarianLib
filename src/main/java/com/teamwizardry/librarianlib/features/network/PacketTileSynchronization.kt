@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.features.network
 
 import com.teamwizardry.librarianlib.features.autoregister.PacketRegister
-import com.teamwizardry.librarianlib.features.base.block.TileMod
+import com.teamwizardry.librarianlib.features.base.block.tile.TileMod
 import com.teamwizardry.librarianlib.features.kotlin.*
 import com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler
 import com.teamwizardry.librarianlib.features.saving.Save
