@@ -12,9 +12,10 @@ import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.BlockModelRenderer
+import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.RenderItem
-import net.minecraft.client.renderer.VertexBuffer
 import net.minecraft.client.renderer.block.model.IBakedModel
+import net.minecraft.client.renderer.vertex.VertexBuffer
 import net.minecraft.client.resources.IResource
 import net.minecraft.init.Items
 import net.minecraft.item.Item
@@ -239,7 +240,7 @@ object GlowingHandler {
     }
 
     @JvmStatic
-    fun glow(blockModelRenderer: BlockModelRenderer, world: IBlockAccess, model: IBakedModel, state: IBlockState, pos: BlockPos, buf: VertexBuffer) {
+    fun glow(blockModelRenderer: BlockModelRenderer, world: IBlockAccess, model: IBakedModel, state: IBlockState, pos: BlockPos, buf: BufferBuilder) {
         val block = state.block as? IGlowingBlock ?: blockRenderSpecialHandlers[state.block]
 
         if (block != null) {

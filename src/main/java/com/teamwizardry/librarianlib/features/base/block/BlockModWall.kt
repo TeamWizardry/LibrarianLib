@@ -30,7 +30,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
  * @author WireSegal
  * Created at 10:36 AM on 5/7/16.
  */
-open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, parent.material, parent.mapColor), IModelGenerator {
+open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, parent.material), IModelGenerator {
     private val parentName = parent.block.registryName
 
     companion object {
@@ -93,7 +93,8 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
     }
 
 
-    override fun getExplosionResistance(world: World, pos: BlockPos, exploder: Entity, explosion: Explosion) = parent.block.getExplosionResistance(world, pos, exploder, explosion)
+    override fun getMapColor(state: IBlockState?, worldIn: IBlockAccess?, pos: BlockPos?) = parent.getMapColor(worldIn, pos)
+    override fun getExplosionResistance(world: World, pos: BlockPos, exploder: Entity?, explosion: Explosion) = parent.block.getExplosionResistance(world, pos, exploder, explosion)
     @Suppress("OverridingDeprecatedMember")
     override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
     override fun isToolEffective(type: String?, state: IBlockState) = parent.block.isToolEffective(type, parent)

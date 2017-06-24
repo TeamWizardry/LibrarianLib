@@ -5,7 +5,8 @@ import com.teamwizardry.librarianlib.features.math.interpolate.InterpFunction
 import com.teamwizardry.librarianlib.features.particle.functions.RenderFunction
 import com.teamwizardry.librarianlib.features.particle.functions.TickFunction
 import net.minecraft.client.particle.Particle
-import net.minecraft.client.renderer.VertexBuffer
+import net.minecraft.client.renderer.BufferBuilder
+import net.minecraft.client.renderer.vertex.VertexBuffer
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
@@ -130,7 +131,7 @@ open class ParticleBase internal constructor(
         tickLast()
     }
 
-    fun render(worldRendererIn: VertexBuffer, info: ParticleRenderInfo) {
+    fun render(worldRendererIn: BufferBuilder, info: ParticleRenderInfo) {
 
         val i = animPos()
 

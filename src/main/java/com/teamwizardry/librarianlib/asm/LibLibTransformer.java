@@ -21,7 +21,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 // Boilerplate code taken with love from Vazkii's Quark mod
-// Quark is distrubted at https://github.com/Vazkii/Quark
+// Quark is distributed at https://github.com/Vazkii/Quark
 
 public class LibLibTransformer implements IClassTransformer, Opcodes {
 
@@ -30,21 +30,21 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     private static final Map<String, Transformer> transformers = new HashMap<>();
 
     public static final ClassnameMap CLASS_MAPPINGS = new ClassnameMap(
-            "net/minecraft/item/ItemStack", "afj",
-            "net/minecraft/client/renderer/block/model/IBakedModel", "cbh",
-            "net/minecraft/client/renderer/RenderItem", "bve",
-            "net/minecraft/client/renderer/entity/layers/LayerArmorBase", "bww",
-            "net/minecraft/entity/EntityLivingBase", "sw",
-            "net/minecraft/client/renderer/entity/RenderLivingBase", "bvl",
-            "net/minecraft/client/model/ModelBase", "blv",
-            "net/minecraft/client/renderer/BlockRendererDispatcher", "bqy",
-            "net/minecraft/client/renderer/BlockModelRenderer", "bra",
-            "net/minecraft/block/state/IBlockState", "atj",
-            "net/minecraft/util/math/BlockPos", "co",
-            "net/minecraft/world/IBlockAccess", "aju",
-            "net/minecraft/client/renderer/VertexBuffer", "bpw",
-            "net/minecraft/client/particle/Particle", "bos",
-            "net/minecraft/client/particle/ParticleSpell", "bpb"
+            "net/minecraft/item/ItemStack", "ain",
+            "net/minecraft/client/renderer/block/model/IBakedModel", "cfw",
+            "net/minecraft/client/renderer/RenderItem", "bzu",
+            "net/minecraft/client/renderer/entity/layers/LayerArmorBase", "cbn",
+            "net/minecraft/entity/EntityLivingBase", "vn",
+            "net/minecraft/client/renderer/entity/RenderLivingBase", "bzy",
+            "net/minecraft/client/model/ModelBase", "b1d",
+            "net/minecraft/client/renderer/BlockRendererDispatcher", "bvk",
+            "net/minecraft/client/renderer/BlockModelRenderer", "bvm",
+            "net/minecraft/block/state/IBlockState", "awr",
+            "net/minecraft/util/math/BlockPos", "et",
+            "net/minecraft/world/IBlockAccess", "amw",
+            "net/minecraft/client/renderer/BufferBuilder", "bui",
+            "net/minecraft/client/particle/Particle", "btd",
+            "net/minecraft/client/particle/ParticleSpell", "btm"
     );
 
 
@@ -128,12 +128,12 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
     private static byte[] transformBlockRenderDispatcher(byte[] basicClass) {
         MethodSignature sig = new MethodSignature("renderBlock", "func_175018_a", "a",
-                "(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/VertexBuffer;)Z");
+                "(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/BufferBuilder;)Z");
 
         MethodSignature target1 = new MethodSignature("renderModel", "func_178267_a", "a",
-                "(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/VertexBuffer;Z)Z");
+                "(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/BufferBuilder;Z)Z");
         MethodSignature target2 = new MethodSignature("renderFluid", "func_178270_a", "a",
-                "(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/VertexBuffer;)Z");
+                "(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/BufferBuilder;)Z");
 
         byte[] transformedClass = transform(basicClass, sig, "Block render hook",
                 combine((AbstractInsnNode node) -> node.getOpcode() == INVOKEVIRTUAL &&
@@ -151,10 +151,10 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                     newInstructions.add(new VarInsnNode(ALOAD, 1));
                     newInstructions.add(new VarInsnNode(ALOAD, 2));
                     newInstructions.add(new VarInsnNode(ALOAD, 4));
-                    // BlockModelRenderer, IBlockAccess, IBakedModel, IBlockState, BlockPos, VertexBuffer
+                    // BlockModelRenderer, IBlockAccess, IBakedModel, IBlockState, BlockPos, BufferBuilder
 
                     newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderHook",
-                            "(Lnet/minecraft/client/renderer/BlockModelRenderer;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/VertexBuffer;)V", false));
+                            "(Lnet/minecraft/client/renderer/BlockModelRenderer;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/BufferBuilder;)V", false));
 
                     method.instructions.insert(node, newInstructions);
 
@@ -176,10 +176,10 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                     newInstructions.add(new VarInsnNode(ALOAD, 1));
                     newInstructions.add(new VarInsnNode(ALOAD, 2));
                     newInstructions.add(new VarInsnNode(ALOAD, 4));
-                    // BlockModelRenderer, IBlockAccess, IBlockState, BlockPos, VertexBuffer
+                    // BlockModelRenderer, IBlockAccess, IBlockState, BlockPos, BufferBuilder
 
                     newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderHook",
-                            "(Lnet/minecraft/client/renderer/BlockModelRenderer;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/VertexBuffer;)V", false));
+                            "(Lnet/minecraft/client/renderer/BlockModelRenderer;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/BufferBuilder;)V", false));
 
                     method.instructions.insert(node, newInstructions);
 

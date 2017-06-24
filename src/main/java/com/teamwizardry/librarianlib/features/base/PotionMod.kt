@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.base
 
+import com.teamwizardry.librarianlib.core.common.RegistrationHandler
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.currentModId
 import net.minecraft.client.Minecraft
@@ -26,7 +27,7 @@ open class PotionMod(name: String, badEffect: Boolean, color: Int) : Potion(badE
         iconX = iconIndex % 8
         iconY = iconIndex / 8
 
-        GameRegistry.register(this, ResourceLocation(modid, VariantHelper.toSnakeCase(name)))
+        RegistrationHandler.register(this, ResourceLocation(modid, VariantHelper.toSnakeCase(name)))
         setPotionName("$modid.potion." + VariantHelper.toSnakeCase(name))
         if (!badEffect)
             setBeneficial()

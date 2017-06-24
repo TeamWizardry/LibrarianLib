@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.base.entity
 import com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler
 import com.teamwizardry.librarianlib.features.saving.SaveInPlace
 import net.minecraft.entity.*
+import net.minecraft.entity.EntityFlying
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.item.EntityMinecart
 import net.minecraft.entity.item.EntityMinecartContainer

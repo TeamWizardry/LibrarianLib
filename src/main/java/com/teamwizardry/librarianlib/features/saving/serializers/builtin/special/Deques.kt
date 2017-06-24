@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.features.saving.serializers.builtin.specia
 
 
 import com.teamwizardry.librarianlib.features.autoregister.SerializerFactoryRegister
-import com.teamwizardry.librarianlib.features.kotlin.forEachIndexed
+import com.teamwizardry.librarianlib.features.kotlin.forEach
 import com.teamwizardry.librarianlib.features.kotlin.readBooleanArray
 import com.teamwizardry.librarianlib.features.kotlin.safeCast
 import com.teamwizardry.librarianlib.features.kotlin.writeBooleanArray
@@ -43,7 +43,7 @@ object SerializeDequeFactory : SerializerFactory("Deque") {
             val deque = existing ?: getDefault()
             deque.clear()
 
-            list.forEachIndexed<NBTTagCompound> { i, container ->
+            list.forEach<NBTTagCompound> { container ->
                 val tag = container.getTag("-")
                 deque.push(
                         if (tag == null)

@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.base.block
 
 import com.teamwizardry.librarianlib.core.client.ModelHandler
+import com.teamwizardry.librarianlib.core.common.RegistrationHandler
 import com.teamwizardry.librarianlib.features.base.IModelGenerator
 import com.teamwizardry.librarianlib.features.base.item.IGlowingItem
 import com.teamwizardry.librarianlib.features.base.item.IItemColorProvider
@@ -42,7 +43,7 @@ open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlo
 
     override fun setUnlocalizedName(par1Str: String): ItemBlock {
         val rl = ResourceLocation(modId, par1Str)
-        GameRegistry.register(this, rl)
+        RegistrationHandler.register(this, rl)
         super.setUnlocalizedName(par1Str)
         return this
     }
@@ -55,8 +56,9 @@ open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlo
         return "tile.$modId:$name"
     }
 
-    override fun getSubItems(itemIn: Item, tab: CreativeTabs?, subItems: NonNullList<ItemStack>) {
-        variants.indices.mapTo(subItems) { ItemStack(itemIn, 1, it) }
+    override fun getSubItems(tab: CreativeTabs, subItems: NonNullList<ItemStack>) {
+        if (isInCreativeTab(tab))
+            variants.indices.mapTo(subItems) { ItemStack(this, 1, it) }
     }
 
     override val providedItem: Item

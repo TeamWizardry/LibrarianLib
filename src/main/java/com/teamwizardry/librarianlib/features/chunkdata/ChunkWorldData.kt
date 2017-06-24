@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.features.network.PacketHandler
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.world.World
-import net.minecraft.world.WorldSavedData
+import net.minecraft.world.storage.WorldSavedData
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.world.ChunkDataEvent
 import net.minecraftforge.event.world.ChunkEvent

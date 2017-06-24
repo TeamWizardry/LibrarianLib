@@ -25,9 +25,7 @@ class ModuleFluid(handler: SerializableFluidTank) : ModuleCapability<ModuleFluid
     override fun onClicked(tile: TileMod, player: EntityPlayer, hand: EnumHand, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         if (side !in allowedSides) return false
         val stack = player.getHeldItem(hand)
-        val result = FluidUtil.interactWithFluidHandler(stack, handler, player)
-        if (result.isSuccess)
-            player.setHeldItem(hand, result.result)
+        FluidUtil.interactWithFluidHandler(player, hand, player.world, tile.pos, side)
         return FluidUtil.getFluidHandler(stack) != null
     }
 

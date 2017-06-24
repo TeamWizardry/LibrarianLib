@@ -183,7 +183,7 @@ object SerializeITextComponent : Serializer<ITextComponent>(FieldType.create(ITe
     }
 
     override fun readNBT(nbt: NBTBase, existing: ITextComponent?, syncing: Boolean): ITextComponent {
-        return ITextComponent.Serializer.jsonToComponent(nbt.safeCast<NBTTagString>().string)
+        return ITextComponent.Serializer.jsonToComponent(nbt.safeCast<NBTTagString>().string)!!
     }
 
     override fun writeNBT(value: ITextComponent, syncing: Boolean): NBTBase {

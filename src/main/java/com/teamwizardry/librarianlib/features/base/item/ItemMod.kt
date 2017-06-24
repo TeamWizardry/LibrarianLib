@@ -34,8 +34,9 @@ open class ItemMod(name: String, vararg variants: String) : Item(), IModItemProv
         return "item.$modId:$name"
     }
 
-    override fun getSubItems(itemIn: Item, tab: CreativeTabs?, subItems: NonNullList<ItemStack>) {
-        variants.indices.mapTo(subItems) { ItemStack(itemIn, 1, it) }
+    override fun getSubItems(tab: CreativeTabs?, subItems: NonNullList<ItemStack>) {
+        if (isInCreativeTab(tab))
+            variants.indices.mapTo(subItems) { ItemStack(this, 1, it) }
     }
 
     /**

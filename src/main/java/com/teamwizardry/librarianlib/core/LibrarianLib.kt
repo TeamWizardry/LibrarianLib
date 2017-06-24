@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.core
 import com.teamwizardry.librarianlib.core.common.LibCommonProxy
 import com.teamwizardry.librarianlib.core.common.OwnershipHandler
 import com.teamwizardry.librarianlib.features.autoregister.TileRegister
-import com.teamwizardry.librarianlib.features.base.ModAchievement
 import com.teamwizardry.librarianlib.features.base.capability.CapabilityMod
 import com.teamwizardry.librarianlib.features.base.item.ItemMod
 import com.teamwizardry.librarianlib.features.config.EasyConfigHandler

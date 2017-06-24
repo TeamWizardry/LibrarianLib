@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.helpers
 
 import com.teamwizardry.librarianlib.core.client.ModelHandler
+import com.teamwizardry.librarianlib.core.common.RegistrationHandler
 import com.teamwizardry.librarianlib.features.base.IVariantHolder
 import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import net.minecraft.block.Block
@@ -97,16 +98,16 @@ object VariantHelper {
     @JvmStatic
     fun setUnlocalizedNameForItem(item: Item, modId: String, name: String) {
         val rl = ResourceLocation(modId, toSnakeCase(name))
-        GameRegistry.register(item, rl)
+        RegistrationHandler.register(item, rl)
     }
 
     @JvmStatic
     fun setUnlocalizedNameForBlock(block: Block, modId: String, name: String, itemForm: ItemBlock?) {
         val snakeName = toSnakeCase(name)
         block.setRegistryName(snakeName)
-        GameRegistry.register(block)
+        RegistrationHandler.register(block)
         if (itemForm != null)
-            GameRegistry.register(itemForm, ResourceLocation(modId, snakeName))
+            RegistrationHandler.register(itemForm, ResourceLocation(modId, snakeName))
     }
 
 }

@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
+import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.item.ItemStack
 import net.minecraft.util.text.TextFormatting
 
@@ -45,7 +46,8 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent<ComponentStack>(p
     }
 
     fun drawTooltip(stack: ItemStack) {
-        val list = stack.getTooltip(Minecraft.getMinecraft().player, Minecraft.getMinecraft().gameSettings.advancedItemTooltips)
+        val list = stack.getTooltip(Minecraft.getMinecraft().player,
+                if (Minecraft.getMinecraft().gameSettings.advancedItemTooltips) ITooltipFlag.TooltipFlags.ADVANCED else ITooltipFlag.TooltipFlags.NORMAL)
 
         for (i in list.indices) {
             if (i == 0) {

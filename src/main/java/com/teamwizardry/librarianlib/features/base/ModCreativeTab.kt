@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.features.helpers.currentModId
 import com.teamwizardry.librarianlib.features.helpers.nonnullListOf
 import net.minecraft.block.Block
 import net.minecraft.creativetab.CreativeTabs
+import net.minecraft.init.Items
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.util.NonNullList
@@ -53,12 +54,12 @@ abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(currentMod
         this.list = list
         for (item in items)
             addItem(item)
-        addEnchantmentBooksToList(list, *(relevantEnchantmentTypes ?: arrayOf()))
+        Items.ENCHANTED_BOOK.getSubItems(this, list)
     }
 
     private fun addItem(item: Item) {
         val tempList = nonnullListOf<ItemStack>()
-        item.getSubItems(item, this, tempList)
+        item.getSubItems(this, tempList)
         if (item == tabIconItem.item)
             this.list.addAll(0, tempList.filterNot { it.isEmpty })
         else

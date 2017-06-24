@@ -2,7 +2,8 @@ package com.teamwizardry.librarianlib.core.client
 
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.BlockModelRenderer
-import net.minecraft.client.renderer.VertexBuffer
+import net.minecraft.client.renderer.BufferBuilder
+import net.minecraft.client.renderer.vertex.VertexBuffer
 import net.minecraft.client.renderer.block.model.IBakedModel
 import net.minecraft.item.ItemStack
 import net.minecraft.util.math.BlockPos
@@ -42,12 +43,12 @@ object RenderHookHandler {
     }
 
     @JvmStatic
-    fun runBlockHook(blockModelRenderer: BlockModelRenderer, world: IBlockAccess, model: IBakedModel, state: IBlockState, pos: BlockPos, vertexBuffer: VertexBuffer) {
+    fun runBlockHook(blockModelRenderer: BlockModelRenderer, world: IBlockAccess, model: IBakedModel, state: IBlockState, pos: BlockPos, vertexBuffer: BufferBuilder) {
         blockHooks.forEach { it(blockModelRenderer, world, model, state, pos, vertexBuffer) }
     }
 
     @JvmStatic
-    fun runFluidHook(blockModelRenderer: BlockModelRenderer, world: IBlockAccess, state: IBlockState, pos: BlockPos, vertexBuffer: VertexBuffer) {
+    fun runFluidHook(blockModelRenderer: BlockModelRenderer, world: IBlockAccess, state: IBlockState, pos: BlockPos, vertexBuffer: BufferBuilder) {
         fluidHooks.forEach { it(blockModelRenderer, world, state, pos, vertexBuffer) }
     }
 
@@ -55,5 +56,5 @@ object RenderHookHandler {
 }
 
 typealias ItemHook = (ItemStack, IBakedModel) -> Unit
-typealias BlockHook = (BlockModelRenderer, IBlockAccess, IBakedModel, IBlockState, BlockPos, VertexBuffer) -> Unit
-typealias FluidHook = (BlockModelRenderer, IBlockAccess, IBlockState, BlockPos, VertexBuffer) -> Unit
+typealias BlockHook = (BlockModelRenderer, IBlockAccess, IBakedModel, IBlockState, BlockPos, BufferBuilder) -> Unit
+typealias FluidHook = (BlockModelRenderer, IBlockAccess, IBlockState, BlockPos, BufferBuilder) -> Unit

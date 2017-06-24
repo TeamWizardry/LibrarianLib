@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.features.particle.ParticleRenderLayer
 import com.teamwizardry.librarianlib.features.particle.ParticleRenderManager
 import net.minecraft.client.Minecraft
 import net.minecraft.client.particle.Particle.cameraViewDir
-import net.minecraft.client.renderer.VertexBuffer
+import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.entity.Entity
 import net.minecraft.util.ResourceLocation
@@ -34,7 +34,7 @@ class RenderFunctionBasic(val texture: TextureAtlasSprite, layer: ParticleRender
      * `i` is from 0-1 along the animation
      */
     override fun render(i: Float, particle: ParticleBase, color: Color, alpha: Float,
-                        worldRendererIn: VertexBuffer, entityIn: Entity?, partialTicks: Float, rotationX: Float, rotationZ: Float, rotationYZ: Float, rotationXY: Float, rotationXZ: Float,
+                        worldRendererIn: BufferBuilder, entityIn: Entity?, partialTicks: Float, rotationX: Float, rotationZ: Float, rotationYZ: Float, rotationXY: Float, rotationXZ: Float,
                         scale: Float, rotation: Float, pos: Vec3d, skyLight: Int, blockLight: Int) {
         val uMin = texture.minU.toDouble()
         val uMax = texture.maxU.toDouble()

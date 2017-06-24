@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.features.helpers.ItemNBTHelper
 import com.teamwizardry.librarianlib.features.kotlin.isNotEmpty
 import com.teamwizardry.librarianlib.features.utilities.client.TooltipHelper
 import net.minecraft.client.Minecraft
+import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
@@ -18,6 +19,7 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.SoundCategory
 import net.minecraft.world.World
 import net.minecraftforge.fml.common.Optional
+import sun.audio.AudioPlayer.player
 
 /**
  * @author WireSegal
@@ -88,13 +90,13 @@ abstract class ItemModBauble(name: String, vararg variants: String) : ItemMod(na
     }
 
     @Optional.Method(modid = "baubles")
-    override fun addInformation(stack: ItemStack, player: EntityPlayer, tooltip: MutableList<String>, advanced: Boolean) {
+    override fun addInformation(stack: ItemStack, world: World?, tooltip: MutableList<String>, flag: ITooltipFlag) {
         TooltipHelper.tooltipIfShift(tooltip) {
-            addHiddenTooltip(stack, player, tooltip, advanced)
+            addHiddenTooltip(stack, world, tooltip, flag)
         }
     }
 
-    open fun addHiddenTooltip(stack: ItemStack, player: EntityPlayer, tooltip: MutableList<String>, advanced: Boolean) {
+    open fun addHiddenTooltip(stack: ItemStack, world: World?, tooltip: MutableList<String>, flag: ITooltipFlag) {
         val keys = Minecraft.getMinecraft().gameSettings.keyBindings
         val key: String? = keys
                 .firstOrNull { it.keyDescription == "Baubles Inventory" }

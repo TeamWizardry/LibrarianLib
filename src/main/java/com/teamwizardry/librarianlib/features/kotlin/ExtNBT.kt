@@ -14,15 +14,6 @@ import net.minecraft.nbt.*
 val NBTTagList.indices: IntRange
     get() = 0..this.tagCount() - 1
 
-operator fun NBTTagList.iterator(): Iterator<NBTBase> {
-    return object : Iterator<NBTBase> {
-        var i = 0
-        val max = this@iterator.tagCount() - 1
-        override fun hasNext() = i < max
-        override fun next() = this@iterator[i++]
-    }
-}
-
 fun <T : NBTBase> NBTTagList.forEach(run: (T) -> Unit) {
     for (i in this.indices) {
         @Suppress("UNCHECKED_CAST")

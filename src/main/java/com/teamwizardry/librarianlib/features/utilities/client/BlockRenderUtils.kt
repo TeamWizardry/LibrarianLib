@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.features.utilities.client
 
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.VertexBuffer
+import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.block.model.BakedQuad
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
@@ -15,12 +15,12 @@ import java.nio.ByteOrder
 @SideOnly(Side.CLIENT)
 object BlockRenderUtils {
     @JvmStatic
-    fun transferVB(from: VertexBuffer, to: VertexBuffer) {
+    fun transferVB(from: BufferBuilder, to: BufferBuilder) {
         to.addVertexData(from.byteBuffer.asIntBuffer().array())
     }
 
     @JvmStatic
-    fun renderQuadsToBuffer(quads: List<BakedQuad>, state: IBlockState, access: IBlockAccess, pos: BlockPos, renderPos: BlockPos, buf: VertexBuffer, red: Float, green: Float, blue: Float, brightness: Float, alpha: Float) {
+    fun renderQuadsToBuffer(quads: List<BakedQuad>, state: IBlockState, access: IBlockAccess, pos: BlockPos, renderPos: BlockPos, buf: BufferBuilder, red: Float, green: Float, blue: Float, brightness: Float, alpha: Float) {
         for (i in quads.indices) {
             val bakedquad = quads[i]
             buf.addVertexData(bakedquad.vertexData)
@@ -50,7 +50,7 @@ object BlockRenderUtils {
     }
 
     @JvmStatic
-    private fun putRGBA_F4(buf: VertexBuffer, red: Float, green: Float, blue: Float, alpha: Float, relIndex: Int) {
+    private fun putRGBA_F4(buf: BufferBuilder, red: Float, green: Float, blue: Float, alpha: Float, relIndex: Int) {
         val index = buf.getColorIndex(relIndex)
         val r = MathHelper.clamp((red * 255.0f).toInt(), 0, 255)
         val g = MathHelper.clamp((green * 255.0f).toInt(), 0, 255)
@@ -60,7 +60,7 @@ object BlockRenderUtils {
     }
 
     @JvmStatic
-    private fun putColorMultiplier(buf: VertexBuffer, red: Float, green: Float, blue: Float, alpha: Float, p_178978_4_: Int) {
+    private fun putColorMultiplier(buf: BufferBuilder, red: Float, green: Float, blue: Float, alpha: Float, p_178978_4_: Int) {
         val index = buf.getColorIndex(p_178978_4_)
         var color = buf.byteBuffer.asIntBuffer().get(index)
 
@@ -83,7 +83,7 @@ object BlockRenderUtils {
     }
 
     @JvmStatic
-    fun renderBlockToVB(state: IBlockState, access: IBlockAccess, pos: BlockPos, renderPos: BlockPos, buffer: VertexBuffer, red: Float, green: Float, blue: Float, brightness: Float, alpha: Float) {
+    fun renderBlockToVB(state: IBlockState, access: IBlockAccess, pos: BlockPos, renderPos: BlockPos, buffer: BufferBuilder, red: Float, green: Float, blue: Float, brightness: Float, alpha: Float) {
         val newState = state.getActualState(access, pos)
 
         val model = Minecraft.getMinecraft().blockRendererDispatcher.blockModelShapes.getModelForState(newState)

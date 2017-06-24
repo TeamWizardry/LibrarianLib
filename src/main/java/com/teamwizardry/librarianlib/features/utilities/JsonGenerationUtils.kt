@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.client.renderer.block.statemap.DefaultStateMapper
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
-import net.minecraftforge.fml.common.registry.IForgeRegistryEntry
+import net.minecraftforge.registries.IForgeRegistryEntry
 import java.io.File
 import java.nio.file.Paths
 

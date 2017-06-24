@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.base
 
+import com.teamwizardry.librarianlib.core.common.RegistrationHandler
 import com.teamwizardry.librarianlib.features.helpers.currentModId
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.enchantment.EnchantmentHelper
@@ -20,7 +21,7 @@ open class EnchantmentMod(name: String, rarity: Rarity, type: EnumEnchantmentTyp
 
     init {
         setName("$modId.$name")
-        GameRegistry.register(this, ResourceLocation(modId, name))
+        RegistrationHandler.register(this, ResourceLocation(modId, name))
     }
 
     private fun getEntityEquipmentForLevel(entityIn: EntityLivingBase)

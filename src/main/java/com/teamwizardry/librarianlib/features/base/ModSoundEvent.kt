@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.base
 
+import com.teamwizardry.librarianlib.core.common.RegistrationHandler
 import com.teamwizardry.librarianlib.features.helpers.currentModId
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.SoundEvent
@@ -11,6 +12,6 @@ import net.minecraftforge.fml.common.registry.GameRegistry
  */
 class ModSoundEvent(name: String) : SoundEvent(ResourceLocation(currentModId, name)) {
     init {
-        GameRegistry.register(this, ResourceLocation(currentModId, name))
+        RegistrationHandler.register(this, ResourceLocation(currentModId, name))
     }
 }

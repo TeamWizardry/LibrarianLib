@@ -36,9 +36,9 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.registry.RegistryDelegate
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import net.minecraftforge.registries.IRegistryDelegate
 import java.io.File
 import java.util.*
 
@@ -224,7 +224,7 @@ object ModelHandler {
     fun onModelBake(e: ModelBakeEvent) {
         val customModelGetter = MethodHandleHelper.wrapperForStaticGetter(ModelLoader::class.java, "customModels")
         @Suppress("UNCHECKED_CAST")
-        val customModels = customModelGetter.invoke() as MutableMap<Pair<RegistryDelegate<Item>, Int>, ModelResourceLocation>
+        val customModels = customModelGetter.invoke() as MutableMap<Pair<IRegistryDelegate<Item>, Int>, ModelResourceLocation>
 
         for ((modid, holders) in variantCache) {
             modName = modid

@@ -4,8 +4,9 @@ import com.teamwizardry.librarianlib.core.client.GlowingHandler;
 import com.teamwizardry.librarianlib.core.client.RenderHookHandler;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BlockModelRenderer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.VertexBuffer;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -27,12 +28,12 @@ public class LibLibAsmHooks {
     }
 
     @SideOnly(Side.CLIENT)
-    public static void renderHook(BlockModelRenderer blockModelRenderer, IBlockAccess world, IBakedModel model, IBlockState state, BlockPos pos, VertexBuffer vertexBuffer) {
+    public static void renderHook(BlockModelRenderer blockModelRenderer, IBlockAccess world, IBakedModel model, IBlockState state, BlockPos pos, BufferBuilder vertexBuffer) {
         RenderHookHandler.runBlockHook(blockModelRenderer, world, model, state, pos, vertexBuffer);
     }
 
     @SideOnly(Side.CLIENT)
-    public static void renderHook(BlockModelRenderer blockModelRenderer, IBlockAccess world, IBlockState state, BlockPos pos, VertexBuffer vertexBuffer) {
+    public static void renderHook(BlockModelRenderer blockModelRenderer, IBlockAccess world, IBlockState state, BlockPos pos, BufferBuilder vertexBuffer) {
         RenderHookHandler.runFluidHook(blockModelRenderer, world, state, pos, vertexBuffer);
     }
 

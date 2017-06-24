@@ -3,8 +3,9 @@
 
 package com.teamwizardry.librarianlib.features.kotlin
 
+import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.VertexBuffer
+import net.minecraft.client.renderer.vertex.VertexBuffer
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -16,11 +17,11 @@ fun Color.glColor() = GlStateManager.color(red / 255f, green / 255f, blue / 255f
 
 // VertexBuffer ========================================================================================================
 
-fun VertexBuffer.pos(pos: Vec3d): VertexBuffer = this.pos(pos.x, pos.y, pos.z)
+fun BufferBuilder.pos(pos: Vec3d): BufferBuilder = this.pos(pos.x, pos.y, pos.z)
 
-fun VertexBuffer.color(color: Color): VertexBuffer = this.color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f)
+fun BufferBuilder.color(color: Color): BufferBuilder = this.color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f)
 
-fun VertexBuffer.createCacheArrayAndReset(): IntArray {
+fun BufferBuilder.createCacheArrayAndReset(): IntArray {
     this.finishDrawing()
 
     val intBuf = this.byteBuffer.asIntBuffer()
@@ -34,6 +35,6 @@ fun VertexBuffer.createCacheArrayAndReset(): IntArray {
     return bufferInts
 }
 
-fun VertexBuffer.addCacheArray(array: IntArray) {
+fun BufferBuilder.addCacheArray(array: IntArray) {
     this.addVertexData(array)
 }

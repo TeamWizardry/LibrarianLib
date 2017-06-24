@@ -34,7 +34,7 @@ class PoweredMachineContainer(player: EntityPlayer, te: TEPoweredMachine) : Cont
         val NAME = ResourceLocation("librarianlibtest", "poweredmachinecontainer")
 
         init {
-            GuiHandler.registerBasicContainer(NAME, { player, pos, tile -> PoweredMachineContainer(player, tile as TEPoweredMachine) }, { player, container -> GuiPoweredMachine(container) })
+            GuiHandler.registerBasicContainer(NAME, { player, _, tile -> PoweredMachineContainer(player, tile as TEPoweredMachine) }, { _, container -> GuiPoweredMachine(container) })
         }
     }
 }

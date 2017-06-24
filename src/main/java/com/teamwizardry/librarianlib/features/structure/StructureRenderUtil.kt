@@ -1,7 +1,8 @@
 package com.teamwizardry.librarianlib.features.structure
 
 import com.teamwizardry.librarianlib.features.utilities.client.BlockRenderUtils
-import net.minecraft.client.renderer.VertexBuffer
+import net.minecraft.client.renderer.BufferBuilder
+import net.minecraft.client.renderer.vertex.VertexBuffer
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.BlockRenderLayer
 import net.minecraft.util.EnumBlockRenderType
@@ -13,7 +14,7 @@ import java.awt.Color
 @SideOnly(Side.CLIENT)
 object StructureRenderUtil {
 
-    private val blockBuf = VertexBuffer(50000)
+    private val blockBuf = BufferBuilder(50000)
 
     fun render(structure: Structure, color: Color, brightness: Float): IntArray {
         val access = structure.blockAccess
