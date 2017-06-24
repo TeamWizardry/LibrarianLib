@@ -48,8 +48,11 @@ import java.util.*
  * @author WireSegal
  * Created at 2:12 PM on 3/20/16.
  */
-@Mod.EventBusSubscriber
 object ModelHandler {
+
+    init {
+        MinecraftForge.EVENT_BUS.register(this)
+    }
 
     fun serialize(el: JsonElement)
             = if (LibLibConfig.prettyJsonSerialization) el.serialize() else el.toString() + "\n"
@@ -92,7 +95,6 @@ object ModelHandler {
     }
 
     @SideOnly(Side.CLIENT)
-    @JvmStatic
     @SubscribeEvent
     fun preInit(e: ModelRegistryEvent) {
         for ((modid, holders) in variantCache) {
@@ -157,7 +159,6 @@ object ModelHandler {
     }
 
     @SideOnly(Side.CLIENT)
-    @JvmStatic
     fun registerModels(holder: IVariantHolder) {
         if (holder is IExtraVariantHolder)
             registerModels(holder, holder.extraVariants, true)

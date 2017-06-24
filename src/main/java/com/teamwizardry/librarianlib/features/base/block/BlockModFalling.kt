@@ -18,7 +18,7 @@ open class BlockModFalling(name: String, materialIn: Material, vararg variants: 
     override val variants: Array<out String> = VariantHelper.beginSetupBlock(bareName, variants)
     val modId = currentModId
 
-    val itemForm: ItemBlock? by lazy { createItemForm() }
+    override val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
         VariantHelper.finishSetupBlock(this, bareName, itemForm, this::creativeTab)

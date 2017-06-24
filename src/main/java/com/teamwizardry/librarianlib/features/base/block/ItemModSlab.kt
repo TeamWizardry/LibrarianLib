@@ -60,6 +60,10 @@ open class ItemModSlab(block: BlockModSlab) : ItemSlab(block, block.singleBlock,
             variants.indices.mapTo(subItems) { ItemStack(this, 1, it) }
     }
 
+
+    override val itemForm: ItemBlock
+        get() = this
+
     override val providedItem: Item
         get() = this
 

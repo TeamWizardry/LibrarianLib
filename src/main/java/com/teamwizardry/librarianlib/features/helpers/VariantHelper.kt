@@ -4,6 +4,8 @@ import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.core.common.RegistrationHandler
 import com.teamwizardry.librarianlib.features.base.IVariantHolder
 import com.teamwizardry.librarianlib.features.base.ModCreativeTab
+import com.teamwizardry.librarianlib.features.base.block.IModBlockProvider
+import com.teamwizardry.librarianlib.features.base.item.IModItemProvider
 import net.minecraft.block.Block
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
@@ -57,7 +59,7 @@ object VariantHelper {
      * All items which use this method in their constructor should implement the setUnlocalizedNameForItem provided below in their setUnlocalizedName.
      */
     @JvmStatic
-    fun <T> setupItem(item: T, name: String, variants: Array<out String>, modCreativeTab: (() -> ModCreativeTab?)? = null): Array<out String> where T : Item, T : IVariantHolder {
+    fun <T> setupItem(item: T, name: String, variants: Array<out String>, modCreativeTab: (() -> ModCreativeTab?)? = null): Array<out String> where T : Item, T : IModItemProvider {
         var variantTemp = variants.map { toSnakeCase(it) }.toTypedArray()
         item.unlocalizedName = name
         if (variantTemp.size > 1)
@@ -87,7 +89,7 @@ object VariantHelper {
 
     @JvmStatic
     @JvmOverloads
-    fun <T> finishSetupBlock(block: T, name: String, itemForm: ItemBlock?, modCreativeTab: (() -> ModCreativeTab?)? = null) where T : Block, T : IVariantHolder {
+    fun <T> finishSetupBlock(block: T, name: String, itemForm: ItemBlock?, modCreativeTab: (() -> ModCreativeTab?)? = null) where T : Block, T : IModBlockProvider {
         block.unlocalizedName = name
         if (itemForm == null)
             ModelHandler.registerVariantHolder(block)

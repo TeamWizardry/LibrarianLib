@@ -9,6 +9,8 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.client.renderer.block.statemap.StateMap
 import net.minecraft.item.EnumRarity
+import net.minecraft.item.Item
+import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.IBlockAccess
@@ -19,6 +21,8 @@ interface IModBlockProvider : IVariantHolder {
      * Provides a block instance to use for registration. This does not have to be the same instance as the IModBlockProvider.
      */
     val providedBlock: Block
+
+    val itemForm: ItemBlock?
 
     /**
      * A list of IProperties to ignore in a blockstate file.

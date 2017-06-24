@@ -35,7 +35,7 @@ open class BlockModTrapdoor(name: String, val parent: IBlockState) : BlockTrapDo
     override val bareName: String = VariantHelper.toSnakeCase(name)
     val modId = currentModId
 
-    val itemForm: ItemBlock? by lazy { createItemForm() }
+    override val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
         this.variants = VariantHelper.beginSetupBlock(name, arrayOf())

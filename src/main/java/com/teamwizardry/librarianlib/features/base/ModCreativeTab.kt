@@ -1,8 +1,13 @@
 package com.teamwizardry.librarianlib.features.base
 
+import com.teamwizardry.librarianlib.features.base.block.BlockMod
+import com.teamwizardry.librarianlib.features.base.block.IModBlockProvider
+import com.teamwizardry.librarianlib.features.base.item.IModItemProvider
+import com.teamwizardry.librarianlib.features.base.item.ItemMod
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.currentModId
 import com.teamwizardry.librarianlib.features.helpers.nonnullListOf
+import com.teamwizardry.librarianlib.test.chunkdata.ChunkDataEntryPoint.item
 import net.minecraft.block.Block
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.init.Items
@@ -18,8 +23,8 @@ abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(currentMod
     companion object {
         val defaultTabs = mutableMapOf<String, ModCreativeTab>()
 
-        val itemsToTab = mutableMapOf<Item, () -> ModCreativeTab?>()
-        val blocksToTab = mutableMapOf<Block, () -> ModCreativeTab?>()
+        val itemsToTab = mutableMapOf<IModItemProvider, () -> ModCreativeTab?>()
+        val blocksToTab = mutableMapOf<IModBlockProvider, () -> ModCreativeTab?>()
 
         fun latePre() {
             for ((item, function) in itemsToTab) function()?.set(item)
@@ -68,15 +73,16 @@ abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(currentMod
 
     private val items = ArrayList<Item>()
 
-    fun set(block: Block) {
-        val item = Item.getItemFromBlock(block) ?: return
+    fun set(block: IModBlockProvider) {
+        val item = block.itemForm ?: return
         items.add(item)
-        block.setCreativeTab(this)
+        block.providedBlock.setCreativeTab(this)
+        item.creativeTab = this
     }
 
-    fun set(item: Item) {
-        items.add(item)
-        item.creativeTab = this
+    fun set(item: IModItemProvider) {
+        items.add(item.providedItem)
+        item.providedItem.creativeTab = this
     }
 }
 

@@ -11,9 +11,11 @@ import net.minecraft.util.SoundEvent
 import net.minecraft.world.biome.Biome
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.RegistryEvent
+import net.minecraftforge.event.RegistryEvent.Register
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.registry.EntityEntry
 import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession
+import net.minecraftforge.registries.IForgeRegistry
 import net.minecraftforge.registries.IForgeRegistryEntry
 import java.lang.reflect.Type
 
@@ -26,16 +28,16 @@ object RegistrationHandler {
         MinecraftForge.EVENT_BUS.register(this)
     }
 
-    @SubscribeEvent fun block(registryEvent: RegistryEvent.Register<Block>) = registrarBlock.forEach { registryEvent.registry.register(it) }
-    @SubscribeEvent fun item(registryEvent: RegistryEvent.Register<Item>) = registrarItem.forEach { registryEvent.registry.register(it) }
-    @SubscribeEvent fun potion(registryEvent: RegistryEvent.Register<Potion>) = registrarPotion.forEach { registryEvent.registry.register(it) }
-    @SubscribeEvent fun biome(registryEvent: RegistryEvent.Register<Biome>) = registrarBiome.forEach { registryEvent.registry.register(it) }
-    @SubscribeEvent fun soundEvent(registryEvent: RegistryEvent.Register<SoundEvent>) = registrarSoundEvent.forEach { registryEvent.registry.register(it) }
-    @SubscribeEvent fun potionType(registryEvent: RegistryEvent.Register<PotionType>) = registrarPotionType.forEach { registryEvent.registry.register(it) }
-    @SubscribeEvent fun enchantment(registryEvent: RegistryEvent.Register<Enchantment>) = registrarEnchantment.forEach { registryEvent.registry.register(it) }
-    @SubscribeEvent fun profession(registryEvent: RegistryEvent.Register<VillagerProfession>) = registrarProfession.forEach { registryEvent.registry.register(it) }
-    @SubscribeEvent fun entity(registryEvent: RegistryEvent.Register<EntityEntry>) = registrarEntity.forEach { registryEvent.registry.register(it) }
-    @SubscribeEvent fun recipe(registryEvent: RegistryEvent.Register<IRecipe>) = registrarRecipe.forEach { registryEvent.registry.register(it) }
+    @SubscribeEvent fun block(registryEvent: Register<Block>) = doRegistration(registryEvent.registry)
+    @SubscribeEvent fun item(registryEvent: Register<Item>) = doRegistration(registryEvent.registry)
+    @SubscribeEvent fun potion(registryEvent: Register<Potion>) = doRegistration(registryEvent.registry)
+    @SubscribeEvent fun biome(registryEvent: Register<Biome>) = doRegistration(registryEvent.registry)
+    @SubscribeEvent fun soundEvent(registryEvent: Register<SoundEvent>) = doRegistration(registryEvent.registry)
+    @SubscribeEvent fun potionType(registryEvent: Register<PotionType>) = doRegistration(registryEvent.registry)
+    @SubscribeEvent fun enchantment(registryEvent: Register<Enchantment>) = doRegistration(registryEvent.registry)
+    @SubscribeEvent fun profession(registryEvent: Register<VillagerProfession>) = doRegistration(registryEvent.registry)
+    @SubscribeEvent fun entity(registryEvent: Register<EntityEntry>) = doRegistration(registryEvent.registry)
+    @SubscribeEvent fun recipe(registryEvent: Register<IRecipe>) = doRegistration(registryEvent.registry)
 
     private val registrarBlock = mutableSetOf<Block>()
     private val registrarItem = mutableSetOf<Item>()
@@ -48,23 +50,56 @@ object RegistrationHandler {
     private val registrarEntity = mutableSetOf<EntityEntry>()
     private val registrarRecipe = mutableSetOf<IRecipe>()
 
-    private val registrars = mutableMapOf<Type, MutableSet<out IForgeRegistryEntry<*>>>(
-            Block::class.java to registrarBlock,
-            Item::class.java to registrarItem,
-            Potion::class.java to registrarPotion,
-            Biome::class.java to registrarBiome,
-            SoundEvent::class.java to registrarSoundEvent,
-            PotionType::class.java to registrarPotionType,
-            Enchantment::class.java to registrarEnchantment,
-            VillagerProfession::class.java to registrarProfession,
-            EntityEntry::class.java to registrarEntity,
-            IRecipe::class.java to registrarRecipe
-    )
+    private val registrarBlockRL = mutableSetOf<Pair<Block, ResourceLocation>>()
+    private val registrarItemRL = mutableSetOf<Pair<Item, ResourceLocation>>()
+    private val registrarPotionRL = mutableSetOf<Pair<Potion, ResourceLocation>>()
+    private val registrarBiomeRL = mutableSetOf<Pair<Biome, ResourceLocation>>()
+    private val registrarSoundEventRL = mutableSetOf<Pair<SoundEvent, ResourceLocation>>()
+    private val registrarPotionTypeRL = mutableSetOf<Pair<PotionType, ResourceLocation>>()
+    private val registrarEnchantmentRL = mutableSetOf<Pair<Enchantment, ResourceLocation>>()
+    private val registrarProfessionRL = mutableSetOf<Pair<VillagerProfession, ResourceLocation>>()
+    private val registrarEntityRL = mutableSetOf<Pair<EntityEntry, ResourceLocation>>()
+    private val registrarRecipeRL = mutableSetOf<Pair<IRecipe, ResourceLocation>>()
+
+    private inline fun <reified T: IForgeRegistryEntry<T>> doRegistration(registry: IForgeRegistry<T>) {
+        getRegistrar(registry.registrySuperType)
+                .forEach { registry.register(it) }
+        getRLRegistrar(registry.registrySuperType)
+                .map { it.first.setRegistryName(it.second) }
+                .forEach { registry.register(it) }
+    }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T : IForgeRegistryEntry<T>> getRegistrar(entry: T) = registrars[entry.registryType] as MutableSet<T>
+    private fun <T : IForgeRegistryEntry<T>> getRegistrar(type: Class<T>) = when(type) {
+        Block::class.java -> registrarBlock
+        Item::class.java -> registrarItem
+        Potion::class.java -> registrarPotion
+        Biome::class.java -> registrarBiome
+        SoundEvent::class.java -> registrarSoundEvent
+        PotionType::class.java -> registrarPotionType
+        Enchantment::class.java -> registrarEnchantment
+        VillagerProfession::class.java -> registrarProfession
+        EntityEntry::class.java -> registrarEntity
+        IRecipe::class.java -> registrarRecipe
+        else -> mutableSetOf()
+    } as MutableSet<T>
 
-    @JvmStatic fun <T : IForgeRegistryEntry<T>> register(entry: T, rl: ResourceLocation) = register(entry.setRegistryName(rl))
-    @JvmStatic fun <T : IForgeRegistryEntry<T>> register(entry: T) = entry.apply { getRegistrar(this).add(this) }
+    @Suppress("UNCHECKED_CAST")
+    private fun <T : IForgeRegistryEntry<T>> getRLRegistrar(type: Class<T>) = when(type) {
+        Block::class.java -> registrarBlockRL
+        Item::class.java -> registrarItemRL
+        Potion::class.java -> registrarPotionRL
+        Biome::class.java -> registrarBiomeRL
+        SoundEvent::class.java -> registrarSoundEventRL
+        PotionType::class.java -> registrarPotionTypeRL
+        Enchantment::class.java -> registrarEnchantmentRL
+        VillagerProfession::class.java -> registrarProfessionRL
+        EntityEntry::class.java -> registrarEntityRL
+        IRecipe::class.java -> registrarRecipeRL
+        else -> mutableSetOf()
+    } as MutableSet<Pair<T, ResourceLocation>>
+
+    @JvmStatic fun <T : IForgeRegistryEntry<T>> register(entry: T, rl: ResourceLocation) = entry.apply { getRLRegistrar(registryType).add(this to rl) }
+    @JvmStatic fun <T : IForgeRegistryEntry<T>> register(entry: T) = entry.apply { getRegistrar(registryType).add(this) }
 
 }

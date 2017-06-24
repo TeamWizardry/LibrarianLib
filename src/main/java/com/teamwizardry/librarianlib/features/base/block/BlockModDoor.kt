@@ -34,7 +34,7 @@ open class BlockModDoor(name: String, val parent: IBlockState) : BlockDoor(paren
     override val bareName: String = VariantHelper.toSnakeCase(name)
     val modId = currentModId
 
-    val itemForm: ItemBlock? by lazy { createItemForm() }
+    override val itemForm: ItemBlock? by lazy { createItemForm() }
 
     val doorItemForm: Item?
 

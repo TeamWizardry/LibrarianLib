@@ -37,7 +37,7 @@ open class BlockModStairs(name: String, val parent: IBlockState) : BlockStairs(p
     val modId = currentModId
     override val variants: Array<out String> = VariantHelper.beginSetupBlock(name, arrayOf())
 
-    val itemForm: ItemBlock? by lazy { createItemForm() }
+    override val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
         VariantHelper.finishSetupBlock(this, bareName, itemForm, this::creativeTab)

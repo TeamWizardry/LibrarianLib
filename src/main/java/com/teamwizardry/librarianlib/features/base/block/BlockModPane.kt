@@ -37,7 +37,7 @@ open class BlockModPane(name: String, canDrop: Boolean, val parent: IBlockState)
     override val bareName: String = VariantHelper.toSnakeCase(name)
     override val variants: Array<out String> = VariantHelper.beginSetupBlock(name, arrayOf())
 
-    val itemForm: ItemBlock? by lazy { createItemForm() }
+    override val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
         VariantHelper.finishSetupBlock(this, bareName, itemForm, this::creativeTab)

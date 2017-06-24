@@ -34,7 +34,7 @@ open class BlockModFence(name: String, val parent: IBlockState) : BlockFence(par
     override val bareName: String = VariantHelper.toSnakeCase(name)
     val modId = currentModId
 
-    val itemForm: ItemBlock? by lazy { createItemForm() }
+    override val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
         this.variants = VariantHelper.beginSetupBlock(name, arrayOf())

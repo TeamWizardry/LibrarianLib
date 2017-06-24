@@ -96,7 +96,7 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
     override val bareName: String = VariantHelper.toSnakeCase(name)
     val modId = currentModId
 
-    val itemForm: ItemBlock? by lazy { createItemForm() }
+    override val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
         VariantHelper.finishSetupBlock(this, bareName, itemForm, this::creativeTab)

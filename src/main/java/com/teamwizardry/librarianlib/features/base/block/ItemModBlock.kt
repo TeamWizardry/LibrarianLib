@@ -61,7 +61,10 @@ open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlo
             variants.indices.mapTo(subItems) { ItemStack(this, 1, it) }
     }
 
-    override val providedItem: Item
+    override val itemForm: ItemBlock
+        get() = this
+
+    override val providedItem: ItemBlock
         get() = this
 
     override val providedBlock: Block
