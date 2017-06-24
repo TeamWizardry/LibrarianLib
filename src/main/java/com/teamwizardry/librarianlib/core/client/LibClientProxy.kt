@@ -68,7 +68,6 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
     override fun latePre(e: FMLPreInitializationEvent) {
         super.latePre(e)
-        ModelHandler.preInit()
 
         GlowingHandler.init()
 

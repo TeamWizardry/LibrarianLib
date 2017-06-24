@@ -31,10 +31,12 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.ModelBakeEvent
+import net.minecraftforge.client.event.ModelRegistryEvent
 import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.Loader
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -46,6 +48,7 @@ import java.util.*
  * @author WireSegal
  * Created at 2:12 PM on 3/20/16.
  */
+@Mod.EventBusSubscriber
 object ModelHandler {
 
     fun serialize(el: JsonElement)
@@ -89,9 +92,9 @@ object ModelHandler {
     }
 
     @SideOnly(Side.CLIENT)
-    fun preInit() {
-        MinecraftForge.EVENT_BUS.register(this)
-
+    @JvmStatic
+    @SubscribeEvent
+    fun preInit(e: ModelRegistryEvent) {
         for ((modid, holders) in variantCache) {
             modName = modid
             log("$modName | Registering models")
@@ -154,6 +157,7 @@ object ModelHandler {
     }
 
     @SideOnly(Side.CLIENT)
+    @JvmStatic
     fun registerModels(holder: IVariantHolder) {
         if (holder is IExtraVariantHolder)
             registerModels(holder, holder.extraVariants, true)
