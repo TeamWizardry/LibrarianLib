@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.base.block
 
+import com.teamwizardry.librarianlib.core.common.OreDictionaryRegistrar
 import net.minecraft.block.SoundType
 import net.minecraft.block.material.Material
 import net.minecraft.block.properties.IProperty
@@ -72,7 +73,7 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
         this.soundType = SoundType.PLANT
         if (itemForm != null)
             for (variant in this.variants.indices)
-                OreDictionary.registerOre("treeLeaves", ItemStack(this, 1, variant))
+                OreDictionaryRegistrar.registerOre("treeLeaves", ItemStack(this, 1, variant))
     }
 
     override fun getFlammability(world: IBlockAccess?, pos: BlockPos?, face: EnumFacing?) = 60

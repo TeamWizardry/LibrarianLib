@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.base.block
 
+import com.teamwizardry.librarianlib.core.common.OreDictionaryRegistrar
 import net.minecraft.block.SoundType
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
@@ -21,7 +22,7 @@ open class BlockModPlanks(name: String, vararg variants: String) : BlockMod(name
         setResistance(5f)
         if (itemForm != null)
             for (variant in this.variants.indices)
-                OreDictionary.registerOre("plankWood", ItemStack(this, 1, variant))
+                OreDictionaryRegistrar.registerOre("plankWood", ItemStack(this, 1, variant))
     }
 
     override fun getHarvestTool(state: IBlockState?): String? {

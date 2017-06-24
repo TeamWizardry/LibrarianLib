@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.base.block
 
+import com.teamwizardry.librarianlib.core.common.OreDictionaryRegistrar
 import net.minecraft.block.SoundType
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
@@ -24,7 +25,7 @@ open class BlockModLog(name: String, vararg variants: String) : BlockModPillar(n
         soundType = SoundType.WOOD
         if (itemForm != null) {
             for (variant in this.variants.indices)
-                OreDictionary.registerOre("logWood", ItemStack(this, 1, variant))
+                OreDictionaryRegistrar.registerOre("logWood", ItemStack(this, 1, variant))
             FurnaceRecipes.instance().addSmeltingRecipeForBlock(this, ItemStack(Items.COAL, 1, 1), 0.15f)
         }
     }

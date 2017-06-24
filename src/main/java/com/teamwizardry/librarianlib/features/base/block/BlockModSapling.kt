@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.base.block
 
 import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.core.common.LibLibConfig
+import com.teamwizardry.librarianlib.core.common.OreDictionaryRegistrar
 import com.teamwizardry.librarianlib.features.base.IModelGenerator
 import com.teamwizardry.librarianlib.features.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.features.kotlin.json
@@ -71,7 +72,7 @@ abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod
         this.tickRandomly = true
         if (itemForm != null)
             for (variant in this.variants.indices)
-                OreDictionary.registerOre("treeSapling", ItemStack(this, 1, variant))
+                OreDictionaryRegistrar.registerOre("treeSapling", ItemStack(this, 1, variant))
     }
 
     override fun onNeighborChange(worldIn: IBlockAccess, pos: BlockPos, neighborBlock: BlockPos) {

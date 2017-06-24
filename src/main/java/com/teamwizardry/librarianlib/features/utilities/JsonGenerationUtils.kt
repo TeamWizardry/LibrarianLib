@@ -78,6 +78,10 @@ object JsonGenerationUtils {
         return Paths.get(Minecraft.getMinecraft().mcDataDir.absolutePath).parent.parent.toString() + +"/${getPathPrefix(modid)}/$modid"
     }
 
+    fun getPathForRecipe(modid: String, name: String): String {
+        return +"${getAssetPath(modid)}/recipes/$name.json"
+    }
+
     fun generateBaseItemModel(item: Item, variantName: String? = null, parent: String = "item/generated"): JsonElement {
         val registryName = item.registryName
         val varname = variantName ?: registryName!!.resourcePath
