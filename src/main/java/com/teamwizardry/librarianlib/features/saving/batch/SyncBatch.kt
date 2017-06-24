@@ -30,6 +30,7 @@ class SyncBatch(objects: List<(ByteBuf) -> Unit>) {
         return List(headerNum) {
             Unpooled.buffer()
                     .writeShort(headerNum)
+                    .writeInt(bytes.size)
                     .writeShort(it)
                     .writeBytes(bytes.sliceArray(it * capacity..Math.min(bytes.size, (it + 1) * capacity)))
         }
