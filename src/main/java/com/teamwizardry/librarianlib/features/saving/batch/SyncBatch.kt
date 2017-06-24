@@ -26,13 +26,20 @@ class SyncBatch(objects: List<(ByteBuf) -> Unit>) {
         bytes = mainBuf.array()
     }
 
-    fun createByteDumps(): List<ByteBuf> {
-        return List(headerNum) {
-            Unpooled.buffer()
-                    .writeShort(headerNum)
-                    .writeInt(bytes.size)
-                    .writeShort(it)
-                    .writeBytes(bytes.sliceArray(it * capacity..Math.min(bytes.size, (it + 1) * capacity)))
-        }
+    /*
+        Byte format for Syncing Batches
+
+        <short: number of packets>
+        <int: number of bytes total>
+        <short: index of packet>
+        <raw: raw data from the sync>
+     */
+
+    fun createByteDumps() = List(headerNum) {
+        Unpooled.buffer()
+                .writeShort(headerNum)
+                .writeInt(bytes.size)
+                .writeShort(it)
+                .writeBytes(bytes.sliceArray(it * capacity..Math.min(bytes.size, (it + 1) * capacity)))
     }
 }
