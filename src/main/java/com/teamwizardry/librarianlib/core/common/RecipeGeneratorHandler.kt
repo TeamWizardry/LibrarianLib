@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.core.common
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import com.sun.tools.javac.jvm.ByteCodes.ret
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.helpers.currentModId
