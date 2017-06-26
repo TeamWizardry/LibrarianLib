@@ -43,7 +43,7 @@ object RecipeGeneratorHandler {
         }
     }
 
-    @JvmStatic fun addShapedRecipe(name: String, output: ItemStack, vararg inputs: Any) = addShapelessRecipe(name, null, output, *inputs)
+    @JvmStatic fun addShapedRecipe(name: String, output: ItemStack, vararg inputs: Any) = addShapedRecipe(name, null, output, *inputs)
 
     @JvmStatic
     fun addShapedRecipe(name: String, group: String?, output: ItemStack, vararg inputs: Any) {
@@ -101,7 +101,7 @@ object RecipeGeneratorHandler {
                 map.put(char, obj)
             }
         }
-        
+
         return Triple(mirrored, pattern, map)
     }
 
