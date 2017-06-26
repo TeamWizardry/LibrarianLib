@@ -1,8 +1,12 @@
 package com.teamwizardry.librarianlib.features.base.block.tile
 
+import com.teamwizardry.librarianlib.features.base.block.tile.module.ModuleInventory
+import com.teamwizardry.librarianlib.features.saving.Module
+import net.minecraftforge.items.IItemHandlerModifiable
+
 /**
  * Created by TheCodeWarrior
  */
-open class TileModInventory(@com.teamwizardry.librarianlib.features.saving.Module val module: com.teamwizardry.librarianlib.features.base.block.tile.module.ModuleInventory) : TileMod(), net.minecraftforge.items.IItemHandlerModifiable by module.handler {
-    constructor(size: Int) : this(com.teamwizardry.librarianlib.features.base.block.tile.module.ModuleInventory(size))
+open class TileModInventory(@Module val module: ModuleInventory) : TileMod(), IItemHandlerModifiable by module.handler {
+    constructor(size: Int) : this(ModuleInventory(size))
 }

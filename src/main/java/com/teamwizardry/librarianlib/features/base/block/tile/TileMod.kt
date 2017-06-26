@@ -1,8 +1,26 @@
 package com.teamwizardry.librarianlib.features.base.block.tile
 
 import com.teamwizardry.librarianlib.features.base.block.tile.module.ITileModule
+import com.teamwizardry.librarianlib.features.kotlin.NBT.comp
 import com.teamwizardry.librarianlib.features.kotlin.forEach
+import com.teamwizardry.librarianlib.features.kotlin.nbt
+import com.teamwizardry.librarianlib.features.network.PacketHandler
+import com.teamwizardry.librarianlib.features.network.PacketModuleSync
+import com.teamwizardry.librarianlib.features.network.PacketTileSynchronization
 import com.teamwizardry.librarianlib.features.saving.*
+import net.minecraft.block.state.IBlockState
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.player.EntityPlayerMP
+import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.network.NetworkManager
+import net.minecraft.network.play.server.SPacketUpdateTileEntity
+import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.EnumHand
+import net.minecraft.util.math.BlockPos
+import net.minecraft.world.World
+import net.minecraft.world.WorldServer
+import net.minecraftforge.common.capabilities.Capability
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.filter
@@ -16,12 +34,12 @@ import kotlin.collections.toTypedArray
  * @author WireSegal
  * Created at 11:06 AM on 8/4/16.
  */
-@com.teamwizardry.librarianlib.features.saving.SaveInPlace
-abstract class TileMod : net.minecraft.tileentity.TileEntity() {
+@SaveInPlace
+abstract class TileMod : TileEntity() {
 
-    protected val modules = kotlin.collections.mutableMapOf<String, ITileModule>()
+    protected val modules = mutableMapOf<String, ITileModule>()
 
-    protected fun initModule(name: String, module: com.teamwizardry.librarianlib.features.base.block.tile.module.ITileModule) = modules.put(name, module)
+    protected fun initModule(name: String, module: ITileModule) = modules.put(name, module)
 
     fun onBreak() = modules.forEach { it.value.onBreak(this) }
 
@@ -30,13 +48,13 @@ abstract class TileMod : net.minecraft.tileentity.TileEntity() {
         modules.forEach { it.value.onLoad(this) }
     }
 
-    fun syncModule(module: com.teamwizardry.librarianlib.features.base.block.tile.module.ITileModule) {
+    fun syncModule(module: ITileModule) {
         val name = modules.entries.firstOrNull { it.value === module }?.key ?: return
-        val ws = world as? net.minecraft.world.WorldServer ?: return
+        val ws = world as? WorldServer ?: return
         ws.playerEntities
-                .filterIsInstance<net.minecraft.entity.player.EntityPlayerMP>()
+                .filterIsInstance<EntityPlayerMP>()
                 .filter { it.getDistanceSq(getPos()) < 64 * 64 && ws.playerChunkMap.isPlayerWatchingChunk(it, pos.x shr 4, pos.z shr 4) }
-                .forEach { com.teamwizardry.librarianlib.features.network.PacketHandler.NETWORK.sendTo(com.teamwizardry.librarianlib.features.network.PacketModuleSync(module.writeToNBT(true), name, pos), it) }
+                .forEach { PacketHandler.NETWORK.sendTo(PacketModuleSync(module.writeToNBT(true), name, pos), it) }
     }
 
     private var modulesSetUp = false
@@ -45,41 +63,41 @@ abstract class TileMod : net.minecraft.tileentity.TileEntity() {
         if (modulesSetUp) return
         modulesSetUp = true
 
-        for ((name, field) in com.teamwizardry.librarianlib.features.saving.SavingFieldCache.getClassFields(FieldType.create(javaClass))) {
-            if (field.meta.hasFlag(com.teamwizardry.librarianlib.features.saving.SavingFieldFlag.MODULE)) {
+        for ((name, field) in SavingFieldCache.getClassFields(FieldType.create(javaClass))) {
+            if (field.meta.hasFlag(SavingFieldFlag.MODULE)) {
                 @Suppress("LeakingThis")
-                val module = field.getter(this) as? com.teamwizardry.librarianlib.features.base.block.tile.module.ITileModule
+                val module = field.getter(this) as? ITileModule
                 module?.let { initModule(name, it) }
             }
         }
 
     }
 
-    fun onClicked(player: net.minecraft.entity.player.EntityPlayer, hand: net.minecraft.util.EnumHand, side: net.minecraft.util.EnumFacing, hitX: Float, hitY: Float, hitZ: Float) = modules
+    fun onClicked(player: EntityPlayer, hand: EnumHand, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float) = modules
             .map { it.value.onClicked(this, player, hand, side, hitX, hitY, hitZ) }
             .any { it }
 
-    fun writeModuleNBT(sync: Boolean): net.minecraft.nbt.NBTTagCompound {
+    fun writeModuleNBT(sync: Boolean): NBTTagCompound {
         createModules()
-        return com.teamwizardry.librarianlib.features.kotlin.nbt {
+        return nbt {
             comp(
                     *modules.map {
                         it.key to it.value.writeToNBT(sync)
                     }.toTypedArray()
             )
-        } as net.minecraft.nbt.NBTTagCompound
+        } as NBTTagCompound
     }
 
-    fun readModuleNBT(nbt: net.minecraft.nbt.NBTTagCompound) {
+    fun readModuleNBT(nbt: NBTTagCompound) {
         createModules()
         nbt.forEach { key, value ->
-            if (value is net.minecraft.nbt.NBTTagCompound) {
+            if (value is NBTTagCompound) {
                 readSingleModuleNBT(key, value)
             }
         }
     }
 
-    fun readSingleModuleNBT(key: String, value: net.minecraft.nbt.NBTTagCompound) {
+    fun readSingleModuleNBT(key: String, value: NBTTagCompound) {
         val module = modules[key]
         module?.readFromNBT(value)
     }
@@ -92,15 +110,15 @@ abstract class TileMod : net.minecraft.tileentity.TileEntity() {
     open val useFastSync: Boolean
         get() = true
 
-    override fun shouldRefresh(world: net.minecraft.world.World, pos: net.minecraft.util.math.BlockPos, oldState: net.minecraft.block.state.IBlockState, newState: net.minecraft.block.state.IBlockState): Boolean {
+    override fun shouldRefresh(world: World, pos: BlockPos, oldState: IBlockState, newState: IBlockState): Boolean {
         return oldState.block !== newState.block
     }
 
-    override fun writeToNBT(compound: net.minecraft.nbt.NBTTagCompound): net.minecraft.nbt.NBTTagCompound {
-        val customTag = net.minecraft.nbt.NBTTagCompound()
+    override fun writeToNBT(compound: NBTTagCompound): NBTTagCompound {
+        val customTag = NBTTagCompound()
         writeCustomNBT(customTag, false)
         compound.setTag("custom", customTag)
-        compound.setTag("auto", com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler.writeAutoNBT(this, false))
+        compound.setTag("auto", AbstractSaveHandler.writeAutoNBT(this, false))
         compound.setTag("module", writeModuleNBT(false))
         compound.setInteger("_v", 2)
         super.writeToNBT(compound)
@@ -108,33 +126,33 @@ abstract class TileMod : net.minecraft.tileentity.TileEntity() {
         return compound
     }
 
-    override fun readFromNBT(compound: net.minecraft.nbt.NBTTagCompound) {
+    override fun readFromNBT(compound: NBTTagCompound) {
         readCustomNBT(compound.getCompoundTag("custom"))
         readModuleNBT(compound.getCompoundTag("module"))
         if (!compound.hasKey("_v"))
-            com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler.readAutoNBT(this, compound, false)
+            AbstractSaveHandler.readAutoNBT(this, compound, false)
         else {
             when (compound.getInteger("_v")) {
-                2 -> com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
+                2 -> AbstractSaveHandler.readAutoNBT(this, compound.getTag("auto"), false)
             }
         }
         super.readFromNBT(compound)
     }
 
-    override fun getUpdateTag(): net.minecraft.nbt.NBTTagCompound {
+    override fun getUpdateTag(): NBTTagCompound {
         val compound = super.getUpdateTag()
-        val customTag = net.minecraft.nbt.NBTTagCompound()
+        val customTag = NBTTagCompound()
         writeCustomNBT(customTag, true)
         compound.setTag("custom", customTag)
-        compound.setTag("auto", com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler.writeAutoNBT(this, true))
+        compound.setTag("auto", AbstractSaveHandler.writeAutoNBT(this, true))
         compound.setTag("module", writeModuleNBT(true))
         super.writeToNBT(compound)
 
         return compound
     }
 
-    override fun getUpdatePacket(): net.minecraft.network.play.server.SPacketUpdateTileEntity {
-        return net.minecraft.network.play.server.SPacketUpdateTileEntity(pos, -999, updateTag)
+    override fun getUpdatePacket(): SPacketUpdateTileEntity {
+        return SPacketUpdateTileEntity(pos, -999, updateTag)
     }
 
     /**
@@ -143,7 +161,7 @@ abstract class TileMod : net.minecraft.tileentity.TileEntity() {
      *
      * [sync] implies that this is being used to send to clientside.
      */
-    open fun writeCustomNBT(cmp: net.minecraft.nbt.NBTTagCompound, sync: Boolean) {
+    open fun writeCustomNBT(cmp: NBTTagCompound, sync: Boolean) {
         // NO-OP
     }
 
@@ -151,7 +169,7 @@ abstract class TileMod : net.minecraft.tileentity.TileEntity() {
      * Override this function to read special data not stored in @Save fields from NBT.
      * If [useFastSync] is false, this will also determine what the client receives.
      */
-    open fun readCustomNBT(cmp: net.minecraft.nbt.NBTTagCompound) {
+    open fun readCustomNBT(cmp: NBTTagCompound) {
         // NO-OP
     }
 
@@ -182,14 +200,14 @@ abstract class TileMod : net.minecraft.tileentity.TileEntity() {
             dispatchTileToNearbyPlayers()
     }
 
-    override fun onDataPacket(net: net.minecraft.network.NetworkManager, packet: net.minecraft.network.play.server.SPacketUpdateTileEntity) {
+    override fun onDataPacket(net: NetworkManager, packet: SPacketUpdateTileEntity) {
         super.onDataPacket(net, packet)
         handleUpdateTag(packet.nbtCompound)
     }
 
-    override fun handleUpdateTag(tag: net.minecraft.nbt.NBTTagCompound) {
+    override fun handleUpdateTag(tag: NBTTagCompound) {
         readCustomNBT(tag.getCompoundTag("custom"))
-        com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler.readAutoNBT(this, tag.getTag("auto"), true)
+        AbstractSaveHandler.readAutoNBT(this, tag.getTag("auto"), true)
         readModuleNBT(tag.getCompoundTag("module"))
     }
 
@@ -197,11 +215,11 @@ abstract class TileMod : net.minecraft.tileentity.TileEntity() {
      * Dispatch tile data to nearby players. This will sync data to client side.
      */
     open fun dispatchTileToNearbyPlayers() {
-        if (world is net.minecraft.world.WorldServer) {
-            val ws: net.minecraft.world.WorldServer = world as net.minecraft.world.WorldServer
+        if (world is WorldServer) {
+            val ws: WorldServer = world as WorldServer
 
             ws.playerEntities
-                    .filterIsInstance<net.minecraft.entity.player.EntityPlayerMP>()
+                    .filterIsInstance<EntityPlayerMP>()
                     .filter { it.getDistanceSq(getPos()) < 64 * 64 && ws.playerChunkMap.isPlayerWatchingChunk(it, pos.x shr 4, pos.z shr 4) }
                     .forEach { sendUpdatePacket(it) }
         }
@@ -211,22 +229,22 @@ abstract class TileMod : net.minecraft.tileentity.TileEntity() {
      * The specific implementation for an update packet.
      * By default, controlled by [useFastSync], it will send the vanilla packet or the LibLib sync packet.
      */
-    open fun sendUpdatePacket(player: net.minecraft.entity.player.EntityPlayerMP) {
+    open fun sendUpdatePacket(player: EntityPlayerMP) {
         if (useFastSync)
-            com.teamwizardry.librarianlib.features.network.PacketHandler.NETWORK.sendTo(com.teamwizardry.librarianlib.features.network.PacketTileSynchronization(this), player)
+            PacketHandler.NETWORK.sendTo(PacketTileSynchronization(this), player)
         else
             player.connection.sendPacket(updatePacket)
     }
 
-    override fun <T : Any> getCapability(capability: net.minecraftforge.common.capabilities.Capability<T>, facing: net.minecraft.util.EnumFacing?): T? {
+    override fun <T : Any> getCapability(capability: Capability<T>, facing: EnumFacing?): T? {
         return modules.values.mapNotNull { it.getCapability(capability, facing) }.firstOrNull() ?:
-                com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler.getCapability(this, capability, facing) ?:
+                AbstractSaveHandler.getCapability(this, capability, facing) ?:
                 super.getCapability(capability, facing)
     }
 
-    override fun hasCapability(capability: net.minecraftforge.common.capabilities.Capability<*>, facing: net.minecraft.util.EnumFacing?): Boolean {
+    override fun hasCapability(capability: Capability<*>, facing: EnumFacing?): Boolean {
         return modules.values.any { it.hasCapability(capability, facing) } ||
-                com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler.hasCapability(this, capability, facing) ||
+                AbstractSaveHandler.hasCapability(this, capability, facing) ||
                 super.hasCapability(capability, facing)
     }
 }

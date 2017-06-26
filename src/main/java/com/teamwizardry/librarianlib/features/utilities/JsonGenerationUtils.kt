@@ -40,7 +40,7 @@ object JsonGenerationUtils {
     private val s = File.separator
 
     private operator fun String.unaryPlus(): String {
-        return this.replace("/", com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils.s)
+        return this.replace("/", JsonGenerationUtils.s)
     }
 
     fun getPathForBaseBlockstate(block: IForgeRegistryEntry<*>): String {

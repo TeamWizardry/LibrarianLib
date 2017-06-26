@@ -19,10 +19,7 @@ import net.minecraftforge.client.model.*
 import net.minecraftforge.client.model.animation.AnimationItemOverrideList
 import net.minecraftforge.client.model.animation.IAnimatedModel
 import net.minecraftforge.client.model.animation.ModelBlockAnimation
-import net.minecraftforge.common.model.IModelPart
-import net.minecraftforge.common.model.IModelState
-import net.minecraftforge.common.model.Models
-import net.minecraftforge.common.model.TRSRTransformation
+import net.minecraftforge.common.model.*
 import net.minecraftforge.common.model.animation.IClip
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.common.property.Properties
@@ -52,7 +49,7 @@ private fun hasItemModel(p_177581_1_: ModelBlock?): Boolean {
     return if (p_177581_1_ == null) false else p_177581_1_.rootModel === ModelBakery_mh_MODEL_GENERATED()
 }
 
-private fun makeBakedQuad(p_177589_1_: BlockPart, p_177589_2_: BlockPartFace, p_177589_3_: TextureAtlasSprite, p_177589_4_: EnumFacing, p_177589_5_: net.minecraftforge.common.model.ITransformation, p_177589_6_: Boolean): BakedQuad {
+private fun makeBakedQuad(p_177589_1_: BlockPart, p_177589_2_: BlockPartFace, p_177589_3_: TextureAtlasSprite, p_177589_4_: EnumFacing, p_177589_5_: ITransformation, p_177589_6_: Boolean): BakedQuad {
     return faceBakery.makeBakedQuad(p_177589_1_.positionFrom, p_177589_1_.positionTo, p_177589_2_, p_177589_3_, p_177589_4_, p_177589_5_, p_177589_1_.partRotation, p_177589_6_, p_177589_1_.shade)
 }
 

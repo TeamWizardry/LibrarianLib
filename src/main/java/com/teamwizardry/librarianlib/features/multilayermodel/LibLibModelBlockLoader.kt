@@ -35,7 +35,7 @@ object LibLibModelBlockLoader : ICustomModelLoader {
         val animation = ModelBlockAnimation.loadVanillaAnimation(manager, armatureLocation)
 
         val iresource = manager.getResource(ResourceLocation(modelLocation.resourceDomain, modelLocation.resourcePath + ".json"))
-        val reader = InputStreamReader(iresource.inputStream, com.google.common.base.Charsets.UTF_8)
+        val reader = InputStreamReader(iresource.inputStream, Charsets.UTF_8)
         val model = JsonUtils.gsonDeserialize<ModelBlock>(ModelsInit.SERIALIZER, reader, ModelBlock::class.java, false)!!
         val iModel = LibLibModelWrapper(modelLocation, model, false, animation)
         return iModel

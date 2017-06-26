@@ -16,7 +16,7 @@ open class ModuleCapability<CAP : INBTSerializable<NBTTagCompound>>(val capabili
 
     protected val allowedSides = mutableSetOf(*EnumFacing.VALUES, null)
 
-    override fun readFromNBT(compound: NBTTagCompound) { handler.deserializeNBT(compound) }
+    override fun readFromNBT(compound: NBTTagCompound) = handler.deserializeNBT(compound)
     override fun writeToNBT(sync: Boolean): NBTTagCompound = handler.serializeNBT()
 
     @Suppress("UNCHECKED_CAST")
