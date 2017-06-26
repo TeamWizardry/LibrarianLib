@@ -142,4 +142,8 @@ object JsonGenerationUtils {
         }
     }
 
+
+    var generatedFiles = mutableListOf<String>()
+
+
 }

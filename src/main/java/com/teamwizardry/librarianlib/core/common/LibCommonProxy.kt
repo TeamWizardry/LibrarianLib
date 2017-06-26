@@ -4,6 +4,7 @@ package com.teamwizardry.librarianlib.core.common
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
+import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.features.autoregister.AnnotationMarkersHandler
 import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.base.item.IShieldItem
@@ -12,10 +13,13 @@ import com.teamwizardry.librarianlib.features.container.GuiHandler
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.saving.SavingFieldCache
+import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
+import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils.generatedFiles
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import com.teamwizardry.librarianlib.features.utilities.unsafeAllowedModIds
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.text.translation.I18n
+import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
@@ -68,6 +72,22 @@ open class LibCommonProxy {
 
         // Late-post because we want to intercept damage at the absolute lowest possible priority
         IShieldItem
+
+        if (generatedFiles.isNotEmpty() && LibrarianLib.DEV_ENVIRONMENT) {
+            val home = System.getProperty("user.home")
+            generatedFiles = generatedFiles.map { if (it.startsWith(home) && home.isNotBlank()) (if (home.endsWith("/")) "~/" else "~") + it.substring(home.length) else it }.toMutableList()
+            val starBegin = "**** THIS IS NOT AN ERROR ****"
+            val starPad = (generatedFiles.fold(64) { max, it -> Math.max(max, it.length) } - starBegin.length + 3) * "*"
+
+            print("\n$starBegin$starPad\n")
+            print("* ${if (generatedFiles.size == 1) "One file was" else "${generatedFiles.size} files were"} generated automatically by LibLib.\n")
+            print("* Restart the ${FMLCommonHandler.instance().side.toString().toLowerCase()} to lock in the changes.\n")
+            print("* Generated files:\n")
+            for (file in generatedFiles)
+                print("** $file\n")
+            print("$starBegin$starPad\n\n")
+            FMLCommonHandler.instance().handleExit(0)
+        }
     }
 
     // End internal methods
