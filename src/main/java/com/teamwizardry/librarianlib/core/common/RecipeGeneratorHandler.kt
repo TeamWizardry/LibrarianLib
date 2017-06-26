@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.core.common
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import com.sun.tools.javac.jvm.ByteCodes.ret
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.helpers.currentModId
@@ -69,24 +70,38 @@ object RecipeGeneratorHandler {
     }
 
     private fun deconstructShaped(vararg inputs: Any): Triple<Boolean, List<String>, Map<Char, JsonElement>> {
+        var inputArray: Array<*> = inputs
+
         val pattern = mutableListOf<String>()
-        var index = 0
+        val map = mutableMapOf<Char, JsonElement>()
         var mirrored = false
-        if (inputs[index] is Boolean) {
+        var index = 0
+
+        // Check if mirrored
+        if (inputArray[index] is Boolean) {
             index++
             mirrored = true
+            if (inputArray[index] is Array<*>)
+                inputArray = inputArray[index] as Array<*>
         }
-        while (++index < inputs.size && inputs[index] is String)
-            pattern.add(inputs[index] as String)
-        val map = mutableMapOf<Char, JsonElement>()
+
+        // Get input pattern
+        if (inputArray[index] is Array<*>) (inputArray[index++] as Array<*>).mapTo(pattern) { it.toString() }
+        else while (++index < inputArray.size && inputArray[index] is String)
+                pattern.add(inputArray[index] as String)
+
         index--
-        while (++index < inputs.size && inputs[index] is Char) {
-            val char = inputs[index] as Char
-            if (++index < inputs.size && index > 0 && inputs[index] !is Char) {
-                val obj = createJsonFromObject(inputs[index])
+
+        // Get char-ingredient map
+        while (++index < inputArray.size && inputArray[index] is Char) {
+            val char = inputArray[index] as Char
+            if (char == ' ') break
+            if (++index < inputArray.size && index > 0 && inputArray[index] !is Char) {
+                val obj = createJsonFromObject(inputArray[index])
                 map.put(char, obj)
             }
         }
+        
         return Triple(mirrored, pattern, map)
     }
 
