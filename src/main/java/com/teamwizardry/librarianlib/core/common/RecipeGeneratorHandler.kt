@@ -6,6 +6,7 @@ import com.google.gson.JsonObject
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.helpers.currentModId
+import com.teamwizardry.librarianlib.features.helpers.modIdOverride
 import com.teamwizardry.librarianlib.features.kotlin.JSON
 import com.teamwizardry.librarianlib.features.kotlin.serialize
 import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
@@ -14,6 +15,9 @@ import net.minecraft.block.Block
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraftforge.fml.common.FMLCommonHandler
+import net.minecraftforge.fml.common.Loader
+import net.minecraftforge.fml.common.LoaderState
 import java.io.File
 
 /**
@@ -21,11 +25,35 @@ import java.io.File
  * Created at 1:45 PM on 6/24/17.
  */
 object RecipeGeneratorHandler {
+    internal fun fireRecipes() {
+        shapelessToDo.forEach { (name, group, output, inputs, modId) ->
+            modIdOverride = modId
+            addShapelessRecipe(name, group, output, *inputs.toTypedArray())
+            modIdOverride = null
+        }
+        shapedToDo.forEach { (name, group, output, inputs, modId) ->
+            modIdOverride = modId
+            addShapedRecipe(name, group, output, *inputs.toTypedArray())
+            modIdOverride = null
+        }
+    }
+
+    private data class Recipe(val name: String, val group: String?, val output: ItemStack, val inp: List<Any>, val modId: String)
+
+    private val shapelessToDo = mutableListOf<Recipe>()
+    private val shapedToDo = mutableListOf<Recipe>()
+
     @JvmStatic fun addShapelessRecipe(name: String, output: ItemStack, vararg inputs: Any) = addShapelessRecipe(name, null, output, *inputs)
 
     @JvmStatic
     fun addShapelessRecipe(name: String, group: String?, output: ItemStack, vararg inputs: Any) {
         if (!shouldGenerateAnyJson()) return
+
+        if (!Loader.instance().hasReachedState(LoaderState.INITIALIZATION)) {
+            shapelessToDo.add(Recipe(name, group, output, inputs.toList(), currentModId))
+            return
+        }
+
         val basePath = JsonGenerationUtils.getPathForRecipe(currentModId, name)
         val file = File(basePath)
         file.parentFile.mkdirs()
@@ -48,14 +76,19 @@ object RecipeGeneratorHandler {
     fun addShapedRecipe(name: String, group: String?, output: ItemStack, vararg inputs: Any) {
         if (!shouldGenerateAnyJson()) return
 
-        val (mirrored, pattern, mapping) = deconstructShaped(inputs)
+        if (!Loader.instance().hasReachedState(LoaderState.INITIALIZATION)) {
+            shapedToDo.add(Recipe(name, group, output, inputs.toList(), currentModId))
+            return
+        }
+
+        val (mirrored, pattern, mapping) = deconstructShaped(*inputs)
 
         val basePath = JsonGenerationUtils.getPathForRecipe(currentModId, name)
         val file = File(basePath)
         file.parentFile.mkdirs()
         if (file.createNewFile()) {
             val obj = JSON.obj(
-                    "type" to "forge:ore_shapeless",
+                    "type" to "forge:ore_shaped",
                     "pattern" to pattern,
                     "key" to mapping,
                     "result" to createJsonFromStackOutput(output)
@@ -80,12 +113,14 @@ object RecipeGeneratorHandler {
         if (inputArray[index] is Boolean) {
             index++
             mirrored = true
-            if (inputArray[index] is Array<*>)
-                inputArray = inputArray[index] as Array<*>
         }
 
+        if (inputArray[index] is Array<*>)
+            inputArray = inputArray[index] as Array<*>
+
         // Get input pattern
-        if (inputArray[index] is Array<*>) (inputArray[index++] as Array<*>).mapTo(pattern) { it.toString() }
+        if (inputArray[index] is Array<*>)
+            (inputArray[index++] as Array<*>).mapTo(pattern) { it.toString() }
         else {
             index--
             while (++index < inputArray.size && inputArray[index] is String)

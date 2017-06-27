@@ -56,6 +56,7 @@ open class LibCommonProxy {
     }
 
     open fun init(e: FMLInitializationEvent) {
+        RecipeGeneratorHandler.fireRecipes()
         NetworkRegistry.INSTANCE.registerGuiHandler(LibrarianLib, GuiHandler)
     }
 
