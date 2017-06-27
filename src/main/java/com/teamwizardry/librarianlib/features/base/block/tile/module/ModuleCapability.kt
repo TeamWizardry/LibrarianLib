@@ -21,8 +21,8 @@ open class ModuleCapability<CAP : INBTSerializable<NBTTagCompound>>(val capabili
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> getCapability(capability: Capability<T>, facing: EnumFacing?): T?
-            = if (capability == capability && facing in allowedSides) handler as T else null
+            = if (capability == this.capability && facing in allowedSides) handler as T else null
 
     override fun hasCapability(capability: Capability<*>, facing: EnumFacing?)
-            = capability == capability && facing in allowedSides
+            = capability == this.capability && facing in allowedSides
 }
