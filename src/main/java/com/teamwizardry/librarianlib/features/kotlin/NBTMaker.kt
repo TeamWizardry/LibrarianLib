@@ -3,6 +3,7 @@
 package com.teamwizardry.librarianlib.features.kotlin
 
 import net.minecraft.nbt.*
+import net.minecraft.util.ResourceLocation
 import java.util.*
 
 /**
@@ -46,6 +47,7 @@ fun convertNBT(value: Any?): NBTBase = when (value) {
     is Array<*> -> NBT.list(*value)
     is Collection<*> -> NBT.list(*value.toTypedArray())
     is Map<*, *> -> NBT.comp(*value.toList().map { it.first.toString() to it.second }.toTypedArray())
+    is ResourceLocation -> NBTTagString(value.toString())
 
     else -> throw IllegalArgumentException("Unrecognized type: " + value)
 }

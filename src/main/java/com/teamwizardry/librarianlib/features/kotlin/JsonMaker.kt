@@ -5,6 +5,7 @@ package com.teamwizardry.librarianlib.features.kotlin
 import com.google.gson.*
 import com.google.gson.internal.Streams
 import com.google.gson.stream.JsonWriter
+import net.minecraft.util.ResourceLocation
 import java.io.StringWriter
 
 /**
@@ -37,6 +38,7 @@ fun convertJSON(value: Any?): JsonElement = when (value) {
     is Collection<*> -> JSON.array(*value.toTypedArray())
     is Map<*, *> -> JSON.obj(*value.toList().map { it.first.toString() to it.second }.toTypedArray())
     is JsonElement -> value
+    is ResourceLocation -> JsonPrimitive(value.toString())
     else -> throw IllegalArgumentException("Unrecognized type: " + value)
 }
 
