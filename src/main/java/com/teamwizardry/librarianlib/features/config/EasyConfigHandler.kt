@@ -9,14 +9,8 @@ import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.utilities.AnnotationHelper
 import com.teamwizardry.librarianlib.features.utilities.AnnotationInfo
 import net.minecraftforge.common.config.Configuration
-import net.minecraftforge.fml.common.FMLLog
 import net.minecraftforge.fml.common.discovery.ASMDataTable
-import org.apache.logging.log4j.Level
-import scala.annotation.meta.field
-import scala.inline
-import java.awt.SystemColor.info
 import java.io.File
-import java.lang.Class
 import java.lang.reflect.Field
 
 
@@ -319,32 +313,32 @@ annotation class ConfigIntRange(val min: Int, val max: Int)
 @Deprecated("Legacy support, use ConfigProperty's defaults")
 const val noModId = ""
 
-@Deprecated("Use ConfigProperty")
+@Deprecated("Use ConfigProperty", ReplaceWith("ConfigProperty(category, comment, id, modid)", "com.teamwizardry.librarianlib.features.config.ConfigProperty"))
 @Target(AnnotationTarget.FIELD) annotation class ConfigPropertyString(val modid: String = "", val category: String, val id: String, val comment: String, val defaultValue: String, val devOnly: Boolean = false)
 
-@Deprecated("Use ConfigProperty")
+@Deprecated("Use ConfigProperty", ReplaceWith("ConfigProperty(category, comment, id, modid)", "com.teamwizardry.librarianlib.features.config.ConfigProperty"))
 @Target(AnnotationTarget.FIELD) annotation class ConfigPropertyInt(val modid: String = "", val category: String, val id: String, val comment: String, val defaultValue: Int, val devOnly: Boolean = false)
 
-@Deprecated("Use ConfigProperty")
+@Deprecated("Use ConfigProperty", ReplaceWith("ConfigProperty(category, comment, id, modid)", "com.teamwizardry.librarianlib.features.config.ConfigProperty"))
 @Target(AnnotationTarget.FIELD) annotation class ConfigPropertyLong(val modid: String = "", val category: String, val id: String, val comment: String, val defaultValue: Long, val devOnly: Boolean = false)
 
-@Deprecated("Use ConfigProperty")
+@Deprecated("Use ConfigProperty", ReplaceWith("ConfigProperty(category, comment, id, modid)", "com.teamwizardry.librarianlib.features.config.ConfigProperty"))
 @Target(AnnotationTarget.FIELD) annotation class ConfigPropertyBoolean(val modid: String = "", val category: String, val id: String, val comment: String, val defaultValue: Boolean, val devOnly: Boolean = false)
 
-@Deprecated("Use ConfigProperty")
+@Deprecated("Use ConfigProperty", ReplaceWith("ConfigProperty(category, comment, id, modid)", "com.teamwizardry.librarianlib.features.config.ConfigProperty"))
 @Target(AnnotationTarget.FIELD) annotation class ConfigPropertyDouble(val modid: String = "", val category: String, val id: String, val comment: String, val defaultValue: Double, val devOnly: Boolean = false)
 
-@Deprecated("Use ConfigProperty")
+@Deprecated("Use ConfigProperty", ReplaceWith("ConfigProperty(category, comment, id, modid)", "com.teamwizardry.librarianlib.features.config.ConfigProperty"))
 @Target(AnnotationTarget.FIELD) annotation class ConfigPropertyStringArray(val modid: String = "", val category: String, val id: String, val comment: String, val defaultValue: Array<String>, val devOnly: Boolean = false)
 
-@Deprecated("Use ConfigProperty")
+@Deprecated("Use ConfigProperty", ReplaceWith("ConfigProperty(category, comment, id, modid)", "com.teamwizardry.librarianlib.features.config.ConfigProperty"))
 @Target(AnnotationTarget.FIELD) annotation class ConfigPropertyIntArray(val modid: String = "", val category: String, val id: String, val comment: String, val defaultValue: IntArray, val devOnly: Boolean = false)
 
-@Deprecated("Use ConfigProperty")
+@Deprecated("Use ConfigProperty", ReplaceWith("ConfigProperty(category, comment, id, modid)", "com.teamwizardry.librarianlib.features.config.ConfigProperty"))
 @Target(AnnotationTarget.FIELD) annotation class ConfigPropertyBooleanArray(val modid: String = "", val category: String, val id: String, val comment: String, val defaultValue: BooleanArray, val devOnly: Boolean = false)
 
-@Deprecated("Use ConfigProperty")
+@Deprecated("Use ConfigProperty", ReplaceWith("ConfigProperty(category, comment, id, modid)", "com.teamwizardry.librarianlib.features.config.ConfigProperty"))
 @Target(AnnotationTarget.FIELD) annotation class ConfigPropertyDoubleArray(val modid: String = "", val category: String, val id: String, val comment: String, val defaultValue: DoubleArray, val devOnly: Boolean = false)
 
-@Deprecated("Use ConfigProperty")
+@Deprecated("Use ConfigProperty", ReplaceWith("ConfigProperty(category, comment, id, modid)", "com.teamwizardry.librarianlib.features.config.ConfigProperty"))
 @Target(AnnotationTarget.FIELD) annotation class ConfigPropertyLongArray(val modid: String = "", val category: String, val id: String, val comment: String, val defaultValue: LongArray, val devOnly: Boolean = false)
