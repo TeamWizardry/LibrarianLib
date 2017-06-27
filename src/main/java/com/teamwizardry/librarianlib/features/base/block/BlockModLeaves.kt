@@ -73,7 +73,7 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
         this.soundType = SoundType.PLANT
         if (itemForm != null)
             for (variant in this.variants.indices)
-                OreDictionaryRegistrar.registerOre("treeLeaves", ItemStack(this, 1, variant))
+                OreDictionaryRegistrar.registerOre("treeLeaves", ItemStack(itemForm, 1, variant))
     }
 
     override fun getFlammability(world: IBlockAccess?, pos: BlockPos?, face: EnumFacing?) = 60

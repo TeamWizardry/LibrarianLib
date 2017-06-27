@@ -72,7 +72,7 @@ abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod
         this.tickRandomly = true
         if (itemForm != null)
             for (variant in this.variants.indices)
-                OreDictionaryRegistrar.registerOre("treeSapling", ItemStack(this, 1, variant))
+                OreDictionaryRegistrar.registerOre("treeSapling", ItemStack(itemForm, 1, variant))
     }
 
     override fun onNeighborChange(worldIn: IBlockAccess, pos: BlockPos, neighborBlock: BlockPos) {
