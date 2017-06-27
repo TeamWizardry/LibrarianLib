@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.utilities
 
 import com.google.gson.JsonElement
+import com.teamwizardry.librarianlib.features.helpers.VariantHelper.toSnakeCase
 import com.teamwizardry.librarianlib.features.helpers.currentModId
 import com.teamwizardry.librarianlib.features.kotlin.json
 import net.minecraft.block.Block
@@ -79,7 +80,7 @@ object JsonGenerationUtils {
     }
 
     fun getPathForRecipe(modid: String, name: String): String {
-        return +"${getAssetPath(modid)}/recipes/$name.json"
+        return +"${getAssetPath(modid)}/recipes/${toSnakeCase(name)}.json"
     }
 
     fun generateBaseItemModel(item: Item, variantName: String? = null, parent: String = "item/generated"): JsonElement {

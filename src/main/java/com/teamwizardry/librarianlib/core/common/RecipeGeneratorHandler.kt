@@ -86,8 +86,11 @@ object RecipeGeneratorHandler {
 
         // Get input pattern
         if (inputArray[index] is Array<*>) (inputArray[index++] as Array<*>).mapTo(pattern) { it.toString() }
-        else while (++index < inputArray.size && inputArray[index] is String)
+        else {
+            index--
+            while (++index < inputArray.size && inputArray[index] is String)
                 pattern.add(inputArray[index] as String)
+        }
 
         index--
 

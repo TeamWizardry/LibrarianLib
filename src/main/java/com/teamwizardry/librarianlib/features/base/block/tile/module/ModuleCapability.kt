@@ -20,11 +20,9 @@ open class ModuleCapability<CAP : INBTSerializable<NBTTagCompound>>(val capabili
     override fun writeToNBT(sync: Boolean): NBTTagCompound = handler.serializeNBT()
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : Any> getCapability(capability: Capability<T>, facing: EnumFacing?): T? {
-        return if (capability == capability && facing in allowedSides) handler as T else null
-    }
+    override fun <T : Any> getCapability(capability: Capability<T>, facing: EnumFacing?): T?
+            = if (capability == capability && facing in allowedSides) handler as T else null
 
-    override fun hasCapability(capability: Capability<*>, facing: EnumFacing?): Boolean {
-        return capability == capability && facing in allowedSides
-    }
+    override fun hasCapability(capability: Capability<*>, facing: EnumFacing?)
+            = capability == capability && facing in allowedSides
 }

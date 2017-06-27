@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.test.variants
 
+import com.teamwizardry.librarianlib.core.common.RecipeGeneratorHandler
 import com.teamwizardry.librarianlib.features.base.block.*
 import com.teamwizardry.librarianlib.features.base.item.IGlowingItem
 import com.teamwizardry.librarianlib.features.base.item.ItemMod
@@ -15,6 +16,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.entity.projectile.EntityTippedArrow
+import net.minecraft.init.Blocks
 import net.minecraft.init.Items
 import net.minecraft.init.PotionTypes
 import net.minecraft.item.Item
@@ -41,7 +43,7 @@ object VariantEntryPoint : TestEntryPoint {
     lateinit var sapling: BlockModSapling
 
     override fun preInit(event: FMLPreInitializationEvent) {
-        object : ItemModArrow("arrow") {
+        val arrow = object : ItemModArrow("arrow") {
             override fun generateArrowEntity(worldIn: World, stack: ItemStack, position: Vec3d, shooter: EntityLivingBase?): EntityArrow {
                 val arrow = if (shooter != null) EntityTippedArrow(worldIn, shooter)
                 else EntityTippedArrow(worldIn, position.x, position.y, position.z)
@@ -73,6 +75,13 @@ object VariantEntryPoint : TestEntryPoint {
                 return true
             }
         }
+        RecipeGeneratorHandler.addShapedRecipe("TestBlock", ItemStack(arrow),
+                "abc",
+                'a', Items.DIAMOND, 'b', Blocks.STONE, 'c', "chestWood")
+        RecipeGeneratorHandler.addShapelessRecipe("fdhjsdk", ItemStack(arrow),
+                Items.DIAMOND, Blocks.STONE, "chestWood")
+
+
 
         BlockModPane("a_pane", true, block.defaultState)
         BlockModTrapdoor("a_trap", block.defaultState)
