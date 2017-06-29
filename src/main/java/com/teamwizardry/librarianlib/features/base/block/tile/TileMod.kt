@@ -1,12 +1,12 @@
 package com.teamwizardry.librarianlib.features.base.block.tile
 
 import com.teamwizardry.librarianlib.features.base.block.tile.module.ITileModule
-import com.teamwizardry.librarianlib.features.kotlin.NBT.comp
 import com.teamwizardry.librarianlib.features.kotlin.forEach
 import com.teamwizardry.librarianlib.features.kotlin.nbt
 import com.teamwizardry.librarianlib.features.network.PacketHandler
 import com.teamwizardry.librarianlib.features.network.PacketModuleSync
 import com.teamwizardry.librarianlib.features.network.PacketTileSynchronization
+import com.teamwizardry.librarianlib.features.network.TargetWatchingBlock
 import com.teamwizardry.librarianlib.features.saving.*
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayer
@@ -23,12 +23,6 @@ import net.minecraft.world.WorldServer
 import net.minecraftforge.common.capabilities.Capability
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.filter
-import kotlin.collections.filterIsInstance
-import kotlin.collections.forEach
-import kotlin.collections.iterator
-import kotlin.collections.map
-import kotlin.collections.toTypedArray
 
 /**
  * @author WireSegal
@@ -50,11 +44,7 @@ abstract class TileMod : TileEntity() {
 
     fun syncModule(module: ITileModule) {
         val name = modules.entries.firstOrNull { it.value === module }?.key ?: return
-        val ws = world as? WorldServer ?: return
-        ws.playerEntities
-                .filterIsInstance<EntityPlayerMP>()
-                .filter { it.getDistanceSq(getPos()) < 64 * 64 && ws.playerChunkMap.isPlayerWatchingChunk(it, pos.x shr 4, pos.z shr 4) }
-                .forEach { PacketHandler.NETWORK.sendTo(PacketModuleSync(module.writeToNBT(true), name, pos), it) }
+        PacketHandler.CHANNEL.update(TargetWatchingBlock(world, pos), PacketModuleSync(module.writeToNBT(true), name, pos))
     }
 
     private var modulesSetUp = false
@@ -70,7 +60,6 @@ abstract class TileMod : TileEntity() {
                 module?.let { initModule(name, it) }
             }
         }
-
     }
 
     fun onClicked(player: EntityPlayer, hand: EnumHand, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float) = modules
@@ -218,22 +207,24 @@ abstract class TileMod : TileEntity() {
         if (world is WorldServer) {
             val ws: WorldServer = world as WorldServer
 
-            ws.playerEntities
-                    .filterIsInstance<EntityPlayerMP>()
-                    .filter { it.getDistanceSq(getPos()) < 64 * 64 && ws.playerChunkMap.isPlayerWatchingChunk(it, pos.x shr 4, pos.z shr 4) }
-                    .forEach { sendUpdatePacket(it) }
+            if(useFastSync) {
+                PacketHandler.CHANNEL.update(TargetWatchingBlock(world, pos), PacketTileSynchronization(this))
+            } else {
+                ws.playerEntities
+                        .filterIsInstance<EntityPlayerMP>()
+                        .filter { it.getDistanceSq(getPos()) < 64 * 64 && ws.playerChunkMap.isPlayerWatchingChunk(it, pos.x shr 4, pos.z shr 4) }
+                        .forEach { sendUpdatePacket(it) }
+            }
         }
     }
 
     /**
-     * The specific implementation for an update packet.
-     * By default, controlled by [useFastSync], it will send the vanilla packet or the LibLib sync packet.
+     * The specific implementation for an individual update packet.
+     *
+     * Unused if [useFastSync]. By default it will send the vanilla packet or the LibLib sync packet.
      */
     open fun sendUpdatePacket(player: EntityPlayerMP) {
-        if (useFastSync)
-            PacketHandler.NETWORK.sendTo(PacketTileSynchronization(this), player)
-        else
-            player.connection.sendPacket(updatePacket)
+        player.connection.sendPacket(updatePacket)
     }
 
     override fun <T : Any> getCapability(capability: Capability<T>, facing: EnumFacing?): T? {

@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.chunkdata
 
 import com.teamwizardry.librarianlib.features.network.PacketCustomChunkData
 import com.teamwizardry.librarianlib.features.network.PacketHandler
+import com.teamwizardry.librarianlib.features.network.TargetWatchingBlock
 import com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler
 import com.teamwizardry.librarianlib.features.saving.SaveInPlace
 import io.netty.buffer.ByteBuf
@@ -34,15 +35,10 @@ open class ChunkData(chunk: Chunk) {
     open fun writeCustomBytes(buf: ByteBuf) {}
     open fun readCustomBytes(buf: ByteBuf) {}
 
-    fun resync() {
+    fun markDirty() {
         if(world is WorldServer) {
             val packet = PacketCustomChunkData(pos, name!!, this)
-            world.playerEntities.forEach {
-                it as EntityPlayerMP
-                if(world.playerChunkMap.isPlayerWatchingChunk(it, pos.x, pos.z)) {
-                    PacketHandler.NETWORK.sendTo(packet, it)
-                }
-            }
+            PacketHandler.CHANNEL.update(TargetWatchingBlock(world, pos.getBlock(0,0,0)), packet)
         }
     }
 

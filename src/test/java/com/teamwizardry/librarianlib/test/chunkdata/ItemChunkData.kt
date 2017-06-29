@@ -23,7 +23,7 @@ class ItemChunkData : ItemMod("chunkdata") {
         if(data != null) {
             if(!worldIn.isRemote) {
                 data.clicks++
-                data.resync()
+                data.markDirty()
                 player.sendStatusMessage(TextComponentString("[S] Clicks: ${data.clicks}"), false)
             } else {
                 player.sendStatusMessage(TextComponentString("[C] Clicks: ${data.clicks}"), false)

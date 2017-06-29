@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext
 import net.minecraftforge.fml.relauncher.Side
 
 @PacketRegister(Side.CLIENT)
-class PacketModuleSync(@Save var data: NBTTagCompound = NBTTagCompound(), @Save val name: String = "", @Save val pos: BlockPos = BlockPos.ORIGIN) : PacketBase() {
+class PacketModuleSync(@Save var data: NBTTagCompound = NBTTagCompound(), @Save val name: String = "", @Save val pos: BlockPos = BlockPos.ORIGIN) : PacketAbstractUpdate(Pair(pos, name)) {
 
     override fun handle(ctx: MessageContext) {
         (LibrarianLib.PROXY.getClientPlayer().world.getTileEntity(pos) as? TileMod)?.let {

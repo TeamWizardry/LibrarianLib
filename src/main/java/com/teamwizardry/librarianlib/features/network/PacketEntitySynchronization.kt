@@ -12,7 +12,7 @@ import net.minecraftforge.fml.relauncher.FMLLaunchHandler
 import net.minecraftforge.fml.relauncher.Side
 
 @PacketRegister(Side.CLIENT)
-class PacketEntitySynchronization(@Save var entityId: Int = -1, val entity: IModEntity? = null) : PacketBase() {
+class PacketEntitySynchronization(@Save var entityId: Int = -1, val entity: IModEntity? = null) : PacketAbstractUpdate(entity) {
 
     @Save var pos: BlockPos? = null
 

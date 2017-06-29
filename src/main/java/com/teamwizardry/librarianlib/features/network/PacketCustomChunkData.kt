@@ -16,7 +16,7 @@ import net.minecraftforge.fml.relauncher.Side
  * Syncs custom chunk data, some more complex chunk data should be synced incrementally however
  */
 @PacketRegister(Side.CLIENT)
-class PacketCustomChunkData(@Save var pos: ChunkPos, @Save var name: ResourceLocation, data: ChunkData? = null) : PacketBase() {
+class PacketCustomChunkData(@Save var pos: ChunkPos, @Save var name: ResourceLocation, data: ChunkData? = null) : PacketAbstractUpdate(Pair(pos, name)) {
     constructor() : this(ChunkPos(0, 0), missingno, null)
 
     @Save var dataBuf: ByteBuf = Unpooled.buffer()
