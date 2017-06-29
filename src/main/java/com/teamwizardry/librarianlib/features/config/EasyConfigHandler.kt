@@ -54,7 +54,9 @@ object EasyConfigHandler {
                                      val identifier: String,
                                      val max: T? = null,
                                      val min: T? = null,
-                                     val sortingId: Int = 0)
+                                     val sortingId: Int = 0,
+                                     val requiresRestart: Boolean = false,
+                                     val requiresWorld: Boolean = false)
 
     @Suppress("DEPRECATION")
     internal fun bootstrap(asm: ASMDataTable, dir: File) {
@@ -117,28 +119,34 @@ object EasyConfigHandler {
 
         fieldMapStr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: "", it.comment).string)
+            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: "", it.comment)
+                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).string)
         }
         fieldMapInt.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: 0, it.comment, it.min ?: -Int.MAX_VALUE, it.max ?: Int.MIN_VALUE).int)
+            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: 0, it.comment, it.min ?: -Int.MAX_VALUE, it.max ?: Int.MIN_VALUE)
+                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).int)
         }
         fieldMapBoolean.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: false, it.comment).boolean)
+            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: false, it.comment)
+                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).boolean)
         }
         fieldMapDouble.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: 0.0, it.comment, it.min ?: -Double.MAX_VALUE, it.max ?: Double.MAX_VALUE).double)
+            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: 0.0, it.comment, it.min ?: -Double.MAX_VALUE, it.max ?: Double.MAX_VALUE)
+                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).double)
         }
         fieldMapLong.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            it.setter(config.get(it.category, it.identifier, (it.defaultValue ?: 0L).toString(), it.comment).long)
+            it.setter(config.get(it.category, it.identifier, (it.defaultValue ?: 0L).toString(), it.comment)
+                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).long)
         }
 
         fieldMapStrArr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: arrayOf(), it.comment).stringList)
+            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: arrayOf(), it.comment)
+                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).stringList)
         }
         fieldMapIntArr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
@@ -146,11 +154,13 @@ object EasyConfigHandler {
             val max = if (maxArr.isEmpty()) Int.MAX_VALUE else maxArr[0]
             val minArr = it.min ?: intArrayOf()
             val min = if (minArr.isEmpty()) -Int.MAX_VALUE else minArr[0]
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: intArrayOf(), it.comment, min, max).intList)
+            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: intArrayOf(), it.comment, min, max)
+                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).intList)
         }
         fieldMapBooleanArr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: booleanArrayOf(), it.comment).booleanList)
+            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: booleanArrayOf(), it.comment)
+                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).booleanList)
         }
         fieldMapDoubleArr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
@@ -158,12 +168,14 @@ object EasyConfigHandler {
             val max = if (maxArr.isEmpty()) Double.MAX_VALUE else maxArr[0]
             val minArr = it.min ?: doubleArrayOf()
             val min = if (minArr.isEmpty()) -Double.MAX_VALUE else minArr[0]
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: doubleArrayOf(), it.comment, min, max).doubleList)
+            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: doubleArrayOf(), it.comment, min, max)
+                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).doubleList)
         }
         fieldMapLongArr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
             val arr = it.defaultValue ?: longArrayOf()
-            it.setter(config.get(it.category, it.identifier, arr.map(Long::toString).toTypedArray(), it.comment).stringList.mapIndexed { i, s ->
+            it.setter(config.get(it.category, it.identifier, arr.map(Long::toString).toTypedArray(), it.comment)
+                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).stringList.mapIndexed { i, s ->
                 try {
                     s.toLong()
                 } catch (e: NumberFormatException) {
@@ -196,13 +208,17 @@ object EasyConfigHandler {
                     val annot = field.getAnnotation(ConfigIntRange::class.java)
                     FieldEntry(modid, { it: Int -> field.set(inst, it) }, field.get(inst) as Int,
                             field.isAnnotationPresent(ConfigDevOnly::class.java),
-                            info.getString("comment"), info.getString("category"), identifier, annot?.max ?: Int.MAX_VALUE, annot?.min ?: Int.MIN_VALUE, info.getInt("sortingId"))
+                            info.getString("comment"), info.getString("category"), identifier, annot?.max ?: Int.MAX_VALUE, annot?.min ?: Int.MIN_VALUE,
+                            info.getInt("sortingId"), field.isAnnotationPresent(ConfigNeedsFullRestart::class.java),
+                            field.isAnnotationPresent(ConfigNeedsWorldRestart::class.java))
                 }
                 Double::class.java -> addToMaps("Double", inst, modid, field, info, fieldMapDouble) { modid, inst, field, identifier, info ->
                     val annot = field.getAnnotation(ConfigDoubleRange::class.java)
                     FieldEntry(modid, { it: Double -> field.set(inst, it) }, field.get(inst) as Double,
                             field.isAnnotationPresent(ConfigDevOnly::class.java),
-                            info.getString("comment"), info.getString("category"), identifier, annot?.max ?: Double.MAX_VALUE, annot?.min ?: Double.MIN_VALUE, info.getInt("sortingId"))
+                            info.getString("comment"), info.getString("category"), identifier, annot?.max ?: Double.MAX_VALUE, annot?.min ?: Double.MIN_VALUE,
+                            info.getInt("sortingId"), field.isAnnotationPresent(ConfigNeedsFullRestart::class.java),
+                            field.isAnnotationPresent(ConfigNeedsWorldRestart::class.java))
                 }
                 Boolean::class.java -> addToMaps("Boolean", inst, modid, field, info, fieldMapBoolean)
                 Long::class.java -> addToMaps("Long", inst, modid, field, info, fieldMapLong)
@@ -211,13 +227,17 @@ object EasyConfigHandler {
                     val annot = field.getAnnotation(ConfigIntRange::class.java)
                     FieldEntry(modid, { it: IntArray -> field.set(inst, it) }, field.get(inst) as IntArray,
                             field.isAnnotationPresent(ConfigDevOnly::class.java),
-                            info.getString("comment"), info.getString("category"), identifier, intArrayOf(annot?.max ?: Int.MAX_VALUE), intArrayOf(annot?.min ?: Int.MIN_VALUE), info.getInt("sortingId"))
+                            info.getString("comment"), info.getString("category"), identifier, intArrayOf(annot?.max ?: Int.MAX_VALUE), intArrayOf(annot?.min ?: Int.MIN_VALUE),
+                            info.getInt("sortingId"), field.isAnnotationPresent(ConfigNeedsFullRestart::class.java),
+                            field.isAnnotationPresent(ConfigNeedsWorldRestart::class.java))
                 }
                 DoubleArray::class.java -> addToMaps("DoubleArray", inst, modid, field, info, fieldMapDoubleArr) { modid, inst, field, identifier, info ->
                     val annot = field.getAnnotation(ConfigDoubleRange::class.java)
                     FieldEntry(modid, { it: DoubleArray -> field.set(inst, it) }, field.get(inst) as DoubleArray,
                             field.isAnnotationPresent(ConfigDevOnly::class.java),
-                            info.getString("comment"), info.getString("category"), identifier, doubleArrayOf(annot?.max ?: Double.MAX_VALUE), doubleArrayOf(annot?.min ?: Double.MIN_VALUE), info.getInt("sortingId"))
+                            info.getString("comment"), info.getString("category"), identifier, doubleArrayOf(annot?.max ?: Double.MAX_VALUE), doubleArrayOf(annot?.min ?: Double.MIN_VALUE),
+                            info.getInt("sortingId"), field.isAnnotationPresent(ConfigNeedsFullRestart::class.java),
+                            field.isAnnotationPresent(ConfigNeedsWorldRestart::class.java))
                 }
                 BooleanArray::class.java -> addToMaps("BooleanArray", inst, modid, field, info, fieldMapBooleanArr)
                 LongArray::class.java -> addToMaps("LongArray", inst, modid, field, info, fieldMapLongArr)
@@ -240,7 +260,9 @@ object EasyConfigHandler {
     private inline fun <reified T> makeFieldEntryDefault(modid: String, inst: Any?, field: Field, identifier: String, info: AnnotationInfo): FieldEntry<T> {
         return FieldEntry(modid, { it: T -> field.set(inst, it) }, field.get(inst) as T,
                 field.isAnnotationPresent(ConfigDevOnly::class.java),
-                info.getString("comment"), info.getString("category"), identifier, null, null, info.getInt("sortingId"))
+                info.getString("comment"), info.getString("category"), identifier, null, null,
+                info.getInt("sortingId"), field.isAnnotationPresent(ConfigNeedsFullRestart::class.java),
+                field.isAnnotationPresent(ConfigNeedsWorldRestart::class.java))
     }
 
     private fun <T> logFieldName(it: FieldEntry<T>) {
@@ -305,6 +327,20 @@ annotation class ConfigProperty(val category: String,
 @MustBeDocumented
 @Target(AnnotationTarget.FIELD)
 annotation class ConfigDevOnly
+
+/**
+ * Apply this to an @[ConfigProperty] to have it require an MC restart to change.
+ */
+@MustBeDocumented
+@Target(AnnotationTarget.FIELD)
+annotation class ConfigNeedsFullRestart
+
+/**
+ * Apply this to an @[ConfigProperty] to have it require a world restart to change.
+ */
+@MustBeDocumented
+@Target(AnnotationTarget.FIELD)
+annotation class ConfigNeedsWorldRestart
 
 /**
  * Apply this to a @[ConfigProperty] double or double array field to clamp its min and max values.
