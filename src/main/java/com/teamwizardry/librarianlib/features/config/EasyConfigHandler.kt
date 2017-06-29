@@ -8,8 +8,11 @@ import com.teamwizardry.librarianlib.features.helpers.currentModId
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.utilities.AnnotationHelper
 import com.teamwizardry.librarianlib.features.utilities.AnnotationInfo
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.config.Configuration
+import net.minecraftforge.fml.client.event.ConfigChangedEvent
 import net.minecraftforge.fml.common.discovery.ASMDataTable
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.io.File
 import java.lang.reflect.Field
 
@@ -57,6 +60,7 @@ object EasyConfigHandler {
     internal fun bootstrap(asm: ASMDataTable, dir: File) {
         loaded = true
         CONFIG_DIR = dir
+        MinecraftForge.EVENT_BUS.register(this)
 
         // Legacy support
         findByClass(String::class.java, ConfigPropertyString::class.java, fieldMapStr, asm)
@@ -81,6 +85,8 @@ object EasyConfigHandler {
         toLoad.clear()
     }
 
+    private val mappings = mutableMapOf<String, File>()
+
     @JvmStatic
     @JvmOverloads
     fun init(modid: String = currentModId, configf: File? = if (loaded) File(CONFIG_DIR, "$currentModId.cfg") else null) {
@@ -89,16 +95,22 @@ object EasyConfigHandler {
         else LibrarianLog.error("Trying to activate the config file override too late. Call it in init. Mod: $modid")
     }
 
+    @SubscribeEvent
+    fun onConfigChanged(e: ConfigChangedEvent) {
+        initInternal(e.modID, mappings[e.modID])
+    }
+
     private fun initInternal(modid: String, configf: File?) {
+        if (allFields.none { it.key.modId == modid }) return
+
         if (LibrarianLib.DEV_ENVIRONMENT)
             LibrarianLog.info("$modid | All config properties found:")
 
         workingId = modid
 
-        val config = if (configf == null)
-            Configuration(File(CONFIG_DIR, "$modid.cfg"))
-        else
-            Configuration(configf)
+        val f = configf ?: File(CONFIG_DIR, "$modid.cfg")
+        mappings.put(modid, f)
+        val config = Configuration(f)
 
         config.load()
         toLog.clear()
