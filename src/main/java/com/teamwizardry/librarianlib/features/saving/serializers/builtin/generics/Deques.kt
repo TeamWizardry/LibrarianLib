@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.features.saving.serializers.builtin.special
+package com.teamwizardry.librarianlib.features.saving.serializers.builtin.generics
 
 
 import com.teamwizardry.librarianlib.features.autoregister.SerializerFactoryRegister

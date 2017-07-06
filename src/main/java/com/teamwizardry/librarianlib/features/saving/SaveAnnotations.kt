@@ -23,7 +23,7 @@ annotation class Save(val saveName: String = "")
  *
  * Apply this to a field to have it be marked as not accepting nulls on syncing.
  *
- * The field will receive a [DefaultValues] entry if it exists instead of null.
+ * The field will receive a default value instead of null.
  */
 @Target(FIELD, FUNCTION, PROPERTY_GETTER, PROPERTY_SETTER)
 @MustBeDocumented
@@ -40,7 +40,6 @@ annotation class NotNullAcceptor
 @Target(FIELD, FUNCTION, PROPERTY_GETTER, PROPERTY_SETTER)
 @MustBeDocumented
 annotation class NoSync
-
 
 /**
  * Apply this to a field or function annotated with [Save] or [SaveMethodSetter]/[SaveMethodGetter] to prevent
@@ -60,7 +59,7 @@ annotation class NonPersistent
  * and with the return type of this function as its single parameter,
  * annotated with [SaveMethodSetter], otherwise nothing will be saved.
  *
- * If the getter is annotated with @[NotNullAcceptor], a default value from [DefaultValues] will be used instead of null.
+ * If the getter is annotated with @[NotNullAcceptor], a default value will be used instead of null.
  *
  * The "getter" method must take exactly zero parameters, and return the content of the field.
  */

@@ -53,7 +53,7 @@ abstract class TileMod : TileEntity() {
         if (modulesSetUp) return
         modulesSetUp = true
 
-        for ((name, field) in SavingFieldCache.getClassFields(FieldType.create(javaClass))) {
+        for ((name, field) in SavingFieldCache.getClassFields(FieldType.create(javaClass, null))) {
             if (field.meta.hasFlag(SavingFieldFlag.MODULE)) {
                 @Suppress("LeakingThis")
                 val module = field.getter(this) as? ITileModule

@@ -8,37 +8,6 @@ import net.minecraft.nbt.NBTBase
 /**
  * Created by TheCodeWarrior
  */
-//class Serializer(val canApply: (FieldType) -> Boolean, val priority: SerializerPriority) {
-//    constructor(vararg classes: Class<*>) : this({ it.clazz in classes }, SerializerPriority.EXACT)
-//
-//    private val serializers = mutableMapOf<SerializerTarget<*, *>, (FieldType) -> SerializerImpl<*, *>>()
-//
-//    fun <R, W> register(target: SerializerTarget<R, W>, generator: (FieldType) -> SerializerImpl<*, *>) {
-//        serializers.put(target, { type ->
-//            if (type is FieldTypeVariable)
-//                throw IllegalArgumentException("Cannot create serializer for variable field type")
-//            else
-//                generator(type)
-//        })
-//    }
-//
-//    fun <R, W> register(target: SerializerTarget<R, W>, impl: SerializerImpl<*, *>) {
-//        register(target, { impl })
-//    }
-//
-//    fun <R, W> register(target: SerializerTarget<R, W>, read: R, write: W) {
-//        val impl = SerializerImpl(read, write)
-//        register(target, { impl })
-//    }
-//
-//    operator fun contains(target: SerializerTarget<*, *>) = target in serializers
-//
-//    @Suppress("UNCHECKED_CAST")
-//    operator fun <T> get(target: SerializerTarget<T>): (FieldType) -> SerializerImpl<T> {
-//        return serializers[target] as? (FieldType) -> SerializerImpl<T> ?: throw IllegalArgumentException("No serializer target registered!")
-//    }
-//}
-
 enum class SerializerFactoryMatch {
     /**
      * No match
@@ -49,13 +18,17 @@ enum class SerializerFactoryMatch {
      */
     GENERAL,
     /**
-     * Exact class with arbitrary generic paramters
+     * Exact class with arbitrary generic parameters
      */
     GENERIC,
     /**
      * Exact class matching
      */
-    EXACT;
+    EXACT,
+    /**
+     * A wrapper match, meaning it will handle delegating
+     */
+    WRAPPER;
 
     fun or(other: SerializerFactoryMatch): SerializerFactoryMatch {
         if(other > this)

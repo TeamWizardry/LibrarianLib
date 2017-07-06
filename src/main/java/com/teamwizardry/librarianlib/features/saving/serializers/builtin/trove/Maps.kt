@@ -19,14 +19,6 @@ import io.netty.buffer.ByteBuf
 import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagList
-import kotlin.collections.MutableMap
-import kotlin.collections.any
-import kotlin.collections.count
-import kotlin.collections.filter
-import kotlin.collections.find
-import kotlin.collections.first
-import kotlin.collections.forEach
-import kotlin.collections.mapOf
 import kotlin.collections.set
 
 @SerializerFactoryRegister
@@ -49,8 +41,9 @@ object SerializeTroveMapsFactory : SerializerFactory("TroveMaps") {
             return (type.genericSuperclass(TMap::class.java) as FieldTypeGeneric).generic(0)
         val setter = type.clazz.methods.filter { it.name == "put" }.first()
         val keyClass = setter.parameterTypes[0]
+        val keyAnnot = setter.annotatedParameterTypes[0]
 
-        return type.resolve(keyClass)
+        return type.resolve(keyClass, keyAnnot)
     }
 
     private fun getValueType(type: FieldType): FieldType {
@@ -58,8 +51,9 @@ object SerializeTroveMapsFactory : SerializerFactory("TroveMaps") {
             return (type.genericSuperclass(TMap::class.java) as FieldTypeGeneric).generic(1)
         val setter = type.clazz.methods.filter { it.name == "put" }.first()
         val keyClass = setter.parameterTypes[1]
+        val keyAnnot = setter.annotatedParameterTypes[1]
 
-        return type.resolve(keyClass)
+        return type.resolve(keyClass, keyAnnot)
     }
 
     class SerializeTroveMap(type: FieldType, troveData: TroveMapData<Any>, keyType: FieldType, valueType: FieldType) : Serializer<Any>(type) {

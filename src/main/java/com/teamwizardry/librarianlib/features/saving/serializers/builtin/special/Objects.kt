@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.features.saving.serializers.builtin.special
 
-import com.google.gson.internal.`$Gson$Types`
 import com.teamwizardry.librarianlib.features.autoregister.SerializerFactoryRegister
 import com.teamwizardry.librarianlib.features.kotlin.readBooleanArray
 import com.teamwizardry.librarianlib.features.kotlin.safeCast
@@ -251,9 +250,9 @@ class SerializerAnalysis(val type: FieldType) {
                         it.parameters.all {
                             val ret =
                                     if(customParamNames != null && i < customParamNames.size)
-                                        paramsToFind.remove(customParamNames[i])?.meta?.type?.equals(FieldType.create(it.parameterizedType)) ?: false
+                                        paramsToFind.remove(customParamNames[i])?.meta?.type?.equals(FieldType.create(it.parameterizedType, it.annotatedType)) ?: false
                                     else
-                                        paramsToFind.remove(it.name)?.meta?.type?.equals(FieldType.create(it.parameterizedType)) ?: false
+                                        paramsToFind.remove(it.name)?.meta?.type?.equals(FieldType.create(it.parameterizedType, it.annotatedType)) ?: false
                             i++
                             ret
                         }
@@ -277,7 +276,7 @@ class SerializerAnalysis(val type: FieldType) {
     private tailrec fun addFieldsRecursive(map: MutableMap<String, FieldCache>, type: FieldType) {
         map.putAll(SavingFieldCache.getClassFields(type))
         if (type.clazz != Any::class.java)
-            addFieldsRecursive(map, FieldType.create(`$Gson$Types`.resolve(type.type, type.clazz, type.clazz.genericSuperclass)))
+            addFieldsRecursive(map, type.genericSuperclass(type.clazz.superclass))
     }
 
     companion object {

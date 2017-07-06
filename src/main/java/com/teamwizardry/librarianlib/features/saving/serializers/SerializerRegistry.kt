@@ -37,13 +37,13 @@ object SerializerRegistry {
     /**
      * Get the serializer implementation for the given type.
      *
-     * _**DO NOT USE IN SERIALIZER GENERATORS!!!**_ Use [lazy] instead
+     * _**DO NOT USE IN SERIALIZERS!!!**_ Use [lazy] instead
      *
      * @throws NoSuchSerializerError if there is no serializer registered for the passed type
      */
-    fun getOrCreate(type: FieldType): Serializer<Any> {
+    fun getOrCreate(type: FieldType, vararg ignoreFactories: SerializerFactory): Serializer<Any> {
         @Suppress("UNCHECKED_CAST")
-        return serializers.getOrPut(type, { findFactoryForType(type).create(type) as Serializer<Any> })
+        return serializers.getOrPut(type, { findFactoryForType(type, ignoreFactories).create(type) as Serializer<Any> })
     }
 
     /**
@@ -54,9 +54,9 @@ object SerializerRegistry {
      *
      * @throws NoSuchSerializerError if there is no serializer registered for the passed type
      */
-    fun lazy(type: FieldType): Lazy<Serializer<Any>> {
-        if(type !in serializers) findFactoryForType(type) // throw an error immediately if there is no serializer
-        return kotlin.lazy { getOrCreate(type) }
+    fun lazy(type: FieldType, vararg ignoreFactories: SerializerFactory): Lazy<Serializer<Any>> {
+        if(type !in serializers) findFactoryForType(type, ignoreFactories) // throw an error immediately if there is no serializer
+        return kotlin.lazy { getOrCreate(type, *ignoreFactories) }
     }
 
     /**
@@ -64,8 +64,10 @@ object SerializerRegistry {
      *
      * @throws NoSuchSerializerError if there is no factory that can handle the passed type
      */
-    private fun findFactoryForType(type: FieldType): SerializerFactory {
+    private fun findFactoryForType(type: FieldType, ignoreFactories: Array<out SerializerFactory>): SerializerFactory {
         val factory = factories.values.maxBy {
+            if(it in ignoreFactories)
+                return@maxBy SerializerFactoryMatch.NONE
             it.canApply(type)
         }
 

@@ -111,12 +111,13 @@ object SavingFieldCache {
             { _, _ -> throw IllegalAccessException("Tried to set final field/property ${field.name} for class $enclosing (final field)") }
 
     fun createMetaForField(field: Field, enclosing: FieldType): FieldMetadata {
-        val resolved = enclosing.resolve(field.genericType)
+        val resolved = enclosing.resolve(field.genericType, field.annotatedType)
 
         val meta = FieldMetadata(resolved, SavingFieldFlag.FIELD)
 
         addJavaFlagsForField(field, meta)
         addAnnotationFlagsForField(field, meta)
+        addAnnotationsForField(field, meta)
 
         return meta
     }
@@ -127,6 +128,13 @@ object SavingFieldCache {
         if (Modifier.isFinal(mods)) meta.addFlag(SavingFieldFlag.FINAL)
         if (Modifier.isTransient(mods)) meta.addFlag(SavingFieldFlag.TRANSIENT)
         if (field.type.isPrimitive) meta.addFlag(SavingFieldFlag.NONNULL)
+    }
+
+    fun addAnnotationsForField(field: AccessibleObject, meta: FieldMetadata) {
+        field.declaredAnnotations.forEach {
+            meta.addAnnotation(it, false)
+            meta.addAnnotation(it, true)
+        }
     }
 
     fun addAnnotationFlagsForField(field: AccessibleObject, meta: FieldMetadata) {
@@ -211,6 +219,13 @@ object SavingFieldCache {
             val wrapperForSetter = setter?.let { MethodHandleHelper.wrapperForMethod<Any>(it) }
 
             val meta = FieldMetadata(FieldType.create(getter), SavingFieldFlag.ANNOTATED, SavingFieldFlag.METHOD)
+
+            getter.declaredAnnotations.forEach {
+                meta.addAnnotation(it, true)
+            }
+            setter?.declaredAnnotations?.forEach {
+                meta.addAnnotation(it, false)
+            }
 
             if (isGetSetPairNotNull(getter, setter))
                 meta.addFlag(SavingFieldFlag.NONNULL)
@@ -386,15 +401,42 @@ data class FieldCache(val meta: FieldMetadata, val getter: (Any) -> Any?, privat
 data class FieldMetadata(val type: FieldType, private var flagsInternal: MutableSet<SavingFieldFlag>) {
     constructor(type: FieldType, vararg flags: SavingFieldFlag) : this(type, EnumSet.noneOf(SavingFieldFlag::class.java).let { it.addAll(flags); it })
 
+    private var annotationsGet = mutableSetOf<Annotation>()
+    private var annotationsSet = mutableSetOf<Annotation>()
+
     val flags: Set<SavingFieldFlag>
         get() = flagsInternal
 
     fun hasFlag(flag: SavingFieldFlag) = flags.contains(flag)
-    fun containsOnly(vararg allowed: SavingFieldFlag) = flags.containsAll(allowed.asList())
-    fun doesNotContain(vararg disallowed: SavingFieldFlag) = !disallowed.any { it in flags }
+    fun containsAll(vararg list: SavingFieldFlag) = flags.containsAll(list.asList())
+    fun containsAny(vararg list: SavingFieldFlag) = list.any { it in flags }
 
     fun addFlag(flag: SavingFieldFlag) = flagsInternal.add(flag)
     fun removeFlag(flag: SavingFieldFlag) = flagsInternal.remove(flag)
+
+    fun addAnnotation(annot: Annotation, getter: Boolean) {
+        ( if(getter) annotationsGet else annotationsSet ).add(annot)
+    }
+
+    fun hasAnnotation(clazz: Class<*>): Boolean {
+        @Suppress("UNCHECKED_CAST")
+        return getAnnotation(clazz as Class<Annotation>) != null
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T : Annotation> getAnnotation(clazz: Class<T>): T? {
+        return getAnnotationGetter(clazz) ?: getAnnotationSetter(clazz)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T : Annotation> getAnnotationGetter(clazz: Class<T>): T? {
+        return annotationsGet.find { clazz.isAssignableFrom(it.javaClass) } as T?
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T : Annotation> getAnnotationSetter(clazz: Class<T>): T? {
+        return annotationsSet.find { clazz.isAssignableFrom(it.javaClass) } as T?
+    }
 }
 
 enum class SavingFieldFlag {

@@ -16,6 +16,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 
@@ -78,7 +79,8 @@ public class SerializeCellFactory extends SerializerFactory {
 			if(constructor.getParameterCount() != 1)
 				continue;
 			Type paramType = constructor.getGenericParameterTypes()[0];
-			FieldType resolvedType = type.resolve(paramType);
+			AnnotatedType annot = constructor.getAnnotatedParameterTypes()[0];
+			FieldType resolvedType = type.resolve(paramType, annot);
 			if(resolvedType.equals(componentType)) {
 				Function1 wrapper = MethodHandleHelper.wrapperForConstructor(constructor);
 				return (component) -> wrapper.invoke(new Object[]{ component });

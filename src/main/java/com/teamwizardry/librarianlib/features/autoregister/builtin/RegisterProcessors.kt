@@ -59,9 +59,9 @@ object SerializerRegisterProcessor : AnnotationMarkerProcessor<SerializerRegiste
             throw RuntimeException("No singleton instance")
         } else {
             classes.forEach {
-                SerializerRegistry.register(FieldType.create(it.javaObjectType), instance)
+                SerializerRegistry.register(FieldType.create(it.javaObjectType, null), instance)
                 if(it.javaPrimitiveType != null)
-                    SerializerRegistry.register(FieldType.create(it.javaPrimitiveType!!), instance)
+                    SerializerRegistry.register(FieldType.create(it.javaPrimitiveType!!, null), instance)
             }
         }
     }
