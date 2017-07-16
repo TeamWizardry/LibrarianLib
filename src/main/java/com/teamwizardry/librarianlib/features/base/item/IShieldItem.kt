@@ -28,7 +28,7 @@ interface IShieldItem {
             MinecraftForge.EVENT_BUS.register(this)
         }
 
-        val canBlockDamageSource = MethodHandleHelper.wrapperForMethod(EntityLivingBase::class.java, arrayOf("e", "func_184583_d", "canBlockDamageSource"), DamageSource::class.java)
+        val canBlockDamageSource = MethodHandleHelper.wrapperForMethod(EntityLivingBase::class.java, "canBlockDamageSource", "func_184583_d", DamageSource::class.java)
 
         @SubscribeEvent(priority = EventPriority.LOWEST)
         fun onLivingAttack(e: LivingAttackEvent) {

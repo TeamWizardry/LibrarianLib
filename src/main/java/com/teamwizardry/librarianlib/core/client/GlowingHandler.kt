@@ -163,7 +163,7 @@ object GlowingHandler {
     }
 
     private val renderModel = ClientRunnable.produce {
-        MethodHandleHelper.wrapperForMethod(RenderItem::class.java, arrayOf("renderModel", "func_175036_a", "a"), IBakedModel::class.java, ItemStack::class.java)
+        MethodHandleHelper.wrapperForMethod(RenderItem::class.java, "renderModel", "func_175036_a", IBakedModel::class.java, ItemStack::class.java)
     }
 
     private val removableGlows = mutableListOf<IGlowingItem>()

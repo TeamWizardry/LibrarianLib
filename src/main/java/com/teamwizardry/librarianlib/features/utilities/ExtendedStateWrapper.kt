@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.features.utilities
 
-import com.google.common.base.Optional
 import com.google.common.collect.ImmutableMap
 import net.minecraft.block.properties.IProperty
 import net.minecraft.block.state.BlockStateBase
@@ -27,8 +26,8 @@ open class ExtendedStateWrapper(private val wrapped: IBlockState, val world: IBl
     override fun <V> withProperty(property: IUnlistedProperty<V>?, value: V?)
             = extState?.let { ExtendedStateWrapper(it.withProperty(property, value), this) } ?: this
 
-    override fun getUnlistedProperties(): ImmutableMap<IUnlistedProperty<*>, Optional<*>>
-            = extState?.unlistedProperties ?: ImmutableMap.of<IUnlistedProperty<*>, Optional<*>>()
+    override fun getUnlistedProperties(): ImmutableMap<IUnlistedProperty<*>, java.util.Optional<*>>
+            = extState?.unlistedProperties ?: ImmutableMap.of<IUnlistedProperty<*>, java.util.Optional<*>>()
 
     override fun getClean() = clean
 

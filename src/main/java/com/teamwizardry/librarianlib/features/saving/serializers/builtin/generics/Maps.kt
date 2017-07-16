@@ -27,7 +27,7 @@ object SerializeMapFactory : SerializerFactory("Map") {
         return SerializeMap(type, type.resolveGeneric(Map::class.java, 0), type.resolveGeneric(Map::class.java, 1))
     }
 
-    class SerializeMap(type: FieldType, keyType: FieldType, valueType: FieldType) : Serializer<MutableMap<Any?, Any?>>(type) {
+    class SerializeMap(type: FieldType, val keyType: FieldType, val valueType: FieldType) : Serializer<MutableMap<Any?, Any?>>(type) {
         override fun getDefault(): MutableMap<Any?, Any?> {
             return mutableMapOf()
         }
@@ -118,6 +118,9 @@ object SerializeMapFactory : SerializerFactory("Map") {
         private fun createConstructorMethodHandle(): () -> MutableMap<Any?, Any?> {
             if(type.clazz == Map::class.java) {
                 return { LinkedHashMap<Any?, Any?>() }
+            } else if(type.clazz == EnumMap::class.java) {
+                @Suppress("UNCHECKED_CAST")
+                return { RawTypeConstructors.createEnumMap(keyType.clazz) as MutableMap<Any?, Any?> }
             } else {
                 val mh = MethodHandleHelper.wrapperForConstructor<MutableMap<Any?, Any?>>(type.clazz)
                 return { mh(arrayOf()) }

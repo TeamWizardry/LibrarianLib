@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import java.lang.reflect.*
 import java.util.*
 
-val getGenericSuperclassMH = MethodHandleHelper.wrapperForStaticMethod(`$Gson$Types`::class.java, arrayOf("getGenericSupertype"), Type::class.java, Class::class.java, Class::class.java)
+val getGenericSuperclassMH = MethodHandleHelper.wrapperForStaticMethod(`$Gson$Types`::class.java, "getGenericSupertype", null, Type::class.java, Class::class.java, Class::class.java)
 
 abstract class FieldType protected constructor(val type: Type, val annotated: AnnotatedType?, open val clazz: Class<*>) {
     val annotations: Array<Annotation> = annotated?.annotations ?: emptyArray()

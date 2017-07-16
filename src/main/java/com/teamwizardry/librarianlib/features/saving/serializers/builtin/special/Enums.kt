@@ -12,6 +12,14 @@ import net.minecraft.nbt.*
 /**
  * Created by TheCodeWarrior
  */
+
+/**
+ * Annotate an enum element with this to have the serializer fall back to it in the case of an unknown element
+ */
+@MustBeDocumented
+@Target(AnnotationTarget.FIELD)
+annotation class FallbackEnumValue
+
 @SerializerFactoryRegister
 object SerializeEnumFactory : SerializerFactory("Enum") {
     override fun canApply(type: FieldType): SerializerFactoryMatch {
@@ -28,6 +36,8 @@ object SerializeEnumFactory : SerializerFactory("Enum") {
             return defaultConstant
         }
 
+        val fallbackConstant = constants.find { it::class.java.getField(it.name).isAnnotationPresent(FallbackEnumValue::class.java) }
+
         val defaultConstant = constants.first()
         val constantsMap = constants.associateBy { it.name }
         val constSize = constants.size
@@ -43,7 +53,7 @@ object SerializeEnumFactory : SerializerFactory("Enum") {
                 }
             } else {
                 val name = nbt.safeCast(NBTTagString::class.java).string
-                return constantsMap[name] ?: throw IllegalArgumentException("No such enum element $name for class ${type.clazz.canonicalName}")
+                return constantsMap[name] ?: getError(name)
             }
         }
 
@@ -60,11 +70,14 @@ object SerializeEnumFactory : SerializerFactory("Enum") {
         }
 
         override fun readBytes(buf: ByteBuf, existing: Enum<*>?, syncing: Boolean): Enum<*> {
-            if (constSize <= 256) {
-                return constants[buf.readByte().toInt()]
+            val c = if (constSize <= 256) {
+                buf.readByte().toInt()
             } else {
-                return constants[buf.readShort().toInt()]
+                buf.readShort().toInt()
             }
+            if(c < 0 || c >= constants.size)
+                return getError(c)
+            return constants[c]
         }
 
         override fun writeBytes(buf: ByteBuf, value: Enum<*>, syncing: Boolean) {
@@ -73,6 +86,14 @@ object SerializeEnumFactory : SerializerFactory("Enum") {
             } else {
                 buf.writeShort(value.ordinal)
             }
+        }
+
+        private fun getError(name: Int): Enum<*> {
+            return getError(name.toString())
+        }
+
+        private fun getError(name: String): Enum<*> {
+            return fallbackConstant ?: throw IllegalArgumentException("No such enum element $name for class ${type.clazz.canonicalName}, perhaps annotate one element with @FallbackEnumValue?")
         }
     }
 }

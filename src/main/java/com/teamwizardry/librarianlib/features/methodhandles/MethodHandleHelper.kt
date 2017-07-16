@@ -21,9 +21,9 @@ object MethodHandleHelper {
      * Methodhandles MUST be invoked from java code, due to the way [@PolymorphicSignature] works.
      */
     @JvmStatic
-    fun <T: Any> handleForMethod(clazz: Class<T>, methodNames: Array<String>, vararg methodClasses: Class<*>): MethodHandle {
+    fun <T: Any> handleForMethod(clazz: Class<T>, methodName: String, obfName: String?, vararg methodClasses: Class<*>): MethodHandle {
         @Suppress("DEPRECATION")
-        val m = ReflectionHelper.findMethod<T>(clazz, null, methodNames, *methodClasses)
+        val m = ReflectionHelper.findMethod(clazz, methodName, obfName, *methodClasses)
         return publicLookup().unreflect(m)
     }
 
@@ -154,8 +154,8 @@ object MethodHandleHelper {
      * Reflects a method from a class, and provides a wrapper for it.
      */
     @JvmStatic
-    fun <T : Any> wrapperForMethod(clazz: Class<T>, methodNames: Array<String>, vararg methodClasses: Class<*>): (T, Array<Any?>) -> Any? {
-        val handle = handleForMethod(clazz, methodNames, *methodClasses)
+    fun <T : Any> wrapperForMethod(clazz: Class<T>, methodName: String, obfName: String?, vararg methodClasses: Class<*>): (T, Array<Any?>) -> Any? {
+        val handle = handleForMethod(clazz, methodName, obfName, *methodClasses)
         return wrapperForMethod(handle)
     }
 
@@ -184,8 +184,8 @@ object MethodHandleHelper {
      * Reflects a static method from a class, and provides a wrapper for it.
      */
     @JvmStatic
-    fun wrapperForStaticMethod(clazz: Class<*>, methodNames: Array<String>, vararg methodClasses: Class<*>): (Array<Any?>) -> Any? {
-        val handle = handleForMethod(clazz, methodNames, *methodClasses)
+    fun wrapperForStaticMethod(clazz: Class<*>, methodName: String, obfName: String?, vararg methodClasses: Class<*>): (Array<Any?>) -> Any? {
+        val handle = handleForMethod(clazz, methodName, obfName, *methodClasses)
         return wrapperForStaticMethod(handle)
     }
 
@@ -279,7 +279,7 @@ fun <T: Any, V> Class<T>.mhVarDelegate(vararg names: String) = MethodHandleHelpe
 fun <T: Any, V> Class<T>.mhStaticValDelegate(vararg names: String) = MethodHandleHelper.delegateForStaticReadOnly<T, V>(this, *names)
 fun <T: Any, V> Class<T>.mhStaticVarDelegate(vararg names: String) = MethodHandleHelper.delegateForStaticReadWrite<T, V>(this, *names)
 
-fun <T: Any> Class<T>.mhMethod(names: Array<String>, vararg params: Class<*>) = MethodHandleHelper.wrapperForMethod(this, names, *params)
-fun <T: Any> Class<T>.mhStaticMethod(names: Array<String>, vararg params: Class<*>) = MethodHandleHelper.wrapperForStaticMethod(this, names, *params)
+fun <T: Any> Class<T>.mhMethod(name: String, obf: String?, vararg params: Class<*>) = MethodHandleHelper.wrapperForMethod(this, name, obf, *params)
+fun <T: Any> Class<T>.mhStaticMethod(name: String, obf: String?, vararg params: Class<*>) = MethodHandleHelper.wrapperForStaticMethod(this, name, obf, *params)
 
 //endregion

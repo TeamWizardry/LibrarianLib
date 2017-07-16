@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.features.saving.serializers.builtin.generics
 
 import com.teamwizardry.librarianlib.features.autoregister.SerializerFactoryRegister
-import com.teamwizardry.librarianlib.features.kotlin.forEach
 import com.teamwizardry.librarianlib.features.kotlin.readVarInt
 import com.teamwizardry.librarianlib.features.kotlin.safeCast
 import com.teamwizardry.librarianlib.features.kotlin.writeVarInt
@@ -102,7 +101,7 @@ object SerializeSetFactory : SerializerFactory("Set") {
                         return { LinkedHashSet<Any?>() } // linked so if order is important it's preserved.
                     } else if (EnumSet::class.java.isAssignableFrom(type.clazz)) {
                         @Suppress("UNCHECKED_CAST")
-                        return { RawEnumSetCreator.create(type.clazz) as MutableSet<Any?> }
+                        return { RawTypeConstructors.createEnumSet(type.clazz) as MutableSet<Any?> }
                     } else {
                         val mh = MethodHandleHelper.wrapperForConstructor<MutableSet<Any?>>(type.clazz)
                         return { mh(arrayOf()) }
