@@ -139,11 +139,13 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                 combine((AbstractInsnNode node) -> node.getOpcode() == INVOKEVIRTUAL &&
                         target1.matches((MethodInsnNode) node), // Filter
                 (MethodNode method, AbstractInsnNode node) -> { // Action
+                    boolean obf = method.name.equals(sig.obfName);
+                    System.out.println("obf: " + obf);
                     InsnList newInstructions = new InsnList();
 
                     newInstructions.add(new VarInsnNode(ALOAD, 0));
                     newInstructions.add(new FieldInsnNode(GETFIELD, "net/minecraft/client/renderer/BlockRendererDispatcher",
-                            "blockModelRenderer", "Lnet/minecraft/client/renderer/BlockModelRenderer;"));
+                        obf ? "field_175027_c" : "blockModelRenderer", "Lnet/minecraft/client/renderer/BlockModelRenderer;"));
                     // BlockModelRenderer
 
                     newInstructions.add(new VarInsnNode(ALOAD, 3));
@@ -165,11 +167,13 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                 combine((AbstractInsnNode node) -> node.getOpcode() == INVOKEVIRTUAL &&
                         target2.matches((MethodInsnNode) node), // Filter
                 (MethodNode method, AbstractInsnNode node) -> { // Action
+                    boolean obf = method.name.equals(sig.obfName);
+                    System.out.println("obf2: " + obf);
                     InsnList newInstructions = new InsnList();
 
                     newInstructions.add(new VarInsnNode(ALOAD, 0));
                     newInstructions.add(new FieldInsnNode(GETFIELD, "net/minecraft/client/renderer/BlockRendererDispatcher",
-                            "blockModelRenderer", "Lnet/minecraft/client/renderer/BlockModelRenderer;"));
+                        obf ? "field_175027_c" : "blockModelRenderer", "Lnet/minecraft/client/renderer/BlockModelRenderer;"));
                     // BlockModelRenderer
 
                     newInstructions.add(new VarInsnNode(ALOAD, 3));

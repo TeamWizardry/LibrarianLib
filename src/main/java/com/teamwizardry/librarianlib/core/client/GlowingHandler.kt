@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.BlockModelRenderer
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.RenderItem
 import net.minecraft.client.renderer.block.model.IBakedModel
-import net.minecraft.client.renderer.vertex.VertexBuffer
 import net.minecraft.client.resources.IResource
 import net.minecraft.init.Items
 import net.minecraft.item.Item
@@ -163,7 +162,7 @@ object GlowingHandler {
     }
 
     private val renderModel = ClientRunnable.produce {
-        MethodHandleHelper.wrapperForMethod(RenderItem::class.java, "renderModel", "func_175036_a", IBakedModel::class.java, ItemStack::class.java)
+        MethodHandleHelper.wrapperForMethod(RenderItem::class.java, "renderModel", "func_191961_a", IBakedModel::class.java, ItemStack::class.java)
     }
 
     private val removableGlows = mutableListOf<IGlowingItem>()
