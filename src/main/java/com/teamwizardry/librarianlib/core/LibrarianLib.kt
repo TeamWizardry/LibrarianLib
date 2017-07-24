@@ -78,7 +78,9 @@ object LibrarianLib {
 
     const val MODID = "librarianlib"
     const val MODNAME = "LibrarianLib"
-    const val VERSION = "4.0"
+    const val BUILD = "GRADLE:BUILD"
+    const val PATCH = "GRADLE:VERSION"
+    const val VERSION = "$BUILD.$PATCH"
     const val ALLOWED = "[1.12,)"
     const val CLIENT = "com.teamwizardry.librarianlib.core.client.LibClientProxy"
     const val SERVER = "com.teamwizardry.librarianlib.core.common.LibCommonProxy"

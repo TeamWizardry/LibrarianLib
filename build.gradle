@@ -72,7 +72,26 @@ minecraft {
     replace 'GRADLE:BUILD', config.build_number
     replace 'GRADLE:VERSION', config.version
 
-    replaceIn 'LibMisc.kt'
+    replaceIn 'LibrarianLib.kt'
+}
+
+import net.minecraftforge.gradle.user.TaskSourceCopy
+
+// Enables source replacements for Kotlin code
+for (set in sourceSets) {
+    def taskName = "source${set.name.capitalize()}Kotlin"
+    def dir = new File(project.getBuildDir(), "sources/${set.name}/kotlin")
+    task(taskName, type: TaskSourceCopy) {
+        source = set.getKotlin()
+        output = dir
+    }
+    def compileTask = tasks[set.getCompileTaskName("kotlin")]
+    compileTask.source = dir
+    compileTask.dependsOn taskName
+    def dirPath = dir.toPath()
+    compileKotlin.include {
+        return it.file.toPath().startsWith(dirPath)
+    }
 }
 
 configurations {
