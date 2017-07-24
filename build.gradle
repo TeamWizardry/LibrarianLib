@@ -36,7 +36,7 @@ ext.corePlugin = config.core_plugin
 
 version = "${config.version}.${config.build_number}"
 group = config.group
-archivesBaseName = config.mod_name
+archivesBaseName = config.mod_name + "-" + ${config.mc_version}
 
 repositories {
 // todo once mcmultipart is 1.11
@@ -47,7 +47,7 @@ repositories {
         url "http://maven.amadornes.com/"
     }
     maven {
-        url "http://mvn.rx14.co.uk/shadowfacts/"
+        url "http://maven.shadowfacts.net/"
     }
     maven { url 'https://jitpack.io' }
     maven {
