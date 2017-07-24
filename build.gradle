@@ -36,7 +36,7 @@ ext.corePlugin = config.core_plugin
 
 version = "${config.version}.${config.build_number}"
 group = config.group
-archivesBaseName = config.mod_name + "-" + ${config.mc_version}
+archivesBaseName = config.mod_name + "-" + config.mc_version
 
 repositories {
 // todo once mcmultipart is 1.11
