@@ -1,6 +1,6 @@
 # LibrarianLib
 
-[![Build Status](https://travis-ci.org/TeamWizardry/LibrarianLib.svg?branch=master)](https://travis-ci.org/TeamWizardry/LibrarianLib)
+[![Build Status](https://travis-ci.org/TeamWizardry/LibrarianLib.svg?branch=1.12)](https://travis-ci.org/TeamWizardry/LibrarianLib)
 
 ## [Documentation WIP](http://teamwizardry.com/docs)
 
