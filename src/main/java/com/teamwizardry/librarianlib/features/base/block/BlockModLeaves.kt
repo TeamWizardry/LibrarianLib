@@ -11,7 +11,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.Item
-import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.util.BlockRenderLayer
 import net.minecraft.util.EnumFacing
@@ -23,20 +22,15 @@ import net.minecraft.world.World
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.IShearable
 import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.fml.common.IFuelHandler
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
-import net.minecraftforge.oredict.OreDictionary
 import java.util.*
 
 
 @Suppress("LeakingThis")
 abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(name, Material.LEAVES, *variants), IShearable {
-    companion object : IFuelHandler {
-        override fun getBurnTime(fuel: ItemStack)
-                = if (fuel.item is ItemBlock && (fuel.item as ItemBlock).block is BlockModLeaves) 100 else 0
+    companion object {
 
         val DECAYABLE: PropertyBool = PropertyBool.create("decayable")
         val CHECK_DECAY: PropertyBool = PropertyBool.create("check_decay")
@@ -46,7 +40,6 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
 
         init {
             MinecraftForge.EVENT_BUS.register(this)
-            GameRegistry.registerFuelHandler(this)
         }
 
         var lastFancy = false
@@ -60,6 +53,8 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
             e.context
         }
     }
+
+    override fun getBurnTime(stack: ItemStack) = 100
 
 
     open val canBeOpaque: Boolean

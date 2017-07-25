@@ -13,14 +13,12 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.IBakedModel
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.util.NonNullList
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.IBlockAccess
-import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 
@@ -60,6 +58,8 @@ open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlo
         if (isInCreativeTab(tab))
             variants.indices.mapTo(subItems) { ItemStack(this, 1, it) }
     }
+
+    override fun getItemBurnTime(itemStack: ItemStack) = modBlock.getBurnTime(itemStack)
 
     override val itemForm: ItemBlock
         get() = this

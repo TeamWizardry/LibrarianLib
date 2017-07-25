@@ -170,9 +170,9 @@ class MyFluidTank : IFluidTank, IFluidHandler {
 
     val tankPropertiesImpl: Array<IFluidTankProperties> by lazy {
         arrayOf<IFluidTankProperties>(object : IFluidTankProperties {
-            override fun canDrainFluidType(fluidStack: FluidStack) = this@MyFluidTank.canDrainFluidType(fluidStack)
+            override fun canDrainFluidType(fluidStack: FluidStack) = this@MyFluidTank.canDrainFluidType()
             override fun getContents() = this@MyFluidTank.fluid
-            override fun canFillFluidType(fluidStack: FluidStack) = this@MyFluidTank.canFillFluidType(fluidStack)
+            override fun canFillFluidType(fluidStack: FluidStack) = this@MyFluidTank.canFillFluidType()
             override fun getCapacity() = this@MyFluidTank.capacity
             override fun canFill() = this@MyFluidTank.canFill()
             override fun canDrain() = this@MyFluidTank.canDrain()
@@ -194,7 +194,7 @@ class MyFluidTank : IFluidTank, IFluidHandler {
     override fun getTankProperties() = this.tankPropertiesImpl
 
     override fun fill(resource: FluidStack?, doFill: Boolean) =
-            if (resource == null || !canFillFluidType(resource)) 0
+            if (resource == null || !canFillFluidType()) 0
             else fillInternal(resource, doFill)
 
     /**
@@ -232,13 +232,13 @@ class MyFluidTank : IFluidTank, IFluidHandler {
     }
 
     override fun drain(resource: FluidStack, doDrain: Boolean): FluidStack? {
-        return if (!canDrainFluidType(resource)) null
+        return if (!canDrainFluidType()) null
         else drainInternal(resource, doDrain)
     }
 
     override fun drain(maxDrain: Int, doDrain: Boolean): FluidStack? {
         val fs = fluidStack
-        return if (fs == null || !canDrainFluidType(fs)) null
+        return if (fs == null || !canDrainFluidType()) null
         else drainInternal(maxDrain, doDrain)
     }
 
@@ -299,7 +299,7 @@ class MyFluidTank : IFluidTank, IFluidHandler {
 
      * @see IFluidTankProperties.canFillFluidType
      */
-    fun canFillFluidType(fluid: FluidStack) = canFill()
+    fun canFillFluidType() = canFill()
 
     /**
      * Returns true if the tank can drain out this type of fluid.
@@ -309,7 +309,7 @@ class MyFluidTank : IFluidTank, IFluidHandler {
 
      * @see IFluidTankProperties.canDrainFluidType
      */
-    fun canDrainFluidType(fluid: FluidStack) = canDrain()
+    fun canDrainFluidType() = canDrain()
 
     private fun onContentsChanged() {
         dirty = true

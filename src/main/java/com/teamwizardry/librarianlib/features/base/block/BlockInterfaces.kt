@@ -60,6 +60,11 @@ interface IModBlock : IModBlockProvider {
     fun getBlockRarity(stack: ItemStack) = EnumRarity.COMMON
 
     /**
+     * The burn time of the block, for the ItemModBlock.
+     */
+    fun getBurnTime(stack: ItemStack) = -1
+
+    /**
      * Provides a mesh definition which can override the model loaded based on the MRL you pass back. Leave null to use default behavior.
      */
     val meshDefinition: ((stack: ItemStack) -> ModelResourceLocation)?

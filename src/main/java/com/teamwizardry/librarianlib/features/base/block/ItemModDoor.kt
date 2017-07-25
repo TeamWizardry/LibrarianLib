@@ -16,6 +16,8 @@ import net.minecraft.util.NonNullList
 @Suppress("LeakingThis")
 open class ItemModDoor(block: BlockModDoor, name: String, vararg variants: String) : ItemDoor(block), IModItemProvider {
 
+    private val modBlock = block
+
     override val providedItem: Item
         get() = this
 
@@ -41,6 +43,8 @@ open class ItemModDoor(block: BlockModDoor, name: String, vararg variants: Strin
         if (isInCreativeTab(tab))
             variants.indices.mapTo(subItems) { ItemStack(this, 1, it) }
     }
+
+    override fun getItemBurnTime(itemStack: ItemStack) = modBlock.getBurnTime(itemStack)
 
     /**
      * Override this to have a custom creative tab. Leave blank to have a default tab (or none if no default tab is set).
