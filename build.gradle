@@ -76,6 +76,7 @@ import net.minecraftforge.gradle.user.TaskSourceCopy
 
 // Enables source replacements for Kotlin code
 for (set in sourceSets) {
+    if (set.name == "test") continue
     def taskName = "source${set.name.capitalize()}Kotlin"
     def dir = new File(project.getBuildDir(), "sources/${set.name}/kotlin")
     task(taskName, type: TaskSourceCopy) {
@@ -97,8 +98,6 @@ configurations {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    required "org.jetbrains:annotations:$annotations_version"
     //required 'com.github.Eladkay:Mixin:-SNAPSHOT'
 // todo once mcmultipart is 1.11
 //    deobfCompile "MCMultiPart:MCMultiPart:1.2.1:universal"
