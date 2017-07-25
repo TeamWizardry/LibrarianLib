@@ -39,10 +39,7 @@ group = config.group
 archivesBaseName = config.mod_name + "-" + config.mc_version
 
 repositories {
-// todo once mcmultipart is 1.11
-//    maven {
-//        url "http://maven.amadornes.com/"
-//    }
+    jcenter()
     maven {
         url "http://maven.amadornes.com/"
     }
