@@ -12,6 +12,7 @@ import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTTagCompound
 import java.lang.reflect.Constructor
 import java.util.*
+import kotlin.reflect.jvm.kotlinFunction
 
 /**
  * Created by TheCodeWarrior
@@ -245,7 +246,8 @@ class SerializerAnalysis(val type: FieldType) {
                 } else {
                     type.clazz.declaredConstructors.find {
                         val paramsToFind = HashMap(fields)
-                        val customParamNames = it.getDeclaredAnnotation(SavableConstructorOrder::class.java)?.params
+                        val customParamNames = it.getDeclaredAnnotation(SavableConstructorOrder::class.java)?.params ?:
+                                it.kotlinFunction?.parameters?.map { it.name }?.toTypedArray()
                         var i = 0
                         it.parameters.all {
                             val ret =
@@ -260,7 +262,9 @@ class SerializerAnalysis(val type: FieldType) {
                             type.clazz.declaredConstructors.find { it.parameterCount == 0 } ?:
                             throw SerializerException("Couldn't find zero-argument constructor or constructor with parameters (${fields.map { it.value.meta.type.toString() + " " + it.key }.joinToString(", ")}) for immutable type ${type.clazz.canonicalName}")
                 }
-        constructorArgOrder = constructor.getDeclaredAnnotation(SavableConstructorOrder::class.java)?.params?.asList() ?: constructor.parameters.map { it.name }
+        constructorArgOrder = constructor.getDeclaredAnnotation(SavableConstructorOrder::class.java)?.params?.asList() ?:
+                constructor.kotlinFunction?.parameters?.let { if(it.any { it.name == null}) null else it.map { it.name!! } } ?:
+                constructor.parameters.map { it.name }
         constructorMH = if (inPlaceSavable) {
             { _ -> throw SerializerException("Cannot create instance of class marked with @SaveInPlace") }
         } else {

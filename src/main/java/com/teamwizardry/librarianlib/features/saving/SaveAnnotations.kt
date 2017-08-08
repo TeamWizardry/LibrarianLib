@@ -103,18 +103,6 @@ annotation class SaveMethodSetter(val saveName: String)
 annotation class Savable
 
 /**
- * @author WireSegal
- * Created at 3:18 PM on 1/6/17.
- *
- * Apply this to a capability-containing field to have it be automatically provided (from TileMods) to the provided [sides]
- * and null. This will apply to all capability superinterfaces of the annotated field type.
- */
-@Target(FIELD)
-@MustBeDocumented
-annotation class CapabilityProvide(vararg val sides: EnumFacing)
-
-
-/**
  * Marks this class and all of its subclasses to be saved in place. Only [Save] annotated fields will be saved.
  *
  * The automatic object serializer will not create any new instances of annotated classes.
@@ -130,6 +118,27 @@ annotation class SaveInPlace
 @Target(CONSTRUCTOR)
 @MustBeDocumented
 annotation class SavableConstructorOrder(vararg val params: String)
+
+/**
+ * When annotating a class with this, its serializer will be "dynamic" by name. It will behave similarly to annotating the
+ * type with @[Dyn] but is more efficient. Annotate every type with this, as well as with @Savable.
+ *
+ * Again, annotate all classes with @Savable, as this does not imply savability!
+ */
+@Target(CLASS)
+@MustBeDocumented
+annotation class NamedDynamic(val resourceLocation: String)
+
+/**
+ * @author WireSegal
+ * Created at 3:18 PM on 1/6/17.
+ *
+ * Apply this to a capability-containing field to have it be automatically provided (from TileMods) to the provided [sides]
+ * and null. This will apply to all capability superinterfaces of the annotated field type.
+ */
+@Target(FIELD)
+@MustBeDocumented
+annotation class CapabilityProvide(vararg val sides: EnumFacing)
 
 /**
  * @author WireSegal

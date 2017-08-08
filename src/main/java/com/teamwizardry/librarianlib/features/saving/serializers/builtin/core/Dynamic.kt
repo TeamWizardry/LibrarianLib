@@ -56,8 +56,8 @@ object SerializeDynamicFactory : SerializerFactory("Dynamic") {
                 if(it !in alreadyWarnedTypes) {
                     alreadyWarnedTypes.add(it)
                     LibrarianLog.warn("Attempt to find the class $it for dynamically serialized type $type failed." +
-                            " Attempting to use default serializer. I hope it uses a compatible serialization schema." +
-                            " If the schemas are not compatible there will likely be major bugs or crashes.")
+                            " Attempting to use default serializer. This is a major problem, and likely will cause strange" +
+                            " bugs and crashes.")
                 }
                 return@withRealDefault defaultSerializer
             }
