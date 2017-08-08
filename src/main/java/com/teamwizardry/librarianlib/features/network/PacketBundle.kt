@@ -39,7 +39,6 @@ class PacketBundle(@Save var discriminator: Int = -1, @Save var bufs: Array<Byte
 
             val clazz = packets.first().javaClass
             if(packets.any { it.javaClass != clazz }) {
-                val uniqueClasses = setOf(packets.map { it.javaClass })
                 throw IllegalArgumentException("PacketBundle can only transmit one packet type at a time!")
             }
             val discriminator = PacketHandler.getDiscriminator(clazz)

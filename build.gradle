@@ -36,18 +36,15 @@ ext.corePlugin = config.core_plugin
 
 version = "${config.version}.${config.build_number}"
 group = config.group
-archivesBaseName = config.mod_name
+archivesBaseName = config.mod_name + "-" + config.mc_version
 
 repositories {
-// todo once mcmultipart is 1.11
-//    maven {
-//        url "http://maven.amadornes.com/"
-//    }
+    jcenter()
     maven {
         url "http://maven.amadornes.com/"
     }
     maven {
-        url "http://mvn.rx14.co.uk/shadowfacts/"
+        url "http://maven.shadowfacts.net/"
     }
     maven { url 'https://jitpack.io' }
     maven {
@@ -72,7 +69,27 @@ minecraft {
     replace 'GRADLE:BUILD', config.build_number
     replace 'GRADLE:VERSION', config.version
 
-    replaceIn 'LibMisc.kt'
+    replaceIn 'LibrarianLib.kt'
+}
+
+import net.minecraftforge.gradle.user.TaskSourceCopy
+
+// Enables source replacements for Kotlin code
+for (set in sourceSets) {
+    if (set.name == "test") continue
+    def taskName = "source${set.name.capitalize()}Kotlin"
+    def dir = new File(project.getBuildDir(), "sources/${set.name}/kotlin")
+    task(taskName, type: TaskSourceCopy) {
+        source = set.getKotlin()
+        output = dir
+    }
+    def compileTask = tasks[set.getCompileTaskName("kotlin")]
+    compileTask.source = dir
+    compileTask.dependsOn taskName
+    def dirPath = dir.toPath()
+    compileKotlin.include {
+        return it.file.toPath().startsWith(dirPath)
+    }
 }
 
 configurations {
@@ -81,12 +98,10 @@ configurations {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    required "org.jetbrains:annotations:$annotations_version"
     //required 'com.github.Eladkay:Mixin:-SNAPSHOT'
 // todo once mcmultipart is 1.11
 //    deobfCompile "MCMultiPart:MCMultiPart:1.2.1:universal"
-    compile "net.shadowfacts:Forgelin:1.4.1"
+    compile "net.shadowfacts:Forgelin:1.5.1"
 //    required "org.jgrapht:jgrapht-core:1.0.1"
 }
 
