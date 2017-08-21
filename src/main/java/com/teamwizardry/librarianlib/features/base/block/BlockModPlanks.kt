@@ -22,7 +22,7 @@ open class BlockModPlanks(name: String, vararg variants: String) : BlockMod(name
         setResistance(5f)
         if (itemForm != null)
             for (variant in this.variants.indices)
-                OreDictionaryRegistrar.registerOre("plankWood", ItemStack(itemForm, 1, variant))
+                OreDictionaryRegistrar.registerOre("plankWood") { ItemStack(itemForm, 1, variant) }
     }
 
     override fun getHarvestTool(state: IBlockState?): String? {

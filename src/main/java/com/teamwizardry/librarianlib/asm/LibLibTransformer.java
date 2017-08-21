@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.asm;
 
 import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraftforge.fml.common.FMLLog;
+import org.apache.logging.log4j.LogManager;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -431,7 +431,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     }
 
     public static void log(String str) {
-        FMLLog.info("[LibrarianLib ASM] %s", str);
+        LogManager.getLogger("LibrarianLib ASM").info(str);
     }
 
     public static void prettyPrint(MethodNode node) {
