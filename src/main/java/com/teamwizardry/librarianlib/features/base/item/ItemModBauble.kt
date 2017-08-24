@@ -49,7 +49,9 @@ abstract class ItemModBauble(name: String, vararg variants: String) : ItemMod(na
                     val stackInSlot = baubles.getStackInSlot(i)
                     if (stackInSlot.isEmpty || (stackInSlot.item as IBauble).canUnequip(stackInSlot, player)) {
                         if (!world.isRemote) {
-                            baubles.setStackInSlot(i, stack.copy())
+                            val cpy = stack.copy()
+                            baubles.setStackInSlot(i, cpy)
+                            onEquipped(cpy, player)
                             if (!player.capabilities.isCreativeMode)
                                 player.inventory.setInventorySlotContents(player.inventory.currentItem, ItemStack.EMPTY)
                         }

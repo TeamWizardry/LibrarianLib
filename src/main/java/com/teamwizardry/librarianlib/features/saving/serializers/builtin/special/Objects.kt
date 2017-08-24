@@ -48,7 +48,7 @@ object SerializeObjectFactory : SerializerFactory("Object") {
         override fun readNBT(nbt: NBTBase, existing: Any?, syncing: Boolean): Any {
             val tag = nbt.safeCast(NBTTagCompound::class.java)
 
-            if (analysis.mutable) {
+            if (analysis.mutable && (existing != null || analysis.constructor.parameters.isEmpty())) {
                 val instance = existing ?: analysis.constructorMH(arrayOf())
                 readFields(analysis.alwaysFields, tag, instance, syncing)
 
@@ -111,7 +111,7 @@ object SerializeObjectFactory : SerializerFactory("Object") {
         override fun readBytes(buf: ByteBuf, existing: Any?, syncing: Boolean): Any {
             val nullsig = buf.readBooleanArray()
             val nulliter = nullsig.iterator()
-            if (analysis.mutable) {
+            if (analysis.mutable && (existing != null || analysis.constructor.parameters.isEmpty())) {
                 val instance = existing ?: analysis.constructorMH(arrayOf())
                 readFields(analysis.alwaysFields, buf, instance, nulliter, syncing)
                 if (!syncing) {

@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.core.common.OwnershipHandler
 import com.teamwizardry.librarianlib.features.kotlin.toNonnullList
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.util.NonNullList
+import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.Loader
 import kotlin.properties.ReadWriteProperty
@@ -33,6 +34,13 @@ fun <T : Any> nonnullListOf(count: Int, default: T): Collection<T> = NonNullList
 fun vec(x: Number, y: Number) = Vec2d(x.toDouble(), y.toDouble())
 
 fun vec(x: Number, y: Number, z: Number) = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
+
+/*
+ * Only out of PURE DESPERATION because mojang has a FUCKING @SideOnly(Side.CLIENT) on the FUCKING (Vec3d, Vec3d) AABB constructor
+ * What the fuck mojang? What the actual fuck. If it's some automated system please just add a pointless AABB constructor
+ * in the server startup routine? One flimsy object allocation and you could be done with it.
+ */
+fun aabb(a: Vec3d, b: Vec3d) = AxisAlignedBB(a.x, a.y, a.z, b.x, b.y, b.z)
 
 internal var modIdOverride: String? = null
 
