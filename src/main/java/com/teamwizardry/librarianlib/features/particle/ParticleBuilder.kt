@@ -25,7 +25,6 @@ import java.util.function.Consumer
  * "Top quality glitter. Can't find glitter better than this, in fact, I'm really good friends with
  * the glitter people. Best pals. Can't get any better than this glitter" -Trump
  */
-@SideOnly(Side.CLIENT)
 class ParticleBuilder(private var lifetime: Int) {
     // region Animation Start/End
     /**
