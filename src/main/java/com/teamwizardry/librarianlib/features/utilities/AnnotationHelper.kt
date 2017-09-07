@@ -26,7 +26,11 @@ object AnnotationHelper {
                     continue
                 }
 
-                val field = Class.forName(data.className).getDeclaredField(data.objectName)
+                val field = try {
+                    Class.forName(data.className)
+                } catch (e: ClassNotFoundException) { // Class is sided and we are on wrong side
+                    continue
+                }.getDeclaredField(data.objectName)
 
                 if (field == null || !(objClass?.isAssignableFrom(field.type) ?: true)) {
                     continue
