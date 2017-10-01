@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.saving
 
+import com.google.common.reflect.TypeToken
 import com.google.gson.internal.`$Gson$Types`
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import java.lang.reflect.*
@@ -43,7 +44,11 @@ abstract class FieldType protected constructor(val type: Type, val annotated: An
         fun create(method: Method) = create(method.genericReturnType, method.annotatedReturnType)
 
         @JvmStatic
+        fun create(token: TypeToken<*>) = create(token.type, null)
+
+        @JvmStatic
         fun create(clazz: Class<*>) = create(clazz, null)
+
         @JvmStatic
         fun create(type: Type, annots: AnnotatedType?): FieldType {
             val fType: FieldType =

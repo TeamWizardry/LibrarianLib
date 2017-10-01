@@ -3,6 +3,7 @@
 
 package com.teamwizardry.librarianlib.features.kotlin
 
+import com.google.common.reflect.TypeToken
 import com.teamwizardry.librarianlib.features.helpers.ItemNBTHelper
 import com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler
 import net.minecraft.item.ItemStack
@@ -74,12 +75,12 @@ class NBTWrapper(val contained: ItemStack) {
 val ItemStack.nbt: NBTWrapper
     get() = NBTWrapper(this)
 
-fun <T: Any> T.toNBT(sync: Boolean = false): NBTBase {
-    return AbstractSaveHandler.writeAutoNBT(this, sync)
+inline fun <reified T: Any> T.toNBT(sync: Boolean = false): NBTBase {
+    return AbstractSaveHandler.writeAutoNBTByToken(object : TypeToken<T>() {}, this, sync)
 }
 
 inline fun <reified T: Any> NBTBase.fromNBT(sync: Boolean = false): T {
-    return AbstractSaveHandler.readAutoNBTByClass(T::class.java, this, sync) as T
+    return AbstractSaveHandler.readAutoNBTByToken(object : TypeToken<T>() {}, this, sync) as T
 }
 // NBTTagCompound ======================================================================================================
 
