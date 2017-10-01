@@ -26,7 +26,11 @@ object AnnotationHelper {
                     continue
                 }
 
-                val field = Class.forName(data.className).getDeclaredField(data.objectName)
+                val field = try {
+                    Class.forName(data.className)
+                } catch (e: ClassNotFoundException) { // Class is sided and we are on wrong side
+                    continue
+                }.getDeclaredField(data.objectName)
 
                 if (field == null || !(objClass?.isAssignableFrom(field.type) ?: true)) {
                     continue
@@ -50,6 +54,8 @@ object AnnotationHelper {
         for (data in table.getAll(annotationClass.name)) {
             try {
                 callback(Class.forName(data.className).asSubclass(superClass) as Class<out T>, AnnotationInfo(data.annotationInfo))
+            } catch (e: ClassNotFoundException) { // Class is sided and we are on wrong side
+                continue
             } catch (ex: Exception) {
                 throw ex
             }
@@ -68,7 +74,11 @@ object AnnotationHelper {
                 val index = data.objectName.indexOf('(')
 
                 if (index != -1 && data.objectName.indexOf(')') == index + 1) {
-                    val method = Class.forName(data.className).getDeclaredMethod(data.objectName.substring(0, index))
+                    val method = try {
+                        Class.forName(data.className)
+                    } catch (e: ClassNotFoundException) { // Class is sided and we are on wrong side
+                        continue
+                    }.getDeclaredMethod(data.objectName.substring(0, index))
 
                     if (method != null) {
                         method.isAccessible = true

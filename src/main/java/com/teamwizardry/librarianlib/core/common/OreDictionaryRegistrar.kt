@@ -14,22 +14,22 @@ import net.minecraftforge.oredict.OreDictionary
  * Created at 1:45 PM on 6/24/17.
  */
 object OreDictionaryRegistrar {
-    val toRegister = mutableMapOf<ItemStack, String>()
+    val toRegister = mutableMapOf<() -> ItemStack, String>()
 
     @JvmStatic
-    fun registerOre(name: String, stack: ItemStack) {
+    fun registerOre(name: String, stack: () -> ItemStack) {
         toRegister.put(stack, name)
     }
 
     @JvmStatic
-    fun registerOre(name: String, item: Item) = registerOre(name, ItemStack(item))
+    fun registerOre(name: String, item: Item) = registerOre(name, { ItemStack(item) })
     @JvmStatic
-    fun registerOre(name: String, block: Block) = registerOre(name, ItemStack(block))
+    fun registerOre(name: String, block: Block) = registerOre(name, { ItemStack(block) })
 
     init {
         MinecraftForge.EVENT_BUS.register(this)
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    fun init(e: RegistryEvent.Register<Item>) = toRegister.forEach { stack, key -> OreDictionary.registerOre(key, stack) }
+    fun init(e: RegistryEvent.Register<Item>) = toRegister.forEach { stack, key -> OreDictionary.registerOre(key, stack()) }
 }
