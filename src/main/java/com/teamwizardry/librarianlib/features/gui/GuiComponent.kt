@@ -477,6 +477,16 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     //=============================================================================
 
     /**
+     * Converts [pos] to be relative to [parent] if [parent] is not equal to null
+     * Converts [pos] to screen coordinates if [parent] is equal to null
+     */
+    fun posRelativeTo(pos: Vec2d, parent: GuiComponent<*>?) = if(parent == null)
+        parent?.unTransformRoot(this, pos, true) ?: this.pos // if this component has no parent it is the root component
+        // which is assumed to be positioned relative to the screen
+    else
+        unTransform(pos, parent)
+
+    /**
      * Transforms the position [pos] from the context of this component to the context of [targetContext]
      */
     fun unTransform(pos: Vec2d, targetContext: GuiComponent<*>): Vec2d {
