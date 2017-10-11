@@ -3,6 +3,9 @@ package com.teamwizardry.librarianlib.features.chunkdata
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.world.World
 import net.minecraft.world.storage.WorldSavedData
+import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.event.world.WorldEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 /**
  * TODO: Document file ChunkWorldData
@@ -15,6 +18,13 @@ class WorldDataContainer(val world: World) : WorldSavedData(NAME) {
 
     companion object {
         val NAME = "librarianlib:worlddata"
+
+        init { MinecraftForge.EVENT_BUS.register(this) }
+
+        @SubscribeEvent
+        fun load(e: WorldEvent.Load) {
+            get(e.world) // to initialize the data before a user calls get
+        }
 
         fun get(world: World) : WorldDataContainer {
             return world.perWorldStorage.getOrLoadData(WorldDataContainer::class.java, WorldDataContainer.NAME) as? WorldDataContainer ?:
