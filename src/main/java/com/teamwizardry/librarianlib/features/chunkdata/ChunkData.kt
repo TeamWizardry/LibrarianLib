@@ -6,7 +6,6 @@ import com.teamwizardry.librarianlib.features.network.TargetWatchingBlock
 import com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler
 import com.teamwizardry.librarianlib.features.saving.SaveInPlace
 import io.netty.buffer.ByteBuf
-import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.ChunkPos
@@ -30,10 +29,10 @@ open class ChunkData(chunk: Chunk) {
             field = value
         }
 
-    open fun saveCustomNBT(): NBTTagCompound? { return null }
-    open fun loadCustomNBT(nbt: NBTTagCompound) {}
-    open fun writeCustomBytes(buf: ByteBuf) {}
-    open fun readCustomBytes(buf: ByteBuf) {}
+    protected open fun saveCustomNBT(): NBTTagCompound? { return null }
+    protected open fun loadCustomNBT(nbt: NBTTagCompound) {}
+    protected open fun writeCustomBytes(buf: ByteBuf) {}
+    protected open fun readCustomBytes(buf: ByteBuf) {}
 
     fun markDirty() {
         if(world is WorldServer) {
