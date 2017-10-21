@@ -476,15 +476,48 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     /* Events/checks */
     //=============================================================================
 
+    fun hasParent(parent: GuiComponent<*>): Boolean {
+        val ourParent = this.parent
+        if(ourParent == parent) return true
+        if(ourParent == null) return false
+        return ourParent.hasParent(parent)
+    }
+
+    fun stepsToReachParent(parent: GuiComponent<*>): List<GuiComponent<*>> {
+        var theParent = this.parent
+        val list = mutableListOf<GuiComponent<*>>()
+
+        while(theParent != parent && theParent != null) {
+            list.add(theParent)
+            theParent = theParent.parent
+        }
+        if(theParent == parent) {
+            list.add(theParent)
+        }
+
+        return list
+    }
+
     /**
-     * Converts [pos] to be relative to [parent] if [parent] is not equal to null
-     * Converts [pos] to screen coordinates if [parent] is equal to null
+     * Converts [pos] to be relative to [other] if [other] is not equal to null
+     * Converts [pos] to screen coordinates if [other] is equal to null
+     * @throws IllegalArgumentException if [other] is nonnull and neither an ancestor nor descendant of this component
      */
-    fun posRelativeTo(pos: Vec2d, parent: GuiComponent<*>?) = if(parent == null)
-        parent?.unTransformRoot(this, pos, true) ?: this.pos // if this component has no parent it is the root component
-        // which is assumed to be positioned relative to the screen
-    else
-        unTransform(pos, parent)
+    fun posRelativeTo(pos: Vec2d, other: GuiComponent<*>?): Vec2d {
+        if (other == null) {
+            // if this component has no parent it is the root component
+            // which is assumed to be positioned relative to the screen
+            return parent?.unTransformRoot(this, pos, true) ?: this.pos
+        } else {
+            if(this.hasParent(other)) {
+                return unTransform(pos, other)
+            } else if(other.hasParent(this)) {
+                return transformTo(pos, other)
+            } else {
+                throw IllegalArgumentException("Passed component is not an ancestor or descendant of this component")
+            }
+        }
+    }
 
     /**
      * Transforms the position [pos] from the context of this component to the context of [targetContext]
@@ -504,6 +537,17 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     fun transformChildPos(child: GuiComponent<*>, pos: Vec2d): Vec2d {
         //     [ translate to child's screen space ] [ subtract child pos to put origin at child origin ]
         return ((pos - childTranslation) / childScale).rotate(-childRotation) - child.pos
+    }
+
+    fun transformTo(pos: Vec2d, child: GuiComponent<*>): Vec2d {
+        val steps = child.stepsToReachParent(this).reversed() + listOf(child)
+        var thePos = pos
+
+        for(i in steps.indices) {
+            if(steps[i] == child) break
+            thePos = steps[i].transformChildPos(steps[i+1], thePos)
+        }
+        return thePos
     }
 
     /**
