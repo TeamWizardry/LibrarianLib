@@ -12,3 +12,13 @@ interface TestEntryPoint {
     fun init(event: FMLInitializationEvent)
     fun postInit(event: FMLPostInitializationEvent)
 }
+
+/**
+ * So git diffs in the entry point list are sane. Because we can't do trailing commas we need some null entry point at
+ * the end
+ */
+object EndEntryPoint : TestEntryPoint {
+    override fun preInit(event: FMLPreInitializationEvent) { }
+    override fun init(event: FMLInitializationEvent) { }
+    override fun postInit(event: FMLPostInitializationEvent) { }
+}

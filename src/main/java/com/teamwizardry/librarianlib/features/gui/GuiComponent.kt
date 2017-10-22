@@ -121,6 +121,9 @@ import java.util.*
  */
 @SideOnly(Side.CLIENT)
 abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX: Int, posY: Int, width: Int = 0, height: Int = 0) : IGuiDrawable {
+    companion object {
+        @JvmStatic val EVENTS = GuiComponentEventsShortcuts()
+    }
 
     @JvmField
     val BUS = EventBus()
