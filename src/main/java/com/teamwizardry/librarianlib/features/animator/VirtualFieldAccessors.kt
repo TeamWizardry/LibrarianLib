@@ -1,7 +1,13 @@
 package com.teamwizardry.librarianlib.features.animator
 
 /**
- * TODO: Document file VirtualFieldAccessors
+ * **UNIMPLEMENTED**
  *
- * Created by TheCodeWarrior
+ * Handles the registering and querying of "virtual" fields in [AnimatableProperty] keyPaths.
  */
+object VirtualFieldAccessorHandler {
+    fun printAvailable() {
+        TODO("implement `VirtualFieldAccessor`s")
+    }
+}
+

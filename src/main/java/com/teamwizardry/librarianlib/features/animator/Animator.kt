@@ -8,22 +8,63 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.*
 
-/**
- * TODO: Document file Animator
- *
- * Created by TheCodeWarrior
- */
 val Minecraft.renderPartialTicksPaused by MethodHandleHelper.delegateForReadOnly<Minecraft, Float>(Minecraft::class.java, "renderPartialTicksPaused", "field_193996_ah")
 val Minecraft.timer by MethodHandleHelper.delegateForReadOnly<Minecraft, Timer>(Minecraft::class.java, "timer", "field_71428_T")
 
+/**
+ * An Animator is an object that manages the timing and execution of a number of animations. A single animator is
+ * generally used per context. (e.g. one per gui)
+ *
+ * Animations are added by simply passing them to the [add] method. As of now there is no way to remove animations
+ * manually, but that ability is on the roadmap.
+ *
+ * @sample AnimatorExamples.basic
+ */
 class Animator {
 
     init {
         animators.add(this)
     }
 
+    /**
+     * If this value is true (which it is by default) this animator will delete any animations that have passed their
+     * end time. This keeps old animations from cluttering up memory, keeping references to dead objects, and reduces
+     * the amount of processing this animator has to do to sort through its animations.
+     *
+     * @sample AnimatorExamples.deletePastAnimationsTrue
+     * @sample AnimatorExamples.deletePastAnimationsFalse
+     */
     var deletePastAnimations = true
+
+    /**
+     * If this value is true (which it isn't by default) this animator will pause when the world pauses.
+     */
     var useWorldPartialTicks = false
+
+    /**
+     * The current time of the animator. By default this is measured in ticks since creation.
+     *
+     * @sample AnimatorExamples.time
+     */
+    var time: Float
+        get() = partialTicks()*speed - timeOffset
+        set(value) {
+            timeOffset = partialTicks()*speed - value
+        }
+
+    /**
+     * The current speed multiplier of the animator
+     *
+     * @sample AnimatorExamples.speed
+     */
+    var speed: Float = 1f
+        get() = field
+        set(value) {
+            timeOffset = time + partialTicks()*value
+            field = value
+        }
+
+
     private fun partialTicks() =
             if(useWorldPartialTicks)
                 worldPartialTicks
@@ -32,30 +73,23 @@ class Animator {
 
     private var timeOffset: Float = partialTicks()
 
-    var time: Float
-        get() = partialTicks()*speed - timeOffset
-        set(value) {
-            timeOffset = partialTicks()*speed - value
-        }
-
-    var speed: Float = 1f
-        get() = field
-        set(value) {
-            timeOffset = time + partialTicks()*value
-            field = value
-        }
-
     // sorted in ascending start order so I can quickly cull the expired animations and efficiently queue large numbers
     // of animations without having to iterate over them
-    private val animations: MutableSet<Animation<*>> = TreeSet(compareBy { it.start })
+    private val animations: MutableSet<Animation<*>> = sortedSetOf(compareBy({ it.start }, { it._id }))
     private val currentAnimations = mutableListOf<Animation<*>>()
 
+    /**
+     * Add [animation] to this animator
+     */
     fun add(animation: Animation<*>) {
-        animations.add(animation)
+        if(animation.isInAnimator) {
+            throw IllegalArgumentException("Animation already added to animator")
+        }
         animation.onAddedToAnimator(this)
+        animations.add(animation)
     }
 
-    fun update() {
+    internal fun update() {
         updateCurrentAnimations()
 
         currentAnimations.forEach { anim ->
@@ -84,6 +118,8 @@ class Animator {
 
         if(toDelete != null) animations.removeAll(toDelete)
     }
+
+    internal var _nextId: Int = 0
 
     companion object {
         @JvmStatic

@@ -5,22 +5,29 @@ import com.teamwizardry.librarianlib.features.animator.internal.StringLerper
 import com.teamwizardry.librarianlib.features.animator.internal.VecLerpers
 
 /**
- * TODO: Document file Lerping
- *
- * Created by TheCodeWarrior
+ * Handles the registering and accessing of [Lerper]s
  */
 object LerperHandler {
     private val map = mutableMapOf<Class<*>, Lerper<*>>()
 
+    /**
+     * Set the passed class's lerper to the passed lerper
+     */
     fun <T> registerLerper(clazz: Class<T>, lerper: Lerper<T>) {
         map[clazz] = lerper
     }
 
+    /**
+     * Get the lerper for the passed class, or null if none exists
+     */
     @Suppress("UNCHECKED_CAST")
     fun getLerper(clazz: Class<*>): Lerper<Any>? {
         return map[clazz] as Lerper<Any>?
     }
 
+    /**
+     * Get the lerper for the passed class, or throw an [IllegalArgumentException]
+     */
     fun getLerperOrError(clazz: Class<*>): Lerper<Any> {
         return getLerper(clazz) ?: throw IllegalArgumentException("Cannot lerp type `${clazz.canonicalName}`")
     }
@@ -40,7 +47,19 @@ fun <T> LerperHandler.registerLerper(clazz: Class<T>, lerper: (from: T, to: T, f
     })
 }
 
+/**
+ * Handles the lerping (linear interpolating) between values of type [T]
+ */
 @FunctionalInterface
 interface Lerper<T> {
+    /**
+     * @param from The value at 0
+     * @param to The value at 1
+     * @param fraction The fractional progress from [from] to [to]. This value **is not** guaranteed to be between 0 and
+     *          1. If your lerping algorithm supports it, extrapolate beyond the two input datapoints when the value is
+     *          outside of that range. If your algorithm does not support anything outside of 0 and 1, you **must** clamp
+     *          this value to that range.
+     * @return The interpolated value
+     */
     fun lerp(from: T, to: T, fraction: Float): T
 }

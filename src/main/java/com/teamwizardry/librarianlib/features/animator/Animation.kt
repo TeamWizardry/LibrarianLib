@@ -6,11 +6,26 @@ import com.teamwizardry.librarianlib.features.kotlin.clamp
  * An animation applied to a specific object and property of that object
  */
 abstract class Animation<T: Any>(val target: T, val property: AnimatableProperty<T>) {
+
     /**
-     * The start time of the animation in ticks. If this is 0 the start time will be set to the current time of the
-     * animator (at the time it is added to the animator)
+     * Default: true
+     *
+     * If this flag is set the start time will be treated as relative to the [Animator] time it is being added to. If it
+     * is false, the start time will be unaffected by the Animator's time.
+     */
+    var isTimeRelative = true
+
+    /**
+     * The start time of the animation in ticks.
+     *
+     * Once this animation has been added to an animator this field cannot be changed.
      */
     var start: Float = 0f
+        set(value) {
+            if(isInAnimator)
+                throw IllegalStateException("Cannot change the start time of an animation once it has been added to an animator")
+            field = value
+        }
 
     /**
      * The duration in ticks of the animation. This is the duration before reverses or loops
@@ -68,23 +83,25 @@ abstract class Animation<T: Any>(val target: T, val property: AnimatableProperty
     }
 
     /**
+     * True if this animation has been added to an animator already.
+     */
+    val isInAnimator: Boolean
+        get() = _id != -1
+
+    /**
      * Updates the value of this animation's property based on the passed time
      * @param time The current time of the containing Animator
      */
     abstract fun update(time: Float)
 
     internal fun onAddedToAnimator(animator: Animator) {
-        if(start == 0f) {
-            start = animator.time
+        if(isTimeRelative) {
+            start += animator.time
         }
+        this._id = animator._nextId++
     }
 
-    companion object {
-        /**
-         * Because animations only get their start reset to the Animator's current time if their start is exactly equal
-         * to zero, using a small value such as this will prevent that reset while still making it effectively zero
-         */
-        const val kTimeStartAtZero = 1e-15
-    }
+    internal var _id: Int = -1
+        private set
 }
 

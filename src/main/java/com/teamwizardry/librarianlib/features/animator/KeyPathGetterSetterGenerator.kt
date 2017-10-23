@@ -11,9 +11,10 @@ import kotlin.reflect.jvm.javaSetter
 import kotlin.reflect.jvm.kotlinProperty
 
 /**
- * TODO: Document file KeyPathGetterSetterGenerator
+ * Please, don't look. It's horrifying.
  *
- * Created by TheCodeWarrior
+ * best regards,
+ * - everyone who has seen this code
  */
 
 private fun getFieldList(target: Class<*>, keyPath: Array<String>): FieldListItem? {
@@ -49,6 +50,19 @@ fun generateGetterAndSetterForKeyPath(target: Class<*>, keyPath: Array<String>):
     return Triple(getter, { target, value -> setter(target, value) }, type)
 }
 
+private fun Class<*>.getDeclaredFieldRecursive(name: String): Field? {
+    var cls: Class<*>? = this
+    var field: Field? = null
+    while(cls != null && field == null) {
+        try {
+            field = cls.getDeclaredField(name)
+        } catch(e: NoSuchFieldException) {
+            //noop
+        }
+        cls = cls.superclass
+    }
+    return field
+}
 
 private class FieldListItem(val target: Class<*>, val name: String) {
     val fieldClass: Class<*>
@@ -57,8 +71,8 @@ private class FieldListItem(val target: Class<*>, val name: String) {
     private val accessorOfChoice: Any
 
     init {
-        val field = target.getDeclaredField(name) ?:
-                throw IllegalArgumentException("Couldn't find field `$name` in class `${target.canonicalName}`")
+        val field = target.getDeclaredFieldRecursive(name) ?:
+                throw IllegalArgumentException("Couldn't find field `$name` in class `${target.canonicalName}` or any of its superclasses")
         fieldClass = field.type
         val property = field.kotlinProperty
 
