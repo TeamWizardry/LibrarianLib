@@ -48,7 +48,7 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
 
         if (mainScaleWrapper.pos.xi != left || mainScaleWrapper.pos.yi != top) {
             mainScaleWrapper.pos = vec(left, top)
-            mainScaleWrapper.childScale = s
+            mainScaleWrapper.transform.scale = s
             mainScaleWrapper.size = vec(guiWidth * s, guiHeight * s)
         }
 

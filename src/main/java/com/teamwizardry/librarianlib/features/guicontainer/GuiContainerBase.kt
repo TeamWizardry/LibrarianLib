@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.features.guicontainer
 import com.teamwizardry.librarianlib.features.container.ContainerBase
 import com.teamwizardry.librarianlib.features.container.internal.ContainerImpl
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.helpers.vec
@@ -58,7 +57,7 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
 
         if (mainScaleWrapper.pos.xi != left || mainScaleWrapper.pos.yi != top) {
             mainScaleWrapper.pos = vec(left, top)
-            mainScaleWrapper.childScale = s
+            mainScaleWrapper.transform.scale = s
             mainScaleWrapper.size = vec(guiWidth * s, guiHeight * s)
             guiLeft = left
             guiTop = top

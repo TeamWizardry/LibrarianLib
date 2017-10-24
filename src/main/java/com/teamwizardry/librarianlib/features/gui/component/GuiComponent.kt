@@ -10,11 +10,12 @@ import com.teamwizardry.librarianlib.features.gui.IGuiDrawable
 import com.teamwizardry.librarianlib.features.gui.Key
 import com.teamwizardry.librarianlib.features.gui.Option
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.div
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.plus
-import com.teamwizardry.librarianlib.features.kotlin.times
+import com.teamwizardry.librarianlib.features.kotlin.unaryMinus
 import com.teamwizardry.librarianlib.features.math.BoundingBox2D
+import com.teamwizardry.librarianlib.features.math.Matrix3
+import com.teamwizardry.librarianlib.features.math.Transform2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
@@ -84,6 +85,8 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
     val BUS = EventBus()
 
     var zIndex = 0
+    var transform = Transform2d()
+
     /**
      * The position of the component relative to it's parent
      */
@@ -194,10 +197,12 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
             addChildrenRecursively(list)
             return Collections.unmodifiableCollection(list)
         }
+
     private fun addChildrenRecursively(list: MutableList<GuiComponent>) {
         list.addAll(components)
         components.forEach { it.addChildrenRecursively(list) }
     }
+
     var parent: GuiComponent? = null
         private set(value) {
             parents.clear()
@@ -207,22 +212,8 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
             }
             field = value
         }
-    var parents: LinkedHashSet<GuiComponent> = LinkedHashSet()
 
-    /**
-     * Amount to translate children, applied to both drawing and mouse position. Applied before [childScale] and [childRotation]
-     */
-    var childTranslation: Vec2d = Vec2d.ZERO
-    /**
-     * Amount to scale children, applied to both drawing and mouse position. Applied after [childTranslation] and before [childRotation]
-     */
-    var childScale: Double = 1.0
-    /**
-     * Amount to rotate children around this component's origin, applied to both drawing and mouse position. Applied after [childScale]
-     *
-     * Angle is in clockwise radians
-     */
-    var childRotation: Double = 0.0
+    var parents: LinkedHashSet<GuiComponent> = LinkedHashSet()
 
     init {
         this.pos = vec(posX, posY)
@@ -378,104 +369,55 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
     /* Events/checks */
     //=============================================================================
 
-    fun hasParent(parent: GuiComponent): Boolean {
-        val ourParent = this.parent
-        if(ourParent == parent) return true
-        if(ourParent == null) return false
-        return ourParent.hasParent(parent)
-    }
-
-    fun stepsToReachParent(parent: GuiComponent): List<GuiComponent> {
-        var theParent = this.parent
-        val list = mutableListOf<GuiComponent>()
-
-        while(theParent != parent && theParent != null) {
-            list.add(theParent)
-            theParent = theParent.parent
-        }
-        if(theParent == parent) {
-            list.add(theParent)
-        }
-
-        return list
-    }
-
     /**
-     * Converts [pos] to be relative to [other] if [other] is not equal to null
-     * Converts [pos] to screen coordinates if [other] is equal to null
-     * @throws IllegalArgumentException if [other] is nonnull and neither an ancestor nor descendant of this component
+     * Takes [pos], which is in our parent's context (coordinate space), and transforms it to our context
      */
-    fun posRelativeTo(pos: Vec2d, other: GuiComponent?): Vec2d {
-        if (other == null) {
-            // if this component has no parent it is the root component
-            // which is assumed to be positioned relative to the screen
-            return parent?.unTransformRoot(this, pos, true) ?: this.pos
-        } else {
-            if(this.hasParent(other)) {
-                return unTransform(pos, other)
-            } else if(other.hasParent(this)) {
-                return transformTo(pos, other)
-            } else {
-                throw IllegalArgumentException("Passed component is not an ancestor or descendant of this component")
-            }
-        }
+    fun transformFromParentContext(pos: Vec2d): Vec2d {
+        return transform.applyInverse(pos) - this.pos
     }
 
     /**
-     * Transforms the position [pos] from the context of this component to the context of [targetContext]
-     */
-    fun unTransform(pos: Vec2d, targetContext: GuiComponent): Vec2d {
-        val this_parent = this.parent
-        if(this_parent == null)
-            return pos
-        if(this_parent == parent)
-            return this_parent.unTransformChildPos(this, pos)
-        return this_parent.unTransform(this_parent.unTransformChildPos(this, pos), targetContext)
-    }
-
-    /**
-     * Allows the component to modify the mouse position before it is passed to a child element.
-     */
-    fun transformChildPos(child: GuiComponent, pos: Vec2d): Vec2d {
-        //     [ translate to child's screen space ] [ subtract child pos to put origin at child origin ]
-        return ((pos - childTranslation) / childScale).rotate(-childRotation) - child.pos
-    }
-
-    fun transformTo(pos: Vec2d, child: GuiComponent): Vec2d {
-        val steps = child.stepsToReachParent(this).reversed() + listOf(child)
-        var thePos = pos
-
-        for(i in steps.indices) {
-            if(steps[i] == child) break
-            thePos = steps[i].transformChildPos(steps[i+1], thePos)
-        }
-        return thePos
-    }
-
-    /**
-     * Reverses [transformChildPos]
-     */
-    fun unTransformChildPos(child: GuiComponent, pos: Vec2d): Vec2d {
-        return (pos + child.pos).rotate(childRotation) * childScale + childTranslation
-    }
-
-    /**
-     * Recursively reverses [transformChildPos], expressing the passed position relative to the root component.
+     * Create a matrix that moves coordinates from [other]'s context (coordinate space) to this component's context
      *
-     * If [screenRoot] is set, then the root component's position is accounted for, making the position relative to the
-     * GL context of the root caller. Generally meaning the pos is relative to the screen.
+     * If [other] is null the returned matrix moves coordinates from the root context to this component's context
      */
-    @JvmOverloads
-    fun unTransformRoot(child: GuiComponent, pos: Vec2d, screenRoot: Boolean = false): Vec2d {
-        return parent?.unTransformRoot(this, unTransformChildPos(child, pos), screenRoot) ?: if (screenRoot) unTransformChildPos(child, pos) + this.pos else unTransformChildPos(child, pos)
+    fun otherContextToThisContext(other: GuiComponent?): Matrix3 {
+        if(other == null) {
+            var matrix = (parent?.otherContextToThisContext(null) ?: Matrix3())
+            matrix = matrix.translate(pos)
+            matrix = transform.apply(matrix)
+            return matrix
+        }
+        val ourMatrix = otherContextToThisContext(null)
+        val otherMatrix = other.otherContextToThisContext(null)
+        return otherMatrix.inverse() * ourMatrix // first go from the other guy to root, then from root to us
+    }
+
+    /**
+     * Create a matrix that moves coordinates from this component's context (coordinate space) to [other]'s context
+     *
+     * If [other] is null the returned matrix moves coordinates from this component's context to the root context
+     */
+    fun thisContextToOtherContext(other: GuiComponent?): Matrix3 {
+        if(other == null) {
+            var matrix = Matrix3()
+            matrix = transform.applyInverse(matrix)
+            matrix = matrix.translate(-pos)
+            parent?.also { matrix *= it.thisContextToOtherContext(null) }
+            return matrix
+        }
+        val ourMatrix = thisContextToOtherContext(null)
+        val otherMatrix = other.thisContextToOtherContext(null)
+        return ourMatrix.inverse() * otherMatrix // first go from us to root, then from root to the other guy
     }
 
     open fun calculateMouseOver(mousePos: Vec2d) {
+        val mousePos = transformFromParentContext(mousePos)
         this.mouseOver = false
 
         if (isVisible) {
             components.asReversed().forEach { child ->
-                child.calculateMouseOver(transformChildPos(child, mousePos))
+                child.calculateMouseOver(mousePos)
                 if (mouseOver) {
                     child.mouseOver = false // occlusion
                 }
@@ -507,6 +449,7 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
     override fun draw(mousePos: Vec2d, partialTicks: Float) {
+        val mousePos = transformFromParentContext(mousePos)
         components.sortBy { it.zIndex }
         if (!isVisible) return
 
@@ -536,6 +479,10 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
         }
         wasMouseOver = this.mouseOver
 
+        GlStateManager.pushMatrix()
+        GlStateManager.translate(pos.x, pos.y, 0.0)
+        transform.glApply()
+
         BUS.fire(GuiComponentEvents.PreDrawEvent(this, mousePos, partialTicks))
 
         drawComponent(mousePos, partialTicks)
@@ -558,21 +505,14 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
             GlStateManager.popAttrib()
         }
 
-        GlStateManager.pushMatrix()
         GlStateManager.pushAttrib()
-        GlStateManager.translate(pos.x + childTranslation.x, pos.y + childTranslation.y, 0.0)
-        if (childScale != 1.0) // avoid unnecessary GL calls. Possibly microoptimization but meh.
-            GlStateManager.scale(childScale, childScale, 1.0)
-        if (childRotation != 0.0) // see above comment
-            GlStateManager.rotate(Math.toDegrees(childRotation).toFloat(), 0f, 0f, 1f)
 
         BUS.fire(GuiComponentEvents.PreChildrenDrawEvent(this, mousePos, partialTicks))
-
-        forEachChild { it.draw(transformChildPos(it, mousePos), partialTicks) }
+        forEachChild { it.draw(mousePos, partialTicks) }
 
         GlStateManager.popAttrib()
-        GlStateManager.popMatrix()
 
+        GlStateManager.popMatrix()
         BUS.fire(GuiComponentEvents.PostDrawEvent(this, mousePos, partialTicks))
     }
 
@@ -583,6 +523,7 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
     fun drawLate(mousePos: Vec2d, partialTicks: Float) {
+        val mousePos = transformFromParentContext(mousePos)
         if (mouseOver) {
             val tt = tooltip(this)
             if (tt?.isNotEmpty() ?: false) {
@@ -609,6 +550,7 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      * @param button
      */
     open fun mouseDown(mousePos: Vec2d, button: EnumMouseButton) {
+        val mousePos = transformFromParentContext(mousePos)
         if (!isVisible) return
         if (BUS.fire(GuiComponentEvents.MouseDownEvent(this, mousePos, button)).isCanceled())
             return
@@ -617,7 +559,7 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
             mouseButtonsDown[button.ordinal] = true
 
         forEachChild { child ->
-            child.mouseDown(transformChildPos(child, mousePos), button)
+            child.mouseDown(mousePos, button)
         }
     }
 
@@ -628,6 +570,7 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      * @param button
      */
     fun mouseUp(mousePos: Vec2d, button: EnumMouseButton) {
+        val mousePos = transformFromParentContext(mousePos)
         if (!isVisible) return
         val wasDown = mouseButtonsDown[button.ordinal]
         mouseButtonsDown[button.ordinal] = false
@@ -641,7 +584,7 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
         }
 
         forEachChild { child ->
-            child.mouseUp(transformChildPos(child, mousePos), button)
+            child.mouseUp(mousePos, button)
         }
     }
 
@@ -652,12 +595,13 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      * @param button
      */
     fun mouseDrag(mousePos: Vec2d, button: EnumMouseButton) {
+        val mousePos = transformFromParentContext(mousePos)
         if (!isVisible) return
         if (BUS.fire(GuiComponentEvents.MouseDragEvent(this, mousePos, button)).isCanceled())
             return
 
         forEachChild { child ->
-            child.mouseDrag(transformChildPos(child, mousePos), button)
+            child.mouseDrag(mousePos, button)
         }
     }
 
@@ -666,12 +610,13 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      * @param mousePos
      */
     fun mouseWheel(mousePos: Vec2d, direction: GuiComponentEvents.MouseWheelDirection) {
+        val mousePos = transformFromParentContext(mousePos)
         if (!isVisible) return
         if (BUS.fire(GuiComponentEvents.MouseWheelEvent(this, mousePos, direction)).isCanceled())
             return
 
         forEachChild { child ->
-            child.mouseWheel(transformChildPos(child, mousePos), direction)
+            child.mouseWheel(mousePos, direction)
         }
     }
 
@@ -718,7 +663,7 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
         var aabb = contentSize
         forEachChild { child ->
             if (!child.isVisible) return@forEachChild
-            val childAABB = child.getLogicalSize()?.scale(childScale)?.offset(childTranslation)
+            val childAABB = child.getLogicalSize()//?.scale(childScale)?.offset(childTranslation)
             aabb = childAABB?.union(aabb) ?: aabb
         }
 

@@ -25,13 +25,13 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
     }
 
     /**
-     * Moves the view to a specific childTranslation.
+     * Moves the view to a specific transform.translate.
      */
     fun scrollTo(scroll: Vec2d) {
         val newScroll = Vec2d.min(maxScroll, scroll)
-        if (newScroll != childTranslation) {
-            this.scroll.fireModifier(newScroll, { h, v -> h(this, childTranslation, v) })
-            childTranslation = newScroll
+        if (newScroll != transform.translate) {
+            this.scroll.fireModifier(newScroll, { h, v -> h(this, transform.translate, v) })
+            transform.translate = newScroll
         }
     }
 
@@ -39,7 +39,7 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
      * Moves the view by the passed vector.
      */
     fun scrollOffset(scroll: Vec2d) {
-        scrollTo(childTranslation.add(scroll))
+        scrollTo(transform.translate.add(scroll))
     }
 
     /**
@@ -50,9 +50,9 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
     }
 
     override fun draw(mousePos: Vec2d, partialTicks: Float) {
-        GlStateManager.translate(-childTranslation.x, -childTranslation.y, 0.0)
+        GlStateManager.translate(-transform.translate.x, -transform.translate.y, 0.0)
         super.draw(mousePos, partialTicks)
-        GlStateManager.translate(childTranslation.x, childTranslation.y, 0.0)
+        GlStateManager.translate(transform.translate.x, transform.translate.y, 0.0)
     }
 
     val maxScroll: Vec2d

@@ -28,7 +28,7 @@ class GuiTestScissor : GuiBase(100, 100) {
 
         val scissor = ComponentVoid(0, 0, 50, 50)
         c.add(scissor)
-        c.childScale = 2.0
+        c.transform.scale = 2.0
         scissor.add(c2)
         scissor.add(c3)
         ScissorMixin.scissor(scissor)
