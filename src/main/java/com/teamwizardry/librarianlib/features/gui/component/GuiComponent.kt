@@ -388,9 +388,8 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
             matrix = transform.apply(matrix)
             return matrix
         }
-        val ourMatrix = otherContextToThisContext(null)
-        val otherMatrix = other.otherContextToThisContext(null)
-        return otherMatrix.inverse() * ourMatrix // first go from the other guy to root, then from root to us
+        // first go from the other guy to root, then from root to us
+        return other.thisContextToOtherContext(null) * otherContextToThisContext(null)
     }
 
     /**
@@ -406,9 +405,18 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
             parent?.also { matrix *= it.thisContextToOtherContext(null) }
             return matrix
         }
-        val ourMatrix = thisContextToOtherContext(null)
-        val otherMatrix = other.thisContextToOtherContext(null)
-        return ourMatrix.inverse() * otherMatrix // first go from us to root, then from root to the other guy
+        // first go from us to root, then from root to the other guy
+        return thisContextToOtherContext(null) * other.otherContextToThisContext(null)
+    }
+
+    /**
+     * A shorthand to transform the passed pos in this component's context (coordinate space) to a pos in [other]'s context
+     *
+     * If [other] is null the returned value is in the root context
+     */
+    @JvmOverloads
+    fun thisPosToOtherContext(other: GuiComponent?, pos: Vec2d = Vec2d.ZERO): Vec2d {
+        return thisContextToOtherContext(other) * pos
     }
 
     open fun calculateMouseOver(mousePos: Vec2d) {
