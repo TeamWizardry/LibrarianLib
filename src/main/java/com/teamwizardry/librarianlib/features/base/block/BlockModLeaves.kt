@@ -10,6 +10,7 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.init.Blocks
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.util.BlockRenderLayer
@@ -28,7 +29,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
 import java.util.*
 
 
-@Suppress("LeakingThis")
+@Suppress("LeakingThis", "DEPRECATION", "OverridingDeprecatedMember")
 abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(name, Material.LEAVES, *variants), IShearable {
     companion object {
 
@@ -42,16 +43,7 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
             MinecraftForge.EVENT_BUS.register(this)
         }
 
-        var lastFancy = false
-        var fancyLeaves = false
-
-        @SubscribeEvent
-        @SideOnly(Side.CLIENT)
-        fun onRenderWorldLast(e: RenderWorldLastEvent) {
-            lastFancy = fancyLeaves
-            fancyLeaves = Minecraft.getMinecraft().gameSettings.fancyGraphics
-            e.context
-        }
+        val leavesFancy get() = !Blocks.LEAVES.isOpaqueCube(null)
     }
 
     override fun getBurnTime(stack: ItemStack) = 100
@@ -193,10 +185,6 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
             val d2 = (pos.z.toFloat() + rand.nextFloat()).toDouble()
             worldIn.spawnParticle(EnumParticleTypes.DRIP_WATER, d0, d1, d2, 0.0, 0.0, 0.0, *IntArray(0))
         }
-
-        if (fancyLeaves != lastFancy) {
-            worldIn.markBlockRangeForRenderUpdate(pos, pos)
-        }
     }
 
 
@@ -214,13 +202,13 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
         super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune)
     }
 
-    override fun isOpaqueCube(state: IBlockState?): Boolean {
-        return !fancyLeaves && canBeOpaque
+    override fun isOpaqueCube(state: IBlockState): Boolean {
+        return !leavesFancy && canBeOpaque
     }
 
     @SideOnly(Side.CLIENT)
     override fun getBlockLayer(): BlockRenderLayer {
-        return if (fancyLeaves || !canBeOpaque) BlockRenderLayer.CUTOUT_MIPPED else BlockRenderLayer.SOLID
+        return if (leavesFancy || !canBeOpaque) BlockRenderLayer.CUTOUT_MIPPED else BlockRenderLayer.SOLID
     }
 
     override fun isShearable(item: ItemStack, world: IBlockAccess, pos: BlockPos): Boolean {
@@ -277,10 +265,9 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
         return BlockStateContainer(this, DECAYABLE, CHECK_DECAY)
     }
 
-    @Suppress("OverridingDeprecatedMember", "DEPRECATION")
     @SideOnly(Side.CLIENT)
     override fun shouldSideBeRendered(blockState: IBlockState, blockAccess: IBlockAccess, pos: BlockPos, side: EnumFacing): Boolean {
-        return if (!fancyLeaves && canBeOpaque && blockAccess.getBlockState(pos.offset(side)).block === this) false else super.shouldSideBeRendered(blockState, blockAccess, pos, side)
+        return if (!leavesFancy && canBeOpaque && blockAccess.getBlockState(pos.offset(side)).block === this) false else super.shouldSideBeRendered(blockState, blockAccess, pos, side)
     }
 
     override fun onSheared(item: ItemStack, world: IBlockAccess, pos: BlockPos, fortune: Int): MutableList<ItemStack>? {

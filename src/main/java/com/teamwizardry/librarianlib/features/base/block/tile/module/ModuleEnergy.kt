@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.base.block.tile.module
 
+import com.teamwizardry.librarianlib.features.base.block.tile.TileMod
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.common.util.INBTSerializable
 import net.minecraftforge.energy.CapabilityEnergy
@@ -36,4 +37,7 @@ class ModuleEnergy(handler: SerializableEnergyStorage) : ModuleCapability<Module
             setInteger("Capacity", capacity)
         }
     }
+
+    override fun hasComparatorOutput() = true
+    override fun getComparatorOutput(tile: TileMod) = handler.energyStored.toFloat() / handler.maxEnergyStored
 }

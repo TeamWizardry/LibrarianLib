@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.base.block.tile
 
 import com.teamwizardry.librarianlib.features.base.block.tile.module.ITileModule
+import com.teamwizardry.librarianlib.features.base.block.tile.module.ModuleInventory
 import com.teamwizardry.librarianlib.features.kotlin.forEach
 import com.teamwizardry.librarianlib.features.kotlin.nbt
 import com.teamwizardry.librarianlib.features.network.PacketHandler
@@ -37,6 +38,15 @@ abstract class TileMod : TileEntity() {
 
     fun onBreak() = modules.forEach { it.value.onBreak(this) }
 
+    fun hasComparatorOverride(): Boolean {
+        createModules()
+        return modules.any { it.value.hasComparatorOutput() }
+    }
+
+    fun getComparatorOverride() = ModuleInventory.getPowerLevel(modules
+            .filter { it.value.hasComparatorOutput() }
+            .let { it.map { it.value.getComparatorOutput(this) }.sum() / it.size })
+
     override fun onLoad() {
         createModules()
         modules.forEach { it.value.onLoad(this) }
@@ -52,6 +62,11 @@ abstract class TileMod : TileEntity() {
     fun createModules() {
         if (modulesSetUp) return
         modulesSetUp = true
+
+        val state = world.getBlockState(pos)
+        val block = state.block
+        if (block is BlockModContainer && block.hasComparatorInputOverride == null)
+            block.hasComparatorInputOverride = hasComparatorOverride()
 
         for ((name, field) in SavingFieldCache.getClassFields(FieldType.create(javaClass, null))) {
             if (field.meta.hasFlag(SavingFieldFlag.MODULE)) {

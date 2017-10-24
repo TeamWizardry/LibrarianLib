@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.features.base.block.tile
 
 import com.teamwizardry.librarianlib.features.base.block.BlockMod
-import com.teamwizardry.librarianlib.features.base.block.tile.TileMod
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayer
@@ -35,5 +34,15 @@ abstract class BlockModContainer(name: String, materialIn: Material, vararg vari
     override fun onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer, hand: EnumHand, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         val tile = worldIn.getTileEntity(pos)
         return tile is TileMod && tile.onClicked(playerIn, hand, facing, hitX, hitY, hitZ)
+    }
+
+    internal var hasComparatorInputOverride: Boolean? = null
+
+    override fun hasComparatorInputOverride(state: IBlockState?) = hasComparatorInputOverride ?: super.hasComparatorInputOverride(state)
+
+    override fun getComparatorInputOverride(blockState: IBlockState, worldIn: World, pos: BlockPos): Int {
+        val tile = worldIn.getTileEntity(pos)
+        if (tile is TileMod) return tile.getComparatorOverride()
+        return super.getComparatorInputOverride(blockState, worldIn, pos)
     }
 }

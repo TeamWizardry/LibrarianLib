@@ -21,6 +21,9 @@ interface ITileModule : ICapabilityProvider {
     fun onUpdate(tile: TileMod) = Unit
     fun onClicked(tile: TileMod, player: EntityPlayer, hand: EnumHand, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float) = false
 
+    fun hasComparatorOutput() = false
+    fun getComparatorOutput(tile: TileMod) = 0f
+
     override fun <T : Any> getCapability(capability: Capability<T>, facing: EnumFacing?): T? = null
     override fun hasCapability(capability: Capability<*>, facing: EnumFacing?) = false
 }

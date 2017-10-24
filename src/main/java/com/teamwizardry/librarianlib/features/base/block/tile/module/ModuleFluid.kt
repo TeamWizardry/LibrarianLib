@@ -36,4 +36,7 @@ class ModuleFluid(handler: SerializableFluidTank) : ModuleCapability<ModuleFluid
         override fun deserializeNBT(nbt: NBTTagCompound) { readFromNBT(nbt) }
         override fun serializeNBT(): NBTTagCompound = writeToNBT(NBTTagCompound())
     }
+
+    override fun hasComparatorOutput() = true
+    override fun getComparatorOutput(tile: TileMod) = (handler.fluid?.amount?.toFloat() ?: 0f) / handler.capacity
 }
