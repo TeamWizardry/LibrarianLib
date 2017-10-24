@@ -3,7 +3,8 @@ package com.teamwizardry.librarianlib.features.gui.mixin
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
 class DragMixin<T : GuiComponent<T>>(protected var component: T, protected var constraints: (Vec2d) -> Vec2d) {
@@ -20,21 +21,21 @@ class DragMixin<T : GuiComponent<T>>(protected var component: T, protected var c
     }
 
     private fun init() {
-        component.BUS.hook(GuiComponent.MouseDownEvent::class.java) { event ->
+        component.BUS.hook(GuiComponentEvents.MouseDownEvent::class.java) { event ->
             if (mouseDown == null && event.component.mouseOver && !component.BUS.fire(DragPickupEvent(event.component, event.mousePos, event.button)).isCanceled()) {
                 mouseDown = event.button
                 clickPos = event.mousePos
                 event.cancel()
             }
         }
-        component.BUS.hook(GuiComponent.MouseUpEvent::class.java) { event ->
+        component.BUS.hook(GuiComponentEvents.MouseUpEvent::class.java) { event ->
             if (mouseDown == event.button && !component.BUS.fire(DragDropEvent(event.component, event.mousePos, event.button, clickPos)).isCanceled()) {
                 mouseDown = null
                 event.cancel()
             }
         }
 
-        component.BUS.hook(GuiComponent.PreDrawEvent::class.java) { event ->
+        component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) { event ->
             val mouseButton = mouseDown
             if (mouseButton != null) {
                 val newPos = constraints(event.component.pos.add(event.mousePos).sub(clickPos))

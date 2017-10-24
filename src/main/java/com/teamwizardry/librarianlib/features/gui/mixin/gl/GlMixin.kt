@@ -1,7 +1,8 @@
 package com.teamwizardry.librarianlib.features.gui.mixin.gl
 
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.Option
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.kotlin.glColor
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.Vec3d
@@ -16,10 +17,10 @@ object GlMixin {
         if (!component.addTag(TAG_ATTRIB))
             return
 
-        component.BUS.hook(GuiComponent.PreDrawEvent::class.java) {
+        component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
             GlStateManager.pushAttrib()
         }
-        component.BUS.hook(GuiComponent.PostDrawEvent::class.java) {
+        component.BUS.hook(GuiComponentEvents.PostDrawEvent::class.java) {
             GlStateManager.popAttrib()
         }
     }
@@ -28,10 +29,10 @@ object GlMixin {
         if (!component.addTag(TAG_MATRIX))
             return
 
-        component.BUS.hook(GuiComponent.PreDrawEvent::class.java) {
+        component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
             GlStateManager.pushMatrix()
         }
-        component.BUS.hook(GuiComponent.PostDrawEvent::class.java) {
+        component.BUS.hook(GuiComponentEvents.PostDrawEvent::class.java) {
             GlStateManager.popMatrix()
         }
     }
@@ -51,7 +52,7 @@ object GlMixin {
 
         val opt = getData(component).getData("color", {
             val o = Option<T, Color>(Color.WHITE)
-            component.BUS.hook(GuiComponent.PreDrawEvent::class.java) {
+            component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
                 o.getValue(component).glColor()
             }
             o
@@ -65,7 +66,7 @@ object GlMixin {
 
         val opt = getData(component).getData("transform", {
             val o = Option<T, Vec3d>(Vec3d.ZERO)
-            component.BUS.hook(GuiComponent.PreDrawEvent::class.java) {
+            component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
                 val v = o.getValue(component)
                 GlStateManager.translate(v.x, v.y, v.z)
             }
@@ -80,7 +81,7 @@ object GlMixin {
 
         val opt = getData(component).getData("scale", {
             val o = Option<T, Vec3d>(Vec3d(1.0, 1.0, 1.0))
-            component.BUS.hook(GuiComponent.PreDrawEvent::class.java) {
+            component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
                 val v = o.getValue(component)
                 GlStateManager.scale(v.x, v.y, v.z)
             }
@@ -95,7 +96,7 @@ object GlMixin {
 
         val opt = getData(component).getData("rotate", {
             val o = Option<T, Vec3d>(Vec3d.ZERO)
-            component.BUS.hook(GuiComponent.PreDrawEvent::class.java) {
+            component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
                 val v = o.getValue(component)
                 GlStateManager.rotate(v.x.toFloat(), 1f, 0f, 0f)
                 GlStateManager.rotate(v.y.toFloat(), 0f, 1f, 0f)

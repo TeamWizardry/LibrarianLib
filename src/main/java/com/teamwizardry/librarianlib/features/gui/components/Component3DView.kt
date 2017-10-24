@@ -1,7 +1,8 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.math.Matrix4
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
@@ -12,21 +13,21 @@ import org.lwjgl.opengl.GL11
 class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent<Component3DView>(posX, posY, width, height) {
 
     init {
-        BUS.hook(PreDrawEvent::class.java) { event -> preDraw(event.mousePos) }
-        BUS.hook(PostDrawEvent::class.java) { postDraw() }
+        BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) { event -> preDraw(event.mousePos) }
+        BUS.hook(GuiComponentEvents.PostDrawEvent::class.java) { postDraw() }
 
-        BUS.hook(MouseWheelEvent::class.java) { event ->
+        BUS.hook(GuiComponentEvents.MouseWheelEvent::class.java) { event ->
             if (mouseOver) {
-                if (event.direction == MouseWheelDirection.UP && zoom < 100) {
+                if (event.direction == GuiComponentEvents.MouseWheelDirection.UP && zoom < 100) {
                     zoom *= 1.5
                 }
-                if (event.direction == MouseWheelDirection.DOWN && zoom > 1) {
+                if (event.direction == GuiComponentEvents.MouseWheelDirection.DOWN && zoom > 1) {
                     zoom /= 1.5
                 }
             }
         }
 
-        BUS.hook(MouseUpEvent::class.java) { event ->
+        BUS.hook(GuiComponentEvents.MouseUpEvent::class.java) { event ->
             calcDrag(event.mousePos, event.button)
 
             dragStart = Vec2d.ZERO

@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.test.gui.tests
 
 import com.teamwizardry.librarianlib.features.gui.GuiBase
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.plus
@@ -17,7 +17,7 @@ class GuiTestResizeMove : GuiBase(100, 100) {
         c.color.setValue(Color.RED)
         mainComponents.add(c)
 
-        c.BUS.hook(GuiComponent.MouseClickEvent::class.java) {
+        c.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
             c.pos += vec(1, 1)
             c.size += vec(1, 0)
         }

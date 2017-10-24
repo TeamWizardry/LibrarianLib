@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 import com.teamwizardry.librarianlib.features.animator.animations.Keyframe
 import com.teamwizardry.librarianlib.features.animator.animations.KeyframeAnimation
 import com.teamwizardry.librarianlib.features.gui.GuiBase
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.helpers.vec
 import java.awt.Color
@@ -41,7 +41,7 @@ class GuiBasicAnimation : GuiBase(200, 100) {
 
 //        animator.add(bouncer2.animate("pos", Vec2d(10, 10), 40f))
 
-        mainComponents.BUS.hook(GuiComponent.EVENTS.MouseClickEvent) {
+        mainComponents.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
             val anim = KeyframeAnimation(bouncer, "pos")
             anim.duration = 120f
             anim.shouldReverse = true

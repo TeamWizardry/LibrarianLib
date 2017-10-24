@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.test.gui.tests
 
 import com.teamwizardry.librarianlib.features.gui.GuiBase
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.gui.mixin.ScissorMixin
@@ -17,7 +17,7 @@ class GuiTestScale : GuiBase(100, 100) {
 
         val p = ComponentVoid(0,0)
         p.childScale = 2.0
-        p.BUS.hook(GuiComponent.MouseClickEvent::class.java) {
+        p.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
             p.childScale = 1/p.childScale
             p.childTranslation += vec(2, 2)
         }

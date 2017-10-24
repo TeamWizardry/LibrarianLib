@@ -1,12 +1,14 @@
-package com.teamwizardry.librarianlib.features.gui
+package com.teamwizardry.librarianlib.features.gui.component
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.core.client.ClientTickHandler
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventBus
-import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
-import com.teamwizardry.librarianlib.features.gui.GuiComponent.*
+import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
+import com.teamwizardry.librarianlib.features.gui.IGuiDrawable
+import com.teamwizardry.librarianlib.features.gui.Key
+import com.teamwizardry.librarianlib.features.gui.Option
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.div
 import com.teamwizardry.librarianlib.features.kotlin.minus
@@ -25,6 +27,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import java.util.*
+
 
 /**
  * The base class of every on-screen object. These can be nested within each other using [add]. Subcomponents will be
@@ -73,116 +76,12 @@ import java.util.*
  * The logical size of a component is theoretically the amount of space a component takes up. This is used for general
  * flow, such as when a list is laid out, the logical height of each element is taken into account in order to stack them.
  *
- * ## Default events
- *
- * ### Common Events
- * - [ComponentTickEvent] - Fired each tick while the component is a part of a screen
- * - [PreDrawEvent] - Fired each frame before the component has been drawn
- * - [PreChildrenDrawEvent] - Fired each frame after the component has been drawn but before children have been drawn
- * - [PostDrawEvent] - Fired each frame after the component and its children have been drawn
- * - ---
- * - [MouseDownEvent] - Fired whenever the mouse is pressed
- * - [MouseUpEvent] - Fired whenever the mouse is released
- * - [MouseDragEvent] - Fired whenever the mouse is moved while a button is being pressed
- * - [MouseClickEvent] - Fired when the mouse is clicked within the component
- * - ---
- * - [KeyDownEvent] - Fired when a key is pressed
- * - [KeyUpEvent] - Fired when a key is released
- * - ---
- * - [MouseInEvent] - Fired when the mouse is moved into the component
- * - [MouseOutEvent] - Fired when the mouse is moved out of the component
- * - [MouseWheelEvent] - Fired when the mouse wheel is moved
- * - ---
- * - [FocusEvent] - Fired when the component gains focus
- * - [BlurEvent] - Fired when the component loses focus
- * - ---
- * - [EnableEvent] - Fired when this component is enabled
- * - [DisableEvent] - Fired when this component is disabled
- *
- * ### Seldom used events
- * - [AddChildEvent] - Fired before a child is added to the component
- * - [RemoveChildEvent] - Fired when a child is removed from the component
- * - [AddToParentEvent] - Fired when the component is added as a child to another component
- * - [RemoveFromParentEvent] - Fired when the component is removed from its parent
- * - ---
- * - [SetDataEvent] - Fired before data is set
- * - [RemoveDataEvent] - Fired before data is removed
- * - [GetDataEvent] - Fired when data is queried
- * - [GetDataKeysEvent] - Fired when the data key set is queried
- * - [GetDataClassesEvent] - Fired when the data class set is queried
- * - ---
- * - [HasTagEvent] - Fired when the component is checked for a tag
- * - [AddTagEvent] - Fired before a tag is added to the component
- * - [RemoveTagEvent] - Fired before a tag is removed from a component
- *
- * ### Advanced events
- * - [LogicalSizeEvent] - Fired when the logical size is queried
- * - [MouseOverEvent] - Fired when checking if the mouse is over this component
  */
 @SideOnly(Side.CLIENT)
 abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX: Int, posY: Int, width: Int = 0, height: Int = 0) : IGuiDrawable {
-    companion object {
-        @JvmStatic val EVENTS = GuiComponentEventsShortcuts()
-    }
 
     @JvmField
     val BUS = EventBus()
-
-    class ComponentTickEvent<T : GuiComponent<T>>(val component: T) : Event()
-
-    class PreDrawEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val partialTicks: Float) : Event()
-    class PostDrawEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val partialTicks: Float) : Event(true)
-    class PreChildrenDrawEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val partialTicks: Float) : Event()
-
-    class MouseDownEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
-    class MouseUpEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
-    class MouseDragEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
-    class MouseClickEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
-
-    class KeyDownEvent<T : GuiComponent<T>>(val component: T, val key: Char, val keyCode: Int) : EventCancelable()
-    class KeyUpEvent<T : GuiComponent<T>>(val component: T, val key: Char, val keyCode: Int) : EventCancelable()
-
-    class MouseInEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d) : Event()
-    class MouseOutEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d) : Event()
-    class MouseWheelEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val direction: MouseWheelDirection) : EventCancelable()
-    enum class MouseWheelDirection(@JvmField val ydirection: Int) {
-        UP(+1), DOWN(-1);
-
-        companion object {
-            @JvmStatic
-            fun fromSign(dir: Int): MouseWheelDirection {
-                return if (dir >= 0) UP else DOWN
-            }
-        }
-    }
-
-    class FocusEvent<T : GuiComponent<T>>(val component: T) : Event()
-    class BlurEvent<T : GuiComponent<T>>(val component: T) : Event()
-    class EnableEvent<T : GuiComponent<T>>(val component: T) : Event()
-    class DisableEvent<T : GuiComponent<T>>(val component: T) : Event()
-
-    class AddChildEvent<T : GuiComponent<T>>(val component: T, val child: GuiComponent<*>) : EventCancelable()
-    class RemoveChildEvent<T : GuiComponent<T>>(val component: T, val child: GuiComponent<*>) : EventCancelable()
-    class AddToParentEvent<out T : GuiComponent<*>>(val component: T, val parent: GuiComponent<*>) : EventCancelable()
-    class RemoveFromParentEvent<out T : GuiComponent<*>>(val component: T, val parent: GuiComponent<*>) : EventCancelable()
-
-    class SetDataEvent<T : GuiComponent<T>, D>(val component: T, val clazz: Class<D>, val key: String, val value: D) : EventCancelable()
-    class RemoveDataEvent<T : GuiComponent<T>, D>(val component: T, val clazz: Class<D>, val key: String, val value: D?) : EventCancelable()
-    class GetDataEvent<T : GuiComponent<T>, D>(val component: T, val clazz: Class<D>, val key: String, val value: D?) : Event()
-    class GetDataKeysEvent<T : GuiComponent<T>, D>(val component: T, val clazz: Class<D>, val value: MutableSet<String>) : Event()
-    class GetDataClassesEvent<T : GuiComponent<T>>(val component: T, val value: MutableSet<Class<*>>) : Event()
-
-    class HasTagEvent<T : GuiComponent<T>>(val component: T, val tag: Any, var hasTag: Boolean) : Event()
-    class AddTagEvent<T : GuiComponent<T>>(val component: T, val tag: Any) : EventCancelable()
-    class RemoveTagEvent<T : GuiComponent<T>>(val component: T, val tag: Any) : EventCancelable()
-
-    class LogicalSizeEvent<T : GuiComponent<T>>(val component: T, var box: BoundingBox2D?) : Event()
-    class MouseOverEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, var isOver: Boolean) : Event()
-
-    class MessageArriveEvent<T : GuiComponent<T>>(val component: T, val from: GuiComponent<*>, val message: Message) : Event()
-
-    data class Message(val component: GuiComponent<*>, val data: Any, val rippleType: EnumRippleType)
-    enum class EnumRippleType { NONE, UP, DOWN, ALL }
 
     var zIndex = 0
     /**
@@ -235,9 +134,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         set(value) {
             if (field != value) {
                 if (value)
-                    BUS.fire(EnableEvent(thiz()))
+                    BUS.fire(GuiComponentEvents.EnableEvent(thiz()))
                 else
-                    BUS.fire(DisableEvent(thiz()))
+                    BUS.fire(GuiComponentEvents.DisableEvent(thiz()))
             }
             field = value
         }
@@ -250,9 +149,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         set(value) {
             if (field != value) {
                 if (value)
-                    BUS.fire(FocusEvent(thiz()))
+                    BUS.fire(GuiComponentEvents.FocusEvent(thiz()))
                 else
-                    BUS.fire(BlurEvent(thiz()))
+                    BUS.fire(GuiComponentEvents.BlurEvent(thiz()))
             }
             field = value
         }
@@ -366,9 +265,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         }
 
 
-        if (BUS.fire(AddChildEvent(thiz(), component)).isCanceled())
+        if (BUS.fire(GuiComponentEvents.AddChildEvent(thiz(), component)).isCanceled())
             return
-        if (component.BUS.fire(AddToParentEvent(component.thiz(), thiz())).isCanceled())
+        if (component.BUS.fire(GuiComponentEvents.AddToParentEvent(component.thiz(), thiz())).isCanceled())
             return
         components.add(component)
         component.parent = this
@@ -384,9 +283,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     fun remove(component: GuiComponent<*>) {
         if (component !in components)
             return
-        if (BUS.fire(RemoveChildEvent(thiz(), component)).isCanceled())
+        if (BUS.fire(GuiComponentEvents.RemoveChildEvent(thiz(), component)).isCanceled())
             return
-        if (component.BUS.fire(RemoveFromParentEvent(component.thiz(), thiz())).isCanceled())
+        if (component.BUS.fire(GuiComponentEvents.RemoveFromParentEvent(component.thiz(), thiz())).isCanceled())
             return
         component.parent = null
         components.remove(component)
@@ -398,9 +297,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     fun removeByTag(tag: Any) {
         components.removeAll { e ->
             var b = e.hasTag(tag)
-            if (BUS.fire(RemoveChildEvent(thiz(), e)).isCanceled())
+            if (BUS.fire(GuiComponentEvents.RemoveChildEvent(thiz(), e)).isCanceled())
                 b = false
-            if (e.BUS.fire(RemoveFromParentEvent(e.thiz(), thiz())).isCanceled())
+            if (e.BUS.fire(GuiComponentEvents.RemoveFromParentEvent(e.thiz(), thiz())).isCanceled())
                 b = false
             if (b) {
                 e.parent = null
@@ -588,7 +487,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
             mouseOver = mouseOver || (calculateOwnHover && calculateOwnHover(mousePos))
         }
-        this.mouseOver = BUS.fire(MouseOverEvent(thiz(), mousePos, this.mouseOver)).isOver
+        this.mouseOver = BUS.fire(GuiComponentEvents.MouseOverEvent(thiz(), mousePos, this.mouseOver)).isOver
         this.mouseOverNoOcclusion = this.mouseOver
     }
 
@@ -618,9 +517,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
         components.removeAll { e ->
             var b = e.isInvalid
-            if (BUS.fire(RemoveChildEvent(thiz(), e)).isCanceled())
+            if (BUS.fire(GuiComponentEvents.RemoveChildEvent(thiz(), e)).isCanceled())
                 b = false
-            if (e.BUS.fire(RemoveFromParentEvent(e.thiz(), thiz())).isCanceled())
+            if (e.BUS.fire(GuiComponentEvents.RemoveFromParentEvent(e.thiz(), thiz())).isCanceled())
                 b = false
             if (b) {
                 e.parent = null
@@ -630,14 +529,14 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
         if (wasMouseOver != this.mouseOver) {
             if (this.mouseOver) {
-                BUS.fire(MouseInEvent(thiz(), mousePos))
+                BUS.fire(GuiComponentEvents.MouseInEvent(thiz(), mousePos))
             } else {
-                BUS.fire(MouseOutEvent(thiz(), mousePos))
+                BUS.fire(GuiComponentEvents.MouseOutEvent(thiz(), mousePos))
             }
         }
         wasMouseOver = this.mouseOver
 
-        BUS.fire(PreDrawEvent(thiz(), mousePos, partialTicks))
+        BUS.fire(GuiComponentEvents.PreDrawEvent(thiz(), mousePos, partialTicks))
 
         drawComponent(mousePos, partialTicks)
 
@@ -667,14 +566,14 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         if (childRotation != 0.0) // see above comment
             GlStateManager.rotate(Math.toDegrees(childRotation).toFloat(), 0f, 0f, 1f)
 
-        BUS.fire(PreChildrenDrawEvent(thiz(), mousePos, partialTicks))
+        BUS.fire(GuiComponentEvents.PreChildrenDrawEvent(thiz(), mousePos, partialTicks))
 
         forEachChild { it.draw(transformChildPos(it, mousePos), partialTicks) }
 
         GlStateManager.popAttrib()
         GlStateManager.popMatrix()
 
-        BUS.fire(PostDrawEvent(thiz(), mousePos, partialTicks))
+        BUS.fire(GuiComponentEvents.PostDrawEvent(thiz(), mousePos, partialTicks))
     }
 
     /**
@@ -698,7 +597,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     open fun onTick() {}
 
     fun tick() {
-        BUS.fire(ComponentTickEvent(thiz()))
+        BUS.fire(GuiComponentEvents.ComponentTickEvent(thiz()))
         onTick()
         forEachChild(GuiComponent<*>::tick)
     }
@@ -711,7 +610,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      */
     open fun mouseDown(mousePos: Vec2d, button: EnumMouseButton) {
         if (!isVisible) return
-        if (BUS.fire(MouseDownEvent(thiz(), mousePos, button)).isCanceled())
+        if (BUS.fire(GuiComponentEvents.MouseDownEvent(thiz(), mousePos, button)).isCanceled())
             return
 
         if (mouseOver)
@@ -733,11 +632,11 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         val wasDown = mouseButtonsDown[button.ordinal]
         mouseButtonsDown[button.ordinal] = false
 
-        if (BUS.fire(MouseUpEvent(thiz(), mousePos, button)).isCanceled())
+        if (BUS.fire(GuiComponentEvents.MouseUpEvent(thiz(), mousePos, button)).isCanceled())
             return
 
         if (mouseOver && wasDown) {
-            BUS.fire(MouseClickEvent(thiz(), mousePos, button))
+            BUS.fire(GuiComponentEvents.MouseClickEvent(thiz(), mousePos, button))
             // don't return here, if a click was handled we should still handle the mouseUp
         }
 
@@ -754,7 +653,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      */
     fun mouseDrag(mousePos: Vec2d, button: EnumMouseButton) {
         if (!isVisible) return
-        if (BUS.fire(MouseDragEvent(thiz(), mousePos, button)).isCanceled())
+        if (BUS.fire(GuiComponentEvents.MouseDragEvent(thiz(), mousePos, button)).isCanceled())
             return
 
         forEachChild { child ->
@@ -766,9 +665,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * Called when the mouse wheel is moved.
      * @param mousePos
      */
-    fun mouseWheel(mousePos: Vec2d, direction: MouseWheelDirection) {
+    fun mouseWheel(mousePos: Vec2d, direction: GuiComponentEvents.MouseWheelDirection) {
         if (!isVisible) return
-        if (BUS.fire(MouseWheelEvent(thiz(), mousePos, direction)).isCanceled())
+        if (BUS.fire(GuiComponentEvents.MouseWheelEvent(thiz(), mousePos, direction)).isCanceled())
             return
 
         forEachChild { child ->
@@ -784,7 +683,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      */
     fun keyPressed(key: Char, keyCode: Int) {
         if (!isVisible) return
-        if (BUS.fire(KeyDownEvent(thiz(), key, keyCode)).isCanceled())
+        if (BUS.fire(GuiComponentEvents.KeyDownEvent(thiz(), key, keyCode)).isCanceled())
             return
 
         keysDown.put(Key[key, keyCode], true)
@@ -804,7 +703,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         if (!isVisible) return
         keysDown.put(Key[key, keyCode], false) // do this before so we don't have lingering keyDown entries
 
-        if (BUS.fire(KeyUpEvent(thiz(), key, keyCode)).isCanceled())
+        if (BUS.fire(GuiComponentEvents.KeyUpEvent(thiz(), key, keyCode)).isCanceled())
             return
 
         forEachChild { child ->
@@ -833,7 +732,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
         aabb = BoundingBox2D(aabb.min + pos - vec(marginLeft, marginTop), aabb.max + pos + vec(marginRight, marginBottom))
 
-        return BUS.fire(LogicalSizeEvent(thiz(), if (outOfFlow) null else aabb)).box
+        return BUS.fire(GuiComponentEvents.LogicalSizeEvent(thiz(), if (outOfFlow) null else aabb)).box
     }
 
     /**
@@ -870,21 +769,21 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     }
     //=============================================================================
 
-    open fun onMessage(from: GuiComponent<*>, message: Message) {}
+    open fun onMessage(from: GuiComponent<*>, message: GuiComponentEvents.Message) {}
 
-    fun handleMessage(from: GuiComponent<*>, message: Message) {
-        BUS.fire(MessageArriveEvent(thiz(), from, message))
+    fun handleMessage(from: GuiComponent<*>, message: GuiComponentEvents.Message) {
+        BUS.fire(GuiComponentEvents.MessageArriveEvent(thiz(), from, message))
         onMessage(from, message)
 
-        if (message.rippleType != EnumRippleType.NONE) {
-            if (message.rippleType == EnumRippleType.UP || message.rippleType == EnumRippleType.ALL) {
+        if (message.rippleType != GuiComponentEvents.EnumRippleType.NONE) {
+            if (message.rippleType == GuiComponentEvents.EnumRippleType.UP || message.rippleType == GuiComponentEvents.EnumRippleType.ALL) {
                 parent?.let {
                     if (it != from) {
                         it.handleMessage(this, message)
                     }
                 }
             }
-            if (message.rippleType == EnumRippleType.DOWN || message.rippleType == EnumRippleType.ALL) {
+            if (message.rippleType == GuiComponentEvents.EnumRippleType.DOWN || message.rippleType == GuiComponentEvents.EnumRippleType.ALL) {
                 forEachChild {
                     if (it != from) {
                         it.handleMessage(this, message)
@@ -894,7 +793,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         }
     }
 
-    open fun sendMessage(data: Any, ripple: EnumRippleType) {
+    open fun sendMessage(data: Any, ripple: GuiComponentEvents.EnumRippleType) {
         // NO-OP
     }
 
@@ -904,14 +803,14 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     fun <D : Any> getAllDataKeys(clazz: Class<D>): Set<String> {
         if (!data.containsKey(clazz))
             return setOf()
-        return BUS.fire(GetDataKeysEvent(thiz(), clazz, data[clazz]?.keys?.toMutableSet() ?: mutableSetOf())).value
+        return BUS.fire(GuiComponentEvents.GetDataKeysEvent(thiz(), clazz, data[clazz]?.keys?.toMutableSet() ?: mutableSetOf())).value
     }
 
     /**
      * Returns all classes for data that contain at least one value. Not guaranteed to be complete.
      */
     fun getAllDataClasses(): Set<Class<*>> {
-        return BUS.fire(GetDataClassesEvent(thiz(), data.entries.filter { it.value.isNotEmpty() }.map { it.key }.toMutableSet())).value
+        return BUS.fire(GuiComponentEvents.GetDataClassesEvent(thiz(), data.entries.filter { it.value.isNotEmpty() }.map { it.key }.toMutableSet())).value
     }
 
     /**
@@ -920,7 +819,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     fun <D : Any> setData(clazz: Class<D>, key: String, value: D) {
         if (!data.containsKey(clazz))
             data.put(clazz, mutableMapOf())
-        if (!BUS.fire(SetDataEvent(thiz(), clazz, key, value)).isCanceled())
+        if (!BUS.fire(GuiComponentEvents.SetDataEvent(thiz(), clazz, key, value)).isCanceled())
             data[clazz]?.put(key, value)
     }
 
@@ -930,7 +829,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     fun <D : Any> removeData(clazz: Class<D>, key: String) {
         if (!data.containsKey(clazz))
             data.put(clazz, mutableMapOf())
-        if (!BUS.fire(RemoveDataEvent(thiz(), clazz, key, getData(clazz, key))).isCanceled())
+        if (!BUS.fire(GuiComponentEvents.RemoveDataEvent(thiz(), clazz, key, getData(clazz, key))).isCanceled())
             data[clazz]?.remove(key)
     }
 
@@ -942,7 +841,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     fun <D> getData(clazz: Class<D>, key: String): D? {
         if (!data.containsKey(clazz))
             data.put(clazz, HashMap<String, Any>())
-        return BUS.fire(GetDataEvent(thiz(), clazz, key, data[clazz]?.get(key) as D?)).value
+        return BUS.fire(GuiComponentEvents.GetDataEvent(thiz(), clazz, key, data[clazz]?.get(key) as D?)).value
     }
 
     /**
@@ -952,7 +851,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     fun <D> hasData(clazz: Class<D>, key: String): Boolean {
         if (!data.containsKey(clazz))
             data.put(clazz, HashMap<String, Any>())
-        return BUS.fire(GetDataEvent(thiz(), clazz, key, data[clazz]?.get(key) as D?)).value != null
+        return BUS.fire(GuiComponentEvents.GetDataEvent(thiz(), clazz, key, data[clazz]?.get(key) as D?)).value != null
     }
 
     /**
@@ -990,7 +889,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * @return true if the tag didn't exist and was added
      */
     fun addTag(tag: Any): Boolean {
-        if (!BUS.fire(AddTagEvent(thiz(), tag)).isCanceled())
+        if (!BUS.fire(GuiComponentEvents.AddTagEvent(thiz(), tag)).isCanceled())
             if (tagStorage.add(tag))
                 return true
         return false
@@ -1002,7 +901,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * @return true if the tag existed and was removed
      */
     fun removeTag(tag: Any): Boolean {
-        if (!BUS.fire(RemoveTagEvent(thiz(), tag)).isCanceled())
+        if (!BUS.fire(GuiComponentEvents.RemoveTagEvent(thiz(), tag)).isCanceled())
             if (tagStorage.remove(tag))
                 return true
         return false
@@ -1012,7 +911,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * Checks if the component has the tag specified. Tags are not case sensitive
      */
     fun hasTag(tag: Any): Boolean {
-        return BUS.fire(HasTagEvent(thiz(), tag, tagStorage.contains(tag))).hasTag
+        return BUS.fire(GuiComponentEvents.HasTagEvent(thiz(), tag, tagStorage.contains(tag))).hasTag
     }
 
     /**

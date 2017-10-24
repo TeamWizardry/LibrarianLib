@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.gui
 
 import com.teamwizardry.librarianlib.core.client.ClientTickHandler
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.div

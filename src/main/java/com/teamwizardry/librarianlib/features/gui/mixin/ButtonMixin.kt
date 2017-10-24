@@ -4,7 +4,8 @@ import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
 class ButtonMixin<T : GuiComponent<T>>(val component: GuiComponent<T>, init: Runnable) {
@@ -28,7 +29,7 @@ class ButtonMixin<T : GuiComponent<T>>(val component: GuiComponent<T>, init: Run
 
         component.addTag(TAG)
 
-        component.BUS.hook(GuiComponent.PreDrawEvent::class.java) { event ->
+        component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) { event ->
             val newState = if (!event.component.enabled) EnumButtonState.DISABLED
             else if (event.component.mouseOver) EnumButtonState.HOVER
             else EnumButtonState.NORMAL
@@ -36,7 +37,7 @@ class ButtonMixin<T : GuiComponent<T>>(val component: GuiComponent<T>, init: Run
             state = component.BUS.fire(ButtonStateChangeEvent(component, event.mousePos, state, newState)).newState
         }
 
-        component.BUS.hook(GuiComponent.MouseClickEvent::class.java) { event ->
+        component.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) { event ->
             if (state != EnumButtonState.DISABLED)
                 component.BUS.fire(ButtonClickEvent(event.component, event.mousePos, event.button))
             state != EnumButtonState.DISABLED

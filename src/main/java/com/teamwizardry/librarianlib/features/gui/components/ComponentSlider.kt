@@ -1,7 +1,8 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.HandlerList
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.mixin.DragMixin
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
@@ -39,7 +40,7 @@ class ComponentSlider(posX: Int, posY: Int, width: Int, height: Int, percentage:
             vec
         }
 
-        handle.BUS.hook(PreDrawEvent::class.java) {
+        handle.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
             if (handlePos != handle.pos)
                 handle.pos = handlePos
         }

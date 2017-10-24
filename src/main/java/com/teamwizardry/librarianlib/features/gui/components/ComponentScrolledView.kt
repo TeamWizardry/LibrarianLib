@@ -1,7 +1,8 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.HandlerList
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.mixin.ScissorMixin
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
@@ -13,7 +14,7 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
     init {
         ScissorMixin.scissor(this)
 
-        BUS.hook(LogicalSizeEvent::class.java) { event ->
+        BUS.hook(GuiComponentEvents.LogicalSizeEvent::class.java) { event ->
             if (event.box != null)
                 event.box = contentSize
         }
