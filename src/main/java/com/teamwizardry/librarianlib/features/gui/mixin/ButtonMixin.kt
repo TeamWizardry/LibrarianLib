@@ -12,8 +12,8 @@ class ButtonMixin(val component: GuiComponent, init: Runnable) {
 
     constructor(component: GuiComponent, init: () -> Unit) : this(component, Runnable(init))
 
-    class ButtonClickEvent(val component: GuiComponent, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
-    class ButtonStateChangeEvent(val component: GuiComponent, val mousePos: Vec2d, val state: EnumButtonState, var newState: EnumButtonState) : Event()
+    class ButtonClickEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
+    class ButtonStateChangeEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val state: EnumButtonState, var newState: EnumButtonState) : Event()
 
     var state = EnumButtonState.NORMAL
 

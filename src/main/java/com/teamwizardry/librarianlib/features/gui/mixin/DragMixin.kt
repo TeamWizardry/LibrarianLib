@@ -9,9 +9,9 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 
 class DragMixin(protected var component: GuiComponent, protected var constraints: (Vec2d) -> Vec2d) {
 
-    class DragPickupEvent(val component: GuiComponent, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
-    class DragDropEvent(val component: GuiComponent, val mousePos: Vec2d, val button: EnumMouseButton, val previousPos: Vec2d) : EventCancelable()
-    class DragMoveEvent(val component: GuiComponent, val mousePos: Vec2d, val clickedPoint: Vec2d, val pos: Vec2d, var newPos: Vec2d, val button: EnumMouseButton) : Event()
+    class DragPickupEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
+    class DragDropEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val button: EnumMouseButton, val previousPos: Vec2d) : EventCancelable()
+    class DragMoveEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val clickedPoint: Vec2d, val pos: Vec2d, var newPos: Vec2d, val button: EnumMouseButton) : Event()
 
     var mouseDown: EnumMouseButton? = null
     var clickPos = Vec2d.ZERO
