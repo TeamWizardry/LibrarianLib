@@ -2,9 +2,40 @@ package com.teamwizardry.librarianlib.features.gui.component
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
-import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.AddChildEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.AddTagEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.AddToParentEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.BlurEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.ComponentTickEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.DisableEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.EnableEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.FocusEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.GetDataClassesEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.GetDataEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.GetDataKeysEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.HasTagEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.KeyDownEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.KeyUpEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.LogicalSizeEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.MouseClickEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.MouseDownEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.MouseDragEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.MouseInEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.MouseOutEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.MouseOverEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.MouseUpEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.MouseWheelEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.PostDrawEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.PreChildrenDrawEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.PreDrawEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.RemoveChildEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.RemoveDataEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.RemoveFromParentEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.RemoveTagEvent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.SetDataEvent
 import com.teamwizardry.librarianlib.features.math.BoundingBox2D
+import com.teamwizardry.librarianlib.features.math.Vec2d
 
 /**
  * ## Default events
@@ -54,23 +85,23 @@ import com.teamwizardry.librarianlib.features.math.BoundingBox2D
  * - [MouseOverEvent] - Fired when checking if the mouse is over this component
  */
 object GuiComponentEvents {
-    class ComponentTickEvent<T : GuiComponent<T>>(val component: T) : Event()
+    class ComponentTickEvent(@JvmField val component: GuiComponent<*>) : Event()
 
-    class PreDrawEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val partialTicks: Float) : Event()
-    class PostDrawEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val partialTicks: Float) : Event(true)
-    class PreChildrenDrawEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val partialTicks: Float) : Event()
+    class PreDrawEvent(@JvmField val component: GuiComponent<*>, val mousePos: Vec2d, val partialTicks: Float) : Event()
+    class PostDrawEvent(@JvmField val component: GuiComponent<*>, val mousePos: Vec2d, val partialTicks: Float) : Event(true)
+    class PreChildrenDrawEvent(@JvmField val component: GuiComponent<*>, val mousePos: Vec2d, val partialTicks: Float) : Event()
 
-    class MouseDownEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
-    class MouseUpEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
-    class MouseDragEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
-    class MouseClickEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
+    class MouseDownEvent(@JvmField val component: GuiComponent<*>, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
+    class MouseUpEvent(@JvmField val component: GuiComponent<*>, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
+    class MouseDragEvent(@JvmField val component: GuiComponent<*>, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
+    class MouseClickEvent(@JvmField val component: GuiComponent<*>, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
 
-    class KeyDownEvent<T : GuiComponent<T>>(val component: T, val key: Char, val keyCode: Int) : EventCancelable()
-    class KeyUpEvent<T : GuiComponent<T>>(val component: T, val key: Char, val keyCode: Int) : EventCancelable()
+    class KeyDownEvent(@JvmField val component: GuiComponent<*>, val key: Char, val keyCode: Int) : EventCancelable()
+    class KeyUpEvent(@JvmField val component: GuiComponent<*>, val key: Char, val keyCode: Int) : EventCancelable()
 
-    class MouseInEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d) : Event()
-    class MouseOutEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d) : Event()
-    class MouseWheelEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, val direction: MouseWheelDirection) : EventCancelable()
+    class MouseInEvent(@JvmField val component: GuiComponent<*>, val mousePos: Vec2d) : Event()
+    class MouseOutEvent(@JvmField val component: GuiComponent<*>, val mousePos: Vec2d) : Event()
+    class MouseWheelEvent(@JvmField val component: GuiComponent<*>, val mousePos: Vec2d, val direction: MouseWheelDirection) : EventCancelable()
     enum class MouseWheelDirection(@JvmField val ydirection: Int) {
         UP(+1), DOWN(-1);
 
@@ -82,31 +113,31 @@ object GuiComponentEvents {
         }
     }
 
-    class FocusEvent<T : GuiComponent<T>>(val component: T) : Event()
-    class BlurEvent<T : GuiComponent<T>>(val component: T) : Event()
-    class EnableEvent<T : GuiComponent<T>>(val component: T) : Event()
-    class DisableEvent<T : GuiComponent<T>>(val component: T) : Event()
+    class FocusEvent(@JvmField val component: GuiComponent<*>) : Event()
+    class BlurEvent(@JvmField val component: GuiComponent<*>) : Event()
+    class EnableEvent(@JvmField val component: GuiComponent<*>) : Event()
+    class DisableEvent(@JvmField val component: GuiComponent<*>) : Event()
 
-    class AddChildEvent<T : GuiComponent<T>>(val component: T, val child: GuiComponent<*>) : EventCancelable()
-    class RemoveChildEvent<T : GuiComponent<T>>(val component: T, val child: GuiComponent<*>) : EventCancelable()
-    class AddToParentEvent<out T : GuiComponent<*>>(val component: T, val parent: GuiComponent<*>) : EventCancelable()
-    class RemoveFromParentEvent<out T : GuiComponent<*>>(val component: T, val parent: GuiComponent<*>) : EventCancelable()
+    class AddChildEvent(@JvmField val component: GuiComponent<*>, val child: GuiComponent<*>) : EventCancelable()
+    class RemoveChildEvent(@JvmField val component: GuiComponent<*>, val child: GuiComponent<*>) : EventCancelable()
+    class AddToParentEvent(@JvmField val component: GuiComponent<*>, val parent: GuiComponent<*>) : EventCancelable()
+    class RemoveFromParentEvent(@JvmField val component: GuiComponent<*>, val parent: GuiComponent<*>) : EventCancelable()
 
-    class SetDataEvent<T : GuiComponent<T>, D>(val component: T, val clazz: Class<D>, val key: String, val value: D) : EventCancelable()
-    class RemoveDataEvent<T : GuiComponent<T>, D>(val component: T, val clazz: Class<D>, val key: String, val value: D?) : EventCancelable()
-    class GetDataEvent<T : GuiComponent<T>, D>(val component: T, val clazz: Class<D>, val key: String, val value: D?) : Event()
-    class GetDataKeysEvent<T : GuiComponent<T>, D>(val component: T, val clazz: Class<D>, val value: MutableSet<String>) : Event()
-    class GetDataClassesEvent<T : GuiComponent<T>>(val component: T, val value: MutableSet<Class<*>>) : Event()
+    class SetDataEvent<D>(@JvmField val component: GuiComponent<*>, val clazz: Class<D>, val key: String, val value: D) : EventCancelable()
+    class RemoveDataEvent<D>(@JvmField val component: GuiComponent<*>, val clazz: Class<D>, val key: String, val value: D?) : EventCancelable()
+    class GetDataEvent<D>(@JvmField val component: GuiComponent<*>, val clazz: Class<D>, val key: String, val value: D?) : Event()
+    class GetDataKeysEvent<D>(@JvmField val component: GuiComponent<*>, val clazz: Class<D>, val value: MutableSet<String>) : Event()
+    class GetDataClassesEvent(@JvmField val component: GuiComponent<*>, val value: MutableSet<Class<*>>) : Event()
 
-    class HasTagEvent<T : GuiComponent<T>>(val component: T, val tag: Any, var hasTag: Boolean) : Event()
-    class AddTagEvent<T : GuiComponent<T>>(val component: T, val tag: Any) : EventCancelable()
-    class RemoveTagEvent<T : GuiComponent<T>>(val component: T, val tag: Any) : EventCancelable()
+    class HasTagEvent(@JvmField val component: GuiComponent<*>, val tag: Any, var hasTag: Boolean) : Event()
+    class AddTagEvent(@JvmField val component: GuiComponent<*>, val tag: Any) : EventCancelable()
+    class RemoveTagEvent(@JvmField val component: GuiComponent<*>, val tag: Any) : EventCancelable()
 
-    class LogicalSizeEvent<T : GuiComponent<T>>(val component: T, var box: BoundingBox2D?) : Event()
-    class MouseOverEvent<T : GuiComponent<T>>(val component: T, val mousePos: Vec2d, var isOver: Boolean) : Event()
+    class LogicalSizeEvent(@JvmField val component: GuiComponent<*>, var box: BoundingBox2D?) : Event()
+    class MouseOverEvent(@JvmField val component: GuiComponent<*>, val mousePos: Vec2d, var isOver: Boolean) : Event()
 
-    class MessageArriveEvent<T : GuiComponent<T>>(val component: T, val from: GuiComponent<*>, val message: Message) : Event()
+    class MessageArriveEvent(@JvmField val component: GuiComponent<*>, val from: GuiComponent<*>, val message: Message) : Event()
 
-    data class Message(val component: GuiComponent<*>, val data: Any, val rippleType: EnumRippleType)
+    data class Message(@JvmField val component: GuiComponent<*>, val data: Any, val rippleType: EnumRippleType)
     enum class EnumRippleType { NONE, UP, DOWN, ALL }
 }

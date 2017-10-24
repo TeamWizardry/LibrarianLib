@@ -134,9 +134,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         set(value) {
             if (field != value) {
                 if (value)
-                    BUS.fire(GuiComponentEvents.EnableEvent(thiz()))
+                    BUS.fire(GuiComponentEvents.EnableEvent(this))
                 else
-                    BUS.fire(GuiComponentEvents.DisableEvent(thiz()))
+                    BUS.fire(GuiComponentEvents.DisableEvent(this))
             }
             field = value
         }
@@ -149,9 +149,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         set(value) {
             if (field != value) {
                 if (value)
-                    BUS.fire(GuiComponentEvents.FocusEvent(thiz()))
+                    BUS.fire(GuiComponentEvents.FocusEvent(this))
                 else
-                    BUS.fire(GuiComponentEvents.BlurEvent(thiz()))
+                    BUS.fire(GuiComponentEvents.BlurEvent(this))
             }
             field = value
         }
@@ -265,9 +265,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         }
 
 
-        if (BUS.fire(GuiComponentEvents.AddChildEvent(thiz(), component)).isCanceled())
+        if (BUS.fire(GuiComponentEvents.AddChildEvent(this, component)).isCanceled())
             return
-        if (component.BUS.fire(GuiComponentEvents.AddToParentEvent(component.thiz(), thiz())).isCanceled())
+        if (component.BUS.fire(GuiComponentEvents.AddToParentEvent(component, this)).isCanceled())
             return
         components.add(component)
         component.parent = this
@@ -283,9 +283,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     fun remove(component: GuiComponent<*>) {
         if (component !in components)
             return
-        if (BUS.fire(GuiComponentEvents.RemoveChildEvent(thiz(), component)).isCanceled())
+        if (BUS.fire(GuiComponentEvents.RemoveChildEvent(this, component)).isCanceled())
             return
-        if (component.BUS.fire(GuiComponentEvents.RemoveFromParentEvent(component.thiz(), thiz())).isCanceled())
+        if (component.BUS.fire(GuiComponentEvents.RemoveFromParentEvent(component, this)).isCanceled())
             return
         component.parent = null
         components.remove(component)
@@ -297,9 +297,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     fun removeByTag(tag: Any) {
         components.removeAll { e ->
             var b = e.hasTag(tag)
-            if (BUS.fire(GuiComponentEvents.RemoveChildEvent(thiz(), e)).isCanceled())
+            if (BUS.fire(GuiComponentEvents.RemoveChildEvent(this, e)).isCanceled())
                 b = false
-            if (e.BUS.fire(GuiComponentEvents.RemoveFromParentEvent(e.thiz(), thiz())).isCanceled())
+            if (e.BUS.fire(GuiComponentEvents.RemoveFromParentEvent(e, this)).isCanceled())
                 b = false
             if (b) {
                 e.parent = null
@@ -487,7 +487,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
             mouseOver = mouseOver || (calculateOwnHover && calculateOwnHover(mousePos))
         }
-        this.mouseOver = BUS.fire(GuiComponentEvents.MouseOverEvent(thiz(), mousePos, this.mouseOver)).isOver
+        this.mouseOver = BUS.fire(GuiComponentEvents.MouseOverEvent(this, mousePos, this.mouseOver)).isOver
         this.mouseOverNoOcclusion = this.mouseOver
     }
 
@@ -517,9 +517,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
         components.removeAll { e ->
             var b = e.isInvalid
-            if (BUS.fire(GuiComponentEvents.RemoveChildEvent(thiz(), e)).isCanceled())
+            if (BUS.fire(GuiComponentEvents.RemoveChildEvent(this, e)).isCanceled())
                 b = false
-            if (e.BUS.fire(GuiComponentEvents.RemoveFromParentEvent(e.thiz(), thiz())).isCanceled())
+            if (e.BUS.fire(GuiComponentEvents.RemoveFromParentEvent(e, this)).isCanceled())
                 b = false
             if (b) {
                 e.parent = null
@@ -529,14 +529,14 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
         if (wasMouseOver != this.mouseOver) {
             if (this.mouseOver) {
-                BUS.fire(GuiComponentEvents.MouseInEvent(thiz(), mousePos))
+                BUS.fire(GuiComponentEvents.MouseInEvent(this, mousePos))
             } else {
-                BUS.fire(GuiComponentEvents.MouseOutEvent(thiz(), mousePos))
+                BUS.fire(GuiComponentEvents.MouseOutEvent(this, mousePos))
             }
         }
         wasMouseOver = this.mouseOver
 
-        BUS.fire(GuiComponentEvents.PreDrawEvent(thiz(), mousePos, partialTicks))
+        BUS.fire(GuiComponentEvents.PreDrawEvent(this, mousePos, partialTicks))
 
         drawComponent(mousePos, partialTicks)
 
@@ -566,14 +566,14 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         if (childRotation != 0.0) // see above comment
             GlStateManager.rotate(Math.toDegrees(childRotation).toFloat(), 0f, 0f, 1f)
 
-        BUS.fire(GuiComponentEvents.PreChildrenDrawEvent(thiz(), mousePos, partialTicks))
+        BUS.fire(GuiComponentEvents.PreChildrenDrawEvent(this, mousePos, partialTicks))
 
         forEachChild { it.draw(transformChildPos(it, mousePos), partialTicks) }
 
         GlStateManager.popAttrib()
         GlStateManager.popMatrix()
 
-        BUS.fire(GuiComponentEvents.PostDrawEvent(thiz(), mousePos, partialTicks))
+        BUS.fire(GuiComponentEvents.PostDrawEvent(this, mousePos, partialTicks))
     }
 
     /**
@@ -597,7 +597,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     open fun onTick() {}
 
     fun tick() {
-        BUS.fire(GuiComponentEvents.ComponentTickEvent(thiz()))
+        BUS.fire(GuiComponentEvents.ComponentTickEvent(this))
         onTick()
         forEachChild(GuiComponent<*>::tick)
     }
@@ -610,7 +610,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      */
     open fun mouseDown(mousePos: Vec2d, button: EnumMouseButton) {
         if (!isVisible) return
-        if (BUS.fire(GuiComponentEvents.MouseDownEvent(thiz(), mousePos, button)).isCanceled())
+        if (BUS.fire(GuiComponentEvents.MouseDownEvent(this, mousePos, button)).isCanceled())
             return
 
         if (mouseOver)
@@ -632,11 +632,11 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         val wasDown = mouseButtonsDown[button.ordinal]
         mouseButtonsDown[button.ordinal] = false
 
-        if (BUS.fire(GuiComponentEvents.MouseUpEvent(thiz(), mousePos, button)).isCanceled())
+        if (BUS.fire(GuiComponentEvents.MouseUpEvent(this, mousePos, button)).isCanceled())
             return
 
         if (mouseOver && wasDown) {
-            BUS.fire(GuiComponentEvents.MouseClickEvent(thiz(), mousePos, button))
+            BUS.fire(GuiComponentEvents.MouseClickEvent(this, mousePos, button))
             // don't return here, if a click was handled we should still handle the mouseUp
         }
 
@@ -653,7 +653,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      */
     fun mouseDrag(mousePos: Vec2d, button: EnumMouseButton) {
         if (!isVisible) return
-        if (BUS.fire(GuiComponentEvents.MouseDragEvent(thiz(), mousePos, button)).isCanceled())
+        if (BUS.fire(GuiComponentEvents.MouseDragEvent(this, mousePos, button)).isCanceled())
             return
 
         forEachChild { child ->
@@ -667,7 +667,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      */
     fun mouseWheel(mousePos: Vec2d, direction: GuiComponentEvents.MouseWheelDirection) {
         if (!isVisible) return
-        if (BUS.fire(GuiComponentEvents.MouseWheelEvent(thiz(), mousePos, direction)).isCanceled())
+        if (BUS.fire(GuiComponentEvents.MouseWheelEvent(this, mousePos, direction)).isCanceled())
             return
 
         forEachChild { child ->
@@ -683,7 +683,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      */
     fun keyPressed(key: Char, keyCode: Int) {
         if (!isVisible) return
-        if (BUS.fire(GuiComponentEvents.KeyDownEvent(thiz(), key, keyCode)).isCanceled())
+        if (BUS.fire(GuiComponentEvents.KeyDownEvent(this, key, keyCode)).isCanceled())
             return
 
         keysDown.put(Key[key, keyCode], true)
@@ -703,20 +703,12 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         if (!isVisible) return
         keysDown.put(Key[key, keyCode], false) // do this before so we don't have lingering keyDown entries
 
-        if (BUS.fire(GuiComponentEvents.KeyUpEvent(thiz(), key, keyCode)).isCanceled())
+        if (BUS.fire(GuiComponentEvents.KeyUpEvent(this, key, keyCode)).isCanceled())
             return
 
         forEachChild { child ->
             child.keyReleased(key, keyCode)
         }
-    }
-
-    /**
-     * Returns `this` casted to `T`. Used to avoid unchecked cast warnings everywhere.
-     */
-    @Suppress("UNCHECKED_CAST")
-    fun thiz(): T {
-        return this as T
     }
 
     /**
@@ -732,7 +724,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
         aabb = BoundingBox2D(aabb.min + pos - vec(marginLeft, marginTop), aabb.max + pos + vec(marginRight, marginBottom))
 
-        return BUS.fire(GuiComponentEvents.LogicalSizeEvent(thiz(), if (outOfFlow) null else aabb)).box
+        return BUS.fire(GuiComponentEvents.LogicalSizeEvent(this, if (outOfFlow) null else aabb)).box
     }
 
     /**
@@ -772,7 +764,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     open fun onMessage(from: GuiComponent<*>, message: GuiComponentEvents.Message) {}
 
     fun handleMessage(from: GuiComponent<*>, message: GuiComponentEvents.Message) {
-        BUS.fire(GuiComponentEvents.MessageArriveEvent(thiz(), from, message))
+        BUS.fire(GuiComponentEvents.MessageArriveEvent(this, from, message))
         onMessage(from, message)
 
         if (message.rippleType != GuiComponentEvents.EnumRippleType.NONE) {
@@ -803,14 +795,14 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     fun <D : Any> getAllDataKeys(clazz: Class<D>): Set<String> {
         if (!data.containsKey(clazz))
             return setOf()
-        return BUS.fire(GuiComponentEvents.GetDataKeysEvent(thiz(), clazz, data[clazz]?.keys?.toMutableSet() ?: mutableSetOf())).value
+        return BUS.fire(GuiComponentEvents.GetDataKeysEvent(this, clazz, data[clazz]?.keys?.toMutableSet() ?: mutableSetOf())).value
     }
 
     /**
      * Returns all classes for data that contain at least one value. Not guaranteed to be complete.
      */
     fun getAllDataClasses(): Set<Class<*>> {
-        return BUS.fire(GuiComponentEvents.GetDataClassesEvent(thiz(), data.entries.filter { it.value.isNotEmpty() }.map { it.key }.toMutableSet())).value
+        return BUS.fire(GuiComponentEvents.GetDataClassesEvent(this, data.entries.filter { it.value.isNotEmpty() }.map { it.key }.toMutableSet())).value
     }
 
     /**
@@ -819,7 +811,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     fun <D : Any> setData(clazz: Class<D>, key: String, value: D) {
         if (!data.containsKey(clazz))
             data.put(clazz, mutableMapOf())
-        if (!BUS.fire(GuiComponentEvents.SetDataEvent(thiz(), clazz, key, value)).isCanceled())
+        if (!BUS.fire(GuiComponentEvents.SetDataEvent(this, clazz, key, value)).isCanceled())
             data[clazz]?.put(key, value)
     }
 
@@ -829,7 +821,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     fun <D : Any> removeData(clazz: Class<D>, key: String) {
         if (!data.containsKey(clazz))
             data.put(clazz, mutableMapOf())
-        if (!BUS.fire(GuiComponentEvents.RemoveDataEvent(thiz(), clazz, key, getData(clazz, key))).isCanceled())
+        if (!BUS.fire(GuiComponentEvents.RemoveDataEvent(this, clazz, key, getData(clazz, key))).isCanceled())
             data[clazz]?.remove(key)
     }
 
@@ -841,7 +833,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     fun <D> getData(clazz: Class<D>, key: String): D? {
         if (!data.containsKey(clazz))
             data.put(clazz, HashMap<String, Any>())
-        return BUS.fire(GuiComponentEvents.GetDataEvent(thiz(), clazz, key, data[clazz]?.get(key) as D?)).value
+        return BUS.fire(GuiComponentEvents.GetDataEvent(this, clazz, key, data[clazz]?.get(key) as D?)).value
     }
 
     /**
@@ -851,7 +843,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     fun <D> hasData(clazz: Class<D>, key: String): Boolean {
         if (!data.containsKey(clazz))
             data.put(clazz, HashMap<String, Any>())
-        return BUS.fire(GuiComponentEvents.GetDataEvent(thiz(), clazz, key, data[clazz]?.get(key) as D?)).value != null
+        return BUS.fire(GuiComponentEvents.GetDataEvent(this, clazz, key, data[clazz]?.get(key) as D?)).value != null
     }
 
     /**
@@ -889,7 +881,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * @return true if the tag didn't exist and was added
      */
     fun addTag(tag: Any): Boolean {
-        if (!BUS.fire(GuiComponentEvents.AddTagEvent(thiz(), tag)).isCanceled())
+        if (!BUS.fire(GuiComponentEvents.AddTagEvent(this, tag)).isCanceled())
             if (tagStorage.add(tag))
                 return true
         return false
@@ -901,7 +893,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * @return true if the tag existed and was removed
      */
     fun removeTag(tag: Any): Boolean {
-        if (!BUS.fire(GuiComponentEvents.RemoveTagEvent(thiz(), tag)).isCanceled())
+        if (!BUS.fire(GuiComponentEvents.RemoveTagEvent(this, tag)).isCanceled())
             if (tagStorage.remove(tag))
                 return true
         return false
@@ -911,7 +903,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * Checks if the component has the tag specified. Tags are not case sensitive
      */
     fun hasTag(tag: Any): Boolean {
-        return BUS.fire(GuiComponentEvents.HasTagEvent(thiz(), tag, tagStorage.contains(tag))).hasTag
+        return BUS.fire(GuiComponentEvents.HasTagEvent(this, tag, tagStorage.contains(tag))).hasTag
     }
 
     /**
