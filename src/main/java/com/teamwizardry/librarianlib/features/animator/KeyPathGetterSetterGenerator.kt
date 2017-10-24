@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.features.animator
 
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
-import sun.tools.jconsole.inspector.XObject.NULL_OBJECT
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import kotlin.reflect.KMutableProperty
@@ -76,7 +75,7 @@ private class FieldListItem(val target: Class<*>, val name: String) {
         fieldClass = field.type
         val property = field.kotlinProperty
 
-        if(property != null) {
+        if(property?.javaGetter != null) {
             accessorOfChoice = property
         } else {
             accessorOfChoice = field

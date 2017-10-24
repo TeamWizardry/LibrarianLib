@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.test.animator
 import com.teamwizardry.librarianlib.features.base.item.ItemMod
 import com.teamwizardry.librarianlib.features.kotlin.localize
 import com.teamwizardry.librarianlib.test.animator.tests.GuiBasicAnimation
+import com.teamwizardry.librarianlib.test.animator.tests.GuiJavaAnimation
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.entity.player.EntityPlayer
@@ -33,5 +34,6 @@ class ItemAnimator : ItemMod("animator") {
 }
 
 enum class Guis(val create: () -> GuiScreen) {
-    BASIC({ GuiBasicAnimation() })
+    BASIC({ GuiBasicAnimation() }),
+    JAVA({ GuiJavaAnimation() })
 }
