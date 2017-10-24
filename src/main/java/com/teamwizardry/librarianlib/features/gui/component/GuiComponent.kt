@@ -17,6 +17,7 @@ import com.teamwizardry.librarianlib.features.math.BoundingBox2D
 import com.teamwizardry.librarianlib.features.math.Matrix3
 import com.teamwizardry.librarianlib.features.math.Transform2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import javafx.geometry.BoundingBox
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
@@ -72,11 +73,6 @@ import java.util.*
  * component.getData(YourCoolObject.class, "foo"); // => yourInstance
  * ```
  *
- * ## Logical size
- *
- * The logical size of a component is theoretically the amount of space a component takes up. This is used for general
- * flow, such as when a list is laid out, the logical height of each element is taken into account in order to stack them.
- *
  */
 @SideOnly(Side.CLIENT)
 abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, width: Int = 0, height: Int = 0) : IGuiDrawable {
@@ -95,6 +91,13 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      * The size of the component
      */
     var size: Vec2d
+
+    var bounds: BoundingBox2D
+        get() = BoundingBox2D(pos, pos+size)
+        set(value) {
+            pos = value.min
+            size = value.max-value.min
+        }
     /**
      * The left margin for logical alignment
      */
@@ -663,30 +666,6 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
             child.keyReleased(key, keyCode)
         }
     }
-
-    /**
-     * The size of the component for layout. Often dynamically calculated
-     */
-    fun getLogicalSize(): BoundingBox2D? {
-        var aabb = contentSize
-        forEachChild { child ->
-            if (!child.isVisible) return@forEachChild
-            val childAABB = child.getLogicalSize()//?.scale(childScale)?.offset(childTranslation)
-            aabb = childAABB?.union(aabb) ?: aabb
-        }
-
-        aabb = BoundingBox2D(aabb.min + pos - vec(marginLeft, marginTop), aabb.max + pos + vec(marginRight, marginBottom))
-
-        return BUS.fire(GuiComponentEvents.LogicalSizeEvent(this, if (outOfFlow) null else aabb)).box
-    }
-
-    /**
-     * Gets the size of the content of this component.
-     */
-    protected open val contentSize: BoundingBox2D
-        get() {
-            return BoundingBox2D(Vec2d.ZERO, size)
-        }
 
     /**
      * Gets the root component

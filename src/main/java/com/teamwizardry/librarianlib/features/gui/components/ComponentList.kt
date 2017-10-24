@@ -14,8 +14,8 @@ class ComponentList(posX: Int, posY: Int) : GuiComponent(posX, posY) {
 
         for (component in components) {
             component.pos = vec(component.pos.x, y)
-            val bb = component.getLogicalSize()
-            if (bb != null) y = bb.max.yi
+            val bb = component.bounds
+            y = bb.max.yi
         }
     }
 }
