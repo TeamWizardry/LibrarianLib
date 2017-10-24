@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.animator.ImmutableFieldMutator
 import com.teamwizardry.librarianlib.features.animator.ImmutableFieldMutatorHandler
 import com.teamwizardry.librarianlib.features.animator.ImmutableFieldMutatorProvider
 import com.teamwizardry.librarianlib.features.kotlin.withX
+import com.teamwizardry.librarianlib.features.kotlin.withY
 import com.teamwizardry.librarianlib.features.kotlin.withZ
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.util.math.Vec3d
@@ -37,7 +38,7 @@ object VecMutators {
                         return object : ImmutableFieldMutator<Vec2d> {
                             override fun mutate(target: Vec2d, value: Any?): Vec2d {
                                 value ?: throw IllegalArgumentException("Cannot set Vec2d.y to null")
-                                return target.withX(doubleFrom(value))
+                                return target.withY(doubleFrom(value))
                             }
                         }
                     }
