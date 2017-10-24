@@ -8,9 +8,9 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 /**
  * Created by TheCodeWarrior
  */
-class ComponentSlot(val slot: SlotBase, x: Int, y: Int) : GuiComponent<ComponentSlot>(x, y) {
+class ComponentSlot(val slot: SlotBase, x: Int, y: Int) : GuiComponent(x, y) {
     val background = ComponentVoid(0, 0)
-    var scaler: GuiComponent<*>? = null
+    var scaler: GuiComponent? = null
 
     init {
         this.add(background)

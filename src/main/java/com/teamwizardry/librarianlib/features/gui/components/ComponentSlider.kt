@@ -8,7 +8,7 @@ import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import java.util.function.Consumer
 
-class ComponentSlider(posX: Int, posY: Int, width: Int, height: Int, percentage: Double, var increments: Int) : GuiComponent<ComponentSlider>(posX, posY, width, height) {
+class ComponentSlider(posX: Int, posY: Int, width: Int, height: Int, percentage: Double, var increments: Int) : GuiComponent(posX, posY, width, height) {
 
     var percentageChange = HandlerList<Consumer<Double>>()
 

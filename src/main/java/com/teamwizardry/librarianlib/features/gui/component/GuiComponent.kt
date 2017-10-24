@@ -78,7 +78,7 @@ import java.util.*
  *
  */
 @SideOnly(Side.CLIENT)
-abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX: Int, posY: Int, width: Int = 0, height: Int = 0) : IGuiDrawable {
+abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, width: Int = 0, height: Int = 0) : IGuiDrawable {
 
     @JvmField
     val BUS = EventBus()
@@ -168,7 +168,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     protected var keysDown: MutableMap<Key, Boolean> = HashMap<Key, Boolean>().withDefault({ false })
     private val data: MutableMap<Class<*>, MutableMap<String, Any>> = mutableMapOf()
 
-    var tooltip: Option<GuiComponent<T>, List<String>?> = Option(null)
+    var tooltip: Option<GuiComponent, List<String>?> = Option(null)
     var tooltipFont: FontRenderer? = null
 
     /**
@@ -180,25 +180,25 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * True if the component shouldn't effect the logical size of it's parent. Causes logical size to return null.
      */
     var outOfFlow = false
-    protected val components = mutableListOf<GuiComponent<*>>()
+    protected val components = mutableListOf<GuiComponent>()
     /**
      * An unmodifiable collection of all the direct children of this component
      */
-    val children: Collection<GuiComponent<*>> = Collections.unmodifiableCollection(components)
+    val children: Collection<GuiComponent> = Collections.unmodifiableCollection(components)
     /**
      * An unmodifiable collection of all the children of this component, recursively.
      */
-    val allChildren: Collection<GuiComponent<*>>
+    val allChildren: Collection<GuiComponent>
         get() {
-            val list = mutableListOf<GuiComponent<*>>()
+            val list = mutableListOf<GuiComponent>()
             addChildrenRecursively(list)
             return Collections.unmodifiableCollection(list)
         }
-    private fun addChildrenRecursively(list: MutableList<GuiComponent<*>>) {
+    private fun addChildrenRecursively(list: MutableList<GuiComponent>) {
         list.addAll(components)
         components.forEach { it.addChildrenRecursively(list) }
     }
-    var parent: GuiComponent<*>? = null
+    var parent: GuiComponent? = null
         private set(value) {
             parents.clear()
             if (value != null) {
@@ -207,7 +207,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
             }
             field = value
         }
-    var parents: LinkedHashSet<GuiComponent<*>> = LinkedHashSet()
+    var parents: LinkedHashSet<GuiComponent> = LinkedHashSet()
 
     /**
      * Amount to translate children, applied to both drawing and mouse position. Applied before [childScale] and [childRotation]
@@ -239,11 +239,11 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
 
      * @throws IllegalArgumentException if the component had a parent already
      */
-    fun add(vararg components: GuiComponent<*>?) {
+    fun add(vararg components: GuiComponent?) {
         components.forEach { addInternal(it) }
     }
 
-    protected fun addInternal(component: GuiComponent<*>?) {
+    protected fun addInternal(component: GuiComponent?) {
         if (component == null) {
             LibrarianLog.error("Null component, ignoring")
             return
@@ -273,14 +273,14 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
         component.parent = this
     }
 
-    operator fun contains(component: GuiComponent<*>): Boolean =
+    operator fun contains(component: GuiComponent): Boolean =
             component in components || components.any { component in it }
 
     /**
      * Removes the supplied component
      * @param component
      */
-    fun remove(component: GuiComponent<*>) {
+    fun remove(component: GuiComponent) {
         if (component !in components)
             return
         if (BUS.fire(GuiComponentEvents.RemoveChildEvent(this, component)).isCanceled())
@@ -311,7 +311,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     /**
      * Iterates over children while allowing children to be added or removed.
      */
-    fun forEachChild(l: (GuiComponent<*>) -> Unit) {
+    fun forEachChild(l: (GuiComponent) -> Unit) {
         val copy = components.toList()
         copy.forEach(l)
     }
@@ -319,8 +319,8 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     /**
      * Returns a list of all children that have the tag [tag]
      */
-    fun getByTag(tag: Any): List<GuiComponent<*>> {
-        val list = mutableListOf<GuiComponent<*>>()
+    fun getByTag(tag: Any): List<GuiComponent> {
+        val list = mutableListOf<GuiComponent>()
         addByTag(tag, list)
         return list
     }
@@ -328,25 +328,25 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     /**
      * Returns a list of all children and grandchildren etc. that have the tag [tag]
      */
-    fun getAllByTag(tag: Any): List<GuiComponent<*>> {
-        val list = mutableListOf<GuiComponent<*>>()
+    fun getAllByTag(tag: Any): List<GuiComponent> {
+        val list = mutableListOf<GuiComponent>()
         addAllByTag(tag, list)
         return list
     }
 
-    protected fun addAllByTag(tag: Any, list: MutableList<GuiComponent<*>>) {
+    protected fun addAllByTag(tag: Any, list: MutableList<GuiComponent>) {
         addByTag(tag, list)
         components.forEach { it.addAllByTag(tag, list) }
     }
 
-    protected fun addByTag(tag: Any, list: MutableList<GuiComponent<*>>) {
+    protected fun addByTag(tag: Any, list: MutableList<GuiComponent>) {
         components.filterTo(list) { it.hasTag(tag) }
     }
 
     /**
      * Returns a list of all children that are subclasses of [clazz]
      */
-    fun <C : GuiComponent<*>> getByClass(clazz: Class<C>): List<C> {
+    fun <C : GuiComponent> getByClass(clazz: Class<C>): List<C> {
         val list = mutableListOf<C>()
         addByClass(clazz, list)
         return list
@@ -355,19 +355,19 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     /**
      * Returns a list of all children and grandchildren etc. that are subclasses of [clazz]
      */
-    fun <C : GuiComponent<*>> getAllByClass(clazz: Class<C>): List<C> {
+    fun <C : GuiComponent> getAllByClass(clazz: Class<C>): List<C> {
         val list = mutableListOf<C>()
         addAllByClass(clazz, list)
         return list
     }
 
-    protected fun <C : GuiComponent<*>> addAllByClass(clazz: Class<C>, list: MutableList<C>) {
+    protected fun <C : GuiComponent> addAllByClass(clazz: Class<C>, list: MutableList<C>) {
         addByClass(clazz, list)
         components.forEach { it.addAllByClass(clazz, list) }
     }
 
     @Suppress("UNCHECKED_CAST")
-    protected fun <C : GuiComponent<*>> addByClass(clazz: Class<C>, list: MutableList<C>) {
+    protected fun <C : GuiComponent> addByClass(clazz: Class<C>, list: MutableList<C>) {
         forEachChild { component ->
             if (clazz.isAssignableFrom(component.javaClass))
                 list.add(component as C)
@@ -378,16 +378,16 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     /* Events/checks */
     //=============================================================================
 
-    fun hasParent(parent: GuiComponent<*>): Boolean {
+    fun hasParent(parent: GuiComponent): Boolean {
         val ourParent = this.parent
         if(ourParent == parent) return true
         if(ourParent == null) return false
         return ourParent.hasParent(parent)
     }
 
-    fun stepsToReachParent(parent: GuiComponent<*>): List<GuiComponent<*>> {
+    fun stepsToReachParent(parent: GuiComponent): List<GuiComponent> {
         var theParent = this.parent
-        val list = mutableListOf<GuiComponent<*>>()
+        val list = mutableListOf<GuiComponent>()
 
         while(theParent != parent && theParent != null) {
             list.add(theParent)
@@ -405,7 +405,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * Converts [pos] to screen coordinates if [other] is equal to null
      * @throws IllegalArgumentException if [other] is nonnull and neither an ancestor nor descendant of this component
      */
-    fun posRelativeTo(pos: Vec2d, other: GuiComponent<*>?): Vec2d {
+    fun posRelativeTo(pos: Vec2d, other: GuiComponent?): Vec2d {
         if (other == null) {
             // if this component has no parent it is the root component
             // which is assumed to be positioned relative to the screen
@@ -424,7 +424,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     /**
      * Transforms the position [pos] from the context of this component to the context of [targetContext]
      */
-    fun unTransform(pos: Vec2d, targetContext: GuiComponent<*>): Vec2d {
+    fun unTransform(pos: Vec2d, targetContext: GuiComponent): Vec2d {
         val this_parent = this.parent
         if(this_parent == null)
             return pos
@@ -436,12 +436,12 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     /**
      * Allows the component to modify the mouse position before it is passed to a child element.
      */
-    fun transformChildPos(child: GuiComponent<*>, pos: Vec2d): Vec2d {
+    fun transformChildPos(child: GuiComponent, pos: Vec2d): Vec2d {
         //     [ translate to child's screen space ] [ subtract child pos to put origin at child origin ]
         return ((pos - childTranslation) / childScale).rotate(-childRotation) - child.pos
     }
 
-    fun transformTo(pos: Vec2d, child: GuiComponent<*>): Vec2d {
+    fun transformTo(pos: Vec2d, child: GuiComponent): Vec2d {
         val steps = child.stepsToReachParent(this).reversed() + listOf(child)
         var thePos = pos
 
@@ -455,7 +455,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     /**
      * Reverses [transformChildPos]
      */
-    fun unTransformChildPos(child: GuiComponent<*>, pos: Vec2d): Vec2d {
+    fun unTransformChildPos(child: GuiComponent, pos: Vec2d): Vec2d {
         return (pos + child.pos).rotate(childRotation) * childScale + childTranslation
     }
 
@@ -466,7 +466,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
      * GL context of the root caller. Generally meaning the pos is relative to the screen.
      */
     @JvmOverloads
-    fun unTransformRoot(child: GuiComponent<*>, pos: Vec2d, screenRoot: Boolean = false): Vec2d {
+    fun unTransformRoot(child: GuiComponent, pos: Vec2d, screenRoot: Boolean = false): Vec2d {
         return parent?.unTransformRoot(this, unTransformChildPos(child, pos), screenRoot) ?: if (screenRoot) unTransformChildPos(child, pos) + this.pos else unTransformChildPos(child, pos)
     }
 
@@ -599,7 +599,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     fun tick() {
         BUS.fire(GuiComponentEvents.ComponentTickEvent(this))
         onTick()
-        forEachChild(GuiComponent<*>::tick)
+        forEachChild(GuiComponent::tick)
     }
 
     /**
@@ -738,7 +738,7 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     /**
      * Gets the root component
      */
-    val root: GuiComponent<*>
+    val root: GuiComponent
         get() {
             return parent?.root ?: this
         }
@@ -761,9 +761,9 @@ abstract class GuiComponent<T : GuiComponent<T>> @JvmOverloads constructor(posX:
     }
     //=============================================================================
 
-    open fun onMessage(from: GuiComponent<*>, message: GuiComponentEvents.Message) {}
+    open fun onMessage(from: GuiComponent, message: GuiComponentEvents.Message) {}
 
-    fun handleMessage(from: GuiComponent<*>, message: GuiComponentEvents.Message) {
+    fun handleMessage(from: GuiComponent, message: GuiComponentEvents.Message) {
         BUS.fire(GuiComponentEvents.MessageArriveEvent(this, from, message))
         onMessage(from, message)
 

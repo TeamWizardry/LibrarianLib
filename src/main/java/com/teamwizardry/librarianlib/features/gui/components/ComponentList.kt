@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 /**
  * Created by TheCodeWarrior on 7/31/16.
  */
-class ComponentList(posX: Int, posY: Int) : GuiComponent<ComponentList>(posX, posY) {
+class ComponentList(posX: Int, posY: Int) : GuiComponent(posX, posY) {
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
         var y = 0

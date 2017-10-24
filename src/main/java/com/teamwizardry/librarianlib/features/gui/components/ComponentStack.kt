@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.HandlerList
 import com.teamwizardry.librarianlib.features.gui.Option
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.kotlin.isNotEmpty
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.math.Vec2d
@@ -13,7 +13,7 @@ import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.item.ItemStack
 import net.minecraft.util.text.TextFormatting
 
-open class ComponentStack(posX: Int, posY: Int) : GuiComponent<ComponentStack>(posX, posY, 16, 16) {
+open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 16) {
 
     val stack = Option<ComponentStack, ItemStack>(ItemStack.EMPTY)
     val enableTooltip = Option<ComponentStack, Boolean>(true)

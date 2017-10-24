@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 
 import java.util.function.Consumer
 
-class ComponentRaw : GuiComponent<ComponentRaw> {
+class ComponentRaw : GuiComponent {
 
     var func: Consumer<ComponentRaw>
 

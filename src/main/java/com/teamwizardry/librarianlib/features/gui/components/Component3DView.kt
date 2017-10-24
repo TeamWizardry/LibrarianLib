@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11
 
-class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent<Component3DView>(posX, posY, width, height) {
+class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent(posX, posY, width, height) {
 
     init {
         BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) { event -> preDraw(event.mousePos) }

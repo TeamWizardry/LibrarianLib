@@ -8,12 +8,12 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
-class ButtonMixin<T : GuiComponent<T>>(val component: GuiComponent<T>, init: Runnable) {
+class ButtonMixin(val component: GuiComponent, init: Runnable) {
 
-    constructor(component: GuiComponent<T>, init: () -> Unit) : this(component, Runnable(init))
+    constructor(component: GuiComponent, init: () -> Unit) : this(component, Runnable(init))
 
-    class ButtonClickEvent<out T : GuiComponent<*>>(val component: T, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
-    class ButtonStateChangeEvent<out T : GuiComponent<*>>(val component: T, val mousePos: Vec2d, val state: EnumButtonState, var newState: EnumButtonState) : Event()
+    class ButtonClickEvent(val component: GuiComponent, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
+    class ButtonStateChangeEvent(val component: GuiComponent, val mousePos: Vec2d, val state: EnumButtonState, var newState: EnumButtonState) : Event()
 
     var state = EnumButtonState.NORMAL
 

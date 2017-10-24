@@ -12,7 +12,7 @@ import java.awt.Color
 /**
  * Created by TheCodeWarrior
  */
-class ComponentRect(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent<ComponentRect>(posX, posY, width, height) {
+class ComponentRect(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent(posX, posY, width, height) {
 
     val color = Option<ComponentRect, Color>(Color.WHITE)
 

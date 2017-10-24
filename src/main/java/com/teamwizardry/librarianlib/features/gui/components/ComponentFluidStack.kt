@@ -31,7 +31,7 @@ class ComponentFluidStack @JvmOverloads constructor(fgSprite: ISprite?, bgSprite
                                                     var fluidWidth: Int = bgWidth, var fluidHeight: Int = bgHeight,
                                                     direction: Option<ComponentSpriteProgressBar, ComponentSpriteProgressBar.ProgressDirection> = Option(ComponentSpriteProgressBar.ProgressDirection.X_POS),
                                                     val tankProps: IFluidTankProperties)
-    : GuiComponent<ComponentFluidStack>(x, y, bgWidth, bgHeight) {
+    : GuiComponent(x, y, bgWidth, bgHeight) {
 
     private var lastFluid: Fluid? = null
 

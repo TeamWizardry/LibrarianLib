@@ -9,7 +9,7 @@ import com.teamwizardry.librarianlib.features.utilities.client.ScissorUtil
 
 object ScissorMixin {
 
-    fun <T : GuiComponent<T>> scissor(component: GuiComponent<T>) {
+    fun scissor(component: GuiComponent) {
         component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) { event ->
             val parent = event.component.parent
             val root = parent?.unTransformRoot(event.component, vec(0, 0)) ?: event.component.pos

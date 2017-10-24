@@ -24,7 +24,7 @@ import java.util.function.Supplier
  */
 object GuiOverlay {
 
-    private data class StorageThing(val initializer: Consumer<GuiComponent<*>>, val visible: BooleanSupplier) {
+    private data class StorageThing(val initializer: Consumer<GuiComponent>, val visible: BooleanSupplier) {
         fun reinit(main: ComponentVoid) {
             val comp = ComponentVisiblePredicate(visible)
             main.add(comp)
@@ -51,7 +51,7 @@ object GuiOverlay {
      *
      * Hook into [GuiComponent.ComponentTickEvent] to update its position and/or size
      */
-    fun getOverlayComponent(visible: BooleanSupplier, initializer: Consumer<GuiComponent<*>>) {
+    fun getOverlayComponent(visible: BooleanSupplier, initializer: Consumer<GuiComponent>) {
         val storage = StorageThing(initializer, visible)
         storage.reinit(mainComp)
         registered.add(storage)
@@ -77,7 +77,7 @@ object GuiOverlay {
         mainComp.tick()
     }
 
-    private class ComponentVisiblePredicate(val predicate: BooleanSupplier) : GuiComponent<ComponentVisiblePredicate>(0, 0) {
+    private class ComponentVisiblePredicate(val predicate: BooleanSupplier) : GuiComponent(0, 0) {
         override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
             // NO-OP
         }

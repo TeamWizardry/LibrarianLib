@@ -24,7 +24,7 @@ class ComponentProgressBar @JvmOverloads constructor(fgSprite: ISprite?, bgSprit
                                                      bgWidth: Int = bgSprite?.width ?: 16, bgHeight: Int = bgSprite?.height ?: 16,
                                                      direction: Option<ComponentSpriteProgressBar, ComponentSpriteProgressBar.ProgressDirection> = Option(ComponentSpriteProgressBar.ProgressDirection.X_POS),
                                                      progress: Option<ComponentSpriteProgressBar, Float> = Option(1.0F))
-    : GuiComponent<ComponentProgressBar>(x, y, bgWidth, bgHeight) {
+    : GuiComponent(x, y, bgWidth, bgHeight) {
 
     var backgroundComponent = ComponentSprite(bgSprite, 0, 0, bgWidth, bgHeight)
     var progressComponent = ComponentSpriteProgressBar(fgSprite, (bgWidth - fgWidth) / 2, (bgHeight - fgHeight) / 2, fgWidth, fgHeight)

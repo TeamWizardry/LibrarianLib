@@ -9,7 +9,7 @@ import com.teamwizardry.librarianlib.features.sprite.Sprite
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-open class ComponentSpriteTiled @JvmOverloads constructor(protected var main: Sprite, borderSize: Int, x: Int, y: Int, width: Int = main.width, height: Int = main.height) : GuiComponent<ComponentSpriteTiled>(x, y, width, height) {
+open class ComponentSpriteTiled @JvmOverloads constructor(protected var main: Sprite, borderSize: Int, x: Int, y: Int, width: Int = main.width, height: Int = main.height) : GuiComponent(x, y, width, height) {
 
     var depth = Option<ComponentSpriteTiled, Boolean>(true)
     var color = Option<ComponentSpriteTiled, Color>(Color.WHITE)
