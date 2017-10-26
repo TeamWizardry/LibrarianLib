@@ -2,10 +2,7 @@ package com.teamwizardry.librarianlib.test.variants
 
 import com.teamwizardry.librarianlib.core.common.RecipeGeneratorHandler
 import com.teamwizardry.librarianlib.features.base.block.*
-import com.teamwizardry.librarianlib.features.base.item.IGlowingItem
-import com.teamwizardry.librarianlib.features.base.item.ItemMod
-import com.teamwizardry.librarianlib.features.base.item.ItemModArrow
-import com.teamwizardry.librarianlib.features.base.item.ItemModShield
+import com.teamwizardry.librarianlib.features.base.item.*
 import com.teamwizardry.librarianlib.features.kotlin.sendSpamlessMessage
 import com.teamwizardry.librarianlib.test.module.BlockModule
 import com.teamwizardry.librarianlib.test.testcore.TestEntryPoint
@@ -59,6 +56,8 @@ object VariantEntryPoint : TestEntryPoint {
                 return false
             }
         }
+
+        ItemModBow("bow")
 
         object : ItemMod("glow"), IGlowingItem {
             @SideOnly(Side.CLIENT)
