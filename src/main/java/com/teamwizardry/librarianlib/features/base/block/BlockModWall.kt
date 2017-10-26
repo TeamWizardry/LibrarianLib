@@ -10,6 +10,7 @@ import net.minecraft.block.Block
 import net.minecraft.block.BlockFenceGate
 import net.minecraft.block.material.Material
 import net.minecraft.block.properties.PropertyBool
+import net.minecraft.block.state.BlockFaceShape
 import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
@@ -60,6 +61,10 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
 
             return i
         }
+    }
+
+    override fun getBlockFaceShape(world: IBlockAccess, state: IBlockState, pos: BlockPos, side: EnumFacing): BlockFaceShape {
+        return if (side != EnumFacing.UP && side != EnumFacing.DOWN) BlockFaceShape.MIDDLE_POLE_THICK else BlockFaceShape.CENTER_BIG
     }
 
     override fun getMetaFromState(state: IBlockState) = 0
