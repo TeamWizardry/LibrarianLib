@@ -2,8 +2,8 @@ package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.gui.HandlerList
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.mixin.ScissorMixin
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
 
@@ -13,11 +13,6 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
 
     init {
         ScissorMixin.scissor(this)
-
-        BUS.hook(GuiComponentEvents.LogicalSizeEvent::class.java) { event ->
-            if (event.box != null)
-                event.box = contentSize
-        }
     }
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
@@ -57,10 +52,7 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
 
     val maxScroll: Vec2d
         get() {
-            var l = super.getLogicalSize()
-            if (l == null)
-                return Vec2d.ZERO
-            return l.max.sub(pos).sub(size)
+            return vec(0, 0)
         }
 
     @FunctionalInterface

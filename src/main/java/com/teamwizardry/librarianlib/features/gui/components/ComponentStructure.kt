@@ -7,7 +7,6 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.structure.Structure
 import com.teamwizardry.librarianlib.features.structure.StructureRenderUtil
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.texture.TextureMap
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -25,7 +24,6 @@ class ComponentStructure(posX: Int, posY: Int, var structure: Structure?) : GuiC
     }
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
-        GlStateManager.translate(this.pos.x, this.pos.y, 0.0)
         Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE)
         val buf = bufferInts
         buf ?: return
@@ -38,7 +36,6 @@ class ComponentStructure(posX: Int, posY: Int, var structure: Structure?) : GuiC
 
         tessellator.draw()
 
-        GlStateManager.translate(-this.pos.x, -this.pos.y, 0.0)
     }
 
     fun initStructure() {

@@ -1,11 +1,9 @@
 package com.teamwizardry.librarianlib.test.gui.tests
 
 import com.teamwizardry.librarianlib.features.gui.GuiBase
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.gui.mixin.ScissorMixin
-import com.teamwizardry.librarianlib.features.helpers.vec
 import java.awt.Color
 
 /**
@@ -33,11 +31,11 @@ class GuiTestScissor : GuiBase(100, 100) {
         scissor.add(c3)
         ScissorMixin.scissor(scissor)
 
-        scissor.BUS.hook(GuiComponentEvents.ComponentTickEvent::class.java) {
-            val progress = (scissor.animationTicks % 100)/100.0
-
-            scissor.pos = vec(progress*100, progress*100)
-        }
+//        scissor.BUS.hook(GuiComponentEvents.ComponentTickEvent::class.java) {
+//            val progress = (scissor.animationTicks % 100)/100.0
+//
+//            scissor.pos = vec(progress*100, progress*100)
+//        }
 
         mainComponents.add(bg)
         mainComponents.add(c)

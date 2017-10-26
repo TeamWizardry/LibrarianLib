@@ -2,22 +2,17 @@ package com.teamwizardry.librarianlib.features.gui.component
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
-import com.teamwizardry.librarianlib.core.client.ClientTickHandler
+import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventBus
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.IGuiDrawable
 import com.teamwizardry.librarianlib.features.gui.Key
 import com.teamwizardry.librarianlib.features.gui.Option
+import com.teamwizardry.librarianlib.features.gui.component.supporting.ComponentTransform
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.minus
-import com.teamwizardry.librarianlib.features.kotlin.plus
-import com.teamwizardry.librarianlib.features.kotlin.unaryMinus
-import com.teamwizardry.librarianlib.features.math.BoundingBox2D
-import com.teamwizardry.librarianlib.features.math.Matrix3
-import com.teamwizardry.librarianlib.features.math.Transform2d
+import com.teamwizardry.librarianlib.features.math.Matrix4
 import com.teamwizardry.librarianlib.features.math.Vec2d
-import javafx.geometry.BoundingBox
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
@@ -80,40 +75,34 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
     @JvmField
     val BUS = EventBus()
 
-    var zIndex = 0
-    var transform = Transform2d()
+    var animator: Animator
+        get() {
+            var a = animatorStorage ?: parent?.animator
+            if(a == null) {
+                a = Animator()
+                animatorStorage = a
+            }
+            return a
+        }
+        set(value) {
+            animatorStorage = value
+        }
 
-    /**
-     * The position of the component relative to it's parent
-     */
-    var pos: Vec2d
+    private var animatorStorage: Animator? = null
+
+    var zIndex = 0
+    var transform = ComponentTransform()
     /**
      * The size of the component
      */
     var size: Vec2d
 
-    var bounds: BoundingBox2D
-        get() = BoundingBox2D(pos, pos+size)
-        set(value) {
-            pos = value.min
-            size = value.max-value.min
-        }
     /**
-     * The left margin for logical alignment
+     * The position of the component relative to its parent
      */
-    var marginLeft: Double = 0.0
-    /**
-     * The right margin for logical alignment
-     */
-    var marginRight: Double = 0.0
-    /**
-     * The top margin for logical alignment
-     */
-    var marginTop: Double = 0.0
-    /**
-     * The bottom margin for logical alignment
-     */
-    var marginBottom: Double = 0.0
+    var pos: Vec2d
+        get() = transform.translate
+        set(value) { transform.translate = value }
 
     var mouseOver = false
     var mouseOverNoOcclusion = false
@@ -129,46 +118,16 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      */
     fun getTags() = Collections.unmodifiableSet<Any>(tagStorage)!!
 
-
-    var animationTicks = 0
-    private var guiTicksLastFrame = ClientTickHandler.ticks
-
-    var enabled = true
-        get() {
-            return field
-        }
-        set(value) {
-            if (field != value) {
-                if (value)
-                    BUS.fire(GuiComponentEvents.EnableEvent(this))
-                else
-                    BUS.fire(GuiComponentEvents.DisableEvent(this))
-            }
-            field = value
-        }
     /**
      * Whether this component should be drawn or have events fire
      */
     var isVisible = true
-
-    var focused = false
-        set(value) {
-            if (field != value) {
-                if (value)
-                    BUS.fire(GuiComponentEvents.FocusEvent(this))
-                else
-                    BUS.fire(GuiComponentEvents.BlurEvent(this))
-            }
-            field = value
-        }
-
     /**
-     * Returns true if this component is invalid and it should be removed from it's parent
+     * Returns true if this component is invalid and it should be removed from its parent
      * @return
      */
     var isInvalid = false
         protected set
-    var isAnimating = true
 
     protected var mouseButtonsDown = BooleanArray(EnumMouseButton.values().size)
     protected var keysDown: MutableMap<Key, Boolean> = HashMap<Key, Boolean>().withDefault({ false })
@@ -376,7 +335,17 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      * Takes [pos], which is in our parent's context (coordinate space), and transforms it to our context
      */
     fun transformFromParentContext(pos: Vec2d): Vec2d {
-        return transform.applyInverse(pos) - this.pos
+        return transform.applyInverse(pos)
+    }
+
+    /**
+     * Takes [pos], which is in our context (coordinate space), and transforms it to our parent's context
+     *
+     * [pos] defaults to (0, 0)
+     */
+    @JvmOverloads
+    fun transformToParentContext(pos: Vec2d = Vec2d.ZERO): Vec2d {
+        return transform.apply(pos)
     }
 
     /**
@@ -384,15 +353,10 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      *
      * If [other] is null the returned matrix moves coordinates from the root context to this component's context
      */
-    fun otherContextToThisContext(other: GuiComponent?): Matrix3 {
-        if(other == null) {
-            var matrix = (parent?.otherContextToThisContext(null) ?: Matrix3())
-            matrix = matrix.translate(pos)
-            matrix = transform.apply(matrix)
-            return matrix
-        }
-        // first go from the other guy to root, then from root to us
-        return other.thisContextToOtherContext(null) * otherContextToThisContext(null)
+    fun otherContextToThisContext(other: GuiComponent?): Matrix4 {
+        if(other == null)
+            return thisContextToOtherContext(null).invert()
+        return other.thisContextToOtherContext(this)
     }
 
     /**
@@ -400,22 +364,26 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      *
      * If [other] is null the returned matrix moves coordinates from this component's context to the root context
      */
-    fun thisContextToOtherContext(other: GuiComponent?): Matrix3 {
+    fun thisContextToOtherContext(other: GuiComponent?): Matrix4 {
+        return _thisContextToOtherContext(other, Matrix4())
+    }
+    private fun _thisContextToOtherContext(other: GuiComponent?, matrix: Matrix4): Matrix4 {
         if(other == null) {
-            var matrix = Matrix3()
-            matrix = transform.applyInverse(matrix)
-            matrix = matrix.translate(-pos)
-            parent?.also { matrix *= it.thisContextToOtherContext(null) }
+            parent?._thisContextToOtherContext(null, matrix)
+            transform.apply(matrix)
             return matrix
         }
-        // first go from us to root, then from root to the other guy
-        return thisContextToOtherContext(null) * other.otherContextToThisContext(null)
+        val mat = other.thisContextToOtherContext(null).invert()
+        mat *= thisContextToOtherContext(null)
+        return mat
     }
 
     /**
      * A shorthand to transform the passed pos in this component's context (coordinate space) to a pos in [other]'s context
      *
      * If [other] is null the returned value is in the root context
+     *
+     * [pos] defaults to (0, 0)
      */
     @JvmOverloads
     fun thisPosToOtherContext(other: GuiComponent?, pos: Vec2d = Vec2d.ZERO): Vec2d {
@@ -464,11 +432,6 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
         components.sortBy { it.zIndex }
         if (!isVisible) return
 
-        if (isAnimating) {
-            animationTicks += ClientTickHandler.ticks - guiTicksLastFrame
-            guiTicksLastFrame = ClientTickHandler.ticks
-        }
-
         components.removeAll { e ->
             var b = e.isInvalid
             if (BUS.fire(GuiComponentEvents.RemoveChildEvent(this, e)).isCanceled())
@@ -491,7 +454,6 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
         wasMouseOver = this.mouseOver
 
         GlStateManager.pushMatrix()
-        GlStateManager.translate(pos.x, pos.y, 0.0)
         transform.glApply()
 
         BUS.fire(GuiComponentEvents.PreDrawEvent(this, mousePos, partialTicks))
@@ -506,11 +468,11 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
             val tessellator = Tessellator.getInstance()
             val vb = tessellator.buffer
             vb.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
-            vb.pos(pos.x, pos.y, 0.0).endVertex()
-            vb.pos(pos.x + size.x, pos.y, 0.0).endVertex()
-            vb.pos(pos.x + size.x, pos.y + size.y, 0.0).endVertex()
-            vb.pos(pos.x, pos.y + size.y, 0.0).endVertex()
-            vb.pos(pos.x, pos.y, 0.0).endVertex()
+            vb.pos(0.0, 0.0, 0.0).endVertex()
+            vb.pos(size.x, 0.0, 0.0).endVertex()
+            vb.pos(size.x, size.y, 0.0).endVertex()
+            vb.pos(0.0, size.y, 0.0).endVertex()
+            vb.pos(0.0, 0.0, 0.0).endVertex()
             tessellator.draw()
             GlStateManager.enableTexture2D()
             GlStateManager.popAttrib()
@@ -523,18 +485,18 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
 
         GlStateManager.popAttrib()
 
-        GlStateManager.popMatrix()
         BUS.fire(GuiComponentEvents.PostDrawEvent(this, mousePos, partialTicks))
+
+        GlStateManager.popMatrix()
     }
 
     /**
-     * Draw late stuff this component, like tooltips.
+     * Draw late stuff this component, like tooltips. This method is executed in the root context
      *
-     * @param mousePos Mouse position
+     * @param mousePos Mouse position in the root context
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
     fun drawLate(mousePos: Vec2d, partialTicks: Float) {
-        val mousePos = transformFromParentContext(mousePos)
         if (mouseOver) {
             val tt = tooltip(this)
             if (tt?.isNotEmpty() ?: false) {
@@ -555,10 +517,10 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
     }
 
     /**
-     * Called when the mouse is pressed. mousePos is relative to the position of this component.
-     * @param mousePos
-     * *
-     * @param button
+     * Called when the mouse is pressed.
+     *
+     * @param mousePos The mouse position in the parent context
+     * @param button The button that was pressed
      */
     open fun mouseDown(mousePos: Vec2d, button: EnumMouseButton) {
         val mousePos = transformFromParentContext(mousePos)
@@ -575,10 +537,10 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
     }
 
     /**
-     * Called when the mouse is released. mousePos is relative to the position of this component.
-     * @param mousePos
-     * *
-     * @param button
+     * Called when the mouse is released.
+     *
+     * @param mousePos The mouse position in the parent context
+     * @param button The button that was released
      */
     fun mouseUp(mousePos: Vec2d, button: EnumMouseButton) {
         val mousePos = transformFromParentContext(mousePos)
@@ -600,10 +562,10 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
     }
 
     /**
-     * Called when the mouse is moved while pressed. mousePos is relative to the position of this component.
-     * @param mousePos
-     * *
-     * @param button
+     * Called when the mouse is moved while pressed.
+     *
+     * @param mousePos The mouse position in the parent context
+     * @param button The button that was held
      */
     fun mouseDrag(mousePos: Vec2d, button: EnumMouseButton) {
         val mousePos = transformFromParentContext(mousePos)
@@ -618,7 +580,9 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
 
     /**
      * Called when the mouse wheel is moved.
-     * @param mousePos
+     *
+     * @param mousePos The mouse position in the parent context
+     * @param direction The direction the wheel was moved
      */
     fun mouseWheel(mousePos: Vec2d, direction: GuiComponentEvents.MouseWheelDirection) {
         val mousePos = transformFromParentContext(mousePos)
@@ -633,8 +597,8 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
 
     /**
      * Called when a key is pressed in the parent component.
+     *
      * @param key The actual character that was pressed
-     * *
      * @param keyCode The key code, codes listed in [Keyboard]
      */
     fun keyPressed(key: Char, keyCode: Int) {
@@ -651,8 +615,8 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
 
     /**
      * Called when a key is released in the parent component.
+     *
      * @param key The actual key that was pressed
-     * *
      * @param keyCode The key code, codes listed in [Keyboard]
      */
     fun keyReleased(key: Char, keyCode: Int) {
@@ -808,8 +772,7 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
     }
 
     /**
-     * Adds the passed tag to this component if it doesn't already have it. Tags are not case sensitive
-
+     * Adds the passed tag to this component if it doesn't already have it.
      * @return true if the tag didn't exist and was added
      */
     fun addTag(tag: Any): Boolean {
@@ -820,8 +783,7 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
     }
 
     /**
-     * Removes the passed tag to this component if it doesn't already have it. Tags are not case sensitive
-
+     * Removes the passed tag to this component if it doesn't already have it.
      * @return true if the tag existed and was removed
      */
     fun removeTag(tag: Any): Boolean {
@@ -829,6 +791,21 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
             if (tagStorage.remove(tag))
                 return true
         return false
+    }
+
+    /**
+     * Adds or removes the passed tag to this component if it isn't already in the correct state.
+     * If [shouldHave] is true this method will add the tag if it doesn't exist, if it is false
+     * this method will remove the tag if it does exist
+     * @param tag The tag to add or remove
+     * @param shouldHave The target state for [hasTag] after calling this method
+     * @return True if the tag was added or removed
+     */
+    fun setTag(tag: Any, shouldHave: Boolean): Boolean {
+        if(shouldHave)
+            return addTag(tag)
+        else
+            return removeTag(tag)
     }
 
     /**
@@ -843,9 +820,5 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      */
     fun invalidate() {
         this.isInvalid = true
-    }
-
-    fun resetAnimation() {
-        animationTicks = 0
     }
 }

@@ -6,18 +6,13 @@ import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.AddChildEvent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.AddTagEvent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.AddToParentEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.BlurEvent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.ComponentTickEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.DisableEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.EnableEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.FocusEvent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.GetDataClassesEvent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.GetDataEvent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.GetDataKeysEvent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.HasTagEvent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.KeyDownEvent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.KeyUpEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.LogicalSizeEvent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.MouseClickEvent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.MouseDownEvent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.MouseDragEvent
@@ -34,7 +29,6 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.R
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.RemoveFromParentEvent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.RemoveTagEvent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.SetDataEvent
-import com.teamwizardry.librarianlib.features.math.BoundingBox2D
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
 /**
@@ -58,11 +52,6 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
  * - [MouseOutEvent] - Fired when the mouse is moved out of the component
  * - [MouseWheelEvent] - Fired when the mouse wheel is moved
  * - ---
- * - [FocusEvent] - Fired when the component gains focus
- * - [BlurEvent] - Fired when the component loses focus
- * - ---
- * - [EnableEvent] - Fired when this component is enabled
- * - [DisableEvent] - Fired when this component is disabled
  *
  * ### Seldom used events
  * - [AddChildEvent] - Fired before a child is added to the component
@@ -81,7 +70,6 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
  * - [RemoveTagEvent] - Fired before a tag is removed from a component
  *
  * ### Advanced events
- * - [LogicalSizeEvent] - Fired when the logical size is queried
  * - [MouseOverEvent] - Fired when checking if the mouse is over this component
  */
 object GuiComponentEvents {
@@ -113,11 +101,6 @@ object GuiComponentEvents {
         }
     }
 
-    class FocusEvent(@JvmField val component: GuiComponent) : Event()
-    class BlurEvent(@JvmField val component: GuiComponent) : Event()
-    class EnableEvent(@JvmField val component: GuiComponent) : Event()
-    class DisableEvent(@JvmField val component: GuiComponent) : Event()
-
     class AddChildEvent(@JvmField val component: GuiComponent, val child: GuiComponent) : EventCancelable()
     class RemoveChildEvent(@JvmField val component: GuiComponent, val child: GuiComponent) : EventCancelable()
     class AddToParentEvent(@JvmField val component: GuiComponent, val parent: GuiComponent) : EventCancelable()
@@ -133,7 +116,6 @@ object GuiComponentEvents {
     class AddTagEvent(@JvmField val component: GuiComponent, val tag: Any) : EventCancelable()
     class RemoveTagEvent(@JvmField val component: GuiComponent, val tag: Any) : EventCancelable()
 
-    class LogicalSizeEvent(@JvmField val component: GuiComponent, var box: BoundingBox2D?) : Event()
     class MouseOverEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, var isOver: Boolean) : Event()
 
     class MessageArriveEvent(@JvmField val component: GuiComponent, val from: GuiComponent, val message: Message) : Event()

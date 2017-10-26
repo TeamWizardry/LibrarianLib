@@ -311,13 +311,68 @@ class Matrix4 {
         return Vec3d(x, y, z)
     }
 
+    private fun mult2x2(vec: Vec2d): Vec2d {
+        val x = m00 * vec.x + m01 * vec.y
+        val y = m10 * vec.x + m11 * vec.y
+
+        return Vec2d(x, y)
+    }
+
     fun apply(vec: Vec3d): Vec3d {
         return mult3x3(vec).addVector(m03, m13, m23)
+    }
+
+    fun apply(vec: Vec2d): Vec2d {
+        return mult2x2(vec).add(m03, m13)
     }
 
     fun applyN(vec: Vec3d): Vec3d {
         mult3x3(vec)
         return vec.normalize()
+    }
+
+    fun invert() : Matrix4 {
+        val m : Matrix4 = Matrix4()
+
+        val s0 = m00 * m11 - m10 * m01
+        val s1 = m00 * m12 - m10 * m02
+        val s2 = m00 * m13 - m10 * m03
+        val s3 = m01 * m12 - m11 * m02
+        val s4 = m01 * m13 - m11 * m03
+        val s5 = m02 * m13 - m12 * m03
+
+        val c5 = m22 * m33 - m32 * m23
+        val c4 = m21 * m33 - m31 * m23
+        val c3 = m21 * m32 - m31 * m22
+        val c2 = m20 * m33 - m30 * m23
+        val c1 = m20 * m32 - m30 * m22
+        val c0 = m20 * m31 - m30 * m21
+
+        val det = (s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0)
+        if(det == 0.0) return m
+        val invdet = 1 / det
+
+        m.m00 = (m11 * c5 - m12 * c4 + m13 * c3) * invdet
+        m.m01 = (-m01 * c5 + m02 * c4 - m03 * c3) * invdet
+        m.m02 = (m31 * s5 - m32 * s4 + m33 * s3) * invdet
+        m.m03 = (-m21 * s5 + m22 * s4 - m23 * s3) * invdet
+
+        m.m10 = (-m10 * c5 + m12 * c2 - m13 * c1) * invdet
+        m.m11 = (m00 * c5 - m02 * c2 + m03 * c1) * invdet
+        m.m12 = (-m30 * s5 + m32 * s2 - m33 * s1) * invdet
+        m.m13 = (m20 * s5 - m22 * s2 + m23 * s1) * invdet
+
+        m.m20 = (m10 * c4 - m11 * c2 + m13 * c0) * invdet
+        m.m21 = (-m00 * c4 + m01 * c2 - m03 * c0) * invdet
+        m.m22 = (m30 * s4 - m31 * s2 + m33 * s0) * invdet
+        m.m23 = (-m20 * s4 + m21 * s2 - m23 * s0) * invdet
+
+        m.m30 = (-m10 * c3 + m11 * c1 - m12 * c0) * invdet
+        m.m31 = (m00 * c3 - m01 * c1 + m02 * c0) * invdet
+        m.m32 = (-m30 * s3 + m31 * s1 - m32 * s0) * invdet
+        m.m33 = (m20 * s3 - m21 * s1 + m22 * s0) * invdet
+
+        return m
     }
 
     override fun toString(): String {
@@ -338,4 +393,10 @@ class Matrix4 {
     companion object {
         private val glBuf = ByteBuffer.allocateDirect(16 * 8).order(ByteOrder.nativeOrder()).asDoubleBuffer()
     }
+
+    operator fun timesAssign(mat: Matrix4) {
+        this.multiply(mat)
+    }
+    operator fun times(vec: Vec3d) = this.apply(vec)
+    operator fun times(vec: Vec2d) = this.apply(vec)
 }

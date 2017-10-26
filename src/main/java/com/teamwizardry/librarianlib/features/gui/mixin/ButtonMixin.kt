@@ -30,7 +30,7 @@ class ButtonMixin(val component: GuiComponent, init: Runnable) {
         component.addTag(TAG)
 
         component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) { event ->
-            val newState = if (!event.component.enabled) EnumButtonState.DISABLED
+            val newState = if (!event.component.hasTag("enabled")) EnumButtonState.DISABLED
             else if (event.component.mouseOver) EnumButtonState.HOVER
             else EnumButtonState.NORMAL
 

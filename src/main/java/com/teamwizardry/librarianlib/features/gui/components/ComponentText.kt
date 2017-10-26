@@ -78,8 +78,8 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
             fr.unicodeFlag = true
         }
 
-        val x = pos.xi / scale
-        var y = pos.yi / scale
+        val x = 0
+        var y = 0
 
         val lines: List<String>
 
@@ -120,7 +120,11 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
         GlStateManager.scale(1/scale, 1/scale, 1/scale)
     }
 
-    override val contentSize: BoundingBox2D
+    fun sizeToText() {
+        this.size = contentSize.size
+    }
+
+    val contentSize: BoundingBox2D
         get() {
             val wrap = this.wrap.getValue(this)
             val scale = this.scale.getValue(this)

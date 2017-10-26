@@ -24,6 +24,8 @@ class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: ISprite?,
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
         val alwaysTop = !depth.getValue(this)
         val sp = sprite ?: return
+        val animationTicks = animator.time.toInt()
+
         if (alwaysTop) {
             // store the current depth function
             GL11.glPushAttrib(GL11.GL_DEPTH_BUFFER_BIT)
@@ -50,7 +52,7 @@ class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: ISprite?,
         if (dir == ProgressDirection.X_POS || dir == ProgressDirection.X_NEG)
             w = (w * progress).toInt()
 
-        sp.drawClipped(animationTicks, pos.xf, pos.yf, w, h, dir == ProgressDirection.X_NEG, dir == ProgressDirection.Y_NEG)
+        sp.drawClipped(animationTicks, 0f, 0f, w, h, dir == ProgressDirection.X_NEG, dir == ProgressDirection.Y_NEG)
         if (alwaysTop)
             GL11.glPopAttrib()
     }

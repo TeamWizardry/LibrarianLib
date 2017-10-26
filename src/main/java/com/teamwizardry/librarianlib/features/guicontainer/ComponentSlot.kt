@@ -27,7 +27,7 @@ class ComponentSlot(val slot: SlotBase, x: Int, y: Int) : GuiComponent(x, y) {
         val p = reverse * vec(0, 0)
 
         if (scaler == null) scaler = this.root.children.firstOrNull()
-        val s = scaler?.pos?: Vec2d.ZERO
+        val s = scaler?.pos ?: Vec2d.ZERO
 
         slot.xPos = p.xi - s.xi
         slot.yPos = p.yi - s.yi
