@@ -10,8 +10,7 @@ object ScissorMixin {
 
     fun scissor(component: GuiComponent) {
         component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) { event ->
-            val reverse = event.component.thisContextToOtherContext(null)
-            val parent = event.component.parent
+            val reverse = event.component.geometry.thisContextToOtherContext(null)
             val root = reverse * vec(0, 0)
             val size = (reverse * event.component.size) - root
             ScissorUtil.push()

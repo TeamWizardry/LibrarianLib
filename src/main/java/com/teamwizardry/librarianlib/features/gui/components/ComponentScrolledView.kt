@@ -5,7 +5,6 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.mixin.ScissorMixin
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
-import net.minecraft.client.renderer.GlStateManager
 
 class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent(posX, posY, width, height) {
 
@@ -20,13 +19,13 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
     }
 
     /**
-     * Moves the view to a specific transform.translate.
+     * Moves the view to a specific transform.postTranslate.
      */
     fun scrollTo(scroll: Vec2d) {
         val newScroll = Vec2d.min(maxScroll, scroll)
-        if (newScroll != transform.translate) {
-            this.scroll.fireModifier(newScroll, { h, v -> h(this, transform.translate, v) })
-            transform.translate = newScroll
+        if (newScroll != transform.postTranslate) {
+            this.scroll.fireModifier(newScroll, { h, v -> h(this, transform.postTranslate, v) })
+            transform.postTranslate = newScroll
         }
     }
 
@@ -34,7 +33,7 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
      * Moves the view by the passed vector.
      */
     fun scrollOffset(scroll: Vec2d) {
-        scrollTo(transform.translate.add(scroll))
+        scrollTo(transform.postTranslate.add(scroll))
     }
 
     /**
@@ -42,12 +41,6 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
      */
     fun scrollToPercent(scroll: Vec2d) {
         scrollTo(maxScroll.mul(scroll))
-    }
-
-    override fun draw(mousePos: Vec2d, partialTicks: Float) {
-        GlStateManager.translate(-transform.translate.x, -transform.translate.y, 0.0)
-        super.draw(mousePos, partialTicks)
-        GlStateManager.translate(transform.translate.x, transform.translate.y, 0.0)
     }
 
     val maxScroll: Vec2d

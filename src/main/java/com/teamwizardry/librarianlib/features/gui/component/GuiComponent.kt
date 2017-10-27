@@ -128,7 +128,17 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      */
     fun transformToParentContext(pos: Vec2d = Vec2d.ZERO)
             = geometry.transformToParentContext(pos)
+
+    /**
+     * Transforms [pos] (`Vec2d.ZERO` by default) in our context into `other`'s context (or the root context if null)
+     */
+    @JvmOverloads
     fun thisPosToOtherContext(other: GuiComponent?, pos: Vec2d = Vec2d.ZERO)
+            = geometry.thisPosToOtherContext(other, pos)
+    /**
+     * Transforms [pos] from `other`'s context (or the root context if null) to our context
+     */
+    fun otherPosToThisContext(other: GuiComponent?, pos: Vec2d)
             = geometry.thisPosToOtherContext(other, pos)
     //endregion
 

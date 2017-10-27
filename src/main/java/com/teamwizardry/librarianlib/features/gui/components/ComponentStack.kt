@@ -60,7 +60,7 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 1
         itemInfo.fireAll { h -> h(this, list) }
 
         val font = stack.item.getFontRenderer(stack)
-        setTooltip(list, font ?: Minecraft.getMinecraft().fontRenderer)
+        render.setTooltip(list, font ?: Minecraft.getMinecraft().fontRenderer)
     }
 
 }

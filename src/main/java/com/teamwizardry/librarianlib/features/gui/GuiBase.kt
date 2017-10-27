@@ -21,8 +21,8 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
 //    protected var left: Int = 0
 
     init {
-        mainComponents.calculateOwnHover = false
-        fullscreenComponents.calculateOwnHover = false
+        mainComponents.geometry.shouldCalculateOwnHover = false
+        fullscreenComponents.geometry.shouldCalculateOwnHover = false
         mainScaleWrapper.zIndex = -100000 // really far back
         fullscreenComponents.add(mainScaleWrapper)
         mainScaleWrapper.add(mainComponents)
@@ -69,25 +69,25 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         super.drawScreen(mouseX, mouseY, partialTicks)
         GlStateManager.enableBlend()
         val relPos = vec(mouseX, mouseY)
-        fullscreenComponents.calculateMouseOver(relPos)
-        fullscreenComponents.draw(relPos, partialTicks)
-        fullscreenComponents.drawLate(relPos, partialTicks)
+        fullscreenComponents.geometry.calculateMouseOver(relPos)
+        fullscreenComponents.render.draw(relPos, partialTicks)
+        fullscreenComponents.render.drawLate(relPos, partialTicks)
     }
 
     @Throws(IOException::class)
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         super.mouseClicked(mouseX, mouseY, mouseButton)
-        fullscreenComponents.mouseDown(vec(mouseX, mouseY), EnumMouseButton.getFromCode(mouseButton))
+        fullscreenComponents.guiEventHandler.mouseDown(vec(mouseX, mouseY), EnumMouseButton.getFromCode(mouseButton))
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         super.mouseReleased(mouseX, mouseY, state)
-        fullscreenComponents.mouseUp(vec(mouseX, mouseY), EnumMouseButton.getFromCode(state))
+        fullscreenComponents.guiEventHandler.mouseUp(vec(mouseX, mouseY), EnumMouseButton.getFromCode(state))
     }
 
     override fun mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
         super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)
-        fullscreenComponents.mouseDrag(vec(mouseX, mouseY), EnumMouseButton.getFromCode(clickedMouseButton))
+        fullscreenComponents.guiEventHandler.mouseDrag(vec(mouseX, mouseY), EnumMouseButton.getFromCode(clickedMouseButton))
     }
 
     @Throws(IOException::class)
@@ -95,9 +95,9 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         super.handleKeyboardInput()
 
         if (Keyboard.getEventKeyState())
-            fullscreenComponents.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
+            fullscreenComponents.guiEventHandler.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
         else
-            fullscreenComponents.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
+            fullscreenComponents.guiEventHandler.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
     }
 
     @Throws(IOException::class)
@@ -108,12 +108,12 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         val wheelAmount = Mouse.getEventDWheel()
 
         if (wheelAmount != 0) {
-            fullscreenComponents.mouseWheel(vec(mouseX, mouseY), GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
+            fullscreenComponents.guiEventHandler.mouseWheel(vec(mouseX, mouseY), GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
         }
     }
 
     fun tick() {
-        fullscreenComponents.tick()
+        fullscreenComponents.guiEventHandler.tick()
     }
 
     companion object {

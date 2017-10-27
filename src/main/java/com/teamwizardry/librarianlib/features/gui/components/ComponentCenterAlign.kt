@@ -10,12 +10,8 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 class ComponentCenterAlign(posX: Int, posY: Int, var centerHorizontal: Boolean, var centerVertical: Boolean) : GuiComponent(posX, posY) {
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
-        //NO-OP
-    }
-
-    override fun draw(mousePos: Vec2d, partialTicks: Float) {
         if (centerHorizontal || centerVertical) {
-            for (component in components) {
+            for (component in children) {
                 val componentCenter = component.transformToParentContext(component.size/2)
                 var adjustedPos = (size/2) - componentCenter
                 if (!centerHorizontal)
@@ -25,8 +21,6 @@ class ComponentCenterAlign(posX: Int, posY: Int, var centerHorizontal: Boolean, 
                 component.pos += adjustedPos
             }
         }
-
-        super.draw(mousePos, partialTicks)
     }
 
 }

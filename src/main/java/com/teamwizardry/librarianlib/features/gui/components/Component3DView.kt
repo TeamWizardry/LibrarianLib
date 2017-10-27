@@ -43,16 +43,15 @@ class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
     var rotZ: Double = 0.toDouble()
     internal var dragButton: EnumMouseButton? = null
 
-    override fun mouseDown(mousePos: Vec2d, button: EnumMouseButton) {
-        super.mouseDown(mousePos, button)
-
+    //@Hook
+    fun mouseDown(e: GuiComponentEvents.MouseDownEvent) {
         if (!mouseOver)
             return
         if (dragButton != null)
             return
 
-        dragStart = mousePos
-        dragButton = button
+        dragStart = e.mousePos
+        dragButton = e.button
     }
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {

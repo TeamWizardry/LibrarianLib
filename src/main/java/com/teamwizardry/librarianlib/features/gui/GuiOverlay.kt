@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.gui
 
 import com.teamwizardry.librarianlib.core.client.ClientTickHandler
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.div
@@ -64,7 +65,7 @@ object GuiOverlay {
         val res = ScaledResolution(Minecraft.getMinecraft())
         GlStateManager.enableBlend()
         mainComp.size = vec(res.scaledWidth, res.scaledHeight)
-        mainComp.draw(mainComp.size / 2, ClientTickHandler.partialTicks)
+        mainComp.render.draw(mainComp.size / 2, ClientTickHandler.partialTicks)
     }
 
     @SubscribeEvent
@@ -74,7 +75,7 @@ object GuiOverlay {
             it.reinit(mainComp)
         }
         newlyRegistered.clear()
-        mainComp.tick()
+        mainComp.guiEventHandler.tick()
     }
 
     private class ComponentVisiblePredicate(val predicate: BooleanSupplier) : GuiComponent(0, 0) {
@@ -82,7 +83,9 @@ object GuiOverlay {
             // NO-OP
         }
 
-        override fun onTick() {
+//        @Hook
+        //TODO
+        fun onTick(e: GuiComponentEvents.ComponentTickEvent) {
             this.isVisible = predicate.asBoolean
         }
     }
