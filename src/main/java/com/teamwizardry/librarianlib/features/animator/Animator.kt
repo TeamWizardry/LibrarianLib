@@ -79,14 +79,16 @@ class Animator {
     private val currentAnimations = mutableListOf<Animation<*>>()
 
     /**
-     * Add [animation] to this animator
+     * Add [animations] to this animator
      */
-    fun add(animation: Animation<*>) {
-        if(animation.isInAnimator) {
-            throw IllegalArgumentException("Animation already added to animator")
+    fun add(vararg animations: Animation<*>) {
+        animations.forEach { animation ->
+            if(animation.isInAnimator) {
+                throw IllegalArgumentException("Animation already added to animator")
+            }
+            animation.onAddedToAnimator(this)
+            this.animations.add(animation)
         }
-        animation.onAddedToAnimator(this)
-        animations.add(animation)
     }
 
     internal fun update() {

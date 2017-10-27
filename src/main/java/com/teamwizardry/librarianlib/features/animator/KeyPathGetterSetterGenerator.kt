@@ -3,11 +3,14 @@ package com.teamwizardry.librarianlib.features.animator
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
+import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.superclasses
+import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaGetter
 import kotlin.reflect.jvm.javaSetter
-import kotlin.reflect.jvm.kotlinProperty
 
 /**
  * Please, don't look. It's horrifying.
@@ -63,6 +66,18 @@ private fun Class<*>.getDeclaredFieldRecursive(name: String): Field? {
     return field
 }
 
+private fun KClass<*>.getDeclaredPropertyRecursive(name: String): KProperty<*>? {
+    var cls: KClass<*>? = this
+    var prop: KProperty<*>? = null
+    while(cls != null && prop == null) {
+        val props = cls.declaredMemberProperties
+        prop = props.firstOrNull { it.name == name }
+        val supers = cls.superclasses
+        cls = supers.firstOrNull { !it.java.isInterface }
+    }
+    return prop
+}
+
 private class FieldListItem(val target: Class<*>, val name: String) {
     val fieldClass: Class<*>
     var child: FieldListItem? = null
@@ -70,15 +85,15 @@ private class FieldListItem(val target: Class<*>, val name: String) {
     private val accessorOfChoice: Any
 
     init {
-        val field = target.getDeclaredFieldRecursive(name) ?:
-                throw IllegalArgumentException("Couldn't find field `$name` in class `${target.canonicalName}` or any of its superclasses")
-        fieldClass = field.type
-        val property = field.kotlinProperty
+        val property = target.kotlin.getDeclaredPropertyRecursive(name) ?:
+            throw IllegalArgumentException("Couldn't find a property `$name` in class `${target.canonicalName}` or any of its superclasses")
+        fieldClass = (property.returnType.classifier as KClass<*>).java
 
-        if(property?.javaGetter != null) {
+        if(property.javaGetter != null) {
             accessorOfChoice = property
         } else {
-            accessorOfChoice = field
+            accessorOfChoice = property.javaField ?:
+                    throw IllegalArgumentException("Property `$name` in class `${target.canonicalName}` has no getter and no backing field")
         }
     }
 
@@ -93,7 +108,7 @@ private class FieldListItem(val target: Class<*>, val name: String) {
             if(!Modifier.isPublic(accessorOfChoice.modifiers)) {
                 throw IllegalAccessException("Could not access field `$name` in class `${target.canonicalName}`")
             }
-            getter = MethodHandleHelper.wrapperForGetter<Any>(accessorOfChoice)
+            getter = MethodHandleHelper.wrapperForGetter(accessorOfChoice)
         } else if(accessorOfChoice is KProperty<*>) {
             if(!Modifier.isPublic(accessorOfChoice.javaGetter!!.modifiers)) {
                 throw IllegalAccessException("Could not access property getter for `$name` in class `${target.canonicalName}`")
@@ -134,7 +149,7 @@ private class FieldListItem(val target: Class<*>, val name: String) {
         val childSetter = child?.createRootSetter(target) ?: { _, finalValue -> finalValue }
 
         // if mutable
-        if ((accessorOfChoice as? KMutableProperty<*>)?.javaSetter?.modifiers?.let { Modifier.isPublic(it) } ?: false ||
+        if ((accessorOfChoice as? KMutableProperty<*>)?.javaSetter?.modifiers?.let { Modifier.isPublic(it) } == true ||
                 (accessorOfChoice is Field && !Modifier.isFinal(accessorOfChoice.modifiers))
                 ) {
             val setter: (target: Any, value: Any?) -> Unit
@@ -178,79 +193,3 @@ private class FieldListItem(val target: Class<*>, val name: String) {
 }
 
 private val NULL_OBJECT = Any()
-
-
-//private val getter: (T) -> Any?
-//private val setter: (T, Any?) -> Unit
-//
-//init {
-//    val steps = keyPath.split(".")
-//
-//    val (getLast, lastType) = getFinalTarget(steps, 0, target)
-//
-//    val field = lastType.getDeclaredField(steps.last())
-//    val property = field.kotlinProperty
-//    if(property == null && !field.isAccessible) {
-//        throw IllegalAccessException("Could not access field $keyPath")
-//    } else if(property != null) {
-//        if(property !is KMutableProperty<*>) {
-//            throw IllegalAccessException("Property $keyPath is immutable")
-//        }
-//        if(!property.javaGetter!!.isAccessible) {
-//            throw IllegalAccessException("Getter for property $keyPath is inaccessable")
-//        }
-//        if(!property.javaSetter!!.isAccessible) {
-//            throw IllegalAccessException("Setter for property $keyPath is inaccessable")
-//        }
-//    }
-//
-//    if(property != null) {
-//        val m = MethodHandleHelper.wrapperForMethod<Any>(property.javaGetter!!)
-//        getter = { t ->
-//            val current = getLast(t)
-//            m(current, emptyArray())
-//        }
-//    } else {
-//        getter = MethodHandleHelper.wrapperForGetter<Any>(field)
-//    }
-//
-//    if(property != null) {
-//        property as KMutableProperty<*>
-//        val m = MethodHandleHelper.wrapperForMethod<Any>(property.javaSetter!!)
-//        setter = { t, v ->
-//            val current = getLast(t)
-//            m(current, arrayOf(v))
-//        }
-//    } else {
-//        setter = MethodHandleHelper.wrapperForSetter<Any>(field)
-//    }
-//}
-//
-//private fun getFinalTarget(steps: List<String>, index: Int, type: Class<*>, runningName: String = steps.first()): Pair<(Any) -> Any, Class<*>> {
-//    if(index >= steps.size-2) {
-//        return Pair({ v -> v }, type)
-//    }
-//    val name = steps[index]
-//    val field = type.getDeclaredField(name)
-//    val property = field.kotlinProperty
-//    if(property == null && !field.isAccessible) {
-//        throw IllegalAccessException("Could not access field $runningName")
-//    } else if(property != null && !property.javaGetter!!.isAccessible) {
-//        throw IllegalAccessException("Could not access property $runningName")
-//    }
-//
-//    val getterThisStep: (Any) -> Any?
-//    if(property != null) {
-//        val g = MethodHandleHelper.wrapperForMethod<Any>(property.javaGetter!!)
-//        getterThisStep = { v -> g(v, emptyArray())}
-//    } else {
-//        getterThisStep = MethodHandleHelper.wrapperForGetter<Any>(field)
-//    }
-//
-//    val (next, nextType) = getFinalTarget(steps, index+1, field.type, runningName + "." + steps[index+1])
-//
-//    return Pair({ v ->
-//        val current = getterThisStep(v)!!
-//        next(current)
-//    }, nextType)
-//}

@@ -7,14 +7,15 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 /**
  * Created by TheCodeWarrior on 7/31/16.
  */
-class ComponentList(posX: Int, posY: Int) : GuiComponent(posX, posY) {
+class ComponentList(posX: Int, posY: Int, var rowHeight: Int) : GuiComponent(posX, posY) {
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
         var y = 0
 
         for (component in components) {
+            val h = rowHeight
             component.pos = vec(component.pos.x, y)
-            y = component.transformToParentContext(component.size).yi
+            y += h
         }
     }
 }

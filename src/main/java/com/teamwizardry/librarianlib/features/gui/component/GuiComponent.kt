@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.gui.component
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
+import com.teamwizardry.librarianlib.features.animator.Animation
 import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventBus
@@ -107,7 +108,6 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
     var mouseOver = false
     var mouseOverNoOcclusion = false
 
-    var mousePosThisFrame = Vec2d.ZERO
     protected var tagStorage: MutableSet<Any> = HashSet()
     /**
      * Do not use this to check if a component has a tag, as event hooks can add virtual tags to components. Use [hasTag] instead.
@@ -141,10 +141,6 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      * well as it's children or if it should only calculate based on it's children.
      */
     var calculateOwnHover = true
-    /**
-     * True if the component shouldn't effect the logical size of it's parent. Causes logical size to return null.
-     */
-    var outOfFlow = false
     protected val components = mutableListOf<GuiComponent>()
     /**
      * An unmodifiable collection of all the direct children of this component
@@ -186,6 +182,13 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      * Draws the component, this is called between pre and post draw events
      */
     abstract fun drawComponent(mousePos: Vec2d, partialTicks: Float)
+
+    /**
+     * Adds animations to [animator]
+     */
+    fun add(vararg animations: Animation<*>) {
+        animator.add(*animations)
+    }
 
     /**
      * Adds child(ren) to this component.
