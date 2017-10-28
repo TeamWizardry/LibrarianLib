@@ -183,7 +183,7 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      * @return true if the tag didn't exist and was added
      */
     fun addTag(tag: Any)
-            = tags.removeTag(tag)
+            = tags.addTag(tag)
     /**
      * Removes the passed tag to this component if it doesn't already have it.
      * @return true if the tag existed and was removed
