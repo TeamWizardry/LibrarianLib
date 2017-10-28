@@ -117,9 +117,4 @@ object GuiComponentEvents {
     class RemoveTagEvent(@JvmField val component: GuiComponent, val tag: Any) : EventCancelable()
 
     class MouseOverEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, var isOver: Boolean) : Event()
-
-    class MessageArriveEvent(@JvmField val component: GuiComponent, val from: GuiComponent, val message: Message) : Event()
-
-    data class Message(@JvmField val component: GuiComponent, val data: Any, val rippleType: EnumRippleType)
-    enum class EnumRippleType { NONE, UP, DOWN, ALL }
 }

@@ -14,30 +14,31 @@ class DragMixin(protected var component: GuiComponent, protected var constraints
      * Called when the component is picked up
      *
      * @property component The component this mixin is for
-     * @property mousePos The position of the mouse in the component
      * @property button The button clicked
+     * @property mousePos The position of the mouse in the component
      */
-    class DragPickupEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
+    class DragPickupEvent(@JvmField val component: GuiComponent, val button: EnumMouseButton, val mousePos: Vec2d) : EventCancelable()
     /**
      * Called when the component is dropped up
      *
      * @property component The component this mixin is for
-     * @property mousePos The position of the mouse in the component
      * @property button The button released
+     * @property previousPos The position of the component when it was picked up
      */
-    class DragDropEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val button: EnumMouseButton, val previousPos: Vec2d) : EventCancelable()
+    class DragDropEvent(@JvmField val component: GuiComponent, val button: EnumMouseButton, val previousPos: Vec2d) : EventCancelable()
     /**
      * Called when the component is about to move
      *
      * @property component The component this mixin is for
+     * @property button The button released
      * @property pos The current component position
      * @property newPos What the component's position will be set to after this event
-     * @property button The button released
      */
-    class DragMoveEvent(@JvmField val component: GuiComponent, val pos: Vec2d, var newPos: Vec2d, val button: EnumMouseButton) : Event()
+    class DragMoveEvent(@JvmField val component: GuiComponent, val button: EnumMouseButton, val pos: Vec2d, var newPos: Vec2d) : Event()
 
     var mouseDown: EnumMouseButton? = null
-    var clickPos = Vec2d.ZERO
+    var dragOffset = Vec2d.ZERO
+    var previousPos = Vec2d.ZERO
 
     init {
         init()
@@ -45,14 +46,15 @@ class DragMixin(protected var component: GuiComponent, protected var constraints
 
     private fun init() {
         component.BUS.hook(GuiComponentEvents.MouseDownEvent::class.java) { event ->
-            if (mouseDown == null && event.component.mouseOver && !component.BUS.fire(DragPickupEvent(event.component, event.mousePos, event.button)).isCanceled()) {
+            if (mouseDown == null && event.component.mouseOver && !component.BUS.fire(DragPickupEvent(event.component, event.button, event.mousePos)).isCanceled()) {
                 mouseDown = event.button
-                clickPos = event.component.transformToParentContext(event.mousePos) - event.component.pos
+                dragOffset = event.component.transformToParentContext(event.mousePos) - event.component.pos
+                previousPos = event.component.pos
                 event.cancel()
             }
         }
         component.BUS.hook(GuiComponentEvents.MouseUpEvent::class.java) { event ->
-            if (mouseDown == event.button && !component.BUS.fire(DragDropEvent(event.component, event.mousePos, event.button, clickPos)).isCanceled()) {
+            if (mouseDown == event.button && !component.BUS.fire(DragDropEvent(event.component, event.button, previousPos)).isCanceled()) {
                 mouseDown = null
                 event.cancel()
             }
@@ -61,11 +63,11 @@ class DragMixin(protected var component: GuiComponent, protected var constraints
         component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) { event ->
             val mouseButton = mouseDown
             if (mouseButton != null) {
-                val newPos = constraints(event.component.transformToParentContext(event.mousePos) - clickPos)
+                val newPos = constraints(event.component.transformToParentContext(event.mousePos) - dragOffset)
 
                 if (newPos != event.component.pos) {
                     event.component.pos = event.component.BUS.fire(
-                            DragMoveEvent(event.component, event.component.pos, newPos, mouseButton)
+                            DragMoveEvent(event.component, mouseButton, event.component.pos, newPos)
                     ).newPos
                 }
             }
