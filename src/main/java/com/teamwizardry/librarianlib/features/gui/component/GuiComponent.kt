@@ -242,9 +242,14 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
     fun add(vararg animations: Animation<*>) = render.add(*animations)
     //endregion
 
+    //region - Internal
     init {
         this.pos = vec(posX, posY)
         this.size = vec(width, height)
+
+        @Suppress("LeakingThis")
+        ComponentEventHookAnnotSearcher.search(this)
     }
+    //endregion
 
 }

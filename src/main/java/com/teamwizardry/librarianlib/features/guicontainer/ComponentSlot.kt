@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.guicontainer
 import com.teamwizardry.librarianlib.features.container.internal.SlotBase
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.Hook
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
@@ -22,7 +23,7 @@ class ComponentSlot(val slot: SlotBase, x: Int, y: Int) : GuiComponent(x, y) {
         slot.visible = true
     }
 
-    //@Hook
+    @Hook
     fun onTick(e: GuiComponentEvents.ComponentTickEvent) {
         val p = thisPosToOtherContext(null)
 

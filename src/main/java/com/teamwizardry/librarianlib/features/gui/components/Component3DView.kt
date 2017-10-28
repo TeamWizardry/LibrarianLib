@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.gui.components
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.Hook
 import com.teamwizardry.librarianlib.features.math.Matrix4
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
@@ -43,7 +44,7 @@ class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
     var rotZ: Double = 0.toDouble()
     internal var dragButton: EnumMouseButton? = null
 
-    //@Hook
+    @Hook
     fun mouseDown(e: GuiComponentEvents.MouseDownEvent) {
         if (!mouseOver)
             return
