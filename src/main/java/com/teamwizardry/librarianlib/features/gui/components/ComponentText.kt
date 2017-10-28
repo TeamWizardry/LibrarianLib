@@ -3,11 +3,9 @@ package com.teamwizardry.librarianlib.features.gui.components
 import com.teamwizardry.librarianlib.features.gui.Option
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.math.BoundingBox2D
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.GlStateManager
 import java.awt.Color
 
 class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizontal: ComponentText.TextAlignH = ComponentText.TextAlignH.LEFT, var vertical: ComponentText.TextAlignV = ComponentText.TextAlignV.TOP) : GuiComponent(posX, posY) {
@@ -32,14 +30,6 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
      * Whether to render a shadow behind the text
      */
     val shadow = Option<ComponentText, Boolean>(false)
-
-    /**
-     * The scale at which to draw the text
-     */
-    val scale = Option<ComponentText, Float>(1f)
-    init {
-        this.color.setValue(Color.BLACK)
-    }
 
     /**
      * Set the text value and unset the function
@@ -69,9 +59,6 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
         val colorHex = color.getValue(this).rgb
         val enableFlags = unicode.getValue(this)
         val dropShadow = shadow.getValue(this)
-        val scale = scale.getValue(this)
-
-        GlStateManager.scale(scale, scale, scale)
 
         if (enableFlags) {
             fr.bidiFlag = true
@@ -87,7 +74,7 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
         if (wrap == -1) {
             lines = listOf(fullText)
         } else {
-            lines = fr.listFormattedStringToWidth(fullText, wrap)!!
+            lines = fr.listFormattedStringToWidth(fullText, wrap)
         }
 
 
@@ -116,8 +103,6 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
             fr.bidiFlag = false
             fr.unicodeFlag = false
         }
-
-        GlStateManager.scale(1/scale, 1/scale, 1/scale)
     }
 
     fun sizeToText() {
@@ -127,7 +112,6 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
     val contentSize: BoundingBox2D
         get() {
             val wrap = this.wrap.getValue(this)
-            val scale = this.scale.getValue(this)
 
             val size: Vec2d
 
@@ -152,7 +136,7 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
                 fr.bidiFlag = false
             }
 
-            return BoundingBox2D(Vec2d.ZERO, size * scale)
+            return BoundingBox2D(Vec2d.ZERO, size)
         }
 
     enum class TextAlignH {
