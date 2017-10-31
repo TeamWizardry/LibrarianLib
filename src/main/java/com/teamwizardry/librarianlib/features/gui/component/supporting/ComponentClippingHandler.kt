@@ -20,18 +20,27 @@ import org.lwjgl.opengl.GL11
  */
 class ComponentClippingHandler(val component: GuiComponent) {
 
+    /**
+     * If true, clip component and its context to within its bounds
+     */
     var enabled = false
+    /**
+     * If nonzero, round the corners of the clipping
+     */
     var cornerRadius = 0.0
+    /**
+     * If nonzero, draw corners with pixels `N` units in size
+     */
     var cornerPixelSize = 0
 
-    fun pushEnable() {
+    internal fun pushEnable() {
         val en = Minecraft.getMinecraft().framebuffer.isStencilEnabled
         if(enabled) {
             StencilUtil.push { stencil() }
         }
     }
 
-    fun popDisable() {
+    internal fun popDisable() {
         if(enabled) {
             StencilUtil.pop { stencil() }
         }
