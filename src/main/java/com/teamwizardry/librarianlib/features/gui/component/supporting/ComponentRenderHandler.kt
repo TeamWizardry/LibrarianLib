@@ -96,6 +96,7 @@ class ComponentRenderHandler(private val component: GuiComponent) {
 
         GlStateManager.pushMatrix()
         component.transform.glApply()
+        component.clipping.pushEnable()
 
         component.BUS.fire(GuiComponentEvents.PreDrawEvent(component, mousePos, partialTicks))
 
@@ -128,6 +129,7 @@ class ComponentRenderHandler(private val component: GuiComponent) {
 
         component.BUS.fire(GuiComponentEvents.PostDrawEvent(component, mousePos, partialTicks))
 
+        component.clipping.popDisable()
         GlStateManager.popMatrix()
     }
 

@@ -73,6 +73,8 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
     @Suppress("LeakingThis") @JvmField val render = ComponentRenderHandler(this)
     /** Internal handler for GUI events (mouse click, key press, etc.) */
     @Suppress("LeakingThis") @JvmField val guiEventHandler = ComponentGuiEventHandler(this)
+    /** Use this to configure clipping */
+    @Suppress("LeakingThis") @JvmField val clipping = ComponentClippingHandler(this)
     //endregion
 
     //region - Base component stuff

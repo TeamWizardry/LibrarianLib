@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.gui
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
@@ -11,6 +12,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
+import org.lwjgl.opengl.GL11
 import java.io.IOException
 
 open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : GuiScreen() {
@@ -68,10 +70,13 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         super.drawScreen(mouseX, mouseY, partialTicks)
         GlStateManager.enableBlend()
+        StencilUtil.clear()
+        GL11.glEnable(GL11.GL_STENCIL_TEST)
         val relPos = vec(mouseX, mouseY)
         fullscreenComponents.geometry.calculateMouseOver(relPos)
         fullscreenComponents.render.draw(relPos, partialTicks)
         fullscreenComponents.render.drawLate(relPos, partialTicks)
+        GL11.glDisable(GL11.GL_STENCIL_TEST)
     }
 
     @Throws(IOException::class)

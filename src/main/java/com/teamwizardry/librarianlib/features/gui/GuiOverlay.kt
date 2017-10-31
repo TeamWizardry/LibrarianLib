@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.div
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.utilities.client.F3Handler
+import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
@@ -17,6 +18,7 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
+import org.lwjgl.opengl.GL11
 import java.util.function.BooleanSupplier
 import java.util.function.Consumer
 import java.util.function.Supplier
@@ -66,7 +68,11 @@ object GuiOverlay {
         val res = ScaledResolution(Minecraft.getMinecraft())
         GlStateManager.enableBlend()
         mainComp.size = vec(res.scaledWidth, res.scaledHeight)
+
+        StencilUtil.clear()
+        GL11.glEnable(GL11.GL_STENCIL_TEST)
         mainComp.render.draw(mainComp.size / 2, ClientTickHandler.partialTicks)
+        GL11.glDisable(GL11.GL_STENCIL_TEST)
     }
 
     @SubscribeEvent
