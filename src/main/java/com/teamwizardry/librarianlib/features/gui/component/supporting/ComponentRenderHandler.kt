@@ -94,7 +94,7 @@ class ComponentRenderHandler(private val component: GuiComponent) {
         }
         wasMouseOver = component.mouseOver
 
-        if( component.BUS.fire(GuiComponentEvents.PreTransformEvent(component, mousePos, partialTicks)).shouldUpdate ) {}
+        component.BUS.fire(GuiComponentEvents.PreTransformEvent(component, mousePos, partialTicks))
 
         GlStateManager.pushMatrix()
 
