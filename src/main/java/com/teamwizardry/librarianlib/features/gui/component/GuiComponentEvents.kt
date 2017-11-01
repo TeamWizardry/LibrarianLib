@@ -3,38 +3,14 @@ package com.teamwizardry.librarianlib.features.gui.component
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.AddChildEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.AddTagEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.AddToParentEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.ComponentTickEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.GetDataClassesEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.GetDataEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.GetDataKeysEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.HasTagEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.KeyDownEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.KeyUpEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.MouseClickEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.MouseDownEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.MouseDragEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.MouseInEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.MouseOutEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.MouseOverEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.MouseUpEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.MouseWheelEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.PostDrawEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.PreChildrenDrawEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.PreDrawEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.RemoveChildEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.RemoveDataEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.RemoveFromParentEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.RemoveTagEvent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.SetDataEvent
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
 object GuiComponentEvents {
     /** Fired each tick while the component is a part of a screen */
     class ComponentTickEvent(@JvmField val component: GuiComponent) : Event()
 
+    /** Fired each frame before applying OpenGL transforms */
+    class PreTransformEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val partialTicks: Float) : Event()
     /** Fired each frame before the component has been drawn, but after most computed properties update */
     class PreDrawEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val partialTicks: Float) : Event()
     /** Fired each frame after the component has been drawn but before children have been drawn */
@@ -100,6 +76,8 @@ object GuiComponentEvents {
     /** Fired before a tag is removed from a component */
     class RemoveTagEvent(@JvmField val component: GuiComponent, val tag: Any) : EventCancelable()
 
+    /** Fired before checking if the mouse is over this component */
+    class PreMouseOverEvent(@JvmField val component: GuiComponent, val parentMousePos: Vec2d) : Event()
     /** Fired when checking if the mouse is over this component */
     class MouseOverEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, var isOver: Boolean) : Event()
 }

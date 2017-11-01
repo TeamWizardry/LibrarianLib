@@ -94,7 +94,10 @@ class ComponentRenderHandler(private val component: GuiComponent) {
         }
         wasMouseOver = component.mouseOver
 
+        if( component.BUS.fire(GuiComponentEvents.PreTransformEvent(component, mousePos, partialTicks)).shouldUpdate ) {}
+
         GlStateManager.pushMatrix()
+
         component.transform.glApply()
         component.clipping.pushEnable()
 

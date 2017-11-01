@@ -87,6 +87,7 @@ class ComponentGeometryHandler(private val component: GuiComponent) {
     }
 
     fun calculateMouseOver(mousePos: Vec2d) {
+        component.BUS.fire(GuiComponentEvents.PreMouseOverEvent(component, mousePos))
         val mousePos = transformFromParentContext(mousePos)
         this.mouseOver = false
 
