@@ -33,7 +33,6 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         mainScaleWrapper.add(mainComponents)
 
         mainComponents.size = vec(guiWidth, guiHeight)
-        fullscreenComponents.add(debugger)
     }
 
     override fun initGui() {
@@ -59,6 +58,7 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         }
 
         fullscreenComponents.size = vec(width, height)
+        debugger.size = vec(width, height)
     }
 
     /**
@@ -91,22 +91,31 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         fullscreenComponents.render.drawLate(relPos, partialTicks)
 
         GlStateManager.popMatrix()
+
+        if(isDebugMode) {
+            debugger.geometry.calculateMouseOver(relPos)
+            debugger.render.draw(relPos, partialTicks)
+            debugger.render.drawLate(relPos, partialTicks)
+        }
         GL11.glDisable(GL11.GL_STENCIL_TEST)
     }
 
     @Throws(IOException::class)
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         super.mouseClicked(mouseX, mouseY, mouseButton)
+        if(isDebugMode) debugger.guiEventHandler.mouseDown(vec(mouseX, mouseY), EnumMouseButton.getFromCode(mouseButton))
         fullscreenComponents.guiEventHandler.mouseDown(vec(mouseX, mouseY), EnumMouseButton.getFromCode(mouseButton))
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         super.mouseReleased(mouseX, mouseY, state)
+        if(isDebugMode) debugger.guiEventHandler.mouseUp(vec(mouseX, mouseY), EnumMouseButton.getFromCode(state))
         fullscreenComponents.guiEventHandler.mouseUp(vec(mouseX, mouseY), EnumMouseButton.getFromCode(state))
     }
 
     override fun mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
         super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)
+        if(isDebugMode) debugger.guiEventHandler.mouseDrag(vec(mouseX, mouseY), EnumMouseButton.getFromCode(clickedMouseButton))
         fullscreenComponents.guiEventHandler.mouseDrag(vec(mouseX, mouseY), EnumMouseButton.getFromCode(clickedMouseButton))
     }
 
@@ -127,10 +136,13 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
             }
         }
 
-        if (Keyboard.getEventKeyState())
+        if (Keyboard.getEventKeyState()) {
+            if(isDebugMode) debugger.guiEventHandler.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
             fullscreenComponents.guiEventHandler.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
-        else
+        } else {
+            if(isDebugMode) debugger.guiEventHandler.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
             fullscreenComponents.guiEventHandler.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
+        }
     }
 
     @Throws(IOException::class)
@@ -141,11 +153,13 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         val wheelAmount = Mouse.getEventDWheel()
 
         if (wheelAmount != 0) {
+            if(isDebugMode) debugger.guiEventHandler.mouseWheel(vec(mouseX, mouseY), GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
             fullscreenComponents.guiEventHandler.mouseWheel(vec(mouseX, mouseY), GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
         }
     }
 
     fun tick() {
+        if(isDebugMode) debugger.guiEventHandler.tick()
         fullscreenComponents.guiEventHandler.tick()
     }
 

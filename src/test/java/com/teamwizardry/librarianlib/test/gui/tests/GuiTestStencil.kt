@@ -25,7 +25,7 @@ class GuiTestStencil : GuiBase(0, 0) {
         wrapper.add(clipping)
         clipping.add(clipped)
 
-        clipping.clipping.enabled = true
+        clipping.clipping.clipToBounds = true
         clipping.clipping.cornerRadius = 15.0
         clipping.clipping.cornerPixelSize = 2
 

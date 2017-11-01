@@ -11,6 +11,10 @@ import com.teamwizardry.librarianlib.features.helpers.vec
 class ComponentDebugger : GuiComponent(0, 0, 0, 0) {
     val debugPanel = ComponentDebugPanel()
 
+    init {
+        add(debugPanel)
+    }
+
     @Hook
     fun tick(e: GuiComponentEvents.ComponentTickEvent) {
         val parentSize = parent?.size ?: vec(0, 0)

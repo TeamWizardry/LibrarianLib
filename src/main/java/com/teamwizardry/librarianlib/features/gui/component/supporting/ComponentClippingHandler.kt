@@ -23,7 +23,7 @@ class ComponentClippingHandler(val component: GuiComponent) {
     /**
      * If true, clip component and its context to within its bounds
      */
-    var enabled = false
+    var clipToBounds = false
     /**
      * If nonzero, round the corners of the clipping
      */
@@ -35,13 +35,13 @@ class ComponentClippingHandler(val component: GuiComponent) {
 
     internal fun pushEnable() {
         val en = Minecraft.getMinecraft().framebuffer.isStencilEnabled
-        if(enabled) {
+        if(clipToBounds) {
             StencilUtil.push { stencil() }
         }
     }
 
     internal fun popDisable() {
-        if(enabled) {
+        if(clipToBounds) {
             StencilUtil.pop { stencil() }
         }
     }

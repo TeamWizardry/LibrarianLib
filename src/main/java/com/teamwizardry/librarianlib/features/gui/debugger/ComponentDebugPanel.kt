@@ -10,10 +10,10 @@ import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
  *
  * Created by TheCodeWarrior
  */
-class ComponentDebugPanel : GuiComponent(0, 0, 0, 0) {
+class ComponentDebugPanel : GuiComponent(0, 0, 0, 100) {
     val rect = ComponentRect(0, 0, 1, 1)
     init {
-        rect.color
+        add(rect)
     }
 
     @Hook
