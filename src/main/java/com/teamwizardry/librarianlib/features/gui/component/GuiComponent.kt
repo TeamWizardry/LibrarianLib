@@ -58,7 +58,7 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
     /**
      * Draws the component, this is called between pre and post draw events.
      */
-    abstract fun drawComponent(mousePos: Vec2d, partialTicks: Float)
+    open fun drawComponent(mousePos: Vec2d, partialTicks: Float) {}
 
     //region - Handlers
     /** Use this for advanced data manipulation and querying */

@@ -12,8 +12,8 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
  * Created by TheCodeWarrior
  */
 class ComponentGuiEventHandler(private val component: GuiComponent) {
-    private var mouseButtonsDown = BooleanArray(EnumMouseButton.values().size)
-    private var keysDown: MutableMap<Key, Boolean> = HashMap<Key, Boolean>().withDefault({ false })
+    internal var mouseButtonsDown = BooleanArray(EnumMouseButton.values().size)
+    internal var keysDown: MutableMap<Key, Boolean> = HashMap<Key, Boolean>().withDefault({ false })
 
     fun tick() {
         component.BUS.fire(GuiComponentEvents.ComponentTickEvent(component))

@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.gui
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
+import com.teamwizardry.librarianlib.features.gui.debugger.ComponentDebugger
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraft.client.Minecraft
@@ -16,9 +17,11 @@ import org.lwjgl.opengl.GL11
 import java.io.IOException
 
 open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : GuiScreen() {
-    open val mainComponents: ComponentVoid = ComponentVoid(0, 0)
-    open val fullscreenComponents: ComponentVoid = ComponentVoid(0, 0)
+    val mainComponents: ComponentVoid = ComponentVoid(0, 0)
+    val fullscreenComponents: ComponentVoid = ComponentVoid(0, 0)
     private val mainScaleWrapper: ComponentVoid = ComponentVoid(0, 0)
+    private var isDebugMode = false
+    private val debugger = ComponentDebugger()
 //    protected var top: Int = 0
 //    protected var left: Int = 0
 
@@ -30,6 +33,7 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         mainScaleWrapper.add(mainComponents)
 
         mainComponents.size = vec(guiWidth, guiHeight)
+        fullscreenComponents.add(debugger)
     }
 
     override fun initGui() {
@@ -73,9 +77,20 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         StencilUtil.clear()
         GL11.glEnable(GL11.GL_STENCIL_TEST)
         val relPos = vec(mouseX, mouseY)
+        GlStateManager.pushMatrix()
+
+        if(isDebugMode) {
+            GlStateManager.translate(width / 2.0, height / 2.0, 0.0)
+            GlStateManager.rotate(-20f, 1f, 0f, 0f)
+            GlStateManager.rotate(-20f, 0f, 1f, 0f)
+            GlStateManager.translate(-width / 2.0, -height / 2.0, 0.0)
+        }
+
         fullscreenComponents.geometry.calculateMouseOver(relPos)
         fullscreenComponents.render.draw(relPos, partialTicks)
         fullscreenComponents.render.drawLate(relPos, partialTicks)
+
+        GlStateManager.popMatrix()
         GL11.glDisable(GL11.GL_STENCIL_TEST)
     }
 
@@ -98,6 +113,19 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
     @Throws(IOException::class)
     override fun handleKeyboardInput() {
         super.handleKeyboardInput()
+
+        if(Keyboard.getEventKeyState()) {
+            if(Keyboard.getEventKey() == Keyboard.KEY_D &&
+                    ( Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) ) &&
+                    ( Keyboard.isKeyDown(Keyboard.KEY_LMETA) || Keyboard.isKeyDown(Keyboard.KEY_RMETA) )
+            ) {
+                isDebugMode = !isDebugMode
+            }
+
+            if(Keyboard.getEventKey() == Keyboard.KEY_B && Keyboard.isKeyDown(Keyboard.KEY_F3)) {
+                Minecraft.getMinecraft().renderManager.isDebugBoundingBox = !Minecraft.getMinecraft().renderManager.isDebugBoundingBox
+            }
+        }
 
         if (Keyboard.getEventKeyState())
             fullscreenComponents.guiEventHandler.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())

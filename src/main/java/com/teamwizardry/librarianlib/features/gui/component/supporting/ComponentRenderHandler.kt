@@ -13,7 +13,8 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraftforge.fml.client.config.GuiUtils
-import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.GL_LINES
+import org.lwjgl.opengl.GL11.GL_LINE_STRIP
 
 /**
  * TODO: Document file ComponentRenderHandler
@@ -99,6 +100,7 @@ class ComponentRenderHandler(private val component: GuiComponent) {
         GlStateManager.pushMatrix()
 
         component.transform.glApply()
+
         component.clipping.pushEnable()
 
         component.BUS.fire(GuiComponentEvents.PreDrawEvent(component, mousePos, partialTicks))
@@ -112,12 +114,30 @@ class ComponentRenderHandler(private val component: GuiComponent) {
             GlStateManager.disableTexture2D()
             val tessellator = Tessellator.getInstance()
             val vb = tessellator.buffer
-            vb.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+            vb.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION)
             vb.pos(0.0, 0.0, 0.0).endVertex()
             vb.pos(component.size.x, 0.0, 0.0).endVertex()
             vb.pos(component.size.x, component.size.y, 0.0).endVertex()
             vb.pos(0.0, component.size.y, 0.0).endVertex()
             vb.pos(0.0, 0.0, 0.0).endVertex()
+            tessellator.draw()
+
+            val big = 1000.0
+            vb.begin(GL_LINES, DefaultVertexFormats.POSITION)
+            vb.pos(0.0, 0.0, 0.0).endVertex()
+            vb.pos(0.0, 0.0, -big).endVertex()
+            vb.pos(component.size.x, 0.0, 0.0).endVertex()
+            vb.pos(component.size.x, 0.0, -big).endVertex()
+            vb.pos(component.size.x, component.size.y, 0.0).endVertex()
+            vb.pos(component.size.x, component.size.y, -big).endVertex()
+            vb.pos(0.0, component.size.y, 0.0).endVertex()
+            vb.pos(0.0, component.size.y, -big).endVertex()
+            tessellator.draw()
+
+            GlStateManager.color(0f, 1f, 1f)
+            vb.begin(GL_LINES, DefaultVertexFormats.POSITION)
+            vb.pos(mousePos.x, mousePos.y, 0.0).endVertex()
+            vb.pos(mousePos.x, mousePos.y, big).endVertex()
             tessellator.draw()
             GlStateManager.enableTexture2D()
             GlStateManager.popAttrib()
@@ -133,6 +153,7 @@ class ComponentRenderHandler(private val component: GuiComponent) {
         component.BUS.fire(GuiComponentEvents.PostDrawEvent(component, mousePos, partialTicks))
 
         component.clipping.popDisable()
+
         GlStateManager.popMatrix()
     }
 
