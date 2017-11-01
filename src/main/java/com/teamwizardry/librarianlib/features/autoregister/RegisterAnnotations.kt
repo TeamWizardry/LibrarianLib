@@ -5,6 +5,7 @@ package com.teamwizardry.librarianlib.features.autoregister
 import com.teamwizardry.librarianlib.features.network.PacketBase
 import com.teamwizardry.librarianlib.features.saving.serializers.Serializer
 import com.teamwizardry.librarianlib.features.saving.serializers.SerializerFactory
+import com.teamwizardry.librarianlib.features.properties.ModProperty
 import net.minecraft.tileentity.TileEntity
 import net.minecraftforge.fml.relauncher.Side
 import kotlin.reflect.KClass
@@ -62,7 +63,17 @@ annotation class SerializerRegister(vararg val classes: KClass<*>)
  */
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class SerializerFactoryRegister()
+annotation class SerializerFactoryRegister
+
+
+/**
+ * Apply this to [ModProperty]s.
+ *
+ * Should [value] be empty, the register will assign it a name based on the class name.
+ */
+@Target(AnnotationTarget.CLASS)
+@MustBeDocumented
+annotation class PropertyRegister(val value: String = "")
 
 
 /**

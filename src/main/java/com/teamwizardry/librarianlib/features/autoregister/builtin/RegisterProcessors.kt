@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.features.kotlin.singletonInstance
 import com.teamwizardry.librarianlib.features.kotlin.toRl
 import com.teamwizardry.librarianlib.features.network.PacketBase
 import com.teamwizardry.librarianlib.features.network.PacketHandler
+import com.teamwizardry.librarianlib.features.properties.ModProperty
 import com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler
 import com.teamwizardry.librarianlib.features.saving.FieldType
 import com.teamwizardry.librarianlib.features.saving.serializers.Serializer
@@ -35,7 +36,6 @@ object TileRegisterProcessor : AnnotationMarkerProcessor<TileRegister, TileEntit
         if (loc.resourceDomain == "minecraft")
             loc = ResourceLocation(owner, loc.resourcePath)
         AbstractSaveHandler.cacheFields(clazz)
-        @Suppress("UNCHECKED_CAST")
         GameRegistry.registerTileEntity(clazz, loc.toString())
     }
 }
@@ -44,7 +44,6 @@ object TileRegisterProcessor : AnnotationMarkerProcessor<TileRegister, TileEntit
 object PacketRegisterProcessor : AnnotationMarkerProcessor<PacketRegister, PacketBase>(PacketRegister::class.java, PacketBase::class.java) {
     override fun process(clazz: Class<PacketBase>, annotation: PacketRegister) {
         val side = annotation.value
-        @Suppress("UNCHECKED_CAST")
         PacketHandler.register(clazz, side)
     }
 }
@@ -55,9 +54,8 @@ object SerializerRegisterProcessor : AnnotationMarkerProcessor<SerializerRegiste
         val classes = annotation.classes
         val instance = clazz.singletonInstance
 
-        if(instance == null) {
-            throw RuntimeException("No singleton instance")
-        } else {
+        if(instance == null) throw RuntimeException("No singleton instance")
+        else {
             classes.forEach {
                 SerializerRegistry.register(FieldType.create(it.javaObjectType, null), instance)
                 if(it.javaPrimitiveType != null)
@@ -72,10 +70,23 @@ object SerializerFactoryRegisterProcessor : AnnotationMarkerProcessor<Serializer
     override fun process(clazz: Class<SerializerFactory>, annotation: SerializerFactoryRegister) {
         val instance = clazz.singletonInstance
 
-        if(instance == null) {
-            throw RuntimeException("No singleton instance")
-        } else {
-            SerializerRegistry.register(instance)
+        if(instance == null) throw RuntimeException("No singleton instance")
+        else SerializerRegistry.register(instance)
+    }
+}
+
+@AMPRegister
+object PropertyRegisterProcessor : AnnotationMarkerProcessor<PropertyRegister, ModProperty>(PropertyRegister::class.java, ModProperty::class.java) {
+    override fun process(clazz: Class<ModProperty>, annotation: PropertyRegister) {
+        val instance = clazz.singletonInstance
+
+        if(instance == null) throw RuntimeException("No singleton instance")
+        else {
+            var name = annotation.value
+            if (name.isEmpty())
+                name = clazz.simpleName
+
+            ModProperty.registerProperty(name, instance)
         }
     }
 }
@@ -86,7 +97,7 @@ object SerializerFactoryRegisterProcessor : AnnotationMarkerProcessor<Serializer
 
 @AMPRegister
 object VoidRegisterProcessor : AnnotationMarkerProcessor<VoidRegister>(VoidRegister::class.java, Void::class.java) {
-    override fun process(clazz: Class<Any>, annotation: VoidRegister) {
+    override fun process(clazz: Class<Void>, annotation: VoidRegister) {
     }
 }
 
