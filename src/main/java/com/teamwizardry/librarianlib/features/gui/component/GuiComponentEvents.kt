@@ -31,64 +31,36 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.R
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents.SetDataEvent
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
-/**
- * ## Default events
- *
- * ### Common Events
- * - [ComponentTickEvent] - Fired each tick while the component is a part of a screen
- * - [PreDrawEvent] - Fired each frame before the component has been drawn
- * - [PreChildrenDrawEvent] - Fired each frame after the component has been drawn but before children have been drawn
- * - [PostDrawEvent] - Fired each frame after the component and its children have been drawn
- * - ---
- * - [MouseDownEvent] - Fired whenever the mouse is pressed
- * - [MouseUpEvent] - Fired whenever the mouse is released
- * - [MouseDragEvent] - Fired whenever the mouse is moved while a button is being pressed
- * - [MouseClickEvent] - Fired when the mouse is clicked within the component
- * - ---
- * - [KeyDownEvent] - Fired when a key is pressed
- * - [KeyUpEvent] - Fired when a key is released
- * - ---
- * - [MouseInEvent] - Fired when the mouse is moved into the component
- * - [MouseOutEvent] - Fired when the mouse is moved out of the component
- * - [MouseWheelEvent] - Fired when the mouse wheel is moved
- * - ---
- *
- * ### Seldom used events
- * - [AddChildEvent] - Fired before a child is added to the component
- * - [RemoveChildEvent] - Fired when a child is removed from the component
- * - [AddToParentEvent] - Fired when the component is added as a child to another component
- * - [RemoveFromParentEvent] - Fired when the component is removed from its parent
- * - ---
- * - [SetDataEvent] - Fired before data is set
- * - [RemoveDataEvent] - Fired before data is removed
- * - [GetDataEvent] - Fired when data is queried
- * - [GetDataKeysEvent] - Fired when the data key set is queried
- * - [GetDataClassesEvent] - Fired when the data class set is queried
- * - ---
- * - [HasTagEvent] - Fired when the component is checked for a tag
- * - [AddTagEvent] - Fired before a tag is added to the component
- * - [RemoveTagEvent] - Fired before a tag is removed from a component
- *
- * ### Advanced events
- * - [MouseOverEvent] - Fired when checking if the mouse is over this component
- */
 object GuiComponentEvents {
+    /** Fired each tick while the component is a part of a screen */
     class ComponentTickEvent(@JvmField val component: GuiComponent) : Event()
 
+    /** Fired each frame before the component has been drawn, but after most computed properties update */
     class PreDrawEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val partialTicks: Float) : Event()
+    /** Fired each frame after the component has been drawn but before children have been drawn */
     class PostDrawEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val partialTicks: Float) : Event(true)
+    /** Fired each frame after the component and its children have been drawn */
     class PreChildrenDrawEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val partialTicks: Float) : Event()
 
+    /** Fired whenever the mouse is pressed */
     class MouseDownEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
+    /** Fired whenever the mouse is released */
     class MouseUpEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
+    /** Fired whenever the mouse is moved while a button is being pressed */
     class MouseDragEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
+    /** Fired when the mouse is clicked within the component */
     class MouseClickEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
 
+    /** Fired when a key is pressed */
     class KeyDownEvent(@JvmField val component: GuiComponent, val key: Char, val keyCode: Int) : EventCancelable()
+    /** Fired when a key is released */
     class KeyUpEvent(@JvmField val component: GuiComponent, val key: Char, val keyCode: Int) : EventCancelable()
 
+    /** Fired when the mouse is moved into the component */
     class MouseInEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d) : Event()
+    /** Fired when the mouse is moved out of the component */
     class MouseOutEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d) : Event()
+    /** Fired when the mouse wheel is moved */
     class MouseWheelEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val direction: MouseWheelDirection) : EventCancelable()
     enum class MouseWheelDirection(@JvmField val ydirection: Int) {
         UP(+1), DOWN(-1);
@@ -101,20 +73,33 @@ object GuiComponentEvents {
         }
     }
 
+    /** Fired before a child is added to the component */
     class AddChildEvent(@JvmField val component: GuiComponent, val child: GuiComponent) : EventCancelable()
+    /** Fired when a child is removed from the component */
     class RemoveChildEvent(@JvmField val component: GuiComponent, val child: GuiComponent) : EventCancelable()
+    /** Fired when the component is added as a child to another component */
     class AddToParentEvent(@JvmField val component: GuiComponent, val parent: GuiComponent) : EventCancelable()
+    /** Fired when the component is removed from its parent */
     class RemoveFromParentEvent(@JvmField val component: GuiComponent, val parent: GuiComponent) : EventCancelable()
 
+    /** Fired before data is set */
     class SetDataEvent<D>(@JvmField val component: GuiComponent, val clazz: Class<D>, val key: String, val value: D) : EventCancelable()
+    /** Fired before data is removed */
     class RemoveDataEvent<D>(@JvmField val component: GuiComponent, val clazz: Class<D>, val key: String, val value: D?) : EventCancelable()
+    /** Fired when data is queried */
     class GetDataEvent<D>(@JvmField val component: GuiComponent, val clazz: Class<D>, val key: String, val value: D?) : Event()
+    /** Fired when the data key set is queried */
     class GetDataKeysEvent<D>(@JvmField val component: GuiComponent, val clazz: Class<D>, val value: MutableSet<String>) : Event()
+    /** Fired when the data class set is queried */
     class GetDataClassesEvent(@JvmField val component: GuiComponent, val value: MutableSet<Class<*>>) : Event()
 
+    /** Fired when the component is checked for a tag */
     class HasTagEvent(@JvmField val component: GuiComponent, val tag: Any, var hasTag: Boolean) : Event()
+    /** Fired before a tag is added to the component */
     class AddTagEvent(@JvmField val component: GuiComponent, val tag: Any) : EventCancelable()
+    /** Fired before a tag is removed from a component */
     class RemoveTagEvent(@JvmField val component: GuiComponent, val tag: Any) : EventCancelable()
 
+    /** Fired when checking if the mouse is over this component */
     class MouseOverEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, var isOver: Boolean) : Event()
 }
