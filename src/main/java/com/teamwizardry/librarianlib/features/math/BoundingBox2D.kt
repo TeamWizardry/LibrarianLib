@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.math
 
+import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.times
 
@@ -51,4 +52,9 @@ class BoundingBox2D(val min: Vec2d, val max: Vec2d) {
     fun widthI(): Int {
         return max.xi - min.xi
     }
+
+    val pos: Vec2d
+        get() = min
+    val size: Vec2d
+        get() = max-min
 }

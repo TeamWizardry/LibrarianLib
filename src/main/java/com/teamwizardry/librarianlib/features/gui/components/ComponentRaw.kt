@@ -1,11 +1,11 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
 import java.util.function.Consumer
 
-class ComponentRaw : GuiComponent<ComponentRaw> {
+class ComponentRaw : GuiComponent {
 
     var func: Consumer<ComponentRaw>
 

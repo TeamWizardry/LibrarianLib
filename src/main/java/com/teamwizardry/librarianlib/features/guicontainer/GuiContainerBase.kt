@@ -3,11 +3,12 @@ package com.teamwizardry.librarianlib.features.guicontainer
 import com.teamwizardry.librarianlib.features.container.ContainerBase
 import com.teamwizardry.librarianlib.features.container.internal.ContainerImpl
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.network.PacketHandler
 import com.teamwizardry.librarianlib.features.network.PacketSyncSlotVisibility
+import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.renderer.GlStateManager
@@ -16,6 +17,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
+import org.lwjgl.opengl.GL11
 import java.io.IOException
 
 /**
@@ -27,9 +29,9 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
     private val mainScaleWrapper: ComponentVoid = ComponentVoid(0, 0)
 
     init {
-        fullscreenComponents.setData(GuiContainerBase::class.java, this)
-        mainComponents.calculateOwnHover = false
-        fullscreenComponents.calculateOwnHover = false
+        fullscreenComponents.setData(GuiContainerBase::class.java, "", this)
+        mainComponents.geometry.shouldCalculateOwnHover = false
+        fullscreenComponents.geometry.shouldCalculateOwnHover = false
         mainScaleWrapper.zIndex = -100000 // really far back
         fullscreenComponents.add(mainScaleWrapper)
         mainScaleWrapper.add(mainComponents)
@@ -57,7 +59,7 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
 
         if (mainScaleWrapper.pos.xi != left || mainScaleWrapper.pos.yi != top) {
             mainScaleWrapper.pos = vec(left, top)
-            mainScaleWrapper.childScale = s
+            mainScaleWrapper.transform.scale = s
             mainScaleWrapper.size = vec(guiWidth * s, guiHeight * s)
             guiLeft = left
             guiTop = top
@@ -86,8 +88,8 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         GlStateManager.pushAttrib()
         GlStateManager.enableBlend()
         val relPos = vec(mouseX, mouseY)
-        fullscreenComponents.calculateMouseOver(relPos)
-        fullscreenComponents.draw(relPos, partialTicks)
+        fullscreenComponents.geometry.calculateMouseOver(relPos)
+        fullscreenComponents.render.draw(relPos, partialTicks)
 
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
@@ -100,23 +102,26 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         container.allSlots.filter { !it.visible }.forEach { it.xPos = -1000; it.yPos = -1000 }
 
         super.drawScreen(mouseX, mouseY, partialTicks)
-        fullscreenComponents.drawLate(relPos, partialTicks)
+        StencilUtil.clear()
+        GL11.glEnable(GL11.GL_STENCIL_TEST)
+        fullscreenComponents.render.drawLate(relPos, partialTicks)
+        GL11.glDisable(GL11.GL_STENCIL_TEST)
     }
 
     @Throws(IOException::class)
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         super.mouseClicked(mouseX, mouseY, mouseButton)
-        fullscreenComponents.mouseDown(vec(mouseX, mouseY), EnumMouseButton.getFromCode(mouseButton))
+        fullscreenComponents.guiEventHandler.mouseDown(vec(mouseX, mouseY), EnumMouseButton.getFromCode(mouseButton))
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         super.mouseReleased(mouseX, mouseY, state)
-        fullscreenComponents.mouseUp(vec(mouseX, mouseY), EnumMouseButton.getFromCode(state))
+        fullscreenComponents.guiEventHandler.mouseUp(vec(mouseX, mouseY), EnumMouseButton.getFromCode(state))
     }
 
     override fun mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
         super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)
-        fullscreenComponents.mouseDrag(vec(mouseX, mouseY), EnumMouseButton.getFromCode(clickedMouseButton))
+        fullscreenComponents.guiEventHandler.mouseDrag(vec(mouseX, mouseY), EnumMouseButton.getFromCode(clickedMouseButton))
     }
 
     @Throws(IOException::class)
@@ -124,9 +129,9 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         super.handleKeyboardInput()
 
         if (Keyboard.getEventKeyState())
-            fullscreenComponents.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
+            fullscreenComponents.guiEventHandler.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
         else
-            fullscreenComponents.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
+            fullscreenComponents.guiEventHandler.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
     }
 
     @Throws(IOException::class)
@@ -137,12 +142,12 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         val wheelAmount = Mouse.getEventDWheel()
 
         if (wheelAmount != 0) {
-            fullscreenComponents.mouseWheel(vec(mouseX, mouseY), GuiComponent.MouseWheelDirection.fromSign(wheelAmount))
+            fullscreenComponents.guiEventHandler.mouseWheel(vec(mouseX, mouseY), GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
         }
     }
 
     fun tick() {
-        fullscreenComponents.tick()
+        fullscreenComponents.guiEventHandler.tick()
     }
 
     companion object {

@@ -1,7 +1,8 @@
 package com.teamwizardry.librarianlib.features.gui.mixin.gl
 
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.Option
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.kotlin.glColor
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.Vec3d
@@ -12,31 +13,31 @@ object GlMixin {
     val TAG_ATTRIB = "mixin_attrib"
     val TAG_MATRIX = "mixin_matrix"
 
-    fun <T : GuiComponent<T>> pushPopAttrib(component: GuiComponent<T>) {
+    fun pushPopAttrib(component: GuiComponent) {
         if (!component.addTag(TAG_ATTRIB))
             return
 
-        component.BUS.hook(GuiComponent.PreDrawEvent::class.java) {
+        component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
             GlStateManager.pushAttrib()
         }
-        component.BUS.hook(GuiComponent.PostDrawEvent::class.java) {
+        component.BUS.hook(GuiComponentEvents.PostDrawEvent::class.java) {
             GlStateManager.popAttrib()
         }
     }
 
-    fun <T : GuiComponent<T>> pushPopMatrix(component: GuiComponent<T>) {
+    fun pushPopMatrix(component: GuiComponent) {
         if (!component.addTag(TAG_MATRIX))
             return
 
-        component.BUS.hook(GuiComponent.PreDrawEvent::class.java) {
+        component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
             GlStateManager.pushMatrix()
         }
-        component.BUS.hook(GuiComponent.PostDrawEvent::class.java) {
+        component.BUS.hook(GuiComponentEvents.PostDrawEvent::class.java) {
             GlStateManager.popMatrix()
         }
     }
 
-    private fun getData(component: GuiComponent<*>): GlMixinData {
+    private fun getData(component: GuiComponent): GlMixinData {
         var dat = component.getData(GlMixinData::class.java, "mixin")
 
         if (dat == null) {
@@ -46,12 +47,12 @@ object GlMixin {
         return dat
     }
 
-    fun <T : GuiComponent<T>> color(component: T): Option<T, Color> {
+    fun color(component: GuiComponent): Option<GuiComponent, Color> {
         pushPopAttrib(component)
 
         val opt = getData(component).getData("color", {
-            val o = Option<T, Color>(Color.WHITE)
-            component.BUS.hook(GuiComponent.PreDrawEvent::class.java) {
+            val o = Option<GuiComponent, Color>(Color.WHITE)
+            component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
                 o.getValue(component).glColor()
             }
             o
@@ -60,12 +61,12 @@ object GlMixin {
         return opt
     }
 
-    fun <T : GuiComponent<T>> transform(component: T): Option<T, Vec3d> {
+    fun transform(component: GuiComponent): Option<GuiComponent, Vec3d> {
         pushPopMatrix(component)
 
         val opt = getData(component).getData("transform", {
-            val o = Option<T, Vec3d>(Vec3d.ZERO)
-            component.BUS.hook(GuiComponent.PreDrawEvent::class.java) {
+            val o = Option<GuiComponent, Vec3d>(Vec3d.ZERO)
+            component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
                 val v = o.getValue(component)
                 GlStateManager.translate(v.x, v.y, v.z)
             }
@@ -75,12 +76,12 @@ object GlMixin {
         return opt
     }
 
-    fun <T : GuiComponent<T>> scale(component: T): Option<T, Vec3d> {
+    fun scale(component: GuiComponent): Option<GuiComponent, Vec3d> {
         pushPopMatrix(component)
 
         val opt = getData(component).getData("scale", {
-            val o = Option<T, Vec3d>(Vec3d(1.0, 1.0, 1.0))
-            component.BUS.hook(GuiComponent.PreDrawEvent::class.java) {
+            val o = Option<GuiComponent, Vec3d>(Vec3d(1.0, 1.0, 1.0))
+            component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
                 val v = o.getValue(component)
                 GlStateManager.scale(v.x, v.y, v.z)
             }
@@ -90,12 +91,12 @@ object GlMixin {
         return opt
     }
 
-    fun <T : GuiComponent<T>> rotate(component: T): Option<T, Vec3d> {
+    fun rotate(component: GuiComponent): Option<GuiComponent, Vec3d> {
         pushPopMatrix(component)
 
         val opt = getData(component).getData("rotate", {
-            val o = Option<T, Vec3d>(Vec3d.ZERO)
-            component.BUS.hook(GuiComponent.PreDrawEvent::class.java) {
+            val o = Option<GuiComponent, Vec3d>(Vec3d.ZERO)
+            component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
                 val v = o.getValue(component)
                 GlStateManager.rotate(v.x.toFloat(), 1f, 0f, 0f)
                 GlStateManager.rotate(v.y.toFloat(), 0f, 1f, 0f)
@@ -108,13 +109,13 @@ object GlMixin {
     }
 
     class GlMixinData {
-        private val data: MutableMap<String, Option<GuiComponent<*>, Any>> = mutableMapOf()
+        private val data: MutableMap<String, Option<GuiComponent, Any>> = mutableMapOf()
 
         @Suppress("UNCHECKED_CAST")
-        fun <COMP : GuiComponent<COMP>, OPT : Any> getData(key: String, init: () -> Option<COMP, OPT>): Option<COMP, OPT> {
+        fun <T : Any> getData(key: String, init: () -> Option<GuiComponent, T>): Option<GuiComponent, T> {
             if (!data.containsKey(key))
-                data.put(key, init() as Option<GuiComponent<*>, Any>)
-            return data[key] as Option<COMP, OPT>
+                data.put(key, init() as Option<GuiComponent, Any>)
+            return data[key] as Option<GuiComponent, T>
         }
     }
 }

@@ -47,6 +47,8 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
     init {
         MinecraftForge.EVENT_BUS.register(this)
+        if(!Minecraft.getMinecraft().framebuffer.isStencilEnabled)
+            Minecraft.getMinecraft().framebuffer.enableStencil()
     }
 
     override fun pre(e: FMLPreInitializationEvent) {
@@ -135,10 +137,17 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         GlStateManager.disableTexture2D()
         GlStateManager.color(1f, 1f, 1f, 1f)
 
-        MinecraftForge.EVENT_BUS.post(CustomWorldRenderEvent(Minecraft.getMinecraft().world, e.context, Animation.getPartialTickTime()))
+        val partialTicks = if (Minecraft.getMinecraft().isGamePaused)
+            Minecraft.getMinecraft().renderPartialTicksPaused
+        else
+            Minecraft.getMinecraft().timer.renderPartialTicks
+        MinecraftForge.EVENT_BUS.post(CustomWorldRenderEvent(Minecraft.getMinecraft().world, e.context, partialTicks))
 
         GlStateManager.enableTexture2D()
         GlStateManager.popAttrib()
         GlStateManager.popMatrix()
     }
 }
+
+val Minecraft.renderPartialTicksPaused by MethodHandleHelper.delegateForReadOnly<Minecraft, Float>(Minecraft::class.java, "renderPartialTicksPaused", "field_193996_ah")
+val Minecraft.timer by MethodHandleHelper.delegateForReadOnly<Minecraft, net.minecraft.util.Timer>(Minecraft::class.java, "timer", "field_71428_T")

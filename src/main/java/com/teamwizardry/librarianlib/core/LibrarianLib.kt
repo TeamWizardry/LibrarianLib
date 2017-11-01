@@ -10,7 +10,7 @@ import com.teamwizardry.librarianlib.features.container.ContainerBase
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventBus
 import com.teamwizardry.librarianlib.features.gui.GuiBase
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.GuiOverlay
 import com.teamwizardry.librarianlib.features.guicontainer.GuiContainerBase
 import com.teamwizardry.librarianlib.features.kotlin.json

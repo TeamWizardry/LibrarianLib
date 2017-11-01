@@ -53,7 +53,7 @@ open class GuiFluidTank(inventorySlotsIn: FluidTankContainer) : GuiContainerBase
                 bgWidth = 16,
                 direction = Option(ComponentSpriteProgressBar.ProgressDirection.Y_NEG),
                 tankProps = te.fluidHandler.tankPropertiesImpl[0])
-        fluidBar.tooltip {
+        fluidBar.render.tooltip {
             val f = te.fluidHandler.fluid
             listOf(if (f != null) I18n.format("llt:gui.fluid", f.localizedName, f.amount) else I18n.format("llt:gui.fluidEmpty"))
         }

@@ -1,12 +1,12 @@
 package com.teamwizardry.librarianlib.test.gui.tests
 
 import com.teamwizardry.librarianlib.features.gui.GuiBase
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.components.ComponentScrolledView
 import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
-import com.teamwizardry.librarianlib.features.sprite.Sprite
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.sprite.Sprite
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
 
@@ -37,16 +37,16 @@ class GuiTestScrolledView : GuiBase(100, 100) {
         scroll.add(gold)
         mainComponents.add(scroll)
 
-        left.BUS.hook(GuiComponent.MouseClickEvent::class.java) {
+        left.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
             scroll.scrollOffset(vec(-1, 0))
         }
-        right.BUS.hook(GuiComponent.MouseClickEvent::class.java) {
+        right.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
             scroll.scrollOffset(vec(1, 0))
         }
-        up.BUS.hook(GuiComponent.MouseClickEvent::class.java) {
+        up.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
             scroll.scrollOffset(vec(0, 1))
         }
-        down.BUS.hook(GuiComponent.MouseClickEvent::class.java) {
+        down.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
             scroll.scrollOffset(vec(0, -1))
         }
 

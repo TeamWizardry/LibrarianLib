@@ -12,7 +12,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  *
  * Created by TheCodeWarrior
  */
-class WorldDataContainer(val world: World) : WorldSavedData(NAME) {
+class WorldDataContainer(ident: String) : WorldSavedData(NAME) {
+    val world: World = gettingWorld
+            ?: throw IllegalStateException("WorldDataContainer.gettingWorld is null! Did you not call WorldDataContainer.get()?")
 
     val datas = mutableMapOf<Class<*>, WorldData>()
 
@@ -27,9 +29,13 @@ class WorldDataContainer(val world: World) : WorldSavedData(NAME) {
         }
 
         fun get(world: World) : WorldDataContainer {
-            return world.perWorldStorage.getOrLoadData(WorldDataContainer::class.java, WorldDataContainer.NAME) as? WorldDataContainer ?:
-                    WorldDataContainer(world).also { world.perWorldStorage.setData(WorldDataContainer.NAME, it) }
+            gettingWorld = world
+            val wdc = world.perWorldStorage.getOrLoadData(WorldDataContainer::class.java, WorldDataContainer.NAME) as? WorldDataContainer ?:
+                    WorldDataContainer(WorldDataContainer.NAME).also { world.perWorldStorage.setData(WorldDataContainer.NAME, it) }
+            gettingWorld = null
+            return wdc
         }
+        private var gettingWorld: World? = null
     }
 
     init {

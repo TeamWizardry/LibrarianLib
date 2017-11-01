@@ -5,7 +5,8 @@ import com.teamwizardry.librarianlib.features.container.GuiHandler
 import com.teamwizardry.librarianlib.features.container.InventoryWrapper
 import com.teamwizardry.librarianlib.features.container.builtin.BaseWrappers
 import com.teamwizardry.librarianlib.features.container.builtin.SlotTypeGhost
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.guicontainer.GuiContainerBase
@@ -92,7 +93,7 @@ class GuiContainerTest(container: ContainerTest) : GuiContainerBase(container, 1
         val button = ComponentRect(178, 68, 12, 11)
         button.color.setValue(Color(0, 0, 0, 127))
 
-        button.BUS.hook(GuiComponent.MouseClickEvent::class.java) {
+        button.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
             s.isVisible = !s.isVisible
         }
 

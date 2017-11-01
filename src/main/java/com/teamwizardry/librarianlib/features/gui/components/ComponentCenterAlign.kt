@@ -1,32 +1,26 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.kotlin.div
+import com.teamwizardry.librarianlib.features.kotlin.minus
+import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
-class ComponentCenterAlign(posX: Int, posY: Int, var centerHorizontal: Boolean, var centerVertical: Boolean) : GuiComponent<ComponentCenterAlign>(posX, posY) {
+@Deprecated("Use `component.transform.postTranslate = -component.size/2` instead")
+class ComponentCenterAlign(posX: Int, posY: Int, var centerHorizontal: Boolean, var centerVertical: Boolean) : GuiComponent(posX, posY) {
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
-        //NO-OP
-    }
-
-    override fun draw(mousePos: Vec2d, partialTicks: Float) {
         if (centerHorizontal || centerVertical) {
-            for (component in components) {
-                val compPos = component.pos
-                val bb = component.getLogicalSize()
-                bb ?: continue
-                val posOffsetFromBB = compPos.sub(bb.min)
-                val centerPos = bb.max.sub(bb.min).mul((1f / 2f).toDouble()).sub(posOffsetFromBB)
-                var adjustedPos = centerPos.mul(-1.0)
+            for (component in children) {
+                val componentCenter = component.transformToParentContext(component.size/2)
+                var adjustedPos = (size/2) - componentCenter
                 if (!centerHorizontal)
-                    adjustedPos = adjustedPos.setX(compPos.x)
+                    adjustedPos = adjustedPos.setX(0.0)
                 if (!centerVertical)
-                    adjustedPos = adjustedPos.setY(compPos.y)
-                component.pos = adjustedPos
+                    adjustedPos = adjustedPos.setY(0.0)
+                component.pos += adjustedPos
             }
         }
-
-        super.draw(mousePos, partialTicks)
     }
 
 }

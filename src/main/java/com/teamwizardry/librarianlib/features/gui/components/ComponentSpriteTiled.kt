@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.Option
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.kotlin.glColor
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.DrawingUtil
@@ -9,7 +9,7 @@ import com.teamwizardry.librarianlib.features.sprite.Sprite
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-open class ComponentSpriteTiled @JvmOverloads constructor(protected var main: Sprite, borderSize: Int, x: Int, y: Int, width: Int = main.width, height: Int = main.height) : GuiComponent<ComponentSpriteTiled>(x, y, width, height) {
+open class ComponentSpriteTiled @JvmOverloads constructor(protected var main: Sprite, borderSize: Int, x: Int, y: Int, width: Int = main.width, height: Int = main.height) : GuiComponent(x, y, width, height) {
 
     var depth = Option<ComponentSpriteTiled, Boolean>(true)
     var color = Option<ComponentSpriteTiled, Color>(Color.WHITE)
@@ -61,7 +61,7 @@ open class ComponentSpriteTiled @JvmOverloads constructor(protected var main: Sp
         }
         color.getValue(this).glColor()
         main.tex.bind()
-        draw(pos.xf, pos.yf, size.xi, size.yi)
+        draw(0f, 0f, size.xi, size.yi)
 
         if (alwaysTop)
             GL11.glPopAttrib()
@@ -74,6 +74,8 @@ open class ComponentSpriteTiled @JvmOverloads constructor(protected var main: Sp
 
         val insideX = x + width - borderSize
         val insideY = y + height - borderSize
+
+        val animationTicks = animator.time.toInt()
 
         topLeft.draw(animationTicks, x, y, borderSize.toFloat(), borderSize.toFloat())
 

@@ -1,22 +1,17 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.HandlerList
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.mixin.ScissorMixin
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
-import net.minecraft.client.renderer.GlStateManager
 
-class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent<ComponentScrolledView>(posX, posY, width, height) {
+class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent(posX, posY, width, height) {
 
     val scroll = HandlerList<(ComponentScrolledView, Vec2d, Vec2d?) -> Vec2d?>()
 
     init {
         ScissorMixin.scissor(this)
-
-        BUS.hook(LogicalSizeEvent::class.java) { event ->
-            if (event.box != null)
-                event.box = contentSize
-        }
     }
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
@@ -24,13 +19,13 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
     }
 
     /**
-     * Moves the view to a specific childTranslation.
+     * Moves the view to a specific transform.postTranslate.
      */
     fun scrollTo(scroll: Vec2d) {
         val newScroll = Vec2d.min(maxScroll, scroll)
-        if (newScroll != childTranslation) {
-            this.scroll.fireModifier(newScroll, { h, v -> h(this, childTranslation, v) })
-            childTranslation = newScroll
+        if (newScroll != transform.postTranslate) {
+            this.scroll.fireModifier(newScroll, { h, v -> h(this, transform.postTranslate, v) })
+            transform.postTranslate = newScroll
         }
     }
 
@@ -38,7 +33,7 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
      * Moves the view by the passed vector.
      */
     fun scrollOffset(scroll: Vec2d) {
-        scrollTo(childTranslation.add(scroll))
+        scrollTo(transform.postTranslate.add(scroll))
     }
 
     /**
@@ -48,18 +43,9 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
         scrollTo(maxScroll.mul(scroll))
     }
 
-    override fun draw(mousePos: Vec2d, partialTicks: Float) {
-        GlStateManager.translate(-childTranslation.x, -childTranslation.y, 0.0)
-        super.draw(mousePos, partialTicks)
-        GlStateManager.translate(childTranslation.x, childTranslation.y, 0.0)
-    }
-
     val maxScroll: Vec2d
         get() {
-            var l = super.getLogicalSize()
-            if (l == null)
-                return Vec2d.ZERO
-            return l.max.sub(pos).sub(size)
+            return vec(0, 0)
         }
 
     @FunctionalInterface

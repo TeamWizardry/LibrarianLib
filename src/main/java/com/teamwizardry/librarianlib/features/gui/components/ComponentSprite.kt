@@ -1,15 +1,15 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.Option
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.kotlin.glColor
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.ISprite
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class ComponentSprite @JvmOverloads constructor(var sprite: ISprite?, x: Int, y: Int, width: Int = sprite?.width ?: 16, height: Int = sprite?.height ?: 16) : GuiComponent<ComponentSprite>(x, y, width, height) {
+class ComponentSprite @JvmOverloads constructor(var sprite: ISprite?, x: Int, y: Int, width: Int = sprite?.width ?: 16, height: Int = sprite?.height ?: 16) : GuiComponent(x, y, width, height) {
 
     class AnimationLoopEvent(val component: ComponentSprite) : Event()
 
@@ -21,8 +21,8 @@ class ComponentSprite @JvmOverloads constructor(var sprite: ISprite?, x: Int, y:
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
         val alwaysTop = !depth.getValue(this)
-        val sp = sprite
-        sp ?: return
+        val sp = sprite ?: return
+        val animationTicks = animator.time.toInt()
         if (alwaysTop) {
             // store the current depth function
             GL11.glPushAttrib(GL11.GL_DEPTH_BUFFER_BIT)
@@ -38,7 +38,7 @@ class ComponentSprite @JvmOverloads constructor(var sprite: ISprite?, x: Int, y:
         lastAnim = animationTicks
         color.getValue(this).glColor()
         sp.bind()
-        sp.draw(animationTicks, pos.xf, pos.yf, size.xi.toFloat(), size.yi.toFloat())
+        sp.draw(animationTicks, 0f, 0f, size.xi.toFloat(), size.yi.toFloat())
         if (alwaysTop)
             GL11.glPopAttrib()
     }

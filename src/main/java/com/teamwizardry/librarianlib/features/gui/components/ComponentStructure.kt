@@ -1,13 +1,12 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.Option
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.mixin.gl.GlMixin
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.structure.Structure
 import com.teamwizardry.librarianlib.features.structure.StructureRenderUtil
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.texture.TextureMap
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -15,7 +14,7 @@ import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class ComponentStructure(posX: Int, posY: Int, var structure: Structure?) : GuiComponent<ComponentStructure>(posX, posY) {
+class ComponentStructure(posX: Int, posY: Int, var structure: Structure?) : GuiComponent(posX, posY) {
 
     val color = Option<ComponentStructure, Color>(Color.WHITE)
 
@@ -25,7 +24,6 @@ class ComponentStructure(posX: Int, posY: Int, var structure: Structure?) : GuiC
     }
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
-        GlStateManager.translate(this.pos.x, this.pos.y, 0.0)
         Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE)
         val buf = bufferInts
         buf ?: return
@@ -38,7 +36,6 @@ class ComponentStructure(posX: Int, posY: Int, var structure: Structure?) : GuiC
 
         tessellator.draw()
 
-        GlStateManager.translate(-this.pos.x, -this.pos.y, 0.0)
     }
 
     fun initStructure() {

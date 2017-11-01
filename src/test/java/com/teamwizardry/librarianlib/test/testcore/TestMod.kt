@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.base.item.ItemMod
 import com.teamwizardry.librarianlib.features.config.ConfigProperty
 import com.teamwizardry.librarianlib.features.utilities.LoggerBase
+import com.teamwizardry.librarianlib.test.animator.AnimatorEntryPoint
 import com.teamwizardry.librarianlib.test.cap.CapabilityTest
 import com.teamwizardry.librarianlib.test.chunkdata.ChunkDataEntryPoint
 import com.teamwizardry.librarianlib.test.chunkdata.WorldDataEntryPoint
@@ -92,7 +93,9 @@ class TestMod {
                 UnsafeTest,
                 ContainerEntryPoint,
                 ChunkDataEntryPoint,
-                WorldDataEntryPoint
+                WorldDataEntryPoint,
+                AnimatorEntryPoint,
+                EndEntryPoint
         )
 
         object Tab : ModCreativeTab() {

@@ -6,7 +6,7 @@ package com.teamwizardry.librarianlib.features.gui.components
  * (a copy of which can be found at the repo root)
  */
 
-import com.teamwizardry.librarianlib.features.gui.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.Option
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.ISprite
@@ -31,7 +31,7 @@ class ComponentFluidStack @JvmOverloads constructor(fgSprite: ISprite?, bgSprite
                                                     var fluidWidth: Int = bgWidth, var fluidHeight: Int = bgHeight,
                                                     direction: Option<ComponentSpriteProgressBar, ComponentSpriteProgressBar.ProgressDirection> = Option(ComponentSpriteProgressBar.ProgressDirection.X_POS),
                                                     val tankProps: IFluidTankProperties)
-    : GuiComponent<ComponentFluidStack>(x, y, bgWidth, bgHeight) {
+    : GuiComponent(x, y, bgWidth, bgHeight) {
 
     private var lastFluid: Fluid? = null
 
