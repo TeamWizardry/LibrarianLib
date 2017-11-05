@@ -104,21 +104,14 @@ class Animator {
 
         currentAnimations.clear()
 
-        var toDelete: MutableSet<Animation<*>>? = null
-        for(animation in animations) {
-            if(animation.end < time && deletePastAnimations) {
-                if(toDelete == null) toDelete = mutableSetOf()
-                toDelete.add(animation)
-                continue;
-            }
-            if(animation.start > time) break;
-
-            currentAnimations.add(animation)
+        if (deletePastAnimations) animations.removeIf {
+            if (it.end < time) {
+                it.update(time)
+                true
+            } else false
         }
 
-        toDelete?.forEach { it.update(time) }
-
-        if(toDelete != null) animations.removeAll(toDelete)
+        currentAnimations.addAll(animations.takeWhile { it.start <= time })
     }
 
     internal var _nextId: Int = 0
