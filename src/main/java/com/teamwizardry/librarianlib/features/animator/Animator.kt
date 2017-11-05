@@ -64,6 +64,14 @@ class Animator {
             field = value
         }
 
+    private var addLock = false
+        set(value) {
+            field = value
+            if (!value) {
+                this.add(*animationsToAdd.toTypedArray())
+                animationsToAdd.clear()
+            }
+        }
 
     private fun partialTicks() =
             if(useWorldPartialTicks)
@@ -76,14 +84,16 @@ class Animator {
     // sorted in ascending start order so I can quickly cull the expired animations and efficiently queue large numbers
     // of animations without having to iterate over them
     private val animations: MutableSet<Animation<*>> = sortedSetOf(compareBy({ it.start }, { it._id }))
+    private val animationsToAdd = mutableListOf<Animation<*>>()
     private val currentAnimations = mutableListOf<Animation<*>>()
 
     /**
      * Add [animations] to this animator
      */
     fun add(vararg animations: Animation<*>) {
-        animations.forEach { animation ->
-            if(animation.isInAnimator) {
+        if (addLock) animationsToAdd.addAll(animations)
+        else animations.forEach { animation ->
+            if (animation.isInAnimator) {
                 throw IllegalArgumentException("Animation already added to animator")
             }
             animation.onAddedToAnimator(this)
@@ -104,14 +114,22 @@ class Animator {
 
         currentAnimations.clear()
 
-        if (deletePastAnimations) animations.removeIf {
-            if (it.end < time) {
-                it.update(time)
-                true
-            } else false
+        performLocked {
+            if (deletePastAnimations) animations.removeIf {
+                if (it.end < time) {
+                    it.update(time)
+                    true
+                } else false
+            }
         }
 
         currentAnimations.addAll(animations.takeWhile { it.start <= time })
+    }
+
+    private inline fun performLocked(block: () -> Unit) {
+        addLock = true
+        block()
+        addLock = false
     }
 
     internal var _nextId: Int = 0
