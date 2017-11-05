@@ -21,14 +21,14 @@ object LerperHandler {
      * Get the lerper for the passed class, or null if none exists
      */
     @Suppress("UNCHECKED_CAST")
-    fun getLerper(clazz: Class<*>): Lerper<Any>? {
-        return map[clazz] as Lerper<Any>?
+    fun <T> getLerper(clazz: Class<T>): Lerper<T>? {
+        return map[clazz] as Lerper<T>?
     }
 
     /**
      * Get the lerper for the passed class, or throw an [IllegalArgumentException]
      */
-    fun getLerperOrError(clazz: Class<*>): Lerper<Any> {
+    fun <T> getLerperOrError(clazz: Class<T>): Lerper<T> {
         return getLerper(clazz) ?: throw IllegalArgumentException("Cannot lerp type `${clazz.canonicalName}`")
     }
 
