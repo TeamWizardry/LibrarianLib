@@ -10,7 +10,7 @@ class AnimatableProperty<T : Any> private constructor(val target: Class<T>, val 
 
     private val getter: (target: T) -> Any?
     private val setter: (target: T, value: Any?) -> Unit
-    val type: Class<*>
+    val type: Class<Any>
 
     init {
         val response = generateGetterAndSetterForKeyPath(target, keyPath.split(".").toTypedArray())

@@ -36,7 +36,7 @@ private fun getFieldList(target: Class<*>, keyPath: Array<String>): FieldListIte
 /**
  * returns: getter, setter, final field type
  */
-fun generateGetterAndSetterForKeyPath(target: Class<*>, keyPath: Array<String>): Triple<(target: Any) -> Any?, (target: Any, value: Any?) -> Unit, Class<*>> {
+fun generateGetterAndSetterForKeyPath(target: Class<*>, keyPath: Array<String>): Triple<(target: Any) -> Any?, (target: Any, value: Any?) -> Unit, Class<Any>> {
     val item = getFieldList(target, keyPath)
     if(item == null) {
         return Triple(
@@ -97,8 +97,9 @@ private class FieldListItem(val target: Class<*>, val name: String) {
         }
     }
 
-    fun getRootType(): Class<*> {
-        return child?.getRootType() ?: fieldClass
+    fun getRootType(): Class<Any> {
+        @Suppress("UNCHECKED_CAST")
+        return child?.getRootType() ?: fieldClass as Class<Any>
     }
 
     fun createRootGetter(): (target: Any) -> Any? {

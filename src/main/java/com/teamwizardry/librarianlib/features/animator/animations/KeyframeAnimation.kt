@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.animator.animations
 import com.teamwizardry.librarianlib.features.animator.AnimatableProperty
 import com.teamwizardry.librarianlib.features.animator.Animation
 import com.teamwizardry.librarianlib.features.animator.LerperHandler
+import java.util.*
 
 /**
  * A keyframe animation. Not much more to say.
