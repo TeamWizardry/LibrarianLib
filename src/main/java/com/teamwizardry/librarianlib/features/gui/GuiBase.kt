@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -33,6 +34,7 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         mainScaleWrapper.add(mainComponents)
 
         mainComponents.size = vec(guiWidth, guiHeight)
+        debugger.geometry.shouldCalculateOwnHover = false
     }
 
     override fun initGui() {
@@ -58,7 +60,12 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         }
 
         fullscreenComponents.size = vec(width, height)
-        debugger.size = vec(width, height)
+
+
+        val scaledresolution = ScaledResolution(Minecraft.getMinecraft());
+
+        debugger.transform.scale = 1.0/scaledresolution.scaleFactor
+        debugger.size = vec(width * scaledresolution.scaleFactor, height * scaledresolution.scaleFactor)
     }
 
     /**
@@ -72,6 +79,7 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+
         super.drawScreen(mouseX, mouseY, partialTicks)
         GlStateManager.enableBlend()
         StencilUtil.clear()
@@ -98,25 +106,32 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
             debugger.render.drawLate(relPos, partialTicks)
         }
         GL11.glDisable(GL11.GL_STENCIL_TEST)
+
+        Mouse.setNativeCursor((debugger.render.cursor ?: fullscreenComponents.render.cursor)?.lwjglCursor)
+        debugger.render.cursor = null
+        fullscreenComponents.render.cursor = null
     }
 
     @Throws(IOException::class)
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         super.mouseClicked(mouseX, mouseY, mouseButton)
         if(isDebugMode) debugger.guiEventHandler.mouseDown(vec(mouseX, mouseY), EnumMouseButton.getFromCode(mouseButton))
-        fullscreenComponents.guiEventHandler.mouseDown(vec(mouseX, mouseY), EnumMouseButton.getFromCode(mouseButton))
+        if(!isDebugMode || !debugger.mouseOver)
+            fullscreenComponents.guiEventHandler.mouseDown(vec(mouseX, mouseY), EnumMouseButton.getFromCode(mouseButton))
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         super.mouseReleased(mouseX, mouseY, state)
         if(isDebugMode) debugger.guiEventHandler.mouseUp(vec(mouseX, mouseY), EnumMouseButton.getFromCode(state))
-        fullscreenComponents.guiEventHandler.mouseUp(vec(mouseX, mouseY), EnumMouseButton.getFromCode(state))
+        if(!isDebugMode || !debugger.mouseOver)
+            fullscreenComponents.guiEventHandler.mouseUp(vec(mouseX, mouseY), EnumMouseButton.getFromCode(state))
     }
 
     override fun mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
         super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)
         if(isDebugMode) debugger.guiEventHandler.mouseDrag(vec(mouseX, mouseY), EnumMouseButton.getFromCode(clickedMouseButton))
-        fullscreenComponents.guiEventHandler.mouseDrag(vec(mouseX, mouseY), EnumMouseButton.getFromCode(clickedMouseButton))
+        if(!isDebugMode || !debugger.mouseOver)
+            fullscreenComponents.guiEventHandler.mouseDrag(vec(mouseX, mouseY), EnumMouseButton.getFromCode(clickedMouseButton))
     }
 
     @Throws(IOException::class)
@@ -126,7 +141,7 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         if(Keyboard.getEventKeyState()) {
             if(Keyboard.getEventKey() == Keyboard.KEY_D &&
                     ( Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) ) &&
-                    ( Keyboard.isKeyDown(Keyboard.KEY_LMETA) || Keyboard.isKeyDown(Keyboard.KEY_RMETA) )
+                    ( Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL) )
             ) {
                 isDebugMode = !isDebugMode
             }
@@ -138,10 +153,12 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
 
         if (Keyboard.getEventKeyState()) {
             if(isDebugMode) debugger.guiEventHandler.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
-            fullscreenComponents.guiEventHandler.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
+            if(!isDebugMode || !debugger.mouseOver)
+                fullscreenComponents.guiEventHandler.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
         } else {
             if(isDebugMode) debugger.guiEventHandler.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
-            fullscreenComponents.guiEventHandler.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
+            if(!isDebugMode || !debugger.mouseOver)
+                fullscreenComponents.guiEventHandler.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
         }
     }
 
@@ -154,7 +171,8 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
 
         if (wheelAmount != 0) {
             if(isDebugMode) debugger.guiEventHandler.mouseWheel(vec(mouseX, mouseY), GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
-            fullscreenComponents.guiEventHandler.mouseWheel(vec(mouseX, mouseY), GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
+            if(!isDebugMode || !debugger.mouseOver)
+                fullscreenComponents.guiEventHandler.mouseWheel(vec(mouseX, mouseY), GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
         }
     }
 

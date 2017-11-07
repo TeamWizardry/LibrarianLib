@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.features.gui.Option
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
@@ -24,6 +25,26 @@ import org.lwjgl.opengl.GL11.GL_LINE_STRIP
 class ComponentRenderHandler(private val component: GuiComponent) {
     var tooltip: Option<GuiComponent, List<String>?> = Option(null)
     var tooltipFont: FontRenderer? = null
+    /**
+     * If nonnull, the cursor will switch to this when hovering.
+     */
+    var hoverCursor: LibCursor? = null
+
+    var cursor: LibCursor? = null
+        get() {
+            val parent = component.parent
+            if (parent == null)
+                return field
+            else
+                return parent.render.cursor
+        }
+        set(value) {
+            val parent = component.parent
+            if (parent == null)
+                field = value
+            else
+                parent.render.cursor = value
+        }
 
     /**
      * Sets the tooltip to be drawn, overriding the existing value. Pass null for the font to use the default font renderer.
@@ -94,6 +115,9 @@ class ComponentRenderHandler(private val component: GuiComponent) {
             }
         }
         wasMouseOver = component.mouseOver
+        if(component.mouseOver && hoverCursor != null) {
+            cursor = hoverCursor
+        }
 
         component.BUS.fire(GuiComponentEvents.PreTransformEvent(component, mousePos, partialTicks))
 
