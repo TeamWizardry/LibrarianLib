@@ -28,7 +28,7 @@ class ModuleFluid(handler: SerializableFluidTank) : ModuleCapability<ModuleFluid
         return FluidUtil.getFluidHandler(stack) != null
     }
 
-    class SerializableFluidTank : FluidTank, INBTSerializable<NBTTagCompound> {
+    open class SerializableFluidTank : FluidTank, INBTSerializable<NBTTagCompound> {
         constructor(capacity: Int) : super(capacity)
         constructor(stack: FluidStack, capacity: Int) : super(stack, capacity)
         constructor(fluid: Fluid, amount: Int, capacity: Int) : super(fluid, amount, capacity)
