@@ -4,11 +4,11 @@ import com.teamwizardry.librarianlib.core.common.RegistrationHandler
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.currentModId
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.potion.Potion
 import net.minecraft.potion.PotionEffect
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 
@@ -43,8 +43,10 @@ open class PotionMod(name: String, badEffect: Boolean, color: Int) : Potion(badE
 
     @SideOnly(Side.CLIENT)
     override fun renderHUDEffect(x: Int, y: Int, effect: PotionEffect?, mc: Minecraft, alpha: Float) {
+        GlStateManager.color(1f, 1f, 1f, alpha)
         mc.renderEngine.bindTexture(resource)
         mc.ingameGUI.drawTexturedModalRect(x + 3, y + 3, 0 + iconX * 18, 198 + iconY * 18, 18, 18)
+        GlStateManager.color(1f, 1f, 1f, 1f)
     }
 
     fun hasEffect(entity: EntityLivingBase): Boolean {
