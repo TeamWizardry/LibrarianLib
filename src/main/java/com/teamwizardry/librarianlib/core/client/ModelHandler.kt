@@ -35,9 +35,7 @@ import net.minecraftforge.client.event.ModelBakeEvent
 import net.minecraftforge.client.event.ModelRegistryEvent
 import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.Loader
-import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -71,7 +69,7 @@ object ModelHandler {
      * This is Mod name -> (Variant name -> MRL), specifically for ItemMeshDefinitions.
      */
     @SideOnly(Side.CLIENT)
-    lateinit var resourceLocations: HashMap<String, HashMap<String, ResourceLocation>>
+    lateinit var resourceLocations: MutableMap<String, MutableMap<String, ModelResourceLocation>>
 
     var gennedResources = false
         private set
@@ -84,6 +82,8 @@ object ModelHandler {
         val name = Loader.instance().activeModContainer()?.modId ?: return
         variantCache.getOrPut(name) { mutableListOf() }.add(holder)
     }
+
+    fun getResource(modId: String, name: String) = resourceLocations[modId]?.get(name)
 
     @SideOnly(Side.CLIENT)
     private fun addToCachedLocations(name: String, mrl: ModelResourceLocation) {
