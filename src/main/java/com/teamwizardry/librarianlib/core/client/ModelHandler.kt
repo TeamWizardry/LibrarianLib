@@ -69,10 +69,8 @@ object ModelHandler {
      * This is Mod name -> (Variant name -> MRL), specifically for ItemMeshDefinitions.
      */
     @SideOnly(Side.CLIENT)
-    lateinit var resourceLocations: MutableMap<String, MutableMap<String, ModelResourceLocation>>
+    val resourceLocations = mutableMapOf<String, MutableMap<String, ModelResourceLocation>>()
 
-    var gennedResources = false
-        private set
 
     /**
      * Use this method to inject your item into the list to be loaded at the end of preinit and colorized at the end of init.
@@ -86,13 +84,8 @@ object ModelHandler {
     fun getResource(modId: String, name: String) = resourceLocations[modId]?.get(name)
 
     @SideOnly(Side.CLIENT)
-    private fun addToCachedLocations(name: String, mrl: ModelResourceLocation) {
-        if (!gennedResources) {
-            resourceLocations = hashMapOf()
-            gennedResources = true
-        }
-        resourceLocations.getOrPut(modName) { hashMapOf() }.put(name, mrl)
-    }
+    private fun addToCachedLocations(name: String, mrl: ModelResourceLocation)
+            = resourceLocations.getOrPut(modName) { hashMapOf() }.put(name, mrl)
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
