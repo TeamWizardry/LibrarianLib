@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.base.fluid
 
 import com.teamwizardry.librarianlib.features.helpers.currentModId
+import net.minecraft.block.Block
 import net.minecraft.block.material.Material
 import net.minecraft.item.EnumRarity
 import net.minecraft.util.ResourceLocation
@@ -42,9 +43,10 @@ open class ModFluid(name: String, rlStill: ResourceLocation, rlFlow: ResourceLoc
     open fun setVaporizes(vaporizes: Boolean): ModFluid
             = apply { this.vaporizes = vaporizes }
     open fun makeBlock(material: Material): ModFluid
-            = apply { BlockModFluid(this, material) }
+            = apply { if (getActualBlock() == null) BlockModFluid(this, material) }
 
     fun getActual(): Fluid = FluidRegistry.getFluid(name)
+    fun getActualBlock(): Block? = getActual().block
 
     init {
         FluidRegistry.registerFluid(this)
