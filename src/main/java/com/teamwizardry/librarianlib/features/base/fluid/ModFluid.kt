@@ -50,7 +50,7 @@ open class ModFluid(name: String, rlStill: ResourceLocation, rlFlow: ResourceLoc
 
     init {
         FluidRegistry.registerFluid(this)
-        if (bucket)
+        if (bucket && getActual() == this)
             FluidRegistry.addBucketForFluid(this)
     }
 }
