@@ -60,21 +60,20 @@ abstract class TileMod : TileEntity() {
     private var modulesSetUp = false
 
     fun createModules() {
-        if (modulesSetUp) return
         if (world != null) {
-            modulesSetUp = true
-
             val state = world.getBlockState(pos)
             val block = state.block
             if (block is BlockModContainer && block.hasComparatorInputOverride == null)
                 block.hasComparatorInputOverride = hasComparatorOverride()
+        }
+        if (modulesSetUp) return
+        modulesSetUp = true
 
-            for ((name, field) in SavingFieldCache.getClassFields(FieldType.create(javaClass, null))) {
-                if (field.meta.hasFlag(SavingFieldFlag.MODULE)) {
-                    @Suppress("LeakingThis")
-                    val module = field.getter(this) as? ITileModule
-                    module?.let { initModule(name, it) }
-                }
+        for ((name, field) in SavingFieldCache.getClassFields(FieldType.create(javaClass, null))) {
+            if (field.meta.hasFlag(SavingFieldFlag.MODULE)) {
+                @Suppress("LeakingThis")
+                val module = field.getter(this) as? ITileModule
+                module?.let { initModule(name, it) }
             }
         }
     }
