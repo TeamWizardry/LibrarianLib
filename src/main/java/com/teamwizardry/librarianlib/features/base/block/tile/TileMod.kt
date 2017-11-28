@@ -58,9 +58,11 @@ abstract class TileMod : TileEntity() {
     }
 
     private var modulesSetUp = false
+    private var comparatorSetUp = false
 
     fun createModules() {
-        if (world != null) {
+        if (world != null && !comparatorSetUp) {
+            comparatorSetUp = true
             val state = world.getBlockState(pos)
             val block = state.block
             if (block is BlockModContainer && block.hasComparatorInputOverride == null)
