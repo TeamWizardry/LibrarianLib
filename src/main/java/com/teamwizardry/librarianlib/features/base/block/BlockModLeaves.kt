@@ -1,13 +1,18 @@
 package com.teamwizardry.librarianlib.features.base.block
 
+import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.core.common.OreDictionaryRegistrar
+import com.teamwizardry.librarianlib.features.base.IModelGenerator
+import com.teamwizardry.librarianlib.features.kotlin.json
+import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
+import net.minecraft.block.Block
 import net.minecraft.block.SoundType
 import net.minecraft.block.material.Material
 import net.minecraft.block.properties.IProperty
 import net.minecraft.block.properties.PropertyBool
 import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
-import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
@@ -20,17 +25,15 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.world.IBlockAccess
 import net.minecraft.world.World
-import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.IShearable
 import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.util.*
 
 
 @Suppress("LeakingThis", "DEPRECATION", "OverridingDeprecatedMember")
-abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(name, Material.LEAVES, *variants), IShearable {
+abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(name, Material.LEAVES, *variants), IShearable, IModelGenerator {
     companion object {
 
         val DECAYABLE: PropertyBool = PropertyBool.create("decayable")
@@ -276,5 +279,22 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
 
     override fun getPickBlock(state: IBlockState, target: RayTraceResult?, world: World?, pos: BlockPos?, player: EntityPlayer?): ItemStack {
         return ItemStack(this, 1, getMetaFromState(state.withProperty(DECAYABLE, false).withProperty(CHECK_DECAY, false)))
+    }
+
+    override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
+        ModelHandler.generateBlockJson(this, {
+            JsonGenerationUtils.generateBaseBlockStates(this, mapper)
+        }, {
+            mapOf(JsonGenerationUtils.getPathForBlockModel(this)
+                    to json {
+                obj(
+                        "parent" to "block/leaves",
+                        "textures" to obj(
+                                "cross" to "${registryName!!.resourceDomain}:blocks/${registryName!!.resourcePath}"
+                        )
+                )
+            })
+        })
+        return true
     }
 }
