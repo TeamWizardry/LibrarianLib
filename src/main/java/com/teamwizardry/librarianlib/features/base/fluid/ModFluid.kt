@@ -43,7 +43,7 @@ open class ModFluid(name: String, rlStill: ResourceLocation, rlFlow: ResourceLoc
     open fun setVaporizes(vaporizes: Boolean): ModFluid
             = apply { this.vaporizes = vaporizes }
     open fun makeBlock(material: Material): ModFluid
-            = apply { if (getActualBlock() == null) BlockModFluid(this, material) }
+            = apply { if (getActualBlock() == null) BlockModFluid(getActual(), material) }
 
     fun getActual(): Fluid = FluidRegistry.getFluid(name)
     fun getActualBlock(): Block? = getActual().block
