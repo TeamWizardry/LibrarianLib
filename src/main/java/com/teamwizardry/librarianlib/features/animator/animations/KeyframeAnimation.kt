@@ -8,7 +8,7 @@ import java.util.*
 /**
  * A keyframe animation. Not much more to say.
  */
-class KeyframeAnimation<T : Any>(target: T, property: AnimatableProperty<T>) : Animation<T>(target, property) {
+class KeyframeAnimation<T : Any> @JvmOverloads constructor(target: T, property: AnimatableProperty<T>, completion: Runnable = Runnable {}) : Animation<T>(target, property, completion) {
     constructor(target: T, property: String) : this(target, AnimatableProperty.get(target.javaClass, property))
 
     /**

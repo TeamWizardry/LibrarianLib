@@ -112,6 +112,11 @@ class Animator {
     private fun updateCurrentAnimations() {
         val time = this.time
 
+        currentAnimations.forEach {
+            if(it.end < time) {
+                it.complete()
+            }
+        }
         currentAnimations.clear()
 
         performLocked {

@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.features.network.PacketModuleSync
 import com.teamwizardry.librarianlib.features.network.PacketTileSynchronization
 import com.teamwizardry.librarianlib.features.network.TargetWatchingBlock
 import com.teamwizardry.librarianlib.features.saving.*
+import com.teamwizardry.librarianlib.features.tesr.TileRenderHandler
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
@@ -22,6 +23,8 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraft.world.WorldServer
 import net.minecraftforge.common.capabilities.Capability
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import kotlin.collections.component1
 import kotlin.collections.component2
 
@@ -256,4 +259,20 @@ abstract class TileMod : TileEntity() {
                 AbstractSaveHandler.hasCapability(this, capability, facing) ||
                 super.hasCapability(capability, facing)
     }
+
+    // TESR stuff
+
+    @SideOnly(Side.CLIENT)
+    @JvmField
+    var renderHandler: TileRenderHandler<TileMod>? = null
+
+    @Suppress("LeakingThis")
+    var hasFastRenderer = this::class.java in fastTESRClasses
+
+    override fun hasFastRenderer() = hasFastRenderer
+
+    companion object {
+        internal val fastTESRClasses = mutableSetOf<Class<out TileMod>>()
+    }
+
 }

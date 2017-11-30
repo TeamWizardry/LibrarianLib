@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.animator
 
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
+import com.teamwizardry.librarianlib.features.saving.ArrayReflect
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
@@ -78,6 +79,8 @@ private fun KClass<*>.getDeclaredPropertyRecursive(name: String): KProperty<*>? 
     return prop
 }
 
+private val subscriptRegex = "\\[(\\d+)\\]".toRegex()
+
 private class FieldListItem(val target: Class<*>, val name: String) {
     val fieldClass: Class<*>
     var child: FieldListItem? = null
@@ -85,15 +88,21 @@ private class FieldListItem(val target: Class<*>, val name: String) {
     private val accessorOfChoice: Any
 
     init {
-        val property = target.kotlin.getDeclaredPropertyRecursive(name) ?:
-            throw IllegalArgumentException("Couldn't find a property `$name` in class `${target.canonicalName}` or any of its superclasses")
-        fieldClass = (property.returnType.classifier as KClass<*>).java
-
-        if(property.javaGetter != null) {
-            accessorOfChoice = property
+        if(target.isArray) {
+            accessorOfChoice = subscriptRegex.find(name)?.groupValues?.getOrNull(1)?.toIntOrNull() ?:
+                    throw IllegalArgumentException("Name `$name` not a valid subscript string! (valid format: `\\[\\d+\\]`)")
+            fieldClass = target.componentType
         } else {
-            accessorOfChoice = property.javaField ?:
-                    throw IllegalArgumentException("Property `$name` in class `${target.canonicalName}` has no getter and no backing field")
+            val property = target.kotlin.getDeclaredPropertyRecursive(name) ?:
+                    throw IllegalArgumentException("Couldn't find a property `$name` in class `${target.canonicalName}` or any of its superclasses")
+            fieldClass = (property.returnType.classifier as KClass<*>).java
+
+            if (property.javaGetter != null) {
+                accessorOfChoice = property
+            } else {
+                accessorOfChoice = property.javaField ?:
+                        throw IllegalArgumentException("Property `$name` in class `${target.canonicalName}` has no getter and no backing field")
+            }
         }
     }
 
@@ -116,6 +125,8 @@ private class FieldListItem(val target: Class<*>, val name: String) {
             }
             val m = MethodHandleHelper.wrapperForMethod<Any>(accessorOfChoice.javaGetter!!)
             getter = { t -> m(t, emptyArray()) }
+        } else if(accessorOfChoice is Int) {
+            getter = { t -> ArrayReflect.get(t, accessorOfChoice) }
         } else {
             throw IllegalStateException("accessorOfChoice was neither a Field nor a KProperty, it was `${(accessorOfChoice as Any?)?.javaClass?.canonicalName ?: "null"}`")
         }
@@ -143,6 +154,8 @@ private class FieldListItem(val target: Class<*>, val name: String) {
             }
             val m = MethodHandleHelper.wrapperForMethod<Any>(accessorOfChoice.javaGetter!!)
             getter = { t -> m(t, emptyArray()) }
+        } else if(accessorOfChoice is Int) {
+            getter = { t -> ArrayReflect.get(t, accessorOfChoice) }
         } else {
             throw IllegalStateException("accessorOfChoice was neither a Field nor a KProperty, it was `${(accessorOfChoice as Any?)?.javaClass?.canonicalName ?: "null"}`")
         }
@@ -150,8 +163,9 @@ private class FieldListItem(val target: Class<*>, val name: String) {
         val childSetter = child?.createRootSetter(target) ?: { _, finalValue -> finalValue }
 
         val setter by lazy<(target: Any, value: Any?) -> Any?> {
-
-            if(
+            if(accessorOfChoice is Int) {
+                return@lazy { t, v -> ArrayReflect.set(t, accessorOfChoice, v) }
+            } else if(
             (accessorOfChoice as? KMutableProperty<*>)?.javaSetter?.modifiers?.let { Modifier.isPublic(it) } == true ||
                     (accessorOfChoice is Field && !Modifier.isFinal(accessorOfChoice.modifiers))
                     ) {

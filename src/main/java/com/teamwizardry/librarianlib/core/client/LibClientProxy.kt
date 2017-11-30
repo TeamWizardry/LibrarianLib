@@ -14,6 +14,7 @@ import com.teamwizardry.librarianlib.features.shader.ShaderHelper
 import com.teamwizardry.librarianlib.features.sprite.SpritesMetadataSection
 import com.teamwizardry.librarianlib.features.sprite.SpritesMetadataSectionSerializer
 import com.teamwizardry.librarianlib.features.sprite.Texture
+import com.teamwizardry.librarianlib.features.tesr.TileRendererRegisterProcessor
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import com.teamwizardry.librarianlib.features.utilities.client.F3Handler
 import com.teamwizardry.librarianlib.features.utilities.client.ScissorUtil
@@ -73,6 +74,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         super.latePre(e)
 
         GlowingHandler.init()
+        TileRendererRegisterProcessor.register()
 
         (Minecraft.getMinecraft().resourceManager as IReloadableResourceManager).registerReloadListener(this)
         onResourceManagerReload(Minecraft.getMinecraft().resourceManager)

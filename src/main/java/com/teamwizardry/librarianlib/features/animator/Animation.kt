@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.features.kotlin.clamp
 /**
  * An animation applied to a specific object and property of that object
  */
-abstract class Animation<T: Any>(val target: T, val property: AnimatableProperty<T>) {
+abstract class Animation<T: Any>(val target: T, val property: AnimatableProperty<T>, private val completion: Runnable) {
 
     /**
      * Default: true
@@ -93,6 +93,13 @@ abstract class Animation<T: Any>(val target: T, val property: AnimatableProperty
      * @param time The current time of the containing Animator
      */
     abstract fun update(time: Float)
+
+    /**
+     * runs the completion callback
+     */
+    fun complete() {
+        completion.run()
+    }
 
     internal fun onAddedToAnimator(animator: Animator) {
         if(isTimeRelative) {
