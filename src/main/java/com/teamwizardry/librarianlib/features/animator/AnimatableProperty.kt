@@ -10,13 +10,15 @@ class AnimatableProperty<T : Any> private constructor(val target: Class<T>, val 
 
     private val getter: (target: T) -> Any?
     private val setter: (target: T, value: Any?) -> Unit
+    private val involvement: (target: T, check: Any) -> Boolean
     val type: Class<Any>
 
     init {
         val response = generateGetterAndSetterForKeyPath(target, keyPath.split(".").toTypedArray())
-        getter = response.first
-        setter = response.second
-        type = response.third
+        getter = response.getter
+        setter = response.setter
+        type = response.clazz
+        involvement = response.involvement
     }
 
     fun get(target: T): Any {
@@ -24,6 +26,10 @@ class AnimatableProperty<T : Any> private constructor(val target: Class<T>, val 
     }
     fun set(target: T, value: Any) {
         setter(target, value)
+    }
+
+    fun doesInvolve(target: T, obj: Any): Boolean {
+        return involvement(target, obj)
     }
 
     companion object {

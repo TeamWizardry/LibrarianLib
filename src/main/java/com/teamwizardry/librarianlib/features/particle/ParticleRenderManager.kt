@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.particle
 
 import com.teamwizardry.librarianlib.core.client.ClientTickHandler
+import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.client.particle.Particle
 import net.minecraft.client.renderer.ActiveRenderInfo
@@ -180,7 +181,10 @@ object ParticleRenderManager {
         queuedParticleAdditions.clear()
 
         val entity = Minecraft.getMinecraft().renderViewEntity
-        val partialTicks = ClientTickHandler.partialTicks
+        val partialTicks = if (Minecraft.getMinecraft().isGamePaused)
+            Minecraft.getMinecraft().renderPartialTicksPaused
+        else
+            ClientTickHandler.partialTicks
         if (entity != null) {
             Particle.interpPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks.toDouble()
             Particle.interpPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks.toDouble()
@@ -291,3 +295,5 @@ abstract class ParticleRenderLayer(val name: String, val shouldSort: Boolean) {
     }
 
 }
+
+val Minecraft.renderPartialTicksPaused by MethodHandleHelper.delegateForReadOnly<Minecraft, Float>(Minecraft::class.java, "renderPartialTicksPaused", "field_193996_ah")
