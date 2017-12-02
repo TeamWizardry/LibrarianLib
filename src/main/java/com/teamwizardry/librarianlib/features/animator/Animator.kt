@@ -137,11 +137,6 @@ class Animator {
     private fun updateCurrentAnimations() {
         val time = this.time
 
-        currentAnimations.forEach {
-            if(it.end < time) {
-                it.complete()
-            }
-        }
         currentAnimations.clear()
 
         performLocked {
@@ -149,7 +144,10 @@ class Animator {
                 if (it.end < time) {
                     it.update(time)
                     true
-                } else false
+                } else {
+                    it.complete()
+                    false
+                }
             }
         }
 
