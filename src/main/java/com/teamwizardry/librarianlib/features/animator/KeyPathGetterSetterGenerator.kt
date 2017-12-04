@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.animator
 
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
+import com.teamwizardry.librarianlib.features.saving.ArrayReflect
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
@@ -19,6 +20,8 @@ import kotlin.reflect.jvm.javaSetter
  * - everyone who has seen this code
  */
 
+data class KeyPathAccessor(val clazz: Class<Any>, val getter: (target: Any) -> Any?, val setter: (target: Any, value: Any?) -> Unit, val involvement: (target: Any, check: Any) -> Boolean)
+
 private fun getFieldList(target: Class<*>, keyPath: Array<String>): FieldListItem? {
     var firstItem: FieldListItem? = null
     var currentTarget = target
@@ -36,20 +39,27 @@ private fun getFieldList(target: Class<*>, keyPath: Array<String>): FieldListIte
 /**
  * returns: getter, setter, final field type
  */
-fun generateGetterAndSetterForKeyPath(target: Class<*>, keyPath: Array<String>): Triple<(target: Any) -> Any?, (target: Any, value: Any?) -> Unit, Class<Any>> {
+fun generateGetterAndSetterForKeyPath(target: Class<*>, keyPath: Array<String>): KeyPathAccessor {
     val item = getFieldList(target, keyPath)
     if(item == null) {
-        return Triple(
+        return KeyPathAccessor(
+                Any::class.java,
                 { _ -> null },
                 { _, _ -> },
-                Any::class.java
+                { _, _ -> false }
         )
     }
     val getter = item.createRootGetter()
     val setter = item.createRootSetter()
+    val involvement = item.createInvolvementChecker()
     val type = item.getRootType()
 
-    return Triple(getter, { target, value -> setter(target, value) }, type)
+    return KeyPathAccessor(
+            clazz = type,
+            getter = getter,
+            setter = { target, value -> setter(target, value) },
+            involvement = involvement
+    )
 }
 
 private fun Class<*>.getDeclaredFieldRecursive(name: String): Field? {
@@ -78,6 +88,8 @@ private fun KClass<*>.getDeclaredPropertyRecursive(name: String): KProperty<*>? 
     return prop
 }
 
+private val subscriptRegex = "\\[(\\d+)\\]".toRegex()
+
 private class FieldListItem(val target: Class<*>, val name: String) {
     val fieldClass: Class<*>
     var child: FieldListItem? = null
@@ -85,15 +97,21 @@ private class FieldListItem(val target: Class<*>, val name: String) {
     private val accessorOfChoice: Any
 
     init {
-        val property = target.kotlin.getDeclaredPropertyRecursive(name) ?:
-            throw IllegalArgumentException("Couldn't find a property `$name` in class `${target.canonicalName}` or any of its superclasses")
-        fieldClass = (property.returnType.classifier as KClass<*>).java
-
-        if(property.javaGetter != null) {
-            accessorOfChoice = property
+        if(target.isArray) {
+            accessorOfChoice = subscriptRegex.find(name)?.groupValues?.getOrNull(1)?.toIntOrNull() ?:
+                    throw IllegalArgumentException("Name `$name` not a valid subscript string! (valid format: `\\[\\d+\\]`)")
+            fieldClass = target.componentType
         } else {
-            accessorOfChoice = property.javaField ?:
-                    throw IllegalArgumentException("Property `$name` in class `${target.canonicalName}` has no getter and no backing field")
+            val property = target.kotlin.getDeclaredPropertyRecursive(name) ?:
+                    throw IllegalArgumentException("Couldn't find a property `$name` in class `${target.canonicalName}` or any of its superclasses")
+            fieldClass = (property.returnType.classifier as KClass<*>).java
+
+            if (property.javaGetter != null) {
+                accessorOfChoice = property
+            } else {
+                accessorOfChoice = property.javaField ?:
+                        throw IllegalArgumentException("Property `$name` in class `${target.canonicalName}` has no getter and no backing field")
+            }
         }
     }
 
@@ -116,6 +134,8 @@ private class FieldListItem(val target: Class<*>, val name: String) {
             }
             val m = MethodHandleHelper.wrapperForMethod<Any>(accessorOfChoice.javaGetter!!)
             getter = { t -> m(t, emptyArray()) }
+        } else if(accessorOfChoice is Int) {
+            getter = { t -> ArrayReflect.get(t, accessorOfChoice) }
         } else {
             throw IllegalStateException("accessorOfChoice was neither a Field nor a KProperty, it was `${(accessorOfChoice as Any?)?.javaClass?.canonicalName ?: "null"}`")
         }
@@ -143,6 +163,8 @@ private class FieldListItem(val target: Class<*>, val name: String) {
             }
             val m = MethodHandleHelper.wrapperForMethod<Any>(accessorOfChoice.javaGetter!!)
             getter = { t -> m(t, emptyArray()) }
+        } else if(accessorOfChoice is Int) {
+            getter = { t -> ArrayReflect.get(t, accessorOfChoice) }
         } else {
             throw IllegalStateException("accessorOfChoice was neither a Field nor a KProperty, it was `${(accessorOfChoice as Any?)?.javaClass?.canonicalName ?: "null"}`")
         }
@@ -150,8 +172,9 @@ private class FieldListItem(val target: Class<*>, val name: String) {
         val childSetter = child?.createRootSetter(target) ?: { _, finalValue -> finalValue }
 
         val setter by lazy<(target: Any, value: Any?) -> Any?> {
-
-            if(
+            if(accessorOfChoice is Int) {
+                return@lazy { t, v -> ArrayReflect.set(t, accessorOfChoice, v) }
+            } else if(
             (accessorOfChoice as? KMutableProperty<*>)?.javaSetter?.modifiers?.let { Modifier.isPublic(it) } == true ||
                     (accessorOfChoice is Field && !Modifier.isFinal(accessorOfChoice.modifiers))
                     ) {
@@ -192,6 +215,38 @@ private class FieldListItem(val target: Class<*>, val name: String) {
             return@ret NULL_OBJECT
         }
 
+    }
+
+    fun createInvolvementChecker(): (target: Any, check: Any) -> Boolean {
+        val getter: (target: Any) -> Any?
+
+        if(accessorOfChoice is Field) {
+            if(!Modifier.isPublic(accessorOfChoice.modifiers)) {
+                throw IllegalAccessException("Could not access field `$name` in class `${target.canonicalName}`")
+            }
+            getter = MethodHandleHelper.wrapperForGetter(accessorOfChoice)
+        } else if(accessorOfChoice is KProperty<*>) {
+            if(!Modifier.isPublic(accessorOfChoice.javaGetter!!.modifiers)) {
+                throw IllegalAccessException("Could not access property getter for `$name` in class `${target.canonicalName}`")
+            }
+            val m = MethodHandleHelper.wrapperForMethod<Any>(accessorOfChoice.javaGetter!!)
+            getter = { t -> m(t, emptyArray()) }
+        } else if(accessorOfChoice is Int) {
+            getter = { t -> ArrayReflect.get(t, accessorOfChoice) }
+        } else {
+            throw IllegalStateException("accessorOfChoice was neither a Field nor a KProperty, it was `${(accessorOfChoice as Any?)?.javaClass?.canonicalName ?: "null"}`")
+        }
+
+        val childGetter = child?.createInvolvementChecker()
+
+        if(childGetter == null) {
+            return { t, c -> getter(t) === c }
+        } else {
+            return ret@{ t, c ->
+                val us = getter(t) ?: return@ret false
+                us === c || childGetter(us, c)
+            }
+        }
     }
 }
 

@@ -8,18 +8,17 @@ import com.teamwizardry.librarianlib.features.animator.Animation
  *
  * Created by TheCodeWarrior
  */
-class ScheduledEventAnimation(time: Float, private val callback: () -> Unit) :
+class ScheduledEventAnimation(time: Float, callback: Runnable) :
         Animation<ScheduledEventAnimation.PointlessAnimatableObject>(PointlessAnimatableObject,
                 AnimatableProperty.get(PointlessAnimatableObject::class.java, "field")) {
-    constructor(time: Float, callback_runnable: Runnable) : this(time, { callback_runnable.run() })
+    constructor(time: Float, callback: () -> Unit) : this(time, Runnable(callback))
+
     init {
         start = time
+        completion = callback
     }
 
-    override fun update(time: Float) {
-        if(this.timeFraction(time) == 1f)
-            callback()
-    }
+    override fun update(time: Float) {}
 
     object PointlessAnimatableObject {
         var field = 0

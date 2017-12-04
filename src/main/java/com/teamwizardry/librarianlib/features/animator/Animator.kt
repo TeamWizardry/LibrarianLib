@@ -39,7 +39,7 @@ class Animator {
     /**
      * If this value is true (which it isn't by default) this animator will pause when the world pauses.
      */
-    var useWorldPartialTicks = false
+    var useWorldTicks = false
 
     /**
      * The current time of the animator. By default this is measured in ticks since creation.
@@ -69,12 +69,14 @@ class Animator {
             field = value
             if (!value) {
                 this.add(*animationsToAdd.toTypedArray())
+                this.animations.removeAll(animationsToRemove)
                 animationsToAdd.clear()
+                animationsToRemove.clear()
             }
         }
 
     private fun partialTicks() =
-            if(useWorldPartialTicks)
+            if(useWorldTicks)
                 worldPartialTicks
             else
                 screenPartialTicks
@@ -85,6 +87,7 @@ class Animator {
     // of animations without having to iterate over them
     private val animations: MutableSet<Animation<*>> = sortedSetOf(compareBy({ it.start }, { it._id }))
     private val animationsToAdd = mutableListOf<Animation<*>>()
+    private val animationsToRemove = mutableListOf<Animation<*>>()
     private val currentAnimations = mutableListOf<Animation<*>>()
 
     /**
@@ -99,6 +102,28 @@ class Animator {
             animation.onAddedToAnimator(this)
             this.animations.add(animation)
         }
+    }
+
+    /**
+     * Remove all animations involving [obj]
+     */
+    fun removeAnimationsFor(obj: Any) {
+        val inlineRemove = mutableListOf<Animation<*>>()
+        animations.forEach {
+            if(it.doesInvolveObject(obj)) {
+                if(addLock) animationsToRemove.add(it)
+                else inlineRemove.add(it)
+            }
+        }
+        if(!addLock) animations.removeAll(inlineRemove)
+    }
+
+    /**
+     * Removes ALL the animations from this animator
+     */
+    fun removeAll() {
+        if(addLock) animationsToRemove.addAll(animations)
+        else animations.clear()
     }
 
     internal fun update() {
@@ -119,7 +144,10 @@ class Animator {
                 if (it.end < time) {
                     it.update(time)
                     true
-                } else false
+                } else {
+                    it.complete()
+                    false
+                }
             }
         }
 

@@ -63,6 +63,11 @@ abstract class Animation<T: Any>(val target: T, val property: AnimatableProperty
     var repeatCount = 0
 
     /**
+     * A callback that is called when this animation completes
+     */
+    var completion: Runnable = Runnable {}
+
+    /**
      * @param time The current time of the containing Animator
      * @returns The current progress of the animation from 0-1 inclusive, taking into account [shouldReverse]
      *          and clamping the values outside of [start] and [end]
@@ -83,6 +88,16 @@ abstract class Animation<T: Any>(val target: T, val property: AnimatableProperty
     }
 
     /**
+     * Returns true if this animation's keypath involves the passed object.
+     *
+     * The equality is by identity
+     */
+    fun doesInvolveObject(obj: Any): Boolean {
+        if(target === obj) return true
+        return property.doesInvolve(target, obj)
+    }
+
+    /**
      * True if this animation has been added to an animator already.
      */
     val isInAnimator: Boolean
@@ -93,6 +108,13 @@ abstract class Animation<T: Any>(val target: T, val property: AnimatableProperty
      * @param time The current time of the containing Animator
      */
     abstract fun update(time: Float)
+
+    /**
+     * runs the completion callback
+     */
+    fun complete() {
+        completion.run()
+    }
 
     internal fun onAddedToAnimator(animator: Animator) {
         if(isTimeRelative) {
