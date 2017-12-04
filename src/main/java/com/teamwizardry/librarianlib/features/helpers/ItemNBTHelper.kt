@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.features.helpers
 import com.teamwizardry.librarianlib.features.kotlin.get
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.*
-import net.minecraftforge.common.util.Constants
 import java.util.*
 
 object ItemNBTHelper {
@@ -15,11 +14,11 @@ object ItemNBTHelper {
         return stack.tagCompound ?: NBTTagCompound()
     }
 
-    @JvmStatic fun removeEntry(stack: ItemStack, tag: String) = getNBT(stack).removeTag(tag)
+    @JvmStatic fun removeEntry(stack: ItemStack, tag: String) = getNBT(stack, false).removeTag(tag)
     @Deprecated("No longer functionally different from removeEntry", ReplaceWith("removeEntry(stack, tag)", "com.teamwizardry.librarianlib.features.helpers.ItemNBTHelper.removeEntry"))
     @JvmStatic fun removeUUID(stack: ItemStack, tag: String) = removeEntry(stack, tag)
 
-    @JvmStatic fun verifyExistence(stack: ItemStack, tag: String) = getNBT(stack).hasKey(tag)
+    @JvmStatic fun verifyExistence(stack: ItemStack, tag: String) = getNBT(stack, false).hasKey(tag)
     @Deprecated("No longer functionally different from verifyUUIDExistence", ReplaceWith("verifyExistence(stack, tag)", "com.teamwizardry.librarianlib.features.helpers.ItemNBTHelper.verifyExistence"))
     @JvmStatic fun verifyUUIDExistence(stack: ItemStack, tag: String) = verifyExistence(stack, tag)
 
