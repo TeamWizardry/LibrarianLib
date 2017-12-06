@@ -143,9 +143,9 @@ class Animator {
             if (deletePastAnimations) animations.removeIf {
                 if (it.end < time) {
                     it.update(time)
+                    it.complete()
                     true
                 } else {
-                    it.complete()
                     false
                 }
             }

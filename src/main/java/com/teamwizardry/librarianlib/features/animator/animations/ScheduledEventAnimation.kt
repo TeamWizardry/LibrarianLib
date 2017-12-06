@@ -15,6 +15,7 @@ class ScheduledEventAnimation(time: Float, callback: Runnable) :
 
     init {
         start = time
+        duration = 0f
         completion = callback
     }
 

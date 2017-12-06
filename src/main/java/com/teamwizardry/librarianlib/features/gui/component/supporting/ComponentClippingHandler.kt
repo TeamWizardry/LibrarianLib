@@ -87,6 +87,7 @@ class ComponentClippingHandler(val component: GuiComponent) {
                 pixelatedArc(size.x - r, r, vec(1, 0), vec(0, -1))
             }
         }
+        GlStateManager.enableTexture2D()
         GlStateManager.popAttrib()
     }
 
