@@ -68,7 +68,6 @@ object ModelHandler {
     /**
      * This is Mod name -> (Variant name -> MRL), specifically for ItemMeshDefinitions.
      */
-    @SideOnly(Side.CLIENT)
     val resourceLocations = mutableMapOf<String, MutableMap<String, ModelResourceLocation>>()
 
 
