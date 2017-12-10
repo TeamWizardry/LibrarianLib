@@ -16,7 +16,7 @@ import net.minecraft.world.World
  */
 abstract class BlockModContainer(name: String, materialIn: Material, vararg variants: String) : BlockMod(name, materialIn, *variants) {
 
-    override fun eventReceived(state: IBlockState?, worldIn: World, pos: BlockPos, eventID: Int, eventParam: Int): Boolean {
+    override fun eventReceived(state: IBlockState, worldIn: World, pos: BlockPos, eventID: Int, eventParam: Int): Boolean {
         val tile = worldIn.getTileEntity(pos) ?: return false
         return tile.receiveClientEvent(eventID, eventParam)
     }
