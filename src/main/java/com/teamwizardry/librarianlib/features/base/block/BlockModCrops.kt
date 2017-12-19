@@ -196,7 +196,7 @@ abstract class BlockModCrops(name: String, stages: Int) : BlockModBush(injectSta
     override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
         ModelHandler.generateBlockJson(this, {
             JsonGenerationUtils.generateBlockStates(this, mapper) {
-                json { obj("model" to registryName.toString() + ("age=(\\d+)".toRegex().find(it)?.groupValues?.get(0)?.toInt() ?: 0)) }
+                json { obj("model" to registryName.toString() + ("age=(\\d+)".toRegex().find(it)?.groupValues?.get(1)?.toInt() ?: 0)) }
             }
         }, {
             (0 until getMaxAge()).associate {
