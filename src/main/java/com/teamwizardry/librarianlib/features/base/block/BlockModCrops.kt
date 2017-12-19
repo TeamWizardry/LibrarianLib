@@ -32,7 +32,7 @@ import java.util.*
 @Suppress("LeakingThis")
 abstract class BlockModCrops(name: String, stages: Int) : BlockModBush(injectStages(name, stages)), IGrowable {
 
-    constructor(name: String) : this(name, 7)
+    constructor(name: String) : this(name, 8)
 
     companion object {
         val CROPS_AABB = arrayOf(
@@ -46,10 +46,10 @@ abstract class BlockModCrops(name: String, stages: Int) : BlockModBush(injectSta
                 AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0))
 
 
-        private var lastStages by threadLocal { -1 }
+        private var lastStages by threadLocal { 8 }
 
         private fun injectStages(name: String, stages: Int): String {
-            lastStages = MathHelper.clamp(stages, 0, 7)
+            lastStages = MathHelper.clamp(stages, 1, 8)
             return name
         }
     }
@@ -67,13 +67,13 @@ abstract class BlockModCrops(name: String, stages: Int) : BlockModBush(injectSta
     private lateinit var property: PropertyInteger
     open fun getAgeProperty(): PropertyInteger {
         if (!createdProperty) {
-            property = PropertyInteger.create("age", 0, lastStages)
+            property = PropertyInteger.create("age", 0, lastStages - 1)
             createdProperty = true
         }
         return property
     }
 
-    open fun getMaxAge(): Int = getAgeProperty().allowedValues.size
+    open fun getMaxAge(): Int = getAgeProperty().allowedValues.size - 1
 
     open fun getAge(state: IBlockState): Int = state.getValue(this.getAgeProperty())
 
