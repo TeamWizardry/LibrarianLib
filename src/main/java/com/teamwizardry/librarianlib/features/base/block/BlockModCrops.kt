@@ -73,7 +73,7 @@ abstract class BlockModCrops(name: String, stages: Int) : BlockModBush(injectSta
         return property
     }
 
-    open fun getMaxAge(): Int = 7
+    open fun getMaxAge(): Int = getAgeProperty().allowedValues.size
 
     open fun getAge(state: IBlockState): Int = state.getValue(this.getAgeProperty())
 
@@ -99,7 +99,7 @@ abstract class BlockModCrops(name: String, stages: Int) : BlockModBush(injectSta
     }
 
     open fun getBonemealAgeIncrease(worldIn: World): Int {
-        return MathHelper.getInt(worldIn.rand, 2, 5)
+        return MathHelper.getInt(worldIn.rand, getMaxAge() / 2 - 1, getMaxAge() / 2 + 1)
     }
 
     open fun getGrowthChance(blockIn: Block, worldIn: World, pos: BlockPos): Float {
@@ -195,17 +195,20 @@ abstract class BlockModCrops(name: String, stages: Int) : BlockModBush(injectSta
 
     override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
         ModelHandler.generateBlockJson(this, {
-            JsonGenerationUtils.generateBaseBlockStates(this, mapper)
+            JsonGenerationUtils.generateBlockStates(this, mapper) {
+                json { obj("model" to registryName.toString() + ("age=(\\d+)".toRegex().find(it)?.groupValues?.get(0)?.toInt() ?: 0)) }
+            }
         }, {
-            mapOf(JsonGenerationUtils.getPathForBlockModel(this)
-                    to json {
-                obj(
-                        "parent" to "block/crop",
-                        "textures" to obj(
-                                "cross" to "${registryName!!.resourceDomain}:blocks/${registryName!!.resourcePath}"
-                        )
-                )
-            })
+            (0 until getMaxAge()).associate {
+                JsonGenerationUtils.getPathForBlockModel(this, registryName.toString() + it) to json {
+                    obj(
+                            "parent" to "block/crop",
+                            "textures" to obj(
+                                    "all" to "${registryName!!.resourceDomain}:blocks/${registryName!!.resourcePath}$it"
+                            )
+                    )
+                }
+            }
         })
         return true
     }
