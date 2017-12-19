@@ -99,7 +99,7 @@ abstract class BlockModCrops(name: String, stages: Int) : BlockModBush(injectSta
     }
 
     open fun getBonemealAgeIncrease(worldIn: World): Int {
-        return MathHelper.getInt(worldIn.rand, getMaxAge() / 2 - 1, getMaxAge() / 2 + 1)
+        return MathHelper.getInt(worldIn.rand, Math.max(getMaxAge() / 2 - 1, 1), getMaxAge() / 2 + 1)
     }
 
     open fun getGrowthChance(blockIn: Block, worldIn: World, pos: BlockPos): Float {
