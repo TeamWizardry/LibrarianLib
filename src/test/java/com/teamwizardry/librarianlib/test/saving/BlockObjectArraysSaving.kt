@@ -70,7 +70,7 @@ class BlockObjectArraysSaving : BlockMod("saving_objectArrays", Material.CACTUS)
 
         @Save var color: Array<Color> = arrayOf(Color.BLACK, Color.BLACK, Color.BLACK)
         @Save var tag: Array<NBTTagCompound> = arrayOf(NBTTagCompound(), NBTTagCompound(), NBTTagCompound())
-        @Save var stack: Array<ItemStack?> = arrayOfNulls(3)
+        @Save var stack: Array<ItemStack> = arrayOf(ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY)
         @Save var handler: Array<ItemStackHandler?> = arrayOfNulls(3)
         @Save var vec3d: Array<Vec3d> = arrayOf(Vec3d.ZERO, Vec3d.ZERO, Vec3d.ZERO)
         @Save var vec3i: Array<Vec3i> = arrayOf(Vec3i.NULL_VECTOR, Vec3i.NULL_VECTOR, Vec3i.NULL_VECTOR)

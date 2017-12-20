@@ -44,8 +44,8 @@ object SerializeMapFactory : SerializerFactory("Map") {
             list.forEach<NBTTagCompound> {
                 val keyTag = it.getTag("k")
                 val valTag = it.getTag("v")
-                val k = if (keyTag == null) null else serKey.read(keyTag, null, syncing)
-                val v = if (valTag == null) null else serValue.read(valTag, existing?.get(k), syncing)
+                val k = serKey.read(keyTag, null, syncing)
+                val v = serValue.read(valTag, existing?.get(k), syncing)
                 map[k] = v
             }
 
@@ -78,9 +78,9 @@ object SerializeMapFactory : SerializerFactory("Map") {
             val nullKey = buf.readVarInt()
             val valueNulls = buf.readBooleanArray()
 
-            for(i in 0..count-1) {
-                val k = if(i == nullKey) null else serKey.read(buf, null, syncing)
-                val v = if(valueNulls[i]) null else serValue.read(buf, existing?.get(k), syncing)
+            for (i in 0..count - 1) {
+                val k = if (i == nullKey) null else serKey.read(buf, null, syncing)
+                val v = if (valueNulls[i]) null else serValue.read(buf, existing?.get(k), syncing)
                 map[k] = v
             }
 
@@ -101,24 +101,24 @@ object SerializeMapFactory : SerializerFactory("Map") {
 
             buf.writeBooleanArray(valueNulls)
 
-            for(i in 0..count-1) {
+            for (i in 0..count - 1) {
                 val k = keys[i]
                 val v = values[i]
 
-                if(k != null) {
+                if (k != null) {
                     serKey.write(buf, k, syncing)
                 }
 
-                if(v != null) {
+                if (v != null) {
                     serValue.write(buf, v, syncing)
                 }
             }
         }
 
         private fun createConstructorMethodHandle(): () -> MutableMap<Any?, Any?> {
-            if(type.clazz == Map::class.java) {
+            if (type.clazz == Map::class.java) {
                 return { LinkedHashMap<Any?, Any?>() }
-            } else if(type.clazz == EnumMap::class.java) {
+            } else if (type.clazz == EnumMap::class.java) {
                 @Suppress("UNCHECKED_CAST")
                 return { RawTypeConstructors.createEnumMap(keyType.clazz) as MutableMap<Any?, Any?> }
             } else {

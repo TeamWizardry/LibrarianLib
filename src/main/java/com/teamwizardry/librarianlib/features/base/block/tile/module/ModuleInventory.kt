@@ -29,8 +29,8 @@ class ModuleInventory(handler: ItemStackHandler) : ModuleCapability<ItemStackHan
             return percent / capability.slots
         }
 
-        private fun getMaxStackSize(slot: Int, handler: IItemHandler, inSlot: ItemStack?): Int {
-            if (inSlot == null || inSlot.isEmpty) return 64
+        private fun getMaxStackSize(slot: Int, handler: IItemHandler, inSlot: ItemStack): Int {
+            if (inSlot.isEmpty) return 64
             val stack = inSlot.copy()
             stack.count = inSlot.maxStackSize - inSlot.count
             val result = handler.insertItem(slot, stack, true)

@@ -11,7 +11,7 @@ import net.minecraft.inventory.EntityEquipmentSlot
 import net.minecraft.item.ItemStack
 
 open class SlotTypeGhost(val maxStackSize: Int = 1, val overstack: Boolean = false) : SlotType() {
-    override fun stackLimit(slot: SlotBase, stack: ItemStack?): Int {
+    override fun stackLimit(slot: SlotBase, stack: ItemStack): Int {
         return maxStackSize
     }
 
@@ -57,11 +57,11 @@ open class SlotTypeGhost(val maxStackSize: Int = 1, val overstack: Boolean = fal
 }
 
 open class SlotTypeEquipment(val player: EntityPlayer, vararg val types: EntityEquipmentSlot) : SlotType() {
-    override fun isValid(slot: SlotBase, stack: ItemStack?, default: Boolean): Boolean {
-        return types.any { stack?.item?.isValidArmor(stack, it, player) ?: false }
+    override fun isValid(slot: SlotBase, stack: ItemStack, default: Boolean): Boolean {
+        return types.any { stack.item.isValidArmor(stack, it, player) }
     }
 
-    override fun stackLimit(slot: SlotBase, stack: ItemStack?): Int {
+    override fun stackLimit(slot: SlotBase, stack: ItemStack): Int {
         return 1
     }
 }

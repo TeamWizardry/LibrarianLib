@@ -2,7 +2,6 @@ package com.teamwizardry.librarianlib.features.helpers
 
 import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.core.common.RegistrationHandler
-import com.teamwizardry.librarianlib.features.base.IVariantHolder
 import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.base.block.IModBlockProvider
 import com.teamwizardry.librarianlib.features.base.item.IModItemProvider
@@ -10,7 +9,6 @@ import net.minecraft.block.Block
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.fml.common.registry.GameRegistry
 import java.util.*
 
 /**

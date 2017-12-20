@@ -46,7 +46,7 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
             MinecraftForge.EVENT_BUS.register(this)
         }
 
-        val leavesFancy get() = !Blocks.LEAVES.isOpaqueCube(null)
+        val leavesFancy get() = !Blocks.LEAVES.isOpaqueCube(Blocks.LEAVES.defaultState)
     }
 
     override fun getBurnTime(stack: ItemStack) = 100
@@ -61,13 +61,14 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
         this.setHardness(0.2f)
         this.setLightOpacity(1)
         this.soundType = SoundType.PLANT
-        if (itemForm != null)
+        val form = itemForm
+        if (form != null)
             for (variant in this.variants.indices)
-                OreDictionaryRegistrar.registerOre("treeLeaves") { ItemStack(itemForm, 1, variant) }
+                OreDictionaryRegistrar.registerOre("treeLeaves") { ItemStack(form, 1, variant) }
     }
 
-    override fun getFlammability(world: IBlockAccess?, pos: BlockPos?, face: EnumFacing?) = 60
-    override fun getFireSpreadSpeed(world: IBlockAccess?, pos: BlockPos?, face: EnumFacing?) = 30
+    override fun getFlammability(world: IBlockAccess, pos: BlockPos, face: EnumFacing) = 60
+    override fun getFireSpreadSpeed(world: IBlockAccess, pos: BlockPos, face: EnumFacing) = 30
 
     override fun breakBlock(worldIn: World, pos: BlockPos, state: IBlockState) {
         val i = 1
@@ -95,7 +96,7 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
     override val ignoredProperties: Array<IProperty<*>>?
         get() = arrayOf(CHECK_DECAY, DECAYABLE)
 
-    override fun updateTick(worldIn: World, pos: BlockPos, state: IBlockState, rand: Random?) {
+    override fun updateTick(worldIn: World, pos: BlockPos, state: IBlockState, rand: Random) {
         if (!worldIn.isRemote) {
             if (state.getValue(CHECK_DECAY) && state.getValue(DECAYABLE)) {
                 val i = 4
@@ -181,8 +182,8 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
     }
 
     @SideOnly(Side.CLIENT)
-    override fun randomDisplayTick(stateIn: IBlockState?, worldIn: World?, pos: BlockPos?, rand: Random?) {
-        if (worldIn!!.isRainingAt(pos!!.up()) && !worldIn.getBlockState(pos.down()).isSideSolid(worldIn, pos.down(), EnumFacing.UP) && rand!!.nextInt(15) == 1) {
+    override fun randomDisplayTick(stateIn: IBlockState, worldIn: World, pos: BlockPos, rand: Random) {
+        if (worldIn.isRainingAt(pos.up()) && !worldIn.getBlockState(pos.down()).isSideSolid(worldIn, pos.down(), EnumFacing.UP) && rand.nextInt(15) == 1) {
             val d0 = (pos.x.toFloat() + rand.nextFloat()).toDouble()
             val d1 = pos.y.toDouble() - 0.05
             val d2 = (pos.z.toFloat() + rand.nextFloat()).toDouble()
@@ -191,19 +192,15 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
     }
 
 
-    override fun quantityDropped(random: Random?): Int {
-        return if (random!!.nextInt(20) == 0) 1 else 0
+    override fun quantityDropped(random: Random): Int {
+        return if (random.nextInt(20) == 0) 1 else 0
     }
 
-    override fun onBlockPlacedBy(worldIn: World?, pos: BlockPos?, state: IBlockState?, placer: EntityLivingBase?, stack: ItemStack?) {
-        worldIn?.setBlockState(pos, state?.withProperty(DECAYABLE, false))
+    override fun onBlockPlacedBy(worldIn: World, pos: BlockPos, state: IBlockState, placer: EntityLivingBase, stack: ItemStack) {
+        worldIn.setBlockState(pos, state.withProperty(DECAYABLE, false))
     }
 
     abstract override fun getItemDropped(state: IBlockState, rand: Random, fortune: Int): Item?
-
-    override fun dropBlockAsItemWithChance(worldIn: World, pos: BlockPos, state: IBlockState, chance: Float, fortune: Int) {
-        super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune)
-    }
 
     override fun isOpaqueCube(state: IBlockState): Boolean {
         return !leavesFancy && canBeOpaque
@@ -218,13 +215,13 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
         return true
     }
 
-    override fun isLeaves(state: IBlockState, world: IBlockAccess?, pos: BlockPos?): Boolean {
+    override fun isLeaves(state: IBlockState, world: IBlockAccess, pos: BlockPos): Boolean {
         return true
     }
 
-    override fun beginLeavesDecay(state: IBlockState?, world: World?, pos: BlockPos?) {
-        if (!(state!!.getValue(CHECK_DECAY) as Boolean)) {
-            world!!.setBlockState(pos, state.withProperty(CHECK_DECAY, true), 4)
+    override fun beginLeavesDecay(state: IBlockState, world: World, pos: BlockPos) {
+        if (!(state.getValue(CHECK_DECAY) as Boolean)) {
+            world.setBlockState(pos, state.withProperty(CHECK_DECAY, true), 4)
         }
     }
 
@@ -234,8 +231,7 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
         return defaultState.withProperty(CHECK_DECAY, check).withProperty(DECAYABLE, decayable)
     }
 
-    override fun getMetaFromState(state: IBlockState?): Int {
-        state ?: return 0
+    override fun getMetaFromState(state: IBlockState): Int {
         var meta = 0
         if (state.getValue(CHECK_DECAY))
             meta = meta or CHECK_BIT
@@ -246,7 +242,7 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
         return meta
     }
 
-    override fun getDrops(world: IBlockAccess?, pos: BlockPos?, state: IBlockState, fortune: Int): List<ItemStack> {
+    override fun getDrops(world: IBlockAccess, pos: BlockPos, state: IBlockState, fortune: Int): List<ItemStack> {
         val ret = ArrayList<ItemStack>()
         val rand = if (world is World) world.rand else Random()
         var chance = 20
@@ -256,15 +252,18 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
             if (chance < 10) chance = 10
         }
 
-        if (rand.nextInt(chance) == 0)
-            ret.add(ItemStack(getItemDropped(state, rand, fortune), 1, damageDropped(state)))
+        if (rand.nextInt(chance) == 0) {
+            val item = getItemDropped(state, rand, fortune)
+            if (item != null)
+                ret.add(ItemStack(item, 1, damageDropped(state)))
+        }
 
         this.captureDrops(true)
         ret.addAll(this.captureDrops(false))
         return ret
     }
 
-    override fun createBlockState(): BlockStateContainer? {
+    override fun createBlockState(): BlockStateContainer {
         return BlockStateContainer(this, DECAYABLE, CHECK_DECAY)
     }
 
@@ -273,11 +272,11 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
         return if (!leavesFancy && canBeOpaque && blockAccess.getBlockState(pos.offset(side)).block === this) false else super.shouldSideBeRendered(blockState, blockAccess, pos, side)
     }
 
-    override fun onSheared(item: ItemStack, world: IBlockAccess, pos: BlockPos, fortune: Int): MutableList<ItemStack>? {
+    override fun onSheared(item: ItemStack, world: IBlockAccess, pos: BlockPos, fortune: Int): MutableList<ItemStack> {
         return mutableListOf(ItemStack(this, 1, getMetaFromState(world.getBlockState(pos).withProperty(DECAYABLE, false).withProperty(CHECK_DECAY, false))))
     }
 
-    override fun getPickBlock(state: IBlockState, target: RayTraceResult?, world: World?, pos: BlockPos?, player: EntityPlayer?): ItemStack {
+    override fun getPickBlock(state: IBlockState, target: RayTraceResult, world: World, pos: BlockPos, player: EntityPlayer): ItemStack {
         return ItemStack(this, 1, getMetaFromState(state.withProperty(DECAYABLE, false).withProperty(CHECK_DECAY, false)))
     }
 

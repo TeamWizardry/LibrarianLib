@@ -8,7 +8,6 @@ import net.minecraft.enchantment.EnumEnchantmentType
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.inventory.EntityEquipmentSlot
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.fml.common.registry.GameRegistry
 
 /**
  * @author WireSegal

@@ -24,6 +24,7 @@ class ComponentSlot(val slot: SlotBase, x: Int, y: Int) : GuiComponent(x, y) {
     }
 
     @Hook
+    @Suppress("UNUSED_PARAMETER")
     fun onTick(e: GuiComponentEvents.ComponentTickEvent) {
         val p = thisPosToOtherContext(null)
 

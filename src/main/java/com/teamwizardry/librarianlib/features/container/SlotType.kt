@@ -10,21 +10,21 @@ open class SlotType {
     /**
      * Returned form the slot `isItemValid` method. Passed the result of the default method
      */
-    open fun isValid(slot: SlotBase, stack: ItemStack?, default: Boolean): Boolean {
+    open fun isValid(slot: SlotBase, stack: ItemStack, default: Boolean): Boolean {
         return default
     }
 
     /**
      * Returned from the slot `getSlotStackLimit` method.
      */
-    open fun stackLimit(slot: SlotBase, stack: ItemStack?): Int {
+    open fun stackLimit(slot: SlotBase, stack: ItemStack): Int {
         return 64
     }
 
     /**
      * Returned from the slot `canTakeStack` method, passed the result of the default method.
      */
-    open fun canTake(slot: SlotBase, player: EntityPlayer?, stack: ItemStack?, default: Boolean): Boolean {
+    open fun canTake(slot: SlotBase, player: EntityPlayer?, stack: ItemStack, default: Boolean): Boolean {
         return default
     }
 

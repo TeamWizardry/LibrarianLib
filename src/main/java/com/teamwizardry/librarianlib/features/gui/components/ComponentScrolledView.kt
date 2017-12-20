@@ -11,7 +11,6 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
     val scroll = HandlerList<(ComponentScrolledView, Vec2d, Vec2d?) -> Vec2d?>()
 
     init {
-        ScissorMixin.scissor(this)
     }
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {

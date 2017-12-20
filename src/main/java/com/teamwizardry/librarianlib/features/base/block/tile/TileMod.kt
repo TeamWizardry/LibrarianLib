@@ -228,7 +228,7 @@ abstract class TileMod : TileEntity() {
         if (world is WorldServer) {
             val ws: WorldServer = world as WorldServer
 
-            if(useFastSync) {
+            if (useFastSync) {
                 PacketHandler.CHANNEL.update(TargetWatchingBlock(world, pos), PacketTileSynchronization(this))
             } else {
                 ws.playerEntities

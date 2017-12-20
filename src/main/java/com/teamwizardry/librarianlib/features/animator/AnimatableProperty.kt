@@ -24,6 +24,7 @@ class AnimatableProperty<T : Any> private constructor(val target: Class<T>, val 
     fun get(target: T): Any {
         return getter(target) ?: throw NullPointerException("Cannot have null value in animation!")
     }
+
     fun set(target: T, value: Any) {
         setter(target, value)
     }
@@ -34,9 +35,9 @@ class AnimatableProperty<T : Any> private constructor(val target: Class<T>, val 
 
     companion object {
         private var map = mutableMapOf<Pair<Class<*>, String>, AnimatableProperty<*>>()
-        fun <T: Any> get(target: Class<T>, keyPath: String): AnimatableProperty<T> {
+        fun <T : Any> get(target: Class<T>, keyPath: String): AnimatableProperty<T> {
             val key = Pair(target, keyPath)
-            if(key !in map) {
+            if (key !in map) {
                 map[key] = AnimatableProperty(target, keyPath)
             }
 

@@ -27,7 +27,7 @@ internal object ComponentEventHookAnnotSearcher {
             val methods = mutableListOf<Method>()
 
             var cls: Class<*>? = clazz
-            while(cls != null) {
+            while (cls != null) {
                 methods.addAll(cls.declaredMethods)
                 cls = cls.superclass
             }

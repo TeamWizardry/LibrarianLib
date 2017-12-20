@@ -1,5 +1,6 @@
-package com.teamwizardry.librarianlib.features.chunkdata
+package com.teamwizardry.librarianlib.features.worlddata
 
+import com.teamwizardry.librarianlib.features.chunkdata.ChunkDataRegistry
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.world.World
 import net.minecraft.world.storage.WorldSavedData
@@ -12,6 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  *
  * Created by TheCodeWarrior
  */
+@Suppress("UNUSED_PARAMETER")
 class WorldDataContainer(ident: String) : WorldSavedData(NAME) {
     val world: World = gettingWorld
             ?: throw IllegalStateException("WorldDataContainer.gettingWorld is null! Did you not call WorldDataContainer.get()?")
@@ -21,20 +23,23 @@ class WorldDataContainer(ident: String) : WorldSavedData(NAME) {
     companion object {
         val NAME = "librarianlib:worlddata"
 
-        init { MinecraftForge.EVENT_BUS.register(this) }
+        init {
+            MinecraftForge.EVENT_BUS.register(this)
+        }
 
         @SubscribeEvent
         fun load(e: WorldEvent.Load) {
             get(e.world) // to initialize the data before a user calls get
         }
 
-        fun get(world: World) : WorldDataContainer {
+        fun get(world: World): WorldDataContainer {
             gettingWorld = world
-            val wdc = world.perWorldStorage.getOrLoadData(WorldDataContainer::class.java, WorldDataContainer.NAME) as? WorldDataContainer ?:
-                    WorldDataContainer(WorldDataContainer.NAME).also { world.perWorldStorage.setData(WorldDataContainer.NAME, it) }
+            val wdc = world.perWorldStorage.getOrLoadData(WorldDataContainer::class.java, NAME) as? WorldDataContainer ?:
+                    WorldDataContainer(NAME).also { world.perWorldStorage.setData(NAME, it) }
             gettingWorld = null
             return wdc
         }
+
         private var gettingWorld: World? = null
     }
 

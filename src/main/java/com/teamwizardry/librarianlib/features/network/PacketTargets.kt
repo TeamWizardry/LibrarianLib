@@ -26,7 +26,7 @@ object TargetServer : PacketTarget {
 }
 
 data class TargetPlayers(override val players: List<EntityPlayer>) : PacketTarget {
-    constructor(vararg players: EntityPlayer) : this(players.filter { it is EntityPlayer })
+    constructor(vararg players: EntityPlayer) : this(players.toList())
 }
 
 class TargetWorld(val world: World) : PacketTarget {
@@ -38,7 +38,7 @@ data class TargetRadius(val world: World, val pos: Vec3d, val radius: Int) : Pac
     override val players: List<EntityPlayer>
         get() {
             return world.playerEntities.filter {
-                (it.positionVector - pos).lengthSquared() <= radius*radius
+                (it.positionVector - pos).lengthSquared() <= radius * radius
             }
         }
 }
@@ -46,7 +46,7 @@ data class TargetRadius(val world: World, val pos: Vec3d, val radius: Int) : Pac
 data class TargetWatchingBlock(val world: World, val pos: BlockPos) : PacketTarget {
     override val players: List<EntityPlayer>
         get() {
-            if(world !is WorldServer) throw UnsupportedOperationException("Cannot target all watching block for non-server worlds")
+            if (world !is WorldServer) throw UnsupportedOperationException("Cannot target all watching block for non-server worlds")
             val chunkPos = ChunkPos(pos)
             val map = world.playerChunkMap
             return world.playerEntities.filter { player ->
@@ -59,7 +59,7 @@ data class TargetWatchingEntity(val entity: Entity) : PacketTarget {
     override val players: List<EntityPlayer>
         get() {
             val world = entity.world
-            if(world !is WorldServer) throw UnsupportedOperationException("Cannot target all watching block for non-server worlds")
+            if (world !is WorldServer) throw UnsupportedOperationException("Cannot target all watching block for non-server worlds")
             val chunkPos = ChunkPos(entity.position)
             val map = world.playerChunkMap
             return world.playerEntities.filter { player ->

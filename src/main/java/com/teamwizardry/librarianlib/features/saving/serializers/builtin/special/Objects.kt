@@ -22,7 +22,7 @@ object SerializeObjectFactory : SerializerFactory("Object") {
     override fun canApply(type: FieldType): SerializerFactoryMatch {
         val savable = type.clazz.isAnnotationPresent(Savable::class.java)
         val inplace = inPlaceCheck(type.clazz)
-        if(savable || inplace)
+        if (savable || inplace)
             return SerializerFactoryMatch.GENERAL
         else
             return SerializerFactoryMatch.NONE
@@ -74,10 +74,10 @@ object SerializeObjectFactory : SerializerFactory("Object") {
                 val value = if (tag.hasKey(it.key)) {
                     analysis.serializers[it.key]!!.value.read(tag.getTag(it.key), oldValue, sync)
                 } else {
-                    if(it.value.meta.hasFlag(SavingFieldFlag.FINAL)) oldValue else null
+                    if (it.value.meta.hasFlag(SavingFieldFlag.FINAL)) oldValue else null
                 }
-                if(it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
-                    if(oldValue !== value) {
+                if (it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
+                    if (oldValue !== value) {
                         throw SerializerException("Cannot set final field ${it.value.name} in class $type to new value. Either make the field mutable or modify the serializer to change the existing object instead of creating a new one.")
                     }
                 } else {
@@ -155,8 +155,8 @@ object SerializeObjectFactory : SerializerFactory("Object") {
                 } else {
                     analysis.serializers[it.key]!!.value.read(buf, oldValue, sync)
                 }
-                if(it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
-                    if(oldValue !== value) {
+                if (it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
+                    if (oldValue !== value) {
                         throw SerializerException("Cannot set final field ${it.value.name} in class ${type} to new value. Either make the field mutable or modify the serializer to change the existing object instead of creating a new one.")
                     }
                 } else {
@@ -251,7 +251,7 @@ class SerializerAnalysis(val type: FieldType) {
                         var i = 0
                         it.parameters.all {
                             val ret =
-                                    if(customParamNames != null && i < customParamNames.size)
+                                    if (customParamNames != null && i < customParamNames.size)
                                         paramsToFind.remove(customParamNames[i])?.meta?.type?.equals(FieldType.create(it.parameterizedType, it.annotatedType)) ?: false
                                     else
                                         paramsToFind.remove(it.name)?.meta?.type?.equals(FieldType.create(it.parameterizedType, it.annotatedType)) ?: false
@@ -263,7 +263,7 @@ class SerializerAnalysis(val type: FieldType) {
                             throw SerializerException("Couldn't find zero-argument constructor or constructor with parameters (${fields.map { it.value.meta.type.toString() + " " + it.key }.joinToString(", ")}) for immutable type ${type.clazz.canonicalName}")
                 }
         constructorArgOrder = constructor.getDeclaredAnnotation(SavableConstructorOrder::class.java)?.params?.asList() ?:
-                constructor.kotlinFunction?.parameters?.let { if(it.any { it.name == null}) null else it.map { it.name!! } } ?:
+                constructor.kotlinFunction?.parameters?.let { if (it.any { it.name == null }) null else it.map { it.name!! } } ?:
                 constructor.parameters.map { it.name }
         constructorMH = if (inPlaceSavable) {
             { _ -> throw SerializerException("Cannot create instance of class marked with @SaveInPlace") }

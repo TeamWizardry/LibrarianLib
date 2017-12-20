@@ -21,7 +21,7 @@ object ImmutableFieldMutatorHandler {
      */
     fun getMutator(clazz: Class<*>, field: String): ImmutableFieldMutator<Any>? {
         val key = clazz to field
-        if(key !in map) {
+        if (key !in map) {
             map[key] = providers[clazz]?.getMutatorForImmutableField(field)
         }
         @Suppress("UNCHECKED_CAST")

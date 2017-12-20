@@ -113,6 +113,7 @@ object SerializeVec2d : Serializer<Vec2d>(FieldType.create(Vec2d::class.java)) {
     override fun getDefault(): Vec2d {
         return vec(0, 0)
     }
+
     override fun readNBT(nbt: NBTBase, existing: Vec2d?, syncing: Boolean): Vec2d {
         val tag = nbt.safeCast(NBTTagCompound::class.java)
         return Vec2d(tag.getDouble("x"), tag.getDouble("y"))

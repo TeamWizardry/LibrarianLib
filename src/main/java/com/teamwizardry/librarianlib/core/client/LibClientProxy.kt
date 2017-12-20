@@ -48,7 +48,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
     init {
         MinecraftForge.EVENT_BUS.register(this)
-        if(!Minecraft.getMinecraft().framebuffer.isStencilEnabled)
+        if (!Minecraft.getMinecraft().framebuffer.isStencilEnabled)
             Minecraft.getMinecraft().framebuffer.enableStencil()
     }
 

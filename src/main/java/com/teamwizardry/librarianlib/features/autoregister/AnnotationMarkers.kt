@@ -15,7 +15,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils
  */
 abstract class AnnotationMarkerProcessor<A : Annotation, T : Any>(val annotationClass: Class<A>, vararg val assertSuperclass: Class<T>) {
 
-    fun isClassValid(clazz: Class<T>) : Boolean {
+    fun isClassValid(clazz: Class<T>): Boolean {
         return assertSuperclass.isEmpty() || assertSuperclass.any { it.isAssignableFrom(clazz) }
     }
 
@@ -41,9 +41,9 @@ object AnnotationMarkersHandler {
 
             for ((annot, map) in errors) {
                 build.add("-+ Errors for @${annot.typeName}")
-                for((error, affected) in map.asMap()) {
+                for ((error, affected) in map.asMap()) {
                     var errorList = error.split("\\r\\n|\\n|\\r")
-                    if(errorList.isEmpty())
+                    if (errorList.isEmpty())
                         errorList = listOf("<<ERR: Empty Stacktrace!>>")
                     build.add(" |-+ Affected classes:")
                     affected.forEach {
@@ -62,7 +62,7 @@ object AnnotationMarkersHandler {
         }
     }
 
-    fun <A: Annotation, T: Any> handle(processor: AnnotationMarkerProcessor<A, T>, asmDataTable: ASMDataTable) {
+    fun <A : Annotation, T : Any> handle(processor: AnnotationMarkerProcessor<A, T>, asmDataTable: ASMDataTable) {
         val annotationClass = processor.annotationClass
 
         val annotationClassName = annotationClass.canonicalName
@@ -75,10 +75,10 @@ object AnnotationMarkersHandler {
                 null
             }
 
-            if(clazz != null) {
+            if (clazz != null) {
                 @Suppress("UNCHECKED_CAST")
                 clazz as Class<T>
-                if(!processor.isClassValid(clazz)) {
+                if (!processor.isClassValid(clazz)) {
                     LibrarianLog.error("Class ${clazz.canonicalName} annotated with ${annotationClass.typeName} is invalid")
                 }
                 val annot = clazz.getAnnotation(annotationClass)

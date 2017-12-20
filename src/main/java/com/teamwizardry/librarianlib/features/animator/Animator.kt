@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.animator
 
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
+import com.teamwizardry.librarianlib.test.animator.AnimatorExamples
 import net.minecraft.client.Minecraft
 import net.minecraft.util.Timer
 import net.minecraftforge.common.MinecraftForge
@@ -47,9 +48,9 @@ class Animator {
      * @sample AnimatorExamples.time
      */
     var time: Float
-        get() = partialTicks()*speed - timeOffset
+        get() = partialTicks() * speed - timeOffset
         set(value) {
-            timeOffset = partialTicks()*speed - value
+            timeOffset = partialTicks() * speed - value
         }
 
     /**
@@ -58,9 +59,8 @@ class Animator {
      * @sample AnimatorExamples.speed
      */
     var speed: Float = 1f
-        get() = field
         set(value) {
-            timeOffset = time + partialTicks()*value
+            timeOffset = time + partialTicks() * value
             field = value
         }
 
@@ -76,7 +76,7 @@ class Animator {
         }
 
     private fun partialTicks() =
-            if(useWorldTicks)
+            if (useWorldTicks)
                 worldPartialTicks
             else
                 screenPartialTicks
@@ -110,19 +110,19 @@ class Animator {
     fun removeAnimationsFor(obj: Any) {
         val inlineRemove = mutableListOf<Animation<*>>()
         animations.forEach {
-            if(it.doesInvolveObject(obj)) {
-                if(addLock) animationsToRemove.add(it)
+            if (it.doesInvolveObject(obj)) {
+                if (addLock) animationsToRemove.add(it)
                 else inlineRemove.add(it)
             }
         }
-        if(!addLock) animations.removeAll(inlineRemove)
+        if (!addLock) animations.removeAll(inlineRemove)
     }
 
     /**
      * Removes ALL the animations from this animator
      */
     fun removeAll() {
-        if(addLock) animationsToRemove.addAll(animations)
+        if (addLock) animationsToRemove.addAll(animations)
         else animations.clear()
     }
 
@@ -160,7 +160,7 @@ class Animator {
         addLock = false
     }
 
-    internal var _nextId: Int = 0
+    internal var nextID: Int = 0
 
     companion object {
         @JvmStatic
@@ -177,17 +177,22 @@ class Animator {
         private var worldTicks = 0
         private var screenTicks = 0
 
-        init { MinecraftForge.EVENT_BUS.register(this) }
+        init {
+            MinecraftForge.EVENT_BUS.register(this)
+        }
+
         private val animators: MutableSet<Animator> = Collections.newSetFromMap(WeakHashMap<Animator, Boolean>())
 
         @SubscribeEvent
+        @Suppress("UNUSED_PARAMETER")
         fun renderTick(e: TickEvent.RenderTickEvent) {
             animators.forEach { it.update() }
         }
 
         @SubscribeEvent
+        @Suppress("UNUSED_PARAMETER")
         fun tick(e: TickEvent.ClientTickEvent) {
-            if(!Minecraft.getMinecraft().isGamePaused) worldTicks++
+            if (!Minecraft.getMinecraft().isGamePaused) worldTicks++
             screenTicks++
         }
     }

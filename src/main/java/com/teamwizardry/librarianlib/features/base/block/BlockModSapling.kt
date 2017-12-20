@@ -48,9 +48,10 @@ abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod
 
     init {
         this.tickRandomly = true
-        if (itemForm != null)
+        val form = itemForm
+        if (form != null)
             for (variant in this.variants.indices)
-                OreDictionaryRegistrar.registerOre("treeSapling") { ItemStack(itemForm, 1, variant) }
+                OreDictionaryRegistrar.registerOre("treeSapling") { ItemStack(form, 1, variant) }
     }
 
     override fun onNeighborChange(worldIn: IBlockAccess, pos: BlockPos, neighborBlock: BlockPos) {
@@ -99,6 +100,7 @@ abstract class BlockModSapling(name: String, vararg variants: String) : BlockMod
 
     abstract fun generateTree(worldIn: World, pos: BlockPos, state: IBlockState, rand: Random)
 
+    @Suppress("OverridingDeprecatedMember")
     override fun getStateFromMeta(meta: Int): IBlockState? {
         return defaultState.withProperty(STAGE, meta and 1)
     }

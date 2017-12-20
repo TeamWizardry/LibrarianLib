@@ -13,11 +13,7 @@ object RaycastUtils {
         val vec = e.positionVector.addVector(0.0, (e as? EntityPlayer)?.getEyeHeight()?.toDouble() ?: 0.0, 0.0)
 
         val look = e.lookVec
-        if (look == null) {
-            return null
-        } else {
-            return raycast(e.world, vec, look, len, stopOnLiquid)
-        }
+        return raycast(e.world, vec, look, len, stopOnLiquid)
     }
 
     @JvmStatic
@@ -34,8 +30,7 @@ object RaycastUtils {
     @JvmStatic
     @JvmOverloads
     fun raycast(world: World, start: Vec3d, end: Vec3d, stopOnLiquid: Boolean = false): RayTraceResult? {
-        val pos = world.rayTraceBlocks(start, end, stopOnLiquid, false, true)
-        return pos
+        return world.rayTraceBlocks(start, end, stopOnLiquid, false, true)
     }
 
     /**

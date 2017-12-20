@@ -7,7 +7,6 @@ import com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler
 import com.teamwizardry.librarianlib.features.saving.Save
 import io.netty.buffer.ByteBuf
 import net.minecraft.client.Minecraft
-import net.minecraft.realms.Tezzelator.t
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler
@@ -16,7 +15,8 @@ import net.minecraftforge.fml.relauncher.Side
 @PacketRegister(Side.CLIENT)
 class PacketTileSynchronization(var tile: TileMod? = null /* Tile is always null on clientside */) : PacketAbstractUpdate(tile?.pos) {
 
-    @Save var pos: BlockPos? = tile?.pos
+    @Save
+    var pos: BlockPos? = tile?.pos
 
     // Buf is always null serverside
     private var buf: ByteBuf? = null
@@ -25,8 +25,9 @@ class PacketTileSynchronization(var tile: TileMod? = null /* Tile is always null
         if (FMLLaunchHandler.side().isServer) return
 
         val b = buf
+        val p = pos ?: return
 
-        val tile = Minecraft.getMinecraft().world.getTileEntity(pos)
+        val tile = Minecraft.getMinecraft().world.getTileEntity(p)
         if (b == null || tile == null || tile !is TileMod) return
 
         AbstractSaveHandler.readAutoBytes(tile, b, true)

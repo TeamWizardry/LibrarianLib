@@ -1,14 +1,10 @@
 package com.teamwizardry.librarianlib.features.base
 
-import com.teamwizardry.librarianlib.features.base.block.BlockMod
 import com.teamwizardry.librarianlib.features.base.block.IModBlockProvider
 import com.teamwizardry.librarianlib.features.base.item.IModItemProvider
-import com.teamwizardry.librarianlib.features.base.item.ItemMod
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.currentModId
 import com.teamwizardry.librarianlib.features.helpers.nonnullListOf
-import com.teamwizardry.librarianlib.test.chunkdata.ChunkDataEntryPoint.item
-import net.minecraft.block.Block
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.init.Items
 import net.minecraft.item.Item

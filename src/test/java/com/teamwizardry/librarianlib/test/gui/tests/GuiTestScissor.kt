@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.test.gui.tests
 import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
-import com.teamwizardry.librarianlib.features.gui.mixin.ScissorMixin
 import java.awt.Color
 
 /**
@@ -29,7 +28,7 @@ class GuiTestScissor : GuiBase(100, 100) {
         c.transform.scale = 2.0
         scissor.add(c2)
         scissor.add(c3)
-        ScissorMixin.scissor(scissor)
+        scissor.clipping.clipToBounds = true
 
 //        scissor.BUS.hook(GuiComponentEvents.ComponentTickEvent::class.java) {
 //            val progress = (scissor.animationTicks % 100)/100.0

@@ -25,15 +25,14 @@ class Channel(private val network: SimpleNetworkWrapper) {
             }
 
 
-
     fun send(target: PacketTarget, vararg packets: PacketBase) {
-        if(target == TargetServer) {
+        if (target == TargetServer) {
             packets.forEach {
                 network.sendToServer(it)
             }
         } else {
             target.players.forEach { player ->
-                if(player is EntityPlayerMP)
+                if (player is EntityPlayerMP)
                     packets.forEach {
                         network.sendTo(it, player)
                     }
@@ -42,7 +41,7 @@ class Channel(private val network: SimpleNetworkWrapper) {
     }
 
     fun <T : PacketBase> bundle(target: PacketTarget, vararg packets: T) {
-        if(target == TargetServer) {
+        if (target == TargetServer) {
             val list = PacketBundle.compactPackets(packets.toList(), CLIENT_TO_SERVER_MAX)
             list.forEach {
                 network.sendToServer(it)
@@ -61,7 +60,7 @@ class Channel(private val network: SimpleNetworkWrapper) {
     fun update(target: PacketTarget, packet: PacketAbstractUpdate) {
         val ident = packet.identifier ?: throw IllegalArgumentException("Packet has no identifier!")
         target.players.forEach { player ->
-            if(player is EntityPlayerMP)
+            if (player is EntityPlayerMP)
                 updates[player][packet.javaClass][ident] = packet
         }
     }

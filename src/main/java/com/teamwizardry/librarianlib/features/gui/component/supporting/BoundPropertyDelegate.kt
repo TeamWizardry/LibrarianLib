@@ -16,6 +16,7 @@ class BoundPropertyDelegateReadOnly<in R, T>(val prop: KProperty0<T>) : ReadOnly
         return prop.get()
     }
 }
+
 class BoundPropertyDelegateReadWrite<in R, T>(val prop: KMutableProperty0<T>) : ReadWriteProperty<R, T> {
     override fun getValue(thisRef: R, property: KProperty<*>): T {
         return prop.get()
@@ -25,6 +26,7 @@ class BoundPropertyDelegateReadWrite<in R, T>(val prop: KMutableProperty0<T>) : 
         prop.set(value)
     }
 }
+
 val <T> KProperty0<T>.delegate: ReadOnlyProperty<Any, T>
     get() = BoundPropertyDelegateReadOnly(this)
 val <T> KMutableProperty0<T>.delegate: ReadWriteProperty<Any, T>

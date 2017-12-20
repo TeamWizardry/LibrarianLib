@@ -6,7 +6,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BlockModelRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.vertex.VertexBuffer;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -16,11 +15,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * @author WireSegal
- *         Created at 11:34 AM on 4/29/17.
+ * Created at 11:34 AM on 4/29/17.
  */
 @SuppressWarnings("unused")
 public class LibLibAsmHooks {
     public static final LibLibAsmHooks INSTANCE = new LibLibAsmHooks();
+    private static float x, y;
 
     @SideOnly(Side.CLIENT)
     public static void renderHook(ItemStack stack, IBakedModel model) {
@@ -36,8 +36,6 @@ public class LibLibAsmHooks {
     public static void renderHook(BlockModelRenderer blockModelRenderer, IBlockAccess world, IBlockState state, BlockPos pos, BufferBuilder vertexBuffer) {
         RenderHookHandler.runFluidHook(blockModelRenderer, world, state, pos, vertexBuffer);
     }
-
-    private static float x, y;
 
     @SideOnly(Side.CLIENT)
     public void maximizeGlowLightmap() {

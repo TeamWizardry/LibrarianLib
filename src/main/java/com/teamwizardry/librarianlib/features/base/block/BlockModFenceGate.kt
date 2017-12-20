@@ -11,6 +11,8 @@ import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
 import net.minecraft.block.Block
 import net.minecraft.block.BlockFenceGate
 import net.minecraft.block.BlockPlanks
+import net.minecraft.block.material.MapColor
+import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.entity.Entity
@@ -79,11 +81,14 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
             return actual
     }
 
-    override fun getMapColor(state: IBlockState?, worldIn: IBlockAccess?, pos: BlockPos?) = parent.getMapColor(worldIn, pos)
-    override fun getMaterial(state: IBlockState) = parent.material
+    @Suppress("OverridingDeprecatedMember")
+    override fun getMapColor(state: IBlockState, worldIn: IBlockAccess, pos: BlockPos): MapColor = parent.getMapColor(worldIn, pos)
+    @Suppress("OverridingDeprecatedMember")
+    override fun getMaterial(state: IBlockState): Material = parent.material
     override fun getExplosionResistance(world: World, pos: BlockPos, exploder: Entity?, explosion: Explosion) = parent.block.getExplosionResistance(world, pos, exploder, explosion)
+    @Suppress("OverridingDeprecatedMember")
     override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
-    override fun isToolEffective(type: String?, state: IBlockState) = parent.block.isToolEffective(type, parent)
+    override fun isToolEffective(type: String, state: IBlockState) = parent.block.isToolEffective(type, parent)
     override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent)
 
     override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
@@ -92,10 +97,12 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
 
         ModelHandler.generateBlockJson(this, {
             JsonGenerationUtils.generateBlockStates(this, mapper) {
-                val y = if ("facing=south" in it) 0
-                else if ("facing=west" in it) 90
-                else if ("facing=north" in it) 180
-                else 270
+                val y = when {
+                    "facing=south" in it -> 0
+                    "facing=west" in it -> 90
+                    "facing=north" in it -> 180
+                    else -> 270
+                }
 
                 val inWall = "in_wall=true" in it
                 val open = "open=true" in it

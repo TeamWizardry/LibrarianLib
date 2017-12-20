@@ -25,7 +25,7 @@ import kotlin.collections.set
 object SerializeTroveMapsFactory : SerializerFactory("TroveMaps") {
 
     override fun canApply(type: FieldType): SerializerFactoryMatch {
-        return if(troveStuff.any {
+        return if (troveStuff.any {
             it.key.isAssignableFrom(type.clazz)
         }) SerializerFactoryMatch.GENERAL else SerializerFactoryMatch.NONE
     }
@@ -37,9 +37,9 @@ object SerializeTroveMapsFactory : SerializerFactory("TroveMaps") {
     }
 
     private fun getKeyType(type: FieldType): FieldType {
-        if(TMap::class.java.isAssignableFrom(type.clazz))
+        if (TMap::class.java.isAssignableFrom(type.clazz))
             return (type.genericSuperclass(TMap::class.java) as FieldTypeGeneric).generic(0)
-        val setter = type.clazz.methods.filter { it.name == "put" }.first()
+        val setter = type.clazz.methods.first { it.name == "put" }
         val keyClass = setter.parameterTypes[0]
         val keyAnnot = setter.annotatedParameterTypes[0]
 
@@ -47,9 +47,9 @@ object SerializeTroveMapsFactory : SerializerFactory("TroveMaps") {
     }
 
     private fun getValueType(type: FieldType): FieldType {
-        if(TMap::class.java.isAssignableFrom(type.clazz))
+        if (TMap::class.java.isAssignableFrom(type.clazz))
             return (type.genericSuperclass(TMap::class.java) as FieldTypeGeneric).generic(1)
-        val setter = type.clazz.methods.filter { it.name == "put" }.first()
+        val setter = type.clazz.methods.first { it.name == "put" }
         val keyClass = setter.parameterTypes[1]
         val keyAnnot = setter.annotatedParameterTypes[1]
 
@@ -71,16 +71,16 @@ object SerializeTroveMapsFactory : SerializerFactory("TroveMaps") {
         override fun readNBT(nbt: NBTBase, existing: Any?, syncing: Boolean): Any {
             val list = nbt.safeCast<NBTTagList>()
             val map = constructor()
-            val map_w = map.wrap()
+            val mapW = map.wrap()
 
-            val existing_w = existing?.wrap()
+            val existingW = existing?.wrap()
 
             list.forEach<NBTTagCompound> {
                 val keyTag = it.getTag("k")
                 val valTag = it.getTag("v")
-                val k = if (keyTag == null) null else serKey.read(keyTag, null, syncing)
-                val v = if (valTag == null) null else serValue.read(valTag, existing_w?.get(k), syncing)
-                map_w[k] = v
+                val k = serKey.read(keyTag, null, syncing)
+                val v = serValue.read(valTag, existingW?.get(k), syncing)
+                mapW[k] = v
             }
 
             return map
@@ -89,11 +89,11 @@ object SerializeTroveMapsFactory : SerializerFactory("TroveMaps") {
         override fun writeNBT(value: Any, syncing: Boolean): NBTBase {
             val list = NBTTagList()
 
-            val value_w = value.wrap()
-            for (k in value_w.keys) {
+            val valueW = value.wrap()
+            for (k in valueW.keys) {
                 val container = NBTTagCompound()
                 list.appendTag(container)
-                val v = value_w[k]
+                val v = valueW[k]
 
                 if (k != null) {
                     container.setTag("k", serKey.write(k, syncing))
@@ -107,27 +107,27 @@ object SerializeTroveMapsFactory : SerializerFactory("TroveMaps") {
         }
 
         override fun readBytes(buf: ByteBuf, existing: Any?, syncing: Boolean): Any {
-            val existing_w = existing?.wrap()
+            val existingW = existing?.wrap()
             val map = constructor()
-            val map_w = map.wrap()
+            val mapW = map.wrap()
 
             val nullCount = buf.readVarInt()
-            for (i in 0..nullCount - 1) {
+            for (i in 0 until nullCount) {
                 val k = serKey.read(buf, null, syncing)
-                map_w[k] = null
+                mapW[k] = null
             }
 
             val hasNullKey = buf.readBoolean()
             if (hasNullKey) {
                 val isNullValue = buf.readBoolean()
-                map_w[null] = if (isNullValue) null else serValue.read(buf, existing_w?.get(null), syncing)
+                mapW[null] = if (isNullValue) null else serValue.read(buf, existingW?.get(null), syncing)
             }
 
             val nonNullCount = buf.readVarInt()
-            for (i in 0..nonNullCount - 1) {
+            for (i in 0 until nonNullCount) {
                 val k = serKey.read(buf, null, syncing)
-                val v = serValue.read(buf, existing_w?.get(k), syncing)
-                map_w[k] = v
+                val v = serValue.read(buf, existingW?.get(k), syncing)
+                mapW[k] = v
             }
 
             return map
@@ -156,7 +156,7 @@ object SerializeTroveMapsFactory : SerializerFactory("TroveMaps") {
 
         private fun createConstructorMethodHandle(): () -> Any {
             val constructor = troveStuff.get(type.clazz)?.constructor
-            if(constructor != null)
+            if (constructor != null)
                 return constructor
             val mh = MethodHandleHelper.wrapperForConstructor<Any>(type.clazz)
             return { mh(arrayOf()) }

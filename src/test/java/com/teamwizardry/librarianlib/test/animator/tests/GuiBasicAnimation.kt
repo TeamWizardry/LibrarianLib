@@ -42,18 +42,18 @@ class GuiBasicAnimation : GuiBase(200, 100) {
 //        animator.add(bouncer2.animate("pos", Vec2d(10, 10), 40f))
 
         mainComponents.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
-            val anim = KeyframeAnimation(bouncer, "pos")
-            anim.duration = 120f
-            anim.shouldReverse = true
+            val animation = KeyframeAnimation(bouncer, "pos")
+            animation.duration = 120f
+            animation.shouldReverse = true
 
-            anim.keyframes = arrayOf(
+            animation.keyframes = arrayOf(
                     Keyframe(0f, vec(0, 0)),
                     Keyframe(0.333f, vec(175, 0), Easing.easeOutBounce),
                     Keyframe(0.666f, vec(175, 75), Easing.easeInOutCubic),
                     Keyframe(1f, vec(0, 75), Easing.easeOutBack)
             )
 
-            animator.add(anim)
+            animator.add(animation)
         }
 
     }

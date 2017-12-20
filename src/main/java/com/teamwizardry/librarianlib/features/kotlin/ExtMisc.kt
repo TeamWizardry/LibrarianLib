@@ -156,7 +156,7 @@ val <T : Any> Class<T>.singletonInstance: T?
             val value = constructor.newInstance()
             singletonMap[this] = value
             return value
-        } catch(e: NoSuchMethodException) {
+        } catch (e: NoSuchMethodException) {
             // NOOP
         }
 
@@ -332,7 +332,7 @@ fun kotlin.Array<Parameter>.matches(other: kotlin.collections.List<KParameter>):
     return ok
 }
 
-inline fun <T: NBTBase> NBTTagList(size: Int, generator: (Int) -> T): NBTTagList {
+inline fun <T : NBTBase> NBTTagList(size: Int, generator: (Int) -> T): NBTTagList {
     val list = NBTTagList()
     for (i in 0 until size)
         list.appendTag(generator(i))

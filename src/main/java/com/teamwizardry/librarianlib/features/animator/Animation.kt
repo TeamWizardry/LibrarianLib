@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.features.kotlin.clamp
 /**
  * An animation applied to a specific object and property of that object
  */
-abstract class Animation<T: Any>(val target: T, val property: AnimatableProperty<T>) {
+abstract class Animation<T : Any>(val target: T, val property: AnimatableProperty<T>) {
 
     /**
      * Default: true
@@ -22,7 +22,7 @@ abstract class Animation<T: Any>(val target: T, val property: AnimatableProperty
      */
     var start: Float = 0f
         set(value) {
-            if(isInAnimator)
+            if (isInAnimator)
                 throw IllegalStateException("Cannot change the start time of an animation once it has been added to an animator")
             field = value
         }
@@ -38,11 +38,11 @@ abstract class Animation<T: Any>(val target: T, val property: AnimatableProperty
      */
     val end: Float
         get() {
-            if(repeatCount < 0) return Float.POSITIVE_INFINITY
+            if (repeatCount < 0) return Float.POSITIVE_INFINITY
 
             var duration = duration
-            if(shouldReverse) duration *= 2
-            if(repeatCount > 0) duration *= repeatCount
+            if (shouldReverse) duration *= 2
+            if (repeatCount > 0) duration *= repeatCount
 
             return start + duration
         }
@@ -73,17 +73,17 @@ abstract class Animation<T: Any>(val target: T, val property: AnimatableProperty
      *          and clamping the values outside of [start] and [end]
      */
     protected fun timeFraction(time: Float): Float {
-        if(time < start) return 0f
-        if(time > end) return if(shouldReverse) 0f else 1f
-        if(shouldReverse) {
-            val f = ((time-start)/duration).rem(2)
-            if(f > 1)
-                return (2-f).clamp(0f,1f) // make it turn down after it reaches 1
-            return f.clamp(0f,1f)
+        if (time < start) return 0f
+        if (time > end) return if (shouldReverse) 0f else 1f
+        if (shouldReverse) {
+            val f = ((time - start) / duration).rem(2)
+            if (f > 1)
+                return (2 - f).clamp(0f, 1f) // make it turn down after it reaches 1
+            return f.clamp(0f, 1f)
         } else {
-            var f = (time-start)/duration
-            if(repeatCount != 0 && repeatCount != 1) f = f.rem(1)
-            return f.clamp(0f,1f)
+            var f = (time - start) / duration
+            if (repeatCount != 0 && repeatCount != 1) f = f.rem(1)
+            return f.clamp(0f, 1f)
         }
     }
 
@@ -93,7 +93,7 @@ abstract class Animation<T: Any>(val target: T, val property: AnimatableProperty
      * The equality is by identity
      */
     fun doesInvolveObject(obj: Any): Boolean {
-        if(target === obj) return true
+        if (target === obj) return true
         return property.doesInvolve(target, obj)
     }
 
@@ -117,10 +117,10 @@ abstract class Animation<T: Any>(val target: T, val property: AnimatableProperty
     }
 
     internal fun onAddedToAnimator(animator: Animator) {
-        if(isTimeRelative) {
+        if (isTimeRelative) {
             start += animator.time
         }
-        this._id = animator._nextId++
+        this._id = animator.nextID++
     }
 
     internal var _id: Int = -1

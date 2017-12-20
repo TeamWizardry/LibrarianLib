@@ -53,7 +53,7 @@ object GuiOverlay {
     /**
      * Get an overlay component and show it when [visible] returns true.
      *
-     * Hook into [GuiComponent.ComponentTickEvent] to update its position and/or size
+     * Hook into [GuiComponentEvents.ComponentTickEvent] to update its position and/or size
      */
     fun getOverlayComponent(visible: BooleanSupplier, initializer: Consumer<GuiComponent>) {
         val storage = StorageThing(initializer, visible)
@@ -91,6 +91,7 @@ object GuiOverlay {
         }
 
         @Hook
+        @Suppress("UNUSED_PARAMETER")
         fun onTick(e: GuiComponentEvents.ComponentTickEvent) {
             this.isVisible = predicate.asBoolean
         }

@@ -4,7 +4,7 @@ import java.lang.invoke.MethodHandle;
 
 /**
  * @author WireSegal
- *         Created at 7:38 PM on 10/22/16.
+ * Created at 7:38 PM on 10/22/16.
  */
 /*package-private*/ class InvocationWrapper {
     private MethodHandle handle;

@@ -55,7 +55,7 @@ object SerializerRegistry {
      * @throws NoSuchSerializerError if there is no serializer registered for the passed type
      */
     fun lazy(type: FieldType, vararg ignoreFactories: SerializerFactory): Lazy<Serializer<Any>> {
-        if(type !in serializers) findFactoryForType(type, ignoreFactories) // throw an error immediately if there is no serializer
+        if (type !in serializers) findFactoryForType(type, ignoreFactories) // throw an error immediately if there is no serializer
         return kotlin.lazy { getOrCreate(type, *ignoreFactories) }
     }
 
@@ -66,12 +66,12 @@ object SerializerRegistry {
      */
     private fun findFactoryForType(type: FieldType, ignoreFactories: Array<out SerializerFactory>): SerializerFactory {
         val factory = factories.values.maxBy {
-            if(it in ignoreFactories)
+            if (it in ignoreFactories)
                 return@maxBy SerializerFactoryMatch.NONE
             it.canApply(type)
         }
 
-        if(factory == null || factory.canApply(type) == SerializerFactoryMatch.NONE)
+        if (factory == null || factory.canApply(type) == SerializerFactoryMatch.NONE)
             throw NoSuchSerializerError(type)
         return factory
     }

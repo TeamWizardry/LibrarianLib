@@ -64,7 +64,7 @@ class BlockObjectsSaving : BlockMod("saving_objects", Material.CACTUS), ITileEnt
     class TETest : TileMod() {
         @Save var color: Color = Color.BLACK
         @Save var tag: NBTTagCompound = NBTTagCompound()
-        @Save var stack: ItemStack? = null
+        @Save var stack: ItemStack = ItemStack.EMPTY
         @Save var handler: ItemStackHandler? = null
         @Save var vec3d: Vec3d = Vec3d.ZERO
         @Save var vec3i: Vec3i = Vec3i.NULL_VECTOR

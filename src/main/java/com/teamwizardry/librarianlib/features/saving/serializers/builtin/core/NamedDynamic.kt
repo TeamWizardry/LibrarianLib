@@ -27,7 +27,7 @@ import net.minecraft.nbt.NBTTagCompound
 @SerializerFactoryRegister
 object SerializeNamedDynamicFactory : SerializerFactory("NamedDynamic") {
     override fun canApply(type: FieldType): SerializerFactoryMatch {
-        if(type.clazz.isAnnotationPresent(NamedDynamic::class.java)) {
+        if (type.clazz.isAnnotationPresent(NamedDynamic::class.java)) {
             return SerializerFactoryMatch.WRAPPER
         }
         return SerializerFactoryMatch.NONE
@@ -51,10 +51,10 @@ object SerializeNamedDynamicFactory : SerializerFactory("NamedDynamic") {
 
         val serializersByName = mutableMapOf<String, Serializer<Any>>().withRealDefault {
             val clazz = registry.get(it)
-            if(clazz != null) {
+            if (clazz != null) {
                 return@withRealDefault serializersByClass[clazz]
             } else {
-                if(it !in alreadyWarnedNames) {
+                if (it !in alreadyWarnedNames) {
                     alreadyWarnedNames.add(it)
                     LibrarianLog.warn("Attempt to locate the class associated with the name `$it` with the base type" +
                             " `${registry.baseType}` failed. Attempting with the default serializer. This is a major" +
@@ -67,10 +67,10 @@ object SerializeNamedDynamicFactory : SerializerFactory("NamedDynamic") {
 
         val serializersById = mutableMapOf<Int, Serializer<Any>>().withRealDefault {
             val clazz = registry.getByID(it)
-            if(clazz != null) {
+            if (clazz != null) {
                 return@withRealDefault serializersByClass[clazz]
             } else {
-                if(it !in alreadyWarnedIds) {
+                if (it !in alreadyWarnedIds) {
                     alreadyWarnedIds.add(it)
                     LibrarianLog.warn("Attempt to locate the class associated with the id `$it` with the base type" +
                             " `${registry.baseType}` failed. Attempting with the default serializer. This is a major" +
@@ -96,7 +96,7 @@ object SerializeNamedDynamicFactory : SerializerFactory("NamedDynamic") {
 
             val ser = serializersByName[type]
 
-            if(wrapper.hasKey("data"))
+            if (wrapper.hasKey("data"))
                 return ser.read(wrapper.getTag("data"), existing, syncing)
             else
                 return ser.read(nbt, existing, syncing) // to facilitate transitions to @Dyn
@@ -104,7 +104,8 @@ object SerializeNamedDynamicFactory : SerializerFactory("NamedDynamic") {
 
         override fun writeNBT(value: Any, syncing: Boolean): NBTBase {
             val wrapper = NBTTagCompound()
-            wrapper.setString("name", registry.get(value.javaClass) ?: throw notFoundError(value.javaClass))
+            val name = registry.get(value.javaClass) ?: throw notFoundError(value.javaClass)
+            wrapper.setString("name", name)
 
             wrapper.setTag("data", serializersByClass[value.javaClass].write(value, syncing))
 
@@ -140,10 +141,10 @@ object NamedDynamicRegistryManager {
     private fun getUpperBound(clazz: Class<*>): Class<*> {
         var current = clazz
         var bound = clazz
-        while(true) {
-            if(current.isAnnotationPresent(NamedDynamic::class.java))
+        while (true) {
+            if (current.isAnnotationPresent(NamedDynamic::class.java))
                 bound = current
-            if(current == clazz.superclass)
+            if (current == clazz.superclass)
                 break
             current = clazz.superclass
         }
@@ -156,7 +157,7 @@ object NamedDynamicRegistryManager {
         private var nextID = 0
 
         fun add(clazz: Class<*>, name: String) {
-            if(clazz in map)
+            if (clazz in map)
                 throw IllegalArgumentException("Duplicate type registration for `$clazz`!")
             map.put(clazz, name)
             ids.put(clazz, nextID++)

@@ -128,7 +128,7 @@ object GlowingHandler {
                 .flatMap {
                     try {
                         resourceManager.getAllResources(ResourceLocation(it, "liblib_glow.cfg"))
-                    } catch(e: IOException) {
+                    } catch (e: IOException) {
                         emptyList<IResource>()
                     }
                 }
@@ -140,8 +140,7 @@ object GlowingHandler {
             val item = ForgeRegistries.ITEMS.getValue(ResourceLocation(name)) ?: continue
             val entries = map.entries.toList()
             val indices = entries.associate { it.key.toInt() to (it.value.first.map(String::toInt) to it.value.second) }
-            registerReloadableGlowHandler(item, {
-                stack, model ->
+            registerReloadableGlowHandler(item, { stack, model ->
                 val array = intArrayOf(*(indices[stack.itemDamage]?.first?.toTypedArray()?.toIntArray() ?: intArrayOf()),
                         *(indices[-1]?.first?.toTypedArray()?.toIntArray() ?: intArrayOf()))
                 IGlowingItem.Helper.wrapperBake(model, array.isEmpty() || array.contains(-1), *array)
@@ -152,8 +151,7 @@ object GlowingHandler {
             val block = ForgeRegistries.BLOCKS.getValue(ResourceLocation(name)) ?: continue
             val entries = map.entries.toList()
             val indices = entries.associate { it.key.toInt() to (it.value.first.map(String::toInt) to it.value.second) }
-            registerReloadableGlowHandler(block) {
-                _, model, state, _ ->
+            registerReloadableGlowHandler(block) { _, model, state, _ ->
                 val array = intArrayOf(*(indices[state.block.getMetaFromState(state)]?.first?.toTypedArray()?.toIntArray() ?: intArrayOf()),
                         *(indices[-1]?.first?.toTypedArray()?.toIntArray() ?: intArrayOf()))
                 IGlowingItem.Helper.wrapperBake(model, array.isEmpty() || array.contains(-1), *array)

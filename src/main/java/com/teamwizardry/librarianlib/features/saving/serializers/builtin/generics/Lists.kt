@@ -29,7 +29,7 @@ object SerializeListFactory : SerializerFactory("List") {
         return SerializeList(type, type.resolveGeneric(List::class.java, 0))
     }
 
-    class SerializeList(type: FieldType, val generic: FieldType) : Serializer<MutableList<Any?>>(type) {
+    class SerializeList(type: FieldType, generic: FieldType) : Serializer<MutableList<Any?>>(type) {
 
         override fun getDefault(): MutableList<Any?> {
             return mutableListOf()
@@ -49,7 +49,7 @@ object SerializeListFactory : SerializerFactory("List") {
 
             list.forEachIndexed<NBTTagCompound> { i, container ->
                 val tag = container.getTag("-")
-                val v = if (tag == null) null else serGeneric.read(tag, array.getOrNull(i), syncing)
+                val v = serGeneric.read(tag, array.getOrNull(i), syncing)
                 if (i >= array.size) {
                     array.add(v)
                 } else {
@@ -108,7 +108,7 @@ object SerializeListFactory : SerializerFactory("List") {
             if (type.clazz == List::class.java) {
                 return { mutableListOf<Any?>() }
             } else {
-                val mh =  MethodHandleHelper.wrapperForConstructor<MutableList<Any?>>(type.clazz)
+                val mh = MethodHandleHelper.wrapperForConstructor<MutableList<Any?>>(type.clazz)
                 return { mh(arrayOf()) }
             }
         }

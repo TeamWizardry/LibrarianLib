@@ -39,7 +39,7 @@ open class ItemModFood(name: String, amount: Int, saturation: Float, wolfFood: B
         return "item.$modId:$name"
     }
 
-    override fun getSubItems(tab: CreativeTabs?, subItems: NonNullList<ItemStack>) {
+    override fun getSubItems(tab: CreativeTabs, subItems: NonNullList<ItemStack>) {
         if (isInCreativeTab(tab))
             variants.indices.mapTo(subItems) { ItemStack(this, 1, it) }
     }

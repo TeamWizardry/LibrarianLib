@@ -26,8 +26,8 @@ import net.minecraft.nbt.NBTTagCompound
 @SerializerFactoryRegister
 object SerializeDynamicFactory : SerializerFactory("Dynamic") {
     override fun canApply(type: FieldType): SerializerFactoryMatch {
-        if(type.annotations.any { it is Dyn }) {
-            if(type is FieldTypeGeneric) {
+        if (type.annotations.any { it is Dyn }) {
+            if (type is FieldTypeGeneric) {
                 throw RuntimeException("Generic types cannot be annotated with @Dyn, as the generic type information is lost at runtime")
             }
             return SerializerFactoryMatch.WRAPPER
@@ -52,8 +52,8 @@ object SerializeDynamicFactory : SerializerFactory("Dynamic") {
                 if (clazz.isArray)
                     throw RuntimeException("Arrays cannot be annotated with @Dyn, only their component types.")
                 return@withRealDefault SerializerRegistry.getOrCreate(FieldType.create(clazz))
-            } catch(e: ClassNotFoundException) {
-                if(it !in alreadyWarnedTypes) {
+            } catch (e: ClassNotFoundException) {
+                if (it !in alreadyWarnedTypes) {
                     alreadyWarnedTypes.add(it)
                     LibrarianLog.warn("Attempt to find the class $it for dynamically serialized type $type failed." +
                             " Attempting to use default serializer. This is a major problem, and likely will cause strange" +
@@ -68,7 +68,7 @@ object SerializeDynamicFactory : SerializerFactory("Dynamic") {
         }
 
         private fun serializerFor(className: String): Serializer<Any> {
-            if(className == "")
+            if (className == "")
                 return defaultSerializer
             else
                 return serializers[className]
@@ -81,7 +81,7 @@ object SerializeDynamicFactory : SerializerFactory("Dynamic") {
 
             val ser = serializerFor(className)
 
-            if(wrapper.hasKey("data"))
+            if (wrapper.hasKey("data"))
                 return ser.read(wrapper.getTag("data"), existing, syncing)
             else
                 return ser.read(nbt, existing, syncing) // to facilitate transitions to @Dyn

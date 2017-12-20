@@ -32,7 +32,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
  * ## Tags
  *
  * If you want to mark a component for retrieval later you can use [addTag] to add an arbitrary object as a tag.
- * Children with a specific tag can be retrieved later using [getByTag], or you can check if a component has a tag using
+ * Children with a specific tag can be retrieved later using [ComponentTagHandler.getByTag], or you can check if a component has a tag using
  * [hasTag]. Tags are stored in a HashSet, so any object that overrides the [hashCode] and [equals] methods will work by
  * value, but any object will work by identity. [Explanation here.](http://stackoverflow.com/a/1692882/1541907)
  *
@@ -62,19 +62,33 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
 
     //region - Handlers
     /** Use this for advanced data manipulation and querying */
-    @Suppress("LeakingThis") @JvmField val data = ComponentDataHandler(this)
+    @Suppress("LeakingThis")
+    @JvmField
+    val data = ComponentDataHandler(this)
     /** Use this for advanced tag manipulation and querying */
-    @Suppress("LeakingThis") @JvmField val tags = ComponentTagHandler(this)
+    @Suppress("LeakingThis")
+    @JvmField
+    val tags = ComponentTagHandler(this)
     /** Use this for advanced geometry manipulation and querying */
-    @Suppress("LeakingThis") @JvmField val geometry = ComponentGeometryHandler(this)
+    @Suppress("LeakingThis")
+    @JvmField
+    val geometry = ComponentGeometryHandler(this)
     /** Use this for advanced parent-child relationship manipulation and querying */
-    @Suppress("LeakingThis") @JvmField val relationships = ComponentRelationshipHandler(this)
+    @Suppress("LeakingThis")
+    @JvmField
+    val relationships = ComponentRelationshipHandler(this)
     /** Use this for advanced rendering manipulation and querying */
-    @Suppress("LeakingThis") @JvmField val render = ComponentRenderHandler(this)
+    @Suppress("LeakingThis")
+    @JvmField
+    val render = ComponentRenderHandler(this)
     /** Internal handler for GUI events (mouse click, key press, etc.) */
-    @Suppress("LeakingThis") @JvmField val guiEventHandler = ComponentGuiEventHandler(this)
+    @Suppress("LeakingThis")
+    @JvmField
+    val guiEventHandler = ComponentGuiEventHandler(this)
     /** Use this to configure clipping */
-    @Suppress("LeakingThis") @JvmField val clipping = ComponentClippingHandler(this)
+    @Suppress("LeakingThis")
+    @JvmField
+    val clipping = ComponentClippingHandler(this)
     //endregion
 
     //region - Base component stuff
@@ -91,6 +105,7 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      */
     var isInvalid = false
         protected set
+
     /**
      * Set this component invalid so it will be removed from it's parent element
      */
@@ -137,6 +152,7 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
     @JvmOverloads
     fun thisPosToOtherContext(other: GuiComponent?, pos: Vec2d = Vec2d.ZERO)
             = geometry.thisPosToOtherContext(other, pos)
+
     /**
      * Transforms [pos] from `other`'s context (or the root context if null) to our context
      */
@@ -167,7 +183,7 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
             by relationships::parent.delegate
 
     fun add(vararg children: GuiComponent)
-        = relationships.add(*children)
+            = relationships.add(*children)
     //endregion
 
     //region - TagHandler
@@ -180,18 +196,21 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      */
     val tagList
             by tags::tagList.delegate
+
     /**
      * Adds the passed tag to this component if it doesn't already have it.
      * @return true if the tag didn't exist and was added
      */
     fun addTag(tag: Any)
             = tags.addTag(tag)
+
     /**
      * Removes the passed tag to this component if it doesn't already have it.
      * @return true if the tag existed and was removed
      */
     fun removeTag(tag: Any)
             = tags.removeTag(tag)
+
     /**
      * Adds or removes the passed tag to this component if it isn't already in the correct state.
      * If [shouldHave] is true this method will add the tag if it doesn't exist, if it is false
@@ -202,6 +221,7 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      */
     fun setTag(tag: Any, shouldHave: Boolean)
             = tags.setTag(tag, shouldHave)
+
     /**
      * Checks if the component has the tag specified.
      */
@@ -215,17 +235,20 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      */
     fun <D : Any> setData(clazz: Class<D>, key: String, value: D)
             = data.setData(clazz, key, value)
+
     /**
      * Removes the value associated with the pair of keys [clazz] and [key]
      */
     fun <D : Any> removeData(clazz: Class<D>, key: String)
             = data.removeData(clazz, key)
+
     /**
      * Returns the value associated with the pair of keys [clazz] and [key] if it exists, else it returns null.
      * The value will be an instance of [clazz]
      */
     fun <D : Any> getData(clazz: Class<D>, key: String)
             = data.getData(clazz, key)
+
     /**
      * Checks if there is a value associated with the pair of keys [clazz] and [key]
      */
@@ -238,6 +261,7 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      * The animator for this component. Generally stored in the root component
      */
     var animator by render::animator.delegate
+
     /**
      * Add the passed animations to this component's animator
      */

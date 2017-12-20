@@ -46,7 +46,7 @@ object JsonGenerationUtils {
 
     fun getPathForBaseBlockstate(block: IForgeRegistryEntry<*>): String {
         val registryName = block.registryName
-        return getAssetPath(registryName!!.resourceDomain) + +"/blockstates/${registryName!!.resourcePath}.json"
+        return getAssetPath(registryName!!.resourceDomain) + +"/blockstates/${registryName.resourcePath}.json"
     }
 
     fun getPathsForBlockstate(block: Block, stateMapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)? = null): Array<String> {

@@ -6,8 +6,6 @@ import com.teamwizardry.librarianlib.features.saving.FieldType
 import com.teamwizardry.librarianlib.features.saving.serializers.Serializer
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
-import net.minecraft.init.Items
-import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTTagByteArray
@@ -17,7 +15,6 @@ import net.minecraft.network.PacketBuffer
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.TextComponentString
-import net.minecraftforge.fluids.Fluid
 import net.minecraftforge.fluids.FluidRegistry
 import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.items.ItemStackHandler
@@ -82,7 +79,7 @@ object SerializeNBTTagCompound : Serializer<NBTTagCompound>(FieldType.create(NBT
 @SerializerRegister(ItemStack::class)
 object SerializeItemStack : Serializer<ItemStack>(FieldType.create(ItemStack::class.java)) {
     override fun getDefault(): ItemStack {
-        return ItemStack(null as Item?)
+        return ItemStack.EMPTY
     }
 
     override fun readNBT(nbt: NBTBase, existing: ItemStack?, syncing: Boolean): ItemStack {
@@ -111,7 +108,7 @@ object SerializeFluidStack : Serializer<FluidStack>(FieldType.create(FluidStack:
             value.writeToNBT(NBTTagCompound())!!
 
     override fun readBytes(buf: ByteBuf, existing: FluidStack?, syncing: Boolean) =
-            buf.readFluidStack()?: FluidStack(FluidRegistry.WATER, 0)
+            buf.readFluidStack() ?: FluidStack(FluidRegistry.WATER, 0)
 
     override fun writeBytes(buf: ByteBuf, value: FluidStack, syncing: Boolean) =
             buf.writeFluidStack(value)

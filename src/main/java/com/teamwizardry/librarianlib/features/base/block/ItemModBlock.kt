@@ -102,8 +102,5 @@ open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlo
     override fun packedGlowCoords(itemStack: ItemStack, model: IBakedModel)
             = if (this.modBlock is IGlowingItem) modBlock.packedGlowCoords(itemStack, model) else super.packedGlowCoords(itemStack, model)
 
-    override fun shouldDisableLightingForGlow(itemStack: ItemStack, model: IBakedModel): Boolean {
-        return super.shouldDisableLightingForGlow(itemStack, model)
-    }
 }
 

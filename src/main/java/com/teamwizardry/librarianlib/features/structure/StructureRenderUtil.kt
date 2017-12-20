@@ -2,7 +2,6 @@ package com.teamwizardry.librarianlib.features.structure
 
 import com.teamwizardry.librarianlib.features.utilities.client.BlockRenderUtils
 import net.minecraft.client.renderer.BufferBuilder
-import net.minecraft.client.renderer.vertex.VertexBuffer
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.BlockRenderLayer
 import net.minecraft.util.EnumBlockRenderType

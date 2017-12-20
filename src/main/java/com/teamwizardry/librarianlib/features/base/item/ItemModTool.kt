@@ -89,7 +89,7 @@ open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, to
         return "item.$modId:$name"
     }
 
-    override fun getSubItems(tab: CreativeTabs?, subItems: NonNullList<ItemStack>) {
+    override fun getSubItems(tab: CreativeTabs, subItems: NonNullList<ItemStack>) {
         if (isInCreativeTab(tab))
             variants.indices.mapTo(subItems) { ItemStack(this, 1, it) }
     }

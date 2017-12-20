@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.core.common.RegistrationHandler
 import com.teamwizardry.librarianlib.features.helpers.currentModId
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.SoundEvent
-import net.minecraftforge.fml.common.registry.GameRegistry
 
 /**
  * @author WireSegal

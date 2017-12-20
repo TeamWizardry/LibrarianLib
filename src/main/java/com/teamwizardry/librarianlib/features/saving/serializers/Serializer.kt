@@ -31,14 +31,14 @@ enum class SerializerFactoryMatch {
     WRAPPER;
 
     fun or(other: SerializerFactoryMatch): SerializerFactoryMatch {
-        if(other > this)
+        if (other > this)
             return other
         else
             return this
     }
 }
 
-abstract class Serializer<T: Any>(val type: FieldType) {
+abstract class Serializer<T : Any>(val type: FieldType) {
     protected abstract fun readNBT(nbt: NBTBase, existing: T?, syncing: Boolean): T
     protected abstract fun writeNBT(value: T, syncing: Boolean): NBTBase
 
@@ -50,7 +50,7 @@ abstract class Serializer<T: Any>(val type: FieldType) {
     fun read(nbt: NBTBase, existing: T?, syncing: Boolean): T {
         try {
             return readNBT(nbt, existing, syncing)
-        } catch(e: RuntimeException) {
+        } catch (e: RuntimeException) {
             throw SerializerException("[NBT] Error deserializing $type", e)
         }
     }
@@ -58,7 +58,7 @@ abstract class Serializer<T: Any>(val type: FieldType) {
     fun write(value: T, syncing: Boolean): NBTBase {
         try {
             return writeNBT(value, syncing)
-        } catch(e: RuntimeException) {
+        } catch (e: RuntimeException) {
             throw SerializerException("[NBT] Error serializing $type", e)
         }
     }
@@ -66,15 +66,15 @@ abstract class Serializer<T: Any>(val type: FieldType) {
     fun read(buf: ByteBuf, existing: T?, syncing: Boolean): T {
         try {
             return readBytes(buf, existing, syncing)
-        } catch(e: RuntimeException) {
+        } catch (e: RuntimeException) {
             throw SerializerException("[Bytes] Error deserializing $type", e)
         }
     }
 
-    fun write(buf: ByteBuf, value: T, syncing: Boolean)  {
+    fun write(buf: ByteBuf, value: T, syncing: Boolean) {
         try {
             return writeBytes(buf, value, syncing)
-        } catch(e: RuntimeException) {
+        } catch (e: RuntimeException) {
             throw SerializerException("[Bytes] Error serializing $type", e)
         }
     }
@@ -87,8 +87,8 @@ abstract class SerializerFactory(val name: String) {
     abstract fun create(type: FieldType): Serializer<*>
 
     protected fun canApplyExact(type: FieldType, vararg classes: Class<*>): SerializerFactoryMatch {
-        if(type.clazz in classes) {
-            if(type is FieldTypeGeneric)
+        if (type.clazz in classes) {
+            if (type is FieldTypeGeneric)
                 return SerializerFactoryMatch.GENERIC
             else
                 return SerializerFactoryMatch.EXACT
@@ -98,7 +98,7 @@ abstract class SerializerFactory(val name: String) {
     }
 
     protected fun canApplySubclass(type: FieldType, vararg classes: Class<*>): SerializerFactoryMatch {
-        if(classes.any { it.isAssignableFrom(type.clazz) })
+        if (classes.any { it.isAssignableFrom(type.clazz) })
             return SerializerFactoryMatch.GENERAL
         else
             return SerializerFactoryMatch.NONE

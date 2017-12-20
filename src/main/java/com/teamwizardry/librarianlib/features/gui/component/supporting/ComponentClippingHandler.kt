@@ -7,7 +7,6 @@ import com.teamwizardry.librarianlib.features.kotlin.pos
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
-import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -34,14 +33,13 @@ class ComponentClippingHandler(val component: GuiComponent) {
     var cornerPixelSize = 0
 
     internal fun pushEnable() {
-        val en = Minecraft.getMinecraft().framebuffer.isStencilEnabled
-        if(clipToBounds) {
+        if (clipToBounds) {
             StencilUtil.push { stencil() }
         }
     }
 
     internal fun popDisable() {
-        if(clipToBounds) {
+        if (clipToBounds) {
             StencilUtil.pop { stencil() }
         }
     }
@@ -51,30 +49,29 @@ class ComponentClippingHandler(val component: GuiComponent) {
         GlStateManager.disableTexture2D()
         GlStateManager.color(1f, 0f, 1f, 0.5f)
         val vb = Tessellator.getInstance().buffer
-        val pos = component.pos
         val size = component.size
         val r = cornerRadius
 
         vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION)
 
-        vb.pos(0.0   ,        r, 0.0).endVertex()
-        vb.pos(0.0   , size.y-r, 0.0).endVertex()
-        vb.pos(size.x, size.y-r, 0.0).endVertex()
-        vb.pos(size.x,        r, 0.0).endVertex()
+        vb.pos(0.0, r, 0.0).endVertex()
+        vb.pos(0.0, size.y - r, 0.0).endVertex()
+        vb.pos(size.x, size.y - r, 0.0).endVertex()
+        vb.pos(size.x, r, 0.0).endVertex()
 
-        vb.pos(       r, 0.0, 0.0).endVertex()
-        vb.pos(       r, r  , 0.0).endVertex()
-        vb.pos(size.x-r, r  , 0.0).endVertex()
-        vb.pos(size.x-r, 0.0, 0.0).endVertex()
+        vb.pos(r, 0.0, 0.0).endVertex()
+        vb.pos(r, r, 0.0).endVertex()
+        vb.pos(size.x - r, r, 0.0).endVertex()
+        vb.pos(size.x - r, 0.0, 0.0).endVertex()
 
-        vb.pos(       r, size.y-r, 0.0).endVertex()
-        vb.pos(       r, size.y  , 0.0).endVertex()
-        vb.pos(size.x-r, size.y  , 0.0).endVertex()
-        vb.pos(size.x-r, size.y-r, 0.0).endVertex()
+        vb.pos(r, size.y - r, 0.0).endVertex()
+        vb.pos(r, size.y, 0.0).endVertex()
+        vb.pos(size.x - r, size.y, 0.0).endVertex()
+        vb.pos(size.x - r, size.y - r, 0.0).endVertex()
 
         Tessellator.getInstance().draw()
 
-        if(cornerRadius > 0) {
+        if (cornerRadius > 0) {
             if (cornerPixelSize <= 0) {
                 arc(r, r, vec(-r, 0), vec(0, -r))
                 arc(size.x - r, size.y - r, vec(r, 0), vec(0, r))
@@ -101,10 +98,10 @@ class ComponentClippingHandler(val component: GuiComponent) {
         vb.pos(origin).endVertex()
 
         val a = 0
-        val d = (Math.PI/2)/16
+        val d = (Math.PI / 2) / 16
 
         (0..16).forEach { i ->
-            val angle = a+d*i
+            val angle = a + d * i
             val rad2 = (vecA * Math.sin(angle)) + (vecB * Math.cos(angle))
             val rad3 = vec(rad2.x, rad2.y, 0)
             vb.pos(origin + rad3).endVertex()
@@ -118,8 +115,8 @@ class ComponentClippingHandler(val component: GuiComponent) {
         val a3 = vec(vecA.x, vecA.y, 0) * cornerPixelSize
         val b3 = vec(vecB.x, vecB.y, 0) * cornerPixelSize
         val r = cornerRadius / cornerPixelSize
-        var x = 0
-        var y = r.toInt()
+        var arcX = 0
+        var arcY = r.toInt()
         var d: Int
 
         val points = mutableMapOf<Int, Int>()
@@ -131,33 +128,31 @@ class ComponentClippingHandler(val component: GuiComponent) {
 //        points[2] = 3
 //        points[3] = 2
 
-        points[x] = y
+        points[arcX] = arcY
         d = 3 - 2 * r.toInt()
-        while (x <= y) {
+        while (arcX <= arcY) {
             if (d <= 0) {
-                d = d + (4 * x + 6)
+                d += (4 * arcX + 6)
             } else {
-                d = d + 4 * (x - y) + 10
-                y--
+                d += 4 * (arcX - arcY) + 10
+                arcY--
             }
-            x++
+            arcX++
 
-            if(x-1 > 0)
-                points[x-1] = Math.max(points[x] ?: 0, y)
-            if(y-1 > 0)
-                points[y-1] = Math.max(points[y] ?: 0, x)
+            if (arcX - 1 > 0)
+                points[arcX - 1] = Math.max(points[arcX] ?: 0, arcY)
+            if (arcY - 1 > 0)
+                points[arcY - 1] = Math.max(points[arcY] ?: 0, arcX)
         }
 
         val vb = Tessellator.getInstance().buffer
         vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION)
 
         points.forEach { (y, x) ->
-//        y = 0
-//        x = 1
             vb.pos(v + a3 * 0 + b3 * y).endVertex()
             vb.pos(v + a3 * x + b3 * y).endVertex()
-            vb.pos(v + a3 * x + b3 * (y+1)).endVertex()
-            vb.pos(v + a3 * 0 + b3 * (y+1)).endVertex()
+            vb.pos(v + a3 * x + b3 * (y + 1)).endVertex()
+            vb.pos(v + a3 * 0 + b3 * (y + 1)).endVertex()
         }
         Tessellator.getInstance().draw()
 

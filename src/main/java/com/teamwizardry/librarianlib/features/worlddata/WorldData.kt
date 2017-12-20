@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.features.chunkdata
+package com.teamwizardry.librarianlib.features.worlddata
 
 import com.teamwizardry.librarianlib.features.network.PacketCustomWorldData
 import com.teamwizardry.librarianlib.features.network.PacketHandler
@@ -22,17 +22,20 @@ open class WorldData(val container: WorldDataContainer) {
     val world = container.world
     var name: ResourceLocation? = null
         set(value) {
-            if(field != null) throw IllegalStateException("Name already set")
+            if (field != null) throw IllegalStateException("Name already set")
             field = value
         }
 
-    protected open fun saveCustomNBT(): NBTTagCompound? { return null }
+    protected open fun saveCustomNBT(): NBTTagCompound? {
+        return null
+    }
+
     protected open fun loadCustomNBT(nbt: NBTTagCompound) {}
     protected open fun writeCustomBytes(buf: ByteBuf) {}
     protected open fun readCustomBytes(buf: ByteBuf) {}
 
     fun markDirty() {
-        if(world is WorldServer) {
+        if (world is WorldServer) {
             val packet = PacketCustomWorldData(name!!, this)
             PacketHandler.CHANNEL.update(TargetWorld(world), packet)
 
@@ -47,8 +50,8 @@ open class WorldData(val container: WorldDataContainer) {
     }
 
     fun loadFromNBT(tag: NBTTagCompound) {
-        tag.getTag("auto")?.also { AbstractSaveHandler.readAutoNBT(this, it, false) }
-        tag.getCompoundTag("custom")?.also { loadCustomNBT(it) }
+        tag.getTag("auto").also { AbstractSaveHandler.readAutoNBT(this, it, false) }
+        tag.getCompoundTag("custom").also { loadCustomNBT(it) }
     }
 
     fun writeToBytes(buf: ByteBuf) {
@@ -74,7 +77,7 @@ open class WorldData(val container: WorldDataContainer) {
          */
         @Suppress("UNCHECKED_CAST")
         @JvmStatic
-        fun <T: WorldData> get(world: World, type: Class<T>): T? =
+        fun <T : WorldData> get(world: World, type: Class<T>): T? =
                 getInternal(world, type) as T?
 
         /**

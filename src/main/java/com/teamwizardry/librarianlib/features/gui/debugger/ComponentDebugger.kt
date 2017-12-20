@@ -41,7 +41,7 @@ class ComponentDebugger : GuiComponent(0, 0, 0, 0) {
             vec(0, it.y.clamp(-size.y, -resizeBar.size.y))
         }
         resizeBar.BUS.hook(DragMixin.DragMoveEvent::class.java) { e ->
-            debugPanel.size = vec(debugPanel.size.x, -(e.newPos.y+8))
+            debugPanel.size = vec(debugPanel.size.x, -(e.newPos.y + 8))
         }
         resizeBar.render.hoverCursor = LibCursor.RESIZE_UPDOWN
     }
@@ -50,6 +50,7 @@ class ComponentDebugger : GuiComponent(0, 0, 0, 0) {
      * Flatten the depth buffer before drawing so we will be able to draw over everything else
      */
     @Hook
+    @Suppress("UNUSED_PARAMETER")
     fun flattenDepth(e: GuiComponentEvents.PreDrawEvent) {
         GlStateManager.depthFunc(GL_ALWAYS)
         GlStateManager.colorMask(false, false, false, false)
@@ -62,6 +63,7 @@ class ComponentDebugger : GuiComponent(0, 0, 0, 0) {
      * Update the sizes and positions of our subcomponents
      */
     @Hook
+    @Suppress("UNUSED_PARAMETER")
     fun tick(e: GuiComponentEvents.ComponentTickEvent) {
         // resize the panel to the full width
         debugPanel.pos = vec(0, Math.max(0.0, size.y - debugPanel.size.y))

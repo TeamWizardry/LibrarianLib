@@ -261,7 +261,7 @@ object SerializeBooleanArray : Serializer<BooleanArray>(FieldType.create(Boolean
 
     override fun writeNBT(value: BooleanArray, syncing: Boolean): NBTBase {
         val tag = NBTTagList()
-        value.forEach { v -> tag.appendTag(NBTTagByte(if(v) 1 else 0)) }
+        value.forEach { v -> tag.appendTag(NBTTagByte(if (v) 1 else 0)) }
         return tag
     }
 
@@ -287,7 +287,7 @@ object SerializeStringArray : Serializer<Array<String>>(FieldType.create(Array<S
 
     override fun readNBT(nbt: NBTBase, existing: Array<String>?, syncing: Boolean): Array<String> {
         val list = nbt.safeCast(NBTTagList::class.java)
-        if(existing != null && existing.size == list.tagCount()) {
+        if (existing != null && existing.size == list.tagCount()) {
             list.forEachIndexed<NBTBase> { i, tag ->
                 existing[i] = tag.safeCast<NBTTagString>().string
             }

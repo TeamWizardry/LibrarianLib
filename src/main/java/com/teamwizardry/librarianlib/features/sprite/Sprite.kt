@@ -8,7 +8,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
  * This class represents a section of a [Texture]
  */
 @SideOnly(Side.CLIENT)
-open class Sprite: ISprite {
+open class Sprite : ISprite {
 
     /**
      * The [Texture] that this sprite is a part of
@@ -61,6 +61,7 @@ open class Sprite: ISprite {
         init(u, v, width, height, frames, offsetU, offsetV)
     }
 
+    @Suppress("LeakingThis")
     constructor(loc: ResourceLocation) {
         this.tex = Texture(loc)
         this.u = 0

@@ -33,7 +33,7 @@ class ComponentTagHandler(private val component: GuiComponent) {
 
     /** [GuiComponent.setTag] */
     fun setTag(tag: Any, shouldHave: Boolean): Boolean {
-        if(shouldHave)
+        if (shouldHave)
             return addTag(tag)
         else
             return removeTag(tag)

@@ -62,9 +62,9 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         fullscreenComponents.size = vec(width, height)
 
 
-        val scaledresolution = ScaledResolution(Minecraft.getMinecraft());
+        val scaledresolution = ScaledResolution(Minecraft.getMinecraft())
 
-        debugger.transform.scale = 1.0/scaledresolution.scaleFactor
+        debugger.transform.scale = 1.0 / scaledresolution.scaleFactor
         debugger.size = vec(width * scaledresolution.scaleFactor, height * scaledresolution.scaleFactor)
     }
 
@@ -87,7 +87,7 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         val relPos = vec(mouseX, mouseY)
         GlStateManager.pushMatrix()
 
-        if(isDebugMode) {
+        if (isDebugMode) {
             GlStateManager.translate(width / 2.0, height / 2.0, 0.0)
             GlStateManager.rotate(-20f, 1f, 0f, 0f)
             GlStateManager.rotate(-20f, 0f, 1f, 0f)
@@ -100,7 +100,7 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
 
         GlStateManager.popMatrix()
 
-        if(isDebugMode) {
+        if (isDebugMode) {
             debugger.geometry.calculateMouseOver(relPos)
             debugger.render.draw(relPos, partialTicks)
             debugger.render.drawLate(relPos, partialTicks)
@@ -115,22 +115,22 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
     @Throws(IOException::class)
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         super.mouseClicked(mouseX, mouseY, mouseButton)
-        if(isDebugMode) debugger.guiEventHandler.mouseDown(vec(mouseX, mouseY), EnumMouseButton.getFromCode(mouseButton))
-        if(!isDebugMode || !debugger.mouseOver)
+        if (isDebugMode) debugger.guiEventHandler.mouseDown(vec(mouseX, mouseY), EnumMouseButton.getFromCode(mouseButton))
+        if (!isDebugMode || !debugger.mouseOver)
             fullscreenComponents.guiEventHandler.mouseDown(vec(mouseX, mouseY), EnumMouseButton.getFromCode(mouseButton))
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         super.mouseReleased(mouseX, mouseY, state)
-        if(isDebugMode) debugger.guiEventHandler.mouseUp(vec(mouseX, mouseY), EnumMouseButton.getFromCode(state))
-        if(!isDebugMode || !debugger.mouseOver)
+        if (isDebugMode) debugger.guiEventHandler.mouseUp(vec(mouseX, mouseY), EnumMouseButton.getFromCode(state))
+        if (!isDebugMode || !debugger.mouseOver)
             fullscreenComponents.guiEventHandler.mouseUp(vec(mouseX, mouseY), EnumMouseButton.getFromCode(state))
     }
 
     override fun mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
         super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)
-        if(isDebugMode) debugger.guiEventHandler.mouseDrag(vec(mouseX, mouseY), EnumMouseButton.getFromCode(clickedMouseButton))
-        if(!isDebugMode || !debugger.mouseOver)
+        if (isDebugMode) debugger.guiEventHandler.mouseDrag(vec(mouseX, mouseY), EnumMouseButton.getFromCode(clickedMouseButton))
+        if (!isDebugMode || !debugger.mouseOver)
             fullscreenComponents.guiEventHandler.mouseDrag(vec(mouseX, mouseY), EnumMouseButton.getFromCode(clickedMouseButton))
     }
 
@@ -138,26 +138,26 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
     override fun handleKeyboardInput() {
         super.handleKeyboardInput()
 
-        if(Keyboard.getEventKeyState()) {
-            if(Keyboard.getEventKey() == Keyboard.KEY_D &&
-                    ( Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) ) &&
-                    ( Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL) )
-            ) {
+        if (Keyboard.getEventKeyState()) {
+            if (Keyboard.getEventKey() == Keyboard.KEY_D &&
+                    (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) &&
+                    (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))
+                    ) {
                 isDebugMode = !isDebugMode
             }
 
-            if(Keyboard.getEventKey() == Keyboard.KEY_B && Keyboard.isKeyDown(Keyboard.KEY_F3)) {
+            if (Keyboard.getEventKey() == Keyboard.KEY_B && Keyboard.isKeyDown(Keyboard.KEY_F3)) {
                 Minecraft.getMinecraft().renderManager.isDebugBoundingBox = !Minecraft.getMinecraft().renderManager.isDebugBoundingBox
             }
         }
 
         if (Keyboard.getEventKeyState()) {
-            if(isDebugMode) debugger.guiEventHandler.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
-            if(!isDebugMode || !debugger.mouseOver)
+            if (isDebugMode) debugger.guiEventHandler.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
+            if (!isDebugMode || !debugger.mouseOver)
                 fullscreenComponents.guiEventHandler.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
         } else {
-            if(isDebugMode) debugger.guiEventHandler.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
-            if(!isDebugMode || !debugger.mouseOver)
+            if (isDebugMode) debugger.guiEventHandler.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
+            if (!isDebugMode || !debugger.mouseOver)
                 fullscreenComponents.guiEventHandler.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
         }
     }
@@ -170,14 +170,14 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         val wheelAmount = Mouse.getEventDWheel()
 
         if (wheelAmount != 0) {
-            if(isDebugMode) debugger.guiEventHandler.mouseWheel(vec(mouseX, mouseY), GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
-            if(!isDebugMode || !debugger.mouseOver)
+            if (isDebugMode) debugger.guiEventHandler.mouseWheel(vec(mouseX, mouseY), GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
+            if (!isDebugMode || !debugger.mouseOver)
                 fullscreenComponents.guiEventHandler.mouseWheel(vec(mouseX, mouseY), GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
         }
     }
 
     fun tick() {
-        if(isDebugMode) debugger.guiEventHandler.tick()
+        if (isDebugMode) debugger.guiEventHandler.tick()
         fullscreenComponents.guiEventHandler.tick()
     }
 

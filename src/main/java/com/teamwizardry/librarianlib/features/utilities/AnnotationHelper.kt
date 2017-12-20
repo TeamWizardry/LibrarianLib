@@ -32,7 +32,7 @@ object AnnotationHelper {
                     continue
                 }.getDeclaredField(data.objectName)
 
-                if (field == null || !(objClass?.isAssignableFrom(field.type) ?: true)) {
+                if (field == null || objClass?.isAssignableFrom(field.type) == false) {
                     continue
                 }
 

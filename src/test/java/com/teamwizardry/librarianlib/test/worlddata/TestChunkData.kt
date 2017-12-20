@@ -1,8 +1,8 @@
-package com.teamwizardry.librarianlib.test.chunkdata
+package com.teamwizardry.librarianlib.test.worlddata
 
-import com.teamwizardry.librarianlib.features.chunkdata.WorldData
-import com.teamwizardry.librarianlib.features.chunkdata.WorldDataContainer
 import com.teamwizardry.librarianlib.features.saving.Save
+import com.teamwizardry.librarianlib.features.worlddata.WorldData
+import com.teamwizardry.librarianlib.features.worlddata.WorldDataContainer
 
 /**
  * TODO: Document file TestChunkData

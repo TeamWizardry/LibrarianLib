@@ -18,7 +18,7 @@ import net.minecraft.world.World
  */
 class ItemAnimator : ItemMod("animator") {
 
-    override fun onItemRightClick(worldIn: World, playerIn: EntityPlayer, hand: EnumHand?): ActionResult<ItemStack> {
+    override fun onItemRightClick(worldIn: World, playerIn: EntityPlayer, hand: EnumHand): ActionResult<ItemStack> {
         val stack = playerIn.getHeldItem(hand)
         if(playerIn.isSneaking)
             stack.itemDamage = (stack.itemDamage + 1) % Guis.values().size

@@ -11,6 +11,7 @@ import com.teamwizardry.librarianlib.features.kotlin.json
 import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
 import net.minecraft.block.Block
 import net.minecraft.block.BlockPane
+import net.minecraft.block.material.MapColor
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.entity.Entity
@@ -49,11 +50,15 @@ open class BlockModPane(name: String, canDrop: Boolean, val parent: IBlockState)
         return this
     }
 
-    override fun getMapColor(state: IBlockState?, worldIn: IBlockAccess?, pos: BlockPos?) = parent.getMapColor(worldIn, pos)
+    @Suppress("OverridingDeprecatedMember")
+    override fun getMapColor(state: IBlockState, worldIn: IBlockAccess, pos: BlockPos): MapColor = parent.getMapColor(worldIn, pos)
     override fun getExplosionResistance(world: World, pos: BlockPos, exploder: Entity?, explosion: Explosion) = parent.block.getExplosionResistance(world, pos, exploder, explosion)
+    @Suppress("OverridingDeprecatedMember")
     override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
-    @SideOnly(Side.CLIENT) override fun isTranslucent(state: IBlockState?) = parent.isTranslucent
-    override fun isToolEffective(type: String?, state: IBlockState) = parent.block.isToolEffective(type, parent) || (blockMaterial == BlockModSlab.FAKE_WOOD && type == "axe")
+    @Suppress("OverridingDeprecatedMember")
+    @SideOnly(Side.CLIENT)
+    override fun isTranslucent(state: IBlockState) = parent.isTranslucent
+    override fun isToolEffective(type: String, state: IBlockState) = parent.block.isToolEffective(type, parent) || (blockMaterial == BlockModSlab.FAKE_WOOD && type == "axe")
     override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent) ?: if (blockMaterial == BlockModSlab.FAKE_WOOD) "axe" else null
 
     /**

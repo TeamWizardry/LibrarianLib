@@ -183,7 +183,7 @@ class MachineProgress(@Save var iss: ItemStack) {
      * The result will get increased in init.
      */
     @Save
-    var result = iss.copy()!!
+    var result = iss.copy()
 
     init {
         result.grow(1)

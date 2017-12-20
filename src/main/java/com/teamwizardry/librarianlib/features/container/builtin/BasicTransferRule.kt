@@ -42,8 +42,8 @@ open class BasicTransferRule : ITransferRule {
     }
 
     override fun putStack(stack: ItemStack)
-            = targets.fold(stack) { stack, target ->
-        if (stack.isNotEmpty) ITransferRule.mergeIntoRegion(stack, target.filter { it.visible }).remainingStack
+            = targets.fold(stack) { itemStack, target ->
+        if (itemStack.isNotEmpty) ITransferRule.mergeIntoRegion(itemStack, target.filter { it.visible }).remainingStack
         else return ItemStack.EMPTY
     }
 }

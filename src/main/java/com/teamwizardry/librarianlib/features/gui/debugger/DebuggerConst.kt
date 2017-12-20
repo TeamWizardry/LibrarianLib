@@ -5,5 +5,4 @@ package com.teamwizardry.librarianlib.features.gui.debugger
  *
  * Created by TheCodeWarrior
  */
-object DebuggerConst {
-}
+object DebuggerConst

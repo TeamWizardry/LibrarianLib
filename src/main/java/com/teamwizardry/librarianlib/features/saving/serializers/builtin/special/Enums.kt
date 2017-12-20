@@ -23,7 +23,7 @@ annotation class FallbackEnumValue
 @SerializerFactoryRegister
 object SerializeEnumFactory : SerializerFactory("Enum") {
     override fun canApply(type: FieldType): SerializerFactoryMatch {
-        return if(type.clazz.isEnum) SerializerFactoryMatch.GENERAL else SerializerFactoryMatch.NONE
+        return if (type.clazz.isEnum) SerializerFactoryMatch.GENERAL else SerializerFactoryMatch.NONE
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -75,7 +75,7 @@ object SerializeEnumFactory : SerializerFactory("Enum") {
             } else {
                 buf.readShort().toInt()
             }
-            if(c < 0 || c >= constants.size)
+            if (c < 0 || c >= constants.size)
                 return getError(c)
             return constants[c]
         }

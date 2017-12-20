@@ -522,7 +522,7 @@ abstract class ItemEntityMod : EntityItem, IModEntity {
 }
 
 @SaveInPlace
-abstract class FireballEntityMod : EntityFireball, IModEntity  {
+abstract class FireballEntityMod : EntityFireball, IModEntity {
     constructor(world: World) : super(world)
     constructor(world: World, x: Double, y: Double, z: Double, accelX: Double, accelY: Double, accelZ: Double) : super(world, x, y, z, accelX, accelY, accelZ)
     constructor(world: World, shooter: EntityLivingBase, accelX: Double, accelY: Double, accelZ: Double) : super(world, shooter, accelX, accelY, accelZ)

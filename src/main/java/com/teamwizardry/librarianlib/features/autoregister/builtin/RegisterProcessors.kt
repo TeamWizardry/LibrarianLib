@@ -30,11 +30,11 @@ object TileRegisterProcessor : AnnotationMarkerProcessor<TileRegister, TileEntit
                 if (name == "") VariantHelper.toSnakeCase(clazz.simpleName).toRl()
                 else ResourceLocation(name)
 
-        if (loc.resourceDomain == "minecraft" && owner == null)
-            throw RuntimeException("No mod id and class has no known owner!")
-
-        if (loc.resourceDomain == "minecraft")
+        if (loc.resourceDomain == "minecraft") {
+            if (owner == null)
+                throw RuntimeException("No mod id and class has no known owner!")
             loc = ResourceLocation(owner, loc.resourcePath)
+        }
         AbstractSaveHandler.cacheFields(clazz)
         GameRegistry.registerTileEntity(clazz, loc.toString())
     }
@@ -54,11 +54,11 @@ object SerializerRegisterProcessor : AnnotationMarkerProcessor<SerializerRegiste
         val classes = annotation.classes
         val instance = clazz.singletonInstance
 
-        if(instance == null) throw RuntimeException("No singleton instance")
+        if (instance == null) throw RuntimeException("No singleton instance")
         else {
             classes.forEach {
                 SerializerRegistry.register(FieldType.create(it.javaObjectType, null), instance)
-                if(it.javaPrimitiveType != null)
+                if (it.javaPrimitiveType != null)
                     SerializerRegistry.register(FieldType.create(it.javaPrimitiveType!!, null), instance)
             }
         }
@@ -70,7 +70,7 @@ object SerializerFactoryRegisterProcessor : AnnotationMarkerProcessor<Serializer
     override fun process(clazz: Class<SerializerFactory>, annotation: SerializerFactoryRegister) {
         val instance = clazz.singletonInstance
 
-        if(instance == null) throw RuntimeException("No singleton instance")
+        if (instance == null) throw RuntimeException("No singleton instance")
         else SerializerRegistry.register(instance)
     }
 }
@@ -80,7 +80,7 @@ object PropertyRegisterProcessor : AnnotationMarkerProcessor<PropertyRegister, M
     override fun process(clazz: Class<ModProperty>, annotation: PropertyRegister) {
         val instance = clazz.singletonInstance
 
-        if(instance == null) throw RuntimeException("No singleton instance")
+        if (instance == null) throw RuntimeException("No singleton instance")
         else {
             var name = annotation.value
             if (name.isEmpty())

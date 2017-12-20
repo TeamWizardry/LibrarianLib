@@ -1,12 +1,10 @@
 package com.teamwizardry.librarianlib.features.tesr
 
-import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.autoregister.AMPRegister
 import com.teamwizardry.librarianlib.features.autoregister.AnnotationMarkerProcessor
 import com.teamwizardry.librarianlib.features.base.block.tile.TileMod
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
-import net.minecraft.tileentity.TileEntity
 import net.minecraftforge.fml.client.registry.ClientRegistry
 import kotlin.reflect.KClass
 
@@ -30,7 +28,7 @@ object TileRendererRegisterProcessor : AnnotationMarkerProcessor<TileRenderer, T
 
             val mh = MethodHandleHelper.wrapperForConstructor(constructor)
             tileRendererRegisters[clazz] = annotation.fast to { tile -> mh(arrayOf(tile)) as TileRenderHandler<TileMod> }
-            if(annotation.fast)
+            if (annotation.fast)
                 TileMod.fastTESRClasses.add(clazz)
         }
     }

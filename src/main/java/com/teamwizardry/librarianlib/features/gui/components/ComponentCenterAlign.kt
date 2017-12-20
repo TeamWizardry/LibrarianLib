@@ -12,8 +12,8 @@ class ComponentCenterAlign(posX: Int, posY: Int, var centerHorizontal: Boolean, 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
         if (centerHorizontal || centerVertical) {
             for (component in children) {
-                val componentCenter = component.transformToParentContext(component.size/2)
-                var adjustedPos = (size/2) - componentCenter
+                val componentCenter = component.transformToParentContext(component.size / 2)
+                var adjustedPos = (size / 2) - componentCenter
                 if (!centerHorizontal)
                     adjustedPos = adjustedPos.setX(0.0)
                 if (!centerVertical)

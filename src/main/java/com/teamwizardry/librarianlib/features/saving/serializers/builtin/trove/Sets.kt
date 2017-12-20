@@ -25,7 +25,7 @@ import net.minecraft.nbt.NBTTagList
 @SerializerFactoryRegister
 object SerializeTroveSetsFactory : SerializerFactory("TroveSets") {
     override fun canApply(type: FieldType): SerializerFactoryMatch {
-        return if(troveStuff.any { it.key.isAssignableFrom(type.clazz) })
+        return if (troveStuff.any { it.key.isAssignableFrom(type.clazz) })
             SerializerFactoryMatch.GENERAL
         else
             SerializerFactoryMatch.NONE
@@ -116,7 +116,7 @@ object SerializeTroveSetsFactory : SerializerFactory("TroveSets") {
 
         private fun createConstructorMethodHandle(): () -> Any {
             val constructor = troveStuff.get(type.clazz)?.constructor
-            if(constructor != null)
+            if (constructor != null)
                 return constructor
 
             val mh = MethodHandleHelper.wrapperForConstructor<Any>(type.clazz)

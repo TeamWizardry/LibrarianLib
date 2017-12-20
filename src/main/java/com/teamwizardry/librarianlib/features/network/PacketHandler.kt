@@ -18,7 +18,9 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper
 import net.minecraftforge.fml.relauncher.Side
 
 object PacketHandler {
-    init { MinecraftForge.EVENT_BUS.register(this) }
+    init {
+        MinecraftForge.EVENT_BUS.register(this)
+    }
 
     @JvmField
     val NETWORK: SimpleNetworkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("TeamWizardry")
@@ -51,6 +53,7 @@ object PacketHandler {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
+    @Suppress("UNUSED_PARAMETER")
     fun tick(e: TickEvent.ServerTickEvent) {
         CHANNEL.onTickEnd()
         channels.values.forEach { it.onTickEnd() }

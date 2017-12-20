@@ -56,5 +56,5 @@ class BoundingBox2D(val min: Vec2d, val max: Vec2d) {
     val pos: Vec2d
         get() = min
     val size: Vec2d
-        get() = max-min
+        get() = max - min
 }

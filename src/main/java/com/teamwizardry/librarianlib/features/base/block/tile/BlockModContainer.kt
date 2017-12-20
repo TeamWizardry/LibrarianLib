@@ -16,6 +16,7 @@ import net.minecraft.world.World
  */
 abstract class BlockModContainer(name: String, materialIn: Material, vararg variants: String) : BlockMod(name, materialIn, *variants) {
 
+    @Suppress("OverridingDeprecatedMember")
     override fun eventReceived(state: IBlockState, worldIn: World, pos: BlockPos, eventID: Int, eventParam: Int): Boolean {
         val tile = worldIn.getTileEntity(pos) ?: return false
         return tile.receiveClientEvent(eventID, eventParam)
@@ -27,7 +28,7 @@ abstract class BlockModContainer(name: String, materialIn: Material, vararg vari
 
     override fun breakBlock(worldIn: World, pos: BlockPos, state: IBlockState) {
         val tile = worldIn.getTileEntity(pos)
-        if (tile is TileMod) tile.onBreak()
+        (tile as? TileMod)?.onBreak()
         super.breakBlock(worldIn, pos, state)
     }
 
@@ -38,8 +39,10 @@ abstract class BlockModContainer(name: String, materialIn: Material, vararg vari
 
     internal var hasComparatorInputOverride: Boolean? = null
 
-    override fun hasComparatorInputOverride(state: IBlockState?) = hasComparatorInputOverride ?: super.hasComparatorInputOverride(state)
+    @Suppress("OverridingDeprecatedMember", "DEPRECATION")
+    override fun hasComparatorInputOverride(state: IBlockState) = hasComparatorInputOverride ?: super.hasComparatorInputOverride(state)
 
+    @Suppress("OverridingDeprecatedMember", "DEPRECATION")
     override fun getComparatorInputOverride(blockState: IBlockState, worldIn: World, pos: BlockPos): Int {
         val tile = worldIn.getTileEntity(pos)
         if (tile is TileMod) return tile.getComparatorOverride()

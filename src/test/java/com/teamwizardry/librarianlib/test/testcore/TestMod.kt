@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.features.utilities.LoggerBase
 import com.teamwizardry.librarianlib.test.animator.AnimatorEntryPoint
 import com.teamwizardry.librarianlib.test.cap.CapabilityTest
 import com.teamwizardry.librarianlib.test.chunkdata.ChunkDataEntryPoint
-import com.teamwizardry.librarianlib.test.chunkdata.WorldDataEntryPoint
+import com.teamwizardry.librarianlib.test.worlddata.WorldDataEntryPoint
 import com.teamwizardry.librarianlib.test.container.ContainerEntryPoint
 import com.teamwizardry.librarianlib.test.fx.FXEntryPoint
 import com.teamwizardry.librarianlib.test.gui.GuiEntryPoint
@@ -16,7 +16,6 @@ import com.teamwizardry.librarianlib.test.variants.VariantEntryPoint
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
-import net.minecraft.util.ActionResult
 import net.minecraft.util.EnumActionResult
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
@@ -41,14 +40,9 @@ class TestMod {
             it.preInit(e)
         }
         object : ItemMod("test") {
-            override fun onItemRightClick(worldIn: World?, playerIn: EntityPlayer, hand: EnumHand?): ActionResult<ItemStack> {
-                //ModItems.test(playerIn)
-                //println(playerIn.getCapability(CapabilityTest.cap, null))
-                return super.onItemRightClick(worldIn, playerIn, hand)
-            }
 
-            override fun onItemUse(playerIn: EntityPlayer?, worldIn: World?, pos: BlockPos?, hand: EnumHand?, facing: EnumFacing?, hitX: Float, hitY: Float, hitZ: Float): EnumActionResult {
-                println(worldIn?.getTileEntity(pos)?.getCapability(CapabilityTest.cap, null))
+            override fun onItemUse(playerIn: EntityPlayer, worldIn: World, pos: BlockPos, hand: EnumHand, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): EnumActionResult {
+                println(worldIn.getTileEntity(pos)?.getCapability(CapabilityTest.cap, null))
                 return super.onItemUse(playerIn, worldIn, pos, hand, facing, hitX, hitY, hitZ)
             }
         }

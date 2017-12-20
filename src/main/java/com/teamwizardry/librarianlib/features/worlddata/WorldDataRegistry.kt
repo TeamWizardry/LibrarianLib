@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.features.chunkdata
+package com.teamwizardry.librarianlib.features.worlddata
 
 import net.minecraft.util.ResourceLocation
 import net.minecraft.world.World
@@ -9,13 +9,16 @@ import net.minecraft.world.World
  * Created by TheCodeWarrior
  */
 object WorldDataRegistry {
-    init { WorldData }
+    init {
+        WorldData
+    }
+
     private val registry = mutableMapOf<Class<*>, WorldDataRegistryItem>()
     private val classes = mutableMapOf<ResourceLocation, Class<*>>()
 
     @JvmStatic
     fun <T : WorldData> register(name: ResourceLocation, clazz: Class<T>, constructor: (container: WorldDataContainer) -> T, applyTo: (world: World) -> Boolean) {
-        if(name in classes) {
+        if (name in classes) {
             throw IllegalArgumentException("Duplicate chunk data name $name")
         }
 

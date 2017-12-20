@@ -32,8 +32,9 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 1
             val itemRender = Minecraft.getMinecraft().renderItem
             itemRender.zLevel = 200.0f
 
+            val fr = (stack.item.getFontRenderer(stack) ?: Minecraft.getMinecraft().fontRenderer)
             itemRender.renderItemAndEffectIntoGUI(stack, 0, 0)
-            itemRender.renderItemOverlayIntoGUI(stack.item.getFontRenderer(stack) ?: Minecraft.getMinecraft().fontRenderer, stack, 0, 0, str)
+            itemRender.renderItemOverlayIntoGUI(fr, stack, 0, 0, str)
 
             itemRender.zLevel = 0.0f
 

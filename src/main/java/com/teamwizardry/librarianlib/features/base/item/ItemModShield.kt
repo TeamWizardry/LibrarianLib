@@ -41,16 +41,16 @@ open class ItemModShield(name: String, durability: Int = 336) : ItemMod(name), I
         fun armorDispense(source: IBlockSource, stack: ItemStack): ItemStack {
             val pos = source.blockPos.offset(source.blockState.getValue(BlockDispenser.FACING) as EnumFacing)
             val list = source.world.getEntitiesWithinAABB(EntityLivingBase::class.java, AxisAlignedBB(pos)) {
-                (it !is EntityPlayer || !it.isSpectator) && it?.heldItemOffhand?.isEmpty ?: true
+                it != null && (it !is EntityPlayer || !it.isSpectator) && it.heldItemOffhand.isEmpty
             }
 
-            if (list.isEmpty()) return ItemStack.EMPTY else {
+            return if (list.isEmpty()) ItemStack.EMPTY else {
                 val entity = list[0]
                 val dispense = stack.splitStack(1)
                 entity.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, dispense)
-                if (entity is EntityLiving) entity.setDropChance(EntityEquipmentSlot.OFFHAND, 2.0f)
+                (entity as? EntityLiving)?.setDropChance(EntityEquipmentSlot.OFFHAND, 2.0f)
 
-                return stack
+                stack
             }
         }
     }

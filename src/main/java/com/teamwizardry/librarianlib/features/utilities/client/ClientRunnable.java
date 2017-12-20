@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 public interface ClientRunnable {
     /**
      * Executes a lambda only if the side is client.
-     *
+     * <p>
      * Because the SAM of {@link ClientRunnable} is {@link SideOnly},
      * any {@link SideOnly} client code is safe to have inside.
      *
@@ -26,12 +26,12 @@ public interface ClientRunnable {
 
     /**
      * Executes a lambda that returns a value, but only if the side is client.
-     *
+     * <p>
      * Because the SAM of {@link ClientSupplier} is {@link SideOnly},
      * any {@link SideOnly} client code is safe to have inside.
      *
      * @param supplier An {@link ClientSupplier} that produces an object of type {@link T}.
-     * @param <T> The type the supplier creates.
+     * @param <T>      The type the supplier creates.
      * @return Null if server-side, otherwise the result of the supplier.
      */
     @Nullable

@@ -69,8 +69,8 @@ object SerializePairFactory : SerializerFactory("Pair") {
             val tagFirst = tag.getTag("first")
             val tagSecond = tag.getTag("second")
 
-            val first = if(tagFirst == null) null else serFirst.read(tagFirst, existing?.first, syncing)
-            val second = if(tagSecond == null) null else serSecond.read(tagSecond, existing?.second, syncing)
+            val first = serFirst.read(tagFirst, existing?.first, syncing)
+            val second = serSecond.read(tagSecond, existing?.second, syncing)
 
             return Pair(first, second)
         }
@@ -81,8 +81,8 @@ object SerializePairFactory : SerializerFactory("Pair") {
             val first = value.first
             val second = value.second
 
-            if(first != null) tag.setTag("first", serFirst.write(first, syncing))
-            if(second != null) tag.setTag("second", serSecond.write(second, syncing))
+            if (first != null) tag.setTag("first", serFirst.write(first, syncing))
+            if (second != null) tag.setTag("second", serSecond.write(second, syncing))
 
             return tag
         }
@@ -90,10 +90,10 @@ object SerializePairFactory : SerializerFactory("Pair") {
         override fun readBytes(buf: ByteBuf, existing: Pair<Any?, Any?>?, syncing: Boolean): Pair<Any?, Any?> {
             val nulls = buf.readBooleanArray()
 
-            val first = if(nulls[0]) null else {
+            val first = if (nulls[0]) null else {
                 serFirst.read(buf, existing?.first, syncing)
             }
-            val second = if(nulls[1]) null else {
+            val second = if (nulls[1]) null else {
                 serSecond.read(buf, existing?.second, syncing)
             }
 
@@ -107,10 +107,10 @@ object SerializePairFactory : SerializerFactory("Pair") {
             val nulls = booleanArrayOf(first == null, second == null)
             buf.writeBooleanArray(nulls)
 
-            if(first != null) {
+            if (first != null) {
                 serFirst.write(buf, first, syncing)
             }
-            if(second != null) {
+            if (second != null) {
                 serSecond.write(buf, second, syncing)
             }
         }

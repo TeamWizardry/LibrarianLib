@@ -1,5 +1,6 @@
-package com.teamwizardry.librarianlib.features.animator
+package com.teamwizardry.librarianlib.test.animator
 
+import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 
 /**
@@ -8,11 +9,9 @@ import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
  * Created by TheCodeWarrior
  */
 object AnimatorExamples {
-    init {
-        throw IllegalStateException("WTF are you doing loading the examples class?!")
-    }
+
     val yourObject = Any()
-    class YourClass {}
+
     val animator = Animator()
     val animation = BasicAnimation(Any(), "")
 
@@ -30,9 +29,6 @@ object AnimatorExamples {
     }
 
     fun time() {
-        // the number of ticks since this animator was created
-        val time = animator.time
-
         // set the time to 0, and continue counting up.
         // If the animator has deletePastAnimations set, none of the old animations will exist anymore, but if that
         // field is unset the old animations will replay from this point
@@ -40,9 +36,6 @@ object AnimatorExamples {
     }
 
     fun speed() {
-        // The speed multiplier of the animator
-        val speed = animator.speed
-
         // set the speed to -1/2 speed
         // If the animator has deletePastAnimations set, none of the old animations will exist anymore, but if that
         // field is unset the old animations will replay backwards

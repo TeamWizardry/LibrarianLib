@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.features.gui.Key
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import org.lwjgl.input.Keyboard
 
 /**
  * TODO: Document file ComponentGuiEventHandler
@@ -27,16 +28,16 @@ class ComponentGuiEventHandler(private val component: GuiComponent) {
      * @param button The button that was pressed
      */
     fun mouseDown(mousePos: Vec2d, button: EnumMouseButton) {
-        val mousePos = component.geometry.transformFromParentContext(mousePos)
+        val transformedPos = component.geometry.transformFromParentContext(mousePos)
         if (!component.isVisible) return
-        if (component.BUS.fire(GuiComponentEvents.MouseDownEvent(component, mousePos, button)).isCanceled())
+        if (component.BUS.fire(GuiComponentEvents.MouseDownEvent(component, transformedPos, button)).isCanceled())
             return
 
         if (component.mouseOver)
             mouseButtonsDown[button.ordinal] = true
 
         component.relationships.forEachChild { child ->
-            child.guiEventHandler.mouseDown(mousePos, button)
+            child.guiEventHandler.mouseDown(transformedPos, button)
         }
     }
 
@@ -47,21 +48,21 @@ class ComponentGuiEventHandler(private val component: GuiComponent) {
      * @param button The button that was released
      */
     fun mouseUp(mousePos: Vec2d, button: EnumMouseButton) {
-        val mousePos = component.geometry.transformFromParentContext(mousePos)
+        val transformedPos = component.geometry.transformFromParentContext(mousePos)
         if (!component.isVisible) return
         val wasDown = mouseButtonsDown[button.ordinal]
         mouseButtonsDown[button.ordinal] = false
 
-        if (component.BUS.fire(GuiComponentEvents.MouseUpEvent(component, mousePos, button)).isCanceled())
+        if (component.BUS.fire(GuiComponentEvents.MouseUpEvent(component, transformedPos, button)).isCanceled())
             return
 
         if (component.mouseOver && wasDown) {
-            component.BUS.fire(GuiComponentEvents.MouseClickEvent(component, mousePos, button))
+            component.BUS.fire(GuiComponentEvents.MouseClickEvent(component, transformedPos, button))
             // don't return here, if a click was handled we should still handle the mouseUp
         }
 
         component.relationships.forEachChild { child ->
-            child.guiEventHandler.mouseUp(mousePos, button)
+            child.guiEventHandler.mouseUp(transformedPos, button)
         }
     }
 
@@ -72,13 +73,13 @@ class ComponentGuiEventHandler(private val component: GuiComponent) {
      * @param button The button that was held
      */
     fun mouseDrag(mousePos: Vec2d, button: EnumMouseButton) {
-        val mousePos = component.geometry.transformFromParentContext(mousePos)
+        val transformedPos = component.geometry.transformFromParentContext(mousePos)
         if (!component.isVisible) return
-        if (component.BUS.fire(GuiComponentEvents.MouseDragEvent(component, mousePos, button)).isCanceled())
+        if (component.BUS.fire(GuiComponentEvents.MouseDragEvent(component, transformedPos, button)).isCanceled())
             return
 
         component.relationships.forEachChild { child ->
-            child.guiEventHandler.mouseDrag(mousePos, button)
+            child.guiEventHandler.mouseDrag(transformedPos, button)
         }
     }
 
@@ -89,13 +90,13 @@ class ComponentGuiEventHandler(private val component: GuiComponent) {
      * @param direction The direction the wheel was moved
      */
     fun mouseWheel(mousePos: Vec2d, direction: GuiComponentEvents.MouseWheelDirection) {
-        val mousePos = component.geometry.transformFromParentContext(mousePos)
+        val transformedPos = component.geometry.transformFromParentContext(mousePos)
         if (!component.isVisible) return
-        if (component.BUS.fire(GuiComponentEvents.MouseWheelEvent(component, mousePos, direction)).isCanceled())
+        if (component.BUS.fire(GuiComponentEvents.MouseWheelEvent(component, transformedPos, direction)).isCanceled())
             return
 
         component.relationships.forEachChild { child ->
-            child.guiEventHandler.mouseWheel(mousePos, direction)
+            child.guiEventHandler.mouseWheel(transformedPos, direction)
         }
     }
 

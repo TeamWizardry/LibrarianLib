@@ -23,6 +23,7 @@ object OreDictionaryRegistrar {
 
     @JvmStatic
     fun registerOre(name: String, item: Item) = registerOre(name, { ItemStack(item) })
+
     @JvmStatic
     fun registerOre(name: String, block: Block) = registerOre(name, { ItemStack(block) })
 
@@ -31,5 +32,6 @@ object OreDictionaryRegistrar {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
+    @Suppress("UNUSED_PARAMETER")
     fun init(e: RegistryEvent.Register<Item>) = toRegister.forEach { stack, key -> OreDictionary.registerOre(key, stack()) }
 }

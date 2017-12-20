@@ -25,10 +25,6 @@ import java.util.function.Predicate;
 
 public class LibLibTransformer implements IClassTransformer, Opcodes {
 
-    private static final String ASM_HOOKS = "com/teamwizardry/librarianlib/asm/LibLibAsmHooks";
-
-    private static final Map<String, Transformer> transformers = new HashMap<>();
-
     public static final ClassnameMap CLASS_MAPPINGS = new ClassnameMap(
             "net/minecraft/item/ItemStack", "ain",
             "net/minecraft/client/renderer/block/model/IBakedModel", "cfw",
@@ -46,7 +42,8 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
             "net/minecraft/client/particle/Particle", "btd",
             "net/minecraft/client/particle/ParticleSpell", "btm"
     );
-
+    private static final String ASM_HOOKS = "com/teamwizardry/librarianlib/asm/LibLibAsmHooks";
+    private static final Map<String, Transformer> transformers = new HashMap<>();
 
     static {
         transformers.put("net.minecraft.client.renderer.RenderItem", LibLibTransformer::transformRenderItem);
@@ -67,18 +64,18 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
         byte[] transformedClass = transform(basicClass, sig1, "Item render hook",
                 combine((AbstractInsnNode node) -> (node.getOpcode() == INVOKESPECIAL || node.getOpcode() == INVOKEVIRTUAL) // Filter
-                        && target.matches((MethodInsnNode) node),
-                (MethodNode method, AbstractInsnNode node) -> { // Action
-                    InsnList newInstructions = new InsnList();
+                                && target.matches((MethodInsnNode) node),
+                        (MethodNode method, AbstractInsnNode node) -> { // Action
+                            InsnList newInstructions = new InsnList();
 
-                    newInstructions.add(new VarInsnNode(ALOAD, 1));
-                    newInstructions.add(new VarInsnNode(ALOAD, 2));
-                    newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderHook",
-                            "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model/IBakedModel;)V", false));
+                            newInstructions.add(new VarInsnNode(ALOAD, 1));
+                            newInstructions.add(new VarInsnNode(ALOAD, 2));
+                            newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderHook",
+                                    "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model/IBakedModel;)V", false));
 
-                    method.instructions.insert(node, newInstructions);
-                    return true;
-                }));
+                            method.instructions.insert(node, newInstructions);
+                            return true;
+                        }));
 
         transformedClass = transform(transformedClass, sig2, "Enchantment glint glow activation", (MethodNode method) -> { // Action
             InsnList instructions = method.instructions;
@@ -106,15 +103,15 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                 "(Lnet/minecraft/client/renderer/entity/RenderLivingBase;Lnet/minecraft/entity/EntityLivingBase;Lnet/minecraft/client/model/ModelBase;FFFFFFF)V");
 
         byte[] transformedClass = transform(basicClass, sig, "Enchantment glint glow activation", (MethodNode method) -> { // Action
-                InsnList instructions = method.instructions;
+            InsnList instructions = method.instructions;
 
-                InsnList newInstructions = new InsnList();
-                newInstructions.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
-                newInstructions.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
+            InsnList newInstructions = new InsnList();
+            newInstructions.add(new FieldInsnNode(GETSTATIC, ASM_HOOKS, "INSTANCE", "L" + ASM_HOOKS + ";"));
+            newInstructions.add(new MethodInsnNode(INVOKEVIRTUAL, ASM_HOOKS, "maximizeGlowLightmap", "()V", false));
 
-                instructions.insertBefore(instructions.getFirst(), newInstructions);
-                return true;
-            });
+            instructions.insertBefore(instructions.getFirst(), newInstructions);
+            return true;
+        });
 
         return transform(transformedClass, sig, "Enchantment glint glow return", combine((AbstractInsnNode node) -> node.getOpcode() == RETURN,
                 (MethodNode method, AbstractInsnNode node) -> {
@@ -137,58 +134,58 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
         byte[] transformedClass = transform(basicClass, sig, "Block render hook",
                 combine((AbstractInsnNode node) -> node.getOpcode() == INVOKEVIRTUAL &&
-                        target1.matches((MethodInsnNode) node), // Filter
-                (MethodNode method, AbstractInsnNode node) -> { // Action
-                    boolean obf = method.name.equals(sig.obfName);
-                    System.out.println("obf: " + obf);
-                    InsnList newInstructions = new InsnList();
+                                target1.matches((MethodInsnNode) node), // Filter
+                        (MethodNode method, AbstractInsnNode node) -> { // Action
+                            boolean obf = method.name.equals(sig.obfName);
+                            System.out.println("obf: " + obf);
+                            InsnList newInstructions = new InsnList();
 
-                    newInstructions.add(new VarInsnNode(ALOAD, 0));
-                    newInstructions.add(new FieldInsnNode(GETFIELD, "net/minecraft/client/renderer/BlockRendererDispatcher",
-                        obf ? "field_175027_c" : "blockModelRenderer", "Lnet/minecraft/client/renderer/BlockModelRenderer;"));
-                    // BlockModelRenderer
+                            newInstructions.add(new VarInsnNode(ALOAD, 0));
+                            newInstructions.add(new FieldInsnNode(GETFIELD, "net/minecraft/client/renderer/BlockRendererDispatcher",
+                                    obf ? "field_175027_c" : "blockModelRenderer", "Lnet/minecraft/client/renderer/BlockModelRenderer;"));
+                            // BlockModelRenderer
 
-                    newInstructions.add(new VarInsnNode(ALOAD, 3));
-                    newInstructions.add(new VarInsnNode(ALOAD, 6));
-                    newInstructions.add(new VarInsnNode(ALOAD, 1));
-                    newInstructions.add(new VarInsnNode(ALOAD, 2));
-                    newInstructions.add(new VarInsnNode(ALOAD, 4));
-                    // BlockModelRenderer, IBlockAccess, IBakedModel, IBlockState, BlockPos, BufferBuilder
+                            newInstructions.add(new VarInsnNode(ALOAD, 3));
+                            newInstructions.add(new VarInsnNode(ALOAD, 6));
+                            newInstructions.add(new VarInsnNode(ALOAD, 1));
+                            newInstructions.add(new VarInsnNode(ALOAD, 2));
+                            newInstructions.add(new VarInsnNode(ALOAD, 4));
+                            // BlockModelRenderer, IBlockAccess, IBakedModel, IBlockState, BlockPos, BufferBuilder
 
-                    newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderHook",
-                            "(Lnet/minecraft/client/renderer/BlockModelRenderer;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/BufferBuilder;)V", false));
+                            newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderHook",
+                                    "(Lnet/minecraft/client/renderer/BlockModelRenderer;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/BufferBuilder;)V", false));
 
-                    method.instructions.insert(node, newInstructions);
+                            method.instructions.insert(node, newInstructions);
 
-                    return true;
-                }));
+                            return true;
+                        }));
 
         return transform(transformedClass, sig, "Fluid render hook",
                 combine((AbstractInsnNode node) -> node.getOpcode() == INVOKEVIRTUAL &&
-                        target2.matches((MethodInsnNode) node), // Filter
-                (MethodNode method, AbstractInsnNode node) -> { // Action
-                    boolean obf = method.name.equals(sig.obfName);
-                    System.out.println("obf2: " + obf);
-                    InsnList newInstructions = new InsnList();
+                                target2.matches((MethodInsnNode) node), // Filter
+                        (MethodNode method, AbstractInsnNode node) -> { // Action
+                            boolean obf = method.name.equals(sig.obfName);
+                            System.out.println("obf2: " + obf);
+                            InsnList newInstructions = new InsnList();
 
-                    newInstructions.add(new VarInsnNode(ALOAD, 0));
-                    newInstructions.add(new FieldInsnNode(GETFIELD, "net/minecraft/client/renderer/BlockRendererDispatcher",
-                        obf ? "field_175027_c" : "blockModelRenderer", "Lnet/minecraft/client/renderer/BlockModelRenderer;"));
-                    // BlockModelRenderer
+                            newInstructions.add(new VarInsnNode(ALOAD, 0));
+                            newInstructions.add(new FieldInsnNode(GETFIELD, "net/minecraft/client/renderer/BlockRendererDispatcher",
+                                    obf ? "field_175027_c" : "blockModelRenderer", "Lnet/minecraft/client/renderer/BlockModelRenderer;"));
+                            // BlockModelRenderer
 
-                    newInstructions.add(new VarInsnNode(ALOAD, 3));
-                    newInstructions.add(new VarInsnNode(ALOAD, 1));
-                    newInstructions.add(new VarInsnNode(ALOAD, 2));
-                    newInstructions.add(new VarInsnNode(ALOAD, 4));
-                    // BlockModelRenderer, IBlockAccess, IBlockState, BlockPos, BufferBuilder
+                            newInstructions.add(new VarInsnNode(ALOAD, 3));
+                            newInstructions.add(new VarInsnNode(ALOAD, 1));
+                            newInstructions.add(new VarInsnNode(ALOAD, 2));
+                            newInstructions.add(new VarInsnNode(ALOAD, 4));
+                            // BlockModelRenderer, IBlockAccess, IBlockState, BlockPos, BufferBuilder
 
-                    newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderHook",
-                            "(Lnet/minecraft/client/renderer/BlockModelRenderer;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/BufferBuilder;)V", false));
+                            newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderHook",
+                                    "(Lnet/minecraft/client/renderer/BlockModelRenderer;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/BufferBuilder;)V", false));
 
-                    method.instructions.insert(node, newInstructions);
+                            method.instructions.insert(node, newInstructions);
 
-                    return true;
-                }));
+                            return true;
+                        }));
     }
 
     private static byte[] transformParticle(byte[] basicClass) {
@@ -222,17 +219,6 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
     // BOILERPLATE =====================================================================================================
 
-    @Override
-    public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if (transformers.containsKey(transformedName)) {
-            String[] arr = transformedName.split("\\.");
-            log("Transforming " + arr[arr.length - 1]);
-            return transformers.get(transformedName).apply(basicClass);
-        }
-
-        return basicClass;
-    }
-
     public static byte[] transform(byte[] basicClass, MethodSignature sig, String simpleDesc, MethodAction action) {
         ClassReader reader = new ClassReader(basicClass);
         ClassNode node = new ClassNode();
@@ -250,7 +236,6 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
         return basicClass;
     }
-
 
     public static boolean findMethodAndTransform(ClassNode node, MethodSignature sig, MethodAction pred) {
         for (MethodNode method : node.methods) {
@@ -460,10 +445,39 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         log(sw.toString());
     }
 
+    @Override
+    public byte[] transform(String name, String transformedName, byte[] basicClass) {
+        if (transformers.containsKey(transformedName)) {
+            String[] arr = transformedName.split("\\.");
+            log("Transforming " + arr[arr.length - 1]);
+            return transformers.get(transformedName).apply(basicClass);
+        }
+
+        return basicClass;
+    }
+
+    public interface Transformer extends Function<byte[], byte[]> {
+        // NO-OP
+    }
+
+    public interface MethodAction extends Predicate<MethodNode> {
+        // NO-OP
+    }
+
+    // Basic interface aliases to not have to clutter up the code with generics over and over again
+
+    public interface NodeFilter extends Predicate<AbstractInsnNode> {
+        // NO-OP
+    }
+
+    public interface NodeAction extends BiPredicate<MethodNode, AbstractInsnNode> {
+        // NO-OP
+    }
+
     private static class InsnArrayIterator implements ListIterator<AbstractInsnNode> {
 
-        private int index;
         private final AbstractInsnNode[] array;
+        private int index;
 
         public InsnArrayIterator(AbstractInsnNode[] array) {
             this(array, 0);
@@ -535,17 +549,17 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
             this.obfDesc = obfuscate(funcDesc);
         }
 
-        @Override
-        public String toString() {
-            return "Names [" + funcName + ", " + srgName + ", " + obfName + "] Descriptor " + funcDesc + " / " + obfDesc;
-        }
-
         private static String obfuscate(String desc) {
             for (String s : CLASS_MAPPINGS.keySet())
                 if (desc.contains(s))
                     desc = desc.replaceAll(s, CLASS_MAPPINGS.get(s));
 
             return desc;
+        }
+
+        @Override
+        public String toString() {
+            return "Names [" + funcName + ", " + srgName + ", " + obfName + "] Descriptor " + funcDesc + " / " + obfDesc;
         }
 
         public boolean matches(String methodName, String methodDesc) {
@@ -563,30 +577,12 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
     }
 
-    // Basic interface aliases to not have to clutter up the code with generics over and over again
-
-    public interface Transformer extends Function<byte[], byte[]> {
-        // NO-OP
-    }
-
-    public interface MethodAction extends Predicate<MethodNode> {
-        // NO-OP
-    }
-
-    public interface NodeFilter extends Predicate<AbstractInsnNode> {
-        // NO-OP
-    }
-
-    public interface NodeAction extends BiPredicate<MethodNode, AbstractInsnNode> {
-        // NO-OP
-    }
-
     // Utility class to not have to manually put
 
     public static class ClassnameMap extends HashMap<String, String> {
 
         public ClassnameMap(String... s) {
-            for(int i = 0; i < s.length / 2; i++)
+            for (int i = 0; i < s.length / 2; i++)
                 put(s[i * 2], s[i * 2 + 1]);
         }
 

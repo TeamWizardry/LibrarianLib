@@ -61,10 +61,12 @@ open class BlockModFence(name: String, val parent: IBlockState) : BlockFence(par
     override val creativeTab: ModCreativeTab?
         get() = ModCreativeTab.defaultTabs[modId]
 
-    override fun getMapColor(state: IBlockState?, worldIn: IBlockAccess?, pos: BlockPos?) = parent.getMapColor(worldIn, pos)
+    @Suppress("OverridingDeprecatedMember")
+    override fun getMapColor(state: IBlockState, worldIn: IBlockAccess, pos: BlockPos): MapColor = parent.getMapColor(worldIn, pos)
     override fun getExplosionResistance(world: World, pos: BlockPos, exploder: Entity?, explosion: Explosion) = parent.block.getExplosionResistance(world, pos, exploder, explosion)
+    @Suppress("OverridingDeprecatedMember")
     override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
-    override fun isToolEffective(type: String?, state: IBlockState) = parent.block.isToolEffective(type, parent)
+    override fun isToolEffective(type: String, state: IBlockState) = parent.block.isToolEffective(type, parent)
     override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent)
 
     override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {

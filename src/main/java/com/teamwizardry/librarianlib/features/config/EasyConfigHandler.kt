@@ -44,7 +44,7 @@ object EasyConfigHandler {
     private val fieldMapBooleanArr: MutableList<FieldEntry<BooleanArray>> = mutableListOf()
     private val fieldMapDoubleArr: MutableList<FieldEntry<DoubleArray>> = mutableListOf()
     private val fieldMapLongArr: MutableList<FieldEntry<LongArray>> = mutableListOf()
-    
+
     private data class FieldEntry<T>(val modId: String,
                                      val setter: (T) -> Unit,
                                      val defaultValue: T?,
@@ -63,20 +63,6 @@ object EasyConfigHandler {
         loaded = true
         CONFIG_DIR = dir
         MinecraftForge.EVENT_BUS.register(this)
-
-        // Legacy support
-        findByClass(String::class.java, ConfigPropertyString::class.java, fieldMapStr, asm)
-        findByClass(Boolean::class.javaPrimitiveType!!, ConfigPropertyBoolean::class.java, fieldMapBoolean, asm)
-        findByClass(Int::class.javaPrimitiveType!!, ConfigPropertyInt::class.java, fieldMapInt, asm)
-        findByClass(Double::class.javaPrimitiveType!!, ConfigPropertyDouble::class.java, fieldMapDouble, asm)
-        findByClass(Long::class.javaPrimitiveType!!, ConfigPropertyLong::class.java, fieldMapLong, asm)
-
-        findByClass(Array<String>::class.java, ConfigPropertyStringArray::class.java, fieldMapStrArr, asm)
-        findByClass(BooleanArray::class.java, ConfigPropertyBooleanArray::class.java, fieldMapBooleanArr, asm)
-        findByClass(IntArray::class.java, ConfigPropertyIntArray::class.java, fieldMapIntArr, asm)
-        findByClass(DoubleArray::class.java, ConfigPropertyDoubleArray::class.java, fieldMapDoubleArr, asm)
-        findByClass(LongArray::class.java, ConfigPropertyLongArray::class.java, fieldMapLongArr, asm)
-        // End Legacy Support
 
         findAllProperties(asm)
 
@@ -204,7 +190,7 @@ object EasyConfigHandler {
 
             when (field.type) {
                 String::class.java -> addToMaps("String", inst, modid, field, info, fieldMapStr)
-                Int::class.java -> addToMaps("Int", inst, modid, field, info, fieldMapInt) { modid, inst, field, identifier, info ->
+                Int::class.java -> addToMaps("Int", inst, modid, field, info, fieldMapInt) { _, _, _, identifier, _ ->
                     val annot = field.getAnnotation(ConfigIntRange::class.java)
                     FieldEntry(modid, { it: Int -> field.set(inst, it) }, field.get(inst) as Int,
                             field.isAnnotationPresent(ConfigDevOnly::class.java),
@@ -212,7 +198,7 @@ object EasyConfigHandler {
                             info.getInt("sortingId"), field.isAnnotationPresent(ConfigNeedsFullRestart::class.java),
                             field.isAnnotationPresent(ConfigNeedsWorldRestart::class.java))
                 }
-                Double::class.java -> addToMaps("Double", inst, modid, field, info, fieldMapDouble) { modid, inst, field, identifier, info ->
+                Double::class.java -> addToMaps("Double", inst, modid, field, info, fieldMapDouble) { _, _, _, identifier, _ ->
                     val annot = field.getAnnotation(ConfigDoubleRange::class.java)
                     FieldEntry(modid, { it: Double -> field.set(inst, it) }, field.get(inst) as Double,
                             field.isAnnotationPresent(ConfigDevOnly::class.java),
@@ -223,7 +209,7 @@ object EasyConfigHandler {
                 Boolean::class.java -> addToMaps("Boolean", inst, modid, field, info, fieldMapBoolean)
                 Long::class.java -> addToMaps("Long", inst, modid, field, info, fieldMapLong)
                 Array<String>::class.java -> addToMaps("StringArray", inst, modid, field, info, fieldMapStrArr)
-                IntArray::class.java -> addToMaps("IntArray", inst, modid, field, info, fieldMapIntArr) { modid, inst, field, identifier, info ->
+                IntArray::class.java -> addToMaps("IntArray", inst, modid, field, info, fieldMapIntArr) { _, _, _, identifier, _ ->
                     val annot = field.getAnnotation(ConfigIntRange::class.java)
                     FieldEntry(modid, { it: IntArray -> field.set(inst, it) }, field.get(inst) as IntArray,
                             field.isAnnotationPresent(ConfigDevOnly::class.java),
@@ -231,7 +217,7 @@ object EasyConfigHandler {
                             info.getInt("sortingId"), field.isAnnotationPresent(ConfigNeedsFullRestart::class.java),
                             field.isAnnotationPresent(ConfigNeedsWorldRestart::class.java))
                 }
-                DoubleArray::class.java -> addToMaps("DoubleArray", inst, modid, field, info, fieldMapDoubleArr) { modid, inst, field, identifier, info ->
+                DoubleArray::class.java -> addToMaps("DoubleArray", inst, modid, field, info, fieldMapDoubleArr) { _, _, _, identifier, _ ->
                     val annot = field.getAnnotation(ConfigDoubleRange::class.java)
                     FieldEntry(modid, { it: DoubleArray -> field.set(inst, it) }, field.get(inst) as DoubleArray,
                             field.isAnnotationPresent(ConfigDevOnly::class.java),
@@ -273,33 +259,6 @@ object EasyConfigHandler {
         if (it.devOnly && !LibrarianLib.DEV_ENVIRONMENT) return false
         return workingId == it.modId
     }
-
-
-    // Legacy
-
-    private inline fun <reified T> findByClass(clazz: Class<*>, annotationClass: Class<*>, target: MutableList<FieldEntry<T>>, asm: ASMDataTable) {
-        AnnotationHelper.findAnnotatedObjects(asm, clazz, annotationClass, { field: Field, info: AnnotationInfo ->
-            injectField(field, info, annotationClass, target)
-        })
-    }
-
-    private inline fun <reified T> injectField(field: Field, info: AnnotationInfo, annotationClass: Class<*>, target: MutableList<FieldEntry<T>>) {
-        field.isAccessible = true
-        val inst = field.declaringClass.kotlin.objectInstance
-
-        var modid = info.getString("modid")
-        if (modid.isBlank())
-            modid = OwnershipHandler.getModId(field.declaringClass) ?: "unknown"
-        allIds.add(modid)
-
-        val fieldEntry = FieldEntry(modid, { it: T -> field.set(inst, it) }, info.get<T>("defaultValue"),
-                info.getBoolean("devOnly"),
-                info.getString("comment"), info.getString("category"), info.getString("id"))
-        allFields.put(fieldEntry, annotationClass.simpleName.replace("ConfigProperty", "") to "${field.declaringClass.typeName}.${field.name}")
-        target.add(fieldEntry)
-    }
-
-    // End Legacy
 }
 
 
@@ -355,38 +314,3 @@ annotation class ConfigDoubleRange(val min: Double, val max: Double)
 @MustBeDocumented
 @Target(AnnotationTarget.FIELD)
 annotation class ConfigIntRange(val min: Int, val max: Int)
-
-
-
-@Deprecated("Legacy support, use ConfigProperty's defaults")
-const val noModId = ""
-
-@Deprecated("Use ConfigProperty", ReplaceWith("ConfigProperty(category, comment, id, modid)", "com.teamwizardry.librarianlib.features.config.ConfigProperty"))
-@Target(AnnotationTarget.FIELD) annotation class ConfigPropertyString(val modid: String = "", val category: String, val id: String, val comment: String, val defaultValue: String, val devOnly: Boolean = false)
-
-@Deprecated("Use ConfigProperty", ReplaceWith("ConfigProperty(category, comment, id, modid)", "com.teamwizardry.librarianlib.features.config.ConfigProperty"))
-@Target(AnnotationTarget.FIELD) annotation class ConfigPropertyInt(val modid: String = "", val category: String, val id: String, val comment: String, val defaultValue: Int, val devOnly: Boolean = false)
-
-@Deprecated("Use ConfigProperty", ReplaceWith("ConfigProperty(category, comment, id, modid)", "com.teamwizardry.librarianlib.features.config.ConfigProperty"))
-@Target(AnnotationTarget.FIELD) annotation class ConfigPropertyLong(val modid: String = "", val category: String, val id: String, val comment: String, val defaultValue: Long, val devOnly: Boolean = false)
-
-@Deprecated("Use ConfigProperty", ReplaceWith("ConfigProperty(category, comment, id, modid)", "com.teamwizardry.librarianlib.features.config.ConfigProperty"))
-@Target(AnnotationTarget.FIELD) annotation class ConfigPropertyBoolean(val modid: String = "", val category: String, val id: String, val comment: String, val defaultValue: Boolean, val devOnly: Boolean = false)
-
-@Deprecated("Use ConfigProperty", ReplaceWith("ConfigProperty(category, comment, id, modid)", "com.teamwizardry.librarianlib.features.config.ConfigProperty"))
-@Target(AnnotationTarget.FIELD) annotation class ConfigPropertyDouble(val modid: String = "", val category: String, val id: String, val comment: String, val defaultValue: Double, val devOnly: Boolean = false)
-
-@Deprecated("Use ConfigProperty", ReplaceWith("ConfigProperty(category, comment, id, modid)", "com.teamwizardry.librarianlib.features.config.ConfigProperty"))
-@Target(AnnotationTarget.FIELD) annotation class ConfigPropertyStringArray(val modid: String = "", val category: String, val id: String, val comment: String, val defaultValue: Array<String>, val devOnly: Boolean = false)
-
-@Deprecated("Use ConfigProperty", ReplaceWith("ConfigProperty(category, comment, id, modid)", "com.teamwizardry.librarianlib.features.config.ConfigProperty"))
-@Target(AnnotationTarget.FIELD) annotation class ConfigPropertyIntArray(val modid: String = "", val category: String, val id: String, val comment: String, val defaultValue: IntArray, val devOnly: Boolean = false)
-
-@Deprecated("Use ConfigProperty", ReplaceWith("ConfigProperty(category, comment, id, modid)", "com.teamwizardry.librarianlib.features.config.ConfigProperty"))
-@Target(AnnotationTarget.FIELD) annotation class ConfigPropertyBooleanArray(val modid: String = "", val category: String, val id: String, val comment: String, val defaultValue: BooleanArray, val devOnly: Boolean = false)
-
-@Deprecated("Use ConfigProperty", ReplaceWith("ConfigProperty(category, comment, id, modid)", "com.teamwizardry.librarianlib.features.config.ConfigProperty"))
-@Target(AnnotationTarget.FIELD) annotation class ConfigPropertyDoubleArray(val modid: String = "", val category: String, val id: String, val comment: String, val defaultValue: DoubleArray, val devOnly: Boolean = false)
-
-@Deprecated("Use ConfigProperty", ReplaceWith("ConfigProperty(category, comment, id, modid)", "com.teamwizardry.librarianlib.features.config.ConfigProperty"))
-@Target(AnnotationTarget.FIELD) annotation class ConfigPropertyLongArray(val modid: String = "", val category: String, val id: String, val comment: String, val defaultValue: LongArray, val devOnly: Boolean = false)

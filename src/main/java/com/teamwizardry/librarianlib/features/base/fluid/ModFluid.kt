@@ -26,22 +26,31 @@ open class ModFluid(name: String, rlStill: ResourceLocation, rlFlow: ResourceLoc
 
     override fun setDensity(density: Int): ModFluid
             = super.setDensity(density) as ModFluid
+
     override fun setEmptySound(emptySound: SoundEvent?): ModFluid
             = super.setEmptySound(emptySound) as ModFluid
+
     override fun setViscosity(viscosity: Int): ModFluid
             = super.setViscosity(viscosity) as ModFluid
+
     override fun setTemperature(temperature: Int): ModFluid
             = super.setTemperature(temperature) as ModFluid
+
     override fun setGaseous(isGaseous: Boolean): ModFluid
             = super.setGaseous(isGaseous) as ModFluid
+
     override fun setRarity(rarity: EnumRarity?): ModFluid
             = super.setRarity(rarity) as ModFluid
+
     override fun setFillSound(fillSound: SoundEvent?): ModFluid
             = super.setFillSound(fillSound) as ModFluid
+
     override fun setLuminosity(luminosity: Int): ModFluid
             = super.setLuminosity(luminosity) as ModFluid
+
     open fun setVaporizes(vaporizes: Boolean): ModFluid
             = apply { this.vaporizes = vaporizes }
+
     open fun makeBlock(material: Material): ModFluid
             = apply { if (getActualBlock() == null) BlockModFluid(getActual(), material) }
 

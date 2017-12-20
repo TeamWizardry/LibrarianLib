@@ -3,8 +3,6 @@ package com.teamwizardry.librarianlib.features.sprite
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.io.IOException
@@ -72,14 +70,14 @@ class Texture(
         this.width = 16
         this.height = 16
         try {
-            var section = Minecraft.getMinecraft().resourceManager.getResource(loc).getMetadata<SpritesMetadataSection>("spritesheet")
+            val section = Minecraft.getMinecraft().resourceManager.getResource(loc).getMetadata<SpritesMetadataSection>("spritesheet")
             this.section = section
             if (section != null) {
                 this.width = section.width
                 this.height = section.height
                 for (def in section.definitions) {
                     if (oldSprites.containsKey(def.name)) {
-                        var oldSprite = oldSprites.get(def.name)
+                        val oldSprite = oldSprites.get(def.name)
                         if (oldSprite != null) {
                             oldSprite.init(def.u, def.v, def.w, def.h, def.frames, def.offsetU, def.offsetV)
                             sprites.put(def.name, oldSprite)

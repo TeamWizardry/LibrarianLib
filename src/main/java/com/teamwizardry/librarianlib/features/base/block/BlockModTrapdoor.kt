@@ -10,6 +10,7 @@ import com.teamwizardry.librarianlib.features.kotlin.json
 import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
 import net.minecraft.block.Block
 import net.minecraft.block.BlockTrapDoor
+import net.minecraft.block.material.MapColor
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.entity.Entity
@@ -30,7 +31,7 @@ open class BlockModTrapdoor(name: String, val parent: IBlockState) : BlockTrapDo
 
     private val parentName = parent.block.registryName
 
-    override val variants: Array<out String>
+    override val variants = VariantHelper.beginSetupBlock(name, arrayOf())
 
     override val bareName: String = VariantHelper.toSnakeCase(name)
     val modId = currentModId
@@ -38,7 +39,6 @@ open class BlockModTrapdoor(name: String, val parent: IBlockState) : BlockTrapDo
     override val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
-        this.variants = VariantHelper.beginSetupBlock(name, arrayOf())
         VariantHelper.finishSetupBlock(this, bareName, itemForm, this::creativeTab)
     }
 
@@ -61,12 +61,17 @@ open class BlockModTrapdoor(name: String, val parent: IBlockState) : BlockTrapDo
     override val creativeTab: ModCreativeTab?
         get() = ModCreativeTab.defaultTabs[modId]
 
-    override fun getMapColor(state: IBlockState?, worldIn: IBlockAccess?, pos: BlockPos?) = parent.getMapColor(worldIn, pos)
+    @Suppress("OverridingDeprecatedMember")
+    override fun getMapColor(state: IBlockState, worldIn: IBlockAccess, pos: BlockPos): MapColor = parent.getMapColor(worldIn, pos)
     override fun getExplosionResistance(world: World, pos: BlockPos, exploder: Entity?, explosion: Explosion) = parent.block.getExplosionResistance(world, pos, exploder, explosion)
+    @Suppress("OverridingDeprecatedMember")
     override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
-    @SideOnly(Side.CLIENT) override fun isTranslucent(state: IBlockState?) = parent.isTranslucent
-    override fun getUseNeighborBrightness(state: IBlockState?) = parent.useNeighborBrightness()
-    override fun isToolEffective(type: String?, state: IBlockState) = parent.block.isToolEffective(type, parent)
+    @SideOnly(Side.CLIENT)
+    @Suppress("OverridingDeprecatedMember")
+    override fun isTranslucent(state: IBlockState) = parent.isTranslucent
+    @Suppress("OverridingDeprecatedMember")
+    override fun getUseNeighborBrightness(state: IBlockState) = parent.useNeighborBrightness()
+    override fun isToolEffective(type: String, state: IBlockState) = parent.block.isToolEffective(type, parent)
     override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent)
 
     override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {

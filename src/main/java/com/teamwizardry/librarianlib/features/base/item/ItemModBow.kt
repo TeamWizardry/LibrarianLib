@@ -12,7 +12,6 @@ import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBow
 import net.minecraft.item.ItemStack
-import net.minecraft.item.ItemSword
 import net.minecraft.util.NonNullList
 
 /**
@@ -41,7 +40,7 @@ open class ItemModBow(name: String) : ItemBow(), IModItemProvider, IModelGenerat
         return "item.$modId:$name"
     }
 
-    override fun getSubItems(tab: CreativeTabs?, subItems: NonNullList<ItemStack>) {
+    override fun getSubItems(tab: CreativeTabs, subItems: NonNullList<ItemStack>) {
         if (isInCreativeTab(tab))
             variants.indices.mapTo(subItems) { ItemStack(this, 1, it) }
     }

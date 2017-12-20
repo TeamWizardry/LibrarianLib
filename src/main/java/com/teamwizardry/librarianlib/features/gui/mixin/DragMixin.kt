@@ -18,6 +18,7 @@ class DragMixin(protected var component: GuiComponent, protected var constraints
      * @property mousePos The position of the mouse in the component
      */
     class DragPickupEvent(@JvmField val component: GuiComponent, val button: EnumMouseButton, val mousePos: Vec2d) : EventCancelable()
+
     /**
      * Called when the component is dropped up
      *
@@ -26,6 +27,7 @@ class DragMixin(protected var component: GuiComponent, protected var constraints
      * @property previousPos The position of the component when it was picked up
      */
     class DragDropEvent(@JvmField val component: GuiComponent, val button: EnumMouseButton, val previousPos: Vec2d) : EventCancelable()
+
     /**
      * Called when the component is about to move
      *

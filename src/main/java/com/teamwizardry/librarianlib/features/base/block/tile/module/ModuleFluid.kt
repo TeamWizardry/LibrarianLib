@@ -33,7 +33,10 @@ class ModuleFluid(handler: SerializableFluidTank) : ModuleCapability<ModuleFluid
         constructor(stack: FluidStack, capacity: Int) : super(stack, capacity)
         constructor(fluid: Fluid, amount: Int, capacity: Int) : super(fluid, amount, capacity)
 
-        override fun deserializeNBT(nbt: NBTTagCompound) { readFromNBT(nbt) }
+        override fun deserializeNBT(nbt: NBTTagCompound) {
+            readFromNBT(nbt)
+        }
+
         override fun serializeNBT(): NBTTagCompound = writeToNBT(NBTTagCompound())
     }
 

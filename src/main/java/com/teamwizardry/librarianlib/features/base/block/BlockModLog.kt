@@ -22,9 +22,10 @@ open class BlockModLog(name: String, vararg variants: String) : BlockModPillar(n
     init {
         blockHardness = 2.0f
         soundType = SoundType.WOOD
-        if (itemForm != null) {
+        val form = itemForm
+        if (form != null) {
             for (variant in this.variants.indices)
-                OreDictionaryRegistrar.registerOre("logWood") { ItemStack(itemForm, 1, variant) }
+                OreDictionaryRegistrar.registerOre("logWood") { ItemStack(form, 1, variant) }
             FurnaceRecipes.instance().addSmeltingRecipeForBlock(this, ItemStack(Items.COAL, 1, 1), 0.15f)
         }
     }

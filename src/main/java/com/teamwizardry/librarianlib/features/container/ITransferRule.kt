@@ -44,7 +44,7 @@ interface ITransferRule {
                 }
             }
 
-            if (runningStack != null) {
+            if (!runningStack.isEmpty) {
                 region.forEach { slot ->
                     if (!shouldContinue)
                         return@forEach
@@ -61,10 +61,7 @@ interface ITransferRule {
         }
 
 
-        fun areItemStacksEqual(stackA: ItemStack?, stackB: ItemStack?): Boolean {
-            if (stackA == null || stackB == null) {
-                return stackA === stackB
-            }
+        fun areItemStacksEqual(stackA: ItemStack, stackB: ItemStack): Boolean {
             return stackB.item === stackA.item && (!stackA.hasSubtypes || stackA.metadata == stackB.metadata) && ItemStack.areItemStackTagsEqual(stackA, stackB)
         }
 

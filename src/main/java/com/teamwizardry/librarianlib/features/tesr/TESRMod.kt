@@ -13,13 +13,13 @@ import org.lwjgl.opengl.GL11
 
 class TESRMod(val constructor: (TileMod) -> TileRenderHandler<TileMod>, val fast: Boolean) : TileEntitySpecialRenderer<TileMod>() {
     override fun render(te: TileMod?, x: Double, y: Double, z: Double, partialTicks: Float, destroyStage: Int, alpha: Float) {
-        if(fast) {
+        if (fast) {
             fastTESRRender(te, x, y, z, partialTicks, destroyStage, alpha)
             return
         }
-        if(te == null) return
+        if (te == null) return
         var renderer = te.renderHandler
-        if(renderer == null) {
+        if (renderer == null) {
             renderer = constructor(te)
             te.renderHandler = renderer
         }
@@ -29,12 +29,9 @@ class TESRMod(val constructor: (TileMod) -> TileRenderHandler<TileMod>, val fast
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
         GlStateManager.enableBlend()
 
-        if (Minecraft.isAmbientOcclusionEnabled())
-        {
+        if (Minecraft.isAmbientOcclusionEnabled()) {
             GlStateManager.shadeModel(GL11.GL_SMOOTH)
-        }
-        else
-        {
+        } else {
             GlStateManager.shadeModel(GL11.GL_FLAT)
         }
 
@@ -48,9 +45,9 @@ class TESRMod(val constructor: (TileMod) -> TileRenderHandler<TileMod>, val fast
     }
 
     override fun renderTileEntityFast(te: TileMod?, x: Double, y: Double, z: Double, partialTicks: Float, destroyStage: Int, alpha: Float, buffer: BufferBuilder) {
-        if(te == null) return
+        if (te == null) return
         var renderer = te.renderHandler
-        if(renderer == null) {
+        if (renderer == null) {
             renderer = constructor(te)
             te.renderHandler = renderer
         }
@@ -68,12 +65,9 @@ class TESRMod(val constructor: (TileMod) -> TileRenderHandler<TileMod>, val fast
         GlStateManager.enableBlend()
         GlStateManager.disableCull()
 
-        if (Minecraft.isAmbientOcclusionEnabled())
-        {
+        if (Minecraft.isAmbientOcclusionEnabled()) {
             GlStateManager.shadeModel(GL11.GL_SMOOTH)
-        }
-        else
-        {
+        } else {
             GlStateManager.shadeModel(GL11.GL_FLAT)
         }
 

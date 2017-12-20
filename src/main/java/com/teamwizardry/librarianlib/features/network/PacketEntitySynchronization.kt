@@ -14,7 +14,8 @@ import net.minecraftforge.fml.relauncher.Side
 @PacketRegister(Side.CLIENT)
 class PacketEntitySynchronization(@Save var entityId: Int = -1, val entity: IModEntity? = null) : PacketAbstractUpdate(entity) {
 
-    @Save var pos: BlockPos? = null
+    @Save
+    var pos: BlockPos? = null
 
     // Buf is always null serverside
     private var buf: ByteBuf? = null

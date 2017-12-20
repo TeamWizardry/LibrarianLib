@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.features.network
 
 import com.teamwizardry.librarianlib.features.autoregister.PacketRegister
-import com.teamwizardry.librarianlib.features.chunkdata.WorldData
+import com.teamwizardry.librarianlib.features.worlddata.WorldData
 import com.teamwizardry.librarianlib.features.kotlin.missingno
 import com.teamwizardry.librarianlib.features.saving.Save
 import io.netty.buffer.ByteBuf
@@ -19,7 +19,8 @@ import net.minecraftforge.fml.relauncher.Side
 class PacketCustomWorldData(@Save var name: ResourceLocation, data: WorldData? = null) : PacketAbstractUpdate(name) {
     constructor() : this(missingno, null)
 
-    @Save var dataBuf: ByteBuf = Unpooled.buffer()
+    @Save
+    var dataBuf: ByteBuf = Unpooled.buffer()
 
     init {
         data?.writeToBytes(dataBuf)

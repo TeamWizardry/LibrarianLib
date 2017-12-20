@@ -9,13 +9,16 @@ import net.minecraft.world.chunk.Chunk
  * Created by TheCodeWarrior
  */
 object ChunkDataRegistry {
-    init { ChunkWorldData }
+    init {
+        ChunkWorldData
+    }
+
     private val registry = mutableMapOf<Class<*>, ChunkDataRegistryItem>()
     private val classes = mutableMapOf<ResourceLocation, Class<*>>()
 
     @JvmStatic
     fun <T : ChunkData> register(name: ResourceLocation, clazz: Class<T>, constructor: (chunk: Chunk) -> T, applyTo: (chunk: Chunk) -> Boolean) {
-        if(name in classes) {
+        if (name in classes) {
             throw IllegalArgumentException("Duplicate chunk data name $name")
         }
 

@@ -21,7 +21,7 @@ class ContainerImpl(val container: ContainerBase) : Container() {
         container.addContainerSlots()
     }
 
-    override fun slotClick(slotId: Int, dragType: Int, clickTypeIn: ClickType?, player: EntityPlayer): ItemStack {
+    override fun slotClick(slotId: Int, dragType: Int, clickTypeIn: ClickType, player: EntityPlayer): ItemStack {
         if (slotId > 0 && slotId < inventorySlots.size) {
             val slot = inventorySlots[slotId] as SlotBase
 
@@ -34,15 +34,15 @@ class ContainerImpl(val container: ContainerBase) : Container() {
         return super.slotClick(slotId, dragType, clickTypeIn, player)
     }
 
-    override fun transferStackInSlot(playerIn: EntityPlayer?, index: Int): ItemStack? {
+    override fun transferStackInSlot(playerIn: EntityPlayer?, index: Int): ItemStack {
         return container.transferStackInSlot(inventorySlots[index] as SlotBase)
     }
 
-    override public fun addSlotToContainer(slotIn: Slot?): Slot {
+    override public fun addSlotToContainer(slotIn: Slot): Slot {
         return super.addSlotToContainer(slotIn)
     }
 
-    override fun onContainerClosed(playerIn: EntityPlayer?) {
+    override fun onContainerClosed(playerIn: EntityPlayer) {
         container.onClosed()
         super.onContainerClosed(playerIn)
     }

@@ -10,8 +10,8 @@ import com.teamwizardry.librarianlib.features.container.ContainerBase
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventBus
 import com.teamwizardry.librarianlib.features.gui.GuiBase
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.GuiOverlay
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.guicontainer.GuiContainerBase
 import com.teamwizardry.librarianlib.features.kotlin.json
 import com.teamwizardry.librarianlib.features.kotlin.nbt
@@ -48,12 +48,11 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
  * - JSON and NBT groovy-style builders [json] [nbt] (JsonMaker and NBTMaker)
  * - Method Handle helpers and delegates [MethodHandleHelper]
  * - Helper class to check what mod owns a class [OwnershipHandler]
- * - Base classes for a variety of situations, for example: [Vec2d] [Matrix4] [Event] [ModAchievement]
+ * - Base classes for a variety of situations, for example: [Vec2d] [Matrix4] [Event]
  * - Structure API [Structure]
  * - Reliable and simple packet handler also using [Save] [PacketBase]
  * - Config Property system that is completely painless and only requires very minimal registration: [EasyConfigHandler]
  * - Container API [ContainerBase]
- * ~~- Multipart API [PartMod]~~
  * - An easy F3+key handler [F3Handler]
  * - A simple event bus implementation [Event] [EventBus]
  * - Capability which uses the [Save] scheme to save and sync fields [CapabilityMod]

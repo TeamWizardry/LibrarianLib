@@ -331,8 +331,8 @@ class Matrix4 {
         return vec.normalize()
     }
 
-    fun invert() : Matrix4 {
-        val m : Matrix4 = Matrix4()
+    fun invert(): Matrix4 {
+        val m = Matrix4()
 
         val s0 = m00 * m11 - m10 * m01
         val s1 = m00 * m12 - m10 * m02
@@ -349,7 +349,7 @@ class Matrix4 {
         val c0 = m20 * m31 - m30 * m21
 
         val det = (s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0)
-        if(det == 0.0) return m
+        if (det == 0.0) return m
         val invdet = 1 / det
 
         m.m00 = (m11 * c5 - m12 * c4 + m13 * c3) * invdet
@@ -397,6 +397,7 @@ class Matrix4 {
     operator fun timesAssign(mat: Matrix4) {
         this.multiply(mat)
     }
+
     operator fun times(vec: Vec3d) = this.apply(vec)
     operator fun times(vec: Vec2d) = this.apply(vec)
 }

@@ -48,8 +48,10 @@ class ComponentTransform {
      * If scale2D's components are not equal, this property returns the average of its X and Y components.
      */
     var scale: Double
-        get() = (scale2D.x + scale2D.y)/2
-        set(value) { scale2D = vec(value, value) }
+        get() = (scale2D.x + scale2D.y) / 2
+        set(value) {
+            scale2D = vec(value, value)
+        }
 
     /**
      * The point to rotate and scale about. Applied after translation
@@ -79,7 +81,7 @@ class ComponentTransform {
         other.rotate(rotate, vec(0, 0, 1))
 
         other.scale(vec(scale2D.x, scale2D.y, 1))
-        other.translate(vec(postTranslate.x-anchor.x, postTranslate.y-anchor.y, 0))
+        other.translate(vec(postTranslate.x - anchor.x, postTranslate.y - anchor.y, 0))
     }
 
     /**
@@ -113,6 +115,6 @@ class ComponentTransform {
         GlStateManager.translate(translate.x + anchor.x, translate.y + anchor.y, translateZ)
         GlStateManager.rotate(Math.toDegrees(rotate).toFloat(), 0f, 0f, 1f)
         GlStateManager.scale(scale2D.x, scale2D.y, 1.0)
-        GlStateManager.translate(postTranslate.x-anchor.x, postTranslate.y-anchor.y, 0.0)
+        GlStateManager.translate(postTranslate.x - anchor.x, postTranslate.y - anchor.y, 0.0)
     }
 }

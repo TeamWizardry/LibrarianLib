@@ -97,15 +97,15 @@ object SerializeSetFactory : SerializerFactory("Set") {
 
         private fun createConstructorMethodHandle(): () -> MutableSet<Any?> {
 
-                    if(type.clazz == Set::class.java) {
-                        return { LinkedHashSet<Any?>() } // linked so if order is important it's preserved.
-                    } else if (EnumSet::class.java.isAssignableFrom(type.clazz)) {
-                        @Suppress("UNCHECKED_CAST")
-                        return { RawTypeConstructors.createEnumSet(type.clazz) as MutableSet<Any?> }
-                    } else {
-                        val mh = MethodHandleHelper.wrapperForConstructor<MutableSet<Any?>>(type.clazz)
-                        return { mh(arrayOf()) }
-                    }
+            if (type.clazz == Set::class.java) {
+                return { LinkedHashSet<Any?>() } // linked so if order is important it's preserved.
+            } else if (EnumSet::class.java.isAssignableFrom(type.clazz)) {
+                @Suppress("UNCHECKED_CAST")
+                return { RawTypeConstructors.createEnumSet(type.clazz) as MutableSet<Any?> }
+            } else {
+                val mh = MethodHandleHelper.wrapperForConstructor<MutableSet<Any?>>(type.clazz)
+                return { mh(arrayOf()) }
+            }
         }
     }
 }

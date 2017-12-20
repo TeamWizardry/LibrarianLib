@@ -1,8 +1,8 @@
-package com.teamwizardry.librarianlib.test.chunkdata
+package com.teamwizardry.librarianlib.test.worlddata
 
-import com.teamwizardry.librarianlib.features.chunkdata.WorldData
-import com.teamwizardry.librarianlib.features.chunkdata.WorldDataRegistry
 import com.teamwizardry.librarianlib.features.kotlin.toRl
+import com.teamwizardry.librarianlib.features.worlddata.WorldData
+import com.teamwizardry.librarianlib.features.worlddata.WorldDataRegistry
 import com.teamwizardry.librarianlib.test.testcore.TestEntryPoint
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraftforge.common.MinecraftForge

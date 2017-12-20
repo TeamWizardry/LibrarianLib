@@ -75,10 +75,10 @@ object SavingFieldCache {
 
     fun getKotlinFieldGetter(field: Field): ((Any) -> Any?)? {
         val property = field.kotlinProperty
-        if(property == null)
+        if (property == null)
             return null
         val method = property.getter.javaMethod
-        if(method == null)
+        if (method == null)
             return null
         method.isAccessible = true
         val handle = MethodHandleHelper.wrapperForMethod<Any>(method)
@@ -88,7 +88,7 @@ object SavingFieldCache {
     fun getJavaFieldGetter(field: Field) = MethodHandleHelper.wrapperForGetter<Any>(field)
 
     fun getFieldSetter(field: Field, enclosing: FieldType): (Any, Any?) -> Unit {
-        if(Modifier.isFinal(field.modifiers)) {
+        if (Modifier.isFinal(field.modifiers)) {
             return getFinalFieldSetter(field, enclosing)
         } else {
             return getKotlinFieldSetter(field) ?: getJavaFieldSetter(field)
@@ -97,7 +97,7 @@ object SavingFieldCache {
 
     fun getKotlinFieldSetter(field: Field): ((Any, Any?) -> Unit)? {
         val property = field.kotlinProperty
-        if(property == null || property !is KMutableProperty<*>)
+        if (property == null || property !is KMutableProperty<*>)
             return null
         val method = property.setter.javaMethod ?: return null
         method.isAccessible = true
@@ -191,7 +191,7 @@ object SavingFieldCache {
             val getReturnType = getter.returnType
             if (name in setters) {
                 val setter = setters[name]!!
-                if(setter.parameterCount == 0)
+                if (setter.parameterCount == 0)
                     errorList[type][name].add("Setter has no parameters")
                 val setReturnType = setter.parameterTypes[0]
                 if (getReturnType == setReturnType)
@@ -238,10 +238,10 @@ object SavingFieldCache {
             if (setter == null)
                 meta.addFlag(SavingFieldFlag.FINAL)
 
-            if(meta.hasFlag(SavingFieldFlag.NO_SYNC) && meta.hasFlag(SavingFieldFlag.NON_PERSISTENT))
+            if (meta.hasFlag(SavingFieldFlag.NO_SYNC) && meta.hasFlag(SavingFieldFlag.NON_PERSISTENT))
                 errorList[type][name].add("Annotated with both @NoSync and @NonPersistent. This field will never be used.")
 
-            val setterLambda: (Any, Any?) -> Unit = if(wrapperForSetter == null)
+            val setterLambda: (Any, Any?) -> Unit = if (wrapperForSetter == null)
                 { _, _ -> throw IllegalAccessException("Tried to set final property $name for class $type (no save setter)") }
             else
                 { obj, inp -> wrapperForSetter(obj, arrayOf(inp)) }
@@ -283,7 +283,7 @@ object SavingFieldCache {
 
         if (name in ILLEGAL_NAMES)
             name += "X"
-        if(name in alreadyDone)
+        if (name in alreadyDone)
             errorList[type][name].add("Name already in use for field")
 
         alreadyDone.add(name)
@@ -305,14 +305,14 @@ object SavingFieldCache {
         partOfUnmatchedPair = partOfUnmatchedPair || getter && name in methodSettersWOGetters
         partOfUnmatchedPair = partOfUnmatchedPair || !getter && name in methodGettersWOSetters
 
-        if(!partOfUnmatchedPair && name in alreadyDone)
-            errorList[type][name].add("Name already in use for ${if(getter) "getter" else "setter"}")
+        if (!partOfUnmatchedPair && name in alreadyDone)
+            errorList[type][name].add("Name already in use for ${if (getter) "getter" else "setter"}")
 
-        if(partOfUnmatchedPair) {
+        if (partOfUnmatchedPair) {
             methodSettersWOGetters.remove(name)
             methodGettersWOSetters.remove(name)
         } else {
-            if(getter) {
+            if (getter) {
                 methodGettersWOSetters.add(name)
             } else {
                 methodSettersWOGetters.add(name)
@@ -415,7 +415,7 @@ data class FieldMetadata(val type: FieldType, private var flagsInternal: Mutable
     fun removeFlag(flag: SavingFieldFlag) = flagsInternal.remove(flag)
 
     fun addAnnotation(annot: Annotation, getter: Boolean) {
-        ( if(getter) annotationsGet else annotationsSet ).add(annot)
+        (if (getter) annotationsGet else annotationsSet).add(annot)
     }
 
     fun hasAnnotation(clazz: Class<*>): Boolean {

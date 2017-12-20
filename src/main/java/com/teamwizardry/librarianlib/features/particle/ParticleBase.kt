@@ -6,7 +6,6 @@ import com.teamwizardry.librarianlib.features.particle.functions.RenderFunction
 import com.teamwizardry.librarianlib.features.particle.functions.TickFunction
 import net.minecraft.client.particle.Particle
 import net.minecraft.client.renderer.BufferBuilder
-import net.minecraft.client.renderer.vertex.VertexBuffer
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
@@ -34,7 +33,7 @@ open class ParticleBase internal constructor(
         val motionEnabled: Boolean,
         val positionEnabled: Boolean,
         var canCollide: Boolean,
-        val initialMotion: Vec3d,
+        initialMotion: Vec3d,
         var acceleration: Vec3d,
         var deceleration: Vec3d,
         var friction: Vec3d,

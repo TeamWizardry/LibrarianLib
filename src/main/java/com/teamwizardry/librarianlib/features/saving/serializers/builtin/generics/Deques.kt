@@ -46,10 +46,7 @@ object SerializeDequeFactory : SerializerFactory("Deque") {
             list.forEach<NBTTagCompound> { container ->
                 val tag = container.getTag("-")
                 deque.push(
-                        if (tag == null)
-                            null
-                        else
-                            serComponent.read(tag, null, syncing)
+                        serComponent.read(tag, null, syncing)
                 )
             }
 
@@ -85,7 +82,7 @@ object SerializeDequeFactory : SerializerFactory("Deque") {
         override fun writeBytes(buf: ByteBuf, value: Deque<Any?>, syncing: Boolean) {
             val nullsig = value.map { it == null }.toTypedArray().toBooleanArray()
             buf.writeBooleanArray(nullsig)
-            for(v in value) {
+            for (v in value) {
                 if (v != null)
                     serComponent.write(buf, v, syncing)
             }

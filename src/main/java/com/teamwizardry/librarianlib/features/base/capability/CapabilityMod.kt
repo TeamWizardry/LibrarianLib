@@ -38,7 +38,7 @@ abstract class CapabilityMod(val name: ResourceLocation) {
                 for (cap in capabilities.values) {
                     val newCap = playerCloneEvent.entityPlayer.getCapability(cap(), null) as CapabilityMod?
                     val oldCap = playerCloneEvent.original.getCapability(cap(), null) as CapabilityMod?
-                    if(oldCap != null && newCap != null)
+                    if (oldCap != null && newCap != null)
                         newCap.readFromNBT(oldCap.writeToNBT(NBTTagCompound()))
                 }
         }

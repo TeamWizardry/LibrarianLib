@@ -12,11 +12,13 @@ import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
  */
 class ComponentDebugPanel : GuiComponent(0, 0, 100, 100) {
     val rect = ComponentRect(0, 0, 1, 1)
+
     init {
         add(rect)
     }
 
     @Hook
+    @Suppress("UNUSED_PARAMETER")
     fun tick(e: GuiComponentEvents.ComponentTickEvent) {
         rect.size = size
     }

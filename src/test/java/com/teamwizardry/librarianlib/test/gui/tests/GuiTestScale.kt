@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
-import com.teamwizardry.librarianlib.features.gui.mixin.ScissorMixin
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import java.awt.Color
@@ -26,7 +25,7 @@ class GuiTestScale : GuiBase(100, 100) {
         val bg = ComponentRect(25, 25, 50, 50)
         bg.color.setValue(Color.GREEN)
         val scissor = ComponentVoid(5, 5, 30, 30)
-        ScissorMixin.scissor(scissor)
+        scissor.clipping.clipToBounds = true
         scissor.add(c)
         bg.add(scissor)
         p.add(bg)

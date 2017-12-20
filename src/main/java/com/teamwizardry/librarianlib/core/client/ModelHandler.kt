@@ -88,6 +88,7 @@ object ModelHandler {
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
+    @Suppress("UNUSED_PARAMETER")
     fun preInit(e: ModelRegistryEvent) {
         for ((modid, holders) in variantCache) {
             modName = modid

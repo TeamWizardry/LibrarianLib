@@ -22,7 +22,10 @@ class ChunkWorldData : WorldSavedData(NAME) {
     val containers = mutableMapOf<ChunkPos, ChunkDataContainer>()
 
     companion object {
-        init { MinecraftForge.EVENT_BUS.register(this) }
+        init {
+            MinecraftForge.EVENT_BUS.register(this)
+        }
+
         const val NAME = "librarianlib:chunkdata"
 
         @SubscribeEvent
@@ -34,7 +37,7 @@ class ChunkWorldData : WorldSavedData(NAME) {
                 val data = it.constructor(e.chunk)
                 data.name = it.name
                 val nbt = rootData.getCompoundTag(it.name.toString())
-                if(nbt != null) data.loadFromNBT(nbt)
+                data.loadFromNBT(nbt)
                 container.datas[it.clazz] = data
             }
 
@@ -43,7 +46,7 @@ class ChunkWorldData : WorldSavedData(NAME) {
 
         @SubscribeEvent
         fun saveChunk(e: ChunkDataEvent.Save) {
-            val rootData =  NBTTagCompound()
+            val rootData = NBTTagCompound()
 
             val container = get(e.chunk.world).containers[e.chunk.pos] ?: return
 
@@ -63,7 +66,7 @@ class ChunkWorldData : WorldSavedData(NAME) {
 
         @SubscribeEvent
         fun clientLoad(e: ChunkEvent.Load) {
-            if(!e.chunk.world.isRemote) return // the server will have loaded the data as it loaded from disk
+            if (!e.chunk.world.isRemote) return // the server will have loaded the data as it loaded from disk
 
             val container = ChunkDataContainer()
             ChunkDataRegistry.getApplicable(e.chunk).forEach {
@@ -85,7 +88,7 @@ class ChunkWorldData : WorldSavedData(NAME) {
             }
         }
 
-        fun get(world: World) : ChunkWorldData {
+        fun get(world: World): ChunkWorldData {
             return world.perWorldStorage.getOrLoadData(ChunkWorldData::class.java, ChunkWorldData.NAME) as? ChunkWorldData ?:
                     ChunkWorldData().also { world.perWorldStorage.setData(ChunkWorldData.NAME, it) }
         }
@@ -93,9 +96,13 @@ class ChunkWorldData : WorldSavedData(NAME) {
 
     // This data is never saved, only stored at runtime. Remove all ability to save to the world:
     override fun writeToNBT(compound: NBTTagCompound?) = compound // noop
+
     override fun readFromNBT(nbt: NBTTagCompound?) {} // noop
     override fun markDirty() {} // noop
-    override fun isDirty(): Boolean { return false } // noop
+    override fun isDirty(): Boolean {
+        return false
+    } // noop
+
     override fun setDirty(isDirty: Boolean) {} // noop
 }
 

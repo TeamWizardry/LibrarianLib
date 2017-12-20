@@ -15,7 +15,6 @@ import net.minecraft.block.Block
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.LoaderState
 import java.io.File
@@ -43,7 +42,8 @@ object RecipeGeneratorHandler {
     private val shapelessToDo = mutableListOf<Recipe>()
     private val shapedToDo = mutableListOf<Recipe>()
 
-    @JvmStatic fun addShapelessRecipe(name: String, output: ItemStack, vararg inputs: Any) = addShapelessRecipe(name, null, output, *inputs)
+    @JvmStatic
+    fun addShapelessRecipe(name: String, output: ItemStack, vararg inputs: Any) = addShapelessRecipe(name, null, output, *inputs)
 
     @JvmStatic
     fun addShapelessRecipe(name: String, group: String?, output: ItemStack, vararg inputs: Any) {
@@ -59,10 +59,10 @@ object RecipeGeneratorHandler {
         file.parentFile.mkdirs()
         if (file.createNewFile()) {
             val obj = JSON.obj(
-                        "type" to "forge:ore_shapeless",
-                        "ingredients" to createJsonFromList(inputs),
-                        "result" to createJsonFromStackOutput(output)
-                )
+                    "type" to "forge:ore_shapeless",
+                    "ingredients" to createJsonFromList(inputs),
+                    "result" to createJsonFromStackOutput(output)
+            )
             if (group != null) obj.addProperty("group", group)
             file.writeText(serialize(obj))
             LibrarianLog.info("Creating ${file.name} for shapeless recipe with output ${output.displayName} x ${output.count}")
@@ -70,7 +70,8 @@ object RecipeGeneratorHandler {
         }
     }
 
-    @JvmStatic fun addShapedRecipe(name: String, output: ItemStack, vararg inputs: Any) = addShapedRecipe(name, null, output, *inputs)
+    @JvmStatic
+    fun addShapedRecipe(name: String, output: ItemStack, vararg inputs: Any) = addShapedRecipe(name, null, output, *inputs)
 
     @JvmStatic
     fun addShapedRecipe(name: String, group: String?, output: ItemStack, vararg inputs: Any) {

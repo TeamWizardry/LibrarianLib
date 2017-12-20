@@ -62,7 +62,7 @@ class ComponentRenderHandler(private val component: GuiComponent) {
     var animator: Animator
         get() {
             var a = animatorStorage ?: component.parent?.animator
-            if(a == null) {
+            if (a == null) {
                 a = Animator()
                 animatorStorage = a
             }
@@ -90,7 +90,7 @@ class ComponentRenderHandler(private val component: GuiComponent) {
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
     fun draw(mousePos: Vec2d, partialTicks: Float) {
-        val mousePos = component.geometry.transformFromParentContext(mousePos)
+        val transformedPos = component.geometry.transformFromParentContext(mousePos)
         val components = component.relationships.components
         components.sortBy { it.relationships.zIndex }
         if (!component.isVisible) return
@@ -109,17 +109,17 @@ class ComponentRenderHandler(private val component: GuiComponent) {
 
         if (wasMouseOver != component.mouseOver) {
             if (component.mouseOver) {
-                component.BUS.fire(GuiComponentEvents.MouseInEvent(component, mousePos))
+                component.BUS.fire(GuiComponentEvents.MouseInEvent(component, transformedPos))
             } else {
-                component.BUS.fire(GuiComponentEvents.MouseOutEvent(component, mousePos))
+                component.BUS.fire(GuiComponentEvents.MouseOutEvent(component, transformedPos))
             }
         }
         wasMouseOver = component.mouseOver
-        if(component.mouseOver && hoverCursor != null) {
+        if (component.mouseOver && hoverCursor != null) {
             cursor = hoverCursor
         }
 
-        component.BUS.fire(GuiComponentEvents.PreTransformEvent(component, mousePos, partialTicks))
+        component.BUS.fire(GuiComponentEvents.PreTransformEvent(component, transformedPos, partialTicks))
 
         GlStateManager.pushMatrix()
 
@@ -127,9 +127,9 @@ class ComponentRenderHandler(private val component: GuiComponent) {
 
         component.clipping.pushEnable()
 
-        component.BUS.fire(GuiComponentEvents.PreDrawEvent(component, mousePos, partialTicks))
+        component.BUS.fire(GuiComponentEvents.PreDrawEvent(component, transformedPos, partialTicks))
 
-        component.drawComponent(mousePos, partialTicks)
+        component.drawComponent(transformedPos, partialTicks)
 
         if (LibrarianLib.DEV_ENVIRONMENT && Minecraft.getMinecraft().renderManager.isDebugBoundingBox) {
             GlStateManager.pushAttrib()
@@ -160,8 +160,8 @@ class ComponentRenderHandler(private val component: GuiComponent) {
 
             GlStateManager.color(0f, 1f, 1f)
             vb.begin(GL_LINES, DefaultVertexFormats.POSITION)
-            vb.pos(mousePos.x, mousePos.y, 0.0).endVertex()
-            vb.pos(mousePos.x, mousePos.y, big).endVertex()
+            vb.pos(transformedPos.x, transformedPos.y, 0.0).endVertex()
+            vb.pos(transformedPos.x, transformedPos.y, big).endVertex()
             tessellator.draw()
             GlStateManager.popAttrib()
         }
@@ -169,12 +169,12 @@ class ComponentRenderHandler(private val component: GuiComponent) {
 
         GlStateManager.pushAttrib()
 
-        component.BUS.fire(GuiComponentEvents.PreChildrenDrawEvent(component, mousePos, partialTicks))
-        component.relationships.forEachChild { it.render.draw(mousePos, partialTicks) }
+        component.BUS.fire(GuiComponentEvents.PreChildrenDrawEvent(component, transformedPos, partialTicks))
+        component.relationships.forEachChild { it.render.draw(transformedPos, partialTicks) }
 
         GlStateManager.popAttrib()
 
-        component.BUS.fire(GuiComponentEvents.PostDrawEvent(component, mousePos, partialTicks))
+        component.BUS.fire(GuiComponentEvents.PostDrawEvent(component, transformedPos, partialTicks))
 
         component.clipping.popDisable()
 

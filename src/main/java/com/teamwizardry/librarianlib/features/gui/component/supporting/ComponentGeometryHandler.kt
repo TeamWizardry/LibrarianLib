@@ -11,7 +11,7 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
  *
  * Created by TheCodeWarrior
  */
-class ComponentGeometryHandler(private val component: GuiComponent) {
+open class ComponentGeometryHandler(private val component: GuiComponent) {
     /** [GuiComponent.transform] */
     val transform = ComponentTransform()
     /** [GuiComponent.size] */
@@ -19,7 +19,9 @@ class ComponentGeometryHandler(private val component: GuiComponent) {
     /** [GuiComponent.pos] */
     var pos: Vec2d
         get() = transform.translate
-        set(value) { transform.translate = value }
+        set(value) {
+            transform.translate = value
+        }
     /** [GuiComponent.mouseOver] */
     var mouseOver = false
     var mouseOverNoOcclusion = false
@@ -50,7 +52,7 @@ class ComponentGeometryHandler(private val component: GuiComponent) {
      * If [other] is null the returned matrix moves coordinates from the root context to this component's context
      */
     fun otherContextToThisContext(other: GuiComponent?): Matrix4 {
-        if(other == null)
+        if (other == null)
             return thisContextToOtherContext(null).invert()
         return other.geometry.thisContextToOtherContext(component)
     }
@@ -63,8 +65,9 @@ class ComponentGeometryHandler(private val component: GuiComponent) {
     fun thisContextToOtherContext(other: GuiComponent?): Matrix4 {
         return _thisContextToOtherContext(other, Matrix4())
     }
+
     private fun _thisContextToOtherContext(other: GuiComponent?, matrix: Matrix4): Matrix4 {
-        if(other == null) {
+        if (other == null) {
             component.parent?.geometry?._thisContextToOtherContext(null, matrix)
             transform.apply(matrix)
             return matrix
@@ -88,12 +91,12 @@ class ComponentGeometryHandler(private val component: GuiComponent) {
 
     fun calculateMouseOver(mousePos: Vec2d) {
         component.BUS.fire(GuiComponentEvents.PreMouseOverEvent(component, mousePos))
-        val mousePos = transformFromParentContext(mousePos)
+        val transformPos = transformFromParentContext(mousePos)
         this.mouseOver = false
 
         if (component.isVisible) {
             component.relationships.components.asReversed().forEach { child ->
-                child.geometry.calculateMouseOver(mousePos)
+                child.geometry.calculateMouseOver(transformPos)
                 if (mouseOver) {
                     child.mouseOver = false // occlusion
                 }
@@ -103,9 +106,9 @@ class ComponentGeometryHandler(private val component: GuiComponent) {
 
             }
 
-            mouseOver = mouseOver || (shouldCalculateOwnHover && calculateOwnHover(mousePos))
+            mouseOver = mouseOver || (shouldCalculateOwnHover && calculateOwnHover(transformPos))
         }
-        this.mouseOver = component.BUS.fire(GuiComponentEvents.MouseOverEvent(component, mousePos, this.mouseOver)).isOver
+        this.mouseOver = component.BUS.fire(GuiComponentEvents.MouseOverEvent(component, transformPos, this.mouseOver)).isOver
         this.mouseOverNoOcclusion = this.mouseOver
     }
 

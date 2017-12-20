@@ -63,6 +63,7 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
         }
     }
 
+    @Suppress("OverridingDeprecatedMember")
     override fun getBlockFaceShape(world: IBlockAccess, state: IBlockState, pos: BlockPos, side: EnumFacing): BlockFaceShape {
         return if (side != EnumFacing.UP && side != EnumFacing.DOWN) BlockFaceShape.MIDDLE_POLE_THICK else BlockFaceShape.CENTER_BIG
     }
@@ -79,10 +80,11 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
 
     override fun canPlaceTorchOnTop(state: IBlockState, world: IBlockAccess, pos: BlockPos) = true
     @Suppress("OverridingDeprecatedMember")
-    override fun isFullCube(state: IBlockState?) = false
-    override fun isPassable(worldIn: IBlockAccess?, pos: BlockPos?) = false
+    override fun isFullCube(state: IBlockState) = false
+
+    override fun isPassable(worldIn: IBlockAccess, pos: BlockPos) = false
     @Suppress("OverridingDeprecatedMember")
-    override fun isOpaqueCube(state: IBlockState?) = false
+    override fun isOpaqueCube(state: IBlockState) = false
 
     private fun canConnectTo(worldIn: IBlockAccess, pos: BlockPos): Boolean {
         val iblockstate = worldIn.getBlockState(pos)
@@ -98,11 +100,13 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
     }
 
 
-    override fun getMapColor(state: IBlockState?, worldIn: IBlockAccess?, pos: BlockPos?) = parent.getMapColor(worldIn, pos)
+    @Suppress("OverridingDeprecatedMember")
+    override fun getMapColor(state: IBlockState, worldIn: IBlockAccess, pos: BlockPos) = parent.getMapColor(worldIn, pos)
     override fun getExplosionResistance(world: World, pos: BlockPos, exploder: Entity?, explosion: Explosion) = parent.block.getExplosionResistance(world, pos, exploder, explosion)
     @Suppress("OverridingDeprecatedMember")
     override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
-    override fun isToolEffective(type: String?, state: IBlockState) = parent.block.isToolEffective(type, parent)
+
+    override fun isToolEffective(type: String, state: IBlockState) = parent.block.isToolEffective(type, parent)
     override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent)
 
     @Suppress("OverridingDeprecatedMember", "DEPRECATION")

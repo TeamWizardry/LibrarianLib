@@ -18,7 +18,7 @@ class SlotBase(handler: IItemHandler, index: Int) : SlotItemHandler(handler, ind
     var visible = true
     var lastVisible = visible
 
-    override fun onTake(thePlayer: EntityPlayer?, stack: ItemStack): ItemStack {
+    override fun onTake(thePlayer: EntityPlayer, stack: ItemStack): ItemStack {
         if (type.onPickup(this, thePlayer, stack))
             return super.onTake(thePlayer, stack)
         return ItemStack.EMPTY
@@ -43,7 +43,7 @@ class SlotBase(handler: IItemHandler, index: Int) : SlotItemHandler(handler, ind
         return if (visible) type.getStack(this, super.getStack()) else ItemStack.EMPTY
     }
 
-    override fun canTakeStack(playerIn: EntityPlayer?): Boolean {
+    override fun canTakeStack(playerIn: EntityPlayer): Boolean {
         return if (visible) type.canTake(this, playerIn, stack, super.canTakeStack(playerIn)) else false
     }
 

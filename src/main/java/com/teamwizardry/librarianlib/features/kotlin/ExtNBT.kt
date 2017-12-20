@@ -75,11 +75,11 @@ class NBTWrapper(val contained: ItemStack) {
 val ItemStack.nbt: NBTWrapper
     get() = NBTWrapper(this)
 
-inline fun <reified T: Any> T.toNBT(sync: Boolean = false): NBTBase {
+inline fun <reified T : Any> T.toNBT(sync: Boolean = false): NBTBase {
     return AbstractSaveHandler.writeAutoNBTByToken(object : TypeToken<T>() {}, this, sync)
 }
 
-inline fun <reified T: Any> NBTBase.fromNBT(sync: Boolean = false): T {
+inline fun <reified T : Any> NBTBase.fromNBT(sync: Boolean = false): T {
     return AbstractSaveHandler.readAutoNBTByToken(object : TypeToken<T>() {}, this, sync) as T
 }
 // NBTTagCompound ======================================================================================================

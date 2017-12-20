@@ -20,7 +20,7 @@ class KeyframeAnimation<T : Any>(target: T, property: AnimatableProperty<T>) : A
      */
     var keyframes: Array<Keyframe>
         set(value) {
-            if(isInAnimator) {
+            if (isInAnimator) {
                 throw IllegalStateException("Cannot set keyframes after the animation has been added to an animator")
             }
             _keyframes = value.copyOf()
@@ -33,18 +33,26 @@ class KeyframeAnimation<T : Any>(target: T, property: AnimatableProperty<T>) : A
 
     override fun update(time: Float) {
         val progress = timeFraction(time)
-        val prev = try { _keyframes.last  { it.time <= progress } } catch(e: NoSuchElementException) { null }
-        val next = try { _keyframes.first { it.time >= progress } } catch(e: NoSuchElementException) { null }
-        if(prev != null && next != null) {
-            if(next.time == prev.time) { // this can only happen with single-keyframe animations or when we are on top of a keyframe
+        val prev = try {
+            _keyframes.last { it.time <= progress }
+        } catch (e: NoSuchElementException) {
+            null
+        }
+        val next = try {
+            _keyframes.first { it.time >= progress }
+        } catch (e: NoSuchElementException) {
+            null
+        }
+        if (prev != null && next != null) {
+            if (next.time == prev.time) { // this can only happen with single-keyframe animations or when we are on top of a keyframe
                 property.set(target, next.value)
             } else {
                 val partialProgress = next.easing((progress - prev.time) / (next.time - prev.time))
                 property.set(target, lerper.lerp(prev.value, next.value, partialProgress))
             }
-        } else if(next != null) {
+        } else if (next != null) {
             property.set(target, next.value)
-        } else if(prev != null) {
+        } else if (prev != null) {
             property.set(target, prev.value)
         }
 

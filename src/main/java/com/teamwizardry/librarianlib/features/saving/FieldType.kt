@@ -8,16 +8,13 @@ import java.util.*
 
 val getGenericSuperclassMH = MethodHandleHelper.wrapperForStaticMethod(`$Gson$Types`::class.java, "getGenericSupertype", null, Type::class.java, Class::class.java, Class::class.java)
 
-abstract class FieldType protected constructor(val type: Type, val annotated: AnnotatedType?, open val clazz: Class<*>) {
+abstract class FieldType protected constructor(val type: Type, annotated: AnnotatedType?, open val clazz: Class<*>) {
     val annotations: Array<Annotation> = annotated?.annotations ?: emptyArray()
     protected val annotString: String
         get() {
-            return annotations.map {
-                var str = "@" + it.annotationClass.simpleName
-//                var args = mutableListOf<String>()
-//                if(it.annotationClass.)
-                str
-            }.joinToString(" ") + " "
+            return annotations.joinToString(" ") {
+                "@" + it.annotationClass.simpleName
+            } + " "
         }
 
     open val interfaces: Array<out Class<*>>
@@ -74,7 +71,7 @@ abstract class FieldType protected constructor(val type: Type, val annotated: An
         }
 
         private fun createArray(type: Class<*>, annots: AnnotatedType?): FieldType {
-            val component = if(annots is AnnotatedArrayType) {
+            val component = if (annots is AnnotatedArrayType) {
                 val a = annots.annotatedGenericComponentType
                 create(a.type, a)
             } else {
@@ -85,7 +82,7 @@ abstract class FieldType protected constructor(val type: Type, val annotated: An
 
         @Suppress("IfThenToElvis")
         private fun createGeneric(type: ParameterizedType, annots: AnnotatedType?): FieldType {
-            val args = if(annots is AnnotatedParameterizedType) {
+            val args = if (annots is AnnotatedParameterizedType) {
                 annots.annotatedActualTypeArguments.map { create(it.type, it) }
             } else {
                 type.actualTypeArguments.map { create(it, null) }
@@ -94,7 +91,7 @@ abstract class FieldType protected constructor(val type: Type, val annotated: An
         }
 
         private fun createGenericArray(type: GenericArrayType, annots: AnnotatedType?): FieldType {
-            val component = if(annots is AnnotatedArrayType) {
+            val component = if (annots is AnnotatedArrayType) {
                 val a = annots.annotatedGenericComponentType
                 create(a.type, a)
             } else {
@@ -111,7 +108,7 @@ abstract class FieldType protected constructor(val type: Type, val annotated: An
 
 class FieldTypeError(type: Type) : FieldType(type, null, Any::class.java) {
     override fun equals(other: Any?): Boolean {
-        if(other == null || other !is FieldType) return false
+        if (other == null || other !is FieldType) return false
         return type == other.type
     }
 
@@ -179,7 +176,7 @@ class FieldTypeGeneric(type: Type, annots: AnnotatedType?, clazz: Class<*>, val 
     }
 
     fun genericOrNull(i: Int): FieldType? {
-        if(i < 0 || i >= generics.size)
+        if (i < 0 || i >= generics.size)
             return null
         return generics[i]
     }

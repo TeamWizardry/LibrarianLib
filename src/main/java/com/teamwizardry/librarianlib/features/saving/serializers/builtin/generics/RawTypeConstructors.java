@@ -11,7 +11,7 @@ public class RawTypeConstructors {
     public static EnumSet createEnumSet(Class clazz) {
         return EnumSet.noneOf((Class<Enum>) clazz);
     }
-    
+
     public static EnumMap createEnumMap(Class clazz) {
         return new EnumMap(clazz);
     }

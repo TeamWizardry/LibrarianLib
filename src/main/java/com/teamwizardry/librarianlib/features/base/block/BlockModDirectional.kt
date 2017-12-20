@@ -56,7 +56,7 @@ open class BlockModDirectional(name: String, material: Material, horizontal: Boo
     }
 
     @Suppress("OverridingDeprecatedMember", "DEPRECATION")
-    override fun getStateForPlacement(worldIn: World?, pos: BlockPos?, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float, meta: Int, placer: EntityLivingBase): IBlockState {
+    override fun getStateForPlacement(worldIn: World?, pos: BlockPos, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float, meta: Int, placer: EntityLivingBase): IBlockState {
         return this.getStateFromMeta(meta).withProperty(property, if (isHorizontal) placer.horizontalFacing.opposite else facing)
     }
 
@@ -71,8 +71,8 @@ open class BlockModDirectional(name: String, material: Material, horizontal: Boo
         }
     }
 
-    override fun rotateBlock(world: World, pos: BlockPos, axis: EnumFacing?): Boolean {
-        if (!isHorizontal || axis?.horizontalIndex?: -1 >= 0)
+    override fun rotateBlock(world: World, pos: BlockPos, axis: EnumFacing): Boolean {
+        if (!isHorizontal || axis.horizontalIndex >= 0)
             world.setBlockState(pos, world.getBlockState(pos).withProperty(property, axis))
         return true
     }
@@ -91,7 +91,7 @@ open class BlockModDirectional(name: String, material: Material, horizontal: Boo
     override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
         ModelHandler.generateBlockJson(this, {
             JsonGenerationUtils.generateBlockStates(this, mapper) {
-                val facing = "${property.name}=(\\w+)".toRegex().find(it)?.groupValues?.get(1)?.toUpperCase()
+                val facing = "${property.name}=(\\w+)".toRegex().find(it)?.groupValues?.get(1)?.toUpperCase() ?: "UP"
                 val dir = EnumFacing.byName(facing) ?: EnumFacing.DOWN
                 val x = when (dir) {
                     EnumFacing.DOWN -> 270

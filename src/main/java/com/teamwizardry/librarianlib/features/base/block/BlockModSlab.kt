@@ -15,6 +15,7 @@ import net.minecraft.block.material.MapColor
 import net.minecraft.block.material.Material
 import net.minecraft.block.properties.IProperty
 import net.minecraft.block.properties.PropertyEnum
+import net.minecraft.block.state.BlockFaceShape
 import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
@@ -135,13 +136,17 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
         get() = ModCreativeTab.defaultTabs[modId]
 
 
-    override fun getMapColor(state: IBlockState?, worldIn: IBlockAccess?, pos: BlockPos?) = parent.getMapColor(worldIn, pos)
+    @Suppress("OverridingDeprecatedMember")
+    override fun getMapColor(state: IBlockState, worldIn: IBlockAccess, pos: BlockPos): MapColor = parent.getMapColor(worldIn, pos)
     override fun getExplosionResistance(world: World, pos: BlockPos, exploder: Entity?, explosion: Explosion) = parent.block.getExplosionResistance(world, pos, exploder, explosion)
     @Suppress("OverridingDeprecatedMember")
     override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
+
     @Suppress("OverridingDeprecatedMember")
-    @SideOnly(Side.CLIENT) override fun isTranslucent(state: IBlockState?) = parent.isTranslucent
-    override fun isToolEffective(type: String?, state: IBlockState) = parent.block.isToolEffective(type, parent) || (blockMaterial == FAKE_WOOD && type == "axe")
+    @SideOnly(Side.CLIENT)
+    override fun isTranslucent(state: IBlockState) = parent.isTranslucent
+
+    override fun isToolEffective(type: String, state: IBlockState) = parent.block.isToolEffective(type, parent) || (blockMaterial == FAKE_WOOD && type == "axe")
     override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent) ?: if (blockMaterial == FAKE_WOOD) "axe" else null
 
     override fun createBlockState()
@@ -151,12 +156,12 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
     override val ignoredProperties: Array<IProperty<*>>?
         get() = arrayOf(DUMMY_PROP)
 
-    @Suppress("DEPRECATION")
-    override fun isSideSolid(base_state: IBlockState, world: IBlockAccess, pos: BlockPos, side: EnumFacing?): Boolean {
-        val state = getActualState(base_state, world, pos)
-        return isDouble
-                || state.getValue(BlockSlab.HALF) == EnumBlockHalf.TOP && side == EnumFacing.UP
-                || state.getValue(BlockSlab.HALF) == EnumBlockHalf.BOTTOM && side == EnumFacing.DOWN
+    @Suppress("OverridingDeprecatedMember")
+    override fun getBlockFaceShape(world: IBlockAccess, state: IBlockState, pos: BlockPos, side: EnumFacing): BlockFaceShape {
+        return if (isDouble) BlockFaceShape.SOLID
+        else if (side == EnumFacing.UP && state.getValue(HALF) == BlockSlab.EnumBlockHalf.TOP) BlockFaceShape.SOLID
+        else if (side == EnumFacing.DOWN && state.getValue(HALF) == BlockSlab.EnumBlockHalf.BOTTOM) BlockFaceShape.SOLID
+        else BlockFaceShape.UNDEFINED
     }
 
     override fun getItemDropped(state: IBlockState, rand: Random, fortune: Int): Item? {
@@ -169,12 +174,15 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
     else defaultState.withProperty(BlockSlab.HALF, if (meta == 8) EnumBlockHalf.TOP else EnumBlockHalf.BOTTOM)
 
     override fun getMetaFromState(state: IBlockState)
-            = if (isDouble) 0
-    else if (state.getValue(BlockSlab.HALF) == EnumBlockHalf.TOP) 8 else 0
+            = when {
+                isDouble -> 0
+                state.getValue(BlockSlab.HALF) == EnumBlockHalf.TOP -> 8
+                else -> 0
+            }
 
     // Internal fixes for slab overriding
 
-    override fun getTypeForItem(stack: ItemStack?) = Dummy.SLAB
+    override fun getTypeForItem(stack: ItemStack) = Dummy.SLAB
     override fun isDouble() = false
     override fun getUnlocalizedName(meta: Int): String = unlocalizedName
     override fun getVariantProperty() = DUMMY_PROP

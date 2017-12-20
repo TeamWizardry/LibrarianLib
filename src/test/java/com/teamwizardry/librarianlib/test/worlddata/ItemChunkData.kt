@@ -1,7 +1,7 @@
-package com.teamwizardry.librarianlib.test.chunkdata
+package com.teamwizardry.librarianlib.test.worlddata
 
 import com.teamwizardry.librarianlib.features.base.item.ItemMod
-import com.teamwizardry.librarianlib.features.chunkdata.WorldData
+import com.teamwizardry.librarianlib.features.worlddata.WorldData
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.EnumActionResult
 import net.minecraft.util.EnumFacing

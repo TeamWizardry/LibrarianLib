@@ -17,7 +17,7 @@ open class ExtendedStateWrapper(private val wrapped: IBlockState, val world: IBl
     private val clean = extState?.clean ?: wrapped
 
     override fun getUnlistedNames(): Collection<IUnlistedProperty<*>>? {
-        return extState?.unlistedNames ?: emptyList<IUnlistedProperty<*>>()
+        return extState?.unlistedNames ?: emptyList()
     }
 
     override fun <V> getValue(property: IUnlistedProperty<V>?)

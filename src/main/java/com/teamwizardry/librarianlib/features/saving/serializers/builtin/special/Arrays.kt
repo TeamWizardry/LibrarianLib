@@ -24,7 +24,7 @@ import net.minecraft.nbt.NBTTagList
 @SerializerFactoryRegister
 object SerializeArrayFactory : SerializerFactory("Array") {
     override fun canApply(type: FieldType): SerializerFactoryMatch {
-        return if(type is FieldTypeArray) SerializerFactoryMatch.GENERAL else SerializerFactoryMatch.NONE
+        return if (type is FieldTypeArray) SerializerFactoryMatch.GENERAL else SerializerFactoryMatch.NONE
     }
 
     override fun create(type: FieldType): Serializer<*> {
@@ -48,10 +48,7 @@ object SerializeArrayFactory : SerializerFactory("Array") {
 
             list.forEachIndexed<NBTTagCompound> { i, container ->
                 val tag = container.getTag("-")
-                if (tag == null)
-                    array[i] = null
-                else
-                    array[i] = serComponent.read(tag, if (reuse) array[i] else null, syncing)
+                array[i] = serComponent.read(tag, if (reuse) array[i] else null, syncing)
             }
 
             return array

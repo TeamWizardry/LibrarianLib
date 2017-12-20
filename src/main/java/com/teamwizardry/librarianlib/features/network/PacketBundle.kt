@@ -20,9 +20,9 @@ class PacketBundle(@Save var discriminator: Int = -1, @Save var bufs: Array<Byte
     override fun readCustomBytes(buf: ByteBuf) {
         super.readCustomBytes(buf)
         val clazz = PacketHandler.getPacketClass(discriminator) ?: throw RuntimeException("Bundle packet discriminator $discriminator invalid!")
-        instances = bufs.map { buf ->
+        instances = bufs.map { buffer ->
             val instance = clazz.newInstance() as PacketBase
-            instance.fromBytes(buf)
+            instance.fromBytes(buffer)
             return@map instance
         }
     }
@@ -35,10 +35,10 @@ class PacketBundle(@Save var discriminator: Int = -1, @Save var bufs: Array<Byte
 
     companion object {
         fun compactPackets(packets: Collection<PacketBase>, maxPacketSize: Int): List<PacketBundle> {
-            if(packets.isEmpty()) return emptyList()
+            if (packets.isEmpty()) return emptyList()
 
             val clazz = packets.first().javaClass
-            if(packets.any { it.javaClass != clazz }) {
+            if (packets.any { it.javaClass != clazz }) {
                 throw IllegalArgumentException("PacketBundle can only transmit one packet type at a time!")
             }
             val discriminator = PacketHandler.getDiscriminator(clazz)
@@ -63,9 +63,9 @@ class PacketBundle(@Save var discriminator: Int = -1, @Save var bufs: Array<Byte
                 }
                 // pack in a bin if it can, if not add another bin, if it still can't complain that the packet is too
                 // large to fit in any bin, even the empty one we just created.
-                if(!tryAdd()) {
+                if (!tryAdd()) {
                     bins.add(Bin(dataSize))
-                    if(!tryAdd()) {
+                    if (!tryAdd()) {
                         throw IllegalArgumentException("Packet too large to fit in a bin! Packet is $len bytes long, but bins or only $dataSize in length.")
                     }
                 }
@@ -81,7 +81,7 @@ class PacketBundle(@Save var discriminator: Int = -1, @Save var bufs: Array<Byte
             val contents = mutableListOf<ByteBuf>()
 
             fun canFit(size: Int): Boolean {
-                return capacity-fullness >= size
+                return capacity - fullness >= size
             }
 
             fun add(buf: ByteBuf) {

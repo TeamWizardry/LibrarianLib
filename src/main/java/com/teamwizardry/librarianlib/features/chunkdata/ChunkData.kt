@@ -25,19 +25,22 @@ open class ChunkData(chunk: Chunk) {
     val pos = chunk.pos
     var name: ResourceLocation? = null
         set(value) {
-            if(field != null) throw IllegalStateException("Name already set")
+            if (field != null) throw IllegalStateException("Name already set")
             field = value
         }
 
-    protected open fun saveCustomNBT(): NBTTagCompound? { return null }
+    protected open fun saveCustomNBT(): NBTTagCompound? {
+        return null
+    }
+
     protected open fun loadCustomNBT(nbt: NBTTagCompound) {}
     protected open fun writeCustomBytes(buf: ByteBuf) {}
     protected open fun readCustomBytes(buf: ByteBuf) {}
 
     fun markDirty() {
-        if(world is WorldServer) {
+        if (world is WorldServer) {
             val packet = PacketCustomChunkData(pos, name!!, this)
-            PacketHandler.CHANNEL.update(TargetWatchingBlock(world, pos.getBlock(0,0,0)), packet)
+            PacketHandler.CHANNEL.update(TargetWatchingBlock(world, pos.getBlock(0, 0, 0)), packet)
         }
     }
 
@@ -48,8 +51,8 @@ open class ChunkData(chunk: Chunk) {
     }
 
     fun loadFromNBT(tag: NBTTagCompound) {
-        tag.getTag("auto")?.also { AbstractSaveHandler.readAutoNBT(this, it, false) }
-        tag.getCompoundTag("custom")?.also { loadCustomNBT(it) }
+        tag.getTag("auto").also { AbstractSaveHandler.readAutoNBT(this, it, false) }
+        tag.getCompoundTag("custom").also { loadCustomNBT(it) }
     }
 
     fun writeToBytes(buf: ByteBuf) {
@@ -75,7 +78,7 @@ open class ChunkData(chunk: Chunk) {
          */
         @Suppress("UNCHECKED_CAST")
         @JvmStatic
-        fun <T: ChunkData> get(world: World, chunk: Chunk, type: Class<T>): T? {
+        fun <T : ChunkData> get(world: World, chunk: Chunk, type: Class<T>): T? {
             return getInternal(world, chunk.pos, type) as T?
         }
 
@@ -86,7 +89,7 @@ open class ChunkData(chunk: Chunk) {
          */
         @Suppress("UNCHECKED_CAST")
         @JvmStatic
-        fun <T: ChunkData> get(world: World, chunk: ChunkPos, type: Class<T>): T? =
+        fun <T : ChunkData> get(world: World, chunk: ChunkPos, type: Class<T>): T? =
                 getInternal(world, chunk, type) as T?
 
         /**

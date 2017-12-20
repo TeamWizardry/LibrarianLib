@@ -14,7 +14,7 @@ import net.minecraft.nbt.*
  */
 
 @SerializerRegister(Byte::class)
-object SerializeByte: Serializer<Byte>(FieldType.create(Byte::class.javaPrimitiveType!!)) {
+object SerializeByte : Serializer<Byte>(FieldType.create(Byte::class.javaPrimitiveType!!)) {
     override fun getDefault(): Byte {
         return 0
     }
@@ -60,7 +60,7 @@ object SerializeChar : Serializer<Char>(FieldType.create(Char::class.javaPrimiti
 }
 
 @SerializerRegister(Short::class)
-object SerializeShort: Serializer<Short>(FieldType.create(Short::class.javaPrimitiveType!!)) {
+object SerializeShort : Serializer<Short>(FieldType.create(Short::class.javaPrimitiveType!!)) {
     override fun getDefault(): Short {
         return 0
     }
@@ -83,7 +83,7 @@ object SerializeShort: Serializer<Short>(FieldType.create(Short::class.javaPrimi
 }
 
 @SerializerRegister(Int::class)
-object SerializeInt: Serializer<Int>(FieldType.create(Int::class.javaPrimitiveType!!)) {
+object SerializeInt : Serializer<Int>(FieldType.create(Int::class.javaPrimitiveType!!)) {
     override fun getDefault(): Int {
         return 0
     }
@@ -106,7 +106,7 @@ object SerializeInt: Serializer<Int>(FieldType.create(Int::class.javaPrimitiveTy
 }
 
 @SerializerRegister(Long::class)
-object SerializeLong: Serializer<Long>(FieldType.create(Long::class.javaPrimitiveType!!)) {
+object SerializeLong : Serializer<Long>(FieldType.create(Long::class.javaPrimitiveType!!)) {
     override fun getDefault(): Long {
         return 0
     }
@@ -129,7 +129,7 @@ object SerializeLong: Serializer<Long>(FieldType.create(Long::class.javaPrimitiv
 }
 
 @SerializerRegister(Float::class)
-object SerializeFloat: Serializer<Float>(FieldType.create(Float::class.javaPrimitiveType!!)) {
+object SerializeFloat : Serializer<Float>(FieldType.create(Float::class.javaPrimitiveType!!)) {
     override fun getDefault(): Float {
         return 0.0f
     }
@@ -152,7 +152,7 @@ object SerializeFloat: Serializer<Float>(FieldType.create(Float::class.javaPrimi
 }
 
 @SerializerRegister(Double::class)
-object SerializeDouble: Serializer<Double>(FieldType.create(Double::class.javaPrimitiveType!!)) {
+object SerializeDouble : Serializer<Double>(FieldType.create(Double::class.javaPrimitiveType!!)) {
     override fun getDefault(): Double {
         return 0.0
     }
@@ -175,7 +175,7 @@ object SerializeDouble: Serializer<Double>(FieldType.create(Double::class.javaPr
 }
 
 @SerializerRegister(Boolean::class)
-object SerializeBoolean: Serializer<Boolean>(FieldType.create(Boolean::class.javaPrimitiveType!!)) {
+object SerializeBoolean : Serializer<Boolean>(FieldType.create(Boolean::class.javaPrimitiveType!!)) {
     override fun getDefault(): Boolean {
         return false
     }
@@ -193,12 +193,12 @@ object SerializeBoolean: Serializer<Boolean>(FieldType.create(Boolean::class.jav
     }
 
     override fun writeNBT(value: Boolean, syncing: Boolean): NBTBase {
-        return NBTTagByte(if(value) 1 else 0)
+        return NBTTagByte(if (value) 1 else 0)
     }
 }
 
 @SerializerRegister(String::class)
-object SerializeString: Serializer<String>(FieldType.create(String::class.java)) {
+object SerializeString : Serializer<String>(FieldType.create(String::class.java)) {
     override fun getDefault(): String {
         return ""
     }
