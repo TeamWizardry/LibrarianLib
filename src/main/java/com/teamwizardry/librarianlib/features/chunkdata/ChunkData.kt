@@ -50,8 +50,9 @@ open class ChunkData(chunk: Chunk) {
         return tag
     }
 
+    @Suppress("UNNECESSARY_SAFE_CALL")
     fun loadFromNBT(tag: NBTTagCompound) {
-        tag.getTag("auto").also { AbstractSaveHandler.readAutoNBT(this, it, false) }
+        tag.getTag("auto")?.also { AbstractSaveHandler.readAutoNBT(this, it, false) }
         tag.getCompoundTag("custom").also { loadCustomNBT(it) }
     }
 
