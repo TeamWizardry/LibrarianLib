@@ -114,7 +114,7 @@ object ItemNBTHelper {
             if (verifyExistence(stack, tag)) getNBT(stack, false).getString(tag) else defaultExpected
 
     @JvmStatic
-    fun getList(stack: ItemStack, tag: String, nbtClass: Class<NBTBase>) =
+    fun getList(stack: ItemStack, tag: String, nbtClass: Class<out NBTBase>) =
             getList(stack, tag, nbtClass.newInstance().id.toInt())
 
     @JvmStatic
