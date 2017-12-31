@@ -45,9 +45,9 @@ open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, to
         }
 
         fun classAttackSpeed(toolClass: String, material: ToolMaterial) = when (toolClass) {
-            "axe" -> if (material.efficiencyOnProperMaterial <= 5f)
+            "axe" -> if (material.efficiency <= 5f)
                 -3.2f
-            else if (material.efficiencyOnProperMaterial <= 7f)
+            else if (material.efficiency <= 7f)
                 -3.1f
             else
                 -3.0f
