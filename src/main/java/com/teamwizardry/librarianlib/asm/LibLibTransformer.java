@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.asm;
 
 import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraft.launchwrapper.Launch;
 import org.apache.logging.log4j.LogManager;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -20,28 +21,12 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-// Boilerplate code taken with love from Vazkii's Quark mod
+// Boilerplate code taken with love from Vazkii's Quark mod and JamiesWhiteShirt's Clothesline
 // Quark is distributed at https://github.com/Vazkii/Quark
+// Clothesline is distributed at https://github.com/JamiesWhiteShirt/clothesline
 
 public class LibLibTransformer implements IClassTransformer, Opcodes {
 
-    public static final ClassnameMap CLASS_MAPPINGS = new ClassnameMap(
-            "net/minecraft/item/ItemStack", "ain",
-            "net/minecraft/client/renderer/block/model/IBakedModel", "cfw",
-            "net/minecraft/client/renderer/RenderItem", "bzu",
-            "net/minecraft/client/renderer/entity/layers/LayerArmorBase", "cbn",
-            "net/minecraft/entity/EntityLivingBase", "vn",
-            "net/minecraft/client/renderer/entity/RenderLivingBase", "bzy",
-            "net/minecraft/client/model/ModelBase", "b1d",
-            "net/minecraft/client/renderer/BlockRendererDispatcher", "bvk",
-            "net/minecraft/client/renderer/BlockModelRenderer", "bvm",
-            "net/minecraft/block/state/IBlockState", "awr",
-            "net/minecraft/util/math/BlockPos", "et",
-            "net/minecraft/world/IBlockAccess", "amw",
-            "net/minecraft/client/renderer/BufferBuilder", "bui",
-            "net/minecraft/client/particle/Particle", "btd",
-            "net/minecraft/client/particle/ParticleSpell", "btm"
-    );
     private static final String ASM_HOOKS = "com/teamwizardry/librarianlib/asm/LibLibAsmHooks";
     private static final Map<String, Transformer> transformers = new HashMap<>();
 
@@ -53,13 +38,13 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     }
 
     private static byte[] transformRenderItem(byte[] basicClass) {
-        MethodSignature sig1 = new MethodSignature("renderItem", "func_180454_a", "a",
+        MethodSignature sig1 = new MethodSignature("renderItem", "func_180454_a",
                 "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model/IBakedModel;)V");
 
-        MethodSignature sig2 = new MethodSignature("renderEffect", "func_180451_a", "a",
+        MethodSignature sig2 = new MethodSignature("renderEffect", "func_180451_a",
                 "(Lnet/minecraft/client/renderer/block/model/IBakedModel;)V");
 
-        MethodSignature target = new MethodSignature("renderModel", "func_175045_a", "a",
+        MethodSignature target = new MethodSignature("renderModel", "func_175045_a",
                 "(Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/item/ItemStack;)V");
 
         byte[] transformedClass = transform(basicClass, sig1, "Item render hook",
@@ -99,7 +84,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     }
 
     private static byte[] transformLayerArmorBase(byte[] basicClass) {
-        MethodSignature sig = new MethodSignature("renderEnchantedGlint", "func_188364_a", "a",
+        MethodSignature sig = new MethodSignature("renderEnchantedGlint", "func_188364_a",
                 "(Lnet/minecraft/client/renderer/entity/RenderLivingBase;Lnet/minecraft/entity/EntityLivingBase;Lnet/minecraft/client/model/ModelBase;FFFFFFF)V");
 
         byte[] transformedClass = transform(basicClass, sig, "Enchantment glint glow activation", (MethodNode method) -> { // Action
@@ -124,25 +109,24 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     }
 
     private static byte[] transformBlockRenderDispatcher(byte[] basicClass) {
-        MethodSignature sig = new MethodSignature("renderBlock", "func_175018_a", "a",
+        MethodSignature sig = new MethodSignature("renderBlock", "func_175018_a",
                 "(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/BufferBuilder;)Z");
 
-        MethodSignature target1 = new MethodSignature("renderModel", "func_178267_a", "a",
+        MethodSignature target1 = new MethodSignature("renderModel", "func_178267_a",
                 "(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/BufferBuilder;Z)Z");
-        MethodSignature target2 = new MethodSignature("renderFluid", "func_178270_a", "a",
+        MethodSignature target2 = new MethodSignature("renderFluid", "func_178270_a",
                 "(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/BufferBuilder;)Z");
 
         byte[] transformedClass = transform(basicClass, sig, "Block render hook",
                 combine((AbstractInsnNode node) -> node.getOpcode() == INVOKEVIRTUAL &&
                                 target1.matches((MethodInsnNode) node), // Filter
                         (MethodNode method, AbstractInsnNode node) -> { // Action
-                            boolean obf = method.name.equals(sig.obfName);
-                            System.out.println("obf: " + obf);
+                            boolean deobf = method.name.equals(sig.funcName);
                             InsnList newInstructions = new InsnList();
 
                             newInstructions.add(new VarInsnNode(ALOAD, 0));
                             newInstructions.add(new FieldInsnNode(GETFIELD, "net/minecraft/client/renderer/BlockRendererDispatcher",
-                                    obf ? "field_175027_c" : "blockModelRenderer", "Lnet/minecraft/client/renderer/BlockModelRenderer;"));
+                                    deobf ? "blockModelRenderer" : "field_175027_c", "Lnet/minecraft/client/renderer/BlockModelRenderer;"));
                             // BlockModelRenderer
 
                             newInstructions.add(new VarInsnNode(ALOAD, 3));
@@ -164,13 +148,12 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                 combine((AbstractInsnNode node) -> node.getOpcode() == INVOKEVIRTUAL &&
                                 target2.matches((MethodInsnNode) node), // Filter
                         (MethodNode method, AbstractInsnNode node) -> { // Action
-                            boolean obf = method.name.equals(sig.obfName);
-                            System.out.println("obf2: " + obf);
+                            boolean deobf = method.name.equals(sig.funcName);
                             InsnList newInstructions = new InsnList();
 
                             newInstructions.add(new VarInsnNode(ALOAD, 0));
                             newInstructions.add(new FieldInsnNode(GETFIELD, "net/minecraft/client/renderer/BlockRendererDispatcher",
-                                    obf ? "field_175027_c" : "blockModelRenderer", "Lnet/minecraft/client/renderer/BlockModelRenderer;"));
+                                    deobf ? "blockModelRenderer" : "field_175027_c", "Lnet/minecraft/client/renderer/BlockModelRenderer;"));
                             // BlockModelRenderer
 
                             newInstructions.add(new VarInsnNode(ALOAD, 3));
@@ -189,7 +172,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     }
 
     private static byte[] transformParticle(byte[] basicClass) {
-        MethodSignature sig = new MethodSignature("getBrightnessForRender", "func_189214_a", "a",
+        MethodSignature sig = new MethodSignature("getBrightnessForRender", "func_189214_a",
                 "(F)I");
 
         return transform(basicClass, sig, "Potion particle glow", (MethodNode method) -> { // Action
@@ -229,7 +212,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         boolean didAnything = findMethodAndTransform(node, sig, action);
 
         if (didAnything) {
-            ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+            ClassWriter writer = new SafeClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
             node.accept(writer);
             return writer.toByteArray();
         }
@@ -539,32 +522,22 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     }
 
     public static class MethodSignature {
-        private final String funcName, srgName, obfName, funcDesc, obfDesc;
+        private final String funcName, srgName, funcDesc;
 
-        public MethodSignature(String funcName, String srgName, String obfName, String funcDesc) {
+        public MethodSignature(String funcName, String srgName, String funcDesc) {
             this.funcName = funcName;
             this.srgName = srgName;
-            this.obfName = obfName;
             this.funcDesc = funcDesc;
-            this.obfDesc = obfuscate(funcDesc);
-        }
-
-        private static String obfuscate(String desc) {
-            for (String s : CLASS_MAPPINGS.keySet())
-                if (desc.contains(s))
-                    desc = desc.replaceAll(s, CLASS_MAPPINGS.get(s));
-
-            return desc;
         }
 
         @Override
         public String toString() {
-            return "Names [" + funcName + ", " + srgName + ", " + obfName + "] Descriptor " + funcDesc + " / " + obfDesc;
+            return "Names [" + funcName + ", " + srgName + "] Descriptor " + funcDesc;
         }
 
         public boolean matches(String methodName, String methodDesc) {
-            return (methodName.equals(funcName) || methodName.equals(obfName) || methodName.equals(srgName))
-                    && (methodDesc.equals(funcDesc) || methodDesc.equals(obfDesc));
+            return (methodName.equals(funcName) || methodName.equals(srgName))
+                    && (methodDesc.equals(funcDesc));
         }
 
         public boolean matches(MethodNode method) {
@@ -577,19 +550,46 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
     }
 
-    // Utility class to not have to manually put
+    /**
+     * Safe class writer.
+     * The way COMPUTE_FRAMES works may require loading additional classes. This can cause ClassCircularityErrors.
+     * The override for getCommonSuperClass will ensure that COMPUTE_FRAMES works properly by using the right ClassLoader.
+     *
+     * Code from: https://github.com/JamiesWhiteShirt/clothesline/blob/master/src/core/java/com/jamieswhiteshirt/clothesline/core/SafeClassWriter.java
+     */
+    public static class SafeClassWriter extends ClassWriter {
+        public SafeClassWriter(int flags) {
+            super(flags);
+        }
 
-    public static class ClassnameMap extends HashMap<String, String> {
-
-        public ClassnameMap(String... s) {
-            for (int i = 0; i < s.length / 2; i++)
-                put(s[i * 2], s[i * 2 + 1]);
+        public SafeClassWriter(ClassReader classReader, int flags) {
+            super(classReader, flags);
         }
 
         @Override
-        public String put(String key, String value) {
-            return super.put("L" + key + ";", "L" + value + ";");
+        protected String getCommonSuperClass(String type1, String type2) {
+            Class<?> c, d;
+            ClassLoader classLoader = Launch.classLoader;
+            try {
+                c = Class.forName(type1.replace('/', '.'), false, classLoader);
+                d = Class.forName(type2.replace('/', '.'), false, classLoader);
+            } catch (Exception e) {
+                throw new RuntimeException(e.toString());
+            }
+            if (c.isAssignableFrom(d)) {
+                return type1;
+            }
+            if (d.isAssignableFrom(c)) {
+                return type2;
+            }
+            if (c.isInterface() || d.isInterface()) {
+                return "java/lang/Object";
+            } else {
+                do {
+                    c = c.getSuperclass();
+                } while (!c.isAssignableFrom(d));
+                return c.getName().replace('.', '/');
+            }
         }
-
     }
 }

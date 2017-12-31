@@ -8,6 +8,7 @@ import java.util.Map;
 
 @IFMLLoadingPlugin.Name("LibrarianLib Plugin")
 @IFMLLoadingPlugin.TransformerExclusions("com.teamwizardry.librarianlib.asm")
+@IFMLLoadingPlugin.SortingIndex(1001) // After runtime deobfuscation
 public class LibLibCorePlugin implements IFMLLoadingPlugin {
 
     public static boolean runtimeDeobf = false;
