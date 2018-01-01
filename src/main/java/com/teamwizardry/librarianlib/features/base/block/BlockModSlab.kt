@@ -54,12 +54,21 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
         override fun isDouble() = true
 
         override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
+            val name = ResourceLocation(parentName!!.resourceDomain, "blocks/${parentName.resourcePath}").toString()
+            val loc = singleBlock.registryName!!.resourcePath + "_full"
             ModelHandler.generateBlockJson(this, {
                 JsonGenerationUtils.generateBlockStates(this, mapper) {
-                    json { obj("model" to parentName.toString()) }
+                    json { obj("model" to registryName!!.resourceDomain + ":" + loc ) }
                 }
             }, {
-                mapOf()
+                mapOf(getPathForBlockModel(this, loc) to json {
+                    obj(
+                            "parent" to "block/cube_all",
+                            "textures" to obj(
+                                    "all" to name
+                            )
+                    )
+                })
             })
             return true
         }
