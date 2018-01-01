@@ -289,7 +289,7 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
                 obj(
                         "parent" to "block/leaves",
                         "textures" to obj(
-                                "cross" to "${registryName!!.resourceDomain}:blocks/${registryName!!.resourcePath}"
+                                "all" to "${registryName!!.resourceDomain}:blocks/${registryName!!.resourcePath}"
                         )
                 )
             })
