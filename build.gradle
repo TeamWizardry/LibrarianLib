@@ -15,7 +15,13 @@ buildscript {
 
 
 apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: 'kotlin'
+/* 
+ * This kotlin plugin is already applied in Forgelin, 
+ * also, you're not actually using this it seems, 
+ * so I'm commenting this out, just in case it's needed later? 
+ *  -Alex
+ * apply plugin: 'kotlin'
+ */
 apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'idea'
 apply plugin: 'maven'
@@ -101,7 +107,8 @@ dependencies {
     //required 'com.github.Eladkay:Mixin:-SNAPSHOT'
 // todo once mcmultipart is 1.11
 //    deobfCompile "MCMultiPart:MCMultiPart:1.2.1:universal"
-    compile "net.shadowfacts:Forgelin:1.5.1"
+//I'm also setting this to use the latest Forgelin cause the latest Forgelin has the latest kotlin
+    compile "net.shadowfacts:Forgelin:1.6.0"
 //    required "org.jgrapht:jgrapht-core:1.0.1"
 }
 
