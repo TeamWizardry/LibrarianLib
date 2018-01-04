@@ -27,6 +27,7 @@ import com.teamwizardry.librarianlib.features.utilities.LoggerBase
 import com.teamwizardry.librarianlib.features.utilities.client.F3Handler
 import com.teamwizardry.librarianlib.features.utilities.getUnsafe
 import net.minecraft.launchwrapper.Launch
+import net.minecraftforge.fluids.FluidRegistry
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.SidedProxy
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
@@ -59,6 +60,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
  */
 @Mod(modid = LibrarianLib.MODID, version = LibrarianLib.VERSION, name = LibrarianLib.MODNAME, dependencies = LibrarianLib.DEPENDENCIES, modLanguageAdapter = LibrarianLib.ADAPTER, acceptedMinecraftVersions = LibrarianLib.ALLOWED)
 object LibrarianLib {
+
+    init {
+        FluidRegistry.enableUniversalBucket()
+    }
 
     @Mod.EventHandler
     fun preInit(e: FMLPreInitializationEvent) {

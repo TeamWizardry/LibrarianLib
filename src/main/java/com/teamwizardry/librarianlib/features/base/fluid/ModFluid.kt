@@ -4,11 +4,13 @@ import com.teamwizardry.librarianlib.features.helpers.currentModId
 import net.minecraft.block.Block
 import net.minecraft.block.material.Material
 import net.minecraft.item.EnumRarity
+import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.SoundEvent
 import net.minecraftforge.fluids.Fluid
 import net.minecraftforge.fluids.FluidRegistry
 import net.minecraftforge.fluids.FluidStack
+import net.minecraftforge.fluids.FluidUtil
 
 /**
  * @author WireSegal
@@ -21,6 +23,7 @@ open class ModFluid(name: String, rlStill: ResourceLocation, rlFlow: ResourceLoc
             this(name, ResourceLocation(currentModId, still), ResourceLocation(currentModId, flow), bucket)
 
     private var vaporizes: Boolean? = null
+    private var myBlock: Block? = null
 
     override fun doesVaporize(fluidStack: FluidStack) = vaporizes ?: super.doesVaporize(fluidStack)
 
@@ -48,11 +51,14 @@ open class ModFluid(name: String, rlStill: ResourceLocation, rlFlow: ResourceLoc
     override fun setLuminosity(luminosity: Int): ModFluid
             = super.setLuminosity(luminosity) as ModFluid
 
+    open fun makeBlock(material: Material): ModFluid
+            = apply { if (getActualBlock() == null) myBlock = BlockModFluid(getActual(), material) }
+
     open fun setVaporizes(vaporizes: Boolean): ModFluid
             = apply { this.vaporizes = vaporizes }
 
-    open fun makeBlock(material: Material): ModFluid
-            = apply { if (getActualBlock() == null) BlockModFluid(getActual(), material) }
+
+    fun bucketOf(): ItemStack = FluidUtil.getFilledBucket(FluidStack(getActual(), 1000))
 
     fun getActual(): Fluid = FluidRegistry.getFluid(name)
     fun getActualBlock(): Block? = getActual().block
