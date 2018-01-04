@@ -5,25 +5,25 @@ import com.teamwizardry.librarianlib.features.base.block.IGlowingBlock
 import com.teamwizardry.librarianlib.features.base.item.IGlowingItem
 import com.teamwizardry.librarianlib.features.config.ConfigProperty
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
-import com.teamwizardry.librarianlib.features.utilities.ExtendedStateWrapper
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import com.teamwizardry.librarianlib.features.utilities.client.GlUtils
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.BlockModelRenderer
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.RenderItem
+import net.minecraft.client.renderer.block.model.BakedQuad
 import net.minecraft.client.renderer.block.model.IBakedModel
 import net.minecraft.client.resources.IResource
 import net.minecraft.init.Items
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.potion.PotionUtils
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.MathHelper
 import net.minecraft.world.IBlockAccess
-import net.minecraftforge.common.ForgeModContainer
 import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -151,10 +151,10 @@ object GlowingHandler {
             val block = ForgeRegistries.BLOCKS.getValue(ResourceLocation(name)) ?: continue
             val entries = map.entries.toList()
             val indices = entries.associate { it.key.toInt() to (it.value.first.map(String::toInt) to it.value.second) }
-            registerReloadableGlowHandler(block) { _, model, state, _ ->
+            registerReloadableGlowHandler(block) { _, quad, state, _ ->
                 val array = intArrayOf(*(indices[state.block.getMetaFromState(state)]?.first?.toTypedArray()?.toIntArray() ?: intArrayOf()),
                         *(indices[-1]?.first?.toTypedArray()?.toIntArray() ?: intArrayOf()))
-                IGlowingItem.Helper.wrapperBake(model, array.isEmpty() || array.contains(-1), *array)
+                (quad.hasTintIndex() && (array.isEmpty() || quad.tintIndex in array) || array.isEmpty() || array.contains(-1))
             }
         }
     }
@@ -169,10 +169,10 @@ object GlowingHandler {
     private val blockRenderSpecialHandlers = mutableMapOf<Block, IGlowingBlock>()
 
     private fun registerReloadableGlowHandler(block: Block,
-                                              modelTransformer: (IBlockAccess, IBakedModel, IBlockState, BlockPos) -> IBakedModel?) {
+                                              modelTransformer: (IBlockAccess, BakedQuad, IBlockState, BlockPos) -> Boolean) {
         val glow = object : IGlowingBlock {
-            override fun transformToGlow(world: IBlockAccess, model: IBakedModel, state: IBlockState, pos: BlockPos): IBakedModel? {
-                return modelTransformer(world, model, state, pos)
+            override fun shouldGlow(world: IBlockAccess, quad: BakedQuad, state: IBlockState, pos: BlockPos): Boolean {
+                return modelTransformer(world, quad, state, pos)
             }
         }
         blockRenderSpecialHandlers.put(block, glow)
@@ -181,10 +181,10 @@ object GlowingHandler {
 
     @JvmStatic
     fun registerCustomGlowHandler(block: Block,
-                                  modelTransformer: (IBlockAccess, IBakedModel, IBlockState, BlockPos) -> IBakedModel?) {
+                                  modelTransformer: (IBlockAccess, BakedQuad, IBlockState, BlockPos) -> Boolean) {
         blockRenderSpecialHandlers.put(block, object : IGlowingBlock {
-            override fun transformToGlow(world: IBlockAccess, model: IBakedModel, state: IBlockState, pos: BlockPos): IBakedModel? {
-                return modelTransformer(world, model, state, pos)
+            override fun shouldGlow(world: IBlockAccess, quad: BakedQuad, state: IBlockState, pos: BlockPos): Boolean {
+                return modelTransformer(world, quad, state, pos)
             }
         })
     }
@@ -237,20 +237,55 @@ object GlowingHandler {
     }
 
     @JvmStatic
-    fun glow(blockModelRenderer: BlockModelRenderer, world: IBlockAccess, model: IBakedModel, state: IBlockState, pos: BlockPos, buf: BufferBuilder) {
+    fun glow(world: IBlockAccess, model: IBakedModel, state: IBlockState, pos: BlockPos, buf: BufferBuilder) {
         val block = state.block as? IGlowingBlock ?: blockRenderSpecialHandlers[state.block]
 
         if (block != null) {
-            val newModel = block.transformToGlow(world, model, state, pos)
-            if (newModel != null) {
-                val prev = ForgeModContainer.forgeLightPipelineEnabled
-                ForgeModContainer.forgeLightPipelineEnabled = false
-                blockModelRenderer.renderModel(world, newModel, object : ExtendedStateWrapper(state, world, pos) {
-                    override fun getPackedLightmapCoords(source: IBlockAccess, pos: BlockPos): Int {
-                        return block.packedGlowCoords(source, source.getBlockState(pos), pos)
-                    }
-                }, pos, buf, true)
-                ForgeModContainer.forgeLightPipelineEnabled = prev
+            relightModel(block, world, model, state, pos, buf, true)
+        }
+    }
+
+    fun relightModel(glow: IGlowingBlock, blockAccessIn: IBlockAccess, modelIn: IBakedModel, blockStateIn: IBlockState, blockPosIn: BlockPos, buffer: BufferBuilder, checkSides: Boolean): Boolean {
+        return relightModel(glow, blockAccessIn, modelIn, blockStateIn, blockPosIn, buffer, checkSides, MathHelper.getPositionRandom(blockPosIn))
+    }
+
+    fun relightModel(glow: IGlowingBlock, worldIn: IBlockAccess, modelIn: IBakedModel, stateIn: IBlockState, posIn: BlockPos, buffer: BufferBuilder, checkSides: Boolean, rand: Long): Boolean {
+        var total = 0
+
+        val brightness = glow.packedGlowCoords(worldIn, stateIn, posIn)
+
+        var list = modelIn.getQuads(stateIn, null, rand)
+
+        if (!list.isEmpty()) {
+            relightQuads(glow, worldIn, stateIn, posIn, brightness, buffer, list, total)
+            total += list.size
+        }
+
+        for (enumfacing in EnumFacing.values().reversed()) {
+            list = modelIn.getQuads(stateIn, enumfacing, rand)
+
+            if (!list.isEmpty() && (!checkSides || stateIn.shouldSideBeRendered(worldIn, posIn, enumfacing))) {
+                relightQuads(glow, worldIn, stateIn, posIn, brightness, buffer, list, total)
+                total += list.size
+            }
+        }
+
+        return total > 0
+    }
+
+    private fun relightQuads(glow: IGlowingBlock, blockAccessIn: IBlockAccess, stateIn: IBlockState, posIn: BlockPos, brightnessIn: Int, buffer: BufferBuilder, list: List<BakedQuad>, total: Int) {
+        val j = list.size
+        val format = buffer.vertexFormat
+        for (i in (j - 1) downTo 0) {
+            val bakedquad = list[i]
+            if (glow.shouldGlow(blockAccessIn, bakedquad, stateIn, posIn)) {
+                val shift = format.getUvOffsetById(1) / 4
+                val truePos = (buffer.vertexCount - (total + j - i) * 4) * format.integerSize + shift
+                val jShift = format.integerSize
+                buffer.rawIntBuffer.put(truePos * 4, brightnessIn)
+                buffer.rawIntBuffer.put(truePos + jShift, brightnessIn)
+                buffer.rawIntBuffer.put(truePos + jShift * 2, brightnessIn)
+                buffer.rawIntBuffer.put(truePos + jShift * 3, brightnessIn)
             }
         }
     }

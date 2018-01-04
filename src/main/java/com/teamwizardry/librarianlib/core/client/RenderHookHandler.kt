@@ -17,7 +17,9 @@ import net.minecraftforge.fml.relauncher.SideOnly
 @SideOnly(Side.CLIENT)
 object RenderHookHandler {
     private val itemHooks = mutableListOf<ItemHook>(GlowingHandler::glow)
-    private val blockHooks = mutableListOf<BlockHook>(GlowingHandler::glow)
+    private val blockHooks = mutableListOf<BlockHook>({ _, world, model, state, pos, buffer ->
+        GlowingHandler.glow(world, model, state, pos, buffer)
+    })
     private val fluidHooks = mutableListOf<FluidHook>()
 
 

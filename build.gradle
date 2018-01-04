@@ -131,7 +131,10 @@ jar {
         }
     }
     manifest {
-        attributes("FMLCorePluginContainsFMLMod": "true", "FMLCorePlugin": "com.teamwizardry.librarianlib.asm.LibLibCorePlugin")
+        attributes(
+                "FMLCorePluginContainsFMLMod": "true",
+                "FMLCorePlugin": "com.teamwizardry.librarianlib.asm.LibLibCorePlugin",
+                "FMLAT": "librarianlib_at.cfg")
     }
 
 }
