@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.asm;
 import com.teamwizardry.librarianlib.core.client.GlowingHandler;
 import com.teamwizardry.librarianlib.core.client.RenderHookHandler;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.BlockFluidRenderer;
 import net.minecraft.client.renderer.BlockModelRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -33,8 +34,8 @@ public class LibLibAsmHooks {
     }
 
     @SideOnly(Side.CLIENT)
-    public static void renderHook(BlockModelRenderer blockModelRenderer, IBlockAccess world, IBlockState state, BlockPos pos, BufferBuilder vertexBuffer) {
-        RenderHookHandler.runFluidHook(blockModelRenderer, world, state, pos, vertexBuffer);
+    public static void renderHook(BlockFluidRenderer blockFluidRenderer, IBlockAccess world, IBlockState state, BlockPos pos, BufferBuilder vertexBuffer) {
+        RenderHookHandler.runFluidHook(blockFluidRenderer, world, state, pos, vertexBuffer);
     }
 
     @SideOnly(Side.CLIENT)

@@ -153,17 +153,17 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
                             newInstructions.add(new VarInsnNode(ALOAD, 0));
                             newInstructions.add(new FieldInsnNode(GETFIELD, "net/minecraft/client/renderer/BlockRendererDispatcher",
-                                    deobf ? "blockModelRenderer" : "field_175027_c", "Lnet/minecraft/client/renderer/BlockModelRenderer;"));
-                            // BlockModelRenderer
+                                    deobf ? "fluidRenderer" : "field_175025_e", "Lnet/minecraft/client/renderer/BlockFluidRenderer;"));
+                            // BlockFluidRenderer
 
                             newInstructions.add(new VarInsnNode(ALOAD, 3));
                             newInstructions.add(new VarInsnNode(ALOAD, 1));
                             newInstructions.add(new VarInsnNode(ALOAD, 2));
                             newInstructions.add(new VarInsnNode(ALOAD, 4));
-                            // BlockModelRenderer, IBlockAccess, IBlockState, BlockPos, BufferBuilder
+                            // BlockFluidRenderer, IBlockAccess, IBlockState, BlockPos, BufferBuilder
 
                             newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "renderHook",
-                                    "(Lnet/minecraft/client/renderer/BlockModelRenderer;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/BufferBuilder;)V", false));
+                                    "(Lnet/minecraft/client/renderer/BlockFluidRenderer;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/BufferBuilder;)V", false));
 
                             method.instructions.insert(node, newInstructions);
 

@@ -37,7 +37,13 @@ public interface ClientRunnable {
     @Nullable
     static <T> T produce(ClientSupplier<T> supplier) {
         MutableObject<T> holder = new MutableObject<>();
-        run(() -> holder.setValue(supplier.produceIfClient()));
+        run(new ClientRunnable() {
+            @Override
+            @SideOnly(Side.CLIENT)
+            public void runIfClient() {
+                holder.setValue(supplier.produceIfClient());
+            }
+        });
         return holder.getValue();
     }
 

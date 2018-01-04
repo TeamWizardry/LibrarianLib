@@ -8,6 +8,8 @@ import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import com.teamwizardry.librarianlib.features.utilities.client.GlUtils
 import net.minecraft.block.Block
+import net.minecraft.block.BlockLiquid
+import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.BufferBuilder
@@ -15,10 +17,12 @@ import net.minecraft.client.renderer.RenderItem
 import net.minecraft.client.renderer.block.model.BakedQuad
 import net.minecraft.client.renderer.block.model.IBakedModel
 import net.minecraft.client.resources.IResource
+import net.minecraft.init.Blocks
 import net.minecraft.init.Items
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.potion.PotionUtils
+import net.minecraft.util.EnumBlockRenderType
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
@@ -175,6 +179,7 @@ object GlowingHandler {
                 return modelTransformer(world, quad, state, pos)
             }
         }
+
         blockRenderSpecialHandlers.put(block, glow)
         removableGlowBlocks.add(glow)
     }
@@ -237,35 +242,34 @@ object GlowingHandler {
     }
 
     @JvmStatic
-    fun glow(world: IBlockAccess, model: IBakedModel, state: IBlockState, pos: BlockPos, buf: BufferBuilder) {
+    fun glow(world: IBlockAccess, model: IBakedModel?, state: IBlockState, pos: BlockPos, buf: BufferBuilder) {
         val block = state.block as? IGlowingBlock ?: blockRenderSpecialHandlers[state.block]
 
         if (block != null) {
-            relightModel(block, world, model, state, pos, buf, true)
+            if (state.renderType == EnumBlockRenderType.LIQUID)
+                relightFluid(block, world, state, pos, buf)
+            else if (model != null && state.renderType == EnumBlockRenderType.MODEL)
+                relightModel(block, world, model, state, pos, buf, true)
         }
     }
 
-    fun relightModel(glow: IGlowingBlock, blockAccessIn: IBlockAccess, modelIn: IBakedModel, blockStateIn: IBlockState, blockPosIn: BlockPos, buffer: BufferBuilder, checkSides: Boolean): Boolean {
-        return relightModel(glow, blockAccessIn, modelIn, blockStateIn, blockPosIn, buffer, checkSides, MathHelper.getPositionRandom(blockPosIn))
-    }
-
-    fun relightModel(glow: IGlowingBlock, worldIn: IBlockAccess, modelIn: IBakedModel, stateIn: IBlockState, posIn: BlockPos, buffer: BufferBuilder, checkSides: Boolean, rand: Long): Boolean {
+    private fun relightModel(glow: IGlowingBlock, world: IBlockAccess, model: IBakedModel, state: IBlockState, pos: BlockPos, buffer: BufferBuilder, checkSides: Boolean, rand: Long = MathHelper.getPositionRandom(pos)): Boolean {
         var total = 0
 
-        val brightness = glow.packedGlowCoords(worldIn, stateIn, posIn)
+        val brightness = glow.packedGlowCoords(world, state, pos)
 
-        var list = modelIn.getQuads(stateIn, null, rand)
+        var list = model.getQuads(state, null, rand)
 
         if (!list.isEmpty()) {
-            relightQuads(glow, worldIn, stateIn, posIn, brightness, buffer, list, total)
+            relightQuads(glow, world, state, pos, brightness, buffer, list, total)
             total += list.size
         }
 
         for (enumfacing in EnumFacing.values().reversed()) {
-            list = modelIn.getQuads(stateIn, enumfacing, rand)
+            list = model.getQuads(state, enumfacing, rand)
 
-            if (!list.isEmpty() && (!checkSides || stateIn.shouldSideBeRendered(worldIn, posIn, enumfacing))) {
-                relightQuads(glow, worldIn, stateIn, posIn, brightness, buffer, list, total)
+            if (!list.isEmpty() && (!checkSides || state.shouldSideBeRendered(world, pos, enumfacing))) {
+                relightQuads(glow, world, state, pos, brightness, buffer, list, total)
                 total += list.size
             }
         }
@@ -273,21 +277,58 @@ object GlowingHandler {
         return total > 0
     }
 
-    private fun relightQuads(glow: IGlowingBlock, blockAccessIn: IBlockAccess, stateIn: IBlockState, posIn: BlockPos, brightnessIn: Int, buffer: BufferBuilder, list: List<BakedQuad>, total: Int) {
+    private fun relightQuads(glow: IGlowingBlock, world: IBlockAccess, state: IBlockState, pos: BlockPos, brightness: Int, buffer: BufferBuilder, list: List<BakedQuad>, total: Int) {
         val j = list.size
         val format = buffer.vertexFormat
         for (i in (j - 1) downTo 0) {
             val bakedquad = list[i]
-            if (glow.shouldGlow(blockAccessIn, bakedquad, stateIn, posIn)) {
+            if (glow.shouldGlow(world, bakedquad, state, pos)) {
                 val shift = format.getUvOffsetById(1) / 4
                 val truePos = (buffer.vertexCount - (total + j - i) * 4) * format.integerSize + shift
                 val jShift = format.integerSize
                 val buf = buffer.byteBuffer.asIntBuffer()
-                buf.put(truePos, brightnessIn)
-                buf.put(truePos + jShift, brightnessIn)
-                buf.put(truePos + jShift * 2, brightnessIn)
-                buf.put(truePos + jShift * 3, brightnessIn)
+                buf.put(truePos, brightness)
+                buf.put(truePos + jShift, brightness)
+                buf.put(truePos + jShift * 2, brightness)
+                buf.put(truePos + jShift * 3, brightness)
             }
+        }
+    }
+
+    private fun relightFluid(glow: IGlowingBlock, world: IBlockAccess, state: IBlockState, pos: BlockPos, buffer: BufferBuilder) {
+        val liquid = state.block as BlockLiquid
+        var total = 0
+
+        if (state.shouldSideBeRendered(world, pos, EnumFacing.UP)) {
+            total++
+            if (liquid.shouldRenderSides(world, pos.up()))
+                total++
+        }
+
+        if (state.shouldSideBeRendered(world, pos, EnumFacing.DOWN))
+            total++
+
+        for (face in EnumFacing.HORIZONTALS) if (state.shouldSideBeRendered(world, pos, face)) {
+            if (state.material != Material.LAVA) {
+                val block = world.getBlockState(pos.offset(face)).block
+                if (block == Blocks.GLASS || block == Blocks.STAINED_GLASS)
+                    total++
+            }
+            total++
+        }
+
+
+        val format = buffer.vertexFormat
+        val buf = buffer.byteBuffer.asIntBuffer()
+        val brightness = glow.packedGlowCoords(world, state, pos)
+        for (i in 1..total) {
+            val shift = format.getUvOffsetById(1) / 4
+            val truePos = (buffer.vertexCount - i * 4) * format.integerSize + shift
+            val jShift = format.integerSize
+            buf.put(truePos, brightness)
+            buf.put(truePos + jShift, brightness)
+            buf.put(truePos + jShift * 2, brightness)
+            buf.put(truePos + jShift * 3, brightness)
         }
     }
 }

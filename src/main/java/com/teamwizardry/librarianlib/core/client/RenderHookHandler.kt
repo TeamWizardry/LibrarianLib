@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.core.client
 
 import net.minecraft.block.state.IBlockState
+import net.minecraft.client.renderer.BlockFluidRenderer
 import net.minecraft.client.renderer.BlockModelRenderer
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.block.model.IBakedModel
@@ -20,7 +21,9 @@ object RenderHookHandler {
     private val blockHooks = mutableListOf<BlockHook>({ _, world, model, state, pos, buffer ->
         GlowingHandler.glow(world, model, state, pos, buffer)
     })
-    private val fluidHooks = mutableListOf<FluidHook>()
+    private val fluidHooks = mutableListOf<FluidHook>({ _, world, state, pos, buffer ->
+        GlowingHandler.glow(world, null, state, pos, buffer)
+    })
 
 
     @JvmStatic
@@ -49,8 +52,8 @@ object RenderHookHandler {
     }
 
     @JvmStatic
-    fun runFluidHook(blockModelRenderer: BlockModelRenderer, world: IBlockAccess, state: IBlockState, pos: BlockPos, vertexBuffer: BufferBuilder) {
-        fluidHooks.forEach { it(blockModelRenderer, world, state, pos, vertexBuffer) }
+    fun runFluidHook(blockFluidRenderer: BlockFluidRenderer, world: IBlockAccess, state: IBlockState, pos: BlockPos, vertexBuffer: BufferBuilder) {
+        fluidHooks.forEach { it(blockFluidRenderer, world, state, pos, vertexBuffer) }
     }
 
 
@@ -58,4 +61,4 @@ object RenderHookHandler {
 
 typealias ItemHook = (ItemStack, IBakedModel) -> Unit
 typealias BlockHook = (BlockModelRenderer, IBlockAccess, IBakedModel, IBlockState, BlockPos, BufferBuilder) -> Unit
-typealias FluidHook = (BlockModelRenderer, IBlockAccess, IBlockState, BlockPos, BufferBuilder) -> Unit
+typealias FluidHook = (BlockFluidRenderer, IBlockAccess, IBlockState, BlockPos, BufferBuilder) -> Unit
