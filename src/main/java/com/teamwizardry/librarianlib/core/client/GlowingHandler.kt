@@ -28,7 +28,6 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.io.IOException
-import java.nio.IntBuffer
 import java.util.*
 
 /**
@@ -274,8 +273,6 @@ object GlowingHandler {
         return total > 0
     }
 
-    val BufferBuilder.rawIntBuffer by MethodHandleHelper.delegateForReadOnly<BufferBuilder, IntBuffer>(BufferBuilder::class.java, "rawIntBuffer", "field_178999_b")
-
     private fun relightQuads(glow: IGlowingBlock, blockAccessIn: IBlockAccess, stateIn: IBlockState, posIn: BlockPos, brightnessIn: Int, buffer: BufferBuilder, list: List<BakedQuad>, total: Int) {
         val j = list.size
         val format = buffer.vertexFormat
@@ -285,10 +282,11 @@ object GlowingHandler {
                 val shift = format.getUvOffsetById(1) / 4
                 val truePos = (buffer.vertexCount - (total + j - i) * 4) * format.integerSize + shift
                 val jShift = format.integerSize
-                buffer.rawIntBuffer.put(truePos * 4, brightnessIn)
-                buffer.rawIntBuffer.put(truePos + jShift, brightnessIn)
-                buffer.rawIntBuffer.put(truePos + jShift * 2, brightnessIn)
-                buffer.rawIntBuffer.put(truePos + jShift * 3, brightnessIn)
+                val buf = buffer.byteBuffer.asIntBuffer()
+                buf.put(truePos, brightnessIn)
+                buf.put(truePos + jShift, brightnessIn)
+                buf.put(truePos + jShift * 2, brightnessIn)
+                buf.put(truePos + jShift * 3, brightnessIn)
             }
         }
     }
