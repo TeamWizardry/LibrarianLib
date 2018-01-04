@@ -28,6 +28,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.io.IOException
+import java.nio.IntBuffer
 import java.util.*
 
 /**
@@ -272,6 +273,8 @@ object GlowingHandler {
 
         return total > 0
     }
+
+    val BufferBuilder.rawIntBuffer by MethodHandleHelper.delegateForReadOnly<BufferBuilder, IntBuffer>(BufferBuilder::class.java, "rawIntBuffer", "field_178999_b")
 
     private fun relightQuads(glow: IGlowingBlock, blockAccessIn: IBlockAccess, stateIn: IBlockState, posIn: BlockPos, brightnessIn: Int, buffer: BufferBuilder, list: List<BakedQuad>, total: Int) {
         val j = list.size
