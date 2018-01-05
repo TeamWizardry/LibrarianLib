@@ -98,7 +98,6 @@ if __name__ == "__main__":
     should_continue = False
 
     expanded_path = os.path.abspath(walk_path)
-    expanded_path.replace(home_dir, "~")
     if src_main_resources in expanded_path:
         should_continue = True
 
@@ -110,7 +109,7 @@ if __name__ == "__main__":
             should_continue = True
 
     if not should_continue:
-        forge_forward = agnostic_input("This path (" + expanded_path + ") doesn't contain " + src_main_resources + ".\n"
+        forge_forward = agnostic_input("This path (" + expanded_path.replace(home_dir, "~") + ") doesn't contain " + src_main_resources + ".\n"
                                        + "Are you sure you want to continue? Anything other than a blank will be "
                                        + "interpreted as \"go ahead\". ")
         if forge_forward.isspace():
@@ -162,4 +161,4 @@ if __name__ == "__main__":
                     all_converted.append(path_to_file + " -> " + path_to_new)
 
     for converted in all_converted:
-        print("Converted file " + converted)
+        print("Converted file " + converted.replace(home_dir, "~"))
