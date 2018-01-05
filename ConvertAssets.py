@@ -89,15 +89,16 @@ def parse_json_line(string):
 src_main_resources = "src" + os.path.sep + "main" + os.path.sep + "resources"
 
 if __name__ == "__main__":
-    allConverted = list()
+    all_converted = list()
 
-    homeDir = os.path.expanduser("~")
+    home_dir = os.path.expanduser("~")
 
     walk_path = "." if len(sys.argv) < 2 else sys.argv[1]
 
     should_continue = False
 
     expanded_path = os.path.abspath(walk_path)
+    expanded_path.replace(home_dir, "~")
     if src_main_resources in expanded_path:
         should_continue = True
 
@@ -156,9 +157,9 @@ if __name__ == "__main__":
                 new.write(data)
                 new.close()
                 if path_to_file == path_to_new:
-                    allConverted.append(path_to_file)
+                    all_converted.append(path_to_file)
                 else:
-                    allConverted.append(path_to_file + " -> " + path_to_new)
+                    all_converted.append(path_to_file + " -> " + path_to_new)
 
-    for converted in allConverted:
+    for converted in all_converted:
         print("Converted file " + converted)
