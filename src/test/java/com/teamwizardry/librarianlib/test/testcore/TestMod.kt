@@ -7,12 +7,12 @@ import com.teamwizardry.librarianlib.features.utilities.LoggerBase
 import com.teamwizardry.librarianlib.test.animator.AnimatorEntryPoint
 import com.teamwizardry.librarianlib.test.cap.CapabilityTest
 import com.teamwizardry.librarianlib.test.chunkdata.ChunkDataEntryPoint
-import com.teamwizardry.librarianlib.test.worlddata.WorldDataEntryPoint
 import com.teamwizardry.librarianlib.test.container.ContainerEntryPoint
 import com.teamwizardry.librarianlib.test.fx.FXEntryPoint
 import com.teamwizardry.librarianlib.test.gui.GuiEntryPoint
 import com.teamwizardry.librarianlib.test.saving.SavingEntryPoint
 import com.teamwizardry.librarianlib.test.variants.VariantEntryPoint
+import com.teamwizardry.librarianlib.test.worlddata.WorldDataEntryPoint
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
@@ -89,6 +89,7 @@ class TestMod {
                 ChunkDataEntryPoint,
                 WorldDataEntryPoint,
                 AnimatorEntryPoint,
+//                RenderEntryPoint, // DO NOT ENABLE THIS OR ALL IS SPONGE
                 EndEntryPoint
         )
 
