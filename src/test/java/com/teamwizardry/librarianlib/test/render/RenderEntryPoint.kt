@@ -44,8 +44,10 @@ object RenderEntryPoint : TestEntryPoint {
             texturesWater[0] = texturemap.getAtlasSprite("minecraft:blocks/water_still")
             texturesWater[1] = texturemap.getAtlasSprite("minecraft:blocks/water_flow")
 
+            val wetSprite = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite("minecraft:blocks/sponge_wet")
+
             RenderHookHandler.registerFluidHook { _, world, state, pos, buffer ->
-                retextureFluid(sprite, world, state, pos, buffer)
+                retextureFluid(wetSprite, world, state, pos, buffer)
             }
         }
     }
@@ -113,7 +115,6 @@ object RenderEntryPoint : TestEntryPoint {
         val txFlow = textures[1]
         if (txStill == null || txFlow == null) return
 
-
         var total = 0
 
         if (state.shouldSideBeRendered(world, pos, EnumFacing.UP)) {
@@ -128,7 +129,7 @@ object RenderEntryPoint : TestEntryPoint {
         for (face in EnumFacing.HORIZONTALS) if (state.shouldSideBeRendered(world, pos, face)) {
             if (state.material != Material.LAVA) {
                 val block = world.getBlockState(pos.offset(face)).block
-                if (block == Blocks.GLASS || block == Blocks.STAINED_GLASS)
+                if (block != Blocks.GLASS && block != Blocks.STAINED_GLASS)
                     total++
             }
             total++
@@ -137,27 +138,28 @@ object RenderEntryPoint : TestEntryPoint {
 
         val format = buffer.vertexFormat
         val buf = buffer.byteBuffer.asIntBuffer()
-        for (i in 1..total) {
-            val shift = format.getUvOffsetById(0) / 4
-            val truePos = (buffer.vertexCount - i * 4) * format.integerSize + shift
-            val jShift = format.integerSize
+        if (total != 0)
+            for (i in 1..total) {
+                val shift = format.getUvOffsetById(0) / 4
+                val truePos = (buffer.vertexCount - i * 4) * format.integerSize + shift
+                val jShift = format.integerSize
 
-            for (vertexIndex in 0 until 4) {
-                val oldU = intBitsToFloat(buf[truePos + vertexIndex * jShift])
-                val oldV = intBitsToFloat(buf[truePos + vertexIndex * jShift + 1])
+                for (vertexIndex in 0 until 4) {
+                    val oldU = intBitsToFloat(buf[truePos + vertexIndex * jShift])
+                    val oldV = intBitsToFloat(buf[truePos + vertexIndex * jShift + 1])
 
-                val sprite = if (oldU <= txFlow.maxU && oldU >= txFlow.minU && oldV <= txFlow.maxV && oldV >= txFlow.minV) txFlow else txStill
+                    val sprite = if (oldU <= txFlow.maxU && oldU >= txFlow.minU && oldV <= txFlow.maxV && oldV >= txFlow.minV) txFlow else txStill
 
-                val originalU = sprite.getUnInterpolatedU(oldU)
-                val originalV = sprite.getUnInterpolatedV(oldV)
+                    val originalU = sprite.getUnInterpolatedU(oldU)
+                    val originalV = sprite.getUnInterpolatedV(oldV)
 
-                val newU = newTex.getInterpolatedU(originalU.toDouble())
-                val newV = newTex.getInterpolatedV(originalV.toDouble())
+                    val newU = newTex.getInterpolatedU(originalU.toDouble())
+                    val newV = newTex.getInterpolatedV(originalV.toDouble())
 
-                buf.put(truePos + vertexIndex * jShift, floatToRawIntBits(newU))
-                buf.put(truePos + vertexIndex * jShift + 1, floatToRawIntBits(newV))
+                    buf.put(truePos + vertexIndex * jShift, floatToRawIntBits(newU))
+                    buf.put(truePos + vertexIndex * jShift + 1, floatToRawIntBits(newV))
+                }
             }
-        }
     }
 
     override fun preInit(event: FMLPreInitializationEvent) = Unit

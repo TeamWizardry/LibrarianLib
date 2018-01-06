@@ -311,7 +311,7 @@ object GlowingHandler {
         for (face in EnumFacing.HORIZONTALS) if (state.shouldSideBeRendered(world, pos, face)) {
             if (state.material != Material.LAVA) {
                 val block = world.getBlockState(pos.offset(face)).block
-                if (block == Blocks.GLASS || block == Blocks.STAINED_GLASS)
+                if (block != Blocks.GLASS && block != Blocks.STAINED_GLASS)
                     total++
             }
             total++
