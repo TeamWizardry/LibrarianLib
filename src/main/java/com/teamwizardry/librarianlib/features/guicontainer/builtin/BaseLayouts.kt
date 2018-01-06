@@ -74,7 +74,8 @@ object BaseLayouts {
             for (column in 0..8) {
                 hotbar.add(ComponentSlot(player.hotbar[column], column * 18, 0))
             }
-            mainWrapper.add(main, hotbar)
+            main.add(hotbar)
+            mainWrapper.add(main)
 
             root = ComponentVoid(0, 0)
             root.add(armor, mainWrapper, offhand)
