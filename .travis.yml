@@ -3,7 +3,7 @@ install:
   - ./gradlew setupCIWorkspace
   -  sed -i 's:^[ \t]*build_number[ \t]*=\([ \t]*.*\)$:build_number=\1-SNAPSHOT:' build.properties
 script:
-  - if [ -n $TRAVIS_PULL_REQUEST_BRANCH ]; then ./gradlew build; else ./gradlew build uploadArchives; fi
+  - ./gradlew build
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 cache:
@@ -13,3 +13,5 @@ cache:
     - gradle
 jdk:
   - oraclejdk8
+after_success:
+  - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./gradlew uploadArchives; fi
