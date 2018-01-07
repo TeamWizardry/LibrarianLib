@@ -101,7 +101,7 @@ dependencies {
     //required 'com.github.Eladkay:Mixin:-SNAPSHOT'
 // todo once mcmultipart is 1.11
 //    deobfCompile "MCMultiPart:MCMultiPart:1.2.1:universal"
-    compile "net.shadowfacts:Forgelin:1.5.1"
+    compile "net.shadowfacts:Forgelin:1.6.0"
 //    required "org.jgrapht:jgrapht-core:1.0.1"
 }
 
@@ -114,7 +114,14 @@ reobf {
 compileKotlin {
     kotlinOptions {
         javaParameters = true
-        jvmTarget = 1.8
+        jvmTarget = "1.8"
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        javaParameters = true
+        jvmTarget = "1.8"
     }
 }
 
