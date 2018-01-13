@@ -41,6 +41,9 @@ archivesBaseName = config.mod_name + "-" + config.mc_version
 repositories {
     jcenter()
     maven {
+        url "http://maven.bluexin.be/repository/snapshots/"
+    }
+    maven {
         url "http://maven.amadornes.com/"
     }
     maven {
