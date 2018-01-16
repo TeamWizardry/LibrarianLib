@@ -91,13 +91,16 @@ abstract class TileMod : TileEntity() {
     fun writeModuleNBT(sync: Boolean): NBTTagCompound? {
         createModules()
         if (modules.isEmpty()) return null
-        return nbt {
+        val compound = nbt {
             comp(
                     *modules.mapNotNull {
                         it.value.writeToNBT(sync)?.let { value -> it.key to value }
                     }.toTypedArray()
             )
         } as NBTTagCompound
+        if (compound.size == 0)
+            return null
+        return compound
     }
 
     fun readModuleNBT(nbt: NBTTagCompound) {
