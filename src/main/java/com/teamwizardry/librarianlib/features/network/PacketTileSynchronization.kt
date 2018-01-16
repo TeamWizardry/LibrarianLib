@@ -32,7 +32,8 @@ class PacketTileSynchronization(var tile: TileMod? = null /* Tile is always null
 
         AbstractSaveHandler.readAutoBytes(tile, b, true)
         tile.readModuleNBT(b.readTag())
-        tile.readCustomBytes(b)
+        if (!b.hasNullSignature())
+            tile.readCustomBytes(b)
         b.release()
     }
 
@@ -49,7 +50,13 @@ class PacketTileSynchronization(var tile: TileMod? = null /* Tile is always null
             buf.writeNonnullSignature()
 
             AbstractSaveHandler.writeAutoBytes(te, buf, true)
-            buf.writeTag(te.writeModuleNBT(true))
+            val moduleNBT = te.writeModuleNBT(true)
+            if (moduleNBT == null)
+                buf.writeNullSignature()
+            else {
+                buf.writeNonnullSignature()
+                buf.writeTag(moduleNBT)
+            }
             te.writeCustomBytes(buf, true)
         }
     }

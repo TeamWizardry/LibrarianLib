@@ -13,8 +13,8 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider
  * Created at 9:59 AM on 6/13/17.
  */
 interface ITileModule : ICapabilityProvider {
-    fun readFromNBT(compound: NBTTagCompound)
-    fun writeToNBT(sync: Boolean): NBTTagCompound
+    fun readFromNBT(compound: NBTTagCompound) = Unit // NO-OP
+    fun writeToNBT(sync: Boolean): NBTTagCompound? = null
 
     fun onLoad(tile: TileMod) = Unit
     fun onBreak(tile: TileMod) = Unit

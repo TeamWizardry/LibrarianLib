@@ -57,7 +57,8 @@ abstract class TileMod : TileEntity() {
 
     fun syncModule(module: ITileModule) {
         val name = modules.entries.firstOrNull { it.value === module }?.key ?: return
-        PacketHandler.CHANNEL.update(TargetWatchingBlock(world, pos), PacketModuleSync(module.writeToNBT(true), name, pos))
+        val compound = module.writeToNBT(true) ?: return
+        PacketHandler.CHANNEL.update(TargetWatchingBlock(world, pos), PacketModuleSync(compound, name, pos))
     }
 
     private var modulesSetUp = false
@@ -87,12 +88,13 @@ abstract class TileMod : TileEntity() {
             .map { it.value.onClicked(this, player, hand, side, hitX, hitY, hitZ) }
             .any { it }
 
-    fun writeModuleNBT(sync: Boolean): NBTTagCompound {
+    fun writeModuleNBT(sync: Boolean): NBTTagCompound? {
         createModules()
+        if (modules.isEmpty()) return null
         return nbt {
             comp(
-                    *modules.map {
-                        it.key to it.value.writeToNBT(sync)
+                    *modules.mapNotNull {
+                        it.value.writeToNBT(sync)?.let { value -> it.key to value }
                     }.toTypedArray()
             )
         } as NBTTagCompound
@@ -129,7 +131,9 @@ abstract class TileMod : TileEntity() {
         writeCustomNBT(customTag, false)
         compound.setTag("custom", customTag)
         compound.setTag("auto", AbstractSaveHandler.writeAutoNBT(this, false))
-        compound.setTag("module", writeModuleNBT(false))
+        writeModuleNBT(false)?.let {
+            compound.setTag("module", it)
+        }
         compound.setInteger("_v", 2)
         super.writeToNBT(compound)
 
@@ -155,7 +159,7 @@ abstract class TileMod : TileEntity() {
         writeCustomNBT(customTag, true)
         compound.setTag("custom", customTag)
         compound.setTag("auto", AbstractSaveHandler.writeAutoNBT(this, true))
-        compound.setTag("module", writeModuleNBT(true))
+        writeModuleNBT(true)?.let { compound.setTag("module", it) }
         super.writeToNBT(compound)
 
         return compound
