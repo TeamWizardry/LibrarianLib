@@ -31,9 +31,9 @@ class PacketTileSynchronization(var tile: TileMod? = null /* Tile is always null
         if (b == null || tile == null || tile !is TileMod) return
 
         AbstractSaveHandler.readAutoBytes(tile, b, true)
-        tile.readModuleNBT(b.readTag())
         if (!b.hasNullSignature())
-            tile.readCustomBytes(b)
+            tile.readModuleNBT(b.readTag())
+        tile.readCustomBytes(b)
         b.release()
     }
 
