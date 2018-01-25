@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.core.client
 
 import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
@@ -20,6 +21,7 @@ import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
 import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils.generatedFiles
+import com.teamwizardry.librarianlib.features.utilities.setObject
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
@@ -308,20 +310,42 @@ object ModelHandler {
         })
     }
 
-    @SideOnly(Side.CLIENT)
-    inline fun generateBlockJson(holder: IModBlockProvider,
+    @SideOnly(Side.CLIENT) // todo reinline
+    fun generateBlockJson(holder: IModBlockProvider,
                                  blockstateFiles: () -> Map<String, JsonElement>,
                                  modelFiles: () -> Map<String, JsonElement>) {
         val files = blockstateFiles()
         var flag = false
         for ((path, model) in files) {
+            if (model !is JsonObject) return
             val stateFile = File(path)
             stateFile.parentFile.mkdirs()
-            if (stateFile.createNewFile()) {
-                stateFile.writeText(serialize(model))
-                ModelHandler.log("$namePad | Creating ${stateFile.name} for blockstate of block ${holder.providedBlock.registryName!!.resourcePath}")
-                generatedFiles.add(path)
+
+            val stateJson = try {
+                JsonParser().parse(stateFile.reader()).asJsonObject
+            } catch (ignored: Throwable) {
                 flag = true
+                JsonObject()
+            }
+
+            if (!(stateJson.has("multipart") || stateJson.has("forge_marker")) || !stateJson.has("variants")) {
+                val variants = if (stateJson.has("variants")) stateJson.get("variants").asJsonObject else null
+                val varsInFile = variants?.entrySet()?.map { it.key } ?: listOf()
+
+                val newVariants = if (model.has("variants")) model.get("variants").asJsonObject else null
+                val newVarsInFile = newVariants?.entrySet()?.map { it.key } ?: listOf()
+
+                if (newVariants == null || variants == null || newVarsInFile.any { it !in varsInFile }) {
+                    if (newVariants != null && variants != null)
+                        varsInFile
+                            .filter { it in newVarsInFile }
+                            .forEach { model.setObject("variants.$it", variants.get(it)) }
+
+                    stateFile.writeText(serialize(model))
+                    ModelHandler.log("$namePad | ${if (flag) "Creating" else "Updating"} ${stateFile.name} for blockstate of block ${holder.providedBlock.registryName!!.resourcePath}")
+                    generatedFiles.add(path)
+                    flag = true
+                }
             }
         }
         if (flag) {

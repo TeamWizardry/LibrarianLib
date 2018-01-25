@@ -81,10 +81,12 @@ open class BlockModStairs(name: String, val parent: IBlockState) : BlockStairs(p
         ModelHandler.generateBlockJson(this, {
             JsonGenerationUtils.generateBlockStates(this, mapper) {
                 val x = if ("half=top" in it) 180 else 0
-                var y = if ("facing=east" in it) 0
-                else if ("facing=west" in it) 180
-                else if ("facing=south" in it) 90
-                else 270
+                var y = when {
+                    "facing=east" in it -> 0
+                    "facing=west" in it -> 180
+                    "facing=south" in it -> 90
+                    else -> 270
+                }
                 if ("half=top" in it && ("shape=inner" in it || "shape=outer" in it)) y += 90
                 if ("_left" in it) y += 270
                 y %= 360
