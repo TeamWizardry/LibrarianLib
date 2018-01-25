@@ -184,19 +184,15 @@ object RecipeGeneratorHandler {
     }
 
     fun createJsonFromObject(obj: Any?): JsonElement {
-        if (obj is String)
-            return createJsonFromString(obj)
-        else if (obj is ItemStack)
-            return createJsonFromStack(obj)
-        else if (obj is Item)
-            return createJsonFromStack(ItemStack(obj))
-        else if (obj is Block)
-            return createJsonFromStack(ItemStack(obj))
-        else if (obj is List<*>)
-            return createJsonFromList(obj)
-        else if (obj is Array<*>)
-            return createJsonFromList(obj)
-        throw IllegalArgumentException("$obj isn't parsable as an ingredient!")
+        return when (obj) {
+            is String -> createJsonFromString(obj)
+            is ItemStack -> createJsonFromStack(obj)
+            is Item -> createJsonFromStack(ItemStack(obj))
+            is Block -> createJsonFromStack(ItemStack(obj))
+            is List<*> -> createJsonFromList(obj)
+            is Array<*> -> createJsonFromList(obj)
+            else -> throw IllegalArgumentException("$obj isn't parsable as an ingredient!")
+        }
     }
 
     fun createJsonFromString(string: String) = JSON.obj("type" to "forge:ore_dict", "ore" to string)

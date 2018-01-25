@@ -51,10 +51,9 @@ object JsonGenerationUtils {
 
     fun getPathsForBlockstate(block: Block, stateMapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)? = null): Array<String> {
         val mapped = (stateMapper ?: { DefaultStateMapper().putStateModelLocations(it) })(block)
-        val files = mapped.map {
+        return mapped.map {
             getPathForMRL(it.value)
         }.toSet().toTypedArray()
-        return files
     }
 
     fun getPathForMRL(modelResourceLocation: ModelResourceLocation): String {
@@ -81,6 +80,10 @@ object JsonGenerationUtils {
 
     fun getPathForRecipe(modid: String, name: String): String {
         return +"${getAssetPath(modid)}/recipes/${toSnakeCase(name)}.json"
+    }
+
+    fun getPathForSounds(modid: String): String {
+        return +"${getAssetPath(modid)}/sounds.json"
     }
 
     fun generateBaseItemModel(item: Item, variantName: String? = null, parent: String = "item/generated"): JsonElement {

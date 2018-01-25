@@ -7,5 +7,5 @@ import com.teamwizardry.librarianlib.features.base.ModSoundEvent
  * Created at 8:01 PM on 2/11/17.
  */
 object LibLibSoundEvents {
-    val baubleEquip = ModSoundEvent("baubleEquip")
+    val baubleEquip = ModSoundEvent("bauble_equip", "equip_bauble")
 }

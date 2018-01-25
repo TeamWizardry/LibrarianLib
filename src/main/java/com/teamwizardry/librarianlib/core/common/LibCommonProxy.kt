@@ -40,6 +40,7 @@ open class LibCommonProxy {
     // Internal methods for initialization
 
     open fun pre(e: FMLPreInitializationEvent) {
+        LibLibSoundEvents
         if (LibrarianLib.DEV_ENVIRONMENT && unsafeAllowedModIds.isNotEmpty()) {
             LibrarianLog.info(LibrarianLib.MODID + " | Unsafe-allowed mod IDs:")
             unsafeAllowedModIds.forEach { "${" " * LibrarianLib.MODID.length} | $it" }

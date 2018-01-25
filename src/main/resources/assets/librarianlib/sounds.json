@@ -1,3 +1,8 @@
 {
-  "baubleEquip": { "sounds":["librarianlib:equip_bauble"], "subtitle": "librarianlib.subtitle.equip_bauble" }
+	"bauble_equip": {
+		"sounds": [
+			"librarianlib:bauble_equip"
+		],
+		"subtitle": "librarianlib.subtitle.equip_bauble"
+	}
 }
