@@ -31,16 +31,16 @@ import java.io.File
  * Created at 7:58 PM on 2/11/17.
  */
 @Suppress("LeakingThis")
-open class ModSoundEvent(name: String, subtitle: String?, private val sounds: List<String>) : SoundEvent(EventHandler.rl(name)) {
+open class ModSoundEvent(name: String, subtitle: String?, private val sounds: List<String>) : SoundEvent(rl(name)) {
 
     constructor(name: String, subtitle: String?, vararg sounds: String) : this(name, subtitle, listOf(*sounds))
-    constructor(name: String, subtitle: String?) : this(name, subtitle, listOf(EventHandler.rl(name).toString()))
+    constructor(name: String, subtitle: String?) : this(name, subtitle, listOf(rl(name).toString()))
     constructor(name: String) : this(name, null)
 
     private val modid = currentModId
 
     private val subtitle = subtitle?.let { modid + ".subtitle." + VariantHelper.toSnakeCase(subtitle) }
-    private val id = EventHandler.rl(name)
+    private val id = rl(name)
 
     open fun name(): String = id.resourcePath
     open fun sounds(): Iterable<String> = sounds
@@ -66,12 +66,12 @@ open class ModSoundEvent(name: String, subtitle: String?, private val sounds: Li
     companion object {
         @JvmStatic
         fun simple(name: String): ModSoundEvent = ModSoundEvent(name, name)
+
+        private fun rl(name: String) = ResourceLocation(currentModId, VariantHelper.toSnakeCase(name))
     }
 
     private object EventHandler {
         val modSounds = mutableMapOf<String, MutableList<ModSoundEvent>>()
-
-        fun rl(name: String) = ResourceLocation(currentModId, VariantHelper.toSnakeCase(name))
 
         fun shouldGenerateAnyJson() = LibrarianLib.DEV_ENVIRONMENT && LibLibConfig.generateJson
 
