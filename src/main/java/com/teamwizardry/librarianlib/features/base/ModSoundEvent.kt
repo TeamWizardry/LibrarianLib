@@ -88,6 +88,7 @@ open class ModSoundEvent(name: String, subtitle: String?, private val sounds: Li
         }
 
         @SideOnly(Side.CLIENT)
+        @Suppress("UNUSED_PARAMETER")
         @SubscribeEvent(priority = EventPriority.LOWEST)
         fun onSoundRegistry(event: RegistryEvent.Register<SoundEvent>) {
             if (shouldGenerateAnyJson()) {
