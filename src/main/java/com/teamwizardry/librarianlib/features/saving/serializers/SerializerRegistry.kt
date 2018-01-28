@@ -17,12 +17,12 @@ object SerializerRegistry {
     private val factories = linkedMapOf<String, SerializerFactory>()
 
     fun register(factory: SerializerFactory) {
-        factories.put(factory.name, factory)
+        factories[factory.name] = factory
     }
 
     fun register(type: FieldType, serializer: Serializer<*>) {
         @Suppress("UNCHECKED_CAST")
-        serializers.put(type, serializer as Serializer<Any>)
+        serializers[type] = serializer as Serializer<Any>
     }
 
     /**

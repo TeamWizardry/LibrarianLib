@@ -35,29 +35,23 @@ inline fun <reified T : NBTBase> NBTBase.safeCast(): T = this.safeCast(T::class.
 
 @Suppress("UNCHECKED_CAST")
 fun <T : NBTBase> NBTBase.safeCast(clazz: Class<T>): T {
-    return (
-            if (clazz.isAssignableFrom(this.javaClass))
-                this
-            else if (NBTPrimitive::class.java.isAssignableFrom(clazz)) when (clazz) {
-                NBTTagLong::class.java -> NBTTagLong(0)
-                NBTTagInt::class.java -> NBTTagInt(0)
-                NBTTagShort::class.java -> NBTTagShort(0)
-                NBTTagDouble::class.java -> NBTTagDouble(0.0)
-                NBTTagFloat::class.java -> NBTTagFloat(0f)
-                else -> NBTTagByte(0)
-            } else if (clazz == NBTTagByteArray::class.java)
-                NBTTagByteArray(ByteArray(0))
-            else if (clazz == NBTTagString::class.java)
-                NBTTagString("")
-            else if (clazz == NBTTagList::class.java)
-                NBTTagList()
-            else if (clazz == NBTTagCompound::class.java)
-                NBTTagCompound()
-            else if (clazz == NBTTagIntArray::class.java)
-                NBTTagIntArray(IntArray(0))
-            else
-                throw IllegalArgumentException("Unknown NBT type to cast to: $clazz")
-            ) as T
+    return (when {
+                clazz.isAssignableFrom(this.javaClass) -> this
+                NBTPrimitive::class.java.isAssignableFrom(clazz) -> when (clazz) {
+                    NBTTagLong::class.java -> NBTTagLong(0)
+                    NBTTagInt::class.java -> NBTTagInt(0)
+                    NBTTagShort::class.java -> NBTTagShort(0)
+                    NBTTagDouble::class.java -> NBTTagDouble(0.0)
+                    NBTTagFloat::class.java -> NBTTagFloat(0f)
+                    else -> NBTTagByte(0)
+                }
+                clazz == NBTTagByteArray::class.java -> NBTTagByteArray(ByteArray(0))
+                clazz == NBTTagString::class.java -> NBTTagString("")
+                clazz == NBTTagList::class.java -> NBTTagList()
+                clazz == NBTTagCompound::class.java -> NBTTagCompound()
+                clazz == NBTTagIntArray::class.java -> NBTTagIntArray(IntArray(0))
+                else -> throw IllegalArgumentException("Unknown NBT type to cast to: $clazz")
+            }) as T
 }
 
 class NBTWrapper(val contained: ItemStack) {

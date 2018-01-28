@@ -53,29 +53,6 @@ object SerializeColor : Serializer<Color>(FieldType.create(Color::class.java)) {
     }
 }
 
-@SerializerRegister(NBTTagCompound::class)
-object SerializeNBTTagCompound : Serializer<NBTTagCompound>(FieldType.create(NBTTagCompound::class.java)) {
-    override fun getDefault(): NBTTagCompound {
-        return NBTTagCompound()
-    }
-
-    override fun readNBT(nbt: NBTBase, existing: NBTTagCompound?, syncing: Boolean): NBTTagCompound {
-        return nbt.copy().safeCast<NBTTagCompound>()
-    }
-
-    override fun writeNBT(value: NBTTagCompound, syncing: Boolean): NBTBase {
-        return value.copy()
-    }
-
-    override fun readBytes(buf: ByteBuf, existing: NBTTagCompound?, syncing: Boolean): NBTTagCompound {
-        return buf.readTag()
-    }
-
-    override fun writeBytes(buf: ByteBuf, value: NBTTagCompound, syncing: Boolean) {
-        buf.writeTag(value)
-    }
-}
-
 @SerializerRegister(ItemStack::class)
 object SerializeItemStack : Serializer<ItemStack>(FieldType.create(ItemStack::class.java)) {
     override fun getDefault(): ItemStack {
