@@ -264,9 +264,7 @@ fun readTagFromBuffer(id: Byte, buf: ByteBuf): NBTBase {
         Constants.NBT.TAG_LIST -> {
             val type = buf.readByte()
             val size = buf.readInt()
-            val list = NBTTagList()
-            for (i in 0 until size) list.appendTag(readTagFromBuffer(type, buf))
-            list
+            NBTTagList(size) { readTagFromBuffer(type, buf) }
         }
         Constants.NBT.TAG_COMPOUND -> buf.readTag()
         Constants.NBT.TAG_INT_ARRAY -> NBTTagIntArray(PacketBuffer(buf).readVarIntArray())
