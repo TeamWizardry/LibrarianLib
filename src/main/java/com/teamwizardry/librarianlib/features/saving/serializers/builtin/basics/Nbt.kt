@@ -269,7 +269,7 @@ fun readTagFromBuffer(id: Byte, buf: ByteBuf): NBTBase {
         Constants.NBT.TAG_COMPOUND -> buf.readTag()
         Constants.NBT.TAG_INT_ARRAY -> NBTTagIntArray(PacketBuffer(buf).readVarIntArray())
         Constants.NBT.TAG_LONG_ARRAY -> NBTTagLongArray(buf.readLongArray())
-        else -> NBTTagEnd()
+        else -> NBTTagCompound()
     }
 }
 
@@ -296,7 +296,6 @@ fun writeTagToBuffer(tag: NBTBase, buf: ByteBuf) {
         is NBTTagCompound -> buf.writeTag(tag)
         is NBTTagIntArray -> PacketBuffer(buf).writeVarIntArray(tag.intArray)
         is NBTTagLongArray -> PacketBuffer(buf).writeLongArray(tag.longArray)
-        else -> NBTTagEnd()
     }
 }
 
