@@ -58,18 +58,19 @@ object SavingFieldCache {
         fields.map {
             getNameFromField(type, it) to it
         }.forEach {
-            val (name, field) = it
-            field.isAccessible = true
+                    val (name, field) = it
+                    field.isAccessible = true
 
-            val meta = createMetaForField(field, type)
+                    val meta = createMetaForField(field, type)
 
-            map[name] = FieldCache(
-                    meta,
-                    getFieldGetter(field),
-                    getFieldSetter(field, type),
-                    field.name
-            )
-        }
+                    if (meta.containsAny())
+                        map[name] = FieldCache(
+                                meta,
+                                getFieldGetter(field),
+                                getFieldSetter(field, type),
+                                field.name
+                        )
+                }
     }
 
     fun getFieldGetter(field: Field): (Any) -> Any? {
@@ -213,46 +214,46 @@ object SavingFieldCache {
         pairs.toList().sortedBy {
             it.first
         }.forEach {
-            val (name, triple) = it
-            val (getter, setter, propertyType) = triple
-            getter.isAccessible = true
-            setter?.isAccessible = true
+                    val (name, triple) = it
+                    val (getter, setter, propertyType) = triple
+                    getter.isAccessible = true
+                    setter?.isAccessible = true
 
-            val wrapperForGetter = MethodHandleHelper.wrapperForMethod<Any>(getter)
-            val wrapperForSetter = setter?.let { MethodHandleHelper.wrapperForMethod<Any>(it) }
+                    val wrapperForGetter = MethodHandleHelper.wrapperForMethod<Any>(getter)
+                    val wrapperForSetter = setter?.let { MethodHandleHelper.wrapperForMethod<Any>(it) }
 
-            val meta = FieldMetadata(FieldType.create(getter), SavingFieldFlag.ANNOTATED, SavingFieldFlag.METHOD)
+                    val meta = FieldMetadata(FieldType.create(getter), SavingFieldFlag.ANNOTATED, SavingFieldFlag.METHOD)
 
-            getter.declaredAnnotations.forEach {
-                meta.addAnnotation(it, true)
-            }
-            setter?.declaredAnnotations?.forEach {
-                meta.addAnnotation(it, false)
-            }
+                    getter.declaredAnnotations.forEach {
+                        meta.addAnnotation(it, true)
+                    }
+                    setter?.declaredAnnotations?.forEach {
+                        meta.addAnnotation(it, false)
+                    }
 
-            if (isGetSetPairNotNull(getter, setter))
-                meta.addFlag(SavingFieldFlag.NONNULL)
-            if (propertyType.isPrimitive)
-                meta.addFlag(SavingFieldFlag.NONNULL)
-            if (getter.isAnnotationPresent(NoSync::class.java) && (setter == null || setter.isAnnotationPresent(NoSync::class.java)))
-                meta.addFlag(SavingFieldFlag.NO_SYNC)
-            if (getter.isAnnotationPresent(NonPersistent::class.java) && (setter == null || setter.isAnnotationPresent(NonPersistent::class.java)))
-                meta.addFlag(SavingFieldFlag.NON_PERSISTENT)
-            if (setter == null)
-                meta.addFlag(SavingFieldFlag.FINAL)
+                    if (isGetSetPairNotNull(getter, setter))
+                        meta.addFlag(SavingFieldFlag.NONNULL)
+                    if (propertyType.isPrimitive)
+                        meta.addFlag(SavingFieldFlag.NONNULL)
+                    if (getter.isAnnotationPresent(NoSync::class.java) && (setter == null || setter.isAnnotationPresent(NoSync::class.java)))
+                        meta.addFlag(SavingFieldFlag.NO_SYNC)
+                    if (getter.isAnnotationPresent(NonPersistent::class.java) && (setter == null || setter.isAnnotationPresent(NonPersistent::class.java)))
+                        meta.addFlag(SavingFieldFlag.NON_PERSISTENT)
+                    if (setter == null)
+                        meta.addFlag(SavingFieldFlag.FINAL)
 
-            if (meta.hasFlag(SavingFieldFlag.NO_SYNC) && meta.hasFlag(SavingFieldFlag.NON_PERSISTENT))
-                errorList[type][name].add("Annotated with both @NoSync and @NonPersistent. This field will never be used.")
+                    if (meta.hasFlag(SavingFieldFlag.NO_SYNC) && meta.hasFlag(SavingFieldFlag.NON_PERSISTENT))
+                        errorList[type][name].add("Annotated with both @NoSync and @NonPersistent. This field will never be used.")
 
-            val setterLambda: (Any, Any?) -> Unit = if (wrapperForSetter == null)
-                { _, _ -> throw IllegalAccessException("Tried to set final property $name for class $type (no save setter)") }
-            else
-                { obj, inp -> wrapperForSetter(obj, arrayOf(inp)) }
+                    val setterLambda: (Any, Any?) -> Unit = if (wrapperForSetter == null)
+                        { _, _ -> throw IllegalAccessException("Tried to set final property $name for class $type (no save setter)") }
+                    else
+                        { obj, inp -> wrapperForSetter(obj, arrayOf(inp)) }
 
-            map[name] = FieldCache(meta,
-                    { obj -> wrapperForGetter(obj, arrayOf()) },
-                    setterLambda)
-        }
+                    map[name] = FieldCache(meta,
+                            { obj -> wrapperForGetter(obj, arrayOf()) },
+                            setterLambda)
+                }
     }
 
     private fun isGetSetPairNotNull(getter: Method, setter: Method?): Boolean {
@@ -413,6 +414,8 @@ data class FieldMetadata(val type: FieldType, private var flagsInternal: Mutable
     fun hasFlag(flag: SavingFieldFlag) = flags.contains(flag)
     fun containsAll(vararg list: SavingFieldFlag) = flags.containsAll(list.asList())
     fun containsAny(vararg list: SavingFieldFlag) = list.any { it in flags }
+    fun containsAny() = flags.any()
+
 
     fun addFlag(flag: SavingFieldFlag) = flagsInternal.add(flag)
     fun removeFlag(flag: SavingFieldFlag) = flagsInternal.remove(flag)
