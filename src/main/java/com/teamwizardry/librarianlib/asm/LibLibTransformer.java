@@ -41,10 +41,10 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         MethodSignature sig1 = new MethodSignature("renderItem", "func_180454_a",
                 "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model/IBakedModel;)V");
 
-        MethodSignature sig2 = new MethodSignature("renderEffect", "func_180451_a",
+        MethodSignature sig2 = new MethodSignature("renderEffect", "func_191966_a",
                 "(Lnet/minecraft/client/renderer/block/model/IBakedModel;)V");
 
-        MethodSignature target = new MethodSignature("renderModel", "func_175045_a",
+        MethodSignature target = new MethodSignature("renderModel", "func_191961_a",
                 "(Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/item/ItemStack;)V");
 
         byte[] transformedClass = transform(basicClass, sig1, "Item render hook",
