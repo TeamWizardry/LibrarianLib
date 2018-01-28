@@ -249,6 +249,24 @@ object SerializeNBTGeneric : Serializer<NBTBase>(FieldType.create(NBTBase::class
             = writeTagToBuffer(value, buf)
 }
 
+@SerializerRegister(NBTPrimitive::class)
+object SerializeNBTPrimitive : Serializer<NBTPrimitive>(FieldType.create(NBTPrimitive::class.java)) {
+    override fun getDefault()
+            = NBTTagByte(0)
+
+    override fun readNBT(nbt: NBTBase, existing: NBTPrimitive?, syncing: Boolean): NBTPrimitive
+            = nbt.safeCast()
+
+    override fun writeNBT(value: NBTPrimitive, syncing: Boolean): NBTBase
+            = value.copy()
+
+    override fun readBytes(buf: ByteBuf, existing: NBTPrimitive?, syncing: Boolean)
+            = readTagFromBuffer(buf.readByte(), buf) as NBTPrimitive
+
+    override fun writeBytes(buf: ByteBuf, value: NBTPrimitive, syncing: Boolean)
+            = writeTagToBuffer(value, buf)
+}
+
 fun readTagFromBuffer(id: Int, buf: ByteBuf) = readTagFromBuffer(id.toByte(), buf)
 
 fun readTagFromBuffer(id: Byte, buf: ByteBuf): NBTBase {
