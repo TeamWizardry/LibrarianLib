@@ -48,22 +48,16 @@ abstract class FieldType protected constructor(val type: Type, annotated: Annota
 
         @JvmStatic
         fun create(type: Type, annots: AnnotatedType?): FieldType {
-            val fType: FieldType =
-                    if (type is ParameterizedType)
-                        createGeneric(type, annots)
-                    else if (type is GenericArrayType)
-                        createGenericArray(type, annots)
-                    else if (type is TypeVariable<*>)
-                        createVariable(type, annots)
-                    else if (type is Class<*>)
-                        if (type.isArray)
-                            createArray(type, annots)
-                        else
-                            createPlain(type, annots)
-                    else
-                        FieldTypeError(type)
-
-            return fType
+            return when (type) {
+                is ParameterizedType -> createGeneric(type, annots)
+                is GenericArrayType -> createGenericArray(type, annots)
+                is TypeVariable<*> -> createVariable(type, annots)
+                is Class<*> -> if (type.isArray)
+                    createArray(type, annots)
+                else
+                    createPlain(type, annots)
+                else -> FieldTypeError(type)
+            }
         }
 
         private fun createPlain(type: Class<*>, annots: AnnotatedType?): FieldType {

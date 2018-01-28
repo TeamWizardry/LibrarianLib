@@ -39,15 +39,20 @@ object SavingFieldCache {
         methodGettersWOSetters.clear()
         methodSettersWOGetters.clear()
 
-        atSaveMap.put(type, map)
+        atSaveMap[type] = map
 
         return map
     }
 
     fun buildClassFields(type: FieldType, map: MutableMap<String, FieldCache>) {
-        val fields = type.clazz.declaredFields.filter {
-            it.declaredAnnotations
-            !Modifier.isStatic(it.modifiers)
+        val fields = mutableSetOf<Field>()
+        var clazz: Class<*>? = type.clazz
+        while (clazz != null) {
+            clazz.declaredFields.filterTo(fields) {
+                it.declaredAnnotations
+                !Modifier.isStatic(it.modifiers)
+            }
+            clazz = clazz.superclass
         }
 
         fields.map {
@@ -58,13 +63,11 @@ object SavingFieldCache {
 
             val meta = createMetaForField(field, type)
 
-            map.put(name,
-                    FieldCache(
-                            meta,
-                            getFieldGetter(field),
-                            getFieldSetter(field, type),
-                            field.name
-                    )
+            map[name] = FieldCache(
+                    meta,
+                    getFieldGetter(field),
+                    getFieldSetter(field, type),
+                    field.name
             )
         }
     }
@@ -74,12 +77,8 @@ object SavingFieldCache {
     }
 
     fun getKotlinFieldGetter(field: Field): ((Any) -> Any?)? {
-        val property = field.kotlinProperty
-        if (property == null)
-            return null
-        val method = property.getter.javaMethod
-        if (method == null)
-            return null
+        val property = field.kotlinProperty ?: return null
+        val method = property.getter.javaMethod ?: return null
         method.isAccessible = true
         val handle = MethodHandleHelper.wrapperForMethod<Any>(method)
         return { obj -> handle(obj, arrayOf()) }
@@ -88,11 +87,10 @@ object SavingFieldCache {
     fun getJavaFieldGetter(field: Field) = MethodHandleHelper.wrapperForGetter<Any>(field)
 
     fun getFieldSetter(field: Field, enclosing: FieldType): (Any, Any?) -> Unit {
-        if (Modifier.isFinal(field.modifiers)) {
-            return getFinalFieldSetter(field, enclosing)
-        } else {
-            return getKotlinFieldSetter(field) ?: getJavaFieldSetter(field)
-        }
+        return if (Modifier.isFinal(field.modifiers))
+            getFinalFieldSetter(field, enclosing)
+        else
+            getKotlinFieldSetter(field) ?: getJavaFieldSetter(field)
     }
 
     fun getKotlinFieldSetter(field: Field): ((Any, Any?) -> Unit)? {
@@ -159,28 +157,33 @@ object SavingFieldCache {
         val getters = mutableMapOf<String, Method>()
         val setters = mutableMapOf<String, Method>()
 
+        val methods = mutableSetOf<Method>()
+        var clazz: Class<*>? = type.clazz
+        while (clazz != null) {
+            clazz.declaredMethods.filterTo(methods) {
+                it.declaredAnnotations
+                !Modifier.isStatic(it.modifiers)
+            }
+            clazz = clazz.superclass
+        }
 
-        type.clazz.declaredMethods.forEach {
-            it.declaredAnnotations
-            val mods = it.modifiers
-            if (!Modifier.isStatic(mods)) {
-                if (it.isAnnotationPresent(SaveMethodGetter::class.java)) {
-                    val types = it.parameterTypes
-                    val name = getNameFromMethod(type, it, true)
-                    if (types.isEmpty()) {
-                        getters.put(name, it)
-                    } else {
-                        errorList[type][name].add("Getter has parameters")
-                    }
+        methods.forEach {
+            if (it.isAnnotationPresent(SaveMethodGetter::class.java)) {
+                val types = it.parameterTypes
+                val name = getNameFromMethod(type, it, true)
+                if (types.isEmpty()) {
+                    getters[name] = it
+                } else {
+                    errorList[type][name].add("Getter has parameters")
                 }
-                if (it.isAnnotationPresent(SaveMethodSetter::class.java)) {
-                    val types = it.parameterTypes
-                    val name = getNameFromMethod(type, it, false)
-                    if (types.size == 1) {
-                        setters.put(name, it)
-                    } else {
-                        errorList[type][name].add("Setter has ${types.size} parameters, they must have exactly 1")
-                    }
+            }
+            if (it.isAnnotationPresent(SaveMethodSetter::class.java)) {
+                val types = it.parameterTypes
+                val name = getNameFromMethod(type, it, false)
+                if (types.size == 1) {
+                    setters[name] = it
+                } else {
+                    errorList[type][name].add("Setter has ${types.size} parameters, they must have exactly 1")
                 }
             }
         }
@@ -195,7 +198,7 @@ object SavingFieldCache {
                     errorList[type][name].add("Setter has no parameters")
                 val setReturnType = setter.parameterTypes[0]
                 if (getReturnType == setReturnType)
-                    pairs.put(name, Triple(getter, setter, getReturnType))
+                    pairs[name] = Triple(getter, setter, getReturnType)
                 else
                     errorList[type][name].add("Getter and setter have mismatched types")
             }
@@ -246,9 +249,9 @@ object SavingFieldCache {
             else
                 { obj, inp -> wrapperForSetter(obj, arrayOf(inp)) }
 
-            map.put(name, FieldCache(meta,
+            map[name] = FieldCache(meta,
                     { obj -> wrapperForGetter(obj, arrayOf()) },
-                    setterLambda))
+                    setterLambda)
         }
     }
 
@@ -323,7 +326,7 @@ object SavingFieldCache {
         return name
     }
 
-    private val errorList = mutableMapOf<FieldType, DefaultedMutableMap<String, MutableList<String>>>().withRealDefault { mutableMapOf<String, MutableList<String>>().withRealDefault { mutableListOf<String>() } }
+    private val errorList = mutableMapOf<FieldType, DefaultedMutableMap<String, MutableList<String>>>().withRealDefault { mutableMapOf<String, MutableList<String>>().withRealDefault { mutableListOf() } }
 
     fun handleErrors() {
         if (errorList.isEmpty())
