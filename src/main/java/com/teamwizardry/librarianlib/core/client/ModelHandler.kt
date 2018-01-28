@@ -310,8 +310,8 @@ object ModelHandler {
         })
     }
 
-    @SideOnly(Side.CLIENT) // todo reinline
-    fun generateBlockJson(holder: IModBlockProvider,
+    @SideOnly(Side.CLIENT)
+    inline fun generateBlockJson(holder: IModBlockProvider,
                                  blockstateFiles: () -> Map<String, JsonElement>,
                                  modelFiles: () -> Map<String, JsonElement>) {
         val files = blockstateFiles()

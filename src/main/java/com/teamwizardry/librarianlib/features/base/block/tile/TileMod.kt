@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.features.base.block.tile
 import com.teamwizardry.librarianlib.features.base.block.tile.module.ITileModule
 import com.teamwizardry.librarianlib.features.base.block.tile.module.ModuleInventory
 import com.teamwizardry.librarianlib.features.kotlin.forEach
-import com.teamwizardry.librarianlib.features.kotlin.nbt
 import com.teamwizardry.librarianlib.features.network.PacketHandler
 import com.teamwizardry.librarianlib.features.network.PacketModuleSync
 import com.teamwizardry.librarianlib.features.network.PacketTileSynchronization
@@ -91,13 +90,9 @@ abstract class TileMod : TileEntity() {
     fun writeModuleNBT(sync: Boolean): NBTTagCompound? {
         createModules()
         if (modules.isEmpty()) return null
-        val compound = nbt {
-            comp(
-                    *modules.mapNotNull {
-                        it.value.writeToNBT(sync)?.let { value -> it.key to value }
-                    }.toTypedArray()
-            )
-        } as NBTTagCompound
+        val compound = NBTTagCompound()
+        for ((key, module) in modules)
+            module.writeToNBT(sync)?.let { compound.setTag(key, it) }
         if (compound.size == 0)
             return null
         return compound
