@@ -56,11 +56,6 @@ repositories {
     }
 }
 
-sourceSets.main {
-    java.srcDirs += 'src/test/java'
-    resources.srcDirs += 'src/test/resources'
-}
-
 minecraft {
     version = "${config.mc_version}-${config.forge_version}"
     runDir = "run"
@@ -105,12 +100,11 @@ dependencies {
 // todo once mcmultipart is 1.11
 //    deobfCompile "MCMultiPart:MCMultiPart:1.2.1:universal"
     compile "net.shadowfacts:Forgelin:1.6.0"
-//    required "org.jgrapht:jgrapht-core:1.0.1"
 }
 
 reobf {
     jar {
-        extraLines "PK: org/jgrapht com/teamwizardry/librarianlib/shade/org/jgrapht"
+//        extraLines "PK: package/name com/teamwizardry/librarianlib/shade/package/name"
     }
 }
 
@@ -150,7 +144,6 @@ jar {
 
 task sourceJar(type: Jar, dependsOn: "sourceMainJava", overwrite: true) {
     from "src/main/java"
-    from "src/test/java"
     classifier = 'sources'
 }
 
@@ -176,8 +169,10 @@ idea {
     module {
         inheritOutputDirs = true
 
-        testSourceDirs -= file('src/test/java')
-        testSourceDirs -= file('src/test/resources')
+        sourceDirs += file('src/api/java')
+        sourceDirs += file('src/test/java')
+        sourceDirs += file('src/test/resources')
+        testSourceDirs = []
     }
     project {
         languageLevel = '1.8'
