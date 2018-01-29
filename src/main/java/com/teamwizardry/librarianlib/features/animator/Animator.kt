@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.features.animator
 
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
-import com.teamwizardry.librarianlib.test.animator.AnimatorExamples
 import net.minecraft.client.Minecraft
 import net.minecraft.util.Timer
 import net.minecraftforge.common.MinecraftForge
