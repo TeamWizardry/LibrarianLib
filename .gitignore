@@ -26,3 +26,8 @@ run
 *.hprof
 
 src/main/resources/assets/librarianlibtest
+
+# JVM crash reports
+
+hs_err_pid*.log
+replay_pid*.log
