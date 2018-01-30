@@ -73,8 +73,10 @@ open class GenericNBTSerializer<T : NBTBase>(val clazz: Class<T>) : Serializer<T
     override fun readBytes(buf: ByteBuf, existing: T?, syncing: Boolean): T
             = readTagFromBuffer(buf.readByte(), buf) as T
 
-    override fun writeBytes(buf: ByteBuf, value: T, syncing: Boolean)
-            = writeTagToBuffer(value, buf)
+    override fun writeBytes(buf: ByteBuf, value: T, syncing: Boolean) {
+        buf.writeByte(value.id.toInt())
+        writeTagToBuffer(value, buf)
+    }
 }
 
 open class NBTSerializer<T : NBTBase>(clazz: Class<T>) : GenericNBTSerializer<T>(clazz) {
@@ -83,6 +85,10 @@ open class NBTSerializer<T : NBTBase>(clazz: Class<T>) : GenericNBTSerializer<T>
     @Suppress("UNCHECKED_CAST")
     override fun readBytes(buf: ByteBuf, existing: T?, syncing: Boolean): T
             = readTagFromBuffer(id, buf) as T
+
+    override fun writeBytes(buf: ByteBuf, value: T, syncing: Boolean) {
+        writeTagToBuffer(value, buf)
+    }
 }
 
 fun readTagFromBuffer(id: Byte, buf: ByteBuf): NBTBase {
