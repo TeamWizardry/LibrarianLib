@@ -234,7 +234,7 @@ object SerializeNBTTagLongArray : Serializer<NBTTagLongArray>(FieldType.create(N
 @SerializerRegister(NBTBase::class)
 object SerializeNBTGeneric : Serializer<NBTBase>(FieldType.create(NBTBase::class.java)) {
     override fun getDefault()
-            = NBTTagLongArray(longArrayOf())
+            = NBTTagCompound()
 
     override fun readNBT(nbt: NBTBase, existing: NBTBase?, syncing: Boolean)
             = nbt
