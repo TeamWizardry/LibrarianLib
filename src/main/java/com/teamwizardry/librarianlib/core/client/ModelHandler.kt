@@ -328,7 +328,7 @@ object ModelHandler {
                 JsonObject()
             }
 
-            if (!stateJson.has("multipart") && !stateJson.has("forge_marker")) {
+            if (stateJson.size() == 0 || !(stateJson.has("multipart") || stateJson.has("forge_marker") || model.has("multipart") || model.has("forge_marker"))) {
                 val variants = if (stateJson.has("variants")) stateJson.get("variants").asJsonObject else null
                 val varsInFile = variants?.entrySet()?.map { it.key } ?: listOf()
 
