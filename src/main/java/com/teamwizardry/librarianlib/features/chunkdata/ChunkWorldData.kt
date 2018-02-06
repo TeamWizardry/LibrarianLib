@@ -36,8 +36,12 @@ class ChunkWorldData : WorldSavedData(NAME) {
             ChunkDataRegistry.getApplicable(e.chunk).forEach {
                 val data = it.constructor(e.chunk)
                 data.name = it.name
-                val nbt = rootData.getCompoundTag(it.name.toString())
-                data.loadFromNBT(nbt)
+                if(rootData.hasKey(it.name.toString())) {
+                    val nbt = rootData.getCompoundTag(it.name.toString())
+                    data.loadFromNBT(nbt)
+                } else {
+                    data.initializeNewChunk()
+                }
                 container.datas[it.clazz] = data
             }
 
@@ -66,16 +70,29 @@ class ChunkWorldData : WorldSavedData(NAME) {
 
         @SubscribeEvent
         fun clientLoad(e: ChunkEvent.Load) {
-            if (!e.chunk.world.isRemote) return // the server will have loaded the data as it loaded from disk
+            if (e.chunk.world.isRemote) {
+                val container = ChunkDataContainer()
+                ChunkDataRegistry.getApplicable(e.chunk).forEach {
+                    val data = it.constructor(e.chunk)
+                    data.name = it.name
+                    container.datas[it.clazz] = data
+                }
 
-            val container = ChunkDataContainer()
-            ChunkDataRegistry.getApplicable(e.chunk).forEach {
-                val data = it.constructor(e.chunk)
-                data.name = it.name
-                container.datas[it.clazz] = data
+                get(e.chunk.world).containers[e.chunk.pos] = container
+            } else {
+                val worldData = get(e.chunk.world)
+                if(!worldData.containers.contains(e.chunk.pos)) {
+                    val container = ChunkDataContainer()
+                    ChunkDataRegistry.getApplicable(e.chunk).forEach {
+                        val data = it.constructor(e.chunk)
+                        data.name = it.name
+                        data.initializeNewChunk()
+                        container.datas[it.clazz] = data
+                    }
+
+                    worldData.containers[e.chunk.pos] = container
+                }
             }
-
-            get(e.chunk.world).containers[e.chunk.pos] = container
         }
 
         @SubscribeEvent

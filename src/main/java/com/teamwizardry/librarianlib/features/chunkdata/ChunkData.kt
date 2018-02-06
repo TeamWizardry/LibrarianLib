@@ -29,6 +29,11 @@ open class ChunkData(chunk: Chunk) {
             field = value
         }
 
+    /**
+     * Called when a newly generated chunk is loaded or when an old chunk without data of this type is loaded
+     */
+    open fun initializeNewChunk() {}
+
     protected open fun saveCustomNBT(): NBTTagCompound? {
         return null
     }
@@ -86,7 +91,8 @@ open class ChunkData(chunk: Chunk) {
         /**
          * Gets the ChunkData for the given world, chunk position, and type or null if the data is not applicable
          *
-         * @return the data or null if the data did not apply to that chunk [ChunkDataRegistry.register] `applyTo` param
+         * @return the data or null if the chunk was unloaded or the data did not apply to that chunk according to the
+         * [ChunkDataRegistry.register] `applyTo` param
          */
         @Suppress("UNCHECKED_CAST")
         @JvmStatic
@@ -96,7 +102,8 @@ open class ChunkData(chunk: Chunk) {
         /**
          * Gets the ChunkData for the given world, chunk, and name or null if the data is not applicable
          *
-         * @return the data or null if the data did not apply to that chunk [ChunkDataRegistry.register] `applyTo` param
+         * @return the data or null if the chunk was unloaded or the data did not apply to that chunk according to the
+         * [ChunkDataRegistry.register] `applyTo` param
          */
         @JvmStatic
         fun get(world: World, chunk: Chunk, name: ResourceLocation): ChunkData? {
@@ -107,7 +114,8 @@ open class ChunkData(chunk: Chunk) {
         /**
          * Gets the ChunkData for the given world, chunk position, and name or null if the data is not applicable
          *
-         * @return the data or null if the data did not apply to that chunk [ChunkDataRegistry.register] `applyTo` param
+         * @return the data or null if the chunk was unloaded or the data did not apply to that chunk according to the
+         * [ChunkDataRegistry.register] `applyTo` param
          */
         @JvmStatic
         fun get(world: World, chunk: ChunkPos, name: ResourceLocation): ChunkData? {
