@@ -188,6 +188,7 @@ class ComponentRenderHandler(private val component: GuiComponent) {
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
     fun drawLate(mousePos: Vec2d, partialTicks: Float) {
+        if (!component.isVisible) return
         if (component.mouseOver) {
             val tt = tooltip(component)
             if (tt?.isNotEmpty() == true) {
