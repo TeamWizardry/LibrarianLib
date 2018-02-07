@@ -43,7 +43,8 @@ class ComponentClippingHandler(val component: GuiComponent) {
     /**
      * If nonnull, this function is used for clipping. Any pixels that aren't drawn to will be masked out.
      *
-     * !!WARNING!! You absolutely cannot draw to a pixel twice in this function. If you do everything will break in wierd ways
+     * !!WARNING!! You absolutely cannot draw to a pixel twice in this function. If you do everything will break in wierd ways.
+     * !!WARNING!! This method MUST be able to run twice in a frame without any changes to the rendering. The first time creates the mask, the second time deletes it.
      */
     var customClipping: (() -> Unit)? = null
 
