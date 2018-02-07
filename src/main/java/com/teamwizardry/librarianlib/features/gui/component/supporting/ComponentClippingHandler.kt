@@ -61,7 +61,10 @@ class ComponentClippingHandler(val component: GuiComponent) {
 
     private fun stencil() {
         if(customClipping != null) {
+            GlStateManager.pushAttrib()
             customClipping!!()
+            GlStateManager.enableTexture2D()
+            GlStateManager.popAttrib()
             return
         }
         val sp = clippingSprite
