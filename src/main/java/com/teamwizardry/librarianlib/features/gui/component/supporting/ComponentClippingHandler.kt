@@ -6,6 +6,8 @@ import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.pos
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import com.teamwizardry.librarianlib.features.sprite.ISprite
+import com.teamwizardry.librarianlib.features.sprite.Sprite
 import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -32,6 +34,19 @@ class ComponentClippingHandler(val component: GuiComponent) {
      */
     var cornerPixelSize = 0
 
+    /**
+     * If nonnull, this sprite is used for clipping. Any pixels that are completely transparent will be masked out.
+     *
+     * If [clippingSprite] is nonnull, it will override this sprite.
+     */
+    var clippingSprite: ISprite? = null
+    /**
+     * If nonnull, this function is used for clipping. Any pixels that aren't drawn to will be masked out.
+     *
+     * !!WARNING!! You absolutely cannot draw to a pixel twice in this function. If you do everything will break in wierd ways
+     */
+    var customClipping: (() -> Unit)? = null
+
     internal fun pushEnable() {
         if (clipToBounds) {
             StencilUtil.push { stencil() }
@@ -45,6 +60,20 @@ class ComponentClippingHandler(val component: GuiComponent) {
     }
 
     private fun stencil() {
+        if(customClipping != null) {
+            customClipping!!()
+            return
+        }
+        val sp = clippingSprite
+        if(sp != null) {
+            GlStateManager.pushAttrib()
+            GlStateManager.enableTexture2D()
+            sp.bind()
+            sp.draw(component.animator.time.toInt(), 0f, 0f, component.size.xi.toFloat(), component.size.yi.toFloat())
+            GlStateManager.popAttrib()
+            return
+        }
+
         GlStateManager.pushAttrib()
         GlStateManager.disableTexture2D()
         GlStateManager.color(1f, 0f, 1f, 0.5f)
