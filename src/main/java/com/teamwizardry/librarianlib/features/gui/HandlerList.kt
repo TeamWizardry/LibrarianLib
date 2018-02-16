@@ -5,7 +5,7 @@ import java.util.*
 /**
  * A list of handlers for an event
 
- * @param  The handler type
+ * @param T The handler type
  */
 class HandlerList<T> {
 
@@ -39,13 +39,7 @@ class HandlerList<T> {
      * Fire an event, each handler will be passed to the caller in order. Once the handler returns true it will halt.
      * @param caller
      */
-    fun fireCancel(caller: (T) -> Boolean): Boolean {
-        for (t in handlers) {
-            if (caller(t))
-                return true
-        }
-        return false
-    }
+    fun fireCancel(caller: (T) -> Boolean) = handlers.any { caller(it) }
 
     /**
      * Fire an event, each handler will be passed to the caller in order. Once the handler returns true it will halt.

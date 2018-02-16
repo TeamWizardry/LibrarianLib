@@ -26,8 +26,9 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 1
 
         val stack = this.stack.getValue(this)
         if (stack.isNotEmpty) {
-            var str = "" + stack.count
-            str = quantityText.fireModifier(str, { h, v -> h(this, v) }) ?: ""
+            var str: String? = stack.count.toString()
+            str = quantityText.fireModifier(str, { h, v -> h(this, v) })
+            if (str == "1") str = null
 
             val itemRender = Minecraft.getMinecraft().renderItem
             itemRender.zLevel = 200.0f
