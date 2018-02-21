@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.structure
 
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.utilities.NBTTypes
 import net.minecraft.block.*
@@ -33,7 +34,7 @@ open class Structure(loc: ResourceLocation) {
         protected set
 
     init {
-        val stream = Structure::class.java.getResourceAsStream("/assets/" + loc.resourceDomain + "/schematics/" + loc.resourcePath + ".nbt")
+        val stream = LibrarianLib.PROXY.getResource(loc.resourceDomain, "schematics/" + loc.resourcePath + ".nbt")
         if (stream != null) {
             try {
                 parse(stream)
