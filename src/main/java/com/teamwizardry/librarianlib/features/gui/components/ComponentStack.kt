@@ -44,7 +44,7 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 1
         }
 
         GlStateManager.disableRescaleNormal()
-        RenderHelper.disableStandardItemLighting()
+        RenderHelper.enableStandardItemLighting()
     }
 
     fun drawTooltip(stack: ItemStack) {
