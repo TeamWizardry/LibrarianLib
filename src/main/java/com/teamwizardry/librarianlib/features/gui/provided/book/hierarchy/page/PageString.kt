@@ -1,17 +1,14 @@
 package com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.page
 
-import com.google.common.collect.Lists
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.FontRenderer
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
-
-import java.util.ArrayList
+import java.util.*
 
 abstract class PageString(override val entry: Entry) : Page {
 

@@ -36,8 +36,7 @@ interface ISearchAlgorithm {
 
         val entry: Entry
 
-        override fun compareTo(other: ISearchAlgorithm.Result)
-                = frequency.compareTo(other.frequency)
+        override fun compareTo(other: ISearchAlgorithm.Result) = frequency.compareTo(other.frequency)
     }
 
     interface Acceptor : IBookElement {

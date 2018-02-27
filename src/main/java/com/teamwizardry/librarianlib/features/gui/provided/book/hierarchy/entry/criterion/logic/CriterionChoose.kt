@@ -13,7 +13,8 @@ import net.minecraft.world.storage.loot.RandomValueRange
  */
 class CriterionChoose(json: JsonObject) : ICriterion {
 
-    private val range: RandomValueRange = rangeDecoder.fromJson(json.get("range") ?: JsonPrimitive(1), RandomValueRange::class.java)
+    private val range: RandomValueRange = rangeDecoder.fromJson(json.get("range")
+            ?: JsonPrimitive(1), RandomValueRange::class.java)
     private val criteria = json.getAsJsonArray("values").mapNotNull { ICriterion.fromJson(it) }
 
     override fun isUnlocked(player: EntityPlayer, grantedInCode: Boolean) =
