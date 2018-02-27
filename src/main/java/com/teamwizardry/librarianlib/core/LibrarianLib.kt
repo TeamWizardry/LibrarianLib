@@ -11,6 +11,7 @@ import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventBus
 import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.GuiOverlay
+import com.teamwizardry.librarianlib.features.gui.LibLibGuiHandler
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.guicontainer.GuiContainerBase
 import com.teamwizardry.librarianlib.features.kotlin.json
@@ -33,6 +34,7 @@ import net.minecraftforge.fml.common.SidedProxy
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
+import net.minecraftforge.fml.common.network.NetworkRegistry
 
 
 /**
@@ -67,6 +69,8 @@ object LibrarianLib {
 
     @Mod.EventHandler
     fun preInit(e: FMLPreInitializationEvent) {
+        NetworkRegistry.INSTANCE.registerGuiHandler(this, LibLibGuiHandler)
+
         PROXY.pre(e)
     }
 

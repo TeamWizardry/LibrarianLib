@@ -3,6 +3,7 @@
 
 package com.teamwizardry.librarianlib.features.kotlin
 
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.Vec3d
@@ -37,3 +38,12 @@ fun BufferBuilder.createCacheArrayAndReset(): IntArray {
 fun BufferBuilder.addCacheArray(array: IntArray) {
     this.addVertexData(array)
 }
+
+val GuiComponent.width
+    get() = size.xi
+val GuiComponent.height
+    get() = size.yi
+val GuiComponent.x
+    get() = pos.xi
+val GuiComponent.y
+    get() = pos.yi
