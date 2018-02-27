@@ -2,10 +2,14 @@ package com.teamwizardry.librarianlib.features.container
 
 import com.google.common.collect.HashBiMap
 import com.teamwizardry.librarianlib.core.LibrarianLib
+import com.teamwizardry.librarianlib.features.base.item.ItemModBook
 import com.teamwizardry.librarianlib.features.container.internal.ContainerImpl
 import com.teamwizardry.librarianlib.features.guicontainer.GuiContainerBase
 import com.teamwizardry.librarianlib.features.kotlin.getTileEntitySafely
+import net.minecraft.client.gui.GuiScreen
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.item.ItemBlock
+import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
@@ -20,6 +24,39 @@ object GuiHandler : IGuiHandler {
     private val registry = mutableMapOf<ResourceLocation, GuiEntry>()
     private val ids = HashBiMap.create<ResourceLocation, Int>()
 
+    init {
+        registerRaw(ResourceLocation(LibrarianLib.MODID, "book"), null) { player, world, _ ->
+            val pair = getStack<ItemModBook>(player)
+            if (pair == null) null else {
+                val (item, stack) = pair
+                item.createGui(player, world, stack) as GuiScreen
+            }
+        }
+    }
+
+    private inline fun <reified T : Any> getStack(p: EntityPlayer): Pair<T, ItemStack>? {
+        var target: T? = tFromStack(p.heldItemMainhand)
+        if (target != null)
+            return target to p.heldItemMainhand
+        target = tFromStack(p.heldItemOffhand)
+        if (target != null)
+            return target to p.heldItemOffhand
+
+        return null
+    }
+
+    private inline fun <reified T : Any> tFromStack(stack: ItemStack): T? {
+        val item = stack.item
+        return if (item is T)
+            item
+        else if (item is ItemBlock) {
+            val block = item.block
+            if (block is T)
+                block
+            else null
+        } else null
+    }
+
     @JvmStatic
     @JvmOverloads
     fun open(name: ResourceLocation, player: EntityPlayer, pos: BlockPos = BlockPos.ORIGIN) {
@@ -32,15 +69,15 @@ object GuiHandler : IGuiHandler {
 
     @JvmStatic
     fun registerRaw(name: ResourceLocation,
-                    server: ((player: EntityPlayer, world: World, pos: BlockPos) -> ContainerBase)?,
-                    client: ((player: EntityPlayer, world: World, pos: BlockPos) -> GuiContainerBase)?) {
+                    server: ((player: EntityPlayer, world: World, pos: BlockPos) -> ContainerBase?)?,
+                    client: ((player: EntityPlayer, world: World, pos: BlockPos) -> GuiScreen?)?) {
         if (name !in ids.keys) {
-            ids.put(name, ids.size)
+            ids[name] = ids.size
         }
         if (name in registry) {
             throw IllegalArgumentException("GUI handler for $name already exists")
         }
-        registry.put(name, GuiEntry(server, client))
+        registry[name] = GuiEntry(server, client)
     }
 
     @JvmStatic
@@ -74,7 +111,9 @@ object GuiHandler : IGuiHandler {
             val handler = registry[ids.inverse()[ID]]?.server
 
             if (handler != null) {
-                return ContainerImpl(handler(player, world, BlockPos(x, y, z)))
+                val handled = handler(player, world, BlockPos(x, y, z))
+                if (handled != null)
+                    return ContainerImpl(handled)
             }
         }
         return null
@@ -83,6 +122,6 @@ object GuiHandler : IGuiHandler {
 }
 
 private data class GuiEntry(
-        val server: ((player: EntityPlayer, world: World, pos: BlockPos) -> ContainerBase)?,
-        val client: ((player: EntityPlayer, world: World, pos: BlockPos) -> GuiContainerBase)?
+        val server: ((player: EntityPlayer, world: World, pos: BlockPos) -> ContainerBase?)?,
+        val client: ((player: EntityPlayer, world: World, pos: BlockPos) -> GuiScreen?)?
 )

@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.features.base.item
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
-import com.teamwizardry.librarianlib.features.gui.LibLibGuiHandler
+import com.teamwizardry.librarianlib.features.container.GuiHandler
 import com.teamwizardry.librarianlib.features.gui.provided.book.GuiBook
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.ActionResult
 import net.minecraft.util.EnumActionResult
 import net.minecraft.util.EnumHand
+import net.minecraft.util.ResourceLocation
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -28,7 +29,7 @@ abstract class ItemModBook(name: String, vararg variants: String) : ItemMod(name
 
     override fun onItemRightClick(worldIn: World, playerIn: EntityPlayer, handIn: EnumHand): ActionResult<ItemStack> {
         val stack = playerIn.getHeldItem(handIn)
-        playerIn.openGui(LibrarianLib, LibLibGuiHandler.ID_BOOK, worldIn, 0, 0, 0)
+        GuiHandler.open(RESOURCE, playerIn)
         return ActionResult(EnumActionResult.SUCCESS, stack)
     }
 
@@ -37,6 +38,9 @@ abstract class ItemModBook(name: String, vararg variants: String) : ItemMod(name
     }
 
     companion object {
+
+        val RESOURCE = ResourceLocation(LibrarianLib.MODID, "book")
+
         @JvmStatic
         @JvmName("forBook")
         operator fun invoke(name: String, book: Book) = ItemSingleBook(name, book)

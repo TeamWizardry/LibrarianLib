@@ -23,6 +23,7 @@ import java.io.IOException
 /**
  * Created by TheCodeWarrior
  */
+@Suppress("LeakingThis")
 open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var guiHeight: Int) : GuiContainer(ContainerImpl(container)) {
     protected val mainComponents: ComponentVoid = ComponentVoid(0, 0)
     protected val fullscreenComponents: ComponentVoid = ComponentVoid(0, 0)
