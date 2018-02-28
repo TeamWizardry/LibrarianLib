@@ -9,7 +9,7 @@ import com.teamwizardry.librarianlib.features.sprite.Sprite
  * Property of Demoniaque.
  * All rights reserved.
  */
-open class ComponentBookMark(val book: IBookGui, icon: Sprite, val id: Int) : ComponentAnimatableVoid(book.mainComponent.size.xi - 10,
+open class ComponentBookMark(val book: IBookGui, icon: Sprite, val id: Int) : ComponentAnimatableVoid(book.mainBookComponent.size.xi - 10,
         20 + 5 * id + book.bookmarkSprite.height * id, book.bookmarkSprite.width, book.bookmarkSprite.height) {
     private val box: Sprite = book.bookmarkSprite
 

@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft
  * Property of Demoniaque.
  * All rights reserved.
  */
-class ComponentCategoryPage(book: IBookGui, category: Category) : NavBarHolder(16, 16, book.mainComponent.size.xi - 32, book.mainComponent.size.yi - 32, book) {
+class ComponentCategoryPage(book: IBookGui, category: Category) : NavBarHolder(16, 16, book.mainBookComponent.size.xi - 32, book.mainBookComponent.size.yi - 32, book) {
 
     init {
         var pageComponent = ComponentVoid(0, 0, size.xi, size.yi)

@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.I18n
 import java.util.*
 
-class ComponentMainIndex(book: IBookGui) : NavBarHolder(0, 0, book.mainComponent.size.xi, book.mainComponent.size.yi - 16, book) {
+class ComponentMainIndex(book: IBookGui) : NavBarHolder(0, 0, book.mainBookComponent.size.xi, book.mainBookComponent.size.yi - 16, book) {
 
     init {
 

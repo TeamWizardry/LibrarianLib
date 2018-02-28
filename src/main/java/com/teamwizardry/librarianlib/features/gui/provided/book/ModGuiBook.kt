@@ -45,27 +45,27 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
     override val homeSprite: Sprite = guideBookSheet.getSprite("arrow_home", 18, 9)
 
     var bookmarkID: Int = 0
-    override val mainComponent: ComponentSprite
+    override val mainBookComponent: ComponentSprite
     override var focus: GuiComponent? = null
     override var history = Stack<IBookElement>()
     override var currentElement: IBookElement? = null
 
     init {
-        this.mainComponent = ComponentSprite(pageSprite, 0, 0)
-        this.mainComponent.color.setValue(book.bookColor)
+        this.mainBookComponent = ComponentSprite(pageSprite, 0, 0)
+        this.mainBookComponent.color.setValue(book.bookColor)
 
         val bookFilling = ComponentSprite(paperSprite, 0, 0)
-        this.mainComponent.add(bookFilling)
+        this.mainBookComponent.add(bookFilling)
         val bookBinding = ComponentSprite(bindingSprite, 0, 0)
         bookBinding.color.setValue(book.bindingColor)
-        this.mainComponent.add(bookBinding)
+        this.mainBookComponent.add(bookBinding)
 
-        mainComponents.add(this.mainComponent)
+        mainComponents.add(this.mainBookComponent)
 
         // --------- SEARCH BAR --------- //
         val bar = ComponentSearchBar(this, bookmarkID++,
                 TFIDFSearch(this).textBoxConsumer(this) { ComponentSearchResults(this) })
-        this.mainComponent.add(bar)
+        this.mainBookComponent.add(bar)
 
         // --------- SEARCH BAR --------- //
 
@@ -73,7 +73,7 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
     }
 
     override fun makeNavigationButton(offsetIndex: Int, entry: Entry, extra: ((ComponentVoid) -> Unit)?): GuiComponent {
-        val indexButton = ComponentVoid(0, 16 * offsetIndex, this.mainComponent.size.xi - 32, 16)
+        val indexButton = ComponentVoid(0, 16 * offsetIndex, this.mainBookComponent.size.xi - 32, 16)
 
         extra?.invoke(indexButton)
         indexButton.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) { placeInFocus(entry) }

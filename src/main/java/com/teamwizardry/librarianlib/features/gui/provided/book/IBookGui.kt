@@ -27,7 +27,7 @@ import java.util.*
 @SideOnly(Side.CLIENT)
 interface IBookGui {
 
-    val mainComponent: GuiComponent
+    val mainBookComponent: GuiComponent
 
     var focus: GuiComponent?
 
@@ -88,7 +88,7 @@ interface IBookGui {
 
         focus?.invalidate()
         focus = element.createComponent(this)
-        focus?.let { mainComponent.add(it) }
+        focus?.let { mainBookComponent.add(it) }
         currentElement = element
     }
 

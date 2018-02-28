@@ -10,7 +10,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.I18n
 import net.minecraft.util.text.TextFormatting
 
-class ComponentSearchResults(private val book: IBookGui) : NavBarHolder(16, 16, book.mainComponent.size.xi - 32, book.mainComponent.size.yi - 32, book), ISearchAlgorithm.Acceptor {
+class ComponentSearchResults(private val book: IBookGui) : NavBarHolder(16, 16, book.mainBookComponent.size.xi - 32, book.mainBookComponent.size.yi - 32, book), ISearchAlgorithm.Acceptor {
 
     private val margin = 16
     override var currentActive: GuiComponent? = null

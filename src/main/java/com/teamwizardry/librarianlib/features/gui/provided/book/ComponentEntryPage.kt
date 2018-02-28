@@ -10,7 +10,7 @@ import net.minecraft.client.resources.I18n
  * Property of Demoniaque.
  * All rights reserved.
  */
-class ComponentEntryPage(book: IBookGui, entry: Entry) : NavBarHolder(16, 16, book.mainComponent.size.xi - 32, book.mainComponent.size.yi - 32, book) {
+class ComponentEntryPage(book: IBookGui, entry: Entry) : NavBarHolder(16, 16, book.mainBookComponent.size.xi - 32, book.mainBookComponent.size.yi - 32, book) {
 
     init {
 
