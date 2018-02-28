@@ -1,7 +1,7 @@
 {
 	"spritesheet":{
-		"textureWidth":300,
-		"textureHeight":300,
+		"textureWidth":384,
+		"textureHeight":384,
 		"sprites":{
 			"book":[0, 0, 146, 180],
 			"paper": [146, 0, 146, 180],
