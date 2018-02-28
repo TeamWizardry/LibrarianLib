@@ -25,7 +25,7 @@ import java.util.*
  * All rights reserved.
  */
 @Suppress("LeakingThis")
-open class GuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
+open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
     override val cachedSearchContent = book.contentCache
     private val sheetRL = ResourceLocation(book.textureSheet)
     private val guideBookSheet = Texture(ResourceLocation(sheetRL.resourceDomain, "textures/" + sheetRL.resourcePath + ".png"))

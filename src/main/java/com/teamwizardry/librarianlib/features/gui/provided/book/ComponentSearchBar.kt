@@ -16,10 +16,10 @@ class ComponentSearchBar(book: IBookGui, id: Int, onType: ((String) -> Unit)?) :
 
         if (onType != null)
             text.BUS.hook(TextEditEvent::class.java) { onType(it.whole) }
-        text.enabledColor = book.book.searchTextColor
-        text.selectionColor = book.book.searchTextHighlight
-        text.cursorColor = book.book.searchTextCursor
-        text.autoFocus = true
+        text.enabledColor.setValue(book.book.searchTextColor)
+        text.selectionColor.setValue(book.book.searchTextHighlight)
+        text.cursorColor.setValue(book.book.searchTextCursor)
+        text.autoFocus.setValue(true)
         add(text)
 
         clipping.clipToBounds = true

@@ -11,10 +11,10 @@ import java.util.function.Function
  *
  * @param P The type of the parameter to the option
  */
-open class Option<P, T>(protected var defaultValue: T) {
+open class Option<P, T>(defaultValue: T) {
 
     private var value: T = defaultValue
-    protected var callback: Function<P, T>? = null
+    protected var callback: ((P) -> T)? = null
 
     constructor(defaultValue: T, callback: ((P) -> T)?) : this(defaultValue) {
         this.func(callback)
@@ -23,20 +23,17 @@ open class Option<P, T>(protected var defaultValue: T) {
     fun getValue(param: P): T {
         val tmp = callback
         if (tmp != null) {
-            return tmp.apply(param) ?: value
+            return tmp.invoke(param) ?: value
         }
         return value
     }
 
     fun func(callback: ((P) -> T)?) {
-        if (callback == null)
-            func(null as Function<P, T>?)
-        else
-            func(Function(callback))
+        this.callback = callback
     }
 
     fun func(callback: Function<P, T>?) {
-        this.callback = callback
+        func(callback?.let { { t: P -> it.apply(t) } })
     }
 
     fun noFunc() {

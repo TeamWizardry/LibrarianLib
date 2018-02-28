@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.features.base.item
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.container.GuiHandler
-import com.teamwizardry.librarianlib.features.gui.provided.book.GuiBook
+import com.teamwizardry.librarianlib.features.gui.provided.book.ModGuiBook
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
 import net.minecraft.entity.player.EntityPlayer
@@ -23,7 +23,7 @@ abstract class ItemModBook(name: String, vararg variants: String) : ItemMod(name
 
     @SideOnly(Side.CLIENT)
     open fun createGui(player: EntityPlayer, world: World?, stack: ItemStack): IBookGui =
-            GuiBook(getBook(player, world, stack))
+            ModGuiBook(getBook(player, world, stack))
 
     abstract fun getBook(player: EntityPlayer, world: World?, stack: ItemStack): Book
 

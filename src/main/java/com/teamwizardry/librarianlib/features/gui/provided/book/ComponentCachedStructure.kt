@@ -72,15 +72,15 @@ class ComponentCachedStructure(x: Int, y: Int, width: Int, height: Int, structur
             if (!event.component.hasTag("switched") && event.component.isVisible) {
                 if (structure?.perfectCenter == null) {
                     GlStateManager.pushMatrix()
-                    GuiBook.ERROR.bind()
-                    GuiBook.ERROR.draw(event.partialTicks.toInt(),
-                            (size.x / 2.0 - GuiBook.ERROR.width / 2.0).toInt().toFloat(),
-                            (size.y / 2.0 - GuiBook.ERROR.height).toInt().toFloat())
+                    ModGuiBook.ERROR.bind()
+                    ModGuiBook.ERROR.draw(event.partialTicks.toInt(),
+                            (size.x / 2.0 - ModGuiBook.ERROR.width / 2.0).toInt().toFloat(),
+                            (size.y / 2.0 - ModGuiBook.ERROR.height).toInt().toFloat())
 
-                    GuiBook.FOF.bind()
-                    GuiBook.FOF.draw(event.partialTicks.toInt(),
-                            (size.x / 2.0 - GuiBook.FOF.width / 2.0).toInt().toFloat(),
-                            (size.y / 2.0 - GuiBook.FOF.height / 2.0).toInt().toFloat())
+                    ModGuiBook.FOF.bind()
+                    ModGuiBook.FOF.draw(event.partialTicks.toInt(),
+                            (size.x / 2.0 - ModGuiBook.FOF.width / 2.0).toInt().toFloat(),
+                            (size.y / 2.0 - ModGuiBook.FOF.height / 2.0).toInt().toFloat())
 
                     GlStateManager.popMatrix()
                 } else {

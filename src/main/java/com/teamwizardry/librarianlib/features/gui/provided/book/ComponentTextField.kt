@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.gui.provided.book
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
+import com.teamwizardry.librarianlib.features.gui.Option
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.kotlin.*
@@ -29,14 +30,16 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
 
     var text = ""
         set(value) {
-            field = if (value.length > this.maxStringLength)
-                value.substring(0, this.maxStringLength)
+            val max = maxStringLength.getValue(this)
+            field = if (value.length > max)
+                value.substring(0, max)
             else value
             this.cursorToEnd()
         }
-    val maxStringLength = 64
-    var canLoseFocus = true
-    var autoFocus = false
+
+    val maxStringLength = Option<ComponentTextField, Int>(64)
+    var canLoseFocus = Option<ComponentTextField, Boolean>(true)
+    var autoFocus = Option<ComponentTextField, Boolean>(false)
 
     var isFocused: Boolean = false
         set(isFocused) {
@@ -55,12 +58,14 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
             field = MathHelper.clamp(pos, 0, this.text.length)
             this.setSelectionPosition(this.cursorPosition)
         }
+    var enabledColor = Option<ComponentTextField, Color>(Color(0xe0e0e0))
+    val disabledColor = Option<ComponentTextField, Color>(Color(0x707070))
+    var selectionColor = Option<ComponentTextField, Color>(Color(0x0000ff))
+    var cursorColor = Option<ComponentTextField, Color>(Color(0xd0d0d0))
+
+
     var selectionEnd: Int = 0
         private set
-    var enabledColor = Color(0xe0e0e0)
-    val disabledColor = Color(0x707070)
-    var selectionColor = Color(0x0000ff)
-    var cursorColor = Color(0xd0d0d0)
 
     val selectedText: String
         get() {
@@ -86,9 +91,11 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
     fun writeText(textToWrite: String) {
 
         val allowed = ChatAllowedCharacters.filterAllowedCharacters(textToWrite)
+        val max = maxStringLength.getValue(this)
+
         val selectionStart = if (this.cursorPosition < this.selectionEnd) this.cursorPosition else this.selectionEnd
         val selectionEnd = if (this.cursorPosition < this.selectionEnd) this.selectionEnd else this.cursorPosition
-        val remainingSpace = this.maxStringLength - this.text.length - (selectionStart - selectionEnd)
+        val remainingSpace = max - this.text.length - (selectionStart - selectionEnd)
 
         var build = if (this.text.isEmpty()) "" else this.text.substring(0, selectionStart)
 
@@ -204,7 +211,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
 
     fun handleKeyTyped(input: Char, inputCode: Int): Boolean {
         if (!this.isFocused) {
-            if (this.autoFocus)
+            if (this.autoFocus.getValue(this))
                 isFocused = true
             else
                 return false
@@ -312,7 +319,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
     fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean {
         val withinBoundary = mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height
 
-        if (this.canLoseFocus)
+        if (this.canLoseFocus.getValue(this))
             this.isFocused = withinBoundary
 
         return if (this.isFocused && withinBoundary && mouseButton == 0) {
@@ -327,7 +334,9 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
 
     fun drawTextBox() {
         if (this.isVisible) {
-            val textColor = if (this.isEnabled) this.enabledColor.rgb else this.disabledColor.rgb
+            val max = maxStringLength.getValue(this)
+
+            val textColor = if (this.isEnabled) this.enabledColor.getValue(this).rgb else this.disabledColor.getValue(this).rgb
             val cursorRelativePosition = this.cursorPosition - this.lineScrollOffset
             var selectionEndPosition = this.selectionEnd - this.lineScrollOffset
             val visible = this.fontRenderer.trimStringToWidth(this.text.substring(this.lineScrollOffset), this.width - fontRenderer.getStringWidth("_"))
@@ -343,7 +352,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
                 offset = this.fontRenderer.drawStringWithShadow(toCursor, offset.toFloat(), y.toFloat(), textColor)
             }
 
-            val cursorInText = this.cursorPosition < this.text.length || this.text.length >= this.maxStringLength
+            val cursorInText = this.cursorPosition < this.text.length || this.text.length >= max
             var unselectedBound = offset
 
             if (!cursorVisible)
@@ -356,7 +365,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
 
             if (cursorBlinkActive)
                 if (cursorInText) {
-                    Gui.drawRect(unselectedBound, y - 1, unselectedBound + 1, y + 2 + this.fontRenderer.FONT_HEIGHT, cursorColor.rgb)
+                    Gui.drawRect(unselectedBound, y - 1, unselectedBound + 1, y + 2 + this.fontRenderer.FONT_HEIGHT, cursorColor.getValue(this).rgb)
                     GlStateManager.enableBlend()
                 } else
                     this.fontRenderer.drawStringWithShadow("_", unselectedBound.toFloat(), (y + 1).toFloat(), textColor)
@@ -384,7 +393,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
 
         val tessellator = Tessellator.getInstance()
         val bufferbuilder = tessellator.buffer
-        selectionColor.glColor()
+        selectionColor.getValue(this).glColor()
         GlStateManager.disableTexture2D()
         GlStateManager.enableColorLogic()
         GlStateManager.colorLogicOp(GlStateManager.LogicOp.OR_REVERSE)

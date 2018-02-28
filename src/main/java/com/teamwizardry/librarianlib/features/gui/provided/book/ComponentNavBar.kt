@@ -115,13 +115,7 @@ class ComponentNavBar(private val book: IBookGui, posX: Int, posY: Int, width: I
             val pageStringComponent = ComponentText(size.x.toInt() / 2, (size.y / 2 - nextSprite.height / 2.0).toInt() + 15, ComponentText.TextAlignH.CENTER, ComponentText.TextAlignV.MIDDLE)
             pageStringComponent.unicode.setValue(false)
 
-            val initialString = (this.page + 1).toString() + "/" + (maxPages + 1)
-            pageStringComponent.text.setValue(initialString)
-
-            pageStringComponent.BUS.hook(GuiComponentEvents.ComponentTickEvent::class.java) {
-                val pageString = (this.page + 1).toString() + "/" + (maxPages + 1)
-                pageStringComponent.text.setValue(pageString)
-            }
+            pageStringComponent.text.func { "${this.page + 1}/${maxPages + 1}" }
             add(pageStringComponent)
         }
     }
