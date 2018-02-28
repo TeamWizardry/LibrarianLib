@@ -18,6 +18,7 @@ import net.minecraftforge.common.crafting.CraftingHelper
 import net.minecraftforge.common.crafting.JsonContext
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import java.awt.Color
 import java.util.*
 
 /**
@@ -28,6 +29,10 @@ import java.util.*
 interface IBookGui {
 
     val mainBookComponent: GuiComponent
+
+    val paperComponent: GuiComponent
+
+    val bindingComponent: GuiComponent
 
     var focus: GuiComponent?
 
@@ -66,6 +71,8 @@ interface IBookGui {
     val searchIconSprite: Sprite
 
     val titleBarSprite: Sprite
+
+    fun updateTextureData(sheet: String, outerColor: Color, bindingColor: Color)
 
     fun actualElement(): IBookElement? {
         val current = currentElement ?: return null

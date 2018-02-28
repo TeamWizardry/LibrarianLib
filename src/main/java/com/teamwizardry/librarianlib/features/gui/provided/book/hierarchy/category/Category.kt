@@ -5,7 +5,6 @@ import com.google.gson.JsonObject
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.provided.book.ComponentCategoryPage
-import com.teamwizardry.librarianlib.features.gui.provided.book.ComponentEntryPage
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.IBookElement
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
@@ -27,6 +26,10 @@ class Category(val book: Book, json: JsonObject) : IBookElement {
     val icon: JsonElement
     val color: Color
 
+    val sheet: String
+    val outerColor: Color
+    val bindingColor: Color
+
     var isValid = false
 
     val isSingleEntry: Boolean
@@ -41,6 +44,9 @@ class Category(val book: Book, json: JsonObject) : IBookElement {
         var icon: JsonElement = JsonObject()
         val entries = mutableListOf<Entry>()
         var color = book.highlightColor
+        var sheet: String = book.textureSheet
+        var outerColor: Color = book.bookColor
+        var bindingColor: Color = book.bindingColor
 
         try {
             title = json.getAsJsonPrimitive("title").asString
@@ -55,6 +61,17 @@ class Category(val book: Book, json: JsonObject) : IBookElement {
                 if (entry.isValid)
                     entries.add(entry)
             }
+
+            if (json.has("style")) {
+                val obj = json.getAsJsonObject("style")
+                if (obj.has("sheet"))
+                    sheet = obj.getAsJsonPrimitive("sheet").asString
+                if (obj.has("color"))
+                    outerColor = Book.colorFromJson(obj.get("color"))
+                if (obj.has("binding"))
+                    bindingColor = Book.colorFromJson(obj.get("binding"))
+            }
+
             if (!entries.isEmpty())
                 isValid = true
         } catch (exception: Exception) {
@@ -66,6 +83,9 @@ class Category(val book: Book, json: JsonObject) : IBookElement {
         this.icon = icon
         this.entries = entries
         this.color = color
+        this.sheet = sheet
+        this.outerColor = outerColor
+        this.bindingColor = bindingColor
     }
 
     fun anyUnlocked(player: EntityPlayer): Boolean {
@@ -74,6 +94,9 @@ class Category(val book: Book, json: JsonObject) : IBookElement {
 
     @SideOnly(Side.CLIENT)
     override fun createComponent(book: IBookGui): GuiComponent {
-        return if (isSingleEntry) ComponentEntryPage(book, entries[0]) else ComponentCategoryPage(book, this)
+        return if (isSingleEntry) entries[0].createComponent(book) else {
+            book.updateTextureData(sheet, outerColor, bindingColor)
+            ComponentCategoryPage(book, this)
+        }
     }
 }

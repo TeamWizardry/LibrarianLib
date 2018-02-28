@@ -18,6 +18,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.I18n
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.text.TextFormatting
+import java.awt.Color
 import java.util.*
 
 /**
@@ -27,25 +28,28 @@ import java.util.*
 @Suppress("LeakingThis")
 open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
     override val cachedSearchContent = book.contentCache
-    private val sheetRL = ResourceLocation(book.textureSheet)
-    private val guideBookSheet = Texture(ResourceLocation(sheetRL.resourceDomain, "textures/" + sheetRL.resourcePath + ".png"))
+    private var sheetRL = ResourceLocation(book.textureSheet)
+    private var guideBookSheet = Texture(ResourceLocation(sheetRL.resourceDomain, "textures/" + sheetRL.resourcePath + ".png"))
 
-    override val bindingSprite: Sprite = guideBookSheet.getSprite("binding", 146, 180)
-    override val pageSprite: Sprite = guideBookSheet.getSprite("book", 146, 180)
-    override val bannerSprite: Sprite = guideBookSheet.getSprite("banner", 140, 31)
-    override val paperSprite: Sprite = guideBookSheet.getSprite("paper", 146, 180)
-    override val bookmarkSprite: Sprite = guideBookSheet.getSprite("bookmark", 133, 13)
-    override val searchIconSprite: Sprite = guideBookSheet.getSprite("magnifier", 12, 12)
-    override val titleBarSprite: Sprite = guideBookSheet.getSprite("title_bar", 86, 11)
-    override val nextSpritePressed: Sprite = guideBookSheet.getSprite("arrow_next_pressed", 18, 10)
-    override val nextSprite: Sprite = guideBookSheet.getSprite("arrow_next", 18, 10)
-    override val backSpritePressed: Sprite = guideBookSheet.getSprite("arrow_home_pressed", 18, 9)
-    override val backSprite: Sprite = guideBookSheet.getSprite("arrow_back", 18, 10)
-    override val homeSpritePressed: Sprite = guideBookSheet.getSprite("arrow_home_pressed", 18, 9)
-    override val homeSprite: Sprite = guideBookSheet.getSprite("arrow_home", 18, 9)
+    override var bindingSprite: Sprite = guideBookSheet.getSprite("binding", 146, 180)
+    override var pageSprite: Sprite = guideBookSheet.getSprite("book", 146, 180)
+    override var bannerSprite: Sprite = guideBookSheet.getSprite("banner", 140, 31)
+    override var paperSprite: Sprite = guideBookSheet.getSprite("paper", 146, 180)
+    override var bookmarkSprite: Sprite = guideBookSheet.getSprite("bookmark", 133, 13)
+    override var searchIconSprite: Sprite = guideBookSheet.getSprite("magnifier", 12, 12)
+    override var titleBarSprite: Sprite = guideBookSheet.getSprite("title_bar", 86, 11)
+    override var nextSpritePressed: Sprite = guideBookSheet.getSprite("arrow_next_pressed", 18, 10)
+    override var nextSprite: Sprite = guideBookSheet.getSprite("arrow_next", 18, 10)
+    override var backSpritePressed: Sprite = guideBookSheet.getSprite("arrow_home_pressed", 18, 9)
+    override var backSprite: Sprite = guideBookSheet.getSprite("arrow_back", 18, 10)
+    override var homeSpritePressed: Sprite = guideBookSheet.getSprite("arrow_home_pressed", 18, 9)
+    override var homeSprite: Sprite = guideBookSheet.getSprite("arrow_home", 18, 9)
 
     var bookmarkID: Int = 0
     override val mainBookComponent: ComponentSprite
+    override val paperComponent: ComponentSprite
+    override val bindingComponent: ComponentSprite
+
     override var focus: GuiComponent? = null
     override var history = Stack<IBookElement>()
     override var currentElement: IBookElement? = null
@@ -54,11 +58,11 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
         this.mainBookComponent = ComponentSprite(pageSprite, 0, 0)
         this.mainBookComponent.color.setValue(book.bookColor)
 
-        val bookFilling = ComponentSprite(paperSprite, 0, 0)
-        this.mainBookComponent.add(bookFilling)
-        val bookBinding = ComponentSprite(bindingSprite, 0, 0)
-        bookBinding.color.setValue(book.bindingColor)
-        this.mainBookComponent.add(bookBinding)
+        paperComponent = ComponentSprite(paperSprite, 0, 0)
+        this.mainBookComponent.add(paperComponent)
+        bindingComponent = ComponentSprite(bindingSprite, 0, 0)
+        bindingComponent.color.setValue(book.bindingColor)
+        this.mainBookComponent.add(bindingComponent)
 
         mainComponents.add(this.mainBookComponent)
 
@@ -106,6 +110,34 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
         indexButton.BUS.hook(GuiComponentEvents.PostDrawEvent::class.java) { render() }
 
         return indexButton
+    }
+
+    override fun updateTextureData(sheet: String, outerColor: Color, bindingColor: Color) {
+        val newSheet = ResourceLocation(sheet)
+        if (sheetRL != newSheet) {
+            sheetRL = newSheet
+            guideBookSheet = Texture(ResourceLocation(sheetRL.resourceDomain, "textures/" + sheetRL.resourcePath + ".png"))
+
+            bindingSprite = guideBookSheet.getSprite("binding", 146, 180)
+            pageSprite = guideBookSheet.getSprite("book", 146, 180)
+            bannerSprite = guideBookSheet.getSprite("banner", 140, 31)
+            paperSprite = guideBookSheet.getSprite("paper", 146, 180)
+            bookmarkSprite = guideBookSheet.getSprite("bookmark", 133, 13)
+            searchIconSprite = guideBookSheet.getSprite("magnifier", 12, 12)
+            titleBarSprite = guideBookSheet.getSprite("title_bar", 86, 11)
+            nextSpritePressed = guideBookSheet.getSprite("arrow_next_pressed", 18, 10)
+            nextSprite = guideBookSheet.getSprite("arrow_next", 18, 10)
+            backSpritePressed = guideBookSheet.getSprite("arrow_home_pressed", 18, 9)
+            backSprite = guideBookSheet.getSprite("arrow_back", 18, 10)
+            homeSpritePressed = guideBookSheet.getSprite("arrow_home_pressed", 18, 9)
+            homeSprite = guideBookSheet.getSprite("arrow_home", 18, 9)
+            mainBookComponent.sprite = pageSprite
+            paperComponent.sprite = paperSprite
+            bindingComponent.sprite = bindingSprite
+        }
+
+        mainBookComponent.color.setValue(outerColor)
+        bindingComponent.color.setValue(bindingColor)
     }
 
     companion object {

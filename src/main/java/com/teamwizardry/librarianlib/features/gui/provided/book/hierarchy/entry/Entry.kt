@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.provided.book.ComponentEntryPage
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.IBookElement
+import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.category.Category
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.criterion.ICriterion
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.criterion.game.EntryUnlockedEvent
@@ -16,6 +17,7 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import java.awt.Color
 
 /**
  * @author WireSegal
@@ -29,6 +31,10 @@ class Entry(val category: Category, rl: String, json: JsonObject) : IBookElement
     val icon: JsonElement
 
     val criterion: ICriterion?
+
+    val sheet: String
+    val outerColor: Color
+    val bindingColor: Color
 
     var isValid = false
 
@@ -46,6 +52,9 @@ class Entry(val category: Category, rl: String, json: JsonObject) : IBookElement
         var descKey = baseKey + ".description"
         var icon: JsonElement = JsonObject()
         var criterion: ICriterion? = null
+        var sheet: String = category.sheet
+        var outerColor: Color = category.outerColor
+        var bindingColor: Color = category.bindingColor
         try {
             if (json.has("title"))
                 titleKey = json.getAsJsonPrimitive("title").asString
@@ -56,6 +65,17 @@ class Entry(val category: Category, rl: String, json: JsonObject) : IBookElement
             allPages.mapNotNullTo(pages) { Page.fromJson(this, it) }
             if (json.has("criteria"))
                 criterion = ICriterion.fromJson(json.get("criteria"))
+
+            if (json.has("style")) {
+                val obj = json.getAsJsonObject("style")
+                if (obj.has("sheet"))
+                    sheet = obj.getAsJsonPrimitive("sheet").asString
+                if (obj.has("color"))
+                    outerColor = Book.colorFromJson(obj.get("color"))
+                if (obj.has("binding"))
+                    bindingColor = Book.colorFromJson(obj.get("binding"))
+            }
+
             isValid = true
         } catch (exception: Exception) {
             LibrarianLog.error(exception, "Failed trying to parse an entry component")
@@ -66,6 +86,9 @@ class Entry(val category: Category, rl: String, json: JsonObject) : IBookElement
         this.descKey = descKey
         this.icon = icon
         this.criterion = criterion
+        this.sheet = sheet
+        this.outerColor = outerColor
+        this.bindingColor = bindingColor
     }
 
     fun isUnlocked(player: EntityPlayer): Boolean {
@@ -79,6 +102,7 @@ class Entry(val category: Category, rl: String, json: JsonObject) : IBookElement
 
     @SideOnly(Side.CLIENT)
     override fun createComponent(book: IBookGui): GuiComponent {
+        book.updateTextureData(sheet, outerColor, bindingColor)
         return ComponentEntryPage(book, this)
     }
 
