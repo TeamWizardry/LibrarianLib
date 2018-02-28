@@ -86,11 +86,9 @@ interface IBookGui {
         if (element === actualElement())
             return
 
-        var focus = focus
-        if (focus != null)
-            focus.invalidate()
+        focus?.invalidate()
         focus = element.createComponent(this)
-        mainComponent.add(focus)
+        focus?.let { mainComponent.add(it) }
         currentElement = element
     }
 
