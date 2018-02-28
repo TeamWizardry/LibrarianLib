@@ -22,21 +22,22 @@ import java.awt.Color
  * @author WireSegal
  * Created at 10:19 PM on 2/17/18.
  */
-class Book(val location: ResourceLocation) : IBookElement {
+@Suppress("LeakingThis")
+open class Book(val location: ResourceLocation) : IBookElement {
     constructor(name: String) : this(ResourceLocation(currentModId, name))
 
-    var categories: List<Category> = listOf()
-    var headerKey: String = ""
-    var subtitleKey: String = ""
-    var bookColor: Color = Color.WHITE
-    var bindingColor: Color = Color.WHITE
-    var highlightColor: Color = Color.WHITE
-    var textureSheet: String = ""
-    var searchTextColor: Color = Color.WHITE
-    var searchTextHighlight: Color = Color.WHITE
-    var searchTextCursor: Color = Color.WHITE
+    open var categories: List<Category> = listOf()
+    open var headerKey: String = ""
+    open var subtitleKey: String = ""
+    open var bookColor: Color = Color.WHITE
+    open var bindingColor: Color = Color.WHITE
+    open var highlightColor: Color = Color.WHITE
+    open var textureSheet: String = ""
+    open var searchTextColor: Color = Color.WHITE
+    open var searchTextHighlight: Color = Color.WHITE
+    open var searchTextCursor: Color = Color.WHITE
 
-    val contentCache: Map<Entry, String>
+    open val contentCache: Map<Entry, String>
         @SideOnly(Side.CLIENT) get() {
             val searchCache = mutableMapOf<Entry, String>()
             for (category in categories) {
@@ -60,7 +61,7 @@ class Book(val location: ResourceLocation) : IBookElement {
             return searchCache
         }
 
-    override val bookParent: IBookElement?
+    final override val bookParent: IBookElement?
         get() = null
 
     init {
@@ -69,7 +70,7 @@ class Book(val location: ResourceLocation) : IBookElement {
             reload()
     }
 
-    fun reload() {
+    open fun reload() {
         try {
             val jsonElement = getJsonFromLink(location)
             if (jsonElement == null || !jsonElement.isJsonObject)

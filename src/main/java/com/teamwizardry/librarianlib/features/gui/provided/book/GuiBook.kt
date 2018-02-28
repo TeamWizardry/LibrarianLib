@@ -24,7 +24,8 @@ import java.util.*
  * Property of Demoniaque.
  * All rights reserved.
  */
-class GuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
+@Suppress("LeakingThis")
+open class GuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
     override val cachedSearchContent = book.contentCache
     private val sheetRL = ResourceLocation(book.textureSheet)
     private val guideBookSheet = Texture(ResourceLocation(sheetRL.resourceDomain, "textures/" + sheetRL.resourcePath + ".png"))
