@@ -125,6 +125,7 @@ open class Book(val location: ResourceLocation) : IBookElement {
 
     @SideOnly(Side.CLIENT)
     override fun createComponent(book: IBookGui): GuiComponent {
+        book.updateTextureData(textureSheet, bookColor, bindingColor)
         return ComponentMainIndex(book)
     }
 
