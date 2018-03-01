@@ -2,8 +2,8 @@ package com.teamwizardry.librarianlib.features.base.item
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.container.GuiHandler
-import com.teamwizardry.librarianlib.features.gui.provided.book.ModGuiBook
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
+import com.teamwizardry.librarianlib.features.gui.provided.book.ModGuiBook
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
@@ -11,6 +11,9 @@ import net.minecraft.util.ActionResult
 import net.minecraft.util.EnumActionResult
 import net.minecraft.util.EnumHand
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.text.Style
+import net.minecraft.util.text.TextComponentTranslation
+import net.minecraft.util.text.TextFormatting
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -29,7 +32,11 @@ abstract class ItemModBook(name: String, vararg variants: String) : ItemMod(name
 
     override fun onItemRightClick(worldIn: World, playerIn: EntityPlayer, handIn: EnumHand): ActionResult<ItemStack> {
         val stack = playerIn.getHeldItem(handIn)
-        GuiHandler.open(RESOURCE, playerIn)
+        val book = getBook(playerIn, worldIn, stack)
+        if (book.isValid)
+            GuiHandler.open(RESOURCE, playerIn)
+        else
+            playerIn.sendStatusMessage(TextComponentTranslation("${LibrarianLib.MODID}.error.nobook").setStyle(Style().setColor(TextFormatting.RED)), true)
         return ActionResult(EnumActionResult.SUCCESS, stack)
     }
 

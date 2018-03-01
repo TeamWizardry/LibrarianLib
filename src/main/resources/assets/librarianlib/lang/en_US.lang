@@ -12,3 +12,5 @@ librarianlib.book.results.match=%d%% match
 librarianlib.book.nav.previous=Previous
 librarianlib.book.nav.next=Next
 librarianlib.book.nav.back=Go Back
+
+librarianlib.error.nobook=The book didn't load correctly...

@@ -37,6 +37,9 @@ open class Book(val location: ResourceLocation) : IBookElement {
     open var searchTextHighlight: Color = Color.WHITE
     open var searchTextCursor: Color = Color.WHITE
 
+    var isValid = false
+        protected set
+
     open val contentCache: Map<Entry, String>
         @SideOnly(Side.CLIENT) get() {
             val searchCache = mutableMapOf<Entry, String>()
@@ -71,6 +74,7 @@ open class Book(val location: ResourceLocation) : IBookElement {
     }
 
     open fun reload() {
+        isValid = false
         try {
             val jsonElement = getJsonFromLink(location)
             if (jsonElement == null || !jsonElement.isJsonObject)
@@ -111,6 +115,8 @@ open class Book(val location: ResourceLocation) : IBookElement {
             categories = allCategories
                     .map { Category(this, it.asJsonObject) }
                     .filter { it.isValid }
+
+            isValid = true
         } catch (error: Exception) {
             LibrarianLog.error(error, "Failed trying to parse a book component")
         }
