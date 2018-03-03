@@ -35,6 +35,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         transformers.put("net.minecraft.client.renderer.entity.layers.LayerArmorBase", LibLibTransformer::transformLayerArmorBase);
         transformers.put("net.minecraft.client.renderer.BlockRendererDispatcher", LibLibTransformer::transformBlockRenderDispatcher);
         transformers.put("net.minecraft.client.particle.Particle", LibLibTransformer::transformParticle);
+        transformers.put("net.minecraft.entity.Entity", LibLibTransformer::transformEntity);
     }
 
     private static byte[] transformRenderItem(byte[] basicClass) {
@@ -192,6 +193,24 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
             newInstructions.add(new LdcInsnNode(0xf000f0));
             newInstructions.add(new InsnNode(IRETURN));
             newInstructions.add(node);
+
+            instructions.insertBefore(instructions.getFirst(), newInstructions);
+            instructions.resetLabels();
+            return true;
+        });
+    }
+
+    private static byte[] transformEntity(byte[] basicClass) {
+        MethodSignature sig = new MethodSignature("onUpdate", "func_70071_h_",
+                "()V");
+
+        return transform(basicClass, sig, "Update hook", (MethodNode method) -> { // Action
+            InsnList instructions = method.instructions;
+
+            InsnList newInstructions = new InsnList();
+
+            newInstructions.add(new VarInsnNode(ALOAD, 0));
+            newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "updateHook", "(Lnet/minecraft/entity/Entity;)V", false));
 
             instructions.insertBefore(instructions.getFirst(), newInstructions);
             instructions.resetLabels();

@@ -2,15 +2,18 @@ package com.teamwizardry.librarianlib.asm;
 
 import com.teamwizardry.librarianlib.core.client.GlowingHandler;
 import com.teamwizardry.librarianlib.core.client.RenderHookHandler;
+import com.teamwizardry.librarianlib.features.forgeevents.EntityUpdateEvent;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BlockFluidRenderer;
 import net.minecraft.client.renderer.BlockModelRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -56,5 +59,9 @@ public class LibLibAsmHooks {
     @SideOnly(Side.CLIENT)
     public boolean usePotionGlow() {
         return GlowingHandler.getPotionGlow();
+    }
+
+    public static void updateHook(Entity entity) {
+        MinecraftForge.EVENT_BUS.post(new EntityUpdateEvent(entity));
     }
 }
