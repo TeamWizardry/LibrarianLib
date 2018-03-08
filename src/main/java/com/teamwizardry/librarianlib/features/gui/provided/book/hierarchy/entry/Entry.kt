@@ -8,7 +8,6 @@ import com.teamwizardry.librarianlib.features.gui.provided.book.ComponentEntryPa
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.IBookElement
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
-import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.category.Category
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.criterion.ICriterion
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.criterion.game.EntryUnlockedEvent
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.page.Page
@@ -23,7 +22,7 @@ import java.awt.Color
  * @author WireSegal
  * Created at 10:19 PM on 2/17/18.
  */
-class Entry(val category: Category, rl: String, json: JsonObject) : IBookElement {
+class Entry(override val bookParent: Book, parentSheet: String, parentOuter: Color, parentBinding: Color, rl: String, json: JsonObject) : IBookElement {
 
     val pages: List<Page>
     val titleKey: String
@@ -38,31 +37,26 @@ class Entry(val category: Category, rl: String, json: JsonObject) : IBookElement
 
     var isValid = false
 
-    override val bookParent: IBookElement?
-        get() = category
-
     init {
         ENTRIES[ResourceLocation(rl)] = this
 
         val pages = mutableListOf<Page>()
-        val baseKey = category.book.location.resourceDomain + "." +
-                category.book.location.resourcePath + "." +
+        val baseKey = bookParent.location.resourceDomain + "." +
+                bookParent.location.resourcePath + "." +
                 rl.replace("^.*/(?=\\w+)".toRegex(), "")
         var titleKey = baseKey + ".title"
         var descKey = baseKey + ".description"
         var icon: JsonElement = JsonObject()
         var criterion: ICriterion? = null
-        var sheet: String = category.sheet
-        var outerColor: Color = category.outerColor
-        var bindingColor: Color = category.bindingColor
+        var sheet: String = parentSheet
+        var outerColor: Color = parentOuter
+        var bindingColor: Color = parentBinding
         try {
             if (json.has("title"))
                 titleKey = json.getAsJsonPrimitive("title").asString
             if (json.has("description"))
                 descKey = json.getAsJsonPrimitive("description").asString
             icon = json.get("icon")
-            val allPages = json.getAsJsonArray("content")
-            allPages.mapNotNullTo(pages) { Page.fromJson(this, it) }
             if (json.has("criteria"))
                 criterion = ICriterion.fromJson(json.get("criteria"))
 
@@ -81,7 +75,6 @@ class Entry(val category: Category, rl: String, json: JsonObject) : IBookElement
             LibrarianLog.error(exception, "Failed trying to parse an entry component")
         }
 
-        this.pages = pages
         this.titleKey = titleKey
         this.descKey = descKey
         this.icon = icon
@@ -89,6 +82,19 @@ class Entry(val category: Category, rl: String, json: JsonObject) : IBookElement
         this.sheet = sheet
         this.outerColor = outerColor
         this.bindingColor = bindingColor
+
+        if (isValid) {
+            try {
+                isValid = false
+                val allPages = json.getAsJsonArray("content")
+                allPages.mapNotNullTo(pages) { Page.fromJson(this, it) }
+                isValid = pages.isNotEmpty()
+            } catch (exception: Exception) {
+                LibrarianLog.error(exception, "Failed trying to parse an entry component")
+            }
+        }
+
+        this.pages = pages
     }
 
     fun isUnlocked(player: EntityPlayer): Boolean {

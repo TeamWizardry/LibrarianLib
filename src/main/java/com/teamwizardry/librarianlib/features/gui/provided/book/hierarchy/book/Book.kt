@@ -64,8 +64,8 @@ open class Book(val location: ResourceLocation) : IBookElement {
             return searchCache
         }
 
-    final override val bookParent: IBookElement?
-        get() = null
+    final override val bookParent: Book
+        get() = this
 
     init {
         allBooks.add(this)

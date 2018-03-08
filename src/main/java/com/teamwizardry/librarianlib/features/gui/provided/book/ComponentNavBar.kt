@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.IBookElement
+import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
 import com.teamwizardry.librarianlib.features.sprite.Sprite
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.resources.I18n
@@ -122,7 +123,7 @@ class ComponentNavBar(private val book: IBookGui, posX: Int, posY: Int, width: I
 
     class ElementWithPage(private val element: IBookElement, private val page: Int) : IBookElement {
 
-        override val bookParent: IBookElement?
+        override val bookParent: Book
             get() = element.bookParent
 
         override val heldElement

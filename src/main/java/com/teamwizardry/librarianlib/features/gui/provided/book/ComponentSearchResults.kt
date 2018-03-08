@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.IBookElement
+import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.I18n
 import net.minecraft.util.text.TextFormatting
@@ -19,7 +20,7 @@ class ComponentSearchResults(private val book: IBookGui) : NavBarHolder(16, 16, 
 
     private var results: List<ISearchAlgorithm.Result>? = mutableListOf()
 
-    override val bookParent: IBookElement?
+    override val bookParent: Book
         get() = book.book
 
     init {

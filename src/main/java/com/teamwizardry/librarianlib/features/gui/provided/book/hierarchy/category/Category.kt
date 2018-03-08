@@ -35,7 +35,7 @@ class Category(val book: Book, json: JsonObject) : IBookElement {
     val isSingleEntry: Boolean
         get() = entries.size == 1
 
-    override val bookParent: IBookElement?
+    override val bookParent: Book
         get() = book
 
     init {
@@ -54,13 +54,6 @@ class Category(val book: Book, json: JsonObject) : IBookElement {
             icon = json.get("icon")
             if (json.has("color"))
                 color = Book.colorFromJson(json.get("color"))
-            val allEntries = json.getAsJsonArray("entries")
-            for (entryJson in allEntries) {
-                val parsable = Book.getJsonFromLink(entryJson.asString)
-                val entry = Entry(this, entryJson.asString, parsable!!.asJsonObject)
-                if (entry.isValid)
-                    entries.add(entry)
-            }
 
             if (json.has("style")) {
                 val obj = json.getAsJsonObject("style")
@@ -72,8 +65,15 @@ class Category(val book: Book, json: JsonObject) : IBookElement {
                     bindingColor = Book.colorFromJson(obj.get("binding"))
             }
 
-            if (!entries.isEmpty())
-                isValid = true
+            val allEntries = json.getAsJsonArray("entries")
+            for (entryJson in allEntries) {
+                val parsable = Book.getJsonFromLink(entryJson.asString)
+                val entry = Entry(book, sheet, outerColor, bindingColor, entryJson.asString, parsable!!.asJsonObject)
+                if (entry.isValid)
+                    entries.add(entry)
+            }
+
+            isValid = entries.isNotEmpty()
         } catch (exception: Exception) {
             LibrarianLog.error(exception, "Failed trying to parse a category component")
         }
