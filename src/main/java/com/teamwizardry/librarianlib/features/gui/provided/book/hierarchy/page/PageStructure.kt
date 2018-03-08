@@ -11,16 +11,15 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 
-class PageStructure(override val entry: Entry, `object`: JsonObject) : Page {
+class PageStructure(override val entry: Entry, element: JsonObject) : Page {
 
-    private val structureName: String
+    private val structureName: String = element.getAsJsonPrimitive("name").asString
     private val structure: RenderableStructure?
 
     override val searchableStrings: Collection<String>?
         get() = mutableListOf(structureName)
 
     init {
-        structureName = `object`.getAsJsonPrimitive("name").asString
         structure = StructureCacheRegistry.getStructureOrAdd(structureName)
     }
 
