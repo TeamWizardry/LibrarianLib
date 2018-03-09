@@ -36,7 +36,7 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
 
             var row = -1
             var column = -1
-            for (i in 1 until recipe.ingredients.size + 1) {
+            for (i in 1 until recipe.ingredients.size) {
                 val ingredient = ghostRecipe.get(i)
 
                 val x = (-8 + size.x / 2.0 - 24).toInt()
