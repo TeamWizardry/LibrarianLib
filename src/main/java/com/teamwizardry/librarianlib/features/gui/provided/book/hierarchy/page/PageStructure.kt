@@ -15,18 +15,14 @@ import net.minecraftforge.fml.relauncher.SideOnly
 class PageStructure(override val entry: Entry, element: JsonObject) : Page {
 
     private val structureName: String = element.getAsJsonPrimitive("name").asString
-    private val structure: RenderableStructure?
+    private var structure: () -> RenderableStructure? = StructureCacheRegistry.getPromise(structureName)
     private val subtext = TranslationHolder.fromJson(element.get("subtext"))
 
     override val searchableStrings: Collection<String>?
         get() = mutableListOf(structureName)
 
-    init {
-        structure = StructureCacheRegistry.getStructureOrAdd(structureName)
-    }
-
     @SideOnly(Side.CLIENT)
     override fun createBookComponents(book: IBookGui, size: Vec2d): List<GuiComponent> {
-        return mutableListOf<GuiComponent>(ComponentCachedStructure(0, 0, size.xi, size.yi, structure, subtext))
+        return mutableListOf<GuiComponent>(ComponentCachedStructure(0, 0, size.xi, size.yi, structure(), subtext))
     }
 }
