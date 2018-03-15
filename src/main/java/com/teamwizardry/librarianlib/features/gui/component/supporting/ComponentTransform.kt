@@ -33,7 +33,7 @@ class ComponentTransform {
     var translateZ = 0.0
 
     /**
-     * The rotation component of the transform
+     * The rotation component of the transform in radians
      */
     var rotate = 0.0
 
