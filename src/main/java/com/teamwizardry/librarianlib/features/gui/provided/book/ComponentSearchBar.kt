@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.provided.book.ComponentTextField.TextEditEvent
 import net.minecraft.client.Minecraft
 
-class ComponentSearchBar(book: IBookGui, id: Int, onType: ((String) -> Unit)?) : ComponentBookMark(book, book.searchIconSprite, id) {
+class ComponentSearchBar(book: IBookGui, id: Int, onType: ((String) -> Unit)?) : ComponentBookMark(book, book.searchIconSprite, id, -8, 1) {
 
     private val text = ComponentTextField(Minecraft.getMinecraft().fontRenderer,
             2, 1, size.xi - 44 - 2 * book.searchIconSprite.width, Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT + 2)
