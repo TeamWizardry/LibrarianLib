@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.provided.book.ComponentRecipe
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
+import com.teamwizardry.librarianlib.features.gui.provided.book.TranslationHolder
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.util.ResourceLocation
@@ -13,7 +14,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
 class PageRecipe(override val entry: Entry, jsonElement: JsonObject) : Page {
 
     private val recipes: List<ResourceLocation>
-    private val subtext = PageText.TranslationHolder.fromJson(jsonElement.get("subtext"))
+    private val subtext = TranslationHolder.fromJson(jsonElement.get("subtext"))
 
     init {
         val recipeObj = jsonElement.get("recipe") ?: jsonElement.get("recipes")
@@ -27,6 +28,6 @@ class PageRecipe(override val entry: Entry, jsonElement: JsonObject) : Page {
 
     @SideOnly(Side.CLIENT)
     override fun createBookComponents(book: IBookGui, size: Vec2d): List<GuiComponent> {
-        return mutableListOf<GuiComponent>(ComponentRecipe(0, 0, size.xi, size.yi, book.book.bookColor, recipes, book.backSpritePressed, subtext))
+        return mutableListOf<GuiComponent>(ComponentRecipe(0, 0, size.xi, size.yi, book.book.bookColor, recipes, book.processArrow, subtext))
     }
 }

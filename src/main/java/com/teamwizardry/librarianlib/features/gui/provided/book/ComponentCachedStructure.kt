@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.components.ComponentText
 import com.teamwizardry.librarianlib.features.gui.provided.book.structure.RenderableStructure
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.Minecraft
@@ -15,7 +16,7 @@ import net.minecraft.util.math.MathHelper
  * Property of Demoniaque.
  * All rights reserved.
  */
-class ComponentCachedStructure(x: Int, y: Int, width: Int, height: Int, structure: RenderableStructure?) : ComponentAnimatableVoid(x, y, width, height) {
+class ComponentCachedStructure(x: Int, y: Int, width: Int, height: Int, structure: RenderableStructure?, subtext: TranslationHolder?) : ComponentAnimatableVoid(x, y, width, height) {
 
     private var dragging = false
     private var prevPos = Vec2d.ZERO
@@ -106,6 +107,13 @@ class ComponentCachedStructure(x: Int, y: Int, width: Int, height: Int, structur
                     GlStateManager.popMatrix()
                 }
             }
+        }
+
+        if (subtext != null) {
+            val text = ComponentText(size.xi / 2, size.yi * 3 / 4, ComponentText.TextAlignH.CENTER, ComponentText.TextAlignV.TOP)
+            text.text.setValue(subtext.toString())
+            text.wrap.setValue(size.xi * 3 / 4)
+            add(text)
         }
     }
 }

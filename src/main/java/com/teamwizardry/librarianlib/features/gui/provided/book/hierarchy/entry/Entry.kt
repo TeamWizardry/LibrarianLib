@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.provided.book.ComponentEntryPage
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
+import com.teamwizardry.librarianlib.features.gui.provided.book.TranslationHolder
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.IBookElement
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.criterion.ICriterion
@@ -25,8 +26,8 @@ import java.awt.Color
 class Entry(override val bookParent: Book, parentSheet: String, parentOuter: Color, parentBinding: Color, rl: String, json: JsonObject) : IBookElement {
 
     val pages: List<Page>
-    val titleKey: String
-    val descKey: String
+    val title: TranslationHolder?
+    val desc: TranslationHolder?
     val icon: JsonElement
 
     val criterion: ICriterion?
@@ -44,8 +45,8 @@ class Entry(override val bookParent: Book, parentSheet: String, parentOuter: Col
         val baseKey = bookParent.location.resourceDomain + "." +
                 bookParent.location.resourcePath + "." +
                 rl.replace("^.*/(?=\\w+)".toRegex(), "")
-        var titleKey = baseKey + ".title"
-        var descKey = baseKey + ".description"
+        var title: TranslationHolder? = TranslationHolder(baseKey + ".title")
+        var desc: TranslationHolder? = TranslationHolder(baseKey + ".description")
         var icon: JsonElement = JsonObject()
         var criterion: ICriterion? = null
         var sheet: String = parentSheet
@@ -53,9 +54,9 @@ class Entry(override val bookParent: Book, parentSheet: String, parentOuter: Col
         var bindingColor: Color = parentBinding
         try {
             if (json.has("title"))
-                titleKey = json.getAsJsonPrimitive("title").asString
+                title = TranslationHolder.fromJson(json.get("title"))
             if (json.has("description"))
-                descKey = json.getAsJsonPrimitive("description").asString
+                desc = TranslationHolder.fromJson(json.get("description"))
             icon = json.get("icon")
             if (json.has("criteria"))
                 criterion = ICriterion.fromJson(json.get("criteria"))
@@ -75,8 +76,8 @@ class Entry(override val bookParent: Book, parentSheet: String, parentOuter: Col
             LibrarianLog.error(exception, "Failed trying to parse an entry component")
         }
 
-        this.titleKey = titleKey
-        this.descKey = descKey
+        this.title = title
+        this.desc = desc
         this.icon = icon
         this.criterion = criterion
         this.sheet = sheet

@@ -17,6 +17,7 @@ public interface ClientRunnable {
      * <p>
      * Because the SAM of {@link ClientRunnable} is {@link SideOnly},
      * any {@link SideOnly} client code is safe to have inside.
+     * This only works for Kotlin.
      *
      * @param runnable A {@link ClientRunnable}.
      */
@@ -29,6 +30,7 @@ public interface ClientRunnable {
      * <p>
      * Because the SAM of {@link ClientSupplier} is {@link SideOnly},
      * any {@link SideOnly} client code is safe to have inside.
+     * This only works for Kotlin.
      *
      * @param supplier An {@link ClientSupplier} that produces an object of type {@link T}.
      * @param <T>      The type the supplier creates.

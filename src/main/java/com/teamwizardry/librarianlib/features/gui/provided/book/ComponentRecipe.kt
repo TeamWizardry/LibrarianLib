@@ -5,7 +5,6 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.Hook
 import com.teamwizardry.librarianlib.features.gui.components.ComponentStack
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
-import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.page.PageText
 import com.teamwizardry.librarianlib.features.sprite.Sprite
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
@@ -23,7 +22,7 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.GL_SMOOTH
 import java.awt.Color
 
-class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: Color, keys: List<ResourceLocation>, arrow: Sprite, subtext: PageText.TranslationHolder?) : GuiComponent(posX, posY, width, height) {
+class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: Color, keys: List<ResourceLocation>, arrow: Sprite, subtext: TranslationHolder?) : GuiComponent(posX, posY, width, height) {
 
     var time = 0
 
@@ -71,8 +70,7 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
                 GlStateManager.enableAlpha()
                 GlStateManager.translate(
                         (size.x / 2.0 + arrow.width / 2.0 + 16.0).toInt().toFloat(), (size.y / 2.0 + arrow.height / 2.0 - 8 + 1).toInt().toFloat(), 0f)
-                GlStateManager.rotate(180f, 0f, 0f, 1f)
-                GlStateManager.color(1f, 0.5f, 1f, 1f)
+                GlStateManager.color(0.25f, 0.25f, 0.25f, 1f)
                 arrow.bind()
                 arrow.draw(event.partialTicks.toInt(), 0f, 0f)
                 GlStateManager.popMatrix()
@@ -132,13 +130,13 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
                 GlStateManager.popMatrix()
                 RenderHelper.enableStandardItemLighting()
             }
+        }
 
-            if (subtext != null) {
-                val text = ComponentText(size.xi / 2, size.yi * 3 / 4, ComponentText.TextAlignH.CENTER, ComponentText.TextAlignV.TOP)
-                text.text.setValue(subtext.toString())
-                text.wrap.setValue(size.xi * 3 / 4)
-                add(text)
-            }
+        if (subtext != null) {
+            val text = ComponentText(size.xi / 2, size.yi * 3 / 4, ComponentText.TextAlignH.CENTER, ComponentText.TextAlignV.TOP)
+            text.text.setValue(subtext.toString())
+            text.wrap.setValue(size.xi * 3 / 4)
+            add(text)
         }
     }
 
