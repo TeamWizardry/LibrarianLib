@@ -107,7 +107,7 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
 
         val render = IBookGui.getRendererFor(icon, Vec2d(16.0, 16.0))
 
-        indexButton.BUS.hook(GuiComponentEvents.PostDrawEvent::class.java) { render() }
+        indexButton.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) { render() }
 
         return indexButton
     }

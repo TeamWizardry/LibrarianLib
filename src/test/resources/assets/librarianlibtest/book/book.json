@@ -1,0 +1,18 @@
+{
+  "title": "Book Title",
+  "subtitle": "Book Subtitle",
+  "color": "0x000000",
+  "binding": "0x808080",
+  "highlight": "0xFFFFFF",
+  "categories": [
+    {
+      "title": "A category",
+      "icon": "librarianlibtest:particles/glow",
+      "description": "A description",
+      "entries": [
+        "librarianlibtest:example",
+        "librarianlibtest:recipes"
+      ]
+    }
+  ]
+}

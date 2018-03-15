@@ -28,7 +28,7 @@ class ComponentCategoryButton(posX: Int, posY: Int, width: Int, height: Int, boo
         // ------- BUTTON RENDERING AND ANIMATION ------- //
         val iconMask = IBookGui.getRendererFor(icon, Vec2d(24.0, 24.0), true)
 
-        BUS.hook(GuiComponentEvents.PostDrawEvent::class.java) {
+        BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
             GlStateManager.color(0f, 0f, 0f)
             iconMask()
             GlStateManager.color(1f, 1f, 1f)
@@ -100,7 +100,7 @@ class ComponentCategoryButton(posX: Int, posY: Int, width: Int, height: Int, boo
 
         val wipeColor = category.color
 
-        circleWipe.BUS.hook(GuiComponentEvents.PostDrawEvent::class.java) {
+        circleWipe.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
             GlStateManager.color(wipeColor.red / 255f, wipeColor.green / 255f, wipeColor.blue / 255f)
             GlStateManager.enableAlpha()
             GlStateManager.disableCull()

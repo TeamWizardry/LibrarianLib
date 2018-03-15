@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
+import com.google.gson.JsonSyntaxException
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
@@ -17,6 +18,7 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.awt.Color
+import java.io.FileNotFoundException
 
 /**
  * @author WireSegal
@@ -24,7 +26,7 @@ import java.awt.Color
  */
 @Suppress("LeakingThis")
 open class Book(val location: ResourceLocation) : IBookElement {
-    constructor(name: String) : this(ResourceLocation(currentModId, name))
+    constructor(name: String) : this(makeResource(name))
 
     open var categories: List<Category> = listOf()
     open var headerKey: String = ""
@@ -77,8 +79,11 @@ open class Book(val location: ResourceLocation) : IBookElement {
         isValid = false
         try {
             val jsonElement = getJsonFromLink(location)
-            if (jsonElement == null || !jsonElement.isJsonObject)
-                return
+            if (jsonElement == null)
+                throw FileNotFoundException(location.toString())
+            else if (!jsonElement.isJsonObject)
+                throw JsonSyntaxException(location.toString())
+
             val json = jsonElement.asJsonObject
             bookColor = if (json.has("color"))
                 colorFromJson(json.get("color"))
@@ -130,6 +135,11 @@ open class Book(val location: ResourceLocation) : IBookElement {
     }
 
     companion object {
+
+        private fun makeResource(str: String): ResourceLocation {
+            val resource = ResourceLocation(str)
+            return ResourceLocation(currentModId, resource.resourcePath)
+        }
 
         var hasEverReloaded = false
         private val allBooks = mutableListOf<Book>()

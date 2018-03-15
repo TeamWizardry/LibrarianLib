@@ -1,0 +1,19 @@
+{
+  "title": "Recipes",
+  "icon": {
+    "item": "crafting_table",
+    "data": 0
+  },
+  "description": "Examples of recipe pages",
+  "content": [
+    {
+      "type": "recipe",
+      "recipe": "minecraft:cake"
+    },
+    {
+      "type": "recipe",
+      "recipes": ["minecraft:cake", "minecraft:black_bed"],
+      "subtext": "Some subtext"
+    }
+  ]
+}

@@ -4,8 +4,8 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.Hook
 import com.teamwizardry.librarianlib.features.gui.components.ComponentStack
-import com.teamwizardry.librarianlib.features.kotlin.x
-import com.teamwizardry.librarianlib.features.kotlin.y
+import com.teamwizardry.librarianlib.features.gui.components.ComponentText
+import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.page.PageText
 import com.teamwizardry.librarianlib.features.sprite.Sprite
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
@@ -23,7 +23,7 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.GL_SMOOTH
 import java.awt.Color
 
-class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: Color, keys: List<ResourceLocation>, arrow: Sprite) : GuiComponent(posX, posY, width, height) {
+class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: Color, keys: List<ResourceLocation>, arrow: Sprite, subtext: PageText.TranslationHolder?) : GuiComponent(posX, posY, width, height) {
 
     var time = 0
 
@@ -37,20 +37,22 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
 
     @Hook
     fun tick(e: GuiComponentEvents.ComponentTickEvent) {
-        if (!GuiScreen.isShiftKeyDown())
+        if (!GuiScreen.isShiftKeyDown() && isVisible)
             time++
     }
 
     init {
-
         if (recipes.isNotEmpty()) {
             val output = ComponentStack(
                     (size.x / 2.0 - 8 + 40).toInt(), (size.y / 2.0 - 8).toInt() - 8)
             output.stack.func { recipe.recipeOutput }
             add(output)
 
+            val x = (-8 + size.x / 2.0 - 24.0 - 16.toDouble()).toInt()
+            val y = (-8 + size.y / 2.0 - 16.toDouble() - 8.0).toInt()
+
             for (row in 0 until 3) for (column in 0 until 3) {
-                val stack = ComponentStack(x + row * 16, y + column * 16)
+                val stack = ComponentStack(x + row * 16, y + column * 16 + (column * 0.5).toInt())
 
                 add(stack)
 
@@ -59,7 +61,7 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
                     if (stacks.isEmpty())
                         ItemStack.EMPTY
                     else
-                        stacks[MathHelper.floor(time / 30.0f) % stacks.size]
+                        stacks[MathHelper.floor(time / 60.0f) % stacks.size]
                 }
             }
 
@@ -84,8 +86,6 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
                 GlStateManager.disableTexture2D()
                 GlStateManager.shadeModel(GL_SMOOTH)
 
-                val x = (-8 + size.x / 2.0 - 24.0 - 16.toDouble()).toInt()
-                val y = (-8 + size.y / 2.0 - 16.toDouble() - 8.0).toInt()
                 val bandWidth = 1
                 val excess = 6
 
@@ -132,6 +132,13 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
                 GlStateManager.popMatrix()
                 RenderHelper.enableStandardItemLighting()
             }
+
+            if (subtext != null) {
+                val text = ComponentText(size.xi / 2, size.yi * 3 / 4, ComponentText.TextAlignH.CENTER, ComponentText.TextAlignV.TOP)
+                text.text.setValue(subtext.toString())
+                text.wrap.setValue(size.xi * 3 / 4)
+                add(text)
+            }
         }
     }
 
@@ -139,18 +146,12 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
         val table = Array(9) { Ingredient.EMPTY }
 
         val actualWidth = if (recipe is IShapedRecipe) recipe.recipeWidth else 3
-        var slotPosition = 1
         val iterator = recipe.ingredients.iterator()
 
-        for (rowAt in 0 until 3) {
-            for (columnAt in 0 until actualWidth) {
-                if (!iterator.hasNext()) return table
+        for (column in 0 until 3) for (row in 0 until actualWidth) {
+            if (!iterator.hasNext()) return table
 
-                table[slotPosition++] = iterator.next()
-            }
-
-            if (actualWidth < 3)
-                slotPosition += 3 - actualWidth
+            table[row * 3 + column + 3 - actualWidth] = iterator.next()
         }
 
         return table

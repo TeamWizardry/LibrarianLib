@@ -50,8 +50,7 @@ abstract class LoggerBase(name: String) {
     }
 
     fun error(e: Exception, message: String, vararg args: Any?) {
-        logger.log(Level.ERROR, String.format(message, *processFormatting(args)))
-        e.printStackTrace()
+        logger.log(Level.ERROR, String.format(message, *processFormatting(args)), e)
     }
 
     fun warn(message: String, vararg args: Any?) {

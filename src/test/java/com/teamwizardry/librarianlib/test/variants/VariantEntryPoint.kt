@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.test.variants
 import com.teamwizardry.librarianlib.core.common.RecipeGeneratorHandler
 import com.teamwizardry.librarianlib.features.base.block.*
 import com.teamwizardry.librarianlib.features.base.item.*
+import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
 import com.teamwizardry.librarianlib.features.kotlin.sendSpamlessMessage
 import com.teamwizardry.librarianlib.test.module.BlockModule
 import com.teamwizardry.librarianlib.test.testcore.TestEntryPoint
@@ -110,6 +111,8 @@ object VariantEntryPoint : TestEntryPoint {
                 defaultSaplingBehavior(worldIn, pos, state, rand, wood, leaves)
             }
         }
+
+        ItemModBook("book", Book("librarianlibtest:book"))
     }
 
     override fun init(event: FMLInitializationEvent) {
