@@ -42,6 +42,7 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
     override var backSprite: Sprite = guideBookSheet.getSprite("arrow_back", 18, 10)
     override var homeSpritePressed: Sprite = guideBookSheet.getSprite("arrow_home_pressed", 18, 9)
     override var homeSprite: Sprite = guideBookSheet.getSprite("arrow_home", 18, 9)
+    override var processArrow: Sprite = guideBookSheet.getSprite("process_arrow", 18, 9)
 
     var bookmarkID: Int = 0
     override val mainBookComponent: ComponentSprite
@@ -129,6 +130,7 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
             backSprite = guideBookSheet.getSprite("arrow_back", 18, 10)
             homeSpritePressed = guideBookSheet.getSprite("arrow_home_pressed", 18, 9)
             homeSprite = guideBookSheet.getSprite("arrow_home", 18, 9)
+            processArrow = guideBookSheet.getSprite("process_arrow", 18, 9)
             mainBookComponent.sprite = pageSprite
             paperComponent.sprite = paperSprite
             bindingComponent.sprite = bindingSprite

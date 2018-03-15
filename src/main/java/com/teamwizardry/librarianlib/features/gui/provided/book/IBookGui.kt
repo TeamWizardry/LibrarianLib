@@ -73,6 +73,8 @@ interface IBookGui {
 
     val titleBarSprite: Sprite
 
+    val processArrow: Sprite
+
     fun updateTextureData(sheet: String, outerColor: Color, bindingColor: Color)
 
     fun actualElement(): IBookElement? {

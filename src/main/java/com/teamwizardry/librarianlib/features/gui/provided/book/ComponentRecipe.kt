@@ -70,8 +70,7 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
                 GlStateManager.enableAlpha()
                 GlStateManager.translate(
                         (size.x / 2.0 + arrow.width / 2.0 + 16.0).toInt().toFloat(), (size.y / 2.0 + arrow.height / 2.0 - 8 + 1).toInt().toFloat(), 0f)
-                GlStateManager.rotate(180f, 0f, 0f, 1f)
-                GlStateManager.color(1f, 0.5f, 1f, 1f)
+                GlStateManager.color(0.25f, 0.25f, 0.25f, 1f)
                 arrow.bind()
                 arrow.draw(event.partialTicks.toInt(), 0f, 0f)
                 GlStateManager.popMatrix()
