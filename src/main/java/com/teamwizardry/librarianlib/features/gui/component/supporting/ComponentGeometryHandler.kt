@@ -94,7 +94,9 @@ open class ComponentGeometryHandler(private val component: GuiComponent) {
         val transformPos = transformFromParentContext(mousePos)
         this.mouseOver = false
 
-        if (component.isVisible) {
+        if (!component.isVisible || component.clipping.isPointClipped(transformPos)) {
+            this.propagateClippedMouseOver()
+        } else {
             component.relationships.components.asReversed().forEach { child ->
                 child.geometry.calculateMouseOver(transformPos)
                 if (mouseOver) {
@@ -103,13 +105,16 @@ open class ComponentGeometryHandler(private val component: GuiComponent) {
                 if (child.mouseOver) {
                     mouseOver = true // mouseover upward transfer
                 }
-
             }
 
             mouseOver = mouseOver || (shouldCalculateOwnHover && calculateOwnHover(transformPos))
         }
         this.mouseOver = component.BUS.fire(GuiComponentEvents.MouseOverEvent(component, transformPos, this.mouseOver)).isOver
         this.mouseOverNoOcclusion = this.mouseOver
+    }
+
+    private fun propagateClippedMouseOver() {
+        component.relationships.components.forEach { child -> child.geometry.propagateClippedMouseOver() }
     }
 
     /**

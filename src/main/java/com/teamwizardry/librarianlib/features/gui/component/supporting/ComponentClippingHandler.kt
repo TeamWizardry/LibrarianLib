@@ -22,7 +22,8 @@ import org.lwjgl.opengl.GL11
 class ComponentClippingHandler(val component: GuiComponent) {
 
     /**
-     * If true, clip component and its context to within its bounds
+     * If true, clip component and its context to within its bounds. When this is set and both [clippingSprite] and
+     * [customClipping] are `null`, mouseover checks will be clipped.
      */
     var clipToBounds = false
     /**
@@ -30,32 +31,36 @@ class ComponentClippingHandler(val component: GuiComponent) {
      */
     var cornerRadius = 0.0
     /**
-     * If nonzero, draw corners with pixels `N` units in size
+     * If nonzero, draw corners with pixels `N` units in size. Pending implementation this property is ignored when
+     * clipping mouseover checks.
      */
     var cornerPixelSize = 0
 
     /**
      * If nonnull, this sprite is used for clipping. Any pixels that are completely transparent will be masked out.
+     * This method of clipping does not support clipping mouseover checks.
      *
      * If [clippingSprite] is nonnull, it will override this sprite.
      */
     var clippingSprite: ISprite? = null
     /**
      * If nonnull, this function is used for clipping. Any pixels that aren't drawn to will be masked out.
+     * This method of clipping does not support clipping mouseover checks.
      *
-     * !!WARNING!! You absolutely cannot draw to a pixel twice in this function. If you do everything will break in wierd ways.
+     * !!WARNING!! You absolutely cannot draw to a pixel twice in this function. If you do everything will break in weird ways.
+     *
      * !!WARNING!! This method MUST be able to run twice in a frame without any changes to the rendering. The first time creates the mask, the second time deletes it.
      */
     var customClipping: (() -> Unit)? = null
 
     internal fun pushEnable() {
-        if (clipToBounds) {
+        if (clipToBounds || clippingSprite != null || customClipping != null) {
             StencilUtil.push { stencil() }
         }
     }
 
     internal fun popDisable() {
-        if (clipToBounds) {
+        if (clipToBounds || clippingSprite != null || customClipping != null) {
             StencilUtil.pop { stencil() }
         }
     }
@@ -188,6 +193,33 @@ class ComponentClippingHandler(val component: GuiComponent) {
             vb.pos(v + a3 * 0 + b3 * (y + 1)).endVertex()
         }
         Tessellator.getInstance().draw()
+    }
 
+    internal fun isPointClipped(point: Vec2d): Boolean {
+        if(clippingSprite != null || customClipping != null) return false // we can't clip these
+
+        if(clipToBounds) {
+            val size = component.geometry.size
+            if (point.x < 0 || point.x > size.x ||
+                    point.y < 0 || point.y > size.y) {
+                return true
+            }
+
+            if (cornerRadius != 0.0) {
+                if (point.x < cornerRadius && point.y < cornerRadius &&
+                        point.squareDist(vec(cornerRadius, cornerRadius)) > cornerRadius * cornerRadius)
+                    return true
+                if (point.x < cornerRadius && point.y > size.y - cornerRadius &&
+                        point.squareDist(vec(cornerRadius, size.y - cornerRadius)) > cornerRadius * cornerRadius)
+                    return true
+                if (point.x > size.x - cornerRadius && point.y > size.y - cornerRadius &&
+                        point.squareDist(vec(size.x - cornerRadius, size.y - cornerRadius)) > cornerRadius * cornerRadius)
+                    return true
+                if (point.x > size.x - cornerRadius && point.y < cornerRadius &&
+                        point.squareDist(vec(size.x - cornerRadius, cornerRadius)) > cornerRadius * cornerRadius)
+                    return true
+            }
+        }
+        return false
     }
 }
