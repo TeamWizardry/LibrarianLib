@@ -141,7 +141,7 @@ interface IBookGui {
                 val itemRender = Minecraft.getMinecraft().renderItem
                 itemRender.zLevel = 200.0f
 
-                GlStateManager.scale(size.x / 16.0, size.y / 16.0, 0.0)
+                GlStateManager.scale(size.x / 16.0, size.y / 16.0, 1.0)
 
                 val fr = (stack.item.getFontRenderer(stack) ?: Minecraft.getMinecraft().fontRenderer)
                 itemRender.renderItemAndEffectIntoGUI(stack, 0, 0)

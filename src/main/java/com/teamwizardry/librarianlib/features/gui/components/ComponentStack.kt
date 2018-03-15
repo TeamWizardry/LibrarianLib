@@ -23,6 +23,7 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 1
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
         RenderHelper.enableGUIStandardItemLighting()
         GlStateManager.enableRescaleNormal()
+        GlStateManager.pushMatrix()
 
         val stack = this.stack.getValue(this)
         if (stack.isNotEmpty) {
@@ -32,6 +33,8 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 1
 
             val itemRender = Minecraft.getMinecraft().renderItem
             itemRender.zLevel = 200.0f
+
+            GlStateManager.scale(size.xf / 16, size.yf / 16, 1f)
 
             val fr = (stack.item.getFontRenderer(stack) ?: Minecraft.getMinecraft().fontRenderer)
             itemRender.renderItemAndEffectIntoGUI(stack, 0, 0)
@@ -43,6 +46,7 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 1
                 drawTooltip(stack)
         }
 
+        GlStateManager.popMatrix()
         GlStateManager.disableRescaleNormal()
         RenderHelper.enableStandardItemLighting()
     }
