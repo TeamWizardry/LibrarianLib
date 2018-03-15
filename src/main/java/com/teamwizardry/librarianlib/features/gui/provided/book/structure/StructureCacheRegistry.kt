@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.gui.provided.book.structure
 
+import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import net.minecraft.util.ResourceLocation
 
 object StructureCacheRegistry {
@@ -18,6 +19,11 @@ object StructureCacheRegistry {
             addStructure(structure)
 
         toLoad.clear()
+
+        ClientRunnable.registerReloadHandler {
+            for (key in structures.keys)
+                addStructure(key.toString())
+        }
     }
 
     fun addStructure(name: String): RenderableStructure? {
