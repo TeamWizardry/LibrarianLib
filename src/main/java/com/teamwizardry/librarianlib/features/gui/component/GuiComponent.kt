@@ -194,7 +194,7 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      *
      * You should use [addTag] and [removeTag] to modify the tag set.
      */
-    val tagList
+    val tagList: MutableSet<Any>
             by tags::tagList.delegate
 
     /**

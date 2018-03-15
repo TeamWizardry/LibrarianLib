@@ -2,57 +2,64 @@ package com.teamwizardry.librarianlib.features.gui.provided.book
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.Hook
 import com.teamwizardry.librarianlib.features.gui.components.ComponentStack
+import com.teamwizardry.librarianlib.features.kotlin.x
+import com.teamwizardry.librarianlib.features.kotlin.y
 import com.teamwizardry.librarianlib.features.sprite.Sprite
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.recipebook.GhostRecipe
+import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.inventory.Slot
+import net.minecraft.item.ItemStack
 import net.minecraft.item.crafting.IRecipe
 import net.minecraft.item.crafting.Ingredient
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.math.MathHelper
 import net.minecraftforge.common.crafting.IShapedRecipe
 import net.minecraftforge.fml.common.registry.ForgeRegistries
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.GL_SMOOTH
 import java.awt.Color
 
-class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: Color, key: ResourceLocation, arrow: Sprite) : GuiComponent(posX, posY, width, height) {
+class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: Color, keys: List<ResourceLocation>, arrow: Sprite) : GuiComponent(posX, posY, width, height) {
+
+    var time = 0
+
+    val recipes = keys.mapNotNull { ForgeRegistries.RECIPES.getValue(it) }.filterNot { it.isDynamic }
+    val grids = recipes.map { createRecipeGrid(it) }
+
+    val recipe: IRecipe
+        get() = recipes[MathHelper.floor(time / 90f) % recipes.size]
+    val grid: Array<Ingredient>
+        get() = grids[MathHelper.floor(time / 90f) % grids.size]
+
+    @Hook
+    fun tick(e: GuiComponentEvents.ComponentTickEvent) {
+        if (!GuiScreen.isShiftKeyDown())
+            time++
+    }
 
     init {
 
-        val recipe = ForgeRegistries.RECIPES.getValue(key)
-
-        if (recipe != null) {
-            val ghostRecipe = createGhostRecipe(recipe, Minecraft.getMinecraft().player.openContainer.inventorySlots)
-
+        if (recipes.isNotEmpty()) {
             val output = ComponentStack(
                     (size.x / 2.0 - 8 + 40).toInt(), (size.y / 2.0 - 8).toInt() - 8)
-            output.stack.setValue(recipe.recipeOutput)
+            output.stack.func { recipe.recipeOutput }
             add(output)
 
-            var row = -1
-            var column = -1
-            for (i in 0 until recipe.ingredients.size) {
-                val ingredient = ghostRecipe.get(i)
-
-                val x = (-8 + size.x / 2.0 - 24).toInt()
-                val y = (-8 + size.y / 2.0 - 8).toInt()
+            for (row in 0 until 3) for (column in 0 until 3) {
                 val stack = ComponentStack(x + row * 16, y + column * 16)
-                stack.stack.setValue(ingredient.item)
-                add(stack)
-                stack.BUS.hook(GuiComponentEvents.ComponentTickEvent::class.java) {
-                    if (!stack.stack.getValue(stack).isItemEqual(ingredient.item)) {
-                        stack.stack.setValue(ingredient.item)
-                    }
-                }
 
-                if (++row >= 2) {
-                    column++
-                    row = -1
+                add(stack)
+
+                stack.stack.func {
+                    val stacks = grid[row * 3 + column].matchingStacks
+                    if (stacks.isEmpty())
+                        ItemStack.EMPTY
+                    else
+                        stacks[MathHelper.floor(time / 30.0f) % stacks.size]
                 }
             }
 
@@ -128,37 +135,24 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
         }
     }
 
-    private fun createGhostRecipe(recipe: IRecipe, slots: List<Slot>): GhostRecipe {
-        val ghostRecipe = GhostRecipe()
-        val itemstack = recipe.recipeOutput
-        ghostRecipe.recipe = recipe
-        ghostRecipe.addIngredient(Ingredient.fromStacks(itemstack),
-                (size.x - 60).toInt(), (size.y / 2.0 - 32).toInt())
-        val i = 3
-        val j = 3
-        val k = (recipe as? IShapedRecipe)?.recipeWidth ?: i
-        var l = 1
+    private fun createRecipeGrid(recipe: IRecipe): Array<Ingredient> {
+        val table = Array(9) { Ingredient.EMPTY }
+
+        val actualWidth = if (recipe is IShapedRecipe) recipe.recipeWidth else 3
+        var slotPosition = 1
         val iterator = recipe.ingredients.iterator()
 
-        for (i1 in 0 until j) {
-            for (j1 in 0 until k) {
-                if (!iterator.hasNext()) return ghostRecipe
+        for (rowAt in 0 until 3) {
+            for (columnAt in 0 until actualWidth) {
+                if (!iterator.hasNext()) return table
 
-                val ingredient = iterator.next()
-
-                if (ingredient !== Ingredient.EMPTY) {
-                    val slot = slots[l]
-                    ghostRecipe.addIngredient(ingredient, slot.xPos, slot.yPos)
-                }
-
-                ++l
+                table[slotPosition++] = iterator.next()
             }
 
-            if (k < i) {
-                l += i - k
-            }
+            if (actualWidth < 3)
+                slotPosition += 3 - actualWidth
         }
 
-        return ghostRecipe
+        return table
     }
 }

@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.IBookElement
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry
+import com.teamwizardry.librarianlib.features.kotlin.isNotEmpty
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.Sprite
 import net.minecraft.client.Minecraft
@@ -131,21 +132,28 @@ interface IBookGui {
         }
 
         fun renderStack(stack: ItemStack, size: Vec2d) {
-            GlStateManager.pushMatrix()
-            GlStateManager.enableBlend()
-            GlStateManager.enableRescaleNormal()
             RenderHelper.enableGUIStandardItemLighting()
+            GlStateManager.enableRescaleNormal()
 
-            GlStateManager.scale(size.x / 16.0, size.y / 16.0, 0.0)
+            if (stack.isNotEmpty) {
+                GlStateManager.pushMatrix()
 
-            val itemRender = Minecraft.getMinecraft().renderItem
-            itemRender.renderItemAndEffectIntoGUI(stack, 0, 0)
-            itemRender.renderItemOverlays(Minecraft.getMinecraft().fontRenderer, stack, 0, 0)
+                val itemRender = Minecraft.getMinecraft().renderItem
+                itemRender.zLevel = 200.0f
 
-            GlStateManager.enableAlpha()
-            RenderHelper.enableStandardItemLighting()
+                GlStateManager.scale(size.x / 16.0, size.y / 16.0, 0.0)
+
+                val fr = (stack.item.getFontRenderer(stack) ?: Minecraft.getMinecraft().fontRenderer)
+                itemRender.renderItemAndEffectIntoGUI(stack, 0, 0)
+                itemRender.renderItemOverlayIntoGUI(fr, stack, 0, 0, null)
+
+                itemRender.zLevel = 0.0f
+
+                GlStateManager.popMatrix()
+            }
+
             GlStateManager.disableRescaleNormal()
-            GlStateManager.popMatrix()
+            RenderHelper.enableStandardItemLighting()
         }
     }
 }
