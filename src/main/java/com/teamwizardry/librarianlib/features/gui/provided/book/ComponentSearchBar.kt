@@ -15,7 +15,10 @@ class ComponentSearchBar(book: IBookGui, id: Int, onType: ((String) -> Unit)?) :
     init {
 
         if (onType != null)
-            text.BUS.hook(TextEditEvent::class.java) { onType(it.whole) }
+            text.BUS.hook(TextEditEvent::class.java) {
+                slideOutLong()
+                onType(it.whole)
+            }
         text.enabledColor.setValue(book.book.searchTextColor)
         text.selectionColor.setValue(book.book.searchTextHighlight)
         text.cursorColor.setValue(book.book.searchTextCursor)
@@ -35,6 +38,12 @@ class ComponentSearchBar(book: IBookGui, id: Int, onType: ((String) -> Unit)?) :
             if (isForcedOpen) {
                 slideIn()
                 text.isVisible = false
+            }
+        }
+        BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
+            if (isForcedOpen) {
+                slideOutLong()
+                text.isVisible = true
             }
         }
     }
