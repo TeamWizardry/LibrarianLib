@@ -8,6 +8,7 @@ import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.provided.book.ComponentMainIndex
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
+import com.teamwizardry.librarianlib.features.gui.provided.book.TranslationHolder
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.IBookElement
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.category.Category
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry
@@ -29,8 +30,8 @@ open class Book(val location: ResourceLocation) : IBookElement {
     constructor(name: String) : this(makeResource(name))
 
     open var categories: List<Category> = listOf()
-    open var headerKey: String = ""
-    open var subtitleKey: String = ""
+    open var header: TranslationHolder? = null
+    open var subtitle: TranslationHolder? = null
     open var bookColor: Color = Color.WHITE
     open var bindingColor: Color = Color.WHITE
     open var highlightColor: Color = Color.WHITE
@@ -48,8 +49,8 @@ open class Book(val location: ResourceLocation) : IBookElement {
             for (category in categories) {
                 for (entry in category.entries) {
                     val searchBuilder = StringBuilder()
-                    searchBuilder.append(I18n.format(entry.titleKey)).append(' ')
-                            .append(I18n.format(entry.descKey)).append(' ')
+                    searchBuilder.append(entry.title.toString()).append(' ')
+                            .append(entry.desc.toString()).append(' ')
                     for (page in entry.pages) {
                         var searchable = page.searchableKeys
                         if (searchable != null)
@@ -95,8 +96,8 @@ open class Book(val location: ResourceLocation) : IBookElement {
                 bookColor.brighter().brighter()
 
             highlightColor = colorFromJson(json.get("highlight"))
-            headerKey = json.getAsJsonPrimitive("title").asString
-            subtitleKey = json.getAsJsonPrimitive("subtitle").asString
+            header = TranslationHolder.fromJson(json.get("title"))
+            subtitle = TranslationHolder.fromJson(json.get("subtitle"))
 
             textureSheet = if (json.has("texture_sheet"))
                 json.getAsJsonPrimitive("texture_sheet").asString

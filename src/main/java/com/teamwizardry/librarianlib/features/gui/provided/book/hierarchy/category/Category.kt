@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.provided.book.ComponentCategoryPage
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
+import com.teamwizardry.librarianlib.features.gui.provided.book.TranslationHolder
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.IBookElement
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry
@@ -21,8 +22,8 @@ import java.awt.Color
 class Category(val book: Book, json: JsonObject) : IBookElement {
 
     val entries: List<Entry>
-    val titleKey: String
-    val descKey: String
+    val title: TranslationHolder?
+    val desc: TranslationHolder?
     val icon: JsonElement
     val color: Color
 
@@ -39,8 +40,8 @@ class Category(val book: Book, json: JsonObject) : IBookElement {
         get() = book
 
     init {
-        var title = ""
-        var desc = ""
+        var title: TranslationHolder? = null
+        var desc: TranslationHolder? = null
         var icon: JsonElement = JsonObject()
         val entries = mutableListOf<Entry>()
         var color = book.highlightColor
@@ -49,8 +50,8 @@ class Category(val book: Book, json: JsonObject) : IBookElement {
         var bindingColor: Color = book.bindingColor
 
         try {
-            title = json.getAsJsonPrimitive("title").asString
-            desc = json.getAsJsonPrimitive("description").asString
+            title = TranslationHolder.fromJson(json.get("title"))
+            desc = TranslationHolder.fromJson(json.get("description"))
             icon = json.get("icon")
             if (json.has("color"))
                 color = Book.colorFromJson(json.get("color"))
@@ -78,8 +79,8 @@ class Category(val book: Book, json: JsonObject) : IBookElement {
             LibrarianLog.error(exception, "Failed trying to parse a category component")
         }
 
-        this.titleKey = title
-        this.descKey = desc
+        this.title = title
+        this.desc = desc
         this.icon = icon
         this.entries = entries
         this.color = color

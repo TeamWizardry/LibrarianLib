@@ -1,13 +1,11 @@
 package com.teamwizardry.librarianlib.features.gui.provided.book
 
-import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.category.Category
 import com.teamwizardry.librarianlib.features.math.Vec2d
-import com.teamwizardry.librarianlib.features.utilities.client.TooltipHelper
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -15,7 +13,6 @@ import net.minecraft.util.math.MathHelper
 import net.minecraft.util.text.TextFormatting
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.GL_POLYGON_SMOOTH
-import java.util.*
 
 class ComponentCategoryButton(posX: Int, posY: Int, width: Int, height: Int, book: IBookGui, category: Category) : GuiComponent(posX, posY, width, height) {
 
@@ -35,17 +32,9 @@ class ComponentCategoryButton(posX: Int, posY: Int, width: Int, height: Int, boo
         }
 
         render.tooltip.func({
-            val list = ArrayList<String>()
-            TooltipHelper.addToTooltip(list, category.titleKey)
-
-            val desc = category.descKey
-            val used = if (LibrarianLib.PROXY.canTranslate(desc)) desc else desc + "0"
-            if (LibrarianLib.PROXY.canTranslate(used)) {
-                TooltipHelper.addToTooltip(list, used)
-                var i = 0
-                while (LibrarianLib.PROXY.canTranslate(desc + ++i))
-                    TooltipHelper.addToTooltip(list, desc + i)
-            }
+            val list = mutableListOf<String>()
+            category.title?.add(list)
+            category.desc?.addDynamic(list)
 
             for (i in 1 until list.size)
                 list[i] = TextFormatting.GRAY.toString() + list[i]

@@ -13,9 +13,7 @@ import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.Sprite
 import com.teamwizardry.librarianlib.features.sprite.Texture
-import com.teamwizardry.librarianlib.features.utilities.client.TooltipHelper
 import net.minecraft.client.Minecraft
-import net.minecraft.client.resources.I18n
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.text.TextFormatting
 import java.awt.Color
@@ -83,7 +81,7 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
         indexButton.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) { placeInFocus(entry) }
 
         // SUB INDEX PLATE RENDERING
-        val title = I18n.format(entry.titleKey).replace("&", "§")
+        val title = entry.title.toString()
         val icon = entry.icon
 
         val textComponent = ComponentText(20, Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2, ComponentText.TextAlignH.LEFT, ComponentText.TextAlignV.TOP)
@@ -96,9 +94,9 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
         indexButton.BUS.hook(GuiComponentEvents.MouseOutEvent::class.java) { textComponent.text.setValue(TextFormatting.RESET.toString() + title) }
 
         indexButton.render.tooltip.func {
-            val list = ArrayList<String>()
-            TooltipHelper.addToTooltip(list, entry.titleKey)
-            TooltipHelper.addDynamic(list, entry.descKey)
+            val list = mutableListOf<String>()
+            entry.title?.add(list)
+            entry.desc?.addDynamic(list)
 
             for (i in 1 until list.size)
                 list[i] = TextFormatting.GRAY.toString() + list[i]

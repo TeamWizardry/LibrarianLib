@@ -5,7 +5,6 @@ import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.Minecraft
-import net.minecraft.client.resources.I18n
 import java.util.*
 
 class ComponentMainIndex(book: IBookGui) : NavBarHolder(0, 0, book.mainBookComponent.size.xi, book.mainBookComponent.size.yi - 16, book) {
@@ -19,12 +18,11 @@ class ComponentMainIndex(book: IBookGui) : NavBarHolder(0, 0, book.mainBookCompo
 
         val fontRenderer = Minecraft.getMinecraft().fontRenderer
         val componentBannerText = ComponentText(20, 5, ComponentText.TextAlignH.LEFT, ComponentText.TextAlignV.TOP)
-        componentBannerText.text.setValue(I18n.format(book.book.headerKey))
+        componentBannerText.text.setValue(book.book.header.toString())
         componentBannerText.color.setValue(book.book.highlightColor)
 
-        val subText = I18n.format(book.book.subtitleKey)
         val componentBannerSubText = ComponentText(componentBanner.size.xi - 10, 2 + fontRenderer.FONT_HEIGHT, ComponentText.TextAlignH.RIGHT, ComponentText.TextAlignV.TOP)
-        componentBannerSubText.text.setValue(subText)
+        componentBannerSubText.text.setValue(book.book.subtitle.toString())
         componentBannerSubText.unicode.setValue(true)
         componentBannerSubText.color.setValue(book.book.highlightColor)
 

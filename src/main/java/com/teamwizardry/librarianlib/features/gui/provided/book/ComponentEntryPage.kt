@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.features.gui.provided.book
 import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry
-import net.minecraft.client.resources.I18n
 
 
 /**
@@ -14,7 +13,7 @@ class ComponentEntryPage(book: IBookGui, entry: Entry) : NavBarHolder(16, 16, bo
 
     init {
 
-        val title = I18n.format(entry.titleKey)
+        val title = entry.title.toString()
 
         val titleBar = ComponentSprite(book.titleBarSprite,
                 (size.x / 2.0 - book.titleBarSprite.width / 2.0).toInt(),

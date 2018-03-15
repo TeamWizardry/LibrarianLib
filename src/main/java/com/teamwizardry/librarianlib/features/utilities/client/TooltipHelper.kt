@@ -45,13 +45,13 @@ object TooltipHelper {
     }
 
     @JvmStatic
-    fun addDynamic(tooltip: MutableList<String>, desc: String) {
+    fun addDynamic(tooltip: MutableList<String>, desc: String, vararg args: Any?) {
         val used = if (LibrarianLib.PROXY.canTranslate(desc)) desc else desc + "0"
         if (LibrarianLib.PROXY.canTranslate(used)) {
             TooltipHelper.addToTooltip(tooltip, used)
             var i = 0
             while (LibrarianLib.PROXY.canTranslate(desc + ++i))
-                TooltipHelper.addToTooltip(tooltip, desc + i)
+                TooltipHelper.addToTooltip(tooltip, desc + i, *args)
         }
     }
 }

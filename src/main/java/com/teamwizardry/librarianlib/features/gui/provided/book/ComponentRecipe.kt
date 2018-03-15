@@ -5,7 +5,6 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.Hook
 import com.teamwizardry.librarianlib.features.gui.components.ComponentStack
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
-import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.page.PageText
 import com.teamwizardry.librarianlib.features.sprite.Sprite
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
@@ -23,7 +22,7 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.GL_SMOOTH
 import java.awt.Color
 
-class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: Color, keys: List<ResourceLocation>, arrow: Sprite, subtext: PageText.TranslationHolder?) : GuiComponent(posX, posY, width, height) {
+class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: Color, keys: List<ResourceLocation>, arrow: Sprite, subtext: TranslationHolder?) : GuiComponent(posX, posY, width, height) {
 
     var time = 0
 
