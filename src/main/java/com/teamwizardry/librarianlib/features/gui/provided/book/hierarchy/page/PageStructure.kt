@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.provided.book.ComponentCachedStructure
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
+import com.teamwizardry.librarianlib.features.gui.provided.book.TranslationHolder
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry
 import com.teamwizardry.librarianlib.features.gui.provided.book.structure.RenderableStructure
 import com.teamwizardry.librarianlib.features.gui.provided.book.structure.StructureCacheRegistry
@@ -15,6 +16,7 @@ class PageStructure(override val entry: Entry, element: JsonObject) : Page {
 
     private val structureName: String = element.getAsJsonPrimitive("name").asString
     private val structure: RenderableStructure?
+    private val subtext = TranslationHolder.fromJson(element.get("subtext"))
 
     override val searchableStrings: Collection<String>?
         get() = mutableListOf(structureName)
@@ -25,7 +27,6 @@ class PageStructure(override val entry: Entry, element: JsonObject) : Page {
 
     @SideOnly(Side.CLIENT)
     override fun createBookComponents(book: IBookGui, size: Vec2d): List<GuiComponent> {
-        return mutableListOf<GuiComponent>(
-                ComponentCachedStructure(0, 0, size.xi, size.yi, structure))
+        return mutableListOf<GuiComponent>(ComponentCachedStructure(0, 0, size.xi, size.yi, structure, subtext))
     }
 }

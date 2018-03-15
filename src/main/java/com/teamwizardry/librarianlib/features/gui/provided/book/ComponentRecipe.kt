@@ -130,13 +130,13 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
                 GlStateManager.popMatrix()
                 RenderHelper.enableStandardItemLighting()
             }
+        }
 
-            if (subtext != null) {
-                val text = ComponentText(size.xi / 2, size.yi * 3 / 4, ComponentText.TextAlignH.CENTER, ComponentText.TextAlignV.TOP)
-                text.text.setValue(subtext.toString())
-                text.wrap.setValue(size.xi * 3 / 4)
-                add(text)
-            }
+        if (subtext != null) {
+            val text = ComponentText(size.xi / 2, size.yi * 3 / 4, ComponentText.TextAlignH.CENTER, ComponentText.TextAlignV.TOP)
+            text.text.setValue(subtext.toString())
+            text.wrap.setValue(size.xi * 3 / 4)
+            add(text)
         }
     }
 
