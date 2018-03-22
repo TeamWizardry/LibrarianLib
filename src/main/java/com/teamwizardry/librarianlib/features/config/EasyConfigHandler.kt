@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.config
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.core.common.OwnershipHandler
+import com.teamwizardry.librarianlib.features.gui.provided.book.BookTranslationDataEvent
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.currentModId
 import com.teamwizardry.librarianlib.features.kotlin.times
@@ -29,6 +30,25 @@ object EasyConfigHandler {
     private val allIds = mutableSetOf<String>()
     private val toLoad = mutableMapOf<String, File?>()
     private var loaded = false
+
+    init {
+        MinecraftForge.EVENT_BUS.register(this)
+    }
+
+    @SubscribeEvent
+    fun translateConfigValues(e: BookTranslationDataEvent) {
+        if (e.providedData.size() >= 2) {
+            val first = e.providedData.get(0)
+
+            if (first.isJsonPrimitive && first.asString == "config") {
+                val joined = e.providedData.joinToString(".") { it.asString }.removePrefix(first.asString + ".")
+                val field = bookConfigValues[joined]
+                if (field != null) e.stringValue = field.toString()
+            }
+        }
+    }
+
+    private val bookConfigValues: MutableMap<String, Any> = mutableMapOf()
 
     private val allFields: MutableMap<FieldEntry<*>, Pair<String, String>> = mutableMapOf()
     private val toLog: MutableList<Pair<String, String>> = mutableListOf()
@@ -97,7 +117,7 @@ object EasyConfigHandler {
         workingId = modid
 
         val f = configf ?: File(CONFIG_DIR, "$modid.cfg")
-        mappings.put(modid, f)
+        mappings[modid] = f
         val config = Configuration(f)
 
         config.load()
@@ -105,34 +125,45 @@ object EasyConfigHandler {
 
         fieldMapStr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: "", it.comment)
-                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).string)
+            val value = config.get(it.category, it.identifier, it.defaultValue ?: "", it.comment)
+                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).string
+            it.setter(value)
+            bookConfigValues[it.modId + "." + it.identifier] = value
         }
         fieldMapInt.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: 0, it.comment, it.min ?: -Int.MAX_VALUE, it.max ?: Int.MIN_VALUE)
-                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).int)
+            val value = config.get(it.category, it.identifier, it.defaultValue ?: 0, it.comment, it.min ?: -Int.MAX_VALUE, it.max ?: Int.MIN_VALUE)
+                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).int
+            it.setter(value)
+            bookConfigValues[it.modId + "." + it.identifier] = value
         }
         fieldMapBoolean.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: false, it.comment)
-                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).boolean)
+            val value = config.get(it.category, it.identifier, it.defaultValue ?: false, it.comment)
+                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).boolean
+            it.setter(value)
+            bookConfigValues[it.modId + "." + it.identifier] = value
         }
         fieldMapDouble.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: 0.0, it.comment, it.min ?: -Double.MAX_VALUE, it.max ?: Double.MAX_VALUE)
-                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).double)
+            val value = config.get(it.category, it.identifier, it.defaultValue ?: 0.0, it.comment, it.min ?: -Double.MAX_VALUE, it.max ?: Double.MAX_VALUE)
+                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).double
+            it.setter(value)
+            bookConfigValues[it.modId + "." + it.identifier] = value
         }
         fieldMapLong.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            it.setter(config.get(it.category, it.identifier, (it.defaultValue ?: 0L).toString(), it.comment)
-                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).long)
+            val value = config.get(it.category, it.identifier, (it.defaultValue ?: 0L).toString(), it.comment)
+                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).long
+            it.setter(value)
+            bookConfigValues[it.modId + "." + it.identifier] = value
         }
-
         fieldMapStrArr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: arrayOf(), it.comment)
-                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).stringList)
+            val value = config.get(it.category, it.identifier, it.defaultValue ?: arrayOf(), it.comment)
+                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).stringList
+            it.setter(value)
+            bookConfigValues[it.modId + "." + it.identifier] = value
         }
         fieldMapIntArr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
@@ -140,13 +171,17 @@ object EasyConfigHandler {
             val max = if (maxArr.isEmpty()) Int.MAX_VALUE else maxArr[0]
             val minArr = it.min ?: intArrayOf()
             val min = if (minArr.isEmpty()) -Int.MAX_VALUE else minArr[0]
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: intArrayOf(), it.comment, min, max)
-                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).intList)
+            val value = config.get(it.category, it.identifier, it.defaultValue ?: intArrayOf(), it.comment, min, max)
+                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).intList
+            it.setter(value)
+            bookConfigValues[it.modId + "." + it.identifier] = value
         }
         fieldMapBooleanArr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: booleanArrayOf(), it.comment)
-                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).booleanList)
+            val value = config.get(it.category, it.identifier, it.defaultValue ?: booleanArrayOf(), it.comment)
+                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).booleanList
+            it.setter(value)
+            bookConfigValues[it.modId + "." + it.identifier] = value
         }
         fieldMapDoubleArr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
@@ -154,20 +189,24 @@ object EasyConfigHandler {
             val max = if (maxArr.isEmpty()) Double.MAX_VALUE else maxArr[0]
             val minArr = it.min ?: doubleArrayOf()
             val min = if (minArr.isEmpty()) -Double.MAX_VALUE else minArr[0]
-            it.setter(config.get(it.category, it.identifier, it.defaultValue ?: doubleArrayOf(), it.comment, min, max)
-                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).doubleList)
+            val value = config.get(it.category, it.identifier, it.defaultValue ?: doubleArrayOf(), it.comment, min, max)
+                    .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).doubleList
+            it.setter(value)
+            bookConfigValues[it.modId + "." + it.identifier] = value
         }
         fieldMapLongArr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
             val arr = it.defaultValue ?: longArrayOf()
-            it.setter(config.get(it.category, it.identifier, arr.map(Long::toString).toTypedArray(), it.comment)
+            val value = config.get(it.category, it.identifier, arr.map(Long::toString).toTypedArray(), it.comment)
                     .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).stringList.mapIndexed { i, s ->
                 try {
                     s.toLong()
                 } catch (e: NumberFormatException) {
                     if (arr.size > i) arr[i] else 0L
                 }
-            }.toLongArray())
+            }.toLongArray()
+            it.setter(value)
+            bookConfigValues[it.modId + "." + it.identifier] = value
         }
 
 
@@ -240,7 +279,7 @@ object EasyConfigHandler {
 
         val fieldEntry = makeFieldEntry(modid, inst, field, identifier, info)
         target.add(fieldEntry)
-        allFields.put(fieldEntry, name to "${field.declaringClass.typeName}.${field.name}")
+        allFields[fieldEntry] = name to "${field.declaringClass.typeName}.${field.name}"
     }
 
     private inline fun <reified T> makeFieldEntryDefault(modid: String, inst: Any?, field: Field, identifier: String, info: AnnotationInfo): FieldEntry<T> {

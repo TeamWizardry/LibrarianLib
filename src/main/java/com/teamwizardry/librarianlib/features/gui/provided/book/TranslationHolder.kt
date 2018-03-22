@@ -1,11 +1,13 @@
 package com.teamwizardry.librarianlib.features.gui.provided.book
 
+import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.utilities.client.TooltipHelper
+import net.minecraftforge.common.MinecraftForge
 
-class TranslationHolder(val key: String, val args: Array<Any?> = arrayOf()) {
+open class TranslationHolder(private val key: String, private val args: Array<Any?> = arrayOf()) {
 
     override fun toString()
             = LibrarianLib.PROXY.translate(key, *args).replace('&', '§')
@@ -15,12 +17,24 @@ class TranslationHolder(val key: String, val args: Array<Any?> = arrayOf()) {
 
     companion object {
 
+        private class TranslationByLambda(val generator: () -> String) : TranslationHolder("") {
+            override fun toString() = generator()
+        }
+
         fun fromJson(jsonElement: JsonElement?): TranslationHolder? {
             if (jsonElement == null || jsonElement.isJsonNull)
                 return null
 
             try {
                 val arguments = mutableListOf<Any?>()
+
+                if (jsonElement is JsonArray) {
+                    return TranslationByLambda {
+                        val event = BookTranslationDataEvent(jsonElement)
+                        MinecraftForge.EVENT_BUS.post(event)
+                        event.stringValue
+                    }
+                }
 
                 if (jsonElement !is JsonObject)
                     return TranslationHolder(jsonElement.asString)
