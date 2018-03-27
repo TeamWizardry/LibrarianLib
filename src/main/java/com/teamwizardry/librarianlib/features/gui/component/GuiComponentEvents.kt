@@ -111,5 +111,5 @@ object GuiComponentEvents {
     class PreMouseOverEvent(@JvmField val component: GuiComponent, val parentMousePos: Vec2d) : Event()
 
     /** Fired when checking if the mouse is over this component */
-    class MouseOverEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, var isOver: Boolean) : Event()
+    class MouseOverEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, var isOver: Boolean, var isOverNoOcclusion: Boolean) : Event()
 }
