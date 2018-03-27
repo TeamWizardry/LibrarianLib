@@ -24,10 +24,12 @@ open class ComponentGeometryHandler(private val component: GuiComponent) {
         }
     /** [GuiComponent.mouseOver] */
     var mouseOver = false
+        private set
     /**
      * This is like [GuiComponent.mouseOver] except it ignores the occlusion of components at higher z-indices.
      */
     var mouseOverNoOcclusion = false
+        private set
     /**
      * Set this to false to make this component not occlude the mouseOver of components behind it.
      */
