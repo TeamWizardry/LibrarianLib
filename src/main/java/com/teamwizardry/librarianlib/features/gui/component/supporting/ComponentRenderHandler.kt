@@ -129,13 +129,15 @@ class ComponentRenderHandler(private val component: GuiComponent) {
 
         component.BUS.fire(GuiComponentEvents.PreDrawEvent(component, transformedPos, partialTicks))
 
+        GlStateManager.enableTexture2D()
+        GlStateManager.color(1f, 1f, 1f, 1f)
         component.drawComponent(transformedPos, partialTicks)
 
         if (LibrarianLib.DEV_ENVIRONMENT && Minecraft.getMinecraft().renderManager.isDebugBoundingBox) {
-            GlStateManager.pushAttrib()
             GlStateManager.disableTexture2D()
-            GlStateManager.color(1f, 1f, 1f)
-            if (!component.mouseOver) GlStateManager.color(1f, 0f, 1f)
+            GlStateManager.color(1f, 0f, 1f)
+            if (component.geometry.mouseOverNoOcclusion) GlStateManager.color(0.75f, 0.75f, 0.75f)
+            if (component.mouseOver) GlStateManager.color(1f, 1f, 1f)
             val tessellator = Tessellator.getInstance()
             val vb = tessellator.buffer
             vb.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION)
@@ -163,9 +165,9 @@ class ComponentRenderHandler(private val component: GuiComponent) {
             vb.pos(transformedPos.x, transformedPos.y, 0.0).endVertex()
             vb.pos(transformedPos.x, transformedPos.y, big).endVertex()
             tessellator.draw()
-            GlStateManager.popAttrib()
         }
         GlStateManager.enableTexture2D()
+        GlStateManager.color(1f, 1f, 1f, 1f)
 
         GlStateManager.pushAttrib()
 
