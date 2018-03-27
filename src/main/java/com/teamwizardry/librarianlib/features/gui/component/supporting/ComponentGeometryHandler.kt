@@ -114,6 +114,8 @@ open class ComponentGeometryHandler(private val component: GuiComponent) {
     }
 
     private fun propagateClippedMouseOver() {
+        this.mouseOver = false
+        this.mouseOverNoOcclusion = false
         component.relationships.components.forEach { child -> child.geometry.propagateClippedMouseOver() }
     }
 
