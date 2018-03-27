@@ -13,7 +13,13 @@ class EventBus {
     }
 
     fun <E : Event> fire(event: E): E {
-        val clazz = event.javaClass
+        getEventClassList(event.javaClass).forEach { clazz ->
+            fire(event, clazz)
+        }
+        return event
+    }
+
+    private fun fire(event: Event, clazz: Class<*>) {
         if (clazz in hooks) {
             if (event.reversed)
                 hooks[clazz]?.asReversed()?.forEach {
@@ -24,7 +30,6 @@ class EventBus {
                     it.accept(event)
                 }
         }
-        return event
     }
 
     fun <E : Event> hook(clazz: Class<E>, hook: (E) -> Unit) {
@@ -36,5 +41,23 @@ class EventBus {
         if (!hooks.containsKey(clazz))
             hooks.put(clazz, mutableListOf())
         hooks[clazz]?.add(hook as Consumer<Event>)
+    }
+
+    companion object {
+        private val classLists = mutableMapOf<Class<*>, List<Class<*>>>()
+
+        private fun getEventClassList(clazz: Class<*>): Iterable<Class<*>> {
+            return classLists.getOrPut(clazz) {
+                val list = mutableListOf<Class<*>>()
+
+                var c = clazz
+                while(Event::class.java.isAssignableFrom(c)) {
+                    list.add(c)
+                    c = c.superclass ?: break
+                }
+
+                return@getOrPut list
+            }
+        }
     }
 }
