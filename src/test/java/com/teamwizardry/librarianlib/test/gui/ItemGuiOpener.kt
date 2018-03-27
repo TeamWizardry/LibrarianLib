@@ -42,5 +42,6 @@ enum class Guis(val create: () -> GuiScreen) {
     STENCIL_SPRITE({ GuiTestStencilSprite() }),
     STENCIL_MOUSEOVER({ GuiTestClippedMouseOver() }),
     AUTOSIZE({ GuiTestAutoSizeScale() }),
-    SPRITE({ GuiTestSprite() })
+    SPRITE({ GuiTestSprite() }),
+    MOUSE_CLICKS({ GuiTestClickEvents() })
 }

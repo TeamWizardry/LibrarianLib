@@ -30,8 +30,20 @@ object GuiComponentEvents {
     /** Fired whenever the mouse is moved while a button is being pressed */
     class MouseDragEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
 
-    /** Fired when the mouse is clicked within the component */
-    class MouseClickEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
+    /** Fired in addition to any of [MouseClickEvent], [MouseClickOutsideEvent], [MouseClickDragInEvent], or [MouseClickDragOutEvent] */
+    open class MouseClickAnyEvent(@JvmField val component: GuiComponent, val mouseDownPos: Vec2d, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
+
+    /** Fired when the mouse is clicked within the component (mouse goes both down and up inside the component) */
+    class MouseClickEvent(component: GuiComponent, mouseDownPos: Vec2d, mousePos: Vec2d, button: EnumMouseButton) : MouseClickAnyEvent(component, mouseDownPos, mousePos, button)
+
+    /** Fired when the mouse is clicked outside the component (mouse goes both down and up outside the component) */
+    class MouseClickOutsideEvent(component: GuiComponent, mouseDownPos: Vec2d, mousePos: Vec2d, button: EnumMouseButton) : MouseClickAnyEvent(component, mouseDownPos, mousePos, button)
+
+    /** Fired when the mouse is clicked within the component (mouse goes down outside and up inside the component) */
+    class MouseClickDragInEvent(component: GuiComponent, mouseDownPos: Vec2d, mousePos: Vec2d, button: EnumMouseButton) : MouseClickAnyEvent(component, mouseDownPos, mousePos, button)
+
+    /** Fired when the mouse is clicked within the component (mouse goes down inside and up outside the component) */
+    class MouseClickDragOutEvent(component: GuiComponent, mouseDownPos: Vec2d, mousePos: Vec2d, button: EnumMouseButton) : MouseClickAnyEvent(component, mouseDownPos, mousePos, button)
 
     /** Fired when a key is pressed */
     class KeyDownEvent(@JvmField val component: GuiComponent, val key: Char, val keyCode: Int) : EventCancelable()
