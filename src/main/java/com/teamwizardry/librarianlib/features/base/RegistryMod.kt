@@ -4,35 +4,17 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.registry.RegistryNamespaced
 
 
-/**
- * Created by Elad on 2/12/2017.
- */
-abstract class RegistryMod<T> {
+class RegistryMod<T> : Iterable<RegistryMod.RegistryEntry<ResourceLocation, T>> {
     private val registry = RegistryNamespaced<ResourceLocation, T>()
     private var lastId = 0
 
-    fun register(id: ResourceLocation, oath: T): T {
-        registry.register(lastId++, id, oath)
-        return oath
-    }
+    fun register(id: ResourceLocation, value: T) = value.apply { registry.register(lastId++, id, this) }
+    fun getObjectByName(id: ResourceLocation) = registry.getObject(id)
+    fun getObjectById(id: Int) = registry.getObjectById(id)
+    fun getIdFromObject(value: T) = registry.getNameForObject(value)
+    override fun iterator() = RegistryEntry.iterateOverRegistry(registry)
 
-    fun getObjectByName(id: ResourceLocation): T? {
-        return registry.getObject(id)
-    }
-
-    fun getObjectById(id: Int): T? {
-        return registry.getObjectById(id)
-    }
-
-    fun getIdFromObject(oath: T): ResourceLocation? {
-        return registry.getNameForObject(oath)
-    }
-
-    operator fun iterator(): Iterator<RegistryEntry<ResourceLocation, T>> {
-        return RegistryEntry.iterateOverRegistry(registry)
-    }
-
-    data class RegistryEntry<out K, V>(val id: Int, val key: K, val value: V) {
+    data class RegistryEntry<out K, out V>(val id: Int, val key: K, val value: V) {
         companion object {
             fun <K, V> iterateOverRegistry(registry: RegistryNamespaced<K, V>): Iterator<RegistryEntry<K, V>> {
                 return object : Iterator<RegistryEntry<K, V>> {

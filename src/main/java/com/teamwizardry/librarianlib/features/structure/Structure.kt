@@ -27,10 +27,10 @@ open class Structure(loc: ResourceLocation) {
     protected var templateBlocks: List<BlockInfo>? = null
     lateinit var blockAccess: TemplateBlockAccess
         protected set
-    var origin = BlockPos.ORIGIN
-    var min = BlockPos.ORIGIN
+    var origin: BlockPos = BlockPos.ORIGIN
+    var min: BlockPos = BlockPos.ORIGIN
         protected set
-    var max = BlockPos.ORIGIN
+    var max: BlockPos = BlockPos.ORIGIN
         protected set
 
     init {

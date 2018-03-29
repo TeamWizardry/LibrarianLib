@@ -4,8 +4,10 @@
 package com.teamwizardry.librarianlib.features.kotlin
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -47,3 +49,8 @@ val GuiComponent.x
     get() = pos.xi
 val GuiComponent.y
     get() = pos.yi
+
+
+val RenderManager.renderPosX by MethodHandleHelper.delegateForReadOnly<RenderManager, Double>(RenderManager::class.java, "field_78725_b", "renderPosX")
+val RenderManager.renderPosY by MethodHandleHelper.delegateForReadOnly<RenderManager, Double>(RenderManager::class.java, "field_78726_c", "renderPosY")
+val RenderManager.renderPosZ by MethodHandleHelper.delegateForReadOnly<RenderManager, Double>(RenderManager::class.java, "field_78723_d", "renderPosZ")

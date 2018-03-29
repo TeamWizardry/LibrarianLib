@@ -95,7 +95,5 @@ object BlockRenderUtils {
         }
 
         renderQuadsToBuffer(model.getQuads(newState, null, 0L), newState, access, pos, renderPos, buffer, red, green, blue, brightness, alpha)
-
-
     }
 }
