@@ -13,7 +13,8 @@ import org.lwjgl.input.Keyboard
  * Created by TheCodeWarrior
  */
 class ComponentGuiEventHandler(private val component: GuiComponent) {
-    internal var mouseButtonsDown = BooleanArray(EnumMouseButton.values().size)
+    internal var mouseButtonsDownInside = arrayOfNulls<Vec2d?>(EnumMouseButton.values().size)
+    internal var mouseButtonsDownOutside = arrayOfNulls<Vec2d?>(EnumMouseButton.values().size)
     internal var keysDown: MutableMap<Key, Boolean> = HashMap<Key, Boolean>().withDefault({ false })
 
     fun tick() {
@@ -34,7 +35,9 @@ class ComponentGuiEventHandler(private val component: GuiComponent) {
             return
 
         if (component.mouseOver)
-            mouseButtonsDown[button.ordinal] = true
+            mouseButtonsDownInside[button.ordinal] = transformedPos
+        else
+            mouseButtonsDownOutside[button.ordinal] = transformedPos
 
         component.relationships.forEachChild { child ->
             child.guiEventHandler.mouseDown(transformedPos, button)
@@ -50,15 +53,26 @@ class ComponentGuiEventHandler(private val component: GuiComponent) {
     fun mouseUp(mousePos: Vec2d, button: EnumMouseButton) {
         val transformedPos = component.geometry.transformFromParentContext(mousePos)
         if (!component.isVisible) return
-        val wasDown = mouseButtonsDown[button.ordinal]
-        mouseButtonsDown[button.ordinal] = false
+        val posDownInside = mouseButtonsDownInside[button.ordinal]
+        val posDownOutside = mouseButtonsDownOutside[button.ordinal]
+        mouseButtonsDownInside[button.ordinal] = null
+        mouseButtonsDownOutside[button.ordinal] = null
 
         if (component.BUS.fire(GuiComponentEvents.MouseUpEvent(component, transformedPos, button)).isCanceled())
             return
 
-        if (component.mouseOver && wasDown) {
-            component.BUS.fire(GuiComponentEvents.MouseClickEvent(component, transformedPos, button))
-            // don't return here, if a click was handled we should still handle the mouseUp
+        if (component.mouseOver) {
+             if(posDownInside != null) {
+                 component.BUS.fire(GuiComponentEvents.MouseClickEvent(component, posDownInside, transformedPos, button))
+             } else if(posDownOutside != null) {
+                 component.BUS.fire(GuiComponentEvents.MouseClickDragInEvent(component, posDownOutside, transformedPos, button))
+             }
+        } else {
+            if(posDownInside != null) {
+                component.BUS.fire(GuiComponentEvents.MouseClickDragOutEvent(component, posDownInside, transformedPos, button))
+            } else if(posDownOutside != null) {
+                component.BUS.fire(GuiComponentEvents.MouseClickOutsideEvent(component, posDownOutside, transformedPos, button))
+            }
         }
 
         component.relationships.forEachChild { child ->

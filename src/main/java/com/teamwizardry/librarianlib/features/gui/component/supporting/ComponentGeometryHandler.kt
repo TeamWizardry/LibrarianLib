@@ -24,11 +24,25 @@ open class ComponentGeometryHandler(private val component: GuiComponent) {
         }
     /** [GuiComponent.mouseOver] */
     var mouseOver = false
+        private set
+    /**
+     * This is like [GuiComponent.mouseOver] except it ignores the occlusion of components at higher z-indices.
+     */
     var mouseOverNoOcclusion = false
+        private set
+    /**
+     * Set this to false to make this component not occlude the mouseOver of components behind it.
+     */
+    var componentOccludesMouseOver = true
+    /**
+     * Set this to false to make a true mouseOver value for this component not cause the mouseOver of its parent to be
+     * set to true.
+     */
+    var componentPropagatesMouseOverToParent = true
 
     /**
-     * Set whether the element should calculate hovering based on it's bounds as
-     * well as it's children or if it should only calculate based on it's children.
+     * Set whether the element should calculate hovering based on its bounds as
+     * well as its children or if it should only calculate based on its children.
      */
     var shouldCalculateOwnHover = true
 
@@ -93,35 +107,66 @@ open class ComponentGeometryHandler(private val component: GuiComponent) {
         component.BUS.fire(GuiComponentEvents.PreMouseOverEvent(component, mousePos))
         val transformPos = transformFromParentContext(mousePos)
         this.mouseOver = false
+        this.mouseOverNoOcclusion = false
+
+        var occludeChildren = false
+        var occludeSelf = false
 
         if (!component.isVisible || component.clipping.isPointClipped(transformPos)) {
             this.propagateClippedMouseOver()
         } else {
             component.relationships.components.asReversed().forEach { child ->
                 child.geometry.calculateMouseOver(transformPos)
-                if (mouseOver) {
-                    child.mouseOver = false // occlusion
+                if (occludeChildren) {
+                    child.mouseOver = false // occlude the child position
                 }
-                if (child.mouseOver) {
-                    mouseOver = true // mouseover upward transfer
+                if (child.mouseOver && child.geometry.componentOccludesMouseOver) {
+                    // occlude all siblings below this component
+                    occludeChildren = true
+                    if(!child.geometry.componentPropagatesMouseOverToParent) {
+                        // if the component occludes and also doesn't pass the mouseover up the chain, set a flag to
+                        // make the parent component's mouseover occlude
+                        occludeSelf = true
+                    }
+                }
+                if (child.mouseOver && child.geometry.componentPropagatesMouseOverToParent) {
+                    // propagate the mouseOver of children up to this, their parent
+                    mouseOver = true
+                }
+                if (child.geometry.mouseOverNoOcclusion && child.geometry.componentPropagatesMouseOverToParent) {
+                    // propagate the non-occluded mouseover to this component
+                    mouseOverNoOcclusion = true
                 }
             }
 
-            mouseOver = mouseOver || (shouldCalculateOwnHover && calculateOwnHover(transformPos))
+            // don't calculate our own bounding box if the mouse is over a non-propagating, occluding child
+            if (!occludeSelf) {
+                mouseOver = mouseOver || (shouldCalculateOwnHover && calculateOwnHover(mousePos))
+            }
+            // even if this component should be occluded by a child, use calculateOwnHover for mouseOverNoOcclusion
+            mouseOverNoOcclusion = mouseOverNoOcclusion || (shouldCalculateOwnHover && calculateOwnHover(mousePos))
         }
-        this.mouseOver = component.BUS.fire(GuiComponentEvents.MouseOverEvent(component, transformPos, this.mouseOver)).isOver
-        this.mouseOverNoOcclusion = this.mouseOver
+        val event = component.BUS.fire(
+                GuiComponentEvents.MouseOverEvent(component, transformPos, this.mouseOver, this.mouseOverNoOcclusion)
+        )
+        this.mouseOver = event.isOver
+        this.mouseOverNoOcclusion = event.isOverNoOcclusion
     }
 
     private fun propagateClippedMouseOver() {
+        this.mouseOver = false
+        this.mouseOverNoOcclusion = false
         component.relationships.components.forEach { child -> child.geometry.propagateClippedMouseOver() }
     }
 
     /**
-     * Override this to change the shape of a hover. For instance making a per-pixel sprite hover
+     * Calculates whether the given position is over this component specifically, ignoring any child components.
      */
-    open fun calculateOwnHover(mousePos: Vec2d): Boolean {
-        return mousePos.x >= 0 && mousePos.x <= size.x && mousePos.y >= 0 && mousePos.y <= size.y
+    fun calculateOwnHover(mousePos: Vec2d): Boolean {
+        val transformPos = transformFromParentContext(mousePos)
+        return !component.clipping.isPointClipped(transformPos) &&
+                transformPos.x >= 0 && transformPos.x <= size.x &&
+                transformPos.y >= 0 && transformPos.y <= size.y
     }
 
 }

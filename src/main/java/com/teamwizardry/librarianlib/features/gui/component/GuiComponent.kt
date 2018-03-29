@@ -57,6 +57,11 @@ import net.minecraftforge.fml.relauncher.SideOnly
 abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, width: Int = 0, height: Int = 0) {
     /**
      * Draws the component, this is called between pre and post draw events.
+     *
+     * The only guranteed GL state when this method is called is the following:
+     *
+     * - GL_TEXTURE_2D - enabled
+     * - GL_COLOR - (1, 1, 1, 1)
      */
     open fun drawComponent(mousePos: Vec2d, partialTicks: Float) {}
 
