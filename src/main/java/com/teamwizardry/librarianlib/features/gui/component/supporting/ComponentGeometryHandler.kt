@@ -24,7 +24,6 @@ open class ComponentGeometryHandler(private val component: GuiComponent) {
         }
     /** [GuiComponent.mouseOver] */
     var mouseOver = false
-        private set
     /**
      * This is like [GuiComponent.mouseOver] except it ignores the occlusion of components at higher z-indices.
      */
