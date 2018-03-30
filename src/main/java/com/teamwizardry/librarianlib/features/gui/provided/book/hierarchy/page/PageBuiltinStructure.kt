@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.page
 
 import com.google.gson.JsonObject
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
-import com.teamwizardry.librarianlib.features.gui.provided.book.ComponentBuiltinStructure
+import com.teamwizardry.librarianlib.features.gui.provided.book.ComponentDynamicStructure
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
 import com.teamwizardry.librarianlib.features.gui.provided.book.TranslationHolder
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry
@@ -26,6 +26,6 @@ class PageBuiltinStructure(override val entry: Entry, element: JsonObject) : Pag
 
     @SideOnly(Side.CLIENT)
     override fun createBookComponents(book: IBookGui, size: Vec2d): List<GuiComponent> {
-        return mutableListOf(ComponentBuiltinStructure(0, 0, size.xi, size.yi, structureName, subtext))
+        return mutableListOf(ComponentDynamicStructure(0, 0, size.xi, size.yi, structureName, subtext))
     }
 }

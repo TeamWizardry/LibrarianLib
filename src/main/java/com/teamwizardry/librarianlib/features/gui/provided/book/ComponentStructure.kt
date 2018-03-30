@@ -6,28 +6,30 @@ import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
 import com.teamwizardry.librarianlib.features.math.Vec2d
-import com.teamwizardry.librarianlib.features.structure.dynamic.STRUCTURE_REGISTRY
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.TextureMap
-import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.MathHelper
 
 /**
  * Property of Demoniaque.
  * All rights reserved.
  */
-class ComponentBuiltinStructure(x: Int, y: Int, width: Int, height: Int, structure: ResourceLocation, subtext: TranslationHolder?) : ComponentAnimatableVoid(x, y, width, height) {
+abstract class ComponentStructure(x: Int, y: Int, width: Int, height: Int, subtext: TranslationHolder?) : ComponentAnimatableVoid(x, y, width, height) {
 
     private var dragging = false
     private var prevPos = Vec2d.ZERO
     private var panVec = Vec2d.ZERO
     private var rotVec = Vec2d.ZERO
 
-    private val builtin = STRUCTURE_REGISTRY.getObjectByName(structure)
-
     private var ticks = 0
+
+    abstract fun render(time: Int)
+
+    abstract fun preShift()
+
+    abstract fun failed(): Boolean
 
     init {
 
@@ -84,7 +86,7 @@ class ComponentBuiltinStructure(x: Int, y: Int, width: Int, height: Int, structu
         clipping.clipToBounds = true
         BUS.hook(GuiComponentEvents.PostDrawEvent::class.java) { event ->
             if (!event.component.hasTag("switched") && event.component.isVisible) {
-                if (builtin == null) {
+                if (failed()) {
                     GlStateManager.pushMatrix()
                     ModGuiBook.ERROR.bind()
                     ModGuiBook.ERROR.draw(event.partialTicks.toInt(),
@@ -110,13 +112,13 @@ class ComponentBuiltinStructure(x: Int, y: Int, width: Int, height: Int, structu
 
                     GlStateManager.scale(5 + this.animX, -5 - this.animX, 5 + this.animX)
 
-                    GlStateManager.translate(0.0, -(builtin.ySize * 0.75), 0.0)
+                    preShift()
 
                     GlStateManager.rotate((35 + rotVec.y).toFloat(), 1f, 0f, 0f)
                     GlStateManager.rotate((45 + rotVec.x).toFloat(), 0f, 1f, 0f)
 
                     Minecraft.getMinecraft().textureManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE)
-                    builtin.renderOnPage(ticks / 4)
+                    render(ticks / 4)
 
                     GlStateManager.popMatrix()
                 }
