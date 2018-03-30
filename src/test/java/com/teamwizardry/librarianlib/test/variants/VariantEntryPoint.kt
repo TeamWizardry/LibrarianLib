@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.features.base.block.*
 import com.teamwizardry.librarianlib.features.base.item.*
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
 import com.teamwizardry.librarianlib.features.kotlin.sendSpamlessMessage
+import com.teamwizardry.librarianlib.features.structure.dynamic.DynamicStructureBuilder
 import com.teamwizardry.librarianlib.test.module.BlockModule
 import com.teamwizardry.librarianlib.test.testcore.TestEntryPoint
 import net.minecraft.block.material.Material
@@ -111,6 +112,13 @@ object VariantEntryPoint : TestEntryPoint {
                 defaultSaplingBehavior(worldIn, pos, state, rand, wood, leaves)
             }
         }
+
+        DynamicStructureBuilder
+                .addBlock(0, 0, 0, Blocks.STONE)
+                .addBlock(0, 1, 0, Blocks.STONE)
+                .addBlock(0, 2, 0, Blocks.STONE)
+                .build("stone_pillar")
+
 
         ItemModBook("book", Book("librarianlibtest:book"))
     }

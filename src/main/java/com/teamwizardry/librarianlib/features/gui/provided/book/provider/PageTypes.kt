@@ -2,10 +2,7 @@ package com.teamwizardry.librarianlib.features.gui.provided.book.provider
 
 import com.google.gson.JsonObject
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry
-import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.page.Page
-import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.page.PageRecipe
-import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.page.PageStructure
-import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.page.PageText
+import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.page.*
 import net.minecraft.util.ResourceLocation
 import java.util.*
 
@@ -17,6 +14,7 @@ object PageTypes {
         registerPageProvider("text", ::PageText)
         registerPageProvider("recipe", ::PageRecipe)
         registerPageProvider("structure", ::PageStructure)
+        registerPageProvider("builtin-structure", ::PageBuiltinStructure)
     }
 
     fun registerPageProvider(name: String, provider: (Entry, JsonObject) -> Page) =

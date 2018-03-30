@@ -4,14 +4,14 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.registry.RegistryNamespaced
 
 
-class RegistryMod<T> : Iterable<RegistryMod.RegistryEntry<ResourceLocation, T>> {
+class RegistryMod<T : Any> : Iterable<RegistryMod.RegistryEntry<ResourceLocation, T>> {
     private val registry = RegistryNamespaced<ResourceLocation, T>()
     private var lastId = 0
 
     fun register(id: ResourceLocation, value: T) = value.apply { registry.register(lastId++, id, this) }
-    fun getObjectByName(id: ResourceLocation) = registry.getObject(id)
-    fun getObjectById(id: Int) = registry.getObjectById(id)
-    fun getIdFromObject(value: T) = registry.getNameForObject(value)
+    fun getObjectByName(id: ResourceLocation): T? = registry.getObject(id)
+    fun getObjectById(id: Int): T? = registry.getObjectById(id)
+    fun getIdFromObject(value: T): ResourceLocation? = registry.getNameForObject(value)
     override fun iterator() = RegistryEntry.iterateOverRegistry(registry)
 
     data class RegistryEntry<out K, out V>(val id: Int, val key: K, val value: V) {

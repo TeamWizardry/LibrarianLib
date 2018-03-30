@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.EnumFacing
+import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.IBlockAccess
 import net.minecraft.world.WorldType
@@ -28,6 +29,20 @@ class DynamicStructure(inheriting: LongObjectHashMap<DynamicBlockInfo>) {
     private val packed = LongObjectHashMap<DynamicBlockInfo>().apply {
         putAll(inheriting)
     }
+
+    val extent: AxisAlignedBB
+
+    init {
+        var aabb = AxisAlignedBB(BlockPos.ORIGIN)
+        for (key in packed.keys)
+            aabb = aabb.union(AxisAlignedBB(BlockPos.fromLong(key)))
+        extent = aabb
+    }
+
+    val xSize get() = extent.maxX - extent.minX
+    val ySize get() = extent.maxY - extent.minY
+    val zSize get() = extent.maxZ - extent.minZ
+
 
     fun composePosition(origin: BlockPos, pack: Long, orientation: EnumFacing): Long {
         val px = fromLongX(pack)
@@ -87,7 +102,9 @@ class DynamicStructure(inheriting: LongObjectHashMap<DynamicBlockInfo>) {
 
         for ((pack, state) in access.packed) {
             mutable.setPos(fromLongX(pack), fromLongY(pack), fromLongZ(pack))
+            buffer.setTranslation(mutable.x.toDouble(), mutable.y.toDouble(), mutable.z.toDouble())
             dispatcher.renderBlock(state, mutable, access, buffer)
+            buffer.setTranslation(0.0, 0.0, 0.0)
         }
 
         GlStateManager.pushMatrix()
@@ -115,6 +132,7 @@ class DynamicStructure(inheriting: LongObjectHashMap<DynamicBlockInfo>) {
 
         val buffer = Tessellator.getInstance().buffer
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK)
+        buffer.setTranslation(-0.5, -0.5, -0.5)
         val dispatcher = Minecraft.getMinecraft().blockRendererDispatcher
 
         val mutable = BlockPos.MutableBlockPos()
@@ -130,24 +148,24 @@ class DynamicStructure(inheriting: LongObjectHashMap<DynamicBlockInfo>) {
             dispatcher.renderBlock(state, mutable, access, buffer)
         }
 
-        val renderPosX = Minecraft.getMinecraft().renderManager.renderPosX
-        val renderPosY = Minecraft.getMinecraft().renderManager.renderPosY
-        val renderPosZ = Minecraft.getMinecraft().renderManager.renderPosZ
-
         GlStateManager.pushMatrix()
-        GlStateManager.translate(-renderPosX, -renderPosY, -renderPosZ)
 
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
         GlStateManager.disableLighting()
+        val maxSize = Math.max(xSize, Math.max(ySize * 0.75, zSize))
+        val scale = 10 / maxSize
+        GlStateManager.scale(scale, scale, scale)
 
-        GlStateManager.color(1f, 1f, 1f, 0.4f)
+        GlStateManager.color(1f, 1f, 1f, 1f)
         Tessellator.getInstance().draw()
         GlStateManager.color(1f, 1f, 1f, 1f)
 
         GlStateManager.enableLighting()
 
         GlStateManager.popMatrix()
+
+        buffer.setTranslation(0.0, 0.0, 0.0)
     }
 }
 
@@ -185,5 +203,5 @@ private class StructureBlockAccess : IBlockAccess {
 
     override fun getBiome(pos: BlockPos): Biome = voidBiome
 
-    override fun getWorldType(): WorldType = WorldType.DEFAULT
+    override fun getWorldType(): WorldType = WorldType.DEBUG_ALL_BLOCK_STATES
 }

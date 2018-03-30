@@ -39,9 +39,10 @@ class DynamicStructureBuilder {
     private val packed = LongObjectHashMap<DynamicBlockInfo>()
     private var finalized = false
 
-    fun addBlock(px: Int, py: Int, pz: Int, info: DynamicBlockInfo) {
+    fun addBlock(px: Int, py: Int, pz: Int, info: DynamicBlockInfo): DynamicStructureBuilder {
         assert(!finalized) { "Already built!" }
         packed[toLong(px, py, pz)] = info
+        return this
     }
 
     fun addBlock(px: Int, py: Int, pz: Int, vararg states: IBlockState) = addBlock(px, py, pz,
@@ -55,6 +56,18 @@ class DynamicStructureBuilder {
         assert(!finalized) { "Already built!" }
         finalized = true
         STRUCTURE_REGISTRY.register(name, DynamicStructure(packed))
+    }
+
+    companion object {
+        fun addBlock(px: Int, py: Int, pz: Int, info: DynamicBlockInfo)
+                = DynamicStructureBuilder().addBlock(px, py, pz, info)
+
+        fun addBlock(px: Int, py: Int, pz: Int, vararg states: IBlockState)
+                = DynamicStructureBuilder().addBlock(px, py, pz, *states)
+
+        fun addBlock(px: Int, py: Int, pz: Int, vararg blocks: Block)
+                = DynamicStructureBuilder().addBlock(px, py, pz, *blocks)
+
     }
 }
 
