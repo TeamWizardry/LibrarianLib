@@ -69,7 +69,7 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
                 GlStateManager.enableBlend()
                 GlStateManager.enableAlpha()
                 GlStateManager.translate(
-                        (size.x / 2.0 + arrow.width / 2.0 + 16.0).toInt().toFloat(), (size.y / 2.0 + arrow.height / 2.0 - 8 + 1).toInt().toFloat(), 0f)
+                        (size.x / 2.0 - arrow.width / 2.0 + 16.0).toInt().toFloat(), (size.y / 2.0 - arrow.height / 2.0 - 8 + 1).toInt().toFloat(), 0f)
                 GlStateManager.color(0.25f, 0.25f, 0.25f, 1f)
                 arrow.bind()
                 arrow.draw(event.partialTicks.toInt(), 0f, 0f)
@@ -80,7 +80,6 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
                 GlStateManager.enableAlpha()
                 GlStateManager.disableCull()
                 GlStateManager.color(1f, 1f, 1f, 1f)
-                //GlStateManager.blendFunc(GL_SRC_ALPHA, GL_ONE);
                 GlStateManager.disableTexture2D()
                 GlStateManager.shadeModel(GL_SMOOTH)
 
@@ -128,6 +127,7 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
                 }
 
                 GlStateManager.popMatrix()
+                GlStateManager.enableTexture2D()
                 RenderHelper.enableStandardItemLighting()
             }
         }

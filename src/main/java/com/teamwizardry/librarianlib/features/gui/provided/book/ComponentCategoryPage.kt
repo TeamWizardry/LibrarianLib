@@ -12,7 +12,7 @@ class ComponentCategoryPage(book: IBookGui, category: Category) : NavBarHolder(1
 
     init {
         var pageComponent = ComponentVoid(0, 0, size.xi, size.yi)
-        add(pageComponent)
+        addPage(pageComponent)
         currentActive = pageComponent
 
         val itemsPerPage = 9
@@ -24,17 +24,16 @@ class ComponentCategoryPage(book: IBookGui, category: Category) : NavBarHolder(1
                 val indexPlate = book.makeNavigationButton(id++, entry, null)
                 pageComponent.add(indexPlate)
 
-                count++
-                if (count >= itemsPerPage) {
-                    addPage(pageComponent)
+                if (++count >= itemsPerPage) {
                     pageComponent = ComponentVoid(0, 0, size.xi, size.yi)
-                    add(pageComponent)
+                    addPage(pageComponent)
                     pageComponent.isVisible = false
                     count = 0
                     id = 0
                 }
             }
-            navBar.whenMaxPagesSet()
         }
+
+        navBar.whenMaxPagesSet()
     }
 }

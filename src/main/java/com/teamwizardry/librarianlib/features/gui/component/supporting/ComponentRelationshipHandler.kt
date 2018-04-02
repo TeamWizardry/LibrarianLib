@@ -10,7 +10,7 @@ import java.util.*
  *
  * Created by TheCodeWarrior
  */
-class ComponentRelationshipHandler(private val component: GuiComponent) {
+open class ComponentRelationshipHandler(private val component: GuiComponent) {
     /** [GuiComponent.zIndex] */
     var zIndex = 0
     internal val components = mutableListOf<GuiComponent>()
