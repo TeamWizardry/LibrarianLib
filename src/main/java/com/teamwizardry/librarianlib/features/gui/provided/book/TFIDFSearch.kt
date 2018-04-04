@@ -5,9 +5,7 @@ import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import org.apache.commons.lang3.StringUtils
-
 import java.util.*
-import java.util.regex.Pattern
 
 /**
  * @author WireSegal
@@ -42,7 +40,11 @@ class TFIDFSearch(private val book: IBookGui) : ISearchAlgorithm {
                 if (mostRepeatedWord != null) {
                     var documentTfidf = 0.0
                     for (keyword in keywords) {
-                        val keywordOccurance = Pattern.compile("\\b" + keyword).splitAsStream(cachedDocument).count() - 1
+                        val pattern = "\\b" + keyword.replace("[\\\\.+*?^$\\[\\](){}/'#:!=|]".toRegex()) {
+                            "\\" + it.value
+                        }
+
+                        val keywordOccurance = pattern.toRegex().findAll(cachedDocument).count() - 1
                         val termFrequency = 0.5 + 0.5 * keywordOccurance / mostRepeatedWord.value
 
                         var keywordDocumentOccurance = contentCache.keys
