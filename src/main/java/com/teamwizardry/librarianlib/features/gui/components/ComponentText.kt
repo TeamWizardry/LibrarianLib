@@ -27,6 +27,10 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
      */
     val unicode = Option<ComponentText, Boolean>(false)
     /**
+     * Whether to set the bidirectional flag to true when unicode is enabled
+     */
+    val enableUnicodeBidi = Option<ComponentText, Boolean>(true)
+    /**
      * Whether to render a shadow behind the text
      */
     val shadow = Option<ComponentText, Boolean>(false)
@@ -61,7 +65,8 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
         val dropShadow = shadow.getValue(this)
 
         if (enableFlags) {
-            fr.bidiFlag = true
+            if(enableUnicodeBidi.getValue(this))
+                fr.bidiFlag = true
             fr.unicodeFlag = true
         }
 
@@ -100,7 +105,8 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
         }
 
         if (enableFlags) {
-            fr.bidiFlag = false
+            if(enableUnicodeBidi.getValue(this))
+                fr.bidiFlag = false
             fr.unicodeFlag = false
         }
     }
@@ -120,8 +126,9 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
             val enableFlags = unicode.getValue(this)
 
             if (enableFlags) {
+                if(enableUnicodeBidi.getValue(this))
+                    fr.bidiFlag = true
                 fr.unicodeFlag = true
-                fr.bidiFlag = true
             }
 
             if (wrap == -1) {
@@ -132,8 +139,9 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
             }
 
             if (enableFlags) {
+                if(enableUnicodeBidi.getValue(this))
+                    fr.bidiFlag = false
                 fr.unicodeFlag = false
-                fr.bidiFlag = false
             }
 
             return BoundingBox2D(Vec2d.ZERO, size)
