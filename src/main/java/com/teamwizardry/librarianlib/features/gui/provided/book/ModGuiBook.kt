@@ -43,6 +43,7 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
     override var homeSpritePressed: Sprite = guideBookSheet.getSprite("arrow_home_pressed", 18, 9)
     override var homeSprite: Sprite = guideBookSheet.getSprite("arrow_home", 18, 9)
     override var processArrow: Sprite = guideBookSheet.getSprite("process_arrow", 18, 9)
+    override val lineBreak: Sprite = guideBookSheet.getSprite("line_break", 177, 2)
 
     var bookmarkID: Int = 0
     override val mainBookComponent: ComponentSprite
@@ -65,12 +66,13 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
 
         mainComponents.add(this.mainBookComponent)
 
-        // --------- SEARCH BAR --------- //
-        val bar = ComponentSearchBar(this, bookmarkID++,
-                TFIDFSearch(this).textBoxConsumer(this) { ComponentSearchResults(this) })
-        this.mainBookComponent.add(bar)
+        // --------- BOOKMARKS --------- //
 
-        // --------- SEARCH BAR --------- //
+        val searchBar = ComponentSearchBar(this, bookmarkID++,
+                TFIDFSearch(this).textBoxConsumer(this) { ComponentSearchResults(this) })
+        this.mainBookComponent.add(searchBar)
+
+        // --------- BOOKMARKS --------- //
 
         placeInFocus(book)
     }

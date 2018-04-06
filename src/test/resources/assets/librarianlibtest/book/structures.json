@@ -1,0 +1,26 @@
+{
+  "title": "Structures",
+  "icon": {
+    "item": "furnace",
+    "data": 0
+  },
+  "description": "Examples of structure pages",
+  "content": [
+    {
+      "type": "builtin-structure",
+      "name": "librarianlibtest:stone_pillar"
+    },
+    {
+      "type": "structure",
+      "name": "librarianlibtest:mana_pool"
+    },
+    {
+      "type": "structure",
+      "name": "librarianlibtest:crafting_altar"
+    },
+    {
+      "type": "structure",
+      "name": "librarianlibtest:mana_battery"
+    }
+  ]
+}

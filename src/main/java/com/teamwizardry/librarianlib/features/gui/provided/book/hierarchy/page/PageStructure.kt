@@ -22,6 +22,6 @@ class PageStructure(override val entry: Entry, element: JsonObject) : Page {
 
     @SideOnly(Side.CLIENT)
     override fun createBookComponents(book: IBookGui, size: Vec2d): List<GuiComponent> {
-        return mutableListOf<GuiComponent>(ComponentRenderableStructure(0, 0, size.xi, size.yi, structure, subtext))
+        return mutableListOf<GuiComponent>(ComponentRenderableStructure(book, 0, 0, size.xi, size.yi, structure, subtext))
     }
 }

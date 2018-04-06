@@ -37,7 +37,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
             this.cursorToEnd()
         }
 
-    val maxStringLength = Option<ComponentTextField, Int>(64)
+    val maxStringLength = Option<ComponentTextField, Int>(100)
     var canLoseFocus = Option<ComponentTextField, Boolean>(true)
     var autoFocus = Option<ComponentTextField, Boolean>(false)
 

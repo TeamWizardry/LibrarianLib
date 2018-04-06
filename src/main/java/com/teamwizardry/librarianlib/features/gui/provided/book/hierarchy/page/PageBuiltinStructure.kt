@@ -26,6 +26,6 @@ class PageBuiltinStructure(override val entry: Entry, element: JsonObject) : Pag
 
     @SideOnly(Side.CLIENT)
     override fun createBookComponents(book: IBookGui, size: Vec2d): List<GuiComponent> {
-        return mutableListOf(ComponentDynamicStructure(0, 0, size.xi, size.yi, structureName, subtext))
+        return mutableListOf(ComponentDynamicStructure(book, 0, 0, size.xi, size.yi, structureName, subtext))
     }
 }

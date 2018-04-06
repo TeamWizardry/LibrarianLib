@@ -2,8 +2,11 @@ package com.teamwizardry.librarianlib.features.gui.provided.book
 
 import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
+import com.teamwizardry.librarianlib.features.gui.Option
 import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
+import com.teamwizardry.librarianlib.features.gui.components.ComponentText
 import com.teamwizardry.librarianlib.features.sprite.Sprite
+import java.awt.Color
 
 /**
  * Property of Demoniaque.
@@ -15,6 +18,9 @@ open class ComponentBookMark(val book: IBookGui, icon: Sprite, val id: Int, icon
 
     private val bar: ComponentSprite
 
+    var text: String = ""
+    var textColor: Color = Color.WHITE
+
     init {
         clipping.clipToBounds = true
 
@@ -23,6 +29,11 @@ open class ComponentBookMark(val book: IBookGui, icon: Sprite, val id: Int, icon
         bar = ComponentSprite(book.bookmarkSprite, -box.width + 20, 0)
         bar.color.setValue(book.book.bookColor)
         add(bar)
+
+        val textComp = ComponentText(0, 0, ComponentText.TextAlignH.LEFT, ComponentText.TextAlignV.TOP)
+        textComp.text.setValue(text)
+        textComp.color.setValue(textColor)
+        bar.add(textComp)
 
         val iconComponent = ComponentSprite(icon, size.xi - icon.width + iconExtraX, iconExtraY)
         bar.add(iconComponent)

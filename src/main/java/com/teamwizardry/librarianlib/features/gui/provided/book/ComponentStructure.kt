@@ -5,18 +5,22 @@ import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
+import com.teamwizardry.librarianlib.features.gui.provided.book.structure.RenderableStructure
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import com.teamwizardry.librarianlib.features.structure.Structure
+import com.teamwizardry.librarianlib.features.structure.dynamic.DynamicStructure
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.TextureMap
 import net.minecraft.util.math.MathHelper
+import org.lwjgl.util.Renderable
 
 /**
  * Property of Demoniaque.
  * All rights reserved.
  */
-abstract class ComponentStructure(x: Int, y: Int, width: Int, height: Int, subtext: TranslationHolder?) : ComponentAnimatableVoid(x, y, width, height) {
+abstract class ComponentStructure(val book: IBookGui, x: Int, y: Int, width: Int, height: Int, subtext: TranslationHolder?) : ComponentAnimatableVoid(x, y, width, height) {
 
     private var dragging = false
     private var prevPos = Vec2d.ZERO
@@ -31,7 +35,11 @@ abstract class ComponentStructure(x: Int, y: Int, width: Int, height: Int, subte
 
     abstract fun failed(): Boolean
 
+    abstract fun init()
+
     init {
+
+        init()
 
         animX = 1.0
 

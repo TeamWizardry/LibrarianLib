@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.test.gui
 
 import com.teamwizardry.librarianlib.features.base.item.ItemMod
+import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
 import com.teamwizardry.librarianlib.features.kotlin.localize
 import com.teamwizardry.librarianlib.test.gui.tests.*
 import net.minecraft.client.Minecraft
@@ -16,6 +17,10 @@ import net.minecraft.world.World
  * Created by TheCodeWarrior
  */
 class ItemGuiOpener : ItemMod("guiopener") {
+
+    companion object {
+        val book = Book("book")
+    }
 
     override fun onItemRightClick(worldIn: World, playerIn: EntityPlayer, hand: EnumHand): ActionResult<ItemStack> {
         val stack = playerIn.getHeldItem(hand)
@@ -45,4 +50,5 @@ enum class Guis(val create: () -> GuiScreen) {
     SPRITE({ GuiTestSprite() }),
     MOUSE_CLICKS({ GuiTestClickEvents() }),
     MOUSE_OVER_FLAGS({ GuiTestMouseOverFlags() }),
+    PROVIDED_BOOK({ GuiTestProvidedBook() })
 }

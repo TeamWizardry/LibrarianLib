@@ -11,7 +11,8 @@
       "description": "A description",
       "entries": [
         "librarianlibtest:example",
-        "librarianlibtest:recipes"
+        "librarianlibtest:recipes",
+        "librarianlibtest:structures"
       ]
     }
   ]

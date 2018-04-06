@@ -6,44 +6,50 @@ import net.minecraft.client.Minecraft
 
 class ComponentSearchBar(book: IBookGui, id: Int, onType: ((String) -> Unit)?) : ComponentBookMark(book, book.searchIconSprite, id, -8, 1) {
 
-    private val text = ComponentTextField(Minecraft.getMinecraft().fontRenderer,
+    private val textField = ComponentTextField(Minecraft.getMinecraft().fontRenderer,
             2, 1, size.xi - 44 - 2 * book.searchIconSprite.width, Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT + 2)
 
-    val isForcedOpen: Boolean
-        get() = !text.isFocused && text.text.isEmpty()
+    var focused = false
 
     init {
 
-        if (onType != null)
-            text.BUS.hook(TextEditEvent::class.java) {
+        if (focused && onType != null)
+            textField.BUS.hook(TextEditEvent::class.java) {
                 slideOutLong()
                 onType(it.whole)
             }
-        text.enabledColor.setValue(book.book.searchTextColor)
-        text.selectionColor.setValue(book.book.searchTextHighlight)
-        text.cursorColor.setValue(book.book.searchTextCursor)
-        text.autoFocus.setValue(true)
-        add(text)
+        textField.enabledColor.setValue(book.book.searchTextColor)
+        textField.selectionColor.setValue(book.book.searchTextHighlight)
+        textField.cursorColor.setValue(book.book.searchTextCursor)
+        textField.autoFocus.setValue(true)
+        add(textField)
 
         clipping.clipToBounds = true
 
         BUS.hook(GuiComponentEvents.MouseInEvent::class.java) {
-            if (isForcedOpen) {
+            if (!focused) {
                 slideOutShort()
-                text.isVisible = true
+               // text.isVisible = true
             }
         }
 
         BUS.hook(GuiComponentEvents.MouseOutEvent::class.java) {
-            if (isForcedOpen) {
+            if (!focused) {
                 slideIn()
-                text.isVisible = false
+               // text.isVisible = false
             }
         }
         BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
-            if (isForcedOpen) {
+            if (!focused) {
                 slideOutLong()
-                text.isVisible = true
+                textField.isVisible = true
+                focused = true
+            } else {
+                if (!book.history.empty()) {
+                    book.forceInFocus(book.history.pop())
+                }
+                focused = false
+                slideIn()
             }
         }
     }
