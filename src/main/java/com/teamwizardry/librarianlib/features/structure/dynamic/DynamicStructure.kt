@@ -26,7 +26,7 @@ import org.lwjgl.opengl.GL11
  * Created at 4:43 PM on 3/29/18.
  */
 class DynamicStructure(inheriting: LongObjectHashMap<DynamicBlockInfo>) {
-    private val packed = LongObjectHashMap<DynamicBlockInfo>().apply {
+    val packed = LongObjectHashMap<DynamicBlockInfo>().apply {
         putAll(inheriting)
     }
 
@@ -83,7 +83,7 @@ class DynamicStructure(inheriting: LongObjectHashMap<DynamicBlockInfo>) {
 
         val dispatcher = Minecraft.getMinecraft().blockRendererDispatcher
 
-        access.packed.clear()
+        DYNAMIC_STRUCTURE_ACCESS.packed.clear()
 
 
         for ((pack, info) in packed) {
@@ -92,7 +92,7 @@ class DynamicStructure(inheriting: LongObjectHashMap<DynamicBlockInfo>) {
             if (!ignoreExisting || !info(world, mutable, orientation)) {
                 val valid = info.validStates
                 val state = valid[(timeSinceBegan / 20) % valid.size]
-                access.packed[pack] = state
+                DYNAMIC_STRUCTURE_ACCESS.packed[pack] = state
             }
         }
 
@@ -100,10 +100,10 @@ class DynamicStructure(inheriting: LongObjectHashMap<DynamicBlockInfo>) {
         val renderPosY = Minecraft.getMinecraft().renderManager.renderPosY
         val renderPosZ = Minecraft.getMinecraft().renderManager.renderPosZ
 
-        for ((pack, state) in access.packed) {
+        for ((pack, state) in DYNAMIC_STRUCTURE_ACCESS.packed) {
             mutable.setPos(fromLongX(pack), fromLongY(pack), fromLongZ(pack))
             buffer.setTranslation(mutable.x.toDouble(), mutable.y.toDouble(), mutable.z.toDouble())
-            dispatcher.renderBlock(state, mutable, access, buffer)
+            dispatcher.renderBlock(state, mutable, DYNAMIC_STRUCTURE_ACCESS, buffer)
             buffer.setTranslation(0.0, 0.0, 0.0)
         }
 
@@ -140,12 +140,12 @@ class DynamicStructure(inheriting: LongObjectHashMap<DynamicBlockInfo>) {
         for ((pack, info) in packed) {
             val valid = info.validStates
             val state = valid[(timeSinceBegan / 20) % valid.size]
-            access.packed[pack] = state
+            DYNAMIC_STRUCTURE_ACCESS.packed[pack] = state
         }
 
-        for ((pack, state) in access.packed) {
+        for ((pack, state) in DYNAMIC_STRUCTURE_ACCESS.packed) {
             mutable.setPos(fromLongX(pack), fromLongY(pack), fromLongZ(pack))
-            dispatcher.renderBlock(state, mutable, access, buffer)
+            dispatcher.renderBlock(state, mutable, DYNAMIC_STRUCTURE_ACCESS, buffer)
         }
 
         GlStateManager.pushMatrix()
@@ -169,11 +169,11 @@ class DynamicStructure(inheriting: LongObjectHashMap<DynamicBlockInfo>) {
     }
 }
 
-private val access = StructureBlockAccess()
+val DYNAMIC_STRUCTURE_ACCESS = StructureBlockAccess()
 
 private val voidBiome by lazy { Biome.REGISTRY.getObjectById(127)!! }
 
-private class StructureBlockAccess : IBlockAccess {
+class StructureBlockAccess : IBlockAccess {
 
     val packed = LongObjectHashMap<IBlockState>()
 
