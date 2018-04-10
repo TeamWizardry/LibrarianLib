@@ -2,7 +2,6 @@ package com.teamwizardry.librarianlib.features.saving
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.kotlin.DefaultedMutableMap
-import com.teamwizardry.librarianlib.features.kotlin.kotlinFunctionSafe
 import com.teamwizardry.librarianlib.features.kotlin.withRealDefault
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.saving.serializers.SerializerRegistry
@@ -17,6 +16,7 @@ import java.lang.reflect.Modifier
 import java.util.*
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.jvm.javaMethod
+import kotlin.reflect.jvm.kotlinFunction
 import kotlin.reflect.jvm.kotlinProperty
 
 /**
@@ -261,12 +261,12 @@ object SavingFieldCache {
     }
 
     private fun isGetterMethodNotNull(getter: Method): Boolean {
-        val kt = getter.kotlinFunctionSafe
+        val kt = getter.kotlinFunction
         return getter.isAnnotationPresent(NotNull::class.java) || (kt != null && !kt.returnType.isMarkedNullable)
     }
 
     private fun isSetterMethodNotNull(setter: Method): Boolean {
-        val kt = setter.kotlinFunctionSafe
+        val kt = setter.kotlinFunction
         return setter.parameterAnnotations[0].any { it is NotNull } || (kt != null && !kt.parameters[0].type.isMarkedNullable)
     }
 

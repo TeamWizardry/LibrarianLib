@@ -304,20 +304,9 @@ operator fun <T : Comparable<T>> IBlockState.get(value: IProperty<T>): T = getVa
  *
  * TODO: replace with Method.kotlinFunction once https://youtrack.jetbrains.com/issue/KT-17423 is resolved
  */
+@Deprecated(message = "Official one has been fixed.", replaceWith = ReplaceWith("this.kotlinFunction", "kotlin.reflect.jvm.kotlinFunction"))
 val Method.kotlinFunctionSafe: KFunction<*>?
-    get() {
-        if (isSynthetic) return null
-
-        if (Modifier.isStatic(modifiers)) {
-            return kotlinFunction
-        }
-
-        val protected = Modifier.isProtected(modifiers)
-        return declaringClass.kotlin.functions.firstOrNull {
-            if (protected && it.visibility == KVisibility.PROTECTED) it.name == name && parameters.matches(it.parameters.drop(1))
-            else it.visibility != KVisibility.PROTECTED && it.javaMethod == this
-        }
-    }
+    get() = kotlinFunction
 
 /**
  * Checks whether a [Parameter] [kotlin.Array] matches a [KParameter] [kotlin.collections.List]
