@@ -6,8 +6,11 @@ package com.teamwizardry.librarianlib.features.helpers
 import com.teamwizardry.librarianlib.core.common.OwnershipHandler
 import com.teamwizardry.librarianlib.features.kotlin.toNonnullList
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import net.minecraft.block.Block
+import net.minecraft.block.material.Material
 import net.minecraft.util.NonNullList
 import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.Loader
 import kotlin.properties.ReadWriteProperty
@@ -59,3 +62,13 @@ class ThreadLocalDelegate<T>(initial: (() -> T)?) : ReadWriteProperty<Any, T> {
     override fun getValue(thisRef: Any, property: KProperty<*>): T = local.get()
     override fun setValue(thisRef: Any, property: KProperty<*>, value: T) = local.set(value)
 }
+
+private class Collision : Block(Material.AIR) {
+    companion object {
+        fun exposedCollision(pos: BlockPos, entityBox: AxisAlignedBB, collidingBoxes: MutableList<AxisAlignedBB>, blockBox: AxisAlignedBB?) =
+                Block.addCollisionBoxToList(pos, entityBox, collidingBoxes, blockBox)
+    }
+}
+
+fun addCollisionBoxToList(pos: BlockPos, entityBox: AxisAlignedBB, collidingBoxes: MutableList<AxisAlignedBB>, blockBox: AxisAlignedBB?) =
+        Collision.exposedCollision(pos, entityBox, collidingBoxes, blockBox)

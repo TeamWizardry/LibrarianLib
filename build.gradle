@@ -21,7 +21,7 @@ apply plugin: 'idea'
 apply plugin: 'maven'
 
 allprojects {
-    tasks.withType(JavaCompile) {
+    tasks.withType(JavaCompile).all {
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
     }
@@ -30,13 +30,8 @@ allprojects {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-ext.configFile = file('build.properties')
-ext.config = parseConfig(configFile)
-ext.corePlugin = config.core_plugin
-
-version = "${config.version}.${config.build_number}"
-group = config.group
-archivesBaseName = config.mod_name + "-" + config.mc_version
+version = "$version.$build_number"
+archivesBaseName = mod_name + "-" + mc_version
 
 repositories {
     jcenter()
@@ -57,15 +52,15 @@ repositories {
 }
 
 minecraft {
-    version = "${config.mc_version}-${config.forge_version}"
+    version = "$mc_version-$forge_version"
     runDir = "run"
-    mappings = config.mc_mappings
+    mappings = mc_mappings
 
-    clientJvmArgs = ["-Dfml.coreMods.load=$corePlugin"]
-    serverJvmArgs = ["-Dfml.coreMods.load=$corePlugin"]
+    clientJvmArgs = ["-Dfml.coreMods.load=$core_plugin"]
+    serverJvmArgs = ["-Dfml.coreMods.load=$core_plugin"]
 
-    replace 'GRADLE:BUILD', config.build_number
-    replace 'GRADLE:VERSION', config.version
+    replace 'GRADLE:VERSION', mod_version
+    replace 'GRADLE:BUILD', build_number
 
     replaceIn 'LibrarianLib.kt'
 }
@@ -76,9 +71,9 @@ import net.minecraftforge.gradle.user.TaskSourceCopy
 for (set in sourceSets) {
     if (set.name == "test") continue
     def taskName = "source${set.name.capitalize()}Kotlin"
-    def dir = new File(project.getBuildDir(), "sources/${set.name}/kotlin")
+    def dir = new File(project.buildDir, "sources/${set.name}/kotlin")
     task(taskName, type: TaskSourceCopy) {
-        source = set.getKotlin()
+        source = set.kotlin
         output = dir
     }
     def compileTask = tasks[set.getCompileTaskName("kotlin")]
@@ -96,16 +91,7 @@ configurations {
 }
 
 dependencies {
-    //required 'com.github.Eladkay:Mixin:-SNAPSHOT'
-// todo once mcmultipart is 1.11
-//    deobfCompile "MCMultiPart:MCMultiPart:1.2.1:universal"
     compile "net.shadowfacts:Forgelin:1.6.0"
-}
-
-reobf {
-    jar {
-//        extraLines "PK: package/name com/teamwizardry/librarianlib/shade/package/name"
-    }
 }
 
 compileKotlin {
@@ -128,7 +114,7 @@ jar {
     from sourceSets.main.output
 
     archiveName "${archivesBaseName}-${version}.jar"
-    dependsOn configurations.compile
+    dependsOn(configurations.getByName("compile") as Object)
     from {
         configurations.required.collect {
             it.isDirectory() ? it : zipTree(it)
@@ -157,14 +143,6 @@ artifacts {
     archives deobfJar
 }
 
-def parseConfig(File config) {
-    config.withReader {
-        def prop = new Properties()
-        prop.load(it)
-        return (new ConfigSlurper().parse(prop))
-    }
-}
-
 idea {
     module {
         inheritOutputDirs = true
@@ -172,7 +150,7 @@ idea {
         sourceDirs += file('src/api/java')
         sourceDirs += file('src/test/java')
         sourceDirs += file('src/test/resources')
-        testSourceDirs = []
+        setTestSourceDirs(new HashSet<File>())
     }
     project {
         languageLevel = '1.8'
@@ -218,7 +196,7 @@ task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
 uploadArchives {
     repositories {
         if (System.getenv('REPO_PWD') != null) {
-            repositories.mavenDeployer {
+            mavenDeployer {
                 repository(url: "http://maven.bluexin.be/repository/" + (((String) project.version).contains("SNAPSHOT") ? "snapshots" : "releases") + "/") {
                     authentication(userName: "travis", password: System.getenv('REPO_PWD'))
                 }
