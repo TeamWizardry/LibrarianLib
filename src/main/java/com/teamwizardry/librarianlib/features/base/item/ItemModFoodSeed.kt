@@ -4,11 +4,8 @@ import net.minecraft.advancements.CriteriaTriggers
 import net.minecraft.block.Block
 import net.minecraft.block.BlockDispenser
 import net.minecraft.block.state.IBlockState
-import net.minecraft.dispenser.BehaviorDefaultDispenseItem
-import net.minecraft.dispenser.IBlockSource
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
-import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumActionResult
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
@@ -22,7 +19,7 @@ import net.minecraftforge.common.IPlantable
  * @author WireSegal
  * Created at 10:12 AM on 12/19/17.
  */
-open class ItemModSeed(name: String, val crops: Block) : ItemMod(name), IPlantable {
+open class ItemModFoodSeed(name: String, val crops: Block, amount: Int, saturation: Float, wolfFood: Boolean) : ItemModFood(name, amount, saturation, wolfFood), IPlantable {
     override fun onItemUse(player: EntityPlayer, worldIn: World, pos: BlockPos, hand: EnumHand, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): EnumActionResult {
         val itemstack = player.getHeldItem(hand)
         val state = worldIn.getBlockState(pos)
@@ -46,28 +43,8 @@ open class ItemModSeed(name: String, val crops: Block) : ItemMod(name), IPlantab
         return this.crops.defaultState
     }
 
-    fun makeSeedBehavior(): ItemModSeed {
-        BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, BehaviourSeeds(crops))
+    fun makeSeedBehavior(): ItemModFoodSeed {
+        BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, ItemModSeed.BehaviourSeeds(crops))
         return this
-    }
-
-    class BehaviourSeeds(val placeState: IBlockState) : BehaviorDefaultDispenseItem() {
-
-        constructor(block: Block) : this(block.defaultState)
-
-        public override fun dispenseStack(par1IBlockSource: IBlockSource, par2ItemStack: ItemStack): ItemStack {
-            val facing = par1IBlockSource.blockState.getValue(BlockDispenser.FACING)
-            val pos = par1IBlockSource.blockPos.offset(facing)
-            val world = par1IBlockSource.world
-
-            if (world.isAirBlock(pos) && placeState.block.canPlaceBlockAt(world, pos)) {
-                world.setBlockState(pos, placeState)
-                par2ItemStack.shrink(1)
-                return par2ItemStack
-            }
-
-            return super.dispenseStack(par1IBlockSource, par2ItemStack)
-        }
-
     }
 }

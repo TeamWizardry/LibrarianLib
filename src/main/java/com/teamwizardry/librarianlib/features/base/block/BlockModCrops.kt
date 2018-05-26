@@ -12,7 +12,7 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
-import net.minecraft.item.Item
+import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.NonNullList
@@ -148,31 +148,38 @@ abstract class BlockModCrops(name: String, stages: Int) : BlockModBush(injectSta
         return (worldIn.getLight(pos) >= 8 || worldIn.canSeeSky(pos)) && soil.block.canSustainPlant(soil, worldIn, pos.down(), EnumFacing.UP, this)
     }
 
-    abstract fun getSeed(): Item
+    abstract fun getSeed(): ItemStack
 
-    abstract fun getCrop(): Item
+    abstract fun getDefaultCrop(): ItemStack
 
     override fun getDrops(drops: NonNullList<ItemStack>, world: IBlockAccess, pos: BlockPos, state: IBlockState, fortune: Int) {
-        super.getDrops(drops, world, pos, state, 0)
-        val age = getAge(state)
         val rand = if (world is World) world.rand else Random()
 
-        if (age >= getMaxAge()) {
-            var any = false
-            for (i in 0..3 + fortune - 1) if (rand.nextInt(2 * getMaxAge()) <= age) {
-                drops.add(ItemStack(this.getSeed(), 1, 0))
-                any = true
-            }
-            if (!any)
-                drops.add(ItemStack(this.getSeed(), 1, 0))
-        }
+        val count = quantityDropped(state, fortune, rand)
+        for (i in 0 until count)
+            drops.add(getSeed())
+
+        if (shouldDrop(world, pos, state, fortune) && !provideDrops(drops, world, pos, state, rand, fortune))
+            drops.add(getSeed())
     }
 
-    override fun getItemDropped(state: IBlockState, rand: Random, fortune: Int)
-            = if (this.isMaxAge(state)) this.getCrop() else this.getSeed()
+    open fun provideDrops(drops: NonNullList<ItemStack>, world: IBlockAccess, pos: BlockPos, state: IBlockState, random: Random, fortune: Int): Boolean {
+        val age = getAge(state)
+        val size = drops.size
+
+        for (i in 0 until dropCount(world, pos, state, fortune))
+            if (random.nextInt(2 * getMaxAge()) <= age)
+                drops.add(generateDrop(world, pos, state, fortune, i))
+
+        return size < drops.size
+    }
+
+    open fun shouldDrop(world: IBlockAccess, pos: BlockPos, state: IBlockState, fortune: Int) = getAge(state) >= getMaxAge()
+    open fun dropCount(world: IBlockAccess, pos: BlockPos, state: IBlockState, fortune: Int) = 3 + fortune
+    open fun generateDrop(world: IBlockAccess, pos: BlockPos, state: IBlockState, fortune: Int, dropped: Int) = getDefaultCrop()
 
     override fun getPickBlock(state: IBlockState, target: RayTraceResult?, world: World, pos: BlockPos, player: EntityPlayer?): ItemStack
-            = ItemStack(getSeed())
+            = if (getAge(state) >= getMaxAge()) getDefaultCrop() else getSeed()
 
     override fun canGrow(worldIn: World, pos: BlockPos, state: IBlockState, isClient: Boolean): Boolean = !this.isMaxAge(state)
 
@@ -191,7 +198,7 @@ abstract class BlockModCrops(name: String, stages: Int) : BlockModBush(injectSta
 
     override fun createBlockState(): BlockStateContainer = BlockStateContainer(this, getAgeProperty())
 
-    override fun createItemForm() = null
+    override fun createItemForm(): ItemBlock? = null
 
     override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
         ModelHandler.generateBlockJson(this, {
