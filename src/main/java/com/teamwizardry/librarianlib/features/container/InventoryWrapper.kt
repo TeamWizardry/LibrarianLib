@@ -8,7 +8,7 @@ import net.minecraftforge.items.IItemHandler
  * Used to provide a convenient slot meaning association. See [BaseWrappers] for examples.
  */
 open class InventoryWrapper(val inventory: IItemHandler) {
-    val slotArray = (0..inventory.slots - 1).map { SlotBase(inventory, it) }
+    val slotArray = (0 until inventory.slots).map { SlotBase(inventory, it) }
     val slots = SlotManager(slotArray)
     val types = TypeManager(slotArray)
 

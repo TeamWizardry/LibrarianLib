@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.features.base.block.tile
 
 import com.teamwizardry.librarianlib.features.base.block.tile.module.ITileModule
-import com.teamwizardry.librarianlib.features.base.block.tile.module.ModuleInventory
 import com.teamwizardry.librarianlib.features.kotlin.forEach
 import com.teamwizardry.librarianlib.features.network.PacketHandler
 import com.teamwizardry.librarianlib.features.network.PacketModuleSync
@@ -45,7 +44,9 @@ abstract class TileMod : TileEntity() {
         return modules.any { it.value.hasComparatorOutput() }
     }
 
-    fun getComparatorOverride() = ModuleInventory.getPowerLevel(modules
+    fun getPowerLevel(percent: Float) = (percent * 15).toInt() + if (percent > 0.0) 1 else 0
+
+    fun getComparatorOverride() = getPowerLevel(modules
             .filter { it.value.hasComparatorOutput() }
             .let { it.map { it.value.getComparatorOutput(this) }.sum() / it.size })
 
