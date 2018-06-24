@@ -5,6 +5,9 @@ import com.teamwizardry.librarianlib.features.math.interpolate.InterpFunction
 /**
  * Created by TheCodeWarrior
  */
+@Deprecated(message="Superseded by InterpFloatInOut", replaceWith=ReplaceWith(
+        "InterpFloatInOut", "com.teamwizardry.librarianlib.features.math.interpolate.float.InterpFloatInOut"
+))
 class InterpFadeInOut(val fadeInTime: Float, val fadeOutTime: Float) : InterpFunction<Float> {
     override fun get(i: Float): Float {
         var alpha = if (i < 1 && i > 0) 1f else 0f
@@ -13,7 +16,7 @@ class InterpFadeInOut(val fadeInTime: Float, val fadeOutTime: Float) : InterpFun
             alpha = (i / fadeInTime)
         }
         if (i >= 1 - fadeOutTime && fadeOutTime != 0f) {
-            alpha = 1 - (i - (1 - fadeOutTime)) / fadeOutTime
+            alpha = (1-i)/fadeOutTime
         }
         return if (alpha < 0) 0f else alpha
     }
