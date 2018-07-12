@@ -13,7 +13,7 @@ import kotlin.annotation.AnnotationTarget.*
  *
  * [saveName] doesn't matter for messages, except in sorting. It's for NBT serializers.
  */
-@Target(FIELD)
+@Target(FIELD, PROPERTY)
 @MustBeDocumented
 annotation class Save(val saveName: String = "")
 

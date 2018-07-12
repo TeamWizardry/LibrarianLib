@@ -5,6 +5,9 @@ import com.google.gson.internal.`$Gson$Types`
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import java.lang.reflect.*
 import java.util.*
+import kotlin.reflect.KProperty
+import kotlin.reflect.jvm.javaMethod
+import kotlin.reflect.jvm.javaType
 
 val getGenericSuperclassMH = MethodHandleHelper.wrapperForStaticMethod(`$Gson$Types`::class.java, "getGenericSupertype", null, Type::class.java, Class::class.java, Class::class.java)
 
@@ -34,6 +37,9 @@ abstract class FieldType protected constructor(val type: Type, annotated: Annota
     }
 
     companion object {
+        @JvmStatic
+        fun create(prop: KProperty<*>) = prop.getter.javaMethod?.let {create(it)} ?: create(prop.returnType.javaType, null)
+
         @JvmStatic
         fun create(field: Field) = create(field.genericType, field.annotatedType)
 

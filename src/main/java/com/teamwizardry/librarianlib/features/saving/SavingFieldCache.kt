@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.saving
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
+import com.teamwizardry.librarianlib.features.kotlin.DataManagerProperty
 import com.teamwizardry.librarianlib.features.kotlin.DefaultedMutableMap
 import com.teamwizardry.librarianlib.features.kotlin.withRealDefault
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
@@ -15,6 +16,9 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.*
 import kotlin.reflect.KMutableProperty
+import kotlin.reflect.KProperty
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.kotlinFunction
 import kotlin.reflect.jvm.kotlinProperty
@@ -46,12 +50,16 @@ object SavingFieldCache {
 
     fun buildClassFields(type: FieldType, map: MutableMap<String, FieldCache>) {
         val fields = mutableSetOf<Field>()
+        val properties = mutableSetOf<KProperty<*>>()
+
         var clazz: Class<*>? = type.clazz
         while (clazz != null) {
             clazz.declaredFields.filterTo(fields) {
                 it.declaredAnnotations
                 !Modifier.isStatic(it.modifiers)
             }
+            properties.addAll(clazz.kotlin.declaredMemberProperties)
+
             clazz = clazz.superclass
         }
 
@@ -71,6 +79,42 @@ object SavingFieldCache {
                                 field.name
                         )
                 }
+
+
+        properties.forEach {
+            if (it.findAnnotation<Save>() != null) {
+                val name = getNameFromProperty(type, it)
+
+
+                val meta = FieldMetadata(FieldType.create(it), SavingFieldFlag.ANNOTATED, SavingFieldFlag.METHOD)
+
+                it.annotations.forEach {
+                    meta.addAnnotation(it, true)
+                }
+
+                if (!it.returnType.isMarkedNullable)
+                    meta.addFlag(SavingFieldFlag.NONNULL)
+                if (it.returnType.classifier == DataManagerProperty::class || it.findAnnotation<NoSync>() != null)
+                    meta.addFlag(SavingFieldFlag.NO_SYNC)
+                if (it.findAnnotation<NonPersistent>() != null)
+                    meta.addFlag(SavingFieldFlag.NON_PERSISTENT)
+                if (it !is KMutableProperty<*>)
+                    meta.addFlag(SavingFieldFlag.FINAL)
+
+
+                if (meta.hasFlag(SavingFieldFlag.NO_SYNC) && meta.hasFlag(SavingFieldFlag.NON_PERSISTENT))
+                    errorList[type][name].add("Annotated with both @NoSync and @NonPersistent. This field will never be used.")
+
+                val setterLambda: (Any, Any?) -> Unit = if (it !is KMutableProperty<*>)
+                    { _, _ -> throw IllegalAccessException("Tried to set final property $name for class $type (no save setter)") }
+                else
+                    { obj, inp -> it.setter.call(obj, inp) }
+
+                map[name] = FieldCache(meta,
+                        { obj -> it.getter.call(obj) },
+                        setterLambda)
+            }
+        }
     }
 
     fun getFieldGetter(field: Field): (Any) -> Any? {
@@ -165,6 +209,7 @@ object SavingFieldCache {
                 it.declaredAnnotations
                 !Modifier.isStatic(it.modifiers)
             }
+
             clazz = clazz.superclass
         }
 
@@ -277,6 +322,24 @@ object SavingFieldCache {
     private val ILLEGAL_NAMES = listOf("id", "x", "y", "z", "ForgeData", "ForgeCaps")
 
     private val nameMap = mutableMapOf<Field, String>()
+    private val namePropMap = mutableMapOf<KProperty<*>, String>()
+
+    private fun getNameFromProperty(type: FieldType, f: KProperty<*>): String {
+        val got = namePropMap[f]
+        if (got != null) return got
+
+        val string = f.findAnnotation<Save>()?.saveName ?: ""
+        var name = if (string == "") f.name else string
+
+        if (name in ILLEGAL_NAMES)
+            name += "X"
+        if (name in alreadyDone)
+            errorList[type][name].add("Name already in use for field")
+
+        alreadyDone.add(name)
+        namePropMap[f] = name
+        return name
+    }
 
     private fun getNameFromField(type: FieldType, f: Field): String {
         val got = nameMap[f]
