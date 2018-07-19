@@ -91,7 +91,7 @@ configurations {
 }
 
 dependencies {
-    compile "net.shadowfacts:Forgelin:1.6.0"
+    compile "net.shadowfacts:Forgelin:1.7.3"
 }
 
 compileKotlin {
