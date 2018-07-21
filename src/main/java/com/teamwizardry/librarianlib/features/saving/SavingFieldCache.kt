@@ -63,6 +63,8 @@ object SavingFieldCache {
             clazz = clazz.superclass
         }
 
+        fields.removeIf { it.kotlinProperty in properties }
+
         fields.map {
             getNameFromField(type, it) to it
         }.forEach {
