@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.features.saving
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
-import com.teamwizardry.librarianlib.features.kotlin.DataManagerProperty
 import com.teamwizardry.librarianlib.features.kotlin.DefaultedMutableMap
 import com.teamwizardry.librarianlib.features.kotlin.withRealDefault
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
@@ -19,6 +18,7 @@ import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.kotlinFunction
 import kotlin.reflect.jvm.kotlinProperty
@@ -96,7 +96,7 @@ object SavingFieldCache {
 
                 if (!it.returnType.isMarkedNullable)
                     meta.addFlag(SavingFieldFlag.NONNULL)
-                if (it.returnType.classifier == DataManagerProperty::class || it.findAnnotation<NoSync>() != null)
+                if (it.javaField == null || it.findAnnotation<NoSync>() != null)
                     meta.addFlag(SavingFieldFlag.NO_SYNC)
                 if (it.findAnnotation<NonPersistent>() != null)
                     meta.addFlag(SavingFieldFlag.NON_PERSISTENT)

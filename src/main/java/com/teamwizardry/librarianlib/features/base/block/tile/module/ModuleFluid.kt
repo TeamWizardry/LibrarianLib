@@ -16,7 +16,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler
  * @author WireSegal
  * Created at 10:41 AM on 6/13/17.
  */
-class ModuleFluid(handler: SerializableFluidTank) : ModuleCapability<ModuleFluid.SerializableFluidTank>(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, handler) {
+class ModuleFluid(handler: SerializableFluidTank) : ModuleCapability<SerializableFluidTank>(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, handler) {
     constructor(capacity: Int) : this(SerializableFluidTank(capacity))
     constructor(stack: FluidStack, capacity: Int) : this(SerializableFluidTank(stack, capacity))
     constructor(fluid: Fluid, amount: Int, capacity: Int) : this(SerializableFluidTank(fluid, amount, capacity))
@@ -28,18 +28,18 @@ class ModuleFluid(handler: SerializableFluidTank) : ModuleCapability<ModuleFluid
         return FluidUtil.getFluidHandler(stack) != null
     }
 
-    open class SerializableFluidTank : FluidTank, INBTSerializable<NBTTagCompound> {
-        constructor(capacity: Int) : super(capacity)
-        constructor(stack: FluidStack, capacity: Int) : super(stack, capacity)
-        constructor(fluid: Fluid, amount: Int, capacity: Int) : super(fluid, amount, capacity)
+    override fun hasComparatorOutput() = true
+    override fun getComparatorOutput(tile: TileMod) = handler.fluidAmount.toFloat() / handler.capacity
+}
 
-        override fun deserializeNBT(nbt: NBTTagCompound) {
-            readFromNBT(nbt)
-        }
+open class SerializableFluidTank : FluidTank, INBTSerializable<NBTTagCompound> {
+    constructor(capacity: Int) : super(capacity)
+    constructor(stack: FluidStack, capacity: Int) : super(stack, capacity)
+    constructor(fluid: Fluid, amount: Int, capacity: Int) : super(fluid, amount, capacity)
 
-        override fun serializeNBT(): NBTTagCompound = writeToNBT(NBTTagCompound())
+    override fun deserializeNBT(nbt: NBTTagCompound) {
+        readFromNBT(nbt)
     }
 
-    override fun hasComparatorOutput() = true
-    override fun getComparatorOutput(tile: TileMod) = (handler.fluid?.amount?.toFloat() ?: 0f) / handler.capacity
+    override fun serializeNBT(): NBTTagCompound = writeToNBT(NBTTagCompound())
 }
