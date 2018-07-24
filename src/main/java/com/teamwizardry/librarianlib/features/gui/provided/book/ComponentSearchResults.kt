@@ -5,10 +5,10 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
-import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.IBookElement
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.I18n
+import net.minecraft.util.math.MathHelper
 import net.minecraft.util.text.TextFormatting
 
 class ComponentSearchResults(private val book: IBookGui) : NavBarHolder(16, 16, book.mainBookComponent.size.xi - 32, book.mainBookComponent.size.yi - 32, book), ISearchAlgorithm.Acceptor {
@@ -38,7 +38,7 @@ class ComponentSearchResults(private val book: IBookGui) : NavBarHolder(16, 16, 
         navBar = ComponentNavBar(book, size.xi / 2 - 35, size.yi + 16, 70, 1)
         add(navBar)
 
-        navBar.BUS.hook(EventNavBarChange::class.java, { update() })
+        navBar.BUS.hook(EventNavBarChange::class.java) { update() }
 
         if (results == null || results.isEmpty()) {
             pageHeader.text.setValue(I18n.format("${LibrarianLib.MODID}.book.results.notfound"))
@@ -102,7 +102,7 @@ class ComponentSearchResults(private val book: IBookGui) : NavBarHolder(16, 16, 
                 }
 
                 textComponent.unicode.setValue(true)
-                textComponent.text.setValue("| " + color + simplifiedResult)
+                textComponent.text.setValue("| $color$simplifiedResult")
 
                 indexButton.BUS.hook(GuiComponentEvents.MouseInEvent::class.java) { textComponent.text.setValue("  | " + color + TextFormatting.ITALIC + exactResult) }
 
@@ -133,11 +133,9 @@ class ComponentSearchResults(private val book: IBookGui) : NavBarHolder(16, 16, 
     }
 
     public override fun update() {
-        if (currentActive != null) currentActive!!.isVisible = false
-
-        currentActive = pages[navBar.page]
-
-        if (currentActive != null) currentActive!!.isVisible = true
+        currentActive?.isVisible = false
+        currentActive = pages[MathHelper.clamp(navBar.page, 0, pages.size - 1)]
+        currentActive?.isVisible = true
     }
 
     override fun createComponent(book: IBookGui): GuiComponent {
