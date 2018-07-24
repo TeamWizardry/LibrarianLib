@@ -76,7 +76,21 @@ object EasyConfigHandler {
                                      val min: T? = null,
                                      val sortingId: Int = 0,
                                      val requiresRestart: Boolean = false,
-                                     val requiresWorld: Boolean = false)
+                                     val requiresWorld: Boolean = false) {
+
+        val editedComment: String
+
+        init {
+            var commented = comment
+            if (min != null)
+                commented += "\nMin: $min"
+            if (defaultValue != null)
+                commented += "\nDefault: $min"
+            if (max != null)
+                commented += "\nMax: $min"
+            editedComment = commented
+        }
+    }
 
     @Suppress("DEPRECATION")
     internal fun bootstrap(asm: ASMDataTable, dir: File) {
@@ -125,42 +139,42 @@ object EasyConfigHandler {
 
         fieldMapStr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            val value = config.get(it.category, it.identifier, it.defaultValue ?: "", it.comment)
+            val value = config.get(it.category, it.identifier, it.defaultValue ?: "", it.editedComment)
                     .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).string
             it.setter(value)
             bookConfigValues[it.modId + "." + it.identifier] = value
         }
         fieldMapInt.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            val value = config.get(it.category, it.identifier, it.defaultValue ?: 0, it.comment, it.min ?: -Int.MAX_VALUE, it.max ?: Int.MIN_VALUE)
+            val value = config.get(it.category, it.identifier, it.defaultValue ?: 0, it.editedComment, it.min ?: -Int.MAX_VALUE, it.max ?: Int.MIN_VALUE)
                     .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).int
             it.setter(value)
             bookConfigValues[it.modId + "." + it.identifier] = value
         }
         fieldMapBoolean.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            val value = config.get(it.category, it.identifier, it.defaultValue ?: false, it.comment)
+            val value = config.get(it.category, it.identifier, it.defaultValue ?: false, it.editedComment)
                     .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).boolean
             it.setter(value)
             bookConfigValues[it.modId + "." + it.identifier] = value
         }
         fieldMapDouble.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            val value = config.get(it.category, it.identifier, it.defaultValue ?: 0.0, it.comment, it.min ?: -Double.MAX_VALUE, it.max ?: Double.MAX_VALUE)
+            val value = config.get(it.category, it.identifier, it.defaultValue ?: 0.0, it.editedComment, it.min ?: -Double.MAX_VALUE, it.max ?: Double.MAX_VALUE)
                     .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).double
             it.setter(value)
             bookConfigValues[it.modId + "." + it.identifier] = value
         }
         fieldMapLong.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            val value = config.get(it.category, it.identifier, (it.defaultValue ?: 0L).toString(), it.comment)
+            val value = config.get(it.category, it.identifier, (it.defaultValue ?: 0L).toString(), it.editedComment)
                     .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).long
             it.setter(value)
             bookConfigValues[it.modId + "." + it.identifier] = value
         }
         fieldMapStrArr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            val value = config.get(it.category, it.identifier, it.defaultValue ?: arrayOf(), it.comment)
+            val value = config.get(it.category, it.identifier, it.defaultValue ?: arrayOf(), it.editedComment)
                     .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).stringList
             it.setter(value)
             bookConfigValues[it.modId + "." + it.identifier] = value
@@ -171,14 +185,14 @@ object EasyConfigHandler {
             val max = if (maxArr.isEmpty()) Int.MAX_VALUE else maxArr[0]
             val minArr = it.min ?: intArrayOf()
             val min = if (minArr.isEmpty()) -Int.MAX_VALUE else minArr[0]
-            val value = config.get(it.category, it.identifier, it.defaultValue ?: intArrayOf(), it.comment, min, max)
+            val value = config.get(it.category, it.identifier, it.defaultValue ?: intArrayOf(), it.editedComment, min, max)
                     .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).intList
             it.setter(value)
             bookConfigValues[it.modId + "." + it.identifier] = value
         }
         fieldMapBooleanArr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
-            val value = config.get(it.category, it.identifier, it.defaultValue ?: booleanArrayOf(), it.comment)
+            val value = config.get(it.category, it.identifier, it.defaultValue ?: booleanArrayOf(), it.editedComment)
                     .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).booleanList
             it.setter(value)
             bookConfigValues[it.modId + "." + it.identifier] = value
@@ -189,7 +203,7 @@ object EasyConfigHandler {
             val max = if (maxArr.isEmpty()) Double.MAX_VALUE else maxArr[0]
             val minArr = it.min ?: doubleArrayOf()
             val min = if (minArr.isEmpty()) -Double.MAX_VALUE else minArr[0]
-            val value = config.get(it.category, it.identifier, it.defaultValue ?: doubleArrayOf(), it.comment, min, max)
+            val value = config.get(it.category, it.identifier, it.defaultValue ?: doubleArrayOf(), it.editedComment, min, max)
                     .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).doubleList
             it.setter(value)
             bookConfigValues[it.modId + "." + it.identifier] = value
@@ -197,7 +211,7 @@ object EasyConfigHandler {
         fieldMapLongArr.sortedBy { it.sortingId }.filter { shouldUse(it) }.forEach {
             logFieldName(it)
             val arr = it.defaultValue ?: longArrayOf()
-            val value = config.get(it.category, it.identifier, arr.map(Long::toString).toTypedArray(), it.comment)
+            val value = config.get(it.category, it.identifier, arr.map(Long::toString).toTypedArray(), it.editedComment)
                     .setRequiresMcRestart(it.requiresRestart).setRequiresWorldRestart(it.requiresWorld).stringList.mapIndexed { i, s ->
                 try {
                     s.toLong()
