@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
-import com.sun.org.apache.xml.internal.security.utils.I18n
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
@@ -15,7 +14,6 @@ import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.catego
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry
 import com.teamwizardry.librarianlib.features.helpers.currentModId
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
-import javafx.geometry.Side
 import net.minecraft.client.resources.I18n
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.Side
