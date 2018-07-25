@@ -12,7 +12,7 @@ import java.awt.Color
  * Property of Demoniaque.
  * All rights reserved.
  */
-open class ComponentBookMark(val book: IBookGui, icon: Sprite, val id: Int, iconExtraX: Int = 0, iconExtraY: Int = 0) : ComponentAnimatableVoid(book.mainBookComponent.size.xi - 10,
+open class ComponentBookMark(val book: IBookGui, icon: Sprite, val id: Int, iconExtraX: Int = 0, iconExtraY: Int = 0, text: String = "") : ComponentAnimatableVoid(book.mainBookComponent.size.xi - 10,
         20 + 5 * id + book.bookmarkSprite.height * id, book.bookmarkSprite.width, book.bookmarkSprite.height) {
     private val box: Sprite = book.bookmarkSprite
 
@@ -22,7 +22,6 @@ open class ComponentBookMark(val book: IBookGui, icon: Sprite, val id: Int, icon
      */
     val bar: ComponentSprite
 
-    var text: String = ""
     var textColor: Color = Color.WHITE
 
     init {
