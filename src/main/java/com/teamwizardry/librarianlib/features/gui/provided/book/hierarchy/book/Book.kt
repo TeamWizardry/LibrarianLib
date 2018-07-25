@@ -33,6 +33,7 @@ open class Book(val location: ResourceLocation) : IBookElement {
     open var header: TranslationHolder? = null
     open var subtitle: TranslationHolder? = null
     open var bookColor: Color = Color.WHITE
+    open var entryTitleTextColor: Color = Color.WHITE
     open var bindingColor: Color = Color.WHITE
     open var highlightColor: Color = Color.WHITE
     open var textureSheet: String = ""
