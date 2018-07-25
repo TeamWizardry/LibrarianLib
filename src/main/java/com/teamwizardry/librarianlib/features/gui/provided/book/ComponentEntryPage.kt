@@ -23,6 +23,7 @@ class ComponentEntryPage(book: IBookGui, entry: Entry) : NavBarHolder(16, 16, bo
 
         val titleText = ComponentText((titleBar.size.x / 2.0).toInt(), (titleBar.size.y / 2.0).toInt() + 1, ComponentText.TextAlignH.CENTER, ComponentText.TextAlignV.MIDDLE)
         titleText.text.setValue(title)
+        titleText.color.setValue(book.book.entryTitleTextColor)
         titleBar.add(titleText)
 
         entry.pages
