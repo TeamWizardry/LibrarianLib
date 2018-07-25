@@ -16,7 +16,11 @@ open class ComponentBookMark(val book: IBookGui, icon: Sprite, val id: Int, icon
         20 + 5 * id + book.bookmarkSprite.height * id, book.bookmarkSprite.width, book.bookmarkSprite.height) {
     private val box: Sprite = book.bookmarkSprite
 
-    private val bar: ComponentSprite
+    /**
+     * This is made public so that you can add whatever shit you want to it directly.
+     * By adding shit to this specifically, your shit will animate properly with it.
+     */
+    val bar: ComponentSprite
 
     var text: String = ""
     var textColor: Color = Color.WHITE
@@ -30,9 +34,10 @@ open class ComponentBookMark(val book: IBookGui, icon: Sprite, val id: Int, icon
         bar.color.setValue(book.book.bookColor)
         add(bar)
 
-        val textComp = ComponentText(0, 0, ComponentText.TextAlignH.LEFT, ComponentText.TextAlignV.TOP)
+        val textComp = ComponentText(size.xi - icon.width, 2, ComponentText.TextAlignH.RIGHT, ComponentText.TextAlignV.TOP)
         textComp.text.setValue(text)
         textComp.color.setValue(textColor)
+        textComp.transform.translateZ = 10.0
         bar.add(textComp)
 
         val iconComponent = ComponentSprite(icon, size.xi - icon.width + iconExtraX, iconExtraY)
