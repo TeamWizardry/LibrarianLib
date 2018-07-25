@@ -28,8 +28,8 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 1
         val stack = this.stack.getValue(this)
         if (stack.isNotEmpty) {
             var str: String? = stack.count.toString()
-            str = quantityText.fireModifier(str) { h, v -> h(this, v) }
             if (str == "1") str = null
+            str = quantityText.fireModifier(str) { h, v -> h(this, v) }
 
             val itemRender = Minecraft.getMinecraft().renderItem
             itemRender.zLevel = 200.0f
@@ -42,8 +42,11 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 1
 
             itemRender.zLevel = 0.0f
 
-            if (mouseOver && enableTooltip.getValue(this))
-                drawTooltip(stack)
+            if (mouseOver && enableTooltip.getValue(this)) {
+                val font = stack.item.getFontRenderer(stack)
+                render.setTooltip(getTooltip(stack) { itemInfo.fireAll { h -> h(this, it) } },
+                        font ?: Minecraft.getMinecraft().fontRenderer)
+            }
         }
 
         GlStateManager.popMatrix()
@@ -51,22 +54,17 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 1
         RenderHelper.enableStandardItemLighting()
     }
 
-    fun drawTooltip(stack: ItemStack) {
-        val list = stack.getTooltip(Minecraft.getMinecraft().player,
-                if (Minecraft.getMinecraft().gameSettings.advancedItemTooltips) ITooltipFlag.TooltipFlags.ADVANCED else ITooltipFlag.TooltipFlags.NORMAL)
+    companion object {
+        fun getTooltip(stack: ItemStack, modifyList: (MutableList<String>) -> Unit): MutableList<String> {
+            val list = stack.getTooltip(Minecraft.getMinecraft().player,
+                    if (Minecraft.getMinecraft().gameSettings.advancedItemTooltips)
+                        ITooltipFlag.TooltipFlags.ADVANCED else ITooltipFlag.TooltipFlags.NORMAL)
 
-        for (i in list.indices) {
-            if (i == 0) {
-                list[i] = stack.rarity.rarityColor + list[i]
-            } else {
-                list[i] = TextFormatting.GRAY + list[i]
-            }
+            list.mapIndexed { i, s -> (if (i == 0) stack.rarity.rarityColor else TextFormatting.GRAY) + s }
+            modifyList.invoke(list)
+
+            return list
         }
-
-        itemInfo.fireAll { h -> h(this, list) }
-
-        val font = stack.item.getFontRenderer(stack)
-        render.setTooltip(list, font ?: Minecraft.getMinecraft().fontRenderer)
     }
 
 }

@@ -38,12 +38,12 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
     override var titleBarSprite: Sprite = guideBookSheet.getSprite("title_bar", 86, 11)
     override var nextSpritePressed: Sprite = guideBookSheet.getSprite("arrow_next_pressed", 18, 10)
     override var nextSprite: Sprite = guideBookSheet.getSprite("arrow_next", 18, 10)
-    override var backSpritePressed: Sprite = guideBookSheet.getSprite("arrow_home_pressed", 18, 9)
+    override var backSpritePressed: Sprite = guideBookSheet.getSprite("arrow_back_pressed", 18, 9)
     override var backSprite: Sprite = guideBookSheet.getSprite("arrow_back", 18, 10)
     override var homeSpritePressed: Sprite = guideBookSheet.getSprite("arrow_home_pressed", 18, 9)
     override var homeSprite: Sprite = guideBookSheet.getSprite("arrow_home", 18, 9)
     override var processArrow: Sprite = guideBookSheet.getSprite("process_arrow", 18, 9)
-    override val lineBreak: Sprite = guideBookSheet.getSprite("line_break", 177, 2)
+    override var materialIcon: Sprite = guideBookSheet.getSprite("material_icon", 16, 16)
 
     var bookmarkID: Int = 0
     override val mainBookComponent: ComponentSprite
@@ -128,11 +128,12 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
             titleBarSprite = guideBookSheet.getSprite("title_bar", 86, 11)
             nextSpritePressed = guideBookSheet.getSprite("arrow_next_pressed", 18, 10)
             nextSprite = guideBookSheet.getSprite("arrow_next", 18, 10)
-            backSpritePressed = guideBookSheet.getSprite("arrow_home_pressed", 18, 9)
+            backSpritePressed = guideBookSheet.getSprite("arrow_back_pressed", 18, 9)
             backSprite = guideBookSheet.getSprite("arrow_back", 18, 10)
             homeSpritePressed = guideBookSheet.getSprite("arrow_home_pressed", 18, 9)
             homeSprite = guideBookSheet.getSprite("arrow_home", 18, 9)
             processArrow = guideBookSheet.getSprite("process_arrow", 18, 9)
+            materialIcon = guideBookSheet.getSprite("material_icon", 16, 16)
             mainBookComponent.sprite = pageSprite
             paperComponent.sprite = paperSprite
             bindingComponent.sprite = bindingSprite

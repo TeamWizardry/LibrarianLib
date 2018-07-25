@@ -89,7 +89,7 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
         }
 
         clipping.clipToBounds = true
-        BUS.hook(GuiComponentEvents.PostDrawEvent::class.java) { event ->
+        BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) { event ->
             if (!event.component.hasTag("switched") && event.component.isVisible) {
                 if (failed()) {
                     GlStateManager.pushMatrix()
@@ -124,6 +124,8 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
 
                     Minecraft.getMinecraft().textureManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE)
                     render(ticks / 4)
+
+                    GlStateManager.disableLighting()
 
                     GlStateManager.popMatrix()
                 }

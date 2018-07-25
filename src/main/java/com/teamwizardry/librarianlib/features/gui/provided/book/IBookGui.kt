@@ -75,7 +75,7 @@ interface IBookGui {
 
     val processArrow: Sprite
 
-    val lineBreak: Sprite
+    val materialIcon: Sprite
 
     fun updateTextureData(sheet: String, outerColor: Color, bindingColor: Color)
 

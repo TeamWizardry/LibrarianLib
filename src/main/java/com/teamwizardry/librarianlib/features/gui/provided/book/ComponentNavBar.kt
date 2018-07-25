@@ -85,7 +85,12 @@ class ComponentNavBar(private val book: IBookGui, posX: Int, posY: Int, width: I
                 }
             }
         }
-        back.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) { page -= 1 }
+        back.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
+            if (GuiScreen.isShiftKeyDown())
+                page = 0
+            else
+                page--
+        }
         val backTooltip = ArrayList<String>()
         backTooltip.add(I18n.format("${LibrarianLib.MODID}.book.nav.previous"))
         back.render.tooltip.setValue(backTooltip)
@@ -105,7 +110,12 @@ class ComponentNavBar(private val book: IBookGui, posX: Int, posY: Int, width: I
                 }
             }
         }
-        next.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) { page += 1 }
+        next.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
+            if (GuiScreen.isShiftKeyDown())
+                page = maxPages
+            else
+                page++
+        }
         val nextTooltip = ArrayList<String>()
         nextTooltip.add(I18n.format("${LibrarianLib.MODID}.book.nav.next"))
         next.render.tooltip.setValue(nextTooltip)
