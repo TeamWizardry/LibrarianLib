@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.gui.provided.book
 
 import com.teamwizardry.librarianlib.features.gui.provided.book.structure.RenderableStructure
+import com.teamwizardry.librarianlib.features.structure.dynamic.DynamicStructure
 import com.teamwizardry.librarianlib.features.structure.dynamic.STRUCTURE_REGISTRY
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
@@ -9,14 +10,17 @@ import net.minecraft.util.ResourceLocation
  * Property of Demoniaque.
  * All rights reserved.
  */
-class ComponentRenderableStructure(book: IBookGui, x: Int, y: Int, width: Int, height: Int, val structure: RenderableStructure?, subtext: TranslationHolder?) : ComponentStructure(book, x, y, width, height, subtext) {
+class ComponentRenderableStructure(book: IBookGui, x: Int, y: Int, width: Int, height: Int, val structure: RenderableStructure?, subtext: TranslationHolder?) : ComponentStructurePage(book, x, y, width, height, subtext, structure) {
 
-    override fun init() {
-        val bookmark = ComponentMaterialListBookmark(book, 1, ComponentMaterialList(book, structure, null))
+    private lateinit var bookmark: ComponentMaterialList
+
+    override fun init(any: Any?) {
+        bookmark = ComponentMaterialList(book, any as? RenderableStructure, null)
         add(bookmark)
     }
 
     override fun render(time: Int) {
+        bookmark.ticks = time
         if (structure != null) {
             GlStateManager.translate(-structure.perfectCenter.x - 0.5, -structure.perfectCenter.y - 0.5, -structure.perfectCenter.z - 0.5)
             structure.draw()
@@ -32,17 +36,21 @@ class ComponentRenderableStructure(book: IBookGui, x: Int, y: Int, width: Int, h
     }
 }
 
-class ComponentDynamicStructure(book: IBookGui, x: Int, y: Int, width: Int, height: Int, val structure: ResourceLocation, subtext: TranslationHolder?) : ComponentStructure(book, x, y, width, height, subtext) {
+class ComponentDynamicStructure(book: IBookGui, x: Int, y: Int, width: Int, height: Int, val structure: ResourceLocation, subtext: TranslationHolder?) : ComponentStructurePage(book, x, y, width, height, subtext, STRUCTURE_REGISTRY.getObjectByName(structure)) {
 
     private val builtin = STRUCTURE_REGISTRY.getObjectByName(structure)
 
-    override fun init() {
-        val bookmark = ComponentMaterialListBookmark(book, 1, ComponentMaterialList(book, null, builtin))
+    private lateinit var bookmark: ComponentMaterialList
+
+    override fun init(any: Any?) {
+        bookmark = ComponentMaterialList(book, null, any as? DynamicStructure)
         add(bookmark)
     }
 
     override fun render(time: Int) {
+        bookmark.ticks = time
         builtin?.renderOnPage(time)
+
     }
 
     override fun preShift() {

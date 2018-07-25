@@ -24,7 +24,7 @@ class ComponentSearchResults(private val book: IBookGui) : NavBarHolder(16, 16, 
         get() = book.book
 
     init {
-        pageHeader.text.setValue(I18n.format("librarianlib.book.results.notfound"))
+        pageHeader.text.setValue(I18n.format("${LibrarianLib.MODID}.book.results.notfound"))
         pageHeader.unicode.setValue(true)
         pageHeader.wrap.setValue(size.xi)
         add(pageHeader)
@@ -90,23 +90,23 @@ class ComponentSearchResults(private val book: IBookGui) : NavBarHolder(16, 16, 
                         else -> TextFormatting.DARK_GREEN
                     }
 
-                    exactResult = I18n.format("librarianlib.book.results.match", matchPercentage)
-                    simplifiedResult = I18n.format("librarianlib.book.results.match", Math.round(matchPercentage))
+                    exactResult = I18n.format("${LibrarianLib.MODID}.book.results.match", matchPercentage)
+                    simplifiedResult = I18n.format("${LibrarianLib.MODID}.book.results.match", Math.round(matchPercentage))
                 } else {
                     color = TextFormatting.RESET
                     simplifiedResult = if (resultItem.frequency == 1.0)
-                        I18n.format("librarianlib.book.results.kwd")
+                        I18n.format("${LibrarianLib.MODID}.book.results.kwd")
                     else
-                        I18n.format("librarianlib.book.results.kwds", resultItem.frequency.toInt())
+                        I18n.format("${LibrarianLib.MODID}.book.results.kwds", resultItem.frequency.toInt())
                     exactResult = simplifiedResult
                 }
 
                 textComponent.unicode.setValue(true)
                 textComponent.text.setValue("| $color$simplifiedResult")
 
-                indexButton.BUS.hook(GuiComponentEvents.MouseInEvent::class.java) { textComponent.text.setValue("  | " + color + TextFormatting.ITALIC + exactResult) }
+                indexButton.BUS.hook(GuiComponentEvents.MouseInEvent::class.java) { textComponent.text.setValue("  | $color${TextFormatting.ITALIC}$exactResult") }
 
-                indexButton.BUS.hook(GuiComponentEvents.MouseOutEvent::class.java) { textComponent.text.setValue("| " + color + simplifiedResult) }
+                indexButton.BUS.hook(GuiComponentEvents.MouseOutEvent::class.java) { textComponent.text.setValue("| $color$simplifiedResult") }
                 // --------- HANDLE EXTRA TEXT COMPONENT --------- //
 
                 count++

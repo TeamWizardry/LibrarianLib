@@ -6,71 +6,50 @@ import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.gui.components.ComponentStack
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
 import com.teamwizardry.librarianlib.features.gui.provided.book.structure.RenderableStructure
+import com.teamwizardry.librarianlib.features.kotlin.isNotEmpty
 import com.teamwizardry.librarianlib.features.math.Vec2d
-import com.teamwizardry.librarianlib.features.structure.dynamic.DYNAMIC_STRUCTURE_ACCESS
+import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.structure.dynamic.DynamicStructure
+import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
-import net.minecraft.util.NonNullList
-import net.minecraft.util.math.BlockPos
-import net.minecraft.world.IBlockAccess
 import net.minecraftforge.fluids.FluidRegistry
 import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.fluids.FluidUtil
 
-class ComponentMaterialList(book: IBookGui, structureRenderable: RenderableStructure?, structureDynamic: DynamicStructure?) : GuiComponent(6, 16, book.mainBookComponent.size.xi - 32, book.mainBookComponent.size.yi - 32) {
+class ComponentMaterialList(book: IBookGui, structureRenderable: RenderableStructure?, structureDynamic: DynamicStructure?) : GuiComponent(16, 16, 16, 16) {
+
+    companion object {
+        fun silkDrop(state: IBlockState): ItemStack {
+            return accessor.invoke(state.block, arrayOf(state)) as ItemStack
+        }
+
+        private val accessor = MethodHandleHelper.wrapperForMethod(Block::class.java, "getSilkTouchDrop", "func_180643_i", IBlockState::class.java)
+    }
+
+    var ticks = 0
 
     init {
         val betterIngredients = mutableMapOf<List<IBlockState>, Int>()
 
-        val world: IBlockAccess = structureRenderable?.blockAccess ?: DYNAMIC_STRUCTURE_ACCESS
-
         if (structureRenderable != null)
             for (info in structureRenderable.blockInfos()) {
-                if (info.blockState.block === Blocks.AIR) continue
+                if (info.blockState.block == Blocks.AIR) continue
 
-                val realState = info.blockState
-
-                var exists = false
-                for ((states, count) in betterIngredients) {
-                    if (states[0].block !== realState.block) continue
-
-                    val newStates = mutableListOf<IBlockState>()
-                    newStates.addAll(states)
-                    betterIngredients.remove(states)
-                    betterIngredients[newStates] = count + 1
-                    exists = true
-                    break
-                }
-                if (!exists) {
-                    betterIngredients.put(mutableListOf<IBlockState>(realState), 1)
-                }
+                val list = mutableListOf(info.blockState)
+                betterIngredients[list] = betterIngredients.getOrDefault(list, 0) + 1
             }
         if (structureDynamic != null) {
             for ((_, info) in structureDynamic.packed) {
                 if (info.validStates[0].block == Blocks.AIR) continue
 
-                var exists = false
-                for ((states, count) in betterIngredients) {
-                    if (states[0] !== info.validStates[0].block) continue
-
-                    val newStates = mutableListOf<IBlockState>()
-                    newStates.addAll(states)
-                    betterIngredients.remove(states)
-                    betterIngredients[newStates] = count + 1
-                    exists = true
-                    break
-                }
-                if (!exists) {
-                    val newStates = mutableListOf<IBlockState>()
-                    newStates.addAll(info.validStates)
-                    betterIngredients.put(newStates, 1)
-                }
+                val list = info.validStates
+                betterIngredients[list] = betterIngredients.getOrDefault(list, 0) + 1
             }
         }
 
-        val text = ComponentText(0, 3, ComponentText.TextAlignH.LEFT, ComponentText.TextAlignV.TOP)
+        val text = ComponentText(0, 0, ComponentText.TextAlignH.LEFT, ComponentText.TextAlignV.TOP)
         text.size = Vec2d(200.0, 16.0)
         text.text.setValue(" " + LibrarianLib.PROXY.translate("liblib.misc.structure_materials"))
         add(text)
@@ -80,32 +59,37 @@ class ComponentMaterialList(book: IBookGui, structureRenderable: RenderableStruc
 
         var i = 0
         var row = 0
+
+        val itemStacks = mutableListOf<List<ItemStack>>()
         for ((validStates, count) in betterIngredients) {
 
-            val nextState = validStates[0]
-            val itemStacks = NonNullList.create<ItemStack>()
+            val stacks = mutableListOf<ItemStack>()
 
-            if (FluidRegistry.lookupFluidForBlock(nextState.block) != null) {
-                var stack: ItemStack = FluidUtil.getFilledBucket(FluidStack(FluidRegistry.lookupFluidForBlock(nextState.block), 1))
+            for (nextState in validStates) {
+                if (FluidRegistry.lookupFluidForBlock(nextState.block) != null) {
+                    var stack: ItemStack = FluidUtil.getFilledBucket(FluidStack(FluidRegistry.lookupFluidForBlock(nextState.block), 1))
 
-                stack = ItemStack(stack.item, count, stack.metadata, stack.tagCompound)
+                    stack = ItemStack(stack.item, count, stack.metadata, stack.tagCompound)
 
-                itemStacks.add(stack)
-            } else {
-                nextState.block.getDrops(itemStacks, world, BlockPos.ORIGIN, nextState, 0)
-
-                if (itemStacks.isEmpty()) itemStacks.add(ItemStack(nextState.block, count))
+                    stacks.add(stack)
+                } else
+                    stacks.add(silkDrop(nextState).apply { this.count = count })
             }
 
-            for (stack in itemStacks) {
-                val componentStack = ComponentStack(i * 16, 20 + row * 16)
-                componentStack.stack.setValue(stack)
-                add(componentStack)
+            if (stacks.isNotEmpty())
+                itemStacks.add(stacks.filter { it.isNotEmpty })
+        }
 
-                if (i++ > 4) {
-                    i = 0
-                    row++
-                }
+        for (stack in itemStacks) {
+            val componentStack = ComponentStack(i * 16, 20 + row * 16)
+            componentStack.stack.func {
+                stack[(ticks / 20) % stack.size]
+            }
+            add(componentStack)
+
+            if (i++ > 4) {
+                i = 0
+                row++
             }
         }
     }
