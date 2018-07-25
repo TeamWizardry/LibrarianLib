@@ -37,7 +37,7 @@ open class ComponentBookMark(val book: IBookGui, icon: Sprite, val id: Int, icon
         val textComp = ComponentText(size.xi - icon.width, 2, ComponentText.TextAlignH.RIGHT, ComponentText.TextAlignV.TOP)
         textComp.text.setValue(text)
         textComp.color.setValue(textColor)
-        textComp.transform.translateZ = 10.0
+        textComp.transform.translateZ = 100.0
         bar.add(textComp)
 
         val iconComponent = ComponentSprite(icon, size.xi - icon.width + iconExtraX, iconExtraY)

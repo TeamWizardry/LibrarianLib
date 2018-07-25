@@ -125,7 +125,7 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
             paperSprite = guideBookSheet.getSprite("paper", 146, 180)
             bookmarkSprite = guideBookSheet.getSprite("bookmark", 133, 13)
             searchIconSprite = guideBookSheet.getSprite("magnifier", 12, 12)
-            titleBarSprite = guideBookSheet.getSprite("title_bar", 86, 11)
+            titleBarSprite = guideBookSheet.getSprite("title_bar", 114, 11)
             nextSpritePressed = guideBookSheet.getSprite("arrow_next_pressed", 18, 10)
             nextSprite = guideBookSheet.getSprite("arrow_next", 18, 10)
             backSpritePressed = guideBookSheet.getSprite("arrow_home_pressed", 18, 9)
