@@ -13,8 +13,8 @@ import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.GuiOverlay
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.guicontainer.GuiContainerBase
-import com.teamwizardry.librarianlib.features.kotlin.json
-import com.teamwizardry.librarianlib.features.kotlin.nbt
+import com.teamwizardry.librarianlib.features.kotlin.jsonObject
+import com.teamwizardry.librarianlib.features.kotlin.tagCompound
 import com.teamwizardry.librarianlib.features.math.Matrix4
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
@@ -46,7 +46,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
  * - A highly customizable and easy to use particle system [ParticleBuilder] [ParticleSpawner]
  * - Automatic registration of TileEntities @[TileRegister]
  * - Unsafe extensions and reflection-free access [getUnsafe] (UnsafeKt.getUnsafeSafely in java)
- * - JSON and NBT groovy-style builders [json] [nbt] (JsonMaker and NBTMaker)
+ * - JSON and NBT groovy-style builders [jsonObject] [tagCompound] (JsonMaker and NBTMaker)
  * - Method Handle helpers and delegates [MethodHandleHelper]
  * - Helper class to check what mod owns a class [OwnershipHandler]
  * - Base classes for a variety of situations, for example: [Vec2d] [Matrix4] [Event]
