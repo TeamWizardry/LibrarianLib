@@ -5,7 +5,8 @@ import com.teamwizardry.librarianlib.features.base.IModelGenerator
 import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.currentModId
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
+import com.teamwizardry.librarianlib.features.utilities.generateBaseItemModel
+import com.teamwizardry.librarianlib.features.utilities.getPathForItemModel
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.creativetab.CreativeTabs
@@ -111,10 +112,10 @@ open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, to
 
     // Model Generation
 
-    override fun generateMissingItem(variant: String): Boolean {
+    override fun generateMissingItem(item: IModItemProvider, variant: String): Boolean {
         ModelHandler.generateItemJson(this) {
-            mapOf(JsonGenerationUtils.getPathForItemModel(this, variant)
-                    to JsonGenerationUtils.generateBaseItemModel(this, variant, "item/handheld"))
+            getPathForItemModel(this, variant) to
+                    generateBaseItemModel(this, variant, "item/handheld")
         }
         return true
     }

@@ -6,9 +6,11 @@ import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.currentModId
-import com.teamwizardry.librarianlib.features.kotlin.json
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils.getPathForBlockModel
+import com.teamwizardry.librarianlib.features.kotlin.key
+import com.teamwizardry.librarianlib.features.utilities.generateBaseItemModel
+import com.teamwizardry.librarianlib.features.utilities.generateBlockStates
+import com.teamwizardry.librarianlib.features.utilities.getPathForBlockModel
+import com.teamwizardry.librarianlib.features.utilities.getPathForItemModel
 import net.minecraft.block.Block
 import net.minecraft.block.BlockSlab
 import net.minecraft.block.material.MapColor
@@ -44,7 +46,7 @@ import java.util.*
 @Suppress("LeakingThis")
 open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapMaterial(parent.material)), IModBlock, IModelGenerator {
 
-    private val parentName = parent.block.registryName
+    private val parentName = parent.block.key
 
     open val singleBlock: BlockModSlab = this
 
@@ -53,27 +55,25 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
 
         override fun isDouble() = true
 
-        override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
-            val name = ResourceLocation(parentName!!.resourceDomain, "blocks/${parentName.resourcePath}").toString()
-            val loc = singleBlock.registryName!!.resourcePath + "_full"
+        override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
+            val name = ResourceLocation(parentName.resourceDomain, "blocks/${parentName.resourcePath}").toString()
+            val loc = singleBlock.key.resourcePath + "_full"
             ModelHandler.generateBlockJson(this, {
-                JsonGenerationUtils.generateBlockStates(this, mapper) {
-                    json { obj("model" to registryName!!.resourceDomain + ":" + loc ) }
+                generateBlockStates(this, mapper) {
+                    "model"("${key.resourceDomain}:$loc")
                 }
             }, {
-                mapOf(getPathForBlockModel(this, loc) to json {
-                    obj(
-                            "parent" to "block/cube_all",
-                            "textures" to obj(
-                                    "all" to name
-                            )
-                    )
-                })
+                getPathForBlockModel(this, loc) to {
+                    "parent"("block/cube_all")
+                    "textures" {
+                        "all"(name)
+                    }
+                }
             })
             return true
         }
 
-        override fun generateMissingItem(variant: String): Boolean {
+        override fun generateMissingItem(item: IModItemProvider, variant: String): Boolean {
             return false
         }
     }
@@ -200,50 +200,42 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
         SLAB
     }
 
-    override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
-        val name = ResourceLocation(parentName!!.resourceDomain, "blocks/${parentName.resourcePath}").toString()
-        val simpleName = registryName!!.resourcePath
+    override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
+        val name = ResourceLocation(parentName.resourceDomain, "blocks/${parentName.resourcePath}").toString()
+        val simpleName = key.resourcePath
 
         ModelHandler.generateBlockJson(this, {
-            JsonGenerationUtils.generateBlockStates(this, mapper) {
-                when (it) {
-                    "half=bottom" -> json { obj("model" to "${registryName}_bottom") }
-                    "half=top" -> json { obj("model" to "${registryName}_top") }
-                    else -> json { obj() }
-                }
+            generateBlockStates(this, mapper) {
+                if (it == "half=bottom") "model"("${registryName}_bottom")
+                else if (it == "half=top") "model"("${registryName}_top")
             }
         }, {
-            mapOf(
-                    getPathForBlockModel(this, "${simpleName}_bottom") to json {
-                        obj(
-                                "parent" to "block/half_slab",
-                                "textures" to obj(
-                                        "bottom" to name,
-                                        "top" to name,
-                                        "side" to name
-                                )
-                        )
-                    },
-                    getPathForBlockModel(this, "${simpleName}_top") to json {
-                        obj(
-                                "parent" to "block/upper_slab",
-                                "textures" to obj(
-                                        "bottom" to name,
-                                        "top" to name,
-                                        "side" to name
-                                )
-                        )
+                    getPathForBlockModel(this, "${simpleName}_bottom") to {
+                        "parent"("block/half_slab")
+                        "textures" {
+                            "bottom"(name)
+                            "top"(name)
+                            "side"(name)
+                        }
                     }
-            )
+
+                    getPathForBlockModel(this, "${simpleName}_top") to {
+                        "parent"("block/upper_slab")
+                        "textures" {
+                            "bottom"(name)
+                            "top"(name)
+                            "side"(name)
+                        }
+
+                    }
         })
         return true
     }
 
-    override fun generateMissingItem(variant: String): Boolean {
-        val item = itemForm as? IModItemProvider ?: return false
+    override fun generateMissingItem(item: IModItemProvider, variant: String): Boolean {
         ModelHandler.generateItemJson(item) {
-            mapOf(JsonGenerationUtils.getPathForItemModel(item as Item)
-                    to JsonGenerationUtils.generateBaseItemModel(item, "${item.registryName!!.resourcePath}_bottom"))
+            getPathForItemModel(this) to
+                    generateBaseItemModel(this, "${key.resourcePath}_bottom")
         }
         return true
     }

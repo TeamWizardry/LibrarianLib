@@ -34,14 +34,12 @@ import net.minecraft.world.World
 import net.minecraft.world.chunk.Chunk
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.ICapabilityProvider
+import net.minecraftforge.registries.IForgeRegistryEntry
 import java.lang.reflect.*
 import java.util.*
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.KVisibility
-import kotlin.reflect.full.functions
 import kotlin.reflect.full.starProjectedType
-import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.kotlinFunction
 
 fun Int.abs() = if (this < 0) -this else this
@@ -49,16 +47,16 @@ fun Int.abs() = if (this < 0) -this else this
 operator fun TextFormatting.plus(str: String) = "$this$str"
 operator fun TextFormatting.plus(other: TextFormatting) = "$this$other"
 
-fun String.localize(vararg parameters: Any): String {
-    return LibrarianLib.PROXY.translate(this, *parameters)
-}
+fun String.localize(vararg parameters: Any) = LibrarianLib.PROXY.translate(this, *parameters)
 
-fun String.canLocalize(): Boolean {
-    return LibrarianLib.PROXY.canTranslate(this)
-}
+fun String.canLocalize() = LibrarianLib.PROXY.canTranslate(this)
+
+fun String.extract(regex: Regex, group: Int = 1, default: String = "") = regex.find(this)?.groupValues?.get(group) ?: default
+fun String.extract(regex: String, group: Int = 1, default: String = "") = this.extract(regex.toRegex(), group, default)
 
 fun String.toRl(): ResourceLocation = ResourceLocation(this)
 val missingno = ResourceLocation("minecraft:missingno")
+val IForgeRegistryEntry<*>.key get() = registryName ?: missingno
 
 fun <K, V> MutableMap<K, V>.withRealDefault(default: (K) -> V): DefaultedMutableMap<K, V> {
     return when (this) {
@@ -73,7 +71,7 @@ interface DefaultedMutableMap<K, V> : MutableMap<K, V> {
 
 private class RealDefaultImpl<K, V>(val map: MutableMap<K, V>, val default: (K) -> V) : DefaultedMutableMap<K, V>, MutableMap<K, V> by map {
     override fun get(key: K): V {
-        return map.getOrPut(key, { default(key) })
+        return map.getOrPut(key) { default(key) }
     }
 }
 

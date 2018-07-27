@@ -7,15 +7,18 @@ import com.teamwizardry.librarianlib.features.base.block.BlockModSlab.Companion.
 import com.teamwizardry.librarianlib.features.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.currentModId
-import com.teamwizardry.librarianlib.features.kotlin.json
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
+import com.teamwizardry.librarianlib.features.kotlin.jsonObject
+import com.teamwizardry.librarianlib.features.kotlin.key
+import com.teamwizardry.librarianlib.features.utilities.generateRegularItemModel
+import com.teamwizardry.librarianlib.features.utilities.getPathForBaseBlockstate
+import com.teamwizardry.librarianlib.features.utilities.getPathForBlockModel
+import com.teamwizardry.librarianlib.features.utilities.getPathForItemModel
 import net.minecraft.block.Block
 import net.minecraft.block.BlockPane
 import net.minecraft.block.material.MapColor
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.entity.Entity
-import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
@@ -74,81 +77,146 @@ open class BlockModPane(name: String, canDrop: Boolean, val parent: IBlockState)
     override val creativeTab: ModCreativeTab?
         get() = ModCreativeTab.defaultTabs[modId]
 
-    override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
+    override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
         val name = ResourceLocation(parentName!!.resourceDomain, "blocks/${parentName.resourcePath}").toString()
-        val simpleName = registryName!!.resourcePath
+        val simpleName = key.resourcePath
 
         ModelHandler.generateBlockJson(this, {
-            mapOf(JsonGenerationUtils.getPathForBaseBlockstate(this) to json {
-                obj(
-                        "multipart" to array(
-                                obj("apply" to obj("model" to "${registryName}_post")),
-                                obj("when" to obj("north" to true), "apply" to obj("model" to "${registryName}_side")),
-                                obj("when" to obj("east" to true), "apply" to obj("model" to "${registryName}_side", "y" to 90)),
-                                obj("when" to obj("south" to true), "apply" to obj("model" to "${registryName}_side_alt")),
-                                obj("when" to obj("west" to true), "apply" to obj("model" to "${registryName}_side_alt", "y" to 90)),
-                                obj("when" to obj("north" to false), "apply" to obj("model" to "${registryName}_noside")),
-                                obj("when" to obj("east" to false), "apply" to obj("model" to "${registryName}_noside_alt")),
-                                obj("when" to obj("south" to false), "apply" to obj("model" to "${registryName}_noside_alt", "y" to 90)),
-                                obj("when" to obj("west" to false), "apply" to obj("model" to "${registryName}_noside", "y" to 270))
-                        )
+            getPathForBaseBlockstate(this) to jsonObject {
+                "multipart"(
+                        jsonObject {
+                            "apply" {
+                                "model"("${registryName}_post")
+                            }
+                        },
+                        jsonObject {
+                            "when" {
+                                "north"("true")
+                            }
+                            "apply" {
+                                "model"("${registryName}_side")
+                            }
+                        },
+                        jsonObject {
+                            "when" {
+                                "north"("true")
+                            }
+                            "apply" {
+                                "model"("${registryName}_side")
+                            }
+                        },
+                        jsonObject {
+                            "when" {
+                                "east"("true")
+                            }
+                            "apply" {
+                                "model"("${registryName}_side")
+                                "y"(90)
+                            }
+                        },
+                        jsonObject {
+                            "when" {
+                                "south"("true")
+                            }
+                            "apply" {
+                                "model"("${registryName}_side_alt")
+                            }
+                        },
+                        jsonObject {
+                            "when" {
+                                "west"("true")
+                            }
+                            "apply" {
+                                "model"("${registryName}_side_alt")
+                                "y"(90)
+                            }
+                        },
+                        jsonObject {
+                            "when" {
+                                "north"("true")
+                            }
+                            "apply" {
+                                "model"("${registryName}_side")
+                            }
+                        },
+                        jsonObject {
+                            "when" {
+                                "north"("false")
+                            }
+                            "apply" {
+                                "model"("${registryName}_noside")
+                            }
+                        },
+                        jsonObject {
+                            "when" {
+                                "east"("false")
+                            }
+                            "apply" {
+                                "model"("${registryName}_noside")
+                                "y"(90)
+                            }
+                        },
+                        jsonObject {
+                            "when" {
+                                "south"("false")
+                            }
+                            "apply" {
+                                "model"("${registryName}_noside_alt")
+                            }
+                        },
+                        jsonObject {
+                            "when" {
+                                "west"("false")
+                            }
+                            "apply" {
+                                "model"("${registryName}_noside_alt")
+                                "y"(90)
+                            }
+                        }
                 )
-            })
+            }
         }, {
-            mapOf(
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_post") to json {
-                        obj(
-                                "parent" to "block/pane_post",
-                                "textures" to obj(
-                                        "edge" to name + "_top",
-                                        "pane" to name
-                                )
-                        )
-                    },
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_side") to json {
-                        obj(
-                                "parent" to "block/pane_side",
-                                "textures" to obj(
-                                        "edge" to name + "_top",
-                                        "pane" to name
-                                )
-                        )
-                    },
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_side_alt") to json {
-                        obj(
-                                "parent" to "block/pane_side_alt",
-                                "textures" to obj(
-                                        "edge" to name + "_top",
-                                        "pane" to name
-                                )
-                        )
-                    },
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_noside") to json {
-                        obj(
-                                "parent" to "block/pane_noside",
-                                "textures" to obj(
-                                        "pane" to name
-                                )
-                        )
-                    },
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_noside_alt") to json {
-                        obj(
-                                "parent" to "block/pane_noside_alt",
-                                "textures" to obj(
-                                        "pane" to name
-                                )
-                        )
-                    }
-            )
+            getPathForBlockModel(this, "${simpleName}_post") to {
+                "parent"("block/pane_post")
+                "textures" {
+                    "edge"(name + "_top")
+                    "pane"(name)
+                }
+            }
+            getPathForBlockModel(this, "${simpleName}_side") to {
+                "parent"("block/pane_side")
+                "textures" {
+                    "edge"(name + "_top")
+                    "pane"(name)
+                }
+            }
+            getPathForBlockModel(this, "${simpleName}_side_alt") to {
+                "parent"("block/pane_side_alt")
+                "textures" {
+                    "edge"(name + "_top")
+                    "pane"(name)
+                }
+            }
+            getPathForBlockModel(this, "${simpleName}_noside") to {
+                "parent"("block/pane_noside")
+                "textures" {
+                    "pane"(name)
+                }
+            }
+            getPathForBlockModel(this, "${simpleName}_noside_alt") to {
+                "parent"("block/pane_noside_alt")
+                "textures" {
+                    "pane"(name)
+                }
+            }
+
         })
         return true
     }
 
-    override fun generateMissingItem(variant: String): Boolean {
-        val item = itemForm as? IModItemProvider ?: return false
+    override fun generateMissingItem(item: IModItemProvider, variant: String): Boolean {
         ModelHandler.generateItemJson(item) {
-            mapOf(JsonGenerationUtils.getPathForItemModel(item as Item, variant) to
-                    JsonGenerationUtils.generateRegularItemModel(item, variant))
+            getPathForItemModel(this, variant) to generateRegularItemModel(this, variant)
         }
         return true
     }

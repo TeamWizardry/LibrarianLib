@@ -3,9 +3,11 @@ package com.teamwizardry.librarianlib.features.base.block
 import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.features.base.IModelGenerator
 import com.teamwizardry.librarianlib.features.base.item.IModItemProvider
-import com.teamwizardry.librarianlib.features.kotlin.associateInPlace
-import com.teamwizardry.librarianlib.features.kotlin.json
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
+import com.teamwizardry.librarianlib.features.kotlin.jsonObject
+import com.teamwizardry.librarianlib.features.kotlin.key
+import com.teamwizardry.librarianlib.features.utilities.getPathForBlockModel
+import com.teamwizardry.librarianlib.features.utilities.getPathForItemModel
+import com.teamwizardry.librarianlib.features.utilities.getPathsForBlockstate
 import net.minecraft.block.Block
 import net.minecraft.block.BlockFenceGate
 import net.minecraft.block.material.Material
@@ -32,7 +34,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
  * Created at 10:36 AM on 5/7/16.
  */
 open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, parent.material), IModelGenerator {
-    private val parentName = parent.block.registryName
+    private val parentName = parent.block.key
 
     companion object {
         val UP: PropertyBool = PropertyBool.create("up")
@@ -71,12 +73,10 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
     override fun getMetaFromState(state: IBlockState) = 0
 
     @Suppress("OverridingDeprecatedMember", "DEPRECATION")
-    override fun getBoundingBox(state: IBlockState, source: IBlockAccess, pos: BlockPos)
-            = AABB_BY_INDEX[getAABBIndex(getActualState(state, source, pos))]
+    override fun getBoundingBox(state: IBlockState, source: IBlockAccess, pos: BlockPos) = AABB_BY_INDEX[getAABBIndex(getActualState(state, source, pos))]
 
     @Suppress("OverridingDeprecatedMember", "DEPRECATION")
-    override fun getCollisionBoundingBox(blockState: IBlockState, worldIn: IBlockAccess, pos: BlockPos): AxisAlignedBB
-            = CLIP_AABB_BY_INDEX[getAABBIndex(getActualState(blockState, worldIn, pos))]
+    override fun getCollisionBoundingBox(blockState: IBlockState, worldIn: IBlockAccess, pos: BlockPos): AxisAlignedBB = CLIP_AABB_BY_INDEX[getAABBIndex(getActualState(blockState, worldIn, pos))]
 
     override fun canPlaceTorchOnTop(state: IBlockState, world: IBlockAccess, pos: BlockPos) = true
     @Suppress("OverridingDeprecatedMember")
@@ -102,6 +102,7 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
 
     @Suppress("OverridingDeprecatedMember")
     override fun getMapColor(state: IBlockState, worldIn: IBlockAccess, pos: BlockPos) = parent.getMapColor(worldIn, pos)
+
     override fun getExplosionResistance(world: World, pos: BlockPos, exploder: Entity?, explosion: Explosion) = parent.block.getExplosionResistance(world, pos, exploder, explosion)
     @Suppress("OverridingDeprecatedMember")
     override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
@@ -128,102 +129,90 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
     override fun createBlockState() = BlockStateContainer(this, UP, NORTH, EAST, WEST, SOUTH)
 
 
-    override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
-        val name = ResourceLocation(parentName!!.resourceDomain, "blocks/${parentName.resourcePath}").toString()
-        val simpleName = registryName!!.resourcePath
+    override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
+        val name = ResourceLocation(parentName.resourceDomain, "blocks/${parentName.resourcePath}").toString()
+        val simpleName = key.resourcePath
 
         ModelHandler.generateBlockJson(this, {
-            JsonGenerationUtils.getPathsForBlockstate(this, mapper).associateInPlace {
-                json {
-                    obj(
-                            "multipart" to array(
-                                    obj(
-                                            "when" to obj(
-                                                    "up" to "true"
-                                            ),
-                                            "apply" to obj(
-                                                    "model" to "${registryName}_post"
-                                            )
-                                    ),
-                                    obj(
-                                            "when" to obj(
-                                                    "north" to "true"
-                                            ),
-                                            "apply" to obj(
-                                                    "model" to "${registryName}_side",
-                                                    "uvlock" to true
-                                            )
-                                    ),
-                                    obj(
-                                            "when" to obj(
-                                                    "east" to "true"
-                                            ),
-                                            "apply" to obj(
-                                                    "model" to "${registryName}_side",
-                                                    "y" to 90,
-                                                    "uvlock" to true
-                                            )
-                                    ),
-                                    obj(
-                                            "when" to obj(
-                                                    "south" to "true"
-                                            ),
-                                            "apply" to obj(
-                                                    "model" to "${registryName}_side",
-                                                    "y" to 180,
-                                                    "uvlock" to true
-                                            )
-                                    ),
-                                    obj(
-                                            "when" to obj(
-                                                    "west" to "true"
-                                            ),
-                                            "apply" to obj(
-                                                    "model" to "${registryName}_side",
-                                                    "y" to 270,
-                                                    "uvlock" to true
-                                            )
-                                    )
-                            )
+            for (path in getPathsForBlockstate(this, mapper))
+                path to {
+                    "multipart"(
+                            jsonObject {
+                                "when" {
+                                    "up"("true")
+                                }
+                                "apply" {
+                                    "model"("${key}_post")
+                                }
+                            },
+                            jsonObject {
+                                "when" {
+                                    "north"("true")
+                                }
+                                "apply" {
+                                    "model"("${key}_side")
+                                    "uvlock"(true)
+                                }
+                            },
+                            jsonObject {
+                                "when" {
+                                    "east"("true")
+                                }
+                                "apply" {
+                                    "model"("${key}_side")
+                                    "y"(90)
+                                    "uvlock"(true)
+                                }
+                            },
+                            jsonObject {
+                                "when" {
+                                    "south"("true")
+                                }
+                                "apply" {
+                                    "model"("${key}_side")
+                                    "y"(180)
+                                    "uvlock"(true)
+                                }
+                            },
+                            jsonObject {
+                                "when" {
+                                    "west"("true")
+                                }
+                                "apply" {
+                                    "model"("${key}_side")
+                                    "y"(270)
+                                    "uvlock"(true)
+                                }
+                            }
                     )
                 }
-            }
         }, {
-            mapOf(JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_post")
-                    to json {
-                obj(
-                        "parent" to "block/wall_post",
-                        "textures" to obj(
-                                "wall" to name
-                        )
-                )
-            },
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_side")
-                            to json {
-                        obj(
-                                "parent" to "block/wall_side",
-                                "textures" to obj(
-                                        "wall" to name
-                                )
-                        )
-                    })
+            getPathForBlockModel(this, "${simpleName}_post") to {
+                "parent"("block/wall_post")
+                "textures" {
+                    "wall"(name)
+                }
+
+            }
+            getPathForBlockModel(this, "${simpleName}_side") to {
+                "parent"("block/wall_side")
+                "textures" {
+                    "wall"(name)
+                }
+            }
         })
         return true
     }
 
-    override fun generateMissingItem(variant: String): Boolean {
-        val name = ResourceLocation(parentName!!.resourceDomain, "block/${parentName.resourcePath}").toString()
-        val item = itemForm as? IModItemProvider ?: return false
+    override fun generateMissingItem(item: IModItemProvider, variant: String): Boolean {
+        val name = ResourceLocation(parentName.resourceDomain, "block/${parentName.resourcePath}").toString()
         ModelHandler.generateItemJson(item) {
-            mapOf(JsonGenerationUtils.getPathForItemModel(item.providedItem)
-                    to json {
-                obj(
-                        "parent" to "block/wall_inventory",
-                        "textures" to obj(
-                                "wall" to name
-                        )
-                )
-            })
+            getPathForItemModel(this) to jsonObject {
+                "parent"("block/wall_inventory")
+                "textures" {
+                    "wall"(name)
+                }
+            }
         }
         return true
     }

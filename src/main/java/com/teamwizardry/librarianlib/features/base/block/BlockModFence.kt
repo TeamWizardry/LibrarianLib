@@ -6,8 +6,11 @@ import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.currentModId
-import com.teamwizardry.librarianlib.features.kotlin.json
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
+import com.teamwizardry.librarianlib.features.kotlin.jsonObject
+import com.teamwizardry.librarianlib.features.kotlin.key
+import com.teamwizardry.librarianlib.features.utilities.getPathForBlockModel
+import com.teamwizardry.librarianlib.features.utilities.getPathForItemModel
+import com.teamwizardry.librarianlib.features.utilities.getPathsForBlockstate
 import net.minecraft.block.Block
 import net.minecraft.block.BlockFence
 import net.minecraft.block.material.MapColor
@@ -27,9 +30,9 @@ import net.minecraft.world.World
 @Suppress("LeakingThis")
 open class BlockModFence(name: String, val parent: IBlockState) : BlockFence(parent.material, MapColor.GRAY), IModBlock, IModelGenerator {
 
-    private val parentName = parent.block.registryName
+    private val parentName = parent.block.key
 
-    override val variants: Array<out String>
+    override val variants: Array<out String> = VariantHelper.beginSetupBlock(name, arrayOf())
 
     override val bareName: String = VariantHelper.toSnakeCase(name)
     val modId = currentModId
@@ -37,7 +40,6 @@ open class BlockModFence(name: String, val parent: IBlockState) : BlockFence(par
     override val itemForm: ItemBlock? by lazy { createItemForm() }
 
     init {
-        this.variants = VariantHelper.beginSetupBlock(name, arrayOf())
         VariantHelper.finishSetupBlock(this, bareName, itemForm, this::creativeTab)
     }
 
@@ -63,105 +65,94 @@ open class BlockModFence(name: String, val parent: IBlockState) : BlockFence(par
 
     @Suppress("OverridingDeprecatedMember")
     override fun getMapColor(state: IBlockState, worldIn: IBlockAccess, pos: BlockPos): MapColor = parent.getMapColor(worldIn, pos)
+
     override fun getExplosionResistance(world: World, pos: BlockPos, exploder: Entity?, explosion: Explosion) = parent.block.getExplosionResistance(world, pos, exploder, explosion)
     @Suppress("OverridingDeprecatedMember")
     override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
+
     override fun isToolEffective(type: String, state: IBlockState) = parent.block.isToolEffective(type, parent)
     override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent)
 
-    override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
-        val name = ResourceLocation(parentName!!.resourceDomain, "blocks/${parentName.resourcePath}").toString()
-        val simpleName = registryName!!.resourcePath
+    override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
+        val name = ResourceLocation(parentName.resourceDomain, "blocks/${parentName.resourcePath}").toString()
+        val simpleName = key.resourcePath
 
         ModelHandler.generateBlockJson(this, {
-            JsonGenerationUtils.getPathsForBlockstate(this, mapper).associate {
-                it to json {
-                    obj(
-                            "multipart" to array(
-                                    obj(
-                                            "apply" to obj(
-                                                    "model" to "${registryName}_post"
-                                            )
-                                    ),
-                                    obj(
-                                            "when" to obj(
-                                                    "north" to "true"
-                                            ),
-                                            "apply" to obj(
-                                                    "model" to "${registryName}_side",
-                                                    "uvlock" to true
-                                            )
-                                    ),
-                                    obj(
-                                            "when" to obj(
-                                                    "east" to "true"
-                                            ),
-                                            "apply" to obj(
-                                                    "model" to "${registryName}_side",
-                                                    "y" to 90,
-                                                    "uvlock" to true
-                                            )
-                                    ),
-                                    obj(
-                                            "when" to obj(
-                                                    "south" to "true"
-                                            ),
-                                            "apply" to obj(
-                                                    "model" to "${registryName}_side",
-                                                    "y" to 180,
-                                                    "uvlock" to true
-                                            )
-                                    ),
-                                    obj(
-                                            "when" to obj(
-                                                    "west" to "true"
-                                            ),
-                                            "apply" to obj(
-                                                    "model" to "${registryName}_side",
-                                                    "y" to 270,
-                                                    "uvlock" to true
-                                            )
-                                    )
-                            )
+            for (path in getPathsForBlockstate(this, mapper))
+                path to {
+                    "multipart"(
+                            jsonObject {
+                                "apply" {
+                                    "model"("${key}_post")
+                                }
+                            },
+                            jsonObject {
+                                "when" {
+                                    "north"("true")
+                                }
+                                "apply" {
+                                    "model"("${key}_side")
+                                    "uvlock"(true)
+                                }
+                            },
+                            jsonObject {
+                                "when" {
+                                    "east"("true")
+                                }
+                                "apply" {
+                                    "model"("${key}_side")
+                                    "y"(90)
+                                    "uvlock"(true)
+                                }
+                            },
+                            jsonObject {
+                                "when" {
+                                    "south"("true")
+                                }
+                                "apply" {
+                                    "model"("${key}_side")
+                                    "y"(180)
+                                    "uvlock"(true)
+                                }
+                            },
+                            jsonObject {
+                                "when" {
+                                    "west"("true")
+                                }
+                                "apply" {
+                                    "model"("${key}_side")
+                                    "y"(270)
+                                    "uvlock"(true)
+                                }
+                            }
                     )
                 }
-            }
         }, {
-            mapOf(JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_post")
-                    to json {
-                obj(
-                        "parent" to "block/fence_post",
-                        "textures" to obj(
-                                "texture" to name
-                        )
-                )
-            },
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_side")
-                            to json {
-                        obj(
-                                "parent" to "block/fence_side",
-                                "textures" to obj(
-                                        "texture" to name
-                                )
-                        )
-                    })
+            getPathForBlockModel(this, "${simpleName}_post") to jsonObject {
+                "parent"("block/fence_post")
+                "textures" {
+                    "texture"(name)
+                }
+            }
+            getPathForBlockModel(this, "${simpleName}_side") to jsonObject {
+                "parent"("block/fence_side")
+                "textures" {
+                    "texture"(name)
+                }
+            }
         })
         return true
     }
 
-    override fun generateMissingItem(variant: String): Boolean {
-        val name = ResourceLocation(parentName!!.resourceDomain, "blocks/${parentName.resourcePath}").toString()
-        val item = itemForm as? IModItemProvider ?: return false
+    override fun generateMissingItem(item: IModItemProvider, variant: String): Boolean {
+        val name = ResourceLocation(parentName.resourceDomain, "blocks/${parentName.resourcePath}").toString()
         ModelHandler.generateItemJson(item) {
-            mapOf(JsonGenerationUtils.getPathForItemModel(item.providedItem)
-                    to json {
-                obj(
-                        "parent" to "block/fence_inventory",
-                        "textures" to obj(
-                                "texture" to name
-                        )
-                )
-            })
+            getPathForItemModel(this) to jsonObject {
+                "parent"("block/fence_inventory")
+                "textures" {
+                    "texture"(name)
+                }
+            }
         }
         return true
     }

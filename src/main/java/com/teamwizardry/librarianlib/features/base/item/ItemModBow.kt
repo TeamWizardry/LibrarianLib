@@ -1,13 +1,15 @@
 package com.teamwizardry.librarianlib.features.base.item
 
-import com.google.gson.JsonObject
 import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.features.base.IModelGenerator
 import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.currentModId
-import com.teamwizardry.librarianlib.features.kotlin.json
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
+import com.teamwizardry.librarianlib.features.kotlin.array
+import com.teamwizardry.librarianlib.features.kotlin.jsonObject
+import com.teamwizardry.librarianlib.features.kotlin.key
+import com.teamwizardry.librarianlib.features.utilities.generateBaseItemModel
+import com.teamwizardry.librarianlib.features.utilities.getPathForItemModel
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBow
@@ -53,24 +55,37 @@ open class ItemModBow(name: String) : ItemBow(), IModItemProvider, IModelGenerat
 
     // Model Generation
 
-    override fun generateMissingItem(variant: String): Boolean {
-        val rd = this.registryName!!.resourceDomain
+    override fun generateMissingItem(item: IModItemProvider, variant: String): Boolean {
+        val rd = this.key.resourceDomain
         ModelHandler.generateItemJson(this) {
-            mapOf(JsonGenerationUtils.getPathForItemModel(this, variant)
-                    to JsonGenerationUtils.generateBaseItemModel(this, variant, "item/bow").apply {
-                (this as JsonObject).add("overrides", json {
-                    array(
-                            obj("predicate" to obj("pulling" to 1), "model" to "$rd:item/${variant}_pulling_0"),
-                            obj("predicate" to obj("pulling" to 1, "pull" to 0.65), "model" to "$rd:item/${variant}_pulling_1"),
-                            obj("predicate" to obj("pulling" to 1, "pull" to 0.9), "model" to "$rd:item/${variant}_pulling_2"))
-                })
-            },
-                    JsonGenerationUtils.getPathForItemModel(this, variant + "_pulling_0")
-                            to JsonGenerationUtils.generateBaseItemModel(this, variant + "_pulling_0", "$rd:item/$variant"),
-                    JsonGenerationUtils.getPathForItemModel(this, variant + "_pulling_1")
-                            to JsonGenerationUtils.generateBaseItemModel(this, variant + "_pulling_1", "$rd:item/$variant"),
-                    JsonGenerationUtils.getPathForItemModel(this, variant + "_pulling_2")
-                            to JsonGenerationUtils.generateBaseItemModel(this, variant + "_pulling_2", "$rd:item/$variant"))
+            getPathForItemModel(this, variant) to generateBaseItemModel(this, variant, "item/bow").apply {
+                add("overrides", array(
+                        jsonObject {
+                            "predicate" {
+                                "pulling" to 1
+                            }
+                            "model" to "$rd:item/${variant}_pulling_0"
+                        },
+                        jsonObject {
+                            "predicate" {
+                                "pulling" to 1
+                                "pull" to 0.65
+                            }
+                            "model" to "$rd:item/${variant}_pulling_1"
+                        },
+                        jsonObject {
+                            "predicate" to {
+                                "pulling" to 1
+                                "pull" to 0.9
+                            }
+                            "model" to "$rd:item/${variant}_pulling_2"
+                        })
+                )
+            }
+
+            for (i in 0..2)
+                getPathForItemModel(this, variant + "_pulling_$i") to
+                    generateBaseItemModel(this, variant + "_pulling_$i", "$rd:item/$variant")
         }
         return true
     }

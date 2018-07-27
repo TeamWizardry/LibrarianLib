@@ -4,8 +4,9 @@ import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.features.base.IModelGenerator
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.threadLocal
-import com.teamwizardry.librarianlib.features.kotlin.json
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
+import com.teamwizardry.librarianlib.features.utilities.generateBaseBlockModel
+import com.teamwizardry.librarianlib.features.utilities.generateBlockStates
+import com.teamwizardry.librarianlib.features.utilities.getPathForBlockModel
 import net.minecraft.block.Block
 import net.minecraft.block.material.MapColor
 import net.minecraft.block.material.Material
@@ -53,13 +54,14 @@ open class BlockModVariant(name: String, materialIn: Material, color: MapColor, 
 
     // Blockstate related objects
 
-    override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
+    override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
         ModelHandler.generateBlockJson(this, {
-            JsonGenerationUtils.generateBlockStates(this, mapper) {
-                json { obj("model" to registryName!!.resourceDomain + ":" + it.replace("variant=", "")) }
+            generateBlockStates(this, mapper) {
+                "model" to key.resourceDomain + ":" + it.replace("variant=", "")
             }
         }, {
-            variants.associate { JsonGenerationUtils.getPathForBlockModel(this, it) to JsonGenerationUtils.generateBaseBlockModel(this, it) }
+            for (variant in variants)
+                getPathForBlockModel(this, variant) to generateBaseBlockModel(this, variant)
         })
         return true
     }

@@ -2,8 +2,9 @@ package com.teamwizardry.librarianlib.features.base.block
 
 import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.features.helpers.threadLocal
-import com.teamwizardry.librarianlib.features.kotlin.json
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
+import com.teamwizardry.librarianlib.features.kotlin.extract
+import com.teamwizardry.librarianlib.features.utilities.generateBlockStates
+import com.teamwizardry.librarianlib.features.utilities.getPathForBlockModel
 import net.minecraft.block.Block
 import net.minecraft.block.IGrowable
 import net.minecraft.block.properties.PropertyInteger
@@ -200,22 +201,20 @@ abstract class BlockModCrops(name: String, stages: Int) : BlockModBush(injectSta
 
     override fun createItemForm(): ItemBlock? = null
 
-    override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
+    override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
         ModelHandler.generateBlockJson(this, {
-            JsonGenerationUtils.generateBlockStates(this, mapper) {
-                json { obj("model" to registryName.toString() + ("age=(\\d+)".toRegex().find(it)?.groupValues?.get(1)?.toInt() ?: 0)) }
+            generateBlockStates(this, mapper) {
+                val age = it.extract("age=(\\d+)").toIntOrNull() ?: 0
+                "model"("$key$age")
             }
         }, {
-            (0 until getMaxAge()).associate {
-                JsonGenerationUtils.getPathForBlockModel(this, registryName.toString() + it) to json {
-                    obj(
-                            "parent" to "block/crop",
-                            "textures" to obj(
-                                    "all" to "${registryName!!.resourceDomain}:blocks/${registryName!!.resourcePath}$it"
-                            )
-                    )
+            for (i in 0 until getMaxAge())
+                getPathForBlockModel(this, "$key$i") to {
+                    "parent"("block/crop")
+                    "textures" {
+                        "all"("${key.resourceDomain}:blocks/${key.resourcePath}$i")
+                    }
                 }
-            }
         })
         return true
     }

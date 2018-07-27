@@ -3,9 +3,11 @@ package com.teamwizardry.librarianlib.features.base.block
 import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.features.base.IModelGenerator
 import com.teamwizardry.librarianlib.features.helpers.threadLocal
+import com.teamwizardry.librarianlib.features.kotlin.extract
 import com.teamwizardry.librarianlib.features.kotlin.get
-import com.teamwizardry.librarianlib.features.kotlin.json
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
+import com.teamwizardry.librarianlib.features.utilities.generateBaseBlockModel
+import com.teamwizardry.librarianlib.features.utilities.generateBlockStates
+import com.teamwizardry.librarianlib.features.utilities.getPathForBlockModel
 import net.minecraft.block.Block
 import net.minecraft.block.material.Material
 import net.minecraft.block.properties.PropertyDirection
@@ -88,30 +90,27 @@ open class BlockModDirectional(name: String, material: Material, horizontal: Boo
         return if (isHorizontal) state.getValue(property).horizontalIndex else state.getValue(property).ordinal
     }
 
-    override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
+    override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
         ModelHandler.generateBlockJson(this, {
-            JsonGenerationUtils.generateBlockStates(this, mapper) {
-                val facing = "${property.name}=(\\w+)".toRegex().find(it)?.groupValues?.get(1)?.toUpperCase() ?: "UP"
-                val dir = EnumFacing.byName(facing) ?: EnumFacing.DOWN
-                val x = when (dir) {
-                    EnumFacing.DOWN -> 270
-                    EnumFacing.UP -> 90
-                    else -> 0
-                }
-                val y = if (dir.horizontalIndex != -1) (dir.horizontalAngle.toInt() - 180) % 360 else 0
+            generateBlockStates(this, mapper) {
+                "model" to key
 
-                json {
-                    obj(
-                            "model" to registryName.toString(),
-                            *if (x != 0) arrayOf("x" to x) else arrayOf(),
-                            *if (y != 0) arrayOf("y" to y) else arrayOf()
-                    )
-                }
+                val dir = EnumFacing.byName(it.extract("${property.name}=(\\w+)", default = "UP"))
+                        ?: EnumFacing.DOWN
+
+                if (dir == EnumFacing.DOWN)
+                    "x" to 270
+                else if (dir == EnumFacing.UP)
+                    "x" to 90
+
+                if (dir.horizontalIndex != -1 && dir.horizontalAngle != 0f)
+                    "y" to (dir.horizontalAngle.toInt() - 180) % 360
+
             }
         }, {
-            mapOf(JsonGenerationUtils.getPathForBlockModel(this)
-                    to JsonGenerationUtils.generateBaseBlockModel(this))
+            getPathForBlockModel(this) to generateBaseBlockModel(this)
         })
+
         return true
     }
 }

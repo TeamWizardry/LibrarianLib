@@ -6,8 +6,11 @@ import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.currentModId
-import com.teamwizardry.librarianlib.features.kotlin.json
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
+import com.teamwizardry.librarianlib.features.kotlin.key
+import com.teamwizardry.librarianlib.features.utilities.generateBaseItemModel
+import com.teamwizardry.librarianlib.features.utilities.generateBlockStates
+import com.teamwizardry.librarianlib.features.utilities.getPathForBlockModel
+import com.teamwizardry.librarianlib.features.utilities.getPathForItemModel
 import net.minecraft.block.Block
 import net.minecraft.block.BlockFenceGate
 import net.minecraft.block.BlockPlanks
@@ -74,29 +77,32 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
 
         val axis = if (actual.getValue(FACING).axis == X) Z else X
 
-        if (worldIn.getBlockState(pos.offset(EnumFacing.getFacingFromAxis(NEGATIVE, axis))).block is BlockModWall ||
+        return if (worldIn.getBlockState(pos.offset(EnumFacing.getFacingFromAxis(NEGATIVE, axis))).block is BlockModWall ||
                 worldIn.getBlockState(pos.offset(EnumFacing.getFacingFromAxis(POSITIVE, axis))).block is BlockModWall)
-            return actual.withProperty(IN_WALL, true)
+            actual.withProperty(IN_WALL, true)
         else
-            return actual
+            actual
     }
 
     @Suppress("OverridingDeprecatedMember")
     override fun getMapColor(state: IBlockState, worldIn: IBlockAccess, pos: BlockPos): MapColor = parent.getMapColor(worldIn, pos)
+
     @Suppress("OverridingDeprecatedMember")
     override fun getMaterial(state: IBlockState): Material = parent.material
+
     override fun getExplosionResistance(world: World, pos: BlockPos, exploder: Entity?, explosion: Explosion) = parent.block.getExplosionResistance(world, pos, exploder, explosion)
     @Suppress("OverridingDeprecatedMember")
     override fun getBlockHardness(blockState: IBlockState, worldIn: World, pos: BlockPos) = parent.getBlockHardness(worldIn, pos)
+
     override fun isToolEffective(type: String, state: IBlockState) = parent.block.isToolEffective(type, parent)
     override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent)
 
-    override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
+    override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
         val name = ResourceLocation(parentName!!.resourceDomain, "blocks/${parentName.resourcePath}").toString()
-        val simpleName = registryName!!.resourcePath
+        val simpleName = key.resourcePath
 
         ModelHandler.generateBlockJson(this, {
-            JsonGenerationUtils.generateBlockStates(this, mapper) {
+            generateBlockStates(this, mapper) {
                 val y = when {
                     "facing=south" in it -> 0
                     "facing=west" in it -> 90
@@ -108,61 +114,45 @@ open class BlockModFenceGate(name: String, val parent: IBlockState) : BlockFence
                 val open = "open=true" in it
 
                 val modelType = "${if (inWall) "wall" else "fence"}_${if (open) "open" else "closed"}"
-                json {
-                    obj(
-                            "model" to "${registryName}_$modelType",
-                            "uvlock" to true,
-                            *if (y != 0) arrayOf("y" to y) else arrayOf()
-                    )
-                }
+
+                "model"("${registryName}_$modelType")
+                "uvlock"(true)
+
+                if (y != 0)
+                    "y"(y)
             }
         }, {
-            mapOf(
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_fence_closed")
-                            to json {
-                        obj(
-                                "parent" to "block/fence_gate_closed",
-                                "textures" to obj(
-                                        "texture" to name
-                                )
-                        )
-                    },
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_fence_open")
-                            to json {
-                        obj(
-                                "parent" to "block/fence_gate_open",
-                                "textures" to obj(
-                                        "texture" to name
-                                )
-                        )
-                    },
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_wall_closed")
-                            to json {
-                        obj(
-                                "parent" to "block/wall_gate_closed",
-                                "textures" to obj(
-                                        "texture" to name
-                                )
-                        )
-                    },
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_wall_open")
-                            to json {
-                        obj(
-                                "parent" to "block/wall_gate_open",
-                                "textures" to obj(
-                                        "texture" to name
-                                )
-                        )
-                    })
+            getPathForBlockModel(this, "${simpleName}_fence_closed") to {
+                "parent"("block/fence_gate_closed")
+                "textures" {
+                    "texture"(name)
+                }
+            }
+            getPathForBlockModel(this, "${simpleName}_fence_open") to {
+                "parent"("block/fence_gate_open")
+                "textures" {
+                    "texture"(name)
+                }
+            }
+            getPathForBlockModel(this, "${simpleName}_wall_closed") to {
+                "parent"("block/wall_gate_closed")
+                "textures" {
+                    "texture"(name)
+                }
+            }
+            getPathForBlockModel(this, "${simpleName}_wall_open") to {
+                "parent"("block/wall_gate_open")
+                "textures" {
+                    "texture"(name)
+                }
+            }
         })
         return true
     }
 
-    override fun generateMissingItem(variant: String): Boolean {
-        val item = itemForm as? IModItemProvider ?: return false
+    override fun generateMissingItem(item: IModItemProvider, variant: String): Boolean {
         ModelHandler.generateItemJson(item) {
-            mapOf(JsonGenerationUtils.getPathForItemModel(item.providedItem)
-                    to JsonGenerationUtils.generateBaseItemModel(item.providedItem, "${registryName!!.resourcePath}_fence_closed"))
+            getPathForItemModel(this) to generateBaseItemModel(this, "${key.resourcePath}_fence_closed")
         }
         return true
     }

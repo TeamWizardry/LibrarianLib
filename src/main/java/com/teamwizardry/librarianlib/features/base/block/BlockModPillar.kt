@@ -2,9 +2,10 @@ package com.teamwizardry.librarianlib.features.base.block
 
 import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.features.base.IModelGenerator
-import com.teamwizardry.librarianlib.features.kotlin.flatAssociate
-import com.teamwizardry.librarianlib.features.kotlin.json
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
+import com.teamwizardry.librarianlib.features.kotlin.extract
+import com.teamwizardry.librarianlib.features.utilities.generateBaseBlockModel
+import com.teamwizardry.librarianlib.features.utilities.generateBlockStates
+import com.teamwizardry.librarianlib.features.utilities.getPathForBlockModel
 import net.minecraft.block.Block
 import net.minecraft.block.BlockLog
 import net.minecraft.block.material.Material
@@ -33,23 +34,20 @@ open class BlockModPillar(name: String, material: Material, vararg variants: Str
     }
 
     @Suppress("OverridingDeprecatedMember", "DEPRECATION")
-    override fun getStateForPlacement(worldIn: World?, pos: BlockPos?, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float, meta: Int, placer: EntityLivingBase?): IBlockState {
+    override fun getStateForPlacement(worldIn: World, pos: BlockPos, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float, meta: Int, placer: EntityLivingBase): IBlockState {
         return this.getStateFromMeta(meta).withProperty(AXIS, BlockLog.EnumAxis.fromFacingAxis(facing.axis))
     }
 
     @Suppress("OverridingDeprecatedMember")
     override fun withRotation(state: IBlockState, rot: Rotation): IBlockState {
-        when (rot) {
-            Rotation.COUNTERCLOCKWISE_90, Rotation.CLOCKWISE_90 -> {
-
-                when (state.getValue(AXIS)) {
-                    BlockLog.EnumAxis.X -> return state.withProperty(AXIS, BlockLog.EnumAxis.Z)
-                    BlockLog.EnumAxis.Z -> return state.withProperty(AXIS, BlockLog.EnumAxis.X)
-                    else -> return state
-                }
+        return when (rot) {
+            Rotation.COUNTERCLOCKWISE_90, Rotation.CLOCKWISE_90 -> when (state.getValue(AXIS)) {
+                BlockLog.EnumAxis.X -> state.withProperty(AXIS, BlockLog.EnumAxis.Z)
+                BlockLog.EnumAxis.Z -> state.withProperty(AXIS, BlockLog.EnumAxis.X)
+                else -> state
             }
 
-            else -> return state
+            else -> state
         }
     }
 
@@ -61,76 +59,49 @@ open class BlockModPillar(name: String, material: Material, vararg variants: Str
 
     @Suppress("OverridingDeprecatedMember")
     override fun getStateFromMeta(meta: Int): IBlockState {
-        var axis = BlockLog.EnumAxis.Y
-        val i = meta and 12
-
-        when (i) {
-            4 -> axis = BlockLog.EnumAxis.X
-            8 -> axis = BlockLog.EnumAxis.Z
-            12 -> axis = BlockLog.EnumAxis.NONE
-        }
-
-        return this.defaultState.withProperty(AXIS, axis)
+        val index = (meta and 0x1100) shl 2
+        return defaultState.withProperty(AXIS, BlockLog.EnumAxis.values()[index])
     }
 
-    override fun getMetaFromState(state: IBlockState?): Int {
-        state ?: return 0
-        var i = 0
+    override fun getMetaFromState(state: IBlockState)
+            = when (state.getValue(AXIS)) {
+                BlockLog.EnumAxis.X -> 0x0100
+                BlockLog.EnumAxis.Z -> 0x1000
+                BlockLog.EnumAxis.NONE -> 0x1100
+                else -> 0x0000
+            }
 
-        when (state.getValue(AXIS)) {
-            BlockLog.EnumAxis.X -> i = i or 4
-            BlockLog.EnumAxis.Z -> i = i or 8
-            BlockLog.EnumAxis.NONE -> i = i or 12
-            else -> i = i or 0
-        }
+    override fun createBlockState() = BlockStateContainer(this, AXIS)
 
-        return i
-    }
-
-    override fun createBlockState(): BlockStateContainer? {
-        return BlockStateContainer(this, AXIS)
-    }
-
-    override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
+    override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
         ModelHandler.generateBlockJson(this, {
-            JsonGenerationUtils.generateBlockStates(this, mapper) {
-                if ("axis=y" in it) json {
-                    obj(
-                            "model" to registryName.toString()
-                    )
-                } else if ("axis=x" in it) json {
-                    obj(
-                            "model" to registryName.toString(),
-                            "x" to 90,
-                            "y" to 90
-                    )
-                } else if ("axis=z" in it) json {
-                    obj(
-                            "model" to registryName.toString(),
-                            "x" to 90
-                    )
-                } else json {
-                    obj(
-                            "model" to registryName.toString() + "_$postFix"
-                    )
+            generateBlockStates(this, mapper) {
+                when (it.extract("axis=(\\w+)")) {
+                    "y" -> "model"(key)
+
+                    "x" -> {
+                        "model"(key)
+                        "x"(90)
+                        "y"(90)
+                    }
+
+                    "z" -> {
+                        "model"(key)
+                        "x"(90)
+                    }
+
+                    else -> "model"("${key}_$postFix")
                 }
             }
         }, {
-            variants.flatAssociate {
-                listOf(
-                        JsonGenerationUtils.getPathForBlockModel(this)
-                                to json {
-                            obj(
-                                    "parent" to "block/cube_column",
-                                    "textures" to obj(
-                                            "end" to "$modId:blocks/$it",
-                                            "side" to "$modId:blocks/${it}_$postFix"
-                                    )
-                            )
-                        },
-                        JsonGenerationUtils.getPathForBlockModel(this, "${it}_$postFix")
-                                to JsonGenerationUtils.generateBaseBlockModel(this, "${it}_$postFix"))
+            getPathForBlockModel(this) to {
+                    "parent"("block/cube_column")
+                    "textures" {
+                        "end"("$modId:blocks/$key")
+                        "side"("$modId:blocks/${key}_$postFix")
+                    }
             }
+            getPathForBlockModel(this, "${key}_$postFix")(generateBaseBlockModel(this, "${key}_$postFix"))
         })
         return true
     }

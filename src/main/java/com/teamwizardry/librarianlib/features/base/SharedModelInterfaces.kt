@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.features.base
 
+import com.teamwizardry.librarianlib.features.base.block.IModBlockProvider
+import com.teamwizardry.librarianlib.features.base.item.IModItemProvider
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
@@ -32,7 +34,7 @@ interface IExtraVariantHolder : IVariantHolder {
  */
 interface IModelGenerator : IVariantHolder {
 
-    fun generateMissingBlockstate(mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean = false
+    fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean = false
 
-    fun generateMissingItem(variant: String): Boolean = false
+    fun generateMissingItem(item: IModItemProvider, variant: String): Boolean = false
 }

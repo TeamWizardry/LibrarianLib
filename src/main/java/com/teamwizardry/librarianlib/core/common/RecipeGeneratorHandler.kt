@@ -7,10 +7,10 @@ import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.helpers.currentModId
 import com.teamwizardry.librarianlib.features.helpers.modIdOverride
-import com.teamwizardry.librarianlib.features.kotlin.JSON
+import com.teamwizardry.librarianlib.features.kotlin.jsonObject
 import com.teamwizardry.librarianlib.features.kotlin.serialize
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils.generatedFiles
+import com.teamwizardry.librarianlib.features.utilities.generatedFiles
+import com.teamwizardry.librarianlib.features.utilities.getPathForRecipe
 import net.minecraft.block.Block
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -54,16 +54,18 @@ object RecipeGeneratorHandler {
             return
         }
 
-        val basePath = JsonGenerationUtils.getPathForRecipe(currentModId, name)
+        val basePath = getPathForRecipe(currentModId, name)
         val file = File(basePath)
         file.parentFile.mkdirs()
         if (file.createNewFile()) {
-            val obj = JSON.obj(
-                    "type" to "forge:ore_shapeless",
-                    "ingredients" to createJsonFromList(inputs),
-                    "result" to createJsonFromStackOutput(output)
-            )
-            if (group != null) obj.addProperty("group", group)
+            val obj = jsonObject {
+                "type"("forge:ore_shapeless")
+                "ingredients"(createJsonFromList(inputs))
+                "result"(createJsonFromStackOutput(output))
+                if (group != null)
+                    "group"(group)
+            }
+
             file.writeText(serialize(obj))
             LibrarianLog.info("Creating ${file.name} for shapeless recipe with output ${output.displayName} x ${output.count}")
             generatedFiles.add(basePath)
@@ -84,18 +86,20 @@ object RecipeGeneratorHandler {
 
         val (mirrored, pattern, mapping) = deconstructShaped(*inputs)
 
-        val basePath = JsonGenerationUtils.getPathForRecipe(currentModId, name)
+        val basePath = getPathForRecipe(currentModId, name)
         val file = File(basePath)
         file.parentFile.mkdirs()
         if (file.createNewFile()) {
-            val obj = JSON.obj(
-                    "type" to "forge:ore_shaped",
-                    "pattern" to pattern,
-                    "key" to mapping,
-                    "result" to createJsonFromStackOutput(output)
-            )
-            if (group != null) obj.addProperty("group", group)
-            if (mirrored) obj.addProperty("mirrored", mirrored)
+            val obj = jsonObject {
+                "type"("forge:ore_shaped")
+                "pattern"(pattern)
+                "key"(mapping)
+                "result"(createJsonFromStackOutput(output))
+                if (group != null)
+                    "group"(group)
+                if (mirrored)
+                    "mirrored"(mirrored)
+            }
             file.writeText(serialize(obj))
             LibrarianLog.info("Creating ${file.name} for shaped recipe with output ${output.displayName} x ${output.count}")
             generatedFiles.add(basePath)
@@ -145,16 +149,15 @@ object RecipeGeneratorHandler {
 
     fun shouldGenerateAnyJson() = LibrarianLib.DEV_ENVIRONMENT && LibLibConfig.generateJson && currentModId in OwnershipHandler.DEV_OWNED
 
-    fun serialize(el: JsonElement)
-            = if (LibLibConfig.prettyJsonSerialization) el.serialize() else el.toString() + "\n"
+    fun serialize(el: JsonElement) = if (LibLibConfig.prettyJsonSerialization) el.serialize() else el.toString() + "\n"
 
-    fun createJsonFromStackOutput(stack: ItemStack): JsonObject {
-        val obj = JSON.obj("item" to stack.item.registryName)
+    fun createJsonFromStackOutput(stack: ItemStack) = jsonObject {
+        "item"(stack.item.registryName)
 
         if (stack.hasSubtypes)
-            obj.addProperty("data", stack.itemDamage)
+            "data"(stack.itemDamage)
         if (stack.count > 1)
-            obj.addProperty("count", stack.count)
+            "count"(stack.count)
 
         val nbt = stack.tagCompound ?: NBTTagCompound()
 
@@ -163,9 +166,7 @@ object RecipeGeneratorHandler {
             nbt.setTag("ForgeCaps", written.getTag("ForgeCaps"))
 
         if (nbt.size != 0)
-            obj.addProperty("nbt", nbt.toString())
-
-        return obj
+            "nbt"(nbt.toString())
     }
 
     fun createJsonFromStack(stack: ItemStack): JsonObject {
@@ -175,12 +176,12 @@ object RecipeGeneratorHandler {
             return obj
         }
 
-        val obj = JSON.obj("item" to stack.item.registryName)
+        return jsonObject {
+            "item"(stack.item.registryName)
 
-        if (stack.hasSubtypes)
-            obj.addProperty("data", stack.itemDamage)
-
-        return obj
+            if (stack.hasSubtypes)
+                "data"(stack.itemDamage)
+        }
     }
 
     fun createJsonFromObject(obj: Any?): JsonElement {
@@ -195,12 +196,16 @@ object RecipeGeneratorHandler {
         }
     }
 
-    fun createJsonFromString(string: String) = JSON.obj("type" to "forge:ore_dict", "ore" to string)
+    fun createJsonFromString(string: String) = jsonObject {
+        "type"("forge:ore_dict")
+        "ore"(string)
+    }
 
     fun createJsonFromList(l: Array<*>): JsonArray = createJsonFromList(l.toList())
     fun createJsonFromList(l: List<*>): JsonArray {
         val arr = JsonArray()
-        l.forEach { arr.add(createJsonFromObject(it)) }
+        for (it in l)
+            arr.add(createJsonFromObject(it))
         return arr
     }
 }

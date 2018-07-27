@@ -5,8 +5,9 @@ import com.teamwizardry.librarianlib.features.base.IModelGenerator
 import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.currentModId
-import com.teamwizardry.librarianlib.features.kotlin.json
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
+import com.teamwizardry.librarianlib.features.kotlin.key
+import com.teamwizardry.librarianlib.features.utilities.generateBlockStates
+import com.teamwizardry.librarianlib.features.utilities.getPathForBlockModel
 import net.minecraft.block.Block
 import net.minecraft.block.BlockDoor
 import net.minecraft.block.material.MapColor
@@ -27,8 +28,6 @@ import java.util.*
  */
 @Suppress("LeakingThis")
 open class BlockModDoor(name: String, val parent: IBlockState) : BlockDoor(parent.material), IModBlock, IModelGenerator {
-
-    private val parentName = parent.block.registryName
 
     override val variants: Array<out String>
 
@@ -80,65 +79,52 @@ open class BlockModDoor(name: String, val parent: IBlockState) : BlockDoor(paren
     override fun isToolEffective(type: String, state: IBlockState) = parent.block.isToolEffective(type, parent)
     override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent)
 
-    override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
-        val name = ResourceLocation(parentName!!.resourceDomain, "blocks/${parentName.resourcePath}").toString()
-        val simpleName = registryName!!.resourcePath
+    override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
+        val name = ResourceLocation(key.resourceDomain, "blocks/${key.resourcePath}").toString()
+        val simpleName = key.resourcePath
 
-        ModelHandler.generateBlockJson(this, {
-            JsonGenerationUtils.generateBlockStates(this, mapper) {
+        ModelHandler.generateBlockJson(block, {
+            generateBlockStates(this, mapper) {
                 val suffix = (if ("half=lower" in it) "bottom" else "top") + if (("open=true" in it) xor ("hinge=left" in it)) "_rh" else ""
                 var rot = if ("facing=east" in it) 0 else if ("facing=south" in it) 90 else if ("facing=west" in it) 180 else 270
                 if ("hinge=left" in it && "open=true" in it) rot += 90
                 else if ("hinge=right" in it && "open=true" in it) rot += 270
                 rot %= 360
-                json {
-                    obj(
-                            "model" to "${registryName}_$suffix",
-                            *(if (rot == 0) arrayOf() else arrayOf("y" to rot))
-                    )
-                }
+
+                "model"("${key}_$suffix")
+                if (rot != 0)
+                    "y"(rot)
             }
         }, {
-            mapOf(JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_bottom")
-                    to json {
-                obj(
-                        "parent" to "block/door_bottom",
-                        "textures" to obj(
-                                "bottom" to name + "_door_lower",
-                                "top" to name + "_door_upper"
-                        )
-                )
-            },
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_top")
-                            to json {
-                        obj(
-                                "parent" to "block/door_top",
-                                "textures" to obj(
-                                        "bottom" to name + "_door_lower",
-                                        "top" to name + "_door_upper"
-                                )
-                        )
-                    },
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_bottom_rh")
-                            to json {
-                        obj(
-                                "parent" to "block/door_bottom_rh",
-                                "textures" to obj(
-                                        "bottom" to name + "_door_lower",
-                                        "top" to name + "_door_upper"
-                                )
-                        )
-                    },
-                    JsonGenerationUtils.getPathForBlockModel(this, "${simpleName}_top_rh")
-                            to json {
-                        obj(
-                                "parent" to "block/door_top_rh",
-                                "textures" to obj(
-                                        "bottom" to name + "_door_lower",
-                                        "top" to name + "_door_upper"
-                                )
-                        )
-                    })
+            getPathForBlockModel(this, "${simpleName}_bottom") to {
+                "parent"("block/door_bottom")
+                "textures" {
+                    "bottom"(name + "_door_lower")
+                    "top"(name + "_door_upper")
+                }
+            }
+
+            getPathForBlockModel(this, "${simpleName}_top") to {
+                "parent"("block/door_top")
+                "textures" {
+                    "bottom"(name + "_door_lower")
+                    "top"(name + "_door_upper")
+                }
+            }
+            getPathForBlockModel(this, "${simpleName}_bottom_rh") to {
+                "parent"("block/door_bottom_rh")
+                "textures" {
+                    "bottom"(name + "_door_lower")
+                    "top"(name + "_door_upper")
+                }
+            }
+            getPathForBlockModel(this, "${simpleName}_top_rh") to {
+                "parent"("block/door_top_rh")
+                "textures" {
+                    "bottom"(name + "_door_lower")
+                    "top"(name + "_door_upper")
+                }
+            }
         })
         return true
     }

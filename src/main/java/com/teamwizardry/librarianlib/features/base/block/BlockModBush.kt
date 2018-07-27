@@ -6,8 +6,7 @@ import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.base.item.IModItemProvider
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.currentModId
-import com.teamwizardry.librarianlib.features.kotlin.json
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
+import com.teamwizardry.librarianlib.features.utilities.*
 import net.minecraft.block.Block
 import net.minecraft.block.BlockBush
 import net.minecraft.block.SoundType
@@ -15,7 +14,6 @@ import net.minecraft.block.material.MapColor
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
-import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 
 /**
@@ -58,28 +56,24 @@ open class BlockModBush(name: String, materialIn: Material, color: MapColor, var
     override val creativeTab: ModCreativeTab?
         get() = ModCreativeTab.defaultTabs[modId]
 
-    override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
-        ModelHandler.generateBlockJson(this, {
-            JsonGenerationUtils.generateBaseBlockStates(this, mapper)
+    override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
+        ModelHandler.generateBlockJson(block, {
+            generateBaseBlockStates(this, mapper)
         }, {
-            mapOf(JsonGenerationUtils.getPathForBlockModel(this)
-                    to json {
-                obj(
-                        "parent" to "block/cross",
-                        "textures" to obj(
-                                "cross" to "${registryName!!.resourceDomain}:blocks/${registryName!!.resourcePath}"
-                        )
-                )
-            })
+            getPathForBlockModel(this) to {
+                "parent"("block/cross")
+                "textures" {
+                    "cross"("${key.resourceDomain}:blocks/${key.resourcePath}")
+                }
+            }
         })
         return true
     }
 
-    override fun generateMissingItem(variant: String): Boolean {
-        val item = itemForm as? IModItemProvider ?: return false
+    override fun generateMissingItem(item: IModItemProvider, variant: String): Boolean {
         ModelHandler.generateItemJson(item) {
-            mapOf(JsonGenerationUtils.getPathForItemModel(item as Item, variant) to
-                    JsonGenerationUtils.generateRegularItemModel(item, variant))
+            getPathForItemModel(this, variant) to
+                    generateRegularItemModel(this, variant)
         }
         return true
     }

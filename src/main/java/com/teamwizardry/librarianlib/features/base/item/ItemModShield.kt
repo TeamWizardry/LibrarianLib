@@ -2,8 +2,7 @@ package com.teamwizardry.librarianlib.features.base.item
 
 import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.features.base.IModelGenerator
-import com.teamwizardry.librarianlib.features.kotlin.json
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
+import com.teamwizardry.librarianlib.features.utilities.getPathForItemModel
 import net.minecraft.block.BlockDispenser
 import net.minecraft.dispenser.BehaviorDefaultDispenseItem
 import net.minecraft.dispenser.IBlockSource
@@ -67,49 +66,41 @@ open class ItemModShield(name: String, durability: Int = 336) : ItemMod(name), I
         // NO-OP
     }
 
-    override fun damageItem(stack: ItemStack, player: EntityPlayer, indirectSource: Entity?, directSource: Entity?, amount: Float, source: DamageSource, damageAmount: Int)
-            = false
+    override fun damageItem(stack: ItemStack, player: EntityPlayer, indirectSource: Entity?, directSource: Entity?, amount: Float, source: DamageSource, damageAmount: Int) = false
 
-    override fun onAxeBlocked(stack: ItemStack, player: EntityPlayer, attacker: EntityLivingBase, amount: Float, source: DamageSource)
-            = false
+    override fun onAxeBlocked(stack: ItemStack, player: EntityPlayer, attacker: EntityLivingBase, amount: Float, source: DamageSource) = false
 
 
-    override fun generateMissingItem(variant: String): Boolean {
+    override fun generateMissingItem(item: IModItemProvider, variant: String): Boolean {
         ModelHandler.generateItemJson(this) {
-            mapOf(JsonGenerationUtils.getPathForItemModel(this, variant) to json {
-                obj(
-                        "parent" to "item/generated",
-                        "textures" to obj(
-                                "layer0" to "${registryName!!.resourceDomain}:items/$variant"
-                        ),
-                        "display" to obj(
-                                "thirdperson_righthand" to obj(
-                                        "rotation" to array(0, 90, 0),
-                                        "translation" to array(1.95, -1.25, 1),
-                                        "scale" to array(0.75, 0.75, 0.75)
-                                )
-                        ),
-                        "overrides" to array(
-                                obj(
-                                        "predicate" to obj(
-                                                "blocking" to 1
-                                        ),
-                                        "model" to "${registryName!!.resourceDomain}:item/${variant}_blocking"
-                                )
-                        )
-                )
-            },
-                    JsonGenerationUtils.getPathForItemModel(this, "${variant}_blocking") to json {
-                        obj(
-                                "parent" to "${registryName!!.resourceDomain}:item/$variant",
-                                "display" to obj(
-                                        "firstperson_righthand" to obj(
-                                                "rotation" to array(0, -45, 25),
-                                                "translation" to array(-1, 1.75, 0)
-                                        )
-                                )
-                        )
-                    })
+            getPathForItemModel(this, variant) to {
+                "parent"("item/generated")
+                "textures" {
+                    "layer0"("${key.resourceDomain}:items/$variant")
+                }
+                "display" {
+                    "thirdperson_righthand" {
+                        "rotation"(0, 90, 0)
+                        "translation"(1.95, -1.25, 1)
+                        "scale"(0.75, 0.75, 0.75)
+                    }
+                }
+                "overrides" {
+                    "predicate" {
+                        "blocking"(1)
+                    }
+                    "model"("${key.resourceDomain}:item/${variant}_blocking")
+                }
+            }
+            getPathForItemModel(this, "${variant}_blocking") to {
+                "parent"("${key.resourceDomain}:item/$variant")
+                "display" {
+                    "firstperson_righthand" {
+                        "rotation"(0, -45, 25)
+                        "translation"(-1, 1.75, 0)
+                    }
+                }
+            }
         }
         return true
     }

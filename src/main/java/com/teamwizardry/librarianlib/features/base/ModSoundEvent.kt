@@ -13,8 +13,8 @@ import com.teamwizardry.librarianlib.features.helpers.currentModId
 import com.teamwizardry.librarianlib.features.kotlin.convertJSON
 import com.teamwizardry.librarianlib.features.kotlin.serialize
 import com.teamwizardry.librarianlib.features.kotlin.times
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils.generatedFiles
+import com.teamwizardry.librarianlib.features.utilities.generatedFiles
+import com.teamwizardry.librarianlib.features.utilities.getPathForSounds
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.SoundEvent
 import net.minecraftforge.common.MinecraftForge
@@ -96,7 +96,7 @@ open class ModSoundEvent(name: String, subtitle: String?, private val sounds: Li
                     if (mod in OwnershipHandler.DEV_OWNED) {
                         log("$mod | Registering sounds in json")
                         val modpad = " " * mod.length
-                        val soundJsonPath = JsonGenerationUtils.getPathForSounds(mod)
+                        val soundJsonPath = getPathForSounds(mod)
                         val file = File(soundJsonPath)
                         file.parentFile.mkdirs()
                         file.createNewFile()

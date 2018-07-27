@@ -13,7 +13,7 @@ import com.teamwizardry.librarianlib.features.gui.provided.book.structure.Struct
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.saving.SavingFieldCache
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils.generatedFiles
+import com.teamwizardry.librarianlib.features.utilities.generatedFiles
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import com.teamwizardry.librarianlib.features.utilities.unsafeAllowedModIds
 import net.minecraft.entity.player.EntityPlayer

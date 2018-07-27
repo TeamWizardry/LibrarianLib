@@ -4,8 +4,9 @@ import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.features.base.IModelGenerator
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.threadLocal
-import com.teamwizardry.librarianlib.features.kotlin.json
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
+import com.teamwizardry.librarianlib.features.utilities.generateBaseBlockModel
+import com.teamwizardry.librarianlib.features.utilities.generateBlockStates
+import com.teamwizardry.librarianlib.features.utilities.getPathForBlockModel
 import jline.console.internal.ConsoleRunner.property
 import net.minecraft.block.Block
 import net.minecraft.block.material.MapColor
@@ -23,7 +24,8 @@ import net.minecraft.util.IStringSerializable
 open class BlockModEnumerated<T> @JvmOverloads constructor(name: String, materialIn: Material, color: MapColor, clazz: Class<T>, predicate: ((T) -> Boolean)? = null)
     : BlockMod(name, materialIn, color, *injectNames(name, clazz, predicate as ((Enum<*>) -> Boolean)?)), IModBlock, IModelGenerator where T : Enum<T>, T : IStringSerializable {
 
-    @JvmOverloads constructor(name: String, materialIn: Material, clazz: Class<T>, predicate: ((T) -> Boolean)? = null) : this(name, materialIn, materialIn.materialMapColor, clazz, predicate)
+    @JvmOverloads
+    constructor(name: String, materialIn: Material, clazz: Class<T>, predicate: ((T) -> Boolean)? = null) : this(name, materialIn, materialIn.materialMapColor, clazz, predicate)
 
     open operator fun get(value: T): IBlockState = defaultState.withProperty(property, value)
 
@@ -70,13 +72,14 @@ open class BlockModEnumerated<T> @JvmOverloads constructor(name: String, materia
 
     // Blockstate related objects
 
-    override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
+    override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
         ModelHandler.generateBlockJson(this, {
-            JsonGenerationUtils.generateBlockStates(this, mapper) {
-                json { obj("model" to registryName!!.resourceDomain + ":" + it.replace("variant=", "")) }
+            generateBlockStates(this, mapper) {
+                "model"(key.resourceDomain + ":" + it.replace("variant=", ""))
             }
         }, {
-            variants.associate { JsonGenerationUtils.getPathForBlockModel(this, it) to JsonGenerationUtils.generateBaseBlockModel(this, it) }
+            for (variant in variants)
+                getPathForBlockModel(this, variant) to generateBaseBlockModel(this, variant)
         })
         return true
     }

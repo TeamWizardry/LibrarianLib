@@ -3,8 +3,8 @@ package com.teamwizardry.librarianlib.features.base.block
 import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.core.common.OreDictionaryRegistrar
 import com.teamwizardry.librarianlib.features.base.IModelGenerator
-import com.teamwizardry.librarianlib.features.kotlin.json
-import com.teamwizardry.librarianlib.features.utilities.JsonGenerationUtils
+import com.teamwizardry.librarianlib.features.utilities.generateBaseBlockStates
+import com.teamwizardry.librarianlib.features.utilities.getPathForBlockModel
 import net.minecraft.block.Block
 import net.minecraft.block.SoundType
 import net.minecraft.block.material.Material
@@ -280,19 +280,16 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
         return ItemStack(this, 1, getMetaFromState(state.withProperty(DECAYABLE, false).withProperty(CHECK_DECAY, false)))
     }
 
-    override fun generateMissingBlockstate(mapper: ((Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
+    override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
         ModelHandler.generateBlockJson(this, {
-            JsonGenerationUtils.generateBaseBlockStates(this, mapper)
+            generateBaseBlockStates(this, mapper)
         }, {
-            mapOf(JsonGenerationUtils.getPathForBlockModel(this)
-                    to json {
-                obj(
-                        "parent" to "block/leaves",
-                        "textures" to obj(
-                                "all" to "${registryName!!.resourceDomain}:blocks/${registryName!!.resourcePath}"
-                        )
-                )
-            })
+            getPathForBlockModel(this) to {
+                "parent"("block/leaves")
+                "textures" {
+                    "all"("${key.resourceDomain}:blocks/${key.resourcePath}")
+                }
+            }
         })
         return true
     }
