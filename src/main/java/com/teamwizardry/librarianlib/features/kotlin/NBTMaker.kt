@@ -2,8 +2,11 @@
 
 package com.teamwizardry.librarianlib.features.kotlin
 
+import com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler
 import net.minecraft.nbt.*
+import net.minecraft.util.IStringSerializable
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.common.util.INBTSerializable
 import java.util.*
 import java.util.function.Consumer
 
@@ -52,6 +55,7 @@ operator fun NBTTagCompound.set(key: String, value: NBTBase) = setTag(key, value
 fun convertNBT(value: Any?): NBTBase = when (value) {
     is NBTBase -> value
 
+    null -> NBTTagByte(0)
     is Boolean -> NBTTagByte(if (value) 1 else 0)
     is Byte -> NBTTagByte(value)
     is Char -> NBTTagShort(value.toShort())
@@ -72,7 +76,10 @@ fun convertNBT(value: Any?): NBTBase = when (value) {
     is Map<*, *> -> compound(*value.toList().map { it.first.toString() to it.second }.toTypedArray())
     is ResourceLocation -> NBTTagString(value.toString())
 
-    else -> throw IllegalArgumentException("Unrecognized type: $value")
+    is INBTSerializable<*> -> value.serializeNBT()
+    is IStringSerializable -> NBTTagString(value.name)
+
+    else -> AbstractSaveHandler.writeAutoNBT(value, true)
 }
 
 
