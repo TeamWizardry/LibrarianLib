@@ -58,18 +58,21 @@ open class BlockModPillar(name: String, material: Material, vararg variants: Str
     }
 
     @Suppress("OverridingDeprecatedMember")
-    override fun getStateFromMeta(meta: Int): IBlockState {
-        val index = (meta and 0b1100) shl 2
-        return defaultState.withProperty(AXIS, BlockLog.EnumAxis.values()[index])
-    }
+    override fun getStateFromMeta(meta: Int): IBlockState =
+            defaultState.withProperty(AXIS, when ((meta and 0b1100) shr 2) {
+                0b00 -> BlockLog.EnumAxis.Y
+                0b01 -> BlockLog.EnumAxis.X
+                0b10 -> BlockLog.EnumAxis.Z
+                else -> BlockLog.EnumAxis.NONE
+            })
 
     override fun getMetaFromState(state: IBlockState)
             = when (state.getValue(AXIS)) {
-                BlockLog.EnumAxis.X -> 0b0100
-                BlockLog.EnumAxis.Z -> 0b1000
-                BlockLog.EnumAxis.NONE -> 0b1100
-                else -> 0b0000
-            }
+                BlockLog.EnumAxis.Y -> 0b00
+                BlockLog.EnumAxis.X -> 0b01
+                BlockLog.EnumAxis.Z -> 0b10
+                else -> 0b11
+            } shl 2
 
     override fun createBlockState() = BlockStateContainer(this, AXIS)
 
