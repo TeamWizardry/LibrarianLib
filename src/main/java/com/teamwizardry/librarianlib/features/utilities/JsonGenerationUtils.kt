@@ -110,7 +110,9 @@ inline fun generateBlockStates(dsl: FileDsl<Block>, noinline stateMapper: ((bloc
                 "variants" {
                     for (location in mapped.values) {
                         if (getPathForMRL(location) == file)
-                            location.variant(makeVariant(location.variant))
+                            location.variant {
+                                makeVariant(location.variant)
+                            }
                     }
                 }
             }
