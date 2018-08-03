@@ -9,16 +9,16 @@ import net.minecraft.util.EnumFacing
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.CapabilityManager
 import org.jetbrains.annotations.NotNull
-import java.lang.reflect.AccessibleObject
+import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.*
+import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.kotlinFunction
 import kotlin.reflect.jvm.kotlinProperty
@@ -65,57 +65,34 @@ object SavingFieldCache {
 
         fields.removeIf { it.kotlinProperty in properties }
 
-        fields.map {
-            getNameFromField(type, it) to it
-        }.forEach {
-                    val (name, field) = it
-                    field.isAccessible = true
+        for (field in fields) {
+            val name = getNameFromField(type, field)
+            field.isAccessible = true
 
-                    val meta = createMetaForField(field, type)
+            val meta = createMetaForField(field, type)
 
-                    if (meta.containsAny())
-                        map[name] = FieldCache(
-                                meta,
-                                getFieldGetter(field),
-                                getFieldSetter(field, type),
-                                field.name
-                        )
-                }
+            if (meta.containsAny())
+                map[name] = FieldCache(
+                        meta,
+                        getFieldGetter(field),
+                        getFieldSetter(field, type),
+                        field.name
+                )
+        }
 
+        for (property in properties) {
+            val name = getNameFromProperty(type, property)
+            val meta = createMetaForProperty(property)
 
-        properties.forEach {
-            if (it.findAnnotation<Save>() != null) {
-                val name = getNameFromProperty(type, it)
+            val setterLambda: (Any, Any?) -> Unit = if (property !is KMutableProperty<*>)
+                { _, _ -> throw IllegalAccessException("Tried to set final property $name for class $type (no save setter)") }
+            else
+                { obj, inp -> property.setter.call(obj, inp) }
 
-
-                val meta = FieldMetadata(FieldType.create(it), SavingFieldFlag.ANNOTATED, SavingFieldFlag.METHOD)
-
-                it.annotations.forEach {
-                    meta.addAnnotation(it, true)
-                }
-
-                if (!it.returnType.isMarkedNullable)
-                    meta.addFlag(SavingFieldFlag.NONNULL)
-                if (it.javaField == null || it.findAnnotation<NoSync>() != null)
-                    meta.addFlag(SavingFieldFlag.NO_SYNC)
-                if (it.findAnnotation<NonPersistent>() != null)
-                    meta.addFlag(SavingFieldFlag.NON_PERSISTENT)
-                if (it !is KMutableProperty<*>)
-                    meta.addFlag(SavingFieldFlag.FINAL)
-
-
-                if (meta.hasFlag(SavingFieldFlag.NO_SYNC) && meta.hasFlag(SavingFieldFlag.NON_PERSISTENT))
-                    errorList[type][name].add("Annotated with both @NoSync and @NonPersistent. This field will never be used.")
-
-                val setterLambda: (Any, Any?) -> Unit = if (it !is KMutableProperty<*>)
-                    { _, _ -> throw IllegalAccessException("Tried to set final property $name for class $type (no save setter)") }
-                else
-                    { obj, inp -> it.setter.call(obj, inp) }
-
-                map[name] = FieldCache(meta,
-                        { obj -> it.getter.call(obj) },
-                        setterLambda)
-            }
+            map[name] = FieldCache(meta,
+                    { obj -> property.getter.call(obj) },
+                    setterLambda,
+                    property.name)
         }
     }
 
@@ -155,6 +132,16 @@ object SavingFieldCache {
     fun getFinalFieldSetter(field: Field, enclosing: FieldType): (Any, Any?) -> Unit =
             { _, _ -> throw IllegalAccessException("Tried to set final field/property ${field.name} for class $enclosing (final field)") }
 
+    fun createMetaForProperty(property: KProperty<*>): FieldMetadata {
+        val meta = FieldMetadata(FieldType.create(property), SavingFieldFlag.PROPERTY)
+
+        addJavaLikeFlagsForProperty(property, meta)
+        addAnnotationFlagsForField(wrap(property), meta)
+        addAnnotationsForField(wrap(property), meta)
+
+        return meta
+    }
+
     fun createMetaForField(field: Field, enclosing: FieldType): FieldMetadata {
         val resolved = enclosing.resolve(field.genericType, field.annotatedType)
 
@@ -167,6 +154,13 @@ object SavingFieldCache {
         return meta
     }
 
+    fun addJavaLikeFlagsForProperty(property: KProperty<*>, meta: FieldMetadata) {
+        if (property !is KMutableProperty<*>)
+            meta.addFlag(SavingFieldFlag.FINAL)
+        if (!property.returnType.isMarkedNullable)
+            meta.addFlag(SavingFieldFlag.NONNULL)
+    }
+
     fun addJavaFlagsForField(field: Field, meta: FieldMetadata) {
         val mods = field.modifiers
 
@@ -175,14 +169,22 @@ object SavingFieldCache {
         if (field.type.isPrimitive) meta.addFlag(SavingFieldFlag.NONNULL)
     }
 
-    fun addAnnotationsForField(field: AccessibleObject, meta: FieldMetadata) {
+    fun wrap(property: KAnnotatedElement) = object : AnnotatedElement {
+        override fun getAnnotations() = property.annotations.toTypedArray()
+        override fun <T : Annotation> getAnnotation(annotationClass: Class<T>) =
+                annotations.firstOrNull { annotationClass.isInstance(it) }?.let { annotationClass.cast(it) }
+        override fun getDeclaredAnnotations() = annotations
+    }
+
+
+    fun addAnnotationsForField(field: AnnotatedElement, meta: FieldMetadata) {
         field.declaredAnnotations.forEach {
             meta.addAnnotation(it, false)
             meta.addAnnotation(it, true)
         }
     }
 
-    fun addAnnotationFlagsForField(field: AccessibleObject, meta: FieldMetadata) {
+    fun addAnnotationFlagsForField(field: AnnotatedElement, meta: FieldMetadata) {
         if (field.isAnnotationPresent(Save::class.java)) meta.addFlag(SavingFieldFlag.ANNOTATED)
         if (field.isAnnotationPresent(Module::class.java)) meta.addFlag(SavingFieldFlag.MODULE)
         if (field.isAnnotationPresent(NotNull::class.java)) meta.addFlag(SavingFieldFlag.NONNULL)
@@ -511,7 +513,7 @@ data class FieldMetadata(val type: FieldType, private var flagsInternal: Mutable
 }
 
 enum class SavingFieldFlag {
-    FIELD, METHOD, ANNOTATED, NONNULL, NO_SYNC, NON_PERSISTENT, TRANSIENT, FINAL,
+    FIELD, PROPERTY, METHOD, ANNOTATED, NONNULL, NO_SYNC, NON_PERSISTENT, TRANSIENT, FINAL,
     CAPABILITY, CAPABILITY_UP, CAPABILITY_DOWN, CAPABILITY_NORTH, CAPABILITY_SOUTH, CAPABILITY_EAST, CAPABILITY_WEST,
     MODULE
 }
