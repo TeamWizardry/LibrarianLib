@@ -19,9 +19,7 @@ import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.jvm.javaMethod
-import kotlin.reflect.jvm.kotlinFunction
-import kotlin.reflect.jvm.kotlinProperty
+import kotlin.reflect.jvm.*
 
 /**
  * @author WireSegal
@@ -238,6 +236,13 @@ object SavingFieldCache {
 
     fun createMetaForProperty(property: KProperty<*>): FieldMetadata {
         val meta = FieldMetadata(FieldType.create(property), SavingFieldFlag.PROPERTY)
+
+        try { // Test for a missing (i.e. sideonly) property
+            property.javaGetter
+            property.javaField
+        } catch (e: Exception) {
+            return meta
+        }
 
         addJavaLikeFlagsForProperty(property, meta)
         addAnnotationFlagsForField(wrap(property), meta)
@@ -482,7 +487,7 @@ data class FieldMetadata(val type: FieldType, private var flagsInternal: Mutable
     fun hasFlag(flag: SavingFieldFlag) = flags.contains(flag)
     fun containsAll(vararg list: SavingFieldFlag) = flags.containsAll(list.asList())
     fun containsAny(vararg list: SavingFieldFlag) = list.any { it in flags }
-    fun containsAny() = flags.any()
+    fun containsAny() = flags.any { !it.descriptive }
 
 
     fun addFlag(flag: SavingFieldFlag) = flagsInternal.add(flag)
@@ -513,8 +518,8 @@ data class FieldMetadata(val type: FieldType, private var flagsInternal: Mutable
     }
 }
 
-enum class SavingFieldFlag {
-    FIELD, PROPERTY, METHOD, ANNOTATED, NONNULL, NO_SYNC, NON_PERSISTENT, TRANSIENT, FINAL,
+enum class SavingFieldFlag(val descriptive: Boolean = false) {
+    FIELD(true), PROPERTY(true), METHOD(true), ANNOTATED, NONNULL, NO_SYNC, NON_PERSISTENT, TRANSIENT, FINAL,
     CAPABILITY, CAPABILITY_UP, CAPABILITY_DOWN, CAPABILITY_NORTH, CAPABILITY_SOUTH, CAPABILITY_EAST, CAPABILITY_WEST,
     MODULE
 }

@@ -40,8 +40,13 @@ abstract class FieldType protected constructor(val type: Type, annotated: Annota
     companion object {
         @JvmStatic
         fun create(prop: KProperty<*>): FieldType {
-            prop.javaGetter?.let { return create(it) }
-            prop.javaField?.let { return create(it) }
+            try {
+                prop.javaGetter?.let { return create(it) }
+                prop.javaField?.let { return create(it) }
+            } catch (e: Exception) {
+                // NO-OP
+            }
+
             return create(prop.returnType.javaType, null)
         }
 
