@@ -72,29 +72,26 @@ object SavingFieldCache {
             val meta = createMetaForField(field, type)
 
             if (meta.containsAny())
-                map[name] = FieldCache(
-                        meta,
+                map[name] = FieldCache(meta,
                         getFieldGetter(field),
-                        getFieldSetter(field, type),
-                        field.name
-                )
+                        getFieldSetter(field, type, name),
+                        field.name)
         }
 
         for (property in properties) {
             val name = getNameFromProperty(type, property)
+
             val meta = createMetaForProperty(property)
 
-            val setterLambda: (Any, Any?) -> Unit = if (property !is KMutableProperty<*>)
-                { _, _ -> throw IllegalAccessException("Tried to set final property $name for class $type (no save setter)") }
-            else
-                { obj, inp -> property.setter.call(obj, inp) }
-
-            map[name] = FieldCache(meta,
-                    { obj -> property.getter.call(obj) },
-                    setterLambda,
-                    property.name)
+            if (meta.containsAny())
+                map[name] = FieldCache(meta,
+                        getPropertyGetter(property),
+                        getPropertySetter(property, type, name),
+                        property.name)
         }
     }
+
+    fun getPropertyGetter(property: KProperty<*>): (Any) -> Any? = { property.getter.call(it) }
 
     fun getFieldGetter(field: Field): (Any) -> Any? {
         return getKotlinFieldGetter(field) ?: getJavaFieldGetter(field)
@@ -110,9 +107,15 @@ object SavingFieldCache {
 
     fun getJavaFieldGetter(field: Field) = MethodHandleHelper.wrapperForGetter<Any>(field)
 
-    fun getFieldSetter(field: Field, enclosing: FieldType): (Any, Any?) -> Unit {
+
+    fun getPropertySetter(property: KProperty<*>, type: FieldType, name: String): (Any, Any?) -> Unit = if (property !is KMutableProperty<*>)
+        { _, _ -> throw IllegalAccessException("Tried to set final property $name for class $type (no save setter)") }
+    else
+        { obj, inp -> property.setter.call(obj, inp) }
+
+    fun getFieldSetter(field: Field, enclosing: FieldType, name: String): (Any, Any?) -> Unit {
         return if (Modifier.isFinal(field.modifiers))
-            getFinalFieldSetter(field, enclosing)
+            getFinalFieldSetter(enclosing, name)
         else
             getKotlinFieldSetter(field) ?: getJavaFieldSetter(field)
     }
@@ -129,8 +132,8 @@ object SavingFieldCache {
 
     fun getJavaFieldSetter(field: Field) = MethodHandleHelper.wrapperForSetter<Any>(field)
 
-    fun getFinalFieldSetter(field: Field, enclosing: FieldType): (Any, Any?) -> Unit =
-            { _, _ -> throw IllegalAccessException("Tried to set final field/property ${field.name} for class $enclosing (final field)") }
+    fun getFinalFieldSetter(enclosing: FieldType, name: String): (Any, Any?) -> Unit =
+            { _, _ -> throw IllegalAccessException("Tried to set final field/property $name for class $enclosing (final field)") }
 
     fun createMetaForProperty(property: KProperty<*>): FieldMetadata {
         val meta = FieldMetadata(FieldType.create(property), SavingFieldFlag.PROPERTY)
