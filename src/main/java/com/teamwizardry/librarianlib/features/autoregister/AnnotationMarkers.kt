@@ -7,8 +7,8 @@ import com.teamwizardry.librarianlib.features.kotlin.singletonInstance
 import com.teamwizardry.librarianlib.features.kotlin.withRealDefault
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
-import org.apache.commons.lang3.exception.ExceptionUtils
-
+import java.io.PrintWriter
+import java.io.StringWriter
 
 /**
  * Created by TheCodeWarrior
@@ -42,20 +42,14 @@ object AnnotationMarkersHandler {
             for ((annot, map) in errors) {
                 build.add("-+ Errors for @${annot.typeName}")
                 for ((error, affected) in map.asMap()) {
-                    var errorList = error.split("\\r\\n|\\n|\\r")
-                    if (errorList.isEmpty())
-                        errorList = listOf("<<ERR: Empty Stacktrace!>>")
                     build.add(" |-+ Affected classes:")
                     affected.forEach {
                         build.add(" | |-+ ${it.canonicalName}")
                     }
                     build.add(" |-+ Stacktrace:")
-                    errorList.forEach {
-                        build.add(
-                                " | | ============================================================\n"
-                                        + it +
-                                        " | | ============================================================")
-                    }
+                    build.add(" | | ============================================================\n"
+                            + error +
+                            " | | ============================================================")
                 }
             }
             LibrarianLog.bigDie("FATAL: AnnotationMarkers failed!!", build)
@@ -85,7 +79,10 @@ object AnnotationMarkersHandler {
                 try {
                     processor.process(clazz, annot)
                 } catch (e: Throwable) {
-                    val str = ExceptionUtils.getStackTrace(e)
+                    val sw = StringWriter()
+                    val pw = PrintWriter(sw)
+                    e.printStackTrace(pw)
+                    val str = sw.toString()
                     errors[annotationClass].put(str, clazz)
                 }
             }
