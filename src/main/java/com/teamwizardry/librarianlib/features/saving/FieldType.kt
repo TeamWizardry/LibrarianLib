@@ -6,9 +6,11 @@ import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import java.lang.reflect.*
 import java.util.*
 import kotlin.reflect.KProperty
+import kotlin.reflect.jvm.internal.KotlinReflectionInternalError
 import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaGetter
 import kotlin.reflect.jvm.javaType
+
 
 val getGenericSuperclassMH = MethodHandleHelper.wrapperForStaticMethod(`$Gson$Types`::class.java, "getGenericSupertype", null, Type::class.java, Class::class.java, Class::class.java)
 
@@ -40,10 +42,10 @@ abstract class FieldType protected constructor(val type: Type, annotated: Annota
     companion object {
         @JvmStatic
         fun create(prop: KProperty<*>): FieldType {
-            try {
+            try { // Test for a missing (i.e. sideonly) property
                 prop.javaGetter?.let { return create(it) }
                 prop.javaField?.let { return create(it) }
-            } catch (e: Exception) {
+            } catch (e: KotlinReflectionInternalError) {
                 // NO-OP
             }
 

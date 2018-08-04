@@ -20,6 +20,7 @@ import kotlin.reflect.KProperty
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.*
+import kotlin.reflect.jvm.internal.KotlinReflectionInternalError
 
 /**
  * @author WireSegal
@@ -61,7 +62,23 @@ object SavingFieldCache {
             clazz = clazz.superclass
         }
 
-        fields.removeIf { it.kotlinProperty in properties }
+        val appliedProperties = mutableSetOf<KProperty<*>>()
+
+        for (property in properties) {
+            val name = getNameFromProperty(type, property)
+
+            val meta = createMetaForProperty(property)
+
+            if (meta != null && meta.containsAny()) {
+                map[name] = FieldCache(meta,
+                        getPropertyGetter(property),
+                        getPropertySetter(property, type, name),
+                        property.name)
+                appliedProperties.add(property)
+            }
+        }
+
+        fields.removeIf { it.kotlinProperty in appliedProperties }
 
         for (field in fields) {
             val name = getNameFromField(type, field)
@@ -74,18 +91,6 @@ object SavingFieldCache {
                         getFieldGetter(field),
                         getFieldSetter(field, type, name),
                         field.name)
-        }
-
-        for (property in properties) {
-            val name = getNameFromProperty(type, property)
-
-            val meta = createMetaForProperty(property)
-
-            if (meta.containsAny())
-                map[name] = FieldCache(meta,
-                        getPropertyGetter(property),
-                        getPropertySetter(property, type, name),
-                        property.name)
         }
     }
 
@@ -234,15 +239,16 @@ object SavingFieldCache {
     fun getFinalFieldSetter(enclosing: FieldType, name: String): (Any, Any?) -> Unit =
             { _, _ -> throw IllegalAccessException("Tried to set final field/property $name for class $enclosing (final field)") }
 
-    fun createMetaForProperty(property: KProperty<*>): FieldMetadata {
-        val meta = FieldMetadata(FieldType.create(property), SavingFieldFlag.PROPERTY)
-
-        try { // Test for a missing (i.e. sideonly) property
-            property.javaGetter
+    fun createMetaForProperty(property: KProperty<*>): FieldMetadata? {
+        try { // Catch properties with removed backing fields or accessors
             property.javaField
-        } catch (e: Exception) {
-            return meta
+            property.javaGetter
+            (property as? KMutableProperty<*>)?.javaSetter
+        } catch (e: KotlinReflectionInternalError) {
+            return null
         }
+
+        val meta = FieldMetadata(FieldType.create(property), SavingFieldFlag.PROPERTY)
 
         addJavaLikeFlagsForProperty(property, meta)
         addAnnotationFlagsForField(wrap(property), meta)
