@@ -91,6 +91,107 @@ object SavingFieldCache {
         }
     }
 
+    fun buildClassGetSetters(type: FieldType, map: MutableMap<String, FieldCache>) {
+        val getters = mutableMapOf<String, Method>()
+        val setters = mutableMapOf<String, Method>()
+
+        val methods = mutableSetOf<Method>()
+        var clazz: Class<*>? = type.clazz
+        while (clazz != null) {
+            clazz.declaredMethods.filterTo(methods) {
+                it.declaredAnnotations
+                !Modifier.isStatic(it.modifiers)
+            }
+
+            clazz = clazz.superclass
+        }
+
+        for (method in methods) {
+            if (method.isAnnotationPresent(SaveMethodGetter::class.java)) {
+                val types = method.parameterTypes
+                val name = getNameFromMethod(type, method, true)
+                if (types.isEmpty())
+                    getters[name] = method
+                else
+                    errorList[type][name].add("Getter has parameters")
+            }
+
+            if (method.isAnnotationPresent(SaveMethodSetter::class.java)) {
+                val types = method.parameterTypes
+                val name = getNameFromMethod(type, method, false)
+                if (types.size == 1)
+                    setters[name] = method
+                else
+                    errorList[type][name].add("Setter has ${types.size} parameters, they must have exactly 1")
+            }
+        }
+
+        val pairs = mutableMapOf<String, Triple<Method, Method?, Class<*>>>()
+        for ((name, getter) in getters) {
+            val getReturnType = getter.returnType
+            val setter = setters[name]
+            if (setter != null) {
+                if (setter.parameterCount == 0)
+                    errorList[type][name].add("Setter has no parameters")
+                val setReturnType = setter.parameterTypes[0]
+                if (getReturnType == setReturnType)
+                    pairs[name] = Triple(getter, setter, getReturnType)
+                else
+                    errorList[type][name].add("Getter and setter have mismatched types")
+            }
+        }
+
+        setters.filterKeys { it !in getters }.forEach {
+            val name = it.key
+            errorList[type][name].add("Setter has no getter")
+        }
+
+
+        pairs.toList().sortedBy {
+            it.first
+        }.forEach {
+            val (name, triple) = it
+            val (getter, setter, propertyType) = triple
+            getter.isAccessible = true
+            setter?.isAccessible = true
+
+            val wrapperForGetter = MethodHandleHelper.wrapperForMethod<Any>(getter)
+            val wrapperForSetter = setter?.let { MethodHandleHelper.wrapperForMethod<Any>(it) }
+
+            val meta = FieldMetadata(FieldType.create(getter), SavingFieldFlag.ANNOTATED, SavingFieldFlag.METHOD)
+
+            getter.declaredAnnotations.forEach {
+                meta.addAnnotation(it, true)
+            }
+            setter?.declaredAnnotations?.forEach {
+                meta.addAnnotation(it, false)
+            }
+
+            if (isGetSetPairNotNull(getter, setter))
+                meta.addFlag(SavingFieldFlag.NONNULL)
+            if (propertyType.isPrimitive)
+                meta.addFlag(SavingFieldFlag.NONNULL)
+            if (getter.isAnnotationPresent(NoSync::class.java) && (setter == null || setter.isAnnotationPresent(NoSync::class.java)))
+                meta.addFlag(SavingFieldFlag.NO_SYNC)
+            if (getter.isAnnotationPresent(NonPersistent::class.java) && (setter == null || setter.isAnnotationPresent(NonPersistent::class.java)))
+                meta.addFlag(SavingFieldFlag.NON_PERSISTENT)
+            if (setter == null)
+                meta.addFlag(SavingFieldFlag.FINAL)
+
+            if (meta.hasFlag(SavingFieldFlag.NO_SYNC) && meta.hasFlag(SavingFieldFlag.NON_PERSISTENT))
+                errorList[type][name].add("Annotated with both @NoSync and @NonPersistent. This field will never be used.")
+
+            val setterLambda: (Any, Any?) -> Unit = if (wrapperForSetter == null)
+                { _, _ -> throw IllegalAccessException("Tried to set final property $name for class $type (no save setter)") }
+            else
+                { obj, inp -> wrapperForSetter(obj, arrayOf(inp)) }
+
+            map[name] = FieldCache(meta,
+                    { obj -> wrapperForGetter(obj, arrayOf()) },
+                    setterLambda)
+        }
+    }
+
     fun getPropertyGetter(property: KProperty<*>): (Any) -> Any? = { property.getter.call(it) }
 
     fun getFieldGetter(field: Field): (Any) -> Any? {
@@ -203,109 +304,6 @@ object SavingFieldCache {
             if (EnumFacing.EAST in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_EAST)
             if (EnumFacing.WEST in annot.sides) meta.addFlag(SavingFieldFlag.CAPABILITY_WEST)
         }
-    }
-
-    fun buildClassGetSetters(type: FieldType, map: MutableMap<String, FieldCache>) {
-        val getters = mutableMapOf<String, Method>()
-        val setters = mutableMapOf<String, Method>()
-
-        val methods = mutableSetOf<Method>()
-        var clazz: Class<*>? = type.clazz
-        while (clazz != null) {
-            clazz.declaredMethods.filterTo(methods) {
-                it.declaredAnnotations
-                !Modifier.isStatic(it.modifiers)
-            }
-
-            clazz = clazz.superclass
-        }
-
-        methods.forEach {
-            if (it.isAnnotationPresent(SaveMethodGetter::class.java)) {
-                val types = it.parameterTypes
-                val name = getNameFromMethod(type, it, true)
-                if (types.isEmpty()) {
-                    getters[name] = it
-                } else {
-                    errorList[type][name].add("Getter has parameters")
-                }
-            }
-            if (it.isAnnotationPresent(SaveMethodSetter::class.java)) {
-                val types = it.parameterTypes
-                val name = getNameFromMethod(type, it, false)
-                if (types.size == 1) {
-                    setters[name] = it
-                } else {
-                    errorList[type][name].add("Setter has ${types.size} parameters, they must have exactly 1")
-                }
-            }
-        }
-
-        val pairs = mutableMapOf<String, Triple<Method, Method?, Class<*>>>()
-        getters.forEach {
-            val (name, getter) = it
-            val getReturnType = getter.returnType
-            if (name in setters) {
-                val setter = setters[name]!!
-                if (setter.parameterCount == 0)
-                    errorList[type][name].add("Setter has no parameters")
-                val setReturnType = setter.parameterTypes[0]
-                if (getReturnType == setReturnType)
-                    pairs[name] = Triple(getter, setter, getReturnType)
-                else
-                    errorList[type][name].add("Getter and setter have mismatched types")
-            }
-        }
-
-        setters.filterKeys { it !in getters }.forEach {
-            val name = it.key
-            errorList[type][name].add("Setter has no getter")
-        }
-
-
-        pairs.toList().sortedBy {
-            it.first
-        }.forEach {
-                    val (name, triple) = it
-                    val (getter, setter, propertyType) = triple
-                    getter.isAccessible = true
-                    setter?.isAccessible = true
-
-                    val wrapperForGetter = MethodHandleHelper.wrapperForMethod<Any>(getter)
-                    val wrapperForSetter = setter?.let { MethodHandleHelper.wrapperForMethod<Any>(it) }
-
-                    val meta = FieldMetadata(FieldType.create(getter), SavingFieldFlag.ANNOTATED, SavingFieldFlag.METHOD)
-
-                    getter.declaredAnnotations.forEach {
-                        meta.addAnnotation(it, true)
-                    }
-                    setter?.declaredAnnotations?.forEach {
-                        meta.addAnnotation(it, false)
-                    }
-
-                    if (isGetSetPairNotNull(getter, setter))
-                        meta.addFlag(SavingFieldFlag.NONNULL)
-                    if (propertyType.isPrimitive)
-                        meta.addFlag(SavingFieldFlag.NONNULL)
-                    if (getter.isAnnotationPresent(NoSync::class.java) && (setter == null || setter.isAnnotationPresent(NoSync::class.java)))
-                        meta.addFlag(SavingFieldFlag.NO_SYNC)
-                    if (getter.isAnnotationPresent(NonPersistent::class.java) && (setter == null || setter.isAnnotationPresent(NonPersistent::class.java)))
-                        meta.addFlag(SavingFieldFlag.NON_PERSISTENT)
-                    if (setter == null)
-                        meta.addFlag(SavingFieldFlag.FINAL)
-
-                    if (meta.hasFlag(SavingFieldFlag.NO_SYNC) && meta.hasFlag(SavingFieldFlag.NON_PERSISTENT))
-                        errorList[type][name].add("Annotated with both @NoSync and @NonPersistent. This field will never be used.")
-
-                    val setterLambda: (Any, Any?) -> Unit = if (wrapperForSetter == null)
-                        { _, _ -> throw IllegalAccessException("Tried to set final property $name for class $type (no save setter)") }
-                    else
-                        { obj, inp -> wrapperForSetter(obj, arrayOf(inp)) }
-
-                    map[name] = FieldCache(meta,
-                            { obj -> wrapperForGetter(obj, arrayOf()) },
-                            setterLambda)
-                }
     }
 
     private fun isGetSetPairNotNull(getter: Method, setter: Method?): Boolean {
