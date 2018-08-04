@@ -84,6 +84,7 @@ object AnnotationMarkersHandler {
                     e.printStackTrace(pw)
                     val str = sw.toString()
                     errors[annotationClass].put(str, clazz)
+                    e.printStackTrace()
                 }
             }
         }
