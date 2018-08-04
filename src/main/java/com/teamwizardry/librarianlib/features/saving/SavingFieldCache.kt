@@ -78,9 +78,9 @@ object SavingFieldCache {
             }
         }
 
-        fields.removeIf { it.kotlinProperty in appliedProperties }
-
         for (field in fields) {
+            if (appliedProperties.any { it.javaField == field })
+                continue
             val name = getNameFromField(type, field)
             field.isAccessible = true
 
