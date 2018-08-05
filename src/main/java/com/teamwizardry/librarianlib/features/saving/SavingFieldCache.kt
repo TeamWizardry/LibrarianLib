@@ -35,16 +35,18 @@ object SavingFieldCache {
         val existing = atSaveMap[type]
         if (existing != null) return existing
 
-        val map = linkedMapOf<String, FieldCache>()
-        buildClassFields(type, map)
-        buildClassGetSetters(type, map)
-        alreadyDone.clear()
-        methodGettersWOSetters.clear()
-        methodSettersWOGetters.clear()
+        synchronized(this) {
+            val map = linkedMapOf<String, FieldCache>()
+            buildClassFields(type, map)
+            buildClassGetSetters(type, map)
+            alreadyDone.clear()
+            methodGettersWOSetters.clear()
+            methodSettersWOGetters.clear()
 
-        atSaveMap[type] = map
+            atSaveMap[type] = map
 
-        return map
+            return map
+        }
     }
 
     fun buildClassFields(type: FieldType, map: MutableMap<String, FieldCache>) {
@@ -70,7 +72,7 @@ object SavingFieldCache {
             val meta = createMetaForProperty(property)
 
             if (meta != null && meta.containsAny()) {
-                map[name] = FieldCache(meta,
+                map.register(name, meta,
                         getPropertyGetter(property),
                         getPropertySetter(property, type, name),
                         property.name)
@@ -86,12 +88,18 @@ object SavingFieldCache {
 
             val meta = createMetaForField(field, type)
 
-            if (meta.containsAny())
-                map[name] = FieldCache(meta,
+            if (meta.containsAny()) {
+                map.register(name, meta,
                         getFieldGetter(field),
                         getFieldSetter(field, type, name),
                         field.name)
+            }
         }
+    }
+
+    private fun MutableMap<String, FieldCache>.register(name: String, meta: FieldMetadata, getter: (Any) -> Any?, setter: (Any, Any?) -> Unit, altName: String = "") {
+        this[name] = FieldCache(meta, getter, setter, altName)
+        reserveName(name)
     }
 
     fun buildClassGetSetters(type: FieldType, map: MutableMap<String, FieldCache>) {
@@ -189,9 +197,7 @@ object SavingFieldCache {
             else
                 { obj, inp -> wrapperForSetter(obj, arrayOf(inp)) }
 
-            map[name] = FieldCache(meta,
-                    { obj -> wrapperForGetter(obj, arrayOf()) },
-                    setterLambda)
+            map.register(name, meta, { obj -> wrapperForGetter(obj, arrayOf()) }, setterLambda)
         }
     }
 
@@ -213,7 +219,7 @@ object SavingFieldCache {
 
 
     fun getPropertySetter(property: KProperty<*>, type: FieldType, name: String): (Any, Any?) -> Unit = if (property !is KMutableProperty<*>)
-        { _, _ -> throw IllegalAccessException("Tried to set final property $name for class $type (no save setter)") }
+        getFinalFieldSetter(type, name)
     else
         { obj, inp -> property.setter.call(obj, inp) }
 
@@ -331,7 +337,7 @@ object SavingFieldCache {
         return setter.parameterAnnotations[0].any { it is NotNull } || (kt != null && !kt.parameters[0].type.isMarkedNullable)
     }
 
-    private val alreadyDone = mutableListOf<String>()
+    private val alreadyDone = mutableSetOf<String>()
     private val methodGettersWOSetters = mutableSetOf<String>()
     private val methodSettersWOGetters = mutableSetOf<String>()
 
@@ -339,6 +345,8 @@ object SavingFieldCache {
 
     private val nameMap = mutableMapOf<Field, String>()
     private val namePropMap = mutableMapOf<KProperty<*>, String>()
+
+    private fun reserveName(name: String) = alreadyDone.add(name)
 
     private fun getNameFromProperty(type: FieldType, f: KProperty<*>): String {
         val got = namePropMap[f]
@@ -352,7 +360,6 @@ object SavingFieldCache {
         if (name in alreadyDone)
             errorList[type][name].add("Name already in use for field")
 
-        alreadyDone.add(name)
         namePropMap[f] = name
         return name
     }
@@ -369,7 +376,6 @@ object SavingFieldCache {
         if (name in alreadyDone)
             errorList[type][name].add("Name already in use for field")
 
-        alreadyDone.add(name)
         nameMap[f] = name
         return name
     }
@@ -402,7 +408,6 @@ object SavingFieldCache {
             }
         }
 
-        alreadyDone.add(name)
         return name
     }
 
