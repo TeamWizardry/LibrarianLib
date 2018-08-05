@@ -201,7 +201,10 @@ object SavingFieldCache {
         }
     }
 
-    fun getPropertyGetter(property: KProperty<*>): (Any) -> Any? = { property.getter.call(it) }
+    fun getPropertyGetter(property: KProperty<*>): (Any) -> Any? {
+        property.getter.isAccessible = true
+        return { property.getter.call(it) }
+    }
 
     fun getFieldGetter(field: Field): (Any) -> Any? {
         return getKotlinFieldGetter(field) ?: getJavaFieldGetter(field)
@@ -217,11 +220,18 @@ object SavingFieldCache {
 
     fun getJavaFieldGetter(field: Field) = MethodHandleHelper.wrapperForGetter<Any>(field)
 
-
-    fun getPropertySetter(property: KProperty<*>, type: FieldType, name: String): (Any, Any?) -> Unit = if (property !is KMutableProperty<*>)
-        getFinalFieldSetter(type, name)
-    else
-        { obj, inp -> property.setter.call(obj, inp) }
+    fun getPropertySetter(property: KProperty<*>, type: FieldType, name: String): (Any, Any?) -> Unit {
+        if (property !is KMutableProperty<*>) {
+            return { _, _ ->
+                throw IllegalAccessException("Tried to set final property $name for class $type (no save setter)")
+            }
+        } else {
+            property.setter.isAccessible = true
+            return { obj, inp ->
+                property.setter.call(obj, inp)
+            }
+        }
+    }
 
     fun getFieldSetter(field: Field, enclosing: FieldType, name: String): (Any, Any?) -> Unit {
         return if (Modifier.isFinal(field.modifiers))

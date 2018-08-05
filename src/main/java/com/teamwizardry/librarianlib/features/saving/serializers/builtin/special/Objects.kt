@@ -226,7 +226,8 @@ class SerializerAnalysis(val type: FieldType) {
                     }
                 } else if (type.clazz.isAnnotationPresent(Savable::class.java)) {
                     allFields.filter {
-                        it.value.meta.hasFlag(SavingFieldFlag.FIELD) && !it.value.meta.hasFlag(SavingFieldFlag.TRANSIENT)
+                        (it.value.meta.hasFlag(SavingFieldFlag.FIELD) || it.value.meta.hasFlag(SavingFieldFlag.PROPERTY))
+                                && !it.value.meta.hasFlag(SavingFieldFlag.TRANSIENT)
                     }
                 } else {
                     mapOf<String, FieldCache>()
