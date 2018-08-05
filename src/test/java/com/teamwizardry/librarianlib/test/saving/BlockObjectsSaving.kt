@@ -4,7 +4,9 @@ import com.teamwizardry.librarianlib.features.autoregister.TileRegister
 import com.teamwizardry.librarianlib.features.base.block.BlockMod
 import com.teamwizardry.librarianlib.features.base.block.tile.TileMod
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.kotlin.get
 import com.teamwizardry.librarianlib.features.kotlin.sendMessage
+import com.teamwizardry.librarianlib.features.kotlin.set
 import com.teamwizardry.librarianlib.features.kotlin.toNonnullList
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.saving.Save
@@ -13,7 +15,9 @@ import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NBTTagByte
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.nbt.NBTTagString
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
@@ -21,6 +25,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.math.Vec3i
 import net.minecraft.world.World
+import net.minecraftforge.common.util.INBTSerializable
 import net.minecraftforge.items.ItemStackHandler
 import java.awt.Color
 import java.util.concurrent.ThreadLocalRandom
@@ -41,6 +46,7 @@ class BlockObjectsSaving : BlockMod("saving_objects", Material.CACTUS), ITileEnt
             te.vec3i = pos
             te.vec2d = vec(hitX, hitZ)
             te.enum = facing
+            te.serializable.isHawt = !te.serializable.isHawt
 
             te.markDirty()
         } else {
@@ -52,6 +58,7 @@ class BlockObjectsSaving : BlockMod("saving_objects", Material.CACTUS), ITileEnt
             playerIn.sendMessage("Vec3i: " + te.vec3i)
             playerIn.sendMessage("Vec2d: " + te.vec2d)
             playerIn.sendMessage("Enum: " + te.enum)
+            playerIn.sendMessage("INBTSerializable: " + if(te.serializable.isHawt) "is hawt" else "isn't hawt")
         }
         return true
     }
@@ -70,6 +77,22 @@ class BlockObjectsSaving : BlockMod("saving_objects", Material.CACTUS), ITileEnt
         @Save var vec3i: Vec3i = Vec3i.NULL_VECTOR
         @Save var vec2d: Vec2d = Vec2d.ZERO
         @Save var enum: EnumFacing = EnumFacing.UP
+        @Save var serializable: INBTSerializableTest = INBTSerializableTest()
+    }
+
+    class INBTSerializableTest: INBTSerializable<NBTTagCompound> {
+        var isHawt = false
+
+        override fun deserializeNBT(nbt: NBTTagCompound) {
+            val amIHawt = (nbt["amIHawt"] as NBTTagString?)?.string
+            isHawt = amIHawt == "yes"
+        }
+
+        override fun serializeNBT(): NBTTagCompound {
+            val tag = NBTTagCompound()
+            tag["amIHawt"] = NBTTagString(if(isHawt) "yes" else "no")
+            return tag
+        }
 
     }
 
