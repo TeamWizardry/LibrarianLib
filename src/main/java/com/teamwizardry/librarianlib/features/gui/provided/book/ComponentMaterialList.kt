@@ -8,6 +8,7 @@ import com.teamwizardry.librarianlib.features.gui.provided.book.structure.Render
 import com.teamwizardry.librarianlib.features.kotlin.isNotEmpty
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.structure.dynamic.DynamicStructure
+import com.teamwizardry.librarianlib.test.gui.ItemGuiOpener.Companion.book
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
