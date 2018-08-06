@@ -41,6 +41,7 @@ open class ComponentBookMark(val book: IBookGui, val icon: Sprite, val id: Int, 
         textComp.text.setValue(textString)
         textComp.color.setValue(textColor)
         textComp.transform.translateZ = 10.0
+        textComp.unicode.setValue(false)
         bar.add(textComp)
     }
 

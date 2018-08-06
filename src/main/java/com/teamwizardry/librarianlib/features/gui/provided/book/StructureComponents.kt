@@ -17,7 +17,7 @@ class ComponentRenderableStructure(book: IBookGui, x: Int, y: Int, width: Int, h
 
     override fun init(any: Any?) {
         bookmark = ComponentMaterialsBar(book, book.bookMarkIndex++, any as? RenderableStructure, null)
-        book.mainBookComponent.add(bookmark)
+        add(bookmark)
     }
 
     override fun render(time: Int) {
@@ -44,7 +44,7 @@ class ComponentDynamicStructure(book: IBookGui, x: Int, y: Int, width: Int, heig
 
     override fun init(any: Any?) {
         bookmark = ComponentMaterialsBar(book, book.bookMarkIndex++, null, any as? DynamicStructure)
-        book.mainBookComponent.add(bookmark)
+        add(bookmark)
     }
 
     override fun render(time: Int) {

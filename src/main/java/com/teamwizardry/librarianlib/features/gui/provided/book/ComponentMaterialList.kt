@@ -68,7 +68,7 @@ class ComponentMaterialList(private val book: IBookGui, private val structureRen
         }
 
         itemStacks.mapIndexed { index, stack -> index to stack }.sortedByDescending { it.second.size }.forEach { (index, stack) ->
-            val stackIcon = ComponentStack(index % 10 * 16, index / 10 * 16)
+            val stackIcon = ComponentStack(index % 7 * 16, 16 + index / 7 * 16)
             stackIcon.stack.func { stack[(ticks / 20) % stack.size] }
             stackIcon.transform.translateZ += 500
             add(stackIcon)
