@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.features.gui.provided.book.structure.Render
 import com.teamwizardry.librarianlib.features.structure.dynamic.DynamicStructure
 import java.awt.Color
 
-class ComponentMaterialsBar(book: IBookGui, renderableStructure: RenderableStructure, dynamicStructure: DynamicStructure) : ComponentBookMark(book, book.searchIconSprite, 2, -8, 1) {
+class ComponentMaterialsBar(book: IBookGui, id: Int, renderableStructure: RenderableStructure?, dynamicStructure: DynamicStructure?) : ComponentBookMark(book, book.searchIconSprite, id, -8, 1) {
 
     var focused = false
 

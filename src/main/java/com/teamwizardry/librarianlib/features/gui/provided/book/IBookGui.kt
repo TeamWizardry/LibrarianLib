@@ -29,6 +29,8 @@ import java.util.*
 @SideOnly(Side.CLIENT)
 interface IBookGui {
 
+    var bookMarkIndex: Int
+
     val mainBookComponent: GuiComponent
 
     val paperComponent: GuiComponent

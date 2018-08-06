@@ -45,7 +45,6 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
     override var processArrow: Sprite = guideBookSheet.getSprite("process_arrow", 18, 9)
     override var materialIcon: Sprite = guideBookSheet.getSprite("material_icon", 16, 16)
 
-    var bookmarkID: Int = 0
     override val mainBookComponent: ComponentSprite
     override val paperComponent: ComponentSprite
     override val bindingComponent: ComponentSprite
@@ -53,6 +52,12 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
     override var focus: GuiComponent? = null
     override var history = Stack<IBookElement>()
     override var currentElement: IBookElement? = null
+
+    var bookMarkID = 0
+
+    override var bookMarkIndex: Int
+        get() = bookMarkID
+        set(value) { bookMarkID = value}
 
     init {
         this.mainBookComponent = ComponentSprite(pageSprite, 0, 0)
@@ -68,7 +73,7 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
 
         // --------- BOOKMARKS --------- //
 
-        val searchBar = ComponentSearchBar(this, bookmarkID++,
+        val searchBar = ComponentSearchBar(this, bookMarkIndex++,
                 TFIDFSearch(this).textBoxConsumer(this) { ComponentSearchResults(this) })
         this.mainBookComponent.add(searchBar)
 
