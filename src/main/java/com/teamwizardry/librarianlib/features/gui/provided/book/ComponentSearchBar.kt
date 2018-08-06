@@ -29,14 +29,14 @@ class ComponentSearchBar(book: IBookGui, id: Int, onType: ((String) -> Unit)?) :
         BUS.hook(GuiComponentEvents.MouseInEvent::class.java) {
             if (!focused) {
                 slideOutShort()
-               // text.isVisible = true
+                textField.isVisible = true
             }
         }
 
         BUS.hook(GuiComponentEvents.MouseOutEvent::class.java) {
             if (!focused) {
                 slideIn()
-               // text.isVisible = false
+                textField.isVisible = false
             }
         }
         BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
@@ -49,6 +49,7 @@ class ComponentSearchBar(book: IBookGui, id: Int, onType: ((String) -> Unit)?) :
                     book.forceInFocus(book.history.pop())
                 }
                 focused = false
+                textField.isVisible = false
                 slideIn()
             }
         }

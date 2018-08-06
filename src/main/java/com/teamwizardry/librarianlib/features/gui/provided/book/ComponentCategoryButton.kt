@@ -31,7 +31,7 @@ class ComponentCategoryButton(posX: Int, posY: Int, width: Int, height: Int, boo
             GlStateManager.color(1f, 1f, 1f)
         }
 
-        render.tooltip.func({
+        render.tooltip.func {
             val list = mutableListOf<String>()
             category.title?.add(list)
             category.desc?.addDynamic(list)
@@ -39,7 +39,7 @@ class ComponentCategoryButton(posX: Int, posY: Int, width: Int, height: Int, boo
             for (i in 1 until list.size)
                 list[i] = TextFormatting.GRAY.toString() + list[i]
             list
-        })
+        }
 
         val circleWipe = ComponentAnimatableVoid(0, 0, width, height)
         circleWipe.transform.translateZ = 100.0
