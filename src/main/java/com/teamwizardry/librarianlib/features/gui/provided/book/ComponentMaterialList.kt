@@ -8,7 +8,6 @@ import com.teamwizardry.librarianlib.features.gui.provided.book.structure.Render
 import com.teamwizardry.librarianlib.features.kotlin.isNotEmpty
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.structure.dynamic.DynamicStructure
-import com.teamwizardry.librarianlib.test.gui.ItemGuiOpener.Companion.book
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
@@ -17,10 +16,10 @@ import net.minecraftforge.fluids.FluidRegistry
 import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.fluids.FluidUtil
 
-class ComponentMaterialList(book: IBookGui, private val structureRenderable: RenderableStructure?, private val structureDynamic: DynamicStructure?) : NavBarHolder(16, 16, book.mainBookComponent.size.xi - 32, book.mainBookComponent.size.yi - 32, book), IBookElement {
+class ComponentMaterialList(private val book: IBookGui, private val structureRenderable: RenderableStructure?, private val structureDynamic: DynamicStructure?) : NavBarHolder(16, 16, book.mainBookComponent.size.xi - 32, book.mainBookComponent.size.yi - 32, book), IBookElement {
 
     override val bookParent: Book
-        get() = book.bookParent
+        get() = book.book
 
     override fun createComponent(book: IBookGui): GuiComponent {
         return ComponentMaterialList(book, structureRenderable, structureDynamic)
