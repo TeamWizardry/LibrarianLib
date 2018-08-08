@@ -4,6 +4,8 @@ import com.google.gson.JsonElement
 import com.teamwizardry.librarianlib.core.client.ClientTickHandler
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
+import com.teamwizardry.librarianlib.features.gui.provided.book.context.BookContext
+import com.teamwizardry.librarianlib.features.gui.provided.book.context.ComponentNavBar
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.IBookElement
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry
@@ -15,12 +17,12 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.math.MathHelper
 import net.minecraftforge.common.crafting.CraftingHelper
 import net.minecraftforge.common.crafting.JsonContext
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.awt.Color
-import java.util.*
 
 /**
  * @author WireSegal
@@ -28,8 +30,6 @@ import java.util.*
  */
 @SideOnly(Side.CLIENT)
 interface IBookGui {
-
-    var bookMarkIndex: Int
 
     val mainBookComponent: GuiComponent
 
@@ -39,9 +39,7 @@ interface IBookGui {
 
     var focus: GuiComponent?
 
-    val history: Stack<IBookElement>
-
-    var currentElement: IBookElement?
+    var context: BookContext
 
     val book: Book
 
@@ -79,31 +77,52 @@ interface IBookGui {
 
     val materialIcon: Sprite
 
+    val navBar: ComponentNavBar
+
     fun updateTextureData(sheet: String, outerColor: Color, bindingColor: Color)
 
-    fun actualElement(): IBookElement? {
-        val current = currentElement ?: return null
-        return current.heldElement
-    }
-
     fun placeInFocus(element: IBookElement) {
-        if (element === actualElement())
+        if (element == context.bookElement)
             return
 
-        val currentElement = currentElement
-        if (currentElement != null)
-            history.push(currentElement)
-        forceInFocus(element)
+        focusOn(BookContext(this, element))
     }
 
     fun forceInFocus(element: IBookElement) {
-        if (element === actualElement())
+        if (element == context.bookElement)
             return
 
+        focusOn(BookContext(this, element, context.parent))
+    }
+
+    fun focusOn(newContext: BookContext): BookContext {
         focus?.invalidate()
-        focus = element.createComponent(this)
-        focus?.let { mainBookComponent.add(it) }
-        currentElement = element
+        context = newContext
+
+        val page = context.pages[context.position]
+        val focusComponent = page.component()
+        focus = focusComponent
+        mainBookComponent.add(focusComponent)
+
+        var bookmarkIndex = 0
+        for (bookmark in context.bookmarks)
+            focusComponent.add(bookmark.createBookmarkComponent(this, bookmarkIndex++))
+        for (bookmark in page.pageBookmarks)
+            focusComponent.add(bookmark.createBookmarkComponent(this, bookmarkIndex++))
+
+        return newContext
+    }
+
+    fun changePage(to: Int) {
+        context.position = MathHelper.clamp(to, 0, context.pages.size)
+        focusOn(context)
+    }
+
+    fun up() {
+        val prev = context
+        val parent = prev.parent
+        if (parent != null)
+            focusOn(parent)
     }
 
     companion object {
@@ -159,7 +178,6 @@ interface IBookGui {
             }
 
             GlStateManager.disableRescaleNormal()
-            RenderHelper.enableStandardItemLighting()
         }
     }
 }

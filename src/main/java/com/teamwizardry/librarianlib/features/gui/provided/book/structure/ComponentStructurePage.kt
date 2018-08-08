@@ -1,10 +1,15 @@
-package com.teamwizardry.librarianlib.features.gui.provided.book
+package com.teamwizardry.librarianlib.features.gui.provided.book.structure
 
 import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.components.ComponentAnimatableVoid
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
+import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
+import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
+import com.teamwizardry.librarianlib.features.gui.provided.book.ModGuiBook
+import com.teamwizardry.librarianlib.features.gui.provided.book.helper.TranslationHolder
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
@@ -17,14 +22,14 @@ import net.minecraft.util.math.MathHelper
  * All rights reserved.
  */
 @Suppress("LeakingThis")
-abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width: Int, height: Int, subtext: TranslationHolder?, extra: Any? = null) : ComponentAnimatableVoid(x, y, width, height) {
+abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width: Int, height: Int, val subtext: TranslationHolder?) : ComponentAnimatableVoid(x, y, width, height) {
 
-    private var dragging = false
-    private var prevPos = Vec2d.ZERO
-    private var panVec = Vec2d.ZERO
-    private var rotVec = Vec2d.ZERO
+    protected var dragging = false
+    protected var prevPos = Vec2d.ZERO
+    protected var panVec = Vec2d.ZERO
+    protected var rotVec = Vec2d.ZERO
 
-    private var ticks = 0
+    var ticks = 0
 
     abstract fun render(time: Int)
 
@@ -32,11 +37,9 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
 
     abstract fun failed(): Boolean
 
-    abstract fun init(any: Any?)
+    abstract fun copy(): ComponentStructurePage
 
     init {
-
-        init(extra)
 
         animX = 1.0
 
@@ -88,8 +91,9 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
             }
         }
 
-        clipping.clipToBounds = true
-        BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) { event ->
+        val drawPlatform = ComponentVoid(0, 0, size.xi, size.yi)
+        drawPlatform.clipping.clipToBounds = true
+        drawPlatform.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) { event ->
             if (!event.component.hasTag("switched") && event.component.isVisible) {
                 if (failed()) {
                     GlStateManager.pushMatrix()
@@ -110,10 +114,10 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
                     GlStateManager.enableAlpha()
                     GlStateManager.enableBlend()
                     GlStateManager.enableCull()
-                    GlStateManager.enableRescaleNormal()
+//                    GlStateManager.enableRescaleNormal()
 
                     GlStateManager.translate(panVec.x, panVec.y, 0.0)
-                    GlStateManager.translate(size.x / 2.0, size.y / 2.0, 500.0)
+                    GlStateManager.translate(size.x / 2.0, size.y / 2.0, 250.0)
 
                     GlStateManager.scale(5 + this.animX, -5 - this.animX, 5 + this.animX)
 
@@ -126,11 +130,14 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
                     render(ticks / 4)
 
                     GlStateManager.disableLighting()
+                    GlStateManager.disableRescaleNormal()
 
                     GlStateManager.popMatrix()
                 }
             }
         }
+
+        add(drawPlatform)
 
         if (subtext != null) {
             val text = ComponentText(size.xi / 2, size.yi * 3 / 4, ComponentText.TextAlignH.CENTER, ComponentText.TextAlignV.TOP)

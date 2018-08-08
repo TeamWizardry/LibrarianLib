@@ -3,15 +3,17 @@ package com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.teamwizardry.librarianlib.core.LibrarianLog
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
-import com.teamwizardry.librarianlib.features.gui.provided.book.ComponentEntryPage
+import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
+import com.teamwizardry.librarianlib.features.gui.components.ComponentText
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
-import com.teamwizardry.librarianlib.features.gui.provided.book.TranslationHolder
+import com.teamwizardry.librarianlib.features.gui.provided.book.context.PaginationContext
+import com.teamwizardry.librarianlib.features.gui.provided.book.helper.TranslationHolder
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.IBookElement
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.criterion.ICriterion
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.criterion.game.EntryUnlockedEvent
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.page.Page
+import com.teamwizardry.librarianlib.features.helpers.vec
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.MinecraftForge
@@ -45,8 +47,8 @@ class Entry(override val bookParent: Book, parentSheet: String, parentOuter: Col
         val baseKey = bookParent.location.resourceDomain + "." +
                 bookParent.location.resourcePath + "." +
                 rl.replace("^.*/(?=\\w+)".toRegex(), "")
-        var title: TranslationHolder? = TranslationHolder(baseKey + ".title")
-        var desc: TranslationHolder? = TranslationHolder(baseKey + ".description")
+        var title: TranslationHolder? = TranslationHolder("$baseKey.title")
+        var desc: TranslationHolder? = TranslationHolder("$baseKey.description")
         var icon: JsonElement = JsonObject()
         var criterion: ICriterion? = null
         var sheet: String = parentSheet
@@ -108,9 +110,38 @@ class Entry(override val bookParent: Book, parentSheet: String, parentOuter: Col
     }
 
     @SideOnly(Side.CLIENT)
-    override fun createComponent(book: IBookGui): GuiComponent {
+    override fun createComponents(book: IBookGui): List<PaginationContext> {
         book.updateTextureData(sheet, outerColor, bindingColor)
-        return ComponentEntryPage(book, this)
+
+        val title = title.toString()
+
+        val xSize = book.mainBookComponent.size.xi - 32
+        val ySize = book.mainBookComponent.size.yi - 32
+        val size = vec(xSize, ySize)
+
+        val pageComponents = mutableListOf<PaginationContext>()
+
+        for (page in pages) {
+            for (component in page.createBookComponents(book, size)) {
+                pageComponents.add(PaginationContext({
+                    val holderComponent = component()
+
+                    val titleBar = ComponentSprite(book.titleBarSprite,
+                            16 + xSize / 2 - book.titleBarSprite.width / 2, -31)
+                    titleBar.color.setValue(book.book.bookColor)
+                    holderComponent.add(titleBar)
+
+                    val titleText = ComponentText(titleBar.size.xi / 2 - 12, titleBar.size.yi / 2 + 1, ComponentText.TextAlignH.CENTER, ComponentText.TextAlignV.MIDDLE)
+                    titleText.text.setValue(title)
+                    titleText.color.setValue(book.book.entryTitleTextColor)
+                    titleBar.add(titleText)
+
+                    holderComponent
+                }, page.extraBookmarks))
+            }
+        }
+
+        return pageComponents
     }
 
     companion object {

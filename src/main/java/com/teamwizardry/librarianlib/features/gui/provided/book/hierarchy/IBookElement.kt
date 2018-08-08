@@ -1,7 +1,8 @@
 package com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy
 
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
+import com.teamwizardry.librarianlib.features.gui.provided.book.context.Bookmark
+import com.teamwizardry.librarianlib.features.gui.provided.book.context.PaginationContext
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -14,7 +15,8 @@ interface IBookElement {
     val bookParent: Book
 
     @SideOnly(Side.CLIENT)
-    fun createComponent(book: IBookGui): GuiComponent
+    fun createComponents(book: IBookGui): List<PaginationContext>
 
-    val heldElement get() = this
+    @SideOnly(Side.CLIENT)
+    fun addAllBookmarks(list: List<Bookmark>?): List<Bookmark> = list ?: listOf()
 }

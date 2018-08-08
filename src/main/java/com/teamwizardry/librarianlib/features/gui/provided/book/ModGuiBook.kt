@@ -7,7 +7,8 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
-import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.IBookElement
+import com.teamwizardry.librarianlib.features.gui.provided.book.context.BookContext
+import com.teamwizardry.librarianlib.features.gui.provided.book.context.ComponentNavBar
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry
 import com.teamwizardry.librarianlib.features.math.Vec2d
@@ -17,7 +18,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.text.TextFormatting
 import java.awt.Color
-import java.util.*
 
 /**
  * Property of Demoniaque.
@@ -50,37 +50,27 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
     override val bindingComponent: ComponentSprite
 
     override var focus: GuiComponent? = null
-    override var history = Stack<IBookElement>()
-    override var currentElement: IBookElement? = null
 
-    var bookMarkID = 0
+    override val navBar: ComponentNavBar
 
-    override var bookMarkIndex: Int
-        get() = bookMarkID
-        set(value) { bookMarkID = value}
 
     init {
-        this.mainBookComponent = ComponentSprite(pageSprite, 0, 0)
-        this.mainBookComponent.color.setValue(book.bookColor)
+        mainBookComponent = ComponentSprite(pageSprite, 0, 0)
+        mainBookComponent.color.setValue(book.bookColor)
 
         paperComponent = ComponentSprite(paperSprite, 0, 0)
-        this.mainBookComponent.add(paperComponent)
+        mainBookComponent.add(paperComponent)
         bindingComponent = ComponentSprite(bindingSprite, 0, 0)
         bindingComponent.color.setValue(book.bindingColor)
-        this.mainBookComponent.add(bindingComponent)
+        mainBookComponent.add(bindingComponent)
+
+        navBar = ComponentNavBar(this, mainBookComponent.size.xi / 2 - 35, mainBookComponent.size.yi, 70)
+        mainBookComponent.add(navBar)
 
         mainComponents.add(this.mainBookComponent)
-
-        // --------- BOOKMARKS --------- //
-
-        val searchBar = ComponentSearchBar(this, bookMarkIndex++,
-                TFIDFSearch(this).textBoxConsumer(this) { ComponentSearchResults(this) })
-        this.mainBookComponent.add(searchBar)
-
-        // --------- BOOKMARKS --------- //
-
-        placeInFocus(book)
     }
+
+    override var context: BookContext = focusOn(BookContext(this, book))
 
     override fun makeNavigationButton(offsetIndex: Int, entry: Entry, extra: ((ComponentVoid) -> Unit)?): GuiComponent {
         val indexButton = ComponentVoid(0, 16 * offsetIndex, this.mainBookComponent.size.xi - 32, 16)

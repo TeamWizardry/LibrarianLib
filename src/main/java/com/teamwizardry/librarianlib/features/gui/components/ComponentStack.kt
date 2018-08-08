@@ -51,7 +51,6 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 1
 
         GlStateManager.popMatrix()
         GlStateManager.disableRescaleNormal()
-        RenderHelper.enableStandardItemLighting()
     }
 
     companion object {

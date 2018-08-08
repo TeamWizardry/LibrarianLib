@@ -8,7 +8,6 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
-import java.util.*
 
 abstract class PageString(override val entry: Entry) : Page {
 
@@ -21,8 +20,8 @@ abstract class PageString(override val entry: Entry) : Page {
     }
 
     @SideOnly(Side.CLIENT)
-    override fun createBookComponents(book: IBookGui, size: Vec2d): List<GuiComponent> {
-        val pages = ArrayList<GuiComponent>()
+    override fun createBookComponents(book: IBookGui, size: Vec2d): List<() -> GuiComponent> {
+        val pages = mutableListOf<() -> GuiComponent>()
 
         val minecraft = Minecraft.getMinecraft()
 
@@ -54,12 +53,13 @@ abstract class PageString(override val entry: Entry) : Page {
             sections.add(page.joinToString("\n"))
 
         for (section in sections) {
-            val sectionComponent = ComponentText(0, 0, ComponentText.TextAlignH.LEFT, ComponentText.TextAlignV.TOP)
-            sectionComponent.text.setValue(section)
-            sectionComponent.wrap.setValue(size.xi)
-            sectionComponent.unicode.setValue(true)
-
-            pages.add(sectionComponent)
+            pages.add {
+                val sectionComponent = ComponentText(16, 16, ComponentText.TextAlignH.LEFT, ComponentText.TextAlignV.TOP)
+                sectionComponent.text.setValue(section)
+                sectionComponent.wrap.setValue(size.xi)
+                sectionComponent.unicode.setValue(true)
+                sectionComponent
+            }
         }
         return pages
     }

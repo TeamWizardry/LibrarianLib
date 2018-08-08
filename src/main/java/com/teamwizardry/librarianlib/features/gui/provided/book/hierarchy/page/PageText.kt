@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.page
 
 import com.google.gson.JsonObject
-import com.teamwizardry.librarianlib.features.gui.provided.book.TranslationHolder
+import com.teamwizardry.librarianlib.features.gui.provided.book.helper.TranslationHolder
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly

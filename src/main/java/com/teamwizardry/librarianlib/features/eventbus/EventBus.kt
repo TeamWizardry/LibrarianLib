@@ -56,7 +56,7 @@ class EventBus {
                     c = c.superclass ?: break
                 }
 
-                return@getOrPut list
+                list
             }
         }
     }

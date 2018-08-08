@@ -31,11 +31,11 @@ open class ComponentRelationshipHandler(private val component: GuiComponent) {
         components.forEach { it.relationships.addChildrenRecursively(list) }
     }
 
-    internal val parents = mutableSetOf<GuiComponent>()
+    val parents = mutableSetOf<GuiComponent>()
 
     /** [GuiComponent.parent] */
     var parent: GuiComponent? = null
-        internal set(value) {
+        set(value) {
             parents.clear()
             if (value != null) {
                 parents.addAll(value.relationships.parents)

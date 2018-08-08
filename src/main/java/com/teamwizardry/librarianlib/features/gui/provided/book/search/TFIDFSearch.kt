@@ -1,5 +1,6 @@
-package com.teamwizardry.librarianlib.features.gui.provided.book
+package com.teamwizardry.librarianlib.features.gui.provided.book.search
 
+import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry
 import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.relauncher.Side

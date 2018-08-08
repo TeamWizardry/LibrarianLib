@@ -5,8 +5,9 @@ import com.google.gson.JsonObject
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
+import com.teamwizardry.librarianlib.features.gui.provided.book.context.Bookmark
+import com.teamwizardry.librarianlib.features.gui.provided.book.helper.PageTypes
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry
-import com.teamwizardry.librarianlib.features.gui.provided.book.provider.PageTypes
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -21,8 +22,11 @@ interface Page {
     val searchableKeys: Collection<String>?
         get() = null
 
+    val extraBookmarks: List<Bookmark>
+        get() = listOf()
+
     @SideOnly(Side.CLIENT)
-    fun createBookComponents(book: IBookGui, size: Vec2d): List<GuiComponent>
+    fun createBookComponents(book: IBookGui, size: Vec2d): List<() -> GuiComponent>
 
     companion object {
 

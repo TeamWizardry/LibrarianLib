@@ -2,10 +2,12 @@ package com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.page
 
 import com.google.gson.JsonObject
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
-import com.teamwizardry.librarianlib.features.gui.provided.book.ComponentRenderableStructure
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
-import com.teamwizardry.librarianlib.features.gui.provided.book.TranslationHolder
+import com.teamwizardry.librarianlib.features.gui.provided.book.context.Bookmark
+import com.teamwizardry.librarianlib.features.gui.provided.book.helper.TranslationHolder
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry
+import com.teamwizardry.librarianlib.features.gui.provided.book.structure.BookmarkRenderableStructure
+import com.teamwizardry.librarianlib.features.gui.provided.book.structure.ComponentRenderableStructure
 import com.teamwizardry.librarianlib.features.gui.provided.book.structure.StructureCacheRegistry
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraftforge.fml.relauncher.Side
@@ -20,8 +22,11 @@ class PageStructure(override val entry: Entry, element: JsonObject) : Page {
     override val searchableStrings: Collection<String>?
         get() = mutableListOf(structureName)
 
+    override val extraBookmarks: List<Bookmark>
+        get() = listOf(BookmarkRenderableStructure(::structure))
+
     @SideOnly(Side.CLIENT)
-    override fun createBookComponents(book: IBookGui, size: Vec2d): List<GuiComponent> {
-        return mutableListOf<GuiComponent>(ComponentRenderableStructure(book, 0, 0, size.xi, size.yi, structure, subtext))
+    override fun createBookComponents(book: IBookGui, size: Vec2d): List<() -> GuiComponent> {
+        return mutableListOf({ ComponentRenderableStructure(book, 16, 16, size.xi, size.yi, structure, subtext) })
     }
 }

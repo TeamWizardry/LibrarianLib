@@ -15,7 +15,7 @@ import org.lwjgl.input.Keyboard
 class ComponentGuiEventHandler(private val component: GuiComponent) {
     internal var mouseButtonsDownInside = arrayOfNulls<Vec2d?>(EnumMouseButton.values().size)
     internal var mouseButtonsDownOutside = arrayOfNulls<Vec2d?>(EnumMouseButton.values().size)
-    internal var keysDown: MutableMap<Key, Boolean> = HashMap<Key, Boolean>().withDefault({ false })
+    internal var keysDown: MutableMap<Key, Boolean> = HashMap<Key, Boolean>().withDefault { false }
 
     fun tick() {
         component.BUS.fire(GuiComponentEvents.ComponentTickEvent(component))

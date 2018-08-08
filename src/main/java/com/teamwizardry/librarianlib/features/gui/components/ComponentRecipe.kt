@@ -1,10 +1,9 @@
-package com.teamwizardry.librarianlib.features.gui.provided.book
+package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.Hook
-import com.teamwizardry.librarianlib.features.gui.components.ComponentStack
-import com.teamwizardry.librarianlib.features.gui.components.ComponentText
+import com.teamwizardry.librarianlib.features.gui.provided.book.helper.TranslationHolder
 import com.teamwizardry.librarianlib.features.sprite.Sprite
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager

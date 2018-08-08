@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.features.gui.provided.book.provider
+package com.teamwizardry.librarianlib.features.gui.provided.book.helper
 
 import com.google.gson.JsonObject
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry

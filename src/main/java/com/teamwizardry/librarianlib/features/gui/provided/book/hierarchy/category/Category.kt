@@ -3,10 +3,9 @@ package com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.categ
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.teamwizardry.librarianlib.core.LibrarianLog
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
-import com.teamwizardry.librarianlib.features.gui.provided.book.ComponentCategoryPage
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
-import com.teamwizardry.librarianlib.features.gui.provided.book.TranslationHolder
+import com.teamwizardry.librarianlib.features.gui.provided.book.context.PaginationContext
+import com.teamwizardry.librarianlib.features.gui.provided.book.helper.TranslationHolder
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.IBookElement
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry
@@ -94,10 +93,13 @@ class Category(val book: Book, json: JsonObject) : IBookElement {
     }
 
     @SideOnly(Side.CLIENT)
-    override fun createComponent(book: IBookGui): GuiComponent {
-        return if (isSingleEntry) entries[0].createComponent(book) else {
+
+    override fun createComponents(book: IBookGui): List<PaginationContext> {
+        return if (isSingleEntry) entries[0].createComponents(book) else {
             book.updateTextureData(sheet, outerColor, bindingColor)
-            ComponentCategoryPage(book, this)
+            List(ComponentCategoryPage.numberOfPages(this)) {
+                PaginationContext { ComponentCategoryPage(book, this, it) }
+            }
         }
     }
 }

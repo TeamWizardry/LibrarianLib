@@ -184,7 +184,7 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
     /**
      * The parent of this component, or null if it has no parent
      */
-    val parent
+    var parent
             by relationships::parent.delegate
 
     fun add(vararg children: GuiComponent)

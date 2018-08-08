@@ -1,10 +1,11 @@
-package com.teamwizardry.librarianlib.features.gui.provided.book
+package com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.category
 
 import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.category.Category
+import com.teamwizardry.librarianlib.features.gui.components.ComponentAnimatableVoid
+import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -12,7 +13,6 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.text.TextFormatting
 import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL11.GL_POLYGON_SMOOTH
 
 class ComponentCategoryButton(posX: Int, posY: Int, width: Int, height: Int, book: IBookGui, category: Category) : GuiComponent(posX, posY, width, height) {
 
@@ -51,20 +51,19 @@ class ComponentCategoryButton(posX: Int, posY: Int, width: Int, height: Int, boo
             GlStateManager.disableCull()
             val tessellator = Tessellator.getInstance()
             val buffer = tessellator.buffer
-            buffer.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_COLOR)
+            buffer.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR)
             val centerX = (width / 2).toFloat()
             val centerY = (height / 2).toFloat()
+            buffer.pos(centerX.toDouble(), centerY.toDouble(), 100.0).color(0f, 1f, 1f, 1f).endVertex()
+
             for (i in 0..10) {
                 val angle = (i.toDouble() * Math.PI * 2.0 / 10).toFloat()
                 val x = (centerX + MathHelper.cos(angle) * circleWipe.animX).toFloat()
                 val y = (centerY + MathHelper.sin(angle) * circleWipe.animX).toFloat()
 
                 buffer.pos(x.toDouble(), y.toDouble(), 100.0).color(0f, 1f, 1f, 1f).endVertex()
-                buffer.pos(centerX.toDouble(), centerY.toDouble(), 100.0).color(0f, 1f, 1f, 1f).endVertex()
             }
             tessellator.draw()
-
-            Unit
         }
 
         val radius = 16.0
@@ -93,9 +92,7 @@ class ComponentCategoryButton(posX: Int, posY: Int, width: Int, height: Int, boo
             GlStateManager.color(wipeColor.red / 255f, wipeColor.green / 255f, wipeColor.blue / 255f)
             GlStateManager.enableAlpha()
             GlStateManager.disableCull()
-            GL11.glEnable(GL_POLYGON_SMOOTH)
             iconMask()
-            GL11.glDisable(GL_POLYGON_SMOOTH)
             GlStateManager.enableCull()
         }
 

@@ -5,13 +5,14 @@ import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
-import com.teamwizardry.librarianlib.features.gui.provided.book.ComponentMainIndex
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
-import com.teamwizardry.librarianlib.features.gui.provided.book.TranslationHolder
+import com.teamwizardry.librarianlib.features.gui.provided.book.context.Bookmark
+import com.teamwizardry.librarianlib.features.gui.provided.book.context.PaginationContext
+import com.teamwizardry.librarianlib.features.gui.provided.book.helper.TranslationHolder
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.IBookElement
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.category.Category
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry
+import com.teamwizardry.librarianlib.features.gui.provided.book.search.SearchBookmark
 import com.teamwizardry.librarianlib.features.helpers.currentModId
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import net.minecraft.client.resources.I18n
@@ -131,9 +132,17 @@ open class Book(val location: ResourceLocation) : IBookElement {
     }
 
     @SideOnly(Side.CLIENT)
-    override fun createComponent(book: IBookGui): GuiComponent {
+    override fun createComponents(book: IBookGui): List<PaginationContext> {
         book.updateTextureData(textureSheet, bookColor, bindingColor)
-        return ComponentMainIndex(book)
+        return List(ComponentMainIndex.numberOfPages(book)) { PaginationContext { ComponentMainIndex(book, it) } }
+    }
+
+    override fun addAllBookmarks(list: List<Bookmark>?): List<Bookmark> {
+        val newList = mutableListOf<Bookmark>()
+        if (list != null)
+            newList.addAll(list)
+        newList.add(SearchBookmark())
+        return newList
     }
 
     companion object {

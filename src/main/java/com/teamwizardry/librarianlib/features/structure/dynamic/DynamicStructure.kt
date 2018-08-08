@@ -161,9 +161,9 @@ class DynamicStructure(inheriting: LongObjectHashMap<DynamicBlockInfo>) {
         Tessellator.getInstance().draw()
         GlStateManager.color(1f, 1f, 1f, 1f)
 
-        GlStateManager.enableLighting()
-
         GlStateManager.popMatrix()
+
+        GlStateManager.enableLighting()
 
         buffer.setTranslation(0.0, 0.0, 0.0)
     }

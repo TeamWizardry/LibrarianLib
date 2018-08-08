@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.features.gui.provided.book
+package com.teamwizardry.librarianlib.features.gui.provided.book.helper
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
@@ -51,7 +51,7 @@ open class TranslationHolder(private val key: String, private val args: Array<An
                             } else if (arg.asJsonPrimitive.isBoolean)
                                 arguments.add(arg.asBoolean)
                             else
-                                arguments.add(TranslationHolder.fromJson(arg))
+                                arguments.add(fromJson(arg))
                             arg.isJsonNull -> arguments.add("null")
                             arg.isJsonObject -> arguments.add(fromJson(arg.asJsonObject))
                         }

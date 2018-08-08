@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.features.gui.provided.book
+package com.teamwizardry.librarianlib.features.gui.provided.book.context
 
 import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
 

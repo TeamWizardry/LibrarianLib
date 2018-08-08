@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.features.gui.provided.book
+package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
@@ -43,6 +43,9 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
 
     var isFocused: Boolean = false
         set(isFocused) {
+            if ((isFocused == this.isFocused) || BUS.fire(FocusEvent(this.isFocused)).isCanceled())
+                return
+
             if (isFocused && !this.isFocused)
                 this.cursorCounter = 0
 
@@ -76,7 +79,10 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
 
     init {
         BUS.hook(GuiComponentEvents.MouseDownEvent::class.java) { mouseClicked(it.mousePos.xi, it.mousePos.yi, it.button.mouseCode) }
-        BUS.hook(GuiComponentEvents.KeyDownEvent::class.java) { handleKeyTyped(it.key, it.keyCode) }
+        BUS.hook(GuiComponentEvents.KeyDownEvent::class.java) {
+            if (handleKeyTyped(it.key, it.keyCode))
+                isFocused = true
+        }
         BUS.hook(GuiComponentEvents.ComponentTickEvent::class.java) { updateCursorCounter() }
     }
 
@@ -210,12 +216,9 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
     }
 
     fun handleKeyTyped(input: Char, inputCode: Int): Boolean {
-        if (!this.isFocused) {
-            if (this.autoFocus.getValue(this))
-                isFocused = true
-            else
-                return false
-        }
+
+        if (!this.isFocused && !this.autoFocus.getValue(this))
+            return false
 
         when {
             GuiScreen.isKeyComboCtrlA(inputCode) -> {
@@ -438,5 +441,6 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
 
     class TextEditEvent(var section: String?, val whole: String) : EventCancelable()
     class TextSentEvent(val content: String) : Event()
+    class FocusEvent(val wasFocused: Boolean) : EventCancelable()
 }
 
