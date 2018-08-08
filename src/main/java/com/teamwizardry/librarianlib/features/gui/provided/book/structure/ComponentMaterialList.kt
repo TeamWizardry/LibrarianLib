@@ -22,7 +22,7 @@ class ComponentMaterialList(book: IBookGui, structureMaterials: StructureMateria
         add(anchor)
 
         for ((index, stack) in structureMaterials.stacks.withIndex()) {
-            val stackIcon = ComponentStack(index % 7 * 16, 16 + index / 7 * 16)
+            val stackIcon = ComponentStack(index % 7 * 16, index / 7 * 16)
             stackIcon.stack.func { stack[( structurePage.ticks / 80) % stack.size] }
             stackIcon.transform.translateZ += 500
             add(stackIcon)
