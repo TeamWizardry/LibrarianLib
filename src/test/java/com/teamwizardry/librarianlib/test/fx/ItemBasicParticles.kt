@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.test.fx
 
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.base.item.ItemMod
-import com.teamwizardry.librarianlib.features.math.interpolate.float.InterpLinearFloat
+import com.teamwizardry.librarianlib.features.math.interpolate.numeric.InterpLinearFloat
 import com.teamwizardry.librarianlib.features.math.interpolate.position.InterpLine
 import com.teamwizardry.librarianlib.features.particle.ParticleBuilder
 import com.teamwizardry.librarianlib.features.particle.ParticleSpawner

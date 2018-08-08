@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.features.math.interpolate.float
+package com.teamwizardry.librarianlib.features.math.interpolate.numeric
 
 import com.teamwizardry.librarianlib.features.math.interpolate.InterpCombine
 import com.teamwizardry.librarianlib.features.math.interpolate.InterpFunction
