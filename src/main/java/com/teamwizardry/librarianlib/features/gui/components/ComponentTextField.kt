@@ -34,7 +34,9 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
             field = if (value.length > max)
                 value.substring(0, max)
             else value
-            this.cursorToEnd()
+
+            if (text.isEmpty())
+                cursorToEnd()
         }
 
     val maxStringLength = Option<ComponentTextField, Int>(100)
@@ -128,7 +130,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
             val section = editEvent.section
 
             this.text = fakeBuildStart + section + fakeBuildEnd
-            this.shiftCursor(selectionStart - this.selectionEnd + section!!.length)
+            this.shiftCursor(selectionStart - this.selectionEnd + section.length)
         }
     }
 
@@ -439,7 +441,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
         this.lineScrollOffset = MathHelper.clamp(this.lineScrollOffset, 0, length)
     }
 
-    class TextEditEvent(var section: String?, val whole: String) : EventCancelable()
+    class TextEditEvent(var section: String, val whole: String) : EventCancelable()
     class TextSentEvent(val content: String) : Event()
     class FocusEvent(val wasFocused: Boolean) : EventCancelable()
 }
