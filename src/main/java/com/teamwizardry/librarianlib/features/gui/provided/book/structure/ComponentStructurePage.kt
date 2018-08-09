@@ -49,7 +49,8 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
         }
 
         BUS.hook(GuiComponentEvents.MouseWheelEvent::class.java) { event ->
-            if (!event.component.hasTag("switched") && event.component.isVisible) {
+            if (event.component.children.none { it is ComponentMaterialList }
+                    && event.component.isVisible) {
                 var tmpZoom = this.animX
                 if (event.direction === GuiComponentEvents.MouseWheelDirection.UP)
                     tmpZoom += 3.0
@@ -67,7 +68,8 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
         }
 
         BUS.hook(GuiComponentEvents.MouseDragEvent::class.java) { event ->
-            if (!event.component.hasTag("switched") && event.component.isVisible) {
+            if (event.component.children.none { it is ComponentMaterialList }
+                    && event.component.isVisible) {
                 val untransform = event.mousePos
                 val diff: Vec2d
                 diff = if (dragging)
@@ -85,7 +87,8 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
         }
 
         BUS.hook(GuiComponentEvents.MouseUpEvent::class.java) { event ->
-            if (!event.component.hasTag("switched") && event.component.isVisible) {
+            if (event.component.children.none { it is ComponentMaterialList }
+                    && event.component.isVisible) {
                 prevPos = Vec2d.ZERO
                 dragging = false
             }
@@ -94,7 +97,8 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
         val drawPlatform = ComponentVoid(0, 0, size.xi, size.yi)
         drawPlatform.clipping.clipToBounds = true
         drawPlatform.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) { event ->
-            if (!event.component.hasTag("switched") && event.component.isVisible) {
+            if (event.component.children.none { it is ComponentMaterialList }
+                    && event.component.isVisible) {
                 if (failed()) {
                     GlStateManager.pushMatrix()
                     ModGuiBook.ERROR.bind()
