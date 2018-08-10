@@ -11,6 +11,7 @@ import java.awt.Color
 class ComponentMaterialList(book: IBookGui, structureMaterials: StructureMaterials, structurePage: ComponentStructurePage) : GuiComponent(0, 0, book.mainBookComponent.size.xi - 32, book.mainBookComponent.size.yi - 32) {
 
     init {
+        structurePage.released = false
 
         val anchor = ComponentVoid(-16, -16)
 
