@@ -53,7 +53,7 @@ open class TranslationHolder(private val key: String, private val args: Array<An
                             else
                                 arguments.add(fromJson(arg))
                             arg.isJsonNull -> arguments.add("null")
-                            arg.isJsonObject -> arguments.add(fromJson(arg.asJsonObject))
+                            else -> arguments.add(fromJson(arg))
                         }
                 return TranslationHolder(key, arguments.toTypedArray())
             } catch (ignored: Exception) {
