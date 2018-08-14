@@ -10,6 +10,7 @@ import com.teamwizardry.librarianlib.test.chunkdata.ChunkDataEntryPoint
 import com.teamwizardry.librarianlib.test.container.ContainerEntryPoint
 import com.teamwizardry.librarianlib.test.fx.FXEntryPoint
 import com.teamwizardry.librarianlib.test.gui.GuiEntryPoint
+import com.teamwizardry.librarianlib.test.particlesystem.ParticleSystemEntryPoint
 import com.teamwizardry.librarianlib.test.saving.SavingEntryPoint
 import com.teamwizardry.librarianlib.test.variants.VariantEntryPoint
 import com.teamwizardry.librarianlib.test.worlddata.WorldDataEntryPoint
@@ -90,7 +91,8 @@ class TestMod {
                 WorldDataEntryPoint,
                 AnimatorEntryPoint,
 //                RenderEntryPoint, // DO NOT ENABLE THIS OR ALL IS SPONGE
-                EndEntryPoint
+                EndEntryPoint,
+                ParticleSystemEntryPoint
         )
 
         object Tab : ModCreativeTab() {

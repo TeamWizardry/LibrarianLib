@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.kotlin.unaryMinus
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
+import com.teamwizardry.librarianlib.features.particlesystem.ParticleRenderManager
 import com.teamwizardry.librarianlib.features.shader.LibShaders
 import com.teamwizardry.librarianlib.features.shader.ShaderHelper
 import com.teamwizardry.librarianlib.features.sprite.SpritesMetadataSection
@@ -59,6 +60,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         ScissorUtil
         LibShaders
         ShaderHelper.init()
+        ParticleRenderManager
 
         val s = MethodHandleHelper.wrapperForGetter(Minecraft::class.java, "metadataSerializer", "field_110452_an")(Minecraft.getMinecraft()) as MetadataSerializer
         s.registerMetadataSectionType(SpritesMetadataSectionSerializer(), SpritesMetadataSection::class.java)
@@ -151,5 +153,5 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
     }
 }
 
-val Minecraft.renderPartialTicksPaused by MethodHandleHelper.delegateForReadOnly<Minecraft, Float>(Minecraft::class.java, "renderPartialTicksPaused", "field_193996_ah")
-val Minecraft.timer by MethodHandleHelper.delegateForReadOnly<Minecraft, net.minecraft.util.Timer>(Minecraft::class.java, "timer", "field_71428_T")
+private val Minecraft.renderPartialTicksPaused by MethodHandleHelper.delegateForReadOnly<Minecraft, Float>(Minecraft::class.java, "renderPartialTicksPaused", "field_193996_ah")
+private val Minecraft.timer by MethodHandleHelper.delegateForReadOnly<Minecraft, net.minecraft.util.Timer>(Minecraft::class.java, "timer", "field_71428_T")
