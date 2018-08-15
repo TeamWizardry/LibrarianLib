@@ -131,8 +131,13 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         GlStateManager.pushAttrib()
         val player = Minecraft.getMinecraft().player
 
+        val partialTicks = if (Minecraft.getMinecraft().isGamePaused)
+            Minecraft.getMinecraft().renderPartialTicksPaused
+        else
+            Minecraft.getMinecraft().timer.renderPartialTicks
+
         val lastPos = vec(player.lastTickPosX, player.lastTickPosY, player.lastTickPosZ)
-        val partialOffset = (player.positionVector - lastPos) * (1 - Animation.getPartialTickTime())
+        val partialOffset = (player.positionVector - lastPos) * (1 - partialTicks)
 
         val globalize = -(player.positionVector - partialOffset)
         GlStateManager.translate(globalize.x, globalize.y, globalize.z)
@@ -141,10 +146,6 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         GlStateManager.disableTexture2D()
         GlStateManager.color(1f, 1f, 1f, 1f)
 
-        val partialTicks = if (Minecraft.getMinecraft().isGamePaused)
-            Minecraft.getMinecraft().renderPartialTicksPaused
-        else
-            Minecraft.getMinecraft().timer.renderPartialTicks
         MinecraftForge.EVENT_BUS.post(CustomWorldRenderEvent(Minecraft.getMinecraft().world, e.context, partialTicks))
 
         GlStateManager.enableTexture2D()
