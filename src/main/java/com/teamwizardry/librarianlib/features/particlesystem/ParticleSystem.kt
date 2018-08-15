@@ -44,8 +44,8 @@ class ParticleSystem {
     }
 
     fun render() {
-        for(module in renderModules) {
-            module.render(particles, renderPrepModules)
+        for(i in 0 until renderModules.size) {
+            renderModules[i].render(particles, renderPrepModules)
         }
     }
 

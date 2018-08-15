@@ -59,8 +59,9 @@ object ParticleWorldCollisionHandler {
         for(x in minX..maxX) {
             for(y in minY..maxY) {
                 for(z in minZ..maxZ) {
-                    for(box in getAABBs(x, y, z)) {
-                        collide(box,
+                    val list = getAABBs(x, y, z)
+                    for(i in 0 until list.size) {
+                        collide(list[i],
                                 posX, posY, posZ,
                                 invVelX, invVelY, invVelZ
                         )

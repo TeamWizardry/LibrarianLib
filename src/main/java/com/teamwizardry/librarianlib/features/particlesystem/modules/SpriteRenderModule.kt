@@ -37,8 +37,8 @@ class SpriteRenderModule(
         val vb = tessellator.buffer
         vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR)
 
-        val playerYaw = player.rotationYaw.toDouble()//ClientTickHandler.interpWorldPartialTicks(player.prevCameraYaw, player.cameraYaw)
-        val playerPitch = player.rotationPitch.toDouble()//ClientTickHandler.interpWorldPartialTicks(player.prevCameraPitch, player.cameraPitch)
+        val playerYaw = player.rotationYaw.toDouble()
+        val playerPitch = player.rotationPitch.toDouble()
 
         val yawX = Math.sin(-Math.toRadians(playerYaw+180))
         val yawZ = Math.cos(-Math.toRadians(playerYaw+180))
@@ -59,20 +59,22 @@ class SpriteRenderModule(
                 it.update(particle)
             }
             if(facingVector != null) {
-                val facing = player.getLook(ClientTickHandler.worldPartialTicks)
+                val facingX = facingVector.get(particle, 0)
+                val facingY = facingVector.get(particle, 1)
+                val facingZ = facingVector.get(particle, 2)
                 // x axis, facing • (0, 1, 0)
-                iHatX = -facingVector.get(particle, 2)
+                iHatX = -facingZ
                 iHatY = 0.0
-                iHatZ = facingVector.get(particle, 0)
+                iHatZ = facingX
                 val iHatInvLength = MathHelper.fastInvSqrt(iHatX * iHatX + iHatY * iHatY + iHatZ * iHatZ)
                 iHatX *= iHatInvLength
                 iHatY *= iHatInvLength
                 iHatZ *= iHatInvLength
 
                 // y axis, facing • iHat
-                jHatX = facingVector.get(particle, 1) * facingVector.get(particle, 0)
-                jHatY = facingVector.get(particle, 2) * -facingVector.get(particle, 2) - facingVector.get(particle, 0) * facingVector.get(particle, 0)
-                jHatZ = facingVector.get(particle, 1) * facingVector.get(particle, 2)
+                jHatX = facingY * facingX
+                jHatY = facingZ * -facingZ - facingX * facingX
+                jHatZ = facingY * facingZ
                 val jHatInvLength = MathHelper.fastInvSqrt(jHatX * jHatX + jHatY * jHatY + jHatZ * jHatZ)
                 jHatX *= -jHatInvLength
                 jHatY *= -jHatInvLength
