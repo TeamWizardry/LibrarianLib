@@ -5,10 +5,7 @@ import com.teamwizardry.librarianlib.features.particlesystem.ParticleSystem
 import com.teamwizardry.librarianlib.features.particlesystem.ReadOnlyParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.VariableBinding
-import com.teamwizardry.librarianlib.features.particlesystem.modules.AccelerationUpdateModule
-import com.teamwizardry.librarianlib.features.particlesystem.modules.CollisionUpdateModule
-import com.teamwizardry.librarianlib.features.particlesystem.modules.SetValueUpdateModule
-import com.teamwizardry.librarianlib.features.particlesystem.modules.SpriteRenderModule
+import com.teamwizardry.librarianlib.features.particlesystem.modules.*
 import net.minecraft.util.math.Vec3d
 import java.awt.Color
 
@@ -41,81 +38,22 @@ object FountainParticleSystem {
         system.updateModules.clear()
         system.renderModules.clear()
 
-        system.updateModules.add(AccelerationUpdateModule(
-                velocity,
-                ConstantBinding(0.0, -0.04, 0.0)
-        ))
-        system.updateModules.add(SetValueUpdateModule(
-                target = previousPosition,
-                source = position
-        ))
-        val impactNormal = VariableBinding(3)
-        val friction = VariableBinding(3)
-        val impactFraction = VariableBinding(1)
-        system.updateModules.add(CollisionUpdateModule(
-                position,
-                velocity,
-                position,
-                impactNormal,
-                friction,
-                impactFraction
-        ))
-        system.updateModules.add(SetValueUpdateModule(
-                target = velocity,
-                source = object: ReadOnlyParticleBinding {
-                    private val pVelocity = velocity
-                    private val pImpactNormal = impactNormal
-                    private val pFriction = friction
-
-                    override fun getSize(): Int = 3
-
-                    override fun get(particle: DoubleArray, index: Int): Double {
-                        return pVelocity.get(particle, index) *
-                                (1-pImpactNormal.get(particle, index)*1.4) *
-                                (1-pFriction.get(particle, index)*0.2)
-                    }
-                }
-        ))
-        system.updateModules.add(CollisionUpdateModule(
-                position,
-                object: ReadOnlyParticleBinding {
-                    private val pVelocity = velocity
-                    private val pImpactFraction = impactFraction
-
-                    override fun getSize(): Int = 3
-
-                    override fun get(particle: DoubleArray, index: Int): Double {
-                        return pVelocity.get(particle, index) *
-                                (1-pImpactFraction.get(particle, 0))
-                    }
-                },
-                position,
-                impactNormal,
-                null,
-                impactFraction
-        ))
-        system.updateModules.add(SetValueUpdateModule(
-                target = velocity,
-                source = object: ReadOnlyParticleBinding {
-                    private val pVelocity = velocity
-                    private val pImpactNormal = impactNormal
-                    private val pFriction = friction
-
-                    override fun getSize(): Int = 3
-
-                    override fun get(particle: DoubleArray, index: Int): Double {
-                        return pVelocity.get(particle, index) *
-                                (1-pImpactNormal.get(particle, index)*1.4) *
-                                (1-pFriction.get(particle, index)*0.2)
-                    }
-                }
-        ))
-
-        system.renderModules.add(SpriteRenderModule(
-                previousPosition = previousPosition,
+        system.updateModules.add(BasicPhysicsUpdateModule(
                 position = position,
-                color = color,
-                size = size
+                previousPosition = previousPosition,
+                velocity = velocity,
+                gravity = 0.04,
+                bounciness = 0.4,
+                friction = 0.2,
+                damping = 0.0
         ))
+        system.poolSize = 3000
+
+//        system.renderModules.add(SpriteRenderModule(
+//                previousPosition = previousPosition,
+//                position = position,
+//                color = color,
+//                size = size
+//        ))
     }
 }

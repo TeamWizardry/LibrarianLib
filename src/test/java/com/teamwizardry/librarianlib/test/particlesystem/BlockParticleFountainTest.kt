@@ -34,7 +34,7 @@ class BlockParticleFountainTest: BlockModContainer("particle_fountain", Material
 class TEContainer : TileMod(), ITickable {
     override fun update() {
         if(this.world.isRemote) {
-            (0 until 150).forEach {
+            (0 until 600).forEach {
                 spawnParticle()
             }
         }
