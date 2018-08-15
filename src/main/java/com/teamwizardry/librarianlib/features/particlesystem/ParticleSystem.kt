@@ -1,12 +1,13 @@
 package com.teamwizardry.librarianlib.features.particlesystem
 
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.StoredBinding
+import org.magicwerk.brownies.collections.GapList
 import java.util.*
 
 class ParticleSystem {
-    val particles = LinkedList<DoubleArray>()
-    val initModules: MutableList<ParticleUpdateModule> = mutableListOf()
+    val particles = GapList<DoubleArray>()
     val updateModules: MutableList<ParticleUpdateModule> = mutableListOf()
+    val postUpdateModules: MutableList<ParticleBatchUpdateModule> = mutableListOf()
     val renderPrepModules: MutableList<ParticleUpdateModule> = mutableListOf()
     val renderModules: MutableList<ParticleRenderModule> = mutableListOf()
     val lifetime = StoredBinding(0, 1)
@@ -34,6 +35,10 @@ class ParticleSystem {
             }
             this.lifetime.set(particle, 0, lifetime)
             update(particle)
+        }
+
+        for(i in 0 until postUpdateModules.size) {
+            postUpdateModules[i].update(particles)
         }
     }
 

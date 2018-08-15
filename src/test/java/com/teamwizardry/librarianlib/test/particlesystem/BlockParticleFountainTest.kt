@@ -32,25 +32,31 @@ class BlockParticleFountainTest: BlockModContainer("particle_fountain", Material
 
 @TileRegister("particle_fountain")
 class TEContainer : TileMod(), ITickable {
+    var countdown = 0
+
     override fun update() {
         if(this.world.isRemote) {
-            (0 until 600).forEach {
+//            if (countdown == 0) {
+//                countdown = 20
+            (0 until 500).forEach {
                 spawnParticle()
             }
+//            }
+            countdown--
         }
     }
 
     fun spawnParticle() {
         val pos = Vec3d(this.pos) + vec(0.5, 1.5, 0.5)
-        val vel = vec(0, 0, 1)
+        val vel = vec(0, 0, 1 + (Math.random()-0.5)*0.1)
                 .rotatePitch((Math.random()*Math.PI/8 + Math.PI/8).toFloat())
-                .rotateYaw(((Math.random()-0.5)*Math.PI/2).toFloat())
+                .rotateYaw(((Math.random()-0.5)*Math.PI).toFloat())
 
         FountainParticleSystem.spawn(80.0,
                 pos,
                 vel,
                 Color(Math.random().toFloat(), Math.random().toFloat(), Math.random().toFloat(), 1f),
-                0.2
+                0.8
         )
     }
 }

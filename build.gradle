@@ -93,6 +93,7 @@ configurations {
 
 dependencies {
     compile "net.shadowfacts:Forgelin:1.6.0"
+    compile "org.magicwerk:brownies-collections:0.9.13"
 }
 
 compileKotlin {

@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.test.particlesystem
 
+import com.teamwizardry.librarianlib.features.kotlin.toRl
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleRenderManager
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleSystem
 import com.teamwizardry.librarianlib.features.particlesystem.ReadOnlyParticleBinding
@@ -12,6 +13,7 @@ import java.awt.Color
 object FountainParticleSystem {
     private val system = ParticleSystem()
 
+    private val depth = system.bind(1)
     private val position = system.bind(3)
     private val previousPosition = system.bind(3)
     private val velocity = system.bind(3)
@@ -26,6 +28,7 @@ object FountainParticleSystem {
 
     fun spawn(lifetime: Double, position: Vec3d, velocity: Vec3d, color: Color, size: Double) {
         system.addParticle(lifetime,
+                0.0,
                 position.x, position.y, position.z,
                 position.x, position.y, position.z,
                 velocity.x, velocity.y, velocity.z,
@@ -36,24 +39,35 @@ object FountainParticleSystem {
 
     fun reloadSystem() {
         system.updateModules.clear()
+        system.postUpdateModules.clear()
         system.renderModules.clear()
-
-        system.updateModules.add(BasicPhysicsUpdateModule(
-                position = position,
-                previousPosition = previousPosition,
-                velocity = velocity,
-                gravity = 0.04,
-                bounciness = 0.4,
-                friction = 0.2,
-                damping = 0.0
-        ))
         system.poolSize = 3000
 
-//        system.renderModules.add(SpriteRenderModule(
-//                previousPosition = previousPosition,
+        system.updateModules.add(VelocityUpdateModule(
+                position,
+                velocity,
+                previousPosition
+        ))
+        system.postUpdateModules.add(DepthSortModule(
+                position,
+                depth
+        ))
+//        system.updateModules.add(BasicPhysicsUpdateModule(
 //                position = position,
-//                color = color,
-//                size = size
+//                previousPosition = previousPosition,
+//                velocity = velocity,
+//                gravity = 0.04,
+//                bounciness = 0.8,
+//                friction = 0.0,
+//                damping = 0.0
 //        ))
+        system.renderModules.add(SpriteRenderModule(
+                sprite = "librarianlibtest:textures/particles/glow.png".toRl(),
+                blend = true,
+                previousPosition = previousPosition,
+                position = position,
+                color = color,
+                size = size
+        ))
     }
 }
