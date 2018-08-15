@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.features.particlesystem.ReadOnlyParticleBin
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.VariableBinding
 import com.teamwizardry.librarianlib.features.particlesystem.modules.*
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.Vec3d
 import java.awt.Color
 
@@ -48,10 +49,6 @@ object FountainParticleSystem {
                 velocity,
                 previousPosition
         ))
-        system.postUpdateModules.add(DepthSortModule(
-                position,
-                depth
-        ))
 //        system.updateModules.add(BasicPhysicsUpdateModule(
 //                position = position,
 //                previousPosition = previousPosition,
@@ -67,7 +64,9 @@ object FountainParticleSystem {
                 previousPosition = previousPosition,
                 position = position,
                 color = color,
-                size = size
+                size = size,
+                blendFactors = GlStateManager.SourceFactor.SRC_ALPHA to GlStateManager.DestFactor.ONE,
+                depthMask = false
         ))
     }
 }

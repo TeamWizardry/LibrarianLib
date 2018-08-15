@@ -20,7 +20,9 @@ class SpriteRenderModule(
         private val position: ParticleBinding,
         private val color: ParticleBinding,
         private val size: ParticleBinding,
-        private val facingVector: ParticleBinding? = null
+        private val facingVector: ParticleBinding? = null,
+        private val blendFactors: Pair<GlStateManager.SourceFactor, GlStateManager.DestFactor>? = null,
+        private val depthMask: Boolean = true
 ): ParticleRenderModule {
     override fun render(particles: List<DoubleArray>, prepModules: List<ParticleUpdateModule>) {
         Minecraft.getMinecraft().renderEngine.bindTexture(sprite)
@@ -32,6 +34,10 @@ class SpriteRenderModule(
         } else {
             GlStateManager.disableBlend()
         }
+        if(blendFactors != null) {
+            GlStateManager.blendFunc(blendFactors.first, blendFactors.second)
+        }
+        GlStateManager.depthMask(depthMask)
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F)
         GlStateManager.disableLighting()
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
@@ -110,8 +116,10 @@ class SpriteRenderModule(
 
         tessellator.draw()
 
+        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
         GlStateManager.enableCull()
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
+        GlStateManager.depthMask(true)
         GlStateManager.disableBlend()
         GlStateManager.enableLighting()
     }

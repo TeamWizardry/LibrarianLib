@@ -55,7 +55,7 @@ class TEContainer : TileMod(), ITickable {
         FountainParticleSystem.spawn(80.0,
                 pos,
                 vel,
-                Color(Math.random().toFloat(), Math.random().toFloat(), Math.random().toFloat(), 1f),
+                Color(Math.random().toFloat(), Math.random().toFloat(), Math.random().toFloat(), 0.1f),
                 0.8
         )
     }
