@@ -45,6 +45,14 @@ object ParticleWorldCollisionHandler {
         collisionNormalY = 0.0
         collisionNormalZ = 0.0
 
+        val maxBounds = 5.0
+        @Suppress("NAME_SHADOWING")
+        val velX = min(maxBounds, max(-maxBounds, velX))
+        @Suppress("NAME_SHADOWING")
+        val velY = min(maxBounds, max(-maxBounds, velY))
+        @Suppress("NAME_SHADOWING")
+        val velZ = min(maxBounds, max(-maxBounds, velZ))
+
         val minX = floor(min(posX, posX+velX)).toInt()
         val minY = floor(min(posY, posY+velY)).toInt()
         val minZ = floor(min(posZ, posZ+velZ)).toInt()
@@ -98,7 +106,7 @@ object ParticleWorldCollisionHandler {
         tmin = max(tmin, min(tz1, tz2))
         tmax = min(tmax, max(tz1, tz2))
 
-        if(tmax >= tmin && tmin < this.collisionFraction) {
+        if(tmax >= tmin && tmax >= 0 && tmin >= 0 && tmin < this.collisionFraction) {
             this.collisionNormalX = if(tmin == tx1 || tmin == tx2) 1.0 else 0.0
             this.collisionNormalY = if(tmin == ty1 || tmin == ty2) 1.0 else 0.0
             this.collisionNormalZ = if(tmin == tz1 || tmin == tz2) 1.0 else 0.0
