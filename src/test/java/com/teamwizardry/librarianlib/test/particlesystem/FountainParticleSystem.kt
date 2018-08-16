@@ -1,10 +1,12 @@
 package com.teamwizardry.librarianlib.test.particlesystem
 
 import com.teamwizardry.librarianlib.features.kotlin.toRl
+import com.teamwizardry.librarianlib.features.math.interpolate.numeric.InterpFloatInOut
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleRenderManager
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleSystem
-import com.teamwizardry.librarianlib.features.particlesystem.ReadOnlyParticleBinding
+import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.ConstantBinding
+import com.teamwizardry.librarianlib.features.particlesystem.bindings.LifetimeInterpBinding
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.VariableBinding
 import com.teamwizardry.librarianlib.features.particlesystem.modules.*
 import net.minecraft.client.renderer.GlStateManager
@@ -44,20 +46,20 @@ object FountainParticleSystem {
         system.renderModules.clear()
         system.poolSize = 3000
 
-        system.updateModules.add(VelocityUpdateModule(
-                position,
-                velocity,
-                previousPosition
-        ))
-//        system.updateModules.add(BasicPhysicsUpdateModule(
-//                position = position,
-//                previousPosition = previousPosition,
-//                velocity = velocity,
-//                gravity = 0.04,
-//                bounciness = 0.8,
-//                friction = 0.0,
-//                damping = 0.0
+//        system.updateModules.add(VelocityUpdateModule(
+//                position,
+//                velocity,
+//                previousPosition
 //        ))
+        system.updateModules.add(BasicPhysicsUpdateModule(
+                position = position,
+                previousPosition = previousPosition,
+                velocity = velocity,
+                gravity = 0.01,
+                bounciness = 0.2,
+                friction = -0.015,
+                damping = 0.001
+        ))
         system.renderModules.add(SpriteRenderModule(
                 sprite = "librarianlibtest:textures/particles/glow.png".toRl(),
                 blend = true,
@@ -65,6 +67,7 @@ object FountainParticleSystem {
                 position = position,
                 color = color,
                 size = size,
+                alpha = LifetimeInterpBinding(system.lifetime, system.age, InterpFloatInOut(0.25f, 0.25f)),
                 blendFactors = GlStateManager.SourceFactor.SRC_ALPHA to GlStateManager.DestFactor.ONE,
                 depthMask = false
         ))

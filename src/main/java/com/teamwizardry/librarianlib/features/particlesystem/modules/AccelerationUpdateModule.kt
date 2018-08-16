@@ -1,11 +1,12 @@
 package com.teamwizardry.librarianlib.features.particlesystem.modules
 
-import com.teamwizardry.librarianlib.features.particlesystem.ParticleBinding
+import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
+import com.teamwizardry.librarianlib.features.particlesystem.ReadWriteParticleBinding
 
 class AccelerationUpdateModule(
-        private val velocity: ParticleBinding,
-        private val acceleration: ParticleBinding
+        private val velocity: ReadWriteParticleBinding,
+        private val acceleration: ReadParticleBinding
 ): ParticleUpdateModule {
     override fun update(particle: DoubleArray) {
         update(particle, 0)

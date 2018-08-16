@@ -1,11 +1,9 @@
 package com.teamwizardry.librarianlib.features.particlesystem.bindings
 
-import com.teamwizardry.librarianlib.features.particlesystem.ParticleBinding
+import com.teamwizardry.librarianlib.features.particlesystem.ReadWriteParticleBinding
 
-class VariableBinding(private val size: Int): ParticleBinding {
+class VariableBinding(override val size: Int): ReadWriteParticleBinding {
     private val array = DoubleArray(size)
-
-    override fun getSize(): Int = size
 
     override fun get(particle: DoubleArray, index: Int): Double {
         return array[index]

@@ -1,46 +1,35 @@
 package com.teamwizardry.librarianlib.features.particlesystem.modules
 
-import com.teamwizardry.librarianlib.features.particlesystem.ParticleBinding
+import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
-import gnu.trove.map.TLongObjectMap
-import gnu.trove.map.hash.TLongObjectHashMap
-import net.minecraft.client.Minecraft
-import net.minecraft.init.Blocks
-import net.minecraft.util.math.AxisAlignedBB
-import net.minecraft.util.math.BlockPos
-import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
-import kotlin.math.floor
-import kotlin.math.max
-import kotlin.math.min
+import com.teamwizardry.librarianlib.features.particlesystem.WriteParticleBinding
 
 class CollisionUpdateModule(
-        private val position: ParticleBinding,
-        private val velocity: ParticleBinding,
-        private val endPoint: ParticleBinding,
-        private val impactNormal: ParticleBinding? = null,
-        private val friction: ParticleBinding? = null,
-        private val impactFraction: ParticleBinding? = null
+        private val position: ReadParticleBinding,
+        private val velocity: ReadParticleBinding,
+        private val endPoint: WriteParticleBinding,
+        private val impactNormal: WriteParticleBinding? = null,
+        private val friction: WriteParticleBinding? = null,
+        private val impactFraction: WriteParticleBinding? = null
 ): ParticleUpdateModule {
     override fun update(particle: DoubleArray) {
         val c = ParticleWorldCollisionHandler
 
-        val posX = position.get(particle, 0)
-        val posY = position.get(particle, 1)
-        val posZ = position.get(particle, 2)
-        val velX = velocity.get(particle, 0)
-        val velY = velocity.get(particle, 1)
-        val velZ = velocity.get(particle, 2)
+        val posX = position[particle, 0]
+        val posY = position[particle, 1]
+        val posZ = position[particle, 2]
+        val velX = velocity[particle, 0]
+        val velY = velocity[particle, 1]
+        val velZ = velocity[particle, 2]
 
         c.collide(posX, posY, posZ, velX, velY, velZ)
 
         val endX = posX + velX*c.collisionFraction
         val endY = posY + velY*c.collisionFraction
         val endZ = posZ + velZ*c.collisionFraction
-        endPoint.set(particle, 0, endX)
-        endPoint.set(particle, 1, endY)
-        endPoint.set(particle, 2, endZ)
+        endPoint[particle, 0] = endX
+        endPoint[particle, 1] = endY
+        endPoint[particle, 2] = endZ
         impactNormal?.set(particle, 0, c.collisionNormalX)
         impactNormal?.set(particle, 1, c.collisionNormalY)
         impactNormal?.set(particle, 2, c.collisionNormalZ)

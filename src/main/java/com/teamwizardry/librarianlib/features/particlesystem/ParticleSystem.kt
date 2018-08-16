@@ -26,14 +26,15 @@ class ParticleSystem {
     fun update() {
         val iter = particles.iterator()
         for(particle in iter) {
-            val lifetime = this.lifetime.get(particle, 0) - 1
-            if(lifetime <= 0) {
+            val lifetime = this.lifetime[particle, 0]
+            val age = this.age[particle, 0]
+            if(age >= lifetime) {
                 iter.remove()
                 if(particlePool.size < poolSize)
                     particlePool.push(particle)
                 continue
             }
-            this.lifetime.set(particle, 0, lifetime)
+            this.age[particle, 0] = age + 1
             update(particle)
         }
 

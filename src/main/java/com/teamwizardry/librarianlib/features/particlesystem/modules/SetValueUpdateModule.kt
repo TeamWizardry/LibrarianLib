@@ -1,9 +1,10 @@
 package com.teamwizardry.librarianlib.features.particlesystem.modules
 
-import com.teamwizardry.librarianlib.features.particlesystem.ParticleBinding
+import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
+import com.teamwizardry.librarianlib.features.particlesystem.WriteParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
 
-class SetValueUpdateModule(private val target: ParticleBinding, private val source: ParticleBinding): ParticleUpdateModule {
+class SetValueUpdateModule(private val target: WriteParticleBinding, private val source: ReadParticleBinding): ParticleUpdateModule {
     init {
         if(target.size == -1) {
             throw IllegalArgumentException("Target binding cannot have an indefinite size")
@@ -15,7 +16,7 @@ class SetValueUpdateModule(private val target: ParticleBinding, private val sour
     }
     override fun update(particle: DoubleArray) {
         for(i in 0 until target.size) {
-            target.set(particle, i, source.get(particle, i))
+            target[particle, i] = source[particle, i]
         }
     }
 }

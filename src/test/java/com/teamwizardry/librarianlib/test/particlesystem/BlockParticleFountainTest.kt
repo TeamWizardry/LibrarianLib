@@ -36,27 +36,28 @@ class TEContainer : TileMod(), ITickable {
 
     override fun update() {
         if(this.world.isRemote) {
-//            if (countdown == 0) {
-//                countdown = 20
-            (0 until 500).forEach {
+            if (countdown <= 0) {
+                countdown = 2
+//            (0 until 1).forEach {
                 spawnParticle()
-            }
 //            }
+            }
             countdown--
         }
     }
 
     fun spawnParticle() {
-        val pos = Vec3d(this.pos) + vec(0.5, 1.5, 0.5)
-        val vel = vec(0, 0, 1 + (Math.random()-0.5)*0.1)
-                .rotatePitch((Math.random()*Math.PI/8 + Math.PI/8).toFloat())
-                .rotateYaw(((Math.random()-0.5)*Math.PI).toFloat())
+        val pos = Vec3d(this.pos) + vec(0.5, 1.5, 0.5) + vec(0, 0, (Math.random()-0.5)*5)
+//        val vel = vec(0, 0, 0.2 + (Math.random()-0.5)*0.1)
+//                .rotatePitch((Math.random()*Math.PI/8 + Math.PI/8).toFloat())
+//                .rotateYaw(((Math.random()-0.5)*Math.PI/4).toFloat())
+        val vel = vec(0.05, 0, (Math.random()-0.5) * 0.01)
 
-        FountainParticleSystem.spawn(80.0,
+        FountainParticleSystem.spawn(200.0,
                 pos,
                 vel,
-                Color(Math.random().toFloat(), Math.random().toFloat(), Math.random().toFloat(), 0.1f),
-                0.8
+                Color(Math.random().toFloat()*0.1f, Math.random().toFloat()*0.1f, (Math.random()*0.5+0.5).toFloat(), 0.5f),
+                10.0
         )
     }
 }

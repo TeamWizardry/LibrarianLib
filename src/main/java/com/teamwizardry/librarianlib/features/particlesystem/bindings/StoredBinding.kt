@@ -1,9 +1,8 @@
 package com.teamwizardry.librarianlib.features.particlesystem.bindings
 
-import com.teamwizardry.librarianlib.features.particlesystem.ParticleBinding
+import com.teamwizardry.librarianlib.features.particlesystem.ReadWriteParticleBinding
 
-class StoredBinding(private val index: Int, private val size: Int): ParticleBinding {
-    override fun getSize(): Int = size
+class StoredBinding(private val index: Int, override val size: Int): ReadWriteParticleBinding {
 
     override fun get(particle: DoubleArray, index: Int): Double {
         return particle[this.index + index]

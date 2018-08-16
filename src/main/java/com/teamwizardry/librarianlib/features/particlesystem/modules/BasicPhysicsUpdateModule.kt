@@ -1,12 +1,12 @@
 package com.teamwizardry.librarianlib.features.particlesystem.modules
 
-import com.teamwizardry.librarianlib.features.particlesystem.ParticleBinding
+import com.teamwizardry.librarianlib.features.particlesystem.ReadWriteParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
 
 class BasicPhysicsUpdateModule(
-        private val position: ParticleBinding,
-        private val previousPosition: ParticleBinding,
-        private val velocity: ParticleBinding,
+        private val position: ReadWriteParticleBinding,
+        private val previousPosition: ReadWriteParticleBinding,
+        private val velocity: ReadWriteParticleBinding,
         private val gravity: Double = 0.04,
         private val bounciness: Double = 0.2,
         private val friction: Double = 0.2,
@@ -15,12 +15,12 @@ class BasicPhysicsUpdateModule(
     override fun update(particle: DoubleArray) {
         val c = ParticleWorldCollisionHandler
 
-        var posX = position.get(particle, 0)
-        var posY = position.get(particle, 1)
-        var posZ = position.get(particle, 2)
-        var velX = velocity.get(particle, 0)
-        var velY = velocity.get(particle, 1)
-        var velZ = velocity.get(particle, 2)
+        var posX = position[particle, 0]
+        var posY = position[particle, 1]
+        var posZ = position[particle, 2]
+        var velX = velocity[particle, 0]
+        var velY = velocity[particle, 1]
+        var velZ = velocity[particle, 2]
 
         velX *= 1-damping
         velY *= 1-damping
@@ -28,9 +28,9 @@ class BasicPhysicsUpdateModule(
 
         velY -= gravity
 
-        previousPosition.set(particle, 0, posX)
-        previousPosition.set(particle, 1, posY)
-        previousPosition.set(particle, 2, posZ)
+        previousPosition[particle, 0] = posX
+        previousPosition[particle, 1] = posY
+        previousPosition[particle, 2] = posZ
 
         c.collide(posX, posY, posZ, velX, velY, velZ)
 
@@ -66,12 +66,12 @@ class BasicPhysicsUpdateModule(
             }
         }
 
-        position.set(particle, 0, posX)
-        position.set(particle, 1, posY)
-        position.set(particle, 2, posZ)
-        velocity.set(particle, 0, velX)
-        velocity.set(particle, 1, velY)
-        velocity.set(particle, 2, velZ)
+        position[particle, 0] = posX
+        position[particle, 1] = posY
+        position[particle, 2] = posZ
+        velocity[particle, 0] = velX
+        velocity[particle, 1] = velY
+        velocity[particle, 2] = velZ
     }
 
 }

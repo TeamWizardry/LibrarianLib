@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.features.particlesystem.modules
 
 import com.teamwizardry.librarianlib.core.client.ClientTickHandler
-import com.teamwizardry.librarianlib.features.particlesystem.ParticleBinding
+import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleRenderModule
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
 import net.minecraft.client.Minecraft
@@ -16,11 +16,12 @@ import org.lwjgl.opengl.GL11
 class SpriteRenderModule(
         private val sprite: ResourceLocation,
         private val blend: Boolean,
-        private val previousPosition: ParticleBinding,
-        private val position: ParticleBinding,
-        private val color: ParticleBinding,
-        private val size: ParticleBinding,
-        private val facingVector: ParticleBinding? = null,
+        private val previousPosition: ReadParticleBinding,
+        private val position: ReadParticleBinding,
+        private val color: ReadParticleBinding,
+        private val size: ReadParticleBinding,
+        private val facingVector: ReadParticleBinding? = null,
+        private val alpha: ReadParticleBinding?,
         private val blendFactors: Pair<GlStateManager.SourceFactor, GlStateManager.DestFactor>? = null,
         private val depthMask: Boolean = true
 ): ParticleRenderModule {
@@ -69,9 +70,9 @@ class SpriteRenderModule(
                 prepModules[i].update(particle)
             }
             if(facingVector != null) {
-                val facingX = facingVector.get(particle, 0)
-                val facingY = facingVector.get(particle, 1)
-                val facingZ = facingVector.get(particle, 2)
+                val facingX = facingVector[particle, 0]
+                val facingY = facingVector[particle, 1]
+                val facingZ = facingVector[particle, 2]
                 // x axis, facing • (0, 1, 0)
                 iHatX = -facingZ
                 iHatY = 0.0
@@ -91,7 +92,7 @@ class SpriteRenderModule(
                 jHatZ *= -jHatInvLength
             }
 
-            val size = this.size.get(particle, 0)/2
+            val size = this.size[particle, 0] /2
             val localIHatX = iHatX * size
             val localIHatY = iHatY * size
             val localIHatZ = iHatZ * size
@@ -99,14 +100,16 @@ class SpriteRenderModule(
             val localJHatY = jHatY * size
             val localJHatZ = jHatZ * size
 
-            val x = ClientTickHandler.interpWorldPartialTicks(previousPosition.get(particle, 0), position.get(particle, 0))
-            val y = ClientTickHandler.interpWorldPartialTicks(previousPosition.get(particle, 1), position.get(particle, 1))
-            val z = ClientTickHandler.interpWorldPartialTicks(previousPosition.get(particle, 2), position.get(particle, 2))
+            val x = ClientTickHandler.interpWorldPartialTicks(previousPosition[particle, 0], position[particle, 0])
+            val y = ClientTickHandler.interpWorldPartialTicks(previousPosition[particle, 1], position[particle, 1])
+            val z = ClientTickHandler.interpWorldPartialTicks(previousPosition[particle, 2], position[particle, 2])
 
-            val r = color.get(particle, 0).toFloat()
-            val g = color.get(particle, 1).toFloat()
-            val b = color.get(particle, 2).toFloat()
-            val a = color.get(particle, 3).toFloat()
+            val r = color[particle, 0].toFloat()
+            val g = color[particle, 1].toFloat()
+            val b = color[particle, 2].toFloat()
+            var a = color[particle, 3].toFloat()
+            if(alpha != null)
+                a *= alpha[particle, 0].toFloat()
 
             vb.pos(x-localIHatX-localJHatX, y-localIHatY-localJHatY, z-localIHatZ-localJHatZ).tex(0.0, 0.0).color(r, g, b, a).endVertex()
             vb.pos(x+localIHatX-localJHatX, y+localIHatY-localJHatY, z+localIHatZ-localJHatZ).tex(1.0, 0.0).color(r, g, b, a).endVertex()
