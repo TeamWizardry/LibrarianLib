@@ -21,6 +21,9 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import java.awt.Color
 import java.util.concurrent.ThreadLocalRandom
+import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.sin
 
 class BlockParticleFountainTest: BlockModContainer("particle_fountain", Material.ROCK) {
     override fun createTileEntity(world: World, state: IBlockState): TileEntity? {
@@ -41,7 +44,7 @@ class TEContainer : TileMod(), ITickable {
     override fun update() {
         if(this.world.isRemote) {
             if (countdown <= 0) {
-                countdown = 1
+                countdown = 2
 //            (0 until 1).forEach {
                 spawnParticle()
 //            }
@@ -51,26 +54,27 @@ class TEContainer : TileMod(), ITickable {
     }
 
     fun spawnParticle() {
-        val pos = Vec3d(this.pos) + vec(0.5, 0.5, 0.5)
+        val pos = Vec3d(this.pos) + vec(0.2, 4.5, 0.5)
 //        val normal = vec(0, 1, 0)
 //                .rotatePitch(((Math.random()-0.5)*Math.PI*2).toFloat())
 //                .rotateYaw(((Math.random()-0.5)*Math.PI*2).toFloat())
         var end = pos
-        end += vec(rand(-3.0, 3.0), 0, rand(-3.0, 3.0))
+//        end += vec(rand(-3.0, 3.0), 0, rand(-3.0, 3.0))
 //                .rotateYaw(((Math.random() - 0.5) * Math.PI * 2).toFloat())
-        end += vec(0, -5.5, 0)
+        end += vec(-10.4, 0, 0)
 
 
         val lightning = generateLightning(pos, end, 4)
-        val maxVel = 0.2/20
 
         lightning.forEachIndexed { i, it ->
-            FountainParticleSystem.spawn(10.0,
+            val coeff = max(0.0, sin((i.toDouble()/(lightning.size-1) * Math.PI)))
+            val maxVel = coeff * 0.2/20
+            FountainParticleSystem.spawn(20.0,
                     it,
                     vec(rand(-maxVel, maxVel), rand(-maxVel, maxVel), rand(-maxVel, maxVel)),
                     Color(1f, 1f, 1f, rand(0.5, 1.0).toFloat()),
                     //Color(rand(0.1).toFloat(), rand(0.5, 1.0).toFloat(), rand(0.1).toFloat(), 0.5f),
-                    8.0,
+                    0.003 * coeff,
                     i == lightning.size-1
             )
         }
@@ -98,6 +102,7 @@ class TEContainer : TileMod(), ITickable {
     }
 
     private fun rand(min: Double, max: Double): Double {
+        if(min == max) return min
         return ThreadLocalRandom.current().nextDouble(min, max)
     }
 

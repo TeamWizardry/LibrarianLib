@@ -11,7 +11,7 @@ class AccelerationUpdateModule(
 ): ParticleUpdateModule {
     init {
         velocity.require(3)
-        velocity.require(3)
+        acceleration.require(3)
     }
     override fun update(particle: DoubleArray) {
         update(particle, 0)
