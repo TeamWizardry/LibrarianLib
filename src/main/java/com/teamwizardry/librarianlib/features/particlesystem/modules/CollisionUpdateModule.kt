@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.particlesystem.modules
 import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
 import com.teamwizardry.librarianlib.features.particlesystem.WriteParticleBinding
+import com.teamwizardry.librarianlib.features.particlesystem.require
 
 class CollisionUpdateModule(
         private val position: ReadParticleBinding,
@@ -12,6 +13,15 @@ class CollisionUpdateModule(
         private val friction: WriteParticleBinding? = null,
         private val impactFraction: WriteParticleBinding? = null
 ): ParticleUpdateModule {
+    init {
+        position.require(3)
+        velocity.require(3)
+        endPoint.require(3)
+        impactNormal?.require(3)
+        friction?.require(3)
+        impactFraction?.require(1)
+    }
+
     override fun update(particle: DoubleArray) {
         val c = ParticleWorldCollisionHandler
 

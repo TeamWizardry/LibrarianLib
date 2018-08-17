@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.particlesystem.modules
 
 import com.teamwizardry.librarianlib.features.particlesystem.ReadWriteParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
+import com.teamwizardry.librarianlib.features.particlesystem.require
 
 class BasicPhysicsUpdateModule(
         private val position: ReadWriteParticleBinding,
@@ -12,6 +13,12 @@ class BasicPhysicsUpdateModule(
         private val friction: Double = 0.2,
         private val damping: Double = 0.01
 ): ParticleUpdateModule {
+    init {
+        position.require(3)
+        previousPosition.require(3)
+        velocity.require(3)
+    }
+
     override fun update(particle: DoubleArray) {
         val c = ParticleWorldCollisionHandler
 

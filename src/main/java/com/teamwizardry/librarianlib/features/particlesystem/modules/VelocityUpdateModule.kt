@@ -1,15 +1,17 @@
 package com.teamwizardry.librarianlib.features.particlesystem.modules
 
-import com.teamwizardry.librarianlib.features.particlesystem.ReadWriteParticleBinding
-import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
-import com.teamwizardry.librarianlib.features.particlesystem.WriteParticleBinding
-import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
+import com.teamwizardry.librarianlib.features.particlesystem.*
 
 class VelocityUpdateModule(
         val position: ReadWriteParticleBinding,
         val velocity: ReadParticleBinding,
         val previousPosition: WriteParticleBinding? = null
 ): ParticleUpdateModule {
+    init {
+        position.require(3)
+        velocity.require(3)
+        previousPosition?.require(3)
+    }
     override fun update(particle: DoubleArray) {
         update(particle, 0)
         update(particle, 1)

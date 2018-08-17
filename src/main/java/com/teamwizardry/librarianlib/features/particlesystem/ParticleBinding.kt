@@ -17,3 +17,18 @@ interface WriteParticleBinding {
     val size: Int
     operator fun set(particle: DoubleArray, index: Int, value: Double)
 }
+
+fun ReadParticleBinding.require(size: Int) {
+    if(this.size != -1 && this.size < size)
+        throw IllegalArgumentException("Binding size is too small, required: $size, passed: ${this.size}")
+}
+
+fun WriteParticleBinding.require(size: Int) {
+    if(this.size != -1 && this.size < size)
+        throw IllegalArgumentException("Binding size is too small, required: $size, passed: ${this.size}")
+}
+
+fun ReadWriteParticleBinding.require(size: Int) {
+    if(this.size != -1 && this.size < size)
+        throw IllegalArgumentException("Binding size is too small, required: $size, passed: ${this.size}")
+}

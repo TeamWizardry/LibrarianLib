@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.core.client.ClientTickHandler
 import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleRenderModule
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
+import com.teamwizardry.librarianlib.features.particlesystem.require
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -25,6 +26,14 @@ class SpriteRenderModule(
         private val blendFactors: Pair<GlStateManager.SourceFactor, GlStateManager.DestFactor>? = null,
         private val depthMask: Boolean = true
 ): ParticleRenderModule {
+    init {
+        previousPosition.require(3)
+        position.require(3)
+        color.require(4)
+        size.require(1)
+        facingVector?.require(3)
+        alpha?.require(1)
+    }
     override fun render(particles: List<DoubleArray>, prepModules: List<ParticleUpdateModule>) {
         Minecraft.getMinecraft().renderEngine.bindTexture(sprite)
 

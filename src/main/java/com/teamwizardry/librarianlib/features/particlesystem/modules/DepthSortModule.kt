@@ -8,6 +8,10 @@ class DepthSortModule(
         private val position: ReadParticleBinding,
         private val depth: ReadWriteParticleBinding
 ): ParticleBatchUpdateModule {
+    init {
+        position.require(3)
+        depth.require(1)
+    }
     override fun update(particles: MutableList<DoubleArray>) {
         val player = Minecraft.getMinecraft().player
         val normal = player.lookVec
