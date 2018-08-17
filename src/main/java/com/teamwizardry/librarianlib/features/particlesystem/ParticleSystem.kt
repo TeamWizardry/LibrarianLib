@@ -4,16 +4,18 @@ import com.teamwizardry.librarianlib.features.particlesystem.bindings.StoredBind
 import org.magicwerk.brownies.collections.GapList
 import java.util.*
 
-class ParticleSystem {
-    val particles = GapList<DoubleArray>()
+class ParticleSystem(optimizeDepthSorting: Boolean = false) {
     val updateModules: MutableList<ParticleUpdateModule> = mutableListOf()
     val postUpdateModules: MutableList<ParticleBatchUpdateModule> = mutableListOf()
     val renderPrepModules: MutableList<ParticleUpdateModule> = mutableListOf()
     val renderModules: MutableList<ParticleRenderModule> = mutableListOf()
+
+    val particles: MutableList<DoubleArray> = GapList<DoubleArray>()
+    var poolSize = 1000
+    private val particlePool = ArrayDeque<DoubleArray>(poolSize)
+
     val lifetime = StoredBinding(0, 1)
     val age = StoredBinding(1, 1)
-    var poolSize = 1000
-    val particlePool = ArrayDeque<DoubleArray>(poolSize)
     var fieldCount = 2
         private set
 

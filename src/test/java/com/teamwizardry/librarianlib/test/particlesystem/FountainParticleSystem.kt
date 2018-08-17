@@ -16,7 +16,7 @@ import java.awt.Color
 object FountainParticleSystem {
     private val system = ParticleSystem()
 
-    private val depth = system.bind(1)
+    private val isEnd = system.bind(1)
     private val position = system.bind(3)
     private val previousPosition = system.bind(3)
     private val velocity = system.bind(3)
@@ -29,9 +29,9 @@ object FountainParticleSystem {
         ParticleRenderManager.reloadHandlers.add(Runnable { reloadSystem() })
     }
 
-    fun spawn(lifetime: Double, position: Vec3d, velocity: Vec3d, color: Color, size: Double) {
+    fun spawn(lifetime: Double, position: Vec3d, velocity: Vec3d, color: Color, size: Double, isEnd: Boolean) {
         system.addParticle(lifetime,
-                0.0,
+                if(isEnd) 1.0 else 0.0,
                 position.x, position.y, position.z,
                 position.x, position.y, position.z,
                 velocity.x, velocity.y, velocity.z,
@@ -44,30 +44,45 @@ object FountainParticleSystem {
         system.updateModules.clear()
         system.postUpdateModules.clear()
         system.renderModules.clear()
-        system.poolSize = 3000
 
-//        system.updateModules.add(VelocityUpdateModule(
-//                position,
-//                velocity,
-//                previousPosition
-//        ))
-        system.updateModules.add(BasicPhysicsUpdateModule(
-                position = position,
-                previousPosition = previousPosition,
-                velocity = velocity,
-                gravity = 0.01,
-                bounciness = 0.2,
-                friction = -0.015,
-                damping = 0.001
+        system.updateModules.add(VelocityUpdateModule(
+                position,
+                velocity,
+                previousPosition
         ))
-        system.renderModules.add(SpriteRenderModule(
-                sprite = "librarianlibtest:textures/particles/glow.png".toRl(),
+
+        system.updateModules.add(AccelerationUpdateModule(
+                velocity,
+                ConstantBinding(0.0, 0.0001, 0.0)
+        ))
+//        system.updateModules.add(BasicPhysicsUpdateModule(
+//                position = position,
+//                previousPosition = previousPosition,
+//                velocity = velocity,
+//                gravity = 0.01,
+//                bounciness = 0.2,
+//                friction = -0.015,
+//                damping = 0.001
+//        ))
+//        system.renderModules.add(SpriteRenderModule(
+//                sprite = "librarianlibtest:textures/particles/glow.png".toRl(),
+//                blend = true,
+//                previousPosition = previousPosition,
+//                position = position,
+//                color = color,
+//                size = size,
+//                alpha = LifetimeInterpBinding(system.lifetime, system.age, InterpFloatInOut(0.25f, 0.25f)),
+//                blendFactors = GlStateManager.SourceFactor.SRC_ALPHA to GlStateManager.DestFactor.ONE,
+//                depthMask = false
+//        ))
+        system.renderModules.add(GlLineBeamRenderModule(
+                isEnd = isEnd,
                 blend = true,
                 previousPosition = previousPosition,
                 position = position,
                 color = color,
-                size = size,
-                alpha = LifetimeInterpBinding(system.lifetime, system.age, InterpFloatInOut(0.25f, 0.25f)),
+                size = 2f,
+                alpha = LifetimeInterpBinding(system.lifetime, system.age, InterpFloatInOut(0f, 0.8f)),
                 blendFactors = GlStateManager.SourceFactor.SRC_ALPHA to GlStateManager.DestFactor.ONE,
                 depthMask = false
         ))
