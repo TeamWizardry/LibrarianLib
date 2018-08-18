@@ -96,14 +96,20 @@ class Vec2d(val x: Double, val y: Double) {
         return norm.mul(this.dot(norm))
     }
 
-    fun rotate(theta: Number): Vec2d {
-        val cs = MathHelper.cos(theta.toFloat())
-        val sn = MathHelper.sin(theta.toFloat())
+    fun rotate(theta: Float): Vec2d {
+        if (theta == 0f) return this
+
+        val cs = MathHelper.cos(theta)
+        val sn = MathHelper.sin(theta)
         return Vec2d(
                 this.x * cs - this.y * sn,
                 this.x * sn + this.y * cs
         )
     }
+
+    @Deprecated(message = "Deprecated for boxing reasons. Use the primitive version instead.",
+            replaceWith = ReplaceWith("this.rotate(theta.toFloat())"))
+    fun rotate(theta: Number) = rotate(theta.toFloat())
 
     //=============================================================================
 

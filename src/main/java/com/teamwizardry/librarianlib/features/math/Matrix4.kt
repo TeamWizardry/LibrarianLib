@@ -114,6 +114,8 @@ class Matrix4 {
     }
 
     fun rotate(angle: Double, axis: Vec3d): Matrix4 {
+        if (angle == 0.0) return this
+
         val c = Math.cos(angle)
         val s = Math.sin(angle)
         val mc = 1.0f - c

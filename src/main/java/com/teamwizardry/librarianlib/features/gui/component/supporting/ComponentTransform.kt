@@ -91,7 +91,7 @@ class ComponentTransform {
         var vec = other
         vec += postTranslate - anchor
         vec *= scale2D
-        vec = vec.rotate(rotate)
+        vec = vec.rotate(rotate.toFloat())
         vec += translate + anchor
         return vec
     }
@@ -102,7 +102,7 @@ class ComponentTransform {
     fun applyInverse(other: Vec2d): Vec2d {
         var vec = other
         vec -= translate + anchor
-        vec = vec.rotate(-rotate)
+        vec = vec.rotate((-rotate).toFloat())
         vec /= scale2D
         vec -= postTranslate - anchor
         return vec
