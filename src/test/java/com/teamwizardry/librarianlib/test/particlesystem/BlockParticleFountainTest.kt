@@ -4,10 +4,7 @@ import com.teamwizardry.librarianlib.features.autoregister.TileRegister
 import com.teamwizardry.librarianlib.features.base.block.tile.BlockModContainer
 import com.teamwizardry.librarianlib.features.base.block.tile.TileMod
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.div
-import com.teamwizardry.librarianlib.features.kotlin.minus
-import com.teamwizardry.librarianlib.features.kotlin.plus
-import com.teamwizardry.librarianlib.features.kotlin.times
+import com.teamwizardry.librarianlib.features.kotlin.*
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleRenderManager
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
@@ -44,40 +41,32 @@ class TEContainer : TileMod(), ITickable {
     override fun update() {
         if(this.world.isRemote) {
             if (countdown <= 0) {
-                countdown = 2
-//            (0 until 1).forEach {
-                spawnParticle()
-//            }
+                countdown = 1
+                (0 until 4).forEach {
+                    spawnParticle()
+                }
             }
             countdown--
         }
     }
 
     fun spawnParticle() {
-        val pos = Vec3d(this.pos) + vec(0.2, 4.5, 0.5)
-//        val normal = vec(0, 1, 0)
-//                .rotatePitch(((Math.random()-0.5)*Math.PI*2).toFloat())
-//                .rotateYaw(((Math.random()-0.5)*Math.PI*2).toFloat())
-        var end = pos
-//        end += vec(rand(-3.0, 3.0), 0, rand(-3.0, 3.0))
-//                .rotateYaw(((Math.random() - 0.5) * Math.PI * 2).toFloat())
-        end += vec(-10.4, 0, 0)
+        val pos = Vec3d(this.pos) + vec(0.5, 8.5, 0.5)
+//        val normal = randomNormal()
+//        val majorAxis = (normal cross randomNormal()).normalize()
+//        val minorAxis = (normal cross majorAxis).normalize()
+        val majorAxis = vec(1, 0, 0)
+        val minorAxis = vec(0, 0, 1).rotatePitch(rand(0.0, 2*Math.PI).toFloat())
 
-
-        val lightning = generateLightning(pos, end, 4)
-
-        lightning.forEachIndexed { i, it ->
-            val coeff = max(0.0, sin((i.toDouble()/(lightning.size-1) * Math.PI)))
-            val maxVel = coeff * 0.2/20
-            FountainParticleSystem.spawn(20.0,
-                    it,
-                    vec(rand(-maxVel, maxVel), rand(-maxVel, maxVel), rand(-maxVel, maxVel)),
-                    Color(1f, 1f, 1f, rand(0.5, 1.0).toFloat()),
-                    //Color(rand(0.1).toFloat(), rand(0.5, 1.0).toFloat(), rand(0.1).toFloat(), 0.5f),
-                    0.003 * coeff,
-                    i == lightning.size-1
-            )
-        }
+        FountainParticleSystem.spawn(200.0,
+                pos,
+                majorAxis,
+                minorAxis,
+                10.0,
+                2.0,
+                Color(Math.random().toFloat(), Math.random().toFloat(), Math.random().toFloat(), rand(0.5, 1.0).toFloat()),
+                0.5
+        )
     }
 
     private fun generateLightning(start: Vec3d, end: Vec3d, iterations: Int, list: MutableList<Vec3d> = mutableListOf()): List<Vec3d> {
