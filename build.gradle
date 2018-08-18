@@ -1,6 +1,7 @@
 buildscript {
     repositories {
         jcenter()
+        mavenCentral()
         maven {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
@@ -179,19 +180,28 @@ processResources {
 }
 
 dokka {
-    includes = ['Module.md']
-
-    linkMapping {
-        dir = "src/main/java"
-        url = "https://github.com/TeamWizardry/LibrarianLib/tree/master/src/main/java"
-        suffix = "#L"
-    }
-}
-
-task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    def out = "$projectDir/docs"
     outputFormat = "javadoc"
-    outputDirectory = "$buildDir/dokkaJavadoc"
+    outputDirectory = out
+    jdkVersion = 8
+    doFirst {
+        println("Cleaning doc directory $out...")
+        project.delete(fileTree(out))
+    }
+
+//    kotlinTasks {
+//        []
+//    }
+
+//    sourceDirs = [projectDir.resolve("src/main/java")]
+//    samples = ["src/samples/java"]
+//    includes = new ArrayList(fileTree("$projectDir/src/main/docs").files)
 }
+
+//task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+//    outputFormat = "javadoc"
+//    outputDirectory = "$buildDir/dokkaJavadoc"
+//}
 
 uploadArchives {
     repositories {

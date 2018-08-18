@@ -31,3 +31,5 @@ src/main/resources/assets/librarianlibtest
 
 hs_err_pid*.log
 replay_pid*.log
+
+/docs
