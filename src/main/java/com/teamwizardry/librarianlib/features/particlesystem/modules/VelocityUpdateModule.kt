@@ -3,9 +3,9 @@ package com.teamwizardry.librarianlib.features.particlesystem.modules
 import com.teamwizardry.librarianlib.features.particlesystem.*
 
 class VelocityUpdateModule(
-        val position: ReadWriteParticleBinding,
-        val velocity: ReadParticleBinding,
-        val previousPosition: WriteParticleBinding? = null
+        @JvmField val position: ReadWriteParticleBinding,
+        @JvmField val velocity: ReadParticleBinding,
+        @JvmField val previousPosition: WriteParticleBinding? = null
 ): ParticleUpdateModule {
     init {
         position.require(3)

@@ -5,14 +5,18 @@ import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModul
 import com.teamwizardry.librarianlib.features.particlesystem.ReadWriteParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.require
 
+/**
+ * Applies a simple acceleration to the passed velocity each tick. Essentially just does `velocity += acceleration`.
+ */
 class AccelerationUpdateModule(
-        private val velocity: ReadWriteParticleBinding,
-        private val acceleration: ReadParticleBinding
+        @JvmField val velocity: ReadWriteParticleBinding,
+        @JvmField val acceleration: ReadParticleBinding
 ): ParticleUpdateModule {
     init {
         velocity.require(3)
         acceleration.require(3)
     }
+
     override fun update(particle: DoubleArray) {
         update(particle, 0)
         update(particle, 1)
@@ -20,7 +24,7 @@ class AccelerationUpdateModule(
     }
 
     private fun update(particle: DoubleArray, index: Int) {
-        val vel = velocity.get(particle, index)
-        velocity.set(particle, index, vel + acceleration.get(particle, index))
+        val vel = velocity[particle, index]
+        velocity[particle, index] = vel + acceleration[particle, index]
     }
 }

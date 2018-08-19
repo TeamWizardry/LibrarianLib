@@ -10,10 +10,10 @@ class EllipsePath(
         /**
          * Though not necessarily the longest axis, the 0 and 1 points lie at the end of this vector
          */
-        private val majorAxis: ReadParticleBinding,
-        private val minorAxis: ReadParticleBinding,
-        private val majorRadius: ReadParticleBinding,
-        private val minorRadius: ReadParticleBinding
+        @JvmField val majorAxis: ReadParticleBinding,
+        @JvmField val minorAxis: ReadParticleBinding,
+        @JvmField val majorRadius: ReadParticleBinding,
+        @JvmField val minorRadius: ReadParticleBinding
 ): ParticlePath {
     init {
         majorAxis.require(3)
@@ -22,21 +22,21 @@ class EllipsePath(
         minorRadius.require(1)
     }
 
-    override fun getPosition(particle: DoubleArray, t: Double, component: Int): Double {
+    override fun getPosition(particle: DoubleArray, t: Double, index: Int): Double {
         val c = cos(t*2*Math.PI)
         val s = sin(t*2*Math.PI)
 
         return 0.0 +
-                majorAxis[particle, component] * c * majorRadius[particle, 0] +
-                minorAxis[particle, component] * s * minorRadius[particle, 0]
+                majorAxis[particle, index] * c * majorRadius[particle, 0] +
+                minorAxis[particle, index] * s * minorRadius[particle, 0]
     }
 
-    override fun getTangent(particle: DoubleArray, t: Double, component: Int): Double {
+    override fun getTangent(particle: DoubleArray, t: Double, index: Int): Double {
         val c = cos(t*2*Math.PI)
         val s = sin(t*2*Math.PI)
 
         return 0.0 +
-                majorAxis[particle, component] * s +
-                minorAxis[particle, component] * c
+                majorAxis[particle, index] * s +
+                minorAxis[particle, index] * c
     }
 }

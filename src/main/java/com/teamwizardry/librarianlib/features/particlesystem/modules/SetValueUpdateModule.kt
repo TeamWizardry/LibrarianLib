@@ -4,7 +4,10 @@ import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.WriteParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
 
-class SetValueUpdateModule(private val target: WriteParticleBinding, private val source: ReadParticleBinding): ParticleUpdateModule {
+class SetValueUpdateModule(
+        @JvmField val target: WriteParticleBinding,
+        @JvmField val source: ReadParticleBinding
+): ParticleUpdateModule {
     init {
         if(target.size == -1) {
             throw IllegalArgumentException("Target binding cannot have an indefinite size")

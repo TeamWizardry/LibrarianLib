@@ -5,8 +5,8 @@ import com.teamwizardry.librarianlib.features.particlesystem.*
 import net.minecraft.client.Minecraft
 
 class DepthSortModule(
-        private val position: ReadParticleBinding,
-        private val depth: ReadWriteParticleBinding
+        @JvmField val position: ReadParticleBinding,
+        @JvmField val depth: ReadWriteParticleBinding
 ): ParticleBatchUpdateModule {
     init {
         position.require(3)

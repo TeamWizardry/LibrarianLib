@@ -13,9 +13,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.opengl.GL11
 import java.util.*
 
-/**
- * Created by TheCodeWarrior
- */
 object ParticleRenderManager {
 
     var needsReload: Boolean = false
@@ -27,7 +24,7 @@ object ParticleRenderManager {
     }
 
     @SubscribeEvent
-    fun tick(event: TickEvent.ClientTickEvent) {
+    private fun tick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START)
             return
         if (Minecraft.getMinecraft().currentScreen?.doesGuiPauseGame() == true)
@@ -48,36 +45,10 @@ object ParticleRenderManager {
             e.printStackTrace()
         }
         profiler.endSection()
-//
-//        profiler.startSection("clean")
-//        layers.forEach {
-//            profiler.startSection(it.name)
-//            it.clean()
-//            profiler.endSection()
-//        }
-//
-//        profiler.endStartSection("update")
-//
-//        layers.forEach {
-//            profiler.startSection(it.name)
-//            it.update()
-//            profiler.endSection()
-//        }
-//
-//        profiler.endStartSection("sort")
-//
-//        layers.forEach {
-//            profiler.startSection(it.name)
-//            it.sort()
-//            profiler.endSection()
-//        }
-//
-//        profiler.endSection()
-//
     }
 
     @SubscribeEvent
-    fun debug(event: RenderGameOverlayEvent.Text) {
+    private fun debug(event: RenderGameOverlayEvent.Text) {
         if (!Minecraft.getMinecraft().gameSettings.showDebugInfo)
             return
 
@@ -87,11 +58,10 @@ object ParticleRenderManager {
 
     @SubscribeEvent
     @Suppress("UNUSED_PARAMETER")
-    fun render(event: CustomWorldRenderEvent) {
+    private fun render(event: CustomWorldRenderEvent) {
         val profiler = Minecraft.getMinecraft().mcProfiler
 
         GL11.glPushAttrib(GL11.GL_LIGHTING_BIT)
-//        GlStateManager.depthMask(false)
         GlStateManager.enableBlend()
         GlStateManager.alphaFunc(GL11.GL_GREATER, 1 / 256f)
         GlStateManager.disableLighting()
@@ -99,16 +69,10 @@ object ParticleRenderManager {
         profiler.startSection("liblib_particles")
 
         val entity = Minecraft.getMinecraft().renderViewEntity
-        val partialTicks = if (Minecraft.getMinecraft().isGamePaused)
-            Minecraft.getMinecraft().renderPartialTicksPaused
-        else
-            ClientTickHandler.partialTicks
         if (entity != null) {
             try {
             emitters.forEach {
-//                profiler.startSection(it.name)
                 it.render()
-//                profiler.endSection()
             }
 
             } catch (e: ConcurrentModificationException) {
@@ -120,16 +84,7 @@ object ParticleRenderManager {
 
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
         GlStateManager.disableBlend()
-//        GlStateManager.depthMask(true)
         GL11.glPopAttrib()
     }
-
-    internal fun projectToRay(a: Vec3d, b: Vec3d, p: Vec3d): Vec3d {
-        val ap = p.subtract(a)
-        val ab = b.subtract(a)
-        return a.add(ab.scale(ap.dotProduct(ab) / ab.dotProduct(ab)))
-    }
-
 }
 
-val Minecraft.renderPartialTicksPaused by MethodHandleHelper.delegateForReadOnly<Minecraft, Float>(Minecraft::class.java, "renderPartialTicksPaused", "field_193996_ah")

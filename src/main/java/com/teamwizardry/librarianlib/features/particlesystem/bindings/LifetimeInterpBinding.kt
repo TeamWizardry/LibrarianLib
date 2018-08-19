@@ -2,11 +2,24 @@ package com.teamwizardry.librarianlib.features.particlesystem.bindings
 
 import com.teamwizardry.librarianlib.features.math.interpolate.InterpFunction
 import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
+import com.teamwizardry.librarianlib.features.particlesystem.ParticleSystem
 
+/**
+ * A 1D binding that generates its value by passing its normalized age [0, 1] into [interp]
+ */
 class LifetimeInterpBinding(
-        private val lifetime: ReadParticleBinding,
-        private val age: ReadParticleBinding,
-        private val interp: InterpFunction<Float>
+        /**
+         * The lifetime binding for the particle. Generally [ParticleSystem.lifetime]
+         */
+        @JvmField val lifetime: ReadParticleBinding,
+        /**
+         * The age binding for the particle. Generally [ParticleSystem.age]
+         */
+        @JvmField val age: ReadParticleBinding,
+        /**
+         * The interp to use when generating values for the binding
+         */
+        @JvmField val interp: InterpFunction<Float>
 ): ReadParticleBinding {
     override val size = 1
 

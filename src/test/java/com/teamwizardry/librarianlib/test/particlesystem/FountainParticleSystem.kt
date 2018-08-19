@@ -4,12 +4,10 @@ import com.teamwizardry.librarianlib.features.kotlin.toRl
 import com.teamwizardry.librarianlib.features.math.interpolate.numeric.InterpFloatInOut
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleRenderManager
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleSystem
-import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
 import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.LifetimeInterpBinding
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.PathPositionBinding
-import com.teamwizardry.librarianlib.features.particlesystem.bindings.VariableBinding
 import com.teamwizardry.librarianlib.features.particlesystem.modules.*
 import com.teamwizardry.librarianlib.features.particlesystem.paths.EllipsePath
 import net.minecraft.client.renderer.GlStateManager
@@ -75,7 +73,7 @@ object FountainParticleSystem {
                 PathPositionBinding(
                         lifetime = system.lifetime,
                         age = system.age,
-                        retime = ConstantBinding(0.5),
+                        timescale = ConstantBinding(0.5),
                         offset = ConstantBinding(0.0),
                         origin = origin,
                         path = ellipse

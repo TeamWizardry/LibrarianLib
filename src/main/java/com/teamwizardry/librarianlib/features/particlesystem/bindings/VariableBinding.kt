@@ -2,6 +2,9 @@ package com.teamwizardry.librarianlib.features.particlesystem.bindings
 
 import com.teamwizardry.librarianlib.features.particlesystem.ReadWriteParticleBinding
 
+/**
+ * A binding backed by an internal array, designed as temporary storage for passing values between update modules.
+ */
 class VariableBinding(override val size: Int): ReadWriteParticleBinding {
     private val array = DoubleArray(size)
 

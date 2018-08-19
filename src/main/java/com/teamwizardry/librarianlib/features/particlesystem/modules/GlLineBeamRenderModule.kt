@@ -13,15 +13,15 @@ import net.minecraft.util.math.MathHelper
 import org.lwjgl.opengl.GL11
 
 class GlLineBeamRenderModule(
-        private val isEnd: ReadParticleBinding,
-        private val blend: Boolean,
-        private val previousPosition: ReadParticleBinding,
-        private val position: ReadParticleBinding,
-        private val color: ReadParticleBinding,
-        private val size: Float,
-        private val alpha: ReadParticleBinding?,
-        private val blendFactors: Pair<GlStateManager.SourceFactor, GlStateManager.DestFactor>? = null,
-        private val depthMask: Boolean = true
+        @JvmField val isEnd: ReadParticleBinding,
+        @JvmField val blend: Boolean,
+        @JvmField val previousPosition: ReadParticleBinding,
+        @JvmField val position: ReadParticleBinding,
+        @JvmField val color: ReadParticleBinding,
+        @JvmField val size: Float,
+        @JvmField val alpha: ReadParticleBinding?,
+        @JvmField val blendFactors: Pair<GlStateManager.SourceFactor, GlStateManager.DestFactor>? = null,
+        @JvmField val depthMask: Boolean = true
 ): ParticleRenderModule {
     init {
         isEnd.require(1)
