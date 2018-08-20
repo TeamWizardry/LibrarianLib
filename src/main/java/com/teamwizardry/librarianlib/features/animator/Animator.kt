@@ -104,7 +104,8 @@ class Animator {
     }
 
     /**
-     * Remove all animations involving [obj]
+     * Remove all animations involving [obj].
+     * Values affected by the animations will be left as they are at the moment of calling this method.
      */
     fun removeAnimationsFor(obj: Any) {
         val inlineRemove = mutableListOf<Animation<*>>()
@@ -118,7 +119,8 @@ class Animator {
     }
 
     /**
-     * Remove all [animations]
+     * Remove all [animations].
+     * Values affected by the animations will be left as they are at the moment of calling this method.
      */
     fun removeAnimations(vararg animations: Animation<*>) {
         if (addLock) animationsToRemove.addAll(animations)
@@ -126,7 +128,8 @@ class Animator {
     }
 
     /**
-     * Removes ALL the animations from this animator
+     * Removes ALL the animations from this animator.
+     * Values affected by the animations will be left as they are at the moment of calling this method.
      */
     fun removeAll() {
         if (addLock) animationsToRemove.addAll(animations)
