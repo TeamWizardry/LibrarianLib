@@ -118,6 +118,14 @@ class Animator {
     }
 
     /**
+     * Remove all [animations]
+     */
+    fun removeAnimations(vararg animations: Animation<*>) {
+        if (addLock) animationsToRemove.addAll(animations)
+        else this.animations.removeAll(animations)
+    }
+
+    /**
      * Removes ALL the animations from this animator
      */
     fun removeAll() {
