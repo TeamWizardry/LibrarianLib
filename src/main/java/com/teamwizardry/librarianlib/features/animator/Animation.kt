@@ -114,7 +114,21 @@ abstract class Animation<T : Any>(val target: T, val property: AnimatablePropert
      */
     fun complete() {
         completion.run()
+        finished = true
     }
+
+    /**
+     * Terminates this animation.
+     * No further updates will be applied, and the [completion] callback will not be called.
+     */
+    var terminated = false
+
+    /**
+     * Whether this animation is over.
+     * This value is set after the [completion] callback is called.
+     */
+    var finished = false
+        internal set
 
     internal fun onAddedToAnimator(animator: Animator) {
         if (isTimeRelative) {

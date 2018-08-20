@@ -151,12 +151,17 @@ class Animator {
 
         performLocked {
             if (deletePastAnimations) animations.removeIf {
-                if (it.end < time) {
-                    it.update(time)
-                    it.complete()
-                    true
-                } else {
-                    false
+                when {
+                    it.terminated -> {
+                        it.finished = true
+                        true
+                    }
+                    it.end < time -> {
+                        it.update(time)
+                        it.complete()
+                        true
+                    }
+                    else -> false
                 }
             }
         }
