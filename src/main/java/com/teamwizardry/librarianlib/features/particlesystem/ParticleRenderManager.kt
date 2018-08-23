@@ -1,22 +1,36 @@
 package com.teamwizardry.librarianlib.features.particlesystem
 
-import com.teamwizardry.librarianlib.core.client.ClientTickHandler
 import com.teamwizardry.librarianlib.features.forgeevents.CustomWorldRenderEvent
-import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.util.math.Vec3d
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.opengl.GL11
 import java.util.*
 
+/**
+ * The soon-to-be-renamed central hub for particle systems.
+ *
+ * This object is responsible for the rendering and updating of particle systems, and is where new particle systems
+ * are sent to be rendered and ticked.
+ */
 object ParticleRenderManager {
 
+    /**
+     * Set this to true to reload particle systems at the next opportune moment.
+     */
     var needsReload: Boolean = false
-    val emitters: MutableList<ParticleSystem> = mutableListOf()
+    /**
+     * The list of registered particle systems, in the order they will tick/render.
+     */
+    val systems: MutableList<ParticleSystem> = mutableListOf()
+    /**
+     * The list of reload handlers for particle systems. This is stopgap until particle systems are designed to be
+     * subclassed and thus have a reload method built in.
+     */
     val reloadHandlers: MutableList<Runnable> = mutableListOf()
 
     init {
@@ -38,7 +52,7 @@ object ParticleRenderManager {
                     it.run()
                 }
             }
-            emitters.forEach {
+            systems.forEach {
                 it.update()
             }
         } catch (e: ConcurrentModificationException) {
@@ -53,7 +67,7 @@ object ParticleRenderManager {
             return
 
         event.left.add("LibrarianLib New Particles:")
-        event.left.add(" - " + emitters.sumBy { it.particles.size })
+        event.left.add(" - " + systems.sumBy { it.particles.size })
     }
 
     @SubscribeEvent
@@ -71,7 +85,7 @@ object ParticleRenderManager {
         val entity = Minecraft.getMinecraft().renderViewEntity
         if (entity != null) {
             try {
-            emitters.forEach {
+            systems.forEach {
                 it.render()
             }
 
@@ -85,6 +99,12 @@ object ParticleRenderManager {
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
         GlStateManager.disableBlend()
         GL11.glPopAttrib()
+    }
+
+    @SubscribeEvent
+    @Suppress("UNUSED_PARAMETER")
+    private fun unloadWorld(event: WorldEvent.Unload) {
+        systems.forEach { it.particles.clear() }
     }
 }
 

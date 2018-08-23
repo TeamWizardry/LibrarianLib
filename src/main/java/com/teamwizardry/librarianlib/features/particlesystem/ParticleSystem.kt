@@ -38,8 +38,9 @@ import java.util.*
  *             position.x, position.y, position.z, // position
  *             position.x, position.y, position.z, // previousPosition
  *             velocity.x, velocity.y, velocity.z, // velocity
- *             color.r/255.0, color.g/255.0, color.b/255.0, color.a/255.0,
- *             size)
+ *             color.r/255.0, color.g/255.0, color.b/255.0, color.a/255.0, // color
+ *             size // size
+ *     )
  * }
  * ```
  */
@@ -77,7 +78,7 @@ open class ParticleSystem {
      */
     var poolSize = 1000
 
-    private val particles: MutableList<DoubleArray> = GapList<DoubleArray>()
+    internal val particles: MutableList<DoubleArray> = GapList<DoubleArray>()
     private val particlePool = ArrayDeque<DoubleArray>(poolSize)
 
     /**
@@ -86,7 +87,7 @@ open class ParticleSystem {
      */
     val lifetime = StoredBinding(0, 1)
     /**
-     * The built-in binding for particle age. Upon spawning the value in this binding is initialized to 0.0, and very
+     * The built-in binding for particle age. Upon spawning the value in this binding is initialized to 0, and very
      * tick thereafter its value is incremented. If the value in [age] is >= the value in [lifetime] the particle will
      * be removed from the world.
      */
@@ -98,9 +99,9 @@ open class ParticleSystem {
         private set
 
     /**
-     * Creates a new binding at the end of the particle array and increases [fieldCount] to reflect the change.
+     * Creates a new [StoredBinding] of the specified size and allocates space for it at the end of the particle array, increasing [fieldCount] to reflect the change.
      *
-     * @throws IllegalStateException if it is unsafe to create new bindings as particles have already been created.
+     * @throws IllegalStateException if particles have already been created by this system, rendering it unsafe to create new bindings
      */
     fun bind(size: Int): StoredBinding {
         if(particles.isNotEmpty() || particlePool.isNotEmpty())
@@ -112,7 +113,7 @@ open class ParticleSystem {
     }
 
     /**
-     * Creates a particle and initializes it with the passed values. Any missing values will be set to 0.0.
+     * Creates a particle and initializes it with the passed values. Any missing values will be set to 0.
      *
      * [params] should be populated with the values for each binding the order they were bound. For example, if
      * a `position` binding was created with a size of 3, then a `color` with a size of 4, and then a `size` with a

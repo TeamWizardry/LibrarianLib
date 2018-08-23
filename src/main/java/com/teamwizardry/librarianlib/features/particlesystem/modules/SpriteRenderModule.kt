@@ -14,16 +14,57 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.MathHelper
 import org.lwjgl.opengl.GL11
 
+/**
+ * The bread-and-butter render module, a simple billboarded sprite.
+ *
+ * Particles are drawn as dynamically sized/colored sprites that are either billboarded or with an arbitrary facing
+ * defined by [facingVector]. The particles are drawn as squares [size] meters to a side and centered on the the
+ * particle's position. One thing of note is that for some particle effects, particularly ones that should look
+ * consistent, disabling interpolation by passing the current position for both [previousPosition] and [position] can
+ * make the particles rock solid in their positions as opposed to jittering about.
+ */
 class SpriteRenderModule(
+        /**
+         * The sprite texture to use
+         */
         @JvmField val sprite: ResourceLocation,
+        /**
+         * Whether to enable OpenGL blending
+         */
         @JvmField val blend: Boolean,
+        /**
+         * The position of the particle last tick, used to interpolate between ticks
+         */
         @JvmField val previousPosition: ReadParticleBinding,
+        /**
+         * The current position of the particle
+         */
         @JvmField val position: ReadParticleBinding,
+        /**
+         * The OpenGL color of the particle
+         */
         @JvmField val color: ReadParticleBinding,
+        /**
+         * The width and height of the particle in meters
+         */
         @JvmField val size: ReadParticleBinding,
+        /**
+         * If present, an artificial facing vector used instead of the player's look vector. This vector _does not need
+         * to be normalized_ as normalization is already being done for an unrelated reason. The additional computation
+         * is unnecessary and will lead to more performance degradation than is required for this feature.
+         */
         @JvmField val facingVector: ReadParticleBinding? = null,
+        /**
+         * The alpha multiplier for the color. Defaults to 1 if not present.
+         */
         @JvmField val alpha: ReadParticleBinding?,
+        /**
+         * The OpenGL source/dest blend factors. Leave null to keep the defaults.
+         */
         @JvmField val blendFactors: Pair<GlStateManager.SourceFactor, GlStateManager.DestFactor>? = null,
+        /**
+         * Whether to enable OpenGL depth masking. (false = no writing to the depth buffer)
+         */
         @JvmField val depthMask: Boolean = true
 ): ParticleRenderModule {
     init {

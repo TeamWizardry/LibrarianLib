@@ -29,7 +29,7 @@ object FountainParticleSystem {
 
     init {
         reloadSystem()
-        ParticleRenderManager.emitters.add(system)
+        ParticleRenderManager.systems.add(system)
         ParticleRenderManager.reloadHandlers.add(Runnable { reloadSystem() })
     }
 

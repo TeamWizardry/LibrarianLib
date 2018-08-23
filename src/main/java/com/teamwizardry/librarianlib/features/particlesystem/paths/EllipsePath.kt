@@ -6,13 +6,34 @@ import com.teamwizardry.librarianlib.features.particlesystem.require
 import kotlin.math.cos
 import kotlin.math.sin
 
+/**
+ * A path that traces the edge of an ellipse.
+ *
+ * The ellipse is defined in terms of the two axes and radii, as this means total control and that no normal has to be
+ * transformed into X/Y unit vectors every time a value is requested, instead those are provided and presumably stored.
+ */
 class EllipsePath(
         /**
-         * Though not necessarily the longest axis, the 0 and 1 points lie at the end of this vector
+         * The major axis normal. Though this need not be the axis with the longest radius (the strict definition of
+         * the (semi)major axis), the distinction is made to easily differentiate the two axes.
+         *
+         * The output is this point (* radius) at t=0 and t=1, and is the opposite point at t=0.5
          */
         @JvmField val majorAxis: ReadParticleBinding,
+        /**
+         * The minor axis normal. Though this need not be the axis with the shortest radius (the strict definition of
+         * the (semi)minor axis), the distinction is made to easily differentiate the two axes.
+         *
+         * The output is this point (* radius) at t=0.25, and is the opposite point at t=0.75
+         */
         @JvmField val minorAxis: ReadParticleBinding,
+        /**
+         * The multiplier for the [majorAxis] normal. This is the major axis radius if the normal has a length of 1.
+         */
         @JvmField val majorRadius: ReadParticleBinding,
+        /**
+         * The multiplier for the [minorAxis] normal. This is the minor axis radius if the normal has a length of 1.
+         */
         @JvmField val minorRadius: ReadParticleBinding
 ): ParticlePath {
     init {

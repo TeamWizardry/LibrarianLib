@@ -11,9 +11,11 @@ class StoredBinding internal constructor(
          * The index in the particle array of the first element of this binding
          */
         val index: Int,
+        /**
+         * The number of elements this binding has allocated
+         */
         override val size: Int
 ): ReadWriteParticleBinding {
-
     override fun get(particle: DoubleArray, index: Int): Double {
         return particle[this.index + index]
     }
@@ -25,9 +27,12 @@ class StoredBinding internal constructor(
     /**
      * Set all the values of this binding in the passed particle at once using the passed [values]
      *
-     * @throws IndexOutOfBoundsException if [values] has fewer elements than this component's [size]
+     * @throws IllegalArgumentException if [values] has a different number elements than this component's [size]
      */
     fun set(particle: DoubleArray, vararg values: Double) {
+        if(values.size != this.size)
+            throw IllegalArgumentException("Mismatched sizes. Bindings size is ${this.size}, " +
+                    "parameter size is ${values.size}")
         (0 until size).forEach {
             particle[this.index + it] = values[it]
         }

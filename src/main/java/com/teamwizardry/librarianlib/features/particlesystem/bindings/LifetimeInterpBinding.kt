@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleSystem
 
 /**
- * A 1D binding that generates its value by passing its normalized age [0, 1] into [interp]
+ * A 1D binding that generates its value by passing its normalized age (0–1) into an InterpFunction<Float>
  */
 class LifetimeInterpBinding(
         /**

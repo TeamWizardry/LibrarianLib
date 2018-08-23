@@ -1,19 +1,18 @@
 package com.teamwizardry.librarianlib.features.particlesystem.modules
 
 import com.teamwizardry.librarianlib.features.particlesystem.*
+import com.teamwizardry.librarianlib.features.utilities.RayWorldCollider
 import java.lang.Math.abs
 
 /**
  * A basic implementation of physics interaction between particles and the world.
  *
- * This module handles essentially the entire simulation of simple particles. It:
+ * This module handles essentially the entire simulation of simple particles. It updates the previous position binding,
+ * computes collisions and their effects on velocity, and advances the position to reflect those collisions and
+ * velocity changes.
  *
- * - Updates the previous position binding
- * - Computes collisions and their effects on velocity
- * - Advances the position based upon those collisions and velocity changes
- *
- * The collision boxes are not updated every tick, as retrieving them is among the most costly operations the collision
- * handler does. A refresh may be manually requested by calling [ParticleWorldCollisionHandler.requestRefresh]
+ * The collision boxes are not updated every tick, as retrieving them is among the most costly operations the collider
+ * does. A refresh may be manually requested by calling [RayWorldCollider.requestRefresh]
  *
  * The process of updating each tick proceeds as follows:
  *
@@ -84,7 +83,6 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
     private var velZ: Double = 0.0
 
     override fun update(particle: DoubleArray) {
-
         posX = position[particle, 0]
         posY = position[particle, 1]
         posZ = position[particle, 2]
@@ -107,8 +105,8 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
         collide()
 
         // (5. in class docs)
-        if(ParticleWorldCollisionHandler.collisionFraction < 1.0) {
-            collide(velocityMultiplier = 1-ParticleWorldCollisionHandler.collisionFraction)
+        if(RayWorldCollider.client.collisionFraction < 1.0) {
+            collide(velocityMultiplier = 1- RayWorldCollider.client.collisionFraction)
         }
 
         position[particle, 0] = posX
@@ -133,22 +131,22 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
 
     private fun collide(velocityMultiplier: Double = 1.0) {
         // (4.1 in class docs)
-        ParticleWorldCollisionHandler.collide(
+        RayWorldCollider.client.collide(
                 posX, posY, posZ,
                 velX*velocityMultiplier, velY*velocityMultiplier, velZ*velocityMultiplier
         )
 
         // (4.2 in class docs)
-        posX += velX*ParticleWorldCollisionHandler.collisionFraction
-        posY += velY*ParticleWorldCollisionHandler.collisionFraction
-        posZ += velZ*ParticleWorldCollisionHandler.collisionFraction
+        posX += velX* RayWorldCollider.client.collisionFraction
+        posY += velY* RayWorldCollider.client.collisionFraction
+        posZ += velZ* RayWorldCollider.client.collisionFraction
 
         // (4.3 in class docs)
-        if(ParticleWorldCollisionHandler.collisionFraction >= 1.0) { return }
+        if(RayWorldCollider.client.collisionFraction >= 1.0) { return }
 
-        val axisX = abs(ParticleWorldCollisionHandler.collisionNormalX)
-        val axisY = abs(ParticleWorldCollisionHandler.collisionNormalX)
-        val axisZ = abs(ParticleWorldCollisionHandler.collisionNormalX)
+        val axisX = abs(RayWorldCollider.client.collisionNormalX)
+        val axisY = abs(RayWorldCollider.client.collisionNormalX)
+        val axisZ = abs(RayWorldCollider.client.collisionNormalX)
         // (4.4 in class docs)
         velX *= 1-axisX*(1.0 + bounciness)
         velY *= 1-axisY*(1.0 + bounciness)

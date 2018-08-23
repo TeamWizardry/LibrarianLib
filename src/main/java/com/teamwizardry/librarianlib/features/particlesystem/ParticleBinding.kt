@@ -1,3 +1,6 @@
+/**
+ * Miscellaneous ParticleBinding utilities
+ */
 @file:JvmName("ParticleBindings")
 package com.teamwizardry.librarianlib.features.particlesystem
 
@@ -5,9 +8,18 @@ import com.teamwizardry.librarianlib.features.particlesystem.bindings.*
 import net.minecraft.util.math.Vec3d
 import java.awt.Color
 
+/**
+ * A read/write particle binding
+ *
+ * @see ParticleBinding
+ * @see ReadParticleBinding
+ * @see WriteParticleBinding
+ */
 interface ReadWriteParticleBinding: ParticleBinding, ReadParticleBinding, WriteParticleBinding
 
 /**
+ * A readable ParticleBinding
+ *
  * @see ParticleBinding
  */
 interface ReadParticleBinding: ParticleBinding {
@@ -21,6 +33,8 @@ interface ReadParticleBinding: ParticleBinding {
 }
 
 /**
+ * A writable ParticleBinding
+ *
  * @see ParticleBinding
  */
 interface WriteParticleBinding: ParticleBinding {

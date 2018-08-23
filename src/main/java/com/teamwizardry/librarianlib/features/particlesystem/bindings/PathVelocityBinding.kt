@@ -6,14 +6,16 @@ import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.require
 
 /**
- * A 3D binding that reads the position values from a [ParticlePath].
+ * A 3D binding that reads tangent values from a ParticlePath.
  *
  * By default the path is traversed from 0-1 across the lifetime of the particle, however using [timescale] and [offset]
- * this timing can be adjusted. The timing equation is: `pathFraction = (age/lifetime + offset) * retime % 1`, where
+ * this timing can be adjusted. The timing equation is: `pathFraction = (age/lifetime + offset) * timescale % 1`, where
  * [timescale] and [offset] are replaced with 1 and 0 respectively if they are null
  *
  * Once the time is determined, the tangent returned from the passed path will be multiplied by [speed], allowing paths
  * to be moved within the world
+ *
+ * @see ParticlePath
  */
 class PathVelocityBinding(
         /**

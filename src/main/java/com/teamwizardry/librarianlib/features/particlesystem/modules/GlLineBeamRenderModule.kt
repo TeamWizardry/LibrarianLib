@@ -12,15 +12,51 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.math.MathHelper
 import org.lwjgl.opengl.GL11
 
+/**
+ * A simple beam rendering module using GL_LINES.
+ *
+ * This is mainly designed as an example of how different renderers can interpret the particle array differently. In
+ * this case the renderer starts drawing with GL_LINES and connecting each particle to the last until it reaches one
+ * with a non-zero value in [isEnd], at which point it breaks the chain and uses the next particle as the starts of the
+ * next chain of lines.
+ */
 class GlLineBeamRenderModule(
+        /**
+         * When this binding is non-zero the chain of lines will be broken, this particle being the end of the current
+         * chain and the next being the start of the next chain.
+         */
         @JvmField val isEnd: ReadParticleBinding,
+        /**
+         * Whether to enable blending in OpenGL
+         */
         @JvmField val blend: Boolean,
+        /**
+         * The previous position binding. This is used to interpolate between ticks
+         */
         @JvmField val previousPosition: ReadParticleBinding,
+        /**
+         * The current position binding.
+         */
         @JvmField val position: ReadParticleBinding,
+        /**
+         * The color of the line
+         */
         @JvmField val color: ReadParticleBinding,
+        /**
+         * The width of the line in pixels
+         */
         @JvmField val size: Float,
+        /**
+         * The alpha multiplier for the color. If null this defaults to `1.0`
+         */
         @JvmField val alpha: ReadParticleBinding?,
+        /**
+         * The pair of source/dest blend factors to use while rendering, or the default if null.
+         */
         @JvmField val blendFactors: Pair<GlStateManager.SourceFactor, GlStateManager.DestFactor>? = null,
+        /**
+         * Whether to enable the depth mask (false = don't write to the depth buffer)
+         */
         @JvmField val depthMask: Boolean = true
 ): ParticleRenderModule {
     init {
@@ -76,7 +112,7 @@ class GlLineBeamRenderModule(
                 a *= alpha[particle, 0].toFloat()
 
             if(!(prevX.isNaN() || prevY.isNaN() || prevZ.isNaN() ||
-                    prevR.isNaN() || prevG.isNaN() || prevB.isNaN() || prevA.isNaN())) {
+                            prevR.isNaN() || prevG.isNaN() || prevB.isNaN() || prevA.isNaN())) {
                 vb.pos(prevX, prevY, prevZ).color(prevR, prevG, prevB, prevA).endVertex()
                 vb.pos(x, y, z).color(r, g, b, a).endVertex()
             }

@@ -6,10 +6,18 @@ import com.teamwizardry.librarianlib.features.particlesystem.ReadWriteParticleBi
 import com.teamwizardry.librarianlib.features.particlesystem.require
 
 /**
- * Applies a simple acceleration to the passed velocity each tick. Essentially just does `velocity += acceleration`.
+ * Performs rudimentary acceleration updates.
+ *
+ * Even more rudimentary than the [VelocityUpdateModule], this module simply adds [acceleration] to [velocity].
  */
 class AccelerationUpdateModule(
+        /**
+         * The velocity to be accelerated by [acceleration]
+         */
         @JvmField val velocity: ReadWriteParticleBinding,
+        /**
+         * The acceleration to add to [velocity] every tick
+         */
         @JvmField val acceleration: ReadParticleBinding
 ): ParticleUpdateModule {
     init {

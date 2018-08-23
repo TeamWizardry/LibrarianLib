@@ -1,13 +1,20 @@
-package com.teamwizardry.librarianlib.features.particlesystem.modules
+package com.teamwizardry.librarianlib.features.utilities
 
+import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import gnu.trove.map.hash.TLongObjectHashMap
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
+import net.minecraft.world.World
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
+import java.lang.ref.WeakReference
+import java.util.*
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
@@ -22,61 +29,83 @@ import kotlin.math.min
  * 2. It doesn't properly handle collision boxes that extend outside the bounds of their block. This is because, unlike
  * Minecraft's collision handling it doesn't check any blocks outside of those the velocity vector moves through.
  */
-object ParticleWorldCollisionHandler {
+class RayWorldCollider private constructor(world: World) {
     init { MinecraftForge.EVENT_BUS.register(this) }
+    private val worldRef = WeakReference(world)
+    private val world: World
+        get() = worldRef.get()!!
     private val cache = TLongObjectHashMap<List<AxisAlignedBB>>()
     private var countdown = 0
 
     /**
      * The fraction along the raytrace that an impact occured, or 1.0 if no impact occured
      */
-    @JvmStatic
+    @JvmField
     var collisionFraction: Double = 0.0
 
     /**
      * The X component of the impacted face's normal, or 0.0 if no impact occurred
      */
-    @JvmStatic
+    @JvmField
     var collisionNormalX: Double = 0.0
     /**
      * The Y component of the impacted face's normal, or 0.0 if no impact occurred
      */
-    @JvmStatic
+    @JvmField
     var collisionNormalY: Double = 0.0
     /**
      * The Z component of the impacted face's normal, or 0.0 if no impact occurred
      */
-    @JvmStatic
+    @JvmField
     var collisionNormalZ: Double = 0.0
 
     /**
      * The X component of the impacted block's position, or 0.0 if no impact occurred. Test if [collisionFraction] is
      * less than 1.0 to tell between a collision at (0,0,0) and no collision.
      */
-    @JvmStatic
+    @JvmField
     var collisionBlockX: Int = 0
     /**
      * The Y component of the impacted block's position, or 0.0 if no impact occurred. Test if [collisionFraction] is
      * less than 1.0 to tell between a collision at (0,0,0) and no collision.
      */
-    @JvmStatic
+    @JvmField
     var collisionBlockY: Int = 0
     /**
      * The Z component of the impacted block's position, or 0.0 if no impact occurred. Test if [collisionFraction] is
      * less than 1.0 to tell between a collision at (0,0,0) and no collision.
      */
-    @JvmStatic
+    @JvmField
     var collisionBlockZ: Int = 0
 
     /**
-     * Request
+     * Request that the cache be cleared. Use this sparingly as it can negatively impact performance.
+     *
+     * This method _immediately_ clears the cache, meaning calling it repeatedly between [collide] calls can severely
+     * impact performance.
      */
-    @JvmStatic
     fun requestRefresh() {
         cache.clear()
     }
 
-    @JvmStatic
+    /**
+     * Traces a collision with the world given the specified start position and velocity.
+     *
+     * The collision uses raytracing to find the impact point on the current world's collision box. The ray begins at
+     * the passed `pos` and extends in the direction and for the length of the passed `vel`. Each component of `vel`
+     * is clamped to ±[maxBounds] in order to avoid accidental infinite loops or other such nastiness.
+     *
+     * The results of the collision are stored in the fields of this class in order to avoid allocating a new object to
+     * contain them.
+     *
+     * @see collisionFraction
+     * @see collisionNormalX
+     * @see collisionNormalY
+     * @see collisionNormalZ
+     * @see collisionBlockX
+     * @see collisionBlockY
+     * @see collisionBlockZ
+     */
     @JvmOverloads
     fun collide(
             posX: Double,
@@ -159,14 +188,14 @@ object ParticleWorldCollisionHandler {
         tmin = max(tmin, min(tz1, tz2))
         tmax = min(tmax, max(tz1, tz2))
 
-        if(tmax >= tmin && tmax >= 0 && tmin >= 0 && tmin < this.collisionFraction) {
-            this.collisionNormalX = if(tmin == tx1) -1.0 else if(tmin == tx2) 1.0 else 0.0
-            this.collisionNormalY = if(tmin == ty1) -1.0 else if(tmin == ty2) 1.0 else 0.0
-            this.collisionNormalZ = if(tmin == tz1) -1.0 else if(tmin == tz2) 1.0 else 0.0
-            this.collisionBlockX = blockX
-            this.collisionBlockY = blockY
-            this.collisionBlockZ = blockZ
-            this.collisionFraction = tmin
+        if(tmax >= tmin && tmax >= 0 && tmin >= 0 && tmin < collisionFraction) {
+            collisionNormalX = if(tmin == tx1) -1.0 else if(tmin == tx2) 1.0 else 0.0
+            collisionNormalY = if(tmin == ty1) -1.0 else if(tmin == ty2) 1.0 else 0.0
+            collisionNormalZ = if(tmin == tz1) -1.0 else if(tmin == tz2) 1.0 else 0.0
+            collisionBlockX = blockX
+            collisionBlockY = blockY
+            collisionBlockZ = blockZ
+            collisionFraction = tmin
             return
         }
     }
@@ -182,8 +211,6 @@ object ParticleWorldCollisionHandler {
         cache[mutablePos.toLong()]?.let {
             return it
         }
-
-        val world = Minecraft.getMinecraft().world
 
         val list: List<AxisAlignedBB>
         if(!world.isBlockLoaded(mutablePos)) {
@@ -213,4 +240,56 @@ object ParticleWorldCollisionHandler {
         countdown--
     }
 
+    companion object {
+        @JvmStatic
+        private val worldMap = WeakHashMap<World, RayWorldCollider>()
+
+        /**
+         * Gets the [RayWorldCollider] for the passed world
+         */
+        @JvmStatic
+        operator fun get(world: World): RayWorldCollider {
+            return worldMap.getOrPut(world) { RayWorldCollider(world) }
+        }
+
+        /**
+         * Gets the [RayWorldCollider] for the client world, or throws an [IllegalStateException] if it is called on a
+         * dedicated server.
+         */
+        @JvmStatic
+        val client: RayWorldCollider
+            get() {
+                var handler: RayWorldCollider? = null
+                ClientRunnable {
+                    handler = ClientRayWorldCollider.get()
+                }
+                return handler
+                        ?: throw IllegalStateException(
+                                "Attempted to get client RayWorldCollider from a dedicated server. " +
+                                        "Don't... Don't do that."
+                        )
+            }
+    }
+}
+
+@SideOnly(Side.CLIENT)
+private object ClientRayWorldCollider {
+    init { MinecraftForge.EVENT_BUS.register(this) }
+//    Minecraft.getMinecraft().world
+    var cache: RayWorldCollider? = null
+
+    @SubscribeEvent
+    fun unloadWorld(e: WorldEvent.Unload) {
+        cache = null
+    }
+
+    fun get(): RayWorldCollider {
+        var cache = this.cache
+        if(cache == null) {
+            cache = RayWorldCollider[Minecraft.getMinecraft().world]
+            this.cache = cache
+            return cache
+        }
+        return cache
+    }
 }
