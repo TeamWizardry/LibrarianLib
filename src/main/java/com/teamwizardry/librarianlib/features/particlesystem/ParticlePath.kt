@@ -8,8 +8,8 @@ interface ParticlePath {
      * Returns the position at the passed fraction [t] along the path.
      *
      * @param particle The particle array
-     * @param t [0, 1] The fraction along the path the returned point should be at.
-     * @param index [0,3) The index of the component (X/Y/Z) that is being requested
+     * @param t (0–1) The fraction along the path the returned point should be at.
+     * @param index (0–2) The index of the component (X/Y/Z) that is being requested
      */
     fun getPosition(particle: DoubleArray, t: Double, index: Int): Double
 
@@ -19,8 +19,8 @@ interface ParticlePath {
      * ends of an ellipse) and not a simple calculation short-cut
      *
      * @param particle The particle array
-     * @param t [0, 1] The fraction along the path the returned tangent should be at.
-     * @param index [0,3) The index of the component (X/Y/Z) that is being requested
+     * @param t (0–1) The fraction along the path the returned tangent should be at.
+     * @param index (0–2) The index of the component (X/Y/Z) that is being requested
      */
     fun getTangent(particle: DoubleArray, t: Double, index: Int): Double
 }
