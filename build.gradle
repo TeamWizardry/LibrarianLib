@@ -189,13 +189,14 @@ dokka {
         project.delete(fileTree(out))
     }
 
-//    kotlinTasks {
-//        []
-//    }
+    kotlinTasks {
+        new ArrayList()
+    }
 
-//    sourceDirs = [projectDir.resolve("src/main/java")]
+    def docsPackage = ""
+    sourceDirs = [new File("$projectDir/src/main/java/$docsPackage")]
 //    samples = ["src/samples/java"]
-//    includes = new ArrayList(fileTree("$projectDir/src/main/docs").files)
+    includes = new ArrayList(fileTree("$projectDir/src/main/docs").files)
 }
 
 //task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
