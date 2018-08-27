@@ -130,8 +130,8 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
 
 
     override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
-        val name = ResourceLocation(parentName.resourceDomain, "blocks/${parentName.resourcePath}").toString()
-        val simpleName = key.resourcePath
+        val name = ResourceLocation(parentName.namespace, "blocks/${parentName.path}").toString()
+        val simpleName = key.path
 
         ModelHandler.generateBlockJson(this, {
             for (path in getPathsForBlockstate(this, mapper))
@@ -205,7 +205,7 @@ open class BlockModWall(name: String, val parent: IBlockState) : BlockMod(name, 
     }
 
     override fun generateMissingItem(item: IModItemProvider, variant: String): Boolean {
-        val name = ResourceLocation(parentName.resourceDomain, "block/${parentName.resourcePath}").toString()
+        val name = ResourceLocation(parentName.namespace, "block/${parentName.path}").toString()
         ModelHandler.generateItemJson(item) {
             getPathForItemModel(this) to jsonObject {
                 "parent"("block/wall_inventory")

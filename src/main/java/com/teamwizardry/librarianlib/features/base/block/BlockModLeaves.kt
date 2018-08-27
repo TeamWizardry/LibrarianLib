@@ -207,7 +207,7 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
     }
 
     @SideOnly(Side.CLIENT)
-    override fun getBlockLayer(): BlockRenderLayer {
+    override fun getRenderLayer(): BlockRenderLayer {
         return if (leavesFancy || !canBeOpaque) BlockRenderLayer.CUTOUT_MIPPED else BlockRenderLayer.SOLID
     }
 
@@ -287,7 +287,7 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
             getPathForBlockModel(this) to {
                 "parent"("block/leaves")
                 "textures" {
-                    "all"("${key.resourceDomain}:blocks/${key.resourcePath}")
+                    "all"("${key.namespace}:blocks/${key.path}")
                 }
             }
         })

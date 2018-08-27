@@ -321,7 +321,7 @@ class Matrix4 {
     }
 
     fun apply(vec: Vec3d): Vec3d {
-        return mult3x3(vec).addVector(m03, m13, m23)
+        return mult3x3(vec).add(m03, m13, m23)
     }
 
     fun apply(vec: Vec2d): Vec2d {

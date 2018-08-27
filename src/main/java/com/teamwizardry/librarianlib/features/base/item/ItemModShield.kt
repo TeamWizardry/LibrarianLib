@@ -76,7 +76,7 @@ open class ItemModShield(name: String, durability: Int = 336) : ItemMod(name), I
             getPathForItemModel(this, variant) to {
                 "parent"("item/generated")
                 "textures" {
-                    "layer0"("${key.resourceDomain}:items/$variant")
+                    "layer0"("${key.namespace}:items/$variant")
                 }
                 "display" {
                     "thirdperson_righthand" {
@@ -89,11 +89,11 @@ open class ItemModShield(name: String, durability: Int = 336) : ItemMod(name), I
                     "predicate" {
                         "blocking"(1)
                     }
-                    "model"("${key.resourceDomain}:item/${variant}_blocking")
+                    "model"("${key.namespace}:item/${variant}_blocking")
                 }
             }
             getPathForItemModel(this, "${variant}_blocking") to {
-                "parent"("${key.resourceDomain}:item/$variant")
+                "parent"("${key.namespace}:item/$variant")
                 "display" {
                     "firstperson_righthand" {
                         "rotation"(0, -45, 25)

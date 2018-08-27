@@ -35,7 +35,7 @@ private operator fun String.unaryPlus() = this.replace("/", File.separator)
 fun getPathForBaseBlockstate(block: FileDsl<Block>): String = getPathForBaseBlockstate(block.value)
 
 fun getPathForBaseBlockstate(block: IForgeRegistryEntry<*>): String =
-        getAssetPath(block.key.resourceDomain) + +"/blockstates/${block.key.resourcePath}.json"
+        getAssetPath(block.key.namespace) + +"/blockstates/${block.key.path}.json"
 
 fun getPathsForBlockstate(block: FileDsl<Block>, stateMapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)? = null): Array<String> {
     val mapped = (stateMapper ?: { DefaultStateMapper().putStateModelLocations(it) })(block.value)
@@ -45,20 +45,20 @@ fun getPathsForBlockstate(block: FileDsl<Block>, stateMapper: ((block: Block) ->
 }
 
 fun getPathForMRL(modelResourceLocation: ModelResourceLocation) =
-        getAssetPath(modelResourceLocation.resourceDomain) + +"/blockstates/${modelResourceLocation.resourcePath}.json"
+        getAssetPath(modelResourceLocation.namespace) + +"/blockstates/${modelResourceLocation.path}.json"
 
-fun getPathForBlockModel(block: FileDsl<Block>) = getPathForBlockModel(block, block.key.resourcePath)
+fun getPathForBlockModel(block: FileDsl<Block>) = getPathForBlockModel(block, block.key.path)
 
 fun getPathForBlockModel(block: FileDsl<Block>, variant: String) =
-        getAssetPath(block.key.resourceDomain) + +"/models/block/$variant.json"
+        getAssetPath(block.key.namespace) + +"/models/block/$variant.json"
 
 fun getPathForItemModel(item: FileDsl<Item>, variantName: String? = null): String {
-    val varname = variantName ?: item.key.resourcePath
-    return getAssetPath(item.key.resourceDomain) + +"/models/item/$varname.json"
+    val varname = variantName ?: item.key.path
+    return getAssetPath(item.key.namespace) + +"/models/item/$varname.json"
 }
 
 fun getAssetPath(modid: String) =
-        Paths.get(Minecraft.getMinecraft().mcDataDir.absolutePath).parent.parent.toString() + +"/${getPathPrefix(modid)}/$modid"
+        Paths.get(Minecraft.getMinecraft().gameDir.absolutePath).parent.parent.toString() + +"/${getPathPrefix(modid)}/$modid"
 
 fun getPathForRecipe(modid: String, name: String) =
         +"${getAssetPath(modid)}/recipes/${toSnakeCase(name)}.json"
@@ -66,30 +66,30 @@ fun getPathForRecipe(modid: String, name: String) =
 fun getPathForSounds(modid: String) = +"${getAssetPath(modid)}/sounds.json"
 
 fun generateBaseItemModel(item: FileDsl<Item>, variantName: String? = null, parent: String = "item/generated"): JsonObject {
-    val varname = variantName ?: item.key.resourcePath
-    if (item is ItemBlock) return jsonObject { "parent"("${item.key.resourceDomain}:block/$varname") }
+    val varname = variantName ?: item.key.path
+    if (item is ItemBlock) return jsonObject { "parent"("${item.key.namespace}:block/$varname") }
     return generateRegularItemModel(item, variantName, parent)
 }
 
 fun generateRegularItemModel(item: FileDsl<Item>, variantName: String? = null, parent: String = "item/generated"): JsonObject {
-    val varname = variantName ?: item.key.resourcePath
+    val varname = variantName ?: item.key.path
     return jsonObject {
         "parent"(parent)
         "textures" {
-            "layer0"("${item.key.resourceDomain}:items/$varname")
+            "layer0"("${item.key.namespace}:items/$varname")
         }
     }
 }
 
 fun generateBaseBlockModel(block: FileDsl<Block>): JsonObject {
-    return generateBaseBlockModel(block, block.key.resourcePath)
+    return generateBaseBlockModel(block, block.key.path)
 }
 
 fun generateBaseBlockModel(block: FileDsl<Block>, variant: String): JsonObject {
     return jsonObject {
         "parent"("block/cube_all")
         "textures" {
-            "all"("${block.key.resourceDomain}:blocks/$variant")
+            "all"("${block.key.namespace}:blocks/$variant")
         }
     }
 }

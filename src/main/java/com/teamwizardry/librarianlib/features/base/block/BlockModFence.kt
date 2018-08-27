@@ -43,9 +43,9 @@ open class BlockModFence(name: String, val parent: IBlockState) : BlockFence(par
         VariantHelper.finishSetupBlock(this, bareName, itemForm, this::creativeTab)
     }
 
-    override fun setUnlocalizedName(name: String): Block {
-        super.setUnlocalizedName(name)
-        VariantHelper.setUnlocalizedNameForBlock(this, modId, name, itemForm)
+    override fun setTranslationKey(name: String): Block {
+        super.setTranslationKey(name)
+        VariantHelper.setTranslationKeyForBlock(this, modId, name, itemForm)
         return this
     }
 
@@ -74,8 +74,8 @@ open class BlockModFence(name: String, val parent: IBlockState) : BlockFence(par
     override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent)
 
     override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
-        val name = ResourceLocation(parentName.resourceDomain, "blocks/${parentName.resourcePath}").toString()
-        val simpleName = key.resourcePath
+        val name = ResourceLocation(parentName.namespace, "blocks/${parentName.path}").toString()
+        val simpleName = key.path
 
         ModelHandler.generateBlockJson(this, {
             for (path in getPathsForBlockstate(this, mapper))
@@ -145,7 +145,7 @@ open class BlockModFence(name: String, val parent: IBlockState) : BlockFence(par
     }
 
     override fun generateMissingItem(item: IModItemProvider, variant: String): Boolean {
-        val name = ResourceLocation(parentName.resourceDomain, "blocks/${parentName.resourcePath}").toString()
+        val name = ResourceLocation(parentName.namespace, "blocks/${parentName.path}").toString()
         ModelHandler.generateItemJson(item) {
             getPathForItemModel(this) to jsonObject {
                 "parent"("block/fence_inventory")

@@ -10,7 +10,7 @@ object RaycastUtils {
     @JvmStatic
     @JvmOverloads
     fun raycast(e: Entity, len: Double, stopOnLiquid: Boolean = false): RayTraceResult? {
-        val vec = e.positionVector.addVector(0.0, (e as? EntityPlayer)?.getEyeHeight()?.toDouble() ?: 0.0, 0.0)
+        val vec = e.positionVector.add(0.0, (e as? EntityPlayer)?.getEyeHeight()?.toDouble() ?: 0.0, 0.0)
 
         val look = e.lookVec
         return raycast(e.world, vec, look, len, stopOnLiquid)
@@ -45,7 +45,7 @@ object RaycastUtils {
         val pos = raycast(e, maxDistance)
         var positionVector = e.positionVector
         if (e is EntityPlayer) {
-            positionVector = positionVector.addVector(0.0, e.getEyeHeight().toDouble(), 0.0)
+            positionVector = positionVector.add(0.0, e.getEyeHeight().toDouble(), 0.0)
         }
 
         if (pos != null) {
@@ -53,7 +53,7 @@ object RaycastUtils {
         }
 
         val lookVector = e.lookVec
-        val reachVector = positionVector.addVector(lookVector.x * maxDistance, lookVector.y * maxDistance, lookVector.z * maxDistance)
+        val reachVector = positionVector.add(lookVector.x * maxDistance, lookVector.y * maxDistance, lookVector.z * maxDistance)
         var lookedEntity: Entity? = null
         val entitiesInBoundingBox = e.world.getEntitiesWithinAABBExcludingEntity(e, e.entityBoundingBox.expand(lookVector.x * maxDistance, lookVector.y * maxDistance, lookVector.z * maxDistance).expand(1.0, 1.0, 1.0))
         var minDistance = distance

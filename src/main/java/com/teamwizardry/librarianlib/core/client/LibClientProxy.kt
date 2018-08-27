@@ -60,7 +60,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         LibShaders
         ShaderHelper.init()
 
-        val s = MethodHandleHelper.wrapperForGetter(Minecraft::class.java, "metadataSerializer_", "field_110452_an")(Minecraft.getMinecraft()) as MetadataSerializer
+        val s = MethodHandleHelper.wrapperForGetter(Minecraft::class.java, "metadataSerializer", "field_110452_an")(Minecraft.getMinecraft()) as MetadataSerializer
         s.registerMetadataSectionType(SpritesMetadataSectionSerializer(), SpritesMetadataSection::class.java)
         SpritesMetadataSection.registered = true
 
@@ -115,7 +115,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
     override fun getClientPlayer(): EntityPlayer = Minecraft.getMinecraft().player
 
-    override fun getDataFolder(): File = Minecraft.getMinecraft().mcDataDir
+    override fun getDataFolder(): File = Minecraft.getMinecraft().gameDir
 
     // Custom events
 

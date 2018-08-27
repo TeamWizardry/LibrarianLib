@@ -110,7 +110,7 @@ interface IMultipleComponentGeometry {
             for (box in boxes) {
                 val result = box.calculateIntercept(a, b)
                 if (result != null) {
-                    val vec = result.hitVec.addVector(x, y, z)
+                    val vec = result.hitVec.add(x, y, z)
                     results.add(RayTraceResult(vec, result.sideHit, pos))
                 }
             }

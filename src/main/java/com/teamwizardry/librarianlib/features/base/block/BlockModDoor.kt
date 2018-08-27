@@ -44,9 +44,9 @@ open class BlockModDoor(name: String, val parent: IBlockState) : BlockDoor(paren
         VariantHelper.finishSetupBlock(this, bareName, itemForm, this::creativeTab)
     }
 
-    override fun setUnlocalizedName(name: String): Block {
-        super.setUnlocalizedName(name)
-        VariantHelper.setUnlocalizedNameForBlock(this, modId, name, itemForm)
+    override fun setTranslationKey(name: String): Block {
+        super.setTranslationKey(name)
+        VariantHelper.setTranslationKeyForBlock(this, modId, name, itemForm)
         return this
     }
 
@@ -80,8 +80,8 @@ open class BlockModDoor(name: String, val parent: IBlockState) : BlockDoor(paren
     override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent)
 
     override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
-        val name = ResourceLocation(key.resourceDomain, "blocks/${key.resourcePath}").toString()
-        val simpleName = key.resourcePath
+        val name = ResourceLocation(key.namespace, "blocks/${key.path}").toString()
+        val simpleName = key.path
 
         ModelHandler.generateBlockJson(block, {
             generateBlockStates(this, mapper) {

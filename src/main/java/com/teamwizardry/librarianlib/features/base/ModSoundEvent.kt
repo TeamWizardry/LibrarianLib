@@ -42,7 +42,7 @@ open class ModSoundEvent(name: String, subtitle: String?, private val sounds: Li
     private val subtitle = subtitle?.let { modid + ".subtitle." + VariantHelper.toSnakeCase(subtitle) }
     private val id = rl(name)
 
-    open fun name(): String = id.resourcePath
+    open fun name(): String = id.path
     open fun sounds(): Iterable<String> = sounds
     open fun subtitle(): String? = subtitle
 

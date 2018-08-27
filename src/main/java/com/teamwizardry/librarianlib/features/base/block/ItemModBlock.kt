@@ -39,14 +39,14 @@ open class ItemModBlock(block: Block) : ItemBlock(block), IModItemProvider, IBlo
 
     override fun getMetadata(damage: Int) = damage
 
-    override fun setUnlocalizedName(par1Str: String): ItemBlock {
+    override fun setTranslationKey(par1Str: String): ItemBlock {
         val rl = ResourceLocation(modId, par1Str)
         RegistrationHandler.register(this, rl)
-        super.setUnlocalizedName(par1Str)
+        super.setTranslationKey(par1Str)
         return this
     }
 
-    override fun getUnlocalizedName(stack: ItemStack): String {
+    override fun getTranslationKey(stack: ItemStack): String {
         val dmg = stack.itemDamage
         val variants = this.variants
         val name = if (dmg >= variants.size) this.modBlock.bareName else variants[dmg]

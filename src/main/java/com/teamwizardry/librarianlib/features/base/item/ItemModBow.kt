@@ -29,12 +29,12 @@ open class ItemModBow(name: String) : ItemBow(), IModItemProvider, IModelGenerat
     private val modId = currentModId
     override val variants = VariantHelper.setupItem(this, bareName, arrayOf(), this::creativeTab)
 
-    override fun setUnlocalizedName(name: String): Item {
-        VariantHelper.setUnlocalizedNameForItem(this, modId, name)
-        return super.setUnlocalizedName(name)
+    override fun setTranslationKey(name: String): Item {
+        VariantHelper.setTranslationKeyForItem(this, modId, name)
+        return super.setTranslationKey(name)
     }
 
-    override fun getUnlocalizedName(stack: ItemStack): String {
+    override fun getTranslationKey(stack: ItemStack): String {
         val dmg = stack.itemDamage
         val variants = this.variants
         val name = if (dmg >= variants.size) this.bareName else variants[dmg]
@@ -56,7 +56,7 @@ open class ItemModBow(name: String) : ItemBow(), IModItemProvider, IModelGenerat
     // Model Generation
 
     override fun generateMissingItem(item: IModItemProvider, variant: String): Boolean {
-        val rd = this.key.resourceDomain
+        val rd = this.key.namespace
         ModelHandler.generateItemJson(this) {
             getPathForItemModel(this, variant) to generateBaseItemModel(this, variant, "item/bow").apply {
                 add("overrides", array(

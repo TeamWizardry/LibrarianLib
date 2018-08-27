@@ -69,7 +69,7 @@ class RenderableStructure(val name: ResourceLocation, private val access: IBlock
             templateBlocks?.let { template ->
                 template
                         .filter { it.blockState.material !== Material.AIR }
-                        .forEach { newBlocks.getOrPut(it.blockState.block.blockLayer) { mutableListOf() }.add(it) }
+                        .forEach { newBlocks.getOrPut(it.blockState.block.renderLayer) { mutableListOf() }.add(it) }
 
                 for ((layer, infoSet) in blocks) {
                     val tes = Tessellator.getInstance()

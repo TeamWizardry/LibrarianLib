@@ -44,8 +44,8 @@ class Entry(override val bookParent: Book, parentSheet: String, parentOuter: Col
         ENTRIES[ResourceLocation(rl)] = this
 
         val pages = mutableListOf<Page>()
-        val baseKey = bookParent.location.resourceDomain + "." +
-                bookParent.location.resourcePath + "." +
+        val baseKey = bookParent.location.namespace + "." +
+                bookParent.location.path + "." +
                 rl.replace("^.*/(?=\\w+)".toRegex(), "")
         var title: TranslationHolder? = TranslationHolder("$baseKey.title")
         var desc: TranslationHolder? = TranslationHolder("$baseKey.description")

@@ -59,7 +59,7 @@ object VariantHelper {
     @JvmStatic
     fun <T> setupItem(item: T, name: String, variants: Array<out String>, modCreativeTab: (() -> ModCreativeTab?)? = null): Array<out String> where T : Item, T : IModItemProvider {
         var variantTemp = variants.map { toSnakeCase(it) }.toTypedArray()
-        item.unlocalizedName = name
+        item.translationKey = name
         if (variantTemp.size > 1)
             item.hasSubtypes = true
 
@@ -88,7 +88,7 @@ object VariantHelper {
     @JvmStatic
     @JvmOverloads
     fun <T> finishSetupBlock(block: T, name: String, itemForm: ItemBlock?, modCreativeTab: (() -> ModCreativeTab?)? = null) where T : Block, T : IModBlockProvider {
-        block.unlocalizedName = name
+        block.translationKey = name
         if (itemForm == null)
             ModelHandler.registerVariantHolder(block)
         if (modCreativeTab != null)
@@ -96,13 +96,13 @@ object VariantHelper {
     }
 
     @JvmStatic
-    fun setUnlocalizedNameForItem(item: Item, modId: String, name: String) {
+    fun setTranslationKeyForItem(item: Item, modId: String, name: String) {
         val rl = ResourceLocation(modId, toSnakeCase(name))
         RegistrationHandler.register(item, rl)
     }
 
     @JvmStatic
-    fun setUnlocalizedNameForBlock(block: Block, modId: String, name: String, itemForm: ItemBlock?) {
+    fun setTranslationKeyForBlock(block: Block, modId: String, name: String, itemForm: ItemBlock?) {
         val snakeName = toSnakeCase(name)
         block.setRegistryName(snakeName)
         RegistrationHandler.register(block)

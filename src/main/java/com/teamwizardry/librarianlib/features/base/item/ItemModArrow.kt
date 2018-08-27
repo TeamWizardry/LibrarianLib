@@ -42,12 +42,12 @@ abstract class ItemModArrow(name: String, vararg variants: String) : ItemArrow()
     override fun createArrow(worldIn: World, stack: ItemStack, shooter: EntityLivingBase) = generateArrowEntity(worldIn, stack, shooter.positionVector, shooter)
     abstract override fun isInfinite(stack: ItemStack, bow: ItemStack, player: EntityPlayer): Boolean
 
-    override fun setUnlocalizedName(name: String): Item {
-        VariantHelper.setUnlocalizedNameForItem(this, modId, name)
-        return super.setUnlocalizedName(name)
+    override fun setTranslationKey(name: String): Item {
+        VariantHelper.setTranslationKeyForItem(this, modId, name)
+        return super.setTranslationKey(name)
     }
 
-    override fun getUnlocalizedName(stack: ItemStack): String {
+    override fun getTranslationKey(stack: ItemStack): String {
         val dmg = stack.itemDamage
         val variants = this.variants
         val name = if (dmg >= variants.size) this.bareName else variants[dmg]

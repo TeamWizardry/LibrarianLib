@@ -47,9 +47,9 @@ open class BlockModPane(name: String, canDrop: Boolean, val parent: IBlockState)
         VariantHelper.finishSetupBlock(this, bareName, itemForm, this::creativeTab)
     }
 
-    override fun setUnlocalizedName(name: String): Block {
-        super.setUnlocalizedName(name)
-        VariantHelper.setUnlocalizedNameForBlock(this, modId, name, itemForm)
+    override fun setTranslationKey(name: String): Block {
+        super.setTranslationKey(name)
+        VariantHelper.setTranslationKeyForBlock(this, modId, name, itemForm)
         return this
     }
 
@@ -61,8 +61,8 @@ open class BlockModPane(name: String, canDrop: Boolean, val parent: IBlockState)
     @Suppress("OverridingDeprecatedMember")
     @SideOnly(Side.CLIENT)
     override fun isTranslucent(state: IBlockState) = parent.isTranslucent
-    override fun isToolEffective(type: String, state: IBlockState) = parent.block.isToolEffective(type, parent) || (blockMaterial == BlockModSlab.FAKE_WOOD && type == "axe")
-    override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent) ?: if (blockMaterial == BlockModSlab.FAKE_WOOD) "axe" else null
+    override fun isToolEffective(type: String, state: IBlockState) = parent.block.isToolEffective(type, parent) || (material == BlockModSlab.FAKE_WOOD && type == "axe")
+    override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent) ?: if (material == BlockModSlab.FAKE_WOOD) "axe" else null
 
     /**
      * Override this to have a custom ItemBlock implementation.
@@ -78,8 +78,8 @@ open class BlockModPane(name: String, canDrop: Boolean, val parent: IBlockState)
         get() = ModCreativeTab.defaultTabs[modId]
 
     override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
-        val name = ResourceLocation(parentName!!.resourceDomain, "blocks/${parentName.resourcePath}").toString()
-        val simpleName = key.resourcePath
+        val name = ResourceLocation(parentName!!.namespace, "blocks/${parentName.path}").toString()
+        val simpleName = key.path
 
         ModelHandler.generateBlockJson(this, {
             getPathForBaseBlockstate(this) to jsonObject {

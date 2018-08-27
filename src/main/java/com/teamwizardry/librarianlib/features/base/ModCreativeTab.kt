@@ -41,7 +41,7 @@ abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(currentMod
     }
 
     @SideOnly(Side.CLIENT)
-    override fun getTranslatedTabLabel(): String = "item_group.$tabLabel"
+    override fun getTranslationKey(): String = "item_group.$tabLabel"
 
     private lateinit var list: NonNullList<ItemStack>
 
@@ -49,7 +49,7 @@ abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(currentMod
 
     private val lazyStack by lazy { iconStack }
 
-    override fun getTabIconItem(): ItemStack = lazyStack
+    override fun createIcon(): ItemStack = lazyStack
 
     override fun displayAllRelevantItems(list: NonNullList<ItemStack>) {
         this.list = list
@@ -61,7 +61,7 @@ abstract class ModCreativeTab(postFix: String? = null) : CreativeTabs(currentMod
     private fun addItem(item: Item) {
         val tempList = nonnullListOf<ItemStack>()
         item.getSubItems(this, tempList)
-        if (item == tabIconItem.item)
+        if (item == iconStack.item)
             this.list.addAll(0, tempList.filterNot { it.isEmpty })
         else
             tempList.filterNotTo(list) { it.isEmpty }

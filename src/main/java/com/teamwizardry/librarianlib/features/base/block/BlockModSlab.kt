@@ -56,11 +56,11 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
         override fun isDouble() = true
 
         override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
-            val name = ResourceLocation(parentName.resourceDomain, "blocks/${parentName.resourcePath}").toString()
-            val loc = singleBlock.key.resourcePath + "_full"
+            val name = ResourceLocation(parentName.namespace, "blocks/${parentName.path}").toString()
+            val loc = singleBlock.key.path + "_full"
             ModelHandler.generateBlockJson(this, {
                 generateBlockStates(this, mapper) {
-                    "model"("${key.resourceDomain}:$loc")
+                    "model"("${key.namespace}:$loc")
                 }
             }, {
                 getPathForBlockModel(this, loc) to {
@@ -117,9 +117,9 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
     }
 
 
-    override fun setUnlocalizedName(name: String): Block {
-        super.setUnlocalizedName(name)
-        VariantHelper.setUnlocalizedNameForBlock(this, modId, name, itemForm)
+    override fun setTranslationKey(name: String): Block {
+        super.setTranslationKey(name)
+        VariantHelper.setTranslationKeyForBlock(this, modId, name, itemForm)
         return this
     }
 
@@ -155,8 +155,8 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
     @SideOnly(Side.CLIENT)
     override fun isTranslucent(state: IBlockState) = parent.isTranslucent
 
-    override fun isToolEffective(type: String, state: IBlockState) = parent.block.isToolEffective(type, parent) || (blockMaterial == FAKE_WOOD && type == "axe")
-    override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent) ?: if (blockMaterial == FAKE_WOOD) "axe" else null
+    override fun isToolEffective(type: String, state: IBlockState) = parent.block.isToolEffective(type, parent) || (material == FAKE_WOOD && type == "axe")
+    override fun getHarvestTool(state: IBlockState): String? = parent.block.getHarvestTool(parent) ?: if (material == FAKE_WOOD) "axe" else null
 
     override fun createBlockState()
             = if (isDouble) BlockStateContainer(this, DUMMY_PROP)
@@ -193,7 +193,7 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
 
     override fun getTypeForItem(stack: ItemStack) = Dummy.SLAB
     override fun isDouble() = false
-    override fun getUnlocalizedName(meta: Int): String = unlocalizedName
+    override fun getTranslationKey(meta: Int): String = translationKey
     override fun getVariantProperty() = DUMMY_PROP
 
     enum class Dummy : EnumStringSerializable {
@@ -201,8 +201,8 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
     }
 
     override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
-        val name = ResourceLocation(parentName.resourceDomain, "blocks/${parentName.resourcePath}").toString()
-        val simpleName = key.resourcePath
+        val name = ResourceLocation(parentName.namespace, "blocks/${parentName.path}").toString()
+        val simpleName = key.path
 
         ModelHandler.generateBlockJson(this, {
             generateBlockStates(this, mapper) {
@@ -235,7 +235,7 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
     override fun generateMissingItem(item: IModItemProvider, variant: String): Boolean {
         ModelHandler.generateItemJson(item) {
             getPathForItemModel(this) to
-                    generateBaseItemModel(this, "${key.resourcePath}_bottom")
+                    generateBaseItemModel(this, "${key.path}_bottom")
         }
         return true
     }

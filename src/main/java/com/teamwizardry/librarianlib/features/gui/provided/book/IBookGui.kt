@@ -133,8 +133,8 @@ interface IBookGui {
 
             if (icon.isJsonPrimitive) {
                 val iconLocation = ResourceLocation(icon.asString)
-                val sprite = Sprite(ResourceLocation(iconLocation.resourceDomain,
-                        "textures/" + iconLocation.resourcePath + ".png"))
+                val sprite = Sprite(ResourceLocation(iconLocation.namespace,
+                        "textures/" + iconLocation.path + ".png"))
                 return { renderSprite(sprite, size, mask) }
             } else if (icon.isJsonObject) {
                 val stack = CraftingHelper.getItemStack(icon.asJsonObject, JsonContext("minecraft"))

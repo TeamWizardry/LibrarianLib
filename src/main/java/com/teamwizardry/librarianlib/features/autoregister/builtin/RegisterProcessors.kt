@@ -30,10 +30,10 @@ object TileRegisterProcessor : AnnotationMarkerProcessor<TileRegister, TileEntit
                 if (name == "") VariantHelper.toSnakeCase(clazz.simpleName).toRl()
                 else ResourceLocation(name)
 
-        if (loc.resourceDomain == "minecraft") {
+        if (loc.namespace == "minecraft") {
             if (owner == null)
                 throw RuntimeException("No mod id and class has no known owner!")
-            loc = ResourceLocation(owner, loc.resourcePath)
+            loc = ResourceLocation(owner, loc.path)
         }
         AbstractSaveHandler.cacheFields(clazz)
         GameRegistry.registerTileEntity(clazz, loc.toString())

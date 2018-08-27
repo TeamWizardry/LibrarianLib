@@ -59,7 +59,7 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 1
                     if (Minecraft.getMinecraft().gameSettings.advancedItemTooltips)
                         ITooltipFlag.TooltipFlags.ADVANCED else ITooltipFlag.TooltipFlags.NORMAL)
 
-            list.mapIndexed { i, s -> (if (i == 0) stack.rarity.rarityColor else TextFormatting.GRAY) + s }
+            list.mapIndexed { i, s -> (if (i == 0) stack.rarity.color else TextFormatting.GRAY) + s }
             modifyList.invoke(list)
 
             return list

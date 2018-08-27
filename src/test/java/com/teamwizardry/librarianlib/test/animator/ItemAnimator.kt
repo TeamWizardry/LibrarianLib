@@ -29,7 +29,7 @@ class ItemAnimator : ItemMod("animator") {
     }
 
     override fun getItemStackDisplayName(stack: ItemStack): String {
-        return (getUnlocalizedName(stack) + ".name").localize(Guis.values()[stack.itemDamage % Guis.values().size].toString())
+        return (getTranslationKey(stack) + ".name").localize(Guis.values()[stack.itemDamage % Guis.values().size].toString())
     }
 }
 

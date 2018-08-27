@@ -17,8 +17,8 @@ open class Shader(vert: ResourceLocation?, frag: ResourceLocation?) {
     constructor(vert: String?, frag: String?)
             : this(vert?.let { ResourceLocation(currentModId, it) }, frag?.let { ResourceLocation(currentModId, it) })
 
-    val vert: String? = if (vert == null) null else "/assets/${vert.resourceDomain}/${VariantHelper.pathToSnakeCase(vert.resourcePath).removePrefix("/")}"
-    val frag: String? = if (frag == null) null else "/assets/${frag.resourceDomain}/${VariantHelper.pathToSnakeCase(frag.resourcePath).removePrefix("/")}"
+    val vert: String? = if (vert == null) null else "/assets/${vert.namespace}/${VariantHelper.pathToSnakeCase(vert.path).removePrefix("/")}"
+    val frag: String? = if (frag == null) null else "/assets/${frag.namespace}/${VariantHelper.pathToSnakeCase(frag.path).removePrefix("/")}"
 
     var time: FloatTypes.FloatUniform? = null
 

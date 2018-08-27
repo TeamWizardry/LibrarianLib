@@ -27,7 +27,7 @@ import java.awt.Color
 open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
     override val cachedSearchContent = book.contentCache
     private var sheetRL = ResourceLocation(book.textureSheet)
-    private var guideBookSheet = Texture(ResourceLocation(sheetRL.resourceDomain, "textures/" + sheetRL.resourcePath + ".png"))
+    private var guideBookSheet = Texture(ResourceLocation(sheetRL.namespace, "textures/" + sheetRL.path + ".png"))
 
     override var bindingSprite: Sprite = guideBookSheet.getSprite("binding", 146, 180)
     override var pageSprite: Sprite = guideBookSheet.getSprite("book", 146, 180)
@@ -112,7 +112,7 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
         val newSheet = ResourceLocation(sheet)
         if (sheetRL != newSheet) {
             sheetRL = newSheet
-            guideBookSheet = Texture(ResourceLocation(sheetRL.resourceDomain, "textures/" + sheetRL.resourcePath + ".png"))
+            guideBookSheet = Texture(ResourceLocation(sheetRL.namespace, "textures/" + sheetRL.path + ".png"))
 
             bindingSprite = guideBookSheet.getSprite("binding", 146, 180)
             pageSprite = guideBookSheet.getSprite("book", 146, 180)

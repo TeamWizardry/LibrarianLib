@@ -149,7 +149,7 @@ open class Book(val location: ResourceLocation) : IBookElement {
 
         private fun makeResource(str: String): ResourceLocation {
             val resource = ResourceLocation(str)
-            return ResourceLocation(currentModId, resource.resourcePath)
+            return ResourceLocation(currentModId, resource.path)
         }
 
         var hasEverReloaded = false
@@ -182,7 +182,7 @@ open class Book(val location: ResourceLocation) : IBookElement {
         }
 
         fun getJsonFromLink(location: ResourceLocation): JsonElement? {
-            val stream = LibrarianLib.PROXY.getResource(location.resourceDomain, "book/" + location.resourcePath + ".json")
+            val stream = LibrarianLib.PROXY.getResource(location.namespace, "book/" + location.path + ".json")
                     ?: return null
             return JsonParser().parse(stream.reader())
         }

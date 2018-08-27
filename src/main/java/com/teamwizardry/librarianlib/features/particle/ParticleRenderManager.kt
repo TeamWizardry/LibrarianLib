@@ -125,7 +125,7 @@ object ParticleRenderManager {
             return
         if (Minecraft.getMinecraft().currentScreen?.doesGuiPauseGame() == true)
             return
-        val profiler = Minecraft.getMinecraft().mcProfiler
+        val profiler = Minecraft.getMinecraft().profiler
         profiler.startSection("liblib_particles")
 
         profiler.startSection("clean")
@@ -165,7 +165,7 @@ object ParticleRenderManager {
     @SubscribeEvent
     @Suppress("UNUSED_PARAMETER")
     fun render(event: RenderWorldLastEvent) {
-        val profiler = Minecraft.getMinecraft().mcProfiler
+        val profiler = Minecraft.getMinecraft().profiler
 
         GL11.glPushAttrib(GL11.GL_LIGHTING_BIT)
         GlStateManager.depthMask(false)

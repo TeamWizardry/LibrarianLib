@@ -26,7 +26,7 @@ object StructureRenderUtil {
             val state = access.getBlockState(info.pos)
             if (state.renderType == EnumBlockRenderType.INVISIBLE)
                 continue
-            if (state.block.blockLayer != BlockRenderLayer.SOLID)
+            if (state.block.renderLayer != BlockRenderLayer.SOLID)
                 continue
             BlockRenderUtils.renderBlockToVB(state, access, info.pos, info.pos.subtract(structure.origin), blockBuf, color.red / 255f, color.green / 255f, color.blue / 255f, brightness, color.alpha / 255f)
         }
@@ -36,7 +36,7 @@ object StructureRenderUtil {
             val state = access.getBlockState(info.pos)
             if (state.renderType == EnumBlockRenderType.INVISIBLE)
                 continue
-            if (state.block.blockLayer != BlockRenderLayer.CUTOUT && state.block.blockLayer != BlockRenderLayer.CUTOUT_MIPPED)
+            if (state.block.renderLayer != BlockRenderLayer.CUTOUT && state.block.renderLayer != BlockRenderLayer.CUTOUT_MIPPED)
                 continue
             BlockRenderUtils.renderBlockToVB(state, access, info.pos, info.pos.subtract(structure.origin), blockBuf, color.red / 255f, color.green / 255f, color.blue / 255f, brightness, color.alpha / 255f)
         }
@@ -46,7 +46,7 @@ object StructureRenderUtil {
             val state = access.getBlockState(info.pos)
             if (state.renderType == EnumBlockRenderType.INVISIBLE)
                 continue
-            if (state.block.blockLayer != BlockRenderLayer.TRANSLUCENT)
+            if (state.block.renderLayer != BlockRenderLayer.TRANSLUCENT)
                 continue
             BlockRenderUtils.renderBlockToVB(state, access, info.pos, info.pos.subtract(structure.origin), blockBuf, color.red / 255f, color.green / 255f, color.blue / 255f, brightness, color.alpha / 255f)
         }

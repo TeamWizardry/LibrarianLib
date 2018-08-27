@@ -27,9 +27,9 @@ open class BlockMod(name: String, materialIn: Material, color: MapColor, vararg 
         VariantHelper.finishSetupBlock(this, bareName, itemForm, this::creativeTab)
     }
 
-    override fun setUnlocalizedName(name: String): Block {
-        super.setUnlocalizedName(name)
-        VariantHelper.setUnlocalizedNameForBlock(this, modId, name, itemForm)
+    override fun setTranslationKey(name: String): Block {
+        super.setTranslationKey(name)
+        VariantHelper.setTranslationKeyForBlock(this, modId, name, itemForm)
         return this
     }
 

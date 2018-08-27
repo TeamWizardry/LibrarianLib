@@ -26,12 +26,12 @@ open class ItemModSword(name: String, material: ToolMaterial) : ItemSword(materi
     private val modId = currentModId
     override val variants = VariantHelper.setupItem(this, bareName, arrayOf(), this::creativeTab)
 
-    override fun setUnlocalizedName(name: String): Item {
-        VariantHelper.setUnlocalizedNameForItem(this, modId, name)
-        return super.setUnlocalizedName(name)
+    override fun setTranslationKey(name: String): Item {
+        VariantHelper.setTranslationKeyForItem(this, modId, name)
+        return super.setTranslationKey(name)
     }
 
-    override fun getUnlocalizedName(stack: ItemStack): String {
+    override fun getTranslationKey(stack: ItemStack): String {
         val dmg = stack.itemDamage
         val variants = this.variants
         val name = if (dmg >= variants.size) this.bareName else variants[dmg]

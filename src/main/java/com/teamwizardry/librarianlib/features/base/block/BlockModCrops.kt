@@ -212,7 +212,7 @@ abstract class BlockModCrops(name: String, stages: Int) : BlockModBush(injectSta
                 getPathForBlockModel(this, "$key$i") to {
                     "parent"("block/crop")
                     "textures" {
-                        "all"("${key.resourceDomain}:blocks/${key.resourcePath}$i")
+                        "all"("${key.namespace}:blocks/${key.path}$i")
                     }
                 }
         })

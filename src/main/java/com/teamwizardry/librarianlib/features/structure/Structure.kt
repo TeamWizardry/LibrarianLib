@@ -34,7 +34,7 @@ open class Structure(loc: ResourceLocation) {
         protected set
 
     init {
-        val stream = LibrarianLib.PROXY.getResource(loc.resourceDomain, "schematics/" + loc.resourcePath + ".nbt")
+        val stream = LibrarianLib.PROXY.getResource(loc.namespace, "schematics/" + loc.path + ".nbt")
         if (stream != null) {
             try {
                 parse(stream)

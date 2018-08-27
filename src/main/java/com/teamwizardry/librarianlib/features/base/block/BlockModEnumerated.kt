@@ -75,7 +75,7 @@ open class BlockModEnumerated<T> @JvmOverloads constructor(name: String, materia
     override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
         ModelHandler.generateBlockJson(this, {
             generateBlockStates(this, mapper) {
-                "model"(key.resourceDomain + ":" + it.replace("variant=", ""))
+                "model"(key.namespace + ":" + it.replace("variant=", ""))
             }
         }, {
             for (variant in variants)

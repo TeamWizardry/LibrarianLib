@@ -10,10 +10,10 @@ import net.minecraftforge.fml.common.FMLCommonHandler
 object Profiler {
     @JvmStatic
     inline fun profile(name: String, code: () -> Unit) {
-        ClientRunnable.run { Minecraft.getMinecraft().mcProfiler.startSection(name) }
+        ClientRunnable.run { Minecraft.getMinecraft().profiler.startSection(name) }
         FMLCommonHandler.instance().minecraftServerInstance.profiler.startSection(name)
         code()
-        ClientRunnable.run { Minecraft.getMinecraft().mcProfiler.endSection() }
+        ClientRunnable.run { Minecraft.getMinecraft().profiler.endSection() }
         FMLCommonHandler.instance().minecraftServerInstance.profiler.endSection()
     }
 }

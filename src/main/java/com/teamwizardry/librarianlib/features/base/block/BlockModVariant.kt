@@ -57,7 +57,7 @@ open class BlockModVariant(name: String, materialIn: Material, color: MapColor, 
     override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
         ModelHandler.generateBlockJson(this, {
             generateBlockStates(this, mapper) {
-                "model" to key.resourceDomain + ":" + it.replace("variant=", "")
+                "model" to key.namespace + ":" + it.replace("variant=", "")
             }
         }, {
             for (variant in variants)

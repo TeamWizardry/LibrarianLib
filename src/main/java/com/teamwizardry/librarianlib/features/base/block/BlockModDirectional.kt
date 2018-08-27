@@ -81,7 +81,7 @@ open class BlockModDirectional(name: String, material: Material, horizontal: Boo
 
     @Suppress("OverridingDeprecatedMember")
     override fun getStateFromMeta(meta: Int): IBlockState {
-        val prop = if (isHorizontal) EnumFacing.getHorizontal(meta and 0b11) else EnumFacing.getFront(meta and 0b111)
+        val prop = if (isHorizontal) EnumFacing.byHorizontalIndex(meta and 0b11) else EnumFacing.byIndex(meta and 0b111)
 
         return this.defaultState.withProperty(property, prop)
     }
