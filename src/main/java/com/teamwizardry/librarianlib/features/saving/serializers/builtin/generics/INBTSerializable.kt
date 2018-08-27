@@ -19,6 +19,8 @@ import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagList
 import net.minecraftforge.common.util.INBTSerializable
+import net.minecraftforge.fml.relauncher.ReflectionHelper
+import java.util.*
 
 /**
  * Created by TheCodeWarrior
@@ -61,6 +63,21 @@ object SerializeINBTSerializableFactory : SerializerFactory("INBTSerializable") 
             val tag = value.serializeNBT()
             buf.writeByte(tag.id.toInt())
             writeTagToBuffer(tag, buf)
+        }
+
+        private fun createConstructorMH(): () -> INBTSerializable<NBTBase> {
+            if (type.clazz == INBTSerializable::class.java) {
+                return { throw UnsupportedOperationException("Cannot initialize value, INBTSerializable " +
+                        "isn't a specific class") }
+            } else {
+                try {
+                    val mh = MethodHandleHelper.wrapperForConstructor<INBTSerializable<NBTBase>>(type.clazz)
+                    return { mh(arrayOf()) }
+                } catch(e: ReflectionHelper.UnableToFindMethodException) {
+                    return { throw UnsupportedOperationException("Could not find zero-argument constructor for " +
+                            type.clazz.simpleName, e) }
+                }
+            }
         }
     }
 }

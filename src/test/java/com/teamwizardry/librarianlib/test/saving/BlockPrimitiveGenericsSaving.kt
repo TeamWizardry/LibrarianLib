@@ -24,9 +24,20 @@ class BlockPrimitiveGenericsSaving : BlockMod("saving_primitiveGenerics", Materi
         val te = worldIn.getTileEntity(pos!!)!! as TETest
         if (!worldIn.isRemote) {
             te.map[facing] = (te.map[facing] ?: 0) + 1
+            te.list.add((te.list.lastOrNull() ?: 0) + 1)
+            if(te.list.size > 5) te.list.clear()
+            te.linkedList.add((te.linkedList.lastOrNull() ?: 0) + 1)
+            if(te.linkedList.size > 5) te.linkedList.clear()
+            te.deque.addFirst(te.deque.removeLast())
+            te.set.add(facing)
+            if(te.set.size > 3) te.set.clear()
             te.markDirty()
         } else {
             playerIn.sendMessage("HashMap<EnumFacing, Int>: [" + te.map.map { "${it.key}:${it.value}" }.joinToString(", ") + "]")
+            playerIn.sendMessage("List<Int>: [" + te.list.joinToString(", ") + "]")
+            playerIn.sendMessage("Deque<EnumFacing>: [" + te.deque.joinToString(", ") + "]")
+            playerIn.sendMessage("Set<EnumFacing>: [" + te.set.joinToString(", ") + "]")
+            playerIn.sendMessage("LinkedList<Int>: [" + te.linkedList.joinToString(", ") + "]")
         }
         return true
     }
@@ -37,6 +48,10 @@ class BlockPrimitiveGenericsSaving : BlockMod("saving_primitiveGenerics", Materi
 
     @TileRegister("saving_primitiveGenerics")
     class TETest : TileMod() {
-        @Save var map: HashMap<EnumFacing, Int> = HashMap()
+        @Save val map: HashMap<EnumFacing, Int> = HashMap()
+        @Save val list: MutableList<Int> = ArrayList()
+        @Save val linkedList: LinkedList<Int> = LinkedList() // can crash due to being interpreted as a Deque
+        @Save val deque: Deque<EnumFacing> = ArrayDeque(EnumFacing.values().asList())
+        @Save val set: MutableSet<EnumFacing> = HashSet()
     }
 }

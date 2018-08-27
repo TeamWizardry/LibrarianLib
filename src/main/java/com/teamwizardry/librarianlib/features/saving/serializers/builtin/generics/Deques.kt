@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.features.kotlin.forEach
 import com.teamwizardry.librarianlib.features.kotlin.readBooleanArray
 import com.teamwizardry.librarianlib.features.kotlin.safeCast
 import com.teamwizardry.librarianlib.features.kotlin.writeBooleanArray
+import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.saving.FieldType
 import com.teamwizardry.librarianlib.features.saving.FieldTypeGeneric
 import com.teamwizardry.librarianlib.features.saving.serializers.Serializer
@@ -16,11 +17,14 @@ import io.netty.buffer.ByteBuf
 import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagList
+import net.minecraftforge.fml.relauncher.ReflectionHelper
 import java.util.*
 
 @SerializerFactoryRegister
 object SerializeDequeFactory : SerializerFactory("Deque") {
     override fun canApply(type: FieldType): SerializerFactoryMatch {
+        if(canApplySubclass(type, List::class.java) != SerializerFactoryMatch.NONE)
+            return SerializerFactoryMatch.NONE
         return canApplySubclass(type, Deque::class.java)
     }
 
@@ -31,10 +35,11 @@ object SerializeDequeFactory : SerializerFactory("Deque") {
 
     class SerializeDeque(type: FieldType, val componentType: FieldType) : Serializer<Deque<Any?>>(type) {
         override fun getDefault(): Deque<Any?> {
-            return ArrayDeque()
+            return constructor()
         }
 
         val serComponent: Serializer<Any> by SerializerRegistry.lazy(componentType)
+        val constructor = createConstructorMH()
 
         override fun readNBT(nbt: NBTBase, existing: Deque<Any?>?, syncing: Boolean): Deque<Any?> {
             val list = nbt.safeCast(NBTTagList::class.java)
@@ -85,6 +90,20 @@ object SerializeDequeFactory : SerializerFactory("Deque") {
             for (v in value) {
                 if (v != null)
                     serComponent.write(buf, v, syncing)
+            }
+        }
+
+        private fun createConstructorMH(): () -> Deque<Any?> {
+            if (type.clazz == Deque::class.java) {
+                return { ArrayDeque() }
+            } else {
+                try {
+                    val mh = MethodHandleHelper.wrapperForConstructor<Deque<Any?>>(type.clazz)
+                    return { mh(arrayOf()) }
+                } catch(e: ReflectionHelper.UnableToFindMethodException) {
+                    return { throw UnsupportedOperationException("Could not find zero-argument constructor for " +
+                            type.clazz.simpleName, e) }
+                }
             }
         }
     }

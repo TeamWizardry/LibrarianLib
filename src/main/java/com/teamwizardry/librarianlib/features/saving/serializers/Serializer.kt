@@ -50,7 +50,7 @@ abstract class Serializer<T : Any>(val type: FieldType) {
     fun read(nbt: NBTBase, existing: T?, syncing: Boolean): T {
         try {
             return readNBT(nbt, existing, syncing)
-        } catch (e: RuntimeException) {
+        } catch (e: Throwable) {
             throw SerializerException("[NBT] Error deserializing $type", e)
         }
     }
@@ -58,7 +58,7 @@ abstract class Serializer<T : Any>(val type: FieldType) {
     fun write(value: T, syncing: Boolean): NBTBase {
         try {
             return writeNBT(value, syncing)
-        } catch (e: RuntimeException) {
+        } catch (e: Throwable) {
             throw SerializerException("[NBT] Error serializing $type", e)
         }
     }
@@ -66,7 +66,7 @@ abstract class Serializer<T : Any>(val type: FieldType) {
     fun read(buf: ByteBuf, existing: T?, syncing: Boolean): T {
         try {
             return readBytes(buf, existing, syncing)
-        } catch (e: RuntimeException) {
+        } catch (e: Throwable) {
             throw SerializerException("[Bytes] Error deserializing $type", e)
         }
     }
@@ -74,7 +74,7 @@ abstract class Serializer<T : Any>(val type: FieldType) {
     fun write(buf: ByteBuf, value: T, syncing: Boolean) {
         try {
             return writeBytes(buf, value, syncing)
-        } catch (e: RuntimeException) {
+        } catch (e: Throwable) {
             throw SerializerException("[Bytes] Error serializing $type", e)
         }
     }
@@ -108,4 +108,5 @@ abstract class SerializerFactory(val name: String) {
 class SerializerException : RuntimeException {
     constructor(msg: String) : super(msg)
     constructor(msg: String, cause: Exception) : super(msg, cause)
+    constructor(msg: String, cause: Throwable) : super(msg, cause)
 }

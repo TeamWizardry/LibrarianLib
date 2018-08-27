@@ -47,6 +47,7 @@ class BlockObjectsSaving : BlockMod("saving_objects", Material.CACTUS), ITileEnt
             te.vec2d = vec(hitX, hitZ)
             te.enum = facing
             te.serializable.isHawt = !te.serializable.isHawt
+            te.privatePropertyTestAccess++
 
             te.markDirty()
         } else {
@@ -59,6 +60,7 @@ class BlockObjectsSaving : BlockMod("saving_objects", Material.CACTUS), ITileEnt
             playerIn.sendMessage("Vec2d: " + te.vec2d)
             playerIn.sendMessage("Enum: " + te.enum)
             playerIn.sendMessage("INBTSerializable: " + if(te.serializable.isHawt) "is hawt" else "isn't hawt")
+            playerIn.sendMessage("Private Property: " + te.privatePropertyTestAccess)
         }
         return true
     }
@@ -78,6 +80,10 @@ class BlockObjectsSaving : BlockMod("saving_objects", Material.CACTUS), ITileEnt
         @Save var vec2d: Vec2d = Vec2d.ZERO
         @Save var enum: EnumFacing = EnumFacing.UP
         @Save var serializable: INBTSerializableTest = INBTSerializableTest()
+        @Save private var privateProperty: Int = 0
+        var privatePropertyTestAccess: Int
+            get() = privateProperty
+            set(value) { privateProperty = value }
     }
 
     class INBTSerializableTest: INBTSerializable<NBTTagCompound> {

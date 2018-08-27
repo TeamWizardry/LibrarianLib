@@ -98,7 +98,20 @@ object SavingFieldCache {
     }
 
     private fun MutableMap<String, FieldCache>.register(name: String, meta: FieldMetadata, getter: (Any) -> Any?, setter: (Any, Any?) -> Unit, altName: String = "") {
-        this[name] = FieldCache(meta, getter, setter, altName)
+        this[name] = FieldCache(meta, {
+            try {
+                getter(it)
+            } catch (e: Exception) {
+                throw ReflectiveOperationException("Failed to get value of property $name", e)
+            }
+        }, { target, value ->
+            try {
+                setter(target, value)
+            } catch (e: Exception) {
+                throw ReflectiveOperationException("Failed to set value of property $name", e)
+            }
+        }, altName)
+
         reserveName(name)
     }
 

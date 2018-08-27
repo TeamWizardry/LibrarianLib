@@ -59,29 +59,45 @@ object SerializeObjectFactory : SerializerFactory("Object") {
                 }
                 return instance
             } else {
-                return analysis.constructorMH(analysis.constructorArgOrder.map {
-                    if (tag.hasKey(it))
-                        analysis.serializers[it]!!.value.read(tag.getTag(it), null, syncing)
-                    else
+                val args = analysis.constructorArgOrder.map {
+                    if (tag.hasKey(it)) {
+                        try {
+                            analysis.serializers[it]!!.value.read(tag.getTag(it), null, syncing)
+                        } catch (e: Throwable) {
+                            throw SerializerException("Error reading value for field $it from NBT", e)
+                        }
+                    } else {
                         null
-                }.toTypedArray())
+                    }
+                }.toTypedArray()
+                try {
+                    return analysis.constructorMH(args)
+                } catch (e: Throwable) {
+                    throw SerializerException("Error creating instance of type $type", e)
+                }
             }
         }
 
         fun readFields(map: Map<String, FieldCache>, tag: NBTTagCompound, instance: Any, sync: Boolean) {
             map.forEach {
-                val oldValue = it.value.getter(instance)
-                val value = if (tag.hasKey(it.key)) {
-                    analysis.serializers[it.key]!!.value.read(tag.getTag(it.key), oldValue, sync)
-                } else {
-                    if (it.value.meta.hasFlag(SavingFieldFlag.FINAL)) oldValue else null
-                }
-                if (it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
-                    if (oldValue !== value) {
-                        throw SerializerException("Cannot set final field ${it.value.name} in class $type to new value. Either make the field mutable or modify the serializer to change the existing object instead of creating a new one.")
+                try {
+                    val oldValue = it.value.getter(instance)
+                    val value = if (tag.hasKey(it.key)) {
+                        analysis.serializers[it.key]!!.value.read(tag.getTag(it.key), oldValue, sync)
+                    } else {
+                        if (it.value.meta.hasFlag(SavingFieldFlag.FINAL)) oldValue else null
                     }
-                } else {
-                    it.value.setter(instance, value)
+                    if (it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
+                        if (oldValue !== value) {
+                            throw SerializerException("Cannot set final field to new value. Either make the field " +
+                                    "mutable or modify the serializer to change the existing object instead of " +
+                                    "creating a new one.")
+                        }
+                    } else {
+                        it.value.setter(instance, value)
+                    }
+                } catch (e: Throwable) {
+                    throw SerializerException("Error reading field ${it.value.name} from NBT", e)
                 }
             }
         }
@@ -102,9 +118,13 @@ object SerializeObjectFactory : SerializerFactory("Object") {
 
         fun writeFields(map: Map<String, FieldCache>, value: Any, tag: NBTTagCompound, sync: Boolean) {
             map.forEach {
-                val fieldValue = it.value.getter(value)
-                if (fieldValue != null)
-                    tag.setTag(it.key, analysis.serializers[it.key]!!.value.write(fieldValue, sync))
+                try {
+                    val fieldValue = it.value.getter(value)
+                    if (fieldValue != null)
+                        tag.setTag(it.key, analysis.serializers[it.key]!!.value.write(fieldValue, sync))
+                } catch (e: Throwable) {
+                    throw SerializerException("Error writing field ${it.value.name} to NBT", e)
+                }
             }
         }
 
@@ -124,75 +144,128 @@ object SerializeObjectFactory : SerializerFactory("Object") {
                 val map = mutableMapOf<String, Any?>()
 
                 analysis.alwaysFields.forEach {
-                    if (!nulliter.next()) {
-                        map[it.key] = analysis.serializers[it.key]!!.value.read(buf, null, syncing)
+                    try {
+                        if (!nulliter.next()) {
+                            map[it.key] = analysis.serializers[it.key]!!.value.read(buf, null, syncing)
+                        }
+                    } catch (e: Throwable) {
+                        throw SerializerException("Error reading field ${it.value.name} from bytes", e)
                     }
                 }
                 if (!syncing) {
                     analysis.noSyncFields.forEach {
-                        if (!nulliter.next()) {
-                            map[it.key] = analysis.serializers[it.key]!!.value.read(buf, null, syncing)
+                        try {
+                            if (!nulliter.next()) {
+                                map[it.key] = analysis.serializers[it.key]!!.value.read(buf, null, syncing)
+                            }
+                        } catch (e: Throwable) {
+                            throw SerializerException("Error reading field ${it.value.name} from bytes", e)
                         }
                     }
                 } else {
                     analysis.nonPersistentFields.forEach {
-                        if (!nulliter.next()) {
-                            map[it.key] = analysis.serializers[it.key]!!.value.read(buf, null, syncing)
+                        try {
+                            if (!nulliter.next()) {
+                                map[it.key] = analysis.serializers[it.key]!!.value.read(buf, null, syncing)
+                            }
+                        } catch (e: Throwable) {
+                            throw SerializerException("Error reading field ${it.value.name} from bytes", e)
                         }
                     }
                 }
-                return analysis.constructorMH(analysis.constructorArgOrder.map {
-                    map[it]
-                }.toTypedArray())
+                try {
+                    return analysis.constructorMH(analysis.constructorArgOrder.map {
+                        map[it]
+                    }.toTypedArray())
+                } catch (e: Throwable) {
+                    throw SerializerException("Error creating instance of type $type", e)
+                }
             }
         }
 
         private fun readFields(map: Map<String, FieldCache>, buf: ByteBuf, instance: Any, nullsig: BooleanIterator, sync: Boolean) {
             map.forEach {
-                val oldValue = it.value.getter(instance)
-                val value = if (nullsig.next()) {
-                    null
-                } else {
-                    analysis.serializers[it.key]!!.value.read(buf, oldValue, sync)
-                }
-                if (it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
-                    if (oldValue !== value) {
-                        throw SerializerException("Cannot set final field ${it.value.name} in class ${type} to new value. Either make the field mutable or modify the serializer to change the existing object instead of creating a new one.")
+                try {
+                    val oldValue = it.value.getter(instance)
+                    val value = if (nullsig.next()) {
+                        null
+                    } else {
+                        analysis.serializers[it.key]!!.value.read(buf, oldValue, sync)
                     }
-                } else {
-                    it.value.setter(instance, value)
+                    if (it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
+                        if (oldValue !== value) {
+                            throw SerializerException("Cannot set final field to new value. Either make the field " +
+                                    "mutable or modify the serializer to change the existing object instead of " +
+                                    "creating a new one.")
+                        }
+                    } else {
+                        it.value.setter(instance, value)
+                    }
+                } catch (e: Throwable) {
+                    throw SerializerException("Error reading field ${it.value.name} from bytes", e)
                 }
             }
 
         }
 
         override fun writeBytes(buf: ByteBuf, value: Any, syncing: Boolean) {
-            val nullsig = analysis.alwaysFields.map { it.value.getter(value) == null }.toTypedArray().toBooleanArray() +
-                    if (!syncing) {
-                        analysis.noSyncFields.map { it.value.getter(value) == null }.toTypedArray().toBooleanArray()
-                    } else {
-                        analysis.nonPersistentFields.map { it.value.getter(value) == null }.toTypedArray().toBooleanArray()
+            var nullsig = mutableListOf<Boolean>()
+            analysis.alwaysFields.forEach {
+                try {
+                    nullsig.add(it.value.getter(value) == null)
+                } catch (e: Throwable) {
+                    throw SerializerException("Error getting field ${it.value.name} for nullsig", e)
+                }
+            }
+            if (!syncing) {
+                analysis.noSyncFields.forEach {
+                    try {
+                        nullsig.add(it.value.getter(value) == null)
+                    } catch (e: Throwable) {
+                        throw SerializerException("Error getting field ${it.value.name} for nullsig", e)
                     }
+                }
+            } else {
+                analysis.nonPersistentFields.forEach {
+                    try {
+                        nullsig.add(it.value.getter(value) == null)
+                    } catch (e: Throwable) {
+                        throw SerializerException("Error getting field ${it.value.name} for nullsig", e)
+                    }
+                }
+            }
 
-            buf.writeBooleanArray(nullsig)
+            buf.writeBooleanArray(nullsig.toTypedArray().toBooleanArray())
 
             analysis.alwaysFields.forEach {
-                val fieldValue = it.value.getter(value)
-                if (fieldValue != null)
-                    analysis.serializers[it.key]!!.value.write(buf, fieldValue, syncing)
+                try {
+                    val fieldValue = it.value.getter(value)
+                    if (fieldValue != null)
+                        analysis.serializers[it.key]!!.value.write(buf, fieldValue, syncing)
+                } catch (e: Throwable) {
+                    throw SerializerException("Error writing field ${it.value.name} to bytes", e)
+                }
             }
 
             if (!syncing) {
                 analysis.noSyncFields.forEach {
-                    val fieldValue = it.value.getter(value)
-                    if (fieldValue != null)
-                        analysis.serializers[it.key]!!.value.write(buf, fieldValue, syncing)
+                    try {
+                        val fieldValue = it.value.getter(value)
+                        if (fieldValue != null)
+                            analysis.serializers[it.key]!!.value.write(buf, fieldValue, syncing)
+                    } catch (e: Throwable) {
+                        throw SerializerException("Error writing field ${it.value.name} to bytes", e)
+                    }
                 }
             } else {
                 analysis.nonPersistentFields.forEach {
-                    val fieldValue = it.value.getter(value)
-                    if (fieldValue != null)
-                        analysis.serializers[it.key]!!.value.write(buf, fieldValue, syncing)
+                    try {
+                        val fieldValue = it.value.getter(value)
+                        if (fieldValue != null)
+                            analysis.serializers[it.key]!!.value.write(buf, fieldValue, syncing)
+                    } catch (e: Throwable) {
+                        throw SerializerException("Error writing field ${it.value.name} to bytes", e)
+                    }
                 }
             }
         }
@@ -248,7 +321,7 @@ class SerializerAnalysis(val type: FieldType) {
                     type.clazz.declaredConstructors.find {
                         val paramsToFind = HashMap(fields)
                         val customParamNames = it.getDeclaredAnnotation(SavableConstructorOrder::class.java)?.params ?:
-                                it.kotlinFunction?.parameters?.map { it.name }?.toTypedArray()
+                        it.kotlinFunction?.parameters?.map { it.name }?.toTypedArray()
                         var i = 0
                         it.parameters.all {
                             val ret =
@@ -260,8 +333,8 @@ class SerializerAnalysis(val type: FieldType) {
                             ret
                         }
                     } ?:
-                            type.clazz.declaredConstructors.find { it.parameterCount == 0 } ?:
-                            throw SerializerException("Couldn't find zero-argument constructor or constructor with parameters (${fields.map { it.value.meta.type.toString() + " " + it.key }.joinToString(", ")}) for immutable type ${type.clazz.canonicalName}")
+                    type.clazz.declaredConstructors.find { it.parameterCount == 0 } ?:
+                    throw SerializerException("Couldn't find zero-argument constructor or constructor with parameters (${fields.map { it.value.meta.type.toString() + " " + it.key }.joinToString(", ")}) for immutable type ${type.clazz.canonicalName}")
                 }
         constructorArgOrder = constructor.getDeclaredAnnotation(SavableConstructorOrder::class.java)?.params?.asList() ?:
                 constructor.kotlinFunction?.parameters?.let { if (it.any { it.name == null }) null else it.map { it.name!! } } ?:

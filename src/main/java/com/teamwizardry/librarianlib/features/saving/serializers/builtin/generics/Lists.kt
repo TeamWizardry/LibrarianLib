@@ -15,6 +15,7 @@ import io.netty.buffer.ByteBuf
 import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagList
+import net.minecraftforge.fml.relauncher.ReflectionHelper
 
 /**
  * Created by TheCodeWarrior
@@ -32,7 +33,7 @@ object SerializeListFactory : SerializerFactory("List") {
     class SerializeList(type: FieldType, generic: FieldType) : Serializer<MutableList<Any?>>(type) {
 
         override fun getDefault(): MutableList<Any?> {
-            return mutableListOf()
+            return constructor()
         }
 
         val serGeneric: Serializer<Any> by SerializerRegistry.lazy(generic)
@@ -42,7 +43,7 @@ object SerializeListFactory : SerializerFactory("List") {
             val list = nbt.safeCast(NBTTagList::class.java)
 
             @Suppress("UNCHECKED_CAST")
-            val array = (existing ?: constructor())
+            val array = (existing ?: getDefault())
 
             while (array.size > list.tagCount())
                 array.removeAt(array.size - 1)
@@ -79,7 +80,7 @@ object SerializeListFactory : SerializerFactory("List") {
             val nullsig = buf.readBooleanArray()
 
             @Suppress("UNCHECKED_CAST")
-            val array = (existing ?: constructor())
+            val array = (existing ?: getDefault())
 
             while (array.size > nullsig.size)
                 array.removeAt(array.size - 1)
@@ -108,8 +109,13 @@ object SerializeListFactory : SerializerFactory("List") {
             if (type.clazz == List::class.java) {
                 return { mutableListOf<Any?>() }
             } else {
-                val mh = MethodHandleHelper.wrapperForConstructor<MutableList<Any?>>(type.clazz)
-                return { mh(arrayOf()) }
+                try {
+                    val mh = MethodHandleHelper.wrapperForConstructor<MutableList<Any?>>(type.clazz)
+                    return { mh(arrayOf()) }
+                } catch(e: ReflectionHelper.UnableToFindMethodException) {
+                    return { throw UnsupportedOperationException("Could not find zero-argument constructor for " +
+                            type.clazz.simpleName, e) }
+                }
             }
         }
     }

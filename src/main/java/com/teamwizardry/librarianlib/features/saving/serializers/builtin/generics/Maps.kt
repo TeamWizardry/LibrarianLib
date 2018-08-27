@@ -12,6 +12,7 @@ import io.netty.buffer.ByteBuf
 import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagList
+import net.minecraftforge.fml.relauncher.ReflectionHelper
 import java.util.*
 
 /**
@@ -29,7 +30,7 @@ object SerializeMapFactory : SerializerFactory("Map") {
 
     class SerializeMap(type: FieldType, val keyType: FieldType, val valueType: FieldType) : Serializer<MutableMap<Any?, Any?>>(type) {
         override fun getDefault(): MutableMap<Any?, Any?> {
-            return mutableMapOf()
+            return constructor()
         }
 
         val serKey: Serializer<Any> by SerializerRegistry.lazy(keyType)
@@ -39,7 +40,8 @@ object SerializeMapFactory : SerializerFactory("Map") {
 
         override fun readNBT(nbt: NBTBase, existing: MutableMap<Any?, Any?>?, syncing: Boolean): MutableMap<Any?, Any?> {
             val list = nbt.safeCast<NBTTagList>()
-            val map = constructor()
+            val map = existing ?: getDefault()
+            map.clear()
 
             list.forEach<NBTTagCompound> {
                 val keyTag = it.getTag("k")
@@ -72,7 +74,8 @@ object SerializeMapFactory : SerializerFactory("Map") {
         }
 
         override fun readBytes(buf: ByteBuf, existing: MutableMap<Any?, Any?>?, syncing: Boolean): MutableMap<Any?, Any?> {
-            val map = constructor()
+            val map = existing ?: getDefault()
+            map.clear()
 
             val count = buf.readVarInt()
             val nullKey = buf.readVarInt()
@@ -122,8 +125,13 @@ object SerializeMapFactory : SerializerFactory("Map") {
                 @Suppress("UNCHECKED_CAST")
                 return { RawTypeConstructors.createEnumMap(keyType.clazz) as MutableMap<Any?, Any?> }
             } else {
-                val mh = MethodHandleHelper.wrapperForConstructor<MutableMap<Any?, Any?>>(type.clazz)
-                return { mh(arrayOf()) }
+                try {
+                    val mh = MethodHandleHelper.wrapperForConstructor<MutableMap<Any?, Any?>>(type.clazz)
+                    return { mh(arrayOf()) }
+                } catch(e: ReflectionHelper.UnableToFindMethodException) {
+                    return { throw UnsupportedOperationException("Could not find zero-argument constructor for " +
+                            type.clazz.simpleName, e) }
+                }
             }
         }
     }
