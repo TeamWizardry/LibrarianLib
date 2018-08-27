@@ -10,6 +10,7 @@ import com.teamwizardry.librarianlib.features.network.PacketSpamlessMessage
 import net.minecraft.block.Block
 import net.minecraft.block.properties.IProperty
 import net.minecraft.block.state.IBlockState
+import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
@@ -34,6 +35,8 @@ import net.minecraft.world.World
 import net.minecraft.world.chunk.Chunk
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.ICapabilityProvider
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import net.minecraftforge.registries.IForgeRegistryEntry
 import java.lang.reflect.*
 import java.util.*
@@ -41,6 +44,10 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.starProjectedType
 import kotlin.reflect.jvm.kotlinFunction
+
+@Suppress("FunctionName")
+@SideOnly(Side.CLIENT)
+fun Minecraft(): Minecraft = Minecraft.getMinecraft()
 
 fun Int.abs() = if (this < 0) -this else this
 
