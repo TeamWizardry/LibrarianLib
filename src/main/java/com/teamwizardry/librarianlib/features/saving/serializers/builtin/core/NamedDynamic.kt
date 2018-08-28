@@ -146,7 +146,7 @@ object NamedDynamicRegistryManager {
                 bound = current
             if (current == clazz.superclass)
                 break
-            current = clazz.superclass
+            current = clazz.superclass ?: break
         }
         return bound
     }
