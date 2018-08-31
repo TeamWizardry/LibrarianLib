@@ -313,13 +313,36 @@ object SavingFieldCache {
         if (field.type.isPrimitive) meta.addFlag(SavingFieldFlag.NONNULL)
     }
 
-    fun wrap(property: KAnnotatedElement) = object : AnnotatedElement {
-        override fun getAnnotations() = property.annotations.toTypedArray()
-        override fun <T : Annotation> getAnnotation(annotationClass: Class<T>) =
-                annotations.firstOrNull { annotationClass.isInstance(it) }?.let { annotationClass.cast(it) }
-        override fun getDeclaredAnnotations() = annotations
+    fun wrapProperty(property: KProperty<*>): AnnotatedElement {
+        val backingField = property.javaField
+
+        var annotations = property.annotations
+        if (backingField != null)
+            annotations += backingField.annotations
+        annotations = annotations.toSet().toList()
+
+        var declaredAnnotations = annotations
+        if (backingField != null)
+            declaredAnnotations += backingField.declaredAnnotations
+        declaredAnnotations = declaredAnnotations.toSet().toList()
+
+        return object : AnnotatedElement {
+            override fun getAnnotations() = annotations.toTypedArray()
+            override fun <T : Annotation> getAnnotation(annotationClass: Class<T>) =
+                    annotations.firstOrNull { annotationClass.isInstance(it) }?.let { annotationClass.cast(it) }
+            override fun getDeclaredAnnotations() = declaredAnnotations.toTypedArray()
+        }
     }
 
+    fun wrap(annotated: KAnnotatedElement) =
+            if (annotated is KProperty<*>)
+                wrapProperty(annotated)
+            else object : AnnotatedElement {
+                override fun getAnnotations() = annotated.annotations.toTypedArray()
+                override fun <T : Annotation> getAnnotation(annotationClass: Class<T>) =
+                        annotations.firstOrNull { annotationClass.isInstance(it) }?.let { annotationClass.cast(it) }
+                override fun getDeclaredAnnotations() = annotations
+            }
 
     fun addAnnotationsForField(field: AnnotatedElement, meta: FieldMetadata) {
         field.declaredAnnotations.forEach {
