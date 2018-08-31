@@ -37,7 +37,7 @@ annotation class NotNullAcceptor
  * the data from syncing to clients, but still get saved to NBT. This does not apply to packets.
  * [NoSync] needs to be applied to both a setter and a getter in the case of method annotations.
  */
-@Target(FIELD, FUNCTION, PROPERTY_GETTER, PROPERTY_SETTER)
+@Target(FIELD, FUNCTION, PROPERTY_GETTER, PROPERTY_SETTER, PROPERTY)
 @MustBeDocumented
 annotation class NoSync
 
@@ -45,7 +45,7 @@ annotation class NoSync
  * Apply this to a field or function annotated with [Save] or [SaveMethodSetter]/[SaveMethodGetter] to prevent
  * the data from saved perminently, but still get synced to clients.
  */
-@Target(FIELD, FUNCTION, PROPERTY_GETTER, PROPERTY_SETTER)
+@Target(FIELD, FUNCTION, PROPERTY_GETTER, PROPERTY_SETTER, PROPERTY)
 @MustBeDocumented
 annotation class NonPersistent
 
@@ -136,7 +136,7 @@ annotation class NamedDynamic(val resourceLocation: String)
  * Apply this to a capability-containing field to have it be automatically provided (from TileMods) to the provided [sides]
  * and null. This will apply to all capability superinterfaces of the annotated field type.
  */
-@Target(FIELD)
+@Target(FIELD, PROPERTY)
 @MustBeDocumented
 annotation class CapabilityProvide(vararg val sides: EnumFacing)
 
@@ -146,6 +146,6 @@ annotation class CapabilityProvide(vararg val sides: EnumFacing)
  *
  * Apply this to a non-code-deterministic module to have it be automatically added to the modules of this tile entity.
  */
-@Target(FIELD)
+@Target(FIELD, PROPERTY)
 @MustBeDocumented
 annotation class Module
