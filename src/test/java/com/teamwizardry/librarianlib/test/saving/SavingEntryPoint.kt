@@ -33,4 +33,8 @@ object SavingBlockRegister {
     val extended = BlockExtendedSaving()
     val dynamic = BlockDynamicSaving()
     val nameddynamic = BlockNamedDynamicSaving()
+
+    init {
+        DynNamedWithIFace
+    }
 }
