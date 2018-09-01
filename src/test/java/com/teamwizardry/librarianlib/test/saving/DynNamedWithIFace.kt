@@ -1,10 +1,7 @@
 package com.teamwizardry.librarianlib.test.saving
 
 import com.teamwizardry.librarianlib.features.base.item.ItemMod
-import com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler
-import com.teamwizardry.librarianlib.features.saving.NamedDynamic
-import com.teamwizardry.librarianlib.features.saving.Savable
-import com.teamwizardry.librarianlib.features.saving.Save
+import com.teamwizardry.librarianlib.features.saving.*
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ActionResult
@@ -16,13 +13,13 @@ import java.util.*
 
 private val logger = LogManager.getLogger("DSI")
 
-object DynNamedWithIFace: ItemMod("dyn_named") {
+object DynNamedWithIFace : ItemMod("dyn_named") {
     override fun onItemRightClick(worldIn: World, playerIn: EntityPlayer, handIn: EnumHand): ActionResult<ItemStack> {
         val stack = playerIn.getHeldItem(handIn)
 
         if (!worldIn.isRemote) {
             if (!playerIn.isSneaking) testStuff(getDamage(stack))
-            else setDamage(stack, (getDamage(stack) + 1) % 3)
+            else setDamage(stack, (getDamage(stack) + 1) % 4)
         }
 
         return ActionResult.newResult(EnumActionResult.SUCCESS, stack)
@@ -70,6 +67,25 @@ object DynNamedWithIFace: ItemMod("dyn_named") {
                     val r = AbstractSaveHandler.readAutoNBT(read2, nbt2, false)
                     logger.warn("Read 2 : $read2 - $r")
                 }
+                3 -> {
+                    val nbt0 = AbstractSaveHandler.writeAutoNBT(Yolo5(CI()), false)
+                    logger.warn("Saved to : $nbt0") // FIXME: saving this before having saved with interface type causes stackoverflow. Workaround would be to call the savers below first.
+                    val nbt = AbstractSaveHandler.writeAutoNBT(Yolo4(CG()), false)
+                    logger.warn("Saved to : $nbt")
+                    val nbt2 = AbstractSaveHandler.writeAutoNBT(Yolo4(CH()), false)
+                    logger.warn("Saved 2 to : $nbt2")
+                    val nbt3 = AbstractSaveHandler.writeAutoNBT(Yolo4(CI()), false)
+                    logger.warn("Saved 2 to : $nbt3")
+                    val read = Yolo4(CG())
+                    AbstractSaveHandler.readAutoNBT(read, nbt, false)
+                    logger.warn("Read : $read")
+                    val read2 = Yolo4(CH())
+                    val r = AbstractSaveHandler.readAutoNBT(read2, nbt2, false)
+                    logger.warn("Read 2 : $read2 - $r")
+                    val read3 = Yolo4(CI())
+                    AbstractSaveHandler.readAutoNBT(read3, nbt3, false)
+                    logger.warn("Read 3 : $read3")
+                }
             }
         } catch (e: Exception) {
             logger.warn("Couldn't save nbt", e)
@@ -91,6 +107,12 @@ data class Yolo2(@Save var a: CA)
 data class Yolo3(@Save var a: CD)
 
 @Savable
+data class Yolo4(@Save var a: ID)
+
+@Savable
+data class Yolo5(@Save var a: CI)
+
+@Savable
 @NamedDynamic("dsi:ia")
 interface IA
 
@@ -100,39 +122,39 @@ interface IB
 
 @Savable
 @NamedDynamic("dsi:ic")
-interface IC: IA
+interface IC : IA
 
 @NamedDynamic("dsi:ea")
-enum class EA: IA {
+enum class EA : IA {
     A, B, C
 }
 
 @NamedDynamic("dsi:eb")
-enum class EB: IA, IB {
+enum class EB : IA, IB {
     D, E, F
 }
 
 @NamedDynamic("dsi:ec")
-enum class EC: IA, IC {
+enum class EC : IA, IC {
     G, H, I
 }
 
 @NamedDynamic("dsi:ed")
-enum class ED: IB {
+enum class ED : IB {
     J, K, L
 }
 
 @Savable
 @NamedDynamic("dsi:ca")
-abstract class CA: IA
+abstract class CA : IA
 
 @Savable
 @NamedDynamic("dsi:cb")
-class CB: IB, CA()
+class CB : IB, CA()
 
 @Savable
 @NamedDynamic("dsi:cc")
-class CC: CA()
+class CC : CA()
 
 @Savable
 @NamedDynamic("dsi:cd")
@@ -140,8 +162,24 @@ open class CD
 
 @Savable
 @NamedDynamic("dsi:ce")
-class CE: IB, CD()
+class CE : IB, CD()
 
 @Savable
 @NamedDynamic("dsi:cf")
-class CF: CD()
+class CF : CD()
+
+@Savable
+@NamedDynamic("dsi:id")
+interface ID
+
+@SaveInPlace
+@NamedDynamic("dsi:cg")
+class CG : ID
+
+@SaveInPlace
+@NamedDynamic("dsi:ch")
+class CH : ID
+
+@SaveInPlace
+@NamedDynamic("dsi:ci")
+class CI : ID
