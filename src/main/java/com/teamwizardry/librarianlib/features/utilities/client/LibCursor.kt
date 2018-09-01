@@ -1,18 +1,28 @@
 package com.teamwizardry.librarianlib.features.utilities.client
 
+import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.kotlin.toRl
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.TextureUtil
+import net.minecraft.client.resources.IReloadableResourceManager
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Cursor
 import java.nio.IntBuffer
 
 
-class LibCursor(rl: ResourceLocation, originX: Int, originY: Int) {
-    val lwjglCursor: Cursor
+class LibCursor(val resourceLocation: ResourceLocation, val originX: Int, val originY: Int) {
+    lateinit var lwjglCursor: Cursor
+        private set
 
     init {
-        val resource = Minecraft.getMinecraft().resourceManager.getResource(rl)
+        loadCursor()
+        (Minecraft().resourceManager as? IReloadableResourceManager)?.registerReloadListener {
+            loadCursor()
+        }
+    }
+
+    private fun loadCursor() {
+        val resource = Minecraft.getMinecraft().resourceManager.getResource(resourceLocation)
         val input = resource.inputStream
         val image = TextureUtil.readBufferedImage(input)
 
