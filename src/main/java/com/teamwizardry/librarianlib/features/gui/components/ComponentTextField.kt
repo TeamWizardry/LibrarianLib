@@ -25,15 +25,19 @@ import java.awt.Color
 @SideOnly(Side.CLIENT)
 class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int, width: Int, height: Int) : GuiComponent(x, y, width, height) {
 
+    constructor(x: Int, y: Int, width: Int, height: Int) : this(Minecraft.getMinecraft().fontRenderer, x, y, width, height)
+
     private var cursorCounter: Int = 0
     private var lineScrollOffset: Int = 0
 
     var text = ""
         set(value) {
             val max = maxStringLength.getValue(this)
-            field = if (value.length > max)
+            val trimmed = if (value.length > max)
                 value.substring(0, max)
             else value
+            val result = if (filter != null) filter?.invoke(trimmed) else trimmed
+            if (result != null) field = result
 
             if (text.isEmpty())
                 cursorToEnd()
@@ -42,6 +46,13 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
     val maxStringLength = Option<ComponentTextField, Int>(100)
     var canLoseFocus = Option<ComponentTextField, Boolean>(true)
     var autoFocus = Option<ComponentTextField, Boolean>(false)
+
+    /**
+     * Callback to filter input.
+     * Argument is the trimmed down String (according to [maxStringLength]).
+     * Output is the resulting String, or null to deny the change.
+     */
+    var filter: ((String) -> String?)? = null
 
     var isFocused: Boolean = false
         set(isFocused) {
