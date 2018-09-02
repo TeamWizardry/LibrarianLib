@@ -47,6 +47,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
     val canLoseFocus = Option<ComponentTextField, Boolean>(true)
     val autoFocus = Option<ComponentTextField, Boolean>(false)
     val useShadow = Option<ComponentTextField, Boolean>(true)
+    val useVanillaFilter = Option<ComponentTextField, Boolean>(true)
 
     /**
      * Callback to filter input.
@@ -110,7 +111,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
 
     fun writeText(textToWrite: String) {
 
-        val allowed = ChatAllowedCharacters.filterAllowedCharacters(textToWrite)
+        val allowed = if (useVanillaFilter(this)) ChatAllowedCharacters.filterAllowedCharacters(textToWrite)  else textToWrite
         val max = maxStringLength.getValue(this)
 
         val selectionStart = if (this.cursorPosition < this.selectionEnd) this.cursorPosition else this.selectionEnd
@@ -321,7 +322,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
                     BUS.fire(TextSentEvent(text))
                     return true
                 }
-                else -> if (ChatAllowedCharacters.isAllowedCharacter(input)) {
+                else -> if (!useVanillaFilter(this) || ChatAllowedCharacters.isAllowedCharacter(input)) {
                     if (this.isEnabled)
                         this.writeText(Character.toString(input))
 
