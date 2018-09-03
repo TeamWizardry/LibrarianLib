@@ -19,7 +19,7 @@ object DynNamedWithIFace : ItemMod("dyn_named") {
 
         if (!worldIn.isRemote) {
             if (!playerIn.isSneaking) testStuff(getDamage(stack))
-            else setDamage(stack, (getDamage(stack) + 1) % 4)
+            else setDamage(stack, (getDamage(stack) + 1) % 6)
         }
 
         return ActionResult.newResult(EnumActionResult.SUCCESS, stack)
@@ -86,6 +86,20 @@ object DynNamedWithIFace : ItemMod("dyn_named") {
                     AbstractSaveHandler.readAutoNBT(read3, nbt3, false)
                     logger.warn("Read 3 : $read3")
                 }
+                4 -> {
+                    val nbt = AbstractSaveHandler.writeAutoNBT(Yolo(EA.C), false)
+                    logger.warn("Saved to : $nbt")
+                    val read = Yolo(EA.A)
+                    AbstractSaveHandler.readAutoNBT(read, nbt, false)
+                    logger.warn("Read : $read")
+                }
+                5 -> {
+                    val nbt = AbstractSaveHandler.writeAutoNBT(Yolo6(EE.O), false)
+                    logger.warn("Saved to : $nbt")
+                    val read = Yolo6(EE.M)
+                    AbstractSaveHandler.readAutoNBT(read, nbt, false)
+                    logger.warn("Read : $read")
+                }
             }
         } catch (e: Exception) {
             logger.warn("Couldn't save nbt", e)
@@ -113,6 +127,9 @@ data class Yolo4(@Save var a: ID)
 data class Yolo5(@Save var a: CI)
 
 @Savable
+data class Yolo6(@Save var a: EE)
+
+@Savable
 @NamedDynamic("dsi:ia")
 interface IA
 
@@ -126,7 +143,13 @@ interface IC : IA
 
 @NamedDynamic("dsi:ea")
 enum class EA : IA {
-    A, B, C
+    A,
+    B,
+    C {
+        override fun toString(): String {
+            return super<EA>.toString()
+        }
+    }
 }
 
 @NamedDynamic("dsi:eb")
@@ -142,6 +165,14 @@ enum class EC : IA, IC {
 @NamedDynamic("dsi:ed")
 enum class ED : IB {
     J, K, L
+}
+
+enum class EE {
+    M, N, O {
+        override fun toString(): String {
+            return super.toString()
+        }
+    }
 }
 
 @Savable

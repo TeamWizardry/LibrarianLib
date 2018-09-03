@@ -23,12 +23,12 @@ annotation class FallbackEnumValue
 @SerializerFactoryRegister
 object SerializeEnumFactory : SerializerFactory("Enum") {
     override fun canApply(type: FieldType): SerializerFactoryMatch {
-        return if (type.clazz.isEnum) SerializerFactoryMatch.GENERAL else SerializerFactoryMatch.NONE
+        return if (type.clazz.isEnum || type.clazz.superclass?.isEnum == true) SerializerFactoryMatch.GENERAL else SerializerFactoryMatch.NONE
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun create(type: FieldType): Serializer<*> {
-        return SerializeEnum(type, (type.clazz.enumConstants as Array<Enum<*>>))
+        return SerializeEnum(type, (type.clazz.enumConstants as? Array<Enum<*>>?: ((type.clazz.superclass as Class<*>).enumConstants as Array<Enum<*>>)))
     }
 
     class SerializeEnum(type: FieldType, val constants: Array<Enum<*>>) : Serializer<Enum<*>>(type) {

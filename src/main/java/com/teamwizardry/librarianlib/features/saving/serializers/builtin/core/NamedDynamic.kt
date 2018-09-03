@@ -140,6 +140,18 @@ object NamedDynamicRegistryManager {
         return getUpperBounds(clazz).map { registries.getOrPut(it) { NamedDynamicRegistry(it) } }
     }
 
+    /*
+    fun getRegistries(clazz: Class<*>): List<NamedDynamicRegistry> {
+        var l = sequenceOf<NamedDynamicRegistry>()
+        if (clazz.isEnum) clazz.enumConstants.forEach {
+            val c = it::class.java
+            if (c != clazz) l += getRegistries(c)
+        }
+        l += getUpperBounds(clazz).map { registries.getOrPut(it) { NamedDynamicRegistry(it) } }
+        return l.toList()
+    }
+     */
+
     /**
      * Always use the class highest up the hierarchy that is annotated with @NamedDynamic. This is the "base type"
      */
@@ -213,9 +225,12 @@ object NamedDynamicRegistryManager {
 @AMPRegister
 object NamedDynamicRegisterProcessor : AnnotationMarkerProcessor<NamedDynamic, Any>(NamedDynamic::class.java) {
     override fun process(clazz: Class<Any>, annotation: NamedDynamic) {
-//        NamedDynamicRegistryManager.getRegistry(clazz).add(clazz, annotation.resourceLocation)
         NamedDynamicRegistryManager.getRegistries(clazz).forEach {
             it.add(clazz, annotation.resourceLocation)
+            if (clazz.isEnum) clazz.enumConstants.forEach { e ->
+                val c = e::class.java
+                if (c != clazz) it.add(c, annotation.resourceLocation + "\$$e")
+            }
         }
     }
 }
