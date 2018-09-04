@@ -77,7 +77,8 @@ object SavingFieldCache {
                         getFieldGetter(field),
                         getFieldSetter(field, type, name),
                         field.name)
-                appliedFields.add(field)
+                if (meta[SavingFieldFlag.ANNOTATED])
+                    appliedFields.add(field)
             }
         }
 
