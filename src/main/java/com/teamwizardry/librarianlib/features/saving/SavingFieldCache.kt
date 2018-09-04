@@ -67,7 +67,6 @@ object SavingFieldCache {
         val appliedFields = mutableSetOf<Field>()
 
         for (field in fields) {
-            appliedFields.add(field)
             val meta = createMetaForField(field, type)
             val name = getNameFromField(type, field)
             field.isAccessible = true
@@ -78,6 +77,7 @@ object SavingFieldCache {
                         getFieldGetter(field),
                         getFieldSetter(field, type, name),
                         field.name)
+                appliedFields.add(field)
             }
         }
 
