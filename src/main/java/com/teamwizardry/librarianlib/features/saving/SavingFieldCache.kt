@@ -64,35 +64,35 @@ object SavingFieldCache {
             clazz = clazz.superclass
         }
 
-        val appliedProperties = mutableSetOf<KProperty<*>>()
-
-        for (property in properties) {
-            val name = getNameFromProperty(type, property)
-
-            val meta = createMetaForProperty(property)
-
-            if (meta != null && meta.containsAny()) {
-                map.register(name, meta,
-                        getPropertyGetter(property),
-                        getPropertySetter(property, type, name),
-                        property.name)
-                appliedProperties.add(property)
-            }
-        }
+        val appliedFields = mutableSetOf<Field>()
 
         for (field in fields) {
-            if (appliedProperties.any { it.javaField == field })
-                continue
+            appliedFields.add(field)
+            val meta = createMetaForField(field, type)
             val name = getNameFromField(type, field)
             field.isAccessible = true
 
-            val meta = createMetaForField(field, type)
 
             if (meta.containsAny()) {
                 map.register(name, meta,
                         getFieldGetter(field),
                         getFieldSetter(field, type, name),
                         field.name)
+            }
+        }
+
+        for (property in properties) {
+            if (property.javaField in appliedFields)
+                continue
+
+            val meta = createMetaForProperty(property)
+            val name = getNameFromProperty(type, property)
+
+            if (meta != null && meta.containsAny()) {
+                map.register(name, meta,
+                        getPropertyGetter(property),
+                        getPropertySetter(property, type, name),
+                        property.name)
             }
         }
     }
@@ -112,7 +112,8 @@ object SavingFieldCache {
             }
         }, altName)
 
-        reserveName(name)
+        if (meta[SavingFieldFlag.ANNOTATED])
+            reserveName(name)
     }
 
     fun buildClassGetSetters(type: FieldType, map: MutableMap<String, FieldCache>) {
@@ -540,6 +541,11 @@ data class FieldMetadata(val type: FieldType, private var flagsInternal: Mutable
 
     val flags: Set<SavingFieldFlag>
         get() = flagsInternal
+
+    operator fun get(flag: SavingFieldFlag) = hasFlag(flag)
+    operator fun get(annotation: Class<*>) = hasAnnotation(annotation.javaClass)
+
+    operator fun set(flag: SavingFieldFlag, value: Boolean) = if (value) addFlag(flag) else removeFlag(flag)
 
     fun hasFlag(flag: SavingFieldFlag) = flags.contains(flag)
     fun containsAll(vararg list: SavingFieldFlag) = flags.containsAll(list.asList())
