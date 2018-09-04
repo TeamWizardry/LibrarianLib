@@ -12,7 +12,7 @@ class ComponentList(posX: Int, posY: Int, var rowHeight: Int) : GuiComponent(pos
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
         var y = 0
 
-        for (component in children) {
+        for (component in children.asSequence().filter(GuiComponent::isVisible)) {
             val h = rowHeight
             component.pos = vec(component.pos.x, y)
             y += h

@@ -53,7 +53,6 @@ object BlockPoweredMachine : BlockModDirectional("powered_machine", Material.IRO
 /**
  * The TileEntity for our [BlockPoweredMachine].
  */
-@Savable
 @TileRegister("te_powered_machine")
 class TEPoweredMachine : TileModInventoryTickable(2) {
 

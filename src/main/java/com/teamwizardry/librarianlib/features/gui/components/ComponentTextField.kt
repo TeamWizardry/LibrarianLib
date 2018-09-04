@@ -25,23 +25,36 @@ import java.awt.Color
 @SideOnly(Side.CLIENT)
 class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int, width: Int, height: Int) : GuiComponent(x, y, width, height) {
 
+    constructor(x: Int, y: Int, width: Int, height: Int) : this(Minecraft.getMinecraft().fontRenderer, x, y, width, height)
+
     private var cursorCounter: Int = 0
     private var lineScrollOffset: Int = 0
 
     var text = ""
         set(value) {
             val max = maxStringLength.getValue(this)
-            field = if (value.length > max)
+            val trimmed = if (value.length > max)
                 value.substring(0, max)
             else value
+            val result = if (filter != null) filter?.invoke(trimmed) else trimmed
+            if (result != null) field = result
 
             if (text.isEmpty())
                 cursorToEnd()
         }
 
     val maxStringLength = Option<ComponentTextField, Int>(100)
-    var canLoseFocus = Option<ComponentTextField, Boolean>(true)
-    var autoFocus = Option<ComponentTextField, Boolean>(false)
+    val canLoseFocus = Option<ComponentTextField, Boolean>(true)
+    val autoFocus = Option<ComponentTextField, Boolean>(false)
+    val useShadow = Option<ComponentTextField, Boolean>(true)
+    val useVanillaFilter = Option<ComponentTextField, Boolean>(true)
+
+    /**
+     * Callback to filter input.
+     * Argument is the trimmed down String (according to [maxStringLength]).
+     * Output is the resulting String, or null to deny the change.
+     */
+    var filter: ((String) -> String?)? = null
 
     var isFocused: Boolean = false
         set(isFocused) {
@@ -98,7 +111,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
 
     fun writeText(textToWrite: String) {
 
-        val allowed = ChatAllowedCharacters.filterAllowedCharacters(textToWrite)
+        val allowed = if (useVanillaFilter(this)) ChatAllowedCharacters.filterAllowedCharacters(textToWrite)  else textToWrite
         val max = maxStringLength.getValue(this)
 
         val selectionStart = if (this.cursorPosition < this.selectionEnd) this.cursorPosition else this.selectionEnd
@@ -309,7 +322,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
                     BUS.fire(TextSentEvent(text))
                     return true
                 }
-                else -> if (ChatAllowedCharacters.isAllowedCharacter(input)) {
+                else -> if (!useVanillaFilter(this) || ChatAllowedCharacters.isAllowedCharacter(input)) {
                     if (this.isEnabled)
                         this.writeText(Character.toString(input))
 
@@ -337,6 +350,10 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
             false
     }
 
+    private fun drawString(text: String, x: Float, y: Float, color: Int): Int {
+        return this.fontRenderer.drawString(text, x, y, color, useShadow(this))
+    }
+
     fun drawTextBox() {
         if (this.isVisible) {
             val max = maxStringLength.getValue(this)
@@ -354,7 +371,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
 
             if (!visible.isEmpty()) {
                 val toCursor = if (cursorVisible) visible.substring(0, cursorRelativePosition) else visible
-                offset = this.fontRenderer.drawStringWithShadow(toCursor, offset.toFloat(), y.toFloat(), textColor)
+                offset = this.drawString(toCursor, offset.toFloat(), y.toFloat(), textColor)
             }
 
             val cursorInText = this.cursorPosition < this.text.length || this.text.length >= max
@@ -366,14 +383,14 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
                 unselectedBound = --offset
 
             if (!visible.isEmpty() && cursorVisible && cursorRelativePosition < visible.length)
-                this.fontRenderer.drawStringWithShadow(visible.substring(cursorRelativePosition), offset.toFloat(), y.toFloat(), textColor)
+                this.drawString(visible.substring(cursorRelativePosition), offset.toFloat(), y.toFloat(), textColor)
 
             if (cursorBlinkActive)
                 if (cursorInText) {
                     Gui.drawRect(unselectedBound, y - 1, unselectedBound + 1, y + 2 + this.fontRenderer.FONT_HEIGHT, cursorColor.getValue(this).rgb)
                     GlStateManager.enableBlend()
                 } else
-                    this.fontRenderer.drawStringWithShadow("_", unselectedBound.toFloat(), (y + 1).toFloat(), textColor)
+                    this.drawString("_", unselectedBound.toFloat(), (y + 1).toFloat(), textColor)
 
             if (selectionEndPosition != cursorRelativePosition) {
                 val selectionX = x + this.fontRenderer.getStringWidth(visible.substring(0, selectionEndPosition))

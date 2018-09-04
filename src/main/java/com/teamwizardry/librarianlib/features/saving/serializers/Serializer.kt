@@ -46,10 +46,9 @@ abstract class Serializer<T : Any>(val type: FieldType) {
     protected abstract fun writeBytes(buf: ByteBuf, value: T, syncing: Boolean)
     abstract fun getDefault(): T
 
-
     fun read(nbt: NBTBase, existing: T?, syncing: Boolean): T {
         try {
-            return readNBT(nbt, existing, syncing)
+            return readNBT(nbt, if (this.type.clazz.isInstance(existing)) existing else null, syncing)
         } catch (e: Throwable) {
             throw SerializerException("[NBT] Error deserializing $type", e)
         }

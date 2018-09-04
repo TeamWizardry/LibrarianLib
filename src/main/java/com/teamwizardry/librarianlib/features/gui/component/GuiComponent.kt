@@ -103,12 +103,12 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
     /**
      * Whether this component should be drawn or have events fire
      */
-    var isVisible = true
+    open var isVisible = true
 
     /**
      * Returns true if this component is invalid and it should be removed from its parent
      */
-    var isInvalid = false
+    open var isInvalid = false
         protected set
 
     /**
