@@ -64,7 +64,9 @@ interface IComponentRender {
  *
  * Created by TheCodeWarrior
  */
-class ComponentRenderHandler(private val component: GuiComponent): IComponentRender {
+class ComponentRenderHandler: IComponentRender {
+    lateinit var component: GuiComponent
+
     override var tooltip: Option<GuiComponent, List<String>?> = Option(null)
     override var tooltipFont: FontRenderer? = null
     /**

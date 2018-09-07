@@ -59,7 +59,9 @@ interface IComponentRelationship {
  *
  * Created by TheCodeWarrior
  */
-open class ComponentRelationshipHandler(private val component: GuiComponent): IComponentRelationship {
+open class ComponentRelationshipHandler: IComponentRelationship {
+    lateinit var component: GuiComponent
+
     /** [GuiComponent.zIndex] */
     override var zIndex = 0
     internal val components = mutableListOf<GuiComponent>()

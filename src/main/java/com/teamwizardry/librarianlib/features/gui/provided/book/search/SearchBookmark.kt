@@ -18,7 +18,7 @@ class SearchBookmark : Bookmark {
             c = ComponentSearchBar(book, bookmarkIndex, TFIDFSearch(book).textBoxConsumer(book) { SearchResults(book.book, it) })
             component = c
         } else
-            c.parent = null
+            c.relationships.parent = null
 
         return c
     }

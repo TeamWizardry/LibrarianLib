@@ -55,7 +55,58 @@ import net.minecraftforge.fml.relauncher.SideOnly
  *
  */
 @SideOnly(Side.CLIENT)
-abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, width: Int = 0, height: Int = 0) {
+abstract class GuiComponent private constructor(
+    posX: Int, posY: Int, width: Int, height: Int,
+    /** Use this for advanced data manipulation and querying */
+    @JvmField
+    val data: ComponentDataHandler = ComponentDataHandler(),
+    /** Use this for advanced tag manipulation and querying */
+    @JvmField
+    val tags: ComponentTagHandler = ComponentTagHandler(),
+    /** Use this for advanced geometry manipulation and querying */
+    @JvmField
+    val geometry: ComponentGeometryHandler = ComponentGeometryHandler(),
+    /** Use this for advanced parent-child relationship manipulation and querying */
+    @JvmField
+    val relationships: ComponentRelationshipHandler = ComponentRelationshipHandler(),
+    /** Use this for advanced rendering manipulation and querying */
+    @JvmField
+    val render: ComponentRenderHandler = ComponentRenderHandler(),
+    /** Internal handler for GUI events (mouse click, key press, etc.) */
+    @JvmField
+    val guiEventHandler: ComponentGuiEventHandler = ComponentGuiEventHandler(),
+    /** Use this to configure clipping */
+    @JvmField
+    val clipping: ComponentClippingHandler = ComponentClippingHandler()
+)
+    : IComponentData by data, IComponentTag by tags, IComponentGeometry by geometry,
+    IComponentRelationship by relationships, IComponentRender by render, IComponentGuiEvent by guiEventHandler,
+    IComponentClipping by clipping
+{
+    @JvmOverloads constructor(posX: Int, posY: Int, width: Int = 0, height: Int = 0): this(
+        posX, posY, width, height,
+        ComponentDataHandler(),
+        ComponentTagHandler(),
+        ComponentGeometryHandler(),
+        ComponentRelationshipHandler(),
+        ComponentRenderHandler(),
+        ComponentGuiEventHandler(),
+        ComponentClippingHandler()
+    )
+
+    init {
+        @Suppress("LeakingThis")
+        {
+            data.component = this
+            tags.component = this
+            geometry.component = this
+            relationships.component = this
+            render.component = this
+            guiEventHandler.component = this
+            clipping.component = this
+        }()
+    }
+
     /**
      * Draws the component, this is called between pre and post draw events.
      *
@@ -65,37 +116,6 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
      * - GL_COLOR - (1, 1, 1, 1)
      */
     open fun drawComponent(mousePos: Vec2d, partialTicks: Float) {}
-
-    //region - Handlers
-    /** Use this for advanced data manipulation and querying */
-    @Suppress("LeakingThis")
-    @JvmField
-    val data = ComponentDataHandler(this)
-    /** Use this for advanced tag manipulation and querying */
-    @Suppress("LeakingThis")
-    @JvmField
-    val tags = ComponentTagHandler(this)
-    /** Use this for advanced geometry manipulation and querying */
-    @Suppress("LeakingThis")
-    @JvmField
-    val geometry = ComponentGeometryHandler(this)
-    /** Use this for advanced parent-child relationship manipulation and querying */
-    @Suppress("LeakingThis")
-    @JvmField
-    val relationships = ComponentRelationshipHandler(this)
-    /** Use this for advanced rendering manipulation and querying */
-    @Suppress("LeakingThis")
-    @JvmField
-    val render = ComponentRenderHandler(this)
-    /** Internal handler for GUI events (mouse click, key press, etc.) */
-    @Suppress("LeakingThis")
-    @JvmField
-    val guiEventHandler = ComponentGuiEventHandler(this)
-    /** Use this to configure clipping */
-    @Suppress("LeakingThis")
-    @JvmField
-    val clipping = ComponentClippingHandler(this)
-    //endregion
 
     //region - Base component stuff
     @JvmField
@@ -120,159 +140,12 @@ abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, widt
     }
     //endregion
 
-    //region - GeometryHandler
-    /**
-     * The position of the component relative to its parent. This is the first operation performed by [transform]
-     */
-    var pos
-            by geometry.transform::translate.delegate
-    /**
-     * The size of the in the local context
-     */
-    var size
-            by geometry::size.delegate
-    /**
-     * The transformations to apply to this component
-     */
-    val transform
-            by geometry::transform.delegate
-
-    /**
-     * Whether the mouse is over this component. For one that ignores other components being in the way look at
-     * [ComponentGeometryHandler.mouseOverNoOcclusion]
-     */
-    var mouseOver
-            by geometry::mouseOver.delegate
-
-    /**
-     * Takes [pos], which is in our context (coordinate space), and transforms it to our parent's context
-     *
-     * [pos] defaults to (0, 0)
-     */
-    fun transformToParentContext(pos: Vec2d = Vec2d.ZERO)
-            = geometry.transformToParentContext(pos)
-
-    /**
-     * Transforms [pos] (`Vec2d.ZERO` by default) in our context into `other`'s context (or the root context if null)
-     */
-    @JvmOverloads
-    fun thisPosToOtherContext(other: GuiComponent?, pos: Vec2d = Vec2d.ZERO)
-            = geometry.thisPosToOtherContext(other, pos)
 
     /**
      * Transforms [pos] from `other`'s context (or the root context if null) to our context
      */
     fun otherPosToThisContext(other: GuiComponent?, pos: Vec2d)
-            = geometry.thisPosToOtherContext(other, pos)
-    //endregion
-
-    //region - RelationshipHandler
-    /**
-     * The sorting factor for the ordering of components for rendering. Higher = later
-     */
-    var zIndex
-            by relationships::zIndex.delegate
-    /**
-     * Gets the root component
-     */
-    val root
-            by relationships::root.delegate
-    /**
-     * An unmodifiable collection of all the direct children of this component
-     */
-    val children
-            by relationships::children.delegate
-    /**
-     * The parent of this component, or null if it has no parent
-     */
-    var parent
-            by relationships::parent.delegate
-
-    fun add(vararg children: GuiComponent)
-            = relationships.add(*children)
-    //endregion
-
-    //region - TagHandler
-    /**
-     * Do not use this to check if a component has a tag, as event hooks can add virtual tags to components. Use [hasTag] instead.
-     *
-     * Returns an unmodifiable set of all the tags this component has.
-     *
-     * You should use [addTag] and [removeTag] to modify the tag set.
-     */
-    val tagList: MutableSet<Any>
-            by tags::tagList.delegate
-
-    /**
-     * Adds the passed tag to this component if it doesn't already have it.
-     * @return true if the tag didn't exist and was added
-     */
-    fun addTag(tag: Any)
-            = tags.addTag(tag)
-
-    /**
-     * Removes the passed tag to this component if it doesn't already have it.
-     * @return true if the tag existed and was removed
-     */
-    fun removeTag(tag: Any)
-            = tags.removeTag(tag)
-
-    /**
-     * Adds or removes the passed tag to this component if it isn't already in the correct state.
-     * If [shouldHave] is true this method will add the tag if it doesn't exist, if it is false
-     * this method will remove the tag if it does exist
-     * @param tag The tag to add or remove
-     * @param shouldHave The target state for [hasTag] after calling this method
-     * @return True if the tag was added or removed
-     */
-    fun setTag(tag: Any, shouldHave: Boolean)
-            = tags.setTag(tag, shouldHave)
-
-    /**
-     * Checks if the component has the tag specified.
-     */
-    fun hasTag(tag: Any)
-            = tags.hasTag(tag)
-    //endregion
-
-    //region - DataHandler
-    /**
-     * Sets the value associated with the pair of keys [clazz] and [key]. The value must be a subclass of [clazz]
-     */
-    fun <D : Any> setData(clazz: Class<D>, key: String, value: D)
-            = data.setData(clazz, key, value)
-
-    /**
-     * Removes the value associated with the pair of keys [clazz] and [key]
-     */
-    fun <D : Any> removeData(clazz: Class<D>, key: String)
-            = data.removeData(clazz, key)
-
-    /**
-     * Returns the value associated with the pair of keys [clazz] and [key] if it exists, else it returns null.
-     * The value will be an instance of [clazz]
-     */
-    fun <D : Any> getData(clazz: Class<D>, key: String)
-            = data.getData(clazz, key)
-
-    /**
-     * Checks if there is a value associated with the pair of keys [clazz] and [key]
-     */
-    fun <D : Any> hasData(clazz: Class<D>, key: String)
-            = data.hasData(clazz, key)
-    //endregion
-
-    //region - RenderHandler
-    /**
-     * The animator for this component. Generally stored in the root component
-     */
-    var animator by render::animator.delegate
-
-    /**
-     * Add the passed animations to this component's animator
-     */
-    fun add(vararg animations: Animation<*>) = render.add(*animations)
-    //endregion
+        = geometry.thisPosToOtherContext(other, pos)
 
     //region - Internal
     init {

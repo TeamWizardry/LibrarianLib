@@ -52,7 +52,8 @@ interface IComponentClipping {
  *
  * Created by TheCodeWarrior
  */
-class ComponentClippingHandler(val component: GuiComponent): IComponentClipping {
+class ComponentClippingHandler: IComponentClipping {
+    lateinit var component: GuiComponent
 
     /**
      * If true, clip component and its context to within its bounds. When this is set and both [clippingSprite] and

@@ -5,6 +5,8 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import java.util.*
 
 interface IComponentTag {
+    val tagList: MutableSet<Any>
+
     /** [GuiComponent.addTag] */
     fun addTag(tag: Any): Boolean
 
@@ -38,11 +40,13 @@ interface IComponentTag {
  *
  * Created by TheCodeWarrior
  */
-class ComponentTagHandler(private val component: GuiComponent): IComponentTag {
+class ComponentTagHandler: IComponentTag {
+    lateinit var component: GuiComponent
+
     private var tagStorage: MutableSet<Any> = HashSet()
 
     /** [GuiComponent.tagList] */
-    internal val tagList = Collections.unmodifiableSet<Any>(tagStorage)!!
+    override val tagList = Collections.unmodifiableSet<Any>(tagStorage)!!
 
     /** [GuiComponent.addTag] */
     override fun addTag(tag: Any): Boolean {

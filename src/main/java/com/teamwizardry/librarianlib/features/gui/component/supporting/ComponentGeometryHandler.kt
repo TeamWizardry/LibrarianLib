@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.gui.component.supporting
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.kotlin.delegate
 import com.teamwizardry.librarianlib.features.math.Matrix4
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
@@ -75,7 +76,9 @@ interface IComponentGeometry {
  *
  * Created by TheCodeWarrior
  */
-open class ComponentGeometryHandler(private val component: GuiComponent): IComponentGeometry {
+open class ComponentGeometryHandler: IComponentGeometry {
+    lateinit var component: GuiComponent
+
     /** [GuiComponent.transform] */
     override val transform = ComponentTransform()
     /** [GuiComponent.size] */
@@ -182,7 +185,7 @@ open class ComponentGeometryHandler(private val component: GuiComponent): ICompo
             component.relationships.components.asReversed().forEach { child ->
                 child.geometry.calculateMouseOver(transformPos)
                 if (occludeChildren) {
-                    child.mouseOver = false // occlude the child position
+                    child.geometry.mouseOver = false // occlude the child position
                 }
                 if (child.mouseOver && child.geometry.componentOccludesMouseOver) {
                     // occlude all siblings below this component

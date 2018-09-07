@@ -53,7 +53,9 @@ interface IComponentData {
  *
  * Created by TheCodeWarrior
  */
-class ComponentDataHandler(private val component: GuiComponent): IComponentData {
+class ComponentDataHandler: IComponentData {
+    lateinit var component: GuiComponent
+
     private val data: MutableMap<Class<*>, MutableMap<String, Any>> = mutableMapOf()
 
     /**

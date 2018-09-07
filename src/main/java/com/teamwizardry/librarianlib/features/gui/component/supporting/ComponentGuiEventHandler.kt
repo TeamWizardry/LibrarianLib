@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import org.lwjgl.input.Keyboard
 
-interface IComponentGuiEventHandler {
+interface IComponentGuiEvent {
     fun tick()
     /**
      * Called when the mouse is pressed.
@@ -63,7 +63,9 @@ interface IComponentGuiEventHandler {
  *
  * Created by TheCodeWarrior
  */
-class ComponentGuiEventHandler(private val component: GuiComponent): IComponentGuiEventHandler {
+class ComponentGuiEventHandler: IComponentGuiEvent {
+    lateinit var component: GuiComponent
+
     internal var mouseButtonsDownInside = arrayOfNulls<Vec2d?>(EnumMouseButton.values().size)
     internal var mouseButtonsDownOutside = arrayOfNulls<Vec2d?>(EnumMouseButton.values().size)
     internal var keysDown: MutableMap<Key, Boolean> = HashMap<Key, Boolean>().withDefault { false }
