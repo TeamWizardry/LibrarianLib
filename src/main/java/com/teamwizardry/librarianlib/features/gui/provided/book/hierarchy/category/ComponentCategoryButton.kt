@@ -31,7 +31,7 @@ class ComponentCategoryButton(posX: Int, posY: Int, width: Int, height: Int, boo
             GlStateManager.color(1f, 1f, 1f)
         }
 
-        render.tooltip.func {
+        tooltip.func {
             val list = mutableListOf<String>()
             category.title?.add(list)
             category.desc?.addDynamic(list)
@@ -45,8 +45,8 @@ class ComponentCategoryButton(posX: Int, posY: Int, width: Int, height: Int, boo
         circleWipe.transform.translateZ = 100.0
         add(circleWipe)
 
-        circleWipe.clipping.clipToBounds = true
-        circleWipe.clipping.customClipping = {
+        circleWipe.clipToBounds = true
+        circleWipe.customClipping = {
             GlStateManager.disableTexture2D()
             GlStateManager.disableCull()
             val tessellator = Tessellator.getInstance()

@@ -24,8 +24,8 @@ class GuiTestStencilSprite : GuiBase(0, 0) {
         wrapper.add(clipping)
         clipping.add(clipped)
 
-        clipping.clipping.clipToBounds = true
-        clipping.clipping.clippingSprite = Sprite("minecraft:textures/items/diamond_sword.png".toRl())
+        clipping.clipToBounds = true
+        clipping.clippingSprite = Sprite("minecraft:textures/items/diamond_sword.png".toRl())
 
         mainComponents.add(wrapper)
     }

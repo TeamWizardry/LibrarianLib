@@ -25,7 +25,7 @@ class GuiTestScale : GuiBase(100, 100) {
         val bg = ComponentRect(25, 25, 50, 50)
         bg.color.setValue(Color.GREEN)
         val scissor = ComponentVoid(5, 5, 30, 30)
-        scissor.clipping.clipToBounds = true
+        scissor.clipToBounds = true
         scissor.add(c)
         bg.add(scissor)
         p.add(bg)

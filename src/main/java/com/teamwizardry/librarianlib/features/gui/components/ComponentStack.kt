@@ -44,7 +44,7 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 1
 
             if (mouseOver && enableTooltip.getValue(this)) {
                 val font = stack.item.getFontRenderer(stack)
-                render.setTooltip(getTooltip(stack) { itemInfo.fireAll { h -> h(this, it) } },
+                setTooltip(getTooltip(stack) { itemInfo.fireAll { h -> h(this, it) } },
                         font ?: Minecraft.getMinecraft().fontRenderer)
             }
         }

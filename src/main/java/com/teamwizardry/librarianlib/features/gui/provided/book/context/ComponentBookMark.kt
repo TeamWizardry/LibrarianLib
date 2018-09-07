@@ -27,7 +27,7 @@ open class ComponentBookMark(val book: IBookGui, val icon: Sprite, val id: Int, 
     val bar: ComponentSprite
 
     init {
-        clipping.clipToBounds = true
+        clipToBounds = true
 
         animX = (-box.width + 20).toDouble()
 

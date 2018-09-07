@@ -57,27 +57,13 @@ import net.minecraftforge.fml.relauncher.SideOnly
 @SideOnly(Side.CLIENT)
 abstract class GuiComponent private constructor(
     posX: Int, posY: Int, width: Int, height: Int,
-    /** Use this for advanced data manipulation and querying */
-    @JvmField
-    val data: ComponentDataHandler = ComponentDataHandler(),
-    /** Use this for advanced tag manipulation and querying */
-    @JvmField
-    val tags: ComponentTagHandler = ComponentTagHandler(),
-    /** Use this for advanced geometry manipulation and querying */
-    @JvmField
-    val geometry: ComponentGeometryHandler = ComponentGeometryHandler(),
-    /** Use this for advanced parent-child relationship manipulation and querying */
-    @JvmField
-    val relationships: ComponentRelationshipHandler = ComponentRelationshipHandler(),
-    /** Use this for advanced rendering manipulation and querying */
-    @JvmField
-    val render: ComponentRenderHandler = ComponentRenderHandler(),
-    /** Internal handler for GUI events (mouse click, key press, etc.) */
-    @JvmField
-    val guiEventHandler: ComponentGuiEventHandler = ComponentGuiEventHandler(),
-    /** Use this to configure clipping */
-    @JvmField
-    val clipping: ComponentClippingHandler = ComponentClippingHandler()
+    internal val data: ComponentDataHandler = ComponentDataHandler(),
+    internal val tags: ComponentTagHandler = ComponentTagHandler(),
+    internal val geometry: ComponentGeometryHandler = ComponentGeometryHandler(),
+    internal val relationships: ComponentRelationshipHandler = ComponentRelationshipHandler(),
+    internal val render: ComponentRenderHandler = ComponentRenderHandler(),
+    internal val guiEventHandler: ComponentGuiEventHandler = ComponentGuiEventHandler(),
+    internal val clipping: ComponentClippingHandler = ComponentClippingHandler()
 )
     : IComponentData by data, IComponentTag by tags, IComponentGeometry by geometry,
     IComponentRelationship by relationships, IComponentRender by render, IComponentGuiEvent by guiEventHandler,

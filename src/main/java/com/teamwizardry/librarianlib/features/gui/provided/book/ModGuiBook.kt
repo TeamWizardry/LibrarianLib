@@ -91,7 +91,7 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
 
         indexButton.BUS.hook(GuiComponentEvents.MouseOutEvent::class.java) { textComponent.text.setValue(TextFormatting.RESET.toString() + title) }
 
-        indexButton.render.tooltip.func {
+        indexButton.tooltip.func {
             val list = mutableListOf<String>()
             entry.title?.add(list)
             entry.desc?.addDynamic(list)

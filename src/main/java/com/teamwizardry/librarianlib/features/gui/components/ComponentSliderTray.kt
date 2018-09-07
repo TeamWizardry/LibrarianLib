@@ -16,7 +16,7 @@ class ComponentSliderTray(posX: Int, posY: Int, internal var offsetX: Int, inter
     internal var rootPos: Vec2d
 
     init {
-        geometry.shouldCalculateOwnHover = false
+        shouldCalculateOwnHover = false
         tickStart = ClientTickHandler.ticks
         this.currentOffsetX = pos.x.toFloat()
         rootPos = pos

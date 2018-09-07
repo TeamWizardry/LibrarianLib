@@ -28,7 +28,7 @@ class GuiTestScissor : GuiBase(100, 100) {
         c.transform.scale = 2.0
         scissor.add(c2)
         scissor.add(c3)
-        scissor.clipping.clipToBounds = true
+        scissor.clipToBounds = true
 
 //        scissor.BUS.hook(GuiComponentEvents.ComponentTickEvent::class.java) {
 //            val progress = (scissor.animationTicks % 100)/100.0

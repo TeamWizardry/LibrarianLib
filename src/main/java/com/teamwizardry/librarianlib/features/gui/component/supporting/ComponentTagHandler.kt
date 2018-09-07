@@ -114,10 +114,10 @@ class ComponentTagHandler: IComponentTag {
 
     private fun addAllByTag(tag: Any, list: MutableList<GuiComponent>) {
         addByTag(tag, list)
-        component.relationships.components.forEach { it.tags.addAllByTag(tag, list) }
+        component.children.forEach { it.tags.addAllByTag(tag, list) }
     }
 
     private fun addByTag(tag: Any, list: MutableList<GuiComponent>) {
-        component.relationships.components.filterTo(list) { it.hasTag(tag) }
+        component.children.filterTo(list) { it.hasTag(tag) }
     }
 }

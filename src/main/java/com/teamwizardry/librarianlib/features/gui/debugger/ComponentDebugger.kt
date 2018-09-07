@@ -54,7 +54,7 @@ class ComponentDebugger : GuiComponent(0, 0, 0, 0) {
     fun flattenDepth(e: GuiComponentEvents.PreDrawEvent) {
         GlStateManager.depthFunc(GL_ALWAYS)
         GlStateManager.colorMask(false, false, false, false)
-        flatten.render.draw(Vec2d.ZERO, 0f)
+        flatten.draw(Vec2d.ZERO, 0f)
         GlStateManager.colorMask(true, true, true, true)
         GlStateManager.depthFunc(GL_LEQUAL)
     }

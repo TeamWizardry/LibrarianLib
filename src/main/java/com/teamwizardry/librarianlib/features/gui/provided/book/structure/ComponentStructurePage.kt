@@ -101,7 +101,7 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
         }
 
         val drawPlatform = ComponentVoid(0, 0, size.xi, size.yi)
-        drawPlatform.clipping.clipToBounds = true
+        drawPlatform.clipToBounds = true
         drawPlatform.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) { event ->
             if (event.component.isVisible) {
                 if (failed()) {

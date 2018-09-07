@@ -45,6 +45,8 @@ interface IComponentClipping {
      * !!WARNING!! This method MUST be able to run twice in a frame without any changes to the rendering. The first time creates the mask, the second time deletes it.
      */
     var customClipping: (() -> Unit)?
+
+    fun isPointClipped(point: Vec2d): Boolean
 }
 
 /**
@@ -229,11 +231,11 @@ class ComponentClippingHandler: IComponentClipping {
         Tessellator.getInstance().draw()
     }
 
-    internal fun isPointClipped(point: Vec2d): Boolean {
+    override fun isPointClipped(point: Vec2d): Boolean {
         if(clippingSprite != null || customClipping != null) return false // we can't clip these
 
         if(clipToBounds) {
-            val size = component.geometry.size
+            val size = component.size
             if (point.x < 0 || point.x > size.x ||
                     point.y < 0 || point.y > size.y) {
                 return true

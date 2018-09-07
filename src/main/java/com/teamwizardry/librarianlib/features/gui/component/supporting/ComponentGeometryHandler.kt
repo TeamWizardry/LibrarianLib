@@ -134,7 +134,7 @@ open class ComponentGeometryHandler: IComponentGeometry {
     override fun otherContextToThisContext(other: GuiComponent?): Matrix4 {
         if (other == null)
             return thisContextToOtherContext(null).invert()
-        return other.geometry.thisContextToOtherContext(component)
+        return other.thisContextToOtherContext(component)
     }
 
     /**
@@ -152,7 +152,7 @@ open class ComponentGeometryHandler: IComponentGeometry {
             transform.apply(matrix)
             return matrix
         }
-        val mat = other.geometry.thisContextToOtherContext(null).invert()
+        val mat = other.thisContextToOtherContext(null).invert()
         mat *= thisContextToOtherContext(null)
         return mat
     }
@@ -179,28 +179,28 @@ open class ComponentGeometryHandler: IComponentGeometry {
         var occludeChildren = false
         var occludeSelf = false
 
-        if (!component.isVisible || component.clipping.isPointClipped(transformPos)) {
+        if (!component.isVisible || component.isPointClipped(transformPos)) {
             this.propagateClippedMouseOver()
         } else {
-            component.relationships.components.asReversed().forEach { child ->
+            component.children.asReversed().forEach { child ->
                 child.geometry.calculateMouseOver(transformPos)
                 if (occludeChildren) {
                     child.geometry.mouseOver = false // occlude the child position
                 }
-                if (child.mouseOver && child.geometry.componentOccludesMouseOver) {
+                if (child.mouseOver && child.componentOccludesMouseOver) {
                     // occlude all siblings below this component
                     occludeChildren = true
-                    if(!child.geometry.componentPropagatesMouseOverToParent) {
+                    if(!child.componentPropagatesMouseOverToParent) {
                         // if the component occludes and also doesn't pass the mouseover up the chain, set a flag to
                         // make the parent component's mouseover occlude
                         occludeSelf = true
                     }
                 }
-                if (child.mouseOver && child.geometry.componentPropagatesMouseOverToParent) {
+                if (child.mouseOver && child.componentPropagatesMouseOverToParent) {
                     // propagate the mouseOver of children up to this, their parent
                     mouseOver = true
                 }
-                if (child.geometry.mouseOverNoOcclusion && child.geometry.componentPropagatesMouseOverToParent) {
+                if (child.mouseOverNoOcclusion && child.componentPropagatesMouseOverToParent) {
                     // propagate the non-occluded mouseover to this component
                     mouseOverNoOcclusion = true
                 }
@@ -223,7 +223,7 @@ open class ComponentGeometryHandler: IComponentGeometry {
     private fun propagateClippedMouseOver() {
         this.mouseOver = false
         this.mouseOverNoOcclusion = false
-        component.relationships.components.forEach { child -> child.geometry.propagateClippedMouseOver() }
+        component.children.forEach { child -> child.geometry.propagateClippedMouseOver() }
     }
 
     /**
@@ -231,7 +231,7 @@ open class ComponentGeometryHandler: IComponentGeometry {
      */
     fun calculateOwnHover(mousePos: Vec2d): Boolean {
         val transformPos = transformFromParentContext(mousePos)
-        return !component.clipping.isPointClipped(transformPos) &&
+        return !component.isPointClipped(transformPos) &&
                 transformPos.x >= 0 && transformPos.x <= size.x &&
                 transformPos.y >= 0 && transformPos.y <= size.y
     }

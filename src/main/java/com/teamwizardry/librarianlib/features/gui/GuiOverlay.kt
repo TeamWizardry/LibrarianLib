@@ -71,7 +71,7 @@ object GuiOverlay {
 
         StencilUtil.clear()
         GL11.glEnable(GL11.GL_STENCIL_TEST)
-        mainComp.render.draw(mainComp.size / 2, ClientTickHandler.partialTicks)
+        mainComp.draw(mainComp.size / 2, ClientTickHandler.partialTicks)
         GL11.glDisable(GL11.GL_STENCIL_TEST)
     }
 
@@ -82,7 +82,7 @@ object GuiOverlay {
             it.reinit(mainComp)
         }
         newlyRegistered.clear()
-        mainComp.guiEventHandler.tick()
+        mainComp.tick()
     }
 
     private class ComponentVisiblePredicate(val predicate: BooleanSupplier) : GuiComponent(0, 0) {

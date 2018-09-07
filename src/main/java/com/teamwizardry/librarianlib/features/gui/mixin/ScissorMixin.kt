@@ -6,7 +6,7 @@ object ScissorMixin {
 
     @Deprecated("Use ", replaceWith = ReplaceWith("component.clipping.clipToBounds = true"))
     fun scissor(component: GuiComponent) {
-        component.clipping.clipToBounds = true
+        component.clipToBounds = true
     }
 
 }

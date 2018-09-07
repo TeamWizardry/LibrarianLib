@@ -43,7 +43,7 @@ class ComponentSearchBar(book: IBookGui, id: Int, onType: ((String) -> Unit)?) :
         textField.autoFocus.setValue(true)
         add(textField)
 
-        clipping.clipToBounds = true
+        clipToBounds = true
 
         BUS.hook(GuiComponentEvents.MouseInEvent::class.java) {
             if (!textField.isFocused) {

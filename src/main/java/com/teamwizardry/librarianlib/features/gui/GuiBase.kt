@@ -27,14 +27,14 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
 //    protected var left: Int = 0
 
     init {
-        mainComponents.geometry.shouldCalculateOwnHover = false
-        fullscreenComponents.geometry.shouldCalculateOwnHover = false
+        mainComponents.shouldCalculateOwnHover = false
+        fullscreenComponents.shouldCalculateOwnHover = false
         mainScaleWrapper.zIndex = -100000 // really far back
         fullscreenComponents.add(mainScaleWrapper)
         mainScaleWrapper.add(mainComponents)
 
         mainComponents.size = vec(guiWidth, guiHeight)
-        debugger.geometry.shouldCalculateOwnHover = false
+        debugger.shouldCalculateOwnHover = false
     }
 
     override fun initGui() {
@@ -95,43 +95,43 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         }
 
         fullscreenComponents.geometry.calculateMouseOver(relPos)
-        fullscreenComponents.render.draw(relPos, partialTicks)
-        fullscreenComponents.render.drawLate(relPos, partialTicks)
+        fullscreenComponents.draw(relPos, partialTicks)
+        fullscreenComponents.drawLate(relPos, partialTicks)
 
         GlStateManager.popMatrix()
 
         if (isDebugMode) {
             debugger.geometry.calculateMouseOver(relPos)
-            debugger.render.draw(relPos, partialTicks)
-            debugger.render.drawLate(relPos, partialTicks)
+            debugger.draw(relPos, partialTicks)
+            debugger.drawLate(relPos, partialTicks)
         }
         GL11.glDisable(GL11.GL_STENCIL_TEST)
 
-        Mouse.setNativeCursor((debugger.render.cursor ?: fullscreenComponents.render.cursor)?.lwjglCursor)
-        debugger.render.cursor = null
-        fullscreenComponents.render.cursor = null
+        Mouse.setNativeCursor((debugger.cursor ?: fullscreenComponents.cursor)?.lwjglCursor)
+        debugger.cursor = null
+        fullscreenComponents.cursor = null
     }
 
     @Throws(IOException::class)
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         super.mouseClicked(mouseX, mouseY, mouseButton)
-        if (isDebugMode) debugger.guiEventHandler.mouseDown(vec(mouseX, mouseY), EnumMouseButton.getFromCode(mouseButton))
+        if (isDebugMode) debugger.mouseDown(vec(mouseX, mouseY), EnumMouseButton.getFromCode(mouseButton))
         if (!isDebugMode || !debugger.mouseOver)
-            fullscreenComponents.guiEventHandler.mouseDown(vec(mouseX, mouseY), EnumMouseButton.getFromCode(mouseButton))
+            fullscreenComponents.mouseDown(vec(mouseX, mouseY), EnumMouseButton.getFromCode(mouseButton))
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         super.mouseReleased(mouseX, mouseY, state)
-        if (isDebugMode) debugger.guiEventHandler.mouseUp(vec(mouseX, mouseY), EnumMouseButton.getFromCode(state))
+        if (isDebugMode) debugger.mouseUp(vec(mouseX, mouseY), EnumMouseButton.getFromCode(state))
         if (!isDebugMode || !debugger.mouseOver)
-            fullscreenComponents.guiEventHandler.mouseUp(vec(mouseX, mouseY), EnumMouseButton.getFromCode(state))
+            fullscreenComponents.mouseUp(vec(mouseX, mouseY), EnumMouseButton.getFromCode(state))
     }
 
     override fun mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
         super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)
-        if (isDebugMode) debugger.guiEventHandler.mouseDrag(vec(mouseX, mouseY), EnumMouseButton.getFromCode(clickedMouseButton))
+        if (isDebugMode) debugger.mouseDrag(vec(mouseX, mouseY), EnumMouseButton.getFromCode(clickedMouseButton))
         if (!isDebugMode || !debugger.mouseOver)
-            fullscreenComponents.guiEventHandler.mouseDrag(vec(mouseX, mouseY), EnumMouseButton.getFromCode(clickedMouseButton))
+            fullscreenComponents.mouseDrag(vec(mouseX, mouseY), EnumMouseButton.getFromCode(clickedMouseButton))
     }
 
     @Throws(IOException::class)
@@ -152,13 +152,13 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         }
 
         if (Keyboard.getEventKeyState()) {
-            if (isDebugMode) debugger.guiEventHandler.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
+            if (isDebugMode) debugger.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
             if (!isDebugMode || !debugger.mouseOver)
-                fullscreenComponents.guiEventHandler.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
+                fullscreenComponents.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
         } else {
-            if (isDebugMode) debugger.guiEventHandler.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
+            if (isDebugMode) debugger.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
             if (!isDebugMode || !debugger.mouseOver)
-                fullscreenComponents.guiEventHandler.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
+                fullscreenComponents.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
         }
     }
 
@@ -170,15 +170,15 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         val wheelAmount = Mouse.getEventDWheel()
 
         if (wheelAmount != 0) {
-            if (isDebugMode) debugger.guiEventHandler.mouseWheel(vec(mouseX, mouseY), GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
+            if (isDebugMode) debugger.mouseWheel(vec(mouseX, mouseY), GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
             if (!isDebugMode || !debugger.mouseOver)
-                fullscreenComponents.guiEventHandler.mouseWheel(vec(mouseX, mouseY), GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
+                fullscreenComponents.mouseWheel(vec(mouseX, mouseY), GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
         }
     }
 
     fun tick() {
-        if (isDebugMode) debugger.guiEventHandler.tick()
-        fullscreenComponents.guiEventHandler.tick()
+        if (isDebugMode) debugger.tick()
+        fullscreenComponents.tick()
     }
 
     companion object {

@@ -72,7 +72,7 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
 
     override fun tick() {
         component.BUS.fire(GuiComponentEvents.ComponentTickEvent(component))
-        component.relationships.forEachChild { it.guiEventHandler.tick() }
+        component.forEachChild { it.tick() }
     }
 
     /**
@@ -82,7 +82,7 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
      * @param button The button that was pressed
      */
     override fun mouseDown(mousePos: Vec2d, button: EnumMouseButton) {
-        val transformedPos = component.geometry.transformFromParentContext(mousePos)
+        val transformedPos = component.transformFromParentContext(mousePos)
         if (!component.isVisible) return
         if (component.BUS.fire(GuiComponentEvents.MouseDownEvent(component, transformedPos, button)).isCanceled())
             return
@@ -92,8 +92,8 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
         else
             mouseButtonsDownOutside[button.ordinal] = transformedPos
 
-        component.relationships.forEachChild { child ->
-            child.guiEventHandler.mouseDown(transformedPos, button)
+        component.forEachChild { child ->
+            child.mouseDown(transformedPos, button)
         }
     }
 
@@ -104,7 +104,7 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
      * @param button The button that was released
      */
     override fun mouseUp(mousePos: Vec2d, button: EnumMouseButton) {
-        val transformedPos = component.geometry.transformFromParentContext(mousePos)
+        val transformedPos = component.transformFromParentContext(mousePos)
         if (!component.isVisible) return
         val posDownInside = mouseButtonsDownInside[button.ordinal]
         val posDownOutside = mouseButtonsDownOutside[button.ordinal]
@@ -128,8 +128,8 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
             }
         }
 
-        component.relationships.forEachChild { child ->
-            child.guiEventHandler.mouseUp(transformedPos, button)
+        component.forEachChild { child ->
+            child.mouseUp(transformedPos, button)
         }
     }
 
@@ -140,13 +140,13 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
      * @param button The button that was held
      */
     override fun mouseDrag(mousePos: Vec2d, button: EnumMouseButton) {
-        val transformedPos = component.geometry.transformFromParentContext(mousePos)
+        val transformedPos = component.transformFromParentContext(mousePos)
         if (!component.isVisible) return
         if (component.BUS.fire(GuiComponentEvents.MouseDragEvent(component, transformedPos, button)).isCanceled())
             return
 
-        component.relationships.forEachChild { child ->
-            child.guiEventHandler.mouseDrag(transformedPos, button)
+        component.forEachChild { child ->
+            child.mouseDrag(transformedPos, button)
         }
     }
 
@@ -157,13 +157,13 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
      * @param direction The direction the wheel was moved
      */
     override fun mouseWheel(mousePos: Vec2d, direction: GuiComponentEvents.MouseWheelDirection) {
-        val transformedPos = component.geometry.transformFromParentContext(mousePos)
+        val transformedPos = component.transformFromParentContext(mousePos)
         if (!component.isVisible) return
         if (component.BUS.fire(GuiComponentEvents.MouseWheelEvent(component, transformedPos, direction)).isCanceled())
             return
 
-        component.relationships.forEachChild { child ->
-            child.guiEventHandler.mouseWheel(transformedPos, direction)
+        component.forEachChild { child ->
+            child.mouseWheel(transformedPos, direction)
         }
     }
 
@@ -180,8 +180,8 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
 
         keysDown.put(Key[key, keyCode], true)
 
-        component.relationships.forEachChild { child ->
-            child.guiEventHandler.keyPressed(key, keyCode)
+        component.forEachChild { child ->
+            child.keyPressed(key, keyCode)
         }
     }
 
@@ -198,8 +198,8 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
         if (component.BUS.fire(GuiComponentEvents.KeyUpEvent(component, key, keyCode)).isCanceled())
             return
 
-        component.relationships.forEachChild { child ->
-            child.guiEventHandler.keyReleased(key, keyCode)
+        component.forEachChild { child ->
+            child.keyReleased(key, keyCode)
         }
     }
 }

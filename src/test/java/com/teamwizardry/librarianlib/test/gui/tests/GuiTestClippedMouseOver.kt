@@ -22,33 +22,33 @@ class GuiTestClippedMouseOver : GuiBase(0, 0) {
             val child = ComponentRect(-20, -20, 40, 40)
             child.color.setValue(Color.GREEN)
             child.transform.rotate = PI / 4
-            rect.clipping.clipToBounds = true
+            rect.clipToBounds = true
             rect.add(child)
         }
         rectMouseOver(0, 0, 100, 100, Color.GREEN) { rect ->
             val child = ComponentRect(-20, -20, 40, 40)
             child.color.setValue(Color.BLUE)
             child.transform.rotate = PI / 4
-            rect.clipping.clipToBounds = true
-            rect.clipping.cornerRadius = 10.0
-            rect.clipping.cornerPixelSize = 2
+            rect.clipToBounds = true
+            rect.cornerRadius = 10.0
+            rect.cornerPixelSize = 2
             rect.add(child)
         }
         rectMouseOver(100, 0, 100, 100, Color.BLUE) { rect ->
             val child = ComponentRect(-20, -20, 40, 40)
             child.color.setValue(Color.GREEN)
             child.transform.rotate = PI / 4
-            rect.clipping.clipToBounds = true
-            rect.clipping.cornerRadius = 10.0
+            rect.clipToBounds = true
+            rect.cornerRadius = 10.0
             rect.add(child)
         }
         rectMouseOver(200, 0, 100, 100, Color.RED) { rect ->
             val child = ComponentRect(-20, -20, 40, 40)
             child.color.setValue(Color.BLUE)
             child.transform.rotate = PI / 4
-            rect.clipping.clipToBounds = true
-            rect.clipping.cornerRadius = 10.0
-            rect.clipping.cornerPixelSize = 2
+            rect.clipToBounds = true
+            rect.cornerRadius = 10.0
+            rect.cornerPixelSize = 2
             rect.transform.rotate = PI / 4
             rect.add(child)
         }

@@ -15,10 +15,10 @@ class GuiTestMouseOverFlags : GuiBase(0, 0) {
         val noOccludeNoPropagate = rect(55, -15, 50, 50, Color.GREEN)
         val noPropagate = rect(80, -5, 50, 50, Color.PINK)
 
-        noOcclude.geometry.componentOccludesMouseOver = false
-        noOccludeNoPropagate.geometry.componentOccludesMouseOver = false
-        noOccludeNoPropagate.geometry.componentPropagatesMouseOverToParent = false
-        noPropagate.geometry.componentPropagatesMouseOverToParent = false
+        noOcclude.componentOccludesMouseOver = false
+        noOccludeNoPropagate.componentOccludesMouseOver = false
+        noOccludeNoPropagate.componentPropagatesMouseOverToParent = false
+        noPropagate.componentPropagatesMouseOverToParent = false
 
         val normalLabel = ComponentText(57, -35)
         val noOccludeLabel = ComponentText(82, -25)

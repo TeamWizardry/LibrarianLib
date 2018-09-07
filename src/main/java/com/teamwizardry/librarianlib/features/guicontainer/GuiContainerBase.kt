@@ -31,8 +31,8 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
 
     init {
         fullscreenComponents.setData(GuiContainerBase::class.java, "", this)
-        mainComponents.geometry.shouldCalculateOwnHover = false
-        fullscreenComponents.geometry.shouldCalculateOwnHover = false
+        mainComponents.shouldCalculateOwnHover = false
+        fullscreenComponents.shouldCalculateOwnHover = false
         mainScaleWrapper.zIndex = -100000 // really far back
         fullscreenComponents.add(mainScaleWrapper)
         mainScaleWrapper.add(mainComponents)
@@ -90,7 +90,7 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         GlStateManager.enableBlend()
         val relPos = vec(mouseX, mouseY)
         fullscreenComponents.geometry.calculateMouseOver(relPos)
-        fullscreenComponents.render.draw(relPos, partialTicks)
+        fullscreenComponents.draw(relPos, partialTicks)
 
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
@@ -105,7 +105,7 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         super.drawScreen(mouseX, mouseY, partialTicks)
         StencilUtil.clear()
         GL11.glEnable(GL11.GL_STENCIL_TEST)
-        fullscreenComponents.render.drawLate(relPos, partialTicks)
+        fullscreenComponents.drawLate(relPos, partialTicks)
         GL11.glDisable(GL11.GL_STENCIL_TEST)
 
         renderHoveredToolTip(mouseX, mouseY)
@@ -114,17 +114,17 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
     @Throws(IOException::class)
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         super.mouseClicked(mouseX, mouseY, mouseButton)
-        fullscreenComponents.guiEventHandler.mouseDown(vec(mouseX, mouseY), EnumMouseButton.getFromCode(mouseButton))
+        fullscreenComponents.mouseDown(vec(mouseX, mouseY), EnumMouseButton.getFromCode(mouseButton))
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         super.mouseReleased(mouseX, mouseY, state)
-        fullscreenComponents.guiEventHandler.mouseUp(vec(mouseX, mouseY), EnumMouseButton.getFromCode(state))
+        fullscreenComponents.mouseUp(vec(mouseX, mouseY), EnumMouseButton.getFromCode(state))
     }
 
     override fun mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
         super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)
-        fullscreenComponents.guiEventHandler.mouseDrag(vec(mouseX, mouseY), EnumMouseButton.getFromCode(clickedMouseButton))
+        fullscreenComponents.mouseDrag(vec(mouseX, mouseY), EnumMouseButton.getFromCode(clickedMouseButton))
     }
 
     @Throws(IOException::class)
@@ -132,9 +132,9 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         super.handleKeyboardInput()
 
         if (Keyboard.getEventKeyState())
-            fullscreenComponents.guiEventHandler.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
+            fullscreenComponents.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
         else
-            fullscreenComponents.guiEventHandler.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
+            fullscreenComponents.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
     }
 
     @Throws(IOException::class)
@@ -145,12 +145,12 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         val wheelAmount = Mouse.getEventDWheel()
 
         if (wheelAmount != 0) {
-            fullscreenComponents.guiEventHandler.mouseWheel(vec(mouseX, mouseY), GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
+            fullscreenComponents.mouseWheel(vec(mouseX, mouseY), GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
         }
     }
 
     fun tick() {
-        fullscreenComponents.guiEventHandler.tick()
+        fullscreenComponents.tick()
     }
 
     companion object {

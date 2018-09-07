@@ -9,11 +9,11 @@ interface IComponentRelationship {
     /** [GuiComponent.zIndex] */
     var zIndex: Int
     /** [GuiComponent.children] */
-    val children: Collection<GuiComponent>
+    val children: List<GuiComponent>
     /**
      * An unmodifiable collection of all the children of this component, recursively.
      */
-    val allChildren: Collection<GuiComponent>
+    val allChildren: List<GuiComponent>
     val parents: MutableSet<GuiComponent>
     /** [GuiComponent.parent] */
     val parent: GuiComponent?
@@ -66,15 +66,15 @@ open class ComponentRelationshipHandler: IComponentRelationship {
     override var zIndex = 0
     internal val components = mutableListOf<GuiComponent>()
     /** [GuiComponent.children] */
-    override val children: Collection<GuiComponent> = Collections.unmodifiableCollection(components)
+    override val children: List<GuiComponent> = Collections.unmodifiableList(components)
     /**
      * An unmodifiable collection of all the children of this component, recursively.
      */
-    override val allChildren: Collection<GuiComponent>
+    override val allChildren: List<GuiComponent>
         get() {
             val list = mutableListOf<GuiComponent>()
             addChildrenRecursively(list)
-            return Collections.unmodifiableCollection(list)
+            return Collections.unmodifiableList(list)
         }
 
     private fun addChildrenRecursively(list: MutableList<GuiComponent>) {
@@ -89,7 +89,7 @@ open class ComponentRelationshipHandler: IComponentRelationship {
         set(value) {
             parents.clear()
             if (value != null) {
-                parents.addAll(value.relationships.parents)
+                parents.addAll(value.parents)
                 parents.add(value)
             }
             field = value

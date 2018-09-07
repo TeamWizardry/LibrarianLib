@@ -28,7 +28,7 @@ class ComponentMaterialsBar(book: IBookGui, id: Int, val materials: StructureMat
             if (focusedElement != null) {
                 val materialElement = focusedElement.children.firstOrNull { it is ComponentMaterialList }
                 if (materialElement != null)
-                    focusedElement.relationships.remove(materialElement)
+                    focusedElement.remove(materialElement)
                 else
                     focusedElement.add(ComponentMaterialList(book, materials, focusedElement))
             }

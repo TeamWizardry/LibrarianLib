@@ -80,14 +80,14 @@ class ComponentRenderHandler: IComponentRender {
             if (parent == null)
                 return field
             else
-                return parent.render.cursor
+                return parent.cursor
         }
         set(value) {
             val parent = component.parent
             if (parent == null)
                 field = value
             else
-                parent.render.cursor = value
+                parent.cursor = value
         }
 
     /**
@@ -134,9 +134,9 @@ class ComponentRenderHandler: IComponentRender {
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
     override fun draw(mousePos: Vec2d, partialTicks: Float) {
-        val transformedPos = component.geometry.transformFromParentContext(mousePos)
+        val transformedPos = component.transformFromParentContext(mousePos)
         val components = component.relationships.components
-        components.sortBy { it.relationships.zIndex }
+        components.sortBy { it.zIndex }
         if (!component.isVisible) return
 
         components.removeAll { e ->
@@ -180,7 +180,7 @@ class ComponentRenderHandler: IComponentRender {
         if (LibrarianLib.DEV_ENVIRONMENT && Minecraft.getMinecraft().renderManager.isDebugBoundingBox) {
             GlStateManager.disableTexture2D()
             GlStateManager.color(1f, 0f, 1f)
-            if (component.geometry.mouseOverNoOcclusion) GlStateManager.color(0.75f, 0.75f, 0.75f)
+            if (component.mouseOverNoOcclusion) GlStateManager.color(0.75f, 0.75f, 0.75f)
             if (component.mouseOver) GlStateManager.color(1f, 1f, 1f)
             val tessellator = Tessellator.getInstance()
             val vb = tessellator.buffer
@@ -216,7 +216,7 @@ class ComponentRenderHandler: IComponentRender {
         GlStateManager.pushAttrib()
 
         component.BUS.fire(GuiComponentEvents.PreChildrenDrawEvent(component, transformedPos, partialTicks))
-        component.relationships.forEachChild { it.render.draw(transformedPos, partialTicks) }
+        component.forEachChild { it.draw(transformedPos, partialTicks) }
 
         GlStateManager.popAttrib()
 
@@ -243,7 +243,7 @@ class ComponentRenderHandler: IComponentRender {
             }
         }
 
-        component.relationships.forEachChild { it.render.drawLate(mousePos, partialTicks) }
+        component.forEachChild { it.drawLate(mousePos, partialTicks) }
     }
 
 }

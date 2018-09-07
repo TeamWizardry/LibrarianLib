@@ -25,9 +25,9 @@ class GuiTestStencil : GuiBase(0, 0) {
         wrapper.add(clipping)
         clipping.add(clipped)
 
-        clipping.clipping.clipToBounds = true
-        clipping.clipping.cornerRadius = 15.0
-        clipping.clipping.cornerPixelSize = 2
+        clipping.clipToBounds = true
+        clipping.cornerRadius = 15.0
+        clipping.cornerPixelSize = 2
 
         wrapper.transform.rotate = Math.toRadians(45.0)
         wrapper.transform.postTranslate = vec(-50, -50)
