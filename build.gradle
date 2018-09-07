@@ -31,7 +31,7 @@ allprojects {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-version = "$mod_version.$build_number"
+version = "$mod_version.$build_number-EXPERIMENTAL"
 archivesBaseName = mod_name + "-" + mc_version
 
 repositories {
