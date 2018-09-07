@@ -4,19 +4,48 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import java.util.*
 
+interface IComponentTag {
+    /** [GuiComponent.addTag] */
+    fun addTag(tag: Any): Boolean
+
+    /** [GuiComponent.removeTag] */
+    fun removeTag(tag: Any): Boolean
+
+    /** [GuiComponent.setTag] */
+    fun setTag(tag: Any, shouldHave: Boolean): Boolean
+
+    /** [GuiComponent.hasTag] */
+    fun hasTag(tag: Any): Boolean
+
+    /**
+     * Returns a list of all children that have the tag [tag]
+     */
+    fun getByTag(tag: Any): List<GuiComponent>
+
+    /**
+     * Returns a list of all children and grandchildren etc. that have the tag [tag]
+     */
+    fun getAllByTag(tag: Any): List<GuiComponent>
+
+    /**
+     * Removes all components that have the supplied tag
+     */
+    fun removeByTag(tag: Any)
+}
+
 /**
  * TODO: Document file ComponentTagHandler
  *
  * Created by TheCodeWarrior
  */
-class ComponentTagHandler(private val component: GuiComponent) {
+class ComponentTagHandler(private val component: GuiComponent): IComponentTag {
     private var tagStorage: MutableSet<Any> = HashSet()
 
     /** [GuiComponent.tagList] */
     internal val tagList = Collections.unmodifiableSet<Any>(tagStorage)!!
 
     /** [GuiComponent.addTag] */
-    fun addTag(tag: Any): Boolean {
+    override fun addTag(tag: Any): Boolean {
         if (!component.BUS.fire(GuiComponentEvents.AddTagEvent(component, tag)).isCanceled())
             if (tagStorage.add(tag))
                 return true
@@ -24,7 +53,7 @@ class ComponentTagHandler(private val component: GuiComponent) {
     }
 
     /** [GuiComponent.removeTag] */
-    fun removeTag(tag: Any): Boolean {
+    override fun removeTag(tag: Any): Boolean {
         if (!component.BUS.fire(GuiComponentEvents.RemoveTagEvent(component, tag)).isCanceled())
             if (tagStorage.remove(tag))
                 return true
@@ -32,7 +61,7 @@ class ComponentTagHandler(private val component: GuiComponent) {
     }
 
     /** [GuiComponent.setTag] */
-    fun setTag(tag: Any, shouldHave: Boolean): Boolean {
+    override fun setTag(tag: Any, shouldHave: Boolean): Boolean {
         if (shouldHave)
             return addTag(tag)
         else
@@ -40,14 +69,14 @@ class ComponentTagHandler(private val component: GuiComponent) {
     }
 
     /** [GuiComponent.hasTag] */
-    fun hasTag(tag: Any): Boolean {
+    override fun hasTag(tag: Any): Boolean {
         return component.BUS.fire(GuiComponentEvents.HasTagEvent(component, tag, tagStorage.contains(tag))).hasTag
     }
 
     /**
      * Returns a list of all children that have the tag [tag]
      */
-    fun getByTag(tag: Any): List<GuiComponent> {
+    override fun getByTag(tag: Any): List<GuiComponent> {
         val list = mutableListOf<GuiComponent>()
         addByTag(tag, list)
         return list
@@ -56,7 +85,7 @@ class ComponentTagHandler(private val component: GuiComponent) {
     /**
      * Returns a list of all children and grandchildren etc. that have the tag [tag]
      */
-    fun getAllByTag(tag: Any): List<GuiComponent> {
+    override fun getAllByTag(tag: Any): List<GuiComponent> {
         val list = mutableListOf<GuiComponent>()
         addAllByTag(tag, list)
         return list
@@ -65,7 +94,7 @@ class ComponentTagHandler(private val component: GuiComponent) {
     /**
      * Removes all components that have the supplied tag
      */
-    fun removeByTag(tag: Any) {
+    override fun removeByTag(tag: Any) {
         component.relationships.components.removeAll { e ->
             var b = e.hasTag(tag)
             if (component.BUS.fire(GuiComponentEvents.RemoveChildEvent(component, e)).isCanceled())

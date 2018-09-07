@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.features.gui.component.supporting
+package com.teamwizardry.librarianlib.features.kotlin
 
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty

@@ -6,65 +6,129 @@ import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Matrix4
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
-/**
- * TODO: Document file ComponentGeometryHandler
- *
- * Created by TheCodeWarrior
- */
-open class ComponentGeometryHandler(private val component: GuiComponent) {
+interface IComponentGeometry {
     /** [GuiComponent.transform] */
-    val transform = ComponentTransform()
+    val transform: ComponentTransform
     /** [GuiComponent.size] */
-    var size: Vec2d = vec(0, 0)
+    var size: Vec2d
     /** [GuiComponent.pos] */
     var pos: Vec2d
-        get() = transform.translate
-        set(value) {
-            transform.translate = value
-        }
     /** [GuiComponent.mouseOver] */
-    var mouseOver = false
+    val mouseOver: Boolean
     /**
      * This is like [GuiComponent.mouseOver] except it ignores the occlusion of components at higher z-indices.
      */
-    var mouseOverNoOcclusion = false
-        private set
+    val mouseOverNoOcclusion: Boolean
     /**
      * Set this to false to make this component not occlude the mouseOver of components behind it.
      */
-    var componentOccludesMouseOver = true
+    var componentOccludesMouseOver: Boolean
     /**
      * Set this to false to make a true mouseOver value for this component not cause the mouseOver of its parent to be
      * set to true.
      */
-    var componentPropagatesMouseOverToParent = true
-
+    var componentPropagatesMouseOverToParent: Boolean
     /**
      * Set whether the element should calculate hovering based on its bounds as
      * well as its children or if it should only calculate based on its children.
      */
-    var shouldCalculateOwnHover = true
-
+    var shouldCalculateOwnHover: Boolean
 
     /**
      * Takes [pos], which is in our parent's context (coordinate space), and transforms it to our context
      */
-    fun transformFromParentContext(pos: Vec2d): Vec2d {
-        return transform.applyInverse(pos)
-    }
+    fun transformFromParentContext(pos: Vec2d): Vec2d
 
     /** [GuiComponent.mouseOver] */
-    @JvmOverloads
-    fun transformToParentContext(pos: Vec2d = Vec2d.ZERO): Vec2d {
-        return transform.apply(pos)
-    }
+    fun transformToParentContext(pos: Vec2d): Vec2d
+
+    fun transformToParentContext(): Vec2d
 
     /**
      * Create a matrix that moves coordinates from [other]'s context (coordinate space) to this component's context
      *
      * If [other] is null the returned matrix moves coordinates from the root context to this component's context
      */
-    fun otherContextToThisContext(other: GuiComponent?): Matrix4 {
+    fun otherContextToThisContext(other: GuiComponent?): Matrix4
+
+    /**
+     * Create a matrix that moves coordinates from this component's context (coordinate space) to [other]'s context
+     *
+     * If [other] is null the returned matrix moves coordinates from this component's context to the root context
+     */
+    fun thisContextToOtherContext(other: GuiComponent?): Matrix4
+
+    /**
+     * A shorthand to transform the passed pos in this component's context (coordinate space) to a pos in [other]'s context
+     *
+     * If [other] is null the returned value is in the root context
+     *
+     * [pos] defaults to (0, 0)
+     */
+    fun thisPosToOtherContext(other: GuiComponent?, pos: Vec2d): Vec2d
+
+    fun thisPosToOtherContext(other: GuiComponent?): Vec2d
+}
+
+/**
+ * TODO: Document file ComponentGeometryHandler
+ *
+ * Created by TheCodeWarrior
+ */
+open class ComponentGeometryHandler(private val component: GuiComponent): IComponentGeometry {
+    /** [GuiComponent.transform] */
+    override val transform = ComponentTransform()
+    /** [GuiComponent.size] */
+    override var size: Vec2d = vec(0, 0)
+    /** [GuiComponent.pos] */
+    override var pos: Vec2d
+        get() = transform.translate
+        set(value) {
+            transform.translate = value
+        }
+    /** [GuiComponent.mouseOver] */
+    override var mouseOver = false
+    /**
+     * This is like [GuiComponent.mouseOver] except it ignores the occlusion of components at higher z-indices.
+     */
+    override var mouseOverNoOcclusion = false
+    /**
+     * Set this to false to make this component not occlude the mouseOver of components behind it.
+     */
+    override var componentOccludesMouseOver = true
+    /**
+     * Set this to false to make a true mouseOver value for this component not cause the mouseOver of its parent to be
+     * set to true.
+     */
+    override var componentPropagatesMouseOverToParent = true
+
+    /**
+     * Set whether the element should calculate hovering based on its bounds as
+     * well as its children or if it should only calculate based on its children.
+     */
+    override var shouldCalculateOwnHover = true
+
+
+    /**
+     * Takes [pos], which is in our parent's context (coordinate space), and transforms it to our context
+     */
+    override fun transformFromParentContext(pos: Vec2d): Vec2d {
+        return transform.applyInverse(pos)
+    }
+
+    /** [GuiComponent.mouseOver] */
+    override fun transformToParentContext(pos: Vec2d): Vec2d {
+        return transform.apply(pos)
+    }
+
+    override fun transformToParentContext(): Vec2d = transformToParentContext(Vec2d.ZERO)
+
+    /**
+     * Create a matrix that moves coordinates from [other]'s context (coordinate space) to this component's context
+     *
+     * If [other] is null the returned matrix moves coordinates from the root context to this component's context
+     */
+    override fun otherContextToThisContext(other: GuiComponent?): Matrix4 {
         if (other == null)
             return thisContextToOtherContext(null).invert()
         return other.geometry.thisContextToOtherContext(component)
@@ -75,7 +139,7 @@ open class ComponentGeometryHandler(private val component: GuiComponent) {
      *
      * If [other] is null the returned matrix moves coordinates from this component's context to the root context
      */
-    fun thisContextToOtherContext(other: GuiComponent?): Matrix4 {
+    override fun thisContextToOtherContext(other: GuiComponent?): Matrix4 {
         return _thisContextToOtherContext(other, Matrix4())
     }
 
@@ -97,10 +161,11 @@ open class ComponentGeometryHandler(private val component: GuiComponent) {
      *
      * [pos] defaults to (0, 0)
      */
-    @JvmOverloads
-    fun thisPosToOtherContext(other: GuiComponent?, pos: Vec2d = Vec2d.ZERO): Vec2d {
+    override fun thisPosToOtherContext(other: GuiComponent?, pos: Vec2d): Vec2d {
         return thisContextToOtherContext(other) * pos
     }
+
+    override fun thisPosToOtherContext(other: GuiComponent?): Vec2d = thisPosToOtherContext(other, Vec2d.ZERO)
 
     fun calculateMouseOver(mousePos: Vec2d) {
         component.BUS.fire(GuiComponentEvents.PreMouseOverEvent(component, mousePos))

@@ -14,35 +14,28 @@ import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11
 
-/**
- * TODO: Document file ComponentClippingHandler
- *
- * Created by TheCodeWarrior
- */
-class ComponentClippingHandler(val component: GuiComponent) {
-
+interface IComponentClipping {
     /**
      * If true, clip component and its context to within its bounds. When this is set and both [clippingSprite] and
      * [customClipping] are `null`, mouseover checks will be clipped.
      */
-    var clipToBounds = false
+    var clipToBounds: Boolean
     /**
      * If nonzero, round the corners of the clipping
      */
-    var cornerRadius = 0.0
+    var cornerRadius: Double
     /**
      * If nonzero, draw corners with pixels `N` units in size. Pending implementation this property is ignored when
      * clipping mouseover checks.
      */
-    var cornerPixelSize = 0
-
+    var cornerPixelSize: Int
     /**
      * If nonnull, this sprite is used for clipping. Any pixels that are completely transparent will be masked out.
      * This method of clipping does not support clipping mouseover checks.
      *
      * If [clippingSprite] is nonnull, it will override this sprite.
      */
-    var clippingSprite: ISprite? = null
+    var clippingSprite: ISprite?
     /**
      * If nonnull, this function is used for clipping. Any pixels that aren't drawn to will be masked out.
      * This method of clipping does not support clipping mouseover checks.
@@ -51,7 +44,47 @@ class ComponentClippingHandler(val component: GuiComponent) {
      *
      * !!WARNING!! This method MUST be able to run twice in a frame without any changes to the rendering. The first time creates the mask, the second time deletes it.
      */
-    var customClipping: (() -> Unit)? = null
+    var customClipping: (() -> Unit)?
+}
+
+/**
+ * TODO: Document file ComponentClippingHandler
+ *
+ * Created by TheCodeWarrior
+ */
+class ComponentClippingHandler(val component: GuiComponent): IComponentClipping {
+
+    /**
+     * If true, clip component and its context to within its bounds. When this is set and both [clippingSprite] and
+     * [customClipping] are `null`, mouseover checks will be clipped.
+     */
+    override var clipToBounds = false
+    /**
+     * If nonzero, round the corners of the clipping
+     */
+    override var cornerRadius = 0.0
+    /**
+     * If nonzero, draw corners with pixels `N` units in size. Pending implementation this property is ignored when
+     * clipping mouseover checks.
+     */
+    override var cornerPixelSize = 0
+
+    /**
+     * If nonnull, this sprite is used for clipping. Any pixels that are completely transparent will be masked out.
+     * This method of clipping does not support clipping mouseover checks.
+     *
+     * If [clippingSprite] is nonnull, it will override this sprite.
+     */
+    override var clippingSprite: ISprite? = null
+    /**
+     * If nonnull, this function is used for clipping. Any pixels that aren't drawn to will be masked out.
+     * This method of clipping does not support clipping mouseover checks.
+     *
+     * !!WARNING!! You absolutely cannot draw to a pixel twice in this function. If you do everything will break in weird ways.
+     *
+     * !!WARNING!! This method MUST be able to run twice in a frame without any changes to the rendering. The first time creates the mask, the second time deletes it.
+     */
+    override var customClipping: (() -> Unit)? = null
 
     internal fun pushEnable() {
         if (clipToBounds || clippingSprite != null || customClipping != null) {

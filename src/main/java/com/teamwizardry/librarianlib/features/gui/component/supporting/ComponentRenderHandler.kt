@@ -17,20 +17,62 @@ import net.minecraftforge.fml.client.config.GuiUtils
 import org.lwjgl.opengl.GL11.GL_LINES
 import org.lwjgl.opengl.GL11.GL_LINE_STRIP
 
+interface IComponentRender {
+    var tooltip: Option<GuiComponent, List<String>?>
+    var tooltipFont: FontRenderer?
+    /**
+     * If nonnull, the cursor will switch to this when hovering.
+     */
+    var hoverCursor: LibCursor?
+    var cursor: LibCursor?
+    var animator: Animator
+
+    /**
+     * Sets the tooltip to be drawn, overriding the existing value. Pass null for the font to use the default font renderer.
+     */
+    fun setTooltip(text: List<String>, font: FontRenderer?)
+
+    /**
+     * Sets the tooltip to be drawn, overriding the existing value and using the default font renderer.
+     */
+    fun setTooltip(text: List<String>)
+
+    /**
+     * Adds animations to [animator]
+     */
+    fun add(vararg animations: Animation<*>)
+
+    /**
+     * Draw this component, don't override in subclasses unless you know what you're doing.
+     *
+     * @param mousePos Mouse position relative to the position of this component
+     * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
+     */
+    fun draw(mousePos: Vec2d, partialTicks: Float)
+
+    /**
+     * Draw late stuff this component, like tooltips. This method is executed in the root context
+     *
+     * @param mousePos Mouse position in the root context
+     * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
+     */
+    fun drawLate(mousePos: Vec2d, partialTicks: Float)
+}
+
 /**
  * TODO: Document file ComponentRenderHandler
  *
  * Created by TheCodeWarrior
  */
-class ComponentRenderHandler(private val component: GuiComponent) {
-    var tooltip: Option<GuiComponent, List<String>?> = Option(null)
-    var tooltipFont: FontRenderer? = null
+class ComponentRenderHandler(private val component: GuiComponent): IComponentRender {
+    override var tooltip: Option<GuiComponent, List<String>?> = Option(null)
+    override var tooltipFont: FontRenderer? = null
     /**
      * If nonnull, the cursor will switch to this when hovering.
      */
-    var hoverCursor: LibCursor? = null
+    override var hoverCursor: LibCursor? = null
 
-    var cursor: LibCursor? = null
+    override var cursor: LibCursor? = null
         get() {
             val parent = component.parent
             if (parent == null)
@@ -49,7 +91,7 @@ class ComponentRenderHandler(private val component: GuiComponent) {
     /**
      * Sets the tooltip to be drawn, overriding the existing value. Pass null for the font to use the default font renderer.
      */
-    fun setTooltip(text: List<String>, font: FontRenderer?) {
+    override fun setTooltip(text: List<String>, font: FontRenderer?) {
         tooltip(text)
         tooltipFont = font
     }
@@ -57,9 +99,9 @@ class ComponentRenderHandler(private val component: GuiComponent) {
     /**
      * Sets the tooltip to be drawn, overriding the existing value and using the default font renderer.
      */
-    fun setTooltip(text: List<String>) = setTooltip(text, null)
+    override fun setTooltip(text: List<String>) = setTooltip(text, null)
 
-    var animator: Animator
+    override var animator: Animator
         get() {
             var a = animatorStorage ?: component.parent?.animator
             if (a == null) {
@@ -79,7 +121,7 @@ class ComponentRenderHandler(private val component: GuiComponent) {
     /**
      * Adds animations to [animator]
      */
-    fun add(vararg animations: Animation<*>) {
+    override fun add(vararg animations: Animation<*>) {
         animator.add(*animations)
     }
 
@@ -89,7 +131,7 @@ class ComponentRenderHandler(private val component: GuiComponent) {
      * @param mousePos Mouse position relative to the position of this component
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
-    fun draw(mousePos: Vec2d, partialTicks: Float) {
+    override fun draw(mousePos: Vec2d, partialTicks: Float) {
         val transformedPos = component.geometry.transformFromParentContext(mousePos)
         val components = component.relationships.components
         components.sortBy { it.relationships.zIndex }
@@ -189,7 +231,7 @@ class ComponentRenderHandler(private val component: GuiComponent) {
      * @param mousePos Mouse position in the root context
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
-    fun drawLate(mousePos: Vec2d, partialTicks: Float) {
+    override fun drawLate(mousePos: Vec2d, partialTicks: Float) {
         if (!component.isVisible) return
         if (component.mouseOver) {
             val tt = tooltip(component)
