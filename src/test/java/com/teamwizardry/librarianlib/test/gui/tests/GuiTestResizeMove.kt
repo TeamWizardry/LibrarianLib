@@ -14,7 +14,7 @@ class GuiTestResizeMove : GuiBase(100, 100) {
     init {
 
         val c = ComponentRect(25, 25, 50, 50)
-        c.color.setValue(Color.RED)
+        c.color = Color.RED
         mainComponents.add(c)
 
         c.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {

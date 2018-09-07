@@ -20,14 +20,14 @@ class GuiTestClippedMouseOver : GuiBase(0, 0) {
         rectMouseOver(-200, 0, 100, 100, Color.RED)
         rectMouseOver(-100, 0, 100, 100, Color.BLUE) { rect ->
             val child = ComponentRect(-20, -20, 40, 40)
-            child.color.setValue(Color.GREEN)
+            child.color = Color.GREEN
             child.transform.rotate = PI / 4
             rect.clipToBounds = true
             rect.add(child)
         }
         rectMouseOver(0, 0, 100, 100, Color.GREEN) { rect ->
             val child = ComponentRect(-20, -20, 40, 40)
-            child.color.setValue(Color.BLUE)
+            child.color = Color.BLUE
             child.transform.rotate = PI / 4
             rect.clipToBounds = true
             rect.cornerRadius = 10.0
@@ -36,7 +36,7 @@ class GuiTestClippedMouseOver : GuiBase(0, 0) {
         }
         rectMouseOver(100, 0, 100, 100, Color.BLUE) { rect ->
             val child = ComponentRect(-20, -20, 40, 40)
-            child.color.setValue(Color.GREEN)
+            child.color = Color.GREEN
             child.transform.rotate = PI / 4
             rect.clipToBounds = true
             rect.cornerRadius = 10.0
@@ -44,7 +44,7 @@ class GuiTestClippedMouseOver : GuiBase(0, 0) {
         }
         rectMouseOver(200, 0, 100, 100, Color.RED) { rect ->
             val child = ComponentRect(-20, -20, 40, 40)
-            child.color.setValue(Color.BLUE)
+            child.color = Color.BLUE
             child.transform.rotate = PI / 4
             rect.clipToBounds = true
             rect.cornerRadius = 10.0
@@ -58,9 +58,9 @@ class GuiTestClippedMouseOver : GuiBase(0, 0) {
         val rect = ComponentRect(posX, posY, width, height)
         rect.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) { event ->
             if(rect.mouseOver) {
-                rect.color.setValue(color)
+                rect.color = color
             } else {
-                rect.color.setValue(color.darker())
+                rect.color = color.darker()
             }
         }
 

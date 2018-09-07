@@ -26,21 +26,21 @@ class ComponentSearchResults(book: IBookGui, results: List<ISearchAlgorithm.Resu
     private var resultSection: ComponentVoid = ComponentVoid(0, margin, size.xi, size.yi - margin)
 
     init {
-        pageHeader.text.setValue(I18n.format("${LibrarianLib.MODID}.book.results.notfound"))
-        pageHeader.unicode.setValue(true)
-        pageHeader.wrap.setValue(size.xi)
+        pageHeader.text = I18n.format("${LibrarianLib.MODID}.book.results.notfound")
+        pageHeader.unicode = true
+        pageHeader.wrap = size.xi
         add(pageHeader)
         add(resultSection)
 
         if (results != null && results.isNotEmpty()) {
             val forTyping = results[0]
             if (forTyping.isSpecificResult)
-                pageHeader.text.setValue(if (results.size == 1)
+                pageHeader.text = if (results.size == 1)
                     I18n.format("${LibrarianLib.MODID}.book.results.oneresult")
                 else
-                    I18n.format("${LibrarianLib.MODID}.book.results.nresults", results.size))
+                    I18n.format("${LibrarianLib.MODID}.book.results.nresults", results.size)
             else
-                pageHeader.text.setValue(I18n.format("${LibrarianLib.MODID}.book.results.toobroad", results.size))
+                pageHeader.text = I18n.format("${LibrarianLib.MODID}.book.results.toobroad", results.size)
 
             val pageComponent = ComponentVoid(0, 0, size.xi, size.yi)
             resultSection.add(pageComponent)
@@ -94,12 +94,12 @@ class ComponentSearchResults(book: IBookGui, results: List<ISearchAlgorithm.Resu
                         exactResult = simplifiedResult
                     }
 
-                    textComponent.unicode.setValue(true)
-                    textComponent.text.setValue("| $color$simplifiedResult")
+                    textComponent.unicode = true
+                    textComponent.text = "| $color$simplifiedResult"
 
-                    indexButton.BUS.hook(GuiComponentEvents.MouseInEvent::class.java) { textComponent.text.setValue("  | $color${TextFormatting.ITALIC}$exactResult") }
+                    indexButton.BUS.hook(GuiComponentEvents.MouseInEvent::class.java) { textComponent.text = "  | $color${TextFormatting.ITALIC}$exactResult" }
 
-                    indexButton.BUS.hook(GuiComponentEvents.MouseOutEvent::class.java) { textComponent.text.setValue("| $color$simplifiedResult") }
+                    indexButton.BUS.hook(GuiComponentEvents.MouseOutEvent::class.java) { textComponent.text = "| $color$simplifiedResult" }
                     // --------- HANDLE EXTRA TEXT COMPONENT --------- //
 
                     count++

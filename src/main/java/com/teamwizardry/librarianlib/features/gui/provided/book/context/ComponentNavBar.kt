@@ -50,15 +50,15 @@ class ComponentNavBar(private val book: IBookGui, posX: Int, posY: Int, width: I
 
         home.BUS.hook(GuiComponentEvents.MouseInEvent::class.java) {
             home.sprite = book.homeSpritePressed
-            home.color.setValue(book.book.bookColor.brighter())
+            home.color = book.book.bookColor.brighter()
         }
         home.BUS.hook(GuiComponentEvents.MouseOutEvent::class.java) {
             home.sprite = book.homeSprite
-            home.color.setValue(Color.WHITE)
+            home.color = Color.WHITE
         }
         val homeTooltip = ArrayList<String>()
         homeTooltip.add(I18n.format("${LibrarianLib.MODID}.book.nav.back"))
-        home.tooltip.setValue(homeTooltip)
+        home.tooltip = homeTooltip
 
         home.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
             if (GuiScreen.isShiftKeyDown()) {
@@ -78,10 +78,10 @@ class ComponentNavBar(private val book: IBookGui, posX: Int, posY: Int, width: I
             if (back.isVisible) {
                 if (it.component.mouseOver) {
                     back.sprite = book.backSpritePressed
-                    back.color.setValue(book.book.bookColor.brighter())
+                    back.color = book.book.bookColor.brighter()
                 } else {
                     back.sprite = book.backSprite
-                    back.color.setValue(Color.WHITE)
+                    back.color = Color.WHITE
                 }
             }
         }
@@ -93,7 +93,7 @@ class ComponentNavBar(private val book: IBookGui, posX: Int, posY: Int, width: I
         }
         val backTooltip = ArrayList<String>()
         backTooltip.add(I18n.format("${LibrarianLib.MODID}.book.nav.previous"))
-        back.tooltip.setValue(backTooltip)
+        back.tooltip = backTooltip
 
         next.BUS.hook(GuiComponentEvents.ComponentTickEvent::class.java) { event ->
             val x = MathHelper.clamp(this.page + 1, 0, maxPage)
@@ -102,10 +102,10 @@ class ComponentNavBar(private val book: IBookGui, posX: Int, posY: Int, width: I
             if (next.isVisible) {
 
                 if (event.component.mouseOver) {
-                    next.color.setValue(book.book.bookColor.brighter())
+                    next.color = book.book.bookColor.brighter()
                     next.sprite = book.nextSpritePressed
                 } else {
-                    next.color.setValue(Color.WHITE)
+                    next.color = Color.WHITE
                     next.sprite = book.nextSprite
                 }
             }
@@ -118,12 +118,12 @@ class ComponentNavBar(private val book: IBookGui, posX: Int, posY: Int, width: I
         }
         val nextTooltip = ArrayList<String>()
         nextTooltip.add(I18n.format("${LibrarianLib.MODID}.book.nav.next"))
-        next.tooltip.setValue(nextTooltip)
+        next.tooltip = nextTooltip
 
         val pageStringComponent = ComponentText(size.x.toInt() / 2, (size.y / 2 - nextSprite.height / 2.0).toInt() + 15, ComponentText.TextAlignH.CENTER, ComponentText.TextAlignV.MIDDLE)
-        pageStringComponent.unicode.setValue(false)
+        pageStringComponent.unicode = false
 
-        pageStringComponent.text.func { "${this.page + 1}/${maxPage + 1}" }
+        pageStringComponent.text_im { "${this.page + 1}/${maxPage + 1}" }
         pageStringComponent.BUS.hook(GuiComponentEvents.ComponentTickEvent::class.java) {
             pageStringComponent.isVisible = this.maxPage > 0
         }

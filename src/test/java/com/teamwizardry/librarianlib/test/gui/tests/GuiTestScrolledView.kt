@@ -23,11 +23,11 @@ class GuiTestScrolledView : GuiBase(100, 100) {
 
         val bg = ComponentRect(0, 0, 100, 0)
 
-        bg.color.setValue(Color.BLUE)
-        left.color.setValue(Color.RED)
-        right.color.setValue(Color.RED)
-        up.color.setValue(Color.RED)
-        down.color.setValue(Color.RED)
+        bg.color = Color.BLUE
+        left.color = Color.RED
+        right.color = Color.RED
+        up.color = Color.RED
+        down.color = Color.RED
 
         mainComponents.add(bg, left, right, up, down)
 

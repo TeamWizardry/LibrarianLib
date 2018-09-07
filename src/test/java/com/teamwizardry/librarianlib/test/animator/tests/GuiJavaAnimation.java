@@ -23,10 +23,10 @@ public class GuiJavaAnimation extends GuiBase {
 		super(100, 100);
 		
 		ComponentRect rect = new ComponentRect(0, 0, 100, 100);
-		rect.getColor().setValue(Color.CYAN);
+		rect.setColor(Color.CYAN);
 		
 		ComponentText text = new ComponentText(20, 20);
-		text.getText().func((Function<ComponentText, String>) (ComponentText comp) -> "Field = " + theJavaField);
+		text.getText_im().set(() -> "Field = " + theJavaField);
 		
 		BasicAnimation<GuiJavaAnimation> anim = new BasicAnimation<>(this, "theJavaField");
 		anim.setDuration(40);

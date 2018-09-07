@@ -11,7 +11,7 @@ class GuiTestAutoSizeScale : GuiBase(100, 500) {
     init {
 
         val c = ComponentRect(25, 0, 50, 500)
-        c.color.setValue(Color.RED)
+        c.color = Color.RED
         mainComponents.add(c)
 
     }

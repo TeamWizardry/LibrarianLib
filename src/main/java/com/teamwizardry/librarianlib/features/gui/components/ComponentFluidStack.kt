@@ -6,7 +6,7 @@ package com.teamwizardry.librarianlib.features.gui.components
  * (a copy of which can be found at the repo root)
  */
 
-import com.teamwizardry.librarianlib.features.gui.Option
+import com.teamwizardry.librarianlib.features.gui.IMValue
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.ISprite
@@ -29,17 +29,22 @@ class ComponentFluidStack @JvmOverloads constructor(fgSprite: ISprite?, bgSprite
                                                     fgWidth: Int = fgSprite?.width ?: 16, fgHeight: Int = fgSprite?.height ?: 16,
                                                     bgWidth: Int = bgSprite?.width ?: 16, bgHeight: Int = bgSprite?.height ?: 16,
                                                     var fluidWidth: Int = bgWidth, var fluidHeight: Int = bgHeight,
-                                                    direction: Option<ComponentSpriteProgressBar, ComponentSpriteProgressBar.ProgressDirection> = Option(ComponentSpriteProgressBar.ProgressDirection.X_POS),
                                                     val tankProps: IFluidTankProperties)
     : GuiComponent(x, y, bgWidth, bgHeight) {
 
+    val direction_im: IMValue<ComponentSpriteProgressBar.ProgressDirection> = IMValue(ComponentSpriteProgressBar.ProgressDirection.X_POS)
+    var direction: ComponentSpriteProgressBar.ProgressDirection by direction_im
+
     private var lastFluid: Fluid? = null
 
-    val progress = ComponentProgressBar(null, bgSprite, 0, 0, fgWidth = fluidWidth, fgHeight = fluidHeight, bgWidth = bgWidth, bgHeight = bgHeight,
-            direction = direction, progress = Option(0f, {
-        (tankProps.contents?.amount?.toFloat() ?: 0f) / Math.max(1f, tankProps.capacity.toFloat())
-    }))
+    val progress = ComponentProgressBar(null, bgSprite, 0, 0, fgWidth = fluidWidth, fgHeight = fluidHeight, bgWidth = bgWidth, bgHeight = bgHeight)
 
+    init {
+        progress.direction_im { this.direction }
+        progress.progress_im {
+            (tankProps.contents?.amount?.toFloat() ?: 0f) / Math.max(1f, tankProps.capacity.toFloat())
+        }
+    }
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
         val fs = tankProps.contents
         if (fs != null && lastFluid != fs.fluid) {

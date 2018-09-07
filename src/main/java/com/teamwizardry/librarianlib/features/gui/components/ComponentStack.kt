@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.gui.HandlerList
-import com.teamwizardry.librarianlib.features.gui.Option
+import com.teamwizardry.librarianlib.features.gui.IMValue
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.kotlin.isNotEmpty
 import com.teamwizardry.librarianlib.features.kotlin.plus
@@ -15,8 +15,11 @@ import net.minecraft.util.text.TextFormatting
 
 open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 16) {
 
-    val stack = Option<ComponentStack, ItemStack>(ItemStack.EMPTY)
-    val enableTooltip = Option<ComponentStack, Boolean>(true)
+    val stack_im: IMValue<ItemStack> = IMValue(ItemStack.EMPTY)
+    val enableTooltip_im: IMValue<Boolean> = IMValue(true)
+
+    var stack: ItemStack by stack_im
+    var enableTooltip: Boolean by enableTooltip_im
     val quantityText = HandlerList<(ComponentStack, String?) -> String?>()
     val itemInfo = HandlerList<(ComponentStack, MutableList<String>) -> Unit>()
 
@@ -25,7 +28,7 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 1
         GlStateManager.enableRescaleNormal()
         GlStateManager.pushMatrix()
 
-        val stack = this.stack.getValue(this)
+        val stack = this.stack
         if (stack.isNotEmpty) {
             var str: String? = stack.count.toString()
             if (str == "1") str = null
@@ -42,10 +45,10 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 1
 
             itemRender.zLevel = 0.0f
 
-            if (mouseOver && enableTooltip.getValue(this)) {
+            if (mouseOver && enableTooltip) {
                 val font = stack.item.getFontRenderer(stack)
-                setTooltip(getTooltip(stack) { itemInfo.fireAll { h -> h(this, it) } },
-                        font ?: Minecraft.getMinecraft().fontRenderer)
+                tooltip = getTooltip(stack) { itemInfo.fireAll { h -> h(this, it) } }
+                tooltipFont = font ?: Minecraft.getMinecraft().fontRenderer
             }
         }
 

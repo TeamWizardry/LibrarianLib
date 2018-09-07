@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
-import com.teamwizardry.librarianlib.features.gui.Option
+import com.teamwizardry.librarianlib.features.gui.IMValue
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.kotlin.glColor
 import com.teamwizardry.librarianlib.features.math.Vec2d
@@ -14,15 +14,20 @@ class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: ISprite?,
     class AnimationLoopEvent(val component: ComponentSpriteProgressBar) : Event()
     enum class ProgressDirection { Y_POS, Y_NEG, X_POS, X_NEG }
 
-    var direction = Option<ComponentSpriteProgressBar, ProgressDirection>(ProgressDirection.Y_POS)
-    var progress = Option<ComponentSpriteProgressBar, Float>(1f)
-    var depth = Option<ComponentSpriteProgressBar, Boolean>(true)
-    var color = Option<ComponentSpriteProgressBar, Color>(Color.WHITE)
+    val direction_im: IMValue<ProgressDirection> = IMValue(ProgressDirection.Y_POS)
+    val progress_im: IMValue<Float> = IMValue(1f)
+    val depth_im: IMValue<Boolean> = IMValue(true)
+    val color_im: IMValue<Color> = IMValue(Color.WHITE)
+
+    var direction: ProgressDirection by direction_im
+    var progress: Float by progress_im
+    var depth: Boolean by depth_im
+    var color: Color by color_im
 
     var lastAnim: Int = 0
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
-        val alwaysTop = !depth.getValue(this)
+        val alwaysTop = !depth
         val sp = sprite ?: return
         val animationTicks = animator.time.toInt()
 
@@ -39,13 +44,13 @@ class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: ISprite?,
             BUS.fire(AnimationLoopEvent(this))
         }
         lastAnim = animationTicks
-        color.getValue(this).glColor()
+        color.glColor()
         sp.bind()
 
         var w = size.xi
         var h = size.yi
-        val dir = direction.getValue(this)
-        val progress = this.progress.getValue(this)
+        val dir = direction
+        val progress = this.progress
 
         if (dir == ProgressDirection.Y_POS || dir == ProgressDirection.Y_NEG)
             h = (h * progress).toInt()

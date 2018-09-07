@@ -31,7 +31,7 @@ class ComponentDebugger : GuiComponent(0, 0, 0, 0) {
         // move the flattened plane back a bit so we are above it
         flatten.transform.translateZ = -1.0
 
-        resizeBar.color.setValue(Color(0xA6A6A6))
+        resizeBar.color = Color(0xA6A6A6)
         add(debugPanel)
         add(resizeBarParent)
         resizeBarParent.add(resizeBar)

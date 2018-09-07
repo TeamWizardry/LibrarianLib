@@ -17,10 +17,10 @@ class GuiTestScissor : GuiBase(100, 100) {
         val c3 = ComponentRect(-500, -500, 1000, 1000)
 
 
-        bg.color.setValue(Color.GRAY)
-        c.color.setValue(Color.RED)
-        c2.color.setValue(Color.GREEN)
-        c3.color.setValue(Color.BLUE)
+        bg.color = Color.GRAY
+        c.color = Color.RED
+        c2.color = Color.GREEN
+        c3.color = Color.BLUE
 
 
         val scissor = ComponentVoid(0, 0, 50, 50)

@@ -128,12 +128,12 @@ class Entry(override val bookParent: Book, parentSheet: String, parentOuter: Col
 
                     val titleBar = ComponentSprite(book.titleBarSprite,
                             16 + xSize / 2 - book.titleBarSprite.width / 2, -31)
-                    titleBar.color.setValue(book.book.bookColor)
+                    titleBar.color = book.book.bookColor
                     holderComponent.add(titleBar)
 
                     val titleText = ComponentText(titleBar.size.xi / 2 - 12, titleBar.size.yi / 2 + 1, ComponentText.TextAlignH.CENTER, ComponentText.TextAlignV.MIDDLE)
-                    titleText.text.setValue(title)
-                    titleText.color.setValue(book.book.entryTitleTextColor)
+                    titleText.text = title
+                    titleText.color = book.book.entryTitleTextColor
                     titleBar.add(titleText)
 
                     holderComponent

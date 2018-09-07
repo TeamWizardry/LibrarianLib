@@ -1,13 +1,12 @@
 package com.teamwizardry.librarianlib.features.gui.mixin.gl
 
-import com.teamwizardry.librarianlib.features.gui.Option
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.kotlin.glColor
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.Vec3d
 import java.awt.Color
 
+/*
 object GlMixin {
 
     val TAG_ATTRIB = "mixin_attrib"
@@ -119,3 +118,4 @@ object GlMixin {
         }
     }
 }
+*/

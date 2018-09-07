@@ -43,7 +43,7 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
         if (recipes.isNotEmpty()) {
             val output = ComponentStack(
                     (size.x / 2.0 - 8 + 40).toInt(), (size.y / 2.0 - 8).toInt() - 8)
-            output.stack.func { recipe.recipeOutput }
+            output.stack_im { recipe.recipeOutput }
             add(output)
 
             val x = (-8 + size.x / 2.0 - 24.0 - 16.toDouble()).toInt()
@@ -54,7 +54,7 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
 
                 add(stack)
 
-                stack.stack.func {
+                stack.stack_im {
                     val stacks = grid[row * 3 + column].matchingStacks
                     if (stacks.isEmpty())
                         ItemStack.EMPTY
@@ -133,8 +133,8 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
 
         if (subtext != null) {
             val text = ComponentText(size.xi / 2, size.yi * 3 / 4, ComponentText.TextAlignH.CENTER, ComponentText.TextAlignV.TOP)
-            text.text.setValue(subtext.toString())
-            text.wrap.setValue(size.xi * 3 / 4)
+            text.text = subtext.toString()
+            text.wrap = size.xi * 3 / 4
             add(text)
         }
     }

@@ -6,7 +6,7 @@ package com.teamwizardry.librarianlib.features.gui.components
  * (a copy of which can be found at the repo root)
  */
 
-import com.teamwizardry.librarianlib.features.gui.Option
+import com.teamwizardry.librarianlib.features.gui.IMValue
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.ISprite
@@ -21,33 +21,24 @@ import net.minecraftforge.fml.relauncher.SideOnly
 class ComponentProgressBar @JvmOverloads constructor(fgSprite: ISprite?, bgSprite: ISprite?,
                                                      x: Int, y: Int,
                                                      fgWidth: Int = fgSprite?.width ?: 16, fgHeight: Int = fgSprite?.height ?: 16,
-                                                     bgWidth: Int = bgSprite?.width ?: 16, bgHeight: Int = bgSprite?.height ?: 16,
-                                                     direction: Option<ComponentSpriteProgressBar, ComponentSpriteProgressBar.ProgressDirection> = Option(ComponentSpriteProgressBar.ProgressDirection.X_POS),
-                                                     progress: Option<ComponentSpriteProgressBar, Float> = Option(1.0F))
+                                                     bgWidth: Int = bgSprite?.width ?: 16, bgHeight: Int = bgSprite?.height ?: 16)
     : GuiComponent(x, y, bgWidth, bgHeight) {
+
+    val direction_im: IMValue<ComponentSpriteProgressBar.ProgressDirection> = IMValue(ComponentSpriteProgressBar.ProgressDirection.X_POS)
+    var direction: ComponentSpriteProgressBar.ProgressDirection by direction_im
+    val progress_im: IMValue<Float> = IMValue(1.0F)
+    var progress: Float by progress_im
 
     var backgroundComponent = ComponentSprite(bgSprite, 0, 0, bgWidth, bgHeight)
     var progressComponent = ComponentSpriteProgressBar(fgSprite, (bgWidth - fgWidth) / 2, (bgHeight - fgHeight) / 2, fgWidth, fgHeight)
 
     init {
-        progressComponent.direction = direction
-        progressComponent.progress = progress
+        progressComponent.direction_im { this.direction }
+        progressComponent.progress_im { this.progress }
         this.add(backgroundComponent, progressComponent)
     }
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
         // NOP
     }
-
-    var direction: Option<ComponentSpriteProgressBar, ComponentSpriteProgressBar.ProgressDirection>
-        get() = progressComponent.direction
-        set(value) {
-            progressComponent.direction = value
-        }
-
-    var progress: Option<ComponentSpriteProgressBar, Float>
-        get() = progressComponent.progress
-        set(value) {
-            progressComponent.progress = value
-        }
 }

@@ -31,7 +31,7 @@ class ComponentCategoryButton(posX: Int, posY: Int, width: Int, height: Int, boo
             GlStateManager.color(1f, 1f, 1f)
         }
 
-        tooltip.func {
+        tooltip_im {
             val list = mutableListOf<String>()
             category.title?.add(list)
             category.desc?.addDynamic(list)

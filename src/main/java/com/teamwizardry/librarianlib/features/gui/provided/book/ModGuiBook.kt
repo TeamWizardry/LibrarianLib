@@ -56,12 +56,12 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
 
     init {
         mainBookComponent = ComponentSprite(pageSprite, 0, 0)
-        mainBookComponent.color.setValue(book.bookColor)
+        mainBookComponent.color = book.bookColor
 
         paperComponent = ComponentSprite(paperSprite, 0, 0)
         mainBookComponent.add(paperComponent)
         bindingComponent = ComponentSprite(bindingSprite, 0, 0)
-        bindingComponent.color.setValue(book.bindingColor)
+        bindingComponent.color = book.bindingColor
         mainBookComponent.add(bindingComponent)
 
         navBar = ComponentNavBar(this, mainBookComponent.size.xi / 2 - 35, mainBookComponent.size.yi, 70)
@@ -83,15 +83,15 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
         val icon = entry.icon
 
         val textComponent = ComponentText(20, Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2, ComponentText.TextAlignH.LEFT, ComponentText.TextAlignV.TOP)
-        textComponent.unicode.setValue(true)
-        textComponent.text.setValue(title)
+        textComponent.unicode = true
+        textComponent.text = title
         indexButton.add(textComponent)
 
-        indexButton.BUS.hook(GuiComponentEvents.MouseInEvent::class.java) { textComponent.text.setValue(" " + TextFormatting.ITALIC.toString() + title) }
+        indexButton.BUS.hook(GuiComponentEvents.MouseInEvent::class.java) { textComponent.text = " " + TextFormatting.ITALIC.toString() + title }
 
-        indexButton.BUS.hook(GuiComponentEvents.MouseOutEvent::class.java) { textComponent.text.setValue(TextFormatting.RESET.toString() + title) }
+        indexButton.BUS.hook(GuiComponentEvents.MouseOutEvent::class.java) { textComponent.text = TextFormatting.RESET.toString() + title }
 
-        indexButton.tooltip.func {
+        indexButton.tooltip_im {
             val list = mutableListOf<String>()
             entry.title?.add(list)
             entry.desc?.addDynamic(list)
@@ -134,8 +134,8 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
             bindingComponent.sprite = bindingSprite
         }
 
-        mainBookComponent.color.setValue(outerColor)
-        bindingComponent.color.setValue(bindingColor)
+        mainBookComponent.color = outerColor
+        bindingComponent.color = bindingColor
     }
 
     companion object {

@@ -16,26 +16,26 @@ class GuiTestClickEvents : GuiBase(100, 100) {
         val text = ComponentText(0, 20)
         val text2 = ComponentText(0, 30)
         c.add(text, text2)
-        c.color.setValue(Color(255, 0, 0, 127))
+        c.color = Color(255, 0, 0, 127)
         mainComponents.add(c)
 
         c.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) { event ->
-            text.text.setValue("click")
+            text.text = "click"
         }
         c.BUS.hook(GuiComponentEvents.MouseClickOutsideEvent::class.java) { event ->
-            text.text.setValue("click outside")
+            text.text = "click outside"
         }
         c.BUS.hook(GuiComponentEvents.MouseClickDragInEvent::class.java) { event ->
-            text.text.setValue("click drag in")
+            text.text = "click drag in"
         }
         c.BUS.hook(GuiComponentEvents.MouseClickDragOutEvent::class.java) { event ->
-            text.text.setValue("click drag out")
+            text.text = "click drag out"
         }
         c.BUS.hook(GuiComponentEvents.MouseClickAnyEvent::class.java) { event ->
-            text2.text.setValue("click")
+            text2.text = "click"
         }
         c.BUS.hook(GuiComponentEvents.MouseDownEvent::class.java) { event ->
-            text2.text.setValue("")
+            text2.text = ""
         }
     }
 }

@@ -149,8 +149,8 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
 
         if (subtext != null) {
             val text = ComponentText(size.xi / 2, size.yi * 3 / 4, ComponentText.TextAlignH.CENTER, ComponentText.TextAlignV.TOP)
-            text.text.setValue(subtext.toString())
-            text.wrap.setValue(size.xi * 3 / 4)
+            text.text = subtext.toString()
+            text.wrap = size.xi * 3 / 4
             add(text)
         }
     }

@@ -91,7 +91,7 @@ class GuiContainerTest(container: ContainerTest) : GuiContainerBase(container, 1
         s.add(miniGrid.root)
 
         val button = ComponentRect(178, 68, 12, 11)
-        button.color.setValue(Color(0, 0, 0, 127))
+        button.color = Color(0, 0, 0, 127)
 
         button.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
             s.isVisible = !s.isVisible

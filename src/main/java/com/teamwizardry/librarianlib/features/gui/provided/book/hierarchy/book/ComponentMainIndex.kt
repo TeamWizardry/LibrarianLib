@@ -21,18 +21,18 @@ class ComponentMainIndex(book: IBookGui, page: Int) : GuiComponent(16, 16, book.
 
         // --------- BANNER --------- //
         val componentBanner = ComponentSprite(book.bannerSprite, -24, -4)
-        componentBanner.color.setValue(book.book.bookColor)
+        componentBanner.color = book.book.bookColor
         add(componentBanner)
 
         val fontRenderer = Minecraft.getMinecraft().fontRenderer
         val componentBannerText = ComponentText(20, 5, ComponentText.TextAlignH.LEFT, ComponentText.TextAlignV.TOP)
-        componentBannerText.text.setValue(book.book.header.toString())
-        componentBannerText.color.setValue(book.book.highlightColor)
+        componentBannerText.text = book.book.header.toString()
+        componentBannerText.color = book.book.highlightColor
 
         val componentBannerSubText = ComponentText(componentBanner.size.xi - 10, 2 + fontRenderer.FONT_HEIGHT, ComponentText.TextAlignH.RIGHT, ComponentText.TextAlignV.TOP)
-        componentBannerSubText.text.setValue(book.book.subtitle.toString())
-        componentBannerSubText.unicode.setValue(true)
-        componentBannerSubText.color.setValue(book.book.highlightColor)
+        componentBannerSubText.text = book.book.subtitle.toString()
+        componentBannerSubText.unicode = true
+        componentBannerSubText.color = book.book.highlightColor
 
         componentBanner.add(componentBannerText, componentBannerSubText)
 

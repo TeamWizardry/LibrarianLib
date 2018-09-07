@@ -21,9 +21,9 @@ class GuiTestScale : GuiBase(100, 100) {
             p.transform.translate += vec(2, 2)
         }
         val c = ComponentRect(-10, -10, 50, 50)
-        c.color.setValue(Color.RED)
+        c.color = Color.RED
         val bg = ComponentRect(25, 25, 50, 50)
-        bg.color.setValue(Color.GREEN)
+        bg.color = Color.GREEN
         val scissor = ComponentVoid(5, 5, 30, 30)
         scissor.clipToBounds = true
         scissor.add(c)

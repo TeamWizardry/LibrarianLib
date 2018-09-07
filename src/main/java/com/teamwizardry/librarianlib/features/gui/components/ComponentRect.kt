@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
-import com.teamwizardry.librarianlib.features.gui.Option
+import com.teamwizardry.librarianlib.features.gui.IMValue
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
@@ -14,7 +14,8 @@ import java.awt.Color
  */
 class ComponentRect(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent(posX, posY, width, height) {
 
-    val color = Option<ComponentRect, Color>(Color.WHITE)
+    val color_im: IMValue<Color> = IMValue(Color.WHITE)
+    var color: Color by color_im
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
         val minX = 0.0
@@ -22,7 +23,7 @@ class ComponentRect(posX: Int, posY: Int, width: Int, height: Int) : GuiComponen
         val maxX = size.xi.toDouble()
         val maxY = size.yi.toDouble()
 
-        val c = color.getValue(this)
+        val c = color
 
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer

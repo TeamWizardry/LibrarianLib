@@ -55,9 +55,9 @@ abstract class PageString(override val entry: Entry) : Page {
         for (section in sections) {
             pages.add {
                 val sectionComponent = ComponentText(16, 16, ComponentText.TextAlignH.LEFT, ComponentText.TextAlignV.TOP)
-                sectionComponent.text.setValue(section)
-                sectionComponent.wrap.setValue(size.xi)
-                sectionComponent.unicode.setValue(true)
+                sectionComponent.text = section
+                sectionComponent.wrap = size.xi
+                sectionComponent.unicode = true
                 sectionComponent
             }
         }

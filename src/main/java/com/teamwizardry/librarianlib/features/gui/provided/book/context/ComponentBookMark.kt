@@ -32,7 +32,7 @@ open class ComponentBookMark(val book: IBookGui, val icon: Sprite, val id: Int, 
         animX = (-box.width + 20).toDouble()
 
         bar = ComponentSprite(book.bookmarkSprite, -box.width + 20, 0)
-        bar.color.setValue(book.book.bookColor)
+        bar.color = book.book.bookColor
         add(bar)
 
         val iconComponent = ComponentSprite(icon, size.xi - icon.width + iconExtraX, iconExtraY)
@@ -42,11 +42,11 @@ open class ComponentBookMark(val book: IBookGui, val icon: Sprite, val id: Int, 
     fun setBookmarkText(textString: String = "", textColor: Color = Color.WHITE, extraX: Int = 0) {
         val textComp = ComponentText(size.xi - icon.width + extraX, 2, ComponentText.TextAlignH.RIGHT, ComponentText.TextAlignV.TOP)
         pad = 10 + Minecraft.getMinecraft().fontRenderer.getStringWidth(textString)
-        textComp.text.setValue(textString)
-        textComp.color.setValue(textColor)
+        textComp.text = textString
+        textComp.color = textColor
         textComp.transform.translateZ = 10.0
-        textComp.unicode.setValue(false)
-        textComp.shadow.setValue(true)
+        textComp.unicode = false
+        textComp.shadow = true
         bar.add(textComp)
         slideIn()
     }

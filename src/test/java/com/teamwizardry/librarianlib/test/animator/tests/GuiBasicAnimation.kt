@@ -21,15 +21,15 @@ class GuiBasicAnimation : GuiBase(200, 100) {
 
 
         val background = ComponentRect(0, 0, 200, 100)
-        background.color.setValue(Color(127, 127, 127))
+        background.color = Color(127, 127, 127)
         mainComponents.add(background)
 
         val bouncer = ComponentRect(0, 0, 25, 15)
-        bouncer.color.setValue(Color(255, 0, 0))
+        bouncer.color = Color(255, 0, 0)
         mainComponents.add(bouncer)
 
         val bouncer2 = ComponentRect(0, 95, 50, 5)
-        bouncer2.color.setValue(Color(0, 0, 255))
+        bouncer2.color = Color(0, 0, 255)
         mainComponents.add(bouncer2)
 
         val anim = BasicAnimation(bouncer2, "pos.x")

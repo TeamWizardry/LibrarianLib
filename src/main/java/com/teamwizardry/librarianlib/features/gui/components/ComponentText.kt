@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
-import com.teamwizardry.librarianlib.features.gui.Option
+import com.teamwizardry.librarianlib.features.gui.IMValue
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.BoundingBox2D
@@ -13,59 +13,45 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
     /**
      * The text to draw
      */
-    val text = Option<ComponentText, String>("-NULL TEXT-")
+    val text_im: IMValue<String> = IMValue("-NULL TEXT-")
     /**
      * The color of the text
      */
-    val color = Option<ComponentText, Color>(Color.BLACK)
+    val color_im: IMValue<Color> = IMValue(Color.BLACK)
     /**
      * The wrap width in pixels, -1 for no wrapping
      */
-    val wrap = Option<ComponentText, Int>(-1)
+    val wrap_im: IMValue<Int> = IMValue(-1)
     /**
      * Whether to set the font renderer's unicode and bidi flags
      */
-    val unicode = Option<ComponentText, Boolean>(false)
+    val unicode_im: IMValue<Boolean> = IMValue(false)
     /**
      * Whether to set the bidirectional flag to true when unicode is enabled
      */
-    val enableUnicodeBidi = Option<ComponentText, Boolean>(true)
+    val enableUnicodeBidi_im: IMValue<Boolean> = IMValue(true)
     /**
      * Whether to render a shadow behind the text
      */
-    val shadow = Option<ComponentText, Boolean>(false)
+    val shadow_im: IMValue<Boolean> = IMValue(false)
 
-    /**
-     * Set the text value and unset the function
-     */
-    fun `val`(str: String): ComponentText {
-        text.setValue(str)
-        text.noFunc()
-        return this
-    }
-
-    /**
-     * Set the callback to create the text for
-
-     * @param func
-     * *
-     * @return
-     */
-    fun func(func: (ComponentText) -> String): ComponentText {
-        text.func(func)
-        return this
-    }
+    var text: String by text_im
+    var color: Color by color_im
+    var wrap: Int by wrap_im
+    var unicode: Boolean by unicode_im
+    var enableUnicodeBidi: Boolean by enableUnicodeBidi_im
+    var shadow: Boolean by shadow_im
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
         val fr = Minecraft.getMinecraft().fontRenderer
 
-        val fullText = text.getValue(this)
-        val colorHex = color.getValue(this).rgb
-        val enableFlags = unicode.getValue(this)
-        val dropShadow = shadow.getValue(this)
+        val fullText = text
+        val colorHex = color.rgb
+        val enableFlags = unicode
+        val dropShadow = shadow
 
         if (enableFlags) {
-            if(enableUnicodeBidi.getValue(this))
+            if(enableUnicodeBidi)
                 fr.bidiFlag = true
             fr.unicodeFlag = true
         }
@@ -75,7 +61,7 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
 
         val lines: List<String>
 
-        val wrap = this.wrap.getValue(this)
+        val wrap = this.wrap
         if (wrap == -1) {
             lines = listOf(fullText)
         } else {
@@ -105,7 +91,7 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
         }
 
         if (enableFlags) {
-            if(enableUnicodeBidi.getValue(this))
+            if(enableUnicodeBidi)
                 fr.bidiFlag = false
             fr.unicodeFlag = false
         }
@@ -117,29 +103,29 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
 
     val contentSize: BoundingBox2D
         get() {
-            val wrap = this.wrap.getValue(this)
+            val wrap = this.wrap
 
             val size: Vec2d
 
             val fr = Minecraft.getMinecraft().fontRenderer
 
-            val enableFlags = unicode.getValue(this)
+            val enableFlags = unicode
 
             if (enableFlags) {
-                if(enableUnicodeBidi.getValue(this))
+                if(enableUnicodeBidi)
                     fr.bidiFlag = true
                 fr.unicodeFlag = true
             }
 
             if (wrap == -1) {
-                size = vec(fr.getStringWidth(text.getValue(this)), fr.FONT_HEIGHT)
+                size = vec(fr.getStringWidth(text), fr.FONT_HEIGHT)
             } else {
-                val wrapped = fr.listFormattedStringToWidth(text.getValue(this), wrap)
+                val wrapped = fr.listFormattedStringToWidth(text, wrap)
                 size = vec(wrap, wrapped.size * fr.FONT_HEIGHT)
             }
 
             if (enableFlags) {
-                if(enableUnicodeBidi.getValue(this))
+                if(enableUnicodeBidi)
                     fr.bidiFlag = false
                 fr.unicodeFlag = false
             }

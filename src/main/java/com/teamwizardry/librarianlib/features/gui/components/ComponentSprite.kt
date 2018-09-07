@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
-import com.teamwizardry.librarianlib.features.gui.Option
+import com.teamwizardry.librarianlib.features.gui.IMValue
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.kotlin.glColor
 import com.teamwizardry.librarianlib.features.math.Vec2d
@@ -14,13 +14,15 @@ class ComponentSprite @JvmOverloads constructor(var sprite: ISprite?, x: Int, y:
     class AnimationLoopEvent(val component: ComponentSprite) : Event()
 
 
-    var depth = Option<ComponentSprite, Boolean>(true)
-    var color = Option<ComponentSprite, Color>(Color.WHITE)
+    val depth_im: IMValue<Boolean> = IMValue(true)
+    val color_im: IMValue<Color> = IMValue(Color.WHITE)
+    var depth: Boolean by depth_im
+    var color: Color by color_im
 
     var lastAnim: Int = 0
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
-        val alwaysTop = !depth.getValue(this)
+        val alwaysTop = !depth
         val sp = sprite ?: return
         val animationTicks = animator.time.toInt()
         if (alwaysTop) {
@@ -36,7 +38,7 @@ class ComponentSprite @JvmOverloads constructor(var sprite: ISprite?, x: Int, y:
             BUS.fire(AnimationLoopEvent(this))
         }
         lastAnim = animationTicks
-        color.getValue(this).glColor()
+        color.glColor()
         sp.bind()
         sp.draw(animationTicks, 0f, 0f, size.xi.toFloat(), size.yi.toFloat())
         if (alwaysTop)

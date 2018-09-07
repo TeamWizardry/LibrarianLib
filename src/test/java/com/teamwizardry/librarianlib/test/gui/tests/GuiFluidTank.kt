@@ -6,7 +6,6 @@ package com.teamwizardry.librarianlib.test.gui.tests
  * (a copy of which can be found at the repo root)
  */
 
-import com.teamwizardry.librarianlib.features.gui.Option
 import com.teamwizardry.librarianlib.features.gui.components.ComponentFluidStack
 import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.gui.components.ComponentSpriteProgressBar
@@ -47,13 +46,15 @@ open class GuiFluidTank(inventorySlotsIn: FluidTankContainer) : GuiContainerBase
         bg.add(output)
 
         val state = te.world.getBlockState(te.pos)
-        bg.add(ComponentText(88, 6, horizontal = ComponentText.TextAlignH.CENTER).`val`(I18n.format(ItemStack(state.block, 1, state.block.damageDropped(state)).displayName)))
+        val title = ComponentText(88, 6, horizontal = ComponentText.TextAlignH.CENTER)
+        title.text = I18n.format(ItemStack(state.block, 1, state.block.damageDropped(state)).displayName)
+        bg.add(title)
 
         val fluidBar = ComponentFluidStack(null, FLUID_BG, 15, 15,
                 bgWidth = 16,
-                direction = Option(ComponentSpriteProgressBar.ProgressDirection.Y_NEG),
                 tankProps = te.fluidHandler.tankPropertiesImpl[0])
-        fluidBar.tooltip {
+        fluidBar.direction = ComponentSpriteProgressBar.ProgressDirection.Y_NEG
+        fluidBar.tooltip_im {
             val f = te.fluidHandler.fluid
             listOf(if (f != null) I18n.format("llt:gui.fluid", f.localizedName, f.amount) else I18n.format("llt:gui.fluidEmpty"))
         }

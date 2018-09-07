@@ -37,10 +37,10 @@ class ComponentSearchBar(book: IBookGui, id: Int, onType: ((String) -> Unit)?) :
         }
 
 
-        textField.enabledColor.setValue(book.book.searchTextColor)
-        textField.selectionColor.setValue(book.book.searchTextHighlight)
-        textField.cursorColor.setValue(book.book.searchTextCursor)
-        textField.autoFocus.setValue(true)
+        textField.enabledColor = book.book.searchTextColor
+        textField.selectionColor = book.book.searchTextHighlight
+        textField.cursorColor = book.book.searchTextCursor
+        textField.autoFocus = true
         add(textField)
 
         clipToBounds = true

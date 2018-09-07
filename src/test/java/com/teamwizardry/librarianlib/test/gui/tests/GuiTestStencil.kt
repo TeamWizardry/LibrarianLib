@@ -17,9 +17,9 @@ class GuiTestStencil : GuiBase(0, 0) {
         val clipped = ComponentRect(50, 50, 100, 100)
         val marker = ComponentRect(49, 49, 102, 102)
 
-        clipping.color.setValue(Color(0f, 1f, 0f, 0.5f))
-        clipped.color.setValue(Color.BLUE)
-        marker.color.setValue(Color.RED)
+        clipping.color = Color(0f, 1f, 0f, 0.5f)
+        clipped.color = Color.BLUE
+        marker.color = Color.RED
 
         wrapper.add(marker)
         wrapper.add(clipping)

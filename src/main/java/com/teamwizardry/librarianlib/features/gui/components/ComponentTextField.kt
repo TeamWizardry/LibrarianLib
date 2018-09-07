@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
-import com.teamwizardry.librarianlib.features.gui.Option
+import com.teamwizardry.librarianlib.features.gui.IMValue
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.kotlin.*
@@ -32,7 +32,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
 
     var text = ""
         set(value) {
-            val max = maxStringLength.getValue(this)
+            val max = maxStringLength
             val trimmed = if (value.length > max)
                 value.substring(0, max)
             else value
@@ -43,11 +43,17 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
                 cursorToEnd()
         }
 
-    val maxStringLength = Option<ComponentTextField, Int>(100)
-    val canLoseFocus = Option<ComponentTextField, Boolean>(true)
-    val autoFocus = Option<ComponentTextField, Boolean>(false)
-    val useShadow = Option<ComponentTextField, Boolean>(true)
-    val useVanillaFilter = Option<ComponentTextField, Boolean>(true)
+    val maxStringLength_im: IMValue<Int> = IMValue(100)
+    val canLoseFocus_im: IMValue<Boolean> = IMValue(true)
+    val autoFocus_im: IMValue<Boolean> = IMValue(false)
+    val useShadow_im: IMValue<Boolean> = IMValue(true)
+    val useVanillaFilter_im: IMValue<Boolean> = IMValue(true)
+
+    var maxStringLength: Int by maxStringLength_im
+    var canLoseFocus: Boolean by canLoseFocus_im
+    var autoFocus: Boolean by autoFocus_im
+    var useShadow: Boolean by useShadow_im
+    var useVanillaFilter: Boolean by useVanillaFilter_im
 
     /**
      * Callback to filter input.
@@ -76,10 +82,15 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
             field = MathHelper.clamp(pos, 0, this.text.length)
             this.setSelectionPosition(this.cursorPosition)
         }
-    var enabledColor = Option<ComponentTextField, Color>(Color(0xe0e0e0))
-    val disabledColor = Option<ComponentTextField, Color>(Color(0x707070))
-    var selectionColor = Option<ComponentTextField, Color>(Color(0x0000ff))
-    var cursorColor = Option<ComponentTextField, Color>(Color(0xd0d0d0))
+    val enabledColor_im: IMValue<Color> = IMValue(Color(0xe0e0e0))
+    val disabledColor_im: IMValue<Color> = IMValue(Color(0x707070))
+    val selectionColor_im: IMValue<Color> = IMValue(Color(0x0000ff))
+    val cursorColor_im: IMValue<Color> = IMValue(Color(0xd0d0d0))
+
+    var enabledColor: Color by enabledColor_im
+    var disabledColor: Color by disabledColor_im
+    var selectionColor: Color by selectionColor_im
+    var cursorColor: Color by cursorColor_im
 
 
     var selectionEnd: Int = 0
@@ -111,8 +122,8 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
 
     fun writeText(textToWrite: String) {
 
-        val allowed = if (useVanillaFilter(this)) ChatAllowedCharacters.filterAllowedCharacters(textToWrite)  else textToWrite
-        val max = maxStringLength.getValue(this)
+        val allowed = if (useVanillaFilter) ChatAllowedCharacters.filterAllowedCharacters(textToWrite)  else textToWrite
+        val max = maxStringLength
 
         val selectionStart = if (this.cursorPosition < this.selectionEnd) this.cursorPosition else this.selectionEnd
         val selectionEnd = if (this.cursorPosition < this.selectionEnd) this.selectionEnd else this.cursorPosition
@@ -232,7 +243,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
 
     fun handleKeyTyped(input: Char, inputCode: Int): Boolean {
 
-        if (!this.isFocused && !this.autoFocus.getValue(this))
+        if (!this.isFocused && !this.autoFocus)
             return false
 
         when {
@@ -322,7 +333,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
                     BUS.fire(TextSentEvent(text))
                     return true
                 }
-                else -> if (!useVanillaFilter(this) || ChatAllowedCharacters.isAllowedCharacter(input)) {
+                else -> if (!useVanillaFilter || ChatAllowedCharacters.isAllowedCharacter(input)) {
                     if (this.isEnabled)
                         this.writeText(Character.toString(input))
 
@@ -337,7 +348,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
     fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean {
         val withinBoundary = mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height
 
-        if (this.canLoseFocus.getValue(this))
+        if (this.canLoseFocus)
             this.isFocused = withinBoundary
 
         return if (this.isFocused && withinBoundary && mouseButton == 0) {
@@ -351,14 +362,14 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
     }
 
     private fun drawString(text: String, x: Float, y: Float, color: Int): Int {
-        return this.fontRenderer.drawString(text, x, y, color, useShadow(this))
+        return this.fontRenderer.drawString(text, x, y, color, useShadow)
     }
 
     fun drawTextBox() {
         if (this.isVisible) {
-            val max = maxStringLength.getValue(this)
+            val max = maxStringLength
 
-            val textColor = if (this.isEnabled) this.enabledColor.getValue(this).rgb else this.disabledColor.getValue(this).rgb
+            val textColor = if (this.isEnabled) this.enabledColor.rgb else this.disabledColor.rgb
             val cursorRelativePosition = this.cursorPosition - this.lineScrollOffset
             var selectionEndPosition = this.selectionEnd - this.lineScrollOffset
             val visible = this.fontRenderer.trimStringToWidth(this.text.substring(this.lineScrollOffset), this.width - fontRenderer.getStringWidth("_"))
@@ -387,7 +398,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
 
             if (cursorBlinkActive)
                 if (cursorInText) {
-                    Gui.drawRect(unselectedBound, y - 1, unselectedBound + 1, y + 2 + this.fontRenderer.FONT_HEIGHT, cursorColor.getValue(this).rgb)
+                    Gui.drawRect(unselectedBound, y - 1, unselectedBound + 1, y + 2 + this.fontRenderer.FONT_HEIGHT, cursorColor.rgb)
                     GlStateManager.enableBlend()
                 } else
                     this.drawString("_", unselectedBound.toFloat(), (y + 1).toFloat(), textColor)
@@ -415,7 +426,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
 
         val tessellator = Tessellator.getInstance()
         val bufferbuilder = tessellator.buffer
-        selectionColor.getValue(this).glColor()
+        selectionColor.glColor()
         GlStateManager.disableTexture2D()
         GlStateManager.enableColorLogic()
         GlStateManager.colorLogicOp(GlStateManager.LogicOp.OR_REVERSE)

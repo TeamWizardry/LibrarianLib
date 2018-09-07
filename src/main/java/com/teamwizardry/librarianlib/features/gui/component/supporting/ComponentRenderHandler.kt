@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.features.gui.component.supporting
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.animator.Animation
 import com.teamwizardry.librarianlib.features.animator.Animator
-import com.teamwizardry.librarianlib.features.gui.Option
+import com.teamwizardry.librarianlib.features.gui.IMValue
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.math.Vec2d
@@ -18,24 +18,16 @@ import org.lwjgl.opengl.GL11.GL_LINES
 import org.lwjgl.opengl.GL11.GL_LINE_STRIP
 
 interface IComponentRender {
-    var tooltip: Option<GuiComponent, List<String>?>
+    val tooltip_im: IMValue<List<String>?>
+    var tooltip: List<String>?
     var tooltipFont: FontRenderer?
     /**
      * If nonnull, the cursor will switch to this when hovering.
      */
+    val hoverCursor_im: IMValue<LibCursor?>
     var hoverCursor: LibCursor?
     var cursor: LibCursor?
     var animator: Animator
-
-    /**
-     * Sets the tooltip to be drawn, overriding the existing value. Pass null for the font to use the default font renderer.
-     */
-    fun setTooltip(text: List<String>, font: FontRenderer?)
-
-    /**
-     * Sets the tooltip to be drawn, overriding the existing value and using the default font renderer.
-     */
-    fun setTooltip(text: List<String>)
 
     /**
      * Adds animations to [animator]
@@ -67,12 +59,14 @@ interface IComponentRender {
 class ComponentRenderHandler: IComponentRender {
     lateinit var component: GuiComponent
 
-    override var tooltip: Option<GuiComponent, List<String>?> = Option(null)
+    override val tooltip_im: IMValue<List<String>?> = IMValue()
+    override var tooltip: List<String>? by tooltip_im
     override var tooltipFont: FontRenderer? = null
     /**
      * If nonnull, the cursor will switch to this when hovering.
      */
-    override var hoverCursor: LibCursor? = null
+    override val hoverCursor_im: IMValue<LibCursor?> = IMValue()
+    override var hoverCursor: LibCursor? by hoverCursor_im
 
     override var cursor: LibCursor? = null
         get() {
@@ -89,19 +83,6 @@ class ComponentRenderHandler: IComponentRender {
             else
                 parent.cursor = value
         }
-
-    /**
-     * Sets the tooltip to be drawn, overriding the existing value. Pass null for the font to use the default font renderer.
-     */
-    override fun setTooltip(text: List<String>, font: FontRenderer?) {
-        tooltip(text)
-        tooltipFont = font
-    }
-
-    /**
-     * Sets the tooltip to be drawn, overriding the existing value and using the default font renderer.
-     */
-    override fun setTooltip(text: List<String>) = setTooltip(text, null)
 
     override var animator: Animator
         get() {
@@ -236,7 +217,7 @@ class ComponentRenderHandler: IComponentRender {
     override fun drawLate(mousePos: Vec2d, partialTicks: Float) {
         if (!component.isVisible) return
         if (component.mouseOver) {
-            val tt = tooltip(component)
+            val tt = tooltip
             if (tt?.isNotEmpty() == true) {
                 GuiUtils.drawHoveringText(tt, mousePos.xi, mousePos.yi, component.root.size.xi, component.root.size.yi, -1,
                         tooltipFont ?: Minecraft.getMinecraft().fontRenderer)
