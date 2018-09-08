@@ -3,6 +3,8 @@ package com.teamwizardry.librarianlib.features.gui.components
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
 import com.teamwizardry.librarianlib.features.gui.IMValue
+import com.teamwizardry.librarianlib.features.gui.IMValueBoolean
+import com.teamwizardry.librarianlib.features.gui.IMValueInt
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.kotlin.*
@@ -43,11 +45,11 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
                 cursorToEnd()
         }
 
-    val maxStringLength_im: IMValue<Int> = IMValue(100)
-    val canLoseFocus_im: IMValue<Boolean> = IMValue(true)
-    val autoFocus_im: IMValue<Boolean> = IMValue(false)
-    val useShadow_im: IMValue<Boolean> = IMValue(true)
-    val useVanillaFilter_im: IMValue<Boolean> = IMValue(true)
+    val maxStringLength_im: IMValueInt = IMValueInt(100)
+    val canLoseFocus_im: IMValueBoolean = IMValueBoolean(true)
+    val autoFocus_im: IMValueBoolean = IMValueBoolean(false)
+    val useShadow_im: IMValueBoolean = IMValueBoolean(true)
+    val useVanillaFilter_im: IMValueBoolean = IMValueBoolean(true)
 
     var maxStringLength: Int by maxStringLength_im
     var canLoseFocus: Boolean by canLoseFocus_im

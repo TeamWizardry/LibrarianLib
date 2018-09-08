@@ -51,13 +51,13 @@ open class GuiPoweredMachine(inventorySlotsIn: PoweredMachineContainer) : GuiCon
         bg.add(title)
 
         val progressBar = ComponentProgressBar(PROGRESS_FG, PROGRESS_BG, 77, 37)
-        progressBar.progress_im { te.currentOperation?.progress ?: 0f }
-        progressBar.tooltip_im { listOf(I18n.format("llt:gui.progress", ((te.currentOperation?.progress ?: 0f) * 100).toInt())) }
+        progressBar.progress_im { te.currentOperation?.progress ?: 0.0 }
+        progressBar.tooltip_im { listOf(I18n.format("llt:gui.progress", ((te.currentOperation?.progress ?: 0.0) * 100).toInt())) }
         bg.add(progressBar)
 
         val powerBar = ComponentProgressBar(POWER_FG, POWER_BG, 15, 15)
         powerBar.direction = ComponentSpriteProgressBar.ProgressDirection.Y_NEG
-        powerBar.progress_im { te.energyHandler.energyStored.toFloat() / te.energyHandler.maxEnergyStored }
+        powerBar.progress_im { te.energyHandler.energyStored.toDouble() / te.energyHandler.maxEnergyStored }
         powerBar.tooltip_im { listOf(I18n.format("llt:gui.energy", te.energyHandler.energyStored, te.energyHandler.maxEnergyStored)) }
         bg.add(powerBar)
     }

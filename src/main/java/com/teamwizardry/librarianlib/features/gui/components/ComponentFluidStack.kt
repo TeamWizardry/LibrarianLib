@@ -42,7 +42,7 @@ class ComponentFluidStack @JvmOverloads constructor(fgSprite: ISprite?, bgSprite
     init {
         progress.direction_im { this.direction }
         progress.progress_im {
-            (tankProps.contents?.amount?.toFloat() ?: 0f) / Math.max(1f, tankProps.capacity.toFloat())
+            (tankProps.contents?.amount ?: 0) / Math.max(1, tankProps.capacity).toDouble()
         }
     }
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {

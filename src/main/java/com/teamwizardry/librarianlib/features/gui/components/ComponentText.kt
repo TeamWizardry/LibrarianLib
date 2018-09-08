@@ -1,6 +1,8 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.gui.IMValue
+import com.teamwizardry.librarianlib.features.gui.IMValueBoolean
+import com.teamwizardry.librarianlib.features.gui.IMValueInt
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.BoundingBox2D
@@ -21,19 +23,19 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
     /**
      * The wrap width in pixels, -1 for no wrapping
      */
-    val wrap_im: IMValue<Int> = IMValue(-1)
+    val wrap_im: IMValueInt = IMValueInt(-1)
     /**
      * Whether to set the font renderer's unicode and bidi flags
      */
-    val unicode_im: IMValue<Boolean> = IMValue(false)
+    val unicode_im: IMValueBoolean = IMValueBoolean(false)
     /**
      * Whether to set the bidirectional flag to true when unicode is enabled
      */
-    val enableUnicodeBidi_im: IMValue<Boolean> = IMValue(true)
+    val enableUnicodeBidi_im: IMValueBoolean = IMValueBoolean(true)
     /**
      * Whether to render a shadow behind the text
      */
-    val shadow_im: IMValue<Boolean> = IMValue(false)
+    val shadow_im: IMValueBoolean = IMValueBoolean(false)
 
     var text: String by text_im
     var color: Color by color_im

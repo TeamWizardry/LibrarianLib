@@ -7,6 +7,7 @@ package com.teamwizardry.librarianlib.features.gui.components
  */
 
 import com.teamwizardry.librarianlib.features.gui.IMValue
+import com.teamwizardry.librarianlib.features.gui.IMValueDouble
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.ISprite
@@ -26,8 +27,8 @@ class ComponentProgressBar @JvmOverloads constructor(fgSprite: ISprite?, bgSprit
 
     val direction_im: IMValue<ComponentSpriteProgressBar.ProgressDirection> = IMValue(ComponentSpriteProgressBar.ProgressDirection.X_POS)
     var direction: ComponentSpriteProgressBar.ProgressDirection by direction_im
-    val progress_im: IMValue<Float> = IMValue(1.0F)
-    var progress: Float by progress_im
+    val progress_im: IMValueDouble = IMValueDouble(1.0)
+    var progress: Double by progress_im
 
     var backgroundComponent = ComponentSprite(bgSprite, 0, 0, bgWidth, bgHeight)
     var progressComponent = ComponentSpriteProgressBar(fgSprite, (bgWidth - fgWidth) / 2, (bgHeight - fgHeight) / 2, fgWidth, fgHeight)

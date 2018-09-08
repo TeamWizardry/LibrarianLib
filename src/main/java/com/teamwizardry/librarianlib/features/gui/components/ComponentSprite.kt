@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.gui.IMValue
+import com.teamwizardry.librarianlib.features.gui.IMValueBoolean
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.kotlin.glColor
 import com.teamwizardry.librarianlib.features.math.Vec2d
@@ -14,7 +15,7 @@ class ComponentSprite @JvmOverloads constructor(var sprite: ISprite?, x: Int, y:
     class AnimationLoopEvent(val component: ComponentSprite) : Event()
 
 
-    val depth_im: IMValue<Boolean> = IMValue(true)
+    val depth_im: IMValueBoolean = IMValueBoolean(true)
     val color_im: IMValue<Color> = IMValue(Color.WHITE)
     var depth: Boolean by depth_im
     var color: Color by color_im

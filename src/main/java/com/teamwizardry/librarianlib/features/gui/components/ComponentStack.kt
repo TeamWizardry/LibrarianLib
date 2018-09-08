@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.gui.HandlerList
 import com.teamwizardry.librarianlib.features.gui.IMValue
+import com.teamwizardry.librarianlib.features.gui.IMValueBoolean
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.kotlin.isNotEmpty
 import com.teamwizardry.librarianlib.features.kotlin.plus
@@ -16,7 +17,7 @@ import net.minecraft.util.text.TextFormatting
 open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 16) {
 
     val stack_im: IMValue<ItemStack> = IMValue(ItemStack.EMPTY)
-    val enableTooltip_im: IMValue<Boolean> = IMValue(true)
+    val enableTooltip_im: IMValueBoolean = IMValueBoolean(true)
 
     var stack: ItemStack by stack_im
     var enableTooltip: Boolean by enableTooltip_im

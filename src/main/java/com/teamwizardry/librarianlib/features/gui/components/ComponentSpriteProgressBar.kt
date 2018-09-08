@@ -2,6 +2,8 @@ package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.gui.IMValue
+import com.teamwizardry.librarianlib.features.gui.IMValueBoolean
+import com.teamwizardry.librarianlib.features.gui.IMValueDouble
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.kotlin.glColor
 import com.teamwizardry.librarianlib.features.math.Vec2d
@@ -15,12 +17,12 @@ class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: ISprite?,
     enum class ProgressDirection { Y_POS, Y_NEG, X_POS, X_NEG }
 
     val direction_im: IMValue<ProgressDirection> = IMValue(ProgressDirection.Y_POS)
-    val progress_im: IMValue<Float> = IMValue(1f)
-    val depth_im: IMValue<Boolean> = IMValue(true)
+    val progress_im: IMValueDouble = IMValueDouble(1.0)
+    val depth_im: IMValueBoolean = IMValueBoolean(true)
     val color_im: IMValue<Color> = IMValue(Color.WHITE)
 
     var direction: ProgressDirection by direction_im
-    var progress: Float by progress_im
+    var progress: Double by progress_im
     var depth: Boolean by depth_im
     var color: Color by color_im
 

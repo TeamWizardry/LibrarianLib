@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.gui.IMValue
+import com.teamwizardry.librarianlib.features.gui.IMValueBoolean
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.kotlin.glColor
 import com.teamwizardry.librarianlib.features.math.Vec2d
@@ -11,7 +12,7 @@ import java.awt.Color
 
 open class ComponentSpriteTiled @JvmOverloads constructor(protected var main: Sprite, borderSize: Int, x: Int, y: Int, width: Int = main.width, height: Int = main.height) : GuiComponent(x, y, width, height) {
 
-    val depth_im: IMValue<Boolean> = IMValue(true)
+    val depth_im: IMValueBoolean = IMValueBoolean(true)
     val color_im: IMValue<Color> = IMValue(Color.WHITE)
     var depth: Boolean by depth_im
     var color: Color by color_im
