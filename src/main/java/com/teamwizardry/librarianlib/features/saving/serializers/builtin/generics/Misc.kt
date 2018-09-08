@@ -116,3 +116,88 @@ object SerializePairFactory : SerializerFactory("Pair") {
         }
     }
 }
+
+@SerializerFactoryRegister
+object SerializeTripleFactory : SerializerFactory("Triple") {
+    override fun canApply(type: FieldType): SerializerFactoryMatch {
+        return this.canApplyExact(type, Triple::class.java)
+    }
+
+    override fun create(type: FieldType): Serializer<*> {
+        type as FieldTypeGeneric
+        return SerializeTriple(type, type.generic(0), type.generic(1), type.generic(2))
+    }
+
+    class SerializeTriple(type: FieldType, firstType: FieldType, secondType: FieldType, thirdType: FieldType) : Serializer<Triple<Any?, Any?, Any?>>(type) {
+        val serFirst: Serializer<Any> by SerializerRegistry.lazy(firstType)
+        val serSecond: Serializer<Any> by SerializerRegistry.lazy(secondType)
+        val serThird: Serializer<Any> by SerializerRegistry.lazy(thirdType)
+
+        override fun getDefault(): Triple<Any?, Any?, Any?> {
+            return Triple(serFirst.getDefault(), serSecond.getDefault(), serThird.getDefault())
+        }
+
+        override fun readNBT(nbt: NBTBase, existing: Triple<Any?, Any?, Any?>?, syncing: Boolean): Triple<Any?, Any?, Any?> {
+            val tag = nbt.safeCast<NBTTagCompound>()
+
+            val tagFirst = tag.getTag("first")
+            val tagSecond = tag.getTag("second")
+            val tagThird = tag.getTag("third")
+
+            val first = serFirst.read(tagFirst, existing?.first, syncing)
+            val second = serSecond.read(tagSecond, existing?.second, syncing)
+            val third= serSecond.read(tagThird, existing?.third, syncing)
+
+            return Triple(first, second, third)
+        }
+
+        override fun writeNBT(value: Triple<Any?, Any?, Any?>, syncing: Boolean): NBTBase {
+            val tag = NBTTagCompound()
+
+            val first = value.first
+            val second = value.second
+            val third = value.third
+
+            if (first != null) tag.setTag("first", serFirst.write(first, syncing))
+            if (second != null) tag.setTag("second", serSecond.write(second, syncing))
+            if (third != null) tag.setTag("third", serSecond.write(third, syncing))
+
+            return tag
+        }
+
+        override fun readBytes(buf: ByteBuf, existing: Triple<Any?, Any?, Any?>?, syncing: Boolean): Triple<Any?, Any?, Any?> {
+            val nulls = buf.readBooleanArray()
+
+            val first = if (nulls[0]) null else {
+                serFirst.read(buf, existing?.first, syncing)
+            }
+            val second = if (nulls[1]) null else {
+                serSecond.read(buf, existing?.second, syncing)
+            }
+            val third = if (nulls[2]) null else {
+                serThird.read(buf, existing?.third, syncing)
+            }
+
+            return Triple(first, second, third)
+        }
+
+        override fun writeBytes(buf: ByteBuf, value: Triple<Any?, Any?, Any?>, syncing: Boolean) {
+            val first = value.first
+            val second = value.second
+            val third = value.third
+
+            val nulls = booleanArrayOf(first == null, second == null, third == null)
+            buf.writeBooleanArray(nulls)
+
+            if (first != null) {
+                serFirst.write(buf, first, syncing)
+            }
+            if (second != null) {
+                serSecond.write(buf, second, syncing)
+            }
+            if (third != null) {
+                serThird.write(buf, third, syncing)
+            }
+        }
+    }
+}
