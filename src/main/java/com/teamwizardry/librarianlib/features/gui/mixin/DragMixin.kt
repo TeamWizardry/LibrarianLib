@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.compCast
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
@@ -69,7 +70,7 @@ class DragMixin(protected var component: GuiComponent, protected var constraints
 
                 if (newPos != event.component.pos) {
                     event.component.pos = event.component.BUS.fire(
-                            DragMoveEvent(event.component, mouseButton, event.component.pos, newPos)
+                            DragMoveEvent(event.component.compCast, mouseButton, event.component.pos, newPos)
                     ).newPos
                 }
             }

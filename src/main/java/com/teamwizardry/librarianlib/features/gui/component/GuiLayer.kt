@@ -26,7 +26,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
  * ## Events
  *
  * More advanced functionality is achieved through event hooks on the component's [BUS]. All events are subclasses of
- * [Event] so a type hierarchy of that should show all events available to you. Only the child classes of [GuiComponent]
+ * [Event] so a type hierarchy of that should show all events available to you. Only the child classes of [GuiLayer]
  * are fired by default, all others are either a part of a particular component class or require some action on the
  * user's part to initialize.
  *
@@ -55,33 +55,79 @@ import net.minecraftforge.fml.relauncher.SideOnly
  *
  */
 @SideOnly(Side.CLIENT)
-abstract class GuiComponent private constructor(
+abstract class GuiLayer private constructor(
     posX: Int, posY: Int, width: Int, height: Int,
-    internal val data: ComponentDataHandler = ComponentDataHandler(),
-    internal val tags: ComponentTagHandler = ComponentTagHandler(),
-    internal val guiEventHandler: ComponentGuiEventHandler = ComponentGuiEventHandler()
-) : GuiLayer(posX, posY, width, height),
-    IComponentData by data, IComponentTag by tags, IComponentGuiEvent by guiEventHandler
+    internal val geometry: ComponentGeometryHandler = ComponentGeometryHandler(),
+    internal val relationships: ComponentRelationshipHandler = ComponentRelationshipHandler(),
+    internal val render: ComponentRenderHandler = ComponentRenderHandler(),
+    internal val clipping: ComponentClippingHandler = ComponentClippingHandler()
+)
+    : IComponentGeometry by geometry, IComponentRelationship by relationships,
+    IComponentRender by render, IComponentClipping by clipping
 {
     @JvmOverloads constructor(posX: Int, posY: Int, width: Int = 0, height: Int = 0): this(
         posX, posY, width, height,
-        ComponentDataHandler(),
-        ComponentTagHandler(),
-        ComponentGuiEventHandler()
+        ComponentGeometryHandler(),
+        ComponentRelationshipHandler(),
+        ComponentRenderHandler(),
+        ComponentClippingHandler()
     )
-
-    val subComponents: List<GuiComponent>
-        get() = this.children.map { it.compCast }
 
     init {
         @Suppress("LeakingThis")
         {
-            data.component = this
-            tags.component = this
-            guiEventHandler.component = this
+            geometry.component = this
+            relationships.component = this
+            render.component = this
+            clipping.component = this
         }()
     }
-}
 
-val GuiLayer.compCast: GuiComponent // temp until full GuiLayer transition is complete
-    get() = this as GuiComponent
+    /**
+     * Draws the component, this is called between pre and post draw events.
+     *
+     * The only guranteed GL state when this method is called is the following:
+     *
+     * - GL_TEXTURE_2D - enabled
+     * - GL_COLOR - (1, 1, 1, 1)
+     */
+    open fun drawComponent(mousePos: Vec2d, partialTicks: Float) {}
+
+    //region - Base component stuff
+    @JvmField
+    val BUS = EventBus()
+
+    /**
+     * Whether this component should be drawn or have events fire
+     */
+    open var isVisible = true
+
+    /**
+     * Returns true if this component is invalid and it should be removed from its parent
+     */
+    open var isInvalid = false
+        protected set
+
+    /**
+     * Set this component invalid so it will be removed from it's parent element
+     */
+    fun invalidate() {
+        this.isInvalid = true
+    }
+    //endregion
+
+
+    /**
+     * Transforms [pos] from `other`'s context (or the root context if null) to our context
+     */
+    fun otherPosToThisContext(other: GuiLayer?, pos: Vec2d)
+        = geometry.thisPosToOtherContext(other, pos)
+
+    //region - Internal
+    init {
+        this.pos = vec(posX, posY)
+        this.size = vec(width, height)
+    }
+    //endregion
+
+}

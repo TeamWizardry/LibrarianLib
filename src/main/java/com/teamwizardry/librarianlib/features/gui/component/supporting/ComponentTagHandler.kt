@@ -2,6 +2,8 @@ package com.teamwizardry.librarianlib.features.gui.component.supporting
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
+import com.teamwizardry.librarianlib.features.gui.component.compCast
 import java.util.*
 
 interface IComponentTag {
@@ -100,7 +102,7 @@ class ComponentTagHandler: IComponentTag {
      */
     override fun removeByTag(tag: Any) {
         component.relationships.components.removeAll { e ->
-            var b = e.hasTag(tag)
+            var b = e.compCast.hasTag(tag)
             if (component.BUS.fire(GuiComponentEvents.RemoveChildEvent(component, e)).isCanceled())
                 b = false
             if (e.BUS.fire(GuiComponentEvents.RemoveFromParentEvent(e, component)).isCanceled())
@@ -114,10 +116,10 @@ class ComponentTagHandler: IComponentTag {
 
     private fun addAllByTag(tag: Any, list: MutableList<GuiComponent>) {
         addByTag(tag, list)
-        component.children.forEach { it.tags.addAllByTag(tag, list) }
+        component.subComponents.forEach { it.tags.addAllByTag(tag, list) }
     }
 
     private fun addByTag(tag: Any, list: MutableList<GuiComponent>) {
-        component.children.filterTo(list) { it.hasTag(tag) }
+        component.subComponents.filterTo(list) { it.hasTag(tag) }
     }
 }

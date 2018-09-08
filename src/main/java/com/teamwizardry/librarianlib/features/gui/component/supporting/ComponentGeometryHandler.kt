@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.features.gui.component.supporting
 
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.delegate
@@ -8,16 +8,16 @@ import com.teamwizardry.librarianlib.features.math.Matrix4
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
 interface IComponentGeometry {
-    /** [GuiComponent.transform] */
+    /** [GuiLayer.transform] */
     val transform: ComponentTransform
-    /** [GuiComponent.size] */
+    /** [GuiLayer.size] */
     var size: Vec2d
-    /** [GuiComponent.pos] */
+    /** [GuiLayer.pos] */
     var pos: Vec2d
-    /** [GuiComponent.mouseOver] */
+    /** [GuiLayer.mouseOver] */
     val mouseOver: Boolean
     /**
-     * This is like [GuiComponent.mouseOver] except it ignores the occlusion of components at higher z-indices.
+     * This is like [GuiLayer.mouseOver] except it ignores the occlusion of components at higher z-indices.
      */
     val mouseOverNoOcclusion: Boolean
     /**
@@ -40,7 +40,7 @@ interface IComponentGeometry {
      */
     fun transformFromParentContext(pos: Vec2d): Vec2d
 
-    /** [GuiComponent.mouseOver] */
+    /** [GuiLayer.mouseOver] */
     fun transformToParentContext(pos: Vec2d): Vec2d
 
     fun transformToParentContext(): Vec2d
@@ -50,14 +50,14 @@ interface IComponentGeometry {
      *
      * If [other] is null the returned matrix moves coordinates from the root context to this component's context
      */
-    fun otherContextToThisContext(other: GuiComponent?): Matrix4
+    fun otherContextToThisContext(other: GuiLayer?): Matrix4
 
     /**
      * Create a matrix that moves coordinates from this component's context (coordinate space) to [other]'s context
      *
      * If [other] is null the returned matrix moves coordinates from this component's context to the root context
      */
-    fun thisContextToOtherContext(other: GuiComponent?): Matrix4
+    fun thisContextToOtherContext(other: GuiLayer?): Matrix4
 
     /**
      * A shorthand to transform the passed pos in this component's context (coordinate space) to a pos in [other]'s context
@@ -66,9 +66,9 @@ interface IComponentGeometry {
      *
      * [pos] defaults to (0, 0)
      */
-    fun thisPosToOtherContext(other: GuiComponent?, pos: Vec2d): Vec2d
+    fun thisPosToOtherContext(other: GuiLayer?, pos: Vec2d): Vec2d
 
-    fun thisPosToOtherContext(other: GuiComponent?): Vec2d
+    fun thisPosToOtherContext(other: GuiLayer?): Vec2d
 }
 
 /**
@@ -77,22 +77,22 @@ interface IComponentGeometry {
  * Created by TheCodeWarrior
  */
 open class ComponentGeometryHandler: IComponentGeometry {
-    lateinit var component: GuiComponent
+    lateinit var component: GuiLayer
 
-    /** [GuiComponent.transform] */
+    /** [GuiLayer.transform] */
     override val transform = ComponentTransform()
-    /** [GuiComponent.size] */
+    /** [GuiLayer.size] */
     override var size: Vec2d = vec(0, 0)
-    /** [GuiComponent.pos] */
+    /** [GuiLayer.pos] */
     override var pos: Vec2d
         get() = transform.translate
         set(value) {
             transform.translate = value
         }
-    /** [GuiComponent.mouseOver] */
+    /** [GuiLayer.mouseOver] */
     override var mouseOver = false
     /**
-     * This is like [GuiComponent.mouseOver] except it ignores the occlusion of components at higher z-indices.
+     * This is like [GuiLayer.mouseOver] except it ignores the occlusion of components at higher z-indices.
      */
     override var mouseOverNoOcclusion = false
     /**
@@ -119,7 +119,7 @@ open class ComponentGeometryHandler: IComponentGeometry {
         return transform.applyInverse(pos)
     }
 
-    /** [GuiComponent.mouseOver] */
+    /** [GuiLayer.mouseOver] */
     override fun transformToParentContext(pos: Vec2d): Vec2d {
         return transform.apply(pos)
     }
@@ -131,7 +131,7 @@ open class ComponentGeometryHandler: IComponentGeometry {
      *
      * If [other] is null the returned matrix moves coordinates from the root context to this component's context
      */
-    override fun otherContextToThisContext(other: GuiComponent?): Matrix4 {
+    override fun otherContextToThisContext(other: GuiLayer?): Matrix4 {
         if (other == null)
             return thisContextToOtherContext(null).invert()
         return other.thisContextToOtherContext(component)
@@ -142,11 +142,11 @@ open class ComponentGeometryHandler: IComponentGeometry {
      *
      * If [other] is null the returned matrix moves coordinates from this component's context to the root context
      */
-    override fun thisContextToOtherContext(other: GuiComponent?): Matrix4 {
+    override fun thisContextToOtherContext(other: GuiLayer?): Matrix4 {
         return _thisContextToOtherContext(other, Matrix4())
     }
 
-    private fun _thisContextToOtherContext(other: GuiComponent?, matrix: Matrix4): Matrix4 {
+    private fun _thisContextToOtherContext(other: GuiLayer?, matrix: Matrix4): Matrix4 {
         if (other == null) {
             component.parent?.geometry?._thisContextToOtherContext(null, matrix)
             transform.apply(matrix)
@@ -164,11 +164,11 @@ open class ComponentGeometryHandler: IComponentGeometry {
      *
      * [pos] defaults to (0, 0)
      */
-    override fun thisPosToOtherContext(other: GuiComponent?, pos: Vec2d): Vec2d {
+    override fun thisPosToOtherContext(other: GuiLayer?, pos: Vec2d): Vec2d {
         return thisContextToOtherContext(other) * pos
     }
 
-    override fun thisPosToOtherContext(other: GuiComponent?): Vec2d = thisPosToOtherContext(other, Vec2d.ZERO)
+    override fun thisPosToOtherContext(other: GuiLayer?): Vec2d = thisPosToOtherContext(other, Vec2d.ZERO)
 
     fun calculateMouseOver(mousePos: Vec2d) {
         component.BUS.fire(GuiComponentEvents.PreMouseOverEvent(component, mousePos))

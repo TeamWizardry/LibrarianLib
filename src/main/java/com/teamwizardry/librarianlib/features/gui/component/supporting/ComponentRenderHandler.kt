@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.animator.Animation
 import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.gui.IMValue
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
@@ -57,7 +57,7 @@ interface IComponentRender {
  * Created by TheCodeWarrior
  */
 class ComponentRenderHandler: IComponentRender {
-    lateinit var component: GuiComponent
+    lateinit var component: GuiLayer
 
     override val tooltip_im: IMValue<List<String>?> = IMValue()
     override var tooltip: List<String>? by tooltip_im

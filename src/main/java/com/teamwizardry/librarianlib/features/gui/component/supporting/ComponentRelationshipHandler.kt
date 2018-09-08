@@ -1,57 +1,57 @@
 package com.teamwizardry.librarianlib.features.gui.component.supporting
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import java.util.*
 
 interface IComponentRelationship {
-    /** [GuiComponent.zIndex] */
+    /** [GuiLayer.zIndex] */
     var zIndex: Int
-    /** [GuiComponent.children] */
-    val children: List<GuiComponent>
+    /** [GuiLayer.children] */
+    val children: List<GuiLayer>
     /**
      * An unmodifiable collection of all the children of this component, recursively.
      */
-    val allChildren: List<GuiComponent>
-    val parents: MutableSet<GuiComponent>
-    /** [GuiComponent.parent] */
-    val parent: GuiComponent?
-    /** [GuiComponent.root] */
-    val root: GuiComponent
+    val allChildren: List<GuiLayer>
+    val parents: MutableSet<GuiLayer>
+    /** [GuiLayer.parent] */
+    val parent: GuiLayer?
+    /** [GuiLayer.root] */
+    val root: GuiLayer
 
     /**
      * Adds child(ren) to this component.
 
      * @throws IllegalArgumentException if the component had a parent already
      */
-    fun add(vararg components: GuiComponent?)
+    fun add(vararg components: GuiLayer?)
 
     /**
      * @return whether this component has [component] as a decendant
      */
-    operator fun contains(component: GuiComponent): Boolean
+    operator fun contains(component: GuiLayer): Boolean
 
     /**
      * Removes the supplied component
      * @param component
      */
-    fun remove(component: GuiComponent)
+    fun remove(component: GuiLayer)
 
     /**
      * Iterates over children while allowing children to be added or removed.
      */
-    fun forEachChild(l: (GuiComponent) -> Unit)
+    fun forEachChild(l: (GuiLayer) -> Unit)
 
     /**
      * Returns a list of all children that are subclasses of [clazz]
      */
-    fun <C : GuiComponent> getByClass(clazz: Class<C>): List<C>
+    fun <C : GuiLayer> getByClass(clazz: Class<C>): List<C>
 
     /**
      * Returns a list of all children and grandchildren etc. that are subclasses of [clazz]
      */
-    fun <C : GuiComponent> getAllByClass(clazz: Class<C>): List<C>
+    fun <C : GuiLayer> getAllByClass(clazz: Class<C>): List<C>
 }
 
 /**
@@ -60,32 +60,32 @@ interface IComponentRelationship {
  * Created by TheCodeWarrior
  */
 open class ComponentRelationshipHandler: IComponentRelationship {
-    lateinit var component: GuiComponent
+    lateinit var component: GuiLayer
 
-    /** [GuiComponent.zIndex] */
+    /** [GuiLayer.zIndex] */
     override var zIndex = 0
-    internal val components = mutableListOf<GuiComponent>()
-    /** [GuiComponent.children] */
-    override val children: List<GuiComponent> = Collections.unmodifiableList(components)
+    internal val components = mutableListOf<GuiLayer>()
+    /** [GuiLayer.children] */
+    override val children: List<GuiLayer> = Collections.unmodifiableList(components)
     /**
      * An unmodifiable collection of all the children of this component, recursively.
      */
-    override val allChildren: List<GuiComponent>
+    override val allChildren: List<GuiLayer>
         get() {
-            val list = mutableListOf<GuiComponent>()
+            val list = mutableListOf<GuiLayer>()
             addChildrenRecursively(list)
             return Collections.unmodifiableList(list)
         }
 
-    private fun addChildrenRecursively(list: MutableList<GuiComponent>) {
+    private fun addChildrenRecursively(list: MutableList<GuiLayer>) {
         list.addAll(components)
         components.forEach { it.relationships.addChildrenRecursively(list) }
     }
 
-    override val parents = mutableSetOf<GuiComponent>()
+    override val parents = mutableSetOf<GuiLayer>()
 
-    /** [GuiComponent.parent] */
-    override var parent: GuiComponent? = null
+    /** [GuiLayer.parent] */
+    override var parent: GuiLayer? = null
         set(value) {
             parents.clear()
             if (value != null) {
@@ -100,11 +100,11 @@ open class ComponentRelationshipHandler: IComponentRelationship {
 
      * @throws IllegalArgumentException if the component had a parent already
      */
-    override fun add(vararg components: GuiComponent?) {
+    override fun add(vararg components: GuiLayer?) {
         components.forEach { addInternal(it) }
     }
 
-    protected fun addInternal(component: GuiComponent?) {
+    protected fun addInternal(component: GuiLayer?) {
         if (component == null) {
             LibrarianLog.error("Null component, ignoring")
             return
@@ -137,14 +137,14 @@ open class ComponentRelationshipHandler: IComponentRelationship {
     /**
      * @return whether this component has [component] as a decendant
      */
-    override operator fun contains(component: GuiComponent): Boolean =
+    override operator fun contains(component: GuiLayer): Boolean =
             component in components || components.any { component in it.relationships }
 
     /**
      * Removes the supplied component
      * @param component
      */
-    override fun remove(component: GuiComponent) {
+    override fun remove(component: GuiLayer) {
         if (component !in components)
             return
         if (this.component.BUS.fire(GuiComponentEvents.RemoveChildEvent(this.component, component)).isCanceled())
@@ -158,7 +158,7 @@ open class ComponentRelationshipHandler: IComponentRelationship {
     /**
      * Iterates over children while allowing children to be added or removed.
      */
-    override fun forEachChild(l: (GuiComponent) -> Unit) {
+    override fun forEachChild(l: (GuiLayer) -> Unit) {
         val copy = components.toList()
         copy.forEach(l)
     }
@@ -166,7 +166,7 @@ open class ComponentRelationshipHandler: IComponentRelationship {
     /**
      * Returns a list of all children that are subclasses of [clazz]
      */
-    override fun <C : GuiComponent> getByClass(clazz: Class<C>): List<C> {
+    override fun <C : GuiLayer> getByClass(clazz: Class<C>): List<C> {
         val list = mutableListOf<C>()
         addByClass(clazz, list)
         return list
@@ -175,27 +175,27 @@ open class ComponentRelationshipHandler: IComponentRelationship {
     /**
      * Returns a list of all children and grandchildren etc. that are subclasses of [clazz]
      */
-    override fun <C : GuiComponent> getAllByClass(clazz: Class<C>): List<C> {
+    override fun <C : GuiLayer> getAllByClass(clazz: Class<C>): List<C> {
         val list = mutableListOf<C>()
         addAllByClass(clazz, list)
         return list
     }
 
-    protected fun <C : GuiComponent> addAllByClass(clazz: Class<C>, list: MutableList<C>) {
+    protected fun <C : GuiLayer> addAllByClass(clazz: Class<C>, list: MutableList<C>) {
         addByClass(clazz, list)
         components.forEach { it.relationships.addAllByClass(clazz, list) }
     }
 
     @Suppress("UNCHECKED_CAST")
-    protected fun <C : GuiComponent> addByClass(clazz: Class<C>, list: MutableList<C>) {
+    protected fun <C : GuiLayer> addByClass(clazz: Class<C>, list: MutableList<C>) {
         forEachChild { component ->
             if (clazz.isAssignableFrom(component.javaClass))
                 list.add(component as C)
         }
     }
 
-    /** [GuiComponent.root] */
-    override val root: GuiComponent
+    /** [GuiLayer.root] */
+    override val root: GuiLayer
         get() {
             return parent?.root ?: this.component
         }

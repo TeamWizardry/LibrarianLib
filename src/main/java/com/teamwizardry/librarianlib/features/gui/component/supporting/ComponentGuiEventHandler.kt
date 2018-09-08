@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.Key
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.compCast
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import org.lwjgl.input.Keyboard
 
@@ -72,7 +73,7 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
 
     override fun tick() {
         component.BUS.fire(GuiComponentEvents.ComponentTickEvent(component))
-        component.forEachChild { it.tick() }
+        component.forEachChild { it.compCast.tick() }
     }
 
     /**
@@ -93,7 +94,7 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
             mouseButtonsDownOutside[button.ordinal] = transformedPos
 
         component.forEachChild { child ->
-            child.mouseDown(transformedPos, button)
+            child.compCast.mouseDown(transformedPos, button)
         }
     }
 
@@ -129,7 +130,7 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
         }
 
         component.forEachChild { child ->
-            child.mouseUp(transformedPos, button)
+            child.compCast.mouseUp(transformedPos, button)
         }
     }
 
@@ -146,7 +147,7 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
             return
 
         component.forEachChild { child ->
-            child.mouseDrag(transformedPos, button)
+            child.compCast.mouseDrag(transformedPos, button)
         }
     }
 
@@ -163,7 +164,7 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
             return
 
         component.forEachChild { child ->
-            child.mouseWheel(transformedPos, direction)
+            child.compCast.mouseWheel(transformedPos, direction)
         }
     }
 
@@ -181,7 +182,7 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
         keysDown.put(Key[key, keyCode], true)
 
         component.forEachChild { child ->
-            child.keyPressed(key, keyCode)
+            child.compCast.keyPressed(key, keyCode)
         }
     }
 
@@ -199,7 +200,7 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
             return
 
         component.forEachChild { child ->
-            child.keyReleased(key, keyCode)
+            child.compCast.keyReleased(key, keyCode)
         }
     }
 }

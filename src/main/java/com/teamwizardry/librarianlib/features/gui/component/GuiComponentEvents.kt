@@ -10,16 +10,16 @@ object GuiComponentEvents {
     class ComponentTickEvent(@JvmField val component: GuiComponent) : Event()
 
     /** Fired each frame before applying OpenGL transforms */
-    class PreTransformEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val partialTicks: Float) : Event()
+    class PreTransformEvent(@JvmField val component: GuiLayer, val mousePos: Vec2d, val partialTicks: Float) : Event()
 
     /** Fired each frame before the component has been drawn, but after most computed properties update */
-    class PreDrawEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val partialTicks: Float) : Event()
+    class PreDrawEvent(@JvmField val component: GuiLayer, val mousePos: Vec2d, val partialTicks: Float) : Event()
 
     /** Fired each frame after the component has been drawn but before children have been drawn */
-    class PostDrawEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val partialTicks: Float) : Event(true)
+    class PostDrawEvent(@JvmField val component: GuiLayer, val mousePos: Vec2d, val partialTicks: Float) : Event(true)
 
     /** Fired each frame after the component and its children have been drawn */
-    class PreChildrenDrawEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val partialTicks: Float) : Event()
+    class PreChildrenDrawEvent(@JvmField val component: GuiLayer, val mousePos: Vec2d, val partialTicks: Float) : Event()
 
     /** Fired whenever the mouse is pressed */
     class MouseDownEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
@@ -52,10 +52,10 @@ object GuiComponentEvents {
     class KeyUpEvent(@JvmField val component: GuiComponent, val key: Char, val keyCode: Int) : EventCancelable()
 
     /** Fired when the mouse is moved into the component */
-    class MouseInEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d) : Event()
+    class MouseInEvent(@JvmField val component: GuiLayer, val mousePos: Vec2d) : Event()
 
     /** Fired when the mouse is moved out of the component */
-    class MouseOutEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d) : Event()
+    class MouseOutEvent(@JvmField val component: GuiLayer, val mousePos: Vec2d) : Event()
 
     /** Fired when the mouse wheel is moved */
     class MouseWheelEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val direction: MouseWheelDirection) : EventCancelable()
@@ -72,16 +72,16 @@ object GuiComponentEvents {
     }
 
     /** Fired before a child is added to the component */
-    class AddChildEvent(@JvmField val component: GuiComponent, val child: GuiComponent) : EventCancelable()
+    class AddChildEvent(@JvmField val component: GuiLayer, val child: GuiLayer) : EventCancelable()
 
     /** Fired when a child is removed from the component */
-    class RemoveChildEvent(@JvmField val component: GuiComponent, val child: GuiComponent) : EventCancelable()
+    class RemoveChildEvent(@JvmField val component: GuiLayer, val child: GuiLayer) : EventCancelable()
 
     /** Fired when the component is added as a child to another component */
-    class AddToParentEvent(@JvmField val component: GuiComponent, val parent: GuiComponent) : EventCancelable()
+    class AddToParentEvent(@JvmField val component: GuiLayer, val parent: GuiLayer) : EventCancelable()
 
     /** Fired when the component is removed from its parent */
-    class RemoveFromParentEvent(@JvmField val component: GuiComponent, val parent: GuiComponent) : EventCancelable()
+    class RemoveFromParentEvent(@JvmField val component: GuiLayer, val parent: GuiLayer) : EventCancelable()
 
     /** Fired before data is set */
     class SetDataEvent<D>(@JvmField val component: GuiComponent, val clazz: Class<D>, val key: String, val value: D) : EventCancelable()
@@ -108,8 +108,8 @@ object GuiComponentEvents {
     class RemoveTagEvent(@JvmField val component: GuiComponent, val tag: Any) : EventCancelable()
 
     /** Fired before checking if the mouse is over this component */
-    class PreMouseOverEvent(@JvmField val component: GuiComponent, val parentMousePos: Vec2d) : Event()
+    class PreMouseOverEvent(@JvmField val component: GuiLayer, val parentMousePos: Vec2d) : Event()
 
     /** Fired when checking if the mouse is over this component */
-    class MouseOverEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, var isOver: Boolean, var isOverNoOcclusion: Boolean) : Event()
+    class MouseOverEvent(@JvmField val component: GuiLayer, val mousePos: Vec2d, var isOver: Boolean, var isOverNoOcclusion: Boolean) : Event()
 }

@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.features.gui.component.supporting
 
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.pos
@@ -55,7 +55,7 @@ interface IComponentClipping {
  * Created by TheCodeWarrior
  */
 class ComponentClippingHandler: IComponentClipping {
-    lateinit var component: GuiComponent
+    lateinit var component: GuiLayer
 
     /**
      * If true, clip component and its context to within its bounds. When this is set and both [clippingSprite] and
