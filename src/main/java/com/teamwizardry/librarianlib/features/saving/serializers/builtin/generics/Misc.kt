@@ -146,7 +146,7 @@ object SerializeTripleFactory : SerializerFactory("Triple") {
 
             val first = serFirst.read(tagFirst, existing?.first, syncing)
             val second = serSecond.read(tagSecond, existing?.second, syncing)
-            val third= serSecond.read(tagThird, existing?.third, syncing)
+            val third= serThird.read(tagThird, existing?.third, syncing)
 
             return Triple(first, second, third)
         }
@@ -160,7 +160,7 @@ object SerializeTripleFactory : SerializerFactory("Triple") {
 
             if (first != null) tag.setTag("first", serFirst.write(first, syncing))
             if (second != null) tag.setTag("second", serSecond.write(second, syncing))
-            if (third != null) tag.setTag("third", serSecond.write(third, syncing))
+            if (third != null) tag.setTag("third", serThird.write(third, syncing))
 
             return tag
         }
