@@ -66,11 +66,11 @@ object SerializePairFactory : SerializerFactory("Pair") {
         override fun readNBT(nbt: NBTBase, existing: Pair<Any?, Any?>?, syncing: Boolean): Pair<Any?, Any?> {
             val tag = nbt.safeCast<NBTTagCompound>()
 
-            val tagFirst = tag.getTag("first")
-            val tagSecond = tag.getTag("second")
+            val tagFirst: NBTBase? = tag.getTag("first")
+            val tagSecond: NBTBase? = tag.getTag("second")
 
-            val first = serFirst.read(tagFirst, existing?.first, syncing)
-            val second = serSecond.read(tagSecond, existing?.second, syncing)
+            val first = if (tagFirst == null) null else serFirst.read(tagFirst, existing?.first, syncing)
+            val second = if (tagSecond == null) null else serSecond.read(tagSecond, existing?.second, syncing)
 
             return Pair(first, second)
         }
@@ -140,13 +140,13 @@ object SerializeTripleFactory : SerializerFactory("Triple") {
         override fun readNBT(nbt: NBTBase, existing: Triple<Any?, Any?, Any?>?, syncing: Boolean): Triple<Any?, Any?, Any?> {
             val tag = nbt.safeCast<NBTTagCompound>()
 
-            val tagFirst = tag.getTag("first")
-            val tagSecond = tag.getTag("second")
-            val tagThird = tag.getTag("third")
+            val tagFirst: NBTBase? = tag.getTag("first")
+            val tagSecond: NBTBase? = tag.getTag("second")
+            val tagThird: NBTBase? = tag.getTag("third")
 
-            val first = serFirst.read(tagFirst, existing?.first, syncing)
-            val second = serSecond.read(tagSecond, existing?.second, syncing)
-            val third= serThird.read(tagThird, existing?.third, syncing)
+            val first = if (tagFirst == null) null else serFirst.read(tagFirst, existing?.first, syncing)
+            val second = if (tagSecond == null) null else serSecond.read(tagSecond, existing?.second, syncing)
+            val third = if (tagThird == null) null else serThird.read(tagThird, existing?.third, syncing)
 
             return Triple(first, second, third)
         }
