@@ -71,7 +71,7 @@ class GuiTestLayout : GuiBase(100, 100) {
     }
 
     class CustomComponent(posX: Int, posY: Int, width: Int, height: Int): GuiComponent(posX, posY, width, height) {
-        override fun layOutChildren() {
+        override fun layoutChildren() {
             val count = children.size
             val heightPer = this.height / count
             children.forEachIndexed { i, child ->

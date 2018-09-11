@@ -109,19 +109,19 @@ abstract class GuiLayer private constructor(
      * children equally along its length, or simply a component that needs to resize its background layer
      * to fit its dimensions.
      */
-    open fun layOutChildren() {}
+    open fun layoutChildren() {}
 
     /**
-     * Calls [layOutChildren] then calls itself on this layer's children. [needsLayout] is reset to false _after_
-     * [layOutChildren] completes, meaning size changes in that method won't cause a layout pass every frame.
+     * Calls [layoutChildren] then calls itself on this layer's children. [needsLayout] is reset to false _after_
+     * [layoutChildren] completes, meaning size changes in that method won't cause a layout pass every frame.
      */
-    open fun layOutChildrenIfNeeded() {
+    open fun layoutChildrenIfNeeded() {
         if(needsLayout) {
-            layOutChildren()
+            layoutChildren()
             BUS.fire(GuiLayerEvents.LayOutChildren())
             needsLayout = false
         }
-        children.forEach { it.layOutChildrenIfNeeded() }
+        children.forEach { it.layoutChildrenIfNeeded() }
     }
 
     //region - Base component stuff
@@ -140,7 +140,7 @@ abstract class GuiLayer private constructor(
         protected set
 
     /**
-     * Marks this component to be laid out using [layOutChildren] before the next frame.
+     * Marks this component to be laid out using [layoutChildren] before the next frame.
      */
     fun setNeedsLayout() {
         this.needsLayout = true
@@ -178,7 +178,7 @@ abstract class GuiLayer private constructor(
         StencilUtil.clear()
         GL11.glEnable(GL11.GL_STENCIL_TEST)
         cleanUpLayers()
-        layOutChildrenIfNeeded()
+        layoutChildrenIfNeeded()
         updateMouseBeforeRender(mousePos)
         geometry.calculateMouseOver(mousePos)
         preFrame()
