@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.features.gui.component.supporting
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import java.util.*
 
 interface IComponentRelationship {
@@ -64,9 +64,9 @@ open class ComponentRelationshipHandler: IComponentRelationship {
 
     /** [GuiLayer.zIndex] */
     override var zIndex = 0
-    internal val components = mutableListOf<GuiLayer>()
+    internal val subLayers = mutableListOf<GuiLayer>()
     /** [GuiLayer.children] */
-    override val children: List<GuiLayer> = Collections.unmodifiableList(components)
+    override val children: List<GuiLayer> = Collections.unmodifiableList(subLayers)
     /**
      * An unmodifiable collection of all the children of this component, recursively.
      */
@@ -78,8 +78,8 @@ open class ComponentRelationshipHandler: IComponentRelationship {
         }
 
     private fun addChildrenRecursively(list: MutableList<GuiLayer>) {
-        list.addAll(components)
-        components.forEach { it.relationships.addChildrenRecursively(list) }
+        list.addAll(subLayers)
+        subLayers.forEach { it.relationships.addChildrenRecursively(list) }
     }
 
     override val parents = mutableSetOf<GuiLayer>()
@@ -126,11 +126,11 @@ open class ComponentRelationshipHandler: IComponentRelationship {
         }
 
 
-        if (component.BUS.fire(GuiComponentEvents.AddChildEvent(this.component, component)).isCanceled())
+        if (component.BUS.fire(GuiLayerEvents.AddChildEvent(component)).isCanceled())
             return
-        if (component.BUS.fire(GuiComponentEvents.AddToParentEvent(component, this.component)).isCanceled())
+        if (component.BUS.fire(GuiLayerEvents.AddToParentEvent(this.component)).isCanceled())
             return
-        components.add(component)
+        subLayers.add(component)
         component.relationships.parent = this.component
     }
 
@@ -138,28 +138,28 @@ open class ComponentRelationshipHandler: IComponentRelationship {
      * @return whether this component has [component] as a decendant
      */
     override operator fun contains(component: GuiLayer): Boolean =
-            component in components || components.any { component in it.relationships }
+            component in subLayers || subLayers.any { component in it.relationships }
 
     /**
      * Removes the supplied component
      * @param component
      */
     override fun remove(component: GuiLayer) {
-        if (component !in components)
+        if (component !in subLayers)
             return
-        if (this.component.BUS.fire(GuiComponentEvents.RemoveChildEvent(this.component, component)).isCanceled())
+        if (this.component.BUS.fire(GuiLayerEvents.RemoveChildEvent(component)).isCanceled())
             return
-        if (component.BUS.fire(GuiComponentEvents.RemoveFromParentEvent(component, this.component)).isCanceled())
+        if (component.BUS.fire(GuiLayerEvents.RemoveFromParentEvent(this.component)).isCanceled())
             return
         component.relationships.parent = null
-        components.remove(component)
+        subLayers.remove(component)
     }
 
     /**
      * Iterates over children while allowing children to be added or removed.
      */
     override fun forEachChild(l: (GuiLayer) -> Unit) {
-        val copy = components.toList()
+        val copy = subLayers.toList()
         copy.forEach(l)
     }
 
@@ -183,7 +183,7 @@ open class ComponentRelationshipHandler: IComponentRelationship {
 
     protected fun <C : GuiLayer> addAllByClass(clazz: Class<C>, list: MutableList<C>) {
         addByClass(clazz, list)
-        components.forEach { it.relationships.addAllByClass(clazz, list) }
+        subLayers.forEach { it.relationships.addAllByClass(clazz, list) }
     }
 
     @Suppress("UNCHECKED_CAST")

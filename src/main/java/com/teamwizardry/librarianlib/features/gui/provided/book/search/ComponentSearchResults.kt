@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.gui.provided.book.search
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
@@ -97,9 +98,9 @@ class ComponentSearchResults(book: IBookGui, results: List<ISearchAlgorithm.Resu
                     textComponent.unicode = true
                     textComponent.text = "| $color$simplifiedResult"
 
-                    indexButton.BUS.hook(GuiComponentEvents.MouseInEvent::class.java) { textComponent.text = "  | $color${TextFormatting.ITALIC}$exactResult" }
+                    indexButton.BUS.hook(GuiLayerEvents.MouseInEvent::class.java) { textComponent.text = "  | $color${TextFormatting.ITALIC}$exactResult" }
 
-                    indexButton.BUS.hook(GuiComponentEvents.MouseOutEvent::class.java) { textComponent.text = "| $color$simplifiedResult" }
+                    indexButton.BUS.hook(GuiLayerEvents.MouseOutEvent::class.java) { textComponent.text = "| $color$simplifiedResult" }
                     // --------- HANDLE EXTRA TEXT COMPONENT --------- //
 
                     count++

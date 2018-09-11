@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.features.container.internal.SlotBase
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.Hook
-import com.teamwizardry.librarianlib.features.gui.component.compCast
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
@@ -19,7 +18,7 @@ class ComponentSlot(val slot: SlotBase, x: Int, y: Int) : GuiComponent(x, y) {
         this.add(background)
     }
 
-    override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
+    override fun draw(partialTicks: Float) {
         background.isVisible = slot.stack.isEmpty
         slot.visible = true
     }
@@ -29,7 +28,7 @@ class ComponentSlot(val slot: SlotBase, x: Int, y: Int) : GuiComponent(x, y) {
     fun onTick(e: GuiComponentEvents.ComponentTickEvent) {
         val p = thisPosToOtherContext(null)
 
-        if (scaler == null) scaler = this.root.children.firstOrNull()?.compCast
+        if (scaler == null) scaler = this.rootComponent.subComponents.firstOrNull()
         val s = scaler?.pos ?: Vec2d.ZERO
 
         slot.xPos = p.xi - s.xi

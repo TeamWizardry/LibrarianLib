@@ -13,7 +13,7 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
     init {
     }
 
-    override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
+    override fun draw(partialTicks: Float) {
         //NO-OP
     }
 

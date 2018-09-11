@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.gui.provided.book.context
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
@@ -48,11 +49,11 @@ class ComponentNavBar(private val book: IBookGui, posX: Int, posY: Int, width: I
         val next = ComponentSprite(nextSprite, (size.x - nextSprite.width).toInt(), (size.y / 2.0 - nextSprite.height / 2.0).toInt())
         add(back, next, home)
 
-        home.BUS.hook(GuiComponentEvents.MouseInEvent::class.java) {
+        home.BUS.hook(GuiLayerEvents.MouseInEvent::class.java) {
             home.sprite = book.homeSpritePressed
             home.color = book.book.bookColor.brighter()
         }
-        home.BUS.hook(GuiComponentEvents.MouseOutEvent::class.java) {
+        home.BUS.hook(GuiLayerEvents.MouseOutEvent::class.java) {
             home.sprite = book.homeSprite
             home.color = Color.WHITE
         }
@@ -76,7 +77,7 @@ class ComponentNavBar(private val book: IBookGui, posX: Int, posY: Int, width: I
             back.isVisible = this.page != x
 
             if (back.isVisible) {
-                if (it.component.mouseOver) {
+                if (back.mouseOver) {
                     back.sprite = book.backSpritePressed
                     back.color = book.book.bookColor.brighter()
                 } else {
@@ -101,7 +102,7 @@ class ComponentNavBar(private val book: IBookGui, posX: Int, posY: Int, width: I
 
             if (next.isVisible) {
 
-                if (event.component.mouseOver) {
+                if (next.mouseOver) {
                     next.color = book.book.bookColor.brighter()
                     next.sprite = book.nextSpritePressed
                 } else {

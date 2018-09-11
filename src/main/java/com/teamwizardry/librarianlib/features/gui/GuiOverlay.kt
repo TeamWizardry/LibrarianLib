@@ -71,7 +71,7 @@ object GuiOverlay {
 
         StencilUtil.clear()
         GL11.glEnable(GL11.GL_STENCIL_TEST)
-        mainComp.draw(mainComp.size / 2, ClientTickHandler.partialTicks)
+        mainComp.renderRoot(mainComp.size / 2, ClientTickHandler.partialTicks)
         GL11.glDisable(GL11.GL_STENCIL_TEST)
     }
 
@@ -86,7 +86,7 @@ object GuiOverlay {
     }
 
     private class ComponentVisiblePredicate(val predicate: BooleanSupplier) : GuiComponent(0, 0) {
-        override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
+        override fun draw(partialTicks: Float) {
             // NO-OP
         }
 

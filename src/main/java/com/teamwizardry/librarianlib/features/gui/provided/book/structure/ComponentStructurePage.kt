@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentAnimatableVoid
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
@@ -51,9 +52,9 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
         }
 
         BUS.hook(GuiComponentEvents.MouseWheelEvent::class.java) { event ->
-            if (event.component.children.none { it is ComponentMaterialList }
+            if (this.subComponents.none { it is ComponentMaterialList }
                     && released
-                    && event.component.isVisible) {
+                    && this.isVisible) {
                 var tmpZoom = this.animX
                 if (event.direction === GuiComponentEvents.MouseWheelDirection.UP)
                     tmpZoom += 3.0
@@ -71,9 +72,9 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
         }
 
         BUS.hook(GuiComponentEvents.MouseDragEvent::class.java) { event ->
-            if (event.component.children.none { it is ComponentMaterialList }
+            if (this.subComponents.none { it is ComponentMaterialList }
                     && released
-                    && event.component.isVisible) {
+                    && this.isVisible) {
                 val untransform = event.mousePos
                 val diff: Vec2d
                 diff = if (dragging)
@@ -92,8 +93,8 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
         }
 
         BUS.hook(GuiComponentEvents.MouseUpEvent::class.java) { event ->
-            if (event.component.children.none { it is ComponentMaterialList }
-                    && event.component.isVisible) {
+            if (this.children.none { it is ComponentMaterialList }
+                    && this.isVisible) {
                 prevPos = Vec2d.ZERO
                 dragging = false
                 released = true
@@ -102,8 +103,8 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
 
         val drawPlatform = ComponentVoid(0, 0, size.xi, size.yi)
         drawPlatform.clipToBounds = true
-        drawPlatform.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) { event ->
-            if (event.component.isVisible) {
+        drawPlatform.BUS.hook(GuiLayerEvents.PreDrawEvent::class.java) { event ->
+            if (drawPlatform.isVisible) {
                 if (failed()) {
                     GlStateManager.pushMatrix()
                     ModGuiBook.ERROR.bind()

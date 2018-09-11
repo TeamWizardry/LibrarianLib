@@ -2,8 +2,6 @@ package com.teamwizardry.librarianlib.features.gui.component.supporting
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
-import com.teamwizardry.librarianlib.features.gui.component.compCast
 import java.util.*
 
 interface IComponentTag {
@@ -52,7 +50,7 @@ class ComponentTagHandler: IComponentTag {
 
     /** [GuiComponent.addTag] */
     override fun addTag(tag: Any): Boolean {
-        if (!component.BUS.fire(GuiComponentEvents.AddTagEvent(component, tag)).isCanceled())
+        if (!component.BUS.fire(GuiComponentEvents.AddTagEvent(tag)).isCanceled())
             if (tagStorage.add(tag))
                 return true
         return false
@@ -60,7 +58,7 @@ class ComponentTagHandler: IComponentTag {
 
     /** [GuiComponent.removeTag] */
     override fun removeTag(tag: Any): Boolean {
-        if (!component.BUS.fire(GuiComponentEvents.RemoveTagEvent(component, tag)).isCanceled())
+        if (!component.BUS.fire(GuiComponentEvents.RemoveTagEvent(tag)).isCanceled())
             if (tagStorage.remove(tag))
                 return true
         return false
@@ -76,7 +74,7 @@ class ComponentTagHandler: IComponentTag {
 
     /** [GuiComponent.hasTag] */
     override fun hasTag(tag: Any): Boolean {
-        return component.BUS.fire(GuiComponentEvents.HasTagEvent(component, tag, tagStorage.contains(tag))).hasTag
+        return component.BUS.fire(GuiComponentEvents.HasTagEvent(tag, tagStorage.contains(tag))).hasTag
     }
 
     /**
@@ -101,16 +99,10 @@ class ComponentTagHandler: IComponentTag {
      * Removes all components that have the supplied tag
      */
     override fun removeByTag(tag: Any) {
-        component.relationships.components.removeAll { e ->
-            var b = e.compCast.hasTag(tag)
-            if (component.BUS.fire(GuiComponentEvents.RemoveChildEvent(component, e)).isCanceled())
-                b = false
-            if (e.BUS.fire(GuiComponentEvents.RemoveFromParentEvent(e, component)).isCanceled())
-                b = false
-            if (b) {
-                e.relationships.parent = null
+        component.subComponents.forEach {
+            if(it.hasTag(tag)) {
+                component.remove(it)
             }
-            b
         }
     }
 

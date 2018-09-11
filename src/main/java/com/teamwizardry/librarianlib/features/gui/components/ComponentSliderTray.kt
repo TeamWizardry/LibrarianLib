@@ -28,7 +28,7 @@ class ComponentSliderTray(posX: Int, posY: Int, internal var offsetX: Int, inter
         animatingOut = true
     }
 
-    override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
+    override fun draw(partialTicks: Float) {
         // TODO: Respect partialTicks
         val t = (ClientTickHandler.ticks - tickStart).toFloat() / lifetime.toFloat()
         if (t > 1) {

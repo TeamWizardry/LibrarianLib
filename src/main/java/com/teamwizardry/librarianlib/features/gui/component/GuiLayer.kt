@@ -1,15 +1,14 @@
 package com.teamwizardry.librarianlib.features.gui.component
 
-import com.teamwizardry.librarianlib.features.animator.Animation
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventBus
 import com.teamwizardry.librarianlib.features.gui.component.supporting.*
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.delegate
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
-
+import org.lwjgl.opengl.GL11
 
 /**
  * The base class of every on-screen object. These can be nested within each other using [add]. Subcomponents will be
@@ -76,11 +75,16 @@ abstract class GuiLayer private constructor(
     init {
         @Suppress("LeakingThis")
         {
-            geometry.component = this
+            geometry.layer = this
             relationships.component = this
-            render.component = this
+            render.layer = this
             clipping.component = this
         }()
+    }
+
+    fun preFrame() {
+        this.BUS.fire(GuiLayerEvents.PreFrameEvent())
+        this.children.forEach { it.preFrame() }
     }
 
     /**
@@ -91,7 +95,7 @@ abstract class GuiLayer private constructor(
      * - GL_TEXTURE_2D - enabled
      * - GL_COLOR - (1, 1, 1, 1)
      */
-    open fun drawComponent(mousePos: Vec2d, partialTicks: Float) {}
+    open fun draw(partialTicks: Float) {}
 
     //region - Base component stuff
     @JvmField
@@ -130,4 +134,15 @@ abstract class GuiLayer private constructor(
     }
     //endregion
 
+    open fun renderRoot(mousePos: Vec2d, partialTicks: Float) {
+        StencilUtil.clear()
+        GL11.glEnable(GL11.GL_STENCIL_TEST)
+        cleanUpLayers()
+        updateMouseBeforeRender(mousePos)
+        geometry.calculateMouseOver(mousePos)
+        preFrame()
+        renderLayer(partialTicks)
+        drawLate(partialTicks)
+        GL11.glDisable(GL11.GL_STENCIL_TEST)
+    }
 }

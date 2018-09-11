@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.gui.provided.book.structure
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
 import com.teamwizardry.librarianlib.features.gui.provided.book.context.ComponentBookMark
 import java.awt.Color
@@ -13,12 +14,12 @@ class ComponentMaterialsBar(book: IBookGui, id: Int, val materials: StructureMat
 
         setBookmarkText("Materials", Color.WHITE, -8)
 
-        BUS.hook(GuiComponentEvents.MouseInEvent::class.java) {
+        BUS.hook(GuiLayerEvents.MouseInEvent::class.java) {
             if (!focused)
                 slideOutShort()
         }
 
-        BUS.hook(GuiComponentEvents.MouseOutEvent::class.java) {
+        BUS.hook(GuiLayerEvents.MouseOutEvent::class.java) {
             if (!focused)
                 slideIn()
         }

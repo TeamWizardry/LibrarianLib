@@ -45,7 +45,7 @@ class ComponentFluidStack @JvmOverloads constructor(fgSprite: ISprite?, bgSprite
             (tankProps.contents?.amount ?: 0) / Math.max(1, tankProps.capacity).toDouble()
         }
     }
-    override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
+    override fun draw(partialTicks: Float) {
         val fs = tankProps.contents
         if (fs != null && lastFluid != fs.fluid) {
             lastFluid = fs.fluid

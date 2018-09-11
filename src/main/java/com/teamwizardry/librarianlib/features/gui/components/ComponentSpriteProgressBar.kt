@@ -28,7 +28,7 @@ class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: ISprite?,
 
     var lastAnim: Int = 0
 
-    override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
+    override fun draw(partialTicks: Float) {
         val alwaysTop = !depth
         val sp = sprite ?: return
         val animationTicks = animator.time.toInt()

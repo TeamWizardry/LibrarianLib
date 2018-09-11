@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
@@ -87,9 +88,9 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
         textComponent.text = title
         indexButton.add(textComponent)
 
-        indexButton.BUS.hook(GuiComponentEvents.MouseInEvent::class.java) { textComponent.text = " " + TextFormatting.ITALIC.toString() + title }
+        indexButton.BUS.hook(GuiLayerEvents.MouseInEvent::class.java) { textComponent.text = " " + TextFormatting.ITALIC.toString() + title }
 
-        indexButton.BUS.hook(GuiComponentEvents.MouseOutEvent::class.java) { textComponent.text = TextFormatting.RESET.toString() + title }
+        indexButton.BUS.hook(GuiLayerEvents.MouseOutEvent::class.java) { textComponent.text = TextFormatting.RESET.toString() + title }
 
         indexButton.tooltip_im {
             val list = mutableListOf<String>()
@@ -103,7 +104,7 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
 
         val render = IBookGui.getRendererFor(icon, Vec2d(16.0, 16.0))
 
-        indexButton.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) { render() }
+        indexButton.BUS.hook(GuiLayerEvents.PreDrawEvent::class.java) { render() }
 
         return indexButton
     }

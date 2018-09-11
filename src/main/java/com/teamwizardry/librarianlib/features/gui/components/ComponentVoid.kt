@@ -8,7 +8,7 @@ class ComponentVoid : GuiComponent {
     constructor(posX: Int, posY: Int, width: Int, height: Int) : super(posX, posY, width, height)
     constructor(posX: Int, posY: Int) : super(posX, posY)
 
-    override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
+    override fun draw(partialTicks: Float) {
         //NO-OP
     }
 

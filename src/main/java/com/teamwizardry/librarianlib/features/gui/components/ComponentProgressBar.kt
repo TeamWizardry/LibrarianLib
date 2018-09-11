@@ -39,7 +39,7 @@ class ComponentProgressBar @JvmOverloads constructor(fgSprite: ISprite?, bgSprit
         this.add(backgroundComponent, progressComponent)
     }
 
-    override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
+    override fun draw(partialTicks: Float) {
         // NOP
     }
 }

@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.gui.components
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.component.Hook
 import com.teamwizardry.librarianlib.features.math.Matrix4
 import com.teamwizardry.librarianlib.features.math.Vec2d
@@ -14,8 +15,8 @@ import org.lwjgl.opengl.GL11
 class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent(posX, posY, width, height) {
 
     init {
-        BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) { event -> preDraw(event.mousePos) }
-        BUS.hook(GuiComponentEvents.PostDrawEvent::class.java) { postDraw() }
+        BUS.hook(GuiLayerEvents.PreDrawEvent::class.java) { event -> preDraw(this.mousePos) }
+        BUS.hook(GuiLayerEvents.PostDrawEvent::class.java) { postDraw() }
 
         BUS.hook(GuiComponentEvents.MouseWheelEvent::class.java) { event ->
             if (mouseOver) {
@@ -55,7 +56,7 @@ class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
         dragButton = e.button
     }
 
-    override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
+    override fun draw(partialTicks: Float) {
         //NO-OP
     }
 

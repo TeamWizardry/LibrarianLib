@@ -17,7 +17,7 @@ class ComponentRect(posX: Int, posY: Int, width: Int, height: Int) : GuiComponen
     val color_im: IMValue<Color> = IMValue(Color.WHITE)
     var color: Color by color_im
 
-    override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
+    override fun draw(partialTicks: Float) {
         val minX = 0.0
         val minY = 0.0
         val maxX = size.xi.toDouble()

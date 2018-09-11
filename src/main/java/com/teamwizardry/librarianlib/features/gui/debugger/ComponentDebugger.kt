@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.gui.debugger
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.component.Hook
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
@@ -51,10 +52,10 @@ class ComponentDebugger : GuiComponent(0, 0, 0, 0) {
      */
     @Hook
     @Suppress("UNUSED_PARAMETER")
-    fun flattenDepth(e: GuiComponentEvents.PreDrawEvent) {
+    fun flattenDepth(e: GuiLayerEvents.PreDrawEvent) {
         GlStateManager.depthFunc(GL_ALWAYS)
         GlStateManager.colorMask(false, false, false, false)
-        flatten.draw(Vec2d.ZERO, 0f)
+        flatten.renderLayer(0f)
         GlStateManager.colorMask(true, true, true, true)
         GlStateManager.depthFunc(GL_LEQUAL)
     }

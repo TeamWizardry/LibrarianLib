@@ -50,7 +50,7 @@ open class ComponentSpriteTiled @JvmOverloads constructor(protected var main: Sp
         this.middle = main.getSubSprite(borderSize, borderSize, main.width - 2 * borderSize, main.height - 2 * borderSize)
     }
 
-    override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
+    override fun draw(partialTicks: Float) {
         val alwaysTop = !depth
 
         if (alwaysTop) {

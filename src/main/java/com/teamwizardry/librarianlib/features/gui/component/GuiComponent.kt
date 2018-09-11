@@ -71,7 +71,9 @@ abstract class GuiComponent private constructor(
     )
 
     val subComponents: List<GuiComponent>
-        get() = this.children.map { it.compCast }
+        get() = this.children.filterIsInstance<GuiComponent>()
+    val rootComponent: GuiComponent
+        get() = this.root as GuiComponent
 
     init {
         @Suppress("LeakingThis")
@@ -82,6 +84,3 @@ abstract class GuiComponent private constructor(
         }()
     }
 }
-
-val GuiLayer.compCast: GuiComponent // temp until full GuiLayer transition is complete
-    get() = this as GuiComponent

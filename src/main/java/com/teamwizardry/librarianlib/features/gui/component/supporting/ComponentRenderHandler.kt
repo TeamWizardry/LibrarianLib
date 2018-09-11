@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.features.animator.Animation
 import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.gui.IMValue
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import net.minecraft.client.Minecraft
@@ -35,12 +35,17 @@ interface IComponentRender {
     fun add(vararg animations: Animation<*>)
 
     /**
-     * Draw this component, don't override in subclasses unless you know what you're doing.
-     *
+     * Cleans up invalid layers, sorts by zIndex, etc. Runs before [updateMouseBeforeRender].
+     */
+    fun cleanUpLayers()
+
+    /**
+     * Renders this layer and its sublayers. This method handles the internals of rendering a layer, to simply render
+     * content in a layer use [GuiLayer.draw]
      * @param mousePos Mouse position relative to the position of this component
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
-    fun draw(mousePos: Vec2d, partialTicks: Float)
+    fun renderLayer(partialTicks: Float)
 
     /**
      * Draw late stuff this component, like tooltips. This method is executed in the root context
@@ -48,7 +53,7 @@ interface IComponentRender {
      * @param mousePos Mouse position in the root context
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
-    fun drawLate(mousePos: Vec2d, partialTicks: Float)
+    fun drawLate(partialTicks: Float)
 }
 
 /**
@@ -57,7 +62,7 @@ interface IComponentRender {
  * Created by TheCodeWarrior
  */
 class ComponentRenderHandler: IComponentRender {
-    lateinit var component: GuiLayer
+    lateinit var layer: GuiLayer
 
     override val tooltip_im: IMValue<List<String>?> = IMValue()
     override var tooltip: List<String>? by tooltip_im
@@ -70,14 +75,14 @@ class ComponentRenderHandler: IComponentRender {
 
     override var cursor: LibCursor? = null
         get() {
-            val parent = component.parent
+            val parent = layer.parent
             if (parent == null)
                 return field
             else
                 return parent.cursor
         }
         set(value) {
-            val parent = component.parent
+            val parent = layer.parent
             if (parent == null)
                 field = value
             else
@@ -86,7 +91,7 @@ class ComponentRenderHandler: IComponentRender {
 
     override var animator: Animator
         get() {
-            var a = animatorStorage ?: component.parent?.animator
+            var a = animatorStorage ?: layer.parent?.animator
             if (a == null) {
                 a = Animator()
                 animatorStorage = a
@@ -99,13 +104,34 @@ class ComponentRenderHandler: IComponentRender {
 
     private var animatorStorage: Animator? = null
 
-    private var wasMouseOver = false
-
     /**
      * Adds animations to [animator]
      */
     override fun add(vararg animations: Animation<*>) {
         animator.add(*animations)
+    }
+
+    override fun cleanUpLayers() {
+        val components = layer.relationships.subLayers
+        components.sortBy { it.zIndex }
+        if (!layer.isVisible) return
+
+        components.removeAll { e ->
+            var b = e.isInvalid
+            if (!b) return@removeAll false
+            if (layer.BUS.fire(GuiLayerEvents.RemoveChildEvent(e)).isCanceled())
+                b = false
+            if (e.BUS.fire(GuiLayerEvents.RemoveFromParentEvent(layer)).isCanceled())
+                b = false
+            if (b) {
+                e.relationships.parent = null
+            }
+            return@removeAll b
+        }
+
+        components.forEach {
+            it.cleanUpLayers()
+        }
     }
 
     /**
@@ -114,62 +140,55 @@ class ComponentRenderHandler: IComponentRender {
      * @param mousePos Mouse position relative to the position of this component
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
-    override fun draw(mousePos: Vec2d, partialTicks: Float) {
-        val transformedPos = component.transformFromParentContext(mousePos)
-        val components = component.relationships.components
-        components.sortBy { it.zIndex }
-        if (!component.isVisible) return
-
-        components.removeAll { e ->
-            var b = e.isInvalid
-            if (component.BUS.fire(GuiComponentEvents.RemoveChildEvent(component, e)).isCanceled())
-                b = false
-            if (e.BUS.fire(GuiComponentEvents.RemoveFromParentEvent(e, component)).isCanceled())
-                b = false
-            if (b) {
-                e.relationships.parent = null
-            }
-            b
-        }
-
-        if (wasMouseOver != component.mouseOver) {
-            if (component.mouseOver) {
-                component.BUS.fire(GuiComponentEvents.MouseInEvent(component, transformedPos))
-            } else {
-                component.BUS.fire(GuiComponentEvents.MouseOutEvent(component, transformedPos))
-            }
-        }
-        wasMouseOver = component.mouseOver
-        if (component.mouseOver && hoverCursor != null) {
+    override fun renderLayer(partialTicks: Float) {
+        if (layer.mouseOver && hoverCursor != null) {
             cursor = hoverCursor
         }
-
-        component.BUS.fire(GuiComponentEvents.PreTransformEvent(component, transformedPos, partialTicks))
+        layer.BUS.fire(GuiLayerEvents.PreTransformEvent(partialTicks))
 
         GlStateManager.pushMatrix()
 
-        component.transform.glApply()
+        layer.transform.glApply()
 
-        component.clipping.pushEnable()
+        layer.clipping.pushEnable()
 
-        component.BUS.fire(GuiComponentEvents.PreDrawEvent(component, transformedPos, partialTicks))
+        layer.BUS.fire(GuiLayerEvents.PreDrawEvent(partialTicks))
 
         GlStateManager.enableTexture2D()
         GlStateManager.color(1f, 1f, 1f, 1f)
-        component.drawComponent(transformedPos, partialTicks)
+        layer.draw(partialTicks)
 
+        drawDebugInfo()
+        GlStateManager.enableTexture2D()
+        GlStateManager.color(1f, 1f, 1f, 1f)
+
+        GlStateManager.pushAttrib()
+
+        layer.BUS.fire(GuiLayerEvents.PreChildrenDrawEvent(partialTicks))
+        layer.forEachChild { it.renderLayer(partialTicks) }
+
+        GlStateManager.popAttrib()
+
+        layer.BUS.fire(GuiLayerEvents.PostDrawEvent(partialTicks))
+
+        layer.clipping.popDisable()
+
+        GlStateManager.popMatrix()
+    }
+
+    private fun drawDebugInfo() {
         if (LibrarianLib.DEV_ENVIRONMENT && Minecraft.getMinecraft().renderManager.isDebugBoundingBox) {
             GlStateManager.disableTexture2D()
             GlStateManager.color(1f, 0f, 1f)
-            if (component.mouseOverNoOcclusion) GlStateManager.color(0.75f, 0.75f, 0.75f)
-            if (component.mouseOver) GlStateManager.color(1f, 1f, 1f)
+            if (layer.mouseOverNoOcclusion) GlStateManager.color(0.75f, 0.75f, 0.75f)
+            if (layer.mouseOver) GlStateManager.color(1f, 1f, 1f)
             val tessellator = Tessellator.getInstance()
             val vb = tessellator.buffer
             vb.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION)
             vb.pos(0.0, 0.0, 0.0).endVertex()
-            vb.pos(component.size.x, 0.0, 0.0).endVertex()
-            vb.pos(component.size.x, component.size.y, 0.0).endVertex()
-            vb.pos(0.0, component.size.y, 0.0).endVertex()
+            vb.pos(layer.size.x, 0.0, 0.0).endVertex()
+            vb.pos(layer.size.x, layer.size.y, 0.0).endVertex()
+            vb.pos(0.0, layer.size.y, 0.0).endVertex()
             vb.pos(0.0, 0.0, 0.0).endVertex()
             tessellator.draw()
 
@@ -177,36 +196,22 @@ class ComponentRenderHandler: IComponentRender {
             vb.begin(GL_LINES, DefaultVertexFormats.POSITION)
             vb.pos(0.0, 0.0, 0.0).endVertex()
             vb.pos(0.0, 0.0, -big).endVertex()
-            vb.pos(component.size.x, 0.0, 0.0).endVertex()
-            vb.pos(component.size.x, 0.0, -big).endVertex()
-            vb.pos(component.size.x, component.size.y, 0.0).endVertex()
-            vb.pos(component.size.x, component.size.y, -big).endVertex()
-            vb.pos(0.0, component.size.y, 0.0).endVertex()
-            vb.pos(0.0, component.size.y, -big).endVertex()
+            vb.pos(layer.size.x, 0.0, 0.0).endVertex()
+            vb.pos(layer.size.x, 0.0, -big).endVertex()
+            vb.pos(layer.size.x, layer.size.y, 0.0).endVertex()
+            vb.pos(layer.size.x, layer.size.y, -big).endVertex()
+            vb.pos(0.0, layer.size.y, 0.0).endVertex()
+            vb.pos(0.0, layer.size.y, -big).endVertex()
             tessellator.draw()
 
             GlStateManager.color(0f, 1f, 1f)
             vb.begin(GL_LINES, DefaultVertexFormats.POSITION)
-            vb.pos(transformedPos.x, transformedPos.y, 0.0).endVertex()
-            vb.pos(transformedPos.x, transformedPos.y, big).endVertex()
+            vb.pos(layer.mousePos.x, layer.mousePos.y, 0.0).endVertex()
+            vb.pos(layer.mousePos.x, layer.mousePos.y, big).endVertex()
             tessellator.draw()
         }
-        GlStateManager.enableTexture2D()
-        GlStateManager.color(1f, 1f, 1f, 1f)
-
-        GlStateManager.pushAttrib()
-
-        component.BUS.fire(GuiComponentEvents.PreChildrenDrawEvent(component, transformedPos, partialTicks))
-        component.forEachChild { it.draw(transformedPos, partialTicks) }
-
-        GlStateManager.popAttrib()
-
-        component.BUS.fire(GuiComponentEvents.PostDrawEvent(component, transformedPos, partialTicks))
-
-        component.clipping.popDisable()
-
-        GlStateManager.popMatrix()
     }
+
 
     /**
      * Draw late stuff this component, like tooltips. This method is executed in the root context
@@ -214,17 +219,18 @@ class ComponentRenderHandler: IComponentRender {
      * @param mousePos Mouse position in the root context
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
-    override fun drawLate(mousePos: Vec2d, partialTicks: Float) {
-        if (!component.isVisible) return
-        if (component.mouseOver) {
+    override fun drawLate(partialTicks: Float) {
+        if (!layer.isVisible) return
+        if (layer.mouseOver) {
             val tt = tooltip
             if (tt?.isNotEmpty() == true) {
-                GuiUtils.drawHoveringText(tt, mousePos.xi, mousePos.yi, component.root.size.xi, component.root.size.yi, -1,
+                val rootPos = layer.thisPosToOtherContext(null, layer.mousePos)
+                GuiUtils.drawHoveringText(tt, rootPos.xi, rootPos.yi, layer.root.size.xi, layer.root.size.yi, -1,
                         tooltipFont ?: Minecraft.getMinecraft().fontRenderer)
             }
         }
 
-        component.forEachChild { it.drawLate(mousePos, partialTicks) }
+        layer.forEachChild { it.drawLate(partialTicks) }
     }
 
 }

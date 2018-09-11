@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentAnimatableVoid
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
 import com.teamwizardry.librarianlib.features.math.Vec2d
@@ -25,7 +26,7 @@ class ComponentCategoryButton(posX: Int, posY: Int, width: Int, height: Int, boo
         // ------- BUTTON RENDERING AND ANIMATION ------- //
         val iconMask = IBookGui.getRendererFor(icon, Vec2d(24.0, 24.0), true)
 
-        BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
+        BUS.hook(GuiLayerEvents.PreDrawEvent::class.java) {
             GlStateManager.color(0f, 0f, 0f)
             iconMask()
             GlStateManager.color(1f, 1f, 1f)
@@ -68,27 +69,27 @@ class ComponentCategoryButton(posX: Int, posY: Int, width: Int, height: Int, boo
 
         val radius = 16.0
 
-        circleWipe.BUS.hook(GuiComponentEvents.MouseInEvent::class.java) {
+        circleWipe.BUS.hook(GuiLayerEvents.MouseInEvent::class.java) {
 
             val mouseInAnim = BasicAnimation(circleWipe, "animX")
             mouseInAnim.duration = 20f
             mouseInAnim.easing = Easing.easeOutQuint
             mouseInAnim.to = radius
-            it.component.add(mouseInAnim)
+            circleWipe.add(mouseInAnim)
         }
 
-        circleWipe.BUS.hook(GuiComponentEvents.MouseOutEvent::class.java) {
+        circleWipe.BUS.hook(GuiLayerEvents.MouseOutEvent::class.java) {
 
             val mouseOutAnim = BasicAnimation(circleWipe, "animX")
             mouseOutAnim.duration = 20f
             mouseOutAnim.easing = Easing.easeOutQuint
             mouseOutAnim.to = 0
-            it.component.add(mouseOutAnim)
+            circleWipe.add(mouseOutAnim)
         }
 
         val wipeColor = category.color
 
-        circleWipe.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
+        circleWipe.BUS.hook(GuiLayerEvents.PreDrawEvent::class.java) {
             GlStateManager.color(wipeColor.red / 255f, wipeColor.green / 255f, wipeColor.blue / 255f)
             GlStateManager.enableAlpha()
             GlStateManager.disableCull()

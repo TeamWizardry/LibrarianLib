@@ -114,7 +114,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
         BUS.hook(GuiComponentEvents.ComponentTickEvent::class.java) { updateCursorCounter() }
     }
 
-    override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
+    override fun draw(partialTicks: Float) {
         drawTextBox()
     }
 

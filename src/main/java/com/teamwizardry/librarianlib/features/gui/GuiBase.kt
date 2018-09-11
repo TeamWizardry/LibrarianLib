@@ -16,8 +16,6 @@ import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
 import java.io.IOException
-import java.util.function.DoubleSupplier
-import java.util.function.Supplier
 
 open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : GuiScreen() {
     val mainComponents: ComponentVoid = ComponentVoid(0, 0)
@@ -84,8 +82,6 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
 
         super.drawScreen(mouseX, mouseY, partialTicks)
         GlStateManager.enableBlend()
-        StencilUtil.clear()
-        GL11.glEnable(GL11.GL_STENCIL_TEST)
         val relPos = vec(mouseX, mouseY)
         GlStateManager.pushMatrix()
 
@@ -96,19 +92,15 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
             GlStateManager.translate(-width / 2.0, -height / 2.0, 0.0)
         }
 
-        fullscreenComponents.geometry.calculateMouseOver(relPos)
-        fullscreenComponents.draw(relPos, partialTicks)
-        fullscreenComponents.drawLate(relPos, partialTicks)
+        fullscreenComponents.renderRoot(relPos, partialTicks)
 
         GlStateManager.popMatrix()
 
         if (isDebugMode) {
-            debugger.geometry.calculateMouseOver(relPos)
-            debugger.draw(relPos, partialTicks)
-            debugger.drawLate(relPos, partialTicks)
+            debugger.renderRoot(relPos, partialTicks)
         }
-        GL11.glDisable(GL11.GL_STENCIL_TEST)
 
+        fullscreenComponents.drawLate(partialTicks)
         Mouse.setNativeCursor((debugger.cursor ?: fullscreenComponents.cursor)?.lwjglCursor)
         debugger.cursor = null
         fullscreenComponents.cursor = null

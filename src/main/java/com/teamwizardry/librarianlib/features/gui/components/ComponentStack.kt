@@ -24,7 +24,7 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 1
     val quantityText = HandlerList<(ComponentStack, String?) -> String?>()
     val itemInfo = HandlerList<(ComponentStack, MutableList<String>) -> Unit>()
 
-    override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
+    override fun draw(partialTicks: Float) {
         RenderHelper.enableGUIStandardItemLighting()
         GlStateManager.enableRescaleNormal()
         GlStateManager.pushMatrix()

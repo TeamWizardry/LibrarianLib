@@ -89,8 +89,7 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         GlStateManager.pushAttrib()
         GlStateManager.enableBlend()
         val relPos = vec(mouseX, mouseY)
-        fullscreenComponents.geometry.calculateMouseOver(relPos)
-        fullscreenComponents.draw(relPos, partialTicks)
+        fullscreenComponents.renderRoot(relPos, partialTicks)
 
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
@@ -103,10 +102,7 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         container.allSlots.filter { !it.visible }.forEach { it.xPos = -1000; it.yPos = -1000 }
 
         super.drawScreen(mouseX, mouseY, partialTicks)
-        StencilUtil.clear()
-        GL11.glEnable(GL11.GL_STENCIL_TEST)
-        fullscreenComponents.drawLate(relPos, partialTicks)
-        GL11.glDisable(GL11.GL_STENCIL_TEST)
+        fullscreenComponents.drawLate(partialTicks)
 
         renderHoveredToolTip(mouseX, mouseY)
     }

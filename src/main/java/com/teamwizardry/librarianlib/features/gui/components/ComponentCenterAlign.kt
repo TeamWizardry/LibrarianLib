@@ -9,7 +9,7 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 @Deprecated("Use `component.transform.postTranslate = -component.size/2` instead")
 class ComponentCenterAlign(posX: Int, posY: Int, var centerHorizontal: Boolean, var centerVertical: Boolean) : GuiComponent(posX, posY) {
 
-    override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
+    override fun draw(partialTicks: Float) {
         if (centerHorizontal || centerVertical) {
             for (component in children) {
                 val componentCenter = component.transformToParentContext(component.size / 2)

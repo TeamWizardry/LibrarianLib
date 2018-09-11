@@ -17,7 +17,7 @@ class ComponentRaw : GuiComponent {
         this.func = func
     }
 
-    override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
+    override fun draw(partialTicks: Float) {
         func.accept(this)
     }
 

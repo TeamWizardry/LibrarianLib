@@ -10,7 +10,7 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
  */
 class ComponentList(posX: Int, posY: Int, var rowHeight: Int) : GuiComponent(posX, posY) {
 
-    override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
+    override fun draw(partialTicks: Float) {
         var y = 0
 
         for (component in children.asSequence().filter(GuiLayer::isVisible)) {

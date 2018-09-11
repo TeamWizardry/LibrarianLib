@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.Key
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.gui.component.compCast
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import org.lwjgl.input.Keyboard
 
@@ -72,8 +71,8 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
     internal var keysDown: MutableMap<Key, Boolean> = HashMap<Key, Boolean>().withDefault { false }
 
     override fun tick() {
-        component.BUS.fire(GuiComponentEvents.ComponentTickEvent(component))
-        component.forEachChild { it.compCast.tick() }
+        component.BUS.fire(GuiComponentEvents.ComponentTickEvent())
+        component.subComponents.forEach { it.tick() }
     }
 
     /**
@@ -85,7 +84,7 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
     override fun mouseDown(mousePos: Vec2d, button: EnumMouseButton) {
         val transformedPos = component.transformFromParentContext(mousePos)
         if (!component.isVisible) return
-        if (component.BUS.fire(GuiComponentEvents.MouseDownEvent(component, transformedPos, button)).isCanceled())
+        if (component.BUS.fire(GuiComponentEvents.MouseDownEvent(transformedPos, button)).isCanceled())
             return
 
         if (component.mouseOver)
@@ -93,8 +92,8 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
         else
             mouseButtonsDownOutside[button.ordinal] = transformedPos
 
-        component.forEachChild { child ->
-            child.compCast.mouseDown(transformedPos, button)
+        component.subComponents.forEach { child ->
+            child.mouseDown(transformedPos, button)
         }
     }
 
@@ -112,25 +111,25 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
         mouseButtonsDownInside[button.ordinal] = null
         mouseButtonsDownOutside[button.ordinal] = null
 
-        if (component.BUS.fire(GuiComponentEvents.MouseUpEvent(component, transformedPos, button)).isCanceled())
+        if (component.BUS.fire(GuiComponentEvents.MouseUpEvent(transformedPos, button)).isCanceled())
             return
 
         if (component.mouseOver) {
              if(posDownInside != null) {
-                 component.BUS.fire(GuiComponentEvents.MouseClickEvent(component, posDownInside, transformedPos, button))
+                 component.BUS.fire(GuiComponentEvents.MouseClickEvent(posDownInside, transformedPos, button))
              } else if(posDownOutside != null) {
-                 component.BUS.fire(GuiComponentEvents.MouseClickDragInEvent(component, posDownOutside, transformedPos, button))
+                 component.BUS.fire(GuiComponentEvents.MouseClickDragInEvent(posDownOutside, transformedPos, button))
              }
         } else {
             if(posDownInside != null) {
-                component.BUS.fire(GuiComponentEvents.MouseClickDragOutEvent(component, posDownInside, transformedPos, button))
+                component.BUS.fire(GuiComponentEvents.MouseClickDragOutEvent(posDownInside, transformedPos, button))
             } else if(posDownOutside != null) {
-                component.BUS.fire(GuiComponentEvents.MouseClickOutsideEvent(component, posDownOutside, transformedPos, button))
+                component.BUS.fire(GuiComponentEvents.MouseClickOutsideEvent(posDownOutside, transformedPos, button))
             }
         }
 
-        component.forEachChild { child ->
-            child.compCast.mouseUp(transformedPos, button)
+        component.subComponents.forEach { child ->
+            child.mouseUp(transformedPos, button)
         }
     }
 
@@ -143,11 +142,11 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
     override fun mouseDrag(mousePos: Vec2d, button: EnumMouseButton) {
         val transformedPos = component.transformFromParentContext(mousePos)
         if (!component.isVisible) return
-        if (component.BUS.fire(GuiComponentEvents.MouseDragEvent(component, transformedPos, button)).isCanceled())
+        if (component.BUS.fire(GuiComponentEvents.MouseDragEvent(transformedPos, button)).isCanceled())
             return
 
-        component.forEachChild { child ->
-            child.compCast.mouseDrag(transformedPos, button)
+        component.subComponents.forEach { child ->
+            child.mouseDrag(transformedPos, button)
         }
     }
 
@@ -160,11 +159,11 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
     override fun mouseWheel(mousePos: Vec2d, direction: GuiComponentEvents.MouseWheelDirection) {
         val transformedPos = component.transformFromParentContext(mousePos)
         if (!component.isVisible) return
-        if (component.BUS.fire(GuiComponentEvents.MouseWheelEvent(component, transformedPos, direction)).isCanceled())
+        if (component.BUS.fire(GuiComponentEvents.MouseWheelEvent(transformedPos, direction)).isCanceled())
             return
 
-        component.forEachChild { child ->
-            child.compCast.mouseWheel(transformedPos, direction)
+        component.subComponents.forEach { child ->
+            child.mouseWheel(transformedPos, direction)
         }
     }
 
@@ -176,13 +175,13 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
      */
     override fun keyPressed(key: Char, keyCode: Int) {
         if (!component.isVisible) return
-        if (component.BUS.fire(GuiComponentEvents.KeyDownEvent(component, key, keyCode)).isCanceled())
+        if (component.BUS.fire(GuiComponentEvents.KeyDownEvent(key, keyCode)).isCanceled())
             return
 
         keysDown.put(Key[key, keyCode], true)
 
-        component.forEachChild { child ->
-            child.compCast.keyPressed(key, keyCode)
+        component.subComponents.forEach { child ->
+            child.keyPressed(key, keyCode)
         }
     }
 
@@ -196,11 +195,11 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
         if (!component.isVisible) return
         keysDown.put(Key[key, keyCode], false) // do this before so we don't have lingering keyDown entries
 
-        if (component.BUS.fire(GuiComponentEvents.KeyUpEvent(component, key, keyCode)).isCanceled())
+        if (component.BUS.fire(GuiComponentEvents.KeyUpEvent(key, keyCode)).isCanceled())
             return
 
-        component.forEachChild { child ->
-            child.compCast.keyReleased(key, keyCode)
+        component.subComponents.forEach { child ->
+            child.keyReleased(key, keyCode)
         }
     }
 }

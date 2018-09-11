@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.component.Hook
 import com.teamwizardry.librarianlib.features.gui.provided.book.helper.TranslationHolder
 import com.teamwizardry.librarianlib.features.sprite.Sprite
@@ -63,7 +64,7 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
                 }
             }
 
-            BUS.hook(GuiComponentEvents.PostDrawEvent::class.java) { event ->
+            BUS.hook(GuiLayerEvents.PostDrawEvent::class.java) { event ->
                 GlStateManager.pushMatrix()
                 GlStateManager.enableBlend()
                 GlStateManager.enableAlpha()

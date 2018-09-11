@@ -1,21 +1,18 @@
 package com.teamwizardry.librarianlib.features.gui.component.supporting
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.delegate
 import com.teamwizardry.librarianlib.features.math.Matrix4
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
 interface IComponentGeometry {
-    /** [GuiLayer.transform] */
     val transform: ComponentTransform
-    /** [GuiLayer.size] */
     var size: Vec2d
-    /** [GuiLayer.pos] */
     var pos: Vec2d
-    /** [GuiLayer.mouseOver] */
-    val mouseOver: Boolean
+    var mousePos: Vec2d
+    var mouseOver: Boolean
+
     /**
      * This is like [GuiLayer.mouseOver] except it ignores the occlusion of components at higher z-indices.
      */
@@ -34,6 +31,11 @@ interface IComponentGeometry {
      * well as its children or if it should only calculate based on its children.
      */
     var shouldCalculateOwnHover: Boolean
+
+    /**
+     *
+     */
+    fun updateMouseBeforeRender(mousePos: Vec2d)
 
     /**
      * Takes [pos], which is in our parent's context (coordinate space), and transforms it to our context
@@ -77,7 +79,7 @@ interface IComponentGeometry {
  * Created by TheCodeWarrior
  */
 open class ComponentGeometryHandler: IComponentGeometry {
-    lateinit var component: GuiLayer
+    lateinit var layer: GuiLayer
 
     /** [GuiLayer.transform] */
     override val transform = ComponentTransform()
@@ -89,6 +91,8 @@ open class ComponentGeometryHandler: IComponentGeometry {
         set(value) {
             transform.translate = value
         }
+    /** [GuiLayer.mouseOver] */
+    override var mousePos = Vec2d.ZERO
     /** [GuiLayer.mouseOver] */
     override var mouseOver = false
     /**
@@ -111,6 +115,13 @@ open class ComponentGeometryHandler: IComponentGeometry {
      */
     override var shouldCalculateOwnHover = true
 
+    private var wasMouseOver = false
+
+    override fun updateMouseBeforeRender(mousePos: Vec2d) {
+        this.mousePos = layer.transformFromParentContext(mousePos)
+        layer.BUS.fire(GuiLayerEvents.AdjustMousePosition())
+        layer.children.forEach { it.updateMouseBeforeRender(this.mousePos) }
+    }
 
     /**
      * Takes [pos], which is in our parent's context (coordinate space), and transforms it to our context
@@ -134,7 +145,7 @@ open class ComponentGeometryHandler: IComponentGeometry {
     override fun otherContextToThisContext(other: GuiLayer?): Matrix4 {
         if (other == null)
             return thisContextToOtherContext(null).invert()
-        return other.thisContextToOtherContext(component)
+        return other.thisContextToOtherContext(layer)
     }
 
     /**
@@ -148,7 +159,7 @@ open class ComponentGeometryHandler: IComponentGeometry {
 
     private fun _thisContextToOtherContext(other: GuiLayer?, matrix: Matrix4): Matrix4 {
         if (other == null) {
-            component.parent?.geometry?._thisContextToOtherContext(null, matrix)
+            layer.parent?.geometry?._thisContextToOtherContext(null, matrix)
             transform.apply(matrix)
             return matrix
         }
@@ -171,7 +182,6 @@ open class ComponentGeometryHandler: IComponentGeometry {
     override fun thisPosToOtherContext(other: GuiLayer?): Vec2d = thisPosToOtherContext(other, Vec2d.ZERO)
 
     fun calculateMouseOver(mousePos: Vec2d) {
-        component.BUS.fire(GuiComponentEvents.PreMouseOverEvent(component, mousePos))
         val transformPos = transformFromParentContext(mousePos)
         this.mouseOver = false
         this.mouseOverNoOcclusion = false
@@ -179,10 +189,10 @@ open class ComponentGeometryHandler: IComponentGeometry {
         var occludeChildren = false
         var occludeSelf = false
 
-        if (!component.isVisible || component.isPointClipped(transformPos)) {
+        if (!layer.isVisible || layer.isPointClipped(transformPos)) {
             this.propagateClippedMouseOver()
         } else {
-            component.children.asReversed().forEach { child ->
+            layer.children.asReversed().forEach { child ->
                 child.geometry.calculateMouseOver(transformPos)
                 if (occludeChildren) {
                     child.geometry.mouseOver = false // occlude the child position
@@ -213,17 +223,21 @@ open class ComponentGeometryHandler: IComponentGeometry {
             // even if this component should be occluded by a child, use calculateOwnHover for mouseOverNoOcclusion
             mouseOverNoOcclusion = mouseOverNoOcclusion || (shouldCalculateOwnHover && calculateOwnHover(mousePos))
         }
-        val event = component.BUS.fire(
-                GuiComponentEvents.MouseOverEvent(component, transformPos, this.mouseOver, this.mouseOverNoOcclusion)
-        )
-        this.mouseOver = event.isOver
-        this.mouseOverNoOcclusion = event.isOverNoOcclusion
+
+        if (wasMouseOver != layer.mouseOver) {
+            if (layer.mouseOver) {
+                layer.BUS.fire(GuiLayerEvents.MouseInEvent())
+            } else {
+                layer.BUS.fire(GuiLayerEvents.MouseOutEvent())
+            }
+        }
+        wasMouseOver = layer.mouseOver
     }
 
     private fun propagateClippedMouseOver() {
         this.mouseOver = false
         this.mouseOverNoOcclusion = false
-        component.children.forEach { child -> child.geometry.propagateClippedMouseOver() }
+        layer.children.forEach { child -> child.geometry.propagateClippedMouseOver() }
     }
 
     /**
@@ -231,7 +245,7 @@ open class ComponentGeometryHandler: IComponentGeometry {
      */
     fun calculateOwnHover(mousePos: Vec2d): Boolean {
         val transformPos = transformFromParentContext(mousePos)
-        return !component.isPointClipped(transformPos) &&
+        return !layer.isPointClipped(transformPos) &&
                 transformPos.x >= 0 && transformPos.x <= size.x &&
                 transformPos.y >= 0 && transformPos.y <= size.y
     }

@@ -64,21 +64,21 @@ class ComponentDataHandler: IComponentData {
     override fun <D : Any> getAllDataKeys(clazz: Class<D>): Set<String> {
         if (!data.containsKey(clazz))
             return setOf()
-        return component.BUS.fire(GuiComponentEvents.GetDataKeysEvent(component, clazz, data[clazz]?.keys?.toMutableSet() ?: mutableSetOf())).value
+        return component.BUS.fire(GuiComponentEvents.GetDataKeysEvent(clazz, data[clazz]?.keys?.toMutableSet() ?: mutableSetOf())).value
     }
 
     /**
      * Returns all classes for data that contain at least one value. Not guaranteed to be complete.
      */
     override fun getAllDataClasses(): Set<Class<*>> {
-        return component.BUS.fire(GuiComponentEvents.GetDataClassesEvent(component, data.entries.filter { it.value.isNotEmpty() }.map { it.key }.toMutableSet())).value
+        return component.BUS.fire(GuiComponentEvents.GetDataClassesEvent(data.entries.filter { it.value.isNotEmpty() }.map { it.key }.toMutableSet())).value
     }
 
     /** [GuiComponent.setData] */
     override fun <D : Any> setData(clazz: Class<D>, key: String, value: D) {
         if (!data.containsKey(clazz))
             data.put(clazz, mutableMapOf())
-        if (!component.BUS.fire(GuiComponentEvents.SetDataEvent(component, clazz, key, value)).isCanceled())
+        if (!component.BUS.fire(GuiComponentEvents.SetDataEvent(clazz, key, value)).isCanceled())
             data[clazz]?.put(key, value)
     }
 
@@ -86,7 +86,7 @@ class ComponentDataHandler: IComponentData {
     override fun <D : Any> removeData(clazz: Class<D>, key: String) {
         if (!data.containsKey(clazz))
             data.put(clazz, mutableMapOf())
-        if (!component.BUS.fire(GuiComponentEvents.RemoveDataEvent(component, clazz, key, getData(clazz, key))).isCanceled())
+        if (!component.BUS.fire(GuiComponentEvents.RemoveDataEvent(clazz, key, getData(clazz, key))).isCanceled())
             data[clazz]?.remove(key)
     }
 
@@ -95,7 +95,7 @@ class ComponentDataHandler: IComponentData {
     override fun <D> getData(clazz: Class<D>, key: String): D? {
         if (!data.containsKey(clazz))
             data.put(clazz, HashMap<String, Any>())
-        return component.BUS.fire(GuiComponentEvents.GetDataEvent(component, clazz, key, data[clazz]?.get(key) as D?)).value
+        return component.BUS.fire(GuiComponentEvents.GetDataEvent(clazz, key, data[clazz]?.get(key) as D?)).value
     }
 
     /** [GuiComponent.hasData] */
@@ -103,7 +103,7 @@ class ComponentDataHandler: IComponentData {
     override fun <D> hasData(clazz: Class<D>, key: String): Boolean {
         if (!data.containsKey(clazz))
             data.put(clazz, HashMap<String, Any>())
-        return component.BUS.fire(GuiComponentEvents.GetDataEvent(component, clazz, key, data[clazz]?.get(key) as D?)).value != null
+        return component.BUS.fire(GuiComponentEvents.GetDataEvent(clazz, key, data[clazz]?.get(key) as D?)).value != null
     }
 
     /**

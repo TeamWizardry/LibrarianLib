@@ -44,7 +44,7 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
     var enableUnicodeBidi: Boolean by enableUnicodeBidi_im
     var shadow: Boolean by shadow_im
 
-    override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
+    override fun draw(partialTicks: Float) {
         val fr = Minecraft.getMinecraft().fontRenderer
 
         val fullText = text

@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.helpers.vec
@@ -56,7 +57,7 @@ class GuiTestClippedMouseOver : GuiBase(0, 0) {
 
     fun rectMouseOver(posX: Int, posY: Int, width: Int, height: Int, color: Color, configure: (ComponentRect) -> Unit = {}) {
         val rect = ComponentRect(posX, posY, width, height)
-        rect.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) { event ->
+        rect.BUS.hook(GuiLayerEvents.PreDrawEvent::class.java) { event ->
             if(rect.mouseOver) {
                 rect.color = color
             } else {

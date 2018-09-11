@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.gui.provided.book.search
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentTextField
 import com.teamwizardry.librarianlib.features.gui.components.ComponentTextField.FocusEvent
 import com.teamwizardry.librarianlib.features.gui.components.ComponentTextField.TextEditEvent
@@ -45,7 +46,7 @@ class ComponentSearchBar(book: IBookGui, id: Int, onType: ((String) -> Unit)?) :
 
         clipToBounds = true
 
-        BUS.hook(GuiComponentEvents.MouseInEvent::class.java) {
+        BUS.hook(GuiLayerEvents.MouseInEvent::class.java) {
             if (!textField.isFocused) {
                 if (textField.text.isEmpty())
                     slideOutShort()
@@ -54,7 +55,7 @@ class ComponentSearchBar(book: IBookGui, id: Int, onType: ((String) -> Unit)?) :
             }
         }
 
-        BUS.hook(GuiComponentEvents.MouseOutEvent::class.java) {
+        BUS.hook(GuiLayerEvents.MouseOutEvent::class.java) {
             if (!textField.isFocused)
                 slideIn()
         }
