@@ -118,6 +118,7 @@ class ComponentRenderHandler: IComponentRender {
 
         components.removeAll { e ->
             var b = e.isInvalid
+            e.clearInvalid()
             if (!b) return@removeAll false
             if (layer.BUS.fire(GuiLayerEvents.RemoveChildEvent(e)).isCanceled())
                 b = false

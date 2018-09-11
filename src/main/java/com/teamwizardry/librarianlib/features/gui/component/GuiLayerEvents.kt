@@ -18,4 +18,5 @@ object GuiLayerEvents {
     class MouseInEvent : Event()
     class MouseOutEvent : Event()
     class AdjustMousePosition : Event()
+    class LayOutChildren : Event()
 }

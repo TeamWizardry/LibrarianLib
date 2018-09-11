@@ -97,6 +97,33 @@ abstract class GuiLayer private constructor(
      */
     open fun draw(partialTicks: Float) {}
 
+    /**
+     * Called to lay out the children of this layer. Unless overridden this is a no-op.
+     *
+     * This method is called before each frame if this component's bounds have changed, children are added/removed,
+     * or [setNeedsLayout] has been called. After this method completes, the children of this component will be
+     * checked for layout. This means that changes made in one layer can ripple downward.
+     *
+     * The idea behind this method is that self-contained components/layers can lay out their children dynamically
+     * themselves. Examples of such a component would be a self-contained list item, a component that spaces out its
+     * children equally along its length, or simply a component that needs to resize its background layer
+     * to fit its dimensions.
+     */
+    open fun layOutChildren() {}
+
+    /**
+     * Calls [layOutChildren] then calls itself on this layer's children. [needsLayout] is reset to false _after_
+     * [layOutChildren] completes, meaning size changes in that method won't cause a layout pass every frame.
+     */
+    open fun layOutChildrenIfNeeded() {
+        if(needsLayout) {
+            layOutChildren()
+            BUS.fire(GuiLayerEvents.LayOutChildren())
+            needsLayout = false
+        }
+        children.forEach { it.layOutChildrenIfNeeded() }
+    }
+
     //region - Base component stuff
     @JvmField
     val BUS = EventBus()
@@ -107,10 +134,24 @@ abstract class GuiLayer private constructor(
     open var isVisible = true
 
     /**
+     * Returns true if the component is in need of a layout update. Defaults to true upon layer creation
+     */
+    open var needsLayout = true
+        protected set
+
+    /**
+     * Marks this component to be laid out using [layOutChildren] before the next frame.
+     */
+    fun setNeedsLayout() {
+        this.needsLayout = true
+    }
+
+    /**
      * Returns true if this component is invalid and it should be removed from its parent
      */
     open var isInvalid = false
         protected set
+    internal fun clearInvalid() { this.isInvalid = false }
 
     /**
      * Set this component invalid so it will be removed from it's parent element
@@ -119,7 +160,6 @@ abstract class GuiLayer private constructor(
         this.isInvalid = true
     }
     //endregion
-
 
     /**
      * Transforms [pos] from `other`'s context (or the root context if null) to our context
@@ -138,6 +178,7 @@ abstract class GuiLayer private constructor(
         StencilUtil.clear()
         GL11.glEnable(GL11.GL_STENCIL_TEST)
         cleanUpLayers()
+        layOutChildrenIfNeeded()
         updateMouseBeforeRender(mousePos)
         geometry.calculateMouseOver(mousePos)
         preFrame()

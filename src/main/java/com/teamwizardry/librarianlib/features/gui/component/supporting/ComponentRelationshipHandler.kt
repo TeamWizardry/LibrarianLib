@@ -102,6 +102,7 @@ open class ComponentRelationshipHandler: IComponentRelationship {
      */
     override fun add(vararg components: GuiLayer?) {
         components.forEach { addInternal(it) }
+        component.setNeedsLayout()
     }
 
     protected fun addInternal(component: GuiLayer?) {

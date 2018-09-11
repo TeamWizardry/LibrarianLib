@@ -50,5 +50,6 @@ enum class Guis(val create: () -> GuiScreen) {
     SPRITE({ GuiTestSprite() }),
     MOUSE_CLICKS({ GuiTestClickEvents() }),
     MOUSE_OVER_FLAGS({ GuiTestMouseOverFlags() }),
-    PROVIDED_BOOK({ GuiTestProvidedBook() })
+    PROVIDED_BOOK({ GuiTestProvidedBook() }),
+    LAYOUT({ GuiTestLayout() })
 }
