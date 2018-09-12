@@ -112,7 +112,7 @@ abstract class Animation<T : Any>(val target: T, val property: AnimatablePropert
     /**
      * runs the completion callback
      */
-    fun complete() {
+    open fun complete() {
         completion.run()
         finished = true
     }

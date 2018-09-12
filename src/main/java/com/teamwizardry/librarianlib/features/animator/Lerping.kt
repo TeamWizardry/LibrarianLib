@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.animator
 
+import com.teamwizardry.librarianlib.features.animator.internal.ColorLerper
 import com.teamwizardry.librarianlib.features.animator.internal.PrimitiveLerpers
 import com.teamwizardry.librarianlib.features.animator.internal.StringLerper
 import com.teamwizardry.librarianlib.features.animator.internal.VecLerpers
@@ -36,6 +37,7 @@ object LerperHandler {
         PrimitiveLerpers
         StringLerper
         VecLerpers
+        ColorLerper
     }
 }
 

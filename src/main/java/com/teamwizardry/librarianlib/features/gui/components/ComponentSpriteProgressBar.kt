@@ -10,7 +10,8 @@ import com.teamwizardry.librarianlib.features.sprite.ISprite
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: ISprite?, x: Int, y: Int, width: Int = sprite?.width ?: 16, height: Int = sprite?.height ?: 16) : GuiComponent(x, y, width, height) {
+class ComponentSpriteProgressBar @JvmOverloads constructor(
+    var sprite: ISprite?, x: Int, y: Int, width: Int = sprite?.width ?: 16, height: Int = sprite?.height ?: 16) : GuiComponent(x, y, width, height) {
 
     class AnimationLoopEvent(val component: ComponentSpriteProgressBar) : Event()
     enum class ProgressDirection { Y_POS, Y_NEG, X_POS, X_NEG }

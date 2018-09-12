@@ -2,7 +2,9 @@ package com.teamwizardry.librarianlib.features.gui.component.supporting
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
+import com.teamwizardry.librarianlib.features.gui.value.RMValue
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.kotlin.delegate
 import com.teamwizardry.librarianlib.features.math.Matrix4
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
@@ -84,19 +86,11 @@ open class ComponentGeometryHandler: IComponentGeometry {
     /** [GuiLayer.transform] */
     override val transform = ComponentTransform()
     /** [GuiLayer.size] */
-    override var size: Vec2d = vec(0, 0)
-        set(value) {
-            if(field != value) {
-                layer.setNeedsLayout()
-            }
-            field = value
-        }
+    override var size: Vec2d by RMValue(vec(0, 0)) {
+        layer.setNeedsLayout()
+    }
     /** [GuiLayer.pos] */
-    override var pos: Vec2d
-        get() = transform.translate
-        set(value) {
-            transform.translate = value
-        }
+    override var pos: Vec2d by transform::translate.delegate
     /** [GuiLayer.mouseOver] */
     override var mousePos = Vec2d.ZERO
     /** [GuiLayer.mouseOver] */

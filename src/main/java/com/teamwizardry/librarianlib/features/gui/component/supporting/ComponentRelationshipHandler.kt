@@ -3,6 +3,8 @@ package com.teamwizardry.librarianlib.features.gui.component.supporting
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
+import com.teamwizardry.librarianlib.features.gui.value.RMValue
+import com.teamwizardry.librarianlib.features.gui.value.RMValueInt
 import java.util.*
 
 interface IComponentRelationship {
@@ -63,7 +65,7 @@ open class ComponentRelationshipHandler: IComponentRelationship {
     lateinit var component: GuiLayer
 
     /** [GuiLayer.zIndex] */
-    override var zIndex = 0
+    override var zIndex by RMValueInt(0)
     internal val subLayers = mutableListOf<GuiLayer>()
     /** [GuiLayer.children] */
     override val children: List<GuiLayer> = Collections.unmodifiableList(subLayers)

@@ -5,6 +5,8 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.component.Hook
+import com.teamwizardry.librarianlib.features.gui.value.RMValue
+import com.teamwizardry.librarianlib.features.gui.value.RMValueDouble
 import com.teamwizardry.librarianlib.features.math.Matrix4
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
@@ -38,11 +40,11 @@ class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
     }
 
     internal var dragStart = Vec2d.ZERO
-    var offset = Vec3d.ZERO
-    var zoom: Double = 0.toDouble()
-    var rotX: Double = 0.toDouble()
-    var rotY: Double = 0.toDouble()
-    var rotZ: Double = 0.toDouble()
+    var offset by RMValue(Vec3d.ZERO)
+    var zoom: Double by RMValueDouble(0.0)
+    var rotX: Double by RMValueDouble(0.0)
+    var rotY: Double by RMValueDouble(0.0)
+    var rotZ: Double by RMValueDouble(0.0)
     internal var dragButton: EnumMouseButton? = null
 
     @Hook

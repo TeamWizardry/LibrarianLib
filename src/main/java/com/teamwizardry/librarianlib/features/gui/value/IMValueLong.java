@@ -1,10 +1,12 @@
 package com.teamwizardry.librarianlib.features.gui.value;
 
 import kotlin.reflect.KProperty;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.LongSupplier;
 
-public class IMValueLong {
+public class IMValueLong implements GuiAnimatable {
     private Storage storage;
 
     private IMValueLong(Storage initialStorage) {
@@ -28,6 +30,7 @@ public class IMValueLong {
      * Sets the callback, unsetting the fixed value in the process
      */
     public void set(LongSupplier callback) {
+        GuiAnimator.getCurrent().add(this);
         if(storage instanceof Storage.Callback) {
             ((Storage.Callback) storage).callback = callback;
         } else {
@@ -40,6 +43,7 @@ public class IMValueLong {
      * access this value (`someProperty` will call longo `somePropery_im` for its value)
      */
     public void setValue(long value) {
+        GuiAnimator.getCurrent().add(this);
         if(storage instanceof Storage.Fixed) {
             ((Storage.Fixed) storage).value = value;
         } else {
@@ -66,6 +70,40 @@ public class IMValueLong {
      */
     public void invoke(LongSupplier callback) {
         set(callback);
+    }
+
+    /**
+     * Gets the current callback, or null if this IMValueLong has a fixed value
+     */
+    @Nullable
+    public LongSupplier getCallback() {
+        if(storage instanceof Storage.Callback) {
+            return ((Storage.Callback) storage).callback;
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    @Override
+    public Object getAnimatableValue() {
+        return this.get();
+    }
+
+    @Override
+    public void setAnimatableValue(@Nullable Object value) {
+        this.setValue((long) value);
+    }
+
+    @Nullable
+    @Override
+    public Object getAnimatableCallback() {
+        return this.getCallback();
+    }
+
+    @Override
+    public void setAnimatableCallback(@NotNull Object supplier) {
+        this.set((LongSupplier) supplier);
     }
 
     private static abstract class Storage {

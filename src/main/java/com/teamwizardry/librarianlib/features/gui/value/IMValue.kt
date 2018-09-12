@@ -14,7 +14,7 @@ import kotlin.reflect.KProperty
  * var yourProperty by yourProperty_im
  * ```
  */
-class IMValue<T> private constructor(private var storage: Storage<T>) {
+class IMValue<T> private constructor(private var storage: Storage<T>): GuiAnimatable {
     constructor(initialValue: T): this(Storage.Fixed(initialValue))
     constructor(initialCallback: Supplier<T>): this(Storage.Callback(initialCallback))
     constructor(initialCallback: () -> T): this(Storage.Callback(Supplier(initialCallback)))
@@ -30,7 +30,15 @@ class IMValue<T> private constructor(private var storage: Storage<T>) {
      * Sets the callback, unsetting the fixed value in the process
      */
     fun set(f: Supplier<T>) {
+        GuiAnimator.current.add(this)
         storage = (this.storage as? Storage.Callback<T>)?.also { it.callback = f } ?: Storage.Callback(f)
+    }
+
+    /**
+     * Gets the callback or null if this IMValue is storing a fixed value
+     */
+    fun getCallback(): Supplier<T>? {
+        return (this.storage as? Storage.Callback<T>)?.callback
     }
 
     /**
@@ -38,6 +46,7 @@ class IMValue<T> private constructor(private var storage: Storage<T>) {
      * access this value (`someProperty` will call into `somePropery_im` for its value)
      */
     fun setValue(value: T) {
+        GuiAnimator.current.add(this)
         storage = (this.storage as? Storage.Fixed<T>)?.also { it.value = value } ?: Storage.Fixed(value)
     }
 
@@ -73,6 +82,25 @@ class IMValue<T> private constructor(private var storage: Storage<T>) {
             override fun get() = callback.get()
         }
     }
+
+    override fun getAnimatableValue(): Any? {
+        return this.get()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun setAnimatableValue(value: Any?) {
+        this.setValue(value as T)
+    }
+
+    override fun getAnimatableCallback(): Any? {
+        return this.getCallback()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun setAnimatableCallback(supplier: Any) {
+        this.set(supplier as Supplier<T>)
+    }
+
 
     companion object {
         /**

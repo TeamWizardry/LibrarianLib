@@ -2,10 +2,12 @@ package com.teamwizardry.librarianlib.features.gui.value;
 
 import kotlin.properties.ReadWriteProperty;
 import kotlin.reflect.KProperty;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.IntSupplier;
 
-public class IMValueInt {
+public class IMValueInt implements GuiAnimatable {
     private Storage storage;
 
     private IMValueInt(Storage initialStorage) {
@@ -29,6 +31,7 @@ public class IMValueInt {
      * Sets the callback, unsetting the fixed value in the process
      */
     public void set(IntSupplier callback) {
+        GuiAnimator.getCurrent().add(this);
         if(storage instanceof Storage.Callback) {
             ((Storage.Callback) storage).callback = callback;
         } else {
@@ -41,6 +44,7 @@ public class IMValueInt {
      * access this value (`someProperty` will call into `somePropery_im` for its value)
      */
     public void setValue(int value) {
+        GuiAnimator.getCurrent().add(this);
         if(storage instanceof Storage.Fixed) {
             ((Storage.Fixed) storage).value = value;
         } else {
@@ -67,6 +71,40 @@ public class IMValueInt {
      */
     public void invoke(IntSupplier callback) {
         set(callback);
+    }
+
+    /**
+     * Gets the current callback, or null if this IMValueInt has a fixed value
+     */
+    @Nullable
+    public IntSupplier getCallback() {
+        if(storage instanceof Storage.Callback) {
+            return ((Storage.Callback) storage).callback;
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    @Override
+    public Object getAnimatableValue() {
+        return this.get();
+    }
+
+    @Override
+    public void setAnimatableValue(@Nullable Object value) {
+        this.setValue((int) value);
+    }
+
+    @Nullable
+    @Override
+    public Object getAnimatableCallback() {
+        return this.getCallback();
+    }
+
+    @Override
+    public void setAnimatableCallback(@NotNull Object supplier) {
+        this.set((IntSupplier) supplier);
     }
 
     private static abstract class Storage {

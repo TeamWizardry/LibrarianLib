@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.mixin.DragMixin
+import com.teamwizardry.librarianlib.features.gui.value.RMValue
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import java.util.function.Consumer
@@ -14,7 +15,7 @@ class ComponentSlider(posX: Int, posY: Int, width: Int, height: Int, percentage:
     var percentageChange = HandlerList<Consumer<Double>>()
 
     val handle: ComponentVoid
-    var percentage: Double = 0.toDouble()
+    var percentage: Double = 0.0
         set(percentage) {
             var newPercent = percentage
             newPercent = Math.min(1.0, Math.max(newPercent, 0.0))
@@ -24,7 +25,7 @@ class ComponentSlider(posX: Int, posY: Int, width: Int, height: Int, percentage:
             field = newPercent
             percentageChange.fireAll { h -> h.accept(this.percentage) }
         }
-    private var handlePos: Vec2d = vec(0, 0)
+    private var handlePos: Vec2d by RMValue(vec(0, 0))
 
     init {
 

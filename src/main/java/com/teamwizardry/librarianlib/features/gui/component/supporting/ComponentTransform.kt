@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.features.gui.component.supporting
 
+import com.teamwizardry.librarianlib.features.gui.value.RMValue
+import com.teamwizardry.librarianlib.features.gui.value.RMValueDouble
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.div
 import com.teamwizardry.librarianlib.features.kotlin.minus
@@ -25,22 +27,22 @@ class ComponentTransform {
     /**
      * The translation component of the transform
      */
-    var translate = vec(0, 0)
+    var translate by RMValue(vec(0, 0))
 
     /**
      * The Z translation component of the transform
      */
-    var translateZ = 0.0
+    var translateZ by RMValueDouble(0.0)
 
     /**
      * The rotation component of the transform in radians
      */
-    var rotate = 0.0
+    var rotate by RMValueDouble(0.0)
 
     /**
      * The scale component of the transform
      */
-    var scale2D = vec(1, 1)
+    var scale2D by RMValue(vec(1, 1))
 
     /**
      * Get and set the uniform scale of the transformation.
@@ -56,14 +58,14 @@ class ComponentTransform {
     /**
      * The point to rotate and scale about. Applied after translation
      */
-    var anchor = vec(0, 0)
+    var anchor by RMValue(vec(0, 0))
 
     /**
      * The translation applied after rotation and scaling. Useful for having a component "positioned" at its center
      */
-    var postTranslate = vec(0, 0)
+    var postTranslate by RMValue(vec(0, 0))
 
-    internal var anchorZ = 0.0
+    internal var anchorZ by RMValueDouble(0.0)
     /**
      * Create a [Matrix4] containing this transform
      */

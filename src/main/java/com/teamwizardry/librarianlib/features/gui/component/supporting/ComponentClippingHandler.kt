@@ -1,6 +1,8 @@
 package com.teamwizardry.librarianlib.features.gui.component.supporting
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
+import com.teamwizardry.librarianlib.features.gui.value.RMValueDouble
+import com.teamwizardry.librarianlib.features.gui.value.RMValueInt
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.pos
@@ -65,12 +67,12 @@ class ComponentClippingHandler: IComponentClipping {
     /**
      * If nonzero, round the corners of the clipping
      */
-    override var cornerRadius = 0.0
+    override var cornerRadius by RMValueDouble(0.0)
     /**
      * If nonzero, draw corners with pixels `N` units in size. Pending implementation this property is ignored when
      * clipping mouseover checks.
      */
-    override var cornerPixelSize = 0
+    override var cornerPixelSize by RMValueInt(0)
 
     /**
      * If nonnull, this sprite is used for clipping. Any pixels that are completely transparent will be masked out.

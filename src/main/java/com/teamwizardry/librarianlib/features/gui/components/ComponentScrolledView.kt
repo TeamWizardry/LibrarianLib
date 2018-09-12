@@ -10,9 +10,6 @@ class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : Gui
 
     val scroll = HandlerList<(ComponentScrolledView, Vec2d, Vec2d?) -> Vec2d?>()
 
-    init {
-    }
-
     override fun draw(partialTicks: Float) {
         //NO-OP
     }

@@ -1,10 +1,12 @@
 package com.teamwizardry.librarianlib.features.gui.value;
 
 import kotlin.reflect.KProperty;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.DoubleSupplier;
 
-public class IMValueDouble {
+public class IMValueDouble implements GuiAnimatable {
     private Storage storage;
 
     private IMValueDouble(Storage initialStorage) {
@@ -28,6 +30,7 @@ public class IMValueDouble {
      * Sets the callback, unsetting the fixed value in the process
      */
     public void set(DoubleSupplier callback) {
+        GuiAnimator.getCurrent().add(this);
         if(storage instanceof Storage.Callback) {
             ((Storage.Callback) storage).callback = callback;
         } else {
@@ -40,6 +43,7 @@ public class IMValueDouble {
      * access this value (`someProperty` will call doubleo `somePropery_im` for its value)
      */
     public void setValue(double value) {
+        GuiAnimator.getCurrent().add(this);
         if(storage instanceof Storage.Fixed) {
             ((Storage.Fixed) storage).value = value;
         } else {
@@ -66,6 +70,40 @@ public class IMValueDouble {
      */
     public void invoke(DoubleSupplier callback) {
         set(callback);
+    }
+
+    /**
+     * Gets the current callback, or null if this IMValueDouble has a fixed value
+     */
+    @Nullable
+    public DoubleSupplier getCallback() {
+        if(storage instanceof Storage.Callback) {
+            return ((Storage.Callback) storage).callback;
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    @Override
+    public Object getAnimatableValue() {
+        return this.get();
+    }
+
+    @Override
+    public void setAnimatableValue(@Nullable Object value) {
+        this.setValue((double) value);
+    }
+
+    @Nullable
+    @Override
+    public Object getAnimatableCallback() {
+        return this.getCallback();
+    }
+
+    @Override
+    public void setAnimatableCallback(@NotNull Object supplier) {
+        this.set((DoubleSupplier) supplier);
     }
 
     private static abstract class Storage {
