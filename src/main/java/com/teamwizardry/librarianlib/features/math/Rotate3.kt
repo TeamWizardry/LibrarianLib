@@ -141,12 +141,12 @@ fun LinearTransformation.rotate(point: Vec3i) = rotate(point.x * 1.0, point.y * 
  * Applies a [LinearTransformation] to the axis-aligned bounding box [boundingBox].
  */
 fun LinearTransformation.rotate(boundingBox: AxisAlignedBB): AxisAlignedBB {
-    val bbMinX = boundingBox.minX - 0.5
-    val bbMinY = boundingBox.minY - 0.5
-    val bbMinZ = boundingBox.minZ - 0.5
-    val bbMaxX = boundingBox.maxX - 0.5
-    val bbMaxY = boundingBox.maxY - 0.5
-    val bbMaxZ = boundingBox.maxZ - 0.5
+    val bbMinX = boundingBox.minX
+    val bbMinY = boundingBox.minY
+    val bbMinZ = boundingBox.minZ
+    val bbMaxX = boundingBox.maxX
+    val bbMaxY = boundingBox.maxY
+    val bbMaxZ = boundingBox.maxZ
 
     val p1 = rotate(bbMinX, bbMinY, bbMinZ)
     val p2 = rotate(bbMinX, bbMinY, bbMaxZ)
@@ -191,12 +191,12 @@ fun AffineTransformation.rotate(point: Vec3i) = rotate(point.x * 1.0, point.y * 
  * Applies an [AffineTransformation] to the axis-aligned bounding box [boundingBox].
  */
 fun AffineTransformation.rotate(boundingBox: AxisAlignedBB): AxisAlignedBB {
-    val bbMinX = boundingBox.minX - 0.5
-    val bbMinY = boundingBox.minY - 0.5
-    val bbMinZ = boundingBox.minZ - 0.5
-    val bbMaxX = boundingBox.maxX - 0.5
-    val bbMaxY = boundingBox.maxY - 0.5
-    val bbMaxZ = boundingBox.maxZ - 0.5
+    val bbMinX = boundingBox.minX
+    val bbMinY = boundingBox.minY
+    val bbMinZ = boundingBox.minZ
+    val bbMaxX = boundingBox.maxX
+    val bbMaxY = boundingBox.maxY
+    val bbMaxZ = boundingBox.maxZ
 
     val p1 = rotate(bbMinX, bbMinY, bbMinZ)
     val p2 = rotate(bbMinX, bbMinY, bbMaxZ)
