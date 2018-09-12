@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.features.gui
+package com.teamwizardry.librarianlib.features.gui.value
 
 import java.util.function.Supplier
 import kotlin.reflect.KProperty

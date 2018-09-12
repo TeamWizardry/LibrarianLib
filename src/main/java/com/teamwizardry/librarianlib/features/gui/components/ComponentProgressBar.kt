@@ -6,10 +6,9 @@ package com.teamwizardry.librarianlib.features.gui.components
  * (a copy of which can be found at the repo root)
  */
 
-import com.teamwizardry.librarianlib.features.gui.IMValue
-import com.teamwizardry.librarianlib.features.gui.IMValueDouble
+import com.teamwizardry.librarianlib.features.gui.value.IMValue
+import com.teamwizardry.librarianlib.features.gui.value.IMValueDouble
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
-import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.ISprite
 import com.teamwizardry.librarianlib.features.sprite.Sprite
 import net.minecraftforge.fml.relauncher.Side

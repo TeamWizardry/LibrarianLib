@@ -1,12 +1,11 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.gui.HandlerList
-import com.teamwizardry.librarianlib.features.gui.IMValue
-import com.teamwizardry.librarianlib.features.gui.IMValueBoolean
+import com.teamwizardry.librarianlib.features.gui.value.IMValue
+import com.teamwizardry.librarianlib.features.gui.value.IMValueBoolean
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.kotlin.isNotEmpty
 import com.teamwizardry.librarianlib.features.kotlin.plus
-import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper

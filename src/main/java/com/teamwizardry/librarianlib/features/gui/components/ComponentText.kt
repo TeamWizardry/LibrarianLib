@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
-import com.teamwizardry.librarianlib.features.gui.IMValue
-import com.teamwizardry.librarianlib.features.gui.IMValueBoolean
-import com.teamwizardry.librarianlib.features.gui.IMValueInt
+import com.teamwizardry.librarianlib.features.gui.value.IMValue
+import com.teamwizardry.librarianlib.features.gui.value.IMValueBoolean
+import com.teamwizardry.librarianlib.features.gui.value.IMValueInt
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.BoundingBox2D

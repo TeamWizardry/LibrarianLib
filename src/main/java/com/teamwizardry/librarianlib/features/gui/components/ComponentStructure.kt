@@ -1,8 +1,7 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
-import com.teamwizardry.librarianlib.features.gui.IMValue
+import com.teamwizardry.librarianlib.features.gui.value.IMValue
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
-import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.structure.Structure
 import com.teamwizardry.librarianlib.features.structure.StructureRenderUtil
 import net.minecraft.client.Minecraft
@@ -10,7 +9,6 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.texture.TextureMap
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 

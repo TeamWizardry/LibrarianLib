@@ -1,33 +1,33 @@
-package com.teamwizardry.librarianlib.features.gui;
+package com.teamwizardry.librarianlib.features.gui.value;
 
 import kotlin.reflect.KProperty;
 
-import java.util.function.LongSupplier;
+import java.util.function.DoubleSupplier;
 
-public class IMValueLong {
+public class IMValueDouble {
     private Storage storage;
 
-    private IMValueLong(Storage initialStorage) {
+    private IMValueDouble(Storage initialStorage) {
         this.storage = initialStorage;
     }
-    public IMValueLong(long initialValue) {
+    public IMValueDouble(double initialValue) {
         this.storage = new Storage.Fixed(initialValue);
     }
-    public IMValueLong(LongSupplier initialCallback) {
+    public IMValueDouble(DoubleSupplier initialCallback) {
         this.storage = new Storage.Callback(initialCallback);
     }
 
     /**
      * Gets the current value
      */
-    public long get() {
+    public double get() {
         return storage.get();
     }
 
     /**
      * Sets the callback, unsetting the fixed value in the process
      */
-    public void set(LongSupplier callback) {
+    public void set(DoubleSupplier callback) {
         if(storage instanceof Storage.Callback) {
             ((Storage.Callback) storage).callback = callback;
         } else {
@@ -37,9 +37,9 @@ public class IMValueLong {
 
     /**
      * Sets the fixed callback. This isn't often called as most classes will provide a delegated property to directly
-     * access this value (`someProperty` will call longo `somePropery_im` for its value)
+     * access this value (`someProperty` will call doubleo `somePropery_im` for its value)
      */
-    public void setValue(long value) {
+    public void setValue(double value) {
         if(storage instanceof Storage.Fixed) {
             ((Storage.Fixed) storage).value = value;
         } else {
@@ -50,48 +50,48 @@ public class IMValueLong {
     /**
      * A kotlin delegate method, used to allow properties to delegate to this IMValue (`var property by property_im`)
      */
-    public long getValue(Object thisRef, KProperty property) {
+    public double getValue(Object thisRef, KProperty property) {
         return storage.get();
     }
 
     /**
      * A kotlin delegate method, used to allow properties to delegate to this IMValue (`var property by property_im`)
      */
-    public void setValue(Object thisRef, KProperty property, long value) {
+    public void setValue(Object thisRef, KProperty property, double value) {
         setValue(value);
     }
 
     /**
      * A kotlin helper to allow cleanly specifying the callback (`something.theValue_im { return someValue }`)
      */
-    public void invoke(LongSupplier callback) {
+    public void invoke(DoubleSupplier callback) {
         set(callback);
     }
 
     private static abstract class Storage {
-        abstract long get();
+        abstract double get();
 
-        static class Fixed extends IMValueLong.Storage {
-            long value;
-            public Fixed(long value) {
+        static class Fixed extends IMValueDouble.Storage {
+            double value;
+            public Fixed(double value) {
                 this.value = value;
             }
 
             @Override
-            long get() {
+            double get() {
                 return value;
             }
         }
 
-        static class Callback extends IMValueLong.Storage {
-            LongSupplier callback;
-            public Callback(LongSupplier callback) {
+        static class Callback extends IMValueDouble.Storage {
+            DoubleSupplier callback;
+            public Callback(DoubleSupplier callback) {
                 this.callback = callback;
             }
 
             @Override
-            long get() {
-                return callback.getAsLong();
+            double get() {
+                return callback.getAsDouble();
             }
         }
     }

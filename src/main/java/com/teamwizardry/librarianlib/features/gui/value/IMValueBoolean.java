@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.features.gui;
+package com.teamwizardry.librarianlib.features.gui.value;
 
 import kotlin.reflect.KProperty;
 

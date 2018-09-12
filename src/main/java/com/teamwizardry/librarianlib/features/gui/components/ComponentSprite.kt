@@ -1,11 +1,10 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
-import com.teamwizardry.librarianlib.features.gui.IMValue
-import com.teamwizardry.librarianlib.features.gui.IMValueBoolean
+import com.teamwizardry.librarianlib.features.gui.value.IMValue
+import com.teamwizardry.librarianlib.features.gui.value.IMValueBoolean
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.kotlin.glColor
-import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.ISprite
 import org.lwjgl.opengl.GL11
 import java.awt.Color

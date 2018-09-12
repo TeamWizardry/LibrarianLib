@@ -2,13 +2,12 @@ package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
-import com.teamwizardry.librarianlib.features.gui.IMValue
-import com.teamwizardry.librarianlib.features.gui.IMValueBoolean
-import com.teamwizardry.librarianlib.features.gui.IMValueInt
+import com.teamwizardry.librarianlib.features.gui.value.IMValue
+import com.teamwizardry.librarianlib.features.gui.value.IMValueBoolean
+import com.teamwizardry.librarianlib.features.gui.value.IMValueInt
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.kotlin.*
-import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.Gui

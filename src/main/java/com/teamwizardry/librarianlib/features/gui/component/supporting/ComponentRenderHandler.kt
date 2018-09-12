@@ -3,10 +3,9 @@ package com.teamwizardry.librarianlib.features.gui.component.supporting
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.animator.Animation
 import com.teamwizardry.librarianlib.features.animator.Animator
-import com.teamwizardry.librarianlib.features.gui.IMValue
+import com.teamwizardry.librarianlib.features.gui.value.IMValue
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
-import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
