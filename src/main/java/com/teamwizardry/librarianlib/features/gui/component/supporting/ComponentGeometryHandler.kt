@@ -90,6 +90,7 @@ open class ComponentGeometryHandler: IComponentGeometry {
         if(transform.size != size) {
             layer.setNeedsLayout()
         }
+        transform.size = size
     }
     /** [GuiLayer.pos] */
     override var pos: Vec2d by transform::translate.delegate

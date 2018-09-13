@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.features.kotlin.div
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.times
+import com.teamwizardry.librarianlib.features.kotlin.unaryMinus
 import com.teamwizardry.librarianlib.features.math.Matrix4
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
@@ -60,12 +61,8 @@ class ComponentTransform {
      */
     var anchor by RMValue(vec(0, 0))
 
-    /**
-     * The translation applied after rotation and scaling. Useful for having a component "positioned" at its center
-     */
-    var postTranslate by RMValue(vec(0, 0))
+    internal var size by RMValue(vec(0, 0))
 
-    internal var anchorZ by RMValueDouble(0.0)
     /**
      * Create a [Matrix4] containing this transform
      */
@@ -79,11 +76,11 @@ class ComponentTransform {
      * Applies this transform to the passed matrix
      */
     fun apply(other: Matrix4) {
-        other.translate(vec(translate.x + anchor.x, translate.y + anchor.y, translateZ + anchorZ))
+        other.translate(vec(translate.x, translate.y, translateZ))
         other.rotate(rotate, vec(0, 0, 1))
 
         other.scale(vec(scale2D.x, scale2D.y, 1))
-        other.translate(vec(postTranslate.x - anchor.x, postTranslate.y - anchor.y, 0))
+        other.translate(vec(-anchor.x * size.x, -anchor.y * size.y, 0))
     }
 
     /**
@@ -91,10 +88,10 @@ class ComponentTransform {
      */
     fun apply(other: Vec2d): Vec2d {
         var vec = other
-        vec += postTranslate - anchor
+        vec += translate
         vec *= scale2D
         vec = vec.rotate(rotate.toFloat())
-        vec += translate + anchor
+        vec -= anchor * size
         return vec
     }
 
@@ -103,10 +100,10 @@ class ComponentTransform {
      */
     fun applyInverse(other: Vec2d): Vec2d {
         var vec = other
-        vec -= translate + anchor
+        vec -= translate
+        vec += anchor * size
         vec = vec.rotate((-rotate).toFloat())
         vec /= scale2D
-        vec -= postTranslate - anchor
         return vec
     }
 
@@ -114,9 +111,9 @@ class ComponentTransform {
      * Applies this transform to the current GL state
      */
     fun glApply() {
-        GlStateManager.translate(translate.x + anchor.x, translate.y + anchor.y, translateZ)
+        GlStateManager.translate(translate.x, translate.y, translateZ)
         GlStateManager.rotate(Math.toDegrees(rotate).toFloat(), 0f, 0f, 1f)
         GlStateManager.scale(scale2D.x, scale2D.y, 1.0)
-        GlStateManager.translate(postTranslate.x - anchor.x, postTranslate.y - anchor.y, 0.0)
+        GlStateManager.translate(-anchor.x * size.x, -anchor.y * size.y, 0.0)
     }
 }

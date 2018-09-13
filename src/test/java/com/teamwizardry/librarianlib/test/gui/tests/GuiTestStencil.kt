@@ -12,7 +12,7 @@ import java.awt.Color
  */
 class GuiTestStencil : GuiBase(0, 0) {
     init {
-        val wrapper = ComponentVoid(0, 0)
+        val wrapper = ComponentVoid(100, 100)
         val clipping = ComponentRect(0, 0, 100, 100)
         val clipped = ComponentRect(50, 50, 100, 100)
         val marker = ComponentRect(49, 49, 102, 102)
@@ -30,7 +30,7 @@ class GuiTestStencil : GuiBase(0, 0) {
         clipping.cornerPixelSize = 2
 
         wrapper.transform.rotate = Math.toRadians(45.0)
-        wrapper.transform.postTranslate = vec(-50, -50)
+        wrapper.transform.anchor = vec(0.5, 0.5)
 
         val anim = BasicAnimation(clipping, "clipping.cornerRadius")
         anim.from = 0

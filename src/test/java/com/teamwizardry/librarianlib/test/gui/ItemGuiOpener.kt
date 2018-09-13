@@ -45,7 +45,6 @@ class ItemGuiOpener : ItemMod("guiopener") {
 enum class Guis(val create: () -> GuiScreen) {
     RECT({ GuiTestRect() }),
     MOVE({ GuiTestResizeMove() }),
-    SCROLL({ GuiTestScrolledView() }),
     SCALE({ GuiTestScale() }),
     SCISSOR({ GuiTestScissor() }),
     STENCIL({ GuiTestStencil() }),
