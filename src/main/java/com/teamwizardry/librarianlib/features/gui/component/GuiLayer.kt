@@ -82,9 +82,21 @@ abstract class GuiLayer private constructor(
         }()
     }
 
-    fun preFrame() {
+    /**
+     * Called immediately before any layers are rendered or sorted by zIndex and after [mouseOver] has been updated.
+     */
+    open fun preFrame() {
+
+    }
+
+    /**
+     * Calls [preFrame] on this layer, fires a [GuiLayerEvents.PreFrameEvent], then calls [callPreFrame] on each
+     * child layer.
+     */
+    open fun callPreFrame() {
+        preFrame()
         this.BUS.fire(GuiLayerEvents.PreFrameEvent())
-        this.children.forEach { it.preFrame() }
+        this.children.forEach { it.callPreFrame() }
     }
 
     /**
@@ -102,7 +114,9 @@ abstract class GuiLayer private constructor(
      *
      * This method is called before each frame if this component's bounds have changed, children are added/removed,
      * or [setNeedsLayout] has been called. After this method completes, the children of this component will be
-     * checked for layout. This means that changes made in one layer can ripple downward.
+     * checked for layout. This means that changes made in one layer can ripple downward. [needsLayout] is reset
+     * to `false` after this method is called, so any changes inside it will not cause the layout to be recalculated
+     * every frame.
      *
      * The idea behind this method is that self-contained components/layers can lay out their children dynamically
      * themselves. Examples of such a component would be a self-contained list item, a component that spaces out its
@@ -112,16 +126,30 @@ abstract class GuiLayer private constructor(
     open fun layoutChildren() {}
 
     /**
-     * Calls [layoutChildren] then calls itself on this layer's children. [needsLayout] is reset to false _after_
-     * [layoutChildren] completes, meaning size changes in that method won't cause a layout pass every frame.
+     * Calls [layoutChildren] if [needsLayout] is true, then calls [layoutLayerIfNeeded] on this layer's children
+     * regardless of [needsLayout]'s value. [needsLayout] is reset to false after [layoutChildren] completes,
+     * meaning size changes in that method won't cause a layout pass every frame.
      */
-    open fun layoutChildrenIfNeeded() {
+    open fun layoutLayerIfNeeded() {
         if(needsLayout) {
             layoutChildren()
             BUS.fire(GuiLayerEvents.LayOutChildren())
             needsLayout = false
         }
-        children.forEach { it.layoutChildrenIfNeeded() }
+        children.forEach { it.layoutLayerIfNeeded() }
+    }
+
+    /**
+     * Calls [layoutChildren] then calls [layoutLayer] on this layer's children. [needsLayout] is reset to false
+     * after [layoutChildren] completes, meaning size changes in that method won't cause a layout pass every frame.
+     */
+    open fun layoutLayer() {
+        if(needsLayout) {
+            layoutChildren()
+            BUS.fire(GuiLayerEvents.LayOutChildren())
+            needsLayout = false
+        }
+        children.forEach { it.layoutLayer() }
     }
 
     //region - Base component stuff
@@ -164,7 +192,7 @@ abstract class GuiLayer private constructor(
     /**
      * Transforms [pos] from `other`'s context (or the root context if null) to our context
      */
-    fun otherPosToThisContext(other: GuiLayer?, pos: Vec2d)
+    open fun otherPosToThisContext(other: GuiLayer?, pos: Vec2d)
         = geometry.thisPosToOtherContext(other, pos)
 
     //region - Internal
@@ -177,11 +205,12 @@ abstract class GuiLayer private constructor(
     open fun renderRoot(mousePos: Vec2d, partialTicks: Float) {
         StencilUtil.clear()
         GL11.glEnable(GL11.GL_STENCIL_TEST)
-        cleanUpLayers()
-        layoutChildrenIfNeeded()
+        cleanUpChildren()
+        layoutLayerIfNeeded()
         updateMouseBeforeRender(mousePos)
         geometry.calculateMouseOver(mousePos)
         preFrame()
+        sortChildren()
         renderLayer(partialTicks)
         drawLate(partialTicks)
         GL11.glDisable(GL11.GL_STENCIL_TEST)

@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 object GuiLayerEvents {
     class PreFrameEvent : Event()
     class PreTransformEvent(val partialTicks: Float) : Event()
+    class PostTransformEvent(val partialTicks: Float) : Event()
     class PreDrawEvent(val partialTicks: Float) : Event()
     class PostDrawEvent(val partialTicks: Float) : Event(true)
     class PreChildrenDrawEvent(val partialTicks: Float) : Event()

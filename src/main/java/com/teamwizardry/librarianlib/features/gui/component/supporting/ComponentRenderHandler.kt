@@ -34,9 +34,14 @@ interface IComponentRender {
     fun add(vararg animations: Animation<*>)
 
     /**
-     * Cleans up invalid layers, sorts by zIndex, etc. Runs before [updateMouseBeforeRender].
+     * Cleans up invalid layers. Runs before [updateMouseBeforeRender].
      */
-    fun cleanUpLayers()
+    fun cleanUpChildren()
+
+    /**
+     * Sorts the layers by zIndex
+     */
+    fun sortChildren()
 
     /**
      * Renders this layer and its sublayers. This method handles the internals of rendering a layer, to simply render
@@ -110,11 +115,8 @@ class ComponentRenderHandler: IComponentRender {
         animator.add(*animations)
     }
 
-    override fun cleanUpLayers() {
+    override fun cleanUpChildren() {
         val components = layer.relationships.subLayers
-        components.sortBy { it.zIndex }
-        if (!layer.isVisible) return
-
         components.removeAll { e ->
             var b = e.isInvalid
             e.clearInvalid()
@@ -130,8 +132,13 @@ class ComponentRenderHandler: IComponentRender {
         }
 
         components.forEach {
-            it.cleanUpLayers()
+            it.cleanUpChildren()
         }
+    }
+
+    override fun sortChildren() {
+        val components = layer.relationships.subLayers
+        components.sortBy { it.zIndex }
     }
 
     /**
@@ -144,11 +151,13 @@ class ComponentRenderHandler: IComponentRender {
         if (layer.mouseOver && hoverCursor != null) {
             cursor = hoverCursor
         }
-        layer.BUS.fire(GuiLayerEvents.PreTransformEvent(partialTicks))
-
         GlStateManager.pushMatrix()
 
+        layer.BUS.fire(GuiLayerEvents.PreTransformEvent(partialTicks))
+
         layer.transform.glApply()
+
+        layer.BUS.fire(GuiLayerEvents.PostTransformEvent(partialTicks))
 
         layer.clipping.pushEnable()
 

@@ -87,7 +87,9 @@ open class ComponentGeometryHandler: IComponentGeometry {
     override val transform = ComponentTransform()
     /** [GuiLayer.size] */
     override var size: Vec2d by RMValue(vec(0, 0)) {
-        layer.setNeedsLayout()
+        if(transform.size != size) {
+            layer.setNeedsLayout()
+        }
     }
     /** [GuiLayer.pos] */
     override var pos: Vec2d by transform::translate.delegate
