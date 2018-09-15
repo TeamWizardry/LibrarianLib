@@ -149,6 +149,12 @@ class ComponentRenderHandler: IComponentRender {
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
     override fun renderLayer(partialTicks: Float) {
+        if(layer.needsLayout) {
+            layer.layoutChildren()
+            layer.BUS.fire(GuiLayerEvents.LayoutChildren())
+            layer.needsLayout = false
+        }
+
         if (layer.mouseOver && hoverCursor != null) {
             cursor = hoverCursor
         }

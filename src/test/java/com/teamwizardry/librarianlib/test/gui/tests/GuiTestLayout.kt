@@ -32,7 +32,7 @@ class GuiTestLayout : GuiBase(100, 100) {
         val subList = CustomComponent(0, 0, 0, 0)
         subListBox.add(subList)
 
-        subListBox.BUS.hook(GuiLayerEvents.LayOutChildren::class.java) {
+        subListBox.BUS.hook(GuiLayerEvents.LayoutChildren::class.java) {
             subList.pos = vec(2, 2)
             subList.size = subListBox.size - vec(4, 4)
         }

@@ -54,7 +54,7 @@ import org.lwjgl.opengl.GL11
  *
  */
 @SideOnly(Side.CLIENT)
-abstract class GuiLayer private constructor(
+open class GuiLayer private constructor(
     posX: Int, posY: Int, width: Int, height: Int,
     internal val geometry: ComponentGeometryHandler = ComponentGeometryHandler(),
     internal val relationships: ComponentRelationshipHandler = ComponentRelationshipHandler(),
@@ -133,7 +133,7 @@ abstract class GuiLayer private constructor(
     open fun layoutLayerIfNeeded() {
         if(needsLayout) {
             layoutChildren()
-            BUS.fire(GuiLayerEvents.LayOutChildren())
+            BUS.fire(GuiLayerEvents.LayoutChildren())
             needsLayout = false
         }
         children.forEach { it.layoutLayerIfNeeded() }
@@ -144,11 +144,9 @@ abstract class GuiLayer private constructor(
      * after [layoutChildren] completes, meaning size changes in that method won't cause a layout pass every frame.
      */
     open fun layoutLayer() {
-        if(needsLayout) {
-            layoutChildren()
-            BUS.fire(GuiLayerEvents.LayOutChildren())
-            needsLayout = false
-        }
+        layoutChildren()
+        BUS.fire(GuiLayerEvents.LayoutChildren())
+        needsLayout = false
         children.forEach { it.layoutLayer() }
     }
 
@@ -165,7 +163,6 @@ abstract class GuiLayer private constructor(
      * Returns true if the component is in need of a layout update. Defaults to true upon layer creation
      */
     open var needsLayout = true
-        protected set
 
     /**
      * Marks this component to be laid out using [layoutChildren] before the next frame.
