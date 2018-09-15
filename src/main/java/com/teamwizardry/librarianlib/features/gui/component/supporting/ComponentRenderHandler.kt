@@ -139,6 +139,7 @@ class ComponentRenderHandler: IComponentRender {
     override fun sortChildren() {
         val components = layer.relationships.subLayers
         components.sortBy { it.zIndex }
+        components.forEach { it.sortChildren() }
     }
 
     /**
