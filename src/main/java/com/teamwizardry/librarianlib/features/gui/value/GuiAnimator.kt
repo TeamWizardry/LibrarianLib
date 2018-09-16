@@ -102,6 +102,9 @@ class GuiAnimator {
          * `by RMValue...` or `by someIMValueProperty` appear after the property declaration that means you can
          * animate it using this method.
          *
+         * Note: This method resets the values of the changed properties back to their original values after it ends. This
+         * is so there isn't a single frame of the final state before the animation takes over.
+         *
          * The internal process by which animations are created is as follows:
          * - The first time any given [IMValue] or [RMValue] is modified inside of [block] it registers
          * itself using `GuiAnimator.`[current][current]`.`[add][add] and its pre-change value is saved as the
@@ -134,6 +137,9 @@ class GuiAnimator {
      * `by RMValue...` or `by someIMValueProperty` appear after the property declaration that means you can
      * animate it using this method.
      *
+     * Note: This method resets the values of the changed properties back to their original values after it ends. This
+     * is so there isn't a single frame of the final state before the animation takes over.
+     *
      * The internal process by which animations are created is as follows:
      * - The first time any given [IMValue] or [RMValue] is modified inside of [block] it registers
      * itself using `GuiAnimator.`[current][current]`.`[add][add] and its pre-change value is saved as the
@@ -159,6 +165,7 @@ class GuiAnimator {
             if(end == null || start == null || start == end)
                 return@mapNotNull null
 
+            it.key.setAnimatableValue(start)
             GuiImplicitAnimation.ValueAnimation(it.key, start, end)
         }
         val anim = GuiImplicitAnimation(valueAnimations)
