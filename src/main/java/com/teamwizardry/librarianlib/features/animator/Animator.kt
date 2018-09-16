@@ -6,6 +6,7 @@ import net.minecraft.util.Timer
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import java.lang.ref.WeakReference
 import java.util.*
 
 val Minecraft.renderPartialTicksPaused by MethodHandleHelper.delegateForReadOnly<Minecraft, Float>(Minecraft::class.java, "renderPartialTicksPaused", "field_193996_ah")
@@ -23,7 +24,7 @@ val Minecraft.timer by MethodHandleHelper.delegateForReadOnly<Minecraft, Timer>(
 class Animator {
 
     init {
-        animators.add(this)
+        newAnimators.add(this)
     }
 
     /**
@@ -196,12 +197,23 @@ class Animator {
             MinecraftForge.EVENT_BUS.register(this)
         }
 
-        private val animators: MutableSet<Animator> = Collections.newSetFromMap(WeakHashMap<Animator, Boolean>())
+        private val newAnimators: MutableSet<Animator> = HashSet()
+        private val animators: MutableSet<WeakReference<Animator>> = HashSet()
 
         @SubscribeEvent
         @Suppress("UNUSED_PARAMETER")
         fun renderTick(e: TickEvent.RenderTickEvent) {
-            animators.forEach { it.update() }
+            animators.addAll(newAnimators.map { WeakReference(it) })
+            newAnimators.clear()
+            val iter = animators.iterator()
+            for(reference in iter) {
+                val animator = reference.get()
+                if(animator == null) {
+                    iter.remove()
+                    continue
+                }
+                animator.update()
+            }
         }
 
         @SubscribeEvent
