@@ -4,7 +4,9 @@ import com.teamwizardry.librarianlib.features.autoregister.TileRegister
 import com.teamwizardry.librarianlib.features.base.block.tile.BlockModContainer
 import com.teamwizardry.librarianlib.features.base.block.tile.TileMod
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.*
+import com.teamwizardry.librarianlib.features.kotlin.div
+import com.teamwizardry.librarianlib.features.kotlin.minus
+import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleRenderManager
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
@@ -18,9 +20,6 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import java.awt.Color
 import java.util.concurrent.ThreadLocalRandom
-import kotlin.math.cos
-import kotlin.math.max
-import kotlin.math.sin
 
 class BlockParticleFountainTest: BlockModContainer("particle_fountain", Material.ROCK) {
     override fun createTileEntity(world: World, state: IBlockState): TileEntity? {
@@ -73,7 +72,7 @@ class TEContainer : TileMod(), ITickable {
         if(iterations == 0) return list
 
         var center = (start+end)/2
-        val distance = (start-end).lengthVector()/8
+        val distance = (start-end).length()/8
         center += vec(
                 rand(-distance, distance),
                 rand(-distance, distance),

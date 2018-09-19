@@ -43,7 +43,7 @@ object ParticleRenderManager {
             return
         if (Minecraft.getMinecraft().currentScreen?.doesGuiPauseGame() == true)
             return
-        val profiler = Minecraft.getMinecraft().mcProfiler
+        val profiler = Minecraft.getMinecraft().profiler
         profiler.startSection("liblib_new_particles")
         try {
             if(needsReload) {
@@ -73,7 +73,7 @@ object ParticleRenderManager {
     @SubscribeEvent
     @Suppress("UNUSED_PARAMETER")
     private fun render(event: CustomWorldRenderEvent) {
-        val profiler = Minecraft.getMinecraft().mcProfiler
+        val profiler = Minecraft.getMinecraft().profiler
 
         GL11.glPushAttrib(GL11.GL_LIGHTING_BIT)
         GlStateManager.enableBlend()

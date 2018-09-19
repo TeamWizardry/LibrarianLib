@@ -32,7 +32,10 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 version = "$mod_version.$build_number"
-archivesBaseName = mod_name + "-" + mc_version
+def branchSuffix = System.getenv('TRAVIS_BRANCH')?: ''
+if (mc_version.contains(branchSuffix)) branchSuffix = ''
+if (!branchSuffix.empty) branchSuffix = '-' + branchSuffix
+archivesBaseName = mod_name + branchSuffix + '-' + mc_version
 
 repositories {
     jcenter()
