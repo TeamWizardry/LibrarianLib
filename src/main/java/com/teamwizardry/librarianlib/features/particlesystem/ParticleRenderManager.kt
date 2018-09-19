@@ -38,7 +38,7 @@ object ParticleRenderManager {
     }
 
     @SubscribeEvent
-    private fun tick(event: TickEvent.ClientTickEvent) {
+    internal fun tick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START)
             return
         if (Minecraft.getMinecraft().currentScreen?.doesGuiPauseGame() == true)
@@ -62,7 +62,7 @@ object ParticleRenderManager {
     }
 
     @SubscribeEvent
-    private fun debug(event: RenderGameOverlayEvent.Text) {
+    internal fun debug(event: RenderGameOverlayEvent.Text) {
         if (!Minecraft.getMinecraft().gameSettings.showDebugInfo)
             return
 
@@ -72,7 +72,7 @@ object ParticleRenderManager {
 
     @SubscribeEvent
     @Suppress("UNUSED_PARAMETER")
-    private fun render(event: CustomWorldRenderEvent) {
+    internal fun render(event: CustomWorldRenderEvent) {
         val profiler = Minecraft.getMinecraft().profiler
 
         GL11.glPushAttrib(GL11.GL_LIGHTING_BIT)
@@ -103,7 +103,7 @@ object ParticleRenderManager {
 
     @SubscribeEvent
     @Suppress("UNUSED_PARAMETER")
-    private fun unloadWorld(event: WorldEvent.Unload) {
+    internal fun unloadWorld(event: WorldEvent.Unload) {
         systems.forEach { it.particles.clear() }
     }
 }

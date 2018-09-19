@@ -41,7 +41,7 @@ class TEContainer : TileMod(), ITickable {
         if(this.world.isRemote) {
             if (countdown <= 0) {
                 countdown = 1
-                (0 until 4).forEach {
+                repeat(4) {
                     spawnParticle()
                 }
             }
