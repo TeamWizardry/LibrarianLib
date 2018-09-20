@@ -97,6 +97,7 @@ configurations {
 dependencies {
     compile "net.shadowfacts:Forgelin:1.6.0"
     required "org.magicwerk:brownies-collections:0.9.13"
+    compile "org.magicwerk:brownies-collections:0.9.13" // Otherwise it doesn't get added to dep list
 }
 
 compileKotlin {
