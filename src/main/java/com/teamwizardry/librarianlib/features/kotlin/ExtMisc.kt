@@ -346,3 +346,11 @@ inline fun NBTTagCompound.forEach(code: (key: String, value: NBTBase) -> Unit) {
     for (key in keySet)
         code(key, getTag(key))
 }
+
+inline fun <T> whileNonNull(statement: () -> T?, body: (T) -> Unit) {
+    var value = statement()
+    while(value != null) {
+        body(value)
+        value = statement()
+    }
+}

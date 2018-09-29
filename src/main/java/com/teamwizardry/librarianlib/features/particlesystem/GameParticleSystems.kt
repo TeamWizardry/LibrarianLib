@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.particlesystem
 
 import com.teamwizardry.librarianlib.features.forgeevents.CustomWorldRenderEvent
+import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -17,39 +18,46 @@ import java.util.*
  * This object is responsible for the rendering and updating of particle systems, and is where new particle systems
  * are sent to be rendered and ticked.
  */
-object ParticleRenderManager {
+internal object GameParticleSystems {
 
-    /**
-     * Set this to true to reload particle systems at the next opportune moment.
-     */
     var needsReload: Boolean = false
-    /**
-     * The list of registered particle systems, in the order they will tick/render.
-     */
+
     val systems: MutableList<ParticleSystem> = mutableListOf()
-    /**
-     * The list of reload handlers for particle systems. This is stopgap until particle systems are designed to be
-     * subclassed and thus have a reload method built in.
-     */
-    val reloadHandlers: MutableList<Runnable> = mutableListOf()
 
     init {
         MinecraftForge.EVENT_BUS.register(this)
+        ClientRunnable.registerReloadHandler {
+            systems.forEach { it.reload() }
+        }
+    }
+
+    fun add(system: ParticleSystem) {
+        if(!systems.contains(system)) {
+            system.reload()
+            systems.add(system)
+        }
+    }
+
+    fun remove(system: ParticleSystem) {
+        systems.remove(system)
     }
 
     @SubscribeEvent
-    private fun tick(event: TickEvent.ClientTickEvent) {
+    fun tick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START)
             return
         if (Minecraft.getMinecraft().currentScreen?.doesGuiPauseGame() == true)
             return
-        val profiler = Minecraft.getMinecraft().mcProfiler
+        if (Minecraft.getMinecraft().world == null)
+            return
+
+        val profiler = Minecraft.getMinecraft().profiler
         profiler.startSection("liblib_new_particles")
         try {
             if(needsReload) {
                 needsReload = false
-                reloadHandlers.forEach {
-                    it.run()
+                systems.forEach {
+                    it.reload()
                 }
             }
             systems.forEach {
@@ -62,18 +70,27 @@ object ParticleRenderManager {
     }
 
     @SubscribeEvent
-    private fun debug(event: RenderGameOverlayEvent.Text) {
+    fun debug(event: RenderGameOverlayEvent.Text) {
         if (!Minecraft.getMinecraft().gameSettings.showDebugInfo)
             return
 
-        event.left.add("LibrarianLib New Particles:")
-        event.left.add(" - " + systems.sumBy { it.particles.size })
+        if(systems.isNotEmpty()) {
+            event.left.add("LibrarianLib Particle Systems:")
+            var total = 0
+            systems.forEach { system ->
+                if (system.particles.isNotEmpty()) {
+                    event.left.add(" - ${system.javaClass.simpleName}: ${system.particles.size}")
+                    total += system.particles.size
+                }
+            }
+            event.left.add(" - $total")
+        }
     }
 
     @SubscribeEvent
     @Suppress("UNUSED_PARAMETER")
-    private fun render(event: CustomWorldRenderEvent) {
-        val profiler = Minecraft.getMinecraft().mcProfiler
+    fun render(event: CustomWorldRenderEvent) {
+        val profiler = Minecraft.getMinecraft().profiler
 
         GL11.glPushAttrib(GL11.GL_LIGHTING_BIT)
         GlStateManager.enableBlend()
@@ -103,7 +120,7 @@ object ParticleRenderManager {
 
     @SubscribeEvent
     @Suppress("UNUSED_PARAMETER")
-    private fun unloadWorld(event: WorldEvent.Unload) {
+    fun unloadWorld(event: WorldEvent.Unload) {
         systems.forEach { it.particles.clear() }
     }
 }

@@ -9,7 +9,7 @@ import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.kotlin.unaryMinus
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
-import com.teamwizardry.librarianlib.features.particlesystem.ParticleRenderManager
+import com.teamwizardry.librarianlib.features.particlesystem.GameParticleSystems
 import com.teamwizardry.librarianlib.features.shader.LibShaders
 import com.teamwizardry.librarianlib.features.shader.ShaderHelper
 import com.teamwizardry.librarianlib.features.sprite.SpritesMetadataSection
@@ -29,7 +29,6 @@ import net.minecraft.client.resources.data.MetadataSerializer
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.client.model.animation.Animation
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
@@ -60,7 +59,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         ScissorUtil
         LibShaders
         ShaderHelper.init()
-        ParticleRenderManager
+        GameParticleSystems
 
         val s = MethodHandleHelper.wrapperForGetter(Minecraft::class.java, "metadataSerializer", "field_110452_an")(Minecraft.getMinecraft()) as MetadataSerializer
         s.registerMetadataSectionType(SpritesMetadataSectionSerializer(), SpritesMetadataSection::class.java)

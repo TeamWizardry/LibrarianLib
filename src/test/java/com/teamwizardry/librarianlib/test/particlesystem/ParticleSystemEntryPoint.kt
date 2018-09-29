@@ -16,5 +16,5 @@ object ParticleSystemEntryPoint: TestEntryPoint {
     }
 
     val item = ItemParticleSystemTest()
-    val fountain = BlockParticleFountainTest()
+    val fountain = BlockParticleTest()
 }
