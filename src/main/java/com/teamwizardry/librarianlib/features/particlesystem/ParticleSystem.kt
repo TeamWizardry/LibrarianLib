@@ -76,7 +76,7 @@ open class ParticleSystem {
      * churn by retaining dead particle arrays and reusing them in [addParticle] as opposed to creating new ones each
      * time.
      */
-    var poolSize = 1000
+    var poolSize = 2000
 
     internal val particles: MutableList<DoubleArray> = GapList<DoubleArray>()
     private val particlePool = ArrayDeque<DoubleArray>(poolSize)
@@ -104,7 +104,7 @@ open class ParticleSystem {
      * @throws IllegalStateException if particles have already been created by this system, rendering it unsafe to create new bindings
      */
     fun bind(size: Int): StoredBinding {
-        if(particles.isNotEmpty() || particlePool.isNotEmpty())
+        if (particles.isNotEmpty() || particlePool.isNotEmpty())
             throw IllegalStateException("It is no longer safe to create new bindings, particles have already been " +
                     "created based on current field count.")
         val binding = StoredBinding(fieldCount, size)
@@ -128,8 +128,8 @@ open class ParticleSystem {
         particle[0] = lifetime
         particle[1] = 0.0
         (2 until particle.size).forEach { i ->
-            if(i-2 < params.size)
-                particle[i] = params[i-2]
+            if (i - 2 < params.size)
+                particle[i] = params[i - 2]
             else
                 particle[i] = 0.0
         }
@@ -139,12 +139,12 @@ open class ParticleSystem {
 
     internal fun update() {
         val iter = particles.iterator()
-        for(particle in iter) {
+        for (particle in iter) {
             val lifetime = this.lifetime[particle, 0]
             val age = this.age[particle, 0]
-            if(age >= lifetime) {
+            if (age >= lifetime) {
                 iter.remove()
-                if(particlePool.size < poolSize)
+                if (particlePool.size < poolSize)
                     particlePool.push(particle)
                 continue
             }
@@ -152,19 +152,19 @@ open class ParticleSystem {
             update(particle)
         }
 
-        for(i in 0 until postUpdateModules.size) {
+        for (i in 0 until postUpdateModules.size) {
             postUpdateModules[i].update(particles)
         }
     }
 
     private fun update(particle: DoubleArray) {
-        for(i in 0 until updateModules.size) {
+        for (i in 0 until updateModules.size) {
             updateModules[i].update(particle)
         }
     }
 
     internal fun render() {
-        for(i in 0 until renderModules.size) {
+        for (i in 0 until renderModules.size) {
             renderModules[i].render(particles, renderPrepModules)
         }
     }

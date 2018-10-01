@@ -41,7 +41,7 @@ class TEContainer : TileMod(), ITickable {
         if(this.world.isRemote) {
             if (countdown <= 0) {
                 countdown = 1
-                repeat(4) {
+                repeat(500) {
                     spawnParticle()
                 }
             }
@@ -57,7 +57,7 @@ class TEContainer : TileMod(), ITickable {
         val majorAxis = vec(1, 0, 0)
         val minorAxis = vec(0, 0, 1).rotatePitch(rand(0.0, 2*Math.PI).toFloat())
 
-        FountainParticleSystem.spawn(200.0,
+        FountainParticleSystem.spawn(100.0,
                 pos,
                 majorAxis,
                 minorAxis,

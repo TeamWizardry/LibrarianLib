@@ -3,8 +3,7 @@ package com.teamwizardry.librarianlib.features.particlesystem.paths
 import com.teamwizardry.librarianlib.features.particlesystem.ParticlePath
 import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.require
-import kotlin.math.cos
-import kotlin.math.sin
+import net.minecraft.util.math.MathHelper
 
 /**
  * A path that traces the edge of an ellipse.
@@ -36,6 +35,9 @@ class EllipsePath(
          */
         @JvmField val minorRadius: ReadParticleBinding
 ): ParticlePath {
+
+    override fun getSize(): Int = 3
+
     init {
         majorAxis.require(3)
         minorAxis.require(3)
@@ -44,8 +46,8 @@ class EllipsePath(
     }
 
     override fun getPosition(particle: DoubleArray, t: Double, index: Int): Double {
-        val c = cos(t*2*Math.PI)
-        val s = sin(t*2*Math.PI)
+        val c = MathHelper.cos((t * 2 * Math.PI).toFloat())
+        val s = MathHelper.sin((t * 2 * Math.PI).toFloat())
 
         return 0.0 +
                 majorAxis[particle, index] * c * majorRadius[particle, 0] +
@@ -53,8 +55,8 @@ class EllipsePath(
     }
 
     override fun getTangent(particle: DoubleArray, t: Double, index: Int): Double {
-        val c = cos(t*2*Math.PI)
-        val s = sin(t*2*Math.PI)
+        val c = MathHelper.cos((t * 2 * Math.PI).toFloat())
+        val s = MathHelper.sin((t * 2 * Math.PI).toFloat())
 
         return 0.0 +
                 majorAxis[particle, index] * s +

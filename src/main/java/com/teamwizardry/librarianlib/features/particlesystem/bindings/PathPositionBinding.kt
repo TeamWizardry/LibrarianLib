@@ -17,6 +17,7 @@ import com.teamwizardry.librarianlib.features.particlesystem.require
  *
  * @see ParticlePath
  */
+@Deprecated("Use PathBinding")
 class PathPositionBinding(
         /**
          * The lifetime binding for the particle. Generally [ParticleSystem.lifetime]

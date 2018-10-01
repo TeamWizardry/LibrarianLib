@@ -23,4 +23,6 @@ interface ParticlePath {
      * @param index (0–2) The index of the component (X/Y/Z) that is being requested
      */
     fun getTangent(particle: DoubleArray, t: Double, index: Int): Double
+
+    fun getSize(): Int
 }

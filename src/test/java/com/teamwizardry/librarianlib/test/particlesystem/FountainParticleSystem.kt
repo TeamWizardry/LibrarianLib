@@ -5,10 +5,8 @@ import com.teamwizardry.librarianlib.features.math.interpolate.numeric.InterpFlo
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleRenderManager
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleSystem
 import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
-import com.teamwizardry.librarianlib.features.particlesystem.bindings.ConstantBinding
-import com.teamwizardry.librarianlib.features.particlesystem.bindings.LifetimeInterpBinding
-import com.teamwizardry.librarianlib.features.particlesystem.bindings.PathPositionBinding
-import com.teamwizardry.librarianlib.features.particlesystem.modules.*
+import com.teamwizardry.librarianlib.features.particlesystem.bindings.InterpBinding
+import com.teamwizardry.librarianlib.features.particlesystem.modules.SpriteRenderModule
 import com.teamwizardry.librarianlib.features.particlesystem.paths.EllipsePath
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.Vec3d
@@ -35,6 +33,7 @@ object FountainParticleSystem {
 
     fun spawn(lifetime: Double, position: Vec3d, majorAxis: Vec3d, minorAxis: Vec3d,
               majorRadius: Double, minorRadius: Double, color: Color, size: Double) {
+        //   reloadSystem()
         system.addParticle(lifetime,
                 position.x, position.y, position.z,
                 position.x+majorAxis.x, position.y+majorAxis.y, position.z+majorAxis.z,
@@ -64,21 +63,33 @@ object FountainParticleSystem {
                 majorRadius,
                 minorRadius
         )
-        system.updateModules.add(SetValueUpdateModule(
-                previousPosition,
-                position
-        ))
-        system.updateModules.add(SetValueUpdateModule(
-                position,
-                PathPositionBinding(
-                        lifetime = system.lifetime,
-                        age = system.age,
-                        timescale = ConstantBinding(0.5),
-                        offset = ConstantBinding(0.0),
-                        origin = origin,
-                        path = ellipse
-                )
-        ))
+        //   system.updateModules.add(SetValueUpdateModule(
+        //           previousPosition,
+        //           position
+        //   ))
+        //   system.updateModules.add(SetValueUpdateModule(
+        //           position,
+        //           PathBinding(
+        //                   lifetime = system.lifetime,
+        //                   age = system.age,
+        //                   origin = origin,
+        //                   timescale = ConstantBinding(0.5),
+        //                   path = ellipse,
+        //                   easing = Easing.linear
+        //           )
+        //   ))
+
+        //  system.updateModules.add(SetValueUpdateModule(
+        //          position,
+        //          EaseBinding(
+        //                  lifetime = system.lifetime,
+        //                  age = system.age,
+        //                  easing = Easing.easeOutQuint,
+        //                  origin = origin,
+        //                  target = position,
+        //                  bindingSize = 3
+        //          )
+        //  ))
 
 //        system.updateModules.add(AccelerationUpdateModule(
 //                velocity,
@@ -111,7 +122,7 @@ object FountainParticleSystem {
                 position = position,
                 color = color,
                 size = size,
-                alpha = LifetimeInterpBinding(system.lifetime, system.age, InterpFloatInOut(0.25f, 0.25f)),
+                alpha = InterpBinding(system.lifetime, system.age, interp = InterpFloatInOut(0.25f, 0.25f)),
                 blendFactors = GlStateManager.SourceFactor.SRC_ALPHA to GlStateManager.DestFactor.ONE,
                 depthMask = false
         ))
