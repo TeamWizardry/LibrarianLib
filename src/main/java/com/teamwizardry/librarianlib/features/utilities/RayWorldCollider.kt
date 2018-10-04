@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.utilities
 
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import gnu.trove.map.hash.TLongObjectHashMap
+import net.minecraft.block.material.Material
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.AxisAlignedBB
@@ -30,12 +31,35 @@ import kotlin.math.min
  * Minecraft's collision handling it doesn't check any blocks outside of those the velocity vector moves through.
  */
 class RayWorldCollider private constructor(world: World) {
-    init { MinecraftForge.EVENT_BUS.register(this) }
+
+    init {
+        MinecraftForge.EVENT_BUS.register(this)
+    }
+
     private val worldRef = WeakReference(world)
+
     private val world: World
         get() = worldRef.get()!!
+
     private val cache = TLongObjectHashMap<List<AxisAlignedBB>>()
+
     private var countdown = 0
+
+    /**
+     * This specifies when to reset the blockstate cache for collision checking.
+     * Setting it to 2, for example, will clear the cache every 2 ticks.
+     *
+     * Setting it to -1 will disable cache clearing. BE VERY CAREFUL WHEN YOU DO THIS.
+     * SERIOUSLY. BE ABSOLUTELY SURE YOU RESET IT PROPERLY YOURSELF. YOU WILL RUN OUT OF MEMORY IF YOU DON'T.
+     * Run requestRefresh() to clear it yourself.
+     *
+     * The cache will only reset when the world unloads on the client if the timer is set to -1.
+     *
+     * It is heavily advised to just set to a massive number instead.
+     * Remember, this works in game ticks.
+     */
+    @JvmField
+    var cacheResetTimer: Int = 10
 
     /**
      * The fraction along the raytrace that an impact occured, or 1.0 if no impact occured
@@ -84,7 +108,7 @@ class RayWorldCollider private constructor(world: World) {
      * This method _immediately_ clears the cache, meaning calling it repeatedly between [collide] calls can severely
      * impact performance.
      */
-    fun requestRefresh() {
+    open fun requestRefresh() {
         cache.clear()
     }
 
@@ -131,22 +155,22 @@ class RayWorldCollider private constructor(world: World) {
         @Suppress("NAME_SHADOWING")
         val velZ = min(maxBounds, max(-maxBounds, velZ))
 
-        val minX = floor(min(posX, posX+velX)).toInt()
-        val minY = floor(min(posY, posY+velY)).toInt()
-        val minZ = floor(min(posZ, posZ+velZ)).toInt()
-        val maxX = floor(max(posX, posX+velX)).toInt()
-        val maxY = floor(max(posY, posY+velY)).toInt()
-        val maxZ = floor(max(posZ, posZ+velZ)).toInt()
+        val minX = floor(min(posX, posX + velX)).toInt()
+        val minY = floor(min(posY, posY + velY)).toInt()
+        val minZ = floor(min(posZ, posZ + velZ)).toInt()
+        val maxX = floor(max(posX, posX + velX)).toInt()
+        val maxY = floor(max(posY, posY + velY)).toInt()
+        val maxZ = floor(max(posZ, posZ + velZ)).toInt()
 
-        val invVelX = 1/velX
-        val invVelY = 1/velY
-        val invVelZ = 1/velZ
+        val invVelX = 1 / velX
+        val invVelY = 1 / velY
+        val invVelZ = 1 / velZ
 
-        for(x in minX..maxX) {
-            for(y in minY..maxY) {
-                for(z in minZ..maxZ) {
+        for (x in minX..maxX) {
+            for (y in minY..maxY) {
+                for (z in minZ..maxZ) {
                     val list = getAABBs(x, y, z)
-                    for(i in 0 until list.size) {
+                    for (i in 0 until list.size) {
                         collide(list[i],
                                 x, y, z,
                                 posX, posY, posZ,
@@ -170,28 +194,28 @@ class RayWorldCollider private constructor(world: World) {
             invVelY: Double,
             invVelZ: Double
     ) {
-        val tx1 = (aabb.minX - posX)*invVelX
-        val tx2 = (aabb.maxX - posX)*invVelX
+        val tx1 = (aabb.minX - posX) * invVelX
+        val tx2 = (aabb.maxX - posX) * invVelX
 
         var tmin = min(tx1, tx2)
         var tmax = max(tx1, tx2)
 
-        val ty1 = (aabb.minY - posY)*invVelY
-        val ty2 = (aabb.maxY - posY)*invVelY
+        val ty1 = (aabb.minY - posY) * invVelY
+        val ty2 = (aabb.maxY - posY) * invVelY
 
         tmin = max(tmin, min(ty1, ty2))
         tmax = min(tmax, max(ty1, ty2))
 
-        val tz1 = (aabb.minZ - posZ)*invVelZ
-        val tz2 = (aabb.maxZ - posZ)*invVelZ
+        val tz1 = (aabb.minZ - posZ) * invVelZ
+        val tz2 = (aabb.maxZ - posZ) * invVelZ
 
         tmin = max(tmin, min(tz1, tz2))
         tmax = min(tmax, max(tz1, tz2))
 
-        if(tmax >= tmin && tmax >= 0 && tmin >= 0 && tmin < collisionFraction) {
-            collisionNormalX = if(tmin == tx1) -1.0 else if(tmin == tx2) 1.0 else 0.0
-            collisionNormalY = if(tmin == ty1) -1.0 else if(tmin == ty2) 1.0 else 0.0
-            collisionNormalZ = if(tmin == tz1) -1.0 else if(tmin == tz2) 1.0 else 0.0
+        if (tmax >= tmin && tmax >= 0 && tmin >= 0 && tmin < collisionFraction) {
+            collisionNormalX = if (tmin == tx1) -1.0 else if (tmin == tx2) 1.0 else 0.0
+            collisionNormalY = if (tmin == ty1) -1.0 else if (tmin == ty2) 1.0 else 0.0
+            collisionNormalZ = if (tmin == tz1) -1.0 else if (tmin == tz2) 1.0 else 0.0
             collisionBlockX = blockX
             collisionBlockY = blockY
             collisionBlockZ = blockZ
@@ -213,11 +237,11 @@ class RayWorldCollider private constructor(world: World) {
         }
 
         val list: List<AxisAlignedBB>
-        if(!world.isBlockLoaded(mutablePos)) {
+        if (!world.isBlockLoaded(mutablePos)) {
             list = emptyList()
         } else {
             val blockstate = world.getBlockState(mutablePos)
-            if(blockstate.block == Blocks.AIR) {
+            if (blockstate.block == Blocks.AIR || blockstate.material == Material.AIR || !blockstate.material.blocksMovement() || blockstate.material.isLiquid) {
                 list = emptyList()
             } else {
                 list = ArrayList(1)
@@ -230,12 +254,16 @@ class RayWorldCollider private constructor(world: World) {
     }
 
     @SubscribeEvent
-    private fun tick(e: TickEvent.ClientTickEvent) {
-        if(countdown == 0) {
-            cache.clear()
+    fun tick(e: TickEvent.ClientTickEvent) {
+        if (cacheResetTimer == -1) return
+        if (cache.isEmpty) {
+            countdown = cacheResetTimer
+            return
         }
-        if(cache.isEmpty) {
-            countdown = 2
+
+        if (countdown <= 0) {
+            cache.clear()
+            countdown = cacheResetTimer
         }
         countdown--
     }
@@ -253,29 +281,27 @@ class RayWorldCollider private constructor(world: World) {
         }
 
         /**
-         * Gets the [RayWorldCollider] for the client world, or throws an [IllegalStateException] if it is called on a
-         * dedicated server.
+         * Gets the [RayWorldCollider] for the client world.
+         * Returns null if called server-side.
          */
         @JvmStatic
-        val client: RayWorldCollider
+        val client: RayWorldCollider?
             get() {
                 var handler: RayWorldCollider? = null
-                ClientRunnable {
+                ClientRunnable.run {
                     handler = ClientRayWorldCollider.get()
                 }
                 return handler
-                        ?: throw IllegalStateException(
-                                "Attempted to get client RayWorldCollider from a dedicated server. " +
-                                        "Don't... Don't do that."
-                        )
             }
     }
 }
 
 @SideOnly(Side.CLIENT)
 private object ClientRayWorldCollider {
-    init { MinecraftForge.EVENT_BUS.register(this) }
-//    Minecraft.getMinecraft().world
+    init {
+        MinecraftForge.EVENT_BUS.register(this)
+    }
+
     var cache: RayWorldCollider? = null
 
     @SubscribeEvent
@@ -285,7 +311,7 @@ private object ClientRayWorldCollider {
 
     fun get(): RayWorldCollider {
         var cache = this.cache
-        if(cache == null) {
+        if (cache == null) {
             cache = RayWorldCollider[Minecraft.getMinecraft().world]
             this.cache = cache
             return cache

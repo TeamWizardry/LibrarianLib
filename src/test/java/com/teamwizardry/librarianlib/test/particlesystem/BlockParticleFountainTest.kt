@@ -18,6 +18,7 @@ import net.minecraft.util.ITickable
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
+import org.apache.commons.lang3.RandomUtils
 import java.awt.Color
 import java.util.concurrent.ThreadLocalRandom
 
@@ -58,7 +59,7 @@ class TEContainer : TileMod(), ITickable {
         val minorAxis = vec(0, 0, 1).rotatePitch(rand(0.0, 2*Math.PI).toFloat())
 
         FountainParticleSystem.spawn(100.0,
-                pos,
+                pos,// + vec(RandomUtils.nextDouble(0.0, 100.0) - 50.0, RandomUtils.nextDouble(0.0, 100.0) - 50.0, RandomUtils.nextDouble(0.0, 100.0) - 50.0),
                 majorAxis,
                 minorAxis,
                 10.0,

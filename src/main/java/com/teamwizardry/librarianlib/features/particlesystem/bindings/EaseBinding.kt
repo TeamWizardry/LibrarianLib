@@ -28,14 +28,24 @@ class EaseBinding @JvmOverloads constructor(
          */
         override val offset: ReadParticleBinding? = null,
         /**
-         * The easing to use when generating values for the binding
+         * The easing to use when generating values for the binding.
          */
         override val easing: Easing,
-
+        /**
+         * If working with a single number, set to 1, if a vector, set to 3 for x, y, z, if a color,
+         * set to 4 for R, G, B, and A
+         *
+         * This exists to allow flexibility so you can ease whatever object you want no matter how many parameters it
+         * may have.
+         */
         @JvmField val bindingSize: Int,
-
+        /**
+         * The start value to interpolate from.
+         */
         @JvmField var origin: ReadParticleBinding? = null,
-
+        /**
+         * The end value to interpolate to.
+         */
         @JvmField var target: ReadParticleBinding? = null
 ) : AbstractTimeBinding(lifetime, age, timescale, offset, easing) {
 

@@ -23,6 +23,8 @@ interface ParticleUpdateModule {
      * completes.
      */
     fun update(particle: DoubleArray)
+
+    fun init(particle: DoubleArray) {}
 }
 
 /**

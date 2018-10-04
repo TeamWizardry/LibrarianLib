@@ -25,19 +25,23 @@ class InterpBinding @JvmOverloads constructor(
         override val timescale: ReadParticleBinding? = null,
         /**
          * The time offset for the normalized age. Applied before the [timescale], so regardless of [timescale]'s value,
-         * if the offset is 0.5, the animation will begin halfway along the path
+         * if the offset is 0.5, the animation will begin halfway along the path.
          */
         override val offset: ReadParticleBinding? = null,
         /**
-         * The interp to use when generating values for the binding
+         * The interp to use when generating values for the binding.
          */
         @JvmField val interp: InterpFunction<Float>,
-
+        /**
+         * The start value to interpolate from.
+         */
         @JvmField var origin: ReadParticleBinding? = null,
-
+        /**
+         * The end value to interpolate to.
+         */
         @JvmField var target: ReadParticleBinding? = null,
         /**
-         * The easing to use when generating values for the binding
+         * The easing to use when generating values for the binding.
          */
         override val easing: Easing = Easing.linear
 ) : AbstractTimeBinding(lifetime, age, timescale, offset, easing) {

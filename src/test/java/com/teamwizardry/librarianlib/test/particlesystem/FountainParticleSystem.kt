@@ -5,11 +5,17 @@ import com.teamwizardry.librarianlib.features.math.interpolate.numeric.InterpFlo
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleRenderManager
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleSystem
 import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
+import com.teamwizardry.librarianlib.features.particlesystem.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.InterpBinding
+import com.teamwizardry.librarianlib.features.particlesystem.bindings.StoredBinding
+import com.teamwizardry.librarianlib.features.particlesystem.bindings.VariableBinding
+import com.teamwizardry.librarianlib.features.particlesystem.modules.BasicPhysicsUpdateModule
+import com.teamwizardry.librarianlib.features.particlesystem.modules.SetValueUpdateModule
 import com.teamwizardry.librarianlib.features.particlesystem.modules.SpriteRenderModule
 import com.teamwizardry.librarianlib.features.particlesystem.paths.EllipsePath
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.Vec3d
+import org.apache.commons.lang3.RandomUtils
 import java.awt.Color
 
 object FountainParticleSystem {
@@ -24,6 +30,8 @@ object FountainParticleSystem {
     private val minorRadius = system.bind(1)
     private val color = system.bind(4)
     private val size = system.bind(1)
+    private val velocity = system.bind(3)
+  //  private val initVelocity = system.bind(3)
 
     init {
         reloadSystem()
@@ -33,17 +41,19 @@ object FountainParticleSystem {
 
     fun spawn(lifetime: Double, position: Vec3d, majorAxis: Vec3d, minorAxis: Vec3d,
               majorRadius: Double, minorRadius: Double, color: Color, size: Double) {
-        //   reloadSystem()
+        reloadSystem()
         system.addParticle(lifetime,
-                position.x, position.y, position.z,
-                position.x+majorAxis.x, position.y+majorAxis.y, position.z+majorAxis.z,
-                position.x+majorAxis.x, position.y+majorAxis.y, position.z+majorAxis.z,
-                majorAxis.x, majorAxis.y, majorAxis.z,
-                minorAxis.x, minorAxis.y, minorAxis.z,
-                majorRadius,
-                minorRadius,
-                color.red/255.0, color.green/255.0, color.blue/255.0, color.alpha/255.0,
-                size
+                position.x, position.y, position.z, // origin
+                position.x + majorAxis.x, position.y + majorAxis.y, position.z + majorAxis.z, // position
+                position.x + majorAxis.x, position.y + majorAxis.y, position.z + majorAxis.z, // previous position
+                majorAxis.x, majorAxis.y, majorAxis.z, // majorAxis
+                minorAxis.x, minorAxis.y, minorAxis.z, // minorAxis
+                majorRadius, // majorRadius
+                minorRadius, // minorRadius
+                color.red / 255.0, color.green / 255.0, color.blue / 255.0, color.alpha / 255.0, // color
+                size, // size
+                RandomUtils.nextDouble(0.0, 2.0) - 1.0, RandomUtils.nextDouble(0.0, 2.0) - 2.0, RandomUtils.nextDouble(0.0, 2.0) - 1.0 // velocity
+              //  1.0, 0.5, 0.3 // initVelocity
         )
     }
 
@@ -63,10 +73,18 @@ object FountainParticleSystem {
                 majorRadius,
                 minorRadius
         )
-        //   system.updateModules.add(SetValueUpdateModule(
-        //           previousPosition,
-        //           position
-        //   ))
+        system.updateModules.add(SetValueUpdateModule(
+                previousPosition,
+                position
+        ))
+        system.updateModules.add(BasicPhysicsUpdateModule(
+                position,
+                previousPosition,
+                velocity = velocity,
+                enableCollision = true
+             //   initVelocity = initVelocity,
+             //   bounciness = 0.2f
+        ))
         //   system.updateModules.add(SetValueUpdateModule(
         //           position,
         //           PathBinding(

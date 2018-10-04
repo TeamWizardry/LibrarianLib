@@ -134,6 +134,10 @@ open class ParticleSystem {
                 particle[i] = 0.0
         }
         particles.add(particle)
+
+        for (i in 0 until updateModules.size) {
+            updateModules[i].init(params)
+        }
         return particle
     }
 

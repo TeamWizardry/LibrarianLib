@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.core.client.ClientTickHandler
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleRenderModule
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
 import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
+import com.teamwizardry.librarianlib.features.particlesystem.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.features.particlesystem.require
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
@@ -22,7 +23,7 @@ import org.lwjgl.opengl.GL11
  * consistent, disabling interpolation by passing the current position for both [previousPosition] and [position] can
  * make the particles rock solid in their positions as opposed to jittering about.
  */
-class SpriteRenderModule(
+class SpriteRenderModule @JvmOverloads constructor(
         /**
          * The sprite texture to use
          */
@@ -30,23 +31,23 @@ class SpriteRenderModule(
         /**
          * Whether to enable OpenGL blending
          */
-        @JvmField val blend: Boolean,
-        /**
-         * The position of the particle last tick, used to interpolate between ticks
-         */
-        @JvmField val previousPosition: ReadParticleBinding? = null,
+        @JvmField val blend: Boolean = false,
         /**
          * The current position of the particle
          */
         @JvmField val position: ReadParticleBinding,
         /**
+         * The position of the particle last tick, used to interpolate between ticks
+         */
+        @JvmField val previousPosition: ReadParticleBinding? = null,
+        /**
          * The OpenGL color of the particle
          */
-        @JvmField val color: ReadParticleBinding,
+        @JvmField val color: ReadParticleBinding = ConstantBinding(255.0, 255.0, 255.0, 255.0),
         /**
          * The width and height of the particle in meters
          */
-        @JvmField val size: ReadParticleBinding,
+        @JvmField val size: ReadParticleBinding = ConstantBinding(1.0),
         /**
          * If present, an artificial facing vector used instead of the player's look vector. This vector _does not need
          * to be normalized_ as normalization is already being done for an unrelated reason. The additional computation
@@ -56,7 +57,7 @@ class SpriteRenderModule(
         /**
          * The alpha multiplier for the color. Defaults to 1 if not present.
          */
-        @JvmField val alpha: ReadParticleBinding?,
+        @JvmField val alpha: ReadParticleBinding? = ConstantBinding(1.0),
         /**
          * The OpenGL source/dest blend factors. Leave null to keep the defaults.
          */

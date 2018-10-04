@@ -67,8 +67,8 @@ interface WriteParticleBinding: ParticleBinding {
  *
  * @see StoredBinding
  * @see ConstantBinding
- * @see LifetimeInterpBinding
- * @see PathPositionBinding
+ * @see InterpBinding
+ * @see EaseBinding
  * @see PathVelocityBinding
  * @see VariableBinding
  */

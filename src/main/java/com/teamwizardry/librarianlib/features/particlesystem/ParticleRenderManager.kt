@@ -8,6 +8,8 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.opengl.GL11
 import java.util.*
 
@@ -17,6 +19,7 @@ import java.util.*
  * This object is responsible for the rendering and updating of particle systems, and is where new particle systems
  * are sent to be rendered and ticked.
  */
+@SideOnly(Side.CLIENT)
 object ParticleRenderManager {
 
     /**
@@ -38,7 +41,7 @@ object ParticleRenderManager {
     }
 
     @SubscribeEvent
-    internal fun tick(event: TickEvent.ClientTickEvent) {
+    fun tick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START)
             return
         if (Minecraft.getMinecraft().currentScreen?.doesGuiPauseGame() == true)
@@ -62,7 +65,7 @@ object ParticleRenderManager {
     }
 
     @SubscribeEvent
-    internal fun debug(event: RenderGameOverlayEvent.Text) {
+    fun debug(event: RenderGameOverlayEvent.Text) {
         if (!Minecraft.getMinecraft().gameSettings.showDebugInfo)
             return
 
@@ -72,10 +75,11 @@ object ParticleRenderManager {
 
     @SubscribeEvent
     @Suppress("UNUSED_PARAMETER")
-    internal fun render(event: CustomWorldRenderEvent) {
+    fun render(event: CustomWorldRenderEvent) {
         val profiler = Minecraft.getMinecraft().profiler
 
-        GL11.glPushAttrib(GL11.GL_LIGHTING_BIT)
+      //  GL11.glPushAttrib(GL11.GL_LIGHTING_BIT)
+        GlStateManager.pushMatrix()
         GlStateManager.enableBlend()
         GlStateManager.alphaFunc(GL11.GL_GREATER, 1 / 256f)
         GlStateManager.disableLighting()
@@ -98,12 +102,13 @@ object ParticleRenderManager {
 
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
         GlStateManager.disableBlend()
-        GL11.glPopAttrib()
+        GlStateManager.popMatrix()
+     //   GL11.glPopAttrib()
     }
 
     @SubscribeEvent
     @Suppress("UNUSED_PARAMETER")
-    internal fun unloadWorld(event: WorldEvent.Unload) {
+    fun unloadWorld(event: WorldEvent.Unload) {
         systems.forEach { it.particles.clear() }
     }
 }

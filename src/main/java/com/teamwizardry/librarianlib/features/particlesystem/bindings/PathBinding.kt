@@ -29,12 +29,16 @@ class PathBinding @JvmOverloads constructor(
          * The path object to use for the positioning.
          */
         @JvmField val path: ParticlePath,
-
+        /**
+         * The start value to interpolate from.
+         */
         @JvmField var origin: ReadParticleBinding? = null,
-
+        /**
+         * The end value to interpolate to.
+         */
         @JvmField var target: ReadParticleBinding? = null,
         /**
-         * The easing to use when generating values for the binding
+         * The easing to use when generating values for the binding.
          */
         override val easing: Easing = Easing.linear
 ) : AbstractTimeBinding(lifetime, age, timescale, offset, easing) {
