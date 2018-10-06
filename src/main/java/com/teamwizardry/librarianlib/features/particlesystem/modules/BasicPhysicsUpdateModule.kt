@@ -48,11 +48,14 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
          *
          * Velocity is set, not added.
          */
-        @JvmField val velocity: ReadParticleBinding,
+        @JvmField val velocity: ReadParticleBinding = ConstantBinding(0.0, 0.0, 0.0),
         /**
          * The initial motion to set to the particle when it spawns.
          */
         @JvmField val initVelocity: ReadParticleBinding? = null,
+        /**
+         * If enabled, will allow the particle to collide with blocks in the world
+         */
         @JvmField val enableCollision: Boolean = false,
         /**
          * The acceleration of gravity. Positive gravity imparts a downward acceleration on the particle.
@@ -68,6 +71,8 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
          * essentially negating the collision axis. However, due to inaccuracies as yet unidentified, a bounciness of
          * 1.0 doesn't result in 100% velocity preservation.
          *
+         * Only useful if enableCollision is set to true.
+         *
          * 0.2 is a good number to start with.
          */
         @JvmField var bounciness: Float = 0.0f,
@@ -77,7 +82,7 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
          * slippery, no velocity lost when rubbing against an object
          * Multiplies particle speed.
          *
-         * Friction sliding against blocks.
+         * Friction sliding against blocks. Only useful if enableCollision is set to true.
          *
          * 0.2 is a good number to start with.
          */
@@ -113,6 +118,12 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
             velX += initVelocity[particle, 0]
             velY += initVelocity[particle, 1]
             velZ += initVelocity[particle, 2]
+        }
+
+        if (velocity is WriteParticleBinding) {
+            velocity[particle, 0] = velX
+            velocity[particle, 1] = velY
+            velocity[particle, 2] = velZ
         }
     }
 

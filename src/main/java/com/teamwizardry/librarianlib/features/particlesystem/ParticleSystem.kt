@@ -1,10 +1,14 @@
 package com.teamwizardry.librarianlib.features.particlesystem
 
+import akka.routing.AdjustPoolSize
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.StoredBinding
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.VariableBinding
 import com.teamwizardry.librarianlib.features.particlesystem.modules.DepthSortModule
+import com.teamwizardry.librarianlib.test.particlesystem.FountainParticleSystem
 import org.magicwerk.brownies.collections.GapList
+import sun.management.snmp.jvminstr.JvmThreadInstanceEntryImpl.ThreadStateMap.Byte0.runnable
 import java.util.*
+import java.util.function.Consumer
 
 /**
  * A system of particles with similar behavior.
@@ -44,7 +48,13 @@ import java.util.*
  * }
  * ```
  */
-open class ParticleSystem {
+open class ParticleSystem(
+        /**
+         * The maximum number of particles in the particle reuse pool. The reuse pool is used to reduce the amount of memory
+         * churn by retaining dead particle arrays and reusing them in [addParticle] as opposed to creating new ones each
+         * time.
+         */
+        var poolSize: Int = 2000) {
     /**
      * The modules that are called every tick for each particle. They are called in sequence for each particle, meaning
      * temporary state set in one module can be safely used in the subsequent modules.
@@ -71,13 +81,6 @@ open class ParticleSystem {
      */
     val renderModules: MutableList<ParticleRenderModule> = mutableListOf()
 
-    /**
-     * The maximum number of particles in the particle reuse pool. The reuse pool is used to reduce the amount of memory
-     * churn by retaining dead particle arrays and reusing them in [addParticle] as opposed to creating new ones each
-     * time.
-     */
-    var poolSize = 2000
-
     internal val particles: MutableList<DoubleArray> = GapList<DoubleArray>()
     private val particlePool = ArrayDeque<DoubleArray>(poolSize)
 
@@ -98,6 +101,47 @@ open class ParticleSystem {
     var fieldCount = 2
         private set
 
+    private var systemConsumer: Consumer<ParticleSystem>? = null
+
+    /**
+     * Convenience method to modify and handle your particle system in a condensed, quick, and builder-like pattern.
+     */
+    fun setup(systemConsumer: Consumer<ParticleSystem>) = apply {
+        this.systemConsumer = systemConsumer
+        this.systemConsumer!!.accept(this)
+
+        ParticleRenderManager.systems.add(this)
+
+        ParticleRenderManager.reloadHandlers.add(Runnable {
+            this.updateModules.clear()
+            this.postUpdateModules.clear()
+            this.renderPrepModules.clear()
+            this.renderModules.clear()
+
+            this.systemConsumer?.accept(this)
+        })
+    }
+
+    /**
+     * Convenience method to add update modules swiftly in a builder-like pattern.
+     */
+    fun addUpdateModules(vararg updateModules: ParticleUpdateModule) = apply { this.updateModules.addAll(updateModules) }
+
+    /**
+     * Convenience method to add post update modules swiftly in a builder-like pattern.
+     */
+    fun addPostUpdateModules(vararg postUpdateModules: ParticleBatchUpdateModule) = apply { this.postUpdateModules.addAll(postUpdateModules) }
+
+    /**
+     * Convenience method to add render prep modules swiftly in a builder-like pattern.
+     */
+    fun addRenderPrepModules(vararg renderPrepModules: ParticleUpdateModule) = apply { this.renderPrepModules.addAll(renderPrepModules) }
+
+    /**
+     * Convenience method to add render modules swiftly in a builder-like pattern.
+     */
+    fun addRenderModules(vararg renderModules: ParticleRenderModule) = apply { this.renderModules.addAll(renderModules) }
+
     /**
      * Creates a new [StoredBinding] of the specified size and allocates space for it at the end of the particle array, increasing [fieldCount] to reflect the change.
      *
@@ -110,6 +154,15 @@ open class ParticleSystem {
         val binding = StoredBinding(fieldCount, size)
         fieldCount += size
         return binding
+    }
+
+    /**
+     * Creates a new [StoredBinding] of the specified size and allocates space for it at the end of the particle array, increasing [fieldCount] to reflect the change.
+     *
+     * @throws IllegalStateException if particles have already been created by this system, rendering it unsafe to create new bindings
+     */
+    fun initBindingsConsumer(runnable: Runnable) = apply {
+        runnable.run()
     }
 
     /**
@@ -136,7 +189,7 @@ open class ParticleSystem {
         particles.add(particle)
 
         for (i in 0 until updateModules.size) {
-            updateModules[i].init(params)
+            updateModules[i].init(particle)
         }
         return particle
     }

@@ -1,19 +1,22 @@
 package com.teamwizardry.librarianlib.test.particlesystem
 
+import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.kotlin.toRl
 import com.teamwizardry.librarianlib.features.math.interpolate.numeric.InterpFloatInOut
+import com.teamwizardry.librarianlib.features.particlesystem.BlendMode
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleRenderManager
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleSystem
 import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.ConstantBinding
+import com.teamwizardry.librarianlib.features.particlesystem.bindings.EaseBinding
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.InterpBinding
-import com.teamwizardry.librarianlib.features.particlesystem.bindings.StoredBinding
-import com.teamwizardry.librarianlib.features.particlesystem.bindings.VariableBinding
 import com.teamwizardry.librarianlib.features.particlesystem.modules.BasicPhysicsUpdateModule
 import com.teamwizardry.librarianlib.features.particlesystem.modules.SetValueUpdateModule
 import com.teamwizardry.librarianlib.features.particlesystem.modules.SpriteRenderModule
 import com.teamwizardry.librarianlib.features.particlesystem.paths.EllipsePath
+import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 import org.apache.commons.lang3.RandomUtils
 import java.awt.Color
@@ -31,7 +34,7 @@ object FountainParticleSystem {
     private val color = system.bind(4)
     private val size = system.bind(1)
     private val velocity = system.bind(3)
-  //  private val initVelocity = system.bind(3)
+    private val initVelocity = system.bind(3)
 
     init {
         reloadSystem()
@@ -52,8 +55,8 @@ object FountainParticleSystem {
                 minorRadius, // minorRadius
                 color.red / 255.0, color.green / 255.0, color.blue / 255.0, color.alpha / 255.0, // color
                 size, // size
-                RandomUtils.nextDouble(0.0, 2.0) - 1.0, RandomUtils.nextDouble(0.0, 2.0) - 2.0, RandomUtils.nextDouble(0.0, 2.0) - 1.0 // velocity
-              //  1.0, 0.5, 0.3 // initVelocity
+                0.0, 0.0, 0.0,
+                RandomUtils.nextDouble(0.0, 2.0) - 1.0, RandomUtils.nextDouble(0.0, 2.0) - 2.0, RandomUtils.nextDouble(0.0, 2.0) - 1.0 // initVelocity
         )
     }
 
@@ -73,17 +76,19 @@ object FountainParticleSystem {
                 majorRadius,
                 minorRadius
         )
-        system.updateModules.add(SetValueUpdateModule(
-                previousPosition,
-                position
-        ))
+       // system.updateModules.add(SetValueUpdateModule(
+       //         previousPosition,
+       //         position
+       // ))
         system.updateModules.add(BasicPhysicsUpdateModule(
                 position,
                 previousPosition,
                 velocity = velocity,
-                enableCollision = true
-             //   initVelocity = initVelocity,
-             //   bounciness = 0.2f
+                initVelocity = initVelocity,
+                gravity = 0.1,
+                enableCollision = true,
+                bounciness = 0.3f,
+                friction = 0.4f
         ))
         //   system.updateModules.add(SetValueUpdateModule(
         //           position,
@@ -135,14 +140,12 @@ object FountainParticleSystem {
 //        ))
         system.renderModules.add(SpriteRenderModule(
                 sprite = "librarianlibtest:textures/particles/glow.png".toRl(),
-                blend = true,
                 previousPosition = previousPosition,
                 position = position,
                 color = color,
                 size = size,
-                alpha = InterpBinding(system.lifetime, system.age, interp = InterpFloatInOut(0.25f, 0.25f)),
-                blendFactors = GlStateManager.SourceFactor.SRC_ALPHA to GlStateManager.DestFactor.ONE,
-                depthMask = false
+                alphaMultiplier = InterpBinding(system.lifetime, system.age, interp = InterpFloatInOut(0.1f, 0.3f)),
+                blendMode = BlendMode.ADDITIVE
         ))
         val facingVector = object : ReadParticleBinding {
             override val size: Int = 3
@@ -152,7 +155,7 @@ object FountainParticleSystem {
         }
 //        system.renderModules.add(GlLineBeamRenderModule(
 //                isEnd = isEnd,
-//                blend = true,
+//                enableBlend = true,
 //                previousPosition = previousPosition,
 //                position = position,
 //                color = color,

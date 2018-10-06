@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.utilities
 
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import gnu.trove.map.hash.TLongObjectHashMap
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.minecraft.block.material.Material
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
@@ -41,7 +42,8 @@ class RayWorldCollider private constructor(world: World) {
     private val world: World
         get() = worldRef.get()!!
 
-    private val cache = TLongObjectHashMap<List<AxisAlignedBB>>()
+    //private val cache = RayWorldCacheMap(5000, 0.5f)
+    private val cache = Long2ObjectOpenHashMap<List<AxisAlignedBB>>()
 
     private var countdown = 0
 
@@ -231,13 +233,16 @@ class RayWorldCollider private constructor(world: World) {
     )
 
     private fun getAABBs(x: Int, y: Int, z: Int): List<AxisAlignedBB> {
+        val blockIndex = (x and 0x3f) or ((y and 0x3f) shl 10) or ((z and 0x3f) shl 20)
         mutablePos.setPos(x, y, z)
-        cache[mutablePos.toLong()]?.let {
-            return it
-        }
+        cache[mutablePos.toLong()]?.let { return it }
+
 
         val list: List<AxisAlignedBB>
-        if (!world.isBlockLoaded(mutablePos)) {
+        if (!world.isBlockLoaded(mutablePos)
+                || mutablePos.x < 0 || mutablePos.x > world.actualHeight
+                || mutablePos.y < 0 || mutablePos.y > world.actualHeight
+                || mutablePos.z < 0 || mutablePos.z > world.actualHeight) {
             list = emptyList()
         } else {
             val blockstate = world.getBlockState(mutablePos)
@@ -256,7 +261,7 @@ class RayWorldCollider private constructor(world: World) {
     @SubscribeEvent
     fun tick(e: TickEvent.ClientTickEvent) {
         if (cacheResetTimer == -1) return
-        if (cache.isEmpty) {
+        if (cache.size == 0) {
             countdown = cacheResetTimer
             return
         }

@@ -1,11 +1,9 @@
 package com.teamwizardry.librarianlib.features.particlesystem.modules
 
 import com.teamwizardry.librarianlib.core.client.ClientTickHandler
-import com.teamwizardry.librarianlib.features.particlesystem.ParticleRenderModule
-import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
-import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
+import com.teamwizardry.librarianlib.features.kotlin.Minecraft
+import com.teamwizardry.librarianlib.features.particlesystem.*
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.ConstantBinding
-import com.teamwizardry.librarianlib.features.particlesystem.require
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -29,10 +27,6 @@ class SpriteRenderModule @JvmOverloads constructor(
          */
         @JvmField val sprite: ResourceLocation,
         /**
-         * Whether to enable OpenGL blending
-         */
-        @JvmField val blend: Boolean = false,
-        /**
          * The current position of the particle
          */
         @JvmField val position: ReadParticleBinding,
@@ -43,7 +37,7 @@ class SpriteRenderModule @JvmOverloads constructor(
         /**
          * The OpenGL color of the particle
          */
-        @JvmField val color: ReadParticleBinding = ConstantBinding(255.0, 255.0, 255.0, 255.0),
+        @JvmField val color: ReadParticleBinding = ConstantBinding(1.0, 1.0, 1.0, 1.0),
         /**
          * The width and height of the particle in meters
          */
@@ -57,15 +51,19 @@ class SpriteRenderModule @JvmOverloads constructor(
         /**
          * The alpha multiplier for the color. Defaults to 1 if not present.
          */
-        @JvmField val alpha: ReadParticleBinding? = ConstantBinding(1.0),
+        @JvmField val alphaMultiplier: ReadParticleBinding = ConstantBinding(1.0),
         /**
-         * The OpenGL source/dest blend factors. Leave null to keep the defaults.
+         * The OpenGL source/dest enableBlend factors. Leave null to keep the defaults.
          */
-        @JvmField val blendFactors: Pair<GlStateManager.SourceFactor, GlStateManager.DestFactor>? = null,
+        @JvmField val blendMode: BlendMode = BlendMode.NORMAL,
         /**
          * Whether to enable OpenGL depth masking. (false = no writing to the depth buffer)
          */
-        @JvmField val depthMask: Boolean = true
+        @JvmField val depthMask: Boolean = false,
+        /**
+         * Whether to enable OpenGL blending
+         */
+        @JvmField val enableBlend: Boolean = true
 ) : ParticleRenderModule {
     init {
         previousPosition?.require(3)
@@ -73,7 +71,7 @@ class SpriteRenderModule @JvmOverloads constructor(
         color.require(4)
         size.require(1)
         facingVector?.require(3)
-        alpha?.require(1)
+        alphaMultiplier.require(1)
     }
 
     override fun render(particles: List<DoubleArray>, prepModules: List<ParticleUpdateModule>) {
@@ -81,14 +79,14 @@ class SpriteRenderModule @JvmOverloads constructor(
 
         val player = Minecraft.getMinecraft().player
         GlStateManager.enableTexture2D()
-        if (blend) {
+        if (enableBlend) {
             GlStateManager.enableBlend()
         } else {
             GlStateManager.disableBlend()
         }
-        if (blendFactors != null) {
-            GlStateManager.blendFunc(blendFactors.first, blendFactors.second)
-        }
+
+        blendMode.glApply()
+
         GlStateManager.depthMask(depthMask)
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F)
         GlStateManager.disableLighting()
@@ -161,9 +159,7 @@ class SpriteRenderModule @JvmOverloads constructor(
             val r = color[particle, 0].toFloat()
             val g = color[particle, 1].toFloat()
             val b = color[particle, 2].toFloat()
-            var a = color[particle, 3].toFloat()
-            if (alpha != null)
-                a *= alpha[particle, 0].toFloat()
+            val a = color[particle, 3].toFloat() * alphaMultiplier[particle, 0].toFloat()
 
             vb.pos(x - localIHatX - localJHatX, y - localIHatY - localJHatY, z - localIHatZ - localJHatZ).tex(0.0, 0.0).color(r, g, b, a).endVertex()
             vb.pos(x + localIHatX - localJHatX, y + localIHatY - localJHatY, z + localIHatZ - localJHatZ).tex(1.0, 0.0).color(r, g, b, a).endVertex()
@@ -173,7 +169,8 @@ class SpriteRenderModule @JvmOverloads constructor(
 
         tessellator.draw()
 
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
+      //  GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
+        blendMode.reset()
         GlStateManager.enableCull()
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
         GlStateManager.depthMask(true)

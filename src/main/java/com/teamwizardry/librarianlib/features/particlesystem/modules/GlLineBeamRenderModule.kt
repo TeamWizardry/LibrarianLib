@@ -51,7 +51,7 @@ class GlLineBeamRenderModule(
          */
         @JvmField val alpha: ReadParticleBinding?,
         /**
-         * The pair of source/dest blend factors to use while rendering, or the default if null.
+         * The pair of source/dest enableBlend factors to use while rendering, or the default if null.
          */
         @JvmField val blendFactors: Pair<GlStateManager.SourceFactor, GlStateManager.DestFactor>? = null,
         /**
