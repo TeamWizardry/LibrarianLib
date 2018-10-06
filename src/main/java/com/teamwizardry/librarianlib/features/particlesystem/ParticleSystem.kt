@@ -1,14 +1,13 @@
 package com.teamwizardry.librarianlib.features.particlesystem
 
-import akka.routing.AdjustPoolSize
+import com.teamwizardry.librarianlib.features.kotlin.whileNonNull
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.StoredBinding
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.VariableBinding
 import com.teamwizardry.librarianlib.features.particlesystem.modules.DepthSortModule
-import com.teamwizardry.librarianlib.test.particlesystem.FountainParticleSystem
 import org.magicwerk.brownies.collections.GapList
-import sun.management.snmp.jvminstr.JvmThreadInstanceEntryImpl.ThreadStateMap.Byte0.runnable
 import java.util.*
-import java.util.function.Consumer
+import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * A system of particles with similar behavior.
@@ -17,7 +16,7 @@ import java.util.function.Consumer
  *
  * * [updateModules] are called in every tick for each particle. They are called in sequence for each particle, meaning
  * any state set in one can be safely used in the next.
- * * [postUpdateModules] are called every tick and passed the full list of particles. They are generally used for depth
+ * * [globalUpdateModules] are called every tick and passed the full list of particles. They are generally used for depth
  * sorting (see [DepthSortModule]) however they are useful for anything that requires the full particle list in one call.
  * * [renderPrepModules] are similar to [updateModules] but are called before each particle is rendered. They can be
  * used to initialize [VariableBinding]s so a complex computation does not have to be repeated in several of the render
@@ -29,32 +28,14 @@ import java.util.function.Consumer
  * once any particles have been created it is no longer safe to create new bindings with [bind].
  *
  * When creating particle systems it is highly recommended to spawn enough to cause a moderate amount of lag and run
- * profiling to find which hotspots are slowing down the game. It is often surprising what small things have a large
+ * sampling to find which hotspots are slowing down the game. It is often surprising what small things have a large
  * impact.
  *
- * When creating a particle system it is recommended to create a singleton subclass. That subclass can manage the
- * initialization of the system as well as provide a specialized wrapper around [addParticle] that allows more
- * meaningful arguments to be passed. For example, such a method might look something like this:
- *
- * ```java
- * double[] addParticle(double lifetime, Vec3d position, Vec3d velocity, Color color, double size) {
- *     return this.addParticle(lifetime,
- *             position.x, position.y, position.z, // position
- *             position.x, position.y, position.z, // previousPosition
- *             velocity.x, velocity.y, velocity.z, // velocity
- *             color.r/255.0, color.g/255.0, color.b/255.0, color.a/255.0, // color
- *             size // size
- *     )
- * }
- * ```
+ * After creating a particle system, call [addToGame] to add it to the game for rendering and updates. Calling
+ * [removeFromGame] will, as the name implies, remove the particle system from the game, at which point it will no
+ * longer render or receive updates
  */
-open class ParticleSystem(
-        /**
-         * The maximum number of particles in the particle reuse pool. The reuse pool is used to reduce the amount of memory
-         * churn by retaining dead particle arrays and reusing them in [addParticle] as opposed to creating new ones each
-         * time.
-         */
-        var poolSize: Int = 2000) {
+abstract class ParticleSystem {
     /**
      * The modules that are called every tick for each particle. They are called in sequence for each particle, meaning
      * temporary state set in one module can be safely used in the subsequent modules.
@@ -62,9 +43,9 @@ open class ParticleSystem(
     val updateModules: MutableList<ParticleUpdateModule> = mutableListOf()
     /**
      * The modules that are called once at the end of each tick and passed the entire list of particles. Often used for
-     * depth sorting
+     * depth sorting with the [DepthSortModule]
      */
-    val postUpdateModules: MutableList<ParticleBatchUpdateModule> = mutableListOf()
+    val globalUpdateModules: MutableList<ParticleGlobalUpdateModule> = mutableListOf()
     /**
      * The modules that are called before each particle is rendered. They are similar to [updateModules] and are often
      * used to optimize computations that are reused in multiple places (say, calculating a normal vector) by storing
@@ -81,88 +62,62 @@ open class ParticleSystem(
      */
     val renderModules: MutableList<ParticleRenderModule> = mutableListOf()
 
+    /**
+     * The maximum number of particles in the particle reuse pool. The reuse pool is used to reduce the amount of memory
+     * churn by retaining dead particle arrays and reusing them in [addParticle] as opposed to creating new ones each
+     * time.
+     */
+    var poolSize = 1000
+
+    internal val queuedAdditions = ConcurrentLinkedQueue<DoubleArray>()
+    internal val shouldQueue = AtomicBoolean(false)
     internal val particles: MutableList<DoubleArray> = GapList<DoubleArray>()
     private val particlePool = ArrayDeque<DoubleArray>(poolSize)
 
     /**
      * The built-in binding for particle lifetime. If the value in [age] is >= the value in [lifetime] the particle will
-     * be removed from the world.
+     * be removed during the next frame or update.
      */
-    val lifetime = StoredBinding(0, 1)
+    lateinit var lifetime: StoredBinding
+        private set
     /**
-     * The built-in binding for particle age. Upon spawning the value in this binding is initialized to 0, and very
+     * The built-in binding for particle age. Upon spawning the value in this binding is initialized to 0, and every
      * tick thereafter its value is incremented. If the value in [age] is >= the value in [lifetime] the particle will
-     * be removed from the world.
+     * be removed during the next frame or update.
      */
-    val age = StoredBinding(1, 1)
+    lateinit var age: StoredBinding
+        private set
+
     /**
      * The required length of the particle arrays.
      */
-    var fieldCount = 2
+    var fieldCount = 0
         private set
 
-    private var systemConsumer: Consumer<ParticleSystem>? = null
+    private var canBind = false
 
     /**
-     * Convenience method to modify and handle your particle system in a condensed, quick, and builder-like pattern.
-     */
-    fun setup(systemConsumer: Consumer<ParticleSystem>) = apply {
-        this.systemConsumer = systemConsumer
-        this.systemConsumer!!.accept(this)
-
-        ParticleRenderManager.systems.add(this)
-
-        ParticleRenderManager.reloadHandlers.add(Runnable {
-            this.updateModules.clear()
-            this.postUpdateModules.clear()
-            this.renderPrepModules.clear()
-            this.renderModules.clear()
-
-            this.systemConsumer?.accept(this)
-        })
-    }
-
-    /**
-     * Convenience method to add update modules swiftly in a builder-like pattern.
-     */
-    fun addUpdateModules(vararg updateModules: ParticleUpdateModule) = apply { this.updateModules.addAll(updateModules) }
-
-    /**
-     * Convenience method to add post update modules swiftly in a builder-like pattern.
-     */
-    fun addPostUpdateModules(vararg postUpdateModules: ParticleBatchUpdateModule) = apply { this.postUpdateModules.addAll(postUpdateModules) }
-
-    /**
-     * Convenience method to add render prep modules swiftly in a builder-like pattern.
-     */
-    fun addRenderPrepModules(vararg renderPrepModules: ParticleUpdateModule) = apply { this.renderPrepModules.addAll(renderPrepModules) }
-
-    /**
-     * Convenience method to add render modules swiftly in a builder-like pattern.
-     */
-    fun addRenderModules(vararg renderModules: ParticleRenderModule) = apply { this.renderModules.addAll(renderModules) }
-
-    /**
-     * Creates a new [StoredBinding] of the specified size and allocates space for it at the end of the particle array, increasing [fieldCount] to reflect the change.
+     * Configures the particle system, binding values and building module lists. This is called both when the system
+     * is first added to the game and when resource packs are reloaded. The bindings and module lists are cleared
+     * beforehand, so any existing bindings should be considered invalid and must be recreated.
      *
-     * @throws IllegalStateException if particles have already been created by this system, rendering it unsafe to create new bindings
+     * This method is the only valid place for bindings to be created with [bind].
+     */
+    abstract fun configure()
+
+    /**
+     * Creates a new [StoredBinding] of the specified size and allocates space for it at the end of the particle array,
+     * increasing [fieldCount] to reflect the change.
+     *
+     * @throws IllegalStateException if called outside of [configure]
      */
     fun bind(size: Int): StoredBinding {
-        if (particles.isNotEmpty() || particlePool.isNotEmpty())
+        if(!canBind)
             throw IllegalStateException("It is no longer safe to create new bindings, particles have already been " +
                     "created based on current field count.")
         val binding = StoredBinding(fieldCount, size)
         fieldCount += size
         return binding
-    }
-
-    /**
-     * Creates a new [StoredBinding] of the specified size and allocates space for it at the end of the particle array, increasing [fieldCount] to reflect the change.
-     *
-     * @throws IllegalStateException if particles have already been created by this system, rendering it unsafe to create new bindings
-     */
-    fun initBindingsConsumer(runnable: Runnable) = apply {
-        runnable.run()
     }
 
     /**
@@ -172,6 +127,17 @@ open class ParticleSystem(
      * a `position` binding was created with a size of 3, then a `color` with a size of 4, and then a `size` with a
      * size of 1, [params] should be populated in the following order: `x, y, z, r, g, b, a, size`. It is recommended
      * that a subclass be created with a method that populates [params] based upon more meaningfully named arguments.
+     * An example based on the aforementioned particle would be:
+     *
+     * ```kotlin
+     * double[] spawn(double lifetime, Vec3d position, Color color, double size) {
+     *     return this.addParticle(lifetime,
+     *             position.x, position.y, position.z,
+     *             color.red/255.0, color.green/255.0, color.blue/255.0, color.alpha/255.0,
+     *             size
+     *     )
+     * }
+     * ```
      *
      * @param lifetime the lifetime of the particle in ticks
      * @param params an array of values to initialize the particle array with.
@@ -181,27 +147,67 @@ open class ParticleSystem(
         particle[0] = lifetime
         particle[1] = 0.0
         (2 until particle.size).forEach { i ->
-            if (i - 2 < params.size)
-                particle[i] = params[i - 2]
+            if(i-2 < params.size)
+                particle[i] = params[i-2]
             else
                 particle[i] = 0.0
         }
-        particles.add(particle)
-
-        for (i in 0 until updateModules.size) {
-            updateModules[i].init(particle)
+        if(shouldQueue.get()) {
+            queuedAdditions.add(particle)
+        } else {
+            particles.add(particle)
         }
         return particle
     }
 
+    /**
+     * Adds the particle system to the game for rendering and updates.
+     */
+    fun addToGame() {
+        GameParticleSystems.add(this)
+    }
+
+    /**
+     * Removes the particle system from the game, meaning it will no longer render or receive updates.
+     */
+    fun removeFromGame() {
+        GameParticleSystems.remove(this)
+    }
+
+    /**
+     * Reloads the particle system. This involves clearing the particle and module lists, then calling [configure] to
+     * re-bind values and rebuild the module lists.
+     */
+    fun reload() {
+        this.particles.clear()
+        this.particlePool.clear()
+        this.updateModules.clear()
+        this.globalUpdateModules.clear()
+        this.renderPrepModules.clear()
+        this.renderModules.clear()
+
+        this.canBind = true
+        this.fieldCount = 0
+
+        this.lifetime = bind(1)
+        this.age = bind(1)
+        this.configure()
+
+        this.canBind = false
+    }
+
     internal fun update() {
+        shouldQueue.set(true)
+        whileNonNull({ queuedAdditions.poll() }) { particle ->
+            particles.add(particle)
+        }
         val iter = particles.iterator()
-        for (particle in iter) {
+        for(particle in iter) {
             val lifetime = this.lifetime[particle, 0]
             val age = this.age[particle, 0]
-            if (age >= lifetime) {
+            if(age >= lifetime) {
                 iter.remove()
-                if (particlePool.size < poolSize)
+                if(particlePool.size < poolSize)
                     particlePool.push(particle)
                 continue
             }
@@ -209,20 +215,26 @@ open class ParticleSystem(
             update(particle)
         }
 
-        for (i in 0 until postUpdateModules.size) {
-            postUpdateModules[i].update(particles)
+        for(i in 0 until globalUpdateModules.size) {
+            globalUpdateModules[i].update(particles)
         }
+        shouldQueue.set(false)
     }
 
     private fun update(particle: DoubleArray) {
-        for (i in 0 until updateModules.size) {
+        for(i in 0 until updateModules.size) {
             updateModules[i].update(particle)
         }
     }
 
     internal fun render() {
-        for (i in 0 until renderModules.size) {
+        shouldQueue.set(true)
+        whileNonNull({ queuedAdditions.poll() }) { particle ->
+            particles.add(particle)
+        }
+        for(i in 0 until renderModules.size) {
             renderModules[i].render(particles, renderPrepModules)
         }
+        shouldQueue.set(false)
     }
 }

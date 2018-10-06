@@ -21,7 +21,7 @@ class DepthSortModule(
          * along their look vector.
          */
         @JvmField val depth: ReadWriteParticleBinding
-): ParticleBatchUpdateModule {
+): ParticleGlobalUpdateModule {
     init {
         position.require(3)
         depth.require(1)

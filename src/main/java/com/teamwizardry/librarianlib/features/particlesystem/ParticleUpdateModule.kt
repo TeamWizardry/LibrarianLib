@@ -8,7 +8,7 @@ import com.teamwizardry.librarianlib.features.particlesystem.modules.VelocityUpd
 /**
  * An object that runs code on a particle.
  *
- * Particle update modules are the simplest modules, the others being the [ParticleBatchUpdateModule] and
+ * Particle update modules are the simplest modules, the others being the [ParticleGlobalUpdateModule] and
  * [ParticleRenderModule]. The purpose of a particle update module is to run code on a per-particle basis, whether it
  * be during the world tick ([ParticleSystem.updateModules]) or in preparation for a particle's rendering
  * ([ParticleSystem.renderPrepModules]).
@@ -33,7 +33,7 @@ interface ParticleUpdateModule {
  * Particle batch update modules are called at the end of each tick and are passed the full particle list. They were
  * designed to do depth sorting but they are general enough to do much more.
  */
-interface ParticleBatchUpdateModule {
+interface ParticleGlobalUpdateModule {
     /**
      * Run on the passed particle list.
      */
