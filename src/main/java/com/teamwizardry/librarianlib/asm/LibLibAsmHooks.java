@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.asm;
 
 import com.teamwizardry.librarianlib.core.client.GlowingHandler;
 import com.teamwizardry.librarianlib.core.client.RenderHookHandler;
+import com.teamwizardry.librarianlib.features.forgeevents.EntityPostUpdateEvent;
 import com.teamwizardry.librarianlib.features.forgeevents.EntityUpdateEvent;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BlockFluidRenderer;
@@ -61,7 +62,11 @@ public class LibLibAsmHooks {
         return GlowingHandler.getPotionGlow();
     }
 
-    public static void updateHook(Entity entity) {
-        MinecraftForge.EVENT_BUS.post(new EntityUpdateEvent(entity));
+    public static boolean preUpdate(Entity entity) {
+        return MinecraftForge.EVENT_BUS.post(new EntityUpdateEvent(entity));
+    }
+
+    public static void postUpdate(Entity entity) {
+        MinecraftForge.EVENT_BUS.post(new EntityPostUpdateEvent(entity));
     }
 }
