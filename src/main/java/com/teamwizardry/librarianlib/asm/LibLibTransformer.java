@@ -36,6 +36,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         transformers.put("net.minecraft.client.renderer.BlockRendererDispatcher", LibLibTransformer::transformBlockRenderDispatcher);
         transformers.put("net.minecraft.client.particle.Particle", LibLibTransformer::transformParticle);
         transformers.put("net.minecraft.world.World", LibLibTransformer::transformWorld);
+        transformers.put("net.minecraft.network.NetHandlerPlayServer", LibLibTransformer::transformNetHandlerPlayServer);
     }
 
     private static byte[] transformRenderItem(byte[] basicClass) {
@@ -261,6 +262,44 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                             // INVOKEVIRTUAL onUpdate
 
                             afterInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "postUpdate", "(Lnet/minecraft/entity/Entity;)V", false));
+                            afterInstructions.add(escapeMethod);
+
+                            instructions.insertBefore(node, beforeInstructions);
+                            instructions.insert(node, afterInstructions);
+
+                            return false;
+                        }));
+    }
+
+    private static byte[] transformNetHandlerPlayServer(byte[] basicClass) {
+        MethodSignature sig = new MethodSignature("update", "func_73660_a",
+                "()V");
+
+        MethodSignature target = new MethodSignature("onUpdateEntity", "func_71127_g",
+                "()V");
+
+        return transform(basicClass, sig, "Update hook",
+                combine(node -> node.getOpcode() == INVOKEVIRTUAL &&
+                                target.matches((MethodInsnNode) node),
+                        (method, node) -> {
+                            InsnList instructions = method.instructions;
+                            InsnList beforeInstructions = new InsnList();
+                            InsnList afterInstructions = new InsnList();
+
+                            LabelNode notCanceled = new LabelNode();
+                            LabelNode escapeMethod = new LabelNode();
+
+                            beforeInstructions.add(new InsnNode(DUP));
+                            beforeInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "preUpdateMP", "(Lnet/minecraft/entity/player/EntityPlayerMP;)Z", false));
+                            beforeInstructions.add(new JumpInsnNode(IFEQ, notCanceled));
+                            beforeInstructions.add(new InsnNode(POP));
+                            beforeInstructions.add(new JumpInsnNode(GOTO, escapeMethod));
+                            beforeInstructions.add(notCanceled);
+                            beforeInstructions.add(new InsnNode(DUP));
+
+                            // INVOKEVIRTUAL onUpdateEntity
+
+                            afterInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "postUpdateMP", "(Lnet/minecraft/entity/player/EntityPlayerMP;)V", false));
                             afterInstructions.add(escapeMethod);
 
                             instructions.insertBefore(node, beforeInstructions);

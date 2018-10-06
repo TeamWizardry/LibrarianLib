@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -63,10 +64,24 @@ public class LibLibAsmHooks {
     }
 
     public static boolean preUpdate(Entity entity) {
+        if (entity instanceof EntityPlayerMP)
+            return false;
+
         return MinecraftForge.EVENT_BUS.post(new EntityUpdateEvent(entity));
     }
 
     public static void postUpdate(Entity entity) {
+        if (entity instanceof EntityPlayerMP)
+            return;
+
+        MinecraftForge.EVENT_BUS.post(new EntityPostUpdateEvent(entity));
+    }
+
+    public static boolean preUpdateMP(EntityPlayerMP entity) {
+        return MinecraftForge.EVENT_BUS.post(new EntityUpdateEvent(entity));
+    }
+
+    public static void postUpdateMP(EntityPlayerMP entity) {
         MinecraftForge.EVENT_BUS.post(new EntityPostUpdateEvent(entity));
     }
 }
