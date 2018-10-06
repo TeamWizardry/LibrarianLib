@@ -23,7 +23,9 @@ abstract class AbstractTimeBinding(
          * if the offset is 0.5, the animation will begin halfway along the path
          */
         open val offset: ReadParticleBinding? = ConstantBinding(0.0),
-
+        /**
+         * The easing to use if you want one to manipulate the binding.
+         */
         open val easing: Easing = Easing.linear
 ) : ReadParticleBinding {
 

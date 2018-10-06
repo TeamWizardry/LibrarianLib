@@ -53,7 +53,7 @@ class EaseBinding @JvmOverloads constructor(
         lifetime.require(1)
         age.require(1)
         if (origin == null) {
-            origin = ConstantBinding(*DoubleArray(bindingSize) { 0.0 })
+            origin = ConstantBinding(*DoubleArray(bindingSize) { 1.0 })
         }
         if (target == null)
             target = ConstantBinding(*DoubleArray(bindingSize) { 1.0 })
@@ -62,6 +62,7 @@ class EaseBinding @JvmOverloads constructor(
     override val size = bindingSize
 
     override fun get(particle: DoubleArray, index: Int): Double {
-        return origin!![particle, index] + (target!![particle, index] * getTime(particle).toFloat())
+        val t = getTime(particle)
+        return (origin!![particle, index] * (1 - t)) + (target!![particle, index] * t)
     }
 }

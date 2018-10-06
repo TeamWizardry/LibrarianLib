@@ -48,11 +48,7 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
          *
          * Velocity is set, not added.
          */
-        @JvmField val velocity: ReadParticleBinding = ConstantBinding(0.0, 0.0, 0.0),
-        /**
-         * The initial motion to set to the particle when it spawns.
-         */
-        @JvmField val initVelocity: ReadParticleBinding? = null,
+        @JvmField val velocity: ReadParticleBinding,
         /**
          * If enabled, will allow the particle to collide with blocks in the world
          */
@@ -103,7 +99,6 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
         position.require(3)
         previousPosition.require(3)
         velocity.require(3)
-        initVelocity?.require(3)
     }
 
     private var posX: Double = 0.0
@@ -112,20 +107,6 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
     private var velX: Double = 0.0
     private var velY: Double = 0.0
     private var velZ: Double = 0.0
-
-    override fun init(particle: DoubleArray) {
-        if (initVelocity != null) {
-            velX += initVelocity[particle, 0]
-            velY += initVelocity[particle, 1]
-            velZ += initVelocity[particle, 2]
-        }
-
-        if (velocity is WriteParticleBinding) {
-            velocity[particle, 0] = velX
-            velocity[particle, 1] = velY
-            velocity[particle, 2] = velZ
-        }
-    }
 
     override fun update(particle: DoubleArray) {
         posX = position[particle, 0]

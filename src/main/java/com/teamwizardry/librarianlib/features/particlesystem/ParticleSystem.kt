@@ -31,11 +31,16 @@ import java.util.concurrent.atomic.AtomicBoolean
  * sampling to find which hotspots are slowing down the game. It is often surprising what small things have a large
  * impact.
  *
- * After creating a particle system, call [addToGame] to add it to the game for rendering and updates. Calling
+ * After creating a particle system, [addToGame] will add the system the game for rendering and updates directly. Calling
  * [removeFromGame] will, as the name implies, remove the particle system from the game, at which point it will no
  * longer render or receive updates
  */
 abstract class ParticleSystem {
+
+    init {
+        addToGame()
+    }
+
     /**
      * The modules that are called every tick for each particle. They are called in sequence for each particle, meaning
      * temporary state set in one module can be safely used in the subsequent modules.
@@ -68,6 +73,8 @@ abstract class ParticleSystem {
      * time.
      */
     var poolSize = 1000
+
+    private var systemInitialized: Boolean = false
 
     internal val queuedAdditions = ConcurrentLinkedQueue<DoubleArray>()
     internal val shouldQueue = AtomicBoolean(false)
@@ -112,7 +119,7 @@ abstract class ParticleSystem {
      * @throws IllegalStateException if called outside of [configure]
      */
     fun bind(size: Int): StoredBinding {
-        if(!canBind)
+        if (!canBind)
             throw IllegalStateException("It is no longer safe to create new bindings, particles have already been " +
                     "created based on current field count.")
         val binding = StoredBinding(fieldCount, size)
@@ -143,19 +150,28 @@ abstract class ParticleSystem {
      * @param params an array of values to initialize the particle array with.
      */
     fun addParticle(lifetime: Double, vararg params: Double): DoubleArray {
+        if (!systemInitialized) {
+            reload()
+            systemInitialized = true
+        }
+
         val particle = DoubleArray(fieldCount)
         particle[0] = lifetime
         particle[1] = 0.0
         (2 until particle.size).forEach { i ->
-            if(i-2 < params.size)
-                particle[i] = params[i-2]
+            if (i - 2 < params.size)
+                particle[i] = params[i - 2]
             else
                 particle[i] = 0.0
         }
-        if(shouldQueue.get()) {
+        if (shouldQueue.get()) {
             queuedAdditions.add(particle)
         } else {
             particles.add(particle)
+        }
+
+        for (i in 0 until updateModules.size) {
+            updateModules[i].init(particle)
         }
         return particle
     }
@@ -179,8 +195,8 @@ abstract class ParticleSystem {
      * re-bind values and rebuild the module lists.
      */
     fun reload() {
-        this.particles.clear()
-        this.particlePool.clear()
+       // this.particles.clear()
+       // this.particlePool.clear()
         this.updateModules.clear()
         this.globalUpdateModules.clear()
         this.renderPrepModules.clear()
@@ -202,12 +218,12 @@ abstract class ParticleSystem {
             particles.add(particle)
         }
         val iter = particles.iterator()
-        for(particle in iter) {
+        for (particle in iter) {
             val lifetime = this.lifetime[particle, 0]
             val age = this.age[particle, 0]
-            if(age >= lifetime) {
+            if (age >= lifetime) {
                 iter.remove()
-                if(particlePool.size < poolSize)
+                if (particlePool.size < poolSize)
                     particlePool.push(particle)
                 continue
             }
@@ -215,14 +231,14 @@ abstract class ParticleSystem {
             update(particle)
         }
 
-        for(i in 0 until globalUpdateModules.size) {
+        for (i in 0 until globalUpdateModules.size) {
             globalUpdateModules[i].update(particles)
         }
         shouldQueue.set(false)
     }
 
     private fun update(particle: DoubleArray) {
-        for(i in 0 until updateModules.size) {
+        for (i in 0 until updateModules.size) {
             updateModules[i].update(particle)
         }
     }
@@ -232,7 +248,7 @@ abstract class ParticleSystem {
         whileNonNull({ queuedAdditions.poll() }) { particle ->
             particles.add(particle)
         }
-        for(i in 0 until renderModules.size) {
+        for (i in 0 until renderModules.size) {
             renderModules[i].render(particles, renderPrepModules)
         }
         shouldQueue.set(false)

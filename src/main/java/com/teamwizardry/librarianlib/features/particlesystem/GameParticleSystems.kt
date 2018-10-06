@@ -33,7 +33,6 @@ internal object GameParticleSystems {
 
     fun add(system: ParticleSystem) {
         if(!systems.contains(system)) {
-            system.reload()
             systems.add(system)
         }
     }
@@ -92,7 +91,7 @@ internal object GameParticleSystems {
     fun render(event: CustomWorldRenderEvent) {
         val profiler = Minecraft.getMinecraft().profiler
 
-        GL11.glPushAttrib(GL11.GL_LIGHTING_BIT)
+        GlStateManager.pushMatrix()
         GlStateManager.enableBlend()
         GlStateManager.alphaFunc(GL11.GL_GREATER, 1 / 256f)
         GlStateManager.disableLighting()
@@ -115,7 +114,7 @@ internal object GameParticleSystems {
 
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
         GlStateManager.disableBlend()
-        GL11.glPopAttrib()
+        GlStateManager.popMatrix()
     }
 
     @SubscribeEvent

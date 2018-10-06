@@ -28,9 +28,6 @@ object AccelerateAway: ParticleExample {
 }
 
 object AccelerateAwaySystem: ParticleSystem() {
-    init {
-        addToGame()
-    }
 
     override fun configure() {
         // bind values in the particle array
@@ -47,12 +44,11 @@ object AccelerateAwaySystem: ParticleSystem() {
 
         renderModules.add(SpriteRenderModule(
             sprite = ResourceLocation("minecraft", "textures/items/clay_ball.png"), // #balance,
-            blend = false,
+            enableBlend = false,
             previousPosition = previousPosition,
             position = position,
             color = ConstantBinding(1.0, 1.0, 1.0, 1.0),
-            size = size,
-            alpha = null
+            size = size
         ))
     }
 

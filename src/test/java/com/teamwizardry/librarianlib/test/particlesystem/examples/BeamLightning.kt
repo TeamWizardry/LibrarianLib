@@ -65,9 +65,6 @@ object BeamLightning: ParticleExample {
 }
 
 object BeamLightningSystem: ParticleSystem() {
-    init {
-        addToGame()
-    }
 
     override fun configure() {
         // bind values in the particle array
