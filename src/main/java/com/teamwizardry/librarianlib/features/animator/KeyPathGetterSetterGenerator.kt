@@ -96,7 +96,7 @@ private class FieldListItem(val target: Class<*>, val name: String) {
     init {
         if (target.isArray) {
             accessorOfChoice = subscriptRegex.find(name)?.groupValues?.getOrNull(1)?.toIntOrNull() ?:
-                    throw IllegalArgumentException("Name `$name` not a valid subscript string! (valid format: `\\[\\d+\\]`)")
+                    throw IllegalArgumentException("Name `$name` not a valid subscript string! (valid format: `\\[\\d+]`)")
             fieldClass = target.componentType
         } else {
             val property = target.kotlin.getDeclaredPropertyRecursive(name) ?:
