@@ -85,7 +85,7 @@ private fun KClass<*>.getDeclaredPropertyRecursive(name: String): KProperty<*>? 
     return prop
 }
 
-private val subscriptRegex = "\\[(\\d+)]".toRegex()
+private val subscriptRegex = "\\[\\d+]".toRegex()
 
 private class FieldListItem(val target: Class<*>, val name: String) {
     val fieldClass: Class<*>
