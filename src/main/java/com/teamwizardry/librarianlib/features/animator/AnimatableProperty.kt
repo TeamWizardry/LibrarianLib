@@ -14,7 +14,7 @@ class AnimatableProperty<T : Any> private constructor(val target: Class<T>, val 
     val type: Class<Any>
 
     init {
-        val response = generateGetterAndSetterForKeyPath(target, keyPath.split("\\.|(?=[\\[])".toRegex()).toTypedArray())
+        val response = generateGetterAndSetterForKeyPath(target, keyPath.split("\\.|(?=\\[)".toRegex()).toTypedArray())
         getter = response.getter
         setter = response.setter
         type = response.clazz
