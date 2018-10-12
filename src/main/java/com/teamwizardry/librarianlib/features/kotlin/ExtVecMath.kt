@@ -104,6 +104,21 @@ operator fun Vec3i.component1() = x
 operator fun Vec3i.component2() = y
 operator fun Vec3i.component3() = z
 
+fun randomNormal(): Vec3d {
+    val yaw = Math.random()*2*Math.PI
+    val pitch = Math.random()*Math.PI - Math.PI/2
+
+    var x = Math.sin(yaw)
+    var z = Math.cos(yaw)
+
+    val y = Math.sin(pitch)
+    val multiplier = Math.cos(pitch)
+    x *= multiplier
+    z *= multiplier
+
+    return Vec3d(x, y, z)
+}
+
 
 
 // Vec2d ===============================================================================================================

@@ -32,7 +32,10 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 version = "$mod_version.$build_number"
-archivesBaseName = mod_name + "-" + mc_version
+def branchSuffix = System.getenv('TRAVIS_BRANCH') ?: ''
+if (mc_version.contains(branchSuffix)) branchSuffix = ''
+if (!branchSuffix.empty) branchSuffix = '-' + branchSuffix
+archivesBaseName = mod_name + branchSuffix + '-' + mc_version
 
 repositories {
     jcenter()
@@ -93,6 +96,8 @@ configurations {
 
 dependencies {
     compile "net.shadowfacts:Forgelin:1.6.0"
+    required "org.magicwerk:brownies-collections:0.9.13"
+    compile "org.magicwerk:brownies-collections:0.9.13" // Otherwise it doesn't get added to dep list
 }
 
 compileKotlin {
@@ -150,8 +155,7 @@ idea {
 
         sourceDirs += file('src/api/java')
         sourceDirs += file('src/test/java')
-        sourceDirs += file('src/test/resources')
-        setTestSourceDirs(new HashSet<File>())
+
     }
     project {
         languageLevel = '1.8'
@@ -247,6 +251,21 @@ uploadArchives {
                             developer {
                                 id 'eladkay'
                                 name 'eladkay'
+                                roles { role 'developer' }
+                            }
+                            developer {
+                                id 'bluexin'
+                                name 'bluexin'
+                                roles { role 'developer' }
+                            }
+                            developer {
+                                id 'Demoniaque'
+                                name 'Demoniaque'
+                                roles { role 'developer' }
+                            }
+                            developer {
+                                id 'InsomniaKitten'
+                                name 'InsomniaKitten'
                                 roles { role 'developer' }
                             }
                         }

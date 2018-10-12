@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.kotlin.unaryMinus
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
+import com.teamwizardry.librarianlib.features.particlesystem.GameParticleSystems
 import com.teamwizardry.librarianlib.features.shader.LibShaders
 import com.teamwizardry.librarianlib.features.shader.ShaderHelper
 import com.teamwizardry.librarianlib.features.sprite.SpritesMetadataSection
@@ -28,7 +29,6 @@ import net.minecraft.client.resources.data.MetadataSerializer
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.client.model.animation.Animation
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
@@ -59,6 +59,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         ScissorUtil
         LibShaders
         ShaderHelper.init()
+        GameParticleSystems
 
         val s = MethodHandleHelper.wrapperForGetter(Minecraft::class.java, "metadataSerializer", "field_110452_an")(Minecraft.getMinecraft()) as MetadataSerializer
         s.registerMetadataSectionType(SpritesMetadataSectionSerializer(), SpritesMetadataSection::class.java)
@@ -129,8 +130,13 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         GlStateManager.pushAttrib()
         val player = Minecraft.getMinecraft().player
 
+        val partialTicks = if (Minecraft.getMinecraft().isGamePaused)
+            Minecraft.getMinecraft().renderPartialTicksPaused
+        else
+            Minecraft.getMinecraft().timer.renderPartialTicks
+
         val lastPos = vec(player.lastTickPosX, player.lastTickPosY, player.lastTickPosZ)
-        val partialOffset = (player.positionVector - lastPos) * (1 - Animation.getPartialTickTime())
+        val partialOffset = (player.positionVector - lastPos) * (1 - partialTicks)
 
         val globalize = -(player.positionVector - partialOffset)
         GlStateManager.translate(globalize.x, globalize.y, globalize.z)
@@ -139,10 +145,6 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         GlStateManager.disableTexture2D()
         GlStateManager.color(1f, 1f, 1f, 1f)
 
-        val partialTicks = if (Minecraft.getMinecraft().isGamePaused)
-            Minecraft.getMinecraft().renderPartialTicksPaused
-        else
-            Minecraft.getMinecraft().timer.renderPartialTicks
         MinecraftForge.EVENT_BUS.post(CustomWorldRenderEvent(Minecraft.getMinecraft().world, e.context, partialTicks))
 
         GlStateManager.enableTexture2D()
@@ -151,5 +153,5 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
     }
 }
 
-val Minecraft.renderPartialTicksPaused by MethodHandleHelper.delegateForReadOnly<Minecraft, Float>(Minecraft::class.java, "renderPartialTicksPaused", "field_193996_ah")
-val Minecraft.timer by MethodHandleHelper.delegateForReadOnly<Minecraft, net.minecraft.util.Timer>(Minecraft::class.java, "timer", "field_71428_T")
+private val Minecraft.renderPartialTicksPaused by MethodHandleHelper.delegateForReadOnly<Minecraft, Float>(Minecraft::class.java, "renderPartialTicksPaused", "field_193996_ah")
+private val Minecraft.timer by MethodHandleHelper.delegateForReadOnly<Minecraft, net.minecraft.util.Timer>(Minecraft::class.java, "timer", "field_71428_T")
