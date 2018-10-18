@@ -9,7 +9,6 @@ import com.teamwizardry.librarianlib.features.kotlin.pos
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.ISprite
-import com.teamwizardry.librarianlib.features.sprite.Sprite
 import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -25,11 +24,13 @@ interface IComponentClipping {
     /**
      * If nonzero, round the corners of the clipping
      */
+    val cornerRadius_rm: RMValueDouble
     var cornerRadius: Double
     /**
      * If nonzero, draw corners with pixels `N` units in size. Pending implementation this property is ignored when
      * clipping mouseover checks.
      */
+    val cornerPixelSize_rm: RMValueInt
     var cornerPixelSize: Int
     /**
      * If nonnull, this sprite is used for clipping. Any pixels that are completely transparent will be masked out.
@@ -67,12 +68,14 @@ class ComponentClippingHandler: IComponentClipping {
     /**
      * If nonzero, round the corners of the clipping
      */
-    override var cornerRadius by RMValueDouble(0.0)
+    override val cornerRadius_rm = RMValueDouble(0.0)
+    override var cornerRadius by cornerRadius_rm
     /**
      * If nonzero, draw corners with pixels `N` units in size. Pending implementation this property is ignored when
      * clipping mouseover checks.
      */
-    override var cornerPixelSize by RMValueInt(0)
+    override val cornerPixelSize_rm = RMValueInt(0)
+    override var cornerPixelSize by cornerPixelSize_rm
 
     /**
      * If nonnull, this sprite is used for clipping. Any pixels that are completely transparent will be masked out.

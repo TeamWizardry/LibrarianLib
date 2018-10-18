@@ -10,7 +10,9 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 
 interface IComponentGeometry {
     val transform: ComponentTransform
+    val size_rm: RMValue<Vec2d>
     var size: Vec2d
+    val pos_rm: RMValue<Vec2d>
     var pos: Vec2d
     var mousePos: Vec2d
     var mouseOver: Boolean
@@ -83,20 +85,17 @@ interface IComponentGeometry {
 open class ComponentGeometryHandler: IComponentGeometry {
     lateinit var layer: GuiLayer
 
-    /** [GuiLayer.transform] */
     override val transform = ComponentTransform()
-    /** [GuiLayer.size] */
-    override var size: Vec2d by RMValue(vec(0, 0)) {
+    override val size_rm: RMValue<Vec2d> = RMValue(vec(0, 0)) {
         if(transform.size != size) {
             layer.setNeedsLayout()
         }
         transform.size = size
     }
-    /** [GuiLayer.pos] */
-    override var pos: Vec2d by transform::translate.delegate
-    /** [GuiLayer.mouseOver] */
+    override var size: Vec2d by size_rm
+    override val pos_rm: RMValue<Vec2d> = transform.translate_rm
+    override var pos: Vec2d by pos_rm
     override var mousePos = Vec2d.ZERO
-    /** [GuiLayer.mouseOver] */
     override var mouseOver = false
     /**
      * This is like [GuiLayer.mouseOver] except it ignores the occlusion of components at higher z-indices.

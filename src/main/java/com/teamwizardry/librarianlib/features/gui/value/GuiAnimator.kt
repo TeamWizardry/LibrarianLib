@@ -5,7 +5,6 @@ import com.teamwizardry.librarianlib.features.animator.Animation
 import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.animator.Lerper
 import com.teamwizardry.librarianlib.features.animator.LerperHandler
-import java.util.function.Supplier
 
 /**
  * Creates implicit animations for [IMValues][IMValue] and [RMValues][RMValue].
@@ -188,9 +187,7 @@ class GuiAnimator {
 }
 
 @Suppress("UNCHECKED_CAST")
-private class GuiImplicitAnimation(val targets: List<ValueAnimation>): Animation<Any>(
-    PointlessAnimatableObject,
-    AnimatableProperty.get(PointlessAnimatableObject::class.java, "field") as AnimatableProperty<Any>) {
+private class GuiImplicitAnimation(val targets: List<ValueAnimation>): Animation<Any>(Any()) {
     var easing: Easing = Easing.linear
 
     override fun update(time: Float) {

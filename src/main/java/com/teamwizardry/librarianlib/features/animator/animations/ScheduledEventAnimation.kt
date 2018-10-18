@@ -4,13 +4,9 @@ import com.teamwizardry.librarianlib.features.animator.AnimatableProperty
 import com.teamwizardry.librarianlib.features.animator.Animation
 
 /**
- * TODO: Document file ScheduledEventAnimation
- *
  * Created by TheCodeWarrior
  */
-class ScheduledEventAnimation(time: Float, callback: Runnable) :
-        Animation<ScheduledEventAnimation.PointlessAnimatableObject>(PointlessAnimatableObject,
-                AnimatableProperty.get(PointlessAnimatableObject::class.java, "field")) {
+class ScheduledEventAnimation(time: Float, callback: Runnable) : Animation<Any>(Any()) {
     constructor(time: Float, callback: () -> Unit) : this(time, Runnable(callback))
 
     init {
@@ -20,8 +16,4 @@ class ScheduledEventAnimation(time: Float, callback: Runnable) :
     }
 
     override fun update(time: Float) {}
-
-    object PointlessAnimatableObject {
-        var field = 0
-    }
 }

@@ -8,5 +8,6 @@ import com.teamwizardry.librarianlib.features.gui.value.RMValueDouble
  * All rights reserved.
  */
 open class ComponentAnimatableVoid(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent(posX, posY, width, height) {
-    var animX: Double by RMValueDouble(0.0)
+    val animX_rm = RMValueDouble(0.0)
+    var animX: Double by animX_rm
 }

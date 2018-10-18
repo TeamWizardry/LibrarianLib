@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.features.kotlin.clamp
 /**
  * An animation applied to a specific object and property of that object
  */
-abstract class Animation<T : Any>(val target: T, val property: AnimatableProperty<T>) {
+abstract class Animation<T : Any>(val target: T) {
 
     /**
      * Default: true
@@ -85,16 +85,6 @@ abstract class Animation<T : Any>(val target: T, val property: AnimatablePropert
             if (repeatCount != 0 && repeatCount != 1) f = f.rem(1)
             return f.clamp(0f, 1f)
         }
-    }
-
-    /**
-     * Returns true if this animation's keypath involves the passed object.
-     *
-     * The equality is by identity
-     */
-    fun doesInvolveObject(obj: Any): Boolean {
-        if (target === obj) return true
-        return property.doesInvolve(target, obj)
     }
 
     /**

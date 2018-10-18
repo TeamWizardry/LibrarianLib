@@ -108,10 +108,10 @@ class Animator {
      * Remove all animations involving [obj].
      * Values affected by the animations will be left as they are at the moment of calling this method.
      */
-    fun removeAnimationsFor(obj: Any) {
+    fun removeAnimationsOn(obj: Any) {
         val inlineRemove = mutableListOf<Animation<*>>()
         animations.forEach {
-            if (it.doesInvolveObject(obj)) {
+            if (it.target === obj) {
                 if (addLock) animationsToRemove.add(it)
                 else inlineRemove.add(it)
             }
@@ -222,5 +222,8 @@ class Animator {
             if (!Minecraft.getMinecraft().isGamePaused) worldTicks++
             screenTicks++
         }
+
+        @JvmField
+        val global = Animator()
     }
 }

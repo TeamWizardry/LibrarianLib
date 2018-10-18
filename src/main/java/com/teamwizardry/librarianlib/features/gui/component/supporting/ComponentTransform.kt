@@ -7,7 +7,6 @@ import com.teamwizardry.librarianlib.features.kotlin.div
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.times
-import com.teamwizardry.librarianlib.features.kotlin.unaryMinus
 import com.teamwizardry.librarianlib.features.math.Matrix4
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
@@ -25,25 +24,29 @@ import net.minecraft.client.renderer.GlStateManager
  * - postTranslate
  */
 class ComponentTransform {
+    val translate_rm: RMValue<Vec2d> = RMValue(vec(0, 0))
     /**
      * The translation component of the transform
      */
-    var translate by RMValue(vec(0, 0))
+    var translate by translate_rm
 
+    var translateZ_rm: RMValueDouble = RMValueDouble(0.0)
     /**
      * The Z translation component of the transform
      */
-    var translateZ by RMValueDouble(0.0)
+    var translateZ by translateZ_rm
 
+    var rotate_rm: RMValueDouble = RMValueDouble(0.0)
     /**
      * The rotation component of the transform in radians
      */
-    var rotate by RMValueDouble(0.0)
+    var rotate: Double by rotate_rm
 
+    val scale2D_rm: RMValue<Vec2d> = RMValue(vec(1, 1))
     /**
      * The scale component of the transform
      */
-    var scale2D by RMValue(vec(1, 1))
+    var scale2D: Vec2d by scale2D_rm
 
     /**
      * Get and set the uniform scale of the transformation.
@@ -56,12 +59,14 @@ class ComponentTransform {
             scale2D = vec(value, value)
         }
 
+    val anchor_rm: RMValue<Vec2d> = RMValue(vec(0, 0))
     /**
      * The point to rotate and scale about. Applied after translation
      */
-    var anchor by RMValue(vec(0, 0))
+    var anchor: Vec2d by anchor_rm
 
-    internal var size by RMValue(vec(0, 0))
+    internal val size_rm: RMValue<Vec2d> = RMValue(vec(0, 0))
+    internal var size: Vec2d by size_rm
 
     /**
      * Create a [Matrix4] containing this transform

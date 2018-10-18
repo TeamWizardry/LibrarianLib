@@ -25,7 +25,8 @@ class ComponentSlider(posX: Int, posY: Int, width: Int, height: Int, percentage:
             field = newPercent
             percentageChange.fireAll { h -> h.accept(this.percentage) }
         }
-    private var handlePos: Vec2d by RMValue(vec(0, 0))
+    private val handlePos_rm = RMValue(vec(0, 0))
+    private var handlePos: Vec2d by handlePos_rm
 
     init {
 

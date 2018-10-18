@@ -1,5 +1,9 @@
 package com.teamwizardry.librarianlib.features.gui.value
 
+import com.teamwizardry.librarianlib.features.animator.Animation
+import com.teamwizardry.librarianlib.features.animator.Animator
+import com.teamwizardry.librarianlib.features.animator.Easing
+import com.teamwizardry.librarianlib.features.animator.LerperHandler
 import java.util.function.Supplier
 import kotlin.reflect.KProperty
 
@@ -101,6 +105,41 @@ class IMValue<T> private constructor(private var storage: Storage<T>): GuiAnimat
         this.set(supplier as Supplier<T>)
     }
 
+    @JvmOverloads
+    fun animate(from: T, to: T, duration: Float, easing: Easing = Easing.linear, delay: Float = 0f) {
+        val animation = AnimationImpl(from, to, this)
+        animation.duration = duration
+        animation.easing = easing
+        animation.start = delay
+        Animator.global.add(animation)
+    }
+
+    @JvmOverloads
+    fun animate(to: T, duration: Float, easing: Easing = Easing.linear, delay: Float = 0f) {
+        val animation = AnimationImpl(get(), to, this)
+        animation.implicitStart = true
+        animation.duration = duration
+        animation.easing = easing
+        animation.start = delay
+        Animator.global.add(animation)
+    }
+
+    class AnimationImpl<T: Any?>(var from: T, var to: T, target: IMValue<T>): Animation<IMValue<T>>(target) {
+        var easing: Easing = Easing.linear
+        var implicitStart: Boolean = false
+
+        @Suppress("UNCHECKED_CAST")
+        private var lerper = LerperHandler.getLerperOrError(((from as Any?)?.javaClass ?: (to as Any?)?.javaClass) as Class<T>)
+        override fun update(time: Float) {
+            if(implicitStart) {
+                from = target.get()
+                implicitStart = false
+            }
+            val progress = easing(timeFraction(time))
+            val new = lerper.lerp(from, to, progress)
+            target.setValue(new)
+        }
+    }
 
     companion object {
         /**

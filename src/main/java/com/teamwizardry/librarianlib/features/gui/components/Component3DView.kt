@@ -40,11 +40,16 @@ class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
     }
 
     internal var dragStart = Vec2d.ZERO
-    var offset by RMValue(Vec3d.ZERO)
-    var zoom: Double by RMValueDouble(0.0)
-    var rotX: Double by RMValueDouble(0.0)
-    var rotY: Double by RMValueDouble(0.0)
-    var rotZ: Double by RMValueDouble(0.0)
+    val offset_rm: RMValue<Vec3d> = RMValue(Vec3d.ZERO)
+    val zoom_rm: RMValueDouble = RMValueDouble(0.0)
+    val rotX_rm: RMValueDouble = RMValueDouble(0.0)
+    val rotY_rm: RMValueDouble = RMValueDouble(0.0)
+    val rotZ_rm: RMValueDouble = RMValueDouble(0.0)
+    var offset: Vec3d by offset_rm
+    var zoom: Double by zoom_rm
+    var rotX: Double by rotX_rm
+    var rotY: Double by rotY_rm
+    var rotZ: Double by rotZ_rm
     internal var dragButton: EnumMouseButton? = null
 
     @Hook

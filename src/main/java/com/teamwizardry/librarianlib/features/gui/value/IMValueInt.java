@@ -1,5 +1,8 @@
 package com.teamwizardry.librarianlib.features.gui.value;
 
+import com.teamwizardry.librarianlib.features.animator.Animation;
+import com.teamwizardry.librarianlib.features.animator.Animator;
+import com.teamwizardry.librarianlib.features.animator.Easing;
 import kotlin.properties.ReadWriteProperty;
 import kotlin.reflect.KProperty;
 import org.jetbrains.annotations.NotNull;
@@ -132,6 +135,51 @@ public class IMValueInt implements GuiAnimatable {
             int get() {
                 return callback.getAsInt();
             }
+        }
+    }
+
+    public void animate(int from, int to, float duration, Easing easing) { animate(from, to, duration, easing, 0); }
+    public void animate(int from, int to, float duration) { animate(from, to, duration, Easing.linear, 0); }
+
+    public void animate(int from, int to, float duration, Easing easing, float delay) {
+        AnimationImpl animation = new AnimationImpl(from, to, this);
+        animation.setDuration(duration);
+        animation.easing = easing;
+        animation.setStart(delay);
+        Animator.global.add(animation);
+    }
+
+    public void animate(int to, float duration) { animate(to, duration, Easing.linear, 0); }
+    public void animate(int to, float duration, Easing easing) { animate(to, duration, easing, 0); }
+
+    public void animate(int to, float duration, Easing easing, float delay) {
+        AnimationImpl animation = new AnimationImpl(get(), to, this);
+        animation.implicitStart = true;
+        animation.setDuration(duration);
+        animation.easing = easing;
+        animation.setStart(delay);
+        Animator.global.add(animation);
+    }
+
+    private class AnimationImpl extends Animation<IMValueInt> {
+        int from, to;
+        boolean implicitStart;
+
+        AnimationImpl(int from, int to, IMValueInt target) {
+            super(target);
+            this.from = from;
+            this.to = to;
+        }
+        Easing easing = Easing.linear;
+
+        public void update(float time) {
+            if(implicitStart) {
+                from = getTarget().get();
+                implicitStart = false;
+            }
+            float progress = easing.invoke(timeFraction(time));
+            int newValue = (int)(from + (to-from) * progress);
+            getTarget().setValue(newValue);
         }
     }
 }

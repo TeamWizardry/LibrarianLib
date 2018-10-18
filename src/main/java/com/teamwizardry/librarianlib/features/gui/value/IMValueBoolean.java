@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.features.gui.value;
 
+import com.teamwizardry.librarianlib.features.animator.Animation;
+import com.teamwizardry.librarianlib.features.animator.Animator;
 import kotlin.reflect.KProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -131,6 +133,31 @@ public class IMValueBoolean implements GuiAnimatable {
             boolean get() {
                 return callback.getAsBoolean();
             }
+        }
+    }
+
+    public void animate(boolean from, boolean to, float delay) {
+        AnimationImpl animation = new AnimationImpl(from, to, this);
+        animation.setDuration(delay);
+        Animator.global.add(animation);
+    }
+
+    private class AnimationImpl extends Animation<IMValueBoolean> {
+        boolean from, to;
+        boolean implicitStart;
+
+        AnimationImpl(boolean from, boolean to, IMValueBoolean target) {
+            super(target);
+            this.from = from;
+            this.to = to;
+        }
+
+        public void update(float time) {
+            if(implicitStart) {
+                from = getTarget().get();
+                implicitStart = false;
+            }
+            getTarget().setValue(time == 1 ? to : from);
         }
     }
 }

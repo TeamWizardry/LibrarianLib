@@ -57,4 +57,5 @@ enum class Guis(val create: () -> GuiScreen) {
     PROVIDED_BOOK({ GuiTestProvidedBook() }),
     LAYOUT({ GuiTestLayout() }),
     IMPLICIT_ANIMATION({ GuiTestImplicitAnimation() }),
+    VALUE_ANIMATION({ GuiTestIMRMValueAnimation() }),
 }

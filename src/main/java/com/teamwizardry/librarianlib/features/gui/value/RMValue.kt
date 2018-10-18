@@ -1,5 +1,9 @@
 package com.teamwizardry.librarianlib.features.gui.value
 
+import com.teamwizardry.librarianlib.features.animator.Animation
+import com.teamwizardry.librarianlib.features.animator.Animator
+import com.teamwizardry.librarianlib.features.animator.Easing
+import com.teamwizardry.librarianlib.features.animator.LerperHandler
 import kotlin.reflect.KProperty
 
 /**
@@ -8,7 +12,8 @@ import kotlin.reflect.KProperty
  */
 class RMValue<T> @JvmOverloads constructor(
     private var value: T, private val change: (oldValue: T) -> Unit = {}
-): GuiAnimatable {
+) {
+
     /**
      * Gets the current value
      */
@@ -20,7 +25,7 @@ class RMValue<T> @JvmOverloads constructor(
      * Sets a new value
      */
     fun set(value: T) {
-        GuiAnimator.current.add(this)
+        GuiAnimator.current.add(animatable)
         val oldValue = this.value
         this.value = value
         if(oldValue != value) {
@@ -44,21 +49,60 @@ class RMValue<T> @JvmOverloads constructor(
         this.set(value)
     }
 
-    override fun getAnimatableValue(): Any? {
-        return value
+    private val animatable = Animatable()
+    inner class Animatable: GuiAnimatable {
+        override fun getAnimatableValue(): Any? {
+            return value
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        override fun setAnimatableValue(value: Any?) {
+            this@RMValue.value = value as T
+        }
+
+        override fun getAnimatableCallback(): Any? {
+            return null
+        }
+
+        override fun setAnimatableCallback(supplier: Any) {
+            // NO-OP
+        }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    override fun setAnimatableValue(value: Any?) {
-        this.value = value as T
+    @JvmOverloads
+    fun animate(from: T, to: T, duration: Float, easing: Easing = Easing.linear, delay: Float = 0f) {
+        val animation = AnimationImpl(from, to, this)
+        animation.duration = duration
+        animation.easing = easing
+        animation.start = delay
+        Animator.global.add(animation)
     }
 
-    override fun getAnimatableCallback(): Any? {
-        return null
+    @JvmOverloads
+    fun animate(to: T, duration: Float, easing: Easing = Easing.linear, delay: Float = 0f) {
+        val animation = AnimationImpl(value, to, this)
+        animation.implicitStart = true
+        animation.duration = duration
+        animation.easing = easing
+        animation.start = delay
+        Animator.global.add(animation)
     }
 
-    override fun setAnimatableCallback(supplier: Any) {
-        // NO-OP
+    class AnimationImpl<T: Any?>(var from: T, var to: T, target: RMValue<T>): Animation<RMValue<T>>(target) {
+        var easing: Easing = Easing.linear
+        var implicitStart: Boolean = false
+
+        @Suppress("UNCHECKED_CAST")
+        private var lerper = LerperHandler.getLerperOrError(((from as Any?)?.javaClass ?: (to as Any?)?.javaClass) as Class<T>)
+        override fun update(time: Float) {
+            if(implicitStart) {
+                from = target.get()
+                implicitStart = false
+            }
+            val progress = easing(timeFraction(time))
+            val new = lerper.lerp(from, to, progress)
+            target.set(new)
+        }
     }
 }
 
