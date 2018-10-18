@@ -1,0 +1,245 @@
+import com.jfrog.bintray.gradle.BintrayExtension
+import groovy.lang.GroovyObject
+import net.minecraftforge.gradle.common.BaseExtension
+import net.minecraftforge.gradle.user.patcherUser.forge.ForgeExtension
+import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.dsl.Coroutines
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig
+import kotlin.concurrent.thread
+
+plugins {
+    `java-library`
+    `maven-publish`
+    kotlin("jvm")
+    id("net.minecraftforge.gradle.forge")
+    id("com.jfrog.bintray")
+    id("com.jfrog.artifactory")
+    id("org.jetbrains.dokka")
+}
+
+val branch = prop("branch") ?: "git rev-parse --abbrev-ref HEAD".execute(rootDir.absolutePath).lines().last()
+logger.info("On branch $branch")
+
+version = "$branch-".takeUnless { prop("mc_version")?.contains(it) == true }.orEmpty() + prop("mod_version") + "." + prop("build_number")
+description = "A library for the TeamWizardry mods "
+base.archivesBaseName = prop("mod_name") + "-" + prop("mc_version")
+
+val minecraft: ForgeExtension by extensions
+minecraft.apply {
+    version = "${prop("mc_version")}-${prop("forge_version")}"
+    mappings = prop("mc_mappings")
+    runDir = "run"
+    // TODO: test setting runSourceSet to test or something combining test & main
+
+    /*
+    if this one doesn't work, move back to
+    ```
+    clientJvmArgs.add("-Dfml.coreMods.load=$core_plugin")
+    serverJvmArgs.add("-Dfml.coreMods.load=$core_plugin")
+    ```
+     */
+    coreMod = prop("core_plugin")
+
+    replace("GRADLE:VERSION", prop("mod_version"))
+    replace("GRADLE:BUILD", prop("build_number"))
+    replaceIn("LibrarianLib.kt")
+}
+
+
+val shade by configurations.creating
+
+configurations.compileOnly.extendsFrom(shade)
+configurations.testCompileOnly.extendsFrom(shade)
+
+repositories {
+    jcenter()
+    maven {
+        name = "Bluexin repo"
+        url = uri("https://maven.bluexin.be/repository/snapshots/")
+    }
+}
+
+dependencies {
+    api("net.shadowfacts:Forgelin:1.6.0")
+    implementation("org.magicwerk:brownies-collections:0.9.13")
+    shade("org.magicwerk:brownies-collections:0.9.13")
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        javaParameters = true
+    }
+}
+
+kotlin.experimental.coroutines = Coroutines.ENABLE
+
+/**
+ * Doing this will ensure we get the sources with replaced values
+ * as defined in `minecraft` block in our sources jar.
+ */
+val sourceJar = tasks.replace("sourceJar", Jar::class).apply {
+    from(
+            tasks["sourceMainJava"],
+            tasks["sourceMainKotlin"],
+            tasks["sourceTestJava"],
+            tasks["sourceTestKotlin"]
+    )
+    include("**/*.kt", "**/*.java", "**/*.scala")
+    classifier = "sources"
+    includeEmptyDirs = false
+}
+
+tasks {
+    getByName<Jar>("jar") {
+        for (dep in shade) {
+            from(zipTree(dep)) {
+                exclude("META-INF", "META-INF/**")
+            }
+        }
+        classifier = "release"
+
+        // TODO: check if we need to manually add manifest entries
+        /*
+        manifest {
+            attributes(
+                    "FMLCorePluginContainsFMLMod": "true",
+                    "FMLCorePlugin": "com.teamwizardry.librarianlib.asm.LibLibCorePlugin"
+            )
+        }
+         */
+    }
+
+    getByName<ProcessResources>("processResources") {
+        val props = mapOf(
+                "version" to project.version,
+                "mcversion" to minecraft.version
+        )
+
+        inputs.properties(props)
+
+        from(sourceSets["main"].resources.srcDirs) {
+            include("mcmod.info")
+            expand(props)
+        }
+    }
+}
+
+val dokka by tasks.getting(DokkaTask::class) {
+    outputDirectory = "$buildDir/docs"
+    outputFormat = "javadoc"
+    jdkVersion = 8
+    sourceDirs =
+            tasks["sourceMainJava"].outputs.files +
+            tasks["sourceMainKotlin"].outputs.files +
+            tasks["sourceTestJava"].outputs.files +
+            tasks["sourceTestKotlin"].outputs.files
+
+    includes = listOf("src/dokka/kotlin-dsl.md")
+    doFirst {
+        file(outputDirectory).deleteRecursively()
+    }
+}
+
+val javadocJar by tasks.registering(Jar::class) {
+    from(dokka.outputs)
+    classifier = "javadoc"
+}
+
+val deobfJar by tasks.registering(Jar::class) {
+    from(sourceSets["main"].output)
+}
+
+publishing {
+    publications.register("publication", MavenPublication::class) {
+        from(components["java"])
+        artifact(sourceJar)
+        artifact(deobfJar.get())
+        artifact(javadocJar.get())
+        this.artifactId = base.archivesBaseName
+    }.get()
+
+    repositories {
+        val mavenPassword = if (hasProp("local")) null else prop("mavenPassword")
+        maven {
+            val remoteURL = "https://maven.bluexin.be/repository/" + (if ((version as String).contains("SNAPSHOT")) "snapshots" else "releases")
+            val localURL = "file://$buildDir/repo"
+            url = uri(if (mavenPassword != null) remoteURL else localURL)
+            if (mavenPassword != null) {
+                credentials(PasswordCredentials::class.java) {
+                    username = prop("mavenUser")
+                    password = mavenPassword
+                }
+            }
+        }
+    }
+}
+val publication by publishing.publications
+
+bintray {
+    user = prop("bintrayUser")
+    key = prop("bintrayApiKey")
+    publish = true
+    override = true
+    setPublications(publication.name)
+    pkg(delegateClosureOf<BintrayExtension.PackageConfig> {
+        repo = "teamwizardry"
+        name = project.name
+        userOrg = "teamwizardry"
+        websiteUrl = "https://github.com/TeamWizardry/LibrarianLib"
+        githubRepo = "TeamWizardry/LibrarianLib"
+        vcsUrl = "https://github.com/TeamWizardry/LibrarianLib"
+        issueTrackerUrl = "https://github.com/TeamWizardry/LibrarianLib/issues"
+        desc = project.description
+        setLabels("minecraft", "mc", "modding", "forge", "library", "wizardry")
+        setLicenses("LGPL-3.0")
+    })
+}
+
+artifactory {
+    setContextUrl("https://oss.jfrog.org")
+    publish(delegateClosureOf<PublisherConfig> {
+        repository(delegateClosureOf<GroovyObject> {
+            val targetRepoKey = if (project.version.toString().endsWith("-SNAPSHOT")) "oss-snapshot-local" else "oss-release-local"
+            setProperty("repoKey", targetRepoKey)
+            setProperty("username", prop("bintrayUser"))
+            setProperty("password", prop("bintrayApiKey"))
+            setProperty("maven", true)
+        })
+        defaults(delegateClosureOf<GroovyObject> {
+            invokeMethod("publications", publication.name)
+        })
+    })
+}
+
+
+
+fun String.execute(wd: String? = null, ignoreExitCode: Boolean = false): String =
+        split(" ").execute(wd, ignoreExitCode)
+
+fun List<String>.execute(wd: String? = null, ignoreExitCode: Boolean = false): String {
+    val process = ProcessBuilder(this)
+            .also { pb -> wd?.let { pb.directory(File(it)) } }
+            .start()
+    var result = ""
+    val errReader = thread { process.errorStream.bufferedReader().forEachLine { logger.error(it) } }
+    val outReader = thread {
+        process.inputStream.bufferedReader().forEachLine { line ->
+            logger.debug(line)
+            result += line
+        }
+    }
+    process.waitFor()
+    outReader.join()
+    errReader.join()
+    if (process.exitValue() != 0 && !ignoreExitCode) error("Non-zero exit status for `$this`")
+    return result
+}
+
+fun hasProp(name: String): Boolean = extra.has(name)
+
+fun prop(name: String): String? = extra.properties[name] as? String
+
+fun DependencyHandler.coroutine(module: String): Any =
+        "org.jetbrains.kotlinx:kotlinx-coroutines-$module:${prop("coroutinesVersion")}"

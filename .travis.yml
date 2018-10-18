@@ -1,20 +1,20 @@
 language: java
 install:
-  - ./gradlew setupCIWorkspace
   -  sed -i 's:^[ \t]*build_number[ \t]*=\([ \t]*.*\)$:build_number=\1-SNAPSHOT:' gradle.properties
+  - ./gradlew setupCIWorkspace --daemon
 script:
-  - ./gradlew build
+  - ./gradlew build -Pbranch=$TRAVIS_BRANCH --daemon
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-    - $HOME/.gradle
-    - .gradle
-    - gradle
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
 jdk:
-  - oraclejdk8
+  - openjdk8
 after_success:
-  - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./gradlew uploadArchives; fi
+  - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./gradlew publish artifactoryPublish -Pbranch=$TRAVIS_BRANCH -PmavenPassword=$REPO_PWD -PbintrayUser=$BINTRAY_USER -PbintrayApiKey=$BINTRAY_KEY --daemon; fi
   - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
   - chmod +x send.sh
   - ./send.sh success $WEBHOOK_URL
