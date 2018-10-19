@@ -1,7 +1,9 @@
 package com.teamwizardry.librarianlib.features.sprite
 
+import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.texture.PngSizeInfo
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -67,8 +69,24 @@ class Texture(
     fun loadSpriteData() {
         val oldSprites = this.sprites
         this.sprites = mutableMapOf()
-        this.width = 16
-        this.height = 16
+
+        val pngSizeInfo = PngSizeInfo.makeFromResource(Minecraft().resourceManager.getResource(loc))
+        var pngWidth = pngSizeInfo.pngWidth
+        var pngHeight = pngSizeInfo.pngHeight
+
+        if (width > 0 && height <= 0) {
+            pngWidth = width
+            pngHeight = pngHeight * width / pngWidth
+        } else if (width <= 0 && height > 0) {
+            pngHeight = height
+            pngWidth = pngWidth * height / pngHeight
+        } else if (width > 0 && height > 0) {
+            pngWidth = width
+            pngHeight = height
+        }
+
+        this.width = pngWidth
+        this.height = pngHeight
         try {
             val section = Minecraft.getMinecraft().resourceManager.getResource(loc).getMetadata<SpritesMetadataSection>("spritesheet")
             this.section = section
@@ -80,17 +98,16 @@ class Texture(
                         val oldSprite = oldSprites.get(def.name)
                         if (oldSprite != null) {
                             oldSprite.init(def.u, def.v, def.w, def.h, def.frames, def.offsetU, def.offsetV)
-                            sprites.put(def.name, oldSprite)
+                            sprites[def.name] = oldSprite
                         }
                     } else {
-                        sprites.put(def.name, Sprite(this, def.u, def.v, def.w, def.h, def.frames, def.offsetU, def.offsetV))
+                        sprites[def.name] = Sprite(this, def.u, def.v, def.w, def.h, def.frames, def.offsetU, def.offsetV)
                     }
                 }
             }
         } catch (e: IOException) {
             e.printStackTrace()
         }
-
     }
 
     /**
@@ -101,7 +118,7 @@ class Texture(
         if (s == null) {
             // create a new one each time so on reload it'll exist and be replaced with a real one
             s = Sprite(this, 0, 0, this.width, this.height, IntArray(0), 0, 0)
-            sprites.put(name, s)
+            sprites[name] = s
         }
 
         s.width = w
