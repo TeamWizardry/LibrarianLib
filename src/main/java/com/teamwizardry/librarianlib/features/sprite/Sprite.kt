@@ -1,8 +1,12 @@
 package com.teamwizardry.librarianlib.features.sprite
 
+import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import net.minecraft.client.renderer.texture.PngSizeInfo
+
+
 
 /**
  * This class represents a section of a [Texture]
@@ -62,14 +66,33 @@ open class Sprite : ISprite {
     }
 
     @Suppress("LeakingThis")
-    constructor(loc: ResourceLocation) {
+    @JvmOverloads constructor(
+            loc: ResourceLocation,
+            width: Int = 0,
+            height: Int = 0) {
         this.tex = Texture(loc)
+
+        val pngSizeInfo = PngSizeInfo.makeFromResource(Minecraft().resourceManager.getResource(loc))
+        var pngWidth = pngSizeInfo.pngWidth
+        var pngHeight = pngSizeInfo.pngHeight
+
+        if (width > 0 && height <= 0) {
+            pngWidth = width
+            pngHeight = pngHeight * width / pngWidth
+        } else if (width <= 0 && height > 0) {
+            pngHeight = height
+            pngWidth = pngWidth * height / pngHeight
+        } else if (width > 0 && height > 0) {
+            pngWidth = width
+            pngHeight = height
+        }
+
         this.u = 0
         this.v = 0
-        this.uvWidth = 16
-        this.uvHeight = 16
-        this.width = 16
-        this.height = 16
+        this.uvWidth = pngWidth
+        this.uvHeight = pngHeight
+        this.width = pngWidth
+        this.height = pngHeight
         this.frames = IntArray(0)
     }
 

@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.features.animator
 
+import net.minecraft.util.math.MathHelper
+
 
 /**
  * An easing function. Used to make more natural transitions.
@@ -160,7 +162,7 @@ abstract class Easing {
                 val a = c
                 val s = p / 4
                 t -= 1
-                return -(a * Math.pow(2.0, (10 * t).toDouble()).toFloat() * Math.sin((t * d - s) * (2 * Math.PI.toFloat()) / p.toDouble()).toFloat()) + b
+                return -(a * Math.pow(2.0, (10 * t).toDouble()).toFloat() * MathHelper.sin((t * d - s) * (2 * Math.PI.toFloat()) / p)) + b
             }
         }
         /** http://easings.net/#easeOutElastic */
@@ -173,7 +175,7 @@ abstract class Easing {
                 val p = d * .3f
                 val a = c
                 val s = p / 4
-                return a * Math.pow(2.0, (-10 * t).toDouble()).toFloat() * Math.sin((t * d - s) * (2 * Math.PI.toFloat()) / p.toDouble()).toFloat() + c + b
+                return a * Math.pow(2.0, (-10 * t).toDouble()).toFloat() * MathHelper.sin((t * d - s) * (2 * Math.PI.toFloat()) / p) + c + b
             }
         }
         /** http://easings.net/#easeInOutElastic */
@@ -187,9 +189,9 @@ abstract class Easing {
                 val a = c
                 val s = p / 4
                 t -= 1
-                if (t < 1) return -.5f * (a * Math.pow(2.0, (10 * t).toDouble()).toFloat() * Math.sin((t * d - s) * (2 * Math.PI.toFloat()) / p.toDouble()).toFloat()) + b
+                if (t < 1) return -.5f * (a * Math.pow(2.0, (10 * t).toDouble()).toFloat() * MathHelper.sin((t * d - s) * (2 * Math.PI.toFloat()) / p)) + b
                 t -= 1
-                return a * Math.pow(2.0, (-10 * t).toDouble()).toFloat() * Math.sin((t * d - s) * (2 * Math.PI.toFloat()) / p.toDouble()).toFloat() * .5f + c + b
+                return a * Math.pow(2.0, (-10 * t).toDouble()).toFloat() * MathHelper.sin((t * d - s) * (2 * Math.PI.toFloat()) / p) * .5f + c + b
             }
         }
         /** http://easings.net/#easeInBounce */

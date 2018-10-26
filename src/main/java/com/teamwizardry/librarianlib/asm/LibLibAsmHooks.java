@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.asm;
 
 import com.teamwizardry.librarianlib.core.client.GlowingHandler;
 import com.teamwizardry.librarianlib.core.client.RenderHookHandler;
+import com.teamwizardry.librarianlib.features.forgeevents.EntityPostUpdateEvent;
 import com.teamwizardry.librarianlib.features.forgeevents.EntityUpdateEvent;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BlockFluidRenderer;
@@ -10,6 +11,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -61,7 +63,25 @@ public class LibLibAsmHooks {
         return GlowingHandler.getPotionGlow();
     }
 
-    public static void updateHook(Entity entity) {
-        MinecraftForge.EVENT_BUS.post(new EntityUpdateEvent(entity));
+    public static boolean preUpdate(Entity entity) {
+        if (entity instanceof EntityPlayerMP)
+            return false;
+
+        return MinecraftForge.EVENT_BUS.post(new EntityUpdateEvent(entity));
+    }
+
+    public static void postUpdate(Entity entity) {
+        if (entity instanceof EntityPlayerMP)
+            return;
+
+        MinecraftForge.EVENT_BUS.post(new EntityPostUpdateEvent(entity));
+    }
+
+    public static boolean preUpdateMP(EntityPlayerMP entity) {
+        return MinecraftForge.EVENT_BUS.post(new EntityUpdateEvent(entity));
+    }
+
+    public static void postUpdateMP(EntityPlayerMP entity) {
+        MinecraftForge.EVENT_BUS.post(new EntityPostUpdateEvent(entity));
     }
 }

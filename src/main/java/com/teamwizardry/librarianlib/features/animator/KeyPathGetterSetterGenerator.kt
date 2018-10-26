@@ -2,6 +2,8 @@ package com.teamwizardry.librarianlib.features.animator
 
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.saving.ArrayReflect
+import io.netty.util.internal.StringUtil
+import org.apache.commons.lang3.StringUtils
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
@@ -18,10 +20,19 @@ import kotlin.reflect.jvm.javaSetter
  *
  * best regards,
  * - everyone who has seen this code
+ *
+ * Demoniaque: HE'S SERIOUS AND I DIDN'T BELIEVE HIM. I TRIED. PLEASE DON'T LOOK AT IT.
  */
 
 data class KeyPathAccessor(val clazz: Class<Any>, val getter: (target: Any) -> Any?, val setter: (target: Any, value: Any?) -> Unit, val involvement: (target: Any, check: Any) -> Boolean)
 
+/**
+ * Foo.someField.anArrayField[3]
+ * list:
+ *  - class = foo, accessing = someField
+ *  - class = someField, accessing = anArrayField,
+ *  - class = anArrayField, accessing = [3]
+ */
 private fun getFieldList(target: Class<*>, keyPath: Array<String>): FieldListItem? {
     var firstItem: FieldListItem? = null
     var currentTarget = target
@@ -95,19 +106,22 @@ private class FieldListItem(val target: Class<*>, val name: String) {
 
     init {
         if (target.isArray) {
-            accessorOfChoice = subscriptRegex.find(name)?.groupValues?.getOrNull(1)?.toIntOrNull() ?:
-                    throw IllegalArgumentException("Name `$name` not a valid subscript string! (valid format: `\\[\\d+\\]`)")
+            // if (name.startsWith("[") && name.endsWith("]"))
+            //     accessorOfChoice = StringUtils.substringBetween(name, "[", "]").toIntOrNull()
+            //             ?: throw IllegalArgumentException("Name `$name` not a valid subscript string! (valid format: `\\[\\d+]`)")
+            // else throw IllegalArgumentException("Name `$name` not a valid subscript string! (valid format: `\\[\\d+]`)")
+            accessorOfChoice = subscriptRegex.find(name)?.groupValues?.getOrNull(1)?.toIntOrNull() ?: throw IllegalArgumentException("Name `$name` not a valid subscript string! (valid format: `\\[\\d+]`)")
             fieldClass = target.componentType
         } else {
-            val property = target.kotlin.getDeclaredPropertyRecursive(name) ?:
-                    throw IllegalArgumentException("Couldn't find a property `$name` in class `${target.canonicalName}` or any of its superclasses")
+            val property = target.kotlin.getDeclaredPropertyRecursive(name)
+                    ?: throw IllegalArgumentException("Couldn't find a property `$name` in class `${target.canonicalName}` or any of its superclasses")
             fieldClass = (property.returnType.classifier as KClass<*>).java
 
             accessorOfChoice = if (property.javaGetter != null) {
                 property
             } else {
-                property.javaField ?:
-                        throw IllegalArgumentException("Property `$name` in class `${target.canonicalName}` has no getter and no backing field")
+                property.javaField
+                        ?: throw IllegalArgumentException("Property `$name` in class `${target.canonicalName}` has no getter and no backing field")
             }
         }
     }
@@ -135,7 +149,8 @@ private class FieldListItem(val target: Class<*>, val name: String) {
                 getter = { t -> m(t, emptyArray()) }
             }
             is Int -> getter = { t -> ArrayReflect.get(t, accessorOfChoice) }
-            else -> throw IllegalStateException("accessorOfChoice was neither a Field nor a KProperty, it was `${(accessorOfChoice as Any?)?.javaClass?.canonicalName ?: "null"}`")
+            else -> throw IllegalStateException("accessorOfChoice was neither a Field nor a KProperty, it was `${(accessorOfChoice as Any?)?.javaClass?.canonicalName
+                    ?: "null"}`")
         }
 
         val childGetter = child?.createRootGetter()
@@ -165,47 +180,52 @@ private class FieldListItem(val target: Class<*>, val name: String) {
                 getter = { t -> m(t, emptyArray()) }
             }
             is Int -> getter = { t -> ArrayReflect.get(t, accessorOfChoice) }
-            else -> throw IllegalStateException("accessorOfChoice was neither a Field nor a KProperty, it was `${(accessorOfChoice as Any?)?.javaClass?.canonicalName ?: "null"}`")
+            else -> throw IllegalStateException("accessorOfChoice was neither a Field nor a KProperty, it was `${(accessorOfChoice as Any?)?.javaClass?.canonicalName
+                    ?: "null"}`")
         }
 
         val childSetter = child?.createRootSetter() ?: { _, finalValue -> finalValue }
 
         val setter by lazy<(target: Any, value: Any?) -> Any?> {
             if (accessorOfChoice is Int) {
-                return@lazy { t, v -> ArrayReflect.set(t, accessorOfChoice, v) }
+                return@lazy m@{ t, v ->
+                    ArrayReflect.set(t, accessorOfChoice, v)
+                    return@m NULL_OBJECT
+                }
             } else if (
-            (accessorOfChoice as? KMutableProperty<*>)?.javaSetter?.modifiers?.let { Modifier.isPublic(it) } == true ||
+                    (accessorOfChoice as? KMutableProperty<*>)?.javaSetter?.modifiers?.let { Modifier.isPublic(it) } == true ||
                     (accessorOfChoice is Field && !Modifier.isFinal(accessorOfChoice.modifiers))
-                           ) {
+            ) {
                 when (accessorOfChoice) {
                     is Field -> {
                         val m = MethodHandleHelper.wrapperForSetter<Any>(accessorOfChoice)
-                        return@lazy m@ { t, v ->
+                        return@lazy m@{ t, v ->
                             m(t, v)
                             return@m NULL_OBJECT
                         }
                     }
                     is KMutableProperty<*> -> {
                         val m = MethodHandleHelper.wrapperForMethod<Any>(accessorOfChoice.javaSetter!!)
-                        return@lazy m@ { t, v ->
+                        return@lazy m@{ t, v ->
                             m(t, arrayOf(v))
                             return@m NULL_OBJECT
                         }
                     }
-                    else -> throw IllegalStateException("accessorOfChoice was neither a Field nor a KProperty, it was `${(accessorOfChoice as Any?)?.javaClass?.canonicalName ?: "null"}`")
+                    else -> throw IllegalStateException("accessorOfChoice was neither a Field nor a KProperty, it was `${(accessorOfChoice as Any?)?.javaClass?.canonicalName
+                            ?: "null"}`")
                 }
             } else {
                 val mutator = ImmutableFieldMutatorHandler.getMutator(target, name)
                         ?: throw IllegalAccessException("Cannot set the immutable field `$name` without a mutator")
 
-                return@lazy m@ { t, v ->
+                return@lazy m@{ t, v ->
                     return@m mutator.mutate(t, v)
                 }
             }
 
         }
 
-        return ret@ { target, finalValue ->
+        return ret@{ target, finalValue ->
             val fieldValue = getter(target)!!
             val childValue = childSetter(fieldValue, finalValue)
 
@@ -236,7 +256,8 @@ private class FieldListItem(val target: Class<*>, val name: String) {
                 getter = { t -> m(t, emptyArray()) }
             }
             is Int -> getter = { t -> ArrayReflect.get(t, accessorOfChoice) }
-            else -> throw IllegalStateException("accessorOfChoice was neither a Field nor a KProperty, it was `${(accessorOfChoice as Any?)?.javaClass?.canonicalName ?: "null"}`")
+            else -> throw IllegalStateException("accessorOfChoice was neither a Field nor a KProperty, it was `${(accessorOfChoice as Any?)?.javaClass?.canonicalName
+                    ?: "null"}`")
         }
 
         val childGetter = child?.createInvolvementChecker()
@@ -244,7 +265,7 @@ private class FieldListItem(val target: Class<*>, val name: String) {
         if (childGetter == null) {
             return { t, c -> getter(t) === c }
         } else {
-            return ret@ { t, c ->
+            return ret@{ t, c ->
                 val us = getter(t) ?: return@ret false
                 us === c || childGetter(us, c)
             }

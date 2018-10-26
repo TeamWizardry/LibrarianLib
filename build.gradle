@@ -31,8 +31,11 @@ allprojects {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-version = "$mod_version.${build_number}x"
-archivesBaseName = mod_name + "-" + mc_version
+version = "$mod_version.$build_number"
+def branchSuffix = System.getenv('TRAVIS_BRANCH') ?: ''
+if (mc_version.contains(branchSuffix)) branchSuffix = ''
+if (!branchSuffix.empty) branchSuffix = '-' + branchSuffix
+archivesBaseName = mod_name + branchSuffix + '-' + mc_version
 
 repositories {
     jcenter()
@@ -93,6 +96,8 @@ configurations {
 
 dependencies {
     compile "net.shadowfacts:Forgelin:1.6.0"
+    required "org.magicwerk:brownies-collections:0.9.13"
+    compile "org.magicwerk:brownies-collections:0.9.13" // Otherwise it doesn't get added to dep list
 }
 
 compileKotlin {
@@ -150,8 +155,7 @@ idea {
 
         sourceDirs += file('src/api/java')
         sourceDirs += file('src/test/java')
-        sourceDirs += file('src/test/resources')
-        setTestSourceDirs(new HashSet<File>())
+
     }
     project {
         languageLevel = '1.8'
@@ -209,7 +213,7 @@ uploadArchives {
         if (System.getenv('REPO_PWD') != null) {
             mavenDeployer {
                 repository(url: "http://maven.bluexin.be/repository/" + (((String) project.version).contains("SNAPSHOT") ? "snapshots" : "releases") + "/") {
-                    authentication(userName: "travis", password: System.getenv('REPO_PWD'))
+                    authentication(userName: "CI", password: System.getenv('REPO_PWD'))
                 }
             }
         } else {
@@ -247,6 +251,21 @@ uploadArchives {
                             developer {
                                 id 'eladkay'
                                 name 'eladkay'
+                                roles { role 'developer' }
+                            }
+                            developer {
+                                id 'bluexin'
+                                name 'bluexin'
+                                roles { role 'developer' }
+                            }
+                            developer {
+                                id 'Demoniaque'
+                                name 'Demoniaque'
+                                roles { role 'developer' }
+                            }
+                            developer {
+                                id 'InsomniaKitten'
+                                name 'InsomniaKitten'
                                 roles { role 'developer' }
                             }
                         }

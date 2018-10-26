@@ -276,7 +276,7 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
         return mutableListOf(ItemStack(this, 1, getMetaFromState(world.getBlockState(pos).withProperty(DECAYABLE, false).withProperty(CHECK_DECAY, false))))
     }
 
-    override fun getPickBlock(state: IBlockState, target: RayTraceResult, world: World, pos: BlockPos, player: EntityPlayer): ItemStack {
+    override fun getPickBlock(state: IBlockState, target: RayTraceResult, world: World, pos: BlockPos, player: EntityPlayer?): ItemStack {
         return ItemStack(this, 1, getMetaFromState(state.withProperty(DECAYABLE, false).withProperty(CHECK_DECAY, false)))
     }
 
