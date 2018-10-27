@@ -24,7 +24,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 @SideOnly(Side.CLIENT)
-class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int, width: Int, height: Int) : GuiComponent(x, y, width, height) {
+open class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int, width: Int, height: Int) : GuiComponent(x, y, width, height) {
 
     constructor(x: Int, y: Int, width: Int, height: Int) : this(Minecraft.getMinecraft().fontRenderer, x, y, width, height)
 
@@ -49,12 +49,14 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
     val autoFocus_im: IMValueBoolean = IMValueBoolean(false)
     val useShadow_im: IMValueBoolean = IMValueBoolean(true)
     val useVanillaFilter_im: IMValueBoolean = IMValueBoolean(true)
+    val useUnderscoreCursor_im: IMValueBoolean = IMValueBoolean(true)
 
     var maxStringLength: Int by maxStringLength_im
     var canLoseFocus: Boolean by canLoseFocus_im
     var autoFocus: Boolean by autoFocus_im
     var useShadow: Boolean by useShadow_im
     var useVanillaFilter: Boolean by useVanillaFilter_im
+    var useUnderscoreCursor: Boolean by useUnderscoreCursor_im
 
     /**
      * Callback to filter input.
@@ -386,7 +388,7 @@ class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int,
                 offset = this.drawString(toCursor, offset.toFloat(), y.toFloat(), textColor)
             }
 
-            val cursorInText = this.cursorPosition < this.text.length || this.text.length >= max
+            val cursorInText = !this.useUnderscoreCursor || this.cursorPosition < this.text.length || this.text.length >= max
             var unselectedBound = offset
 
             if (!cursorVisible)
