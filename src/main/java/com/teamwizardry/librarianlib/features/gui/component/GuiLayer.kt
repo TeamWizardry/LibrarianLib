@@ -126,28 +126,28 @@ open class GuiLayer private constructor(
     open fun layoutChildren() {}
 
     /**
-     * Calls [layoutChildren] if [needsLayout] is true, then calls [layoutLayerIfNeeded] on this layer's children
+     * Calls [layoutChildren] if [needsLayout] is true, then calls [runLayoutIfNeeded] on this layer's children
      * regardless of [needsLayout]'s value. [needsLayout] is reset to false after [layoutChildren] completes,
      * meaning size changes in that method won't cause a layout pass every frame.
      */
-    open fun layoutLayerIfNeeded() {
+    open fun runLayoutIfNeeded() {
         if(needsLayout) {
             layoutChildren()
             BUS.fire(GuiLayerEvents.LayoutChildren())
             needsLayout = false
         }
-        children.forEach { it.layoutLayerIfNeeded() }
+        children.forEach { it.runLayoutIfNeeded() }
     }
 
     /**
-     * Calls [layoutChildren] then calls [layoutLayer] on this layer's children. [needsLayout] is reset to false
+     * Calls [layoutChildren] then calls [runLayout] on this layer's children. [needsLayout] is reset to false
      * after [layoutChildren] completes, meaning size changes in that method won't cause a layout pass every frame.
      */
-    open fun layoutLayer() {
+    open fun runLayout() {
         layoutChildren()
         BUS.fire(GuiLayerEvents.LayoutChildren())
         needsLayout = false
-        children.forEach { it.layoutLayer() }
+        children.forEach { it.runLayout() }
     }
 
     //region - Base component stuff
@@ -203,7 +203,7 @@ open class GuiLayer private constructor(
         StencilUtil.clear()
         GL11.glEnable(GL11.GL_STENCIL_TEST)
         cleanUpChildren()
-        layoutLayerIfNeeded()
+        runLayoutIfNeeded()
         updateMouseBeforeRender(mousePos)
         geometry.calculateMouseOver(mousePos)
         preFrame()

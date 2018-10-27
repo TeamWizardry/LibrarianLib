@@ -20,58 +20,36 @@ open class Sprite : ISprite {
      */
     var tex: Texture
         protected set
-    /**
-     * The minimum U coordinate in pixels
-     */
-    var u: Int = 0
-        protected set
-    /**
-     * The minimum V coordinate in pixels
-     */
-    var v: Int = 0
-        protected set
-    /**
-     * The width in pixels
-     */
-    var uvWidth: Int = 0
-        protected set
-    /**
-     * The height in pixels
-     */
-    var uvHeight: Int = 0
-        protected set
-    protected var frames: IntArray = IntArray(0)
-    protected var offsetU: Int = 0
-    protected var offsetV: Int = 0
+    protected var def: SpriteDefinition = SpriteDefinition("")
+
+    override val hardScaleU: Boolean
+        get() = def.hardScaleU
+
+    override val hardScaleV: Boolean
+        get() = def.hardScaleV
+
     override val frameCount: Int
-        get() = frames.size
+        get() = def.frames.size
 
-    /**
-     * The width on screen of the sprite.
+    override val width: Int
+        get() = def.w / tex.logicalScale
 
-     * Public for easy and concise access. Set to 1 by default.
-     */
-    override var width = 1
+    override val height: Int
+        get() = def.h / tex.logicalScale
 
-    /**
-     * The height on screen of the sprite.
+    override val uSize: Float
+        get() = def.w / tex.width.toFloat()
+    override val vSize: Float
+        get() = def.h / tex.height.toFloat()
 
-     * Public for easy and concise access. Set to 1 by default.
-     */
-    override var height = 1
-
-    constructor(tex: Texture, u: Int, v: Int, width: Int, height: Int, frames: IntArray, offsetU: Int, offsetV: Int) {
+    constructor(tex: Texture, def: SpriteDefinition) {
         this.tex = tex
-        init(u, v, width, height, frames, offsetU, offsetV)
+        init(def)
     }
 
     @Suppress("LeakingThis")
     @JvmOverloads constructor(
-            loc: ResourceLocation,
-            width: Int = 0,
-            height: Int = 0) {
-        this.tex = Texture(loc)
-
+            loc: ResourceLocation, width: Int = 0, height: Int = 0) {
         val pngSizeInfo = PngSizeInfo.makeFromResource(Minecraft().resourceManager.getResource(loc))
         var pngWidth = pngSizeInfo.pngWidth
         var pngHeight = pngSizeInfo.pngHeight
@@ -87,13 +65,13 @@ open class Sprite : ISprite {
             pngHeight = height
         }
 
-        this.u = 0
-        this.v = 0
-        this.uvWidth = pngWidth
-        this.uvHeight = pngHeight
-        this.width = pngWidth
-        this.height = pngHeight
-        this.frames = IntArray(0)
+        this.tex = Texture(loc, pngWidth, pngHeight)
+
+        def.u = 0
+        def.v = 0
+        def.w = pngWidth
+        def.h = pngHeight
+        def.frames = IntArray(0)
     }
 
     /**
@@ -101,52 +79,66 @@ open class Sprite : ISprite {
 
      * --Package private--
      */
-    internal fun init(u: Int, v: Int, width: Int, height: Int, frames: IntArray, offsetU: Int, offsetV: Int) {
-        this.u = u
-        this.v = v
-        this.uvWidth = width
-        this.uvHeight = height
-        this.offsetU = offsetU
-        this.offsetV = offsetV
-        this.frames = frames
+    internal fun init(def: SpriteDefinition) {
+        this.def = def
     }
+
+    private fun frameMultiplier(animFrames: Int) = if (def.frames.isEmpty()) 0 else def.frames[animFrames % def.frames.size]
 
     /**
      * The minimum U coordinate (0-1)
      */
     override fun minU(animFrames: Int): Float {
-        return (u + offsetU * if (frames.isEmpty()) 0 else frames[animFrames % frames.size]).toFloat() / tex.width.toFloat()
+        return (def.u + def.offsetU * frameMultiplier(animFrames)).toFloat() / tex.width.toFloat()
     }
 
     /**
      * The minimum V coordinate (0-1)
      */
     override fun minV(animFrames: Int): Float {
-        return (v + offsetV * if (frames.isEmpty()) 0 else frames[animFrames % frames.size]).toFloat() / tex.height.toFloat()
+        return (def.v + def.offsetV * frameMultiplier(animFrames)).toFloat() / tex.height.toFloat()
     }
 
     /**
      * The maximum U coordinate (0-1)
      */
     override fun maxU(animFrames: Int): Float {
-        return (u + uvWidth + offsetU * if (frames.isEmpty()) 0 else frames[animFrames % frames.size]).toFloat() / tex.width.toFloat()
+        return (def.u + def.w + def.offsetU * frameMultiplier(animFrames)).toFloat() / tex.width.toFloat()
     }
 
     /**
      * The maximum V coordinate (0-1)
      */
     override fun maxV(animFrames: Int): Float {
-        return (v + uvHeight + offsetV * if (frames.isEmpty()) 0 else frames[animFrames % frames.size]).toFloat() / tex.height.toFloat()
+        return (def.v + def.h + def.offsetV * frameMultiplier(animFrames)).toFloat() / tex.height.toFloat()
     }
 
-    fun getSubSprite(u: Int, v: Int, width: Int, height: Int): Sprite {
-        val uScale = uvWidth.toFloat() / this.width.toFloat()
-        val vScale = uvHeight.toFloat() / this.height.toFloat()
-        val s = Sprite(this.tex, this.u + (u * uScale).toInt(), this.v + (v * vScale).toInt(), (width * uScale).toInt(), (height * vScale).toInt(), frames, offsetU, offsetV)
-        s.width = width
-        s.height = height
-        return s
-    }
+    override val minUCap: Float
+        get() = def.minUCap.toFloat() / def.w
+
+    override val minVCap: Float
+        get() = def.minVCap.toFloat() / def.h
+
+    override val maxUCap: Float
+        get() = def.maxUCap.toFloat() / def.w
+
+    override val maxVCap: Float
+        get() = def.maxVCap.toFloat() / def.h
 
     override fun bind() = tex.bind()
+}
+
+class SpriteDefinition(
+    var name: String,
+    var u: Int, var v: Int, var w: Int, var h: Int,
+    var frames: IntArray, var offsetU: Int, var offsetV: Int,
+    var minUCap: Int, var minVCap: Int, var maxUCap: Int, var maxVCap: Int,
+    var hardScaleU: Boolean, var hardScaleV: Boolean) {
+    constructor(name: String) : this(
+        name,
+        0, 0, 0, 0,
+        intArrayOf(), 0, 0,
+        0, 0, 0, 0,
+        false, false
+    )
 }

@@ -5,10 +5,9 @@ import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 
 @SideOnly(Side.CLIENT)
-class SpritesMetadataSection(var width: Int, var height: Int, var definitions: List<SpritesMetadataSection.SpriteDefinition>) : IMetadataSection {
-    class SpriteDefinition(var name: String, var u: Int, var v: Int, var w: Int, var h: Int, var frames: IntArray, var offsetU: Int, var offsetV: Int)
-
+class SpritesMetadataSection(var width: Int, var height: Int, var definitions: List<SpriteDefinition>) : IMetadataSection {
     companion object {
         var registered = false
     }
 }
+

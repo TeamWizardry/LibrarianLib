@@ -63,15 +63,15 @@ open class GuiPoweredMachine(inventorySlotsIn: PoweredMachineContainer) : GuiCon
     }
 
     companion object {
-        private val TEX = Texture(ResourceLocation("librarianlibtest", "textures/guis/gui_powered_machine.png"))
-        private val BG = TEX.getSprite("bg", 176, 166)
+        private val TEX = Texture(ResourceLocation("librarianlibtest", "textures/guis/gui_powered_machine.png"), 256, 256)
+        private val BG = TEX.getSprite("bg")
 
-        private val PROGRESS_BG = TEX.getSprite("progression_bg", 14, 10)
-        private val PROGRESS_FG = TEX.getSprite("progression_fg", 12, 8)
+        private val PROGRESS_BG = TEX.getSprite("progression_bg")
+        private val PROGRESS_FG = TEX.getSprite("progression_fg")
 
-        private val POWER_BG = TEX.getSprite("power_bg", 8, 56)
-        private val POWER_FG = TEX.getSprite("power_fg", 8, 56)
+        private val POWER_BG = TEX.getSprite("power_bg")
+        private val POWER_FG = TEX.getSprite("power_fg")
 
-        private val SLOT = TEX.getSprite("slot", 18, 18)
+        private val SLOT = TEX.getSprite("slot")
     }
 }

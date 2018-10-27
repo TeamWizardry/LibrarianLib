@@ -59,7 +59,7 @@ class ComponentSpriteProgressBar @JvmOverloads constructor(
         if (dir == ProgressDirection.X_POS || dir == ProgressDirection.X_NEG)
             w = (w * progress).toInt()
 
-        sp.drawClipped(animationTicks, 0f, 0f, w, h, dir == ProgressDirection.X_NEG, dir == ProgressDirection.Y_NEG)
+        sp.draw(animationTicks, 0f, 0f, w.toFloat(), h.toFloat())
         if (alwaysTop)
             GL11.glPopAttrib()
     }

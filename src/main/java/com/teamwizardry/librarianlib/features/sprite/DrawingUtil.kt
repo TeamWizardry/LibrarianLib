@@ -43,6 +43,24 @@ object DrawingUtil {
      */
     fun draw(sprite: ISprite, animFrames: Int, x: Float, y: Float, width: Float, height: Float) {
 
+        val tessellator = Tessellator.getInstance()
+        val vb = tessellator.buffer
+
+        if (!isDrawing)
+            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
+
+        if(!sprite.hardScaleU && !sprite.hardScaleV &&
+            sprite.minUCap == 0f && sprite.minVCap == 0f && sprite.maxUCap == 0f && sprite.maxVCap == 0f) {
+            drawSimple(sprite, animFrames, x, y, width, height)
+        } else {
+            drawComplex(sprite, animFrames, x, y, width, height)
+        }
+
+        if (!isDrawing)
+            tessellator.draw()
+    }
+
+    private fun drawSimple(sprite: ISprite, animFrames: Int, x: Float, y: Float, width: Float, height: Float) {
         val minX = x
         val minY = y
         val maxX = x + width
@@ -50,85 +68,93 @@ object DrawingUtil {
 
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
-
-        if (!isDrawing)
-            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
-
         vb.pos(minX.toDouble(), maxY.toDouble(), 0.0).tex(sprite.minU(animFrames).toDouble(), sprite.maxV(animFrames).toDouble()).endVertex()
         vb.pos(maxX.toDouble(), maxY.toDouble(), 0.0).tex(sprite.maxU(animFrames).toDouble(), sprite.maxV(animFrames).toDouble()).endVertex()
         vb.pos(maxX.toDouble(), minY.toDouble(), 0.0).tex(sprite.maxU(animFrames).toDouble(), sprite.minV(animFrames).toDouble()).endVertex()
         vb.pos(minX.toDouble(), minY.toDouble(), 0.0).tex(sprite.minU(animFrames).toDouble(), sprite.minV(animFrames).toDouble()).endVertex()
-
-        if (!isDrawing)
-            tessellator.draw()
     }
 
-    /**
-     * **!!! Use [Sprite.drawClipped] instead !!!**
+    private fun drawComplex(sprite: ISprite, animFrames: Int, x: Float, y: Float, width: Float, height: Float) {
 
-     *
-     * Draw a sprite at a location with the width and height specified by clipping or tiling instead of stretching/squishing
-     * @param sprite The sprite to draw
-     * *
-     * @param x The x position to draw at
-     * *
-     * @param y The y position to draw at
-     * *
-     * @param width The width to draw the sprite
-     * *
-     * @param height The height to draw the sprite
-     */
-    fun drawClipped(sprite: ISprite, animTicks: Int, x: Float, y: Float, width: Int, height: Int, reverseX: Boolean, reverseY: Boolean) {
-        if (!isDrawing) {
-            val hor = Math.ceil((width) / sprite.width.toDouble()).toInt()
-            val vert = Math.ceil(height / sprite.height.toDouble()).toInt()
+        val xSections = getSections(
+            size = sprite.width.toFloat(),
+            minCap = sprite.minUCap,
+            maxCap = sprite.maxUCap,
+            hard = sprite.hardScaleU,
+            targetPos = width
+        )
 
-            for (xIndex in 0 until hor) {
-                for (yIndex in 0 until vert) {
-                    val croppedX = (reverseX && xIndex == 0) || (!reverseX && xIndex == hor - 1)
-                    val croppedY = (reverseY && yIndex == 0) || (!reverseY && yIndex == vert - 1)
+        val ySections = getSections(
+            size = sprite.height.toFloat(),
+            minCap = sprite.minVCap,
+            maxCap = sprite.maxVCap,
+            hard = sprite.hardScaleV,
+            targetPos = height
+        )
 
-                    var cropW = if (croppedX) sprite.width - width % sprite.width else 0
-                    if (cropW == sprite.width) cropW = 0
-                    var cropH = if (croppedY) sprite.height - height % sprite.height else 0
-                    if (cropH == sprite.height) cropH = 0
+        val tessellator = Tessellator.getInstance()
+        val vb = tessellator.buffer
 
-                    val sX = x + xIndex * sprite.width
-                    val sY = y + yIndex * sprite.height
-
-                    val realX = (if (reverseX) sX + cropW + sprite.inWidth - sprite.height * hor else sX).toDouble()
-                    val realY = (if (reverseY) sY + cropH + sprite.inHeight - sprite.height * vert else sY).toDouble()
-
-                    val maxX = realX + if (croppedX) sprite.width - cropW else sprite.width
-                    val maxY = realY + if (croppedY) sprite.height - cropH else sprite.height
-
-                    var minU = sprite.minU(animTicks).toDouble()
-                    var minV = sprite.minV(animTicks).toDouble()
-
-                    var maxU = sprite.maxU(animTicks).toDouble()
-                    var maxV = sprite.maxV(animTicks).toDouble()
-
-                    val uSpan = maxU - minU
-                    val vSpan = maxV - minV
-
-                    if (croppedX) {
-                        if (reverseX) minU += uSpan * (cropW / sprite.width.toDouble())
-                        else maxU -= uSpan * (cropW / sprite.width.toDouble())
-                    }
-                    if (croppedY) {
-                        if (reverseY) minV += vSpan * (cropH / sprite.height.toDouble())
-                        else maxV -= vSpan * (cropH / sprite.height.toDouble())
-                    }
-
-                    val vb1 = Tessellator.getInstance().buffer
-                    startDrawingSession()
-                    vb1.pos(realX, realY, 0.0).tex(minU, minV).endVertex()
-                    vb1.pos(realX, maxY, 0.0).tex(minU, maxV).endVertex()
-                    vb1.pos(maxX, maxY, 0.0).tex(maxU, maxV).endVertex()
-                    vb1.pos(maxX, realY, 0.0).tex(maxU, minV).endVertex()
-                    endDrawingSession()
-                }
+        val spriteMinU = sprite.minU(animFrames)
+        val spriteMinV = sprite.minV(animFrames)
+        val spriteUSpan = sprite.maxU(animFrames) - spriteMinU
+        val spriteVSpan = sprite.maxV(animFrames) - spriteMinV
+        xSections.forEach { xSection ->
+            ySections.forEach { ySection ->
+                val minX = x + xSection.minPos
+                val minY = y + ySection.minPos
+                val maxX = x + xSection.maxPos
+                val maxY = y + ySection.maxPos
+                val minU = spriteMinU + xSection.minTex * spriteUSpan
+                val minV = spriteMinV + ySection.minTex * spriteVSpan
+                val maxU = spriteMinU + xSection.maxTex * spriteUSpan
+                val maxV = spriteMinV + ySection.maxTex * spriteVSpan
+                vb.pos(minX.toDouble(), maxY.toDouble(), 0.0).tex(minU.toDouble(), maxV.toDouble()).endVertex()
+                vb.pos(maxX.toDouble(), maxY.toDouble(), 0.0).tex(maxU.toDouble(), maxV.toDouble()).endVertex()
+                vb.pos(maxX.toDouble(), minY.toDouble(), 0.0).tex(maxU.toDouble(), minV.toDouble()).endVertex()
+                vb.pos(minX.toDouble(), minY.toDouble(), 0.0).tex(minU.toDouble(), minV.toDouble()).endVertex()
             }
         }
     }
+
+    private fun getSections(size: Float, minCap: Float, maxCap: Float, hard: Boolean, targetPos: Float): List<Section> {
+        val sections = mutableListOf<Section>()
+        if(!hard) {
+            if(minCap != 0f) {
+                sections.add(Section(0f, size * minCap, 0f, minCap))
+            }
+            sections.add(Section(size * minCap, targetPos - size * maxCap, minCap, 1-maxCap))
+            if(maxCap != 0f) {
+                sections.add(Section(targetPos - size * maxCap, targetPos, 1-maxCap, 1f))
+            }
+        } else {
+            val midSize = size * (1 - minCap - maxCap)
+
+            var pos = 0f
+            if(minCap != 0f) {
+                sections.add(Section(pos, size * minCap, 0f, minCap))
+                pos += size * minCap
+            }
+
+            // generate a bunch of middle sections
+            val endCapStart = targetPos - size * maxCap
+            do {
+                sections.add(Section(pos, pos + midSize, minCap, 1-maxCap))
+                pos += midSize
+            } while (pos < endCapStart)
+
+            // trim last section to required size
+            val cut = pos - endCapStart
+            sections.last().maxPos = cut
+            sections.last().maxTex = minCap + cut / size
+            pos = endCapStart
+
+            if(maxCap != 0f) {
+                sections.add(Section(pos, targetPos, 1-maxCap, 1f))
+            }
+        }
+        return sections
+    }
+
+    private class Section(var minPos: Float, var maxPos: Float, var minTex: Float, var maxTex: Float)
 }

@@ -76,49 +76,57 @@ interface ISprite {
     }
 
     /**
-     * Draws the sprite to the screen with a custom width and height by clipping or tiling instead of stretching/squashing
-     * @param x
-     * *
-     * @param y
-     * *
-     * @param width
-     * *
-     * @param height
-     */
-    fun drawClipped(animTicks: Int, x: Float, y: Float, width: Int, height: Int, reverseX: Boolean = false, reverseY: Boolean = false) {
-        DrawingUtil.drawClipped(this, animTicks, x, y, width, height, reverseX, reverseY)
-    }
-
-    fun drawClipped(animTicks: Int, x: Float, y: Float, width: Int, height: Int) =
-            drawClipped(animTicks, x, y, width, height, false, false)
-
-
-    /**
-     * Width of this sprite.
+     * The logical width of this sprite.
      */
     val width: Int
 
     /**
-     * Intended width for this sprite.
-     * Used for automatic repetition (instead of bad scaling).
-     */
-    val inWidth
-        get() = width
-
-    /**
-     * Height of this sprite.
+     * The logical height of this sprite.
      */
     val height: Int
 
     /**
-     * Intended height for this sprite.
-     * Used for automatic repetition (instead of bad scaling).
+     * The UV width of this sprite.
      */
-    val inHeight
-        get() = height
+    val uSize: Float
 
     /**
-     * Frames for this sprite (if animated).
+     * The UV height of this sprite.
+     */
+    val vSize: Float
+
+    /**
+     * Frames for this sprite (if animated). Must be >= 1
      */
     val frameCount: Int
+
+    /**
+     * The fraction of the sprite along the minimum U edge that should not be distorted when stretching the sprite.
+     */
+    val minUCap: Float
+
+    /**
+     * The fraction of the sprite along the minimum V edge that should not be distorted when stretching the sprite.
+     */
+    val minVCap: Float
+
+    /**
+     * The fraction of the sprite along the maximum U edge that should not be distorted when stretching the sprite.
+     */
+    val maxUCap: Float
+
+    /**
+     * The fraction of the sprite along the maximum V edge that should not be distorted when stretching the sprite.
+     */
+    val maxVCap: Float
+
+    /**
+     * Whether the sprite should be repeated/truncated rather than stretched/squished along the U axis
+     */
+    val hardScaleU: Boolean
+
+    /**
+     * Whether the sprite should be repeated/truncated rather than stretched/squished along the V axis
+     */
+    val hardScaleV: Boolean
 }

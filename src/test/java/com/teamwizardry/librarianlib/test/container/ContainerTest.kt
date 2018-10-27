@@ -60,9 +60,9 @@ class TestWrapper(te: TEContainer) : InventoryWrapper(te) {
 
 class GuiContainerTest(container: ContainerTest) : GuiContainerBase(container, 197, 166) {
     companion object {
-        val TEXTURE = Texture(ResourceLocation("librarianlibtest:textures/gui/containerTest.png"))
-        val bg = TEXTURE.getSprite("bg", 197, 166)
-        val slider = TEXTURE.getSprite("slider", 60, 62)
+        val TEXTURE = Texture(ResourceLocation("librarianlibtest:textures/gui/containerTest.png"), 256, 256)
+        val bg = TEXTURE.getSprite("bg")
+        val slider = TEXTURE.getSprite("slider")
     }
 
     init {

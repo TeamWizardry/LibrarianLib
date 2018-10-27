@@ -62,11 +62,11 @@ open class GuiFluidTank(inventorySlotsIn: FluidTankContainer) : GuiContainerBase
     }
 
     companion object {
-        private val TEX = Texture(ResourceLocation("librarianlibtest", "textures/guis/gui_powered_machine.png"))
-        private val BG = TEX.getSprite("bg", 176, 166)
+        private val TEX = Texture(ResourceLocation("librarianlibtest", "textures/guis/gui_powered_machine.png"), 256, 256)
+        private val BG = TEX.getSprite("bg")
 
-        private val FLUID_BG = TEX.getSprite("power_bg", 8, 56)
+        private val FLUID_BG = TEX.getSprite("power_bg")
 
-        private val SLOT = TEX.getSprite("slot", 18, 18)
+        private val SLOT = TEX.getSprite("slot")
     }
 }

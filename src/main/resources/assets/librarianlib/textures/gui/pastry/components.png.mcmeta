@@ -3,15 +3,15 @@
          "textureWidth": 256,
          "textureHeight": 256,
          "sprites": {
-             "background": [0,0,24,24],
-             "text_field": [24,0,24,11],
-             "button": [48,0,24,11],
-             "button_pressed": [72,0,24,11],
-             "option_spinner": [24,12,40,11],
-             "scrollbar_track_vertical": [64,12,7,16],
-             "scrollbar_track_horizontal": [72,16,16,7],
-             "scrollbar_handle_vertical": [56,24,5,5],
-             "scrollbar_handle_horizontal": [72,24,5,5],
+             "background": { "pos": [0,0,24,24], "caps": [3,3,3,3] },
+             "text_field": { "pos": [24,0,24,11], "caps": [2,0,2,0] },
+             "button": { "pos": [48,0,24,11], "caps": [2,0,2,0] },
+             "button_pressed": { "pos": [72,0,24,11], "caps": [2,0,2,0] },
+             "option_spinner": { "pos": [24,12,40,11], "caps": [13,0,13,0] },
+             "scrollbar_track_vertical": { "pos": [64,12,7,16], "caps": [0,2,0,2] },
+             "scrollbar_track_horizontal": { "pos": [72,16,16,7], "caps": [2,0,2,0] },
+             "scrollbar_handle_vertical": { "pos": [56,24,5,5], "caps": [0,2,0,1], "hardScale": [false,true] },
+             "scrollbar_handle_horizontal": { "pos": [72,24,5,5], "caps": [2,0,1,0], "hardScale": [true,false] },
              "radial_slider": [0,24,15,15],
              "radial_slider_pointer": [15,24,1,8],
              "checkbox_off": [16,24,7,7],
@@ -34,8 +34,8 @@
              "slider_tick_right": [49,39,7,1],
              "slider_tick_top": [48,40,1,7],
              "slider_tick_bottom": [49,41,1,7],
-             "slider_track_horizontal": [32,35,22,1],
-             "slider_track_vertical": [59,33,1,22]
+             "slider_track_horizontal": { "pos": [32,35,22,1], "caps": [1,0,1,0] },
+             "slider_track_vertical": { "pos": [59,33,1,22], "caps": [0,1,0,1] }
          }
      }
  }

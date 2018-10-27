@@ -32,6 +32,11 @@ import java.util.*
  *                 "pos": [&lt;u&gt;, &lt;v&gt;, &lt;w&gt;, &lt;h&gt;],
  *                 "frames": [0, 1, 2, 3, 2, 1],            // animation frame indices
  *                 "offset": [&lt;u&gt;, &lt;v&gt;]                     // default: [u, &lt;h&gt;] - uv offset per frame.
+ *             },
+ *             "&lt;sprite name&gt;": {
+ *                 "pos": [&lt;u&gt;, &lt;v&gt;, &lt;w&gt;, &lt;h&gt;],
+ *                 "caps": [&lt;minU&gt;, &lt;minV&gt;, &lt;maxU&gt;, &lt;maxV&gt;], // the number of pixels on each edge that should remain non-distorted when stretching the sprite
+ *                 "hardScale": [&lt;uAxis&gt;, &lt;vAxis&gt;] // default: [false, false] - whether the texture should be repeated/truncated rather than stretched/squished along each axis
  *             }
  *         }
  *     }
@@ -40,10 +45,21 @@ import java.util.*
  */
 @SideOnly(Side.CLIENT)
 class Texture(
-        /**
-         * The location of the texture
-         */
-        val loc: ResourceLocation) {
+    /**
+     * The location of the texture
+     */
+    val loc: ResourceLocation,
+    /**
+     * The logical width of this texture in pixels. Used to determine the scaling factor from texture pixels to
+     * logical pixels
+     */
+    val logicalWidth: Int,
+    /**
+     * The logical height of this texture in pixels. Used to determine the scaling factor from texture pixels to
+     * logical pixels
+     */
+    val logicalHeight: Int
+) {
     /**
      * The width of the texture in pixels
      */
@@ -54,6 +70,12 @@ class Texture(
      */
     var height: Int = 0
         private set
+
+    /**
+     * The ratio of texture pixels / logical pixels. Calculated by averaging the ratio on each axis.
+     */
+    val logicalScale: Int
+        get() = ((logicalWidth.toFloat() / width + logicalHeight.toFloat() / height) / 2).toInt()
     private var section: SpritesMetadataSection? = null
     private var sprites: MutableMap<String, Sprite> = mutableMapOf()
 
@@ -95,13 +117,13 @@ class Texture(
                 this.height = section.height
                 for (def in section.definitions) {
                     if (oldSprites.containsKey(def.name)) {
-                        val oldSprite = oldSprites.get(def.name)
+                        val oldSprite = oldSprites[def.name]
                         if (oldSprite != null) {
-                            oldSprite.init(def.u, def.v, def.w, def.h, def.frames, def.offsetU, def.offsetV)
+                            oldSprite.init(def)
                             sprites[def.name] = oldSprite
                         }
                     } else {
-                        sprites[def.name] = Sprite(this, def.u, def.v, def.w, def.h, def.frames, def.offsetU, def.offsetV)
+                        sprites[def.name] = Sprite(this, def)
                     }
                 }
             }
@@ -113,16 +135,14 @@ class Texture(
     /**
      * Gets the sprite with the specified name
      */
-    fun getSprite(name: String, w: Int, h: Int): Sprite {
+    fun getSprite(name: String): Sprite {
         var s: Sprite? = sprites[name]
         if (s == null) {
             // create a new one each time so on reload it'll exist and be replaced with a real one
-            s = Sprite(this, 0, 0, this.width, this.height, IntArray(0), 0, 0)
+            s = Sprite(this, SpriteDefinition(""))
             sprites[name] = s
         }
 
-        s.width = w
-        s.height = h
         return s
     }
 
