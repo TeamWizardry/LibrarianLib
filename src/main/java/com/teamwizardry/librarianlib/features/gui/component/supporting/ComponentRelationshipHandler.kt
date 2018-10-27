@@ -63,7 +63,7 @@ open class ComponentRelationshipHandler(private val component: GuiComponent) {
 
         if (component.parent != null) {
             if (component.parent == this.component) {
-                LibrarianLog.warn("You tried to add the component to the same parent twice. Why?")
+                LibrarianLog.error(Exception(), "You tried to add the component to the same parent twice. Why?")
                 return
             } else {
                 throw IllegalArgumentException("Component already had a parent")
