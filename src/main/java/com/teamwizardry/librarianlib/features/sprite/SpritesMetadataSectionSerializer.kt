@@ -51,20 +51,22 @@ class SpritesMetadataSectionSerializer : BaseMetadataSectionSerializer<SpritesMe
             def.h = JsonUtils.getInt(arr.get(3), "spritesheet.sprites.$name[3]")
 
             // frames
-            if (obj.get("frames").isJsonArray) {
-                arr = JsonUtils.getJsonArray(obj.get("frames"), "spritesheet.sprites.$name.frames")
-                def.frames = IntArray(arr.size()) {
-                    JsonUtils.getInt(arr.get(it), "spritesheet.sprites.$name.frames[$it]")
+            if (obj.get("frames") != null) {
+                if (obj.get("frames").isJsonArray) {
+                    arr = JsonUtils.getJsonArray(obj.get("frames"), "spritesheet.sprites.$name.frames")
+                    def.frames = IntArray(arr.size()) {
+                        JsonUtils.getInt(arr.get(it), "spritesheet.sprites.$name.frames[$it]")
+                    }
+                } else {
+                    def.frames = IntArray(JsonUtils.getInt(obj.get("frames"), "spritesheet.sprites.$name.frames")) { it }
                 }
-            } else {
-                def.frames = IntArray(JsonUtils.getInt(obj.get("frames"), "spritesheet.sprites.$name.frames")) { it }
+
+                val frameTime = JsonUtils.getInt(obj, "frameTime", 1)
+
+                def.frames = def.frames.flatMap { frame ->
+                    MutableList(frameTime) { frame }
+                }.toIntArray()
             }
-
-            val frameTime = JsonUtils.getInt(obj, "frameTime", 1)
-
-            def.frames = def.frames.flatMap { frame ->
-                MutableList(frameTime) { frame }
-            }.toIntArray()
 
             // animation offset
             def.offsetU = 0
@@ -97,7 +99,7 @@ class SpritesMetadataSectionSerializer : BaseMetadataSectionSerializer<SpritesMe
 
             return def
         } else {
-            throw JsonSyntaxException("expected spritesheet{sprites{$name to be either an object or array")
+            throw JsonSyntaxException("expected spritesheet.sprites.$name to be either an object or array")
         }
     }
 

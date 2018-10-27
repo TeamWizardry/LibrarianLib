@@ -138,10 +138,10 @@ object DrawingUtil {
 
             // generate a bunch of middle sections
             val endCapStart = targetPos - size * maxCap
-            do {
+            while (pos < endCapStart) {
                 sections.add(Section(pos, pos + midSize, minCap, 1-maxCap))
                 pos += midSize
-            } while (pos < endCapStart)
+            }
 
             // trim last section to required size
             val cut = pos - endCapStart

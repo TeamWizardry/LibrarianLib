@@ -137,7 +137,7 @@ class SpriteDefinition(
     constructor(name: String) : this(
         name,
         0, 0, 0, 0,
-        intArrayOf(), 0, 0,
+        intArrayOf(0), 0, 0,
         0, 0, 0, 0,
         false, false
     )
