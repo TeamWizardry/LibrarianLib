@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.features.kotlin.glColor
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.DrawingUtil
 import com.teamwizardry.librarianlib.features.sprite.Sprite
+import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
@@ -50,21 +51,17 @@ open class ComponentSpriteTiled @JvmOverloads constructor(protected var main: Sp
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
         val alwaysTop = !depth.getValue(this)
 
-        if (alwaysTop) {
-            // store the current depth function
-            GL11.glPushAttrib(GL11.GL_DEPTH_BUFFER_BIT)
 
-            // by using GL_ALWAYS instead of disabling depth it writes to the depth buffer
-            // imagine a mountain, that is the depth buffer. this causes the sprite to write
-            // it's value to the depth buffer, cutting a hole down wherever it's drawn.
-            GL11.glDepthFunc(GL11.GL_ALWAYS)
-        }
+
+        if (alwaysTop)
+            GlStateManager.depthFunc(GL11.GL_ALWAYS)
+
         color.getValue(this).glColor()
         main.tex.bind()
         draw(0f, 0f, size.xi, size.yi)
 
         if (alwaysTop)
-            GL11.glPopAttrib()
+            GlStateManager.depthFunc(GL11.GL_LESS)
     }
 
     fun draw(x: Float, y: Float, width: Int, height: Int) {

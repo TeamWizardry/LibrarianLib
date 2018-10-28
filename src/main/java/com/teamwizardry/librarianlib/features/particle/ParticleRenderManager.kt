@@ -30,8 +30,6 @@ object ParticleRenderManager {
         override fun setup() {
             Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE)
 
-            GlStateManager.pushAttrib()
-            GL11.glPushAttrib(GL11.GL_LIGHTING_BIT)
 //            GlStateManager.depthMask(false);
             GlStateManager.enableBlend()
             GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE)
@@ -53,8 +51,7 @@ object ParticleRenderManager {
             GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
             GlStateManager.disableBlend()
 //            GlStateManager.depthMask(true);
-            GL11.glPopAttrib()
-            GlStateManager.popAttrib()
+            GlStateManager.enableLighting()
         }
 
     }
@@ -64,8 +61,6 @@ object ParticleRenderManager {
         override fun setup() {
             Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE)
 
-            GlStateManager.pushAttrib()
-            GL11.glPushAttrib(GL11.GL_LIGHTING_BIT)
             GlStateManager.enableBlend()
             GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F)
             GlStateManager.disableLighting()
@@ -83,8 +78,7 @@ object ParticleRenderManager {
 
             GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
             GlStateManager.disableBlend()
-            GL11.glPopAttrib()
-            GlStateManager.popAttrib()
+            GlStateManager.enableLighting()
         }
 
     }
@@ -167,7 +161,6 @@ object ParticleRenderManager {
     fun render(event: RenderWorldLastEvent) {
         val profiler = Minecraft.getMinecraft().profiler
 
-        GL11.glPushAttrib(GL11.GL_LIGHTING_BIT)
         GlStateManager.depthMask(false)
         GlStateManager.enableBlend()
         GlStateManager.alphaFunc(GL11.GL_GREATER, 1 / 256f)
@@ -213,7 +206,7 @@ object ParticleRenderManager {
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
         GlStateManager.disableBlend()
         GlStateManager.depthMask(true)
-        GL11.glPopAttrib()
+        GlStateManager.enableLighting()
     }
 
     internal fun projectToRay(a: Vec3d, b: Vec3d, p: Vec3d): Vec3d {

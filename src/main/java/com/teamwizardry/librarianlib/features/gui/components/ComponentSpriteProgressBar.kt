@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.kotlin.glColor
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.ISprite
+import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
@@ -26,18 +27,14 @@ class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: ISprite?,
         val sp = sprite ?: return
         val animationTicks = animator.time.toInt()
 
-        if (alwaysTop) {
-            // store the current depth function
-            GL11.glPushAttrib(GL11.GL_DEPTH_BUFFER_BIT)
 
-            // by using GL_ALWAYS instead of disabling depth it writes to the depth buffer
-            // imagine a mountain, that is the depth buffer. this causes the sprite to write
-            // it's value to the depth buffer, cutting a hole down wherever it's drawn.
-            GL11.glDepthFunc(GL11.GL_ALWAYS)
-        }
-        if (sp.frameCount > 0 && lastAnim / sp.frameCount < animationTicks / sp.frameCount) {
+
+        if (alwaysTop)
+            GlStateManager.depthFunc(GL11.GL_ALWAYS)
+
+        if (sp.frameCount > 0 && lastAnim / sp.frameCount < animationTicks / sp.frameCount)
             BUS.fire(AnimationLoopEvent(this))
-        }
+
         lastAnim = animationTicks
         color.getValue(this).glColor()
         sp.bind()
@@ -53,8 +50,9 @@ class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: ISprite?,
             w = (w * progress).toInt()
 
         sp.drawClipped(animationTicks, 0f, 0f, w, h, dir == ProgressDirection.X_NEG, dir == ProgressDirection.Y_NEG)
+        
         if (alwaysTop)
-            GL11.glPopAttrib()
+            GlStateManager.depthFunc(GL11.GL_LESS)
     }
 
 }

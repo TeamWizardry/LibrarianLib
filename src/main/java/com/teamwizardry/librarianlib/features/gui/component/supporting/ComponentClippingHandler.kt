@@ -7,7 +7,6 @@ import com.teamwizardry.librarianlib.features.kotlin.pos
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.ISprite
-import com.teamwizardry.librarianlib.features.sprite.Sprite
 import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -66,24 +65,21 @@ class ComponentClippingHandler(val component: GuiComponent) {
     }
 
     private fun stencil() {
-        if(customClipping != null) {
-            GlStateManager.pushAttrib()
-            customClipping!!()
+        customClipping?.let {
+            it()
             GlStateManager.enableTexture2D()
-            GlStateManager.popAttrib()
             return
+
         }
+
         val sp = clippingSprite
         if(sp != null) {
-            GlStateManager.pushAttrib()
             GlStateManager.enableTexture2D()
             sp.bind()
             sp.draw(component.animator.time.toInt(), 0f, 0f, component.size.xi.toFloat(), component.size.yi.toFloat())
-            GlStateManager.popAttrib()
             return
         }
 
-        GlStateManager.pushAttrib()
         GlStateManager.disableTexture2D()
         GlStateManager.color(1f, 0f, 1f, 0.5f)
         val vb = Tessellator.getInstance().buffer
@@ -123,7 +119,6 @@ class ComponentClippingHandler(val component: GuiComponent) {
             }
         }
         GlStateManager.enableTexture2D()
-        GlStateManager.popAttrib()
     }
 
     private fun arc(x: Double, y: Double, vecA: Vec2d, vecB: Vec2d) {

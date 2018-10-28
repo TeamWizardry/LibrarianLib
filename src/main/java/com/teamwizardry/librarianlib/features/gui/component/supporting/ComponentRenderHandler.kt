@@ -169,12 +169,8 @@ class ComponentRenderHandler(private val component: GuiComponent) {
         GlStateManager.enableTexture2D()
         GlStateManager.color(1f, 1f, 1f, 1f)
 
-        GlStateManager.pushAttrib()
-
         component.BUS.fire(GuiComponentEvents.PreChildrenDrawEvent(component, transformedPos, partialTicks))
         component.relationships.forEachChild { it.render.draw(transformedPos, partialTicks) }
-
-        GlStateManager.popAttrib()
 
         component.BUS.fire(GuiComponentEvents.PostDrawEvent(component, transformedPos, partialTicks))
 

@@ -25,16 +25,6 @@ object ScissorUtil {
     private var screenScale = -1
 
     @JvmStatic
-    fun push() {
-        GL11.glPushAttrib(GL11.GL_SCISSOR_BIT)
-    }
-
-    @JvmStatic
-    fun pop() {
-        GL11.glPopAttrib()
-    }
-
-    @JvmStatic
     fun enable(): Boolean {
         val wasEnabled = GL11.glGetBoolean(GL11.GL_SCISSOR_TEST)
         GL11.glEnable(GL11.GL_SCISSOR_TEST)
