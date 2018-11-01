@@ -50,7 +50,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
  *
  */
 @SideOnly(Side.CLIENT)
-abstract class GuiComponent private constructor(
+open class GuiComponent private constructor(
     posX: Int, posY: Int, width: Int, height: Int,
     internal val data: ComponentDataHandler,
     internal val tags: ComponentTagHandler,
@@ -81,6 +81,7 @@ abstract class GuiComponent private constructor(
             data.component = this
             tags.component = this
             guiEventHandler.component = this
+            mouseHandler.component = this
         }()
     }
 }

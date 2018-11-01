@@ -6,6 +6,8 @@ import com.teamwizardry.librarianlib.features.math.Rect2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.CoordinateSpace2D
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.ScreenSpace
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.ScaledResolution
 
 class RootComponent: GuiComponent(0, 0) {
     override var size: Vec2d

@@ -30,6 +30,17 @@ open class LibGuiImpl(
         override var anchor: Vec2d
             get() = vec(0.5, 0.5)
             set(value) {}
+
+        override fun layoutChildren() {
+            val parentSize = this.parent!!.size
+            val scaledResolution = ScaledResolution(Minecraft.getMinecraft())
+            val maxScale = scaledResolution.scaleFactor
+            var scale = 1
+            while(size.x / scale > parentSize.x && size.y / scale > parentSize.y && scale < maxScale) {
+                scale++
+            }
+            this.scale = 1.0/scale
+        }
     }
 
     init {
@@ -39,23 +50,9 @@ open class LibGuiImpl(
     }
 
     fun initGui() {
-
-        var s = 1.0
-        if (!adjustGuiSize()) {
-            var i = 1
-            // find required scale, either 1x, 1/2x 1/3x, or 1/4x
-            while ((main.size.x * s > guiWidth() || main.size.y * s > guiHeight()) && i < 4) {
-                i++
-                s = 1.0 / i
-            }
-        }
-
-        val guiSize = vec(guiWidth(), guiHeight())
-
-        main.pos = guiSize/2
-        main.scale = s
-
-        root.size = guiSize
+        val scaledResolution = ScaledResolution(Minecraft.getMinecraft())
+        val resolution = vec(scaledResolution.scaledWidth, scaledResolution.scaledHeight)
+        root.size_rm.set(resolution) //
     }
 
     fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {

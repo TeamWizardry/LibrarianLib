@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.value.RMValue
 import com.teamwizardry.librarianlib.features.gui.value.RMValueDouble
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.kotlin.unaryMinus
 import com.teamwizardry.librarianlib.features.math.Matrix3
 import com.teamwizardry.librarianlib.features.math.Rect2d
@@ -42,13 +43,12 @@ class LayerGeometryHandler: ILayerGeometry {
     lateinit var layer: GuiLayer
 
     override val frame: Rect2d
-        get() = parentSpace?.let { this.convertRectTo(bounds, it) } ?: bounds
+        get() = layer.parentSpace?.let { this.convertRectTo(layer.bounds, it) } ?: layer.bounds
     override val bounds: Rect2d
-        get() = Rect2d(-contentsOffset, size)
+        get() = Rect2d(-layer.contentsOffset, layer.size)
 
     override val size_rm: RMValue<Vec2d> = RMValue(Vec2d.ZERO) { old, new ->
         if(old != new) {
-            clearMatrixCache()
             boundsChange()
             frameChange()
         }
@@ -57,7 +57,6 @@ class LayerGeometryHandler: ILayerGeometry {
 
     override val pos_rm: RMValue<Vec2d> = RMValue(Vec2d.ZERO) { old, new ->
         if(old != new) {
-            clearMatrixCache()
             frameChange()
         }
     }
@@ -68,18 +67,16 @@ class LayerGeometryHandler: ILayerGeometry {
 
     override val scale_rm: RMValue<Vec2d> = RMValue(Vec2d.ONE) { old, new ->
         if(old != new) {
-            clearMatrixCache()
             frameChange()
         }
     }
     override var scale2d: Vec2d by scale_rm
     override var scale: Double
-        get() = (scale2d.x + scale2d.y) / 2
-        set(value) { scale2d = vec(value, value) }
+        get() = (layer.scale2d.x + layer.scale2d.y) / 2
+        set(value) { layer.scale2d = vec(value, value) }
 
     override val rotation_rm: RMValueDouble = RMValueDouble(0.0) { old, new ->
         if(old != new) {
-            clearMatrixCache()
             frameChange()
         }
     }
@@ -87,7 +84,6 @@ class LayerGeometryHandler: ILayerGeometry {
 
     override val anchor_rm: RMValue<Vec2d> = RMValue(Vec2d.ZERO) { old, new ->
         if(old != new) {
-            clearMatrixCache()
             frameChange()
         }
     }
@@ -95,52 +91,60 @@ class LayerGeometryHandler: ILayerGeometry {
 
     override var contentsOffset_rm: RMValue<Vec2d> = RMValue(Vec2d.ZERO) { old, new ->
         if(old != new) {
-            clearMatrixCache()
             boundsChange()
         }
     }
     override var contentsOffset: Vec2d by contentsOffset_rm
 
     override fun glApplyTransform() {
-        GlStateManager.translate(pos.x, pos.y, translateZ)
-        GlStateManager.rotate(Math.toDegrees(rotation).toFloat(), 0f, 1f, 0f)
-        GlStateManager.scale(scale2d.x, scale2d.y, 1.0)
-        GlStateManager.translate(-anchor.x, -anchor.y, 0.0)
-        GlStateManager.translate(contentsOffset.x, contentsOffset.y, 0.0)
+        updateMatrixIfNeeded()
+        GlStateManager.translate(matrixParams.pos.x, matrixParams.pos.y, layer.translateZ)
+        GlStateManager.rotate(Math.toDegrees(matrixParams.rotation).toFloat(), 0f, 1f, 0f)
+        GlStateManager.scale(matrixParams.scale.x, matrixParams.scale.y, 1.0)
+        GlStateManager.translate(-matrixParams.anchor.x, -matrixParams.anchor.y, 0.0)
+        GlStateManager.translate(matrixParams.contentsOffset.x, matrixParams.contentsOffset.y, 0.0)
     }
 
     override val parentSpace: CoordinateSpace2D?
         get() = layer.parent
 
-    private var matrixCache: Matrix3? = null
-    override val matrix: Matrix3
+    override var matrix: Matrix3 = Matrix3.identity
         get() {
-            val value = matrixCache ?: createMatrix()
-            matrixCache = value
-            return value
+            updateMatrixIfNeeded()
+            return field
         }
+    private set
 
-    private var inverseMatrixCache: Matrix3? = null
-    override val inverseMatrix: Matrix3
+    override var inverseMatrix: Matrix3 = Matrix3.identity
         get() {
-            val value = inverseMatrixCache ?: matrix.invertSafely()
-            inverseMatrixCache = value
-            return value
+            updateMatrixIfNeeded()
+            return field
         }
+    private set
 
-    private fun createMatrix(): Matrix3 {
+    data class MatrixParams(val pos: Vec2d = Vec2d.ZERO, val rotation: Double = 0.0, val scale: Vec2d = Vec2d.ONE,
+        val anchor: Vec2d = Vec2d.ZERO, val contentsOffset: Vec2d = Vec2d.ZERO)
+    var matrixParams = MatrixParams()
+
+    private fun createMatrix() {
         val matrix = Matrix3()
-        matrix.translate(pos)
-        matrix.rotate(rotation)
-        matrix.scale(scale2d)
-        matrix.translate(-anchor)
-        matrix.translate(contentsOffset)
-        return matrix
+        matrix.translate(matrixParams.pos)
+        matrix.rotate(matrixParams.rotation)
+        matrix.scale(matrixParams.scale)
+        matrix.translate(-matrixParams.anchor)
+        matrix.translate(matrixParams.contentsOffset)
+        this.matrix = matrix.frozen()
+        this.inverseMatrix = matrix.invertSafely().frozen()
     }
 
-    private fun clearMatrixCache() {
-        matrixCache = null
-        inverseMatrixCache = null
+    private fun updateMatrixIfNeeded() {
+        val newParams = MatrixParams(layer.pos, layer.rotation, layer.scale2d,
+            layer.anchor * layer.size, layer.contentsOffset)
+
+        if(newParams != matrixParams) {
+            matrixParams = newParams
+            createMatrix()
+        }
     }
 
     private fun boundsChange() {
