@@ -1,22 +1,15 @@
 package com.teamwizardry.librarianlib.features.gui.component.supporting
 
-import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.animator.Animation
 import com.teamwizardry.librarianlib.features.animator.Animator
-import com.teamwizardry.librarianlib.features.gui.value.IMValue
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
+import com.teamwizardry.librarianlib.features.gui.value.IMValue
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraftforge.fml.client.config.GuiUtils
-import org.lwjgl.opengl.GL11.GL_LINES
-import org.lwjgl.opengl.GL11.GL_LINE_STRIP
 
-interface IComponentRender {
+interface ILayerRendering {
     val tooltip_im: IMValue<List<String>?>
     var tooltip: List<String>?
     var tooltipFont: FontRenderer?
@@ -50,14 +43,6 @@ interface IComponentRender {
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
     fun renderLayer(partialTicks: Float)
-
-    /**
-     * Draw late stuff this component, like tooltips. This method is executed in the root context
-     *
-     * @param mousePos Mouse position in the root context
-     * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
-     */
-    fun drawLate(partialTicks: Float)
 }
 
 /**
@@ -65,7 +50,7 @@ interface IComponentRender {
  *
  * Created by TheCodeWarrior
  */
-class ComponentRenderHandler: IComponentRender {
+class LayerRenderHandler: ILayerRendering {
     lateinit var layer: GuiLayer
 
     override val tooltip_im: IMValue<List<String>?> = IMValue()
@@ -155,14 +140,11 @@ class ComponentRenderHandler: IComponentRender {
             layer.needsLayout = false
         }
 
-        if (layer.mouseOver && hoverCursor != null) {
-            cursor = hoverCursor
-        }
         GlStateManager.pushMatrix()
 
         layer.BUS.fire(GuiLayerEvents.PreTransformEvent(partialTicks))
 
-        layer.transform.glApply()
+        layer.glApplyTransform()
 
         layer.BUS.fire(GuiLayerEvents.PostTransformEvent(partialTicks))
 
@@ -173,17 +155,11 @@ class ComponentRenderHandler: IComponentRender {
         GlStateManager.enableTexture2D()
         GlStateManager.color(1f, 1f, 1f, 1f)
         layer.draw(partialTicks)
-
-        drawDebugInfo()
         GlStateManager.enableTexture2D()
         GlStateManager.color(1f, 1f, 1f, 1f)
 
-        GlStateManager.pushAttrib()
-
         layer.BUS.fire(GuiLayerEvents.PreChildrenDrawEvent(partialTicks))
         layer.forEachChild { it.renderLayer(partialTicks) }
-
-        GlStateManager.popAttrib()
 
         layer.BUS.fire(GuiLayerEvents.PostDrawEvent(partialTicks))
 
@@ -191,62 +167,4 @@ class ComponentRenderHandler: IComponentRender {
 
         GlStateManager.popMatrix()
     }
-
-    private fun drawDebugInfo() {
-        if (LibrarianLib.DEV_ENVIRONMENT && Minecraft.getMinecraft().renderManager.isDebugBoundingBox) {
-            GlStateManager.disableTexture2D()
-            GlStateManager.color(1f, 0f, 1f)
-            if (layer.mouseOverNoOcclusion) GlStateManager.color(0.75f, 0.75f, 0.75f)
-            if (layer.mouseOver) GlStateManager.color(1f, 1f, 1f)
-            val tessellator = Tessellator.getInstance()
-            val vb = tessellator.buffer
-            vb.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION)
-            vb.pos(0.0, 0.0, 0.0).endVertex()
-            vb.pos(layer.size.x, 0.0, 0.0).endVertex()
-            vb.pos(layer.size.x, layer.size.y, 0.0).endVertex()
-            vb.pos(0.0, layer.size.y, 0.0).endVertex()
-            vb.pos(0.0, 0.0, 0.0).endVertex()
-            tessellator.draw()
-
-            val big = 1000.0
-            vb.begin(GL_LINES, DefaultVertexFormats.POSITION)
-            vb.pos(0.0, 0.0, 0.0).endVertex()
-            vb.pos(0.0, 0.0, -big).endVertex()
-            vb.pos(layer.size.x, 0.0, 0.0).endVertex()
-            vb.pos(layer.size.x, 0.0, -big).endVertex()
-            vb.pos(layer.size.x, layer.size.y, 0.0).endVertex()
-            vb.pos(layer.size.x, layer.size.y, -big).endVertex()
-            vb.pos(0.0, layer.size.y, 0.0).endVertex()
-            vb.pos(0.0, layer.size.y, -big).endVertex()
-            tessellator.draw()
-
-            GlStateManager.color(0f, 1f, 1f)
-            vb.begin(GL_LINES, DefaultVertexFormats.POSITION)
-            vb.pos(layer.mousePos.x, layer.mousePos.y, 0.0).endVertex()
-            vb.pos(layer.mousePos.x, layer.mousePos.y, big).endVertex()
-            tessellator.draw()
-        }
-    }
-
-
-    /**
-     * Draw late stuff this component, like tooltips. This method is executed in the root context
-     *
-     * @param mousePos Mouse position in the root context
-     * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
-     */
-    override fun drawLate(partialTicks: Float) {
-        if (!layer.isVisible) return
-        if (layer.mouseOver) {
-            val tt = tooltip
-            if (tt?.isNotEmpty() == true) {
-                val rootPos = layer.thisPosToOtherContext(null, layer.mousePos)
-                GuiUtils.drawHoveringText(tt, rootPos.xi, rootPos.yi, layer.root.size.xi, layer.root.size.yi, -1,
-                        tooltipFont ?: Minecraft.getMinecraft().fontRenderer)
-            }
-        }
-
-        layer.forEachChild { it.drawLate(partialTicks) }
-    }
-
 }

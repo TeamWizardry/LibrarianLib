@@ -30,5 +30,5 @@ object PageTypes {
             getPageProvider(ResourceLocation(type.toLowerCase(Locale.ROOT)))
 
     fun getPageProvider(type: ResourceLocation) =
-            pageProviders.getOrDefault(type.toString(), null)
+            pageProviders[type.toString()]
 }

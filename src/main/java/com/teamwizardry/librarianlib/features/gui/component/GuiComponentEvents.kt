@@ -9,6 +9,9 @@ object GuiComponentEvents {
     /** Fired each tick while the component is a part of a screen */
     class ComponentTickEvent : Event()
 
+    /** Called when the mouse position is being calculated to allow event handlers to modify it */
+    class CalculateMousePositionEvent(var mousePos: Vec2d): Event()
+
     /** Fired whenever the mouse is pressed */
     class MouseDownEvent(val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
 
@@ -17,6 +20,22 @@ object GuiComponentEvents {
 
     /** Fired whenever the mouse is moved while a button is being pressed */
     class MouseDragEvent(val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
+
+    /** Fired whenever the mouse is moved */
+    class MouseMoveEvent(val previousMousePos: Vec2d, val mousePos: Vec2d) : Event()
+
+    /** Fired whenever the mouse is moved out of this component (when mouseInside goes from true to false) */
+    class MouseMoveOutEvent(val previousMousePos: Vec2d, val mousePos: Vec2d) : Event()
+
+    /** Fired whenever the mouse is moved into this component (when mouseInside goes from false to true) */
+    class MouseMoveInEvent(val previousMousePos: Vec2d, val mousePos: Vec2d) : Event()
+
+    /** Fired whenever the mouse is moved off this component (when mouseOver goes from true to false) */
+    class MouseMoveEnterEvent(val previousMousePos: Vec2d, val mousePos: Vec2d) : Event()
+
+    /** Fired whenever the mouse is moved over this component (when mouseOver goes from false to true) */
+    class MouseMoveLeaveEvent(val previousMousePos: Vec2d, val mousePos: Vec2d) : Event()
+
 
     /** Fired in addition to any of [MouseClickEvent], [MouseClickOutsideEvent], [MouseClickDragInEvent], or [MouseClickDragOutEvent] */
     open class MouseClickAnyEvent(val mouseDownPos: Vec2d, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()

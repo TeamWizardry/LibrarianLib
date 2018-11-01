@@ -11,7 +11,7 @@ import kotlin.reflect.KProperty
  * represents a Retained Mode Value, in contrast to [IMValue], which represents an Immediate Mode Value
  */
 class RMValue<T> @JvmOverloads constructor(
-    private var value: T, private val change: (oldValue: T) -> Unit = {}
+    private var value: T, private val change: (oldValue: T, newValue: T) -> Unit = { _, _ -> }
 ) {
 
     /**
@@ -29,7 +29,7 @@ class RMValue<T> @JvmOverloads constructor(
         val oldValue = this.value
         this.value = value
         if(oldValue != value) {
-            change(oldValue)
+            change(oldValue, value)
         }
     }
 

@@ -5,9 +5,9 @@ import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 import com.teamwizardry.librarianlib.features.gui.GuiBase;
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect;
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText;
+import com.teamwizardry.librarianlib.features.math.Vec2d;
 
 import java.awt.*;
-import java.util.function.Function;
 
 /**
  * TODO: Document file GuiJavaAnimation
@@ -20,7 +20,8 @@ public class GuiJavaAnimation extends GuiBase {
 	Animator animator = new Animator();
 	
 	public GuiJavaAnimation() {
-		super(100, 100);
+		super();
+		getMain().setSize(new Vec2d(100, 100));
 		
 		ComponentRect rect = new ComponentRect(0, 0, 100, 100);
 		rect.setColor(Color.CYAN);
@@ -33,7 +34,7 @@ public class GuiJavaAnimation extends GuiBase {
 		anim.setTo(100);
 		animator.add(anim);
 		
-		this.getMainComponents().add(rect, text);
+		this.getMain().add(rect, text);
 	}
 	
 }

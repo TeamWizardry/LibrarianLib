@@ -43,7 +43,7 @@ class ComponentCategoryButton(posX: Int, posY: Int, width: Int, height: Int, boo
         }
 
         val circleWipe = ComponentAnimatableVoid(0, 0, width, height)
-        circleWipe.transform.translateZ = 100.0
+        circleWipe.translateZ = 100.0
         add(circleWipe)
 
         circleWipe.clipToBounds = true
@@ -69,7 +69,7 @@ class ComponentCategoryButton(posX: Int, posY: Int, width: Int, height: Int, boo
 
         val radius = 16.0
 
-        circleWipe.BUS.hook(GuiLayerEvents.MouseInEvent::class.java) {
+        circleWipe.BUS.hook(GuiComponentEvents.MouseMoveInEvent::class.java) {
 
             val mouseInAnim = BasicAnimation(circleWipe, "animX")
             mouseInAnim.duration = 20f
@@ -78,7 +78,7 @@ class ComponentCategoryButton(posX: Int, posY: Int, width: Int, height: Int, boo
             circleWipe.add(mouseInAnim)
         }
 
-        circleWipe.BUS.hook(GuiLayerEvents.MouseOutEvent::class.java) {
+        circleWipe.BUS.hook(GuiComponentEvents.MouseMoveOutEvent::class.java) {
 
             val mouseOutAnim = BasicAnimation(circleWipe, "animX")
             mouseOutAnim.duration = 20f

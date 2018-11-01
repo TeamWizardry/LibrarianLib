@@ -1,24 +1,25 @@
 package com.teamwizardry.librarianlib.features.gui.component.supporting
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.value.RMValueInt
+import java.lang.Exception
 import java.util.*
 
-interface IComponentRelationship {
+interface ILayerRelationships {
     val zIndex_rm: RMValueInt
     var zIndex: Int
-    /** [GuiLayer.children] */
+
     val children: List<GuiLayer>
     /**
      * An unmodifiable collection of all the children of this component, recursively.
      */
     val allChildren: List<GuiLayer>
+
     val parents: MutableSet<GuiLayer>
-    /** [GuiLayer.parent] */
     val parent: GuiLayer?
-    /** [GuiLayer.root] */
     val root: GuiLayer
 
     /**
@@ -60,15 +61,16 @@ interface IComponentRelationship {
  *
  * Created by TheCodeWarrior
  */
-open class ComponentRelationshipHandler: IComponentRelationship {
+class LayerRelationshipHandler: ILayerRelationships {
     lateinit var component: GuiLayer
 
-    /** [GuiLayer.zIndex] */
     override val zIndex_rm = RMValueInt(0)
     override var zIndex by zIndex_rm
+
     internal val subLayers = mutableListOf<GuiLayer>()
-    /** [GuiLayer.children] */
+
     override val children: List<GuiLayer> = Collections.unmodifiableList(subLayers)
+
     /**
      * An unmodifiable collection of all the children of this component, recursively.
      */
@@ -117,7 +119,7 @@ open class ComponentRelationshipHandler: IComponentRelationship {
 
         if (component.parent != null) {
             if (component.parent == this.component) {
-                LibrarianLog.warn("You tried to add the component to the same parent twice. Why?")
+                LibrarianLog.error("You tried to add the component to the same parent twice. Why?", Exception())
                 return
             } else {
                 throw IllegalArgumentException("Component already had a parent")
@@ -128,8 +130,7 @@ open class ComponentRelationshipHandler: IComponentRelationship {
             throw IllegalArgumentException("Recursive component hierarchy")
         }
 
-
-        if (component.BUS.fire(GuiLayerEvents.AddChildEvent(component)).isCanceled())
+        if (this.component.BUS.fire(GuiLayerEvents.AddChildEvent(component)).isCanceled())
             return
         if (component.BUS.fire(GuiLayerEvents.AddToParentEvent(this.component)).isCanceled())
             return

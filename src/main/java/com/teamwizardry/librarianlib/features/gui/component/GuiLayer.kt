@@ -56,20 +56,20 @@ import org.lwjgl.opengl.GL11
 @SideOnly(Side.CLIENT)
 open class GuiLayer private constructor(
     posX: Int, posY: Int, width: Int, height: Int,
-    internal val geometry: ComponentGeometryHandler = ComponentGeometryHandler(),
-    internal val relationships: ComponentRelationshipHandler = ComponentRelationshipHandler(),
-    internal val render: ComponentRenderHandler = ComponentRenderHandler(),
-    internal val clipping: ComponentClippingHandler = ComponentClippingHandler()
+    internal val geometry: LayerGeometryHandler,
+    internal val relationships: LayerRelationshipHandler,
+    internal val render: LayerRenderHandler,
+    internal val clipping: LayerClippingHandler
 )
-    : IComponentGeometry by geometry, IComponentRelationship by relationships,
-    IComponentRender by render, IComponentClipping by clipping
+    : ILayerGeometry by geometry, ILayerRelationships by relationships,
+    ILayerRendering by render, ILayerClipping by clipping
 {
     @JvmOverloads constructor(posX: Int, posY: Int, width: Int = 0, height: Int = 0): this(
         posX, posY, width, height,
-        ComponentGeometryHandler(),
-        ComponentRelationshipHandler(),
-        ComponentRenderHandler(),
-        ComponentClippingHandler()
+        LayerGeometryHandler(),
+        LayerRelationshipHandler(),
+        LayerRenderHandler(),
+        LayerClippingHandler()
     )
 
     init {
@@ -186,12 +186,6 @@ open class GuiLayer private constructor(
     }
     //endregion
 
-    /**
-     * Transforms [pos] from `other`'s context (or the root context if null) to our context
-     */
-    open fun otherPosToThisContext(other: GuiLayer?, pos: Vec2d)
-        = geometry.thisPosToOtherContext(other, pos)
-
     //region - Internal
     init {
         this.pos = vec(posX, posY)
@@ -199,17 +193,14 @@ open class GuiLayer private constructor(
     }
     //endregion
 
-    open fun renderRoot(mousePos: Vec2d, partialTicks: Float) {
+    open fun renderRoot(partialTicks: Float) {
         StencilUtil.clear()
         GL11.glEnable(GL11.GL_STENCIL_TEST)
         cleanUpChildren()
         runLayoutIfNeeded()
-        updateMouseBeforeRender(mousePos)
-        geometry.calculateMouseOver(mousePos)
         preFrame()
         sortChildren()
         renderLayer(partialTicks)
-        drawLate(partialTicks)
         GL11.glDisable(GL11.GL_STENCIL_TEST)
     }
 }

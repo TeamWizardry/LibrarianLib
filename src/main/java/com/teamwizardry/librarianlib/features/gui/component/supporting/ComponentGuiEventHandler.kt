@@ -9,13 +9,14 @@ import org.lwjgl.input.Keyboard
 
 interface IComponentGuiEvent {
     fun tick()
+
     /**
      * Called when the mouse is pressed.
      *
      * @param mousePos The mouse position in the parent context
      * @param button The button that was pressed
      */
-    fun mouseDown(mousePos: Vec2d, button: EnumMouseButton)
+    fun mouseDown(button: EnumMouseButton)
 
     /**
      * Called when the mouse is released.
@@ -23,7 +24,7 @@ interface IComponentGuiEvent {
      * @param mousePos The mouse position in the parent context
      * @param button The button that was released
      */
-    fun mouseUp(mousePos: Vec2d, button: EnumMouseButton)
+    fun mouseUp(button: EnumMouseButton)
 
     /**
      * Called when the mouse is moved while pressed.
@@ -31,7 +32,7 @@ interface IComponentGuiEvent {
      * @param mousePos The mouse position in the parent context
      * @param button The button that was held
      */
-    fun mouseDrag(mousePos: Vec2d, button: EnumMouseButton)
+    fun mouseDrag(button: EnumMouseButton)
 
     /**
      * Called when the mouse wheel is moved.
@@ -39,7 +40,7 @@ interface IComponentGuiEvent {
      * @param mousePos The mouse position in the parent context
      * @param direction The direction the wheel was moved
      */
-    fun mouseWheel(mousePos: Vec2d, direction: GuiComponentEvents.MouseWheelDirection)
+    fun mouseWheel(direction: GuiComponentEvents.MouseWheelDirection)
 
     /**
      * Called when a key is pressed in the parent component.
@@ -58,11 +59,6 @@ interface IComponentGuiEvent {
     fun keyReleased(key: Char, keyCode: Int)
 }
 
-/**
- * TODO: Document file ComponentGuiEventHandler
- *
- * Created by TheCodeWarrior
- */
 class ComponentGuiEventHandler: IComponentGuiEvent {
     lateinit var component: GuiComponent
 
@@ -81,19 +77,18 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
      * @param mousePos The mouse position in the parent context
      * @param button The button that was pressed
      */
-    override fun mouseDown(mousePos: Vec2d, button: EnumMouseButton) {
-        val transformedPos = component.transformFromParentContext(mousePos)
+    override fun mouseDown(button: EnumMouseButton) {
         if (!component.isVisible) return
-        if (component.BUS.fire(GuiComponentEvents.MouseDownEvent(transformedPos, button)).isCanceled())
+        if (component.BUS.fire(GuiComponentEvents.MouseDownEvent(component.mousePos, button)).isCanceled())
             return
 
         if (component.mouseOver)
-            mouseButtonsDownInside[button.ordinal] = transformedPos
+            mouseButtonsDownInside[button.ordinal] = component.mousePos
         else
-            mouseButtonsDownOutside[button.ordinal] = transformedPos
+            mouseButtonsDownOutside[button.ordinal] = component.mousePos
 
         component.subComponents.forEach { child ->
-            child.mouseDown(transformedPos, button)
+            child.mouseDown(button)
         }
     }
 
@@ -103,33 +98,32 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
      * @param mousePos The mouse position in the parent context
      * @param button The button that was released
      */
-    override fun mouseUp(mousePos: Vec2d, button: EnumMouseButton) {
-        val transformedPos = component.transformFromParentContext(mousePos)
+    override fun mouseUp(button: EnumMouseButton) {
         if (!component.isVisible) return
         val posDownInside = mouseButtonsDownInside[button.ordinal]
         val posDownOutside = mouseButtonsDownOutside[button.ordinal]
         mouseButtonsDownInside[button.ordinal] = null
         mouseButtonsDownOutside[button.ordinal] = null
 
-        if (component.BUS.fire(GuiComponentEvents.MouseUpEvent(transformedPos, button)).isCanceled())
+        if (component.BUS.fire(GuiComponentEvents.MouseUpEvent(component.mousePos, button)).isCanceled())
             return
 
         if (component.mouseOver) {
              if(posDownInside != null) {
-                 component.BUS.fire(GuiComponentEvents.MouseClickEvent(posDownInside, transformedPos, button))
+                 component.BUS.fire(GuiComponentEvents.MouseClickEvent(posDownInside, component.mousePos, button))
              } else if(posDownOutside != null) {
-                 component.BUS.fire(GuiComponentEvents.MouseClickDragInEvent(posDownOutside, transformedPos, button))
+                 component.BUS.fire(GuiComponentEvents.MouseClickDragInEvent(posDownOutside, component.mousePos, button))
              }
         } else {
             if(posDownInside != null) {
-                component.BUS.fire(GuiComponentEvents.MouseClickDragOutEvent(posDownInside, transformedPos, button))
+                component.BUS.fire(GuiComponentEvents.MouseClickDragOutEvent(posDownInside, component.mousePos, button))
             } else if(posDownOutside != null) {
-                component.BUS.fire(GuiComponentEvents.MouseClickOutsideEvent(posDownOutside, transformedPos, button))
+                component.BUS.fire(GuiComponentEvents.MouseClickOutsideEvent(posDownOutside, component.mousePos, button))
             }
         }
 
         component.subComponents.forEach { child ->
-            child.mouseUp(transformedPos, button)
+            child.mouseUp(button)
         }
     }
 
@@ -139,14 +133,13 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
      * @param mousePos The mouse position in the parent context
      * @param button The button that was held
      */
-    override fun mouseDrag(mousePos: Vec2d, button: EnumMouseButton) {
-        val transformedPos = component.transformFromParentContext(mousePos)
+    override fun mouseDrag(button: EnumMouseButton) {
         if (!component.isVisible) return
-        if (component.BUS.fire(GuiComponentEvents.MouseDragEvent(transformedPos, button)).isCanceled())
+        if (component.BUS.fire(GuiComponentEvents.MouseDragEvent(component.mousePos, button)).isCanceled())
             return
 
         component.subComponents.forEach { child ->
-            child.mouseDrag(transformedPos, button)
+            child.mouseDrag(button)
         }
     }
 
@@ -156,14 +149,13 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
      * @param mousePos The mouse position in the parent context
      * @param direction The direction the wheel was moved
      */
-    override fun mouseWheel(mousePos: Vec2d, direction: GuiComponentEvents.MouseWheelDirection) {
-        val transformedPos = component.transformFromParentContext(mousePos)
+    override fun mouseWheel(direction: GuiComponentEvents.MouseWheelDirection) {
         if (!component.isVisible) return
-        if (component.BUS.fire(GuiComponentEvents.MouseWheelEvent(transformedPos, direction)).isCanceled())
+        if (component.BUS.fire(GuiComponentEvents.MouseWheelEvent(component.mousePos, direction)).isCanceled())
             return
 
         component.subComponents.forEach { child ->
-            child.mouseWheel(transformedPos, direction)
+            child.mouseWheel(direction)
         }
     }
 

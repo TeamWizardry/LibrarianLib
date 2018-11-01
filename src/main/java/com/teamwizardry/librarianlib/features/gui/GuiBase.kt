@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.features.gui
 
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
-import com.teamwizardry.librarianlib.features.gui.debugger.ComponentDebugger
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.delegate
 import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
@@ -18,16 +18,13 @@ import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
 import java.io.IOException
 
-open class GuiBase(mainWidth: Int, mainHeight: Int) : GuiScreen() {
+open class GuiBase : GuiScreen() {
     val impl = LibGuiImpl(
-        mainWidth, mainHeight,
         { this.width }, { this.height }, { this.adjustGuiSize() }
     )
 
-    var mainWidth: Int by impl::mainWidth.delegate
-    var mainHeight: Int by impl::mainHeight.delegate
-    val mainComponents: ComponentVoid by impl::mainComponents.delegate
-    val fullscreenComponents: ComponentVoid by impl::fullscreenComponents.delegate
+    val main: GuiComponent by impl::main.delegate
+    val root: GuiComponent by impl::root.delegate
 
     override fun initGui() {
         impl.initGui()

@@ -31,8 +31,8 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
 
     init {
         fullscreenComponents.setData(GuiContainerBase::class.java, "", this)
-        mainComponents.shouldCalculateOwnHover = false
-        fullscreenComponents.shouldCalculateOwnHover = false
+        mainComponents.shouldComputeMouseInsideFromBounds = false
+        fullscreenComponents.shouldComputeMouseInsideFromBounds = false
         mainScaleWrapper.zIndex = -100000 // really far back
         fullscreenComponents.add(mainScaleWrapper)
         mainScaleWrapper.add(mainComponents)
@@ -60,7 +60,7 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
 
         if (mainScaleWrapper.pos.xi != left || mainScaleWrapper.pos.yi != top) {
             mainScaleWrapper.pos = vec(left, top)
-            mainScaleWrapper.transform.scale = s
+            mainScaleWrapper.scale = s
             mainScaleWrapper.size = vec(guiWidth * s, guiHeight * s)
             guiLeft = left
             guiTop = top
@@ -89,7 +89,7 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         GlStateManager.pushAttrib()
         GlStateManager.enableBlend()
         val relPos = vec(mouseX, mouseY)
-        fullscreenComponents.renderRoot(relPos, partialTicks)
+        fullscreenComponents.renderRoot(partialTicks)
 
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
@@ -102,7 +102,6 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         container.allSlots.filter { !it.visible }.forEach { it.xPos = -1000; it.yPos = -1000 }
 
         super.drawScreen(mouseX, mouseY, partialTicks)
-        fullscreenComponents.drawLate(partialTicks)
 
         renderHoveredToolTip(mouseX, mouseY)
     }
@@ -110,17 +109,17 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
     @Throws(IOException::class)
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         super.mouseClicked(mouseX, mouseY, mouseButton)
-        fullscreenComponents.mouseDown(vec(mouseX, mouseY), EnumMouseButton.getFromCode(mouseButton))
+        fullscreenComponents.mouseDown(EnumMouseButton.getFromCode(mouseButton))
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         super.mouseReleased(mouseX, mouseY, state)
-        fullscreenComponents.mouseUp(vec(mouseX, mouseY), EnumMouseButton.getFromCode(state))
+        fullscreenComponents.mouseUp(EnumMouseButton.getFromCode(state))
     }
 
     override fun mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
         super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)
-        fullscreenComponents.mouseDrag(vec(mouseX, mouseY), EnumMouseButton.getFromCode(clickedMouseButton))
+        fullscreenComponents.mouseDrag(EnumMouseButton.getFromCode(clickedMouseButton))
     }
 
     @Throws(IOException::class)
@@ -141,7 +140,7 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         val wheelAmount = Mouse.getEventDWheel()
 
         if (wheelAmount != 0) {
-            fullscreenComponents.mouseWheel(vec(mouseX, mouseY), GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
+            fullscreenComponents.mouseWheel(GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
         }
     }
 

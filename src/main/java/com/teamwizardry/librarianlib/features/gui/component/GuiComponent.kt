@@ -52,23 +52,28 @@ import net.minecraftforge.fml.relauncher.SideOnly
 @SideOnly(Side.CLIENT)
 abstract class GuiComponent private constructor(
     posX: Int, posY: Int, width: Int, height: Int,
-    internal val data: ComponentDataHandler = ComponentDataHandler(),
-    internal val tags: ComponentTagHandler = ComponentTagHandler(),
-    internal val guiEventHandler: ComponentGuiEventHandler = ComponentGuiEventHandler()
+    internal val data: ComponentDataHandler,
+    internal val tags: ComponentTagHandler,
+    internal val guiEventHandler: ComponentGuiEventHandler,
+    internal val mouseHandler: ComponentMouseHandler
 ) : GuiLayer(posX, posY, width, height),
-    IComponentData by data, IComponentTag by tags, IComponentGuiEvent by guiEventHandler
+    IComponentData by data, IComponentTag by tags,
+    IComponentGuiEvent by guiEventHandler, IComponentMouse by mouseHandler
 {
     @JvmOverloads constructor(posX: Int, posY: Int, width: Int = 0, height: Int = 0): this(
         posX, posY, width, height,
         ComponentDataHandler(),
         ComponentTagHandler(),
-        ComponentGuiEventHandler()
+        ComponentGuiEventHandler(),
+        ComponentMouseHandler()
     )
 
     val subComponents: List<GuiComponent>
         get() = this.children.filterIsInstance<GuiComponent>()
     val rootComponent: GuiComponent
         get() = this.root as GuiComponent
+    val parentComponent: GuiComponent?
+        get() = this.parent as GuiComponent
 
     init {
         @Suppress("LeakingThis")

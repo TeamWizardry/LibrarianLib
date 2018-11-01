@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.math
 
+import com.teamwizardry.librarianlib.features.helpers.vec
 import net.minecraft.util.math.MathHelper
 
 class Vec2d(val x: Double, val y: Double) {
@@ -169,14 +170,25 @@ class Vec2d(val x: Double, val y: Double) {
         @JvmField
         val NEG_Y_INFINITY = Vec2d(0.0, Double.NEGATIVE_INFINITY)
 
+        /**
+         * Takes the minimum of each component
+         */
         @JvmStatic
         fun min(a: Vec2d, b: Vec2d): Vec2d {
             return Vec2d(Math.min(a.x, b.x), Math.min(a.y, b.y))
         }
 
+        /**
+         * Takes the maximum of each component
+         */
         @JvmStatic
         fun max(a: Vec2d, b: Vec2d): Vec2d {
             return Vec2d(Math.max(a.x, b.x), Math.max(a.y, b.y))
         }
     }
+}
+
+enum class Axis2d(val direction: Vec2d) {
+    X(vec(1, 0)),
+    Y(vec(0, 1))
 }

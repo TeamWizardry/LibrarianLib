@@ -14,23 +14,23 @@ import java.awt.Color
 /**
  * Created by TheCodeWarrior
  */
-class GuiBasicAnimation : GuiBase(200, 100) {
+class GuiBasicAnimation : GuiBase() {
     val animator = Animator()
 
     init {
-
+        main.size = vec(200, 100)
 
         val background = ComponentRect(0, 0, 200, 100)
         background.color = Color(127, 127, 127)
-        mainComponents.add(background)
+        main.add(background)
 
         val bouncer = ComponentRect(0, 0, 25, 15)
         bouncer.color = Color(255, 0, 0)
-        mainComponents.add(bouncer)
+        main.add(bouncer)
 
         val bouncer2 = ComponentRect(0, 95, 50, 5)
         bouncer2.color = Color(0, 0, 255)
-        mainComponents.add(bouncer2)
+        main.add(bouncer2)
 
         val anim = BasicAnimation(bouncer2, "pos.x")
         anim.duration = 60f
@@ -41,7 +41,7 @@ class GuiBasicAnimation : GuiBase(200, 100) {
 
 //        animator.add(bouncer2.animate("pos", Vec2d(10, 10), 40f))
 
-        mainComponents.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
+        main.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
             val animation = KeyframeAnimation(bouncer, "pos")
             animation.duration = 120f
             animation.shouldReverse = true

@@ -9,9 +9,17 @@ import org.jetbrains.annotations.Nullable;
 
 public class RMValueDouble {
     private double value;
+    @Nullable
+    private final ChangeListener.Double change;
 
     public RMValueDouble(double initialValue) {
         this.value = initialValue;
+        this.change = null;
+    }
+
+    public RMValueDouble(double initialValue, @NotNull ChangeListener.Double change) {
+        this.value = initialValue;
+        this.change = change;
     }
 
     /**

@@ -15,9 +15,5 @@ object GuiLayerEvents {
     class RemoveChildEvent(val child: GuiLayer) : EventCancelable()
     class AddToParentEvent(val parent: GuiLayer) : EventCancelable()
     class RemoveFromParentEvent(val parent: GuiLayer) : EventCancelable()
-
-    class MouseInEvent : Event()
-    class MouseOutEvent : Event()
-    class AdjustMousePosition : Event()
     class LayoutChildren : Event()
 }

@@ -14,12 +14,12 @@ class ComponentMaterialsBar(book: IBookGui, id: Int, val materials: StructureMat
 
         setBookmarkText("Materials", Color.WHITE, -8)
 
-        BUS.hook(GuiLayerEvents.MouseInEvent::class.java) {
+        BUS.hook(GuiComponentEvents.MouseMoveInEvent::class.java) {
             if (!focused)
                 slideOutShort()
         }
 
-        BUS.hook(GuiLayerEvents.MouseOutEvent::class.java) {
+        BUS.hook(GuiComponentEvents.MouseMoveOutEvent::class.java) {
             if (!focused)
                 slideIn()
         }

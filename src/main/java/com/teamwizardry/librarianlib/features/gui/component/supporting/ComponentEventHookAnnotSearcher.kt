@@ -10,7 +10,6 @@ import java.lang.reflect.Method
 internal object ComponentEventHookAnnotSearcher {
     val cache = mutableMapOf<Class<*>, EventCache>().withRealDefault { EventCache(it) }
 
-
     fun search(component: GuiComponent) {
         cache[component.javaClass].events.forEach {
             @Suppress("UNCHECKED_CAST")

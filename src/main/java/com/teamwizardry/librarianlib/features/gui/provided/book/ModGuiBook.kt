@@ -12,6 +12,7 @@ import com.teamwizardry.librarianlib.features.gui.provided.book.context.BookCont
 import com.teamwizardry.librarianlib.features.gui.provided.book.context.ComponentNavBar
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.Sprite
 import com.teamwizardry.librarianlib.features.sprite.Texture
@@ -25,7 +26,7 @@ import java.awt.Color
  * All rights reserved.
  */
 @Suppress("LeakingThis")
-open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
+open class ModGuiBook(override val book: Book) : GuiBase(), IBookGui {
     override val cachedSearchContent = book.contentCache
     private var sheetRL = ResourceLocation(book.textureSheet)
     private var guideBookSheet = Texture(ResourceLocation(sheetRL.namespace, "textures/" + sheetRL.path + ".png"), 384, 384)
@@ -56,6 +57,7 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
 
 
     init {
+        this.main.size = vec(146, 180)
         mainBookComponent = ComponentSprite(pageSprite, 0, 0)
         mainBookComponent.color = book.bookColor
 
@@ -68,7 +70,7 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
         navBar = ComponentNavBar(this, mainBookComponent.size.xi / 2 - 35, mainBookComponent.size.yi, 70)
         mainBookComponent.add(navBar)
 
-        mainComponents.add(this.mainBookComponent)
+        main.add(this.mainBookComponent)
     }
 
     override var context: BookContext = focusOn(BookContext(this, book))
@@ -88,9 +90,9 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
         textComponent.text = title
         indexButton.add(textComponent)
 
-        indexButton.BUS.hook(GuiLayerEvents.MouseInEvent::class.java) { textComponent.text = " " + TextFormatting.ITALIC.toString() + title }
+        indexButton.BUS.hook(GuiComponentEvents.MouseMoveInEvent::class.java) { textComponent.text = " " + TextFormatting.ITALIC.toString() + title }
 
-        indexButton.BUS.hook(GuiLayerEvents.MouseOutEvent::class.java) { textComponent.text = TextFormatting.RESET.toString() + title }
+        indexButton.BUS.hook(GuiComponentEvents.MouseMoveOutEvent::class.java) { textComponent.text = TextFormatting.RESET.toString() + title }
 
         indexButton.tooltip_im {
             val list = mutableListOf<String>()

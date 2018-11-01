@@ -11,14 +11,15 @@ import java.awt.Color
 /**
  * Created by TheCodeWarrior
  */
-class GuiTestScale : GuiBase(100, 100) {
+class GuiTestScale : GuiBase() {
     init {
+        main.size = vec(100, 100)
 
         val p = ComponentVoid(0,0)
-        p.transform.scale = 2.0
+        p.scale = 2.0
         p.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
-            p.transform.scale = 1/p.transform.scale
-            p.transform.translate += vec(2, 2)
+            p.scale = 1/p.scale
+            p.pos += vec(2, 2)
         }
         val c = ComponentRect(-10, -10, 50, 50)
         c.color = Color.RED
@@ -29,7 +30,7 @@ class GuiTestScale : GuiBase(100, 100) {
         scissor.add(c)
         bg.add(scissor)
         p.add(bg)
-        mainComponents.add(p)
+        main.add(p)
 
     }
 }

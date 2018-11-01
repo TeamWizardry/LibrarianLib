@@ -46,7 +46,7 @@ class ComponentSearchBar(book: IBookGui, id: Int, onType: ((String) -> Unit)?) :
 
         clipToBounds = true
 
-        BUS.hook(GuiLayerEvents.MouseInEvent::class.java) {
+        BUS.hook(GuiComponentEvents.MouseMoveInEvent::class.java) {
             if (!textField.isFocused) {
                 if (textField.text.isEmpty())
                     slideOutShort()
@@ -55,7 +55,7 @@ class ComponentSearchBar(book: IBookGui, id: Int, onType: ((String) -> Unit)?) :
             }
         }
 
-        BUS.hook(GuiLayerEvents.MouseOutEvent::class.java) {
+        BUS.hook(GuiComponentEvents.MouseMoveOutEvent::class.java) {
             if (!textField.isFocused)
                 slideIn()
         }

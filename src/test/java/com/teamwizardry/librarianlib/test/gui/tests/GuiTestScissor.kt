@@ -3,13 +3,15 @@ package com.teamwizardry.librarianlib.test.gui.tests
 import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
+import com.teamwizardry.librarianlib.features.helpers.vec
 import java.awt.Color
 
 /**
  * Created by TheCodeWarrior
  */
-class GuiTestScissor : GuiBase(100, 100) {
+class GuiTestScissor : GuiBase() {
     init {
+        main.size = vec(100, 100)
 
         val bg = ComponentRect(0, 0, 200, 200)
         val c = ComponentRect(50, 50, 100, 100)
@@ -25,7 +27,7 @@ class GuiTestScissor : GuiBase(100, 100) {
 
         val scissor = ComponentVoid(0, 0, 50, 50)
         c.add(scissor)
-        c.transform.scale = 2.0
+        c.scale = 2.0
         scissor.add(c2)
         scissor.add(c3)
         scissor.clipToBounds = true
@@ -36,8 +38,8 @@ class GuiTestScissor : GuiBase(100, 100) {
 //            scissor.pos = vec(progress*100, progress*100)
 //        }
 
-        mainComponents.add(bg)
-        mainComponents.add(c)
+        main.add(bg)
+        main.add(c)
 
     }
 }

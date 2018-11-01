@@ -64,19 +64,19 @@ class DragMixin(protected var component: GuiComponent, protected var constraints
             }
         }
 
-        component.BUS.hook(GuiLayerEvents.AdjustMousePosition::class.java) { event ->
+        component.BUS.hook(GuiComponentEvents.CalculateMousePositionEvent::class.java) { event ->
             val mouseButton = mouseDown
             if (mouseButton != null) {
-                val pinnedPoint = component.transformToParentContext(clickedPoint)
-                val offset = component.transformToParentContext(component.mousePos) - pinnedPoint
+                val pinnedPoint = component.convertPointToParent(clickedPoint)
+                val offset = component.convertPointToParent(event.mousePos) - pinnedPoint
                 val newPos = constraints(component.pos + offset)
 
                 if (newPos != component.pos) {
                     component.pos = component.BUS.fire(
                             DragMoveEvent(component, mouseButton, component.pos, newPos)
                     ).newPos
-                    component.mousePos = component.parent?.let { parent ->
-                        component.transformFromParentContext(parent.mousePos)
+                    event.mousePos = component.parentComponent?.let { parent ->
+                        component.convertPointFromParent(parent.mousePos)
                     } ?: component.mousePos
                 }
             }

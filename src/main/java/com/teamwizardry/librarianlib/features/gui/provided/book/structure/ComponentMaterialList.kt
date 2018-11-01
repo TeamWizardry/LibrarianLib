@@ -16,7 +16,7 @@ class ComponentMaterialList(book: IBookGui, structureMaterials: StructureMateria
         val anchor = ComponentVoid(-16, -16)
 
         val sprite = ComponentSprite(book.paperSprite, 0, 0)
-        sprite.transform.translateZ += 800
+        sprite.translateZ += 800
         sprite.color = Color(1f, 1f, 1f, 0.5f)
         anchor.add(sprite)
 
@@ -25,7 +25,7 @@ class ComponentMaterialList(book: IBookGui, structureMaterials: StructureMateria
         for ((index, stack) in structureMaterials.stacks.withIndex()) {
             val stackIcon = ComponentStack(index % 7 * 16, index / 7 * 16)
             stackIcon.stack_im { stack[( structurePage.ticks / 80) % stack.size] }
-            stackIcon.transform.translateZ += 500
+            stackIcon.translateZ += 500
             add(stackIcon)
         }
 

@@ -1,0 +1,48 @@
+package com.teamwizardry.librarianlib.features.helpers
+
+import com.teamwizardry.librarianlib.features.math.Vec2d
+import net.minecraft.util.math.Vec3d
+
+@Deprecated("Use primitive functions", level = DeprecationLevel.HIDDEN)
+fun vec(x: Number, y: Number) = Vec2d(x.toDouble(), y.toDouble())
+
+fun vec(x: Int, y: Int) = Vec2d(x.toDouble(), y.toDouble())
+fun vec(x: Int, y: Float) = Vec2d(x.toDouble(), y.toDouble())
+fun vec(x: Int, y: Double) = Vec2d(x.toDouble(), y)
+fun vec(x: Float, y: Int) = Vec2d(x.toDouble(), y.toDouble())
+fun vec(x: Float, y: Float) = Vec2d(x.toDouble(), y.toDouble())
+fun vec(x: Float, y: Double) = Vec2d(x.toDouble(), y)
+fun vec(x: Double, y: Int) = Vec2d(x, y.toDouble())
+fun vec(x: Double, y: Float) = Vec2d(x, y.toDouble())
+fun vec(x: Double, y: Double) = Vec2d(x, y)
+
+@Deprecated("Use primitive functions", level = DeprecationLevel.HIDDEN)
+fun vec(x: Number, y: Number, z: Number) = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
+
+fun vec(x: Int, y: Int, z: Int) = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
+fun vec(x: Int, y: Int, z: Float) = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
+fun vec(x: Int, y: Int, z: Double) = Vec3d(x.toDouble(), y.toDouble(), z)
+fun vec(x: Int, y: Float, z: Int) = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
+fun vec(x: Int, y: Float, z: Float) = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
+fun vec(x: Int, y: Float, z: Double) = Vec3d(x.toDouble(), y.toDouble(), z)
+fun vec(x: Int, y: Double, z: Int) = Vec3d(x.toDouble(), y, z.toDouble())
+fun vec(x: Int, y: Double, z: Float) = Vec3d(x.toDouble(), y, z.toDouble())
+fun vec(x: Int, y: Double, z: Double) = Vec3d(x.toDouble(), y, z)
+fun vec(x: Float, y: Int, z: Int) = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
+fun vec(x: Float, y: Int, z: Float) = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
+fun vec(x: Float, y: Int, z: Double) = Vec3d(x.toDouble(), y.toDouble(), z)
+fun vec(x: Float, y: Float, z: Int) = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
+fun vec(x: Float, y: Float, z: Float) = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
+fun vec(x: Float, y: Float, z: Double) = Vec3d(x.toDouble(), y.toDouble(), z)
+fun vec(x: Float, y: Double, z: Int) = Vec3d(x.toDouble(), y, z.toDouble())
+fun vec(x: Float, y: Double, z: Float) = Vec3d(x.toDouble(), y, z.toDouble())
+fun vec(x: Float, y: Double, z: Double) = Vec3d(x.toDouble(), y, z)
+fun vec(x: Double, y: Int, z: Int) = Vec3d(x, y.toDouble(), z.toDouble())
+fun vec(x: Double, y: Int, z: Float) = Vec3d(x, y.toDouble(), z.toDouble())
+fun vec(x: Double, y: Int, z: Double) = Vec3d(x, y.toDouble(), z)
+fun vec(x: Double, y: Float, z: Int) = Vec3d(x, y.toDouble(), z.toDouble())
+fun vec(x: Double, y: Float, z: Float) = Vec3d(x, y.toDouble(), z.toDouble())
+fun vec(x: Double, y: Float, z: Double) = Vec3d(x, y.toDouble(), z)
+fun vec(x: Double, y: Double, z: Int) = Vec3d(x, y, z.toDouble())
+fun vec(x: Double, y: Double, z: Float) = Vec3d(x, y, z.toDouble())
+fun vec(x: Double, y: Double, z: Double) = Vec3d(x, y, z)

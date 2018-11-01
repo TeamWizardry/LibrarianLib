@@ -10,12 +10,13 @@ import java.awt.Color
 /**
  * Created by TheCodeWarrior
  */
-class GuiTestResizeMove : GuiBase(100, 100) {
+class GuiTestResizeMove : GuiBase() {
     init {
+        main.size = vec(100, 100)
 
         val c = ComponentRect(25, 25, 50, 50)
         c.color = Color.RED
-        mainComponents.add(c)
+        main.add(c)
 
         c.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
             c.pos += vec(1, 1)

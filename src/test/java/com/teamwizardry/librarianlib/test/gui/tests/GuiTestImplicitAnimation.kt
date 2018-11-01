@@ -13,12 +13,13 @@ import java.util.concurrent.ThreadLocalRandom
 /**
  * Created by TheCodeWarrior
  */
-class GuiTestImplicitAnimation : GuiBase(100, 100) {
+class GuiTestImplicitAnimation : GuiBase() {
     init {
+        main.size = vec(100, 100)
 
         val c = ComponentRect(25, 25, 50, 50)
         c.color = Color.RED
-        mainComponents.add(c)
+        main.add(c)
 
         c.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
             fun rand() = ThreadLocalRandom.current().nextDouble(-20.0, 30.0)

@@ -9,9 +9,17 @@ import org.jetbrains.annotations.Nullable;
 
 public class RMValueInt {
     private int value;
+    @Nullable
+    private final ChangeListener.Int change;
 
     public RMValueInt(int initialValue) {
         this.value = initialValue;
+        this.change = null;
+    }
+
+    public RMValueInt(int initialValue, @NotNull ChangeListener.Int change) {
+        this.value = initialValue;
+        this.change = change;
     }
 
     /**

@@ -9,9 +9,17 @@ import org.jetbrains.annotations.Nullable;
 
 public class RMValueLong {
     private long value;
+    @Nullable
+    private final ChangeListener.Long change;
 
     public RMValueLong(long initialValue) {
         this.value = initialValue;
+        this.change = null;
+    }
+
+    public RMValueLong(long initialValue, @NotNull ChangeListener.Long change) {
+        this.value = initialValue;
+        this.change = change;
     }
 
     /**

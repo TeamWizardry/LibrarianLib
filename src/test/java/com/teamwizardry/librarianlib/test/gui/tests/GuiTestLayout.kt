@@ -16,10 +16,12 @@ import java.util.concurrent.ThreadLocalRandom
 /**
  * Created by TheCodeWarrior
  */
-class GuiTestLayout : GuiBase(100, 100) {
+class GuiTestLayout : GuiBase() {
     init {
+        main.size = vec(100, 100)
+
         val mainList = CustomComponent(0, 0, 75, 75)
-        mainComponents.add(mainList)
+        main.add(mainList)
         mainList.add(
             ComponentRect(0, 0, 0, 0).also { it.color = Color.RED },
             ComponentRect(0, 0, 0, 0).also { it.color = Color.GREEN }
@@ -47,14 +49,14 @@ class GuiTestLayout : GuiBase(100, 100) {
         val addRemoveBox = ComponentRect(0, 0, 0, 0).also { it.color = Color.BLUE }
 
         val sizeButton = ComponentRect(100, 0, 10, 10)
-        mainComponents.add(sizeButton)
+        main.add(sizeButton)
         sizeButton.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
             fun rand() = ThreadLocalRandom.current().nextDouble(-10.0, 10.0)
             mainList.size += vec(rand(), rand())
         }
 
         val addRemoveButton = ComponentRect(100, 20, 10, 10)
-        mainComponents.add(addRemoveButton)
+        main.add(addRemoveButton)
         addRemoveButton.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
             if(addRemoveBox.parent == null) {
                 mainList.add(addRemoveBox)
@@ -64,7 +66,7 @@ class GuiTestLayout : GuiBase(100, 100) {
         }
 
         val markLayoutButton = ComponentRect(100, 40, 10, 10)
-        mainComponents.add(markLayoutButton)
+        main.add(markLayoutButton)
         markLayoutButton.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
             mainList.setNeedsLayout()
         }

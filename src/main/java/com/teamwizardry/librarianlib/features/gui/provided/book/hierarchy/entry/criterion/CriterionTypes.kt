@@ -41,6 +41,6 @@ object CriterionTypes {
     }
 
     fun getCriterion(type: ResourceLocation): ((JsonObject) -> ICriterion)? {
-        return criterionTypes.getOrDefault(type.toString(), null)
+        return criterionTypes[type.toString()]
     }
 }

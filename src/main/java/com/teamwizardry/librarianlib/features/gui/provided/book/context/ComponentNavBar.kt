@@ -49,11 +49,11 @@ class ComponentNavBar(private val book: IBookGui, posX: Int, posY: Int, width: I
         val next = ComponentSprite(nextSprite, (size.x - nextSprite.width).toInt(), (size.y / 2.0 - nextSprite.height / 2.0).toInt())
         add(back, next, home)
 
-        home.BUS.hook(GuiLayerEvents.MouseInEvent::class.java) {
+        home.BUS.hook(GuiComponentEvents.MouseMoveInEvent::class.java) {
             home.sprite = book.homeSpritePressed
             home.color = book.book.bookColor.brighter()
         }
-        home.BUS.hook(GuiLayerEvents.MouseOutEvent::class.java) {
+        home.BUS.hook(GuiComponentEvents.MouseMoveOutEvent::class.java) {
             home.sprite = book.homeSprite
             home.color = Color.WHITE
         }

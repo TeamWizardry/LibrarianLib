@@ -44,7 +44,7 @@ open class ComponentBookMark(val book: IBookGui, val icon: Sprite, val id: Int, 
         pad = 10 + Minecraft.getMinecraft().fontRenderer.getStringWidth(textString)
         textComp.text = textString
         textComp.color = textColor
-        textComp.transform.translateZ = 10.0
+        textComp.translateZ = 10.0
         textComp.unicode = false
         textComp.shadow = true
         bar.add(textComp)

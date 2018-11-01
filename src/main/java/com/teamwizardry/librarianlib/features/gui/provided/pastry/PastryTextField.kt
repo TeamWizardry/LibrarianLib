@@ -11,9 +11,9 @@ import net.minecraft.client.gui.FontRenderer
 class PastryTextField(fontRenderer: FontRenderer, x: Int, y: Int, width: Int, height: Int): GuiComponent(x, y, width, height) {
     constructor(x: Int, y: Int, width: Int, height: Int) : this(Minecraft.getMinecraft().fontRenderer, x, y, width, height)
 
-    val field = ComponentTextField(fontRenderer, x, y, width, height)
+    val field = ComponentTextField(fontRenderer, 1, 1, width-2, height-2)
 
-    private val background = SpriteLayer(PastryTexture.textField, 0, 0, 0, 0)
+    private val background = SpriteLayer(PastryTexture.textField, 0, 0, width, height)
 
     init {
         this.add(background, field)

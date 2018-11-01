@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11
 
-interface IComponentClipping {
+interface ILayerClipping {
     /**
      * If true, clip component and its context to within its bounds. When this is set and both [clippingSprite] and
      * [customClipping] are `null`, mouseover checks will be clipped.
@@ -57,7 +57,7 @@ interface IComponentClipping {
  *
  * Created by TheCodeWarrior
  */
-class ComponentClippingHandler: IComponentClipping {
+class LayerClippingHandler: ILayerClipping {
     lateinit var component: GuiLayer
 
     /**

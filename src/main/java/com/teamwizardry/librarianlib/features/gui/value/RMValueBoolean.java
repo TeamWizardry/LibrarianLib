@@ -10,9 +10,17 @@ import java.util.function.BooleanSupplier;
 
 public class RMValueBoolean {
     private boolean value;
+    @Nullable
+    private final ChangeListener.Boolean change;
 
     public RMValueBoolean(boolean initialValue) {
         this.value = initialValue;
+        this.change = null;
+    }
+
+    public RMValueBoolean(boolean initialValue, @NotNull ChangeListener.Boolean change) {
+        this.value = initialValue;
+        this.change = change;
     }
 
     /**
