@@ -2,9 +2,12 @@ package com.teamwizardry.librarianlib.features.gui.component
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.gui.component.supporting.*
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
-
+import org.lwjgl.opengl.GL11
 
 /**
  * The base class of every on-screen object. These can be nested within each other using [add]. Subcomponents will be
@@ -74,6 +77,13 @@ open class GuiComponent private constructor(
         get() = this.root as GuiComponent
     val parentComponent: GuiComponent?
         get() = this.parent as GuiComponent
+
+    override fun drawDebugBoundingBox() {
+        if (mouseInside) GlStateManager.color(0.75f, 0.75f, 0.75f)
+        if (mouseOver) GlStateManager.color(1f, 1f, 1f)
+
+        super.drawDebugBoundingBox()
+    }
 
     init {
         @Suppress("LeakingThis")

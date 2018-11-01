@@ -1,13 +1,18 @@
 package com.teamwizardry.librarianlib.features.gui.component.supporting
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.animator.Animation
 import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.value.IMValue
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import org.lwjgl.opengl.GL11
 
 interface ILayerRendering {
     val tooltip_im: IMValue<List<String>?>
@@ -43,13 +48,13 @@ interface ILayerRendering {
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
     fun renderLayer(partialTicks: Float)
+
+    /**
+     * Draw a bounding box around
+     */
+    fun drawDebugBoundingBox()
 }
 
-/**
- * TODO: Document file ComponentRenderHandler
- *
- * Created by TheCodeWarrior
- */
 class LayerRenderHandler: ILayerRendering {
     lateinit var layer: GuiLayer
 
@@ -152,6 +157,10 @@ class LayerRenderHandler: ILayerRendering {
 
         layer.BUS.fire(GuiLayerEvents.PreDrawEvent(partialTicks))
 
+        if (LibrarianLib.DEV_ENVIRONMENT && Minecraft.getMinecraft().renderManager.isDebugBoundingBox) {
+            GlStateManager.color(1f, 0f, 1f)
+            layer.drawDebugBoundingBox()
+        }
         GlStateManager.enableTexture2D()
         GlStateManager.color(1f, 1f, 1f, 1f)
         layer.draw(partialTicks)
@@ -166,5 +175,18 @@ class LayerRenderHandler: ILayerRendering {
         layer.clipping.popDisable()
 
         GlStateManager.popMatrix()
+    }
+
+    override fun drawDebugBoundingBox() {
+        GlStateManager.disableTexture2D()
+        val tessellator = Tessellator.getInstance()
+        val vb = tessellator.buffer
+        vb.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+        vb.pos(0.0, 0.0, 0.0).endVertex()
+        vb.pos(layer.size.x, 0.0, 0.0).endVertex()
+        vb.pos(layer.size.x, layer.size.y, 0.0).endVertex()
+        vb.pos(0.0, layer.size.y, 0.0).endVertex()
+        vb.pos(0.0, 0.0, 0.0).endVertex()
+        tessellator.draw()
     }
 }
