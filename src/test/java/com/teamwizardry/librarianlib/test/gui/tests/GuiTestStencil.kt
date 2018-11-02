@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
+import com.teamwizardry.librarianlib.features.gui.layers.ColorLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
 import java.awt.Color
 
@@ -12,36 +13,27 @@ import java.awt.Color
  */
 class GuiTestStencil : GuiBase() {
     init {
-        main.size = vec(0, 0)
+        main.size = vec(100, 100)
 
-        val wrapper = ComponentVoid(100, 100)
-        val clipping = ComponentRect(0, 0, 100, 100)
-        val clipped = ComponentRect(50, 50, 100, 100)
-        val marker = ComponentRect(49, 49, 102, 102)
+        val unclipped = ColorLayer(Color.PINK, 0, 0, 100, 100)
+        val clipped = ColorLayer(Color.RED, -25, -25, 100, 100)
+        val clipping = ColorLayer(Color.GREEN, 25, 25, 50, 50)
 
-        clipping.color = Color(0f, 1f, 0f, 0.5f)
-        clipped.color = Color.BLUE
-        marker.color = Color.RED
-
-        wrapper.add(marker)
-        wrapper.add(clipping)
+        main.add(unclipped, clipping)
         clipping.add(clipped)
+
+        unclipped.rotation = Math.toRadians(45.0)
+        clipped.rotation = Math.toRadians(45.0)
 
         clipping.clipToBounds = true
         clipping.cornerRadius = 15.0
-        clipping.cornerPixelSize = 2
 
-        wrapper.rotation = Math.toRadians(45.0)
-        wrapper.anchor = vec(0.5, 0.5)
-
-        val anim = BasicAnimation(clipping, "clipping.cornerRadius")
+        val anim = BasicAnimation(clipping, "cornerRadius")
         anim.from = 0
-        anim.to = 50
+        anim.to = 25
         anim.duration = 2 * 20f
         anim.shouldReverse = true
         anim.repeatCount = -1
         clipping.animator.add(anim)
-
-        main.add(wrapper)
     }
 }

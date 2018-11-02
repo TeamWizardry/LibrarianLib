@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.gui.component
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventBus
 import com.teamwizardry.librarianlib.features.gui.component.supporting.*
+import com.teamwizardry.librarianlib.features.gui.components.LayerBackedComponent
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
@@ -183,6 +184,13 @@ open class GuiLayer private constructor(
      */
     fun invalidate() {
         this.isInvalid = true
+    }
+
+    /**
+     * Wraps this layer in a GuiComponent
+     */
+    fun toComponent(): GuiComponent {
+        return LayerBackedComponent(this)
     }
     //endregion
 

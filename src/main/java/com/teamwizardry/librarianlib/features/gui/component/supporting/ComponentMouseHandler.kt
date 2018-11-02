@@ -127,7 +127,7 @@ class ComponentMouseHandler: IComponentMouse {
     override fun updateMouseInside(): Boolean {
         var mouseInside = false
         if(shouldComputeMouseInsideFromBounds) {
-            mouseInside = mousePos in component.bounds
+            mouseInside = mousePos in component.bounds && !component.isPointClipped(mousePos)
         }
         for(child in component.subComponents.asReversed()) {
             mouseInside = mouseInside || child.updateMouseInside()

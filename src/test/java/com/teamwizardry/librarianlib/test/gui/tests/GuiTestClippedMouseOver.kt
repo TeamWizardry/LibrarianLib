@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.test.gui.tests
 import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
+import com.teamwizardry.librarianlib.features.gui.layers.ColorLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
 import java.awt.Color
 import kotlin.math.PI
@@ -13,42 +14,19 @@ import kotlin.math.PI
 class GuiTestClippedMouseOver : GuiBase() {
 
     init {
-        main.size = vec(0, 0)
+        main.size = vec(500, 200)
+        val background = ColorLayer(Color.WHITE, 0, 0, 500, 200)
+        main.add(background)
 
-        rectMouseOver(-200, 0, 100, 100, Color.RED)
-        rectMouseOver(-100, 0, 100, 100, Color.BLUE) { rect ->
-            val child = ComponentRect(-20, -20, 40, 40)
-            child.color = Color.GREEN
-            child.rotation = PI / 4
+        rectMouseOver(10, 10, 75, 75, Color.GREEN) { rect ->
             rect.clipToBounds = true
-            rect.add(child)
+            rect.cornerRadius = 25.0
         }
-        rectMouseOver(0, 0, 100, 100, Color.GREEN) { rect ->
-            val child = ComponentRect(-20, -20, 40, 40)
-            child.color = Color.BLUE
-            child.rotation = PI / 4
+
+        rectMouseOver(100, 10, 75, 75, Color.GREEN) { rect ->
             rect.clipToBounds = true
-            rect.cornerRadius = 10.0
-            rect.cornerPixelSize = 2
-            rect.add(child)
-        }
-        rectMouseOver(100, 0, 100, 100, Color.BLUE) { rect ->
-            val child = ComponentRect(-20, -20, 40, 40)
-            child.color = Color.GREEN
-            child.rotation = PI / 4
-            rect.clipToBounds = true
-            rect.cornerRadius = 10.0
-            rect.add(child)
-        }
-        rectMouseOver(200, 0, 100, 100, Color.RED) { rect ->
-            val child = ComponentRect(-20, -20, 40, 40)
-            child.color = Color.BLUE
-            child.rotation = PI / 4
-            rect.clipToBounds = true
-            rect.cornerRadius = 10.0
-            rect.cornerPixelSize = 2
-            rect.rotation = PI / 4
-            rect.add(child)
+            rect.cornerRadius = 25.0
+            rect.cornerPixelSize = 3
         }
     }
 
