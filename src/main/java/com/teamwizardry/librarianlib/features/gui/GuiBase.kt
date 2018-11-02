@@ -25,6 +25,7 @@ open class GuiBase : GuiScreen() {
 
     val main: GuiComponent by impl::main.delegate
     val root: GuiComponent by impl::root.delegate
+    var useDefaultBackground by impl::useDefaultBackground.delegate
 
     override fun initGui() {
         impl.initGui()

@@ -5,10 +5,12 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.gui.components.RootComponent
+import com.teamwizardry.librarianlib.features.gui.layers.GradientLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.kotlin.div
 import com.teamwizardry.librarianlib.features.kotlin.minus
+import com.teamwizardry.librarianlib.features.math.Axis2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraft.client.Minecraft
@@ -19,6 +21,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
+import java.awt.Color
 import java.io.IOException
 
 open class LibGuiImpl(
@@ -44,8 +47,23 @@ open class LibGuiImpl(
             this.scale = 1.0/scale
         }
     }
+    private val background = GradientLayer(Axis2d.Y,
+        Color(0x10, 0x10, 0x10, 0xC0),
+        Color(0x10, 0x10, 0x10, 0xD0),
+        0, 0, 0, 0
+    )
+    var useDefaultBackground = false
+        set(value) {
+            field = value
+            if(value && background.parent == null) {
+                root.add(background)
+            } else if(!value && background.parent != null) {
+                root.remove(background)
+            }
+        }
 
     init {
+        background.zIndex = Int.MIN_VALUE
         main.shouldComputeMouseInsideFromBounds = false
         root.shouldComputeMouseInsideFromBounds = false
         root.add(main)
@@ -55,6 +73,7 @@ open class LibGuiImpl(
         val scaledResolution = ScaledResolution(Minecraft.getMinecraft())
         val resolution = vec(scaledResolution.scaledWidth, scaledResolution.scaledHeight)
         root.size_rm.set(resolution) //
+        background.size = resolution
         main.setNeedsLayout()
     }
 

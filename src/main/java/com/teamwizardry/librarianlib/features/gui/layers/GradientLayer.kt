@@ -37,11 +37,12 @@ class GradientLayer(val axis: Axis2d, posX: Int, posY: Int, width: Int, height: 
         val vb = tessellator.buffer
 
         GlStateManager.disableTexture2D()
+        GlStateManager.disableCull()
 
         GlStateManager.enableBlend()
 
         if(stops.isNotEmpty()) {
-            vb.begin(GL11.GL_QUAD_STRIP, DefaultVertexFormats.POSITION_COLOR)
+            vb.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_COLOR)
             if (axis == Axis2d.X) {
                 if (stops.first().location != 0.0) {
                     vb.pos(minX, minY, 0.0).color(stops.first().color).endVertex()
