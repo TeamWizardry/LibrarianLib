@@ -96,7 +96,7 @@ open class GuiComponent private constructor(
 
         GlStateManager.glLineWidth(2f)
         GlStateManager.color(1f, 0f, 1f)
-        if (mouseInside) GlStateManager.color(0.75f, 0.75f, 0.75f)
+        if (mouseInside) GlStateManager.color(0.25f, 0.25f, 0.25f)
         if (mouseOver) GlStateManager.color(1f, 1f, 1f)
 
         super.drawDebugBoundingBox()

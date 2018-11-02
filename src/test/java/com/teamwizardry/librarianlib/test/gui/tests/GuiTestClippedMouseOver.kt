@@ -27,6 +27,10 @@ class GuiTestClippedMouseOver : GuiBase() {
             rect.clipToBounds = true
             rect.cornerRadius = 25.0
             rect.cornerPixelSize = 3
+
+            val child = ComponentRect(50, 50, 50, 50)
+            child.color = Color.BLUE
+            rect.add(child)
         }
     }
 

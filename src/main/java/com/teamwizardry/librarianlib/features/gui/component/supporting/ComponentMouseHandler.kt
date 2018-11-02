@@ -130,7 +130,7 @@ class ComponentMouseHandler: IComponentMouse {
             mouseInside = mousePos in component.bounds && !component.isPointClipped(mousePos)
         }
         for(child in component.subComponents.asReversed()) {
-            mouseInside = mouseInside || child.updateMouseInside()
+            mouseInside = child.updateMouseInside() || mouseInside
         }
         if(mouseInside && !this.mouseInside) {
             component.BUS.fire(GuiComponentEvents.MouseMoveInEvent(lastMousePos, mousePos))
@@ -149,9 +149,14 @@ class ComponentMouseHandler: IComponentMouse {
     override fun updateMouseOver(occluded: Boolean): Boolean {
         @Suppress("NAME_SHADOWING") var occluded = occluded
         var mouseOver = false
+        val clipped = component.isPointClipped(mousePos)
         for(child in component.subComponents.reversed()) {
-            occluded = occluded || child.updateMouseOver(occluded)
-            mouseOver = mouseOver || child.shouldPropagateMouseOverTrue()
+            if(clipped) {
+                child.updateMouseOver(true)
+            } else {
+                occluded = child.updateMouseOver(occluded) || occluded
+            }
+            mouseOver = child.shouldPropagateMouseOverTrue() || mouseOver
         }
         mouseOver = mouseOver || (!occluded && mouseInside)
         occluded = occluded || (mouseOver && isOpaqueToMouse)
@@ -161,6 +166,7 @@ class ComponentMouseHandler: IComponentMouse {
         if(!mouseOver && this.mouseOver) {
             component.BUS.fire(GuiComponentEvents.MouseMoveLeaveEvent(lastMousePos, mousePos))
         }
+        this.mouseOver = mouseOver
         return occluded
     }
 
