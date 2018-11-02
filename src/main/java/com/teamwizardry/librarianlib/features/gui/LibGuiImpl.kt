@@ -8,7 +8,9 @@ import com.teamwizardry.librarianlib.features.gui.components.RootComponent
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.kotlin.div
+import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
@@ -22,7 +24,7 @@ import java.io.IOException
 open class LibGuiImpl(
     protected val guiWidth: () -> Int, protected val guiHeight: () -> Int, protected val adjustGuiSize: () -> Boolean
     ) {
-    val root: GuiComponent = RootComponent()
+    val root: RootComponent = RootComponent()
     val main: GuiComponent = object: GuiComponent(0, 0) {
         override var pos: Vec2d
             get() = root.size/2
@@ -32,7 +34,7 @@ open class LibGuiImpl(
             set(value) {}
 
         override fun layoutChildren() {
-            val parentSize = this.parent!!.size
+            val parentSize = this.parent!!.size - vec(20, 20)
             val scaledResolution = ScaledResolution(Minecraft.getMinecraft())
             val maxScale = scaledResolution.scaleFactor
             var scale = 1
@@ -53,6 +55,7 @@ open class LibGuiImpl(
         val scaledResolution = ScaledResolution(Minecraft.getMinecraft())
         val resolution = vec(scaledResolution.scaledWidth, scaledResolution.scaledHeight)
         root.size_rm.set(resolution) //
+        main.setNeedsLayout()
     }
 
     fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -60,10 +63,7 @@ open class LibGuiImpl(
         val relPos = vec(mouseX, mouseY)
         GlStateManager.pushMatrix()
 
-        root.updateMouse(relPos)
-        root.updateMouseInside()
-        root.updateMouseOver(false)
-        root.renderRoot(partialTicks)
+        root.renderRoot(partialTicks, relPos)
 
         GlStateManager.popMatrix()
 

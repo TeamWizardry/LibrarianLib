@@ -135,9 +135,9 @@ open class GuiLayer private constructor(
         if(needsLayout) {
             layoutChildren()
             BUS.fire(GuiLayerEvents.LayoutChildren())
-            needsLayout = false
         }
         children.forEach { it.runLayoutIfNeeded() }
+        needsLayout = false
     }
 
     /**
@@ -147,8 +147,8 @@ open class GuiLayer private constructor(
     open fun runLayout() {
         layoutChildren()
         BUS.fire(GuiLayerEvents.LayoutChildren())
-        needsLayout = false
         children.forEach { it.runLayout() }
+        needsLayout = false
     }
 
     //region - Base component stuff
@@ -200,15 +200,4 @@ open class GuiLayer private constructor(
         this.size = vec(width, height)
     }
     //endregion
-
-    open fun renderRoot(partialTicks: Float) {
-        StencilUtil.clear()
-        GL11.glEnable(GL11.GL_STENCIL_TEST)
-        cleanUpChildren()
-        runLayoutIfNeeded()
-        preFrame()
-        sortChildren()
-        renderLayer(partialTicks)
-        GL11.glDisable(GL11.GL_STENCIL_TEST)
-    }
 }

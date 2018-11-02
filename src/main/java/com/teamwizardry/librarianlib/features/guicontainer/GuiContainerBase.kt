@@ -89,7 +89,7 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         GlStateManager.pushAttrib()
         GlStateManager.enableBlend()
         val relPos = vec(mouseX, mouseY)
-        fullscreenComponents.renderRoot(partialTicks)
+//        fullscreenComponents.renderRoot(partialTicks)
 
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()

@@ -6,8 +6,10 @@ import com.teamwizardry.librarianlib.features.math.Rect2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.CoordinateSpace2D
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.ScreenSpace
+import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
+import org.lwjgl.opengl.GL11
 
 class RootComponent: GuiComponent(0, 0) {
     override var size: Vec2d
@@ -42,4 +44,22 @@ class RootComponent: GuiComponent(0, 0) {
         get() = null
     override val root: GuiLayer
         get() = this
+
+    fun renderRoot(partialTicks: Float, mousePos: Vec2d) {
+        StencilUtil.clear()
+        GL11.glEnable(GL11.GL_STENCIL_TEST)
+
+        cleanUpChildren()
+        sortChildren()
+
+        runLayoutIfNeeded()
+        callPreFrame()
+
+        updateMouse(mousePos)
+        updateMouseInside()
+        updateMouseOver(false)
+        renderLayer(partialTicks)
+
+        GL11.glDisable(GL11.GL_STENCIL_TEST)
+    }
 }

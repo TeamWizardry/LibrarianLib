@@ -32,7 +32,7 @@ class GuiTestMouseOverFlags : GuiBase() {
         normalLabel.text = "occlude = true, propagate = false"
         noOccludeLabel.text = "occlude = false, propagate = false"
         noOccludePropagateLabel.text = "occlude = false, propagate = true"
-        propagateLabel.text = "occlude = true, propagate = false"
+        propagateLabel.text = "occlude = true, propagate = true"
 
         background.add(
                 normal, normalLabel,

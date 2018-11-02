@@ -71,7 +71,7 @@ object GuiOverlay {
 
         StencilUtil.clear()
         GL11.glEnable(GL11.GL_STENCIL_TEST)
-        mainComp.renderRoot(ClientTickHandler.partialTicks)
+//        mainComp.renderRoot(ClientTickHandler.partialTicks)
         GL11.glDisable(GL11.GL_STENCIL_TEST)
     }
 
