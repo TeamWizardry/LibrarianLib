@@ -99,7 +99,7 @@ class LayerGeometryHandler: ILayerGeometry {
     override fun glApplyTransform() {
         updateMatrixIfNeeded()
         GlStateManager.translate(matrixParams.pos.x, matrixParams.pos.y, layer.translateZ)
-        GlStateManager.rotate(Math.toDegrees(matrixParams.rotation).toFloat(), 0f, 1f, 0f)
+        GlStateManager.rotate(Math.toDegrees(matrixParams.rotation).toFloat(), 0f, 0f, 1f)
         GlStateManager.scale(matrixParams.scale.x, matrixParams.scale.y, 1.0)
         GlStateManager.translate(-matrixParams.anchor.x, -matrixParams.anchor.y, 0.0)
         GlStateManager.translate(matrixParams.contentsOffset.x, matrixParams.contentsOffset.y, 0.0)
@@ -134,7 +134,17 @@ class LayerGeometryHandler: ILayerGeometry {
         matrix.translate(-matrixParams.anchor)
         matrix.translate(matrixParams.contentsOffset)
         this.matrix = matrix.frozen()
-        this.inverseMatrix = matrix.invertSafely().frozen()
+
+        val inverseX = if(matrixParams.scale.x == 0.0) Double.POSITIVE_INFINITY else 1.0/matrixParams.scale.x
+        val inverseY = if(matrixParams.scale.y == 0.0) Double.POSITIVE_INFINITY else 1.0/matrixParams.scale.y
+        val inverseMatrix = Matrix3()
+        inverseMatrix.translate(-matrixParams.contentsOffset)
+        inverseMatrix.translate(matrixParams.anchor)
+        inverseMatrix.scale(vec(inverseX, inverseY))
+        inverseMatrix.rotate(-matrixParams.rotation)
+        inverseMatrix.translate(-matrixParams.pos)
+        this.inverseMatrix = inverseMatrix.frozen()
+        matrix.toString()
     }
 
     private fun updateMatrixIfNeeded() {

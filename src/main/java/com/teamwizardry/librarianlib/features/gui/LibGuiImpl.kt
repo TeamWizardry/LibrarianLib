@@ -36,7 +36,7 @@ open class LibGuiImpl(
             val scaledResolution = ScaledResolution(Minecraft.getMinecraft())
             val maxScale = scaledResolution.scaleFactor
             var scale = 1
-            while(size.x / scale > parentSize.x && size.y / scale > parentSize.y && scale < maxScale) {
+            while((size.x / scale > parentSize.x || size.y / scale > parentSize.y) && scale < maxScale) {
                 scale++
             }
             this.scale = 1.0/scale

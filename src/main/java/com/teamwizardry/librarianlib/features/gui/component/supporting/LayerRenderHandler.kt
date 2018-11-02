@@ -158,6 +158,7 @@ class LayerRenderHandler: ILayerRendering {
         layer.BUS.fire(GuiLayerEvents.PreDrawEvent(partialTicks))
 
         if (LibrarianLib.DEV_ENVIRONMENT && Minecraft.getMinecraft().renderManager.isDebugBoundingBox) {
+            GlStateManager.glLineWidth(1f)
             GlStateManager.color(1f, 0f, 1f)
             layer.drawDebugBoundingBox()
         }

@@ -118,7 +118,7 @@ class ComponentMouseHandler: IComponentMouse {
     override var shouldComputeMouseInsideFromBounds: Boolean = true
 
     override fun updateMouse(parentMousePos: Vec2d) {
-        this.mousePos = component.inverseMatrix * parentMousePos
+        this.mousePos = component.convertPointFromParent(parentMousePos)
         component.subComponents.forEach {
             it.updateMouse(this.mousePos)
         }

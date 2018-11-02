@@ -3,6 +3,8 @@ package com.teamwizardry.librarianlib.features.math
 import com.teamwizardry.librarianlib.features.helpers.vec
 import javax.vecmath.Matrix3d
 import javax.vecmath.Point3d
+import kotlin.math.floor
+import kotlin.math.max
 
 class Matrix3 private constructor(private val matrix: Matrix3d, val frozen: Boolean) {
     constructor(): this(Matrix3d().apply { setIdentity() }, false)
@@ -12,27 +14,6 @@ class Matrix3 private constructor(private val matrix: Matrix3d, val frozen: Bool
     fun invert(): Matrix3 {
         val inverseMatrix = this.copy()
         inverseMatrix.matrix.invert()
-        return inverseMatrix
-    }
-
-    /**
-     * Returns an inverse of this matrix, avoiding issues with zero scales by collapsing positions onto a line
-     */
-    fun invertSafely(): Matrix3 {
-        val inverseMatrix = this.copy()
-        val xZero = inverseMatrix.matrix.m00 == 0.0 && inverseMatrix.matrix.m01 == 0.0
-        val yZero = inverseMatrix.matrix.m10 == 0.0 && inverseMatrix.matrix.m11 == 0.0
-        if(xZero) inverseMatrix.matrix.m00 = 1.0
-        if(yZero) inverseMatrix.matrix.m11 = 1.0
-        inverseMatrix.matrix.invert()
-        if(xZero) {
-            inverseMatrix.matrix.m00 = Double.POSITIVE_INFINITY
-            inverseMatrix.matrix.m01 = 0.0
-        }
-        if(yZero) {
-            inverseMatrix.matrix.m10 = 0.0
-            inverseMatrix.matrix.m11 = Double.POSITIVE_INFINITY
-        }
         return inverseMatrix
     }
 
@@ -108,7 +89,7 @@ class Matrix3 private constructor(private val matrix: Matrix3d, val frozen: Bool
         this.point.y = point.y
         this.point.z = 1.0
         matrix.transform(this.point)
-        return vec(point.x, point.y)
+        return vec(this.point.x, this.point.y)
     }
 
     /**
@@ -153,6 +134,35 @@ class Matrix3 private constructor(private val matrix: Matrix3d, val frozen: Bool
      */
     operator fun timesAssign(matrix: Matrix3) = mul(matrix)
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Matrix3) return false
+
+        if (matrix != other.matrix) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return matrix.hashCode()
+    }
+
+    override fun toString(): String {
+        val w0 = floor(max(matrix.m00, max(matrix.m10, matrix.m20))).toString().length + 1
+        val w1 = floor(max(matrix.m01, max(matrix.m11, matrix.m21))).toString().length + 1
+        val w2 = floor(max(matrix.m02, max(matrix.m12, matrix.m22))).toString().length + 1
+
+        return """
+            ⎡%$w0.2f %$w1.2f %$w2.2f⎤
+            ⎢%$w0.2f %$w1.2f %$w2.2f⎥
+            ⎣%$w0.2f %$w1.2f %$w2.2f⎦
+        """.trimIndent().format(
+            matrix.m00, matrix.m01, matrix.m02,
+            matrix.m10, matrix.m11, matrix.m12,
+            matrix.m20, matrix.m21, matrix.m22
+        )
+    }
+
     companion object {
         /**
          * A frozen identity matrix
@@ -160,4 +170,6 @@ class Matrix3 private constructor(private val matrix: Matrix3d, val frozen: Bool
         @JvmField
         val identity = Matrix3().frozen()
     }
+
+
 }

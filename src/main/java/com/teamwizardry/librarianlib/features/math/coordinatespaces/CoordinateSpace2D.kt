@@ -19,8 +19,8 @@ interface CoordinateSpace2D {
      */
     @JvmDefault
     fun conversionMatrixTo(other: CoordinateSpace2D): Matrix3 {
-        if(other === this.parentSpace) return this.inverseMatrix.copy()
-        if(other.parentSpace === this) return this.matrix.copy()
+        if(other === this.parentSpace) return other.matrix.copy()
+        if(other.parentSpace === this) return other.inverseMatrix.copy()
 
         val lca = lowestCommonAncestor(other) ?: throw UnrelatedCoordinateSpaceException(this, other)
 
@@ -49,7 +49,7 @@ interface CoordinateSpace2D {
      * Converts a point in the [other] coordinate space into the corresponding point in this coordinate space
      */
     @JvmDefault
-    fun convertPointFrom(point: Vec2d, other: CoordinateSpace2D) = other.convertPointTo(point, other)
+    fun convertPointFrom(point: Vec2d, other: CoordinateSpace2D) = other.convertPointTo(point, this)
 
     /**
      * Converts a rect in this coordinate space to the _**smallest bounding rectangle**_ around it in the [other]
@@ -95,7 +95,7 @@ interface CoordinateSpace2D {
      * rect, instead it will _contain_ it.
      */
     @JvmDefault
-    fun convertRectFrom(rect: Rect2d, other: CoordinateSpace2D) = other.convertRectTo(rect, other)
+    fun convertRectFrom(rect: Rect2d, other: CoordinateSpace2D) = other.convertRectTo(rect, this)
 
     /**
      * Converts a point in this coordinate space into the corresponding point in the parent coordinate space.
@@ -171,7 +171,7 @@ interface CoordinateSpace2D {
         val matrix = Matrix3()
         var space: CoordinateSpace2D = this
         while(space !== other) {
-            matrix *= space.inverseMatrix
+            matrix *= space.matrix
 
             // if we haven't reached [other] yet, there are still parentSpaces.
             // if we have reached other we will not be here (the loop would have finished)
@@ -196,7 +196,7 @@ interface CoordinateSpace2D {
 
         val matrix = Matrix3()
         ancestors.reversed().forEach {
-            matrix *= it.matrix
+            matrix *= it.inverseMatrix
         }
         return matrix
     }
