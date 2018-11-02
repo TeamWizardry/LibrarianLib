@@ -46,15 +46,15 @@ class Matrix3 private constructor(private val matrix: Matrix3d, val frozen: Bool
     }
 
     /**
-     * Rotates this matrix about the origin by [angle] radians
+     * Rotates this matrix about the origin by [angle] radians clockwise
      * @param angle the angle to rotate by in radians
      *
      * @throws IllegalStateException if this matrix is [frozen]
      */
     fun rotate(angle: Double) {
         transform.setIdentity()
-        val sin = Math.sin(angle)
-        val cos = Math.cos(angle)
+        val sin = Math.sin(-angle)
+        val cos = Math.cos(-angle)
         transform.m00 = cos
         transform.m01 = sin
         transform.m10 = -sin
