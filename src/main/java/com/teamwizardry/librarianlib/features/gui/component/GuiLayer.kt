@@ -4,6 +4,8 @@ import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventBus
 import com.teamwizardry.librarianlib.features.gui.component.supporting.*
 import com.teamwizardry.librarianlib.features.gui.components.LayerBackedComponent
+import com.teamwizardry.librarianlib.features.gui.value.IMValue
+import com.teamwizardry.librarianlib.features.gui.value.IMValueBoolean
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
@@ -155,10 +157,11 @@ open class GuiLayer private constructor(
     @JvmField
     val BUS = EventBus()
 
+    open val isVisible_im: IMValueBoolean = IMValueBoolean(true)
     /**
      * Whether this component should be drawn or have events fire
      */
-    open var isVisible = true
+    open var isVisible by isVisible_im
 
     /**
      * Returns true if the component is in need of a layout update. Defaults to true upon layer creation
