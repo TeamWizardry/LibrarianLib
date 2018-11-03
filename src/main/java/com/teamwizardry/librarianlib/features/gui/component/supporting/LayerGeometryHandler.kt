@@ -118,13 +118,15 @@ class LayerGeometryHandler: ILayerGeometry {
 
     override fun getContentsBounds(predicate: (layer: GuiLayer) -> Boolean): Rect2d? {
         var bounds: Rect2d? = null
-        if(predicate(layer) && layer.isVisible) {
-            bounds = layer.bounds
-        }
-        for(child in layer.children) {
-            val subBounds = child.getContentsBounds(predicate) ?: continue
-            val subFrame = child.convertRectToParent(subBounds)
-            bounds = bounds?.expandToFit(subFrame) ?: subFrame
+        if(layer.isVisible) {
+            if (predicate(layer)) {
+                bounds = layer.bounds
+            }
+            for (child in layer.children) {
+                val subBounds = child.getContentsBounds(predicate) ?: continue
+                val subFrame = child.convertRectToParent(subBounds)
+                bounds = bounds?.expandToFit(subFrame) ?: subFrame
+            }
         }
         return bounds
     }
