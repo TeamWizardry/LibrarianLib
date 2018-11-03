@@ -1,18 +1,13 @@
 package com.teamwizardry.librarianlib.test.gui.tests
 
-import com.teamwizardry.librarianlib.features.animator.animations.ScheduledEventAnimation
 import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
-import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.gui.layers.ColorLayer
-import com.teamwizardry.librarianlib.features.gui.layers.RectLayer
 import com.teamwizardry.librarianlib.features.gui.value.GuiAnimator
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.sprite.Sprite
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
