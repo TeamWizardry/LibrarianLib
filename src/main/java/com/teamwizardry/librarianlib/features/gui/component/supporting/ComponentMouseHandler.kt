@@ -114,7 +114,7 @@ class ComponentMouseHandler: IComponentMouse {
     override var mouseOver: Boolean = false
         private set
     override var isOpaqueToMouse: Boolean = true
-    override var mousePropagationType: MousePropagationType = MousePropagationType.NONE
+    override var mousePropagationType: MousePropagationType = MousePropagationType.OVER
     override var shouldComputeMouseInsideFromBounds: Boolean = true
 
     override fun updateMouse(parentMousePos: Vec2d) {
