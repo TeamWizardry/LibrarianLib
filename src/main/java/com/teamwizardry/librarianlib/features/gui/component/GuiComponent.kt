@@ -80,20 +80,7 @@ open class GuiComponent private constructor(
 
     override fun drawDebugBoundingBox() {
 
-        GlStateManager.glLineWidth(1f)
-        GlStateManager.color(0f, 0f, 0f)
         GlStateManager.disableTexture2D()
-        val tessellator = Tessellator.getInstance()
-        val vb = tessellator.buffer
-        vb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION)
-        vb.pos(0.0, 0.0, 2.0).endVertex()
-        vb.pos(mousePos.x, mousePos.y, 2.0).endVertex()
-        vb.pos(mousePos.x + 1.0, mousePos.y + 1.0, 2.0).endVertex()
-        vb.pos(mousePos.x - 1.0, mousePos.y - 1.0, 2.0).endVertex()
-        vb.pos(mousePos.x + 1.0, mousePos.y - 1.0, 2.0).endVertex()
-        vb.pos(mousePos.x - 1.0, mousePos.y + 1.0, 2.0).endVertex()
-        tessellator.draw()
-
         GlStateManager.glLineWidth(2f)
         GlStateManager.color(1f, 0f, 1f)
         if (mouseInside) GlStateManager.color(0.25f, 0.25f, 0.25f)

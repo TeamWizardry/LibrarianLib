@@ -157,10 +157,12 @@ class LayerGeometryHandler: ILayerGeometry {
         }
     }
 
+    // MAKE PUBLIC AND RENAME
     private fun boundsChange() {
         layer.setNeedsLayout()
     }
 
+    // MAKE PUBLIC AND RENAME
     private fun frameChange() {
         layer.parent?.setNeedsLayout()
     }
