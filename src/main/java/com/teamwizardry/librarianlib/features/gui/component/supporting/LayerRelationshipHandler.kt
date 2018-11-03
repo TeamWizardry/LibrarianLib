@@ -54,6 +54,11 @@ interface ILayerRelationships {
      * Returns a list of all children and grandchildren etc. that are subclasses of [clazz]
      */
     fun <C : GuiLayer> getAllByClass(clazz: Class<C>): List<C>
+
+    /**
+     * Return false if [parent] is not a valid parent for this layer
+     */
+    fun canAddToParent(parent: GuiLayer): Boolean
 }
 
 /**
@@ -117,6 +122,9 @@ class LayerRelationshipHandler: ILayerRelationships {
         if (component === this.component)
             throw IllegalArgumentException("Immediately recursive component hierarchy")
 
+        if (!component.canAddToParent(this.component)) {
+            throw IllegalArgumentException("This is an invalid parent for the passed layer")
+        }
         if (component.parent != null) {
             if (component.parent == this.component) {
                 LibrarianLog.error("You tried to add the component to the same parent twice. Why?", Exception())
@@ -196,6 +204,10 @@ class LayerRelationshipHandler: ILayerRelationships {
             if (clazz.isAssignableFrom(component.javaClass))
                 list.add(component as C)
         }
+    }
+
+    override fun canAddToParent(parent: GuiLayer): Boolean {
+        return true
     }
 
     /** [GuiLayer.root] */

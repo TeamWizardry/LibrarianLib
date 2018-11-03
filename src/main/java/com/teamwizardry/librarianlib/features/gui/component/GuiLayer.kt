@@ -198,6 +198,8 @@ open class GuiLayer private constructor(
     init {
         this.pos = vec(posX, posY)
         this.size = vec(width, height)
+
+        ComponentEventHookAnnotSearcher.search(this)
     }
     //endregion
 }

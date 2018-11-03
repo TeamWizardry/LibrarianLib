@@ -102,6 +102,10 @@ open class GuiComponent private constructor(
         super.drawDebugBoundingBox()
     }
 
+    override fun canAddToParent(parent: GuiLayer): Boolean {
+        return parent is GuiComponent
+    }
+
     init {
         @Suppress("LeakingThis")
         {

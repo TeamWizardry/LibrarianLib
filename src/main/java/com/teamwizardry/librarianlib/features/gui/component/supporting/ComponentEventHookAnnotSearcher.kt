@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.features.gui.component.supporting
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.component.Hook
 import com.teamwizardry.librarianlib.features.kotlin.withRealDefault
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
@@ -10,7 +10,7 @@ import java.lang.reflect.Method
 internal object ComponentEventHookAnnotSearcher {
     val cache = mutableMapOf<Class<*>, EventCache>().withRealDefault { EventCache(it) }
 
-    fun search(component: GuiComponent) {
+    fun search(component: GuiLayer) {
         cache[component.javaClass].events.forEach {
             @Suppress("UNCHECKED_CAST")
             component.BUS.hook(it.first as Class<Event>) { event: Event ->
