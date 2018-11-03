@@ -21,9 +21,6 @@ object GuiComponentEvents {
     /** Fired whenever the mouse is moved while a button is being pressed */
     class MouseDragEvent(val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
 
-    /** Fired whenever the mouse is moved */
-    class MouseMoveEvent(val previousMousePos: Vec2d, val mousePos: Vec2d) : Event()
-
     /** Fired whenever the mouse is moved out of this component (when mouseInside goes from true to false) */
     class MouseMoveOutEvent(val previousMousePos: Vec2d, val mousePos: Vec2d) : Event()
 
