@@ -19,7 +19,7 @@ interface CoordinateSpace2D {
      */
     @JvmDefault
     fun conversionMatrixTo(other: CoordinateSpace2D): Matrix3 {
-        if(other === this.parentSpace) return other.matrix.copy()
+        if(other === this.parentSpace) return this.matrix.copy()
         if(other.parentSpace === this) return other.inverseMatrix.copy()
 
         val lca = lowestCommonAncestor(other) ?: throw UnrelatedCoordinateSpaceException(this, other)

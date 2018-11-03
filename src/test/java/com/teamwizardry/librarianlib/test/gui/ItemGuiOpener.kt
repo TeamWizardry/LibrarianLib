@@ -58,4 +58,5 @@ enum class Guis(val create: () -> GuiScreen) {
     LAYOUT({ GuiTestLayout() }),
     IMPLICIT_ANIMATION({ GuiTestImplicitAnimation() }),
     VALUE_ANIMATION({ GuiTestIMRMValueAnimation() }),
+    CONTENT_BOUNDS({ GuiTestGetContentBounds() }),
 }

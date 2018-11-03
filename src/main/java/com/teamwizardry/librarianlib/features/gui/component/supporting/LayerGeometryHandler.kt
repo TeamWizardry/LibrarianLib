@@ -13,6 +13,9 @@ import com.teamwizardry.librarianlib.features.math.coordinatespaces.CoordinateSp
 import net.minecraft.client.renderer.GlStateManager
 
 interface ILayerGeometry: CoordinateSpace2D {
+    val frame: Rect2d
+    val bounds: Rect2d
+
     val size_rm: RMValue<Vec2d>
     var size: Vec2d
 
@@ -34,9 +37,17 @@ interface ILayerGeometry: CoordinateSpace2D {
     var contentsOffset_rm: RMValue<Vec2d>
     var contentsOffset: Vec2d
 
-    val frame: Rect2d
-    val bounds: Rect2d
     fun glApplyTransform()
+    /**
+     * Get the aggregate of this layer's contents recursively. The returned rect is in this layer's coordinates and
+     * will contain all of its children that both have [isVisible][GuiLayer.isVisible] set to true and return true from
+     * the passed predicate. NOTE: layers that fail the passed predicate will still include their children.
+     *
+     * @param predicate A predicate to filter the layers included
+     * @return The rect containing all the visible children that match the predicate, or null if neither this layer nor
+     * any of its children were visible and matched the predicate
+     */
+    fun getContentsBounds(predicate: (layer: GuiLayer) -> Boolean): Rect2d?
 }
 
 class LayerGeometryHandler: ILayerGeometry {
@@ -105,6 +116,19 @@ class LayerGeometryHandler: ILayerGeometry {
         GlStateManager.translate(matrixParams.contentsOffset.x, matrixParams.contentsOffset.y, 0.0)
     }
 
+    override fun getContentsBounds(predicate: (layer: GuiLayer) -> Boolean): Rect2d? {
+        var bounds: Rect2d? = null
+        if(predicate(layer) && layer.isVisible) {
+            bounds = layer.bounds
+        }
+        for(child in layer.children) {
+            val subBounds = child.getContentsBounds(predicate) ?: continue
+            val subFrame = child.convertRectToParent(subBounds)
+            bounds = bounds?.expandToFit(subFrame) ?: subFrame
+        }
+        return bounds
+    }
+
     override val parentSpace: CoordinateSpace2D?
         get() = layer.parent
 
@@ -113,14 +137,14 @@ class LayerGeometryHandler: ILayerGeometry {
             updateMatrixIfNeeded()
             return field
         }
-    private set
+        private set
 
     override var inverseMatrix: Matrix3 = Matrix3.identity
         get() {
             updateMatrixIfNeeded()
             return field
         }
-    private set
+        private set
 
     data class MatrixParams(val pos: Vec2d = Vec2d.ZERO, val rotation: Double = 0.0, val scale: Vec2d = Vec2d.ONE,
         val anchor: Vec2d = Vec2d.ZERO, val contentsOffset: Vec2d = Vec2d.ZERO)
