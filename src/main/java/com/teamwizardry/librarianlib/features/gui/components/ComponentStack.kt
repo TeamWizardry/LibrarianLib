@@ -35,7 +35,7 @@ open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 1
             str = quantityText.fireModifier(str) { h, v -> h(this, v) }
 
             val itemRender = Minecraft.getMinecraft().renderItem
-            itemRender.zLevel = 200.0f
+            itemRender.zLevel = -100f
 
             GlStateManager.scale(size.xf / 16, size.yf / 16, 1f)
 
