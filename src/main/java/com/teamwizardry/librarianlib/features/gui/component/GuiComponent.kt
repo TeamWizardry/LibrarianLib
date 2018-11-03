@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.gui.component
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.gui.component.supporting.*
+import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -81,6 +82,22 @@ open class GuiComponent private constructor(
     override fun drawDebugBoundingBox() {
 
         GlStateManager.disableTexture2D()
+
+        if(GuiScreen.isShiftKeyDown()) {
+            GlStateManager.glLineWidth(1f)
+            GlStateManager.color(0f, 0f, 0f)
+            val tessellator = Tessellator.getInstance()
+            val vb = tessellator.buffer
+            vb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION)
+            vb.pos(0.0, 0.0, 2.0).endVertex()
+            vb.pos(mousePos.x, mousePos.y, 2.0).endVertex()
+            vb.pos(mousePos.x + 1.0, mousePos.y + 1.0, 2.0).endVertex()
+            vb.pos(mousePos.x - 1.0, mousePos.y - 1.0, 2.0).endVertex()
+            vb.pos(mousePos.x + 1.0, mousePos.y - 1.0, 2.0).endVertex()
+            vb.pos(mousePos.x - 1.0, mousePos.y + 1.0, 2.0).endVertex()
+            tessellator.draw()
+        }
+
         GlStateManager.glLineWidth(2f)
         GlStateManager.color(1f, 0f, 1f)
         if (mouseInside) GlStateManager.color(0.25f, 0.25f, 0.25f)
