@@ -146,6 +146,8 @@ class LayerRenderHandler: ILayerRendering {
             layer.needsLayout = false
         }
 
+        if(!layer.isVisible) return;
+
         GlStateManager.pushMatrix()
 
         layer.BUS.fire(GuiLayerEvents.PreTransformEvent(partialTicks))
