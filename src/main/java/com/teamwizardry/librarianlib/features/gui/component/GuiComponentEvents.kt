@@ -31,10 +31,10 @@ object GuiComponentEvents {
     class MouseMoveInEvent(val previousMousePos: Vec2d, val mousePos: Vec2d) : Event()
 
     /** Fired whenever the mouse is moved off this component (when mouseOver goes from true to false) */
-    class MouseMoveEnterEvent(val previousMousePos: Vec2d, val mousePos: Vec2d) : Event()
+    class MouseEnterEvent(val previousMousePos: Vec2d, val mousePos: Vec2d) : Event()
 
     /** Fired whenever the mouse is moved over this component (when mouseOver goes from false to true) */
-    class MouseMoveLeaveEvent(val previousMousePos: Vec2d, val mousePos: Vec2d) : Event()
+    class MouseLeaveEvent(val previousMousePos: Vec2d, val mousePos: Vec2d) : Event()
 
 
     /** Fired in addition to any of [MouseClickEvent], [MouseClickOutsideEvent], [MouseClickDragInEvent], or [MouseClickDragOutEvent] */

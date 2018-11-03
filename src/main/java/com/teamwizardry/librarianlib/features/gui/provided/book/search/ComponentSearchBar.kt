@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.features.gui.provided.book.search
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentTextField
 import com.teamwizardry.librarianlib.features.gui.components.ComponentTextField.FocusEvent
 import com.teamwizardry.librarianlib.features.gui.components.ComponentTextField.TextEditEvent

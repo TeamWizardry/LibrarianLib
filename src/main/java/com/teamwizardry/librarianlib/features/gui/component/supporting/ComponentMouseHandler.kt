@@ -161,10 +161,10 @@ class ComponentMouseHandler: IComponentMouse {
         mouseOver = mouseOver || (!occluded && mouseInside)
         occluded = occluded || (mouseOver && isOpaqueToMouse)
         if(mouseOver && !this.mouseOver) {
-            component.BUS.fire(GuiComponentEvents.MouseMoveEnterEvent(lastMousePos, mousePos))
+            component.BUS.fire(GuiComponentEvents.MouseEnterEvent(lastMousePos, mousePos))
         }
         if(!mouseOver && this.mouseOver) {
-            component.BUS.fire(GuiComponentEvents.MouseMoveLeaveEvent(lastMousePos, mousePos))
+            component.BUS.fire(GuiComponentEvents.MouseLeaveEvent(lastMousePos, mousePos))
         }
         this.mouseOver = mouseOver
         return occluded

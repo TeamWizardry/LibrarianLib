@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.features.gui.provided.book.structure
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
 import com.teamwizardry.librarianlib.features.gui.provided.book.context.ComponentBookMark
 import java.awt.Color
