@@ -36,8 +36,10 @@ class GuiTestGetContentBounds : GuiBase() {
                 this.add(ColorLayer(Color.GREEN, 0, 0, 40, 10))
             }
             override fun draw(partialTicks: Float) {
-                val contentsBounds = getContentsBounds { it != containerIgnoredContents }!!
-                val corner = contentsBounds.max
+                var contentsBounds = getContentsBounds({ it != containerIgnoredContents && it.isVisible }, { it.isVisible })!!
+                val ignoreInvisible = contentsBounds.max
+                contentsBounds = getContentsBounds({ it != containerContents }, { true })!!
+                val ignoreContents = contentsBounds.max
 
                 val tessellator = Tessellator.getInstance()
                 val vb = tessellator.buffer
@@ -45,14 +47,24 @@ class GuiTestGetContentBounds : GuiBase() {
                 GlStateManager.disableTexture2D()
 
                 GlStateManager.enableBlend()
-                val c = Color.BLUE
+                var c = Color.BLUE
                 GlStateManager.color(c.red / 255f, c.green / 255f, c.blue / 255f, c.alpha / 255f)
 
                 vb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION)
-                vb.pos(corner.x, 0.0, 1.0).endVertex()
-                vb.pos(corner.x, 100.0, 1.0).endVertex()
-                vb.pos(0.0, corner.y, 1.0).endVertex()
-                vb.pos(100.0, corner.y, 1.0).endVertex()
+                vb.pos(ignoreInvisible.x, 0.0, 1.0).endVertex()
+                vb.pos(ignoreInvisible.x, 100.0, 1.0).endVertex()
+                vb.pos(0.0, ignoreInvisible.y, 1.0).endVertex()
+                vb.pos(100.0, ignoreInvisible.y, 1.0).endVertex()
+                tessellator.draw()
+
+                c = Color.RED
+                GlStateManager.color(c.red / 255f, c.green / 255f, c.blue / 255f, c.alpha / 255f)
+
+                vb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION)
+                vb.pos(ignoreContents.x+1, 0.0, 1.0).endVertex()
+                vb.pos(ignoreContents.x+1, 100.0, 1.0).endVertex()
+                vb.pos(0.0, ignoreContents.y+1, 1.0).endVertex()
+                vb.pos(100.0, ignoreContents.y+1, 1.0).endVertex()
                 tessellator.draw()
 
                 GlStateManager.enableTexture2D()

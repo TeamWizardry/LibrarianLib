@@ -48,15 +48,46 @@ interface ILayerGeometry: CoordinateSpace2D {
     fun glApplyContentsOffset()
 
     /**
-     * Get the aggregate of this layer's contents recursively. The returned rect is in this layer's coordinates and
-     * will contain all of its children that both have [isVisible][GuiLayer.isVisible] set to true and return true from
-     * the passed predicate. NOTE: layers that fail the passed predicate will still include their children.
+     * Get the aggregate of this layer's contents recursively. The returned rect is in this layer's coordinates. Any
+     * layers for which [includeOwnBounds] returns false will not count their own bounds in the calculation
+     * (useful for things such as large mask wrappers which would bloat the content size). Any layers for which
+     * [includeChildren] returns false will not count their children's content bounds (useful primarily in combination
+     * with returning false from [includeOwnBounds] to totally exclude a layer)
      *
-     * @param predicate A predicate to filter the layers included
-     * @return The rect containing all the visible children that match the predicate, or null if neither this layer nor
-     * any of its children were visible and matched the predicate
+     * @param includeOwnBounds A predicate to filter out which layers should count their own bounds
+     * @param includeChildren A predicate to filter out which layers should count their children's bounds
+     * @return The rect containing all the children that are included as per the above rules, or null if neither this
+     * layer nor any of its children were included
      */
-    fun getContentsBounds(predicate: (layer: GuiLayer) -> Boolean): Rect2d?
+    fun getContentsBounds(
+        includeOwnBounds: (layer: GuiLayer) -> Boolean,
+        includeChildren: (layer: GuiLayer) -> Boolean
+    ): Rect2d?
+
+    /**
+     * Get the aggregate of this layer's contents recursively. The returned rect is in this layer's coordinates. Any
+     * layers for which [includeLayer] returns false will not count their own bounds nor their children's in the
+     * calculation.
+     *
+     * @param includeLayer A predicate to filter out which layers should count their own bounds
+     * @return The rect containing all the children that return true from the passed predicate
+     */
+    @JvmDefault
+    fun getContentsBounds(includeLayer: (layer: GuiLayer) -> Boolean): Rect2d? {
+        return getContentsBounds(includeLayer, includeLayer)
+    }
+
+    /**
+     * Get the aggregate of this layer's contents recursively. The returned rect is in this layer's coordinates. Any
+     * layers which have [isVisible][GuiLayer.isVisible] set to false will not count their own bounds nor their
+     * children's in the calculation.
+     *
+     * @return The rect containing all the children that return true from the passed predicate
+     */
+    @JvmDefault
+    fun getContentsBounds(): Rect2d? {
+        return getContentsBounds { it.isVisible }
+    }
 }
 
 class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
@@ -128,14 +159,17 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
         GlStateManager.translate(matrixParams.contentsOffset.x, matrixParams.contentsOffset.y, 0.0)
     }
 
-    override fun getContentsBounds(predicate: (layer: GuiLayer) -> Boolean): Rect2d? {
+    override fun getContentsBounds(
+        includeOwnBounds: (layer: GuiLayer) -> Boolean,
+        includeChildren: (layer: GuiLayer) -> Boolean
+    ): Rect2d? {
         var bounds: Rect2d? = null
-        if(layer.isVisible) {
-            if (predicate(layer)) {
-                bounds = layer.bounds
-            }
+        if (includeOwnBounds(layer)) {
+            bounds = layer.bounds
+        }
+        if (includeChildren(layer)) {
             for (child in layer.children) {
-                val subBounds = child.getContentsBounds(predicate) ?: continue
+                val subBounds = child.getContentsBounds(includeOwnBounds, includeChildren) ?: continue
                 val subFrame = child.convertRectToParent(subBounds)
                 bounds = bounds?.expandToFit(subFrame) ?: subFrame
             }
