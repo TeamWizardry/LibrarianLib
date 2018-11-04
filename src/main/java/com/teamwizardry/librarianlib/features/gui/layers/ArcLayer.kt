@@ -12,6 +12,8 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.lang.Math.PI
+import kotlin.math.abs
+import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
@@ -27,18 +29,17 @@ class ArcLayer(color: Color = Color.white, posX: Int, posY: Int, width: Int, hei
     val endAngle_im: IMValueDouble = IMValueDouble(2*PI)
     var endAngle: Double by endAngle_im
 
-    val points_im: IMValueInt = IMValueInt(25)
-    var points: Int by points_im
+    val segmentSize_im: IMValueDouble = IMValueDouble(Math.toRadians(5.0))
+    var segmentSize: Double by segmentSize_im
 
     override fun draw(partialTicks: Float) {
-        val startWrap = startAngle % (2*PI)
-        val endWrap = endAngle % (2*PI)
-        val start = min(startWrap, endWrap)
-        val end = max(startWrap, endWrap)
+        val start = startAngle
+        var end = endAngle
+        if(end > start + PI*2) end = start + PI*2
         val rX = size.x/2
         val rY = size.y/2
 
-        val steps = max(2, points)-1
+        val segmentSize = segmentSize
 
         val c = color
 
@@ -53,13 +54,24 @@ class ArcLayer(color: Color = Color.white, posX: Int, posY: Int, width: Int, hei
 
         vb.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION)
         vb.setTranslation(size.x/2, size.y/2, 0.0)
+
         vb.pos(0.0, 0.0, 0.0).endVertex()
-        for(i in 0..steps) {
-            val a = start + (end-start)*i/steps
+
+        var a = start
+        while(if(start < end) a < end else a > end) {
             val cos = Math.cos(a)
             val sin = Math.sin(a)
             vb.pos(rX*sin, rY*-cos, 0.0).endVertex()
+            if(start < end)
+                a += segmentSize
+            else
+                a -= segmentSize
         }
+
+        val cos = Math.cos(end)
+        val sin = Math.sin(end)
+        vb.pos(rX*sin, rY*-cos, 0.0).endVertex()
+
         vb.setTranslation(0.0, 0.0, 0.0)
         tessellator.draw()
 

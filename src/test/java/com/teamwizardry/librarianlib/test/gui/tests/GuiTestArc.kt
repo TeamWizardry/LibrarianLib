@@ -21,8 +21,14 @@ class GuiTestArc : GuiBase() {
 
         val arc = ArcLayer(Color.BLACK, 50, 50, 100, 100)
 
-//        arc.startAngle_im.animate(0.0, PI*2, 40f, Easing.easeInOutSine).repeatCount = -1
-        arc.endAngle_im.animate(0.0, PI*2, 60f, Easing.easeInOutSine).repeatCount = -1
+        arc.endAngle_im.animateKeyframes(0.0)
+            .add(60f, PI*2, Easing.easeInOutSine)
+            .add(60f, PI*2)
+            .finish().repeatCount = -1
+        arc.startAngle_im.animateKeyframes(0.0)
+            .add(60f, 0.0)
+            .add(60f, PI*2, Easing.easeInOutSine)
+            .finish().repeatCount = -1
 
         main.add(arc)
     }
