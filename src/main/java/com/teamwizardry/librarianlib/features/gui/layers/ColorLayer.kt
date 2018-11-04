@@ -10,7 +10,7 @@ import java.awt.Color
 
 class ColorLayer(color: Color = Color.white, posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, posY, width, height) {
     val color_im: IMValue<Color> = IMValue(color)
-    val color: Color by color_im
+    var color: Color by color_im
 
     override fun draw(partialTicks: Float) {
         val minX = 0.0
