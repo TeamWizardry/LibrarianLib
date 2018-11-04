@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BooleanSupplier;
 
+@SuppressWarnings("Duplicates")
 public class IMValueBoolean implements GuiAnimatable {
     private Storage storage;
 

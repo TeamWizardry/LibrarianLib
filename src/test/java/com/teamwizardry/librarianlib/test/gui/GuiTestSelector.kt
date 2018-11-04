@@ -38,7 +38,8 @@ class GuiTestSelector : GuiBase() {
         ListItem("Value_Animation") { GuiTestIMRMValueAnimation() },
         ListItem("Contents Bounds") { GuiTestGetContentBounds() },
         ListItem("Coordinate Conversion") { GuiTestCoordinateConversion() },
-        ListItem("Arc") { GuiTestArc() }
+        ListItem("Arc") { GuiTestArc() },
+        ListItem("Keyframe Builder") { GuiTestValueKeyframeBuilder() }
     )
 
     init {

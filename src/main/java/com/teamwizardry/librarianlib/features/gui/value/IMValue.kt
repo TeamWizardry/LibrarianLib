@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.animator.Animation
 import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.animator.LerperHandler
+import com.teamwizardry.librarianlib.features.animator.animations.Keyframe
 import java.util.function.Supplier
 import kotlin.reflect.KProperty
 
@@ -18,6 +19,7 @@ import kotlin.reflect.KProperty
  * var yourProperty by yourProperty_im
  * ```
  */
+@Suppress("Duplicates")
 class IMValue<T> private constructor(private var storage: Storage<T>): GuiAnimatable {
     constructor(initialValue: T): this(Storage.Fixed(initialValue))
     constructor(initialCallback: Supplier<T>): this(Storage.Callback(initialCallback))
@@ -122,7 +124,7 @@ class IMValue<T> private constructor(private var storage: Storage<T>): GuiAnimat
         return anim
     }
 
-    class AnimationImpl<T: Any?>(var from: T, var to: T, target: IMValue<T>): Animation<IMValue<T>>(target) {
+    private class AnimationImpl<T: Any?>(var from: T, var to: T, target: IMValue<T>): Animation<IMValue<T>>(target) {
         var easing: Easing = Easing.linear
         var implicitStart: Boolean = false
 
@@ -139,6 +141,73 @@ class IMValue<T> private constructor(private var storage: Storage<T>): GuiAnimat
         }
     }
 
+    @JvmOverloads
+    fun animateKeyframes(initialValue: T, delay: Float = 0f): KeyframeAnimationBuilder<T> {
+        return KeyframeAnimationBuilder(initialValue, delay, this)
+    }
+
+    class KeyframeAnimationBuilder<T>(initialValue: T, private val delay: Float, private val target: IMValue<T>) {
+        private val keyframes = mutableListOf<Keyframe>()
+
+        init {
+            keyframes.add(Keyframe(0f, initialValue as Any))
+        }
+        /**
+         * Add a keyframe [time] ticks after the previous one
+         */
+        @JvmOverloads
+        fun add(time: Float, value: T, easing: Easing = Easing.linear): KeyframeAnimationBuilder<T> {
+            keyframes.add(Keyframe(time, value as Any, easing))
+            return this
+        }
+
+        fun finish(): Animation<IMValue<T>> {
+            if(keyframes.isEmpty()) throw IllegalStateException("Cannot create an empty keyframe animation")
+
+            val duration = keyframes.fold(0f) { s, it -> s + it.time }
+            var total = 0f
+            keyframes.map {
+                total += it.time
+                it.time = total / duration
+            }
+
+            val animation = KeyframeAnimation(target, keyframes)
+            animation.duration = duration
+            animation.start = delay
+            Animator.global.add(animation)
+            return animation
+        }
+    }
+
+    private data class Keyframe(var time: Float, val value: Any, val easing: Easing = Easing.linear)
+    private class KeyframeAnimation<T>(target: IMValue<T>, private val keyframes: List<Keyframe>): Animation<IMValue<T>>(target) {
+        @Suppress("UNCHECKED_CAST")
+        private var lerper = LerperHandler.getLerperOrError(
+            keyframes.first().value.javaClass as Class<T>
+        )
+
+        @Suppress("UNCHECKED_CAST")
+        override fun update(time: Float) {
+            val progress = timeFraction(time)
+            val prev = keyframes.lastOrNull { it.time <= progress }
+            val next = keyframes.firstOrNull { it.time >= progress }
+            if (prev != null && next != null) {
+                if (next.time == prev.time) { // this can only happen with single-keyframe animations or when we are on top of a keyframe
+                    target.setValue(next.value as T)
+                } else {
+                    val partialProgress = next.easing((progress - prev.time) / (next.time - prev.time))
+                    target.setValue(lerper.lerp(prev.value as T, next.value as T, partialProgress))
+                }
+            } else if (next != null) {
+                target.setValue(next.value as T)
+            } else if (prev != null) {
+                target.setValue(prev.value as T)
+            }
+
+        }
+    }
+
+
     companion object {
         /**
          * Initializes an instance of IMValue that initially contains `null`. This is not a constructor because of the
@@ -150,5 +219,6 @@ class IMValue<T> private constructor(private var storage: Storage<T>): GuiAnimat
             return IMValue<T?>(null)
         }
     }
+
 }
 
