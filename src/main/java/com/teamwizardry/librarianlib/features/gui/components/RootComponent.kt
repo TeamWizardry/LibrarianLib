@@ -40,8 +40,9 @@ class RootComponent: GuiComponent(0, 0) {
 
     override val parentSpace: CoordinateSpace2D?
         get() = ScreenSpace
-    override val parent: GuiLayer?
+    override var parent: GuiLayer?
         get() = null
+        internal set(value) {}
     override val root: GuiLayer
         get() = this
 

@@ -2,6 +2,8 @@ package com.teamwizardry.librarianlib.features.gui.component.supporting
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.kotlin.minus
+import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
 interface IComponentMouse {
@@ -129,7 +131,7 @@ class ComponentMouseHandler: IComponentMouse {
     override fun updateMouseInside(): Boolean {
         var mouseInside = false
         if(shouldComputeMouseInsideFromBounds) {
-            mouseInside = mousePos in component.bounds && !component.isPointClipped(mousePos)
+            mouseInside = (mousePos + component.contentsOffset) in component.bounds && !component.isPointClipped(mousePos)
         }
         for(child in component.subComponents.asReversed()) {
             mouseInside = child.updateMouseInside() || mouseInside

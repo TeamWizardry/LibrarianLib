@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.gui.component
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.gui.component.supporting.*
+import com.teamwizardry.librarianlib.features.gui.layers.ComponentBackedLayer
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -106,8 +107,17 @@ open class GuiComponent private constructor(
         super.drawDebugBoundingBox()
     }
 
+    internal var allowAddingToLayer = false
     override fun canAddToParent(parent: GuiLayer): Boolean {
-        return parent is GuiComponent
+        return allowAddingToLayer || parent is GuiComponent
+    }
+
+    /**
+     * Wraps this component in a layer, effectively removing it from UI calculations. This can be helpful for compat
+     * with rendering-only components.
+     */
+    fun layerWrapper(): GuiLayer {
+        return ComponentBackedLayer(this)
     }
 
     init {

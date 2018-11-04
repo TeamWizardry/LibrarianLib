@@ -24,11 +24,12 @@ interface CoordinateSpace2D {
 
         val lca = lowestCommonAncestor(other) ?: throw UnrelatedCoordinateSpaceException(this, other)
 
-        if(lca === other) return this.matrixBackTo(other)
-        if(lca === this) return other.inverseMatrixBackTo(this)
+        if(lca === other) return this.matrixToParent(other)
+        if(lca === this) return other.matrixFromParent(this)
 
-        val matrix = this.matrixBackTo(lca)
-        matrix *= other.inverseMatrixBackTo(lca)
+        val matrix = Matrix3()
+        matrix *= other.matrixFromParent(lca)
+        matrix *= this.matrixToParent(lca)
         return matrix
     }
 
@@ -167,15 +168,17 @@ interface CoordinateSpace2D {
     /**
      * The matrix to get our coordinates back to [other]'s space. [other] is one of our ancestors
      */
-    private fun matrixBackTo(other: CoordinateSpace2D): Matrix3 {
-        val matrix = Matrix3()
+    private fun matrixToParent(parent: CoordinateSpace2D): Matrix3 {
+        val ancestors = mutableListOf<CoordinateSpace2D>()
         var space: CoordinateSpace2D = this
-        while(space !== other) {
-            matrix *= space.matrix
-
-            // if we haven't reached [other] yet, there are still parentSpaces.
-            // if we have reached other we will not be here (the loop would have finished)
+        while(space !== parent) {
+            ancestors.add(space)
             space = space.parentSpace!!
+        }
+
+        val matrix = Matrix3()
+        ancestors.reversed().forEach {
+            matrix *= it.matrix
         }
         return matrix
     }
@@ -183,19 +186,16 @@ interface CoordinateSpace2D {
     /**
      * The matrix to get [other]'s coordinates down to our space. [other] is one of our ancestors
      */
-    private fun inverseMatrixBackTo(other: CoordinateSpace2D): Matrix3 {
+    private fun matrixFromParent(other: CoordinateSpace2D): Matrix3 {
         val ancestors = mutableListOf<CoordinateSpace2D>()
         var space: CoordinateSpace2D = this
         while(space !== other) {
             ancestors.add(space)
-
-            // if we haven't reached [other] yet, there are still parentSpaces.
-            // if we have reached other we will not be here (the loop would have finished)
             space = space.parentSpace!!
         }
 
         val matrix = Matrix3()
-        ancestors.reversed().forEach {
+        ancestors.forEach {
             matrix *= it.inverseMatrix
         }
         return matrix

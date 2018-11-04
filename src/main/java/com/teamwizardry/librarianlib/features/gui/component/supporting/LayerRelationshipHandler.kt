@@ -143,7 +143,7 @@ class LayerRelationshipHandler: ILayerRelationships {
         if (component.BUS.fire(GuiLayerEvents.AddToParentEvent(this.component)).isCanceled())
             return
         subLayers.add(component)
-        component.relationships.parent = this.component
+        component.parent = this.component
     }
 
     /**
@@ -163,7 +163,7 @@ class LayerRelationshipHandler: ILayerRelationships {
             return
         if (component.BUS.fire(GuiLayerEvents.RemoveFromParentEvent(this.component)).isCanceled())
             return
-        component.relationships.parent = null
+        component.parent = null
         subLayers.remove(component)
     }
 
@@ -213,6 +213,6 @@ class LayerRelationshipHandler: ILayerRelationships {
     /** [GuiLayer.root] */
     override val root: GuiLayer
         get() {
-            return parent?.root ?: this.component
+            return component.parent?.root ?: this.component
         }
 }

@@ -37,7 +37,16 @@ interface ILayerGeometry: CoordinateSpace2D {
     var contentsOffset_rm: RMValue<Vec2d>
     var contentsOffset: Vec2d
 
+    /**
+     * Applies this layer's transforms, barring the final content offset operation
+     */
     fun glApplyTransform()
+
+    /**
+     * Performs the final content offset operation
+     */
+    fun glApplyContentsOffset()
+
     /**
      * Get the aggregate of this layer's contents recursively. The returned rect is in this layer's coordinates and
      * will contain all of its children that both have [isVisible][GuiLayer.isVisible] set to true and return true from
@@ -50,7 +59,7 @@ interface ILayerGeometry: CoordinateSpace2D {
     fun getContentsBounds(predicate: (layer: GuiLayer) -> Boolean): Rect2d?
 }
 
-class LayerGeometryHandler: ILayerGeometry {
+class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
     lateinit var layer: GuiLayer
 
     override val frame: Rect2d
@@ -58,7 +67,7 @@ class LayerGeometryHandler: ILayerGeometry {
     override val bounds: Rect2d
         get() = Rect2d(-layer.contentsOffset, layer.size)
 
-    override val size_rm: RMValue<Vec2d> = RMValue(Vec2d.ZERO) { old, new ->
+    override val size_rm: RMValue<Vec2d> = RMValue(initialFrame.size) { old, new ->
         if(old != new) {
             boundsChange()
             frameChange()
@@ -66,7 +75,7 @@ class LayerGeometryHandler: ILayerGeometry {
     }
     override var size: Vec2d by size_rm
 
-    override val pos_rm: RMValue<Vec2d> = RMValue(Vec2d.ZERO) { old, new ->
+    override val pos_rm: RMValue<Vec2d> = RMValue(initialFrame.pos) { old, new ->
         if(old != new) {
             frameChange()
         }
@@ -113,6 +122,9 @@ class LayerGeometryHandler: ILayerGeometry {
         GlStateManager.rotate(Math.toDegrees(matrixParams.rotation).toFloat(), 0f, 0f, 1f)
         GlStateManager.scale(matrixParams.scale.x, matrixParams.scale.y, 1.0)
         GlStateManager.translate(-matrixParams.anchor.x, -matrixParams.anchor.y, 0.0)
+    }
+
+    override fun glApplyContentsOffset() {
         GlStateManager.translate(matrixParams.contentsOffset.x, matrixParams.contentsOffset.y, 0.0)
     }
 
@@ -170,7 +182,6 @@ class LayerGeometryHandler: ILayerGeometry {
         inverseMatrix.rotate(-matrixParams.rotation)
         inverseMatrix.translate(-matrixParams.pos)
         this.inverseMatrix = inverseMatrix.frozen()
-        matrix.toString()
     }
 
     private fun updateMatrixIfNeeded() {

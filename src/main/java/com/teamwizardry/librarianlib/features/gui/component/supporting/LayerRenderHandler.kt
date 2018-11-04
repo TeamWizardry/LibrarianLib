@@ -117,7 +117,7 @@ class LayerRenderHandler: ILayerRendering {
             if (e.BUS.fire(GuiLayerEvents.RemoveFromParentEvent(layer)).isCanceled())
                 b = false
             if (b) {
-                e.relationships.parent = null
+                e.parent = null
             }
             return@removeAll b
         }
@@ -158,6 +158,9 @@ class LayerRenderHandler: ILayerRendering {
 
         layer.clipping.pushEnable()
 
+        GlStateManager.pushMatrix()
+        layer.glApplyContentsOffset()
+
         layer.BUS.fire(GuiLayerEvents.PreDrawEvent(partialTicks))
 
         GlStateManager.enableTexture2D()
@@ -170,6 +173,7 @@ class LayerRenderHandler: ILayerRendering {
         layer.forEachChild { it.renderLayer(partialTicks) }
 
         layer.BUS.fire(GuiLayerEvents.PostDrawEvent(partialTicks))
+        GlStateManager.popMatrix()
 
         layer.clipping.popDisable()
 

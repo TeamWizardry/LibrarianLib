@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.value.RMValueDouble
 import com.teamwizardry.librarianlib.features.gui.value.RMValueInt
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.pos
 import com.teamwizardry.librarianlib.features.kotlin.times
@@ -238,6 +239,7 @@ class LayerClippingHandler: ILayerClipping {
 
     override fun isPointClipped(point: Vec2d): Boolean {
         if(clippingSprite != null || customClipping != null) return false // we can't clip these
+        val point = point + component.contentsOffset
 
         if(clipToBounds) {
             val size = component.size
