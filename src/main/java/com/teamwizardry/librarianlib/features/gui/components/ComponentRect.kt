@@ -29,8 +29,6 @@ class ComponentRect(posX: Int, posY: Int, width: Int, height: Int) : GuiComponen
 
         GlStateManager.disableTexture2D()
 
-        GlStateManager.pushAttrib()
-
         GlStateManager.enableBlend()
 //        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
         GlStateManager.color(c.red / 255f, c.green / 255f, c.blue / 255f, c.alpha / 255f)
@@ -41,8 +39,6 @@ class ComponentRect(posX: Int, posY: Int, width: Int, height: Int) : GuiComponen
         vb.pos(maxX, maxY, 0.0).endVertex()
         vb.pos(maxX, minY, 0.0).endVertex()
         tessellator.draw()
-
-        GlStateManager.popAttrib()
 
         GlStateManager.enableTexture2D()
     }

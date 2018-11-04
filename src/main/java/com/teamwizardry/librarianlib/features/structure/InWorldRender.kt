@@ -35,7 +35,6 @@ object InWorldRender {
         if (verts == null)
             return
 
-        GlStateManager.pushAttrib()
         GlStateManager.pushMatrix()
 
         GlStateManager.enableBlend()
@@ -56,7 +55,6 @@ object InWorldRender {
         tessellator.draw()
 
         GlStateManager.popMatrix()
-        GlStateManager.popAttrib()
     }
 
     @SubscribeEvent

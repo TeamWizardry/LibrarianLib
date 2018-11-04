@@ -127,7 +127,6 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
     @SubscribeEvent
     fun renderWorldEvent(e: RenderWorldLastEvent) {
         GlStateManager.pushMatrix()
-        GlStateManager.pushAttrib()
         val player = Minecraft.getMinecraft().player
 
         val partialTicks = if (Minecraft.getMinecraft().isGamePaused)
@@ -148,7 +147,6 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         MinecraftForge.EVENT_BUS.post(CustomWorldRenderEvent(Minecraft.getMinecraft().world, e.context, partialTicks))
 
         GlStateManager.enableTexture2D()
-        GlStateManager.popAttrib()
         GlStateManager.popMatrix()
     }
 }

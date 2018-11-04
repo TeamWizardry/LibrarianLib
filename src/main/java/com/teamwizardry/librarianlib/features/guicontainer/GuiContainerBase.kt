@@ -86,14 +86,12 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         container.allSlots.forEach { it.lastVisible = it.visible; it.visible = false }
         super.drawDefaultBackground()
-        GlStateManager.pushAttrib()
         GlStateManager.enableBlend()
         val relPos = vec(mouseX, mouseY)
 //        fullscreenComponents.renderRoot(partialTicks)
 
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
-        GlStateManager.popAttrib()
 
         if (container.allSlots.any { it.lastVisible != it.visible }) {
             PacketHandler.NETWORK.sendToServer(PacketSyncSlotVisibility(container.allSlots.map { it.visible }.toBooleanArray()))

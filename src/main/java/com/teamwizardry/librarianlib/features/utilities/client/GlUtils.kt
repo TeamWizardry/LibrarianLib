@@ -11,11 +11,6 @@ import org.lwjgl.opengl.GL11
  */
 @SideOnly(Side.CLIENT)
 object GlUtils {
-    inline fun pushAttrib(lambda: () -> Unit) {
-        GlStateManager.pushAttrib()
-        lambda()
-        GlStateManager.popAttrib()
-    }
 
     inline fun pushMatrix(lambda: () -> Unit) {
         GlStateManager.pushMatrix()
