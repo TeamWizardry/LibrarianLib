@@ -77,27 +77,33 @@ public class RMValueInt {
         }
     }
 
-    public void animate(int from, int to, float duration, Easing easing) { animate(from, to, duration, easing, 0); }
-    public void animate(int from, int to, float duration) { animate(from, to, duration, Easing.linear, 0); }
+    public Animation<RMValueInt> animate(int from, int to, float duration, Easing easing) {
+        return animate(from, to, duration, easing, 0);
+    }
+    public Animation<RMValueInt> animate(int from, int to, float duration) {
+        return animate(from, to, duration, Easing.linear, 0);
+    }
 
-    public void animate(int from, int to, float duration, Easing easing, float delay) {
+    public Animation<RMValueInt> animate(int from, int to, float duration, Easing easing, float delay) {
         AnimationImpl animation = new AnimationImpl(from, to, this);
         animation.setDuration(duration);
         animation.easing = easing;
         animation.setStart(delay);
         Animator.global.add(animation);
+        return animation;
     }
 
-    public void animate(int to, float duration) { animate(to, duration, Easing.linear, 0); }
-    public void animate(int to, float duration, Easing easing) { animate(to, duration, easing, 0); }
+    public Animation<RMValueInt> animate(int to, float duration) {
+        return animate(to, duration, Easing.linear, 0);
+    }
+    public Animation<RMValueInt> animate(int to, float duration, Easing easing) {
+        return animate(to, duration, easing, 0);
+    }
 
-    public void animate(int to, float duration, Easing easing, float delay) {
-        AnimationImpl animation = new AnimationImpl(get(), to, this);
-        animation.implicitStart = true;
-        animation.setDuration(duration);
-        animation.easing = easing;
-        animation.setStart(delay);
-        Animator.global.add(animation);
+    public Animation<RMValueInt> animate(int to, float duration, Easing easing, float delay) {
+        AnimationImpl anim = (AnimationImpl) animate(get(), to, duration, easing, delay);
+        anim.implicitStart = true;
+        return anim;
     }
 
     private class AnimationImpl extends Animation<RMValueInt> {

@@ -70,22 +70,20 @@ class RMValue<T> @JvmOverloads constructor(
     }
 
     @JvmOverloads
-    fun animate(from: T, to: T, duration: Float, easing: Easing = Easing.linear, delay: Float = 0f) {
+    fun animate(from: T, to: T, duration: Float, easing: Easing = Easing.linear, delay: Float = 0f): Animation<RMValue<T>> {
         val animation = AnimationImpl(from, to, this)
         animation.duration = duration
         animation.easing = easing
         animation.start = delay
         Animator.global.add(animation)
+        return animation
     }
 
     @JvmOverloads
-    fun animate(to: T, duration: Float, easing: Easing = Easing.linear, delay: Float = 0f) {
-        val animation = AnimationImpl(value, to, this)
-        animation.implicitStart = true
-        animation.duration = duration
-        animation.easing = easing
-        animation.start = delay
-        Animator.global.add(animation)
+    fun animate(to: T, duration: Float, easing: Easing = Easing.linear, delay: Float = 0f): Animation<RMValue<T>> {
+        val anim = animate(value, to, duration, easing, delay) as AnimationImpl<T>
+        anim.implicitStart = true
+        return anim
     }
 
     class AnimationImpl<T: Any?>(var from: T, var to: T, target: RMValue<T>): Animation<RMValue<T>>(target) {

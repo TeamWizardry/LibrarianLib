@@ -78,10 +78,16 @@ public class RMValueBoolean {
         }
     }
 
-    public void animate(boolean from, boolean to, float delay) {
+    public Animation<RMValueBoolean> animate(boolean to, float delay) {
+        AnimationImpl anim = (AnimationImpl) animate(get(), to, delay);
+        anim.implicitStart = true;
+        return anim;
+    }
+    public Animation<RMValueBoolean> animate(boolean from, boolean to, float delay) {
         AnimationImpl animation = new AnimationImpl(from, to, this);
         animation.setDuration(delay);
         Animator.global.add(animation);
+        return animation;
     }
 
     private class AnimationImpl extends Animation<RMValueBoolean> {
