@@ -18,6 +18,7 @@
              "checkbox_on": [24,24,7,7],
              "switch_off": [32,24,11,7],
              "switch_on": [45,24,11,7],
+             "switch_handle": [64,33,7,7],
              "radio_off": [16,32,7,7],
              "radio_on": [24,32,7,7],
              "stepper_frame": [0,40,17,9],

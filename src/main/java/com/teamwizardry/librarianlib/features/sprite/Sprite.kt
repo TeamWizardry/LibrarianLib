@@ -5,8 +5,7 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import net.minecraft.client.renderer.texture.PngSizeInfo
-
-
+import kotlin.math.max
 
 /**
  * This class represents a section of a [Texture]
@@ -29,7 +28,7 @@ open class Sprite : ISprite {
         get() = def.hardScaleV
 
     override val frameCount: Int
-        get() = def.frames.size
+        get() = max(1, def.frames.size)
 
     override val width: Int
         get() = def.w / tex.logicalScale

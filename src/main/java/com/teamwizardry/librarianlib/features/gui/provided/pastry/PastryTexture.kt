@@ -21,6 +21,7 @@ object PastryTexture {
     val checkboxOn = texture.getSprite("checkbox_on")
     val switchOff = texture.getSprite("switch_off")
     val switchOn = texture.getSprite("switch_on")
+    val switchHandle = texture.getSprite("switch_handle")
     val radioOff = texture.getSprite("radio_off")
     val radioOn = texture.getSprite("radio_on")
     val stepperFrame = texture.getSprite("stepper_frame")
