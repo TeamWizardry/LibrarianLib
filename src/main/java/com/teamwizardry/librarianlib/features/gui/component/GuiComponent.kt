@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.gui.component
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.gui.component.supporting.*
+import com.teamwizardry.librarianlib.features.gui.components.RootComponent
 import com.teamwizardry.librarianlib.features.gui.layers.ComponentBackedLayer
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
@@ -84,18 +85,22 @@ open class GuiComponent private constructor(
 
         GlStateManager.disableTexture2D()
 
-        if(GuiScreen.isShiftKeyDown()) {
+        if(GuiLayer.isDebugMode) {
             GlStateManager.glLineWidth(1f)
             GlStateManager.color(0f, 0f, 0f)
             val tessellator = Tessellator.getInstance()
             val vb = tessellator.buffer
             vb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION)
-            vb.pos(0.0, 0.0, 2.0).endVertex()
-            vb.pos(mousePos.x, mousePos.y, 2.0).endVertex()
-            vb.pos(mousePos.x + 1.0, mousePos.y + 1.0, 2.0).endVertex()
-            vb.pos(mousePos.x - 1.0, mousePos.y - 1.0, 2.0).endVertex()
-            vb.pos(mousePos.x + 1.0, mousePos.y - 1.0, 2.0).endVertex()
-            vb.pos(mousePos.x - 1.0, mousePos.y + 1.0, 2.0).endVertex()
+            if(GuiScreen.isShiftKeyDown() && GuiScreen.isCtrlKeyDown()) {
+                vb.pos(0.0, 0.0, 0.0).endVertex()
+                vb.pos(mousePos.x, mousePos.y, 0.0).endVertex()
+            }
+            vb.pos(mousePos.x + 1.0, mousePos.y + 1.0, 0.0).endVertex()
+            vb.pos(mousePos.x - 1.0, mousePos.y - 1.0, 0.0).endVertex()
+            vb.pos(mousePos.x + 1.0, mousePos.y - 1.0, 0.0).endVertex()
+            vb.pos(mousePos.x - 1.0, mousePos.y + 1.0, 0.0).endVertex()
+            vb.pos(mousePos.x, mousePos.y, 0.0).endVertex()
+            vb.pos(mousePos.x, mousePos.y, -100.0).endVertex()
             tessellator.draw()
         }
 

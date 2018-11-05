@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.value.IMValue
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
@@ -178,20 +179,37 @@ class LayerRenderHandler: ILayerRendering {
 
         layer.glApplyContentsOffset(true)
         layer.clipping.popDisable()
-        layer.glApplyTransform(true)
 
         if (LibrarianLib.DEV_ENVIRONMENT && Minecraft.getMinecraft().renderManager.isDebugBoundingBox) {
             GlStateManager.glLineWidth(1f)
             GlStateManager.color(.75f, 0f, .75f)
             layer.drawDebugBoundingBox()
         }
+
+        layer.glApplyTransform(true)
     }
 
     override fun drawDebugBoundingBox() {
         GlStateManager.disableTexture2D()
+        val points = createBoundingBoxPoints()
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
         vb.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+        points.forEach { vb.pos(it.x, it.y, 0.0).endVertex() }
+        tessellator.draw()
+        GlStateManager.color(0f, 0f, 0f, 0.15f)
+        if(GuiLayer.isDebugMode) {
+            vb.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION)
+            points.forEach {
+                vb.pos(it.x, it.y, -100.0).endVertex()
+                vb.pos(it.x, it.y, 0.0).endVertex()
+            }
+            tessellator.draw()
+        }
+    }
+
+    private fun createBoundingBoxPoints(): List<Vec2d> {
+        val list = mutableListOf<Vec2d>()
         if(layer.clipToBounds && layer.cornerRadius != 0.0) {
             val rad = layer.cornerRadius
             val d = (Math.PI / 2) / 16
@@ -200,35 +218,35 @@ class LayerRenderHandler: ILayerRendering {
             (0..16).forEach { i ->
                 val angle = d * i
                 val diff = vec(Math.cos(angle) * rad, Math.sin(angle) * rad)
-                vb.pos(rad - diff.x, rad - diff.y, 0.0).endVertex()
+                list.add(vec(rad - diff.x, rad - diff.y))
             }
 
             (0..16).forEach { i ->
                 val angle = d * i
                 val diff = vec(Math.sin(angle) * rad, Math.cos(angle) * rad)
-                vb.pos(layer.size.x - rad + diff.x, rad - diff.y, 0.0).endVertex()
+                list.add(vec(layer.size.x - rad + diff.x, rad - diff.y))
             }
 
             (0..16).forEach { i ->
                 val angle = d * i
                 val diff = vec(Math.cos(angle) * rad, Math.sin(angle) * rad)
-                vb.pos(layer.size.x - rad + diff.x, layer.size.y - rad + diff.y, 0.0).endVertex()
+                list.add(vec(layer.size.x - rad + diff.x, layer.size.y - rad + diff.y))
             }
 
             (0..16).forEach { i ->
                 val angle = d * i
                 val diff = vec(Math.sin(angle) * rad, Math.cos(angle) * rad)
-                vb.pos(rad - diff.x, layer.size.y - rad + diff.y, 0.0).endVertex()
+                list.add(vec(rad - diff.x, layer.size.y - rad + diff.y))
             }
 
-            vb.pos(0.0, rad, 0.0).endVertex()
+            list.add(vec(0.0, rad))
         } else {
-            vb.pos(0.0, 0.0, 0.0).endVertex()
-            vb.pos(layer.size.x, 0.0, 0.0).endVertex()
-            vb.pos(layer.size.x, layer.size.y, 0.0).endVertex()
-            vb.pos(0.0, layer.size.y, 0.0).endVertex()
-            vb.pos(0.0, 0.0, 0.0).endVertex()
+            list.add(vec(0.0, 0.0))
+            list.add(vec(layer.size.x, 0.0))
+            list.add(vec(layer.size.x, layer.size.y))
+            list.add(vec(0.0, layer.size.y))
+            list.add(vec(0.0, 0.0))
         }
-        tessellator.draw()
+        return list
     }
 }

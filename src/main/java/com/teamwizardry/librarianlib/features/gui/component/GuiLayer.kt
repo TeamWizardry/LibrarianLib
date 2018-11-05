@@ -63,4 +63,9 @@ open class GuiLayer private constructor(
         ComponentEventHookAnnotSearcher.search(this)
     }
     //endregion
+
+    companion object {
+        @JvmStatic
+        var isDebugMode = false
+    }
 }

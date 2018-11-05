@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.features.math.coordinatespaces.ScreenSpace
 import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 
 class RootComponent: GuiComponent(0, 0) {
@@ -35,10 +36,26 @@ class RootComponent: GuiComponent(0, 0) {
         set(value) {}
 
     override fun glApplyTransform(inverse: Boolean) {
-        // nop
+        if (GuiLayer.isDebugMode) {
+            if(inverse) {
+                GlStateManager.translate(size.x / 2.0, size.y / 2.0, 0.0)
+                GlStateManager.rotate(20f, 0f, 1f, 0f)
+                GlStateManager.rotate(20f, 1f, 0f, 0f)
+                GlStateManager.translate(-size.x / 2.0, -size.y / 2.0, 0.0)
+            } else {
+                GlStateManager.translate(size.x / 2.0, size.y / 2.0, 0.0)
+                GlStateManager.rotate(-20f, 1f, 0f, 0f)
+                GlStateManager.rotate(-20f, 0f, 1f, 0f)
+                GlStateManager.translate(-size.x / 2.0, -size.y / 2.0, 0.0)
+            }
+        }
     }
     override fun glApplyContentsOffset(inverse: Boolean) {
         // nop
+    }
+
+    override fun canAddToParent(parent: GuiLayer): Boolean {
+        return false
     }
 
     override val parentSpace: CoordinateSpace2D?

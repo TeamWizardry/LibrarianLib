@@ -43,6 +43,7 @@ class GuiTestClippedMouseOver : GuiBase() {
                 rect.color = color.darker()
             }
         }
+        rect.translateZ = 20.0
 
         configure(rect)
 

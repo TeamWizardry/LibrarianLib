@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.features.gui
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
-import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.gui.components.RootComponent
 import com.teamwizardry.librarianlib.features.gui.layers.GradientLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
@@ -12,15 +11,12 @@ import com.teamwizardry.librarianlib.features.kotlin.div
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.math.Axis2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
-import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.io.IOException
 
@@ -106,6 +102,9 @@ open class LibGuiImpl(
     @Throws(IOException::class)
     fun handleKeyboardInput() {
         if (Keyboard.getEventKeyState()) {
+            if (Keyboard.getEventKey() == Keyboard.KEY_D && GuiScreen.isShiftKeyDown() && GuiScreen.isCtrlKeyDown()) {
+                GuiLayer.isDebugMode = !GuiLayer.isDebugMode
+            }
             if (Keyboard.getEventKey() == Keyboard.KEY_B && Keyboard.isKeyDown(Keyboard.KEY_F3)) {
                 Minecraft.getMinecraft().renderManager.isDebugBoundingBox = !Minecraft.getMinecraft().renderManager.isDebugBoundingBox
             }
