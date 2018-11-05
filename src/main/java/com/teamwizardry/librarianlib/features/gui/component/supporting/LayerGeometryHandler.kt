@@ -40,12 +40,12 @@ interface ILayerGeometry: CoordinateSpace2D {
     /**
      * Applies this layer's transforms, barring the final content offset operation
      */
-    fun glApplyTransform()
+    fun glApplyTransform(inverse: Boolean)
 
     /**
      * Performs the final content offset operation
      */
-    fun glApplyContentsOffset()
+    fun glApplyContentsOffset(inverse: Boolean)
 
     /**
      * Get the aggregate of this layer's contents recursively. The returned rect is in this layer's coordinates. Any
@@ -147,16 +147,34 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
     }
     override var contentsOffset: Vec2d by contentsOffset_rm
 
-    override fun glApplyTransform() {
-        updateMatrixIfNeeded()
-        GlStateManager.translate(matrixParams.pos.x, matrixParams.pos.y, layer.translateZ)
-        GlStateManager.rotate(Math.toDegrees(matrixParams.rotation).toFloat(), 0f, 0f, 1f)
-        GlStateManager.scale(matrixParams.scale.x, matrixParams.scale.y, 1.0)
-        GlStateManager.translate(-matrixParams.anchor.x, -matrixParams.anchor.y, 0.0)
+    override fun glApplyTransform(inverse: Boolean) {
+        if(inverse) {
+            if(matrixParams.scale.x == 0.0 || matrixParams.scale.y == 0.0) {
+                GlStateManager.popMatrix()
+            } else {
+                GlStateManager.translate(-matrixParams.anchor.x, -matrixParams.anchor.y, 0.0)
+                GlStateManager.scale(matrixParams.inverseScale.x, matrixParams.inverseScale.y, 1.0)
+                GlStateManager.rotate(-Math.toDegrees(matrixParams.rotation).toFloat(), 0f, 0f, 1f)
+                GlStateManager.translate(-matrixParams.pos.x, -matrixParams.pos.y, -layer.translateZ)
+            }
+        } else {
+            updateMatrixIfNeeded()
+            if(matrixParams.scale.x == 0.0 || matrixParams.scale.y == 0.0) {
+                GlStateManager.pushMatrix()
+            }
+            GlStateManager.translate(matrixParams.pos.x, matrixParams.pos.y, layer.translateZ)
+            GlStateManager.rotate(Math.toDegrees(matrixParams.rotation).toFloat(), 0f, 0f, 1f)
+            GlStateManager.scale(matrixParams.scale.x, matrixParams.scale.y, 1.0)
+            GlStateManager.translate(-matrixParams.anchor.x, -matrixParams.anchor.y, 0.0)
+        }
     }
 
-    override fun glApplyContentsOffset() {
-        GlStateManager.translate(matrixParams.contentsOffset.x, matrixParams.contentsOffset.y, 0.0)
+    override fun glApplyContentsOffset(inverse: Boolean) {
+        if(inverse) {
+            GlStateManager.translate(-matrixParams.contentsOffset.x, -matrixParams.contentsOffset.y, 0.0)
+        } else {
+            GlStateManager.translate(matrixParams.contentsOffset.x, matrixParams.contentsOffset.y, 0.0)
+        }
     }
 
     override fun getContentsBounds(
@@ -195,7 +213,7 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
         private set
 
     data class MatrixParams(val pos: Vec2d = Vec2d.ZERO, val rotation: Double = 0.0, val scale: Vec2d = Vec2d.ONE,
-        val anchor: Vec2d = Vec2d.ZERO, val contentsOffset: Vec2d = Vec2d.ZERO)
+        val inverseScale: Vec2d = Vec2d.ONE, val anchor: Vec2d = Vec2d.ZERO, val contentsOffset: Vec2d = Vec2d.ZERO)
     var matrixParams = MatrixParams()
 
     private fun createMatrix() {
@@ -207,19 +225,21 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
         matrix.translate(matrixParams.contentsOffset)
         this.matrix = matrix.frozen()
 
-        val inverseX = if(matrixParams.scale.x == 0.0) Double.POSITIVE_INFINITY else 1.0/matrixParams.scale.x
-        val inverseY = if(matrixParams.scale.y == 0.0) Double.POSITIVE_INFINITY else 1.0/matrixParams.scale.y
         val inverseMatrix = Matrix3()
         inverseMatrix.translate(-matrixParams.contentsOffset)
         inverseMatrix.translate(matrixParams.anchor)
-        inverseMatrix.scale(vec(inverseX, inverseY))
+        inverseMatrix.scale(matrixParams.inverseScale)
         inverseMatrix.rotate(-matrixParams.rotation)
         inverseMatrix.translate(-matrixParams.pos)
         this.inverseMatrix = inverseMatrix.frozen()
     }
 
     private fun updateMatrixIfNeeded() {
-        val newParams = MatrixParams(layer.pos, layer.rotation, layer.scale2d,
+        val inverseScale = vec(
+            if(layer.scale2d.x == 0.0) Double.POSITIVE_INFINITY else 1.0/layer.scale2d.x,
+            if(layer.scale2d.y == 0.0) Double.POSITIVE_INFINITY else 1.0/layer.scale2d.y
+        )
+        val newParams = MatrixParams(layer.pos, layer.rotation, layer.scale2d, inverseScale,
             layer.anchor * layer.size, layer.contentsOffset)
 
         if(newParams != matrixParams) {

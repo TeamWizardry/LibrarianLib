@@ -34,7 +34,10 @@ class RootComponent: GuiComponent(0, 0) {
         get() = super.contentsOffset
         set(value) {}
 
-    override fun glApplyTransform() {
+    override fun glApplyTransform(inverse: Boolean) {
+        // nop
+    }
+    override fun glApplyContentsOffset(inverse: Boolean) {
         // nop
     }
 

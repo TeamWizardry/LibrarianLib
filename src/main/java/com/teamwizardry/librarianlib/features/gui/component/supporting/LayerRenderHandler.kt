@@ -148,19 +148,17 @@ class LayerRenderHandler: ILayerRendering {
 
         if(!layer.isVisible) return;
 
-        GlStateManager.pushMatrix()
-
         layer.BUS.fire(GuiLayerEvents.PreTransformEvent(partialTicks))
 
-        layer.glApplyTransform()
+        layer.glApplyTransform(false)
 
         layer.BUS.fire(GuiLayerEvents.PostTransformEvent(partialTicks))
 
         layer.clipping.pushEnable()
 
-        GlStateManager.pushMatrix()
-        layer.glApplyContentsOffset()
+        layer.glApplyContentsOffset(false)
 
+        GlStateManager.pushMatrix()
         layer.BUS.fire(GuiLayerEvents.PreDrawEvent(partialTicks))
 
         GlStateManager.enableTexture2D()
@@ -169,21 +167,24 @@ class LayerRenderHandler: ILayerRendering {
         GlStateManager.enableTexture2D()
         GlStateManager.color(1f, 1f, 1f, 1f)
 
+        GlStateManager.popMatrix()
+
         layer.BUS.fire(GuiLayerEvents.PreChildrenDrawEvent(partialTicks))
         layer.forEachChild { it.renderLayer(partialTicks) }
 
+        GlStateManager.pushMatrix()
         layer.BUS.fire(GuiLayerEvents.PostDrawEvent(partialTicks))
         GlStateManager.popMatrix()
 
+        layer.glApplyContentsOffset(true)
         layer.clipping.popDisable()
+        layer.glApplyTransform(true)
 
         if (LibrarianLib.DEV_ENVIRONMENT && Minecraft.getMinecraft().renderManager.isDebugBoundingBox) {
             GlStateManager.glLineWidth(1f)
             GlStateManager.color(.75f, 0f, .75f)
             layer.drawDebugBoundingBox()
         }
-
-        GlStateManager.popMatrix()
     }
 
     override fun drawDebugBoundingBox() {
