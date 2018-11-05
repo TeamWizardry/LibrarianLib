@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.features.math.Rect2d
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
+import kotlin.math.min
 
 class TextLayout {
     var fontRenderer: FontRenderer = Minecraft.getMinecraft().fontRenderer
@@ -23,6 +24,23 @@ class TextLayout {
             if(field != value) changed = true
             field = value
         }
+
+    var maxWidth: Int = Int.MAX_VALUE
+        set(value) {
+            if(field != value) changed = true
+            field = value
+        }
+    var maxLines: Int = Int.MAX_VALUE
+        set(value) {
+            if(field != value) changed = true
+            field = value
+        }
+    var truncationText: String? = null
+        set(value) {
+            if(field != value) changed = true
+            field = value
+        }
+
     var lineSpacing: Int = 0
         set(value) {
             if(field != value) changed = true
@@ -46,7 +64,7 @@ class TextLayout {
 
     var changed = false
 
-    val runs = mutableListOf<TextRun>()
+    var runs = mutableListOf<TextRun>()
     var bounds: Rect2d = Rect2d.ZERO
 
     fun genIfNeeded() {
@@ -58,13 +76,27 @@ class TextLayout {
 
     fun genRuns() {
         runs.clear()
+        bounds = Rect2d.ZERO
+        if(text.isEmpty()) return
+
         if (unicode) {
             if(enableUnicodeBidi)
                 fontRenderer.bidiFlag = true
             fontRenderer.unicodeFlag = true
         }
 
-        bounds = Rect2d.ZERO
+        createRuns()
+
+        truncateRuns()
+
+        if (unicode) {
+            if(enableUnicodeBidi)
+                fontRenderer.bidiFlag = false
+            fontRenderer.unicodeFlag = false
+        }
+    }
+
+    private fun createRuns() {
         var y = 0
         var remaining = text
         while(remaining.isNotEmpty()) {
@@ -97,13 +129,27 @@ class TextLayout {
             runs.add(run)
             bounds = bounds.expandToFit(run.rect)
         }
+    }
 
-        if (unicode) {
-            if(enableUnicodeBidi)
-                fontRenderer.bidiFlag = false
-            fontRenderer.unicodeFlag = false
+    private fun truncateRuns() {
+        val truncationText = truncationText
+        if(truncationText != null && (runs.size > maxLines || runs.last().rect.width > maxWidth)) {
+            runs = runs.dropLast(runs.size - maxLines).toMutableList()
+            val lastRun = runs.last()
+
+            val maxWidth = min(wrapWidth, maxWidth)
+            val truncationWidth = fontRenderer.getStringWidth(truncationText)
+            val remainingWidth = maxWidth - truncationWidth
+            if(remainingWidth > 0) {
+                val truncatedString = fontRenderer.trimStringToWidth(lastRun.text, remainingWidth) + truncationText
+                runs[runs.lastIndex] = TextRun(truncatedString, rect(
+                    lastRun.rect.x, lastRun.rect.y,
+                    fontRenderer.getStringWidth(truncatedString), lastRun.rect.height
+                ))
+            }
         }
     }
+
 
     fun render(color: Int, dropShadow: Boolean) {
         if (unicode) {

@@ -29,6 +29,8 @@ class TextLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, p
     var unicode: Boolean = false
     var enableUnicodeBidi: Boolean = true
     var align: Align2d = Align2d.LEFT_TOP
+    var maxLines: Int = Int.MAX_VALUE
+    var truncate: Boolean = false
 
     // visual options
     var color: Color by color_im
@@ -74,6 +76,14 @@ class TextLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, p
         layout.align = align
         layout.unicode = unicode
         layout.enableUnicodeBidi = enableUnicodeBidi
+        layout.maxLines = maxLines
+        if(truncate) {
+            layout.maxWidth = size.xi
+            layout.truncationText = " ..."
+        } else {
+            layout.maxWidth = Int.MAX_VALUE
+            layout.truncationText = null
+        }
         layout.genIfNeeded()
     }
 

@@ -23,6 +23,8 @@ class PastryButton(posX: Int, posY: Int, width: Int, height: Int): GuiComponent(
 
     init {
         label.wrap = false
+        label.maxLines = 1
+        label.truncate = true
         this.add(sprite, label)
     }
 
