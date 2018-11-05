@@ -40,7 +40,8 @@ class GuiTestSelector : GuiBase() {
         ListItem("Coordinate Conversion") { GuiTestCoordinateConversion() },
         ListItem("Arc") { GuiTestArc() },
         ListItem("Keyframe Builder") { GuiTestValueKeyframeBuilder() },
-        ListItem("Text") { GuiTestTextLayer() }
+        ListItem("Text") { GuiTestTextLayer() },
+        ListItem("Pastry") { GuiTestPastry() }
     )
 
     init {

@@ -4,9 +4,13 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.Hook
 import com.teamwizardry.librarianlib.features.gui.layers.SpriteLayer
+import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
+import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.kotlin.minus
 
 class PastryButton(posX: Int, posY: Int, width: Int, height: Int): GuiComponent(posX, posY, width, height) {
     private val sprite = SpriteLayer(PastryTexture.button, 0, 0, width, height)
+    val label = TextLayer(4, 2, width-8, height-4)
     private var mouseDown = false
     private var pressed = false
         set(value) {
@@ -18,7 +22,8 @@ class PastryButton(posX: Int, posY: Int, width: Int, height: Int): GuiComponent(
         }
 
     init {
-        this.add(sprite)
+        label.wrap = false
+        this.add(sprite, label)
     }
 
     @Hook
@@ -46,5 +51,6 @@ class PastryButton(posX: Int, posY: Int, width: Int, height: Int): GuiComponent(
 
     override fun layoutChildren() {
         sprite.size = this.size
+        label.size = this.size - vec(8, 4)
     }
 }
