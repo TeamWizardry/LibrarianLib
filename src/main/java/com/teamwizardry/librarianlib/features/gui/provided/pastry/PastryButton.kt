@@ -8,7 +8,7 @@ import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.minus
 
-class PastryButton(posX: Int, posY: Int, width: Int, height: Int): GuiComponent(posX, posY, width, height) {
+class PastryButton @JvmOverloads constructor(posX: Int, posY: Int, width: Int, height: Int = 12): GuiComponent(posX, posY, width, height) {
     private val sprite = SpriteLayer(PastryTexture.button, 0, 0, width, height)
     val label = TextLayer(4, 2, width-8, height-4)
     private var mouseDown = false
