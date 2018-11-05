@@ -102,6 +102,6 @@ class Rect2d(val x: Double, val y: Double, val width: Double, val height: Double
 
     companion object {
         @JvmField
-        val ZERO = Vec2d(0.0, 0.0)
+        val ZERO = Rect2d(0.0, 0.0, 0.0, 0.0)
     }
 }

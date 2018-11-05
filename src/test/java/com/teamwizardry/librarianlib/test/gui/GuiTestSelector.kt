@@ -39,7 +39,8 @@ class GuiTestSelector : GuiBase() {
         ListItem("Contents Bounds") { GuiTestGetContentBounds() },
         ListItem("Coordinate Conversion") { GuiTestCoordinateConversion() },
         ListItem("Arc") { GuiTestArc() },
-        ListItem("Keyframe Builder") { GuiTestValueKeyframeBuilder() }
+        ListItem("Keyframe Builder") { GuiTestValueKeyframeBuilder() },
+        ListItem("Text") { GuiTestTextLayer() }
     )
 
     init {
