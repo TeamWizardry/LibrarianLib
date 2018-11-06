@@ -164,6 +164,7 @@ class LayerRenderHandler: ILayerRendering {
 
         GlStateManager.enableTexture2D()
         GlStateManager.color(1f, 1f, 1f, 1f)
+        GlStateManager.enableBlend()
         layer.draw(partialTicks)
         GlStateManager.enableTexture2D()
         GlStateManager.color(1f, 1f, 1f, 1f)
