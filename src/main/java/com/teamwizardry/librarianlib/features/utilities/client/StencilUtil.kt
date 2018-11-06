@@ -16,35 +16,14 @@ object StencilUtil {
         private set
 
     fun clear() {
-        glEnable(GL_STENCIL_TEST)
         currentStencil = 0
 
-        GlStateManager.depthMask(false)
-        GlStateManager.colorMask(false, false, false, false)
-
-        glStencilFunc(GL_ALWAYS, 0, 0xFF)
-        glStencilOp(GL_ZERO, GL_ZERO, GL_ZERO)
+        glEnable(GL_STENCIL_TEST)
 
         glStencilMask(0xFF)
-
-        GlStateManager.disableTexture2D()
-        GlStateManager.color(1f, 0f, 1f, 0.5f)
-
-        val tessellator = Tessellator.getInstance()
-        val vb = tessellator.buffer
-        val s = 100_000.0
-
-        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION)
-
-        vb.pos(-s, -s, 0.0).endVertex()
-        vb.pos( s, -s, 0.0).endVertex()
-        vb.pos( s,  s, 0.0).endVertex()
-        vb.pos(-s,  s, 0.0).endVertex()
-
-        tessellator.draw()
-
-        GlStateManager.colorMask(true, true, true, true)
-        GlStateManager.depthMask(true)
+        glStencilMask(0xFF)
+        glClearStencil(0)
+        glClear(GL_STENCIL_BUFFER_BIT)
 
         glDisable(GL_STENCIL_TEST)
     }
