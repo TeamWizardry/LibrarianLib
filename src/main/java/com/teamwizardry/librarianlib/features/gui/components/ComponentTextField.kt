@@ -349,16 +349,12 @@ open class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y:
     }
 
     fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean {
-        val withinBoundary = mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height
-
         if (this.canLoseFocus)
-            this.isFocused = withinBoundary
+            this.isFocused = mouseOver
 
-        return if (this.isFocused && withinBoundary && mouseButton == 0) {
-            val xFromLeft = mouseX - x
-
+        return if (this.isFocused && mouseOver && mouseButton == 0) {
             val visible = this.fontRenderer.trimStringToWidth(this.text.substring(this.lineScrollOffset), this.width)
-            this.cursorPosition = this.fontRenderer.trimStringToWidth(visible, xFromLeft).length + this.lineScrollOffset
+            this.cursorPosition = this.fontRenderer.trimStringToWidth(visible, mouseX).length + this.lineScrollOffset
             true
         } else
             false
@@ -385,30 +381,30 @@ open class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y:
 
             if (!visible.isEmpty()) {
                 val toCursor = if (cursorVisible) visible.substring(0, cursorRelativePosition) else visible
-                offset = this.drawString(toCursor, offset.toFloat(), y.toFloat(), textColor)
+                offset = this.drawString(toCursor, offset.toFloat(), 0f, textColor)
             }
 
             val cursorInText = !this.useUnderscoreCursor || this.cursorPosition < this.text.length || this.text.length >= max
             var unselectedBound = offset
 
             if (!cursorVisible)
-                unselectedBound = if (cursorRelativePosition > 0) x + width - fontRenderer.getStringWidth("_") else x
+                unselectedBound = if (cursorRelativePosition > 0) width - fontRenderer.getStringWidth("_") else 0
             else if (cursorInText)
                 unselectedBound = --offset
 
             if (!visible.isEmpty() && cursorVisible && cursorRelativePosition < visible.length)
-                this.drawString(visible.substring(cursorRelativePosition), offset.toFloat(), y.toFloat(), textColor)
+                this.drawString(visible.substring(cursorRelativePosition), offset.toFloat(), 0f, textColor)
 
             if (cursorBlinkActive)
                 if (cursorInText) {
-                    Gui.drawRect(unselectedBound, y - 1, unselectedBound + 1, y + 2 + this.fontRenderer.FONT_HEIGHT, cursorColor.rgb)
+                    Gui.drawRect(unselectedBound, -1, unselectedBound + 1, 2 + this.fontRenderer.FONT_HEIGHT, cursorColor.rgb)
                     GlStateManager.enableBlend()
                 } else
-                    this.drawString("_", unselectedBound.toFloat(), (y + 1).toFloat(), textColor)
+                    this.drawString("_", unselectedBound.toFloat(), 1f, textColor)
 
             if (selectionEndPosition != cursorRelativePosition) {
-                val selectionX = x + this.fontRenderer.getStringWidth(visible.substring(0, selectionEndPosition))
-                this.drawSelectionBox(unselectedBound, y, selectionX - 1, y + this.fontRenderer.FONT_HEIGHT)
+                val selectionX = this.fontRenderer.getStringWidth(visible.substring(0, selectionEndPosition))
+                this.drawSelectionBox(unselectedBound, 0, selectionX - 1, this.fontRenderer.FONT_HEIGHT)
             }
 
             GlStateManager.color(1f, 1f, 1f, 1f)
@@ -421,11 +417,11 @@ open class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y:
         val minY = Math.min(startY, endY)
         val maxY = Math.max(startY, endY)
 
-        if (minX > x + width)
-            minX = x + width
+        if (minX > width)
+            minX = width
 
-        if (maxX > x + width)
-            maxX = x + width
+        if (maxX > width)
+            maxX = width
 
         val tessellator = Tessellator.getInstance()
         val bufferbuilder = tessellator.buffer
