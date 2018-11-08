@@ -41,12 +41,16 @@ fun BufferBuilder.addCacheArray(array: IntArray) {
     this.addVertexData(array)
 }
 
+@Deprecated("New property directly on GuiLayer", replaceWith = ReplaceWith("widthi"))
 val GuiComponent.width
     get() = size.xi
+@Deprecated("New property directly on GuiLayer", replaceWith = ReplaceWith("heighti"))
 val GuiComponent.height
     get() = size.yi
+@Deprecated("New property directly on GuiLayer", replaceWith = ReplaceWith("xi"))
 val GuiComponent.x
     get() = pos.xi
+@Deprecated("New property directly on GuiLayer", replaceWith = ReplaceWith("yi"))
 val GuiComponent.y
     get() = pos.yi
 

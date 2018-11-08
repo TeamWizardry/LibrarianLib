@@ -37,6 +37,82 @@ interface ILayerGeometry: CoordinateSpace2D {
     var contentsOffset_rm: RMValue<Vec2d>
     var contentsOffset: Vec2d
 
+    @JvmDefault
+    var width: Double
+        get() = size.x
+        set(value) {
+            size = vec(value, size.y)
+        }
+    @JvmDefault
+    var widthf: Float
+        get() = size.xf
+        set(value) {
+            size = vec(value, size.y)
+        }
+    @JvmDefault
+    var widthi: Int
+        get() = size.xi
+        set(value) {
+            size = vec(value, size.y)
+        }
+
+    @JvmDefault
+    var height: Double
+        get() = size.y
+        set(value) {
+            size = vec(size.x, value)
+        }
+    @JvmDefault
+    var heightf: Float
+        get() = size.yf
+        set(value) {
+            size = vec(size.x, value)
+        }
+    @JvmDefault
+    var heighti: Int
+        get() = size.yi
+        set(value) {
+            size = vec(size.x, value)
+        }
+
+    @JvmDefault
+    var x: Double
+        get() = pos.x
+        set(value) {
+            pos = vec(value, pos.y)
+        }
+    @JvmDefault
+    var xf: Float
+        get() = pos.xf
+        set(value) {
+            pos = vec(value, pos.y)
+        }
+    @JvmDefault
+    var xi: Int
+        get() = pos.xi
+        set(value) {
+            pos = vec(value, pos.y)
+        }
+
+    @JvmDefault
+    var y: Double
+        get() = pos.y
+        set(value) {
+            pos = vec(pos.x, value)
+        }
+    @JvmDefault
+    var yf: Float
+        get() = pos.yf
+        set(value) {
+            pos = vec(pos.x, value)
+        }
+    @JvmDefault
+    var yi: Int
+        get() = pos.yi
+        set(value) {
+            pos = vec(pos.x, value)
+        }
+
     /**
      * Applies this layer's transforms, barring the final content offset operation
      */

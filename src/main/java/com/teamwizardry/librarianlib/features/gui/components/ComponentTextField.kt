@@ -353,7 +353,7 @@ open class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y:
             this.isFocused = mouseOver
 
         return if (this.isFocused && mouseOver && mouseButton == 0) {
-            val visible = this.fontRenderer.trimStringToWidth(this.text.substring(this.lineScrollOffset), this.width)
+            val visible = this.fontRenderer.trimStringToWidth(this.text.substring(this.lineScrollOffset), this.widthi)
             this.cursorPosition = this.fontRenderer.trimStringToWidth(visible, mouseX).length + this.lineScrollOffset
             true
         } else
@@ -371,10 +371,10 @@ open class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y:
             val textColor = if (this.isEnabled) this.enabledColor.rgb else this.disabledColor.rgb
             val cursorRelativePosition = this.cursorPosition - this.lineScrollOffset
             var selectionEndPosition = this.selectionEnd - this.lineScrollOffset
-            val visible = this.fontRenderer.trimStringToWidth(this.text.substring(this.lineScrollOffset), this.width - fontRenderer.getStringWidth("_"))
+            val visible = this.fontRenderer.trimStringToWidth(this.text.substring(this.lineScrollOffset), this.widthi - fontRenderer.getStringWidth("_"))
             val cursorVisible = cursorRelativePosition >= 0 && cursorRelativePosition <= visible.length
             val cursorBlinkActive = this.isFocused && this.cursorCounter / 12 % 2 == 0 && cursorVisible
-            var offset = x
+            var offset = xi
 
             if (selectionEndPosition > visible.length)
                 selectionEndPosition = visible.length
@@ -388,7 +388,7 @@ open class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y:
             var unselectedBound = offset
 
             if (!cursorVisible)
-                unselectedBound = if (cursorRelativePosition > 0) width - fontRenderer.getStringWidth("_") else 0
+                unselectedBound = if (cursorRelativePosition > 0) widthi - fontRenderer.getStringWidth("_") else 0
             else if (cursorInText)
                 unselectedBound = --offset
 
@@ -418,10 +418,10 @@ open class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y:
         val maxY = Math.max(startY, endY)
 
         if (minX > width)
-            minX = width
+            minX = widthi
 
         if (maxX > width)
-            maxX = width
+            maxX = widthi
 
         val tessellator = Tessellator.getInstance()
         val bufferbuilder = tessellator.buffer
@@ -453,7 +453,7 @@ open class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y:
         if (this.lineScrollOffset > length)
             this.lineScrollOffset = length
 
-        val boxWidth = this.width - fontRenderer.getStringWidth("_")
+        val boxWidth = this.widthi - fontRenderer.getStringWidth("_")
         val visible = this.fontRenderer.trimStringToWidth(this.text.substring(this.lineScrollOffset), boxWidth)
         val positionInOverall = visible.length + this.lineScrollOffset
 
