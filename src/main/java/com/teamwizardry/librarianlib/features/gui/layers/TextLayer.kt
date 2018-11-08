@@ -30,6 +30,7 @@ class TextLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, p
     var enableUnicodeBidi: Boolean = true
     var align: Align2d = Align2d.LEFT_TOP
     var maxLines: Int = Int.MAX_VALUE
+    var lineSpacing: Int = 0
     var truncate: Boolean = false
 
     // visual options
@@ -59,7 +60,7 @@ class TextLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, p
         }
         when(layout.align.y) {
             Align2d.Y.TOP -> {}
-            Align2d.Y.CENTER -> GlStateManager.translate(0.0, (size.y - layout.bounds.height)/2, 0.0)
+            Align2d.Y.CENTER -> GlStateManager.translate(0.0, ((size.y - layout.bounds.height)/2).toInt() + 1.0, 0.0)
             Align2d.Y.BOTTOM -> GlStateManager.translate(0.0, size.y - layout.bounds.height, 0.0)
         }
 
@@ -72,7 +73,7 @@ class TextLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, p
         layout.fontRenderer = fontRenderer
         layout.text = text
         layout.wrapWidth = if(wrap) size.xi else Int.MAX_VALUE
-        layout.lineSpacing = 0
+        layout.lineSpacing = lineSpacing
         layout.align = align
         layout.unicode = unicode
         layout.enableUnicodeBidi = enableUnicodeBidi

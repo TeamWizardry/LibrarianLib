@@ -89,6 +89,12 @@ class TextLayout {
 
         truncateRuns()
 
+        var bounds: Rect2d? = null
+        runs.forEach { run ->
+            bounds = bounds?.expandToFit(run.rect) ?: run.rect
+        }
+        this.bounds = bounds ?: rect(0,0, 0,0)
+
         if (unicode) {
             if(enableUnicodeBidi)
                 fontRenderer.bidiFlag = false
@@ -127,7 +133,6 @@ class TextLayout {
             y += fontRenderer.FONT_HEIGHT + lineSpacing
             val run = TextRun(runString, rect)
             runs.add(run)
-            bounds = bounds.expandToFit(run.rect)
         }
     }
 
