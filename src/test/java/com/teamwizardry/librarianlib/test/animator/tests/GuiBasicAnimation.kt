@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 import com.teamwizardry.librarianlib.features.animator.animations.Keyframe
 import com.teamwizardry.librarianlib.features.animator.animations.KeyframeAnimation
 import com.teamwizardry.librarianlib.features.gui.GuiBase
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.helpers.vec
@@ -27,6 +28,15 @@ class GuiBasicAnimation : GuiBase() {
         val bouncer = ComponentRect(0, 0, 25, 15)
         bouncer.color = Color(255, 0, 0)
         main.add(bouncer)
+
+        val row = ComponentRect(0, 30, 50, 1)
+        main.add(row)
+        val scale = GuiComponent(0, 30, 0, 0)
+        val pixel = ComponentRect(0, 0, 1, 1)
+        pixel.color = Color.GREEN
+        scale.scale = 10.0
+        scale.add(pixel)
+        main.add(scale)
 
         val bouncer2 = ComponentRect(0, 95, 50, 5)
         bouncer2.color = Color(0, 0, 255)
@@ -54,6 +64,12 @@ class GuiBasicAnimation : GuiBase() {
             )
 
             animator.add(animation)
+
+            val animation2 = BasicAnimation(pixel, "pos")
+            animation2.duration = 8000f
+            animation2.to = vec(1, 1)
+
+            animator.add(animation2)
         }
 
     }
