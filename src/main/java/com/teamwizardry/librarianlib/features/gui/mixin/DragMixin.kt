@@ -50,9 +50,9 @@ class DragMixin(protected var component: GuiComponent, protected var constraints
 
     private fun init() {
         component.BUS.hook(GuiComponentEvents.MouseDownEvent::class.java) { event ->
-            if (mouseDown == null && component.mouseOver && !component.BUS.fire(DragPickupEvent(component, event.button, event.mousePos)).isCanceled()) {
+            if (mouseDown == null && component.mouseOver && !component.BUS.fire(DragPickupEvent(component, event.button, component.mousePos)).isCanceled()) {
                 mouseDown = event.button
-                clickedPoint = event.mousePos
+                clickedPoint = component.mousePos
                 previousPos = component.pos
                 event.cancel()
             }

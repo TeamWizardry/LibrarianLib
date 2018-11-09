@@ -115,11 +115,6 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         fullscreenComponents.mouseUp(EnumMouseButton.getFromCode(state))
     }
 
-    override fun mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
-        super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)
-        fullscreenComponents.mouseDrag(EnumMouseButton.getFromCode(clickedMouseButton))
-    }
-
     @Throws(IOException::class)
     override fun handleKeyboardInput() {
         super.handleKeyboardInput()

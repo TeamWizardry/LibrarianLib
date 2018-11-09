@@ -47,19 +47,14 @@ open class GuiBase : GuiScreen() {
     }
 
     @Throws(IOException::class)
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        super.mouseClicked(mouseX, mouseY, mouseButton)
-        impl.mouseClicked(mouseX, mouseY, mouseButton)
+    override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
+        super.mouseClicked(mouseX, mouseY, button)
+        impl.mouseClicked(button)
     }
 
-    override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
-        super.mouseReleased(mouseX, mouseY, state)
-        impl.mouseReleased(mouseX, mouseY, state)
-    }
-
-    override fun mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
-        super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)
-        impl.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)
+    override fun mouseReleased(mouseX: Int, mouseY: Int, button: Int) {
+        super.mouseReleased(mouseX, mouseY, button)
+        impl.mouseReleased(button)
     }
 
     @Throws(IOException::class)

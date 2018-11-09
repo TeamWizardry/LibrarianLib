@@ -87,16 +87,12 @@ open class LibGuiImpl(
     }
 
     @Throws(IOException::class)
-    fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-            root.mouseDown(EnumMouseButton.getFromCode(mouseButton))
+    fun mouseClicked(button: Int) {
+            root.mouseDown(EnumMouseButton.getFromCode(button))
     }
 
-    fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
-            root.mouseUp(EnumMouseButton.getFromCode(state))
-    }
-
-    fun mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
-            root.mouseDrag(EnumMouseButton.getFromCode(clickedMouseButton))
+    fun mouseReleased(button: Int) {
+            root.mouseUp(EnumMouseButton.getFromCode(button))
     }
 
     @Throws(IOException::class)

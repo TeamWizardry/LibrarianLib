@@ -40,7 +40,7 @@ class ButtonMixin(val component: GuiComponent, init: Runnable) {
 
         component.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) { event ->
             if (state != EnumButtonState.DISABLED)
-                component.BUS.fire(ButtonClickEvent(component, event.mousePos, event.button))
+                component.BUS.fire(ButtonClickEvent(component, component.mousePos, event.button))
             state != EnumButtonState.DISABLED
         }
     }

@@ -1,10 +1,11 @@
 package com.teamwizardry.librarianlib.features.gui.component.supporting
 
+import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import java.util.Collections
 
 interface IComponentMouse {
     /**
@@ -39,6 +40,11 @@ interface IComponentMouse {
      * dragged will likely occlude this one.
      */
     val mouseOver: Boolean
+
+    /**
+     * The set of mouse buttons currently being pressed
+     */
+    val pressedButtons: Set<EnumMouseButton>
 
     /**
      * Whether this component will block the mouse being over those behind it.
@@ -84,6 +90,12 @@ interface IComponentMouse {
      * Returns whether the parent component should set its mouseOver to true
      */
     fun shouldPropagateMouseOverTrue(): Boolean
+
+    fun mouseDown(button: EnumMouseButton)
+
+    fun mouseUp(button: EnumMouseButton)
+
+    fun mouseWheel(direction: GuiComponentEvents.MouseWheelDirection)
 }
 
 enum class MousePropagationType {
@@ -115,14 +127,24 @@ class ComponentMouseHandler: IComponentMouse {
         private set
     override var mouseOver: Boolean = false
         private set
+
+    private val buttonsDownOver = mutableMapOf<EnumMouseButton, Boolean>()
+    override val pressedButtons: Set<EnumMouseButton> = Collections.unmodifiableSet(buttonsDownOver.keys)
+
     override var isOpaqueToMouse: Boolean = true
     override var mousePropagationType: MousePropagationType = MousePropagationType.OVER
     override var shouldComputeMouseInsideFromBounds: Boolean = true
 
     override fun updateMouse(parentMousePos: Vec2d) {
+        this.lastMousePos = mousePos
         this.mousePos = GuiComponentEvents.CalculateMousePositionEvent(
             component.convertPointFromParent(parentMousePos)
         ).mousePos
+        if(lastMousePos.squareDist(mousePos) > 0.1 * 0.1) {
+            if(mouseOver)
+                component.BUS.fire(GuiComponentEvents.MouseDragEvent())
+            component.BUS.fire(GuiComponentEvents.MouseMoveEvent())
+        }
         component.subComponents.forEach {
             it.updateMouse(this.mousePos)
         }
@@ -137,10 +159,10 @@ class ComponentMouseHandler: IComponentMouse {
             mouseInside = child.updateMouseInside() || mouseInside
         }
         if(mouseInside && !this.mouseInside) {
-            component.BUS.fire(GuiComponentEvents.MouseMoveInEvent(lastMousePos, mousePos))
+            component.BUS.fire(GuiComponentEvents.MouseMoveInEvent())
         }
         if(!mouseInside && this.mouseInside) {
-            component.BUS.fire(GuiComponentEvents.MouseMoveOutEvent(lastMousePos, mousePos))
+            component.BUS.fire(GuiComponentEvents.MouseMoveOutEvent())
         }
         this.mouseInside = mouseInside
         if(mousePropagationType != MousePropagationType.NONE) {
@@ -165,10 +187,10 @@ class ComponentMouseHandler: IComponentMouse {
         mouseOver = mouseOver || (!occluded && mouseInside)
         occluded = occluded || (mouseOver && isOpaqueToMouse)
         if(mouseOver && !this.mouseOver) {
-            component.BUS.fire(GuiComponentEvents.MouseEnterEvent(lastMousePos, mousePos))
+            component.BUS.fire(GuiComponentEvents.MouseEnterEvent())
         }
         if(!mouseOver && this.mouseOver) {
-            component.BUS.fire(GuiComponentEvents.MouseLeaveEvent(lastMousePos, mousePos))
+            component.BUS.fire(GuiComponentEvents.MouseLeaveEvent())
         }
         this.mouseOver = mouseOver
         return occluded
@@ -177,4 +199,57 @@ class ComponentMouseHandler: IComponentMouse {
     override fun shouldPropagateMouseOverTrue(): Boolean {
         return mouseOver && mousePropagationType == MousePropagationType.OVER
     }
+
+    override fun mouseDown(button: EnumMouseButton) {
+        if (!component.isVisible) return
+        if (component.BUS.fire(GuiComponentEvents.MouseDownEvent(button)).isCanceled())
+            return
+
+        buttonsDownOver[button] = mouseOver
+
+        component.subComponents.forEach { child ->
+            child.mouseDown(button)
+        }
+    }
+
+    override fun mouseUp(button: EnumMouseButton) {
+        if (!component.isVisible) return
+
+        val wasOver = buttonsDownOver[button] ?: false
+        buttonsDownOver[button] = false
+
+        if (component.BUS.fire(GuiComponentEvents.MouseUpEvent(button)).isCanceled())
+            return
+
+        if (component.mouseOver) {
+            if(wasOver) {
+                component.BUS.fire(GuiComponentEvents.MouseClickEvent(button))
+            } else {
+                component.BUS.fire(GuiComponentEvents.MouseClickDragInEvent(button))
+            }
+        } else {
+            if(wasOver) {
+                component.BUS.fire(GuiComponentEvents.MouseClickDragOutEvent(button))
+            } else {
+                component.BUS.fire(GuiComponentEvents.MouseClickOutsideEvent(button))
+            }
+        }
+
+        component.subComponents.forEach { child ->
+            child.mouseUp(button)
+        }
+    }
+
+    override fun mouseWheel(direction: GuiComponentEvents.MouseWheelDirection) {
+        if (!component.isVisible) return
+
+        if (component.BUS.fire(GuiComponentEvents.MouseWheelEvent(direction)).isCanceled())
+            return
+
+        component.subComponents.forEach { child ->
+            child.mouseWheel(direction)
+        }
+    }
+
+
 }

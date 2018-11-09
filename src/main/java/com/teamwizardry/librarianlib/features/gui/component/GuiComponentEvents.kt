@@ -13,41 +13,44 @@ object GuiComponentEvents {
     class CalculateMousePositionEvent(var mousePos: Vec2d): Event()
 
     /** Fired whenever the mouse is pressed */
-    class MouseDownEvent(val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
+    class MouseDownEvent(val button: EnumMouseButton) : EventCancelable()
 
     /** Fired whenever the mouse is released */
-    class MouseUpEvent(val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
+    class MouseUpEvent(val button: EnumMouseButton) : EventCancelable()
 
     /** Fired whenever the mouse is moved while a button is being pressed */
-    class MouseDragEvent(val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
+    class MouseMoveEvent() : Event()
+
+    /** Fired whenever the mouse is moved while a button is being pressed */
+    class MouseDragEvent() : Event()
 
     /** Fired whenever the mouse is moved out of this component (when mouseInside goes from true to false) */
-    class MouseMoveOutEvent(val previousMousePos: Vec2d, val mousePos: Vec2d) : Event()
+    class MouseMoveOutEvent() : Event()
 
     /** Fired whenever the mouse is moved into this component (when mouseInside goes from false to true) */
-    class MouseMoveInEvent(val previousMousePos: Vec2d, val mousePos: Vec2d) : Event()
+    class MouseMoveInEvent() : Event()
 
     /** Fired whenever the mouse is moved off this component (when mouseOver goes from true to false) */
-    class MouseEnterEvent(val previousMousePos: Vec2d, val mousePos: Vec2d) : Event()
+    class MouseEnterEvent() : Event()
 
     /** Fired whenever the mouse is moved over this component (when mouseOver goes from false to true) */
-    class MouseLeaveEvent(val previousMousePos: Vec2d, val mousePos: Vec2d) : Event()
+    class MouseLeaveEvent() : Event()
 
 
     /** Fired in addition to any of [MouseClickEvent], [MouseClickOutsideEvent], [MouseClickDragInEvent], or [MouseClickDragOutEvent] */
-    open class MouseClickAnyEvent(val mouseDownPos: Vec2d, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
+    open class MouseClickAnyEvent(val button: EnumMouseButton) : EventCancelable()
 
     /** Fired when the mouse is clicked within the component (mouse goes both down and up inside the component) */
-    class MouseClickEvent(mouseDownPos: Vec2d, mousePos: Vec2d, button: EnumMouseButton) : MouseClickAnyEvent(mouseDownPos, mousePos, button)
+    class MouseClickEvent(button: EnumMouseButton) : MouseClickAnyEvent(button)
 
     /** Fired when the mouse is clicked outside the component (mouse goes both down and up outside the component) */
-    class MouseClickOutsideEvent(mouseDownPos: Vec2d, mousePos: Vec2d, button: EnumMouseButton) : MouseClickAnyEvent(mouseDownPos, mousePos, button)
+    class MouseClickOutsideEvent(button: EnumMouseButton) : MouseClickAnyEvent(button)
 
     /** Fired when the mouse is clicked within the component (mouse goes down outside and up inside the component) */
-    class MouseClickDragInEvent(mouseDownPos: Vec2d, mousePos: Vec2d, button: EnumMouseButton) : MouseClickAnyEvent(mouseDownPos, mousePos, button)
+    class MouseClickDragInEvent(button: EnumMouseButton) : MouseClickAnyEvent(button)
 
     /** Fired when the mouse is clicked within the component (mouse goes down inside and up outside the component) */
-    class MouseClickDragOutEvent(mouseDownPos: Vec2d, mousePos: Vec2d, button: EnumMouseButton) : MouseClickAnyEvent(mouseDownPos, mousePos, button)
+    class MouseClickDragOutEvent(button: EnumMouseButton) : MouseClickAnyEvent(button)
 
     /** Fired when a key is pressed */
     class KeyDownEvent(val key: Char, val keyCode: Int) : EventCancelable()
@@ -56,7 +59,7 @@ object GuiComponentEvents {
     class KeyUpEvent(val key: Char, val keyCode: Int) : EventCancelable()
 
     /** Fired when the mouse wheel is moved */
-    class MouseWheelEvent(val mousePos: Vec2d, val direction: MouseWheelDirection) : EventCancelable()
+    class MouseWheelEvent(val direction: MouseWheelDirection) : EventCancelable()
 
     enum class MouseWheelDirection(@JvmField val ydirection: Int) {
         UP(+1), DOWN(-1);
@@ -68,28 +71,4 @@ object GuiComponentEvents {
             }
         }
     }
-
-    /** Fired before data is set */
-    class SetDataEvent<D>(val clazz: Class<D>, val key: String, val value: D) : EventCancelable()
-
-    /** Fired before data is removed */
-    class RemoveDataEvent<D>(val clazz: Class<D>, val key: String, val value: D?) : EventCancelable()
-
-    /** Fired when data is queried */
-    class GetDataEvent<D>(val clazz: Class<D>, val key: String, val value: D?) : Event()
-
-    /** Fired when the data key set is queried */
-    class GetDataKeysEvent<D>(val clazz: Class<D>, val value: MutableSet<String>) : Event()
-
-    /** Fired when the data class set is queried */
-    class GetDataClassesEvent(val value: MutableSet<Class<*>>) : Event()
-
-    /** Fired when the component is checked for a tag */
-    class HasTagEvent(val tag: Any, var hasTag: Boolean) : Event()
-
-    /** Fired before a tag is added to the component */
-    class AddTagEvent(val tag: Any) : EventCancelable()
-
-    /** Fired before a tag is removed from a component */
-    class RemoveTagEvent(val tag: Any) : EventCancelable()
 }

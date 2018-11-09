@@ -75,16 +75,16 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
             if (this.subComponents.none { it is ComponentMaterialList }
                     && released
                     && this.isVisible) {
-                val untransform = event.mousePos
+                val untransform = mousePos
                 val diff: Vec2d
                 diff = if (dragging)
                     untransform.sub(prevPos).mul(1 / 2.0)
                 else
-                    event.mousePos.mul(1 / 100.0)
+                    mousePos.mul(1 / 100.0)
 
-                if (event.button == EnumMouseButton.RIGHT)
+                if (EnumMouseButton.RIGHT in pressedButtons)
                     rotVec = rotVec.add(diff)
-                else if (event.button == EnumMouseButton.LEFT)
+                else if (EnumMouseButton.LEFT in pressedButtons)
                     panVec = panVec.add(diff.mul(2.0))
 
                 prevPos = untransform

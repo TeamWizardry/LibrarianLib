@@ -107,7 +107,7 @@ open class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y:
         }
 
     init {
-        BUS.hook(GuiComponentEvents.MouseDownEvent::class.java) { mouseClicked(it.mousePos.xi, it.mousePos.yi, it.button.mouseCode) }
+        BUS.hook(GuiComponentEvents.MouseDownEvent::class.java) { mouseClicked(mousePos.xi, mousePos.yi, it.button.mouseCode) }
         BUS.hook(GuiComponentEvents.KeyDownEvent::class.java) {
             if (handleKeyTyped(it.key, it.keyCode))
                 isFocused = true

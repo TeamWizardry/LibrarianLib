@@ -32,7 +32,7 @@ class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
         }
 
         BUS.hook(GuiComponentEvents.MouseUpEvent::class.java) { event ->
-            calcDrag(event.mousePos, event.button)
+            calcDrag(mousePos, event.button)
 
             dragStart = Vec2d.ZERO
             dragButton = null
@@ -59,7 +59,7 @@ class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiCompon
         if (dragButton != null)
             return
 
-        dragStart = e.mousePos
+        dragStart = mousePos
         dragButton = e.button
     }
 
