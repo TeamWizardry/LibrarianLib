@@ -38,6 +38,10 @@ class GuiBasicAnimation : GuiBase() {
         scale.add(pixel)
         main.add(scale)
 
+        val replace = ComponentRect(0, 80, 10, 10)
+        replace.color = Color.MAGENTA
+        main.add(replace)
+
         val bouncer2 = ComponentRect(0, 95, 50, 5)
         bouncer2.color = Color(0, 0, 255)
         main.add(bouncer2)
@@ -52,7 +56,7 @@ class GuiBasicAnimation : GuiBase() {
 //        animator.add(bouncer2.animate("pos", Vec2d(10, 10), 40f))
 
         main.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
-            val animation = KeyframeAnimation(bouncer, "pos")
+            var animation = KeyframeAnimation(bouncer, "pos")
             animation.duration = 120f
             animation.shouldReverse = true
 
@@ -65,10 +69,22 @@ class GuiBasicAnimation : GuiBase() {
 
             animator.add(animation)
 
-            val animation2 = BasicAnimation(pixel, "pos")
+            var animation2 = BasicAnimation(pixel, "pos")
             animation2.duration = 8000f
             animation2.to = vec(1, 1)
+            animator.add(animation2)
 
+            animation2 = BasicAnimation(replace, "pos")
+            animation2.duration = 40f
+            animation2.from = vec(0, 80)
+            animation2.to = vec(190, 80)
+            animator.add(animation2)
+
+            animation2 = BasicAnimation(replace, "pos")
+            animation2.duration = 20f
+            animation2.from = vec(40, 80)
+            animation2.to = vec(40, 40)
+            animation2.start = 10f
             animator.add(animation2)
         }
 

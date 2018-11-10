@@ -8,7 +8,7 @@ import com.teamwizardry.librarianlib.features.animator.LerperHandler
 /**
  * A basic animation from [from] to [to]. Both values default to the current value of this animation's property
  */
-class BasicAnimation<T : Any>(target: T, val property: AnimatableProperty<T>) : Animation<T>(target) {
+class BasicAnimation<T : Any>(target: T, property: AnimatableProperty<T>) : PropertyAnimation<T>(target, property) {
     constructor(target: T, property: String) : this(target, AnimatableProperty.get(target.javaClass, property))
 
     /**

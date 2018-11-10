@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.animator
 
+import com.teamwizardry.librarianlib.features.animator.animations.PropertyAnimation
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.util.Timer
@@ -26,16 +27,6 @@ class Animator {
     init {
         newAnimators.add(this)
     }
-
-    /**
-     * If this value is true (which it is by default) this animator will delete any animations that have passed their
-     * end time. This keeps old animations from cluttering up memory, keeping references to dead objects, and reduces
-     * the amount of processing this animator has to do to sort through its animations.
-     *
-     * @sample AnimatorExamples.deletePastAnimationsTrue
-     * @sample AnimatorExamples.deletePastAnimationsFalse
-     */
-    var deletePastAnimations = true
 
     /**
      * If this value is true (which it isn't by default) this animator will pause when the world pauses.
@@ -148,10 +139,21 @@ class Animator {
     private fun updateCurrentAnimations() {
         val time = this.time
 
-        currentAnimations.clear()
-
         performLocked {
-            if (deletePastAnimations) animations.removeIf {
+            val properties = mutableMapOf<Pair<AnimatableProperty<*>, Any>, Float>()
+            currentAnimations.forEach { animation ->
+                if (animation is PropertyAnimation) {
+                    properties[animation.property to animation.target] = animation.start
+                }
+            }
+
+            animations.forEach {
+                if(it is PropertyAnimation && it.start < properties[it.property to it.target] ?: Float.NEGATIVE_INFINITY) {
+                    it.terminated = true
+                }
+            }
+
+            animations.removeIf {
                 when {
                     it.terminated -> {
                         it.finished = true
@@ -165,7 +167,9 @@ class Animator {
                     else -> false
                 }
             }
+
         }
+        currentAnimations.clear()
 
         currentAnimations.addAll(animations.takeWhile { it.start <= time })
     }
