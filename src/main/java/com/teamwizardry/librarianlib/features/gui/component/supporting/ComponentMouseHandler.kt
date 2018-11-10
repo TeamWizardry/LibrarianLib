@@ -86,6 +86,8 @@ interface IComponentMouse {
      */
     fun updateMouseOver(occluded: Boolean): Boolean
 
+    fun clearMouseOver()
+
     /**
      * Returns whether the parent component should set its mouseOver to true
      */
@@ -165,7 +167,7 @@ class ComponentMouseHandler: IComponentMouse {
             component.BUS.fire(GuiComponentEvents.MouseMoveOutEvent())
         }
         this.mouseInside = mouseInside
-        if(mousePropagationType != MousePropagationType.NONE) {
+        if(mousePropagationType != MousePropagationType.NONE && component.isVisible) {
             return mouseInside
         } else {
             return false
@@ -173,18 +175,21 @@ class ComponentMouseHandler: IComponentMouse {
     }
 
     override fun updateMouseOver(occluded: Boolean): Boolean {
+        if(!component.isVisible || component.isPointClipped(mousePos)) {
+            clearMouseOver()
+            return occluded
+        }
         @Suppress("NAME_SHADOWING") var occluded = occluded
         var mouseOver = false
-        val clipped = component.isPointClipped(mousePos)
         for(child in component.subComponents.reversed()) {
-            if(clipped) {
-                child.updateMouseOver(true)
-            } else {
-                occluded = child.updateMouseOver(occluded) || occluded
-            }
+            occluded = child.updateMouseOver(occluded) || occluded
             mouseOver = child.shouldPropagateMouseOverTrue() || mouseOver
         }
         mouseOver = mouseOver || (!occluded && mouseInside)
+        val cursor = component.hoverCursor
+        if(mouseOver && cursor != null) {
+            component.cursor = cursor
+        }
         occluded = occluded || (mouseOver && isOpaqueToMouse)
         if(mouseOver && !this.mouseOver) {
             component.BUS.fire(GuiComponentEvents.MouseEnterEvent())
@@ -194,6 +199,13 @@ class ComponentMouseHandler: IComponentMouse {
         }
         this.mouseOver = mouseOver
         return occluded
+    }
+
+    override fun clearMouseOver() {
+        this.mouseOver = false
+        for(child in component.subComponents) {
+            child.clearMouseOver()
+        }
     }
 
     override fun shouldPropagateMouseOverTrue(): Boolean {
