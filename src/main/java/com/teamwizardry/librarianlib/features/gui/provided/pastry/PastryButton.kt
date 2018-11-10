@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.features.gui.layers.SpriteLayer
 import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.minus
+import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 
 class PastryButton @JvmOverloads constructor(posX: Int, posY: Int, width: Int, height: Int = 12): GuiComponent(posX, posY, width, height) {
     private val sprite = SpriteLayer(PastryTexture.button, 0, 0, width, height)
@@ -22,6 +23,7 @@ class PastryButton @JvmOverloads constructor(posX: Int, posY: Int, width: Int, h
         }
 
     init {
+        this.hoverCursor = LibCursor.POINT
         label.wrap = false
         label.maxLines = 1
         label.truncate = true

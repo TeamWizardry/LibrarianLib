@@ -8,6 +8,7 @@ import com.teamwizardry.librarianlib.features.gui.value.IMValueInt
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.kotlin.*
+import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.Gui
@@ -107,6 +108,7 @@ open class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y:
         }
 
     init {
+        this.hoverCursor = LibCursor.TEXT
         BUS.hook(GuiComponentEvents.MouseDownEvent::class.java) { mouseClicked(mousePos.xi, mousePos.yi, it.button.mouseCode) }
         BUS.hook(GuiComponentEvents.KeyDownEvent::class.java) {
             if (handleKeyTyped(it.key, it.keyCode))

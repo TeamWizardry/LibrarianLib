@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.features.gui.components.ComponentTextField
 import com.teamwizardry.librarianlib.features.gui.layers.SpriteLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.minus
+import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 
@@ -16,6 +17,7 @@ class PastryTextField(fontRenderer: FontRenderer, x: Int, y: Int, width: Int, he
     private val background = SpriteLayer(PastryTexture.textField, 0, 0, width, height)
 
     init {
+        this.hoverCursor = LibCursor.TEXT
         this.add(background, field)
         field.useUnderscoreCursor = false
     }
