@@ -15,6 +15,10 @@ object PastryTexture {
     val switchOff = texture.getSprite("switch.off")
     val switchOn = texture.getSprite("switch.on")
     val switchHandle = texture.getSprite("switch.handle")
+    val checkboxOff = texture.getSprite("checkbox.off")
+    val checkboxOn = texture.getSprite("checkbox.on")
+    val radioOff = texture.getSprite("radiobutton.off")
+    val radioOn = texture.getSprite("radiobutton.on")
 }
 
 enum class BackgroundType(val sprite: Sprite) {

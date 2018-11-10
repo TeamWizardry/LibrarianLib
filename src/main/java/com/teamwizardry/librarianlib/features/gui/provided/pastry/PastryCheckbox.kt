@@ -12,29 +12,22 @@ import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 
-class PastrySwitch(posX: Int, posY: Int): PastryToggle(posX, posY, 11, 7) {
-    private val background = SpriteLayer(PastryTexture.switchOff, 0, 0, 11, 7)
-    private val handle = SpriteLayer(PastryTexture.switchHandle, 0, 0, 7, 7)
-    private val switchOn = SpriteLayer(PastryTexture.switchOn, 0, 0, 11, 7)
-    private val switchOnMask = GuiLayer(0, 0, 4, 7)
+class PastryCheckbox(posX: Int, posY: Int): PastryToggle(posX, posY, 7, 7) {
+    private val background = SpriteLayer(PastryTexture.checkboxOff, 0, 0, 7, 7)
+    private val checked = SpriteLayer(PastryTexture.checkboxOn, 0, 0, 7, 7)
+//    private val checkedMask = GuiLayer(0, 0, 0, 0)
 
     override fun stateChanged(state: Boolean) {
     }
 
     override fun visualStateChanged(visualState: Boolean) {
-        val duration = 2f
-        if(visualState) {
-            handle.pos_rm.animate(vec(4, 0), duration)
-            switchOnMask.size_rm.animate(vec(8, 7), duration)
-        } else {
-            handle.pos_rm.animate(vec(0, 0), duration)
-            switchOnMask.size_rm.animate(vec(4, 7), duration)
-        }
+        checked.isVisible = visualState
     }
 
     init {
-        switchOnMask.clipToBounds = true
-        switchOnMask.add(switchOn)
-        this.add(background, switchOnMask, handle)
+//        switchOnMask.clipToBounds = true
+//        switchOnMask.add(switchOn)
+        checked.isVisible = false
+        this.add(background, checked)
     }
 }

@@ -1,12 +1,12 @@
 package com.teamwizardry.librarianlib.test.gui.tests
 
 import com.teamwizardry.librarianlib.features.gui.GuiBase
-import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryBackground
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryButton
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryCheckbox
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryToggle
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastrySwitch
 import com.teamwizardry.librarianlib.features.helpers.vec
-import java.awt.Color
 
 /**
  * Created by TheCodeWarrior
@@ -24,7 +24,10 @@ class GuiTestPastry : GuiBase() {
         button.label.text = "I may or may not be a bit too long to fit."
         main.add(button)
 
-        var switch = PastrySwitch(120, 10)
+        val switch = PastrySwitch(120, 10)
         main.add(switch)
+
+        val check = PastryCheckbox(120, 30)
+        main.add(check)
     }
 }
