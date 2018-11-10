@@ -81,6 +81,8 @@ open class GuiComponent private constructor(
     val parentComponent: GuiComponent?
         get() = this.parent as GuiComponent
 
+    override fun shouldDrawSkeleton(): Boolean = this.mouseInside
+
     override fun drawDebugBoundingBox() {
 
         GlStateManager.disableTexture2D()

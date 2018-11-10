@@ -51,10 +51,14 @@ interface ILayerRendering {
      */
     fun renderLayer(partialTicks: Float)
 
+    fun renderSkeleton()
+
     /**
      * Draw a bounding box around
      */
     fun drawDebugBoundingBox()
+
+    fun shouldDrawSkeleton(): Boolean
 }
 
 class LayerRenderHandler: ILayerRendering {
@@ -147,7 +151,10 @@ class LayerRenderHandler: ILayerRendering {
             layer.needsLayout = false
         }
 
-        if(!layer.isVisible) return;
+        if(!layer.isVisible) {
+            renderSkeleton()
+            return
+        }
 
         layer.BUS.fire(GuiLayerEvents.PreTransformEvent(partialTicks))
 
@@ -185,6 +192,36 @@ class LayerRenderHandler: ILayerRendering {
             GlStateManager.glLineWidth(1f)
             GlStateManager.color(.75f, 0f, .75f)
             layer.drawDebugBoundingBox()
+        }
+
+        layer.glApplyTransform(true)
+    }
+
+    override fun shouldDrawSkeleton(): Boolean = false
+
+    override fun renderSkeleton() {
+        if(layer.needsLayout) {
+            layer.layoutChildren()
+            layer.BUS.fire(GuiLayerEvents.LayoutChildren())
+            layer.needsLayout = false
+        }
+
+        layer.glApplyTransform(false)
+
+        layer.glApplyContentsOffset(false)
+
+        layer.forEachChild { it.render.renderSkeleton() }
+
+        layer.glApplyContentsOffset(true)
+
+        if (LibrarianLib.DEV_ENVIRONMENT && Minecraft.getMinecraft().renderManager.isDebugBoundingBox &&
+            GuiLayer.isDebugMode && layer.shouldDrawSkeleton()) {
+            GlStateManager.glLineWidth(1f)
+            GlStateManager.color(.75f, 0f, .75f)
+            GL11.glEnable(GL11.GL_LINE_STIPPLE)
+            GL11.glLineStipple(2, 0b0011_0011_0011_0011.toShort())
+            layer.drawDebugBoundingBox()
+            GL11.glDisable(GL11.GL_LINE_STIPPLE)
         }
 
         layer.glApplyTransform(true)
