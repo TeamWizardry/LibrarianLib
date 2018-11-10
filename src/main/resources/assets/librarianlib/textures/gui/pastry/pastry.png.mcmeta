@@ -1,0 +1,16 @@
+ {
+     "spritesheet": {
+         "textureWidth": 256,
+         "textureHeight": 256,
+         "sprites": {
+            "background.default": { "pos": [0,0,8,8], "caps": [3,3,3,3] },
+            "background.light": { "pos": [80,0,8,8], "caps": [2,2,2,2] },
+            "background.dark": { "pos": [80,0,8,8], "caps": [2,2,2,2] },
+            "button.unpressed": { "pos": [0,72,8,8], "caps": [2,2,2,2] },
+            "button.pressed": { "pos": [16,72,8,8], "caps": [2,2,2,2] },
+            "switch.off": [0,48,11,7],
+            "switch.on": [13,48,11,7],
+            "switch.handle": [24,48,7,7]
+         }
+     }
+ }
