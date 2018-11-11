@@ -236,6 +236,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
                             instructions.insertBefore(node, beforeInstructions);
                             instructions.insert(node, afterInstructions);
+                            instructions.resetLabels();
 
                             return false;
                         }));
@@ -266,6 +267,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
                             instructions.insertBefore(node, beforeInstructions);
                             instructions.insert(node, afterInstructions);
+                            instructions.resetLabels();
 
                             return false;
                         }));
@@ -304,6 +306,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
                             instructions.insertBefore(node, beforeInstructions);
                             instructions.insert(node, afterInstructions);
+                            instructions.resetLabels();
 
                             return false;
                         }));
