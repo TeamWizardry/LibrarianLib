@@ -88,4 +88,14 @@ class TextLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, p
         layout.genIfNeeded()
     }
 
+    fun fitToText() {
+        updateLayout()
+
+        if(wrap) {
+            this.size = vec(size.x, layout.bounds.height)
+        } else {
+            this.size = layout.bounds.size
+        }
+    }
+
 }
