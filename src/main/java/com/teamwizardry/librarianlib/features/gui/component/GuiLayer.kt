@@ -8,12 +8,16 @@ import com.teamwizardry.librarianlib.features.gui.value.IMValue
 import com.teamwizardry.librarianlib.features.gui.value.IMValueBoolean
 import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.kotlin.Client
 import com.teamwizardry.librarianlib.features.math.Rect2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.opengl.GL11
+import kotlin.coroutines.CoroutineContext
 
 @SideOnly(Side.CLIENT)
 open class GuiLayer private constructor(
@@ -24,7 +28,7 @@ open class GuiLayer private constructor(
     internal val base: LayerBaseHandler
 )
     : ILayerGeometry by geometry, ILayerRelationships by relationships,
-    ILayerRendering by render, ILayerClipping by clipping, ILayerBase by base {
+    ILayerRendering by render, ILayerClipping by clipping, ILayerBase by base, CoroutineScope {
     @JvmOverloads constructor(posX: Int, posY: Int, width: Int = 0, height: Int = 0): this(
         LayerGeometryHandler(rect(posX, posY, width, height)),
         LayerRelationshipHandler(),
@@ -32,6 +36,8 @@ open class GuiLayer private constructor(
         LayerClippingHandler(),
         LayerBaseHandler()
     )
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Client
 
     init {
         @Suppress("LeakingThis")

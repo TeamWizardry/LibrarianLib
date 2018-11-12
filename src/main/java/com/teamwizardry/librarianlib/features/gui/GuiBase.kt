@@ -4,8 +4,11 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.kotlin.Client
 import com.teamwizardry.librarianlib.features.kotlin.delegate
 import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
@@ -17,8 +20,11 @@ import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
 import java.io.IOException
+import kotlin.coroutines.CoroutineContext
 
-open class GuiBase : GuiScreen() {
+open class GuiBase : GuiScreen(), CoroutineScope {
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Client
     val impl = LibGuiImpl(
         { this.width }, { this.height }, { this.adjustGuiSize() }
     )

@@ -1,6 +1,10 @@
 package com.teamwizardry.librarianlib.features.animator
 
 import com.teamwizardry.librarianlib.features.kotlin.clamp
+import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * An animation applied to a specific object and property of that object
@@ -104,8 +108,13 @@ abstract class Animation<T : Any>(val target: T) {
      */
     open fun complete() {
         completion.run()
+        continuations.forEach {
+            it.resume(Unit)
+        }
         finished = true
     }
+
+    private val continuations = CopyOnWriteArrayList<Continuation<Unit>>()
 
     /**
      * Terminates this animation.
@@ -129,5 +138,12 @@ abstract class Animation<T : Any>(val target: T) {
 
     internal var _id: Int = -1
         private set
+
+    suspend fun await() {
+        if(finished) return
+        suspendCoroutine<Unit> { cont ->
+            continuations.add(cont)
+        }
+    }
 }
 
