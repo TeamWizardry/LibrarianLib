@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.core.client.GlowingHandler;
 import com.teamwizardry.librarianlib.core.client.RenderHookHandler;
 import com.teamwizardry.librarianlib.features.forgeevents.EntityPostUpdateEvent;
 import com.teamwizardry.librarianlib.features.forgeevents.EntityUpdateEvent;
+import com.teamwizardry.librarianlib.features.forgeevents.PreGameLoopEvent;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BlockFluidRenderer;
 import net.minecraft.client.renderer.BlockModelRenderer;
@@ -83,5 +84,13 @@ public class LibLibAsmHooks {
 
     public static void postUpdateMP(EntityPlayerMP entity) {
         MinecraftForge.EVENT_BUS.post(new EntityPostUpdateEvent(entity));
+    }
+
+    public static void preClientGameLoop() {
+        MinecraftForge.EVENT_BUS.post(new PreGameLoopEvent.Client());
+    }
+
+    public static void preServerGameLoop() {
+        MinecraftForge.EVENT_BUS.post(new PreGameLoopEvent.Server());
     }
 }
