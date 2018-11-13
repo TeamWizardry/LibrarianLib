@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.test.gui.tests
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.gui.GuiBase
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryBackground
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryButton
@@ -25,9 +26,9 @@ import kotlinx.coroutines.runBlocking
  */
 class GuiTestPastry : GuiBase() {
     init {
-        main.size = vec(300, 300)
+        main.size = vec(200, 200)
 
-        main.add(PastryBackground(0, 0, 300, 300))
+        main.add(PastryBackground(0, 0, 200, 200))
 
         var button = PastryButton(5, 5, 100)
         button.label.text = "Push me! gg."
@@ -39,19 +40,41 @@ class GuiTestPastry : GuiBase() {
         val switch = PastrySwitch(120, 10)
         main.add(switch)
 
-        val radioSet = PastryRadioButtonSet<String>()
+        val switches = switchPanel()
+        switches.x = -switches.width
+        switches.y = 30.0
+        switches.add(PastryBackground(0, 0, switches.widthi, switches.heighti).also { it.zIndex = -1 })
+        main.add(switches)
+    }
 
-        main.add(radioSet.addOption("First", 120, 20))
-        main.add(radioSet.addOption("Second", 120, 30))
-        main.add(radioSet.addOption("Third", 120, 40))
-        main.add(radioSet.addOption("Fourth", 120, 50))
-        val radioText = TextLayer(130, 20, 0, 0)
-        radioText.text = "<none>"
+    fun switchPanel(): GuiComponent {
+        val panel = GuiComponent(0, 0, 55, 45)
+
+        val radioSet = PastryRadioButtonSet<String>()
+        panel.add(radioSet.addOption("1", 5, 5))
+        panel.add(radioSet.addOption("2", 5, 15))
+        panel.add(radioSet.addOption("3", 5, 25))
+        panel.add(radioSet.addOption("4", 5, 35))
+
+        val radioText = TextLayer(13, 5, 0, 0)
+        radioText.text = "x"
         radioText.fitToText = true
-        main.add(radioText)
+        panel.add(radioText)
 
         radioSet.BUS.hook<PastryRadioButtonSet<String>.OptionSelected> {
-            radioText.text = it.option ?: "<none>"
+            radioText.text = it.option ?: "x"
         }
+
+        panel.add(PastryCheckbox(23, 5))
+        panel.add(PastryCheckbox(23, 15))
+        panel.add(PastryCheckbox(23, 25))
+        panel.add(PastryCheckbox(23, 35))
+
+        panel.add(PastrySwitch(35, 5))
+        panel.add(PastrySwitch(35, 15))
+        panel.add(PastrySwitch(35, 25))
+        panel.add(PastrySwitch(35, 35))
+
+        return panel
     }
 }
