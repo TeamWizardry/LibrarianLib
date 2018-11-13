@@ -19,6 +19,8 @@ object PastryTexture {
     val checkboxOn = texture.getSprite("checkbox.on")
     val radioButtonOff = texture.getSprite("radiobutton.off")
     val radioButtonOn = texture.getSprite("radiobutton.on")
+    val progressbarBG = texture.getSprite("progressbar.bg")
+    val progressbarFG = texture.getSprite("progressbar.fg")
 }
 
 enum class BackgroundType(val sprite: Sprite) {

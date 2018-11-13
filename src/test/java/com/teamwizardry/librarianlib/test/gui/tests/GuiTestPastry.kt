@@ -1,12 +1,14 @@
 package com.teamwizardry.librarianlib.test.gui.tests
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
+import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryBackground
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryButton
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryCheckbox
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryProgressBar
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryRadioButtonSet
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryToggle
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastrySwitch
@@ -30,15 +32,14 @@ class GuiTestPastry : GuiBase() {
 
         main.add(PastryBackground(0, 0, 200, 200))
 
-        var button = PastryButton(5, 5, 100)
-        button.label.text = "Push me! gg."
-        main.add(button)
-        button = PastryButton(5, 25, 100)
-        button.label.text = "I may or may not be a bit too long to fit."
-        main.add(button)
-
-        val switch = PastrySwitch(120, 10)
-        main.add(switch)
+        val progress = PastryProgressBar(10, 35, 75, 5)
+        progress.progress_im.animateKeyframes(0.0)
+            .add(80f, 1.0, Easing.easeOutCubic)
+            .add(10f, 1.0)
+            .add(40f, 0.0, Easing.easeOutBounce)
+            .add(10f, 0.0)
+            .finish().repeatCount = -1
+        main.add(progress)
 
         val switches = switchPanel()
         switches.x = -switches.width

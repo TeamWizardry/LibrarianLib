@@ -14,7 +14,9 @@
             "radiobutton.off": [32,48,7,7],
             "radiobutton.on": [40,48,7,7],
             "checkbox.off": [48,48,7,7],
-            "checkbox.on": [56,48,7,7]
+            "checkbox.on": [56,48,7,7],
+            "progressbar.bg": { "pos": [80,56,8,4], "caps": [1,1,1,1] },
+            "progressbar.fg": { "pos": [88,56,8,4], "caps": [1,1,1,1] }
          }
      }
  }
