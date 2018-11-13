@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.gui.provided.pastry
 
+import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.Hook
 import com.teamwizardry.librarianlib.features.gui.components.FixedSizeComponent
@@ -10,16 +11,13 @@ abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int): Fixe
     private var mouseDown = false
     private var pressed = false
     private var visualState = false
-    var stateStorage = false
-    var state: Boolean
-        get() = stateStorage
+    var state: Boolean = false
         set(value) {
-            if(stateStorage != value) {
-                stateStorage = value
+            if(field != value) {
+                field = value
                 updateVisualState()
-                stateChanged(value)
             } else {
-                stateStorage = value
+                field = value
             }
         }
 
@@ -31,7 +29,6 @@ abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int): Fixe
         }
     }
 
-    abstract fun stateChanged(state: Boolean)
     abstract fun visualStateChanged(visualState: Boolean)
 
     init {
@@ -40,7 +37,7 @@ abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int): Fixe
 
     @Hook
     private fun mouseDown(e: GuiComponentEvents.MouseDownEvent) {
-        if(this.mouseOver) {
+        if(this.mouseOver && !BUS.fire(BeginToggleEvent()).isCanceled()) {
             pressed = true
             mouseDown = true
             updateVisualState()
@@ -64,18 +61,31 @@ abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int): Fixe
 
     @Hook
     private fun click(e: GuiComponentEvents.MouseClickEvent) {
-        stateStorage = !stateStorage
+        val state = state
         pressed = false
+        if(mouseDown && !BUS.fire(StateChangeEvent()).isCanceled()) {
+            this.state = !state
+            updateVisualState()
+        }
         mouseDown = false
-        updateVisualState()
-        stateChanged(stateStorage)
     }
 
     @Hook
     private fun mouseUp(e: GuiComponentEvents.MouseClickDragOutEvent) {
         pressed = false
+        if(mouseDown) {
+            updateVisualState()
+        }
         mouseDown = false
-        updateVisualState()
     }
 
+    /**
+     * Called before a state change is committed. Cancel this event to prevent the state change
+     */
+    class StateChangeEvent: EventCancelable()
+
+    /**
+     * Called before a toggle interaction begins. Cancel this event to prevent the interaction from starting.
+     */
+    class BeginToggleEvent: EventCancelable()
 }

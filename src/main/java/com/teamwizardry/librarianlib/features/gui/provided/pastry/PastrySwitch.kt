@@ -18,9 +18,6 @@ class PastrySwitch(posX: Int, posY: Int): PastryToggle(posX, posY, 11, 7) {
     private val switchOn = SpriteLayer(PastryTexture.switchOn, 0, 0, 11, 7)
     private val switchOnMask = GuiLayer(0, 0, 4, 7)
 
-    override fun stateChanged(state: Boolean) {
-    }
-
     override fun visualStateChanged(visualState: Boolean) {
         val duration = 2f
         if(visualState) {

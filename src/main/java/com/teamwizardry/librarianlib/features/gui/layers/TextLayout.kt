@@ -106,7 +106,8 @@ class TextLayout {
         var y = 0
         var remaining = text
         while(remaining.isNotEmpty()) {
-            val i = fontRenderer.sizeStringToWidth(remaining, wrapWidth)
+            val i = if(wrapWidth == 0) remaining.length else fontRenderer.sizeStringToWidth(remaining, wrapWidth)
+            if(i == 0) throw TextLayoutException("Could not wrap `$remaining` to width $wrapWidth")
 
             val runString: String
 
@@ -187,4 +188,12 @@ class TextLayout {
             return sizeStringToWidth_mh(this, arrayOf(str, wrapWidth)) as Int
         }
     }
+}
+
+class TextLayoutException: RuntimeException {
+    constructor(): super()
+    constructor(message: String?): super(message)
+    constructor(message: String?, cause: Throwable?): super(message, cause)
+    constructor(cause: Throwable?): super(cause)
+    constructor(message: String?, cause: Throwable?, enableSuppression: Boolean, writableStackTrace: Boolean): super(message, cause, enableSuppression, writableStackTrace)
 }
