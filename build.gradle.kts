@@ -47,7 +47,7 @@ minecraft.apply {
 }
 
 
-val shade by configurations.creating
+val shade by configurations.creating // TODO: investigate contained deps
 
 configurations.compileOnly.extendsFrom(shade)
 configurations.testCompileOnly.extendsFrom(shade)
@@ -142,23 +142,24 @@ val dokka by tasks.getting(DokkaTask::class) {
     }
 }
 
-val javadocJar by tasks.registering(Jar::class) {
+val javadocJar by tasks.creating(Jar::class) {
     from(dokka.outputs)
     classifier = "javadoc"
 }
 
-val deobfJar by tasks.registering(Jar::class) {
+val deobfJar by tasks.creating(Jar::class) {
     from(sourceSets["main"].output)
 }
 
+lateinit var publication : Publication
 publishing {
-    publications.register("publication", MavenPublication::class) {
+    publication = publications.create("publication", MavenPublication::class) {
         from(components["java"])
         artifact(sourceJar)
-        artifact(deobfJar.get())
-        artifact(javadocJar.get())
+        artifact(deobfJar)
+        artifact(javadocJar)
         this.artifactId = base.archivesBaseName
-    }.get()
+    }
 
     repositories {
         val mavenPassword = if (hasProp("local")) null else prop("mavenPassword")
@@ -175,7 +176,6 @@ publishing {
         }
     }
 }
-val publication by publishing.publications
 
 bintray {
     user = prop("bintrayUser")
