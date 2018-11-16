@@ -33,7 +33,6 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         fullscreenComponents.setData(GuiContainerBase::class.java, "", this)
         mainComponents.shouldComputeMouseInsideFromBounds = false
         fullscreenComponents.shouldComputeMouseInsideFromBounds = false
-        mainScaleWrapper.zIndex = -100000 // really far back
         fullscreenComponents.add(mainScaleWrapper)
         mainScaleWrapper.add(mainComponents)
 

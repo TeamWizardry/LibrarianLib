@@ -4,13 +4,14 @@ import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
+import com.teamwizardry.librarianlib.features.gui.value.RMValueDouble
 import com.teamwizardry.librarianlib.features.gui.value.RMValueInt
 import java.lang.Exception
 import java.util.*
 
 interface ILayerRelationships {
-    val zIndex_rm: RMValueInt
-    var zIndex: Int
+    val zIndex_rm: RMValueDouble
+    var zIndex: Double
 
     val children: List<GuiLayer>
     /**
@@ -69,7 +70,7 @@ interface ILayerRelationships {
 class LayerRelationshipHandler: ILayerRelationships {
     lateinit var component: GuiLayer
 
-    override val zIndex_rm = RMValueInt(0)
+    override val zIndex_rm = RMValueDouble(1.0)
     override var zIndex by zIndex_rm
 
     internal val subLayers = mutableListOf<GuiLayer>()

@@ -44,7 +44,7 @@ class GuiTestPastry : GuiBase() {
         val switches = switchPanel()
         switches.x = -switches.width
         switches.y = 30.0
-        switches.add(PastryBackground(0, 0, switches.widthi, switches.heighti).also { it.zIndex = -1 })
+        switches.add(PastryBackground(0, 0, switches.widthi, switches.heighti).also { it.zIndex = 0.0 })
         main.add(switches)
     }
 

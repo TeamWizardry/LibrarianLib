@@ -59,7 +59,7 @@ open class LibGuiImpl(
         }
 
     init {
-        background.zIndex = Int.MIN_VALUE
+        background.zIndex = Double.NEGATIVE_INFINITY
         main.shouldComputeMouseInsideFromBounds = false
         root.shouldComputeMouseInsideFromBounds = false
         root.add(main)

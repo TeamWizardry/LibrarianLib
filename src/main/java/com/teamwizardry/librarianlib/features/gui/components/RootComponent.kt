@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
+import com.teamwizardry.librarianlib.features.gui.component.supporting.MouseHit
 import com.teamwizardry.librarianlib.features.math.Rect2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.CoordinateSpace2D
@@ -66,6 +67,8 @@ class RootComponent: GuiComponent(0, 0) {
     override val root: GuiLayer
         get() = this
 
+    var topMouseHit: MouseHit? = null
+
     fun renderRoot(partialTicks: Float, mousePos: Vec2d) {
         StencilUtil.clear()
         GL11.glEnable(GL11.GL_STENCIL_TEST)
@@ -76,9 +79,10 @@ class RootComponent: GuiComponent(0, 0) {
         runLayoutIfNeeded()
         callPreFrame()
 
+        topMouseHit = null
         updateMouse(mousePos)
-        updateMouseInside()
-        updateMouseOver(false)
+        updateHits(this, 0.0)
+        propagateHits()
         renderLayer(partialTicks)
 
         GL11.glDisable(GL11.GL_STENCIL_TEST)

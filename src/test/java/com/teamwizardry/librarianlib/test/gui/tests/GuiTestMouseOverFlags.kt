@@ -2,7 +2,6 @@ package com.teamwizardry.librarianlib.test.gui.tests
 
 import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
-import com.teamwizardry.librarianlib.features.gui.component.supporting.MousePropagationType
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
 import com.teamwizardry.librarianlib.features.helpers.vec
@@ -14,15 +13,20 @@ class GuiTestMouseOverFlags : GuiBase() {
 
         val background = ComponentRect(-55, -25, 110, 50)
         background.color = Color.WHITE
-        val normal = rect(5, -35, 50, 50, Color.RED)
+        val nothing = rect(5, -35, 50, 50, Color.RED)
+        nothing.zIndex = 1.0
+        nothing.propagateMouse = false
         val noOcclude = rect(30, -25, 50, 50, Color.BLUE)
-        val noOccludePropagate = rect(55, -15, 50, 50, Color.GREEN)
-        val propagate = rect(80, -5, 50, 50, Color.PINK)
-
+        noOcclude.zIndex = 2.0
         noOcclude.isOpaqueToMouse = false
+        noOcclude.propagateMouse = false
+        val noOccludePropagate = rect(55, -15, 50, 50, Color.GREEN)
+        noOccludePropagate.zIndex = 3.0
         noOccludePropagate.isOpaqueToMouse = false
-        noOccludePropagate.mousePropagationType = MousePropagationType.OVER
-        propagate.mousePropagationType = MousePropagationType.OVER
+        val propagate = rect(80, -5, 50, 50, Color.PINK)
+        propagate.zIndex = 4.0
+
+
 
         val normalLabel = ComponentText(57, -35)
         val noOccludeLabel = ComponentText(82, -25)
@@ -35,7 +39,7 @@ class GuiTestMouseOverFlags : GuiBase() {
         propagateLabel.text = "occlude = true, propagate = true"
 
         background.add(
-                normal, normalLabel,
+                nothing, normalLabel,
                 noOcclude, noOccludeLabel,
                 noOccludePropagate, noOccludePropagateLabel,
                 propagate, propagateLabel

@@ -74,14 +74,14 @@ open class GuiComponent private constructor(
         ComponentMouseHandler()
     )
 
-    val subComponents: List<GuiComponent>
+    open val subComponents: List<GuiComponent>
         get() = this.children.filterIsInstance<GuiComponent>()
-    val rootComponent: GuiComponent
+    open val rootComponent: GuiComponent
         get() = this.root as GuiComponent
-    val parentComponent: GuiComponent?
+    open val parentComponent: GuiComponent?
         get() = this.parent as GuiComponent
 
-    override fun shouldDrawSkeleton(): Boolean = this.mouseInside
+    override fun shouldDrawSkeleton(): Boolean = this.mouseHit != null
 
     override fun drawDebugBoundingBox() {
 
@@ -108,7 +108,7 @@ open class GuiComponent private constructor(
 
         GlStateManager.glLineWidth(2f)
         GlStateManager.color(1f, 0f, 1f)
-        if (mouseInside) GlStateManager.color(0.25f, 0.25f, 0.25f)
+        if (this.mouseHit != null) GlStateManager.color(0.25f, 0.25f, 0.25f)
         if (mouseOver) GlStateManager.color(1f, 1f, 1f)
 
         super.drawDebugBoundingBox()
