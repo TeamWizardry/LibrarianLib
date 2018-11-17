@@ -7,7 +7,6 @@ import com.teamwizardry.librarianlib.features.helpers.threadLocal
 import com.teamwizardry.librarianlib.features.utilities.generateBaseBlockModel
 import com.teamwizardry.librarianlib.features.utilities.generateBlockStates
 import com.teamwizardry.librarianlib.features.utilities.getPathForBlockModel
-import jline.console.internal.ConsoleRunner.property
 import net.minecraft.block.Block
 import net.minecraft.block.material.MapColor
 import net.minecraft.block.material.Material
