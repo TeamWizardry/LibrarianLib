@@ -54,9 +54,15 @@ interface ILayerRendering {
     fun renderSkeleton()
 
     /**
-     * Draw a bounding box around
+     * Draws a bounding box around the edge of this component
      */
     fun drawDebugBoundingBox()
+
+    /**
+     * Creates a series of points defining the path the debug bounding box follows. For culling reasons this list
+     * must be in clockwise order
+     */
+    fun createDebugBoundingBoxPoints(): List<Vec2d>
 
     fun shouldDrawSkeleton(): Boolean
 }
@@ -229,7 +235,7 @@ class LayerRenderHandler: ILayerRendering {
 
     override fun drawDebugBoundingBox() {
         GlStateManager.disableTexture2D()
-        val points = createBoundingBoxPoints()
+        val points = createDebugBoundingBoxPoints()
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
         vb.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
@@ -246,7 +252,7 @@ class LayerRenderHandler: ILayerRendering {
         }
     }
 
-    private fun createBoundingBoxPoints(): List<Vec2d> {
+    override fun createDebugBoundingBoxPoints(): List<Vec2d> {
         val list = mutableListOf<Vec2d>()
         if(layer.clipToBounds && layer.cornerRadius != 0.0) {
             val rad = layer.cornerRadius
