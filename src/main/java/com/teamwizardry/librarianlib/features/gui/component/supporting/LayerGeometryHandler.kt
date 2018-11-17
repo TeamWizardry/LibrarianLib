@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.value.RMValue
 import com.teamwizardry.librarianlib.features.gui.value.RMValueDouble
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.kotlin.unaryMinus
 import com.teamwizardry.librarianlib.features.math.Matrix3
@@ -114,6 +115,13 @@ interface ILayerGeometry: CoordinateSpace2D {
         }
 
     /**
+     * @return true if the passed point is inside the bounds of this component. This is used for tests such as when
+     * checking whether the mouse is positioned inside the component. Calling [GuiLayer.isPointClipped] with the passed
+     * point is recommended
+     */
+    fun isPointInBounds(point: Vec2d): Boolean
+
+    /**
      * Applies this layer's transforms, barring the final content offset operation
      */
     fun glApplyTransform(inverse: Boolean)
@@ -222,6 +230,10 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
         }
     }
     override var contentsOffset: Vec2d by contentsOffset_rm
+
+    override fun isPointInBounds(point: Vec2d): Boolean {
+        return (point + layer.contentsOffset) in layer.bounds && !layer.isPointClipped(point)
+    }
 
     override fun glApplyTransform(inverse: Boolean) {
         if(inverse) {

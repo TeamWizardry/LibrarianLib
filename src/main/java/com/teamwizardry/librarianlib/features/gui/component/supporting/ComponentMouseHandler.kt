@@ -144,9 +144,7 @@ class ComponentMouseHandler: IComponentMouse {
 
     override fun updateHits(root: RootComponent, parentZ: Double) {
         val zIndex = parentZ + component.zIndex
-        if(component.shouldComputeMouseInsideFromBounds &&
-            (component.mousePos + component.contentsOffset) in component.bounds &&
-            !component.isPointClipped(component.mousePos)) {
+        if(component.shouldComputeMouseInsideFromBounds && component.isPointInBounds(component.mousePos)) {
             val mouseHit = MouseHit(this.component, zIndex)
             this.mouseHit = mouseHit
             if(component.isOpaqueToMouse && mouseHit > root.topMouseHit) {
