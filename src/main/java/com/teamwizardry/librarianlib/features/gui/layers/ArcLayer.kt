@@ -6,6 +6,11 @@ import com.teamwizardry.librarianlib.features.gui.value.IMValueDouble
 import com.teamwizardry.librarianlib.features.gui.value.IMValueInt
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.clamp
+import com.teamwizardry.librarianlib.features.kotlin.div
+import com.teamwizardry.librarianlib.features.kotlin.minus
+import com.teamwizardry.librarianlib.features.kotlin.plus
+import com.teamwizardry.librarianlib.features.kotlin.times
+import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -13,6 +18,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.lang.Math.PI
 import kotlin.math.abs
+import kotlin.math.atan2
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -31,6 +37,23 @@ class ArcLayer(color: Color = Color.white, posX: Int, posY: Int, width: Int, hei
 
     val segmentSize_im: IMValueDouble = IMValueDouble(Math.toRadians(5.0))
     var segmentSize: Double by segmentSize_im
+
+    override fun isPointInBounds(point: Vec2d): Boolean {
+        if ((point + contentsOffset) !in bounds || isPointClipped(point))
+            return false
+
+        val size = bounds.size
+        if(size.x == 0.0 || size.y == 0.0) return false
+        // divide by size to adjust for non-square bounds. This puts values on the edges at ±1 on each axis
+        val delta = (point/size - vec(0.5, 0.5)) * 2
+        val angle = atan2(-delta.x, delta.y) + PI
+
+        val start = startAngle
+        var end = endAngle
+        if(end > start + PI*2) end = start + PI*2
+
+        return angle in start..end && delta.length() <= 1
+    }
 
     override fun draw(partialTicks: Float) {
         val start = startAngle
