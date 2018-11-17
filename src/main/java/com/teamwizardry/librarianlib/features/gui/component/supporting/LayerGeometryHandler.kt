@@ -228,7 +228,7 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
             if(matrixParams.scale.x == 0.0 || matrixParams.scale.y == 0.0) {
                 GlStateManager.popMatrix()
             } else {
-                GlStateManager.translate(-matrixParams.anchor.x, -matrixParams.anchor.y, 0.0)
+                GlStateManager.translate(matrixParams.anchor.x, matrixParams.anchor.y, 0.0)
                 GlStateManager.scale(matrixParams.inverseScale.x, matrixParams.inverseScale.y, 1.0)
                 GlStateManager.rotate(-Math.toDegrees(matrixParams.rotation).toFloat(), 0f, 0f, 1f)
                 GlStateManager.translate(-matrixParams.pos.x, -matrixParams.pos.y, -layer.translateZ)
