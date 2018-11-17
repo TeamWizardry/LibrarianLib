@@ -21,7 +21,7 @@ plugins {
 val branch = prop("branch") ?: "git rev-parse --abbrev-ref HEAD".execute(rootDir.absolutePath).lines().last()
 logger.info("On branch $branch")
 
-version = "$branch-".takeUnless { prop("mc_version")?.contains(it) == true }.orEmpty() + prop("mod_version") + "." + prop("build_number")
+version = "$branch-".takeUnless { prop("mc_version")?.contains(branch) == true }.orEmpty() + prop("mod_version") + "." + prop("build_number")
 description = "A library for the TeamWizardry mods "
 base.archivesBaseName = prop("mod_name") + "-" + prop("mc_version")
 
