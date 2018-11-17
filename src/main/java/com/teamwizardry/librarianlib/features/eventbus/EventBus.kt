@@ -44,7 +44,7 @@ class EventBus {
     }
 
     inline fun <reified  E : Event> hook(noinline hook: (E) -> Unit) {
-        hook(E::class.java, Consumer(hook))
+        hook(E::class.java, hook)
     }
 
     fun <E : Event> hook(clazz: Class<E>, hook: (E) -> Unit) {
