@@ -54,7 +54,7 @@ repositories {
 }
 
 dependencies {
-    api("net.shadowfacts:Forgelin:1.6.0")
+    api("net.shadowfacts:Forgelin:1.8.0")
     implementation("org.magicwerk:brownies-collections:0.9.13")
     shade("org.magicwerk:brownies-collections:0.9.13")
 }
