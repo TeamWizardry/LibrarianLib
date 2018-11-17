@@ -145,7 +145,7 @@ publishing {
         from(components["java"])
         artifact(sourceJar)
         artifact(deobfJar)
-        artifact(javadocJar)
+//        artifact(javadocJar)
         this.artifactId = base.archivesBaseName
     }
 
