@@ -9,10 +9,8 @@ package com.teamwizardry.librarianlib.test.container
 import com.teamwizardry.librarianlib.features.autoregister.TileRegister
 import com.teamwizardry.librarianlib.features.base.block.tile.BlockModContainer
 import com.teamwizardry.librarianlib.features.base.block.tile.TileModInventoryTickable
-import com.teamwizardry.librarianlib.features.base.block.tile.module.ModuleSidedInventory
 import com.teamwizardry.librarianlib.features.container.GuiHandler
 import com.teamwizardry.librarianlib.features.saving.CapabilityProvide
-import com.teamwizardry.librarianlib.features.saving.Module
 import com.teamwizardry.librarianlib.features.saving.Savable
 import com.teamwizardry.librarianlib.features.saving.Save
 import net.minecraft.block.material.Material

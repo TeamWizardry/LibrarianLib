@@ -4,13 +4,9 @@ import com.teamwizardry.librarianlib.features.autoregister.TileRegister
 import com.teamwizardry.librarianlib.features.base.block.tile.BlockModContainer
 import com.teamwizardry.librarianlib.features.base.block.tile.TileMod
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.kotlin.plus
-import com.teamwizardry.librarianlib.features.particlesystem.GameParticleSystems
 import com.teamwizardry.librarianlib.features.saving.Save
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
-import com.teamwizardry.librarianlib.test.particlesystem.examples.AccelerateAway
-import com.teamwizardry.librarianlib.test.particlesystem.examples.BeamLightning
 import com.teamwizardry.librarianlib.test.particlesystem.examples.PhysicsCurtain
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState

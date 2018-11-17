@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.test.fx
 
-import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.utilities.client.CustomBlockMapSprites
 import com.teamwizardry.librarianlib.test.testcore.TestEntryPoint
 import com.teamwizardry.librarianlib.test.testcore.TestMod

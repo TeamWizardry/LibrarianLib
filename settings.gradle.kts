@@ -18,7 +18,7 @@ pluginManagement {
     resolutionStrategy {
         eachPlugin {
             if (requested.id.id.startsWith("org.jetbrains.kotlin")) useVersion(kotlin_version)
-            when (requested.id.id) {
+            else when (requested.id.id) {
                 "net.minecraftforge.gradle.forge" -> useModule("net.minecraftforge.gradle:ForgeGradle:$forgegradle_version")
                 "org.jetbrains.dokka" -> useVersion(dokka_version)
                 "com.jfrog.bintray" -> useVersion(bintray_version)

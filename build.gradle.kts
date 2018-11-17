@@ -30,15 +30,6 @@ minecraft.apply {
     version = "${prop("mc_version")}-${prop("forge_version")}"
     mappings = prop("mc_mappings")
     runDir = "run"
-    // TODO: test setting runSourceSet to test or something combining test & main
-
-    /*
-    if this one doesn't work, move back to
-    ```
-    clientJvmArgs.add("-Dfml.coreMods.load=$core_plugin")
-    serverJvmArgs.add("-Dfml.coreMods.load=$core_plugin")
-    ```
-     */
     coreMod = prop("core_plugin")
 
     replace("GRADLE:VERSION", prop("mod_version"))
@@ -46,6 +37,8 @@ minecraft.apply {
     replaceIn("LibrarianLib.kt")
 }
 
+sourceSets["main"].allSource.srcDir("src/example/java")
+sourceSets["main"].resources.srcDir("src/example/resources")
 
 val shade by configurations.creating // TODO: investigate contained deps
 
@@ -98,17 +91,12 @@ tasks {
                 exclude("META-INF", "META-INF/**")
             }
         }
+        exclude("*/**/librarianlibtest/**", "*/**/librarianlib.test/**")
         classifier = "release"
 
-        // TODO: check if we need to manually add manifest entries
-        /*
         manifest {
-            attributes(
-                    "FMLCorePluginContainsFMLMod": "true",
-                    "FMLCorePlugin": "com.teamwizardry.librarianlib.asm.LibLibCorePlugin"
-            )
+            attributes("FMLCorePluginContainsFMLMod" to true)
         }
-         */
     }
 
     getByName<ProcessResources>("processResources") {

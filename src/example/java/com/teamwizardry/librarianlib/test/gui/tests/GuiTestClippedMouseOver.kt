@@ -1,13 +1,8 @@
 package com.teamwizardry.librarianlib.test.gui.tests
 
-import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 import com.teamwizardry.librarianlib.features.gui.GuiBase
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
-import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
-import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.math.Vec2d
 import java.awt.Color
 import kotlin.math.PI
 
