@@ -1,6 +1,7 @@
 import com.jfrog.bintray.gradle.BintrayExtension
 import groovy.lang.GroovyObject
 import net.minecraftforge.gradle.common.BaseExtension
+import net.minecraftforge.gradle.user.TaskSingleReobf
 import net.minecraftforge.gradle.user.patcherUser.forge.ForgeExtension
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.Coroutines
@@ -139,10 +140,15 @@ val deobfJar by tasks.creating(Jar::class) {
     from(sourceSets["main"].output)
 }
 
+val reobfJar : TaskSingleReobf by tasks
+
 lateinit var publication : Publication
 publishing {
     publication = publications.create("publication", MavenPublication::class) {
-        from(components["java"])
+        artifact(reobfJar.jar) {
+            builtBy(reobfJar)
+            classifier = "release"
+        }
         artifact(sourceJar)
         artifact(deobfJar)
 //        artifact(javadocJar)
