@@ -93,7 +93,7 @@ tasks {
             }
         }
         exclude("*/**/librarianlibtest/**", "*/**/librarianlib.test/**")
-        classifier = "release"
+        classifier = "fat"
 
         manifest {
             attributes("FMLCorePluginContainsFMLMod" to true)
@@ -145,6 +145,7 @@ val reobfJar : TaskSingleReobf by tasks
 lateinit var publication : Publication
 publishing {
     publication = publications.create("publication", MavenPublication::class) {
+        from(components["java"])
         artifact(reobfJar.jar) {
             builtBy(reobfJar)
             classifier = "release"
