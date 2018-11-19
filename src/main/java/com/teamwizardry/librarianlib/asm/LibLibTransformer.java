@@ -662,6 +662,34 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         }
 
     }
+    
+    public static class FieldSignature {
+        private final String fieldName, srgName, fieldDesc;
+
+        public FieldSignature(String fieldName, String srgName, String fieldDesc) {
+            this.fieldName = fieldName;
+            this.srgName = srgName;
+            this.fieldDesc = fieldDesc;
+        }
+
+        @Override
+        public String toString() {
+            return "Names [" + fieldName + ", " + srgName + "] Descriptor " + fieldDesc;
+        }
+
+        public boolean matches(String fieldName, String fieldDesc) {
+            return (fieldName.equals(this.fieldName) || fieldName.equals(srgName))
+                    && (fieldDesc.equals(this.fieldDesc));
+        }
+
+        public boolean matches(FieldInsnNode field) {
+            return matches(field.name, field.desc);
+        }
+
+        public boolean matches(FieldNode field) {
+            return matches(field.name, field.desc);
+        }
+    }
 
     /**
      * Safe class writer.
