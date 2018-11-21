@@ -1,6 +1,9 @@
 package com.teamwizardry.librarianlib.features.saving.serializers.builtin.basics
 
 import com.teamwizardry.librarianlib.features.autoregister.SerializerRegister
+import com.teamwizardry.librarianlib.features.helpers.castOrDefault
+import com.teamwizardry.librarianlib.features.helpers.defaultNBTValue
+import com.teamwizardry.librarianlib.features.helpers.idForClass
 import com.teamwizardry.librarianlib.features.kotlin.*
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.saving.FieldType
@@ -61,10 +64,10 @@ object SerializeNBTPrimitive : GenericNBTSerializer<NBTPrimitive>(NBTPrimitive::
 open class GenericNBTSerializer<T : NBTBase>(val clazz: Class<T>) : Serializer<T>(FieldType.create(clazz)) {
 
     override fun getDefault(): T
-            = clazz.defaultNBT()
+            = clazz.defaultNBTValue()
 
     override fun readNBT(nbt: NBTBase, existing: T?, syncing: Boolean): T
-            = nbt.safeCast(clazz)
+            = nbt.castOrDefault(clazz)
 
     override fun writeNBT(value: T, syncing: Boolean): NBTBase
             = value.copy()
@@ -80,7 +83,7 @@ open class GenericNBTSerializer<T : NBTBase>(val clazz: Class<T>) : Serializer<T
 }
 
 open class NBTSerializer<T : NBTBase>(clazz: Class<T>) : GenericNBTSerializer<T>(clazz) {
-    val id = clazz.idForClazz().toByte()
+    val id = clazz.idForClass().toByte()
 
     @Suppress("UNCHECKED_CAST")
     override fun readBytes(buf: ByteBuf, existing: T?, syncing: Boolean): T

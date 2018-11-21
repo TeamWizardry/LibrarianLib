@@ -5,7 +5,8 @@ import baubles.api.BaublesApi
 import baubles.api.IBauble
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.common.LibLibSoundEvents
-import com.teamwizardry.librarianlib.features.helpers.ItemNBTHelper
+import com.teamwizardry.librarianlib.features.helpers.getNBTInt
+import com.teamwizardry.librarianlib.features.helpers.setNBTInt
 import com.teamwizardry.librarianlib.features.kotlin.isNotEmpty
 import com.teamwizardry.librarianlib.features.utilities.client.TooltipHelper
 import net.minecraft.client.Minecraft
@@ -27,10 +28,10 @@ import net.minecraftforge.fml.common.Optional
 @Optional.Interface(iface = "baubles.api.IBauble", modid = "baubles")
 abstract class ItemModBauble(name: String, vararg variants: String) : ItemMod(name, *variants), IBauble {
     companion object {
-        val TAG_HASHCODE = "playerHashcode"
+        const val TAG_HASHCODE = "playerHashcode"
 
-        fun getLastPlayerHashcode(stack: ItemStack) = ItemNBTHelper.getInt(stack, TAG_HASHCODE, 0)
-        fun setLastPlayerHashcode(stack: ItemStack, hash: Int) = ItemNBTHelper.setInt(stack, TAG_HASHCODE, hash)
+        fun getLastPlayerHashcode(stack: ItemStack) = stack.getNBTInt(TAG_HASHCODE, 0)
+        fun setLastPlayerHashcode(stack: ItemStack, hash: Int) = stack.setNBTInt(TAG_HASHCODE, hash)
     }
 
     init {
@@ -38,7 +39,7 @@ abstract class ItemModBauble(name: String, vararg variants: String) : ItemMod(na
     }
 
     @Optional.Method(modid = "baubles")
-    override abstract fun getBaubleType(stack: ItemStack): BaubleType
+    abstract override fun getBaubleType(stack: ItemStack): BaubleType
 
     override fun onItemRightClick(world: World, player: EntityPlayer, hand: EnumHand): ActionResult<ItemStack> {
         val stack = player.getHeldItem(hand)

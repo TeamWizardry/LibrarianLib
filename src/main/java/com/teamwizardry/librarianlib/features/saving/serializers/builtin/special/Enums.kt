@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.features.saving.serializers.builtin.special
 
 import com.teamwizardry.librarianlib.features.autoregister.SerializerFactoryRegister
-import com.teamwizardry.librarianlib.features.kotlin.safeCast
+import com.teamwizardry.librarianlib.features.helpers.castOrDefault
 import com.teamwizardry.librarianlib.features.saving.FieldType
 import com.teamwizardry.librarianlib.features.saving.serializers.Serializer
 import com.teamwizardry.librarianlib.features.saving.serializers.SerializerFactory
@@ -43,38 +43,29 @@ object SerializeEnumFactory : SerializerFactory("Enum") {
         val constSize = constants.size
 
         override fun readNBT(nbt: NBTBase, existing: Enum<*>?, syncing: Boolean): Enum<*> {
-            if (syncing || nbt is NBTPrimitive) {
-                nbt.safeCast(NBTPrimitive::class.java).let {
-                    if (constSize <= 256) {
-                        return constants[it.byte.toInt()]
-                    } else {
-                        return constants[it.short.toInt()]
-                    }
-                }
+            return if (syncing || nbt is NBTPrimitive) {
+                constants[nbt.castOrDefault(NBTPrimitive::class.java).int]
             } else {
-                val name = nbt.safeCast(NBTTagString::class.java).string
-                return constantsMap[name] ?: getError(name)
+                val name = nbt.castOrDefault(NBTTagString::class.java).string
+                constantsMap[name] ?: getError(name)
             }
         }
 
         override fun writeNBT(value: Enum<*>, syncing: Boolean): NBTBase {
-            if (syncing) {
-                if (constSize <= 256) {
-                    return NBTTagByte(value.ordinal.toByte())
-                } else {
-                    return NBTTagShort(value.ordinal.toShort())
-                }
-            } else {
-                return NBTTagString(value.name)
-            }
+            return if (syncing) {
+                if (constSize <= 256)
+                    NBTTagByte(value.ordinal.toByte())
+                else
+                    NBTTagShort(value.ordinal.toShort())
+            } else
+                NBTTagString(value.name)
         }
 
         override fun readBytes(buf: ByteBuf, existing: Enum<*>?, syncing: Boolean): Enum<*> {
-            val c = if (constSize <= 256) {
+            val c = if (constSize <= 256)
                 buf.readByte().toInt()
-            } else {
+            else
                 buf.readShort().toInt()
-            }
             if (c < 0 || c >= constants.size)
                 return getError(c)
             return constants[c]

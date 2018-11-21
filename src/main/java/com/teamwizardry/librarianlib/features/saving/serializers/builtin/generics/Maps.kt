@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.saving.serializers.builtin.generics
 
 import com.teamwizardry.librarianlib.features.autoregister.SerializerFactoryRegister
+import com.teamwizardry.librarianlib.features.helpers.castOrDefault
 import com.teamwizardry.librarianlib.features.kotlin.*
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.saving.FieldType
@@ -39,7 +40,7 @@ object SerializeMapFactory : SerializerFactory("Map") {
         val constructor = createConstructorMethodHandle()
 
         override fun readNBT(nbt: NBTBase, existing: MutableMap<Any?, Any?>?, syncing: Boolean): MutableMap<Any?, Any?> {
-            val list = nbt.safeCast<NBTTagList>()
+            val list = nbt.castOrDefault(NBTTagList::class.java)
             val map = existing ?: getDefault()
             map.clear()
 
@@ -81,7 +82,7 @@ object SerializeMapFactory : SerializerFactory("Map") {
             val nullKey = buf.readVarInt()
             val valueNulls = buf.readBooleanArray()
 
-            for (i in 0..count - 1) {
+            for (i in 0 until count) {
                 val k = if (i == nullKey) null else serKey.read(buf, null, syncing)
                 val v = if (valueNulls[i]) null else serValue.read(buf, existing?.get(k), syncing)
                 map[k] = v
@@ -104,7 +105,7 @@ object SerializeMapFactory : SerializerFactory("Map") {
 
             buf.writeBooleanArray(valueNulls)
 
-            for (i in 0..count - 1) {
+            for (i in 0 until count) {
                 val k = keys[i]
                 val v = values[i]
 
@@ -118,14 +119,12 @@ object SerializeMapFactory : SerializerFactory("Map") {
             }
         }
 
+        @Suppress("UNCHECKED_CAST")
         private fun createConstructorMethodHandle(): () -> MutableMap<Any?, Any?> {
-            if (type.clazz == Map::class.java) {
-                return { LinkedHashMap<Any?, Any?>() }
-            } else if (type.clazz == EnumMap::class.java) {
-                @Suppress("UNCHECKED_CAST")
-                return { RawTypeConstructors.createEnumMap(keyType.clazz) as MutableMap<Any?, Any?> }
-            } else {
-                try {
+            when {
+                type.clazz == Map::class.java -> return { LinkedHashMap() }
+                type.clazz == EnumMap::class.java -> return { RawTypeConstructors.createEnumMap(keyType.clazz) as MutableMap<Any?, Any?> }
+                else -> try {
                     val mh = MethodHandleHelper.wrapperForConstructor<MutableMap<Any?, Any?>>(type.clazz)
                     return { mh(arrayOf()) }
                 } catch(e: ReflectionHelper.UnableToFindMethodException) {

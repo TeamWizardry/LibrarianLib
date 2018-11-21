@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.features.utilities
 
-import com.teamwizardry.librarianlib.features.kotlin.safeCast
+import com.teamwizardry.librarianlib.features.helpers.castOrDefault
 import net.minecraft.nbt.*
 import net.minecraftforge.common.util.Constants
 
@@ -8,9 +8,9 @@ import net.minecraftforge.common.util.Constants
  * @author WireSegal
  * Created at 8:59 PM on 3/21/17.
  */
-private val MATCHER = "(?:(?:(?:\\[\\d+\\])|(?:[^.\\[\\]]+))(\\.|$|(?=\\[)))+".toRegex()
+private val MATCHER = "(?:(?:(?:\\[\\d+])|(?:[^.\\[\\]]+))(\\.|$|(?=\\[)))+".toRegex()
 
-private val TOKENIZER = "((?:\\[\\d+\\])|(?:[^.\\[\\]]+))(?=[.\\[]|$)".toRegex()
+private val TOKENIZER = "((?:\\[\\d+])|(?:[^.\\[\\]]+))(?=[.\\[]|$)".toRegex()
 
 fun NBTTagCompound.getObject(key: String): NBTBase? {
     if (!MATCHER.matches(key)) return null
@@ -20,22 +20,31 @@ fun NBTTagCompound.getObject(key: String): NBTBase? {
     val matched = TOKENIZER.findAll(key)
     for (match in matched) {
         val m = match.groupValues[1]
-        if (m.startsWith("[")) {
-            val ind = m.removePrefix("[").removeSuffix("]").toInt()
-            if (currentElement is NBTTagList) {
-                if (currentElement.tagCount() < ind + 1) return null
-                currentElement = currentElement[ind]
-            } else if (currentElement is NBTTagByteArray) {
-                if (currentElement.byteArray.size < ind + 1) return null
-                currentElement = NBTTagByte(currentElement.byteArray[ind])
-            } else if (currentElement is NBTTagIntArray) {
-                if (currentElement.intArray.size < ind + 1) return null
-                currentElement = NBTTagInt(currentElement.intArray[ind])
-            } else return null
-        } else if (currentElement is NBTTagCompound) {
-            if (!currentElement.hasKey(m)) return null
-            currentElement = currentElement.getTag(m)
-        } else return null
+        when {
+            m.startsWith("[") -> {
+                val ind = m.removePrefix("[").removeSuffix("]").toInt()
+                currentElement = when (currentElement) {
+                    is NBTTagList -> {
+                        if (currentElement.tagCount() < ind + 1) return null
+                        currentElement[ind]
+                    }
+                    is NBTTagByteArray -> {
+                        if (currentElement.byteArray.size < ind + 1) return null
+                        NBTTagByte(currentElement.byteArray[ind])
+                    }
+                    is NBTTagIntArray -> {
+                        if (currentElement.intArray.size < ind + 1) return null
+                        NBTTagInt(currentElement.intArray[ind])
+                    }
+                    else -> return null
+                }
+            }
+            currentElement is NBTTagCompound -> {
+                if (!currentElement.hasKey(m)) return null
+                currentElement = currentElement.getTag(m)
+            }
+            else -> return null
+        }
     }
     return currentElement
 }
@@ -81,7 +90,7 @@ fun NBTTagCompound.setObject(key: String, tag: NBTBase): Boolean {
                     else {
                         var type = currentElement.tagType
                         if (type == 0) type = Constants.NBT.TAG_DOUBLE
-                        val transformedTag = tag.safeCast(CLASSES[type])
+                        val transformedTag = tag.castOrDefault(CLASSES[type])
                         if (ind >= currentElement.tagCount()) currentElement.appendTag(transformedTag)
                         else currentElement.set(ind, transformedTag)
                     }

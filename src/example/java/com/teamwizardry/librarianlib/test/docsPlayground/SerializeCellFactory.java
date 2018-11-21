@@ -114,7 +114,8 @@ public class SerializeCellFactory extends SerializerFactory {
 			
 			boolean bool = compound.getBoolean("bool");
 			NBTBase componentTag = compound.getTag("component");
-			Object component = componentTag == null ? null : // if no tag, it's null
+			@SuppressWarnings("ConstantConditions")
+            Object component = componentTag == null ? null : // if no tag, it's null
 				// if there is a tag, deserialize. The existing value is pulled from `existing` if there is an existing cell.
 				componentSerializer.getValue().read(componentTag, null, syncing);
 			
@@ -171,7 +172,7 @@ public class SerializeCellFactory extends SerializerFactory {
 		@NotNull
 		@Override
 		public Cell getDefault() {
-			return new Cell(componentSerializer.getValue().getDefault());
+			return new Cell<>(componentSerializer.getValue().getDefault());
 		}
 	}
 }
@@ -193,7 +194,7 @@ object SerializeListFactory : SerializerFactory("List") {
         val constructor = createConstructorMH()
 
         override fun readNBT(nbt: NBTBase, existing: MutableList<Any?>?, syncing: Boolean): MutableList<Any?> {
-            val list = nbt.safeCast(NBTTagList::class.java)
+            val list = nbt.castOrDefault(NBTTagList::class.java)
 
             @Suppress("UNCHECKED_CAST")
             val array = (existing ?: constructor())

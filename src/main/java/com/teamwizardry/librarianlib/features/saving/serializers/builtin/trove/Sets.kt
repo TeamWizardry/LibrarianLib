@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.features.saving.serializers.builtin.trove
 
 import com.teamwizardry.librarianlib.features.autoregister.SerializerFactoryRegister
+import com.teamwizardry.librarianlib.features.helpers.castOrDefault
 import com.teamwizardry.librarianlib.features.kotlin.forEach
 import com.teamwizardry.librarianlib.features.kotlin.readVarInt
-import com.teamwizardry.librarianlib.features.kotlin.safeCast
 import com.teamwizardry.librarianlib.features.kotlin.writeVarInt
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.saving.FieldType
@@ -50,22 +50,22 @@ object SerializeTroveSetsFactory : SerializerFactory("TroveSets") {
 
         val constructor = createConstructorMethodHandle()
 
-        val wrap: Any.() -> MutableSet<Any?> = setData.wrapper
+        @Suppress("UNCHECKED_CAST")
+        val wrap: Any.() -> MutableSet<Any?> = setData.wrapper as Any.() -> MutableSet<Any?>
 
         override fun readNBT(nbt: NBTBase, existing: Any?, syncing: Boolean): Any {
-            val compound = nbt.safeCast(NBTTagCompound::class.java)
-            val list = compound.getTag("values").safeCast(NBTTagList::class.java)
+            val compound = nbt.castOrDefault(NBTTagCompound::class.java)
+            val list = compound.getTag("values").castOrDefault(NBTTagList::class.java)
             val nullFlag = compound.getBoolean("hasNull")
 
-            @Suppress("UNCHECKED_CAST")
             val set = existing ?: constructor()
-            val set_w = set.wrap()
-            set_w.clear()
+            val wrappedSet = set.wrap()
+            wrappedSet.clear()
             if (nullFlag)
-                set_w.add(null)
+                wrappedSet.add(null)
             list.forEach<NBTTagCompound> {
                 val v = serValue.read(it, null, syncing)
-                set_w.add(v)
+                wrappedSet.add(v)
             }
 
             return set
@@ -74,14 +74,14 @@ object SerializeTroveSetsFactory : SerializerFactory("TroveSets") {
         override fun writeNBT(value: Any, syncing: Boolean): NBTBase {
             val list = NBTTagList()
 
-            val value_w = value.wrap()
+            val wrappedValue = value.wrap()
 
-            value_w
+            wrappedValue
                     .filterNotNull()
                     .forEach { list.appendTag(serValue.write(it, syncing)) }
 
             val compound = NBTTagCompound()
-            compound.setBoolean("hasNull", value_w.contains(null))
+            compound.setBoolean("hasNull", wrappedValue.contains(null))
             compound.setTag("values", list)
             return compound
         }
@@ -90,32 +90,31 @@ object SerializeTroveSetsFactory : SerializerFactory("TroveSets") {
             val nullFlag = buf.readBoolean()
             val len = buf.readVarInt() - if (nullFlag) 1 else 0
 
-            @Suppress("UNCHECKED_CAST")
             val set = existing ?: constructor()
-            val set_w = set.wrap()
-            set_w.clear()
+            val wrappedSet = set.wrap()
+            wrappedSet.clear()
             if (nullFlag)
-                set_w.add(null)
+                wrappedSet.add(null)
 
-            for (i in 0..len - 1) {
-                set_w.add(serValue.read(buf, null, syncing))
+            for (i in 0 until len) {
+                wrappedSet.add(serValue.read(buf, null, syncing))
             }
 
             return set
         }
 
         override fun writeBytes(buf: ByteBuf, value: Any, syncing: Boolean) {
-            val value_w = value.wrap()
-            buf.writeBoolean(value_w.contains(null))
-            buf.writeVarInt(value_w.size)
+            val wrappedValue = value.wrap()
+            buf.writeBoolean(wrappedValue.contains(null))
+            buf.writeVarInt(wrappedValue.size)
 
-            value_w
+            wrappedValue
                     .filterNotNull()
                     .forEach { serValue.write(buf, it, syncing) }
         }
 
         private fun createConstructorMethodHandle(): () -> Any {
-            val constructor = troveStuff.get(type.clazz)?.constructor
+            val constructor = troveStuff[type.clazz]?.constructor
             if (constructor != null)
                 return constructor
 
@@ -126,14 +125,14 @@ object SerializeTroveSetsFactory : SerializerFactory("TroveSets") {
 
     @Suppress("UNCHECKED_CAST")
     val troveStuff = mapOf(
-            TByteSet::class.java to TroveSetData<TByteSet>({ TByteHashSet() }, { TByteSetDecorator(this) as MutableSet<Any?> }),
-            TCharSet::class.java to TroveSetData<TCharSet>({ TCharHashSet() }, { TCharSetDecorator(this) as MutableSet<Any?> }),
-            TShortSet::class.java to TroveSetData<TShortSet>({ TShortHashSet() }, { TShortSetDecorator(this) as MutableSet<Any?> }),
-            TIntSet::class.java to TroveSetData<TIntSet>({ TIntHashSet() }, { TIntSetDecorator(this) as MutableSet<Any?> }),
-            TLongSet::class.java to TroveSetData<TLongSet>({ TLongHashSet() }, { TLongSetDecorator(this) as MutableSet<Any?> }),
-            TFloatSet::class.java to TroveSetData<TFloatSet>({ TFloatHashSet() }, { TFloatSetDecorator(this) as MutableSet<Any?> }),
-            TDoubleSet::class.java to TroveSetData<TDoubleSet>({ TDoubleHashSet() }, { TDoubleSetDecorator(this) as MutableSet<Any?> })
+            TByteSet::class.java to TroveSetData(::TByteHashSet, ::TByteSetDecorator),
+            TCharSet::class.java to TroveSetData(::TCharHashSet, ::TCharSetDecorator),
+            TShortSet::class.java to TroveSetData(::TShortHashSet, ::TShortSetDecorator),
+            TIntSet::class.java to TroveSetData(::TIntHashSet, ::TIntSetDecorator),
+            TLongSet::class.java to TroveSetData(::TLongHashSet, ::TLongSetDecorator),
+            TFloatSet::class.java to TroveSetData(::TFloatHashSet, ::TFloatSetDecorator),
+            TDoubleSet::class.java to TroveSetData(::TDoubleHashSet, ::TDoubleSetDecorator)
     )
 }
 
-class TroveSetData<T>(val constructor: () -> T, val wrapper: T.() -> MutableSet<Any?>)
+class TroveSetData<T>(val constructor: () -> T, val wrapper: T.() -> MutableSet<out Any?>)

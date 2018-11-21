@@ -5,8 +5,8 @@ import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.autoregister.AMPRegister
 import com.teamwizardry.librarianlib.features.autoregister.AnnotationMarkerProcessor
 import com.teamwizardry.librarianlib.features.autoregister.SerializerFactoryRegister
+import com.teamwizardry.librarianlib.features.helpers.castOrDefault
 import com.teamwizardry.librarianlib.features.kotlin.readVarInt
-import com.teamwizardry.librarianlib.features.kotlin.safeCast
 import com.teamwizardry.librarianlib.features.kotlin.withRealDefault
 import com.teamwizardry.librarianlib.features.kotlin.writeVarInt
 import com.teamwizardry.librarianlib.features.saving.FieldType
@@ -91,7 +91,7 @@ object SerializeNamedDynamicFactory : SerializerFactory("NamedDynamic") {
         }
 
         override fun readNBT(nbt: NBTBase, existing: Any?, syncing: Boolean): Any {
-            val wrapper = nbt.safeCast(NBTTagCompound::class.java)
+            val wrapper = nbt.castOrDefault(NBTTagCompound::class.java)
 
             val type = wrapper.getString("name")
 

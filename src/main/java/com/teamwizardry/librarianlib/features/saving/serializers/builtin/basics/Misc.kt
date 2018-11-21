@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.saving.serializers.builtin.basics
 
 import com.teamwizardry.librarianlib.features.autoregister.SerializerRegister
+import com.teamwizardry.librarianlib.features.helpers.castOrDefault
 import com.teamwizardry.librarianlib.features.kotlin.*
 import com.teamwizardry.librarianlib.features.saving.FieldType
 import com.teamwizardry.librarianlib.features.saving.serializers.Serializer
@@ -28,7 +29,7 @@ object SerializeColor : Serializer<Color>(FieldType.create(Color::class.java)) {
     }
 
     override fun readNBT(nbt: NBTBase, existing: Color?, syncing: Boolean): Color {
-        val tag = nbt.safeCast<NBTTagCompound>()
+        val tag = nbt.castOrDefault(NBTTagCompound::class.java)
 
         return Color(component(tag, "r"), component(tag, "g"), component(tag, "b"), component(tag, "a"))
     }
@@ -60,7 +61,7 @@ object SerializeItemStack : Serializer<ItemStack>(FieldType.create(ItemStack::cl
     }
 
     override fun readNBT(nbt: NBTBase, existing: ItemStack?, syncing: Boolean): ItemStack {
-        return ItemStack(nbt.safeCast(NBTTagCompound::class.java))
+        return ItemStack(nbt.castOrDefault(NBTTagCompound::class.java))
     }
 
     override fun writeNBT(value: ItemStack, syncing: Boolean): NBTBase {
@@ -79,7 +80,7 @@ object SerializeItemStack : Serializer<ItemStack>(FieldType.create(ItemStack::cl
 @SerializerRegister(FluidStack::class)
 object SerializeFluidStack : Serializer<FluidStack>(FieldType.create(FluidStack::class.java)) {
     override fun readNBT(nbt: NBTBase, existing: FluidStack?, syncing: Boolean) =
-            FluidStack.loadFluidStackFromNBT(nbt.safeCast())!!
+            FluidStack.loadFluidStackFromNBT(nbt.castOrDefault(NBTTagCompound::class.java))!!
 
     override fun writeNBT(value: FluidStack, syncing: Boolean) =
             value.writeToNBT(NBTTagCompound())!!
@@ -103,7 +104,7 @@ object SerializeItemStackHandler : Serializer<ItemStackHandler>(FieldType.create
 
     override fun readNBT(nbt: NBTBase, existing: ItemStackHandler?, syncing: Boolean): ItemStackHandler {
         val handler = ItemStackHandler()
-        handler.deserializeNBT(nbt.safeCast(NBTTagCompound::class.java))
+        handler.deserializeNBT(nbt.castOrDefault(NBTTagCompound::class.java))
         return handler
     }
 
@@ -157,7 +158,7 @@ object SerializeITextComponent : Serializer<ITextComponent>(FieldType.create(ITe
     }
 
     override fun readNBT(nbt: NBTBase, existing: ITextComponent?, syncing: Boolean): ITextComponent {
-        return ITextComponent.Serializer.jsonToComponent(nbt.safeCast<NBTTagString>().string)!!
+        return ITextComponent.Serializer.jsonToComponent(nbt.castOrDefault(NBTTagString::class.java).string)!!
     }
 
     override fun writeNBT(value: ITextComponent, syncing: Boolean): NBTBase {

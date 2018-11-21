@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.test.animator.tests;
 import com.teamwizardry.librarianlib.features.animator.Animator;
 import com.teamwizardry.librarianlib.features.animator.Easing;
 import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation;
-import com.teamwizardry.librarianlib.features.helpers.ItemNBTHelper;
+import com.teamwizardry.librarianlib.features.helpers.NBTHelper;
 import com.teamwizardry.librarianlib.test.animator.AnimatorItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -69,13 +69,13 @@ public class PearlRadialUIRenderer {
 
 				int count = 5;
 
-				int scrollSlot = ItemNBTHelper.getInt(stack, "scroll_slot", -1);
+				int scrollSlot = NBTHelper.getInt(stack, "scroll_slot", -1);
 				int lastSlot = scrollSlot;
 
 				scrollSlot = getScrollSlot(event, count, scrollSlot);
 
 				if (lastSlot != scrollSlot && scrollSlot >= 0) {
-					ItemNBTHelper.setInt(stack, "scroll_slot", scrollSlot);
+					NBTHelper.setInt(stack, "scroll_slot", scrollSlot);
 
 					for (int i = 0; i < INSTANCE.slotAnimations.length; i++) {
 						BasicAnimation animation = INSTANCE.slotAnimations[i];
@@ -124,7 +124,7 @@ public class PearlRadialUIRenderer {
 				float anglePerSegment = anglePerColor / (numSegmentsPerArc);
 				float angle = 0;
 
-				int scrollSlot = ItemNBTHelper.getInt(stack, "scroll_slot", -1);
+				int scrollSlot = NBTHelper.getInt(stack, "scroll_slot", -1);
 
 				Tessellator tess = Tessellator.getInstance();
 				BufferBuilder bb = tess.getBuffer();

@@ -2,8 +2,8 @@ package com.teamwizardry.librarianlib.features.saving.serializers.builtin.core
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.autoregister.SerializerFactoryRegister
+import com.teamwizardry.librarianlib.features.helpers.castOrDefault
 import com.teamwizardry.librarianlib.features.kotlin.readString
-import com.teamwizardry.librarianlib.features.kotlin.safeCast
 import com.teamwizardry.librarianlib.features.kotlin.withRealDefault
 import com.teamwizardry.librarianlib.features.kotlin.writeString
 import com.teamwizardry.librarianlib.features.saving.Dyn
@@ -68,23 +68,20 @@ object SerializeDynamicFactory : SerializerFactory("Dynamic") {
         }
 
         private fun serializerFor(className: String): Serializer<Any> {
-            if (className == "")
-                return defaultSerializer
+            return if (className.isEmpty())
+                defaultSerializer
             else
-                return serializers[className]
+                serializers[className]
         }
 
         override fun readNBT(nbt: NBTBase, existing: Any?, syncing: Boolean): Any {
-            val wrapper = nbt.safeCast(NBTTagCompound::class.java)
+            val wrapper = nbt.castOrDefault(NBTTagCompound::class.java)
 
             val className = wrapper.getString("class")
 
             val ser = serializerFor(className)
 
-            if (wrapper.hasKey("data"))
-                return ser.read(wrapper.getTag("data"), existing, syncing)
-            else
-                return ser.read(nbt, existing, syncing) // to facilitate transitions to @Dyn
+            return ser.read(if (wrapper.hasKey("data")) wrapper.getTag("data") else nbt, existing, syncing) // to facilitate transitions to @Dyn
         }
 
         override fun writeNBT(value: Any, syncing: Boolean): NBTBase {

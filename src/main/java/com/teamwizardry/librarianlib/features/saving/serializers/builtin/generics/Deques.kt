@@ -2,9 +2,9 @@ package com.teamwizardry.librarianlib.features.saving.serializers.builtin.generi
 
 
 import com.teamwizardry.librarianlib.features.autoregister.SerializerFactoryRegister
+import com.teamwizardry.librarianlib.features.helpers.castOrDefault
 import com.teamwizardry.librarianlib.features.kotlin.forEach
 import com.teamwizardry.librarianlib.features.kotlin.readBooleanArray
-import com.teamwizardry.librarianlib.features.kotlin.safeCast
 import com.teamwizardry.librarianlib.features.kotlin.writeBooleanArray
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.saving.FieldType
@@ -29,8 +29,7 @@ object SerializeDequeFactory : SerializerFactory("Deque") {
     }
 
     override fun create(type: FieldType): Serializer<*> {
-        type as FieldTypeGeneric
-        return SerializeDeque(type, type.resolveGeneric(Deque::class.java, 0))
+        return SerializeDeque(type as FieldTypeGeneric, type.resolveGeneric(Deque::class.java, 0))
     }
 
     class SerializeDeque(type: FieldType, val componentType: FieldType) : Serializer<Deque<Any?>>(type) {
@@ -42,7 +41,7 @@ object SerializeDequeFactory : SerializerFactory("Deque") {
         val constructor = createConstructorMH()
 
         override fun readNBT(nbt: NBTBase, existing: Deque<Any?>?, syncing: Boolean): Deque<Any?> {
-            val list = nbt.safeCast(NBTTagList::class.java)
+            val list = nbt.castOrDefault(NBTTagList::class.java)
 
             @Suppress("UNCHECKED_CAST")
             val deque = existing ?: getDefault()
@@ -77,7 +76,7 @@ object SerializeDequeFactory : SerializerFactory("Deque") {
             val deque = existing ?: getDefault()
             deque.clear()
 
-            for (i in 0..nullsig.size - 1) {
+            for (i in 0 until nullsig.size) {
                 deque.push(if (nullsig[i]) null else serComponent.read(buf, null, syncing))
             }
 

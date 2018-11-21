@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.features.saving.serializers.builtin.generics
 
 import com.teamwizardry.librarianlib.features.autoregister.SerializerFactoryRegister
+import com.teamwizardry.librarianlib.features.helpers.castOrDefault
 import com.teamwizardry.librarianlib.features.kotlin.readVarInt
-import com.teamwizardry.librarianlib.features.kotlin.safeCast
 import com.teamwizardry.librarianlib.features.kotlin.writeVarInt
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.saving.FieldType
@@ -39,8 +39,8 @@ object SerializeSetFactory : SerializerFactory("Set") {
         val constructor = createConstructorMethodHandle()
 
         override fun readNBT(nbt: NBTBase, existing: MutableSet<Any?>?, syncing: Boolean): MutableSet<Any?> {
-            val compound = nbt.safeCast(NBTTagCompound::class.java)
-            val list = compound.getTag("values").safeCast(NBTTagList::class.java)
+            val compound = nbt.castOrDefault(NBTTagCompound::class.java)
+            val list = compound.getTag("values").castOrDefault(NBTTagList::class.java)
             val nullFlag = compound.getBoolean("hasNull")
 
             @Suppress("UNCHECKED_CAST")
@@ -79,7 +79,7 @@ object SerializeSetFactory : SerializerFactory("Set") {
             if (nullFlag)
                 set.add(null)
 
-            for (i in 0..len - 1) {
+            for (i in 0 until len) {
                 set.add(serValue.read(buf, null, syncing))
             }
 
@@ -96,15 +96,14 @@ object SerializeSetFactory : SerializerFactory("Set") {
         }
 
         private fun createConstructorMethodHandle(): () -> MutableSet<Any?> {
-
-            if (type.clazz == Set::class.java) {
-                return { LinkedHashSet<Any?>() } // linked so if order is important it's preserved.
-            } else if (EnumSet::class.java.isAssignableFrom(type.clazz)) {
-                @Suppress("UNCHECKED_CAST")
+            when {
+                type.clazz == Set::class.java -> return { linkedSetOf() } // linked so if order is important it's preserved.
+                EnumSet::class.java.isAssignableFrom(type.clazz) -> @Suppress("UNCHECKED_CAST")
                 return { RawTypeConstructors.createEnumSet(type.clazz) as MutableSet<Any?> }
-            } else {
-                val mh = MethodHandleHelper.wrapperForConstructor<MutableSet<Any?>>(type.clazz)
-                return { mh(arrayOf()) }
+                else -> {
+                    val mh = MethodHandleHelper.wrapperForConstructor<MutableSet<Any?>>(type.clazz)
+                    return { mh(arrayOf()) }
+                }
             }
         }
     }

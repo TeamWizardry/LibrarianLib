@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.features.saving.serializers.builtin.special
 
 import com.teamwizardry.librarianlib.features.autoregister.SerializerFactoryRegister
+import com.teamwizardry.librarianlib.features.helpers.castOrDefault
 import com.teamwizardry.librarianlib.features.kotlin.forEachIndexed
 import com.teamwizardry.librarianlib.features.kotlin.readBooleanArray
-import com.teamwizardry.librarianlib.features.kotlin.safeCast
 import com.teamwizardry.librarianlib.features.kotlin.writeBooleanArray
 import com.teamwizardry.librarianlib.features.saving.ArrayReflect
 import com.teamwizardry.librarianlib.features.saving.FieldType
@@ -28,19 +28,16 @@ object SerializeArrayFactory : SerializerFactory("Array") {
     }
 
     override fun create(type: FieldType): Serializer<*> {
-        type as FieldTypeArray
-        return SerializeArray(type, type.componentType)
+        return SerializeArray(type as FieldTypeArray, type.componentType)
     }
 
     class SerializeArray(type: FieldType, val componentType: FieldType) : Serializer<Array<Any?>>(type) {
-        override fun getDefault(): Array<Any?> {
-            return Array(0) {}
-        }
+        override fun getDefault(): Array<Any?> = arrayOf()
 
         val serComponent: Serializer<Any> by SerializerRegistry.lazy(componentType)
 
         override fun readNBT(nbt: NBTBase, existing: Array<Any?>?, syncing: Boolean): Array<Any?> {
-            val list = nbt.safeCast(NBTTagList::class.java)
+            val list = nbt.castOrDefault(NBTTagList::class.java)
 
             val reuse = existing != null && existing.size == list.tagCount()
             @Suppress("UNCHECKED_CAST")
@@ -59,7 +56,7 @@ object SerializeArrayFactory : SerializerFactory("Array") {
 
             val len = ArrayReflect.getLength(value)
 
-            for (i in 0..len - 1) {
+            for (i in 0 until len) {
                 val v = ArrayReflect.get(value, i)
                 val container = NBTTagCompound()
                 list.appendTag(container)
@@ -77,7 +74,7 @@ object SerializeArrayFactory : SerializerFactory("Array") {
             @Suppress("UNCHECKED_CAST")
             val array = if (reuse) existing as Array<Any?> else ArrayReflect.newInstanceRaw(componentType.clazz, nullsig.size)
 
-            for (i in 0..nullsig.size - 1) {
+            for (i in 0 until nullsig.size) {
                 array[i] = if (nullsig[i]) null else serComponent.read(buf, array[i], syncing)
             }
             return array
@@ -87,7 +84,7 @@ object SerializeArrayFactory : SerializerFactory("Array") {
             val len = ArrayReflect.getLength(value)
             val nullsig = BooleanArray(len) { ArrayReflect.get(value, it) == null }
             buf.writeBooleanArray(nullsig)
-            for (i in 0..len - 1) {
+            for (i in 0 until len) {
                 if (!nullsig[i])
                     serComponent.write(buf, ArrayReflect.get(value, i), syncing)
             }

@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.features.saving.serializers.builtin.special
 
 import com.teamwizardry.librarianlib.features.autoregister.SerializerFactoryRegister
+import com.teamwizardry.librarianlib.features.helpers.castOrDefault
 import com.teamwizardry.librarianlib.features.kotlin.readBooleanArray
-import com.teamwizardry.librarianlib.features.kotlin.safeCast
 import com.teamwizardry.librarianlib.features.kotlin.writeBooleanArray
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.saving.*
@@ -22,10 +22,10 @@ object SerializeObjectFactory : SerializerFactory("Object") {
     override fun canApply(type: FieldType): SerializerFactoryMatch {
         val savable = type.clazz.isAnnotationPresent(Savable::class.java)
         val inplace = inPlaceCheck(type.clazz)
-        if (savable || inplace)
-            return SerializerFactoryMatch.GENERAL
+        return if (savable || inplace)
+            SerializerFactoryMatch.GENERAL
         else
-            return SerializerFactoryMatch.NONE
+            SerializerFactoryMatch.NONE
     }
 
     fun inPlaceCheck(clazz: Class<*>): Boolean {
@@ -46,7 +46,7 @@ object SerializeObjectFactory : SerializerFactory("Object") {
         }
 
         override fun readNBT(nbt: NBTBase, existing: Any?, syncing: Boolean): Any {
-            val tag = nbt.safeCast(NBTTagCompound::class.java)
+            val tag = nbt.castOrDefault(NBTTagCompound::class.java)
 
             if (analysis.mutable && (existing != null || analysis.constructor.parameters.isEmpty())) {
                 val instance = existing ?: analysis.constructorMH(arrayOf())
@@ -209,7 +209,7 @@ object SerializeObjectFactory : SerializerFactory("Object") {
         }
 
         override fun writeBytes(buf: ByteBuf, value: Any, syncing: Boolean) {
-            var nullsig = mutableListOf<Boolean>()
+            val nullsig = mutableListOf<Boolean>()
             analysis.alwaysFields.forEach {
                 try {
                     nullsig.add(it.value.getter(value) == null)
@@ -293,17 +293,15 @@ class SerializerAnalysis(val type: FieldType) {
         val allFields = mutableMapOf<String, FieldCache>()
         addFieldsRecursive(allFields, type)
         this.fields =
-                if (allFields.any { it.value.meta.hasFlag(SavingFieldFlag.ANNOTATED) }) {
-                    allFields.filter {
+                when {
+                    allFields.any { it.value.meta.hasFlag(SavingFieldFlag.ANNOTATED) } -> allFields.filter {
                         it.value.meta.hasFlag(SavingFieldFlag.ANNOTATED)
                     }
-                } else if (type.clazz.isAnnotationPresent(Savable::class.java)) {
-                    allFields.filter {
+                    type.clazz.isAnnotationPresent(Savable::class.java) -> allFields.filter {
                         (it.value.meta.hasFlag(SavingFieldFlag.FIELD) || it.value.meta.hasFlag(SavingFieldFlag.PROPERTY))
                                 && !it.value.meta.hasFlag(SavingFieldFlag.TRANSIENT)
                     }
-                } else {
-                    mapOf<String, FieldCache>()
+                    else -> mapOf()
                 }
         inPlaceSavable = SerializeObjectFactory.inPlaceCheck(type.clazz)
         this.mutable = inPlaceSavable || !fields.any { it.value.meta.hasFlag(SavingFieldFlag.FINAL) }

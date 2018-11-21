@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.features.saving.serializers.builtin.generics
 
 import com.teamwizardry.librarianlib.features.autoregister.SerializerFactoryRegister
+import com.teamwizardry.librarianlib.features.helpers.castOrDefault
 import com.teamwizardry.librarianlib.features.kotlin.forEachIndexed
 import com.teamwizardry.librarianlib.features.kotlin.readBooleanArray
-import com.teamwizardry.librarianlib.features.kotlin.safeCast
 import com.teamwizardry.librarianlib.features.kotlin.writeBooleanArray
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.saving.FieldType
@@ -40,7 +40,7 @@ object SerializeListFactory : SerializerFactory("List") {
         val constructor = createConstructorMH()
 
         override fun readNBT(nbt: NBTBase, existing: MutableList<Any?>?, syncing: Boolean): MutableList<Any?> {
-            val list = nbt.safeCast(NBTTagList::class.java)
+            val list = nbt.castOrDefault(NBTTagList::class.java)
 
             @Suppress("UNCHECKED_CAST")
             val array = (existing ?: getDefault())
@@ -64,7 +64,7 @@ object SerializeListFactory : SerializerFactory("List") {
         override fun writeNBT(value: MutableList<Any?>, syncing: Boolean): NBTBase {
             val list = NBTTagList()
 
-            for (i in 0..value.size - 1) {
+            for (i in 0 until value.size) {
                 val container = NBTTagCompound()
                 list.appendTag(container)
                 val v = value[i]
@@ -85,7 +85,7 @@ object SerializeListFactory : SerializerFactory("List") {
             while (array.size > nullsig.size)
                 array.removeAt(array.size - 1)
 
-            for (i in 0..nullsig.size - 1) {
+            for (i in 0 until nullsig.size) {
                 val v = if (nullsig[i]) null else serGeneric.read(buf, array.getOrNull(i), syncing)
                 if (i >= array.size) {
                     array.add(v)
@@ -100,14 +100,14 @@ object SerializeListFactory : SerializerFactory("List") {
             val nullsig = BooleanArray(value.size) { value[it] == null }
             buf.writeBooleanArray(nullsig)
 
-            (0..value.size - 1)
+            (0 until value.size)
                     .filterNot { nullsig[it] }
                     .forEach { serGeneric.write(buf, value[it]!!, syncing) }
         }
 
         private fun createConstructorMH(): () -> MutableList<Any?> {
             if (type.clazz == List::class.java) {
-                return { mutableListOf<Any?>() }
+                return { mutableListOf() }
             } else {
                 try {
                     val mh = MethodHandleHelper.wrapperForConstructor<MutableList<Any?>>(type.clazz)

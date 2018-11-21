@@ -1,138 +1,147 @@
 package com.teamwizardry.librarianlib.features.helpers
 
-import com.teamwizardry.librarianlib.features.kotlin.get
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.*
+import net.minecraft.nbt.NBTBase
+import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.nbt.NBTTagList
 import java.util.*
 
+@Deprecated("Use NBTHelper methods instead")
 object ItemNBTHelper {
 
     @JvmStatic
+    @Deprecated("Use raw call instead", ReplaceWith("stack.hasTagCompound()"))
     fun detectNBT(stack: ItemStack) = stack.hasTagCompound()
 
     @JvmStatic
     @JvmOverloads
-    fun getNBT(stack: ItemStack, modify: Boolean = true): NBTTagCompound {
-        if (modify && !detectNBT(stack))
-            stack.tagCompound = NBTTagCompound()
-        return stack.tagCompound ?: NBTTagCompound()
-    }
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("if (modify) stack.getOrCreateNBT() else (stack.tagCompound ?: NBTTagCompound())", "net.minecraft.nbt.NBTTagCompound"))
+    fun getNBT(stack: ItemStack, modify: Boolean = true) =
+            if (modify) stack.getOrCreateNBT() else (stack.tagCompound ?: NBTTagCompound())
 
     @JvmStatic
-    fun removeEntry(stack: ItemStack, tag: String) = getNBT(stack, false).removeTag(tag)
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.removeNBTEntry(tag)"))
+    fun removeEntry(stack: ItemStack, tag: String) = stack.removeNBTEntry(tag)
 
     @JvmStatic
-    fun verifyExistence(stack: ItemStack, tag: String) = getNBT(stack, false).hasKey(tag)
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.hasNBTEntry(tag)"))
+    fun verifyExistence(stack: ItemStack, tag: String) = stack.hasNBTEntry(tag)
 
     @JvmStatic
-    fun setBoolean(stack: ItemStack, tag: String, b: Boolean) = getNBT(stack).setBoolean(tag, b)
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.setNBTBoolean(tag, b)"))
+    fun setBoolean(stack: ItemStack, tag: String, b: Boolean) = stack.setNBTBoolean(tag, b)
 
     @JvmStatic
-    fun setByte(stack: ItemStack, tag: String, b: Byte) = getNBT(stack).setByte(tag, b)
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.setNBTByte(tag, b)"))
+    fun setByte(stack: ItemStack, tag: String, b: Byte) = stack.setNBTByte(tag, b)
 
     @JvmStatic
-    fun setShort(stack: ItemStack, tag: String, s: Short) = getNBT(stack).setShort(tag, s)
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.setNBTShort(tag, s)"))
+    fun setShort(stack: ItemStack, tag: String, s: Short) = stack.setNBTShort(tag, s)
 
     @JvmStatic
-    fun setInt(stack: ItemStack, tag: String, i: Int) = getNBT(stack).setInteger(tag, i)
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.setNBTInt(tag, i)"))
+    fun setInt(stack: ItemStack, tag: String, i: Int) = stack.setNBTInt(tag, i)
 
     @JvmStatic
-    fun setIntArray(stack: ItemStack, tag: String, arr: IntArray) = getNBT(stack).setIntArray(tag, arr)
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.setNBTIntArray(tag, arr)"))
+    fun setIntArray(stack: ItemStack, tag: String, arr: IntArray) = stack.setNBTIntArray(tag, arr)
 
     @JvmStatic
-    fun setIntArray(stack: ItemStack, tag: String, arr: ByteArray) = getNBT(stack).setByteArray(tag, arr)
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.setNBTByteArray(tag, arr)"))
+    fun setIntArray(stack: ItemStack, tag: String, arr: ByteArray) = stack.setNBTByteArray(tag, arr)
 
     @JvmStatic
-    fun setLong(stack: ItemStack, tag: String, l: Long) = getNBT(stack).setLong(tag, l)
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.setNBTLong(tag, l)"))
+    fun setLong(stack: ItemStack, tag: String, l: Long) = stack.setNBTLong(tag, l)
 
     @JvmStatic
-    fun setFloat(stack: ItemStack, tag: String, f: Float) = getNBT(stack).setFloat(tag, f)
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.setNBTFloat(tag, f)"))
+    fun setFloat(stack: ItemStack, tag: String, f: Float) = stack.setNBTFloat(tag, f)
 
     @JvmStatic
-    fun setDouble(stack: ItemStack, tag: String, d: Double) = getNBT(stack).setDouble(tag, d)
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.setNBTDouble(tag, d)"))
+    fun setDouble(stack: ItemStack, tag: String, d: Double) = stack.setNBTDouble(tag, d)
 
     @JvmStatic
-    fun setCompound(stack: ItemStack, tag: String, cmp: NBTTagCompound) = set(stack, tag, cmp)
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.setNBTCompound(tag, cmp)"))
+    fun setCompound(stack: ItemStack, tag: String, cmp: NBTTagCompound) = stack.setNBTCompound(tag, cmp)
 
     @JvmStatic
-    fun setString(stack: ItemStack, tag: String, s: String) = getNBT(stack).setString(tag, s)
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.setNBTString(tag, s)"))
+    fun setString(stack: ItemStack, tag: String, s: String) = stack.setNBTString(tag, s)
 
     @JvmStatic
-    fun setList(stack: ItemStack, tag: String, list: NBTTagList) = set(stack, tag, list)
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.setNBTList(tag, list)"))
+    fun setList(stack: ItemStack, tag: String, list: NBTTagList) = stack.setNBTList(tag, list)
 
     @JvmStatic
-    fun setUUID(stack: ItemStack, tag: String, uuid: UUID) = set(stack, tag, NBTTagList().apply {
-        appendTag(NBTTagLong(uuid.mostSignificantBits))
-        appendTag(NBTTagLong(uuid.leastSignificantBits))
-    })
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.setNBTUniqueId(tag, uuid)"))
+    fun setUUID(stack: ItemStack, tag: String, uuid: UUID) = stack.setNBTUniqueId(tag, uuid)
 
     @JvmStatic
-    fun set(stack: ItemStack, tag: String, value: NBTBase) = getNBT(stack).setTag(tag, value)
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.setNBTTag(tag, value)"))
+    fun set(stack: ItemStack, tag: String, value: NBTBase) = stack.setNBTTag(tag, value)
 
     @JvmStatic
-    fun getBoolean(stack: ItemStack, tag: String, defaultExpected: Boolean) =
-            if (verifyExistence(stack, tag)) getNBT(stack, false).getBoolean(tag) else defaultExpected
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.getNBTBoolean(tag, defaultExpected)"))
+    fun getBoolean(stack: ItemStack, tag: String, defaultExpected: Boolean) = stack.getNBTBoolean(tag, defaultExpected)
 
     @JvmStatic
-    fun getByte(stack: ItemStack, tag: String, defaultExpected: Byte) =
-            if (verifyExistence(stack, tag)) getNBT(stack, false).getByte(tag) else defaultExpected
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.getNBTByte(tag, defaultExpected)"))
+    fun getByte(stack: ItemStack, tag: String, defaultExpected: Byte) = stack.getNBTByte(tag, defaultExpected)
 
     @JvmStatic
-    fun getShort(stack: ItemStack, tag: String, defaultExpected: Short) =
-            if (verifyExistence(stack, tag)) getNBT(stack, false).getShort(tag) else defaultExpected
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.getNBTShort(tag, defaultExpected)"))
+    fun getShort(stack: ItemStack, tag: String, defaultExpected: Short) = stack.getNBTShort(tag, defaultExpected)
 
     @JvmStatic
-    fun getInt(stack: ItemStack, tag: String, defaultExpected: Int) =
-            if (verifyExistence(stack, tag)) getNBT(stack, false).getInteger(tag) else defaultExpected
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.getNBTInt(tag, defaultExpected)"))
+    fun getInt(stack: ItemStack, tag: String, defaultExpected: Int) = stack.getNBTInt(tag, defaultExpected)
 
     @JvmStatic
-    fun getIntArray(stack: ItemStack, tag: String): IntArray? =
-            if (verifyExistence(stack, tag)) getNBT(stack, false).getIntArray(tag) else null
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.getNBTIntArray(tag)"))
+    fun getIntArray(stack: ItemStack, tag: String): IntArray? = stack.getNBTIntArray(tag)
 
     @JvmStatic
-    fun getByteArray(stack: ItemStack, tag: String): ByteArray? =
-            if (verifyExistence(stack, tag)) getNBT(stack, false).getByteArray(tag) else null
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.getNBTByteArray(tag)"))
+    fun getByteArray(stack: ItemStack, tag: String): ByteArray? = stack.getNBTByteArray(tag)
 
     @JvmStatic
-    fun getLong(stack: ItemStack, tag: String, defaultExpected: Long) =
-            if (verifyExistence(stack, tag)) getNBT(stack, false).getLong(tag) else defaultExpected
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.getNBTLong(tag, defaultExpected)"))
+    fun getLong(stack: ItemStack, tag: String, defaultExpected: Long) = stack.getNBTLong(tag, defaultExpected)
 
     @JvmStatic
-    fun getFloat(stack: ItemStack, tag: String, defaultExpected: Float) =
-            if (verifyExistence(stack, tag)) getNBT(stack, false).getFloat(tag) else defaultExpected
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.getNBTFloat(tag, defaultExpected)"))
+    fun getFloat(stack: ItemStack, tag: String, defaultExpected: Float) = stack.getNBTFloat(tag, defaultExpected)
 
     @JvmStatic
-    fun getDouble(stack: ItemStack, tag: String, defaultExpected: Double) =
-            if (verifyExistence(stack, tag)) getNBT(stack, false).getDouble(tag) else defaultExpected
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.getNBTDouble(tag, defaultExpected)"))
+    fun getDouble(stack: ItemStack, tag: String, defaultExpected: Double) = stack.getNBTDouble(tag, defaultExpected)
 
     @JvmStatic
-    fun getCompound(stack: ItemStack, tag: String): NBTTagCompound? =
-            if (verifyExistence(stack, tag)) getNBT(stack, false).getCompoundTag(tag) else null
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.getNBTCompound(tag)"))
+    fun getCompound(stack: ItemStack, tag: String): NBTTagCompound? = stack.getNBTCompound(tag)
 
     @JvmStatic
-    fun getString(stack: ItemStack, tag: String, defaultExpected: String?) =
-            if (verifyExistence(stack, tag)) getNBT(stack, false).getString(tag) else defaultExpected
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.getNBTString(tag) ?: defaultExpected"))
+    fun getString(stack: ItemStack, tag: String, defaultExpected: String?) = stack.getNBTString(tag) ?: defaultExpected
 
     @JvmStatic
-    fun getList(stack: ItemStack, tag: String, nbtClass: Class<out NBTBase>) =
-            getList(stack, tag, nbtClass.newInstance().id.toInt())
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.getNBTList(tag, nbtClass)"))
+    fun getList(stack: ItemStack, tag: String, nbtClass: Class<out NBTBase>) = stack.getNBTList(tag, nbtClass)
 
     @JvmStatic
-    fun getList(stack: ItemStack, tag: String, objType: Int): NBTTagList? =
-            if (verifyExistence(stack, tag)) getNBT(stack, false).getTagList(tag, objType) else null
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.getNBTList(tag, objType)"))
+    fun getList(stack: ItemStack, tag: String, objType: Int): NBTTagList? = stack.getNBTList(tag, objType)
 
     @JvmStatic
-    fun getUUID(stack: ItemStack, tag: String): UUID? =
-            if (verifyExistence(stack, tag)) fromList(getNBT(stack, false), tag) else null
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.getNBTUniqueId(tag)"))
+    fun getUUID(stack: ItemStack, tag: String): UUID? = stack.getNBTUniqueId(tag)
 
     @JvmStatic
-    fun get(stack: ItemStack, tag: String) = getNBT(stack, false)[tag]
+    @Deprecated("Use NBTHelper methods instead", ReplaceWith("stack.getNBTTag(tag)"))
+    fun get(stack: ItemStack, tag: String) = stack.getNBTTag(tag)
 
-    private fun fromList(compound: NBTTagCompound, key: String): UUID? {
-        val list = compound.getTag(key) as? NBTTagList ?: return null
-
-        if (list.tagCount() != 2 || list.get(0) !is NBTPrimitive) return null
-        return UUID((list.get(0) as NBTPrimitive).long, (list.get(1) as NBTPrimitive).long)
-    }
 
 }

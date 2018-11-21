@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.features.saving.serializers.builtin.primitives
 
 import com.teamwizardry.librarianlib.features.autoregister.SerializerRegister
+import com.teamwizardry.librarianlib.features.helpers.castOrDefault
 import com.teamwizardry.librarianlib.features.kotlin.readString
-import com.teamwizardry.librarianlib.features.kotlin.safeCast
 import com.teamwizardry.librarianlib.features.kotlin.writeString
 import com.teamwizardry.librarianlib.features.saving.FieldType
 import com.teamwizardry.librarianlib.features.saving.serializers.Serializer
@@ -28,7 +28,7 @@ object SerializeByte : Serializer<Byte>(FieldType.create(Byte::class.javaPrimiti
     }
 
     override fun readNBT(nbt: NBTBase, existing: Byte?, syncing: Boolean): Byte {
-        return nbt.safeCast<NBTTagByte>().short.toByte()
+        return nbt.castOrDefault(NBTTagByte::class.java).short.toByte()
     }
 
     override fun writeNBT(value: Byte, syncing: Boolean): NBTBase {
@@ -51,7 +51,7 @@ object SerializeChar : Serializer<Char>(FieldType.create(Char::class.javaPrimiti
     }
 
     override fun readNBT(nbt: NBTBase, existing: Char?, syncing: Boolean): Char {
-        return nbt.safeCast<NBTTagShort>().short.toChar()
+        return nbt.castOrDefault(NBTTagShort::class.java).short.toChar()
     }
 
     override fun writeNBT(value: Char, syncing: Boolean): NBTBase {
@@ -74,7 +74,7 @@ object SerializeShort : Serializer<Short>(FieldType.create(Short::class.javaPrim
     }
 
     override fun readNBT(nbt: NBTBase, existing: Short?, syncing: Boolean): Short {
-        return nbt.safeCast<NBTTagShort>().short
+        return nbt.castOrDefault(NBTTagShort::class.java).short
     }
 
     override fun writeNBT(value: Short, syncing: Boolean): NBTBase {
@@ -97,7 +97,7 @@ object SerializeInt : Serializer<Int>(FieldType.create(Int::class.javaPrimitiveT
     }
 
     override fun readNBT(nbt: NBTBase, existing: Int?, syncing: Boolean): Int {
-        return nbt.safeCast<NBTTagInt>().int
+        return nbt.castOrDefault(NBTTagInt::class.java).int
     }
 
     override fun writeNBT(value: Int, syncing: Boolean): NBTBase {
@@ -120,7 +120,7 @@ object SerializeLong : Serializer<Long>(FieldType.create(Long::class.javaPrimiti
     }
 
     override fun readNBT(nbt: NBTBase, existing: Long?, syncing: Boolean): Long {
-        return nbt.safeCast<NBTTagLong>().long
+        return nbt.castOrDefault(NBTTagLong::class.java).long
     }
 
     override fun writeNBT(value: Long, syncing: Boolean): NBTBase {
@@ -143,7 +143,7 @@ object SerializeFloat : Serializer<Float>(FieldType.create(Float::class.javaPrim
     }
 
     override fun readNBT(nbt: NBTBase, existing: Float?, syncing: Boolean): Float {
-        return nbt.safeCast<NBTTagFloat>().float
+        return nbt.castOrDefault(NBTTagFloat::class.java).float
     }
 
     override fun writeNBT(value: Float, syncing: Boolean): NBTBase {
@@ -166,7 +166,7 @@ object SerializeDouble : Serializer<Double>(FieldType.create(Double::class.javaP
     }
 
     override fun readNBT(nbt: NBTBase, existing: Double?, syncing: Boolean): Double {
-        return nbt.safeCast<NBTTagDouble>().double
+        return nbt.castOrDefault(NBTTagDouble::class.java).double
     }
 
     override fun writeNBT(value: Double, syncing: Boolean): NBTBase {
@@ -189,7 +189,7 @@ object SerializeBoolean : Serializer<Boolean>(FieldType.create(Boolean::class.ja
     }
 
     override fun readNBT(nbt: NBTBase, existing: Boolean?, syncing: Boolean): Boolean {
-        return nbt.safeCast<NBTTagByte>().byte != 0.toByte()
+        return nbt.castOrDefault(NBTTagByte::class.java).byte != 0.toByte()
     }
 
     override fun writeNBT(value: Boolean, syncing: Boolean): NBTBase {
@@ -212,7 +212,7 @@ object SerializeString : Serializer<String>(FieldType.create(String::class.java)
     }
 
     override fun readNBT(nbt: NBTBase, existing: String?, syncing: Boolean): String {
-        return nbt.safeCast<NBTTagString>().string
+        return nbt.castOrDefault(NBTTagString::class.java).string
     }
 
     override fun writeNBT(value: String, syncing: Boolean): NBTBase {

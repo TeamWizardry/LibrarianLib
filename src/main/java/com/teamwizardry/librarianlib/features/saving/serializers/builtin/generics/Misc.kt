@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.features.saving.serializers.builtin.generics
 
 import com.teamwizardry.librarianlib.features.autoregister.SerializerFactoryRegister
+import com.teamwizardry.librarianlib.features.helpers.castOrDefault
 import com.teamwizardry.librarianlib.features.kotlin.readBooleanArray
-import com.teamwizardry.librarianlib.features.kotlin.safeCast
 import com.teamwizardry.librarianlib.features.kotlin.writeBooleanArray
 import com.teamwizardry.librarianlib.features.saving.FieldType
 import com.teamwizardry.librarianlib.features.saving.FieldTypeGeneric
@@ -64,7 +64,7 @@ object SerializePairFactory : SerializerFactory("Pair") {
         }
 
         override fun readNBT(nbt: NBTBase, existing: Pair<Any?, Any?>?, syncing: Boolean): Pair<Any?, Any?> {
-            val tag = nbt.safeCast<NBTTagCompound>()
+            val tag = nbt.castOrDefault(NBTTagCompound::class.java)
 
             val tagFirst: NBTBase? = tag.getTag("first")
             val tagSecond: NBTBase? = tag.getTag("second")
@@ -138,7 +138,7 @@ object SerializeTripleFactory : SerializerFactory("Triple") {
         }
 
         override fun readNBT(nbt: NBTBase, existing: Triple<Any?, Any?, Any?>?, syncing: Boolean): Triple<Any?, Any?, Any?> {
-            val tag = nbt.safeCast<NBTTagCompound>()
+            val tag = nbt.castOrDefault(NBTTagCompound::class.java)
 
             val tagFirst: NBTBase? = tag.getTag("first")
             val tagSecond: NBTBase? = tag.getTag("second")
