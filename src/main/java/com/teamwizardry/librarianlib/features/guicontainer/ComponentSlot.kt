@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.features.gui.component.Hook
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.ScreenSpace
+import com.teamwizardry.librarianlib.features.math.coordinatespaces.UnrelatedCoordinateSpaceException
 
 /**
  * Created by TheCodeWarrior
@@ -27,12 +28,16 @@ class ComponentSlot(val slot: SlotBase, x: Int, y: Int) : GuiComponent(x, y) {
     @Hook
     @Suppress("UNUSED_PARAMETER")
     fun onTick(e: GuiComponentEvents.ComponentTickEvent) {
-        val p = convertPointTo(Vec2d.ZERO, ScreenSpace)
+        try {
+            val p = convertPointTo(Vec2d.ZERO, ScreenSpace)
 
-        if (scaler == null) scaler = this.rootComponent.subComponents.firstOrNull()
-        val s = scaler?.pos ?: Vec2d.ZERO
+            if (scaler == null) scaler = this.rootComponent.subComponents.firstOrNull()
+            val s = scaler?.pos ?: Vec2d.ZERO
 
-        slot.xPos = p.xi - s.xi
-        slot.yPos = p.yi - s.yi
+            slot.xPos = p.xi - s.xi
+            slot.yPos = p.yi - s.yi
+        } catch(e: UnrelatedCoordinateSpaceException) {
+            // nop
+        }
     }
 }

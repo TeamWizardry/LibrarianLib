@@ -4,9 +4,12 @@ import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.PngSizeInfo
+import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import java.awt.Color
+import java.awt.image.BufferedImage
 import java.io.IOException
 import java.lang.ref.WeakReference
 import java.util.*
@@ -45,10 +48,7 @@ import java.util.*
  */
 @SideOnly(Side.CLIENT)
 class Texture(
-    /**
-     * The location of the texture
-     */
-    val loc: ResourceLocation,
+    loc: ResourceLocation,
     /**
      * The logical width of this texture in pixels. Used to determine the scaling factor from texture pixels to
      * logical pixels
@@ -60,6 +60,8 @@ class Texture(
      */
     val logicalHeight: Int
 ) {
+    var loc: ResourceLocation = loc
+        private set
     /**
      * The width of the texture in pixels
      */
@@ -71,27 +73,28 @@ class Texture(
     var height: Int = 0
         private set
 
+    var image: BufferedImage? = null
+        private set
+
     /**
      * The ratio of texture pixels / logical pixels. Calculated by averaging the ratio on each axis.
      */
     val logicalScale: Int
         get() = ((logicalWidth.toFloat() / width + logicalHeight.toFloat() / height) / 2).toInt()
     private var section: SpritesMetadataSection? = null
-    private var sprites: MutableMap<String, Sprite> = mutableMapOf()
+    internal var sprites: MutableMap<String, Sprite> = mutableMapOf()
+    private var colors: MutableMap<String, TextureColor> = mutableMapOf()
 
     init {
         textures.add(WeakReference(this))
         if (SpritesMetadataSection.registered)
-            loadSpriteData()
+            load()
     }
 
     /**
      * Loads the sprite data from disk
      */
-    fun loadSpriteData() {
-        val oldSprites = this.sprites
-        this.sprites = mutableMapOf()
-
+    fun load() {
         val pngSizeInfo = PngSizeInfo.makeFromResource(Minecraft().resourceManager.getResource(loc))
         var pngWidth = pngSizeInfo.pngWidth
         var pngHeight = pngSizeInfo.pngHeight
@@ -109,27 +112,58 @@ class Texture(
 
         this.width = pngWidth
         this.height = pngHeight
+        this.section = null
         try {
-            val section = Minecraft.getMinecraft().resourceManager.getResource(loc).getMetadata<SpritesMetadataSection>("spritesheet")
-            this.section = section
-            if (section != null) {
-                this.width = section.width
-                this.height = section.height
-                for (def in section.definitions) {
-                    if (oldSprites.containsKey(def.name)) {
-                        val oldSprite = oldSprites[def.name]
-                        if (oldSprite != null) {
-                            oldSprite.init(def)
-                            sprites[def.name] = oldSprite
-                        }
-                    } else {
-                        sprites[def.name] = Sprite(this, def)
-                    }
-                }
-            }
+            this.section = Minecraft().resourceManager.getResource(loc).getMetadata("spritesheet")
         } catch (e: IOException) {
             e.printStackTrace()
         }
+        readSection()
+        loadImageData()
+    }
+
+    private fun readSection() {
+        val section = this.section
+
+        val oldSprites = this.sprites
+        val oldColors = this.colors
+        this.sprites = mutableMapOf()
+
+        if (section != null) {
+            this.width = section.width
+            this.height = section.height
+
+            for (def in section.sprites) {
+                val sprite = oldSprites[def.name] ?: Sprite(this)
+                sprites[def.name] = sprite
+                sprite.init(def)
+            }
+
+            for (def in section.colors) {
+                val color = oldColors[def.name] ?: TextureColor()
+                colors[def.name] = color
+                color.init(def)
+            }
+        }
+    }
+
+    fun loadImageData() {
+        val image = TextureUtil.readBufferedImage(Minecraft().resourceManager.getResource(loc).inputStream)
+        this.image = image
+        this.sprites.forEach { _, sprite ->
+            sprite.loadImage(image)
+        }
+        this.colors.forEach { _, color ->
+            val x = (color.u.toDouble() / this.width * image.width).toInt()
+            val y = (color.v.toDouble() / this.height * image.height).toInt()
+            color.color.replaceColor(Color(image.getRGB(x, y)))
+        }
+    }
+
+    fun switchTexture(loc: ResourceLocation) {
+        this.loc = loc
+        if (SpritesMetadataSection.registered)
+            load()
     }
 
     /**
@@ -139,7 +173,7 @@ class Texture(
         var s: Sprite? = sprites[name]
         if (s == null) {
             // create a new one each time so on reload it'll exist and be replaced with a real one
-            s = Sprite(this, SpriteDefinition(""))
+            s = Sprite(this)
             sprites[name] = s
         }
 
@@ -160,7 +194,8 @@ class Texture(
                 val newList = ArrayList<WeakReference<Texture>>()
 
                 for (tex in Texture.textures) {
-                    tex.get()?.loadSpriteData()
+                    tex.get()?.load()
+                    tex.get()?.loadImageData()
                     if (tex.get() != null) newList.add(tex)
                 }
 
@@ -171,4 +206,14 @@ class Texture(
         var textures: MutableList<WeakReference<Texture>> = ArrayList()
     }
 
+    private class TextureColor {
+        var u: Int = 0
+        var v: Int = 0
+        val color = MutableColor()
+
+        fun init(def: ColorDefinition) {
+            this.u = def.u
+            this.v = def.v
+        }
+    }
 }

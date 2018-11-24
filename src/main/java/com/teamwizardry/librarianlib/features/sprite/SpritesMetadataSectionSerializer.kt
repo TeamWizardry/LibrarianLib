@@ -8,6 +8,7 @@ import net.minecraft.client.resources.data.BaseMetadataSectionSerializer
 import net.minecraft.util.JsonUtils
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import java.awt.Color
 import java.lang.reflect.Type
 import java.util.*
 
@@ -103,6 +104,17 @@ class SpritesMetadataSectionSerializer : BaseMetadataSectionSerializer<SpritesMe
         }
     }
 
+    private fun parseColor(name: String, element: JsonElement): ColorDefinition? {
+        val arr = JsonUtils.getJsonArray(element, "spritesheet.colors.$name")
+        if (arr.size() != 2)
+            throw JsonSyntaxException("expected spritesheet.colors." + name + " to have a length of 2, was " + arr.toString())
+        val u = JsonUtils.getInt(arr.get(0), "spritesheet.colors.$name[0]")
+        val v = JsonUtils.getInt(arr.get(1), "spritesheet.colors.$name[1]")
+
+        // create def
+        return ColorDefinition(name = name, u = u, v = v)
+    }
+
     @Throws(JsonParseException::class)
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): SpritesMetadataSection {
         val jsonObject = JsonUtils.getJsonObject(json, "spritesheet.")
@@ -110,13 +122,11 @@ class SpritesMetadataSectionSerializer : BaseMetadataSectionSerializer<SpritesMe
         val width = JsonUtils.getInt(jsonObject.get("textureWidth"), "spritesheet.textureWidth")
         val height = JsonUtils.getInt(jsonObject.get("textureHeight"), "spritesheet.textureHeight")
 
-        val sprites = JsonUtils.getJsonObject(jsonObject.get("sprites"), "spritesheet.sprites")
-        val definitions = ArrayList<SpriteDefinition>()
-        for ((key, value) in sprites.entrySet()) {
-            val d = parseSprite(key, value) ?: continue
-            definitions.add(d)
-        }
-        return SpritesMetadataSection(width, height, definitions)
+        val spriteJson = jsonObject.get("sprites")?.let { JsonUtils.getJsonObject(it, "spritesheet.sprites") }
+        val sprites = spriteJson?.entrySet()?.mapNotNull { (name, value) -> parseSprite(name, value) } ?: emptyList()
+        val colorJson = jsonObject.get("colors")?.let { JsonUtils.getJsonObject(it, "spritesheet.colors") }
+        val colors = colorJson?.entrySet()?.mapNotNull { (name, value) -> parseColor(name, value) } ?: emptyList()
+        return SpritesMetadataSection(width, height, sprites, colors)
     }
 
 }

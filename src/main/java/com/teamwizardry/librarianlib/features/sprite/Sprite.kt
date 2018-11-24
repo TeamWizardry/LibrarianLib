@@ -5,6 +5,8 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import net.minecraft.client.renderer.texture.PngSizeInfo
+import java.awt.image.BufferedImage
+import java.awt.image.RasterFormatException
 import kotlin.math.max
 
 /**
@@ -41,9 +43,11 @@ open class Sprite : ISprite {
     override val vSize: Float
         get() = def.h / tex.height.toFloat()
 
-    constructor(tex: Texture, def: SpriteDefinition) {
+    var images: List<BufferedImage> = listOf()
+        private set
+
+    constructor(tex: Texture) {
         this.tex = tex
-        init(def)
     }
 
     @Suppress("LeakingThis")
@@ -64,13 +68,16 @@ open class Sprite : ISprite {
             pngHeight = height
         }
 
-        this.tex = Texture(loc, pngWidth, pngHeight)
-
         def.u = 0
         def.v = 0
         def.w = pngWidth
         def.h = pngHeight
         def.frames = IntArray(0)
+
+        this.tex = Texture(loc, pngWidth, pngHeight)
+        tex.sprites[loc.path] = this
+
+        tex.load()
     }
 
     /**
@@ -80,6 +87,22 @@ open class Sprite : ISprite {
      */
     internal fun init(def: SpriteDefinition) {
         this.def = def
+    }
+
+    fun loadImage(full: BufferedImage) {
+        images = (0 until frameCount).map { i ->
+            val minX = (minU(i) * full.width).toInt()
+            val maxX = (maxU(i) * full.width).toInt()
+            val minY = (minV(i) * full.height).toInt()
+            val maxY = (maxV(i) * full.height).toInt()
+
+            try {
+                full.getSubimage(minX, minY, maxX - minX, maxY - minY)
+            } catch(e: RasterFormatException) {
+                e.printStackTrace()
+                BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
+            }
+        }
     }
 
     private fun frameMultiplier(animFrames: Int) = if (def.frames.isEmpty()) 0 else def.frames[animFrames % def.frames.size]
@@ -125,19 +148,4 @@ open class Sprite : ISprite {
         get() = def.maxVCap.toFloat() / def.h
 
     override fun bind() = tex.bind()
-}
-
-class SpriteDefinition(
-    var name: String,
-    var u: Int, var v: Int, var w: Int, var h: Int,
-    var frames: IntArray, var offsetU: Int, var offsetV: Int,
-    var minUCap: Int, var minVCap: Int, var maxUCap: Int, var maxVCap: Int,
-    var hardScaleU: Boolean, var hardScaleV: Boolean) {
-    constructor(name: String) : this(
-        name,
-        0, 0, 0, 0,
-        intArrayOf(0), 0, 0,
-        0, 0, 0, 0,
-        false, false
-    )
 }
