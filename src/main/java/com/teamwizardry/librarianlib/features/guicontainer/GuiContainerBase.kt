@@ -8,7 +8,6 @@ import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.network.PacketHandler
 import com.teamwizardry.librarianlib.features.network.PacketSyncSlotVisibility
-import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.renderer.GlStateManager
@@ -17,7 +16,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
-import org.lwjgl.opengl.GL11
 import java.io.IOException
 
 /**
@@ -31,8 +29,8 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
 
     init {
         fullscreenComponents.setData(GuiContainerBase::class.java, "", this)
-        mainComponents.shouldComputeMouseInsideFromBounds = false
-        fullscreenComponents.shouldComputeMouseInsideFromBounds = false
+        mainComponents.disableMouseCollision = true
+        fullscreenComponents.disableMouseCollision = true
         fullscreenComponents.add(mainScaleWrapper)
         mainScaleWrapper.add(mainComponents)
 

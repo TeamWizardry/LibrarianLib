@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.RootComponent
-import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import java.util.Collections
 
@@ -21,16 +20,6 @@ interface IComponentMouse {
 
     val mouseHit: MouseHit?
 
-    /**
-     * True if the mouse is over this component. This is a subset of the mouse being [inside][mouseInside] the
-     * component. Even if the mouse is inside this component, another component may be above this one. However, if
-     * the mouse is over this component it will also by definition be inside this component.
-     * See [mousePropagationType] for more information about how it relates to subcomponents.
-     *
-     * This one should generally be used to determine if the user is interacting with a component. [mouseInside] is
-     * more useful for things such as detecting whether a component has been dragged onto another one, as the one being
-     * dragged will likely occlude this one.
-     */
     val mouseOver: Boolean
 
     /**
@@ -56,7 +45,7 @@ interface IComponentMouse {
      * This flag controls whether the mouse being within this component's bounding rectangle should count as it being
      * [inside][mouseInside] or [over][mouseOver] this component. The default value is true.
      */
-    var shouldComputeMouseInsideFromBounds: Boolean
+    var disableMouseCollision: Boolean
 
     /**
      * Update the mousePos of this component and its children based on the given mouse position in its parent.
@@ -125,7 +114,7 @@ class ComponentMouseHandler: IComponentMouse {
 
     override var isOpaqueToMouse: Boolean = true
     override var propagateMouse: Boolean = true
-    override var shouldComputeMouseInsideFromBounds: Boolean = true
+    override var disableMouseCollision: Boolean = false
 
     override fun updateMouse(parentMousePos: Vec2d) {
         this.lastMousePos = mousePos
@@ -140,11 +129,12 @@ class ComponentMouseHandler: IComponentMouse {
         component.subComponents.forEach {
             it.updateMouse(this.mousePos)
         }
+        this.mouseHit = null
     }
 
     override fun updateHits(root: RootComponent, parentZ: Double) {
         val zIndex = parentZ + component.zIndex
-        if(component.shouldComputeMouseInsideFromBounds && component.isPointInBounds(component.mousePos)) {
+        if(!component.disableMouseCollision && component.isPointInBounds(component.mousePos)) {
             val mouseHit = MouseHit(this.component, zIndex)
             this.mouseHit = mouseHit
             if(component.isOpaqueToMouse && mouseHit > root.topMouseHit) {
@@ -155,11 +145,7 @@ class ComponentMouseHandler: IComponentMouse {
         }
 
         for(child in component.subComponents) {
-            if(!child.isVisible) {
-                val mouseHit = root.topMouseHit
-                child.updateHits(root, zIndex)
-                root.topMouseHit = mouseHit // no changes should be made if the component is invisible
-            } else {
+            if(child.isVisible) {
                 child.updateHits(root, zIndex)
             }
         }

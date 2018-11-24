@@ -60,8 +60,8 @@ open class LibGuiImpl(
 
     init {
         background.zIndex = Double.NEGATIVE_INFINITY
-        main.shouldComputeMouseInsideFromBounds = false
-        root.shouldComputeMouseInsideFromBounds = false
+        main.disableMouseCollision = true
+        root.disableMouseCollision = true
         root.add(main)
     }
 

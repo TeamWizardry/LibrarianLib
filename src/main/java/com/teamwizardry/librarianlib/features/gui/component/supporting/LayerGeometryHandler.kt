@@ -116,8 +116,8 @@ interface ILayerGeometry: CoordinateSpace2D {
 
     /**
      * @return true if the passed point is inside the bounds of this component. This is used for tests such as when
-     * checking whether the mouse is positioned inside the component. Calling [GuiLayer.isPointClipped] with the passed
-     * point is recommended
+     * checking whether the mouse is positioned inside the component. Calling [GuiLayer.isPointClipped] in this
+     * method's implementation is recommended in order to maintain normal clipping behavior.
      */
     fun isPointInBounds(point: Vec2d): Boolean
 

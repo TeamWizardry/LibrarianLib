@@ -81,7 +81,7 @@ open class GuiComponent private constructor(
     open val parentComponent: GuiComponent?
         get() = this.parent as GuiComponent
 
-    override fun shouldDrawSkeleton(): Boolean = this.mouseHit != null
+    override fun shouldDrawSkeleton(): Boolean = this.isPointInBounds(this.mousePos)
 
     override fun drawDebugBoundingBox() {
 
