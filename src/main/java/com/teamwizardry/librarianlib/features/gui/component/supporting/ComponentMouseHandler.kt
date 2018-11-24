@@ -99,13 +99,8 @@ class ComponentMouseHandler: IComponentMouse {
         private set
     override var lastMousePos: Vec2d = Vec2d.ZERO
         private set
-    override val mouseOver: Boolean
-        get() {
-            val mouseHit = this.component.mouseHit
-            val topHit = (this.component.rootComponent as? RootComponent)?.topMouseHit
-
-            return mouseHit != null && mouseHit >= topHit
-        }
+    override var mouseOver: Boolean = false
+        private set
     override var mouseHit: MouseHit? = null
         private set
 
@@ -116,19 +111,22 @@ class ComponentMouseHandler: IComponentMouse {
     override var propagateMouse: Boolean = true
     override var disableMouseCollision: Boolean = false
 
+    private var hadMouseHit = false
+
     override fun updateMouse(parentMousePos: Vec2d) {
         this.lastMousePos = mousePos
         this.mousePos = GuiComponentEvents.CalculateMousePositionEvent(
             component.convertPointFromParent(parentMousePos)
         ).mousePos
         if(lastMousePos.squareDist(mousePos) > 0.1 * 0.1) {
-            if(mouseOver && pressedButtons.isNotEmpty())
+            if(pressedButtons.isNotEmpty())
                 component.BUS.fire(GuiComponentEvents.MouseDragEvent())
             component.BUS.fire(GuiComponentEvents.MouseMoveEvent())
         }
         component.subComponents.forEach {
             it.updateMouse(this.mousePos)
         }
+        this.hadMouseHit = component.mouseHit != null
         this.mouseHit = null
     }
 
@@ -140,8 +138,6 @@ class ComponentMouseHandler: IComponentMouse {
             if(component.isOpaqueToMouse && mouseHit > root.topMouseHit) {
                 root.topMouseHit = mouseHit
             }
-        } else {
-            this.mouseHit = null
         }
 
         for(child in component.subComponents) {
@@ -154,9 +150,36 @@ class ComponentMouseHandler: IComponentMouse {
     override fun propagateHits() {
         for(child in component.subComponents) {
             child.propagateHits()
-            if(child.isVisible && child.propagateMouse && child.mouseHit > this.mouseHit) {
+            if(child.isVisible && child.propagateMouse && child.mouseHit > component.mouseHit) {
                 this.mouseHit = child.mouseHit
             }
+        }
+
+        val wasMouseOver = component.mouseOver
+
+        val mouseHit = this.component.mouseHit
+        val topHit = (this.component.rootComponent as? RootComponent)?.topMouseHit
+
+        mouseOver = mouseHit != null && mouseHit >= topHit
+
+        if(wasMouseOver && !component.mouseOver) {
+            if(pressedButtons.isNotEmpty())
+                component.BUS.fire(GuiComponentEvents.MouseDragLeaveEvent())
+            component.BUS.fire(GuiComponentEvents.MouseLeaveEvent())
+        } else if(!wasMouseOver && component.mouseOver) {
+            if(pressedButtons.isNotEmpty())
+                component.BUS.fire(GuiComponentEvents.MouseDragEnterEvent())
+            component.BUS.fire(GuiComponentEvents.MouseEnterEvent())
+        }
+
+        if(hadMouseHit && component.mouseHit == null) {
+            if(pressedButtons.isNotEmpty())
+                component.BUS.fire(GuiComponentEvents.MouseDragOutEvent())
+            component.BUS.fire(GuiComponentEvents.MouseMoveOutEvent())
+        } else if(!hadMouseHit && component.mouseHit != null) {
+            if(pressedButtons.isNotEmpty())
+                component.BUS.fire(GuiComponentEvents.MouseDragInEvent())
+            component.BUS.fire(GuiComponentEvents.MouseMoveInEvent())
         }
     }
 

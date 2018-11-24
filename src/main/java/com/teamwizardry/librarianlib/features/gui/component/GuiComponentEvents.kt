@@ -24,18 +24,29 @@ object GuiComponentEvents {
     /** Fired whenever the mouse is moved while a button is being pressed */
     class MouseDragEvent() : Event()
 
-    /** Fired whenever the mouse is moved out of this component (when mouseInside goes from true to false) */
+    /** Fired whenever the mouse is moved out of this component (when mouseHit goes from nonnull to null) */
     class MouseMoveOutEvent() : Event()
+    /** Fired whenever the mouse is moved out of this component (when mouseHit goes from nonnull to null) and one or
+     * more buttons are pressed */
+    class MouseDragOutEvent() : Event()
 
-    /** Fired whenever the mouse is moved into this component (when mouseInside goes from false to true) */
+    /** Fired whenever the mouse is moved into this component (when mouseHit goes from null to nonnull) */
     class MouseMoveInEvent() : Event()
-
-    /** Fired whenever the mouse is moved off this component (when mouseOver goes from true to false) */
-    class MouseEnterEvent() : Event()
+    /** Fired whenever the mouse is moved into this component (when mouseHit goes from null to nonnull) and one or
+     * more buttons are pressed*/
+    class MouseDragInEvent() : Event()
 
     /** Fired whenever the mouse is moved over this component (when mouseOver goes from false to true) */
-    class MouseLeaveEvent() : Event()
+    class MouseEnterEvent() : Event()
+    /** Fired whenever the mouse is moved over this component (when mouseOver goes from false to true) and one or more
+     * buttons are pressed */
+    class MouseDragEnterEvent() : Event()
 
+    /** Fired whenever the mouse is moved off this component (when mouseOver goes from true to false) */
+    class MouseLeaveEvent() : Event()
+    /** Fired whenever the mouse is moved off this component (when mouseOver goes from true to false) and one or more
+    * buttons are pressed */
+    class MouseDragLeaveEvent() : Event()
 
     /** Fired in addition to any of [MouseClickEvent], [MouseClickOutsideEvent], [MouseClickDragInEvent], or [MouseClickDragOutEvent] */
     open class MouseClickAnyEvent(val button: EnumMouseButton) : EventCancelable()
@@ -43,13 +54,10 @@ object GuiComponentEvents {
     /** Fired when the mouse is clicked within the component (mouse goes both down and up inside the component) */
     class MouseClickEvent(button: EnumMouseButton) : MouseClickAnyEvent(button)
 
-    /** Fired when the mouse is clicked outside the component (mouse goes both down and up outside the component) */
     class MouseClickOutsideEvent(button: EnumMouseButton) : MouseClickAnyEvent(button)
 
-    /** Fired when the mouse is clicked within the component (mouse goes down outside and up inside the component) */
     class MouseClickDragInEvent(button: EnumMouseButton) : MouseClickAnyEvent(button)
 
-    /** Fired when the mouse is clicked within the component (mouse goes down inside and up outside the component) */
     class MouseClickDragOutEvent(button: EnumMouseButton) : MouseClickAnyEvent(button)
 
     /** Fired when a key is pressed */
