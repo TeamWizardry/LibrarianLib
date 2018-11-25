@@ -39,6 +39,7 @@ minecraft.apply {
 }
 
 sourceSets["main"].allSource.srcDir("src/example/java")
+sourceSets["main"].allSource.srcDir("src/api/java")
 sourceSets["main"].resources.srcDir("src/example/resources")
 
 val shade by configurations.creating // TODO: investigate contained deps

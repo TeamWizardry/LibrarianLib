@@ -221,8 +221,11 @@ fun <T, R> ICapabilityProvider.ifCap(capability: Capability<T>, facing: EnumFaci
 }
 
 // Relating to NonNullList =============================================================================================
-private class FakeNonnullList<T : Any>(delegate: MutableList<T>) : NonNullList<T>(delegate, null) {
-    constructor(delegate: MutableList<T?>, default: T) : this(delegate.map { it ?: default }.toMutableList())
+private class FakeNonnullList<T : Any>(delegate: MutableList<T>, default: T? = null) : NonNullList<T>(delegate, default) {
+
+    companion object {
+        fun <T: Any> fromNullable(delegate: MutableList<T?>, default: T) = FakeNonnullList(delegate.map { it ?: default }.toMutableList(), default)
+    }
 }
 
 fun <T : Any> Iterable<T>.toNonnullList() = toMutableList().asNonnullList()
@@ -239,7 +242,8 @@ fun DoubleArray.toNonnullList() = toMutableList().asNonnullList()
 fun CharArray.toNonnullList() = toMutableList().asNonnullList()
 fun CharSequence.toNonnullList() = toMutableList().asNonnullList()
 fun <T : Any> MutableList<T>.asNonnullList(): NonNullList<T> = FakeNonnullList(this)
-fun <T : Any> MutableList<T?>.asNonnullList(default: T): NonNullList<T> = FakeNonnullList(this, default)
+fun <T : Any> MutableList<T>.asNonnullListWithDefault(default: T): NonNullList<T> = FakeNonnullList(this, default)
+fun <T : Any> MutableList<T?>.asNonnullList(default: T): NonNullList<T> = FakeNonnullList.fromNullable(this, default)
 
 fun <T : Any> Iterable<T>.nullable() = toMutableList<T?>()
 fun <T : Any> kotlin.Array<T>.nullable() = toMutableList<T?>()
