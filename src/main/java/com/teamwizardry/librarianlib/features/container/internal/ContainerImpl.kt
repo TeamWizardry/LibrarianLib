@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack
 /**
  * Created by TheCodeWarrior
  */
-class ContainerImpl(val container: ContainerBase) : Container() {
+open class ContainerImpl(val container: ContainerBase) : Container() {
 
     override fun canInteractWith(playerIn: EntityPlayer?): Boolean {
         return true
@@ -38,7 +38,7 @@ class ContainerImpl(val container: ContainerBase) : Container() {
         return container.transferStackInSlot(inventorySlots[index] as SlotBase)
     }
 
-    override public fun addSlotToContainer(slotIn: Slot): Slot {
+    public override fun addSlotToContainer(slotIn: Slot): Slot {
         return super.addSlotToContainer(slotIn)
     }
 
