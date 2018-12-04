@@ -16,14 +16,14 @@ class StoredBinding internal constructor(
          */
         val size: Int
 ): ReadWriteParticleBinding {
-    override val contents: DoubleArray = DoubleArray(size)
+    override val value: DoubleArray = DoubleArray(size)
 
     override fun load(particle: DoubleArray) {
-        particle.copyInto(contents, 0, index, index+size)
+        particle.copyInto(value, 0, index, index+size)
     }
 
     override fun store(particle: DoubleArray) {
-        contents.copyInto(particle, index)
+        value.copyInto(particle, index)
     }
 
     /**

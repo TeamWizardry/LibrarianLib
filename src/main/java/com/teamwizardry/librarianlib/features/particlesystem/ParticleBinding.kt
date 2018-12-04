@@ -24,7 +24,7 @@ interface ReadWriteParticleBinding: ParticleBinding, ReadParticleBinding, WriteP
  */
 interface ReadParticleBinding: ParticleBinding {
     /**
-     * Loads the value into [contents].
+     * Loads the value into [value].
      */
     fun load(particle: DoubleArray)
 }
@@ -36,7 +36,7 @@ interface ReadParticleBinding: ParticleBinding {
  */
 interface WriteParticleBinding: ParticleBinding {
     /**
-     * Commits the current [contents] into storage
+     * Commits the current [value] into storage
      */
     fun store(particle: DoubleArray)
 }
@@ -66,11 +66,11 @@ interface WriteParticleBinding: ParticleBinding {
  * @see VariableBinding
  */
 interface ParticleBinding {
-    val contents: DoubleArray
+    val value: DoubleArray
 
     @JvmDefault
     fun require(size: Int) {
-        if (this.contents.size != size)
-            throw IllegalArgumentException("Binding size is incorrect, required: $size, actual: ${this.contents.size}")
+        if (this.value.size != size)
+            throw IllegalArgumentException("Binding size is incorrect, required: $size, actual: ${this.value.size}")
     }
 }

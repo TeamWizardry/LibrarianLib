@@ -27,7 +27,7 @@ class AccelerationUpdateModule(
     override fun update(particle: DoubleArray) {
         velocity.load(particle)
         for(i in 0 until 3) {
-            velocity.contents[i] += acceleration.contents[i]
+            velocity.value[i] += acceleration.value[i]
         }
         velocity.store(particle)
     }

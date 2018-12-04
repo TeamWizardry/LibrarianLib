@@ -1,12 +1,7 @@
 package com.teamwizardry.librarianlib.features.particlesystem.paths
 
-import com.teamwizardry.librarianlib.features.kotlin.div
-import com.teamwizardry.librarianlib.features.kotlin.minus
-import com.teamwizardry.librarianlib.features.kotlin.withY
 import com.teamwizardry.librarianlib.features.particlesystem.ParticlePath
 import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
-import com.teamwizardry.librarianlib.features.particlesystem.bindings.ConstantBinding
-import net.minecraft.util.math.MathHelper
 
 /**
  * Create a Bézier curve from [start] to [end] with [startControl] and [endControl] as relative positions of handles for the curvature
@@ -52,20 +47,20 @@ class BezierPath @JvmOverloads constructor(
             val startControlValue =
                 if (startControl == null) {
                     if (i == 1) 0.0
-                    else ((end.contents[i] - start.contents[i]) / 2.0)
+                    else ((end.value[i] - start.value[i]) / 2.0)
                 } else {
-                    startControl.contents[i]
+                    startControl.value[i]
                 }
             val endControlValue =
                 if (endControl == null) {
                     if (i == 1) 0.0
-                    else ((start.contents[i] - end.contents[i]) / 2.0)
+                    else ((start.value[i] - end.value[i]) / 2.0)
                 } else {
-                    endControl.contents[i]
+                    endControl.value[i]
                 }
-            value[i] = getBezierComponent(t, start.contents[i], end.contents[i],
-                start.contents[i] + startControlValue,
-                start.contents[i] + endControlValue
+            value[i] = getBezierComponent(t, start.value[i], end.value[i],
+                start.value[i] + startControlValue,
+                start.value[i] + endControlValue
             )
         }
     }
@@ -80,23 +75,23 @@ class BezierPath @JvmOverloads constructor(
             val startControlValue =
                 if (startControl == null) {
                     if (i == 1) 0.0
-                    else ((end.contents[i] - start.contents[i]) / 2.0)
+                    else ((end.value[i] - start.value[i]) / 2.0)
                 } else {
-                    startControl.contents[i]
+                    startControl.value[i]
                 }
             val endControlValue =
                 if (endControl == null) {
                     if (i == 1) 0.0
-                    else ((start.contents[i] - end.contents[i]) / 2.0)
+                    else ((start.value[i] - end.value[i]) / 2.0)
                 } else {
-                    endControl.contents[i]
+                    endControl.value[i]
                 }
             value[i] = getBezierComponent(
                 t,
-                start.contents[i],
-                end.contents[i],
-                start.contents[i] + startControlValue,
-                start.contents[i] + endControlValue
+                start.value[i],
+                end.value[i],
+                start.value[i] + startControlValue,
+                start.value[i] + endControlValue
             )
         }
     }

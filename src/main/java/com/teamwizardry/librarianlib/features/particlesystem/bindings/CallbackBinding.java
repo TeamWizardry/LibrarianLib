@@ -14,7 +14,7 @@ public class CallbackBinding implements ReadParticleBinding {
 
     @NotNull
     @Override
-    public double[] getContents() {
+    public double[] getValue() {
         return contents;
     }
 

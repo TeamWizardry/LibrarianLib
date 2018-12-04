@@ -1,8 +1,6 @@
 package com.teamwizardry.librarianlib.features.particlesystem.modules
 
 import com.teamwizardry.librarianlib.features.particlesystem.*
-import com.teamwizardry.librarianlib.features.particlesystem.bindings.ConstantBinding
-import com.teamwizardry.librarianlib.features.particlesystem.bindings.VariableBinding
 import com.teamwizardry.librarianlib.features.utilities.RayHitResult
 import com.teamwizardry.librarianlib.features.utilities.RayWorldCollider
 import java.lang.Math.abs
@@ -113,19 +111,19 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
 
     override fun update(particle: DoubleArray) {
         position.load(particle)
-        posX = position.contents[0]
-        posY = position.contents[1]
-        posZ = position.contents[2]
+        posX = position.value[0]
+        posY = position.value[1]
+        posZ = position.value[2]
 
         velocity.load(particle)
-        velX = velocity.contents[0]
-        velY = velocity.contents[1]
-        velZ = velocity.contents[2]
+        velX = velocity.value[0]
+        velY = velocity.value[1]
+        velZ = velocity.value[2]
 
         // (1. in class docs)
-        previousPosition.contents[0] = posX
-        previousPosition.contents[1] = posY
-        previousPosition.contents[2] = posZ
+        previousPosition.value[0] = posX
+        previousPosition.value[1] = posY
+        previousPosition.value[2] = posZ
         previousPosition.store(particle)
 
         // (2. in class docs)
@@ -148,14 +146,14 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
             posZ += velZ
         }
 
-        position.contents[0] = posX
-        position.contents[1] = posY
-        position.contents[2] = posZ
+        position.value[0] = posX
+        position.value[1] = posY
+        position.value[2] = posZ
         position.store(particle)
 
-        velocity.contents[0] = velX
-        velocity.contents[1] = velY
-        velocity.contents[2] = velZ
+        velocity.value[0] = velX
+        velocity.value[1] = velY
+        velocity.value[2] = velZ
         if (velocity is WriteParticleBinding) {
             velocity.store(particle)
         }

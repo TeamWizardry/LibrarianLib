@@ -50,8 +50,8 @@ class EllipsePath(
 
         for(i in 0 until 3) {
             value[i] = 0.0 +
-                majorAxis.contents[i] * c * majorRadius.contents[0] +
-                minorAxis.contents[i] * s * minorRadius.contents[0]
+                majorAxis.value[i] * c * majorRadius.value[0] +
+                minorAxis.value[i] * s * minorRadius.value[0]
         }
     }
 
@@ -61,8 +61,8 @@ class EllipsePath(
 
         for(i in 0 until 3) {
             value[i] = 0.0 +
-                majorAxis.contents[i] * s * majorRadius.contents[0] +
-                minorAxis.contents[i] * c * minorRadius.contents[0]
+                majorAxis.value[i] * s * majorRadius.value[0] +
+                minorAxis.value[i] * c * minorRadius.value[0]
         }
     }
 }

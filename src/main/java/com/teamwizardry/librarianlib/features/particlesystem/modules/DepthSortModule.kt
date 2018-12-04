@@ -39,9 +39,9 @@ class DepthSortModule(
 
         for(particle in particles) {
             position.load(particle)
-            val distance = (position.contents[0]-eyeX)*normal.x +
-                    (position.contents[1]-eyeY)*normal.y +
-                    (position.contents[2]-eyeZ)*normal.z
+            val distance = (position.value[0]-eyeX)*normal.x +
+                    (position.value[1]-eyeY)*normal.y +
+                    (position.value[2]-eyeZ)*normal.z
             particle[depth.index] = distance
         }
 

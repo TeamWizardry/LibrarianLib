@@ -42,7 +42,7 @@ class PathBinding @JvmOverloads constructor(
         override val easing: Easing = Easing.linear
 ) : AbstractTimeBinding(lifetime, age, timescale, offset, easing) {
 
-    override val contents: DoubleArray = DoubleArray(path.value.size)
+    override val value: DoubleArray = DoubleArray(path.value.size)
 
     init {
         lifetime.require(1)
@@ -54,8 +54,8 @@ class PathBinding @JvmOverloads constructor(
     override fun load(particle: DoubleArray) {
         super.load(particle)
         path.computePosition(particle, time * easing(time.toFloat()))
-        for(i in 0 until contents.size) {
-            contents[i] = origin.contents[i] + (target.contents[i] * path.value[i])
+        for(i in 0 until value.size) {
+            value[i] = origin.value[i] + (target.value[i] * path.value[i])
         }
     }
 }

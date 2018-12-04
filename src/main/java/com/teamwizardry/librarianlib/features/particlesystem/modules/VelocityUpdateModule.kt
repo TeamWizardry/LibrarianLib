@@ -31,11 +31,11 @@ class VelocityUpdateModule(
     override fun update(particle: DoubleArray) {
         position.load(particle)
         if(previousPosition != null) {
-            position.contents.copyInto(previousPosition.contents)
+            position.value.copyInto(previousPosition.value)
         }
         velocity.load(particle)
         for(i in 0 until 3) {
-            position.contents[i] += velocity.contents[i]
+            position.value[i] += velocity.value[i]
         }
         position.store(particle)
     }

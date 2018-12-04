@@ -48,7 +48,7 @@ class EaseBinding @JvmOverloads constructor(
         @JvmField var target: ReadParticleBinding = ConstantBinding(*DoubleArray(bindingSize) { 1.0 })
 ) : AbstractTimeBinding(lifetime, age, timescale, offset, easing) {
 
-    override val contents: DoubleArray = DoubleArray(bindingSize)
+    override val value: DoubleArray = DoubleArray(bindingSize)
 
     init {
         lifetime.require(1)
@@ -62,7 +62,7 @@ class EaseBinding @JvmOverloads constructor(
         origin.load(particle)
         target.load(particle)
         for(i in 0 until bindingSize) {
-            contents[i] = (origin.contents[i] * (1 - time)) + (target.contents[i] * time)
+            value[i] = (origin.value[i] * (1 - time)) + (target.value[i] * time)
         }
     }
 }

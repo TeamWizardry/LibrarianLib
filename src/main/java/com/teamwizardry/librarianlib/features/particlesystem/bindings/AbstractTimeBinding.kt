@@ -33,11 +33,11 @@ abstract class AbstractTimeBinding(
     override fun load(particle: DoubleArray) {
         age.load(particle)
         lifetime.load(particle)
-        var t = age.contents[0] / lifetime.contents[0]
+        var t = age.value[0] / lifetime.value[0]
 
         if (easing != Easing.linear) t = easing(t.toFloat()).toDouble()
-        if (offset != null) t += offset!!.contents[0]
-        if (timescale != null) t *= timescale!!.contents[0]
+        if (offset != null) t += offset!!.value[0]
+        if (timescale != null) t *= timescale!!.value[0]
         if(t != 0.0) {
             t %= 1
             // because 1 % 1 = 0, but it should go up to 1 inclusive. If t is really 0 the above if won't pass

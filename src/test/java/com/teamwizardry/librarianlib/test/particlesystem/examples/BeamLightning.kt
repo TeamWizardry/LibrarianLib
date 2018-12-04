@@ -6,7 +6,6 @@ import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.randomNormal
 import com.teamwizardry.librarianlib.features.kotlin.times
-import com.teamwizardry.librarianlib.features.particlesystem.ParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleSystem
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.CallbackBinding
 import com.teamwizardry.librarianlib.features.particlesystem.modules.GlLineBeamRenderModule
@@ -14,7 +13,6 @@ import com.teamwizardry.librarianlib.features.particlesystem.modules.VelocityUpd
 import net.minecraft.util.math.Vec3d
 import java.awt.Color
 import java.util.concurrent.ThreadLocalRandom
-import kotlin.math.sin
 
 // Creates a lightning effect around the block
 // https://i.imgur.com/OMRSuHP.png
@@ -85,7 +83,7 @@ object BeamLightningSystem: ParticleSystem() {
             alpha = CallbackBinding(1) { particle, contents ->
                 age.load(particle)
                 lifetime.load(particle)
-                contents[0] = 1.0 - (age.contents[0] / lifetime.contents[0])
+                contents[0] = 1.0 - (age.value[0] / lifetime.value[0])
             }
         ))
     }

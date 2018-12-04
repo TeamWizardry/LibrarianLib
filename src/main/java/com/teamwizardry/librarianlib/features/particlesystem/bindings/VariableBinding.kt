@@ -11,7 +11,7 @@ class VariableBinding(
          */
         val size: Int
 ): ReadWriteParticleBinding {
-    override val contents: DoubleArray = DoubleArray(size)
+    override val value: DoubleArray = DoubleArray(size)
 
     override fun load(particle: DoubleArray) {
         //nop

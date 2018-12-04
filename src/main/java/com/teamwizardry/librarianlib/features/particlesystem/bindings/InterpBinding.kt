@@ -45,19 +45,19 @@ class InterpBinding @JvmOverloads constructor(
         override val easing: Easing = Easing.linear
 ) : AbstractTimeBinding(lifetime, age, timescale, offset, easing) {
 
-    override val contents: DoubleArray = DoubleArray(origin.contents.size)
+    override val value: DoubleArray = DoubleArray(origin.value.size)
 
     init {
         lifetime.require(1)
         age.require(1)
-        target.require(origin.contents.size)
+        target.require(origin.value.size)
     }
 
     override fun load(particle: DoubleArray) {
         super.load(particle)
         val multiplier = interp.get(time.toFloat()).toDouble()
-        for(i in 0 until origin.contents.size) {
-            contents[i] = origin.contents[i] + (target.contents[i] * multiplier)
+        for(i in 0 until origin.value.size) {
+            value[i] = origin.value[i] + (target.value[i] * multiplier)
         }
     }
 }

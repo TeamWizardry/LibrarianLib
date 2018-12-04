@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.features.particlesystem.modules
 
 import com.teamwizardry.librarianlib.core.client.ClientTickHandler
-import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.particlesystem.*
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.ConstantBinding
 import net.minecraft.client.Minecraft
@@ -120,9 +119,9 @@ class SpriteRenderModule @JvmOverloads constructor(
             }
             if (facingVector != null) {
                 facingVector.load(particle)
-                val facingX = facingVector.contents[0]
-                val facingY = facingVector.contents[1]
-                val facingZ = facingVector.contents[2]
+                val facingX = facingVector.value[0]
+                val facingY = facingVector.value[1]
+                val facingZ = facingVector.value[2]
                 // x axis, facing • (0, 1, 0)
                 iHatX = -facingZ
                 iHatY = 0.0
@@ -143,7 +142,7 @@ class SpriteRenderModule @JvmOverloads constructor(
             }
 
             size.load(particle)
-            val size = this.size.contents[0] / 2
+            val size = this.size.value[0] / 2
             val localIHatX = iHatX * size
             val localIHatY = iHatY * size
             val localIHatZ = iHatZ * size
@@ -152,22 +151,22 @@ class SpriteRenderModule @JvmOverloads constructor(
             val localJHatZ = jHatZ * size
 
             position.load(particle)
-            var x = position.contents[0]
-            var y = position.contents[1]
-            var z = position.contents[2]
+            var x = position.value[0]
+            var y = position.value[1]
+            var z = position.value[2]
             if(previousPosition != null) {
                 previousPosition.load(particle)
-                x = ClientTickHandler.interpWorldPartialTicks(previousPosition.contents[0], x)
-                y = ClientTickHandler.interpWorldPartialTicks(previousPosition.contents[1], y)
-                z = ClientTickHandler.interpWorldPartialTicks(previousPosition.contents[2], z)
+                x = ClientTickHandler.interpWorldPartialTicks(previousPosition.value[0], x)
+                y = ClientTickHandler.interpWorldPartialTicks(previousPosition.value[1], y)
+                z = ClientTickHandler.interpWorldPartialTicks(previousPosition.value[2], z)
             }
 
             color.load(particle)
             alphaMultiplier.load(particle)
-            val r = color.contents[0].toFloat()
-            val g = color.contents[1].toFloat()
-            val b = color.contents[2].toFloat()
-            val a = color.contents[3].toFloat() * alphaMultiplier.contents[0].toFloat()
+            val r = color.value[0].toFloat()
+            val g = color.value[1].toFloat()
+            val b = color.value[2].toFloat()
+            val a = color.value[3].toFloat() * alphaMultiplier.value[0].toFloat()
 
             vb.pos(x - localIHatX - localJHatX, y - localIHatY - localJHatY, z - localIHatZ - localJHatZ).tex(0.0, 0.0).color(r, g, b, a).endVertex()
             vb.pos(x + localIHatX - localJHatX, y + localIHatY - localJHatY, z + localIHatZ - localJHatZ).tex(1.0, 0.0).color(r, g, b, a).endVertex()

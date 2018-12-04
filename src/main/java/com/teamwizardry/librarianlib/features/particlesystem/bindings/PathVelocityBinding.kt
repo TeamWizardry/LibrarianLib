@@ -50,7 +50,7 @@ class PathVelocityBinding(
         override val easing: Easing = Easing.linear
 ): AbstractTimeBinding(lifetime, age, timescale, offset, easing) {
 
-    override var contents: DoubleArray = DoubleArray(path.value.size)
+    override var value: DoubleArray = DoubleArray(path.value.size)
 
     init {
         lifetime.require(1)
@@ -62,6 +62,6 @@ class PathVelocityBinding(
     override fun load(particle: DoubleArray) {
         super.load(particle)
         path.computeTangent(particle, time * easing(time.toFloat()))
-        path.value.copyInto(contents)
+        path.value.copyInto(value)
     }
 }
