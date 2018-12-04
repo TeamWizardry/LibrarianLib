@@ -10,6 +10,7 @@ import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.awt.Color
 import java.awt.image.BufferedImage
+import java.io.FileNotFoundException
 import java.io.IOException
 import java.lang.ref.WeakReference
 import java.util.*
@@ -95,19 +96,26 @@ class Texture(
      * Loads the sprite data from disk
      */
     fun load() {
-        val pngSizeInfo = PngSizeInfo.makeFromResource(Minecraft().resourceManager.getResource(loc))
-        var pngWidth = pngSizeInfo.pngWidth
-        var pngHeight = pngSizeInfo.pngHeight
+        var pngWidth: Int
+        var pngHeight: Int
+        try {
+            val pngSizeInfo = PngSizeInfo.makeFromResource(Minecraft().resourceManager.getResource(loc))
+            pngWidth = pngSizeInfo.pngWidth
+            pngHeight = pngSizeInfo.pngHeight
 
-        if (width > 0 && height <= 0) {
-            pngWidth = width
-            pngHeight = pngHeight * width / pngWidth
-        } else if (width <= 0 && height > 0) {
-            pngHeight = height
-            pngWidth = pngWidth * height / pngHeight
-        } else if (width > 0 && height > 0) {
-            pngWidth = width
-            pngHeight = height
+            if (width > 0 && height <= 0) {
+                pngWidth = width
+                pngHeight = pngHeight * width / pngWidth
+            } else if (width <= 0 && height > 0) {
+                pngHeight = height
+                pngWidth = pngWidth * height / pngHeight
+            } else if (width > 0 && height > 0) {
+                pngWidth = width
+                pngHeight = height
+            }
+        } catch (e: FileNotFoundException) {
+            pngWidth = 16
+            pngHeight = 16
         }
 
         this.width = pngWidth
@@ -115,8 +123,8 @@ class Texture(
         this.section = null
         try {
             this.section = Minecraft().resourceManager.getResource(loc).getMetadata("spritesheet")
-        } catch (e: IOException) {
-            e.printStackTrace()
+        } catch (e: FileNotFoundException) {
+            // nop
         }
         readSection()
         loadImageData()
@@ -148,15 +156,19 @@ class Texture(
     }
 
     fun loadImageData() {
-        val image = TextureUtil.readBufferedImage(Minecraft().resourceManager.getResource(loc).inputStream)
-        this.image = image
-        this.sprites.forEach { _, sprite ->
-            sprite.loadImage(image)
-        }
-        this.colors.forEach { _, color ->
-            val x = (color.u.toDouble() / this.width * image.width).toInt()
-            val y = (color.v.toDouble() / this.height * image.height).toInt()
-            color.color.replaceColor(Color(image.getRGB(x, y)))
+        try {
+            val image = TextureUtil.readBufferedImage(Minecraft().resourceManager.getResource(loc).inputStream)
+            this.image = image
+            this.sprites.forEach { _, sprite ->
+                sprite.loadImage(image)
+            }
+            this.colors.forEach { _, color ->
+                val x = (color.u.toDouble() / this.width * image.width).toInt()
+                val y = (color.v.toDouble() / this.height * image.height).toInt()
+                color.color.replaceColor(Color(image.getRGB(x, y)))
+            }
+        } catch (e: FileNotFoundException) {
+            // nop
         }
     }
 

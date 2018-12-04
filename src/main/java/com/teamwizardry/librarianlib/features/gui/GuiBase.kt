@@ -26,7 +26,7 @@ open class GuiBase : GuiScreen(), CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Client
     val impl = LibGuiImpl(
-        { this.width }, { this.height }, { this.adjustGuiSize() }
+        { this.width }, { this.height }
     )
 
     val main: GuiComponent by impl::main.delegate
@@ -35,16 +35,6 @@ open class GuiBase : GuiScreen(), CoroutineScope {
 
     override fun initGui() {
         impl.initGui()
-    }
-
-    /**
-     * Try to fit the gui in a [width] by [height] area, setting [guiWidth] and [guiHeight] to whatever size you manage
-     * to clamp the GUI to.
-     *
-     * Return true from this function to cancel any auto resizing
-     */
-    open fun adjustGuiSize(): Boolean {
-        return false
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {

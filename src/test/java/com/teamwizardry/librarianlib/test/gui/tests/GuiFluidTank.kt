@@ -30,7 +30,7 @@ open class GuiFluidTank(inventorySlotsIn: FluidTankContainer) : GuiContainerBase
     init {
         val te = inventorySlotsIn.invBlock.inventory as TEFluidTank
         val bg = ComponentSprite(BG, 0, 0)
-        mainComponents.add(bg)
+        main.add(bg)
 
         val inventory = BaseLayouts.player(inventorySlotsIn.invPlayer)
         bg.add(inventory.root)

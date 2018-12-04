@@ -30,7 +30,7 @@ open class GuiPoweredMachine(inventorySlotsIn: PoweredMachineContainer) : GuiCon
     init {
         val te = inventorySlotsIn.invBlock.inventory as TEPoweredMachine
         val bg = ComponentSprite(BG, 0, 0)
-        mainComponents.add(bg)
+        main.add(bg)
 
         val inventory = BaseLayouts.player(inventorySlotsIn.invPlayer)
         bg.add(inventory.root)

@@ -67,7 +67,8 @@ class GuiContainerTest(container: ContainerTest) : GuiContainerBase(container, 1
 
     init {
         val b = ComponentSprite(bg, 0, 0)
-        mainComponents.add(b)
+        main.add(b)
+        main.size = vec(197, 166)
 
         val layout = BaseLayouts.player(container.invPlayer)
         b.add(layout.root)

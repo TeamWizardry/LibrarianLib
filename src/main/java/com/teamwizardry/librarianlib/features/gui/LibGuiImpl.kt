@@ -20,9 +20,7 @@ import org.lwjgl.input.Mouse
 import java.awt.Color
 import java.io.IOException
 
-open class LibGuiImpl(
-    protected val guiWidth: () -> Int, protected val guiHeight: () -> Int, protected val adjustGuiSize: () -> Boolean
-    ) {
+open class LibGuiImpl(protected val guiWidth: () -> Int, protected val guiHeight: () -> Int) {
     val root: RootComponent = RootComponent()
     val main: GuiComponent = object: GuiComponent(0, 0) {
         override var pos: Vec2d
