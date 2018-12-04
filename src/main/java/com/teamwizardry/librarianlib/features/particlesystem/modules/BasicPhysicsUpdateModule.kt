@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.particlesystem.modules
 import com.teamwizardry.librarianlib.features.particlesystem.*
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.VariableBinding
+import com.teamwizardry.librarianlib.features.utilities.RayHitResult
 import com.teamwizardry.librarianlib.features.utilities.RayWorldCollider
 import java.lang.Math.abs
 
@@ -85,13 +86,13 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
         @JvmField var friction: Float = 0.0f,
         /**
          * The damping, or "drag" of the particle. Every tick the velocity will be reduced by this fraction. Setting
-         * the damping to the default, 0.01, means that the particle will reach 10% velocity in just over 10 seconds
+         * the damping to 0.01 means that the particle will reach 10% velocity in just over 10 seconds
          * (0.99^229 ≈ 0.1, log.99(0.1) ≈ 229).
          * Multiplies particle speed.
          *
          * Friction in the air basically.
          *
-         * 0.1 is a good number to start with.
+         * 0.01 is a good number to start with.
          */
         @JvmField var damping: Float = 0.0f
 ) : ParticleUpdateModule {
@@ -107,19 +108,25 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
     private var velX: Double = 0.0
     private var velY: Double = 0.0
     private var velZ: Double = 0.0
+    private val rayHit = RayHitResult()
+    private lateinit var collider: RayWorldCollider
 
     override fun update(particle: DoubleArray) {
-        posX = position[particle, 0]
-        posY = position[particle, 1]
-        posZ = position[particle, 2]
-        velX = velocity[particle, 0]
-        velY = velocity[particle, 1]
-        velZ = velocity[particle, 2]
+        position.load(particle)
+        posX = position.contents[0]
+        posY = position.contents[1]
+        posZ = position.contents[2]
+
+        velocity.load(particle)
+        velX = velocity.contents[0]
+        velY = velocity.contents[1]
+        velZ = velocity.contents[2]
 
         // (1. in class docs)
-        previousPosition[particle, 0] = posX
-        previousPosition[particle, 1] = posY
-        previousPosition[particle, 2] = posZ
+        previousPosition.contents[0] = posX
+        previousPosition.contents[1] = posY
+        previousPosition.contents[2] = posZ
+        previousPosition.store(particle)
 
         // (2. in class docs)
         dampen()
@@ -127,23 +134,30 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
         // (3. in class docs)
         accelerate()
 
-        // (4. in class docs)
-        collide()
+        if(enableCollision && RayWorldCollider.client?.also { collider = it } != null) {
+            // (4. in class docs)
+            collide()
 
-        // (5. in class docs)
-        val rayWorldCollider = RayWorldCollider.client
-        rayWorldCollider?.cacheResetTimer = 1000
-        if (rayWorldCollider != null && rayWorldCollider.collisionFraction < 1.0) {
-            collide(velocityMultiplier = 1 - rayWorldCollider.collisionFraction)
+            // (5. in class docs)
+            if (rayHit.collisionFraction < 1.0) {
+                collide(velocityMultiplier = 1 - rayHit.collisionFraction)
+            }
+        } else {
+            posX += velX
+            posY += velY
+            posZ += velZ
         }
 
-        position[particle, 0] = posX
-        position[particle, 1] = posY
-        position[particle, 2] = posZ
+        position.contents[0] = posX
+        position.contents[1] = posY
+        position.contents[2] = posZ
+        position.store(particle)
+
+        velocity.contents[0] = velX
+        velocity.contents[1] = velY
+        velocity.contents[2] = velZ
         if (velocity is WriteParticleBinding) {
-            velocity[particle, 0] = velX
-            velocity[particle, 1] = velY
-            velocity[particle, 2] = velZ
+            velocity.store(particle)
         }
     }
 
@@ -158,36 +172,25 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
     }
 
     private fun collide(velocityMultiplier: Double = 1.0) {
-
-        val rayWorldCollider = if (enableCollision) RayWorldCollider.client else null
-
-        rayWorldCollider?.cacheResetTimer = 10
-
         // (4.1 in class docs)
-        rayWorldCollider?.collide(
+        collider.collide(rayHit,
                 posX, posY, posZ,
                 velX * velocityMultiplier, velY * velocityMultiplier, velZ * velocityMultiplier
         )
 
         // (4.2 in class docs)
-        posX += velX * (rayWorldCollider?.collisionFraction ?: 1.0)
-        posY += velY * (rayWorldCollider?.collisionFraction ?: 1.0)
-        posZ += velZ * (rayWorldCollider?.collisionFraction ?: 1.0)
+        posX += velX * rayHit.collisionFraction
+        posY += velY * rayHit.collisionFraction
+        posZ += velZ * rayHit.collisionFraction
 
         // (4.3 in class docs)
-        if (rayWorldCollider != null && rayWorldCollider.collisionFraction >= 1.0) {
+        if (rayHit.collisionFraction >= 1.0) {
             return
         }
 
-        var axisX = 0.0
-        var axisZ = 0.0
-        var axisY = 0.0
-
-        if (rayWorldCollider != null) {
-            axisX = abs(rayWorldCollider.collisionNormalX)
-            axisY = abs(rayWorldCollider.collisionNormalY)
-            axisZ = abs(rayWorldCollider.collisionNormalZ)
-        }
+        val axisX = abs(rayHit.collisionNormalX)
+        val axisY = abs(rayHit.collisionNormalY)
+        val axisZ = abs(rayHit.collisionNormalZ)
 
         // (4.4 in class docs)
         velX *= 1 - axisX * (1.0 + bounciness)

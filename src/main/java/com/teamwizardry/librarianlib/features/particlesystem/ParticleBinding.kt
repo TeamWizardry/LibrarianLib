@@ -24,12 +24,9 @@ interface ReadWriteParticleBinding: ParticleBinding, ReadParticleBinding, WriteP
  */
 interface ReadParticleBinding: ParticleBinding {
     /**
-     * Returns the value at [index] given the passed [particle].
-     *
-     * @param particle The particle array
-     * @param index The index to be read
+     * Loads the value into [contents].
      */
-    operator fun get(particle: DoubleArray, index: Int): Double
+    fun load(particle: DoubleArray)
 }
 
 /**
@@ -39,13 +36,9 @@ interface ReadParticleBinding: ParticleBinding {
  */
 interface WriteParticleBinding: ParticleBinding {
     /**
-     * Sets the value at [index] to [value] given the passed [particle].
-     *
-     * @param particle The particle array
-     * @param index The index to be written to
-     * @param value The value to be written
+     * Commits the current [contents] into storage
      */
-    operator fun set(particle: DoubleArray, index: Int, value: Double)
+    fun store(particle: DoubleArray)
 }
 
 /**
@@ -73,19 +66,11 @@ interface WriteParticleBinding: ParticleBinding {
  * @see VariableBinding
  */
 interface ParticleBinding {
-    /**
-     * The number of valid indices in this binding (0 <= i < size), or -1 if it is unbounded.
-     */
-    val size: Int
-}
+    val contents: DoubleArray
 
-/**
- * Asserts that the binding's size must be at least [size], or it must be indefinite.
- *
- * @param size the minimum size required
- * @throws IllegalArgumentException if the binding is too small
- */
-fun ParticleBinding.require(size: Int) {
-    if (this.size != -1 && this.size < size)
-        throw IllegalArgumentException("Binding size is too small, required: $size, passed: ${this.size}")
+    @JvmDefault
+    fun require(size: Int) {
+        if (this.contents.size != size)
+            throw IllegalArgumentException("Binding size is incorrect, required: $size, actual: ${this.contents.size}")
+    }
 }

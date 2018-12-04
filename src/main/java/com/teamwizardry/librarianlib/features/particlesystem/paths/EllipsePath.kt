@@ -2,7 +2,6 @@ package com.teamwizardry.librarianlib.features.particlesystem.paths
 
 import com.teamwizardry.librarianlib.features.particlesystem.ParticlePath
 import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
-import com.teamwizardry.librarianlib.features.particlesystem.require
 import net.minecraft.util.math.MathHelper
 
 /**
@@ -36,7 +35,7 @@ class EllipsePath(
         @JvmField val minorRadius: ReadParticleBinding
 ): ParticlePath {
 
-    override fun getSize(): Int = 3
+    override val value: DoubleArray = DoubleArray(3)
 
     init {
         majorAxis.require(3)
@@ -45,21 +44,25 @@ class EllipsePath(
         minorRadius.require(1)
     }
 
-    override fun getPosition(particle: DoubleArray, t: Double, index: Int): Double {
+    override fun computePosition(particle: DoubleArray, t: Double) {
         val c = MathHelper.cos((t * 2 * Math.PI).toFloat())
         val s = MathHelper.sin((t * 2 * Math.PI).toFloat())
 
-        return 0.0 +
-                majorAxis[particle, index] * c * majorRadius[particle, 0] +
-                minorAxis[particle, index] * s * minorRadius[particle, 0]
+        for(i in 0 until 3) {
+            value[i] = 0.0 +
+                majorAxis.contents[i] * c * majorRadius.contents[0] +
+                minorAxis.contents[i] * s * minorRadius.contents[0]
+        }
     }
 
-    override fun getTangent(particle: DoubleArray, t: Double, index: Int): Double {
+    override fun computeTangent(particle: DoubleArray, t: Double) {
         val c = MathHelper.cos((t * 2 * Math.PI).toFloat())
         val s = MathHelper.sin((t * 2 * Math.PI).toFloat())
 
-        return 0.0 +
-                majorAxis[particle, index] * s +
-                minorAxis[particle, index] * c
+        for(i in 0 until 3) {
+            value[i] = 0.0 +
+                majorAxis.contents[i] * s * majorRadius.contents[0] +
+                minorAxis.contents[i] * c * minorRadius.contents[0]
+        }
     }
 }

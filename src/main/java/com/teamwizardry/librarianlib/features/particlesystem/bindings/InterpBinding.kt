@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.math.interpolate.InterpFunction
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleSystem
 import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
-import com.teamwizardry.librarianlib.features.particlesystem.require
 
 /**
  * A 1D binding that generates its value by passing its normalized age (0–1) into an InterpFunction<Float>
@@ -35,30 +34,30 @@ class InterpBinding @JvmOverloads constructor(
         /**
          * The start value to interpolate from.
          */
-        @JvmField var origin: ReadParticleBinding? = null,
+        @JvmField val origin: ReadParticleBinding = ConstantBinding(0.0),
         /**
          * The end value to interpolate to.
          */
-        @JvmField var target: ReadParticleBinding? = null,
+        @JvmField val target: ReadParticleBinding = ConstantBinding(1.0),
         /**
          * The easing to use when generating values for the binding.
          */
         override val easing: Easing = Easing.linear
 ) : AbstractTimeBinding(lifetime, age, timescale, offset, easing) {
 
+    override val contents: DoubleArray = DoubleArray(origin.contents.size)
+
     init {
         lifetime.require(1)
         age.require(1)
-        if (origin == null) {
-            origin = ConstantBinding(0.0)
-        }
-        if (target == null)
-            target = ConstantBinding(1.0)
+        target.require(origin.contents.size)
     }
 
-    override val size = 1
-
-    override fun get(particle: DoubleArray, index: Int): Double {
-        return origin!![particle, index] + (target!![particle, index] * interp.get(getTime(particle).toFloat()).toDouble())
+    override fun load(particle: DoubleArray) {
+        super.load(particle)
+        val multiplier = interp.get(time.toFloat()).toDouble()
+        for(i in 0 until origin.contents.size) {
+            contents[i] = origin.contents[i] + (target.contents[i] * multiplier)
+        }
     }
 }

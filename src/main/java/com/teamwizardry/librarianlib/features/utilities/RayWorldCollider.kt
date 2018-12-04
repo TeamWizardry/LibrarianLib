@@ -62,47 +62,6 @@ class RayWorldCollider private constructor(world: World) {
     var cacheResetTimer: Int = 10
 
     /**
-     * The fraction along the raytrace that an impact occured, or 1.0 if no impact occured
-     */
-    @JvmField
-    var collisionFraction: Double = 0.0
-
-    /**
-     * The X component of the impacted face's normal, or 0.0 if no impact occurred
-     */
-    @JvmField
-    var collisionNormalX: Double = 0.0
-    /**
-     * The Y component of the impacted face's normal, or 0.0 if no impact occurred
-     */
-    @JvmField
-    var collisionNormalY: Double = 0.0
-    /**
-     * The Z component of the impacted face's normal, or 0.0 if no impact occurred
-     */
-    @JvmField
-    var collisionNormalZ: Double = 0.0
-
-    /**
-     * The X component of the impacted block's position, or 0.0 if no impact occurred. Test if [collisionFraction] is
-     * less than 1.0 to tell between a collision at (0,0,0) and no collision.
-     */
-    @JvmField
-    var collisionBlockX: Int = 0
-    /**
-     * The Y component of the impacted block's position, or 0.0 if no impact occurred. Test if [collisionFraction] is
-     * less than 1.0 to tell between a collision at (0,0,0) and no collision.
-     */
-    @JvmField
-    var collisionBlockY: Int = 0
-    /**
-     * The Z component of the impacted block's position, or 0.0 if no impact occurred. Test if [collisionFraction] is
-     * less than 1.0 to tell between a collision at (0,0,0) and no collision.
-     */
-    @JvmField
-    var collisionBlockZ: Int = 0
-
-    /**
      * Request that the cache be cleared. Use this sparingly as it can negatively impact performance.
      *
      * This method _immediately_ clears the cache, meaning calling it repeatedly between [collide] calls can severely
@@ -130,6 +89,7 @@ class RayWorldCollider private constructor(world: World) {
      */
     @JvmOverloads
     fun collide(
+            result: RayHitResult,
             posX: Double,
             posY: Double,
             posZ: Double,
@@ -138,13 +98,13 @@ class RayWorldCollider private constructor(world: World) {
             velZ: Double,
             maxBounds: Double = 5.0
     ) {
-        collisionFraction = 1.0
-        collisionNormalX = 0.0
-        collisionNormalY = 0.0
-        collisionNormalZ = 0.0
-        collisionBlockX = 0
-        collisionBlockY = 0
-        collisionBlockZ = 0
+        result.collisionFraction = 1.0
+        result.collisionNormalX = 0.0
+        result.collisionNormalY = 0.0
+        result.collisionNormalZ = 0.0
+        result.collisionBlockX = 0
+        result.collisionBlockY = 0
+        result.collisionBlockZ = 0
 
         @Suppress("NAME_SHADOWING")
         val velX = min(maxBounds, max(-maxBounds, velX))
@@ -169,7 +129,7 @@ class RayWorldCollider private constructor(world: World) {
                 for (z in minZ..maxZ) {
                     val list = getAABBs(x, y, z)
                     for (i in 0 until list.size) {
-                        collide(list[i],
+                        collide(result, list[i],
                                 x, y, z,
                                 posX, posY, posZ,
                                 invVelX, invVelY, invVelZ
@@ -181,6 +141,7 @@ class RayWorldCollider private constructor(world: World) {
     }
 
     private fun collide(
+            result: RayHitResult,
             aabb: AxisAlignedBB,
             blockX: Int,
             blockY: Int,
@@ -210,14 +171,14 @@ class RayWorldCollider private constructor(world: World) {
         tmin = max(tmin, min(tz1, tz2))
         tmax = min(tmax, max(tz1, tz2))
 
-        if (tmax >= tmin && tmax >= 0 && tmin >= 0 && tmin < collisionFraction) {
-            collisionNormalX = if (tmin == tx1) -1.0 else if (tmin == tx2) 1.0 else 0.0
-            collisionNormalY = if (tmin == ty1) -1.0 else if (tmin == ty2) 1.0 else 0.0
-            collisionNormalZ = if (tmin == tz1) -1.0 else if (tmin == tz2) 1.0 else 0.0
-            collisionBlockX = blockX
-            collisionBlockY = blockY
-            collisionBlockZ = blockZ
-            collisionFraction = tmin
+        if (tmax >= tmin && tmax >= 0 && tmin >= 0 && tmin < result.collisionFraction) {
+            result.collisionNormalX = if (tmin == tx1) -1.0 else if (tmin == tx2) 1.0 else 0.0
+            result.collisionNormalY = if (tmin == ty1) -1.0 else if (tmin == ty2) 1.0 else 0.0
+            result.collisionNormalZ = if (tmin == tz1) -1.0 else if (tmin == tz2) 1.0 else 0.0
+            result.collisionBlockX = blockX
+            result.collisionBlockY = blockY
+            result.collisionBlockZ = blockZ
+            result.collisionFraction = tmin
             return
         }
     }
@@ -233,10 +194,7 @@ class RayWorldCollider private constructor(world: World) {
         cache[mutablePos.toLong()]?.let { return it }
 
         val list: List<AxisAlignedBB>
-        if (!world.isBlockLoaded(mutablePos)
-                || mutablePos.x < 0 || mutablePos.x > world.actualHeight
-                || mutablePos.y < 0 || mutablePos.y > world.actualHeight
-                || mutablePos.z < 0 || mutablePos.z > world.actualHeight) {
+        if (!world.isBlockLoaded(mutablePos) || mutablePos.y < 0 || mutablePos.y > world.actualHeight) {
             list = emptyList()
         } else {
             val blockstate = world.getBlockState(mutablePos)
@@ -299,6 +257,49 @@ class RayWorldCollider private constructor(world: World) {
     }
 }
 
+class RayHitResult {
+    /**
+     * The fraction along the raytrace that an impact occured, or 1.0 if no impact occured
+     */
+    @JvmField
+    var collisionFraction: Double = 0.0
+
+    /**
+     * The X component of the impacted face's normal, or 0.0 if no impact occurred
+     */
+    @JvmField
+    var collisionNormalX: Double = 0.0
+    /**
+     * The Y component of the impacted face's normal, or 0.0 if no impact occurred
+     */
+    @JvmField
+    var collisionNormalY: Double = 0.0
+    /**
+     * The Z component of the impacted face's normal, or 0.0 if no impact occurred
+     */
+    @JvmField
+    var collisionNormalZ: Double = 0.0
+
+    /**
+     * The X component of the impacted block's position, or 0.0 if no impact occurred. Test if [collisionFraction] is
+     * less than 1.0 to tell between a collision at (0,0,0) and no collision.
+     */
+    @JvmField
+    var collisionBlockX: Int = 0
+    /**
+     * The Y component of the impacted block's position, or 0.0 if no impact occurred. Test if [collisionFraction] is
+     * less than 1.0 to tell between a collision at (0,0,0) and no collision.
+     */
+    @JvmField
+    var collisionBlockY: Int = 0
+    /**
+     * The Z component of the impacted block's position, or 0.0 if no impact occurred. Test if [collisionFraction] is
+     * less than 1.0 to tell between a collision at (0,0,0) and no collision.
+     */
+    @JvmField
+    var collisionBlockZ: Int = 0
+}
+
 @SideOnly(Side.CLIENT)
 @Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
 private object ClientRayWorldCollider {
@@ -321,3 +322,39 @@ private object ClientRayWorldCollider {
         return cache
     }
 }
+
+/*
+var fastAirCheck = true
+fun blah() {
+    val isAir = false
+    if(fastAirCheck) {
+        try {
+            isAir = this.isAir(x, y, z)
+        } catch(e: Exception) {
+            fastAirCheck = false
+        }
+    }
+    if(isAir) {
+        list = emptyList()
+    } else {
+        val blockState = world.getBlockState(...)
+        if(blockState.block == Air || materialAirStuff || whatever)
+        list = ArrayList(1)
+        // add from blockstate and whatnot.
+    }
+}
+private fun isAir(x: Int, y: Int, z: Int): Boolean {
+    val chunk = world.chunkProvider.getLoadedChunk(x shr 4, z shr 4) ?: return true
+    val storageArrays = chunk.storageArrays_mh
+    if(y < 0 || y shr 4 >= storageArrays.size) return true
+    val storage = storageArrays[y shr 4]
+
+    if(storage == Chunk.NULL_BLOCK_STORAGE) return true
+    val data = storage.data_mh
+    val index = (y and 0xf shl 8) or (z and 0xf shl 4) or (x and 0xf)
+    return data.storage_mh.getAt(index) == 0
+}
+val Chunk.storageArrays_mh by MethodHandleHelper.delegateForReadOnly<Chunk, Array<ExtendedBlockStorage>>(Chunk::class.java, "field_78725_b", "renderPosX")
+val ExtendedBlockStorage.data_mh by MethodHandleHelper.delegateForReadOnly<ExtendedBlockStorage, BlockStateContainer>(ExtendedBlockStorage::class.java, "field_78725_b", "renderPosX")
+val BlockStateContainer.storage_mh by MethodHandleHelper.delegateForReadOnly<BlockStateContainer, BitArray>(BlockStateContainer::class.java, "field_78725_b", "renderPosX")
+ */

@@ -4,27 +4,27 @@ import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 import org.jetbrains.annotations.NotNull;
 
 public class CallbackBinding implements ReadParticleBinding {
-    private final int size;
+    private final double[] contents;
     private final Callback callback;
 
     public CallbackBinding(int size, Callback callback) {
-        this.size = size;
+        this.contents = new double[size];
         this.callback = callback;
     }
 
+    @NotNull
     @Override
-    public int getSize() {
-        return size;
+    public double[] getContents() {
+        return contents;
     }
 
-
     @Override
-    public double get(@NotNull double[] particle, int index) {
-        return callback.call(particle, index);
+    public void load(@NotNull double[] particle) {
+        callback.call(particle, contents);
     }
 
     @FunctionalInterface
     public interface Callback {
-        double call(@NotNull double[] particle, int index);
+        void call(@NotNull double[] particle, @NotNull double[] contents);
     }
 }
