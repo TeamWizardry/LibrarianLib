@@ -37,8 +37,12 @@ object AccelerateAwaySystem: ParticleSystem() {
         val velocity = bind(3)
         val origin = bind(3)
 
-        updateModules.add(AccelerationUpdateModule(velocity, CallbackBinding(3) { particle, i ->
-            (position[particle, i] - origin[particle, i])
+        updateModules.add(AccelerationUpdateModule(velocity, CallbackBinding(3) { particle, contents ->
+            position.load(particle)
+            origin.load(particle)
+            for(i in 0 until 3) {
+                contents[i] = position.contents[i] - origin.contents[i]
+            }
         }))
         updateModules.add(VelocityUpdateModule(position, velocity, previousPosition))
 

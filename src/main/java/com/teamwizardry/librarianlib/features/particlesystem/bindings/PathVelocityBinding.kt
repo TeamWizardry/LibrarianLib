@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.features.particlesystem.bindings
 
+import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.particlesystem.ParticlePath
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleSystem
 import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
-import com.teamwizardry.librarianlib.features.particlesystem.require
 
 /**
  * A 3D binding that reads tangent values from a ParticlePath.
@@ -21,21 +21,21 @@ class PathVelocityBinding(
         /**
          * The lifetime binding for the particle. Generally [ParticleSystem.lifetime]
          */
-        @JvmField val lifetime: ReadParticleBinding,
+        override val lifetime: ReadParticleBinding,
         /**
          * The age binding for the particle. Generally [ParticleSystem.age]
          */
-        @JvmField val age: ReadParticleBinding,
+        override val age: ReadParticleBinding,
         /**
          * The multiplier for the normalized age. If this value is > 1 the movement will loop, and if this value is < 1
          * the movement will end before the end of the path.
          */
-        @JvmField val timescale: ReadParticleBinding?,
+        override val timescale: ReadParticleBinding?,
         /**
          * The time offset for the normalized age. Applied before the [timescale], so regardless of [timescale]'s value,
          * if the offset is 0.5, the animation will begin halfway along the path
          */
-        @JvmField val offset: ReadParticleBinding?,
+        override val offset: ReadParticleBinding?,
         /**
          * The speed multiplier for the returned velocity.
          */
@@ -43,8 +43,15 @@ class PathVelocityBinding(
         /**
          * The path object to use for the tangent vectors.
          */
-        @JvmField val path: ParticlePath
-): ReadParticleBinding {
+        @JvmField val path: ParticlePath,
+        /**
+         * The easing to use when generating values for the binding.
+         */
+        override val easing: Easing = Easing.linear
+): AbstractTimeBinding(lifetime, age, timescale, offset, easing) {
+
+    override var contents: DoubleArray = DoubleArray(path.value.size)
+
     init {
         lifetime.require(1)
         age.require(1)
@@ -52,13 +59,9 @@ class PathVelocityBinding(
         offset?.require(1)
     }
 
-    override val size: Int = 3
-
-    override fun get(particle: DoubleArray, index: Int): Double {
-        var time = age[particle, 0]/lifetime[particle, 0]
-        if(offset != null) time += offset[particle, 0]
-        if(timescale != null) time *= timescale[particle, 0]
-        time %= 1
-        return path.getTangent(particle, time, index)
+    override fun load(particle: DoubleArray) {
+        super.load(particle)
+        path.computeTangent(particle, time * easing(time.toFloat()))
+        path.value.copyInto(contents)
     }
 }

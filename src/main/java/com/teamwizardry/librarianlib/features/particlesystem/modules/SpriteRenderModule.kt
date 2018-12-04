@@ -119,9 +119,10 @@ class SpriteRenderModule @JvmOverloads constructor(
                 prepModules[i].update(particle)
             }
             if (facingVector != null) {
-                val facingX = facingVector[particle, 0]
-                val facingY = facingVector[particle, 1]
-                val facingZ = facingVector[particle, 2]
+                facingVector.load(particle)
+                val facingX = facingVector.contents[0]
+                val facingY = facingVector.contents[1]
+                val facingZ = facingVector.contents[2]
                 // x axis, facing • (0, 1, 0)
                 iHatX = -facingZ
                 iHatY = 0.0
@@ -141,7 +142,8 @@ class SpriteRenderModule @JvmOverloads constructor(
                 jHatZ *= -jHatInvLength
             }
 
-            val size = this.size[particle, 0] / 2
+            size.load(particle)
+            val size = this.size.contents[0] / 2
             val localIHatX = iHatX * size
             val localIHatY = iHatY * size
             val localIHatZ = iHatZ * size
@@ -149,17 +151,23 @@ class SpriteRenderModule @JvmOverloads constructor(
             val localJHatY = jHatY * size
             val localJHatZ = jHatZ * size
 
-            var x = position[particle, 0]
-            previousPosition?.let { x = ClientTickHandler.interpWorldPartialTicks(it[particle, 0], x) }
-            var y = position[particle, 1]
-            previousPosition?.let { y = ClientTickHandler.interpWorldPartialTicks(it[particle, 1], y) }
-            var z = position[particle, 2]
-            previousPosition?.let { z = ClientTickHandler.interpWorldPartialTicks(it[particle, 2], z) }
+            position.load(particle)
+            var x = position.contents[0]
+            var y = position.contents[1]
+            var z = position.contents[2]
+            if(previousPosition != null) {
+                previousPosition.load(particle)
+                x = ClientTickHandler.interpWorldPartialTicks(previousPosition.contents[0], x)
+                y = ClientTickHandler.interpWorldPartialTicks(previousPosition.contents[1], y)
+                z = ClientTickHandler.interpWorldPartialTicks(previousPosition.contents[2], z)
+            }
 
-            val r = color[particle, 0].toFloat()
-            val g = color[particle, 1].toFloat()
-            val b = color[particle, 2].toFloat()
-            val a = color[particle, 3].toFloat() * alphaMultiplier[particle, 0].toFloat()
+            color.load(particle)
+            alphaMultiplier.load(particle)
+            val r = color.contents[0].toFloat()
+            val g = color.contents[1].toFloat()
+            val b = color.contents[2].toFloat()
+            val a = color.contents[3].toFloat() * alphaMultiplier.contents[0].toFloat()
 
             vb.pos(x - localIHatX - localJHatX, y - localIHatY - localJHatY, z - localIHatZ - localJHatZ).tex(0.0, 0.0).color(r, g, b, a).endVertex()
             vb.pos(x + localIHatX - localJHatX, y + localIHatY - localJHatY, z + localIHatZ - localJHatZ).tex(1.0, 0.0).color(r, g, b, a).endVertex()

@@ -54,5 +54,7 @@ class TEContainer : TileMod(), ITickable {
 
 @SideOnly(Side.CLIENT)
 val particleExamples = listOf(
-        PhysicsCurtain
+    AccelerateAway,
+    BeamLightning,
+    PhysicsCurtain
 )

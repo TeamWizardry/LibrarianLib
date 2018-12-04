@@ -21,18 +21,15 @@ class SetValueUpdateModule(
         @JvmField val source: ReadParticleBinding
 ): ParticleUpdateModule {
     init {
-        if(target.size == -1) {
-            throw IllegalArgumentException("Target binding cannot have an indefinite size")
-        }
-        if(source.size != -1 && source.size != target.size) {
+        if(source.contents.size != target.contents.size) {
             throw IllegalArgumentException("Source binding has a non-indefinite size which is different from the " +
-                    "target size: source: ${source.size} target: ${target.size}")
+                    "target size. source: ${source.contents.size} target: ${target.contents.size}")
         }
     }
 
     override fun update(particle: DoubleArray) {
-        for(i in 0 until target.size) {
-            target[particle, i] = source[particle, i]
-        }
+        source.load(particle)
+        source.contents.copyInto(target.contents)
+        target.store(particle)
     }
 }

@@ -6,7 +6,6 @@ import com.teamwizardry.librarianlib.features.kotlin.withY
 import com.teamwizardry.librarianlib.features.particlesystem.ParticlePath
 import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.ConstantBinding
-import com.teamwizardry.librarianlib.features.particlesystem.require
 import net.minecraft.util.math.MathHelper
 
 /**
@@ -34,7 +33,7 @@ class BezierPath @JvmOverloads constructor(
         @JvmField val endControl: ReadParticleBinding? = null
 ) : ParticlePath {
 
-    override fun getSize(): Int = 3
+    override val value: DoubleArray = DoubleArray(3)
 
     init {
         start.require(3)
@@ -43,38 +42,63 @@ class BezierPath @JvmOverloads constructor(
         endControl?.require(3)
     }
 
-    override fun getPosition(particle: DoubleArray, t: Double, index: Int): Double {
-        val iStart = start[particle, index]
-        val iEnd = end[particle, index]
-        return getBezierComponent(
-                t,
-                iStart,
-                iEnd,
-                iStart + (if (startControl == null) {
-                    if (index == 1) 0.0
-                    else ((iEnd - iStart) / 2.0)
-                } else startControl[particle, index]),
-                iStart + (if (endControl == null) {
-                    if (index == 1) 0.0
-                    else ((iStart - iEnd) / 2.0)
-                } else endControl[particle, index]))
+    override fun computePosition(particle: DoubleArray, t: Double) {
+        start.load(particle)
+        end.load(particle)
+        startControl?.load(particle)
+        endControl?.load(particle)
+
+        for(i in 0 until 3) {
+            val startControlValue =
+                if (startControl == null) {
+                    if (i == 1) 0.0
+                    else ((end.contents[i] - start.contents[i]) / 2.0)
+                } else {
+                    startControl.contents[i]
+                }
+            val endControlValue =
+                if (endControl == null) {
+                    if (i == 1) 0.0
+                    else ((start.contents[i] - end.contents[i]) / 2.0)
+                } else {
+                    endControl.contents[i]
+                }
+            value[i] = getBezierComponent(t, start.contents[i], end.contents[i],
+                start.contents[i] + startControlValue,
+                start.contents[i] + endControlValue
+            )
+        }
     }
 
-    override fun getTangent(particle: DoubleArray, t: Double, index: Int): Double {
-        val iStart = start[particle, index]
-        val iEnd = end[particle, index]
-        return getBezierComponent(
+    override fun computeTangent(particle: DoubleArray, t: Double) {
+        start.load(particle)
+        end.load(particle)
+        startControl?.load(particle)
+        endControl?.load(particle)
+
+        for(i in 0 until 3) {
+            val startControlValue =
+                if (startControl == null) {
+                    if (i == 1) 0.0
+                    else ((end.contents[i] - start.contents[i]) / 2.0)
+                } else {
+                    startControl.contents[i]
+                }
+            val endControlValue =
+                if (endControl == null) {
+                    if (i == 1) 0.0
+                    else ((start.contents[i] - end.contents[i]) / 2.0)
+                } else {
+                    endControl.contents[i]
+                }
+            value[i] = getBezierComponent(
                 t,
-                iStart,
-                iEnd,
-                iStart + (if (startControl == null) {
-                    if (index == 1) 0.0
-                    else ((iEnd - iStart) / 2.0)
-                } else startControl[particle, index]),
-                iStart + (if (endControl == null) {
-                    if (index == 1) 0.0
-                    else ((iStart - iEnd) / 2.0)
-                } else endControl[particle, index]))
+                start.contents[i],
+                end.contents[i],
+                start.contents[i] + startControlValue,
+                start.contents[i] + endControlValue
+            )
+        }
     }
 
     private fun getBezierComponent(t: Double, s: Double, e: Double, sc: Double, ec: Double): Double {

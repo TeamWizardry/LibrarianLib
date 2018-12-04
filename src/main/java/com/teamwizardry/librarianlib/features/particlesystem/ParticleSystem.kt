@@ -218,16 +218,23 @@ abstract class ParticleSystem {
             particles.add(particle)
         }
         val iter = particles.iterator()
+
         for (particle in iter) {
-            val lifetime = this.lifetime[particle, 0]
-            val age = this.age[particle, 0]
+
+            this.lifetime.load(particle)
+            this.age.load(particle)
+
+            val lifetime = this.lifetime.contents[0]
+            val age = this.age.contents[0]
             if (age >= lifetime) {
                 iter.remove()
                 if (particlePool.size < poolSize)
                     particlePool.push(particle)
                 continue
             }
-            this.age[particle, 0] = age + 1
+
+            this.age.contents[0] = age + 1
+            this.age.store(particle)
             update(particle)
         }
 

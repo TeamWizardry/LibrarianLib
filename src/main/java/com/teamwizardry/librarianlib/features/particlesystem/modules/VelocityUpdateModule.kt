@@ -29,14 +29,14 @@ class VelocityUpdateModule(
     }
 
     override fun update(particle: DoubleArray) {
-        update(particle, 0)
-        update(particle, 1)
-        update(particle, 2)
-    }
-
-    private fun update(particle: DoubleArray, index: Int) {
-        val pos = position[particle, index]
-        previousPosition?.set(particle, index, pos)
-        position[particle, index] = pos + velocity[particle, index]
+        position.load(particle)
+        if(previousPosition != null) {
+            position.contents.copyInto(previousPosition.contents)
+        }
+        velocity.load(particle)
+        for(i in 0 until 3) {
+            position.contents[i] += velocity.contents[i]
+        }
+        position.store(particle)
     }
 }

@@ -9,15 +9,15 @@ class VariableBinding(
         /**
          * The number of virtual elements this variable should have. Cannot be indefinite (-1)
          */
-        override val size: Int
+        val size: Int
 ): ReadWriteParticleBinding {
-    private val array = DoubleArray(size)
+    override val contents: DoubleArray = DoubleArray(size)
 
-    override fun get(particle: DoubleArray, index: Int): Double {
-        return array[index]
+    override fun load(particle: DoubleArray) {
+        //nop
     }
 
-    override fun set(particle: DoubleArray, index: Int, value: Double) {
-        array[index] = value
+    override fun store(particle: DoubleArray) {
+        //nop
     }
 }

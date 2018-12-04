@@ -82,8 +82,10 @@ object BeamLightningSystem: ParticleSystem() {
             isEnd = isEnd, blend = true,
             previousPosition = previousPosition, position = position,
             color = color, size = 2f,
-            alpha = CallbackBinding(1) { particle, _ ->
-                1.0 - (age[particle, 0] / lifetime[particle, 0])
+            alpha = CallbackBinding(1) { particle, contents ->
+                age.load(particle)
+                lifetime.load(particle)
+                contents[0] = 1.0 - (age.contents[0] / lifetime.contents[0])
             }
         ))
     }

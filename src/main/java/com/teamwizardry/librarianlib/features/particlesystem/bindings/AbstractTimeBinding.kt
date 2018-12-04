@@ -28,15 +28,21 @@ abstract class AbstractTimeBinding(
          */
         open val easing: Easing = Easing.linear
 ) : ReadParticleBinding {
+    protected var time = 0.0
 
-    fun getTime(particle: DoubleArray): Double {
-        var t = age[particle, 0] / lifetime[particle, 0]
+    override fun load(particle: DoubleArray) {
+        age.load(particle)
+        lifetime.load(particle)
+        var t = age.contents[0] / lifetime.contents[0]
 
         if (easing != Easing.linear) t = easing(t.toFloat()).toDouble()
-        if (offset != null) t += offset!![particle, 0]
-        if (timescale != null) t *= timescale!![particle, 0]
-        t %= 1
-
-        return t
+        if (offset != null) t += offset!!.contents[0]
+        if (timescale != null) t *= timescale!!.contents[0]
+        if(t != 0.0) {
+            t %= 1
+            // because 1 % 1 = 0, but it should go up to 1 inclusive. If t is really 0 the above if won't pass
+            if(t == 0.0) t = 1.0
+        }
+        time = t
     }
 }

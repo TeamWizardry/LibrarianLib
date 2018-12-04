@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.features.particlesystem.bindings
 import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleSystem
 import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
-import com.teamwizardry.librarianlib.features.particlesystem.require
 
 /**
  * A 1D binding that generates its value by passing its normalized age (0–1) into an InterpFunction<Float>
@@ -42,27 +41,28 @@ class EaseBinding @JvmOverloads constructor(
         /**
          * The start value to interpolate from.
          */
-        @JvmField var origin: ReadParticleBinding? = null,
+        @JvmField val origin: ReadParticleBinding = ConstantBinding(*DoubleArray(bindingSize) { 1.0 }),
         /**
          * The end value to interpolate to.
          */
-        @JvmField var target: ReadParticleBinding? = null
+        @JvmField var target: ReadParticleBinding = ConstantBinding(*DoubleArray(bindingSize) { 1.0 })
 ) : AbstractTimeBinding(lifetime, age, timescale, offset, easing) {
+
+    override val contents: DoubleArray = DoubleArray(bindingSize)
 
     init {
         lifetime.require(1)
         age.require(1)
-        if (origin == null) {
-            origin = ConstantBinding(*DoubleArray(bindingSize) { 1.0 })
-        }
-        if (target == null)
-            target = ConstantBinding(*DoubleArray(bindingSize) { 1.0 })
+        origin.require(bindingSize)
+        target.require(bindingSize)
     }
 
-    override val size = bindingSize
-
-    override fun get(particle: DoubleArray, index: Int): Double {
-        val t = getTime(particle)
-        return (origin!![particle, index] * (1 - t)) + (target!![particle, index] * t)
+    override fun load(particle: DoubleArray) {
+        super.load(particle)
+        origin.load(particle)
+        target.load(particle)
+        for(i in 0 until bindingSize) {
+            contents[i] = (origin.contents[i] * (1 - time)) + (target.contents[i] * time)
+        }
     }
 }

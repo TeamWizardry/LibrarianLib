@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.features.particlesystem.modules
 import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
 import com.teamwizardry.librarianlib.features.particlesystem.ReadWriteParticleBinding
-import com.teamwizardry.librarianlib.features.particlesystem.require
 
 /**
  * Performs rudimentary acceleration updates.
@@ -26,13 +25,10 @@ class AccelerationUpdateModule(
     }
 
     override fun update(particle: DoubleArray) {
-        update(particle, 0)
-        update(particle, 1)
-        update(particle, 2)
-    }
-
-    private fun update(particle: DoubleArray, index: Int) {
-        val vel = velocity[particle, index]
-        velocity[particle, index] = vel + acceleration[particle, index]
+        velocity.load(particle)
+        for(i in 0 until 3) {
+            velocity.contents[i] += acceleration.contents[i]
+        }
+        velocity.store(particle)
     }
 }

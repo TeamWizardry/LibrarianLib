@@ -14,14 +14,16 @@ class StoredBinding internal constructor(
         /**
          * The number of elements this binding has allocated
          */
-        override val size: Int
+        val size: Int
 ): ReadWriteParticleBinding {
-    override fun get(particle: DoubleArray, index: Int): Double {
-        return particle[this.index + index]
+    override val contents: DoubleArray = DoubleArray(size)
+
+    override fun load(particle: DoubleArray) {
+        particle.copyInto(contents, 0, index, index+size)
     }
 
-    override fun set(particle: DoubleArray, index: Int, value: Double) {
-        particle[this.index + index] = value
+    override fun store(particle: DoubleArray) {
+        contents.copyInto(particle, index)
     }
 
     /**
@@ -33,8 +35,6 @@ class StoredBinding internal constructor(
         if(values.size != this.size)
             throw IllegalArgumentException("Mismatched sizes. Bindings size is ${this.size}, " +
                     "parameter size is ${values.size}")
-        (0 until size).forEach {
-            particle[this.index + it] = values[it]
-        }
+        values.copyInto(particle, index)
     }
 }

@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.core.client.ClientTickHandler
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleRenderModule
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
 import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
-import com.teamwizardry.librarianlib.features.particlesystem.require
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -87,6 +86,7 @@ class GlLineBeamRenderModule(
         val vb = tessellator.buffer
         vb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
 
+        var isStart = true
         var prevX = Double.NaN
         var prevY = Double.NaN
         var prevZ = Double.NaN
@@ -100,31 +100,32 @@ class GlLineBeamRenderModule(
                 prepModules[i].update(particle)
             }
 
-            val x = ClientTickHandler.interpWorldPartialTicks(previousPosition[particle, 0], position[particle, 0])
-            val y = ClientTickHandler.interpWorldPartialTicks(previousPosition[particle, 1], position[particle, 1])
-            val z = ClientTickHandler.interpWorldPartialTicks(previousPosition[particle, 2], position[particle, 2])
+            previousPosition.load(particle)
+            position.load(particle)
+            color.load(particle)
+            alpha?.load(particle)
+            isEnd.load(particle)
 
-            val r = color[particle, 0].toFloat()
-            val g = color[particle, 1].toFloat()
-            val b = color[particle, 2].toFloat()
-            var a = color[particle, 3].toFloat()
+            val x = ClientTickHandler.interpWorldPartialTicks(previousPosition.contents[0], position.contents[0])
+            val y = ClientTickHandler.interpWorldPartialTicks(previousPosition.contents[1], position.contents[1])
+            val z = ClientTickHandler.interpWorldPartialTicks(previousPosition.contents[2], position.contents[2])
+
+            val r = color.contents[0].toFloat()
+            val g = color.contents[1].toFloat()
+            val b = color.contents[2].toFloat()
+            var a = color.contents[3].toFloat()
             if(alpha != null)
-                a *= alpha[particle, 0].toFloat()
+                a *= alpha.contents[0].toFloat()
 
-            if(!(prevX.isNaN() || prevY.isNaN() || prevZ.isNaN() ||
-                            prevR.isNaN() || prevG.isNaN() || prevB.isNaN() || prevA.isNaN())) {
+            if(isStart) {
+                isStart = false
+            } else {
                 vb.pos(prevX, prevY, prevZ).color(prevR, prevG, prevB, prevA).endVertex()
                 vb.pos(x, y, z).color(r, g, b, a).endVertex()
             }
 
-            if(isEnd[particle, 0] != 0.0) {
-                prevX = Double.NaN
-                prevY = Double.NaN
-                prevZ = Double.NaN
-                prevR = Float.NaN
-                prevG = Float.NaN
-                prevB = Float.NaN
-                prevA = Float.NaN
+            if(isEnd.contents[0] != 0.0) {
+                isStart = true
             } else {
                 prevX = x
                 prevY = y
