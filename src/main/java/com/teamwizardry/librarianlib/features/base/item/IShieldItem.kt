@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.base.item
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.kotlin.toolClasses
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import net.minecraft.enchantment.EnchantmentHelper
@@ -12,9 +13,9 @@ import net.minecraft.item.ItemAxe
 import net.minecraft.item.ItemStack
 import net.minecraft.util.DamageSource
 import net.minecraft.util.math.MathHelper
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.entity.living.LivingAttackEvent
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -22,14 +23,14 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  * @author WireSegal
  * Created at 5:02 PM on 4/9/17.
  */
+@Deprecated("Use the forge method isShield")
+@Mod.EventBusSubscriber(modid = LibrarianLib.MODID)
 interface IShieldItem {
     companion object {
-        init {
-            MinecraftForge.EVENT_BUS.register(this)
-        }
 
         val canBlockDamageSource = MethodHandleHelper.wrapperForMethod(EntityLivingBase::class.java, "canBlockDamageSource", "func_184583_d", DamageSource::class.java)
 
+        @JvmStatic
         @SubscribeEvent(priority = EventPriority.LOWEST)
         fun onLivingAttack(e: LivingAttackEvent) {
             val attacked = e.entityLiving

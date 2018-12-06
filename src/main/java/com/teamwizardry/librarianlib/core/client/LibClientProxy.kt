@@ -24,12 +24,14 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.resources.I18n
 import net.minecraft.client.resources.IReloadableResourceManager
 import net.minecraft.client.resources.IResourceManager
-import net.minecraft.client.resources.IResourceManagerReloadListener
 import net.minecraft.client.resources.data.MetadataSerializer
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.client.resource.IResourceType
+import net.minecraftforge.client.resource.ISelectiveResourceReloadListener
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -39,15 +41,16 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.util.*
+import java.util.function.Predicate
 
 /**
  * Prefixed with Lib so code suggestion in dependent projects doesn't suggest it
  */
 @SideOnly(Side.CLIENT)
-class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
+@Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
+class LibClientProxy : LibCommonProxy(), ISelectiveResourceReloadListener {
 
     init {
-        MinecraftForge.EVENT_BUS.register(this)
         if (!Minecraft.getMinecraft().framebuffer.isStencilEnabled)
             Minecraft.getMinecraft().framebuffer.enableStencil()
     }
@@ -99,10 +102,10 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         val fixedPath = VariantHelper.pathToSnakeCase(path).removePrefix("/")
 
         val resourceManager = Minecraft.getMinecraft().resourceManager
-        try {
-            return resourceManager.getResource(ResourceLocation(fixedModId, fixedPath)).inputStream
+        return try {
+            resourceManager.getResource(ResourceLocation(fixedModId, fixedPath)).inputStream
         } catch (e: IOException) {
-            return null
+            null
         }
     }
 
@@ -120,34 +123,37 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
     // Custom events
 
-    override fun onResourceManagerReload(resourceManager: IResourceManager) {
+    override fun onResourceManagerReload(resourceManager: IResourceManager, type: Predicate<IResourceType>) {
         for (it in reloadHandlers) ClientRunnable.run(it)
     }
 
-    @SubscribeEvent
-    fun renderWorldEvent(e: RenderWorldLastEvent) {
-        GlStateManager.pushMatrix()
-        val player = Minecraft.getMinecraft().player
+    companion object {
+        @SubscribeEvent
+        @JvmStatic
+        fun renderWorldEvent(e: RenderWorldLastEvent) {
+            GlStateManager.pushMatrix()
+            val player = Minecraft.getMinecraft().player
 
-        val partialTicks = if (Minecraft.getMinecraft().isGamePaused)
-            Minecraft.getMinecraft().renderPartialTicksPaused
-        else
-            Minecraft.getMinecraft().timer.renderPartialTicks
+            val partialTicks = if (Minecraft.getMinecraft().isGamePaused)
+                Minecraft.getMinecraft().renderPartialTicksPaused
+            else
+                Minecraft.getMinecraft().timer.renderPartialTicks
 
-        val lastPos = vec(player.lastTickPosX, player.lastTickPosY, player.lastTickPosZ)
-        val partialOffset = (player.positionVector - lastPos) * (1 - partialTicks)
+            val lastPos = vec(player.lastTickPosX, player.lastTickPosY, player.lastTickPosZ)
+            val partialOffset = (player.positionVector - lastPos) * (1 - partialTicks)
 
-        val globalize = -(player.positionVector - partialOffset)
-        GlStateManager.translate(globalize.x, globalize.y, globalize.z)
+            val globalize = -(player.positionVector - partialOffset)
+            GlStateManager.translate(globalize.x, globalize.y, globalize.z)
 
 
-        GlStateManager.disableTexture2D()
-        GlStateManager.color(1f, 1f, 1f, 1f)
+            GlStateManager.disableTexture2D()
+            GlStateManager.color(1f, 1f, 1f, 1f)
 
-        MinecraftForge.EVENT_BUS.post(CustomWorldRenderEvent(Minecraft.getMinecraft().world, e.context, partialTicks))
+            MinecraftForge.EVENT_BUS.post(CustomWorldRenderEvent(Minecraft.getMinecraft().world, e.context, partialTicks))
 
-        GlStateManager.enableTexture2D()
-        GlStateManager.popMatrix()
+            GlStateManager.enableTexture2D()
+            GlStateManager.popMatrix()
+        }
     }
 }
 

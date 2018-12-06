@@ -1,11 +1,13 @@
 package com.teamwizardry.librarianlib.core.client
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import net.minecraft.client.renderer.texture.TextureMap
 import net.minecraftforge.client.event.TextureStitchEvent
-import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.relauncher.Side
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL12
@@ -22,11 +24,10 @@ import javax.imageio.ImageIO
 val TextureMap.mh_mipMapLevel by MethodHandleHelper.delegateForReadOnly<TextureMap, Int>(TextureMap::class.java, "mipmapLevels", "field_147636_j")
 val TextureMap.mh_basePath by MethodHandleHelper.delegateForReadOnly<TextureMap, String>(TextureMap::class.java, "basePath", "field_94254_c")
 
+@Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
 object TextureMapExporter {
-    init {
-        MinecraftForge.EVENT_BUS.register(this)
-    }
 
+    @JvmStatic
     @SubscribeEvent
     fun postTextureStitch(e: TextureStitchEvent.Post) {
         saveGlTexture(e.map.mh_basePath, e.map.glTextureId, e.map.mh_mipMapLevel)

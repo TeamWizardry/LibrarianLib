@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.structure
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -9,8 +10,8 @@ import net.minecraft.util.Mirror
 import net.minecraft.util.Rotation
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.world.BlockEvent
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -18,6 +19,7 @@ import org.lwjgl.opengl.GL11
 
 // TODO : Conversion is lazy, may want to rewrite
 @SideOnly(Side.CLIENT)
+@Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
 object InWorldRender {
 
     private var pos: BlockPos? = null
@@ -26,10 +28,7 @@ object InWorldRender {
     var verts: IntArray? = null
     var match: StructureMatchResult? = null
 
-    init {
-        MinecraftForge.EVENT_BUS.register(this)
-    }
-
+    @JvmStatic
     @SubscribeEvent
     fun worldLast(event: RenderWorldLastEvent) {
         if (verts == null)
@@ -57,6 +56,7 @@ object InWorldRender {
         GlStateManager.popMatrix()
     }
 
+    @JvmStatic
     @SubscribeEvent
     fun blockPlace(event: BlockEvent.PlaceEvent) {
         if (match == null)
@@ -66,6 +66,7 @@ object InWorldRender {
             refreshVerts()
     }
 
+    @JvmStatic
     @SubscribeEvent
     fun blockBreak(event: BlockEvent.BreakEvent) {
         if (match == null)

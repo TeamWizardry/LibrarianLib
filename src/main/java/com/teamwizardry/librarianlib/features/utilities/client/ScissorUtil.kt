@@ -1,23 +1,21 @@
 package com.teamwizardry.librarianlib.features.utilities.client
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent
-import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.opengl.GL11
 
 @SideOnly(Side.CLIENT)
+@Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
 object ScissorUtil {
 
-    init {
-        MinecraftForge.EVENT_BUS.register(this)
-    }
-
+    @JvmStatic
     @SubscribeEvent
-    @Suppress("UNUSED_PARAMETER")
     fun updateResolution(event: InitGuiEvent.Pre?) {
         screenScale = ScaledResolution(Minecraft.getMinecraft()).scaleFactor
     }

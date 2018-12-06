@@ -1,11 +1,12 @@
 package com.teamwizardry.librarianlib.features.worlddata
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.chunkdata.ChunkDataRegistry
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.world.World
 import net.minecraft.world.storage.WorldSavedData
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.world.WorldEvent
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 /**
@@ -14,6 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  * Created by TheCodeWarrior
  */
 @Suppress("UNUSED_PARAMETER")
+@Mod.EventBusSubscriber(modid = LibrarianLib.MODID)
 class WorldDataContainer(ident: String) : WorldSavedData(NAME) {
     val world: World = gettingWorld
             ?: throw IllegalStateException("WorldDataContainer.gettingWorld is null! Did you not call WorldDataContainer.get()?")
@@ -21,12 +23,9 @@ class WorldDataContainer(ident: String) : WorldSavedData(NAME) {
     val datas = mutableMapOf<Class<*>, WorldData>()
 
     companion object {
-        val NAME = "librarianlib:worlddata"
+        const val NAME = "librarianlib:worlddata"
 
-        init {
-            MinecraftForge.EVENT_BUS.register(this)
-        }
-
+        @JvmStatic
         @SubscribeEvent
         fun load(e: WorldEvent.Load) {
             get(e.world) // to initialize the data before a user calls get

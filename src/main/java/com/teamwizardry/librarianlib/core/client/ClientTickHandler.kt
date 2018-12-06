@@ -1,22 +1,21 @@
 package com.teamwizardry.librarianlib.core.client
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.Vec3d
-import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase
+import net.minecraftforge.fml.relauncher.Side
 
+@Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
 object ClientTickHandler {
-
-    init {
-        MinecraftForge.EVENT_BUS.register(this)
-    }
 
     @JvmStatic
     var ticks = 0
@@ -43,6 +42,7 @@ object ClientTickHandler {
         delta = total - oldTotal
     }
 
+    @JvmStatic
     @SubscribeEvent
     fun renderTick(event: TickEvent.RenderTickEvent) {
         if (event.phase == Phase.START) {
@@ -55,6 +55,7 @@ object ClientTickHandler {
         }
     }
 
+    @JvmStatic
     @SubscribeEvent
     fun clientTickEnd(event: ClientTickEvent) {
         if (event.phase == Phase.END) {

@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.base.block
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.features.base.IModelGenerator
 import com.teamwizardry.librarianlib.features.base.ModCreativeTab
@@ -31,8 +32,8 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.Explosion
 import net.minecraft.world.IBlockAccess
 import net.minecraft.world.World
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.furnace.FurnaceFuelBurnTimeEvent
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -44,6 +45,7 @@ import java.util.*
  * Created at 9:50 AM on 1/10/17.
  */
 @Suppress("LeakingThis")
+@Mod.EventBusSubscriber(modid = LibrarianLib.MODID)
 open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapMaterial(parent.material)), IModBlock, IModelGenerator {
 
     private val parentName = parent.block.key
@@ -79,16 +81,13 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
     }
 
     companion object {
+        @JvmStatic
         @SubscribeEvent
         fun canBurn(e: FurnaceFuelBurnTimeEvent) {
             val fuel = e.itemStack
             if (e.burnTime == -1)
                 if (fuel.item is ItemBlock && (fuel.item as ItemBlock).block.defaultState.material == FAKE_WOOD)
                     e.burnTime = 150
-        }
-
-        init {
-            MinecraftForge.EVENT_BUS.register(this)
         }
 
         val DUMMY_PROP: PropertyEnum<Dummy> = PropertyEnum.create("block", Dummy::class.java)

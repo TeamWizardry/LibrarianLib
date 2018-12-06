@@ -1,6 +1,8 @@
 package com.teamwizardry.librarianlib.features.utilities.client;
 
 import com.teamwizardry.librarianlib.core.LibrarianLib;
+import net.minecraftforge.client.resource.IResourceType;
+import net.minecraftforge.client.resource.SelectiveReloadStateHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -47,6 +49,11 @@ public interface ClientRunnable {
             }
         });
         return holder.getValue();
+    }
+
+    @SideOnly(Side.CLIENT)
+    static boolean isLoading(IResourceType type) {
+        return SelectiveReloadStateHandler.INSTANCE.get().test(type);
     }
 
     static void registerReloadHandler(ClientRunnable runnable) {

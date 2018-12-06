@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.gui
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.client.ClientTickHandler
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
@@ -14,9 +15,10 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.client.event.RenderGameOverlayEvent
-import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.relauncher.Side
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import java.util.function.BooleanSupplier
@@ -26,6 +28,7 @@ import java.util.function.Supplier
 /**
  * Created by TheCodeWarrior
  */
+@Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
 object GuiOverlay {
 
     private data class StorageThing(val initializer: Consumer<GuiComponent>, val visible: BooleanSupplier) {
@@ -41,7 +44,6 @@ object GuiOverlay {
     private val newlyRegistered = mutableSetOf<StorageThing>()
 
     init {
-        MinecraftForge.EVENT_BUS.register(this)
         F3Handler.addHandler(Keyboard.KEY_O, "Reinitialize overlay components", Supplier { "Reloaded overlays" }, Runnable {
             mainComp = ComponentVoid(0, 0)
             registered.forEach {
@@ -62,6 +64,7 @@ object GuiOverlay {
         newlyRegistered.add(storage)
     }
 
+    @JvmStatic
     @SubscribeEvent
     fun overlay(e: RenderGameOverlayEvent.Post) {
         if (e.type != RenderGameOverlayEvent.ElementType.ALL) return
@@ -75,6 +78,7 @@ object GuiOverlay {
         GL11.glDisable(GL11.GL_STENCIL_TEST)
     }
 
+    @JvmStatic
     @SubscribeEvent
     @Suppress("UNUSED_PARAMETER")
     fun tick(e: TickEvent.ClientTickEvent) {

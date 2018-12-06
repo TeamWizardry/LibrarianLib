@@ -9,9 +9,9 @@ import com.teamwizardry.librarianlib.features.helpers.currentModId
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.utilities.AnnotationHelper
 import com.teamwizardry.librarianlib.features.utilities.AnnotationInfo
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.config.Configuration
 import net.minecraftforge.fml.client.event.ConfigChangedEvent
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.discovery.ASMDataTable
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.io.File
@@ -22,6 +22,7 @@ import java.lang.reflect.Field
  * Created by Elad on 10/14/2016.
  * This object contains utilities for the automatic config system.
  */
+@Mod.EventBusSubscriber(modid = LibrarianLib.MODID)
 object EasyConfigHandler {
     private lateinit var CONFIG_DIR: File
 
@@ -31,10 +32,7 @@ object EasyConfigHandler {
     private val toLoad = mutableMapOf<String, File?>()
     private var loaded = false
 
-    init {
-        MinecraftForge.EVENT_BUS.register(this)
-    }
-
+    @JvmStatic
     @SubscribeEvent
     fun translateConfigValues(e: BookTranslationDataEvent) {
         if (e.providedData.size() >= 2) {
@@ -96,7 +94,6 @@ object EasyConfigHandler {
     internal fun bootstrap(asm: ASMDataTable, dir: File) {
         loaded = true
         CONFIG_DIR = dir
-        MinecraftForge.EVENT_BUS.register(this)
 
         findAllProperties(asm)
 
@@ -113,10 +110,11 @@ object EasyConfigHandler {
     @JvmOverloads
     fun init(modid: String = currentModId, configf: File? = if (loaded) File(CONFIG_DIR, "$currentModId.cfg") else null) {
         if (!loaded)
-            toLoad.put(modid, configf)
+            toLoad[modid] = configf
         else LibrarianLog.error("Trying to activate the config file override too late. Call it in init. Mod: $modid")
     }
 
+    @JvmStatic
     @SubscribeEvent
     fun onConfigChanged(e: ConfigChangedEvent) {
         initInternal(e.modID, mappings[e.modID])

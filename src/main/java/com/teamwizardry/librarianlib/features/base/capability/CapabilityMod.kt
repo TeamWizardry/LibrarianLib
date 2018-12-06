@@ -1,17 +1,18 @@
 package com.teamwizardry.librarianlib.features.base.capability
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.saving.AbstractSaveHandler
 import com.teamwizardry.librarianlib.features.saving.SaveInPlace
 import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.CapabilityManager
 import net.minecraftforge.common.capabilities.ICapabilitySerializable
 import net.minecraftforge.event.AttachCapabilitiesEvent
 import net.minecraftforge.event.entity.player.PlayerEvent
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
 
@@ -19,6 +20,7 @@ import java.util.*
  * Created by Elad on 1/21/2017.
  */
 @SaveInPlace
+@Mod.EventBusSubscriber(modid = LibrarianLib.MODID)
 abstract class CapabilityMod(val name: ResourceLocation) {
 
     val capability: Capability<*> by lazy { capabilities[javaClass]?.invoke() ?: throw ClassNotFoundException("Invalid class!") }
@@ -28,10 +30,8 @@ abstract class CapabilityMod(val name: ResourceLocation) {
     }
 
     companion object {
-        init {
-            MinecraftForge.EVENT_BUS.register(this)
-        }
 
+        @JvmStatic
         @SubscribeEvent
         fun onDeath(playerCloneEvent: PlayerEvent.Clone) {
             if (playerCloneEvent.isWasDeath)
@@ -55,7 +55,7 @@ abstract class CapabilityMod(val name: ResourceLocation) {
 
             }, capClass)
             registeredClasses.add(capClass)
-            capabilities.put(capClass, capObj)
+            capabilities[capClass] = capObj
         }
     }
 

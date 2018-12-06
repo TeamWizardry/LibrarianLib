@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.gui
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.gui.debugger.ComponentDebugger
@@ -9,14 +10,16 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.relauncher.Side
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
 import java.io.IOException
 
+@Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
 open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : GuiScreen() {
     val mainComponents: ComponentVoid = ComponentVoid(0, 0)
     val fullscreenComponents: ComponentVoid = ComponentVoid(0, 0)
@@ -181,17 +184,10 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
     }
 
     companion object {
-        init {
-            MinecraftForge.EVENT_BUS.register(this)
-        }
-
+        @JvmStatic
         @SubscribeEvent
-        @Suppress("UNUSED_PARAMETER")
         fun tick(e: TickEvent.ClientTickEvent) {
-            val gui = Minecraft.getMinecraft().currentScreen
-            if (gui is GuiBase) {
-                gui.tick()
-            }
+            (Minecraft.getMinecraft().currentScreen as? GuiBase)?.tick()
         }
     }
 }

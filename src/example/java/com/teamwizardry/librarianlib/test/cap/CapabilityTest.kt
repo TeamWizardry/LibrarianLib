@@ -20,7 +20,6 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.CapabilityInject
 
@@ -39,7 +38,6 @@ class CapabilityTest : CapabilityMod("${TestMod.MODID}:CapTest".toRl()) {
             register(CapabilityTest::class.java, ICapabilityObjectProvider {
                 cap
             })
-            MinecraftForge.EVENT_BUS.register(CapabilityTest::class.java)
             BlockCapTest()
         }
     }

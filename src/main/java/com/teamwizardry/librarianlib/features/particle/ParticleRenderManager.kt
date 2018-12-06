@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.particle
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.client.ClientTickHandler
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import net.minecraft.client.Minecraft
@@ -13,16 +14,18 @@ import net.minecraft.entity.Entity
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.world.WorldEvent
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.relauncher.Side
 import org.lwjgl.opengl.GL11
 import java.util.*
 
 /**
  * Created by TheCodeWarrior
  */
+@Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
 object ParticleRenderManager {
 
     @JvmStatic
@@ -89,7 +92,6 @@ object ParticleRenderManager {
     init {
         register(LAYER_BLOCK_MAP)
         register(LAYER_BLOCK_MAP_ADDITIVE)
-        MinecraftForge.EVENT_BUS.register(this)
     }
 
     @JvmStatic
@@ -102,6 +104,7 @@ object ParticleRenderManager {
         layers.add(layer)
     }
 
+    @JvmStatic
     @SubscribeEvent
     fun debug(event: RenderGameOverlayEvent.Text) {
         if (!Minecraft.getMinecraft().gameSettings.showDebugInfo)
@@ -113,6 +116,7 @@ object ParticleRenderManager {
         }
     }
 
+    @JvmStatic
     @SubscribeEvent
     fun tick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START)
@@ -150,12 +154,14 @@ object ParticleRenderManager {
         profiler.endSection()
     }
 
+    @JvmStatic
     @SubscribeEvent
     @Suppress("UNUSED_PARAMETER")
     fun unloadWorld(event: WorldEvent.Unload) {
         layers.forEach(ParticleRenderLayer::clear)
     }
 
+    @JvmStatic
     @SubscribeEvent
     @Suppress("UNUSED_PARAMETER")
     fun render(event: RenderWorldLastEvent) {

@@ -1,15 +1,16 @@
 package com.teamwizardry.librarianlib.features.chunkdata
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.network.PacketCustomChunkData
 import com.teamwizardry.librarianlib.features.network.PacketHandler
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.world.World
 import net.minecraft.world.storage.WorldSavedData
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.world.ChunkDataEvent
 import net.minecraftforge.event.world.ChunkEvent
 import net.minecraftforge.event.world.ChunkWatchEvent
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 /**
@@ -17,17 +18,15 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  *
  * Created by TheCodeWarrior
  */
+@Mod.EventBusSubscriber(modid = LibrarianLib.MODID)
 class ChunkWorldData : WorldSavedData(NAME) {
 
     val containers = mutableMapOf<ChunkPos, ChunkDataContainer>()
 
     companion object {
-        init {
-            MinecraftForge.EVENT_BUS.register(this)
-        }
-
         const val NAME = "librarianlib:chunkdata"
 
+        @JvmStatic
         @SubscribeEvent
         fun loadChunk(e: ChunkDataEvent.Load) {
             val rootData = e.data.getCompoundTag("librarianlib_chunkdata") ?: NBTTagCompound()
@@ -48,6 +47,7 @@ class ChunkWorldData : WorldSavedData(NAME) {
             get(e.chunk.world).containers[e.chunk.pos] = container
         }
 
+        @JvmStatic
         @SubscribeEvent
         fun saveChunk(e: ChunkDataEvent.Save) {
             val rootData = NBTTagCompound()
@@ -63,11 +63,13 @@ class ChunkWorldData : WorldSavedData(NAME) {
             e.data.setTag("librarianlib_chunkdata", rootData)
         }
 
+        @JvmStatic
         @SubscribeEvent
         fun unloadChunk(e: ChunkEvent.Unload) {
             get(e.chunk.world).containers.remove(e.chunk.pos)
         }
 
+        @JvmStatic
         @SubscribeEvent
         fun clientLoad(e: ChunkEvent.Load) {
             if (e.chunk.world.isRemote) {
@@ -95,6 +97,7 @@ class ChunkWorldData : WorldSavedData(NAME) {
             }
         }
 
+        @JvmStatic
         @SubscribeEvent
         fun watch(e: ChunkWatchEvent.Watch) {
             val container = get(e.player.world).containers[e.chunk] ?: return

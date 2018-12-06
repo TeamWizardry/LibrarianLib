@@ -10,7 +10,6 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -301,13 +300,12 @@ class RayWorldCollider private constructor(world: World) {
 }
 
 @SideOnly(Side.CLIENT)
+@Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
 private object ClientRayWorldCollider {
-    init {
-        MinecraftForge.EVENT_BUS.register(this)
-    }
 
     var cache: RayWorldCollider? = null
 
+    @JvmStatic
     @SubscribeEvent
     fun unloadWorld(e: WorldEvent.Unload) {
         cache = null

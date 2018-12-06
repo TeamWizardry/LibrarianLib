@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.base.block
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.helpers.addCollisionBoxToList
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.GlStateManager
@@ -13,7 +14,7 @@ import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.IBlockAccess
 import net.minecraftforge.client.event.DrawBlockHighlightEvent
-import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -23,14 +24,13 @@ import org.lwjgl.opengl.GL11
  * @author WireSegal
  * Created at 9:36 AM on 4/10/18.
  */
+@Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
 interface IMultipleComponentGeometry {
     companion object {
-        init {
-            MinecraftForge.EVENT_BUS.register(this)
-        }
 
         private val renderBoxes = mutableSetOf<AxisAlignedBB>()
 
+        @JvmStatic
         @SubscribeEvent
         @SideOnly(Side.CLIENT)
         fun onDrawBlockHighlight(event: DrawBlockHighlightEvent) {

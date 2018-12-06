@@ -17,9 +17,8 @@ import com.teamwizardry.librarianlib.features.utilities.generatedFiles
 import com.teamwizardry.librarianlib.features.utilities.getPathForSounds
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.SoundEvent
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.RegistryEvent
-import net.minecraftforge.fml.common.FMLCommonHandler
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.Side
@@ -31,6 +30,7 @@ import java.io.File
  * Created at 7:58 PM on 2/11/17.
  */
 @Suppress("LeakingThis")
+@Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
 open class ModSoundEvent(name: String, subtitle: String?, private val sounds: List<String>) : SoundEvent(rl(name)) {
 
     constructor(name: String, subtitle: String?, vararg sounds: String) : this(name, subtitle, listOf(*sounds))
@@ -60,7 +60,7 @@ open class ModSoundEvent(name: String, subtitle: String?, private val sounds: Li
 
     init {
         RegistrationHandler.register(this, id)
-        EventHandler.modSounds.getOrPut(modid) { mutableListOf() }.add(this)
+        modSounds.getOrPut(modid) { mutableListOf() }.add(this)
     }
 
     companion object {
@@ -68,27 +68,21 @@ open class ModSoundEvent(name: String, subtitle: String?, private val sounds: Li
         fun simple(name: String): ModSoundEvent = ModSoundEvent(name, name)
 
         private fun rl(name: String) = ResourceLocation(currentModId, VariantHelper.toSnakeCase(name))
-    }
 
-    private object EventHandler {
-        val modSounds = mutableMapOf<String, MutableList<ModSoundEvent>>()
+        private val modSounds = mutableMapOf<String, MutableList<ModSoundEvent>>()
 
-        fun shouldGenerateAnyJson() = LibrarianLib.DEV_ENVIRONMENT && LibLibConfig.generateJson
+        private fun shouldGenerateAnyJson() = LibrarianLib.DEV_ENVIRONMENT && LibLibConfig.generateJson
 
-        init {
-            if (FMLCommonHandler.instance().side.isClient)
-                MinecraftForge.EVENT_BUS.register(this)
-        }
 
-        fun serialize(el: JsonElement)
+        private fun serialize(el: JsonElement)
                 = if (LibLibConfig.prettyJsonSerialization) el.serialize() else el.toString() + "\n"
 
-        fun log(text: String) {
+        private fun log(text: String) {
             if (LibrarianLib.DEV_ENVIRONMENT) LibrarianLog.info(text)
         }
 
+        @JvmStatic
         @SideOnly(Side.CLIENT)
-        @Suppress("UNUSED_PARAMETER")
         @SubscribeEvent(priority = EventPriority.LOWEST)
         fun onSoundRegistry(event: RegistryEvent.Register<SoundEvent>) {
             if (shouldGenerateAnyJson()) {

@@ -1,12 +1,13 @@
 package com.teamwizardry.librarianlib.features.particle
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.common.LibLibConfig
 import com.teamwizardry.librarianlib.features.math.interpolate.InterpFunction
 import com.teamwizardry.librarianlib.features.math.interpolate.InterpListGenerator
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.relauncher.Side
@@ -18,17 +19,15 @@ import java.util.function.BiConsumer
 /**
  * Manages the spawning of particles along paths
  */
+@Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
 object ParticleSpawner {
-
-    init {
-        MinecraftForge.EVENT_BUS.register(this)
-    }
 
     /**
      * The particles that are pending spawning
      */
     private var pending: MutableSet<ParticleSpawn> = Collections.newSetFromMap(ConcurrentHashMap())
 
+    @JvmStatic
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     fun tickEvent(event: TickEvent.ClientTickEvent) {
@@ -85,7 +84,7 @@ object ParticleSpawner {
     }
 }
 
-private data class ParticleSpawn private constructor(val particle: ParticleBase) {
+private data class ParticleSpawn(val particle: ParticleBase) {
     var ticksTillSpawn = 0
 
     constructor(particle: ParticleBase, ticksTillSpawn: Int) : this(particle) {

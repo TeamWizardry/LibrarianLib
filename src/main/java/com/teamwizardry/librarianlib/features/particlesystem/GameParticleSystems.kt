@@ -1,14 +1,16 @@
 package com.teamwizardry.librarianlib.features.particlesystem
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.forgeevents.CustomWorldRenderEvent
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.client.event.RenderGameOverlayEvent
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.world.WorldEvent
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.relauncher.Side
 import org.lwjgl.opengl.GL11
 import java.util.*
 
@@ -18,6 +20,7 @@ import java.util.*
  * This object is responsible for the rendering and updating of particle systems, and is where new particle systems
  * are sent to be rendered and ticked.
  */
+@Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
 internal object GameParticleSystems {
 
     var needsReload: Boolean = false
@@ -25,7 +28,6 @@ internal object GameParticleSystems {
     val systems: MutableList<ParticleSystem> = mutableListOf()
 
     init {
-        MinecraftForge.EVENT_BUS.register(this)
         ClientRunnable.registerReloadHandler {
             systems.forEach { it.reload() }
         }
@@ -41,6 +43,7 @@ internal object GameParticleSystems {
         systems.remove(system)
     }
 
+    @JvmStatic
     @SubscribeEvent
     fun tick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START)
@@ -68,6 +71,7 @@ internal object GameParticleSystems {
         profiler.endSection()
     }
 
+    @JvmStatic
     @SubscribeEvent
     fun debug(event: RenderGameOverlayEvent.Text) {
         if (!Minecraft.getMinecraft().gameSettings.showDebugInfo)
@@ -86,8 +90,8 @@ internal object GameParticleSystems {
         }
     }
 
+    @JvmStatic
     @SubscribeEvent
-    @Suppress("UNUSED_PARAMETER")
     fun render(event: CustomWorldRenderEvent) {
         val profiler = Minecraft.getMinecraft().profiler
 
@@ -117,8 +121,8 @@ internal object GameParticleSystems {
         GlStateManager.popMatrix()
     }
 
+    @JvmStatic
     @SubscribeEvent
-    @Suppress("UNUSED_PARAMETER")
     fun unloadWorld(event: WorldEvent.Unload) {
         systems.forEach { it.particles.clear() }
     }

@@ -1,19 +1,22 @@
 package com.teamwizardry.librarianlib.features.utilities.client
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.kotlin.toComponent
 import net.minecraft.client.Minecraft
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.util.text.Style
 import net.minecraft.util.text.TextFormatting
-import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
+import net.minecraftforge.fml.relauncher.Side
 import org.lwjgl.input.Keyboard
 import java.util.function.Supplier
 
 /**
  * Created by TheCodeWarrior
  */
+@Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
 object F3Handler {
     private val handlers = mutableMapOf<Int, Runnable>()
     private val updateText = mutableMapOf<Int, Supplier<String?>>()
@@ -23,20 +26,18 @@ object F3Handler {
             Keyboard.KEY_H, Keyboard.KEY_N, Keyboard.KEY_P, /* Q has handler */ Keyboard.KEY_T
     )
     private val keysDown = mutableMapOf<Int, Boolean>()
-    private var f3Down = false
 
     fun addHandler(key: Int, desc: String, update: Supplier<String?>, run: Runnable): Boolean {
         if (key in handlers || key in reserved)
             return false
-        handlers.put(key, run)
-        keysDown.put(key, false)
-        descriptions.put(key, desc)
-        updateText.put(key, update)
+        handlers[key] = run
+        keysDown[key] = false
+        descriptions[key] = desc
+        updateText[key] = update
         return true
     }
 
     init {
-        MinecraftForge.EVENT_BUS.register(this)
         addHandler(Keyboard.KEY_Q, "", Supplier { null }, Runnable {
             val guinewchat = Minecraft.getMinecraft().ingameGUI.chatGUI
             handlers.forEach {
@@ -48,8 +49,8 @@ object F3Handler {
         })
     }
 
+    @JvmStatic
     @SubscribeEvent
-    @Suppress("UNUSED_PARAMETER")
     fun key(e: InputEvent.KeyInputEvent) {
         if (Minecraft.getMinecraft().currentScreen != null) return
 
@@ -73,7 +74,7 @@ object F3Handler {
                     KeyBinding.onTick(Keyboard.KEY_ESCAPE)
                 }
 
-                keysDown.put(it.key, currentKey)
+                keysDown[it.key] = currentKey
             }
         }
     }

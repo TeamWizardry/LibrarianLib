@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.guicontainer
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.container.ContainerBase
 import com.teamwizardry.librarianlib.features.container.internal.ContainerImpl
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
@@ -12,9 +13,10 @@ import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.relauncher.Side
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
@@ -24,6 +26,7 @@ import java.io.IOException
  * Created by TheCodeWarrior
  */
 @Suppress("LeakingThis")
+@Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
 open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var guiHeight: Int) : GuiContainer(ContainerImpl(container)) {
     protected val mainComponents: ComponentVoid = ComponentVoid(0, 0)
     protected val fullscreenComponents: ComponentVoid = ComponentVoid(0, 0)
@@ -152,12 +155,8 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
     }
 
     companion object {
-        init {
-            MinecraftForge.EVENT_BUS.register(this)
-        }
-
+        @JvmStatic
         @SubscribeEvent
-        @Suppress("UNUSED_PARAMETER")
         fun tick(e: TickEvent.ClientTickEvent) {
             val gui = Minecraft.getMinecraft().currentScreen
             if (gui is GuiContainerBase) {

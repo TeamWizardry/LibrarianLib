@@ -26,7 +26,6 @@ import net.minecraft.util.math.RayTraceResult
 import net.minecraft.world.IBlockAccess
 import net.minecraft.world.World
 import net.minecraftforge.common.IShearable
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.util.*
@@ -39,12 +38,8 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
         val DECAYABLE: PropertyBool = PropertyBool.create("decayable")
         val CHECK_DECAY: PropertyBool = PropertyBool.create("check_decay")
 
-        val DECAY_BIT = 8
-        val CHECK_BIT = 4
-
-        init {
-            MinecraftForge.EVENT_BUS.register(this)
-        }
+        const val DECAY_BIT = 8
+        const val CHECK_BIT = 4
 
         val leavesFancy get() = !Blocks.LEAVES.isOpaqueCube(Blocks.LEAVES.defaultState)
     }
