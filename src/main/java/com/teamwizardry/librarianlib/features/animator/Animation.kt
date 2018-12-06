@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.features.kotlin.clamp
 /**
  * An animation applied to a specific object and property of that object
  */
-abstract class Animation<T : Any>(val target: T, val property: AnimatableProperty<T>) {
+abstract class Animation<T>(val target: T, val property: IAnimatable<T>) {
 
     /**
      * Default: true

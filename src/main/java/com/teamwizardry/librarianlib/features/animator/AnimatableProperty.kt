@@ -6,12 +6,12 @@ package com.teamwizardry.librarianlib.features.animator
  * the [VirtualFieldAccessorHandler]. Call [VirtualFieldAccessorHandler.printAvailable], optionally passing it a type,
  * to see what virtual fields are available and what their types are.
  */
-class AnimatableProperty<T : Any> private constructor(val target: Class<T>, val keyPath: String) {
+class AnimatableProperty<T : Any> private constructor(val target: Class<T>, val keyPath: String) : IAnimatable<T> {
 
     private val getter: (target: T) -> Any?
     private val setter: (target: T, value: Any?) -> Unit
     private val involvement: (target: T, check: Any) -> Boolean
-    val type: Class<Any>
+    override val type: Class<Any>
 
     init {
         val response = generateGetterAndSetterForKeyPath(target, keyPath.split("\\.|(?=\\[)".toRegex()).toTypedArray())
@@ -21,23 +21,55 @@ class AnimatableProperty<T : Any> private constructor(val target: Class<T>, val 
         involvement = response.involvement
     }
 
-    fun get(target: T): Any {
-        return getter(target) ?: throw NullPointerException("Cannot have null value in animation!")
-    }
+    override fun get(target: T) =
+            getter(target) ?: throw NullPointerException("Cannot have null value in animation!")
 
-    fun set(target: T, value: Any) {
-        setter(target, value)
-    }
+    override fun set(target: T, value: Any) = setter(target, value)
 
-    fun doesInvolve(target: T, obj: Any): Boolean {
-        return involvement(target, obj)
-    }
+    override fun doesInvolve(target: T, obj: Any) = involvement(target, obj)
 
     companion object {
         private var map = mutableMapOf<Pair<Class<*>, String>, AnimatableProperty<*>>()
         fun <T : Any> get(target: Class<T>, keyPath: String): AnimatableProperty<T> {
             @Suppress("UNCHECKED_CAST")
             return map.getOrPut(target to keyPath) { AnimatableProperty(target, keyPath) } as AnimatableProperty<T>
+        }
+    }
+}
+
+/**
+ * A static property that can be animated.
+ * [keyPath] is simply a sequence of fields to follow, with additional "virtual" fields available when registered with
+ * the [VirtualFieldAccessorHandler]. Call [VirtualFieldAccessorHandler.printAvailable], optionally passing it a type,
+ * to see what virtual fields are available and what their types are.
+ */
+class StaticAnimatableProperty<T : Any> private constructor(val target: Class<T>, val keyPath: String) : IAnimatable<Nothing?> {
+
+    private val getter: () -> Any?
+    private val setter: (value: Any?) -> Unit
+    private val involvement: (check: Any) -> Boolean
+    override val type: Class<Any>
+
+    init {
+        val response = generateGetterAndSetterForStaticKeyPath(target, keyPath.split("\\.|(?=\\[)".toRegex()).toTypedArray())
+        getter = response.getter
+        setter = response.setter
+        type = response.clazz
+        involvement = response.involvement
+    }
+
+    override fun get(target: Nothing?) =
+            getter() ?: throw NullPointerException("Cannot have null value in animation!")
+
+    override fun set(target: Nothing?, value: Any) = setter(target)
+
+    override fun doesInvolve(target: Nothing?, obj: Any) = involvement(obj)
+
+    companion object {
+        private var map = mutableMapOf<Pair<Class<*>, String>, StaticAnimatableProperty<*>>()
+        fun <T : Any> get(target: Class<T>, keyPath: String): StaticAnimatableProperty<T> {
+            @Suppress("UNCHECKED_CAST")
+            return map.getOrPut(target to keyPath) { StaticAnimatableProperty(target, keyPath) } as StaticAnimatableProperty<T>
         }
     }
 }

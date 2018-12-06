@@ -5,18 +5,18 @@ import com.teamwizardry.librarianlib.features.animator.*
 /**
  * A basic animation from [from] to [to]. Both values default to the current value of this animation's property
  */
-class BasicAnimation<T : Any>(target: T, property: IAnimatable<T>) : Animation<T>(target, property) {
-    constructor(target: T, property: String) : this(target, AnimatableProperty.get(target.javaClass, property))
+class StaticAnimation<T : Any>(property: IAnimatable<Nothing?>) : Animation<Nothing?>(null, property) {
+    constructor(target: Class<T>, property: String) : this(StaticAnimatableProperty.get(target, property))
 
     /**
      * The value of the property at [start]
      */
-    var from: Any = property.get(target)
+    var from: Any = property.get(null)
 
     /**
      * The value of the property at [end]
      */
-    var to: Any = property.get(target)
+    var to: Any = property.get(null)
 
     /**
      * The easing function to use to animate between [start] and [end]

@@ -1,16 +1,18 @@
 package com.teamwizardry.librarianlib.features.utilities
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
-import gnu.trove.map.hash.TLongObjectHashMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.minecraft.block.material.Material
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.world.WorldEvent
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.relauncher.Side
@@ -31,11 +33,8 @@ import kotlin.math.min
  * 2. It doesn't properly handle collision boxes that extend outside the bounds of their block. This is because, unlike
  * Minecraft's collision handling it doesn't check any blocks outside of those the velocity vector moves through.
  */
+@Mod.EventBusSubscriber(modid = LibrarianLib.MODID)
 class RayWorldCollider private constructor(world: World) {
-
-    init {
-        MinecraftForge.EVENT_BUS.register(this)
-    }
 
     private val worldRef = WeakReference(world)
 
@@ -110,9 +109,7 @@ class RayWorldCollider private constructor(world: World) {
      * This method _immediately_ clears the cache, meaning calling it repeatedly between [collide] calls can severely
      * impact performance.
      */
-    open fun requestRefresh() {
-        cache.clear()
-    }
+    fun requestRefresh() = cache.clear()
 
     /**
      * Traces a collision with the world given the specified start position and velocity.
@@ -233,10 +230,8 @@ class RayWorldCollider private constructor(world: World) {
     )
 
     private fun getAABBs(x: Int, y: Int, z: Int): List<AxisAlignedBB> {
-        val blockIndex = (x and 0x3f) or ((y and 0x3f) shl 10) or ((z and 0x3f) shl 20)
         mutablePos.setPos(x, y, z)
         cache[mutablePos.toLong()]?.let { return it }
-
 
         val list: List<AxisAlignedBB>
         if (!world.isBlockLoaded(mutablePos)
@@ -253,29 +248,33 @@ class RayWorldCollider private constructor(world: World) {
                 blockstate.addCollisionBoxToList(world, mutablePos, infiniteAABB, list, null, false)
             }
         }
-        cache.put(mutablePos.toLong(), list)
+        cache[mutablePos.toLong()] = list
 
         return list
     }
 
-    @SubscribeEvent
-    fun tick(e: TickEvent.ClientTickEvent) {
-        if (cacheResetTimer == -1) return
-        if (cache.size == 0) {
-            countdown = cacheResetTimer
-            return
-        }
-
-        if (countdown <= 0) {
-            cache.clear()
-            countdown = cacheResetTimer
-        }
-        countdown--
-    }
 
     companion object {
         @JvmStatic
         private val worldMap = WeakHashMap<World, RayWorldCollider>()
+
+        @SubscribeEvent
+        @JvmStatic
+        fun tick(e: TickEvent.ClientTickEvent) {
+            for (value in worldMap.values) {
+                if (value.cacheResetTimer == -1) return
+                if (value.cache.size == 0) {
+                    value.countdown = value.cacheResetTimer
+                    return
+                }
+
+                if (value.countdown <= 0) {
+                    value.cache.clear()
+                    value.countdown = value.cacheResetTimer
+                }
+                value.countdown--
+            }
+        }
 
         /**
          * Gets the [RayWorldCollider] for the passed world
