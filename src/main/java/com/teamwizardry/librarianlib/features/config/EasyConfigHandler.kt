@@ -76,16 +76,30 @@ object EasyConfigHandler {
                                      val requiresRestart: Boolean = false,
                                      val requiresWorld: Boolean = false) {
 
+        // Repetition because these are inconvertible types
+        private fun stringRep(obj: Any?) = when (obj) {
+            is Array<*> -> "[" + obj.joinToString() + "]"
+            is ByteArray -> "[" + obj.joinToString() + "]"
+            is CharArray -> "[" + obj.joinToString() + "]"
+            is ShortArray -> "[" + obj.joinToString() + "]"
+            is IntArray -> "[" + obj.joinToString() + "]"
+            is FloatArray -> "[" + obj.joinToString() + "]"
+            is LongArray -> "[" + obj.joinToString() + "]"
+            is DoubleArray -> "[" + obj.joinToString() + "]"
+            is BooleanArray -> "[" + obj.joinToString() + "]"
+            else -> obj.toString()
+        }
+
         val editedComment: String
 
         init {
             var commented = comment
             if (min != null)
-                commented += "\nMin: $min"
+                commented += "\nMin: ${stringRep(min)}"
             if (defaultValue != null)
-                commented += "\nDefault: $min"
+                commented += "\nDefault: ${stringRep(defaultValue)}"
             if (max != null)
-                commented += "\nMax: $min"
+                commented += "\nMax: ${stringRep(max)}"
             editedComment = commented
         }
     }
@@ -245,7 +259,8 @@ object EasyConfigHandler {
                     val annot = field.getAnnotation(ConfigIntRange::class.java)
                     FieldEntry(modid, { it: Int -> field.set(inst, it) }, field.get(inst) as Int,
                             field.isAnnotationPresent(ConfigDevOnly::class.java),
-                            info.getString("comment"), info.getString("category"), identifier, annot?.max ?: Int.MAX_VALUE, annot?.min ?: Int.MIN_VALUE,
+                            info.getString("comment"), info.getString("category"), identifier,
+                            annot?.max, annot?.min,
                             info.getInt("sortingId"), field.isAnnotationPresent(ConfigNeedsFullRestart::class.java),
                             field.isAnnotationPresent(ConfigNeedsWorldRestart::class.java))
                 }
@@ -253,7 +268,8 @@ object EasyConfigHandler {
                     val annot = field.getAnnotation(ConfigDoubleRange::class.java)
                     FieldEntry(modid, { it: Double -> field.set(inst, it) }, field.get(inst) as Double,
                             field.isAnnotationPresent(ConfigDevOnly::class.java),
-                            info.getString("comment"), info.getString("category"), identifier, annot?.max ?: Double.MAX_VALUE, annot?.min ?: Double.MIN_VALUE,
+                            info.getString("comment"), info.getString("category"), identifier,
+                            annot?.max, annot?.min,
                             info.getInt("sortingId"), field.isAnnotationPresent(ConfigNeedsFullRestart::class.java),
                             field.isAnnotationPresent(ConfigNeedsWorldRestart::class.java))
                 }
@@ -264,7 +280,8 @@ object EasyConfigHandler {
                     val annot = field.getAnnotation(ConfigIntRange::class.java)
                     FieldEntry(modid, { it: IntArray -> field.set(inst, it) }, field.get(inst) as IntArray,
                             field.isAnnotationPresent(ConfigDevOnly::class.java),
-                            info.getString("comment"), info.getString("category"), identifier, intArrayOf(annot?.max ?: Int.MAX_VALUE), intArrayOf(annot?.min ?: Int.MIN_VALUE),
+                            info.getString("comment"), info.getString("category"), identifier,
+                            annot?.max?.let { intArrayOf(it) }, annot?.min?.let { intArrayOf(it) },
                             info.getInt("sortingId"), field.isAnnotationPresent(ConfigNeedsFullRestart::class.java),
                             field.isAnnotationPresent(ConfigNeedsWorldRestart::class.java))
                 }
@@ -272,7 +289,8 @@ object EasyConfigHandler {
                     val annot = field.getAnnotation(ConfigDoubleRange::class.java)
                     FieldEntry(modid, { it: DoubleArray -> field.set(inst, it) }, field.get(inst) as DoubleArray,
                             field.isAnnotationPresent(ConfigDevOnly::class.java),
-                            info.getString("comment"), info.getString("category"), identifier, doubleArrayOf(annot?.max ?: Double.MAX_VALUE), doubleArrayOf(annot?.min ?: Double.MIN_VALUE),
+                            info.getString("comment"), info.getString("category"), identifier,
+                            annot?.max?.let { doubleArrayOf(it) }, annot?.min?.let { doubleArrayOf(it) },
                             info.getInt("sortingId"), field.isAnnotationPresent(ConfigNeedsFullRestart::class.java),
                             field.isAnnotationPresent(ConfigNeedsWorldRestart::class.java))
                 }
