@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.features.animator.*
  */
 class BasicAnimation<T : Any>(target: T, property: IAnimatable<T>) : Animation<T>(target, property) {
     constructor(target: T, property: String) : this(target, AnimatableProperty.get(target.javaClass, property))
+    @PublishedApi internal constructor(target: T, property: AnimatableProperty<T>) : this(target, property as IAnimatable<T>)
 
     /**
      * The value of the property at [start]
