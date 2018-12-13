@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.layers.ColorLayer
 import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
+import com.teamwizardry.librarianlib.features.gui.layers.TextTestLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Align2d
 import java.awt.Color
@@ -50,5 +51,14 @@ class GuiTestTextLayer : GuiBase() {
         """.trimIndent()
         textLayer.align = Align2d.CENTER
         main.add(textLayer)
+
+        textLayer = TextLayer(10, 48, 1000, 35)
+        textLayer.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nibh sem, interdum ut nunc eu,"
+        textLayer.unicode = true
+        main.add(textLayer)
+
+        val testTextLayer = TextTestLayer(10, 64, 100, 35)
+        testTextLayer.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nibh sem, interdum ut nunc eu,"
+        main.add(testTextLayer)
     }
 }

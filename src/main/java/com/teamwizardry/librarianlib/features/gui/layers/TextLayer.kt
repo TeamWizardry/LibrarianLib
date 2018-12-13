@@ -2,13 +2,12 @@ package com.teamwizardry.librarianlib.features.gui.layers
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.value.IMValue
-import com.teamwizardry.librarianlib.features.gui.value.IMValueBoolean
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Align2d
+import com.teamwizardry.librarianlib.features.text.TextLayout
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import java.awt.Color
-import net.minecraft.client.gui.FontRenderer.getFormatFromString
 import net.minecraft.client.renderer.GlStateManager
 
 class TextLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, posY, width, height) {

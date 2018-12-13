@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.helpers
 
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.util.math.Vec3d
 
 @Deprecated("Use primitive functions", level = DeprecationLevel.HIDDEN)
@@ -46,3 +47,30 @@ fun vec(x: Double, y: Float, z: Double) = Vec3d(x, y.toDouble(), z)
 fun vec(x: Double, y: Double, z: Int) = Vec3d(x, y, z.toDouble())
 fun vec(x: Double, y: Double, z: Float) = Vec3d(x, y, z.toDouble())
 fun vec(x: Double, y: Double, z: Double) = Vec3d(x, y, z)
+
+fun BufferBuilder.pos(x: Int, y: Int, z: Int): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z.toDouble())
+fun BufferBuilder.pos(x: Int, y: Int, z: Float): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z.toDouble())
+fun BufferBuilder.pos(x: Int, y: Int, z: Double): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z)
+fun BufferBuilder.pos(x: Int, y: Float, z: Int): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z.toDouble())
+fun BufferBuilder.pos(x: Int, y: Float, z: Float): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z.toDouble())
+fun BufferBuilder.pos(x: Int, y: Float, z: Double): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z)
+fun BufferBuilder.pos(x: Int, y: Double, z: Int): BufferBuilder = this.pos(x.toDouble(), y, z.toDouble())
+fun BufferBuilder.pos(x: Int, y: Double, z: Float): BufferBuilder = this.pos(x.toDouble(), y, z.toDouble())
+fun BufferBuilder.pos(x: Int, y: Double, z: Double): BufferBuilder = this.pos(x.toDouble(), y, z)
+fun BufferBuilder.pos(x: Float, y: Int, z: Int): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z.toDouble())
+fun BufferBuilder.pos(x: Float, y: Int, z: Float): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z.toDouble())
+fun BufferBuilder.pos(x: Float, y: Int, z: Double): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z)
+fun BufferBuilder.pos(x: Float, y: Float, z: Int): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z.toDouble())
+fun BufferBuilder.pos(x: Float, y: Float, z: Float): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z.toDouble())
+fun BufferBuilder.pos(x: Float, y: Float, z: Double): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z)
+fun BufferBuilder.pos(x: Float, y: Double, z: Int): BufferBuilder = this.pos(x.toDouble(), y, z.toDouble())
+fun BufferBuilder.pos(x: Float, y: Double, z: Float): BufferBuilder = this.pos(x.toDouble(), y, z.toDouble())
+fun BufferBuilder.pos(x: Float, y: Double, z: Double): BufferBuilder = this.pos(x.toDouble(), y, z)
+fun BufferBuilder.pos(x: Double, y: Int, z: Int): BufferBuilder = this.pos(x, y.toDouble(), z.toDouble())
+fun BufferBuilder.pos(x: Double, y: Int, z: Float): BufferBuilder = this.pos(x, y.toDouble(), z.toDouble())
+fun BufferBuilder.pos(x: Double, y: Int, z: Double): BufferBuilder = this.pos(x, y.toDouble(), z)
+fun BufferBuilder.pos(x: Double, y: Float, z: Int): BufferBuilder = this.pos(x, y.toDouble(), z.toDouble())
+fun BufferBuilder.pos(x: Double, y: Float, z: Float): BufferBuilder = this.pos(x, y.toDouble(), z.toDouble())
+fun BufferBuilder.pos(x: Double, y: Float, z: Double): BufferBuilder = this.pos(x, y.toDouble(), z)
+fun BufferBuilder.pos(x: Double, y: Double, z: Int): BufferBuilder = this.pos(x, y, z.toDouble())
+fun BufferBuilder.pos(x: Double, y: Double, z: Float): BufferBuilder = this.pos(x, y, z.toDouble())
