@@ -24,7 +24,7 @@ open class LibGuiImpl(protected val guiWidth: () -> Int, protected val guiHeight
     val root: RootComponent = RootComponent()
     val main: GuiComponent = object: GuiComponent(0, 0) {
         override var pos: Vec2d
-            get() = root.size/2
+            get() = vec(root.size.xi/2, root.size.yi/2)
             set(value) {}
         override var anchor: Vec2d
             get() = vec(0.5, 0.5)
