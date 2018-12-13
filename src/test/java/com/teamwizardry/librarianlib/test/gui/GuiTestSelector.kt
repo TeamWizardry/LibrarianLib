@@ -42,6 +42,7 @@ class GuiTestSelector : GuiBase() {
         ListItem("Arc") { GuiTestArc() },
         ListItem("Keyframe Builder") { GuiTestValueKeyframeBuilder() },
         ListItem("Text") { GuiTestTextLayer() },
+        ListItem("MCTiny Text") { GuiTestMCTiny() },
         ListItem("Pastry") { GuiTestPastry() }
     )
 

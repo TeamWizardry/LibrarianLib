@@ -107,7 +107,8 @@ class TextLayout {
         var remaining = text
         while(remaining.isNotEmpty()) {
             val i = if(wrapWidth == 0) remaining.length else fontRenderer.sizeStringToWidth(remaining, wrapWidth)
-            if(i == 0) throw TextLayoutException("Could not wrap `$remaining` to width $wrapWidth")
+            if(i == 0 && !remaining[0].isWhitespace())
+                throw TextLayoutException("Could not wrap `$remaining` to width $wrapWidth")
 
             val runString: String
 

@@ -4,20 +4,32 @@ import net.minecraft.client.renderer.BufferBuilder
 import java.awt.Color
 
 object Typesetter {
-    fun createRun(text: String, maxWidth: Int): TextRun {
-        if(text.isEmpty()) return TextRun(emptyList())
-        val font = Font.tiny
+    fun createRun(font: Font, text: String, maxWidth: Int): Pair<String, TextRun> {
+        if(text.isEmpty()) return text to TextRun(emptyList())
 
-        val glyphs = mutableListOf<Glyph>()
+        var glyphs = mutableListOf<Glyph>()
+        var chars = 0
         var width = 0
         for(char in text) {
+            if(char == '\n') {
+                chars++
+                break
+            }
             val glyph = font[char]
             width += glyph.advance
-            if(width > maxWidth)
+            if(width > maxWidth) {
+                val splitPoint = text.substring(0, chars+1).indexOfLast { it.isWhitespace() }
+                if(splitPoint != -1) {
+                    chars = splitPoint+1
+                    glyphs = glyphs.subList(0, splitPoint)
+                }
                 break
+            }
+
+            chars++
             glyphs.add(glyph)
         }
-        return TextRun(glyphs)
+        return text.substring(chars) to TextRun(glyphs)
     }
 }
 

@@ -20,7 +20,7 @@ import java.nio.ByteBuffer
 import kotlin.math.ceil
 import kotlin.math.sqrt
 
-class Font(val location: ResourceLocation) {
+class Font(val location: ResourceLocation, val monospace: Boolean = false) {
     val texture = ResourceLocation(location.namespace, location.path + "/font.png")
     val glyphs = Char2ObjectOpenHashMap<Glyph>()
     lateinit var missingGlyph: Glyph
@@ -31,6 +31,7 @@ class Font(val location: ResourceLocation) {
         private set
 
     init {
+        fonts.add(WeakReference(this))
         load()
     }
 
@@ -53,6 +54,11 @@ class Font(val location: ResourceLocation) {
             g.u = (it % gridCells) * glyphSize
             g.v = (it / gridCells) * glyphSize
             glyphs[g.codepoint] = g
+        }
+        if(monospace) {
+            glyphs.forEach {
+                it.value.advance = emSize
+            }
         }
         missingGlyph = glyphs[0xFFFF.toChar()]
             ?: throw FontException("Invalid font at $location. Fonts must include a 'Missing Glyph' glyph at 0xFFFF")
@@ -79,10 +85,11 @@ class Font(val location: ResourceLocation) {
         var fonts: MutableList<WeakReference<Font>> = ArrayList()
 
         val tiny = Font("librarianlib:font/mctiny".toRl())
+        val tinyMono = Font("librarianlib:font/mctiny".toRl(), true)
     }
 }
 
-class Glyph(val font: Font, val index: Int, val codepoint: Char, val advance: Int, val leftHang: Int) {
+class Glyph(val font: Font, val index: Int, val codepoint: Char, var advance: Int, val leftHang: Int) {
     var u: Double = 0.0
     var v: Double = 0.0
     var uvSize: Double = 0.0

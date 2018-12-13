@@ -22,8 +22,17 @@ class TextTestLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(pos
     var text: String = ""
         set(value) {
             field = value
-            runs = listOf(Typesetter.createRun(text, Int.MAX_VALUE))
+            val runs = mutableListOf<TextRun>()
+            var remaining = text
+            while(true) {
+                val (rem, run) = Typesetter.createRun(Font.tiny, remaining, size.xi)
+                if(remaining == rem) break
+                remaining = rem
+                runs.add(run)
+            }
+            this.runs = runs
         }
+
     override fun draw(partialTicks: Float) {
         GlStateManager.pushMatrix()
 
@@ -44,8 +53,10 @@ class TextTestLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(pos
         Minecraft().renderEngine.bindTexture(Font.tiny.texture)
         val vb = Tessellator.getInstance().buffer
         vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR)
+        var cursor = 0
         runs.forEach { run ->
-            run.place(vb, Color.BLACK, 0, 0, 1)
+            run.place(vb, Color.BLACK, 0, cursor, 1)
+            cursor += 9
         }
         Tessellator.getInstance().draw()
         GlStateManager.enableCull()
