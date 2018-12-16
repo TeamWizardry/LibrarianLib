@@ -201,9 +201,8 @@ class RayWorldCollider private constructor(world: World) {
         if (!world.isBlockLoaded(mutablePos) || mutablePos.y < 0 || mutablePos.y > world.actualHeight) {
             list = emptyList()
         } else {
-            lateinit var blockstate: IBlockState
-            if (world.fastIsAir(x, y, z) ||
-                world.getBlockState(mutablePos).also { blockstate = it }.material == Material.AIR ||
+            val blockstate: IBlockState = world.getBlockState(mutablePos)
+            if (blockstate.material == Material.AIR ||
                 !blockstate.material.blocksMovement() || blockstate.material.isLiquid) {
                 list = emptyList()
             } else {
@@ -211,7 +210,7 @@ class RayWorldCollider private constructor(world: World) {
                 blockstate.addCollisionBoxToList(world, mutablePos, infiniteAABB, list, null, false)
             }
         }
-        cache.put(mutablePos.toLong(), list)
+        cache[mutablePos.toLong()] = list
 
         return list
     }
