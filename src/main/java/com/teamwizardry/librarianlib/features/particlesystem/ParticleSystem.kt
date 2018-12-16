@@ -8,6 +8,8 @@ import org.magicwerk.brownies.collections.GapList
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.math.ceil
+import kotlin.math.floor
 
 /**
  * A system of particles with similar behavior.
@@ -155,15 +157,11 @@ abstract class ParticleSystem {
             systemInitialized = true
         }
 
-        val particle = DoubleArray(fieldCount)
+        val particle = particlePool.poll() ?: DoubleArray(fieldCount)
         particle[0] = lifetime
         particle[1] = 0.0
-        (2 until particle.size).forEach { i ->
-            if (i - 2 < params.size)
-                particle[i] = params[i - 2]
-            else
-                particle[i] = 0.0
-        }
+        params.copyInto(particle, 2)
+
         if (shouldQueue.get()) {
             queuedAdditions.add(particle)
         } else {
@@ -202,6 +200,8 @@ abstract class ParticleSystem {
         this.renderPrepModules.clear()
         this.renderModules.clear()
 
+        this.particles.clear()
+        this.particlePool.clear()
         this.canBind = true
         this.fieldCount = 0
 
@@ -226,7 +226,8 @@ abstract class ParticleSystem {
 
             val lifetime = this.lifetime.value[0]
             val age = this.age.value[0]
-            if (age >= lifetime) {
+            // round age up and lifetime down so age is never greater than lifetime
+            if (ceil(age) >= floor(lifetime)) {
                 iter.remove()
                 if (particlePool.size < poolSize)
                     particlePool.push(particle)
