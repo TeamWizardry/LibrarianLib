@@ -25,7 +25,7 @@ class TextTestLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(pos
             val runs = mutableListOf<TextRun>()
             var remaining = text
             while(true) {
-                val (rem, run) = Typesetter.createRun(Font.tiny, remaining, size.xi)
+                val (rem, run) = Typesetter.createRun(Font.tinyMono, remaining, size.xi)
                 if(remaining == rem) break
                 remaining = rem
                 runs.add(run)
@@ -50,7 +50,7 @@ class TextTestLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(pos
         GlStateManager.disableCull()
         GlStateManager.enableTexture2D()
         GlStateManager.enableBlend()
-        Minecraft().renderEngine.bindTexture(Font.tiny.texture)
+        Minecraft().renderEngine.bindTexture(Font.tinyMono.texture)
         val vb = Tessellator.getInstance().buffer
         vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR)
         var cursor = 0
