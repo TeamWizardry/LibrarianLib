@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import gnu.trove.map.hash.TLongObjectHashMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.minecraft.block.material.Material
+import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.AxisAlignedBB
@@ -42,7 +43,6 @@ class RayWorldCollider private constructor(world: World) {
     private val world: World
         get() = worldRef.get()!!
 
-    //private val cache = RayWorldCacheMap(5000, 0.5f)
     private val cache = Long2ObjectOpenHashMap<List<AxisAlignedBB>>()
 
     private var countdown = 0
@@ -197,13 +197,14 @@ class RayWorldCollider private constructor(world: World) {
         mutablePos.setPos(x, y, z)
         cache[mutablePos.toLong()]?.let { return it }
 
-
         val list: List<AxisAlignedBB>
         if (!world.isBlockLoaded(mutablePos) || mutablePos.y < 0 || mutablePos.y > world.actualHeight) {
             list = emptyList()
         } else {
-            val blockstate = world.getBlockState(mutablePos)
-            if (blockstate.block == Blocks.AIR || blockstate.material == Material.AIR || !blockstate.material.blocksMovement() || blockstate.material.isLiquid) {
+            lateinit var blockstate: IBlockState
+            if (world.fastIsAir(x, y, z) ||
+                world.getBlockState(mutablePos).also { blockstate = it }.material == Material.AIR ||
+                !blockstate.material.blocksMovement() || blockstate.material.isLiquid) {
                 list = emptyList()
             } else {
                 list = ArrayList(1)
@@ -325,38 +326,3 @@ private object ClientRayWorldCollider {
     }
 }
 
-/*
-var fastAirCheck = true
-fun blah() {
-    val isAir = false
-    if(fastAirCheck) {
-        try {
-            isAir = this.isAir(x, y, z)
-        } catch(e: Exception) {
-            fastAirCheck = false
-        }
-    }
-    if(isAir) {
-        list = emptyList()
-    } else {
-        val blockState = world.getBlockState(...)
-        if(blockState.block == Air || materialAirStuff || whatever)
-        list = ArrayList(1)
-        // add from blockstate and whatnot.
-    }
-}
-private fun isAir(x: Int, y: Int, z: Int): Boolean {
-    val chunk = world.chunkProvider.getLoadedChunk(x shr 4, z shr 4) ?: return true
-    val storageArrays = chunk.storageArrays_mh
-    if(y < 0 || y shr 4 >= storageArrays.size) return true
-    val storage = storageArrays[y shr 4]
-
-    if(storage == Chunk.NULL_BLOCK_STORAGE) return true
-    val data = storage.data_mh
-    val index = (y and 0xf shl 8) or (z and 0xf shl 4) or (x and 0xf)
-    return data.storage_mh.getAt(index) == 0
-}
-val Chunk.storageArrays_mh by MethodHandleHelper.delegateForReadOnly<Chunk, Array<ExtendedBlockStorage>>(Chunk::class.java, "field_78725_b", "renderPosX")
-val ExtendedBlockStorage.data_mh by MethodHandleHelper.delegateForReadOnly<ExtendedBlockStorage, BlockStateContainer>(ExtendedBlockStorage::class.java, "field_78725_b", "renderPosX")
-val BlockStateContainer.storage_mh by MethodHandleHelper.delegateForReadOnly<BlockStateContainer, BitArray>(BlockStateContainer::class.java, "field_78725_b", "renderPosX")
- */
