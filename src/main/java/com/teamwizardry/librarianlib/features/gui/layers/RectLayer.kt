@@ -28,7 +28,7 @@ class RectLayer(color: Color = Color.white, posX: Int, posY: Int, width: Int, he
         GlStateManager.enableBlend()
         GlStateManager.color(c.red / 255f, c.green / 255f, c.blue / 255f, c.alpha / 255f)
 
-        vb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION)
+        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION)
         vb.pos(minX, minY, 0.0).endVertex()
         vb.pos(minX, maxY, 0.0).endVertex()
         vb.pos(maxX, maxY, 0.0).endVertex()

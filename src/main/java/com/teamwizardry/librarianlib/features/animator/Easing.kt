@@ -9,9 +9,9 @@ import net.minecraft.util.math.MathHelper
 abstract class Easing {
 
     /**
-     * @param progress A progress value from 0-1
-     * @return A float value for interpolation. This value **is not** guaranteed to be between 0 and 1. If your
-     *           interpolation algorithm requires a 0-1 value you **must** clamp this to that range.
+     * @param progress A progress array from 0-1
+     * @return A float array for interpolation. This array **is not** guaranteed to be between 0 and 1. If your
+     *           interpolation algorithm requires a 0-1 array you **must** clamp this to that range.
      */
     abstract operator fun invoke(progress: Float): Float
 

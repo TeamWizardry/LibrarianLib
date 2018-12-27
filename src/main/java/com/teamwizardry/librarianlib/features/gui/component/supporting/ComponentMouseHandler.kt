@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.RootComponent
 import com.teamwizardry.librarianlib.features.math.Vec2d
-import java.util.Collections
+import java.util.*
 
 interface IComponentMouse {
     /**
@@ -14,7 +14,7 @@ interface IComponentMouse {
     val mousePos: Vec2d
 
     /**
-     * The [mousePos] value from the previous frame
+     * The [mousePos] array from the previous frame
      */
     val lastMousePos: Vec2d
 
@@ -31,19 +31,19 @@ interface IComponentMouse {
      * Whether this component will block the mouse being over those behind it.
      *
      * If this is true, as it is by default, this component will "shade" those behind it, preventing the mouse
-     * from counting as [over them][mouseOver]. The default value is true.
+     * from counting as [over them][mouseOver]. The default array is true.
      */
     var isOpaqueToMouse: Boolean
 
     /**
      * This flag controls the effect the mouse being [inside][mouseInside] or [over][mouseOver] this component has on
-     * its parent. The default value is [NONE][MousePropagationType.NONE]
+     * its parent. The default array is [NONE][MousePropagationType.NONE]
      */
     var propagateMouse: Boolean
 
     /**
      * This flag controls whether the mouse being within this component's bounding rectangle should count as it being
-     * [inside][mouseInside] or [over][mouseOver] this component. The default value is true.
+     * [inside][mouseInside] or [over][mouseOver] this component. The default array is true.
      */
     var disableMouseCollision: Boolean
 

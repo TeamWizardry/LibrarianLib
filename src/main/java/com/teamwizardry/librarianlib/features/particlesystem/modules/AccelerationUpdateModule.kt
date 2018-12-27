@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.features.particlesystem.modules
 
-import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
+import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.ReadWriteParticleBinding
 
 /**
@@ -27,7 +27,7 @@ class AccelerationUpdateModule(
     override fun update(particle: DoubleArray) {
         velocity.load(particle)
         for(i in 0 until 3) {
-            velocity.value[i] += acceleration.value[i]
+            velocity.setValue(i, velocity.getValue(i) + acceleration.getValue(i))
         }
         velocity.store(particle)
     }

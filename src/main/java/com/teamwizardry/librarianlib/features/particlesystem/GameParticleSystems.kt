@@ -32,7 +32,7 @@ internal object GameParticleSystems {
     }
 
     fun add(system: ParticleSystem) {
-        if(!systems.contains(system)) {
+        if (!systems.contains(system)) {
             systems.add(system)
         }
     }
@@ -53,7 +53,7 @@ internal object GameParticleSystems {
         val profiler = Minecraft.getMinecraft().profiler
         profiler.startSection("liblib_new_particles")
         try {
-            if(needsReload) {
+            if (needsReload) {
                 needsReload = false
                 systems.forEach {
                     it.reload()
@@ -73,7 +73,7 @@ internal object GameParticleSystems {
         if (!Minecraft.getMinecraft().gameSettings.showDebugInfo)
             return
 
-        if(systems.isNotEmpty()) {
+        if (systems.isNotEmpty()) {
             event.left.add("LibrarianLib Particle Systems:")
             var total = 0
             systems.forEach { system ->
@@ -101,9 +101,10 @@ internal object GameParticleSystems {
         val entity = Minecraft.getMinecraft().renderViewEntity
         if (entity != null) {
             try {
-            systems.forEach {
-                it.render()
-            }
+                systems.forEach {
+                    if (!it.manuallyRender)
+                        it.render()
+                }
 
             } catch (e: ConcurrentModificationException) {
                 e.printStackTrace()

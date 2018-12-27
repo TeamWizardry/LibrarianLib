@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.features.gui.value
 
-import com.teamwizardry.librarianlib.features.animator.AnimatableProperty
 import com.teamwizardry.librarianlib.features.animator.Animation
 import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.animator.Lerper
@@ -73,14 +72,14 @@ class GuiAnimator {
          *
          * The internal process by which animations are created is as follows:
          * - The first time any given [IMValue] or [RMValue] is modified inside of [block] it registers
-         * itself using `GuiAnimator.`[current][current]`.`[add][add] and its pre-change value is saved as the
-         * starting value of the animation.
-         * - After the block finishes the value of each [GuiAnimatable] object that was registered is read as the
-         * ending value of the animation.
-         * - If the start and end are equal or either is null then no animations will be added for that value.
+         * itself using `GuiAnimator.`[current][current]`.`[add][add] and its pre-change array is saved as the
+         * starting array of the animation.
+         * - After the block finishes the array of each [GuiAnimatable] object that was registered is read as the
+         * ending array of the animation.
+         * - If the start and end are equal or either is null then no animations will be added for that array.
          *
          * @param duration The duration of the returned animation
-         * @param easing The easing value of the returned animation
+         * @param easing The easing array of the returned animation
          * @param block The block that will be run and inside of which any changes will occur
          * @return The generated animation
          */
@@ -106,14 +105,14 @@ class GuiAnimator {
          *
          * The internal process by which animations are created is as follows:
          * - The first time any given [IMValue] or [RMValue] is modified inside of [block] it registers
-         * itself using `GuiAnimator.`[current][current]`.`[add][add] and its pre-change value is saved as the
-         * starting value of the animation.
-         * - After the block finishes the value of each [GuiAnimatable] object that was registered is read as the
-         * ending value of the animation.
-         * - If the start and end are equal or either is null then no animations will be added for that value.
+         * itself using `GuiAnimator.`[current][current]`.`[add][add] and its pre-change array is saved as the
+         * starting array of the animation.
+         * - After the block finishes the array of each [GuiAnimatable] object that was registered is read as the
+         * ending array of the animation.
+         * - If the start and end are equal or either is null then no animations will be added for that array.
          *
          * @param duration The duration of the returned animation
-         * @param easing The easing value of the returned animation
+         * @param easing The easing array of the returned animation
          * @param block The block that will be run and inside of which any changes will occur
          * @return The generated animation
          */
@@ -141,14 +140,14 @@ class GuiAnimator {
      *
      * The internal process by which animations are created is as follows:
      * - The first time any given [IMValue] or [RMValue] is modified inside of [block] it registers
-     * itself using `GuiAnimator.`[current][current]`.`[add][add] and its pre-change value is saved as the
-     * starting value of the animation.
-     * - After the block finishes the value of each [GuiAnimatable] object that was registered is read as the
-     * ending value of the animation.
-     * - If the start and end are equal or either is null then no animations will be added for that value.
+     * itself using `GuiAnimator.`[current][current]`.`[add][add] and its pre-change array is saved as the
+     * starting array of the animation.
+     * - After the block finishes the array of each [GuiAnimatable] object that was registered is read as the
+     * ending array of the animation.
+     * - If the start and end are equal or either is null then no animations will be added for that array.
      *
      * @param duration The duration of the returned animation
-     * @param easing The easing value of the returned animation
+     * @param easing The easing array of the returned animation
      * @param block The block that will be run and inside of which any changes will occur
      * @return The generated animation
      */
@@ -238,7 +237,7 @@ private class GuiImplicitAnimation(val targets: List<ValueAnimation>): Animation
             val newValue = lerper.lerp(start, end, progress)
 
             val currentValue = target.getAnimatableValue()
-            if(currentValue != previousValue) { // the value was manually set
+            if (currentValue != previousValue) { // the array was manually set
                 previousCallback = null
             }
             previousValue = currentValue

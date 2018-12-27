@@ -1,7 +1,10 @@
 package com.teamwizardry.librarianlib.features.particlesystem.modules
 
 import com.teamwizardry.librarianlib.core.client.ClientTickHandler
-import com.teamwizardry.librarianlib.features.particlesystem.*
+import com.teamwizardry.librarianlib.features.particlesystem.BlendMode
+import com.teamwizardry.librarianlib.features.particlesystem.ParticleRenderModule
+import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
+import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.ConstantBinding
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
@@ -34,7 +37,7 @@ class SpriteRenderModule @JvmOverloads constructor(
          */
         @JvmField val previousPosition: ReadParticleBinding? = null,
         /**
-         * The OpenGL color of the particle
+         * The OpenGL colorPrimary of the particle
          */
         @JvmField val color: ReadParticleBinding = ConstantBinding(1.0, 1.0, 1.0, 1.0),
         /**
@@ -48,7 +51,7 @@ class SpriteRenderModule @JvmOverloads constructor(
          */
         @JvmField val facingVector: ReadParticleBinding? = null,
         /**
-         * The alpha multiplier for the color. Defaults to 1 if not present.
+         * The alpha multiplier for the colorPrimary. Defaults to 1 if not present.
          */
         @JvmField val alphaMultiplier: ReadParticleBinding = ConstantBinding(1.0),
         /**
@@ -62,7 +65,13 @@ class SpriteRenderModule @JvmOverloads constructor(
         /**
          * Whether to enable OpenGL blending
          */
-        @JvmField val enableBlend: Boolean = true
+        @JvmField val enableBlend: Boolean = true,
+        /**
+         * If disabled, will render the particles in 3d space (the particle face vectors will be against that of the
+         * player in 3D).
+         * If enabled, will render the particles with flat vectors so they always face the screen (like in a gui).
+         */
+        @JvmField val is2D: Boolean = false
 ) : ParticleRenderModule {
     init {
         previousPosition?.require(3)
@@ -92,7 +101,7 @@ class SpriteRenderModule @JvmOverloads constructor(
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
         GlStateManager.disableCull()
 
-
+        //if (is2D) 0.0 else
         val playerYaw = player.prevRotationYaw.toDouble()
         val playerPitch = player.prevRotationPitch.toDouble()
 
@@ -119,9 +128,9 @@ class SpriteRenderModule @JvmOverloads constructor(
             }
             if (facingVector != null) {
                 facingVector.load(particle)
-                val facingX = facingVector.value[0]
-                val facingY = facingVector.value[1]
-                val facingZ = facingVector.value[2]
+                val facingX = facingVector.getValue(0)
+                val facingY = facingVector.getValue(1)
+                val facingZ = facingVector.getValue(2)
                 // x axis, facing • (0, 1, 0)
                 iHatX = -facingZ
                 iHatY = 0.0
@@ -142,7 +151,7 @@ class SpriteRenderModule @JvmOverloads constructor(
             }
 
             size.load(particle)
-            val size = this.size.value[0] / 2
+            val size = this.size.getValue(0) / 2
             val localIHatX = iHatX * size
             val localIHatY = iHatY * size
             val localIHatZ = iHatZ * size
@@ -151,22 +160,22 @@ class SpriteRenderModule @JvmOverloads constructor(
             val localJHatZ = jHatZ * size
 
             position.load(particle)
-            var x = position.value[0]
-            var y = position.value[1]
-            var z = position.value[2]
-            if(previousPosition != null) {
+            var x = position.getValue(0)
+            var y = position.getValue(1)
+            var z = position.getValue(2)
+            if (previousPosition != null) {
                 previousPosition.load(particle)
-                x = ClientTickHandler.interpWorldPartialTicks(previousPosition.value[0], x)
-                y = ClientTickHandler.interpWorldPartialTicks(previousPosition.value[1], y)
-                z = ClientTickHandler.interpWorldPartialTicks(previousPosition.value[2], z)
+                x = ClientTickHandler.interpWorldPartialTicks(previousPosition.getValue(0), x)
+                y = ClientTickHandler.interpWorldPartialTicks(previousPosition.getValue(1), y)
+                z = ClientTickHandler.interpWorldPartialTicks(previousPosition.getValue(2), z)
             }
 
             color.load(particle)
             alphaMultiplier.load(particle)
-            val r = color.value[0].toFloat()
-            val g = color.value[1].toFloat()
-            val b = color.value[2].toFloat()
-            val a = color.value[3].toFloat() * alphaMultiplier.value[0].toFloat()
+            val r = color.getValue(0).toFloat()
+            val g = color.getValue(1).toFloat()
+            val b = color.getValue(2).toFloat()
+            val a = color.getValue(3).toFloat() * alphaMultiplier.getValue(0).toFloat()
 
             vb.pos(x - localIHatX - localJHatX, y - localIHatY - localJHatY, z - localIHatZ - localJHatZ).tex(0.0, 0.0).color(r, g, b, a).endVertex()
             vb.pos(x + localIHatX - localJHatX, y + localIHatY - localJHatY, z + localIHatZ - localJHatZ).tex(1.0, 0.0).color(r, g, b, a).endVertex()
@@ -176,7 +185,7 @@ class SpriteRenderModule @JvmOverloads constructor(
 
         tessellator.draw()
 
-      //  GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
+        //  GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
         blendMode.reset()
         GlStateManager.enableCull()
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)

@@ -29,7 +29,7 @@ class Animator {
     }
 
     /**
-     * If this value is true (which it isn't by default) this animator will pause when the world pauses.
+     * If this array is true (which it isn't by default) this animator will pause when the world pauses.
      */
     var useWorldTicks = false
 

@@ -128,7 +128,7 @@ private val singletonMap = IdentityHashMap<Class<*>, Any?>()
  * Searches for one of a few things:
  *
  * * If the class is a Kotlin object it will get the instance of it
- * * If the class has a static final field named `INSTANCE` with the same type as this class, gets the value of that field (if it is null, returns null)
+ * * If the class has a static final field named `INSTANCE` with the same type as this class, gets the array of that field (if it is null, returns null)
  * * If the class has a zero-argument constructor, instantiates an instance of the class
  * * If none of these requirements was fulfilled or if the `INSTANCE` field contained null, returns null.
  *

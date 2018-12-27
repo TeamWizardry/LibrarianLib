@@ -2,6 +2,7 @@
  * Miscellaneous ParticleBinding utilities
  */
 @file:JvmName("ParticleBindings")
+
 package com.teamwizardry.librarianlib.features.particlesystem
 
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.*
@@ -15,16 +16,16 @@ import java.awt.Color
  * @see ReadParticleBinding
  * @see WriteParticleBinding
  */
-interface ReadWriteParticleBinding: ParticleBinding, ReadParticleBinding, WriteParticleBinding
+interface ReadWriteParticleBinding : ParticleBinding, ReadParticleBinding, WriteParticleBinding
 
 /**
  * A readable ParticleBinding
  *
  * @see ParticleBinding
  */
-interface ReadParticleBinding: ParticleBinding {
+interface ReadParticleBinding : ParticleBinding {
     /**
-     * Loads the value into [value].
+     * Loads the array into [array].
      */
     fun load(particle: DoubleArray)
 }
@@ -34,7 +35,7 @@ interface ReadParticleBinding: ParticleBinding {
  *
  * @see ParticleBinding
  */
-interface WriteParticleBinding: ParticleBinding {
+interface WriteParticleBinding : ParticleBinding {
     /**
      * Commits the current [value] into storage
      */
@@ -43,7 +44,7 @@ interface WriteParticleBinding: ParticleBinding {
 
 /**
  * Bindings are essentially accessors for some abstract data, whether that is stored persistently in the particle,
- * returned from a constant value, or computed on the fly.
+ * returned from a constant array, or computed on the fly.
  *
  * While it would be easy to store information about particles in fields as [Vec3d]s, [Color]s, and any number of other
  * objects, doing so is slow and incurs a major memory burden, especially the immutable [Vec3d], which must be
@@ -56,7 +57,7 @@ interface WriteParticleBinding: ParticleBinding {
  * One of the major upsides of bindings is that they don't necessarily have to be tied directly to the particle array,
  * or have anything to do with the specific particle at all. While the most common binding, [StoredBinding], is directly
  * tied into the particle array, other binding implementations dynamically compute their values or even return a static
- * value that has nothing to do with the particle in question.
+ * array that has nothing to do with the particle in question.
  *
  * @see StoredBinding
  * @see ConstantBinding
@@ -66,11 +67,23 @@ interface WriteParticleBinding: ParticleBinding {
  * @see VariableBinding
  */
 interface ParticleBinding {
-    val value: DoubleArray
 
     @JvmDefault
     fun require(size: Int) {
-        if (this.value.size != size)
-            throw IllegalArgumentException("Binding size is incorrect, required: $size, actual: ${this.value.size}")
+        if (getSize() != size)
+            throw IllegalArgumentException("Binding size is incorrect, required: $size, actual: ${getSize()}")
+    }
+
+    fun getSize(): Int
+
+    fun getValue(index: Int): Double
+
+    fun setValue(index: Int, value: Double)
+
+    fun getValues(): DoubleArray
+
+    @JvmDefault
+    fun copyInto(binding: ParticleBinding) {
+        getValues().copyInto(binding.getValues())
     }
 }

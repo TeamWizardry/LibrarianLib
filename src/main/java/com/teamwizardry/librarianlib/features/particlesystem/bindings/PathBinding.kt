@@ -15,12 +15,12 @@ class PathBinding @JvmOverloads constructor(
          */
         override val age: ReadParticleBinding,
         /**
-         * The multiplier for the normalized age. If this value is > 1 the movement will loop, and if this value is < 1
+         * The multiplier for the normalized age. If this array is > 1 the movement will loop, and if this array is < 1
          * the movement will end before the end of the path.
          */
         override val timescale: ReadParticleBinding? = null,
         /**
-         * The time offset for the normalized age. Applied before the [timescale], so regardless of [timescale]'s value,
+         * The time offset for the normalized age. Applied before the [timescale], so regardless of [timescale]'s array,
          * if the offset is 0.5, the animation will begin halfway along the path
          */
         override val offset: ReadParticleBinding? = null,
@@ -29,11 +29,11 @@ class PathBinding @JvmOverloads constructor(
          */
         @JvmField val path: ParticlePath,
         /**
-         * The start value to interpolate from.
+         * The start array to interpolate from.
          */
         @JvmField var origin: ReadParticleBinding = ConstantBinding(*DoubleArray(path.value.size) { 0.0 }),
         /**
-         * The end value to interpolate to.
+         * The end array to interpolate to.
          */
         @JvmField var target: ReadParticleBinding = ConstantBinding(*DoubleArray(path.value.size) { 1.0 }),
         /**
@@ -42,7 +42,7 @@ class PathBinding @JvmOverloads constructor(
         override val easing: Easing = Easing.linear
 ) : AbstractTimeBinding(lifetime, age, timescale, offset, easing) {
 
-    override val value: DoubleArray = DoubleArray(path.value.size)
+    override val array: DoubleArray = DoubleArray(path.value.size)
 
     init {
         lifetime.require(1)
@@ -54,8 +54,11 @@ class PathBinding @JvmOverloads constructor(
     override fun load(particle: DoubleArray) {
         super.load(particle)
         path.computePosition(particle, time * easing(time.toFloat()))
-        for(i in 0 until value.size) {
-            value[i] = origin.value[i] + (target.value[i] * path.value[i])
+        for (i in 0 until array.size) {
+            array[i] = origin.getValue(i) + (target.getValue(i) * path.value[i])
         }
     }
+
+    override fun getValues(): DoubleArray = array
+
 }

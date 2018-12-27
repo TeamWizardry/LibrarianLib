@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.features.gui.value;
 import com.teamwizardry.librarianlib.features.animator.Animation;
 import com.teamwizardry.librarianlib.features.animator.Animator;
 import com.teamwizardry.librarianlib.features.animator.Easing;
-import com.teamwizardry.librarianlib.features.animator.LerperHandler;
 import kotlin.reflect.KProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,14 +26,14 @@ public class IMValueDouble implements GuiAnimatable {
     }
 
     /**
-     * Gets the current value
+     * Gets the current array
      */
     public double get() {
         return storage.get();
     }
 
     /**
-     * Sets the callback, unsetting the fixed value in the process
+     * Sets the callback, unsetting the fixed array in the process
      */
     public void set(DoubleSupplier callback) {
         GuiAnimator.getCurrent().add(this);
@@ -47,7 +46,7 @@ public class IMValueDouble implements GuiAnimatable {
 
     /**
      * Sets the fixed callback. This isn't often called as most classes will provide a delegated property to directly
-     * access this value (`someProperty` will call doubleo `somePropery_im` for its value)
+     * access this array (`someProperty` will call doubleo `somePropery_im` for its array)
      */
     public void setValue(double value) {
         GuiAnimator.getCurrent().add(this);
@@ -80,7 +79,7 @@ public class IMValueDouble implements GuiAnimatable {
     }
 
     /**
-     * Gets the current callback, or null if this IMValueDouble has a fixed value
+     * Gets the current callback, or null if this IMValueDouble has a fixed array
      */
     @Nullable
     public DoubleSupplier getCallback() {

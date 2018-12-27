@@ -44,12 +44,12 @@ interface ImmutableFieldMutatorProvider<T> {
 }
 
 /**
- * A mutator for an immutable field. Returns a new instance with the changed value.
+ * A mutator for an immutable field. Returns a new instance with the changed array.
  */
 @FunctionalInterface
 interface ImmutableFieldMutator<T> {
     /**
-     * Create a mutated copy of [target] to set this mutator's field to [value]. Return the new value.
+     * Create a mutated copy of [target] to set this mutator's field to [value]. Return the new array.
      */
     fun mutate(target: T, value: Any?): T
 }

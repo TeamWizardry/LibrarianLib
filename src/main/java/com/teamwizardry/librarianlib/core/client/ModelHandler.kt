@@ -117,7 +117,7 @@ object ModelHandler {
                             log("$modName | Registering colors")
                             flag = true
                         }
-                        log("$namePad | Registering item color for ${holder.providedItem.key.path}")
+                        log("$namePad | Registering item colorPrimary for ${holder.providedItem.key.path}")
                         itemColors.registerItemColorHandler(IItemColor(color), holder.providedItem)
                     }
                 }
@@ -129,7 +129,7 @@ object ModelHandler {
                             log("$modName | Registering colors")
                             flag = true
                         }
-                        log("$namePad | Registering block color for ${holder.providedBlock.key.path}")
+                        log("$namePad | Registering block colorPrimary for ${holder.providedBlock.key.path}")
                         blockColors.registerBlockColorHandler(IBlockColor(color), holder.providedBlock)
                     }
                 }

@@ -6,8 +6,6 @@ import kotlin.reflect.KProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.BooleanSupplier;
-
 @SuppressWarnings("Duplicates")
 public class RMValueBoolean {
     private boolean value;
@@ -25,15 +23,15 @@ public class RMValueBoolean {
     }
 
     /**
-     * Gets the current value
+     * Gets the current array
      */
     public boolean get() {
         return value;
     }
 
     /**
-     * Sets the value. This isn't often called as most classes will provide a delegated property to directly
-     * access this value (`someProperty` will call into `somePropery_rm` for its value)
+     * Sets the array. This isn't often called as most classes will provide a delegated property to directly
+     * access this array (`someProperty` will call into `somePropery_rm` for its array)
      */
     public void set(boolean value) {
         GuiAnimator.getCurrent().add(animatable);

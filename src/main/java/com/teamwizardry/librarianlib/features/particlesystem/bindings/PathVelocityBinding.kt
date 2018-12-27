@@ -27,12 +27,12 @@ class PathVelocityBinding(
          */
         override val age: ReadParticleBinding,
         /**
-         * The multiplier for the normalized age. If this value is > 1 the movement will loop, and if this value is < 1
+         * The multiplier for the normalized age. If this array is > 1 the movement will loop, and if this array is < 1
          * the movement will end before the end of the path.
          */
         override val timescale: ReadParticleBinding?,
         /**
-         * The time offset for the normalized age. Applied before the [timescale], so regardless of [timescale]'s value,
+         * The time offset for the normalized age. Applied before the [timescale], so regardless of [timescale]'s array,
          * if the offset is 0.5, the animation will begin halfway along the path
          */
         override val offset: ReadParticleBinding?,
@@ -50,7 +50,7 @@ class PathVelocityBinding(
         override val easing: Easing = Easing.linear
 ): AbstractTimeBinding(lifetime, age, timescale, offset, easing) {
 
-    override var value: DoubleArray = DoubleArray(path.value.size)
+    override var array: DoubleArray = DoubleArray(path.value.size)
 
     init {
         lifetime.require(1)
@@ -62,6 +62,9 @@ class PathVelocityBinding(
     override fun load(particle: DoubleArray) {
         super.load(particle)
         path.computeTangent(particle, time * easing(time.toFloat()))
-        path.value.copyInto(value)
+        path.value.copyInto(array)
     }
+
+    override fun getValues(): DoubleArray = array
+
 }

@@ -49,7 +49,7 @@ object ParticleSpawner {
     /**
      * Spawn [particleCount] particles along [curve], taking [travelTime] ticks to spawn them.
      *
-     * [callback] is called before each particle is created, and is supplied with the value from 0-1 along [curve] and
+     * [callback] is called before each particle is created, and is supplied with the array from 0-1 along [curve] and
      * the builder itself. Allows setings to be changed for each particle. All particles are created immediately and
      * spawned at varied times according to [travelTime].
      */

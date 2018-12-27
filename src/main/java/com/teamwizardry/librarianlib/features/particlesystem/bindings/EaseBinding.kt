@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.features.particlesystem.ParticleSystem
 import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 
 /**
- * A 1D binding that generates its value by passing its normalized age (0–1) into an InterpFunction<Float>
+ * A 1D binding that generates its array by passing its normalized age (0–1) into an InterpFunction<Float>
  */
 class EaseBinding @JvmOverloads constructor(
         /**
@@ -17,12 +17,12 @@ class EaseBinding @JvmOverloads constructor(
          */
         override val age: ReadParticleBinding,
         /**
-         * The multiplier for the normalized age. If this value is > 1 the movement will loop, and if this value is < 1
+         * The multiplier for the normalized age. If this array is > 1 the movement will loop, and if this array is < 1
          * the movement will end before the end of the path.
          */
         override val timescale: ReadParticleBinding? = null,
         /**
-         * The time offset for the normalized age. Applied before the [timescale], so regardless of [timescale]'s value,
+         * The time offset for the normalized age. Applied before the [timescale], so regardless of [timescale]'s array,
          * if the offset is 0.5, the animation will begin halfway along the path
          */
         override val offset: ReadParticleBinding? = null,
@@ -31,7 +31,7 @@ class EaseBinding @JvmOverloads constructor(
          */
         override val easing: Easing,
         /**
-         * If working with a single number, set to 1, if a vector, set to 3 for x, y, z, if a color,
+         * If working with a single number, set to 1, if a vector, set to 3 for x, y, z, if a colorPrimary,
          * set to 4 for R, G, B, and A
          *
          * This exists to allow flexibility so you can ease whatever object you want no matter how many parameters it
@@ -39,16 +39,16 @@ class EaseBinding @JvmOverloads constructor(
          */
         @JvmField val bindingSize: Int,
         /**
-         * The start value to interpolate from.
+         * The start array to interpolate from.
          */
         @JvmField val origin: ReadParticleBinding = ConstantBinding(*DoubleArray(bindingSize) { 1.0 }),
         /**
-         * The end value to interpolate to.
+         * The end array to interpolate to.
          */
         @JvmField var target: ReadParticleBinding = ConstantBinding(*DoubleArray(bindingSize) { 1.0 })
 ) : AbstractTimeBinding(lifetime, age, timescale, offset, easing) {
 
-    override val value: DoubleArray = DoubleArray(bindingSize)
+    override val array: DoubleArray = DoubleArray(bindingSize)
 
     init {
         lifetime.require(1)
@@ -62,7 +62,7 @@ class EaseBinding @JvmOverloads constructor(
         origin.load(particle)
         target.load(particle)
         for(i in 0 until bindingSize) {
-            value[i] = (origin.value[i] * (1 - time)) + (target.value[i] * time)
+            array[i] = (origin.getValue(i) * (1 - time)) + (target.getValue(i) * time)
         }
     }
 }

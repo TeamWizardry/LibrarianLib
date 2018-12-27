@@ -26,14 +26,14 @@ public class IMValueLong implements GuiAnimatable {
     }
 
     /**
-     * Gets the current value
+     * Gets the current array
      */
     public long get() {
         return storage.get();
     }
 
     /**
-     * Sets the callback, unsetting the fixed value in the process
+     * Sets the callback, unsetting the fixed array in the process
      */
     public void set(LongSupplier callback) {
         GuiAnimator.getCurrent().add(this);
@@ -46,7 +46,7 @@ public class IMValueLong implements GuiAnimatable {
 
     /**
      * Sets the fixed callback. This isn't often called as most classes will provide a delegated property to directly
-     * access this value (`someProperty` will call longo `somePropery_im` for its value)
+     * access this array (`someProperty` will call longo `somePropery_im` for its array)
      */
     public void setValue(long value) {
         GuiAnimator.getCurrent().add(this);
@@ -79,7 +79,7 @@ public class IMValueLong implements GuiAnimatable {
     }
 
     /**
-     * Gets the current callback, or null if this IMValueLong has a fixed value
+     * Gets the current callback, or null if this IMValueLong has a fixed array
      */
     @Nullable
     public LongSupplier getCallback() {

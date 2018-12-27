@@ -52,15 +52,15 @@ class Category(val book: Book, json: JsonObject) : IBookElement {
             title = TranslationHolder.fromJson(json.get("title"))
             desc = TranslationHolder.fromJson(json.get("description"))
             icon = json.get("icon")
-            if (json.has("color"))
-                color = Book.colorFromJson(json.get("color"))
+            if (json.has("colorPrimary"))
+                color = Book.colorFromJson(json.get("colorPrimary"))
 
             if (json.has("style")) {
                 val obj = json.getAsJsonObject("style")
                 if (obj.has("sheet"))
                     sheet = obj.getAsJsonPrimitive("sheet").asString
-                if (obj.has("color"))
-                    outerColor = Book.colorFromJson(obj.get("color"))
+                if (obj.has("colorPrimary"))
+                    outerColor = Book.colorFromJson(obj.get("colorPrimary"))
                 if (obj.has("binding"))
                     bindingColor = Book.colorFromJson(obj.get("binding"))
             }

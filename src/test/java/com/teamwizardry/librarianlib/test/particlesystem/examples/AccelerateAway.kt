@@ -41,7 +41,7 @@ object AccelerateAwaySystem: ParticleSystem() {
             position.load(particle)
             origin.load(particle)
             for(i in 0 until 3) {
-                contents[i] = position.value[i] - origin.value[i]
+                contents[i] = position.getValue(i) - origin.getValue(i)
             }
         }))
         updateModules.add(VelocityUpdateModule(position, velocity, previousPosition))

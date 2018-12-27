@@ -1,10 +1,9 @@
 package com.teamwizardry.librarianlib.features.particlesystem.modules
 
-import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
 import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.ReadWriteParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.WriteParticleBinding
-import com.teamwizardry.librarianlib.features.utilities.RayHitResult
+import com.teamwizardry.librarianlib.features.particlesystem.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.features.utilities.RayWorldCollider
 import java.lang.Math.abs
 
@@ -35,27 +34,26 @@ import java.lang.Math.abs
  * collision with the ground—doesn't lock them in place. In the second iteration that downward velocity will have
  * been zeroed or negated by the first collision, allowing the particle to slide or bounce as would be expected.
  */
-@Deprecated("Use WorldPhysicsModule instead")
-class BasicPhysicsUpdateModule @JvmOverloads constructor(
+class GUIPhysicsModule3D @JvmOverloads constructor(
         /**
          * The position of the particle.
          */
-        @JvmField val position: ReadWriteParticleBinding,
+        @JvmField override val position: ReadWriteParticleBinding,
         /**
          * The previous position of the particle. Populated so renderers can properly position the particle between ticks.
          */
-        @JvmField val previousPosition: WriteParticleBinding,
+        @JvmField override val previousPosition: WriteParticleBinding,
         /**
          * The velocity of the particle. If the binding is a [ReadWriteParticleBinding] the final velocity will be
          * stored in this binding.
          *
          * Velocity is set, not added.
          */
-        @JvmField val velocity: ReadParticleBinding,
+        @JvmField override val velocity: ReadParticleBinding,
         /**
          * If enabled, will allow the particle to collide with blocks in the world
          */
-        @JvmField val enableCollision: Boolean = false,
+        @JvmField override val enableCollisionBinding: ReadParticleBinding = ConstantBinding(0.0),
         /**
          * The acceleration of gravity. Positive gravity imparts a downward acceleration on the particle.
          *
@@ -63,7 +61,7 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
          *
          * 0.04 is a good number to start with.
          */
-        @JvmField var gravity: Double = 0.0,
+        @JvmField override var gravityBinding: ReadParticleBinding = ConstantBinding(0.0),
         /**
          * The fraction of velocity conserved upon impact. A bouncinessBinding of 0 means the particle will completely stop
          * when impacting a surface. 1.0 means the particle will bounce back with all of the velocity it had impacting,
@@ -74,7 +72,7 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
          *
          * 0.2 is a good number to start with.
          */
-        @JvmField var bounciness: Float = 0.0f,
+        @JvmField override var bouncinessBinding: ReadParticleBinding = ConstantBinding(0.0),
         /**
          * The frictionBinding of the particle upon impact. Every time the particle impacts (or rests upon) a block, the two
          * axes perpendicular to the side being hit will be reduced by this fraction. Friction of 0 would mean perfectly
@@ -85,7 +83,7 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
          *
          * 0.2 is a good number to start with.
          */
-        @JvmField var friction: Float = 0.0f,
+        @JvmField override var frictionBinding: ReadParticleBinding = ConstantBinding(0.0),
         /**
          * The dampingBinding, or "drag" of the particle. Every tick the velocity will be reduced by this fraction. Setting
          * the dampingBinding to 0.01 means that the particle will reach 10% velocity in just over 10 seconds
@@ -96,113 +94,86 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
          *
          * 0.01 is a good number to start with.
          */
-        @JvmField var damping: Float = 0.0f
-) : ParticleUpdateModule {
+        @JvmField override var dampingBinding: ReadParticleBinding = ConstantBinding(0.0)
+) : AbstractPhysicsUpdateModule(position, previousPosition, velocity, enableCollisionBinding, gravityBinding, bouncinessBinding, frictionBinding, dampingBinding) {
+
+
+    constructor(
+            position: ReadWriteParticleBinding,
+            previousPosition: WriteParticleBinding,
+            velocity: ReadParticleBinding,
+            enableCollision: Boolean = false,
+            gravity: Double = 0.0,
+            bounciness: Float = 0.0f,
+            friction: Float = 0.0f,
+            damping: Float = 0.0f
+    ) : this(
+            position,
+            previousPosition,
+            velocity,
+            ConstantBinding(if (enableCollision) 1.0 else 0.0),
+            ConstantBinding(gravity),
+            ConstantBinding(bounciness.toDouble()),
+            ConstantBinding(friction.toDouble()),
+            ConstantBinding(damping.toDouble()))
+
+
     init {
         position.require(3)
         previousPosition.require(3)
         velocity.require(3)
     }
 
-    private var posX: Double = 0.0
-    private var posY: Double = 0.0
-    private var posZ: Double = 0.0
-    private var velX: Double = 0.0
-    private var velY: Double = 0.0
-    private var velZ: Double = 0.0
-    private val rayHit = RayHitResult()
-    private lateinit var collider: RayWorldCollider
+    override fun init(particle: DoubleArray) {
+        super.init(particle)
 
-    override fun update(particle: DoubleArray) {
-        position.load(particle)
-        posX = position.getValue(0)
-        posY = position.getValue(1)
-        posZ = position.getValue(2)
+        enableCollisionBinding.load(particle)
+        gravityBinding.load(particle)
+        bouncinessBinding.load(particle)
+        frictionBinding.load(particle)
+        dampingBinding.load(particle)
+    }
 
-        velocity.load(particle)
-        velX = velocity.getValue(0)
-        velY = velocity.getValue(1)
-        velZ = velocity.getValue(2)
+    override fun movePos() {
+        for (i in 0 until changingVelocity.getSize()) {
+            changingPos.setValue(i, changingPos.getValue(i) + ((if (i == 1) -1 else 1) * changingVelocity.getValue(i)))
+        }
+    }
 
-        // (1. in class docs)
-        previousPosition.setValue(0, posX)
-        previousPosition.setValue(1, posY)
-        previousPosition.setValue(2, posZ)
-        previousPosition.store(particle)
+    override fun collide(velocityMultiplier: Double) {
+        if (RayWorldCollider.client?.also { collider = it } != null) {
 
-        // (2. in class docs)
-        dampen()
+            // (4.1 in class docs)
+            collider.collide(rayHit,
+                    changingPos.getValue(0), changingPos.getValue(1), changingPos.getValue(2),
+                    changingVelocity.getValue(0) * velocityMultiplier, changingVelocity.getValue(1) * velocityMultiplier, changingVelocity.getValue(2) * velocityMultiplier
+            )
 
-        // (3. in class docs)
-        accelerate()
+            // (4.2 in class docs)
+            for (i in 0 until changingPos.getSize())
+                changingPos.setValue(i, changingPos.getValue(i) + ((if (i == 1) -1 else 1) * changingVelocity.getValue(i)) * rayHit.collisionFraction)
 
-        if (enableCollision && RayWorldCollider.client?.also { collider = it } != null) {
-            // (4. in class docs)
-            collide()
-
-            // (5. in class docs)
-            if (rayHit.collisionFraction < 1.0) {
-                collide(velocityMultiplier = 1 - rayHit.collisionFraction)
+            // (4.3 in class docs)
+            if (rayHit.collisionFraction >= 1.0) {
+                return
             }
-        } else {
-            posX += velX
-            posY += velY
-            posZ += velZ
+
+            val axisX = abs(rayHit.collisionNormalX)
+            val axisY = abs(rayHit.collisionNormalY)
+            val axisZ = abs(rayHit.collisionNormalZ)
+
+            val bounciness = bouncinessBinding.getValue(0)
+            val friction = frictionBinding.getValue(0)
+
+            // (4.4 in class docs)
+            changingVelocity.setValue(0, changingVelocity.getValue(0) * 1 - axisX * (1.0 + bounciness))
+            changingVelocity.setValue(1, changingVelocity.getValue(1) * 1 - axisY * (1.0 + bounciness))
+            changingVelocity.setValue(2, changingVelocity.getValue(2) * 1 - axisZ * (1.0 + bounciness))
+
+            // (4.5 in class docs)
+            changingVelocity.setValue(0, changingVelocity.getValue(0) * 1 - (1 - axisX) * friction)
+            changingVelocity.setValue(1, changingVelocity.getValue(1) * 1 - (1 - axisY) * friction)
+            changingVelocity.setValue(2, changingVelocity.getValue(2) * 1 - (1 - axisZ) * friction)
         }
-
-        position.setValue(0, posX)
-        position.setValue(1, posY)
-        position.setValue(2, posZ)
-        position.store(particle)
-
-        velocity.setValue(0, velX)
-        velocity.setValue(1, velY)
-        velocity.setValue(2, velZ)
-        if (velocity is WriteParticleBinding) {
-            velocity.store(particle)
-        }
     }
-
-    private fun dampen() {
-        velX *= 1 - damping
-        velY *= 1 - damping
-        velZ *= 1 - damping
-    }
-
-    private fun accelerate() {
-        velY -= gravity
-    }
-
-    private fun collide(velocityMultiplier: Double = 1.0) {
-        // (4.1 in class docs)
-        collider.collide(rayHit,
-                posX, posY, posZ,
-                velX * velocityMultiplier, velY * velocityMultiplier, velZ * velocityMultiplier
-        )
-
-        // (4.2 in class docs)
-        posX += velX * rayHit.collisionFraction
-        posY += velY * rayHit.collisionFraction
-        posZ += velZ * rayHit.collisionFraction
-
-        // (4.3 in class docs)
-        if (rayHit.collisionFraction >= 1.0) {
-            return
-        }
-
-        val axisX = abs(rayHit.collisionNormalX)
-        val axisY = abs(rayHit.collisionNormalY)
-        val axisZ = abs(rayHit.collisionNormalZ)
-
-        // (4.4 in class docs)
-        velX *= 1 - axisX * (1.0 + bounciness)
-        velY *= 1 - axisY * (1.0 + bounciness)
-        velZ *= 1 - axisZ * (1.0 + bounciness)
-
-        // (4.5 in class docs)
-        velX *= 1 - (1 - axisX) * friction
-        velY *= 1 - (1 - axisY) * friction
-        velZ *= 1 - (1 - axisZ) * friction
-    }
-
 }

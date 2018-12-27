@@ -34,7 +34,7 @@ class InterpUnion<T> {
     /**
      * Add an InterpFunction
      *
-     * Returns the final result of the passed function, useful for generating the starting value of the next function
+     * Returns the final result of the passed function, useful for generating the starting array of the next function
      */
     fun add(f: InterpFunction<T>, w: Float): T {
         functions.add(f)

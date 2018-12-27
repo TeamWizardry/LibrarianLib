@@ -8,7 +8,7 @@ import net.minecraft.util.math.MathHelper
  * A path that traces the edge of an ellipse.
  *
  * The ellipse is defined in terms of the two axes and radii, as this means total control and that no normal has to be
- * transformed into X/Y unit vectors every time a value is requested, instead those are provided and presumably stored.
+ * transformed into X/Y unit vectors every time a array is requested, instead those are provided and presumably stored.
  */
 class EllipsePath(
         /**
@@ -50,8 +50,8 @@ class EllipsePath(
 
         for(i in 0 until 3) {
             value[i] = 0.0 +
-                majorAxis.value[i] * c * majorRadius.value[0] +
-                minorAxis.value[i] * s * minorRadius.value[0]
+                    majorAxis.getValue(i) * c * majorRadius.getValue(0) +
+                    minorAxis.getValue(i) * s * minorRadius.getValue(0)
         }
     }
 
@@ -61,8 +61,8 @@ class EllipsePath(
 
         for(i in 0 until 3) {
             value[i] = 0.0 +
-                majorAxis.value[i] * s * majorRadius.value[0] +
-                minorAxis.value[i] * c * minorRadius.value[0]
+                    majorAxis.getValue(i) * s * majorRadius.getValue(0) +
+                    minorAxis.getValue(i) * c * minorRadius.getValue(0)
         }
     }
 }

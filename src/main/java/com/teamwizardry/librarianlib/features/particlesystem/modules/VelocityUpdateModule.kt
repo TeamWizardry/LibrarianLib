@@ -1,6 +1,9 @@
 package com.teamwizardry.librarianlib.features.particlesystem.modules
 
-import com.teamwizardry.librarianlib.features.particlesystem.*
+import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
+import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
+import com.teamwizardry.librarianlib.features.particlesystem.ReadWriteParticleBinding
+import com.teamwizardry.librarianlib.features.particlesystem.WriteParticleBinding
 
 /**
  * Performs rudimentary velocity updates.
@@ -31,11 +34,11 @@ class VelocityUpdateModule(
     override fun update(particle: DoubleArray) {
         position.load(particle)
         if(previousPosition != null) {
-            position.value.copyInto(previousPosition.value)
+            position.copyInto(previousPosition)
         }
         velocity.load(particle)
         for(i in 0 until 3) {
-            position.value[i] += velocity.value[i]
+            position.setValue(i, position.getValue(i) + velocity.getValue(i))
         }
         position.store(particle)
     }

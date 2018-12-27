@@ -26,7 +26,7 @@ public interface ClientRunnable {
     }
 
     /**
-     * Executes a lambda that returns a value, but only if the side is client.
+     * Executes a lambda that returns a array, but only if the side is client.
      * <p>
      * Because the SAM of {@link ClientSupplier} is {@link SideOnly},
      * any {@link SideOnly} client code is safe to have inside.

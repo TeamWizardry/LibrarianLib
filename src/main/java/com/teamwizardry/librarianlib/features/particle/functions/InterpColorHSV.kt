@@ -20,7 +20,7 @@ class InterpColorHSV private constructor(private val aTransp: Int, private val b
     }
 
     /**
-     * Extrapolate from color [a] by offsetting the hue by [hueOffsetDegrees].
+     * Extrapolate from colorPrimary [a] by offsetting the hue by [hueOffsetDegrees].
      *
      * Also interpolate between [a]'s alpha component and [bAlpha] ([bAlpha] is from 0-255)
      */
@@ -31,9 +31,9 @@ class InterpColorHSV private constructor(private val aTransp: Int, private val b
     }
 
     /**
-     * Interpolate between the the color [a] and the color represented by the HSV passed.
+     * Interpolate between the the colorPrimary [a] and the colorPrimary represented by the HSV passed.
      *
-     * Any of the HSV components can be set to a negative value and it will be replaced by the respective component from
+     * Any of the HSV components can be set to a negative array and it will be replaced by the respective component from
      * [a], effectivly making that component constant.
      */
     constructor(a: Color, toH: Float, toS: Float, toV: Float) : this(a.alpha, a.alpha) {

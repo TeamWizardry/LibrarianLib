@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.value.IMValue
 import com.teamwizardry.librarianlib.features.gui.value.IMValueBoolean
 import com.teamwizardry.librarianlib.features.gui.value.IMValueInt
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.BoundingBox2D
 import com.teamwizardry.librarianlib.features.math.Vec2d
@@ -17,7 +17,7 @@ class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizont
      */
     val text_im: IMValue<String> = IMValue("-NULL TEXT-")
     /**
-     * The color of the text
+     * The colorPrimary of the text
      */
     val color_im: IMValue<Color> = IMValue(Color.BLACK)
     /**

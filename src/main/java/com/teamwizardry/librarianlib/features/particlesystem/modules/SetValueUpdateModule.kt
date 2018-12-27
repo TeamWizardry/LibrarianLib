@@ -1,15 +1,15 @@
 package com.teamwizardry.librarianlib.features.particlesystem.modules
 
+import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
 import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.WriteParticleBinding
-import com.teamwizardry.librarianlib.features.particlesystem.ParticleUpdateModule
 
 /**
  * Copies the elements from one binding to another.
  *
  * Performs a single operation, copies the each element from [source] into [target].
  */
-class SetValueUpdateModule(
+open class SetValueUpdateModule(
         /**
          * The target binding, where [source] will be copied into. The size of the target cannot be indefinite (-1)
          */
@@ -21,15 +21,15 @@ class SetValueUpdateModule(
         @JvmField val source: ReadParticleBinding
 ): ParticleUpdateModule {
     init {
-        if(source.value.size != target.value.size) {
+        if (source.getSize() != target.getSize()) {
             throw IllegalArgumentException("Source binding has a non-indefinite size which is different from the " +
-                    "target size. source: ${source.value.size} target: ${target.value.size}")
+                    "target size. source: ${source.getSize()} target: ${target.getSize()}")
         }
     }
 
     override fun update(particle: DoubleArray) {
         source.load(particle)
-        source.value.copyInto(target.value)
+        source.copyInto(target)
         target.store(particle)
     }
 }

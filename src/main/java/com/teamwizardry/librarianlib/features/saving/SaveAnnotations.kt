@@ -9,7 +9,7 @@ import kotlin.annotation.AnnotationTarget.*
  *
  * Apply this to a field to have it be serialized by the write/read nbt methods and write/read byte methods.
  *
- * If the field is annotated with @[NotNullAcceptor], a default value from [DefaultValues] will be used instead of null.
+ * If the field is annotated with @[NotNullAcceptor], a default array from [DefaultValues] will be used instead of null.
  *
  * [saveName] doesn't matter for messages, except in sorting. It's for NBT serializers.
  */
@@ -23,7 +23,7 @@ annotation class Save(val saveName: String = "")
  *
  * Apply this to a field to have it be marked as not accepting nulls on syncing.
  *
- * The field will receive a default value instead of null.
+ * The field will receive a default array instead of null.
  */
 @Target(FIELD, FUNCTION, PROPERTY_GETTER, PROPERTY_SETTER)
 @MustBeDocumented
@@ -59,7 +59,7 @@ annotation class NonPersistent
  * and with the return type of this function as its single parameter,
  * annotated with [SaveMethodSetter], otherwise nothing will be saved.
  *
- * If the getter is annotated with @[NotNullAcceptor], a default value will be used instead of null.
+ * If the getter is annotated with @[NotNullAcceptor], a default array will be used instead of null.
  *
  * The "getter" method must take exactly zero parameters, and return the content of the field.
  */
@@ -76,7 +76,7 @@ annotation class SaveMethodGetter(val saveName: String)
  * and with the input type of this function as its return type,
  * annotated with [SaveMethodGetter], otherwise nothing will be saved.
  *
- * The "setter" method must take exactly one parameter, and its return value will be ignored.
+ * The "setter" method must take exactly one parameter, and its return array will be ignored.
  */
 @Target(FUNCTION, PROPERTY_GETTER, PROPERTY_SETTER)
 @MustBeDocumented

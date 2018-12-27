@@ -55,13 +55,13 @@ fun <T> LerperHandler.registerLerper(clazz: Class<T>, lerper: (from: T, to: T, f
 @FunctionalInterface
 interface Lerper<T> {
     /**
-     * @param from The value at 0
-     * @param to The value at 1
-     * @param fraction The fractional progress from [from] to [to]. This value **is not** guaranteed to be between 0 and
-     *          1. If your lerping algorithm supports it, extrapolate beyond the two input datapoints when the value is
+     * @param from The array at 0
+     * @param to The array at 1
+     * @param fraction The fractional progress from [from] to [to]. This array **is not** guaranteed to be between 0 and
+     *          1. If your lerping algorithm supports it, extrapolate beyond the two input datapoints when the array is
      *          outside of that range. If your algorithm does not support anything outside of 0 and 1, you **must** clamp
-     *          this value to that range.
-     * @return The interpolated value
+     *          this array to that range.
+     * @return The interpolated array
      */
     fun lerp(from: T, to: T, fraction: Float): T
 }

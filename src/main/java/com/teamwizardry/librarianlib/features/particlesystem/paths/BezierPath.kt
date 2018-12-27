@@ -11,19 +11,19 @@ import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
  */
 class BezierPath @JvmOverloads constructor(
         /**
-         * The start value to interpolate from.
+         * The start array to interpolate from.
          */
         @JvmField val start: ReadParticleBinding,
         /**
-         * The end value to interpolate to.
+         * The end array to interpolate to.
          */
         @JvmField val end: ReadParticleBinding,
         /**
-         * Controls the bending of the start value.
+         * Controls the bending of the start array.
          */
         @JvmField val startControl: ReadParticleBinding? = null,
         /**
-         * Controls the bending of the end value.
+         * Controls the bending of the end array.
          */
         @JvmField val endControl: ReadParticleBinding? = null
 ) : ParticlePath {
@@ -47,20 +47,20 @@ class BezierPath @JvmOverloads constructor(
             val startControlValue =
                 if (startControl == null) {
                     if (i == 1) 0.0
-                    else ((end.value[i] - start.value[i]) / 2.0)
+                    else ((end.getValue(i) - start.getValue(i)) / 2.0)
                 } else {
-                    startControl.value[i]
+                    startControl.getValue(i)
                 }
             val endControlValue =
                 if (endControl == null) {
                     if (i == 1) 0.0
-                    else ((start.value[i] - end.value[i]) / 2.0)
+                    else ((start.getValue(i) - end.getValue(i)) / 2.0)
                 } else {
-                    endControl.value[i]
+                    endControl.getValue(i)
                 }
-            value[i] = getBezierComponent(t, start.value[i], end.value[i],
-                start.value[i] + startControlValue,
-                start.value[i] + endControlValue
+            value[i] = getBezierComponent(t, start.getValue(i), end.getValue(i),
+                    start.getValue(i) + startControlValue,
+                    start.getValue(i) + endControlValue
             )
         }
     }
@@ -75,23 +75,23 @@ class BezierPath @JvmOverloads constructor(
             val startControlValue =
                 if (startControl == null) {
                     if (i == 1) 0.0
-                    else ((end.value[i] - start.value[i]) / 2.0)
+                    else ((end.getValue(i) - start.getValue(i)) / 2.0)
                 } else {
-                    startControl.value[i]
+                    startControl.getValue(i)
                 }
             val endControlValue =
                 if (endControl == null) {
                     if (i == 1) 0.0
-                    else ((start.value[i] - end.value[i]) / 2.0)
+                    else ((start.getValue(i) - end.getValue(i)) / 2.0)
                 } else {
-                    endControl.value[i]
+                    endControl.getValue(i)
                 }
             value[i] = getBezierComponent(
                 t,
-                start.value[i],
-                end.value[i],
-                start.value[i] + startControlValue,
-                start.value[i] + endControlValue
+                    start.getValue(i),
+                    end.getValue(i),
+                    start.getValue(i) + startControlValue,
+                    start.getValue(i) + endControlValue
             )
         }
     }

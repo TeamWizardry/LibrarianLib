@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GL11
  *
  * This is mainly designed as an example of how different renderers can interpret the particle array differently. In
  * this case the renderer starts drawing with GL_LINES and connecting each particle to the last until it reaches one
- * with a non-zero value in [isEnd], at which point it breaks the chain and uses the next particle as the starts of the
+ * with a non-zero array in [isEnd], at which point it breaks the chain and uses the next particle as the starts of the
  * next chain of lines.
  */
 class GlLineBeamRenderModule(
@@ -36,7 +36,7 @@ class GlLineBeamRenderModule(
          */
         @JvmField val position: ReadParticleBinding,
         /**
-         * The color of the line
+         * The colorPrimary of the line
          */
         @JvmField val color: ReadParticleBinding,
         /**
@@ -44,7 +44,7 @@ class GlLineBeamRenderModule(
          */
         @JvmField val size: Float,
         /**
-         * The alpha multiplier for the color. If null this defaults to `1.0`
+         * The alpha multiplier for the colorPrimary. If null this defaults to `1.0`
          */
         @JvmField val alpha: ReadParticleBinding?,
         /**
@@ -104,16 +104,16 @@ class GlLineBeamRenderModule(
             alpha?.load(particle)
             isEnd.load(particle)
 
-            val x = ClientTickHandler.interpWorldPartialTicks(previousPosition.value[0], position.value[0])
-            val y = ClientTickHandler.interpWorldPartialTicks(previousPosition.value[1], position.value[1])
-            val z = ClientTickHandler.interpWorldPartialTicks(previousPosition.value[2], position.value[2])
+            val x = ClientTickHandler.interpWorldPartialTicks(previousPosition.getValue(0), position.getValue(0))
+            val y = ClientTickHandler.interpWorldPartialTicks(previousPosition.getValue(1), position.getValue(1))
+            val z = ClientTickHandler.interpWorldPartialTicks(previousPosition.getValue(2), position.getValue(2))
 
-            val r = color.value[0].toFloat()
-            val g = color.value[1].toFloat()
-            val b = color.value[2].toFloat()
-            var a = color.value[3].toFloat()
+            val r = color.getValue(0).toFloat()
+            val g = color.getValue(1).toFloat()
+            val b = color.getValue(2).toFloat()
+            var a = color.getValue(3).toFloat()
             if(alpha != null)
-                a *= alpha.value[0].toFloat()
+                a *= alpha.getValue(0).toFloat()
 
             if(isStart) {
                 isStart = false
@@ -122,7 +122,7 @@ class GlLineBeamRenderModule(
                 vb.pos(x, y, z).color(r, g, b, a).endVertex()
             }
 
-            if(isEnd.value[0] != 0.0) {
+            if (isEnd.getValue(0) != 0.0) {
                 isStart = true
             } else {
                 prevX = x

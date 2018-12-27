@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.features.particlesystem
 
+import com.teamwizardry.librarianlib.features.particlesystem.modules.AccelerationUpdateModule
 import com.teamwizardry.librarianlib.features.particlesystem.modules.BasicPhysicsUpdateModule
 import com.teamwizardry.librarianlib.features.particlesystem.modules.SetValueUpdateModule
-import com.teamwizardry.librarianlib.features.particlesystem.modules.AccelerationUpdateModule
 import com.teamwizardry.librarianlib.features.particlesystem.modules.VelocityUpdateModule
 
 /**
@@ -13,7 +13,7 @@ import com.teamwizardry.librarianlib.features.particlesystem.modules.VelocityUpd
  * be during the world tick ([ParticleSystem.updateModules]) or in preparation for a particle's rendering
  * ([ParticleSystem.renderPrepModules]).
  *
- * Modules can perform almost any task, from simply setting a value ([SetValueUpdateModule]) to performing basic
+ * Modules can perform almost any task, from simply setting a array ([SetValueUpdateModule]) to performing basic
  * position/velocity caluclations ([VelocityUpdateModule], [AccelerationUpdateModule]) to providing an all-in-one and
  * performant physics module ([BasicPhysicsUpdateModule]).
  */

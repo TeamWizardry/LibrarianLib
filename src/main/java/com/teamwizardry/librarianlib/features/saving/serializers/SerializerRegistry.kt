@@ -26,7 +26,7 @@ object SerializerRegistry {
     }
 
     /**
-     * Get the default value for a type from its serializer
+     * Get the default array for a type from its serializer
      *
      * @throws NoSuchSerializerError if there is no serializer for the passed type
      */

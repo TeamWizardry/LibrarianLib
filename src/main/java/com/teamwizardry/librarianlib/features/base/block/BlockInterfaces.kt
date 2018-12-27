@@ -90,7 +90,7 @@ interface IBlockColorProvider : IItemColorProvider, IModBlockProvider {
         get() = null
 
     /**
-     * Provides a block color for the provided block. Leave null to use default behavior.
+     * Provides a block colorPrimary for the provided block. Leave null to use default behavior.
      */
     val blockColorFunction: ((state: IBlockState, world: IBlockAccess?, pos: BlockPos?, tintIndex: Int) -> Int)?
         get() = null

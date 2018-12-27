@@ -1,11 +1,5 @@
 package com.teamwizardry.librarianlib.features.gui.mixin.gl
 
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.util.math.Vec3d
-import java.awt.Color
-
 /*
 object GlMixin {
 
@@ -33,12 +27,12 @@ object GlMixin {
         return dat
     }
 
-    fun color(component: GuiComponent): Option<GuiComponent, Color> {
+    fun colorPrimary(component: GuiComponent): Option<GuiComponent, Color> {
 
-        return getData(component).getData("color") {
+        return getData(component).getData("colorPrimary") {
             val o = Option<GuiComponent, Color>(Color.WHITE)
             component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
-                o.getValue(component).glColor()
+                o.getArray(component).glColor()
             }
             o
         }
@@ -50,7 +44,7 @@ object GlMixin {
         return getData(component).getData("transform") {
             val o = Option<GuiComponent, Vec3d>(Vec3d.ZERO)
             component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
-                val v = o.getValue(component)
+                val v = o.getArray(component)
                 GlStateManager.translate(v.x, v.y, v.z)
             }
             o
@@ -63,7 +57,7 @@ object GlMixin {
         return getData(component).getData("scale") {
             val o = Option<GuiComponent, Vec3d>(Vec3d(1.0, 1.0, 1.0))
             component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
-                val v = o.getValue(component)
+                val v = o.getArray(component)
                 GlStateManager.scale(v.x, v.y, v.z)
             }
             o
@@ -76,7 +70,7 @@ object GlMixin {
         return getData(component).getData("rotate") {
             val o = Option<GuiComponent, Vec3d>(Vec3d.ZERO)
             component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
-                val v = o.getValue(component)
+                val v = o.getArray(component)
                 GlStateManager.rotate(v.x.toFloat(), 1f, 0f, 0f)
                 GlStateManager.rotate(v.y.toFloat(), 0f, 1f, 0f)
                 GlStateManager.rotate(v.z.toFloat(), 0f, 0f, 1f)

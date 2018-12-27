@@ -1,10 +1,14 @@
 package com.teamwizardry.librarianlib.features.particlesystem
 
 import com.teamwizardry.librarianlib.features.kotlin.whileNonNull
+import com.teamwizardry.librarianlib.features.math.Vec2d
+import com.teamwizardry.librarianlib.features.particlesystem.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.StoredBinding
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.VariableBinding
 import com.teamwizardry.librarianlib.features.particlesystem.modules.DepthSortModule
+import net.minecraft.util.math.Vec3d
 import org.magicwerk.brownies.collections.GapList
+import java.awt.Color
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
@@ -84,14 +88,14 @@ abstract class ParticleSystem {
     private val particlePool = ArrayDeque<DoubleArray>(poolSize)
 
     /**
-     * The built-in binding for particle lifetime. If the value in [age] is >= the value in [lifetime] the particle will
+     * The built-in binding for particle lifetime. If the array in [age] is >= the array in [lifetime] the particle will
      * be removed during the next frame or update.
      */
     lateinit var lifetime: StoredBinding
         private set
     /**
-     * The built-in binding for particle age. Upon spawning the value in this binding is initialized to 0, and every
-     * tick thereafter its value is incremented. If the value in [age] is >= the value in [lifetime] the particle will
+     * The built-in binding for particle age. Upon spawning the array in this binding is initialized to 0, and every
+     * tick thereafter its array is incremented. If the array in [age] is >= the array in [lifetime] the particle will
      * be removed during the next frame or update.
      */
     lateinit var age: StoredBinding
@@ -102,6 +106,8 @@ abstract class ParticleSystem {
      */
     var fieldCount = 0
         private set
+
+    var manuallyRender = false
 
     private var canBind = false
 
@@ -130,19 +136,67 @@ abstract class ParticleSystem {
     }
 
     /**
+     * Creates a new [ConstantBinding] that is INDEPENDENT of the system and CANNOT BE MODIFIED NOR MANIPULATED.
+     * This creates READ ONLY bindings that are STATIC and UNCHANGING.
+     * This is very useful for specifying values that you never want changed in your particles or never want them or
+     * have no intention of having them be configurable.
+     *
+     * Use [bind] if you want to make a array that changes in your particle like a colorPrimary binding that changes array
+     * in a transition, or a velocity that changes.
+     *
+     * Really ANYTHING you want that your particle will change, you have
+     * to bind. If not, you can use this method to reduce load on the particle's storage and for incredibly useful
+     * convenience.
+     */
+    fun constant(vararg args: Double): ConstantBinding {
+        return ConstantBinding(*args)
+    }
+
+    /**
+     * Convenience method for [constant].
+     */
+    fun constant(color: Color) = constant(color.red / 255.0, color.green / 255.0, color.blue / 255.0, color.alpha / 255.0)
+
+    /**
+     * Convenience method for [constant].
+     */
+    fun constant(vec: Vec3d) = constant(vec.x, vec.y, vec.z)
+
+    /**
+     * Convenience method for [constant].
+     */
+    fun constant(vec: Vec2d) = constant(vec.x, vec.y)
+
+    /**
+     * Convenience method for [constant].
+     */
+    fun constant(i: Int) = constant(i.toDouble())
+
+    /**
+     * Convenience method for [constant].
+     */
+    fun constant(f: Float) = constant(f.toDouble())
+
+    /**
+     * Convenience method for [constant].
+     * Renamed with a D at the end because it conflicts with [constant] otherwise.
+     */
+    fun constantD(d: Double) = constant(d)
+
+    /**
      * Creates a particle and initializes it with the passed values. Any missing values will be set to 0.
      *
      * [params] should be populated with the values for each binding the order they were bound. For example, if
-     * a `position` binding was created with a size of 3, then a `color` with a size of 4, and then a `size` with a
+     * a `position` binding was created with a size of 3, then a `colorPrimary` with a size of 4, and then a `size` with a
      * size of 1, [params] should be populated in the following order: `x, y, z, r, g, b, a, size`. It is recommended
      * that a subclass be created with a method that populates [params] based upon more meaningfully named arguments.
      * An example based on the aforementioned particle would be:
      *
      * ```kotlin
-     * double[] spawn(double lifetime, Vec3d position, Color color, double size) {
+     * double[] spawn(double lifetime, Vec3d position, Color colorPrimary, double size) {
      *     return this.addParticle(lifetime,
      *             position.x, position.y, position.z,
-     *             color.red/255.0, color.green/255.0, color.blue/255.0, color.alpha/255.0,
+     *             colorPrimary.red/255.0, colorPrimary.green/255.0, colorPrimary.blue/255.0, colorPrimary.alpha/255.0,
      *             size
      *     )
      * }
@@ -193,8 +247,8 @@ abstract class ParticleSystem {
      * re-bind values and rebuild the module lists.
      */
     fun reload() {
-       // this.particles.clear()
-       // this.particlePool.clear()
+        // this.particles.clear()
+        // this.particlePool.clear()
         this.updateModules.clear()
         this.globalUpdateModules.clear()
         this.renderPrepModules.clear()
@@ -212,7 +266,7 @@ abstract class ParticleSystem {
         this.canBind = false
     }
 
-    internal fun update() {
+    fun update() {
         shouldQueue.set(true)
         whileNonNull({ queuedAdditions.poll() }) { particle ->
             particles.add(particle)
@@ -224,8 +278,8 @@ abstract class ParticleSystem {
             this.lifetime.load(particle)
             this.age.load(particle)
 
-            val lifetime = this.lifetime.value[0]
-            val age = this.age.value[0]
+            val lifetime = this.lifetime.getValue(0)
+            val age = this.age.getValue(0)
             // round age up and lifetime down so age is never greater than lifetime
             if (ceil(age) >= floor(lifetime)) {
                 iter.remove()
@@ -234,7 +288,7 @@ abstract class ParticleSystem {
                 continue
             }
 
-            this.age.value[0] = age + 1
+            this.age.setValue(0, age + 1)
             this.age.store(particle)
             update(particle)
         }
@@ -251,7 +305,7 @@ abstract class ParticleSystem {
         }
     }
 
-    internal fun render() {
+    fun render() {
         shouldQueue.set(true)
         whileNonNull({ queuedAdditions.poll() }) { particle ->
             particles.add(particle)

@@ -1,7 +1,8 @@
 package com.teamwizardry.librarianlib.features.particlesystem.modules
 
 import com.teamwizardry.librarianlib.core.client.ClientTickHandler
-import com.teamwizardry.librarianlib.features.particlesystem.*
+import com.teamwizardry.librarianlib.features.particlesystem.ParticleGlobalUpdateModule
+import com.teamwizardry.librarianlib.features.particlesystem.ReadParticleBinding
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.StoredBinding
 import net.minecraft.client.Minecraft
 
@@ -18,7 +19,7 @@ class DepthSortModule(
          */
         @JvmField val position: ReadParticleBinding,
         /**
-         * The binding used to cache the distance from the player before sorting. The value is in blocks from the player
+         * The binding used to cache the distance from the player before sorting. The array is in blocks from the player
          * along their look vector.
          */
         @JvmField val depth: StoredBinding
@@ -39,9 +40,9 @@ class DepthSortModule(
 
         for(particle in particles) {
             position.load(particle)
-            val distance = (position.value[0]-eyeX)*normal.x +
-                    (position.value[1]-eyeY)*normal.y +
-                    (position.value[2]-eyeZ)*normal.z
+            val distance = (position.getValue(0) - eyeX) * normal.x +
+                    (position.getValue(1) - eyeY) * normal.y +
+                    (position.getValue(2) - eyeZ) * normal.z
             particle[depth.index] = distance
         }
 

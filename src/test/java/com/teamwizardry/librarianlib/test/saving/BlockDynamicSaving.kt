@@ -37,7 +37,7 @@ class BlockDynamicSaving : BlockMod("saving_dynamic", Material.CACTUS), ITileEnt
 
             te.markDirty()
         } else {
-            playerIn.sendMessage("" + te.foo)//"HashMap<EnumFacing, Int>: [" + te.map.map { "${it.key}:${it.value}" }.joinToString(", ") + "]")
+            playerIn.sendMessage("" + te.foo)//"HashMap<EnumFacing, Int>: [" + te.map.map { "${it.key}:${it.array}" }.joinToString(", ") + "]")
         }
         return true
     }

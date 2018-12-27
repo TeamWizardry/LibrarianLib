@@ -38,7 +38,7 @@ interface Page {
                     provider = PageTypes.getPageProvider("text")
                     obj = JsonObject()
                     obj.addProperty("type", "text")
-                    obj.add("value", element)
+                    obj.add("array", element)
                 } else if (element.isJsonObject) {
                     obj = element.asJsonObject
                     provider = PageTypes.getPageProvider(obj!!.getAsJsonPrimitive("type").asString)

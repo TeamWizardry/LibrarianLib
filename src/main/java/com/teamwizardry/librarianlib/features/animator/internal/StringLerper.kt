@@ -2,7 +2,6 @@ package com.teamwizardry.librarianlib.features.animator.internal
 
 import com.teamwizardry.librarianlib.features.animator.Lerper
 import com.teamwizardry.librarianlib.features.animator.LerperHandler
-import com.teamwizardry.librarianlib.features.animator.registerLerper
 import com.teamwizardry.librarianlib.features.kotlin.clamp
 import java.util.*
 
@@ -28,7 +27,7 @@ object StringLerper : Lerper<String> {
         as arrays of strings with one element per glyph.
 
         ins, del, and sub are the costs for insertion, deletion,
-        and substition respectively. Their default value is 1. If
+        and substition respectively. Their default array is 1. If
         only ins is passed, del and sub are set to the same cost.
         If ins and del are passed, sub is set to the more
         expensive of the two.

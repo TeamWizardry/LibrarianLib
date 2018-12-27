@@ -1,11 +1,7 @@
 package com.teamwizardry.librarianlib.test.particlesystem.examples
 
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.div
-import com.teamwizardry.librarianlib.features.kotlin.minus
-import com.teamwizardry.librarianlib.features.kotlin.plus
-import com.teamwizardry.librarianlib.features.kotlin.randomNormal
-import com.teamwizardry.librarianlib.features.kotlin.times
+import com.teamwizardry.librarianlib.features.kotlin.*
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleSystem
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.CallbackBinding
 import com.teamwizardry.librarianlib.features.particlesystem.modules.GlLineBeamRenderModule
@@ -83,7 +79,7 @@ object BeamLightningSystem: ParticleSystem() {
             alpha = CallbackBinding(1) { particle, contents ->
                 age.load(particle)
                 lifetime.load(particle)
-                contents[0] = 1.0 - (age.value[0] / lifetime.value[0])
+                contents[0] = 1.0 - (age.getValue(0) / lifetime.getValue(0))
             }
         ))
     }

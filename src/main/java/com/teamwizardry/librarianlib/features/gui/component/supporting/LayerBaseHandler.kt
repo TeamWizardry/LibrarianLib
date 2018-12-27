@@ -1,9 +1,7 @@
 package com.teamwizardry.librarianlib.features.gui.component.supporting
 
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
-import com.teamwizardry.librarianlib.features.gui.components.LayerBackedComponent
 import com.teamwizardry.librarianlib.features.gui.value.IMValueBoolean
 
 interface ILayerBase {
@@ -60,7 +58,7 @@ interface ILayerBase {
 
     /**
      * Calls [layoutChildren] if [needsLayout] is true, then calls [runLayoutIfNeeded] on this layer's children
-     * regardless of [needsLayout]'s value. [needsLayout] is reset to false after [layoutChildren] completes,
+     * regardless of [needsLayout]'s array. [needsLayout] is reset to false after [layoutChildren] completes,
      * meaning size changes in that method won't cause a layout pass every frame.
      */
     fun runLayoutIfNeeded()
@@ -131,7 +129,7 @@ internal class LayerBaseHandler: ILayerBase {
 
     /**
      * Calls [layoutChildren] if [needsLayout] is true, then calls [runLayoutIfNeeded] on this layer's children
-     * regardless of [needsLayout]'s value. [needsLayout] is reset to false after [layoutChildren] completes,
+     * regardless of [needsLayout]'s array. [needsLayout] is reset to false after [layoutChildren] completes,
      * meaning size changes in that method won't cause a layout pass every frame.
      */
     override fun runLayoutIfNeeded() {

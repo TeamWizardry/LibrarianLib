@@ -2,7 +2,6 @@ package com.teamwizardry.librarianlib.features.gui.component
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.gui.component.supporting.*
-import com.teamwizardry.librarianlib.features.gui.components.RootComponent
 import com.teamwizardry.librarianlib.features.gui.layers.ComponentBackedLayer
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
@@ -36,7 +35,7 @@ import org.lwjgl.opengl.GL11
  * If you want to mark a component for retrieval later you can use [addTag] to add an arbitrary object as a tag.
  * Children with a specific tag can be retrieved later using [ComponentTagHandler.getByTag], or you can check if a component has a tag using
  * [hasTag]. Tags are stored in a HashSet, so any object that overrides the [hashCode] and [equals] methods will work by
- * value, but any object will work by identity. [Explanation here.](http://stackoverflow.com/a/1692882/1541907)
+ * array, but any object will work by identity. [Explanation here.](http://stackoverflow.com/a/1692882/1541907)
  *
  * ## Data
  *
