@@ -10,8 +10,8 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.util.math.MathHelper
 
 class PastrySlider(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent(posX, posY, width, height) {
-    private val bg = SpriteLayer(PastryTexture.progressbarBG, 0, 0, 0, 0)
-    private val fg = SpriteLayer(PastryTexture.progressbarFG, 0, 0, 0, 0)
+    private val bg = SpriteLayer(PastryTexture.progressbar, 0, 0, 0, 0)
+    private val fg = SpriteLayer(PastryTexture.progressbarFill, 0, 0, 0, 0)
 
     val progress_im: IMValueDouble = IMValueDouble(0.0)
     var progress: Double by progress_im

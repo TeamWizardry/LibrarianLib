@@ -9,8 +9,8 @@ import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.sprite.Sprite
 
 class PastryProgressBar(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, posY, width, height) {
-    private val bg = SpriteLayer(PastryTexture.progressbarBG, 0, 0, 0, 0)
-    private val fg = SpriteLayer(PastryTexture.progressbarFG, 0, 0, 0, 0)
+    private val bg = SpriteLayer(PastryTexture.progressbar, 0, 0, 0, 0)
+    private val fg = SpriteLayer(PastryTexture.progressbarFill, 0, 0, 0, 0)
 
     val progress_im: IMValueDouble = IMValueDouble(0.0)
     val progress: Double by progress_im

@@ -1,0 +1,55 @@
+ {
+     "spritesheet": {
+         "textureWidth": 256,
+         "textureHeight": 256,
+         "sprites": {
+            "background": { "pos": [0,0,8,8], "caps": [3,3,3,3] },
+            "background.inner_corners": { "pos": [8,0,8,8], "caps": [3,3,3,3] },
+            "background.slight.round": { "pos": [16,8,8,8], "caps": [3,3,3,3] },
+            "background.slight.round.inner_corners": { "pos": [40,8,8,8], "caps": [3,3,3,3] },
+            "background.slight": { "pos": [24,8,8,8], "caps": [2,2,2,2] },
+            "background.slight.inner_corners": { "pos": [48,8,8,8], "caps": [3,3,3,3] },
+            "background.slight.inset": { "pos": [32,8,8,8], "caps": [2,2,2,2] },
+            "background.slight.inset.inner_corners": { "pos": [56,8,8,8], "caps": [3,3,3,3] },
+            "background.black": { "pos": [16,16,8,8], "caps": [2,2,2,2] },
+            "background.black.inner_corners": { "pos": [24,16,8,8], "caps": [3,3,3,3] },
+
+            "textfield": { "pos": [0,24,8,12], "caps": [2,0,2,0] },
+            "dropdown": { "pos": [16,24,16,12], "caps": [2,0,8,0] },
+            "dropdown.background": { "pos": [16,40,16,8], "caps": [2,2,2,2] },
+            "dropdown.highlight": { "pos": [16,48,16,8], "caps": [2,2,2,2] },
+            "dropdown.separator": { "pos": [16,56,16,5], "caps": [4,0,4,0] },
+
+            "scrollbar.handle.horizontal": { "pos": [88,40,5,5], "caps": [2,0,1,0] },
+            "scrollbar.handle.vertical": { "pos": [88,48,5,5], "caps": [0,2,0,1] },
+            "scrollbar.track": { "pos": [88,56,7,7], "caps": [2,2,2,2] },
+
+            "button": { "pos": [0,80,8,8], "caps": [2,2,2,2] },
+            "button.pressed": { "pos": [8,80,8,8], "caps": [2,2,2,2] },
+            "switch.off": [48,24,11,7],
+            "switch.on": [48,31,11,7],
+            "switch.handle": [48,38,7,7],
+            "radio_button": {
+                "pos": [64,24,7,7],
+                "frames": 5,
+                "offset": [0, 8]
+            },
+            "checkbox": {
+                "pos": [72,24,7,7],
+                "frames": 5,
+                "offset": [0, 8]
+            },
+            "progressbar": { "pos": [88,24,10,6], "caps": [3,0,3,0] },
+            "progressbar.fill": { "pos": [88,30,10,6], "caps": [3,0,3,0] },
+            "slider.handle": [104,24,7,7],
+            "slider.handle.right": [104,32,7,7],
+            "slider.handle.left": [113,24,7,7],
+            "slider.handle.down": [104,40,7,7],
+            "slider.handle.up": [104,49,7,7]
+         },
+         "colors": {
+            "slider.lines": [112, 40],
+            "slider.lines.highlighted": [116, 40]
+         }
+     }
+ }

@@ -81,7 +81,7 @@ object DrawingUtil {
             minCap = sprite.minUCap,
             maxCap = sprite.maxUCap,
             hard = sprite.hardScaleU,
-            targetPos = width
+            targetSize = width
         )
 
         val ySections = getSections(
@@ -89,7 +89,7 @@ object DrawingUtil {
             minCap = sprite.minVCap,
             maxCap = sprite.maxVCap,
             hard = sprite.hardScaleV,
-            targetPos = height
+            targetSize = height
         )
 
         val tessellator = Tessellator.getInstance()
@@ -117,27 +117,40 @@ object DrawingUtil {
         }
     }
 
-    private fun getSections(size: Float, minCap: Float, maxCap: Float, hard: Boolean, targetPos: Float): List<Section> {
+    private fun getSections(size: Float, minCap: Float, maxCap: Float, hard: Boolean, targetSize: Float): List<Section> {
+        if(targetSize == 0f) {
+            return emptyList()
+        }
         val sections = mutableListOf<Section>()
+
+        var logicalMinCap = size * minCap
+        var logicalMaxCap = size * maxCap
+        if(logicalMinCap + logicalMaxCap != 0f && logicalMinCap + logicalMaxCap > targetSize) {
+            val factor = (logicalMinCap + logicalMaxCap)/targetSize
+            sections.add(Section(0f, logicalMinCap/factor, 0f, minCap/factor))
+            sections.add(Section(logicalMinCap/factor, logicalMaxCap/factor, 1-maxCap/factor, 1f))
+            return sections
+        }
+
         if(!hard) {
-            if(minCap != 0f) {
-                sections.add(Section(0f, size * minCap, 0f, minCap))
+            if(logicalMinCap != 0f) {
+                sections.add(Section(0f, logicalMinCap, 0f, minCap))
             }
-            sections.add(Section(size * minCap, targetPos - size * maxCap, minCap, 1-maxCap))
-            if(maxCap != 0f) {
-                sections.add(Section(targetPos - size * maxCap, targetPos, 1-maxCap, 1f))
+            sections.add(Section(logicalMinCap, targetSize - logicalMaxCap, minCap, 1-maxCap))
+            if(logicalMaxCap != 0f) {
+                sections.add(Section(targetSize - logicalMaxCap, targetSize, 1-maxCap, 1f))
             }
         } else {
-            val midSize = size * (1 - minCap - maxCap)
+            val midSize = size - logicalMinCap - logicalMaxCap
 
             var pos = 0f
-            if(minCap != 0f) {
-                sections.add(Section(pos, size * minCap, 0f, minCap))
-                pos += size * minCap
+            if(logicalMinCap != 0f) {
+                sections.add(Section(pos, logicalMinCap, 0f, minCap))
+                pos += logicalMinCap
             }
 
             // generate a bunch of middle sections
-            val endCapStart = targetPos - size * maxCap
+            val endCapStart = targetSize - logicalMaxCap
             while (pos < endCapStart) {
                 sections.add(Section(pos, pos + midSize, minCap, 1-maxCap))
                 pos += midSize
@@ -149,8 +162,8 @@ object DrawingUtil {
             sections.last().maxTex = minCap + cut / size
             pos = endCapStart
 
-            if(maxCap != 0f) {
-                sections.add(Section(pos, targetPos, 1-maxCap, 1f))
+            if(logicalMaxCap != 0f) {
+                sections.add(Section(pos, targetSize, 1-maxCap, 1f))
             }
         }
         return sections

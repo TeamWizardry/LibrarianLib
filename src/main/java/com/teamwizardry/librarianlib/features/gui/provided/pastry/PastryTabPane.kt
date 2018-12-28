@@ -7,11 +7,11 @@ import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
-class PastryTabPane(type: BackgroundType, posX: Int, posY: Int, width: Int, height: Int) : GuiComponent(posX, posY, width, height) {
+class PastryTabPane(type: BackgroundTexture, posX: Int, posY: Int, width: Int, height: Int) : GuiComponent(posX, posY, width, height) {
 
-    constructor(posX: Int, posY: Int, width: Int, height: Int) : this(BackgroundType.DEFAULT, posX, posY, width, height)
+    constructor(posX: Int, posY: Int, width: Int, height: Int) : this(BackgroundTexture.DEFAULT, posX, posY, width, height)
 
-    private val sprite = SpriteLayer(type.sprite, -2, -2, 0, 0)
+    private val sprite = SpriteLayer(type.background, -2, -2, 0, 0)
 
     val tabs = LinkedHashMap<GuiComponent, GuiComponent>()
 

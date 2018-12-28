@@ -65,7 +65,7 @@ class GuiParticleMaker : GuiBase() {
     init {
         system.reload()
 
-        val background = PastryBackground(BackgroundType.DARK, -500 / 2, -300 / 2, 500, 300)
+        val background = PastryBackground(BackgroundTexture.BLACK, -500 / 2, -300 / 2, 500, 300)
         main.add(background.componentWrapper())
 
         val renderBox = ComponentRect((-500 / 2) + 10, (-300 / 2) + 10, 300 - 20, 300 - 20)
