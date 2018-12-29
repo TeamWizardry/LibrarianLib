@@ -115,9 +115,9 @@ class ComponentMouseHandler: IComponentMouse {
 
     override fun updateMouse(parentMousePos: Vec2d) {
         this.lastMousePos = mousePos
-        this.mousePos = GuiComponentEvents.CalculateMousePositionEvent(
+        this.mousePos = component.BUS.fire(GuiComponentEvents.CalculateMousePositionEvent(
             component.convertPointFromParent(parentMousePos)
-        ).mousePos
+        )).mousePos
         if(lastMousePos.squareDist(mousePos) > 0.1 * 0.1) {
             if(pressedButtons.isNotEmpty())
                 component.BUS.fire(GuiComponentEvents.MouseDragEvent())

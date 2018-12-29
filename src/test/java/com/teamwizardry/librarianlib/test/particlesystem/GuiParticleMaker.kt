@@ -5,11 +5,12 @@ import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
-import com.teamwizardry.librarianlib.features.gui.components.ComponentColorWheel
+import com.teamwizardry.librarianlib.features.gui.components.ComponentColorPicker
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.*
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
+import com.teamwizardry.librarianlib.features.math.Cardinal2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.particlesystem.BlendMode
 import com.teamwizardry.librarianlib.features.particlesystem.ParticleSystem
@@ -26,6 +27,7 @@ import net.minecraft.util.math.Vec3d
 import org.apache.commons.lang3.RandomUtils
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import kotlin.math.roundToInt
 
 class GuiParticleMaker : GuiBase() {
 
@@ -211,14 +213,14 @@ class GuiParticleMaker : GuiBase() {
 
 
         val mainRadius = 30.0
-        val colorWheelPrimary = ComponentColorWheel(aesthetics.widthi / 2 - (mainRadius.toInt() * 2) / 2, 0, (mainRadius.toInt() * 2), (mainRadius.toInt() * 2))
-        colorWheelPrimary.BUS.hook<ComponentColorWheel.ColorChangeEvent> {
+        val colorWheelPrimary = ComponentColorPicker(aesthetics.widthi / 2 - (mainRadius.toInt() * 2) / 2, 0, (mainRadius.toInt() * 2), (mainRadius.toInt() * 2))
+        colorWheelPrimary.BUS.hook<ComponentColorPicker.ColorChangeEvent> {
             colorPrimary = it.color
         }
 
-        val colorWheelSecondary = ComponentColorWheel(aesthetics.widthi / 2 - (mainRadius.toInt() * 2) / 2, 0, (mainRadius.toInt() * 2), (mainRadius.toInt() * 2))
+        val colorWheelSecondary = ComponentColorPicker(aesthetics.widthi / 2 - (mainRadius.toInt() * 2) / 2, 0, (mainRadius.toInt() * 2), (mainRadius.toInt() * 2))
         colorWheelSecondary.isVisible = false
-        colorWheelSecondary.BUS.hook<ComponentColorWheel.ColorChangeEvent> {
+        colorWheelSecondary.BUS.hook<ComponentColorPicker.ColorChangeEvent> {
             colorSecondary = it.color
         }
         aesthetics.add(colorWheelPrimary, colorWheelSecondary)
@@ -327,26 +329,27 @@ class GuiParticleMaker : GuiBase() {
         })
 
 
-        animatableWrapper2.add(makeSlider("Gravity", 0, gravity, 0.0, 10.0) { gravity = it })
-        animatableWrapper2.add(makeSlider("Damping", 20, damping.toDouble(), 0.0, 1.0) { damping = it.toFloat() })
-        animatableWrapper2.add(makeSlider("Friction", 40, friction.toDouble(), 0.0, 1.0) { friction = it.toFloat() })
-        animatableWrapper2.add(makeSlider("Bounciness", 60, bounciness.toDouble(), 0.0, 1.0) { bounciness = it.toFloat() })
+        animatableWrapper2.add(makeSlider("Gravity", 0, gravity, 0.0 .. 10.0) { gravity = it })
+        animatableWrapper2.add(makeSlider("Damping", 20, damping.toDouble(), 0.0 .. 1.0) { damping = it.toFloat() })
+        animatableWrapper2.add(makeSlider("Friction", 40, friction.toDouble(), 0.0 .. 1.0) { friction = it.toFloat() })
+        animatableWrapper2.add(makeSlider("Bounciness", 60, bounciness.toDouble(), 0.0 .. 1.0) { bounciness = it.toFloat() })
     }
 
-    private fun makeSlider(text: String, y: Int, beginValue: Double, minValue: Double, maxValue: Double, stateChange: (newProgress: Double) -> Unit): PastrySlider {
+    private fun makeSlider(text: String, y: Int, beginValue: Double, range: ClosedRange<Double>, stateChange: (newProgress: Double) -> Unit): PastrySlider {
         val titleLayer = TextLayer(0, -10, 0, 0)
         titleLayer.fitToText = true
         titleLayer.text = text
 
-        val slider = PastrySlider(0, y + 10, 150, 5)
-        slider.updateProgress(beginValue / maxValue)
+        val slider = PastrySlider(0, y + 10, 150, false, Cardinal2d.GUI.DOWN)
+        slider.range = range
+        slider.value = beginValue
         slider.BUS.fire(PastryToggle.StateChangeEvent())
 
         val numberLayer = TextLayer(150 + 10, 0, 0, 0)
         numberLayer.fitToText = true
-        numberLayer.text = "${Math.round(beginValue * 100.0) / 100.0}"
-        slider.BUS.hook<PastryToggle.StateChangeEvent> {
-            val result = Math.round(MathHelper.clamp(slider.progress * maxValue, minValue, maxValue) * 100.0) / 100.0
+        numberLayer.text = "${(slider.value * 100).roundToInt() / 100.0}"
+        slider.BUS.hook<PastrySlider.ValueChangeEvent> {
+            val result = (slider.value * 100).roundToInt() / 100.0
             numberLayer.text = "$result"
             stateChange(result)
         }
@@ -361,15 +364,15 @@ class GuiParticleMaker : GuiBase() {
         titleLayer.fitToText = true
         titleLayer.text = text
 
-        val slider = PastrySlider(0, y + 10, 150, 5)
-        slider.updateProgress(beginValue.toDouble() / maxValue.toDouble())
+        val slider = PastrySlider(0, y + 10, 150, false, Cardinal2d.GUI.DOWN)
+        slider.value = beginValue.toDouble() / maxValue.toDouble()
         slider.BUS.fire(PastryToggle.StateChangeEvent())
 
         val numberLayer = TextLayer(150 + 10, 0, 0, 0)
         numberLayer.fitToText = true
         numberLayer.text = "$beginValue"
-        slider.BUS.hook<PastryToggle.StateChangeEvent> {
-            val result = MathHelper.clamp(slider.progress * maxValue.toDouble(), minValue.toDouble(), maxValue.toDouble()).toInt()
+        slider.BUS.hook<PastrySlider.ValueChangeEvent> {
+            val result = MathHelper.clamp(slider.value * maxValue.toDouble(), minValue.toDouble(), maxValue.toDouble()).toInt()
             numberLayer.text = "$result"
             stateChange(result)
         }

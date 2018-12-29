@@ -57,11 +57,15 @@ open class GuiLayer private constructor(
         get() = relationships.parent
         internal set(value) { relationships.parent = value }
 
+    private var wrapper: LayerBackedComponent? = null
+
     /**
      * Wraps this layer in a GuiComponent
      */
     fun componentWrapper(): GuiComponent {
-        return LayerBackedComponent(this)
+        val wrapper = this.wrapper ?: LayerBackedComponent(this)
+        this.wrapper = wrapper
+        return wrapper
     }
 
     //region - Internal

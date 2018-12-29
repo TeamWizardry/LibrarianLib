@@ -118,12 +118,16 @@ open class GuiComponent private constructor(
         return allowAddingToLayer || parent is GuiComponent
     }
 
+    private var wrapper: ComponentBackedLayer? = null
+
     /**
      * Wraps this component in a layer, effectively removing it from UI calculations. This can be helpful for compat
      * with rendering-only components.
      */
     fun layerWrapper(): GuiLayer {
-        return ComponentBackedLayer(this)
+        val wrapper = this.wrapper ?: ComponentBackedLayer(this)
+        this.wrapper = wrapper
+        return wrapper
     }
 
     init {

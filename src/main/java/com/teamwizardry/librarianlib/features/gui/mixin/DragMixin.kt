@@ -5,12 +5,11 @@ import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
-class DragMixin(protected var component: GuiComponent, protected var constraints: (Vec2d) -> Vec2d) {
+class DragMixin(protected var component: GuiComponent, protected var correctionFunction: (Vec2d) -> Vec2d) {
 
     /**
      * Called when the component is picked up
@@ -69,7 +68,7 @@ class DragMixin(protected var component: GuiComponent, protected var constraints
             if (mouseButton != null) {
                 val pinnedPoint = component.convertPointToParent(clickedPoint)
                 val offset = component.convertPointToParent(event.mousePos) - pinnedPoint
-                val newPos = constraints(component.pos + offset)
+                val newPos = correctionFunction(component.pos + offset)
 
                 if (newPos != component.pos) {
                     component.pos = component.BUS.fire(
