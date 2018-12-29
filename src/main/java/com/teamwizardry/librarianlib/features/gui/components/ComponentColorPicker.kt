@@ -18,9 +18,9 @@ import java.awt.Color
  *
  * Will give you a full circular colorPrimary wheel WITHOUT a value bar. Implement that by yourself.
  */
-class ComponentColorWheel(x: Int, y: Int, width: Int, height: Int) : GuiComponent(x, y, width, height) {
+class ComponentColorPicker(x: Int, y: Int, width: Int, height: Int) : GuiComponent(x, y, width, height) {
 
-    private val colorWheelRadius = (width / 2.0) - 2.0 - 5.0
+    private val colorWheelRadius = (width * 0.9 / 2.0) - 2.0 - 5.0
     private val valueMinRadius = colorWheelRadius + 1
     private val valueMainRadius = colorWheelRadius + 3
     private val valueMaxRadius = colorWheelRadius + 5
