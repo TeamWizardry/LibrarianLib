@@ -192,3 +192,17 @@ enum class Axis2d(val direction: Vec2d) {
     X(vec(1, 0)),
     Y(vec(0, 1))
 }
+
+enum class Cardinal2d(val direction: Vec2d, val axis: Axis2d, val sign: Int) {
+    POSITIVE_X(vec( 1,  0), Axis2d.X,  1),
+    POSITIVE_Y(vec( 0,  1), Axis2d.Y,  1),
+    NEGATIVE_X(vec(-1,  0), Axis2d.X, -1),
+    NEGATIVE_Y(vec( 0, -1), Axis2d.Y, -1);
+
+    object GUI {
+        @JvmStatic val UP = NEGATIVE_Y
+        @JvmStatic val DOWN = POSITIVE_Y
+        @JvmStatic val LEFT = NEGATIVE_X
+        @JvmStatic val RIGHT = POSITIVE_X
+    }
+}
