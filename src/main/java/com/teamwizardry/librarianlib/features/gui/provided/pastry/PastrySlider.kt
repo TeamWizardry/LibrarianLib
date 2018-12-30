@@ -49,38 +49,7 @@ class PastrySlider(posX: Int, posY: Int, length: Int, var pointed: Boolean, faci
             val changed = field != value
             field = value
             if(changed) {
-                length = length // update size
-                when(value) {
-                    Cardinal2d.NEGATIVE_Y -> { // up
-                        inner.anchor = vec(1, 1)
-                        inner.rotation = 2*PI
-                        handleLayer.sprite = PastryTexture.sliderHandleUp
-                        handleLayer.rotation = 0.0
-                    }
-                    Cardinal2d.POSITIVE_Y -> { // down
-                        inner.anchor = vec(0, 0)
-                        inner.rotation = 0.0
-                        handleLayer.sprite = PastryTexture.sliderHandleDown
-                        handleLayer.rotation = 0.0
-                    }
-                    Cardinal2d.NEGATIVE_X -> { // left
-                        inner.anchor = vec(0, 1)
-                        inner.rotation = PI
-                        handleLayer.sprite = PastryTexture.sliderHandleLeft
-                        handleLayer.rotation = 0.0
-                    }
-                    Cardinal2d.POSITIVE_X -> { // right
-                        inner.anchor = vec(1, 0)
-                        inner.rotation = -PI
-                        handleLayer.sprite = PastryTexture.sliderHandleRight
-                        handleLayer.rotation = 0.0
-                    }
-                }
-                if(!pointed) {
-                    handleLayer.sprite = PastryTexture.sliderHandle
-                    handleLayer.rotation = -inner.rotation
-                }
-                this.setNeedsLayout()
+                updateFacing()
             }
         }
 
@@ -123,6 +92,43 @@ class PastrySlider(posX: Int, posY: Int, length: Int, var pointed: Boolean, faci
         }
 
         this.add(inner)
+
+        updateFacing()
+    }
+
+    fun updateFacing() {
+        length = length // update size
+        when(facing) {
+            Cardinal2d.NEGATIVE_Y -> { // up
+                inner.anchor = vec(1, 1)
+                inner.rotation = 2*PI
+                handleLayer.sprite = PastryTexture.sliderHandleUp
+                handleLayer.rotation = 0.0
+            }
+            Cardinal2d.POSITIVE_Y -> { // down
+                inner.anchor = vec(0, 0)
+                inner.rotation = 0.0
+                handleLayer.sprite = PastryTexture.sliderHandleDown
+                handleLayer.rotation = 0.0
+            }
+            Cardinal2d.NEGATIVE_X -> { // left
+                inner.anchor = vec(0, 1)
+                inner.rotation = PI
+                handleLayer.sprite = PastryTexture.sliderHandleLeft
+                handleLayer.rotation = 0.0
+            }
+            Cardinal2d.POSITIVE_X -> { // right
+                inner.anchor = vec(1, 0)
+                inner.rotation = -PI
+                handleLayer.sprite = PastryTexture.sliderHandleRight
+                handleLayer.rotation = 0.0
+            }
+        }
+        if(!pointed) {
+            handleLayer.sprite = PastryTexture.sliderHandle
+            handleLayer.rotation = -inner.rotation
+        }
+        this.setNeedsLayout()
     }
 
     private fun mouseAdjustValue(mousePos: Vec2d) {
