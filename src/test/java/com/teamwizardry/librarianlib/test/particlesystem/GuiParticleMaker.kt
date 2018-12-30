@@ -190,8 +190,7 @@ class GuiParticleMaker : GuiBase() {
                 text = "Set Particle Lifetime",
                 y = 10,
                 beginValue = lifetime,
-                minValue = 1,
-                maxValue = 500) {
+                range = 1 .. 500) {
             lifetime = it
         }
         animatableWrapper1.add(sliderLifetime)
@@ -203,8 +202,7 @@ class GuiParticleMaker : GuiBase() {
                 text = "Set Particle Count",
                 y = sliderLifetime.yi + 20,
                 beginValue = 1,
-                minValue = 1,
-                maxValue = 1000) {
+                range = 1 .. 1000) {
             particleCount = it
         }
 
@@ -351,8 +349,8 @@ class GuiParticleMaker : GuiBase() {
         val numberLayer = TextLayer(150 + 10, 0, 0, 0)
         numberLayer.fitToText = true
         numberLayer.text = "${(slider.value * 100).roundToInt() / 100.0}"
-        slider.BUS.hook<PastrySlider.ValueChangeEvent> {
-            val result = (slider.value * 100).roundToInt() / 100.0
+        slider.BUS.hook<PastrySlider.ValueChangeEvent> { event ->
+            val result = (event.newValue * 100).roundToInt() / 100.0
             numberLayer.text = "$result"
             stateChange(result)
         }
@@ -362,22 +360,28 @@ class GuiParticleMaker : GuiBase() {
         return slider
     }
 
-    private fun makeSlider(text: String, y: Int, beginValue: Int, minValue: Int, maxValue: Int, stateChange: (newProgress: Int) -> Unit): PastrySlider {
+    private fun makeSlider(text: String, y: Int, beginValue: Int, range: ClosedRange<Int>, stateChange: (newProgress: Int) -> Unit): PastrySlider {
         val titleLayer = TextLayer(0, -10, 0, 0)
         titleLayer.fitToText = true
         titleLayer.text = text
 
         val slider = PastrySlider(0, y + 10, 150, false, Cardinal2d.GUI.DOWN)
-        slider.value = beginValue.toDouble() / maxValue.toDouble()
+        slider.range = range.start.toDouble() .. range.endInclusive.toDouble()
+        slider.value = beginValue.toDouble()
         slider.BUS.fire(PastryToggle.StateChangeEvent())
 
         val numberLayer = TextLayer(150 + 10, 0, 0, 0)
         numberLayer.fitToText = true
         numberLayer.text = "$beginValue"
-        slider.BUS.hook<PastrySlider.ValueChangeEvent> {
-            val result = MathHelper.clamp(slider.value * maxValue.toDouble(), minValue.toDouble(), maxValue.toDouble()).toInt()
-            numberLayer.text = "$result"
-            stateChange(result)
+        var lastValue = beginValue
+        slider.BUS.hook<PastrySlider.ValueChangeEvent> { event ->
+            val intValue = event.newValue.roundToInt()
+            event.newValue = intValue.toDouble()
+            if(intValue != lastValue) {
+                numberLayer.text = "$intValue"
+                stateChange(intValue)
+                lastValue = intValue
+            }
         }
 
         slider.add(titleLayer, numberLayer)
