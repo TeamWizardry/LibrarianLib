@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.components.FixedSizeComponent
+import com.teamwizardry.librarianlib.features.gui.layers.ColorLayer
 import com.teamwizardry.librarianlib.features.gui.layers.SpriteLayer
 import com.teamwizardry.librarianlib.features.gui.mixin.DragMixin
 import com.teamwizardry.librarianlib.features.gui.value.IMValueDouble
@@ -17,8 +18,10 @@ import com.teamwizardry.librarianlib.features.math.Axis2d
 import com.teamwizardry.librarianlib.features.math.Cardinal2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.Sprite
+import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import net.minecraft.util.math.MathHelper
 import kotlin.math.PI
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 class PastrySlider(posX: Int, posY: Int, length: Int, var pointed: Boolean, facing: Cardinal2d) : FixedSizeComponent(
@@ -28,6 +31,9 @@ class PastrySlider(posX: Int, posY: Int, length: Int, var pointed: Boolean, faci
 ) {
     private val inner = GuiComponent(0, 0, length, 7)
 
+    val leftLine = ColorLayer(PastryTexture.sliderLinesColor, 3, 3, 0, 1)
+    val rightLine = ColorLayer(PastryTexture.sliderLinesColor, widthi-3, 3, 0, 1)
+
     var length: Int = length
         set(value) {
             field = value
@@ -35,6 +41,7 @@ class PastrySlider(posX: Int, posY: Int, length: Int, var pointed: Boolean, faci
                 if(facing.axis == Axis2d.Y) length else 7,
                 if(facing.axis == Axis2d.X) 7 else length
             )
+            rightLine.x = length - 3.5
             inner.size = vec(length, 7)
         }
     var facing: Cardinal2d = facing
@@ -91,22 +98,31 @@ class PastrySlider(posX: Int, posY: Int, length: Int, var pointed: Boolean, faci
     private val handleLayer = SpriteLayer(PastryTexture.sliderHandle, 0, 0, 7, 7)
 
     init {
+        handleLayer.componentWrapper().cursor = LibCursor.POINT
+
         handleLayer.anchor = vec(0.5, 0.5)
-        this.add(inner)
         inner.add(handleLayer.componentWrapper())
+
+        leftLine.x = 3.5
+        rightLine.anchor = vec(1, 0)
+        inner.add(leftLine, rightLine)
 
         DragMixin(handleLayer.componentWrapper()) { it }
 
         handleLayer.BUS.hook<DragMixin.DragMoveEvent> { event ->
             mouseAdjustValue(event.newPos)
             event.newPos = posFromValue(value)
+            setNeedsLayout()
         }
 
-        BUS.hook<GuiComponentEvents.MouseClickEvent> {
+        inner.BUS.hook<GuiComponentEvents.MouseClickEvent> {
             if (mouseOver) {
                 mouseAdjustValue(mousePos)
+                setNeedsLayout()
             }
         }
+
+        this.add(inner)
     }
 
     private fun mouseAdjustValue(mousePos: Vec2d) {
@@ -119,7 +135,7 @@ class PastrySlider(posX: Int, posY: Int, length: Int, var pointed: Boolean, faci
     }
 
     private fun valueFromPos(mousePos: Vec2d): Double {
-        val fraction = ((mousePos.x - 3.5) / (width - 7)).clamp(0.0, 1.0)
+        val fraction = ((mousePos.x - 3.5) / (inner.width - 7)).clamp(0.0, 1.0)
         return range.start + fraction * (range.endInclusive - range.start)
     }
 
@@ -138,6 +154,10 @@ class PastrySlider(posX: Int, posY: Int, length: Int, var pointed: Boolean, faci
 
     override fun layoutChildren() {
         handleLayer.pos = posFromValue(value)
+        val handleX = handleLayer.x - 3.5
+        val trackWidth = inner.width - 7
+        leftLine.width = max(0.0, handleX - 4)
+        rightLine.width = max(0.0, trackWidth - handleX - 4)
     }
 
     /**

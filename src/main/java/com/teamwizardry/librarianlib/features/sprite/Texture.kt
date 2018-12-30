@@ -182,14 +182,14 @@ class Texture(
      * Gets the sprite with the specified name
      */
     fun getSprite(name: String): Sprite {
-        var s: Sprite? = sprites[name]
-        if (s == null) {
-            // create a new one each time so on reload it'll exist and be replaced with a real one
-            s = Sprite(this)
-            sprites[name] = s
-        }
+        return sprites.getOrPut(name) { Sprite(this) }
+    }
 
-        return s
+    /**
+     * Gets the color with the specified name
+     */
+    fun getColor(name: String): Color {
+        return colors.getOrPut(name) { TextureColor() }.color
     }
 
     /**

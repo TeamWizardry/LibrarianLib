@@ -43,8 +43,8 @@ object PastryTexture {
     val sliderHandleDown = texture.getSprite("slider.handle.down")
     val sliderHandleUp = texture.getSprite("slider.handle.up")
 
-    val sliderLines = texture.getSprite("slider.lines")
-    val sliderLinesHighlighted = texture.getSprite("slider.lines.highlighted")
+    val sliderLinesColor = texture.getColor("slider.lines")
+    val sliderLinesHighlightedColor = texture.getColor("slider.lines.highlighted")
 }
 
 enum class BackgroundTexture(val background: Sprite, val innerCorners: Sprite) {
