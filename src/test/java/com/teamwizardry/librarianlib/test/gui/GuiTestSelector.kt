@@ -7,8 +7,11 @@ import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
 import com.teamwizardry.librarianlib.features.gui.layers.ColorLayer
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryButton
+import com.teamwizardry.librarianlib.features.gui.windows.GuiWindow
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.test.gui.tests.*
+import com.teamwizardry.librarianlib.test.gui.tests.windows.GuiTestMultiWindow
+import com.teamwizardry.librarianlib.test.gui.tests.windows.GuiTestSingleWindow
 import net.minecraft.client.Minecraft
 import java.awt.Color
 import kotlin.math.max
@@ -20,32 +23,34 @@ import kotlin.math.min
 class GuiTestSelector : GuiBase() {
 
     val items = listOf(
-        ListItem("Rect") { GuiTestRect() },
-        ListItem("Move") { GuiTestResizeMove() },
-        ListItem("Scale") { GuiTestScale() },
-        ListItem("Scissor") { GuiTestScissor() },
-        ListItem("Stencil") { GuiTestStencil() },
-        ListItem("Stencil Sprite") { GuiTestStencilSprite() },
-        ListItem("Stencil mouseOver") { GuiTestClippedMouseOver() },
-        ListItem("GUI auto-scale") { GuiTestAutoSizeScale() },
-        ListItem("Sprite") { GuiTestSprite() },
-        ListItem("Mouse Clicks") { GuiTestClickEvents() },
-        ListItem("MouseOver flags") { GuiTestMouseOverFlags() },
-        ListItem("Provided Book") { GuiTestProvidedBook() },
-        ListItem("Layout") { GuiTestLayout() },
-        ListItem("Implicit Animation") { GuiTestImplicitAnimation() },
-        ListItem("Value Animation") { GuiTestIMRMValueAnimation() },
-        ListItem("Animation Await") { GuiTestAnimationAwait() },
-        ListItem("Contents Bounds") { GuiTestGetContentBounds() },
-        ListItem("Coordinate Conversion") { GuiTestCoordinateConversion() },
-        ListItem("Arc") { GuiTestArc() },
-        ListItem("Keyframe Builder") { GuiTestValueKeyframeBuilder() },
-        ListItem("Text") { GuiTestTextLayer() },
-        ListItem("MCTiny Text") { GuiTestMCTiny() },
-        ListItem("Pastry") { GuiTestPastry() },
-        ListItem("Text Field") { GuiTestTextField() },
+        ListItem.Gui("Rect") { GuiTestRect() },
+        ListItem.Gui("Move") { GuiTestResizeMove() },
+        ListItem.Gui("Scale") { GuiTestScale() },
+        ListItem.Gui("Scissor") { GuiTestScissor() },
+        ListItem.Gui("Stencil") { GuiTestStencil() },
+        ListItem.Gui("Stencil Sprite") { GuiTestStencilSprite() },
+        ListItem.Gui("Stencil mouseOver") { GuiTestClippedMouseOver() },
+        ListItem.Gui("GUI auto-scale") { GuiTestAutoSizeScale() },
+        ListItem.Gui("Sprite") { GuiTestSprite() },
+        ListItem.Gui("Mouse Clicks") { GuiTestClickEvents() },
+        ListItem.Gui("MouseOver flags") { GuiTestMouseOverFlags() },
+        ListItem.Gui("Provided Book") { GuiTestProvidedBook() },
+        ListItem.Gui("Layout") { GuiTestLayout() },
+        ListItem.Gui("Implicit Animation") { GuiTestImplicitAnimation() },
+        ListItem.Gui("Value Animation") { GuiTestIMRMValueAnimation() },
+        ListItem.Gui("Animation Await") { GuiTestAnimationAwait() },
+        ListItem.Gui("Contents Bounds") { GuiTestGetContentBounds() },
+        ListItem.Gui("Coordinate Conversion") { GuiTestCoordinateConversion() },
+        ListItem.Gui("Arc") { GuiTestArc() },
+        ListItem.Gui("Keyframe Builder") { GuiTestValueKeyframeBuilder() },
+        ListItem.Gui("Text") { GuiTestTextLayer() },
+        ListItem.Gui("MCTiny Text") { GuiTestMCTiny() },
+        ListItem.Gui("Pastry") { GuiTestPastry() },
+        ListItem.Gui("Text Field") { GuiTestTextField() },
 
-        ListItem("<fix for commas in diffs>") { throw RuntimeException("How was this called?") }
+        ListItem.Window("Single Window") { GuiTestSingleWindow() },
+        ListItem.Window("Multi Window") { GuiTestMultiWindow() },
+        ListItem.Gui("<fix for commas in diffs>") { throw RuntimeException("How was this called?") }
     ).dropLast(1)
 
     init {
@@ -60,7 +65,10 @@ class GuiTestSelector : GuiBase() {
             text.size = vec(280, 12)
             text.text = item.name
             text.BUS.hook<GuiComponentEvents.MouseClickEvent> {
-                Minecraft.getMinecraft().displayGuiScreen(item.create())
+                when(item) {
+                    is ListItem.Gui -> Minecraft.getMinecraft().displayGuiScreen(item.create())
+                    is ListItem.Window -> item.create().open()
+                }
             }
             scrollComponent.add(text)
         }
@@ -79,5 +87,8 @@ class GuiTestSelector : GuiBase() {
         main.add(background, scrollComponent)
     }
 
-    data class ListItem(val name: String, val create: () -> GuiBase)
+    sealed class ListItem(val name: String) {
+        class Gui(name: String, val create: () -> GuiBase): ListItem(name)
+        class Window(name: String, val create: () -> GuiWindow): ListItem(name)
+    }
 }

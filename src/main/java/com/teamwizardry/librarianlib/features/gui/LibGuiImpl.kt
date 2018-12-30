@@ -3,15 +3,13 @@ package com.teamwizardry.librarianlib.features.gui
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
-import com.teamwizardry.librarianlib.features.gui.components.RootComponent
+import com.teamwizardry.librarianlib.features.gui.components.StandaloneRootComponent
 import com.teamwizardry.librarianlib.features.gui.layers.GradientLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
-import com.teamwizardry.librarianlib.features.kotlin.div
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.math.Axis2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
-import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
@@ -22,7 +20,7 @@ import java.awt.Color
 import java.io.IOException
 
 open class LibGuiImpl(protected val guiWidth: () -> Int, protected val guiHeight: () -> Int) {
-    val root: RootComponent = RootComponent()
+    val root: StandaloneRootComponent = StandaloneRootComponent()
     val main: GuiComponent = object: GuiComponent(0, 0) {
         override var pos: Vec2d
             get() = vec(root.size.xi/2, root.size.yi/2)
@@ -62,6 +60,8 @@ open class LibGuiImpl(protected val guiWidth: () -> Int, protected val guiHeight
         main.disableMouseCollision = true
         root.disableMouseCollision = true
         root.add(main)
+
+        initGui()
     }
 
     fun initGui() {
@@ -111,8 +111,6 @@ open class LibGuiImpl(protected val guiWidth: () -> Int, protected val guiHeight
 
     @Throws(IOException::class)
     fun handleMouseInput() {
-        val mouseX = Mouse.getEventX() * this.guiWidth() / Minecraft().displayWidth
-        val mouseY = this.guiHeight() - Mouse.getEventY() * this.guiHeight() / Minecraft().displayHeight - 1
         val wheelAmount = Mouse.getEventDWheel()
 
         if (wheelAmount != 0) {

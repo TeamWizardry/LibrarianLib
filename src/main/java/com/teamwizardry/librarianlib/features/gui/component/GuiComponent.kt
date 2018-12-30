@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.gui.component
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.gui.component.supporting.*
 import com.teamwizardry.librarianlib.features.gui.layers.ComponentBackedLayer
+import com.teamwizardry.librarianlib.features.gui.windows.GuiWindow
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -79,6 +80,8 @@ open class GuiComponent private constructor(
         get() = this.root as GuiComponent
     open val parentComponent: GuiComponent?
         get() = this.parent as GuiComponent
+    open val window: GuiWindow?
+        get() = this.root as? GuiWindow
 
     override fun shouldDrawSkeleton(): Boolean = this.isPointInBounds(this.mousePos)
 
