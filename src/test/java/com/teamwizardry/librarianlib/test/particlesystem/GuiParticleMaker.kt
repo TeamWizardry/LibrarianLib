@@ -253,15 +253,15 @@ class GuiParticleMaker : GuiBase() {
         val animatableWrapper2 = GuiComponent(0, 30)
         physics.add(animatableWrapper2)
 
-        val velXField = ComponentDescriptiveNumField("X", velX, 40, 40, 50, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
+        val velXField = ComponentDescriptiveNumField("X", velX, 40, 40, 20, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
             velX = it
         }
         velXField.isVisible = false
-        val velYField = ComponentDescriptiveNumField("Y", velY, 100, 40, 50, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
+        val velYField = ComponentDescriptiveNumField("Y", velY, 100, 40, 20, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
             velY = it
         }
         velYField.isVisible = false
-        val velZField = ComponentDescriptiveNumField("Z", velZ, 150, 40, 50, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
+        val velZField = ComponentDescriptiveNumField("Z", velZ, 150, 40, 20, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
             velZ = it
         }
         velZField.isVisible = false
