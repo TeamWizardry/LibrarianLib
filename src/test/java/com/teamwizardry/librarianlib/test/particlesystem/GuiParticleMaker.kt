@@ -253,30 +253,30 @@ class GuiParticleMaker : GuiBase() {
         val animatableWrapper2 = GuiComponent(0, 30)
         physics.add(animatableWrapper2)
 
-        val velXField = ComponentDescriptiveNumField("X", velX, 40, 40, 20, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
+        val velXField = ComponentDescriptiveNumField("X", velX, 40, 40, 50, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
             velX = it
         }
         velXField.isVisible = false
-        val velYField = ComponentDescriptiveNumField("Y", velY, 100, 40, 20, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
+        val velYField = ComponentDescriptiveNumField("Y", velY, 100, 40, 50, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
             velY = it
         }
         velYField.isVisible = false
-        val velZField = ComponentDescriptiveNumField("Z", velZ, 150, 40, 20, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
+        val velZField = ComponentDescriptiveNumField("Z", velZ, 150, 40, 50, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
             velZ = it
         }
         velZField.isVisible = false
         physics.add(velXField, velYField, velZField)
 
 
-        val maxVelXField = ComponentDescriptiveNumField("Max X", maxVelX, 40, 50, 20, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
+        val maxVelXField = ComponentDescriptiveNumField("Max X", maxVelX, 40, 65, 20, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
             velX = it
         }
         maxVelXField.isVisible = false
-        val maxVelYField = ComponentDescriptiveNumField("Max Y", maxVelY, 100, 50, 20, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
+        val maxVelYField = ComponentDescriptiveNumField("Max Y", maxVelY, 100, 65, 20, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
             velY = it
         }
         maxVelYField.isVisible = false
-        val maxVelZField = ComponentDescriptiveNumField("Max Z", maxVelZ, 150, 50, 20, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
+        val maxVelZField = ComponentDescriptiveNumField("Max Z", maxVelZ, 165, 50, 20, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
             velZ = it
         }
         maxVelZField.isVisible = false

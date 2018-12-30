@@ -20,7 +20,6 @@ import kotlin.math.min
 class GuiTestSelector : GuiBase() {
 
     val items = listOf(
-
         ListItem("Rect") { GuiTestRect() },
         ListItem("Move") { GuiTestResizeMove() },
         ListItem("Scale") { GuiTestScale() },
@@ -43,8 +42,11 @@ class GuiTestSelector : GuiBase() {
         ListItem("Keyframe Builder") { GuiTestValueKeyframeBuilder() },
         ListItem("Text") { GuiTestTextLayer() },
         ListItem("MCTiny Text") { GuiTestMCTiny() },
-        ListItem("Pastry") { GuiTestPastry() }
-    )
+        ListItem("Pastry") { GuiTestPastry() },
+        ListItem("Text Field") { GuiTestTextField() },
+
+        ListItem("<fix for commas in diffs>") { throw RuntimeException("How was this called?") }
+    ).dropLast(1)
 
     init {
         main.size = vec(300, 200)

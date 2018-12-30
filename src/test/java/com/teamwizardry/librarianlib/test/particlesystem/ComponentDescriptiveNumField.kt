@@ -5,21 +5,25 @@ import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 
-class ComponentDescriptiveNumField constructor(description: String? = null, defaultValue: Double, x: Int, y: Int, width: Int, height: Int, onEdit: (Double) -> Unit) : ComponentTextField(x, y, width, height) {
+class ComponentDescriptiveNumField constructor(description: String? = null, defaultValue: Double, x: Int, y: Int, width: Int, height: Int, onEdit: (Double) -> Unit)
+    : ComponentTextField(x, y, width, height) {
 
     var textLayer: TextLayer? = null
-    val field = ComponentTextField(0, 0, width, height)
 
     init {
-        field.writeText("$defaultValue")
-        field.BUS.hook<ComponentTextField.TextEditEvent> {
+        writeText("$defaultValue")
+        BUS.hook<ComponentTextField.TextEditEvent> {
             try {
-                onEdit(it.whole.toDouble())
+                onEdit(
+                    if(it.whole.isBlank())
+                        0.0
+                    else
+                        it.whole.toDouble()
+                )
             } catch (ignored: Exception) {
                 it.cancel()
             }
         }
-        add(field)
 
         if (description != null) {
             val stringWidth = Minecraft().fontRenderer.getStringWidth(description)

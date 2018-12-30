@@ -376,7 +376,7 @@ open class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y:
             val visible = this.fontRenderer.trimStringToWidth(this.text.substring(this.lineScrollOffset), this.widthi - fontRenderer.getStringWidth("_"))
             val cursorVisible = cursorRelativePosition >= 0 && cursorRelativePosition <= visible.length
             val cursorBlinkActive = this.isFocused && this.cursorCounter / 12 % 2 == 0 && cursorVisible
-            var offset = xi
+            var offset = 0
 
             if (selectionEndPosition > visible.length)
                 selectionEndPosition = visible.length
