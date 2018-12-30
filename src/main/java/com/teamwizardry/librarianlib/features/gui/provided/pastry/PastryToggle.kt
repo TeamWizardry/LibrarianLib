@@ -32,7 +32,7 @@ abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int): Fixe
     abstract fun visualStateChanged(visualState: Boolean)
 
     init {
-        this.hoverCursor = LibCursor.POINT
+        this.cursor = LibCursor.POINT
     }
 
     @Hook

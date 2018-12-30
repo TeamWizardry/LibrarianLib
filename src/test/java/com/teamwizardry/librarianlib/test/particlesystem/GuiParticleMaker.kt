@@ -19,6 +19,7 @@ import com.teamwizardry.librarianlib.features.particlesystem.modules.Conditional
 import com.teamwizardry.librarianlib.features.particlesystem.modules.GUIPhysicsModule3D
 import com.teamwizardry.librarianlib.features.particlesystem.modules.SetValueUpdateModule
 import com.teamwizardry.librarianlib.features.particlesystem.modules.SpriteRenderModule
+import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.util.ResourceLocation
@@ -71,6 +72,8 @@ class GuiParticleMaker : GuiBase() {
         main.add(background.componentWrapper())
 
         val renderBox = ComponentRect((-500 / 2) + 10, (-300 / 2) + 10, 300 - 20, 300 - 20)
+        renderBox.zIndex = 2.0
+        renderBox.cursor = LibCursor.MOVE
         renderBox.color = Color.BLACK
 
         renderBox.clipToBounds = true

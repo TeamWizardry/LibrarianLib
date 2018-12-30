@@ -11,6 +11,7 @@ import com.teamwizardry.librarianlib.features.kotlin.div
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.math.Axis2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
@@ -79,9 +80,6 @@ open class LibGuiImpl(protected val guiWidth: () -> Int, protected val guiHeight
         root.renderRoot(partialTicks, relPos)
 
         GlStateManager.popMatrix()
-
-        Mouse.setNativeCursor(root.cursor?.lwjglCursor)
-        root.cursor = null
     }
 
     @Throws(IOException::class)

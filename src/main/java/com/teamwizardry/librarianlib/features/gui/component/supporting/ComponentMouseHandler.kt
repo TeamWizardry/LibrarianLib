@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.RootComponent
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import java.util.*
 
 interface IComponentMouse {
@@ -46,6 +47,11 @@ interface IComponentMouse {
      * [inside][mouseInside] or [over][mouseOver] this component. The default array is true.
      */
     var disableMouseCollision: Boolean
+
+    /**
+     * If nonnull, the cursor will switch to this when hovering.
+     */
+    var cursor: LibCursor?
 
     /**
      * Update the mousePos of this component and its children based on the given mouse position in its parent.
@@ -110,6 +116,7 @@ class ComponentMouseHandler: IComponentMouse {
     override var isOpaqueToMouse: Boolean = true
     override var propagateMouse: Boolean = true
     override var disableMouseCollision: Boolean = false
+    override var cursor: LibCursor? = null
 
     private var hadMouseHit = false
 
@@ -133,7 +140,7 @@ class ComponentMouseHandler: IComponentMouse {
     override fun updateHits(root: RootComponent, parentZ: Double) {
         val zIndex = parentZ + component.zIndex
         if(!component.disableMouseCollision && component.isPointInBounds(component.mousePos)) {
-            val mouseHit = MouseHit(this.component, zIndex)
+            val mouseHit = MouseHit(this.component, zIndex, this.cursor)
             this.mouseHit = mouseHit
             if(component.isOpaqueToMouse && mouseHit > root.topMouseHit) {
                 root.topMouseHit = mouseHit

@@ -20,12 +20,6 @@ interface ILayerRendering {
     val tooltip_im: IMValue<List<String>?>
     var tooltip: List<String>?
     var tooltipFont: FontRenderer?
-    /**
-     * If nonnull, the cursor will switch to this when hovering.
-     */
-    val hoverCursor_im: IMValue<LibCursor?>
-    var hoverCursor: LibCursor?
-    var cursor: LibCursor?
     var animator: Animator
 
     /**
@@ -73,27 +67,6 @@ class LayerRenderHandler: ILayerRendering {
     override val tooltip_im: IMValue<List<String>?> = IMValue()
     override var tooltip: List<String>? by tooltip_im
     override var tooltipFont: FontRenderer? = null
-    /**
-     * If nonnull, the cursor will switch to this when hovering.
-     */
-    override val hoverCursor_im: IMValue<LibCursor?> = IMValue()
-    override var hoverCursor: LibCursor? by hoverCursor_im
-
-    override var cursor: LibCursor? = null
-        get() {
-            val parent = layer.parent
-            if (parent == null)
-                return field
-            else
-                return parent.cursor
-        }
-        set(value) {
-            val parent = layer.parent
-            if (parent == null)
-                field = value
-            else
-                parent.cursor = value
-        }
 
     override var animator: Animator
         get() {

@@ -1,8 +1,9 @@
 package com.teamwizardry.librarianlib.features.gui.component.supporting
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 
-data class MouseHit(val component: GuiComponent, val zIndex: Double) {
+data class MouseHit(val component: GuiComponent, val zIndex: Double, val cursor: LibCursor?) {
     companion object {
         /**
          * @param   left the object on the left of the comparison.

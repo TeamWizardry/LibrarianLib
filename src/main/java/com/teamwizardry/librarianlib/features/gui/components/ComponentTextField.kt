@@ -108,7 +108,7 @@ open class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y:
         }
 
     init {
-        this.hoverCursor = LibCursor.TEXT
+        this.cursor = LibCursor.TEXT
         BUS.hook(GuiComponentEvents.MouseDownEvent::class.java) { mouseClicked(mousePos.xi, mousePos.yi, it.button.mouseCode) }
         BUS.hook(GuiComponentEvents.KeyDownEvent::class.java) {
             if (handleKeyTyped(it.key, it.keyCode))

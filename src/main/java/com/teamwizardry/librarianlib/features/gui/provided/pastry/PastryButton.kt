@@ -23,7 +23,7 @@ class PastryButton @JvmOverloads constructor(buttonText: String = "", posX: Int,
         }
 
     init {
-        this.hoverCursor = LibCursor.POINT
+        this.cursor = LibCursor.POINT
         label.wrap = false
         label.maxLines = 1
         label.truncate = true

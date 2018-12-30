@@ -11,6 +11,7 @@ import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
+import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
 
 class RootComponent: GuiComponent(0, 0) {
@@ -83,6 +84,8 @@ class RootComponent: GuiComponent(0, 0) {
         updateMouse(mousePos)
         updateHits(this, 0.0)
         propagateHits()
+
+        Mouse.setNativeCursor(topMouseHit?.cursor?.lwjglCursor)
         renderLayer(partialTicks)
 
         GL11.glDisable(GL11.GL_STENCIL_TEST)
