@@ -74,3 +74,13 @@ fun BufferBuilder.pos(x: Double, y: Float, z: Float): BufferBuilder = this.pos(x
 fun BufferBuilder.pos(x: Double, y: Float, z: Double): BufferBuilder = this.pos(x, y.toDouble(), z)
 fun BufferBuilder.pos(x: Double, y: Double, z: Int): BufferBuilder = this.pos(x, y, z.toDouble())
 fun BufferBuilder.pos(x: Double, y: Double, z: Float): BufferBuilder = this.pos(x, y, z.toDouble())
+
+fun BufferBuilder.pos(x: Int, y: Int): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), 0.0)
+fun BufferBuilder.pos(x: Int, y: Float): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), 0.0)
+fun BufferBuilder.pos(x: Int, y: Double): BufferBuilder = this.pos(x.toDouble(), y, 0.0)
+fun BufferBuilder.pos(x: Float, y: Int): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), 0.0)
+fun BufferBuilder.pos(x: Float, y: Float): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), 0.0)
+fun BufferBuilder.pos(x: Float, y: Double): BufferBuilder = this.pos(x.toDouble(), y, 0.0)
+fun BufferBuilder.pos(x: Double, y: Int): BufferBuilder = this.pos(x, y.toDouble(), 0.0)
+fun BufferBuilder.pos(x: Double, y: Float): BufferBuilder = this.pos(x, y.toDouble(), 0.0)
+fun BufferBuilder.pos(x: Double, y: Double): BufferBuilder = this.pos(x, y, 0.0)

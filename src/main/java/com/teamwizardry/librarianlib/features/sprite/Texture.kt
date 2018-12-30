@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.FileNotFoundException
@@ -159,13 +160,17 @@ class Texture(
         try {
             val image = TextureUtil.readBufferedImage(Minecraft().resourceManager.getResource(loc).inputStream)
             this.image = image
-            this.sprites.forEach { _, sprite ->
-                sprite.loadImage(image)
+            this.sprites.forEach { name, sprite ->
+                try {
+                    sprite.loadImage(image)
+                } catch(e: Exception) {
+                    RuntimeException("Error loading sprite image $name in texture $loc", e).printStackTrace()
+                }
             }
             this.colors.forEach { _, color ->
                 val x = (color.u.toDouble() / this.width * image.width).toInt()
                 val y = (color.v.toDouble() / this.height * image.height).toInt()
-                color.color.replaceColor(Color(image.getRGB(x, y)))
+                color.color.replaceColor(Color(image.getRGB(x, y), true))
             }
         } catch (e: FileNotFoundException) {
             // nop
@@ -174,6 +179,7 @@ class Texture(
 
     fun switchTexture(loc: ResourceLocation) {
         this.loc = loc
+        this.textureLoaded = false
         if (SpritesMetadataSection.registered)
             load()
     }
@@ -192,11 +198,46 @@ class Texture(
         return colors.getOrPut(name) { TextureColor() }.color
     }
 
+    private var blending = false
+    private var textureLoaded = false
+    /**
+     * Enables linear blending
+     */
+    fun enableBlending() {
+        if(!textureLoaded) {
+            blending = true
+            return
+        }
+        Minecraft.getMinecraft().textureManager.bindTexture(loc)
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR)
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR)
+    }
+
+    /**
+     * Disables linear blending
+     */
+    fun disableBlending() {
+        if(!textureLoaded) {
+            blending = false
+            return
+        }
+        Minecraft.getMinecraft().textureManager.bindTexture(loc)
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST)
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST)
+    }
+
     /**
      * Bind this texture
      */
     fun bind() {
         Minecraft.getMinecraft().textureManager.bindTexture(loc)
+        if(!textureLoaded) {
+            textureLoaded = true
+            if (blending)
+                enableBlending()
+            else
+                disableBlending()
+        }
     }
 
     companion object {

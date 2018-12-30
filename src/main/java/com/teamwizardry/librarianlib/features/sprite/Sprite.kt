@@ -90,6 +90,7 @@ open class Sprite : ISprite {
     }
 
     fun loadImage(full: BufferedImage) {
+        var exception: Exception? = null
         images = (0 until frameCount).map { i ->
             val minX = (minU(i) * full.width).toInt()
             val maxX = (maxU(i) * full.width).toInt()
@@ -99,10 +100,11 @@ open class Sprite : ISprite {
             try {
                 full.getSubimage(minX, minY, maxX - minX, maxY - minY)
             } catch(e: RasterFormatException) {
-                e.printStackTrace()
+                exception = e
                 BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
             }
         }
+        exception?.also { throw it }
     }
 
     private fun frameMultiplier(animFrames: Int) = if (def.frames.isEmpty()) 0 else def.frames[animFrames % def.frames.size]

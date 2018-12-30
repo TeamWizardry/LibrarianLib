@@ -48,6 +48,7 @@
             "slider.handle.up": [104,49,7,7]
          },
          "colors": {
+            "window.shadow.color": [16, 0],
             "slider.lines": [112, 40],
             "slider.lines.highlighted": [116, 40]
          }

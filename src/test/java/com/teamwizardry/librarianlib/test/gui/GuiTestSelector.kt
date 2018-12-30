@@ -10,8 +10,7 @@ import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryButton
 import com.teamwizardry.librarianlib.features.gui.windows.GuiWindow
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.test.gui.tests.*
-import com.teamwizardry.librarianlib.test.gui.tests.windows.GuiTestMultiWindow
-import com.teamwizardry.librarianlib.test.gui.tests.windows.GuiTestSingleWindow
+import com.teamwizardry.librarianlib.test.gui.tests.windows.*
 import net.minecraft.client.Minecraft
 import java.awt.Color
 import kotlin.math.max
@@ -50,6 +49,9 @@ class GuiTestSelector : GuiBase() {
 
         ListItem.Window("Single Window") { GuiTestSingleWindow() },
         ListItem.Window("Multi Window") { GuiTestMultiWindow() },
+        ListItem.Window("Simple Window") { GuiTestSimpleWindow() },
+        ListItem.Window("Multi Simple Window") { GuiTestMultiSimpleWindow() },
+
         ListItem.Gui("<fix for commas in diffs>") { throw RuntimeException("How was this called?") }
     ).dropLast(1)
 

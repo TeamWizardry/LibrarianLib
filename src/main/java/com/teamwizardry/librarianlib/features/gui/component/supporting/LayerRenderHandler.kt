@@ -59,6 +59,16 @@ interface ILayerRendering {
     fun createDebugBoundingBoxPoints(): List<Vec2d>
 
     fun shouldDrawSkeleton(): Boolean
+
+    companion object {
+        @JvmStatic
+        fun glStateGuarantees() {
+            GlStateManager.enableTexture2D()
+            GlStateManager.color(1f, 1f, 1f, 1f)
+            GlStateManager.enableBlend()
+            GlStateManager.shadeModel(GL11.GL_SMOOTH)
+        }
+    }
 }
 
 class LayerRenderHandler: ILayerRendering {
@@ -148,12 +158,9 @@ class LayerRenderHandler: ILayerRendering {
         GlStateManager.pushMatrix()
         layer.BUS.fire(GuiLayerEvents.PreDrawEvent(partialTicks))
 
-        GlStateManager.enableTexture2D()
-        GlStateManager.color(1f, 1f, 1f, 1f)
-        GlStateManager.enableBlend()
+        ILayerRendering.glStateGuarantees()
         layer.draw(partialTicks)
-        GlStateManager.enableTexture2D()
-        GlStateManager.color(1f, 1f, 1f, 1f)
+        ILayerRendering.glStateGuarantees()
 
         GlStateManager.popMatrix()
 

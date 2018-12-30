@@ -6,6 +6,10 @@ import com.teamwizardry.librarianlib.features.sprite.Texture
 
 object PastryTexture {
     val texture = Texture("librarianlib:textures/gui/pastry/light.png".toRl(), 256, 256)
+    val shadowTexture = Texture("librarianlib:textures/gui/pastry/shadow.png".toRl(), 256, 256)
+    init {
+        shadowTexture.enableBlending()
+    }
 
     val background = texture.getSprite("background")
     val backgroundInnerCorners = texture.getSprite("background.inner_corners")
@@ -43,8 +47,12 @@ object PastryTexture {
     val sliderHandleDown = texture.getSprite("slider.handle.down")
     val sliderHandleUp = texture.getSprite("slider.handle.up")
 
+    val shadowColor = texture.getColor("window.shadow.color")
     val sliderLinesColor = texture.getColor("slider.lines")
     val sliderLinesHighlightedColor = texture.getColor("slider.lines.highlighted")
+
+    val shadowFadeSize = 48
+    val shadowSprite = shadowTexture.getSprite("shadow")
 }
 
 enum class BackgroundTexture(val background: Sprite, val innerCorners: Sprite) {
