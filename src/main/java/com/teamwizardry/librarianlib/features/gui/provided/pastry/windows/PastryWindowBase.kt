@@ -1,19 +1,14 @@
-package com.teamwizardry.librarianlib.features.gui.windows
+package com.teamwizardry.librarianlib.features.gui.provided.pastry.windows
 
-import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
-import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
-import com.teamwizardry.librarianlib.features.gui.layers.DropShadowLayer
-import com.teamwizardry.librarianlib.features.gui.layers.SpriteLayer
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryDropShadowLayer
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryTexture
+import com.teamwizardry.librarianlib.features.gui.windows.GuiWindow
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.div
 import com.teamwizardry.librarianlib.features.kotlin.plus
-import com.teamwizardry.librarianlib.features.kotlin.times
-import net.minecraft.client.renderer.GlStateManager
-import org.lwjgl.opengl.GL11
 
-open class SimpleWindow(width: Int, height: Int): GuiWindow(width, height) {
-    private val dropShadowLayer = DropShadowLayer(0, 0, width, height, 8)
+open class PastryWindowBase(width: Int, height: Int): GuiWindow(width, height) {
+    private val dropShadowLayer = PastryDropShadowLayer(0, 0, width, height, 8)
     var showDropShadow: Boolean
         get() = dropShadowLayer.isVisible
         set(value) { dropShadowLayer.isVisible = value }

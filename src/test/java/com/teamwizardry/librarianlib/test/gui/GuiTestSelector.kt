@@ -3,10 +3,8 @@ package com.teamwizardry.librarianlib.test.gui
 import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
 import com.teamwizardry.librarianlib.features.gui.layers.ColorLayer
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryButton
 import com.teamwizardry.librarianlib.features.gui.windows.GuiWindow
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.test.gui.tests.*
@@ -49,8 +47,9 @@ class GuiTestSelector : GuiBase() {
 
         ListItem.Window("Single Window") { GuiTestSingleWindow() },
         ListItem.Window("Multi Window") { GuiTestMultiWindow() },
-        ListItem.Window("Simple Window") { GuiTestSimpleWindow() },
-        ListItem.Window("Multi Simple Window") { GuiTestMultiSimpleWindow() },
+        ListItem.Window("Pastry Window Base") { GuiTestPastryWindowBase() },
+        ListItem.Window("Multi Pastry Window Base") { GuiTestMultiPastryWindowBase() },
+        ListItem.Window("Pastry Window") { GuiTestPastryWindow() },
 
         ListItem.Gui("<fix for commas in diffs>") { throw RuntimeException("How was this called?") }
     ).dropLast(1)

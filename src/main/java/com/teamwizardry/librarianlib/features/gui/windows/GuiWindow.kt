@@ -109,7 +109,10 @@ open class GuiWindow(width: Int, height: Int): RootComponent(0, 0, width, height
     }
 
     override fun keyPressed(key: Char, keyCode: Int) {
-        if(isFocused) super.keyPressed(key, keyCode)
+        if(isFocused)
+            super.keyPressed(key, keyCode)
+        else
+            this.BUS
     }
 
     override fun keyReleased(key: Char, keyCode: Int) {

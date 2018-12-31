@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.features.math
 
+import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.kotlin.clamp
 import com.teamwizardry.librarianlib.features.kotlin.minus
 
 class Rect2d(val x: Double, val y: Double, val width: Double, val height: Double) {
@@ -69,6 +71,17 @@ class Rect2d(val x: Double, val y: Double, val width: Double, val height: Double
         return point.x >= x && point.y >= y && point.x < x + width && point.y < y + height
     }
 
+    /**
+     * Clamps the passed point's X and Y coordinates to within this rect
+     */
+    fun clamp(point: Vec2d): Vec2d {
+        if(point in this) return point
+        return vec(
+            point.x.clamp(pos.x, pos.x + size.x),
+            point.y.clamp(pos.y, pos.y + size.y)
+        )
+    }
+
     //=============================================================================
 
     override fun hashCode(): Int {
@@ -103,5 +116,7 @@ class Rect2d(val x: Double, val y: Double, val width: Double, val height: Double
     companion object {
         @JvmField
         val ZERO = Rect2d(0.0, 0.0, 0.0, 0.0)
+        @JvmField
+        val INFINITE = Rect2d(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY)
     }
 }
