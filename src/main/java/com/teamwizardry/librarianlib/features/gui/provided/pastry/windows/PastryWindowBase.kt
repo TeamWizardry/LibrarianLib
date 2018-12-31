@@ -1,10 +1,7 @@
 package com.teamwizardry.librarianlib.features.gui.provided.pastry.windows
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
-import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryDropShadowLayer
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryTexture
 import com.teamwizardry.librarianlib.features.gui.windows.GuiWindow
@@ -14,7 +11,6 @@ import com.teamwizardry.librarianlib.features.kotlin.div
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.math.Align2d
-import com.teamwizardry.librarianlib.features.math.Rect2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 
@@ -80,14 +76,18 @@ open class PastryWindowBase(width: Int, height: Int): GuiWindow(width, height) {
         return ALIGN_CURSORS[set]
     }
 
-    open val minSize: Vec2d
-        get() = this.size
+    private var _minSize: Vec2d? = null
+    open var minSize: Vec2d
+        get() = _minSize ?: this.size
+        set(value) { _minSize = value }
 
-    open val maxSize: Vec2d
-        get() = this.size
+    private var _maxSize: Vec2d? = null
+    open var maxSize: Vec2d
+        get() = _maxSize ?: this.size
+        set(value) { _maxSize = value }
 
     private inner class MoveHandler {
-        var edgeDeltas = Vec2d.ZERO
+        var edgeDistance = Vec2d.ZERO
         var clickedEdge: Align2d? = null
 
         val window = this@PastryWindowBase
@@ -104,7 +104,7 @@ open class PastryWindowBase(width: Int, height: Int): GuiWindow(width, height) {
                 Align2d.Y.BOTTOM -> size.y - mousePos.y
             }
 
-            edgeDeltas = vec(deltaX, deltaY)
+            edgeDistance = vec(deltaX, deltaY)
             clickedEdge = side
         }
 
@@ -116,39 +116,40 @@ open class PastryWindowBase(width: Int, height: Int): GuiWindow(width, height) {
             window.BUS.hook(GuiComponentEvents.CalculateMousePositionEvent::class.java) { event ->
                 val clickedEdge = clickedEdge
                 if (clickedEdge != null) {
-                    val pointInParent = convertPointToParent(event.mousePos - edgeDeltas)
+                    var newPos = pos
+                    var newSize = size
 
-                    val desiredX = when(clickedEdge.x) {
-                        Align2d.X.LEFT -> pointInParent.x
-                        Align2d.X.CENTER -> if(clickedEdge == Align2d.CENTER) pointInParent.x else x
-                        Align2d.X.RIGHT -> x
-                    }
-                    val desiredY = when(clickedEdge.y) {
-                        Align2d.Y.TOP -> pointInParent.y
-                        Align2d.Y.CENTER -> if(clickedEdge == Align2d.CENTER) pointInParent.y else y
-                        Align2d.Y.BOTTOM -> y
+                    if(clickedEdge == Align2d.CENTER) {
+                        newPos = convertPointToParent(event.mousePos - edgeDistance)
+                    } else {
+                        val desiredChange = vec(
+                            when(clickedEdge.x) {
+                                Align2d.X.LEFT -> edgeDistance.x - event.mousePos.x
+                                Align2d.X.CENTER -> 0.0
+                                Align2d.X.RIGHT -> edgeDistance.x - (size.x - event.mousePos.x)
+                            },
+                            when(clickedEdge.y) {
+                                Align2d.Y.TOP -> edgeDistance.y - event.mousePos.y
+                                Align2d.Y.CENTER -> 0.0
+                                Align2d.Y.BOTTOM -> edgeDistance.y - (size.y - event.mousePos.y)
+                            }
+                        )
+
+                        val allowedChange = vec(
+                            (size.x + desiredChange.x).clamp(minSize.x, maxSize.x) - size.x,
+                            (size.y + desiredChange.y).clamp(minSize.y, maxSize.y) - size.y
+                        )
+
+                        newSize = size + allowedChange
+                        newPos = pos + vec(
+                            if(clickedEdge.x == Align2d.X.LEFT) -allowedChange.x else 0.0,
+                            if(clickedEdge.y == Align2d.Y.TOP) -allowedChange.y else 0.0
+                        )
                     }
 
-                    val desiredWidth = when(clickedEdge.x) {
-                        Align2d.X.LEFT -> width + edgeDeltas.x - event.mousePos.x
-                        Align2d.X.CENTER -> width
-                        Align2d.X.RIGHT -> event.mousePos.x + edgeDeltas.x
-                    }
-                    val desiredHeight = when(clickedEdge.y) {
-                        Align2d.Y.TOP-> height + edgeDeltas.y - event.mousePos.y
-                        Align2d.Y.CENTER -> height
-                        Align2d.Y.BOTTOM -> event.mousePos.y + edgeDeltas.y
-                    }
-
-                    val desiredPos = vec(desiredX, desiredY)
-                    val desiredSize = vec(
-                        desiredWidth.clamp(minSize.x, maxSize.x),
-                        desiredHeight.clamp(minSize.y, maxSize.y)
-                    )
-
-                    if (desiredPos != window.pos || desiredSize != window.size) {
+                    if (newPos != window.pos || newSize != window.size) {
                         val frameEvent = window.BUS.fire(
-                            WindowFrameWillChangeEvent(window.pos, window.size, desiredPos, desiredSize)
+                            WindowFrameWillChangeEvent(window.pos, window.size, newPos, newSize)
                         )
                         window.pos = frameEvent.newPos
                         window.size = frameEvent.newSize

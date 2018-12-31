@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.gui.layers.ColorLayer
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.windows.PastryWindow
 import com.teamwizardry.librarianlib.features.gui.windows.GuiWindow
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.math.Vec2d
 import java.awt.Color
 
 class GuiTestPastryWindow: PastryWindow(100, 100) {
@@ -12,6 +13,9 @@ class GuiTestPastryWindow: PastryWindow(100, 100) {
     init {
         header.add(headerLayer)
         content.add(ColorLayer(Color.RED, 0, 0, 100, 100))
+
+        minSize = vec(50, 50)
+        maxSize = vec(150, 150)
     }
 
     override fun layoutChildren() {

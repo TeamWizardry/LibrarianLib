@@ -38,4 +38,12 @@ enum class Align2d(val x: X, val y: Y) {
             if (this == CENTER) return CENTER
             return values()[(ordinal-1 + 4) % (values().size-1) + 1]
         }
+
+    companion object {
+        private val map = values().associateBy { it.x to it.y }
+        @JvmStatic
+        operator fun get(x: Align2d.X, y: Align2d.Y): Align2d {
+            return map[x to y]!!
+        }
+    }
 }

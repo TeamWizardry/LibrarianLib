@@ -65,7 +65,7 @@ open class GuiWindow(width: Int, height: Int): RootComponent(0, 0, width, height
         this.mouseHit = null
         val zIndex = parentZ + zIndex
         if(!disableMouseCollision && isPointInBounds(mousePos)) {
-            val mouseHit = MouseHit(this, zIndex, this.topMouseHit?.cursor)
+            val mouseHit = MouseHit(this, zIndex, this.cursor ?: this.topMouseHit?.cursor)
             this.mouseHit = mouseHit
             if(isOpaqueToMouse && mouseHit > root.topMouseHit) {
                 root.topMouseHit = mouseHit
