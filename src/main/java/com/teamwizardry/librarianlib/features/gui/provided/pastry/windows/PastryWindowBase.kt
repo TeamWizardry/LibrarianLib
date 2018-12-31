@@ -141,10 +141,10 @@ open class PastryWindowBase(width: Int, height: Int): GuiWindow(width, height) {
                         )
 
                         newSize = size + allowedChange
-                        newPos = pos + vec(
+                        newPos = convertPointToParent(vec(
                             if(clickedEdge.x == Align2d.X.LEFT) -allowedChange.x else 0.0,
                             if(clickedEdge.y == Align2d.Y.TOP) -allowedChange.y else 0.0
-                        )
+                        ))
                     }
 
                     if (newPos != window.pos || newSize != window.size) {

@@ -29,8 +29,9 @@ class GuiWindowManager(private val existingScreen: GuiScreen?): GuiBase() {
         override fun isFocused(window: GuiWindow) = window == focusedWindow
 
         override fun requestFocus(window: GuiWindow): Boolean {
-            focusedWindow = window
+            if(focusedWindow == window) return true
             focusedWindow?.BUS?.fire(GuiWindow.LoseFocusEvent())
+            focusedWindow = window
             window.BUS.fire(GuiWindow.GainFocusEvent())
             sort()
             return true
@@ -42,6 +43,9 @@ class GuiWindowManager(private val existingScreen: GuiScreen?): GuiBase() {
             if(focusedWindow == window) {
                 val top = windows.lastOrNull { !it.isFloating }
                 top?.also { requestFocus(it) }
+            }
+            if(windows.isEmpty()) {
+                Minecraft().displayGuiScreen(existingScreen)
             }
         }
 

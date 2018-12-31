@@ -58,7 +58,7 @@ object PastryTexture {
 enum class BackgroundTexture(val background: Sprite, val innerCorners: Sprite) {
     DEFAULT(PastryTexture.background, PastryTexture.backgroundInnerCorners),
     SLIGHT(PastryTexture.backgroundSlight, PastryTexture.backgroundSlightInnerCorners),
-    SLIGHT_INSET(PastryTexture.backgroundSlight, PastryTexture.backgroundSlightInnerCorners),
+    SLIGHT_INSET(PastryTexture.backgroundSlightInset, PastryTexture.backgroundSlightInsetInnerCorners),
     SLIGHT_ROUND(PastryTexture.backgroundSlightRound, PastryTexture.backgroundSlightRoundInnerCorners),
     BLACK(PastryTexture.backgroundBlack, PastryTexture.backgroundBlackInnerCorners)
 }

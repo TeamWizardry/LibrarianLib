@@ -36,6 +36,7 @@ open class PastryWindow(width: Int, height: Int): PastryWindowBase(width, height
 
     init {
         header.heighti = 15
+        header.clipToBounds = true
         content.clipToBounds = true
         add(header, content)
         addDragHooks(header)

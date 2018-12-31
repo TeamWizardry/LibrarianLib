@@ -50,6 +50,7 @@ class GuiTestSelector : GuiBase() {
         ListItem.Window("Pastry Window Base") { GuiTestPastryWindowBase() },
         ListItem.Window("Multi Pastry Window Base") { GuiTestMultiPastryWindowBase() },
         ListItem.Window("Pastry Window") { GuiTestPastryWindow() },
+        ListItem.Window("Pastry Window Example") { GuiTestPastryWindowExample() },
 
         ListItem.Gui("<fix for commas in diffs>") { throw RuntimeException("How was this called?") }
     ).dropLast(1)

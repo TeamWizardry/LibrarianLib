@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.gui.windows
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.component.supporting.MouseHit
 import com.teamwizardry.librarianlib.features.gui.component.supporting.compareTo
 import com.teamwizardry.librarianlib.features.gui.components.RootComponent
@@ -11,6 +12,10 @@ import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.kotlin.div
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import org.lwjgl.opengl.GL11
 
 open class GuiWindow(width: Int, height: Int): RootComponent(0, 0, width, height) {
     var windowManager: IWindowManager? = null
@@ -36,6 +41,35 @@ open class GuiWindow(width: Int, height: Int): RootComponent(0, 0, width, height
     final override var mouseOver: Boolean = false
         private set
     private var hadMouseHit = false
+
+    init {
+        this.BUS.hook<GuiLayerEvents.PostDrawEvent> {
+            GlStateManager.depthFunc(GL11.GL_ALWAYS)
+            GlStateManager.colorMask(false, false, false, false)
+            val minX = 0.0
+            val minY = 0.0
+            val maxX = size.xi.toDouble()
+            val maxY = size.yi.toDouble()
+
+            val tessellator = Tessellator.getInstance()
+            val vb = tessellator.buffer
+
+            GlStateManager.disableTexture2D()
+
+            GlStateManager.enableBlend()
+
+            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION)
+            vb.pos(minX, minY, 0.0).endVertex()
+            vb.pos(minX, maxY, 0.0).endVertex()
+            vb.pos(maxX, maxY, 0.0).endVertex()
+            vb.pos(maxX, minY, 0.0).endVertex()
+            tessellator.draw()
+
+            GlStateManager.enableTexture2D()
+            GlStateManager.colorMask(true, true, true, true)
+            GlStateManager.depthFunc(GL11.GL_LEQUAL)
+        }
+    }
 
     fun requestFocus() = windowManager?.requestFocus(this) ?: false
     fun close() = windowManager?.close(this) ?: false
