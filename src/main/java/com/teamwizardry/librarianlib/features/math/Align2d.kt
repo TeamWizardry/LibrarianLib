@@ -32,4 +32,10 @@ enum class Align2d(val x: X, val y: Y) {
         CENTER(0),
         BOTTOM(1)
     }
+
+    val opposite: Align2d
+        get() {
+            if (this == CENTER) return CENTER
+            return values()[(ordinal-1 + 4) % (values().size-1) + 1]
+        }
 }

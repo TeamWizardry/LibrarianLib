@@ -26,10 +26,12 @@ class GuiWindowManager(private val existingScreen: GuiScreen?): GuiBase() {
         override val windows: List<GuiWindow>
             get() = root.children.filterIsInstance<GuiWindow>()
 
-        override fun isFocused(window: GuiWindow) = window == focusedWindow || window.isFloating
+        override fun isFocused(window: GuiWindow) = window == focusedWindow
 
         override fun requestFocus(window: GuiWindow): Boolean {
             focusedWindow = window
+            focusedWindow?.BUS?.fire(GuiWindow.LoseFocusEvent())
+            window.BUS.fire(GuiWindow.GainFocusEvent())
             sort()
             return true
         }

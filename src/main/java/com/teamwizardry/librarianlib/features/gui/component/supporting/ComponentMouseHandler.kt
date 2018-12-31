@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.RootComponent
 import com.teamwizardry.librarianlib.features.gui.components.StandaloneRootComponent
+import com.teamwizardry.librarianlib.features.gui.value.IMValue
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import java.util.*
@@ -48,6 +49,8 @@ interface IComponentMouse {
      * [inside][mouseInside] or [over][mouseOver] this component. The default array is true.
      */
     var disableMouseCollision: Boolean
+
+    val cursor_im: IMValue<LibCursor?>
 
     /**
      * If nonnull, the cursor will switch to this when hovering.
@@ -117,7 +120,8 @@ class ComponentMouseHandler: IComponentMouse {
     override var isOpaqueToMouse: Boolean = true
     override var propagateMouse: Boolean = true
     override var disableMouseCollision: Boolean = false
-    override var cursor: LibCursor? = null
+    override val cursor_im: IMValue<LibCursor?> = IMValue()
+    override var cursor: LibCursor? by cursor_im
 
     private var hadMouseHit = false
 

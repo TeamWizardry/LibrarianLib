@@ -109,10 +109,7 @@ open class GuiWindow(width: Int, height: Int): RootComponent(0, 0, width, height
     }
 
     override fun keyPressed(key: Char, keyCode: Int) {
-        if(isFocused)
-            super.keyPressed(key, keyCode)
-        else
-            this.BUS
+        if(isFocused) super.keyPressed(key, keyCode)
     }
 
     override fun keyReleased(key: Char, keyCode: Int) {
@@ -121,13 +118,13 @@ open class GuiWindow(width: Int, height: Int): RootComponent(0, 0, width, height
 
     override fun mouseDown(button: EnumMouseButton) {
         if(mouseOver) focusMouseDown = true
-        if(isFocused) super.mouseDown(button)
+        if(isFocused || isFloating) super.mouseDown(button)
     }
 
     override fun mouseUp(button: EnumMouseButton) {
         if(mouseOver && focusMouseDown) windowManager?.requestFocus(this)
         focusMouseDown = false
-        if(isFocused) super.mouseUp(button)
+        if(isFocused || isFloating) super.mouseUp(button)
     }
 
     class GainFocusEvent(): Event()
