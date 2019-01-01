@@ -14,6 +14,30 @@
             "background.black": { "pos": [16,16,8,8], "caps": [2,2,2,2] },
             "background.black.inner_corners": { "pos": [24,16,8,8], "caps": [3,3,3,3] },
 
+            "window.background.titlebar": { "pos": [48,80,8,8], "caps": [3,3,3,3] },
+            "window.background.body": { "pos": [48,88,8,8], "caps": [3,3,3,3] },
+            "window.dialog.background.titlebar": { "pos": [56,80,8,8], "caps": [2,2,2,2] },
+            "window.dialog.background.body": { "pos": [56,88,8,8], "caps": [2,2,2,2] },
+            "window.slight.background.titlebar": { "pos": [64,80,8,8], "caps": [2,2,2,2] },
+            "window.slight.background.body": { "pos": [64,88,8,8], "caps": [2,2,2,2] },
+
+            "window.icons.close.macos.small": [48,104,5,5],
+            "window.icons.minimize.macos.small": [56,104,5,5],
+            "window.icons.maximize.macos.small": [64,104,5,5],
+            "window.icons.close.macos": [48,112,7,7],
+            "window.icons.minimize.macos": [56,112,7,7],
+            "window.icons.maximize.macos": [64,112,7,7],
+            "window.icons.minimize": [48,123,6,5],
+            "window.icons.maximize": [56,123,6,5],
+            "window.icons.close": [64,123,5,5],
+
+            "tabs.button": { "pos": [80,80,8,8], "caps": [2,2,2,2] },
+            "tabs.body": { "pos": [80,88,8,8], "caps": [2,2,2,2] },
+            "tabs.button.pressed": { "pos": [88,80,8,8], "caps": [2,2,2,2] },
+            "splitpane.region": { "pos": [104,80,8,8], "caps": [2,2,2,2] },
+            "splitpane.hsplit": { "pos": [112,85,8,3], "caps": [2,0,2,0], "capstretch": true },
+            "splitpane.vsplit": { "pos": [109,88,3,8], "caps": [0,2,0,2], "capstretch": true },
+
             "textfield": { "pos": [0,24,8,12], "caps": [2,0,2,0] },
             "dropdown": { "pos": [16,24,16,12], "caps": [2,0,8,0] },
             "dropdown.background": { "pos": [16,40,16,8], "caps": [2,2,2,2] },
@@ -48,6 +72,7 @@
             "slider.handle.up": [104,49,7,7]
          },
          "colors": {
+            "window.shadow.color": [16, 0],
             "slider.lines": [112, 40],
             "slider.lines.highlighted": [116, 40]
          }

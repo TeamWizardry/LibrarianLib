@@ -22,6 +22,31 @@ object PastryTexture {
     val backgroundBlack = texture.getSprite("background.black")
     val backgroundBlackInnerCorners = texture.getSprite("background.black.inner_corners")
 
+    val windowBackgroundTitlebar = texture.getSprite("window.background.titlebar")
+    val windowBackgroundBody = texture.getSprite("window.background.body")
+    val windowDialogBackgroundTitlebar = texture.getSprite("window.dialog.background.titlebar")
+    val windowDialogBackgroundBody = texture.getSprite("window.dialog.background.body")
+    val windowSlightBackgroundTitlebar = texture.getSprite("window.slight.background.titlebar")
+    val windowSlightBackgroundBody = texture.getSprite("window.slight.background.body")
+
+    val windowIconsCloseMacosSmall = texture.getSprite("window.icons.close.macos.small")
+    val windowIconsMinimizeMacosSmall = texture.getSprite("window.icons.minimize.macos.small")
+    val windowIconsMaximizeMacosSmall = texture.getSprite("window.icons.maximize.macos.small")
+    val windowIconsCloseMacos = texture.getSprite("window.icons.close.macos")
+    val windowIconsMinimizeMacos = texture.getSprite("window.icons.minimize.macos")
+    val windowIconsMaximizeMacos = texture.getSprite("window.icons.maximize.macos")
+    val windowIconsMinimize = texture.getSprite("window.icons.minimize")
+    val windowIconsMaximize = texture.getSprite("window.icons.maximize")
+    val windowIconsClose = texture.getSprite("window.icons.close")
+
+    val tabsButton = texture.getSprite("tabs.button")
+    val tabsBody = texture.getSprite("tabs.body")
+    val tabsButtonPressed = texture.getSprite("tabs.button.pressed")
+    val splitpaneRegion = texture.getSprite("splitpane.region")
+    val splitpaneHsplit = texture.getSprite("splitpane.hsplit")
+    val splitpaneVsplit = texture.getSprite("splitpane.vsplit")
+
+
     val textfield = texture.getSprite("textfield")
     val dropdown = texture.getSprite("dropdown")
     val dropdownBackground = texture.getSprite("dropdown.background")

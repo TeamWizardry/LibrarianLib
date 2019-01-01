@@ -44,7 +44,7 @@ class LibCursor(val resourceLocation: ResourceLocation, val originX: Int, val or
 
     @Suppress("unused")
     companion object {
-        private fun _c(name: String, originX: Int, originY: Int) = LibCursor("librarianlib:textures/libgui/cursors/$name.png".toRl(), originX, originY)
+        private fun _c(name: String, originX: Int, originY: Int) = LibCursor("librarianlib:textures/gui/cursors/$name.png".toRl(), originX, originY)
 
         @JvmField
         val DEFAULT: LibCursor? = null
