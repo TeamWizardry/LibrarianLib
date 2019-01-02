@@ -64,7 +64,7 @@ open class GuiWindow(width: Int, height: Int): RootComponent(0, 0, width, height
             tessellator.draw()
 
             GlStateManager.enableTexture2D()
-            GlStateManager.colorMask(false, false, false, false)
+            GlStateManager.colorMask(true, true, true, true)
             GlStateManager.depthFunc(GL11.GL_LEQUAL)
         }
     }
