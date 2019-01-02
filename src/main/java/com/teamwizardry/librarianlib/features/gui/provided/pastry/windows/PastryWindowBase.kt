@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.features.gui.provided.pastry.windows
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryDropShadowLayer
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.layers.PastryDropShadowLayer
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryTexture
 import com.teamwizardry.librarianlib.features.gui.windows.GuiWindow
 import com.teamwizardry.librarianlib.features.helpers.vec

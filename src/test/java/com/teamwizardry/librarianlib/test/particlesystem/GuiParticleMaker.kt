@@ -9,6 +9,12 @@ import com.teamwizardry.librarianlib.features.gui.components.ComponentColorPicke
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.*
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastryButton
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastrySlider
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastrySwitch
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastryTabPane
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastryToggle
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.math.Cardinal2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
@@ -23,7 +29,6 @@ import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 import org.apache.commons.lang3.RandomUtils
 import org.lwjgl.opengl.GL11

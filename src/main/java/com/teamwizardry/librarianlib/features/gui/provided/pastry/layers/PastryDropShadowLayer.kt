@@ -1,8 +1,9 @@
-package com.teamwizardry.librarianlib.features.gui.provided.pastry
+package com.teamwizardry.librarianlib.features.gui.provided.pastry.layers
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.layers.SpriteLayer
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryTexture
 import com.teamwizardry.librarianlib.features.gui.value.RMValue
 import com.teamwizardry.librarianlib.features.gui.value.RMValueInt
 import com.teamwizardry.librarianlib.features.helpers.vec

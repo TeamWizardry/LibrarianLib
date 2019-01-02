@@ -1,36 +1,21 @@
 package com.teamwizardry.librarianlib.features.gui.provided.pastry.windows
 
-import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
-import com.teamwizardry.librarianlib.features.gui.component.supporting.MouseHit
-import com.teamwizardry.librarianlib.features.gui.component.supporting.compareTo
-import com.teamwizardry.librarianlib.features.gui.components.RootComponent
 import com.teamwizardry.librarianlib.features.gui.layers.SpriteLayer
 import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryButton
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryTexture
-import com.teamwizardry.librarianlib.features.gui.windows.GuiWindow
-import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.delegate
 import com.teamwizardry.librarianlib.features.kotlin.getValue
-import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.setValue
 import com.teamwizardry.librarianlib.features.kotlin.unaryMinus
 import com.teamwizardry.librarianlib.features.math.Align2d
-import com.teamwizardry.librarianlib.features.math.Axis2d
-import com.teamwizardry.librarianlib.features.math.Rect2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.Sprite
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import net.minecraft.client.Minecraft
-import net.minecraft.util.Util
-import kotlin.math.abs
-import kotlin.math.max
 
 open class PastryWindow(width: Int, height: Int): PastryWindowBase(width, height) {
     val header = GuiComponent(0, 0, width, 0)

@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.features.gui.provided.pastry
+package com.teamwizardry.librarianlib.features.gui.provided.pastry.components
 
 import com.teamwizardry.librarianlib.features.eventbus.EventBus
 import com.teamwizardry.librarianlib.features.eventbus.EventCancelable

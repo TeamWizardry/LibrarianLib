@@ -1,13 +1,10 @@
 package com.teamwizardry.librarianlib.test.gui.tests
 
 import com.teamwizardry.librarianlib.features.gui.GuiBase
-import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.gui.components.ComponentTextField
 import com.teamwizardry.librarianlib.features.gui.layers.ColorLayer
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryBackground
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.sprite.Sprite
-import net.minecraft.util.ResourceLocation
 import java.awt.Color
 
 /**

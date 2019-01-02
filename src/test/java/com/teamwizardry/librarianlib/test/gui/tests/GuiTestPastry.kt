@@ -1,27 +1,15 @@
 package com.teamwizardry.librarianlib.test.gui.tests
 
-import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryBackground
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryButton
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryCheckbox
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryProgressBar
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryRadioButtonSet
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryToggle
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastrySwitch
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.layers.PastryBackground
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastryCheckbox
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.layers.PastryProgressBar
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastryRadioButtonSet
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastrySwitch
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.Client
-import com.teamwizardry.librarianlib.features.kotlin.MainThreadExecutors
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.future.future
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 /**
  * Created by TheCodeWarrior

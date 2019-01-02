@@ -1,10 +1,9 @@
-package com.teamwizardry.librarianlib.features.gui.provided.pastry
+package com.teamwizardry.librarianlib.features.gui.provided.pastry.components
 
 import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.Hook
 import com.teamwizardry.librarianlib.features.gui.components.FixedSizeComponent
-import com.teamwizardry.librarianlib.features.gui.layers.SpriteLayer
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 
 abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int): FixedSizeComponent(posX, posY, width, height) {

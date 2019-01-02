@@ -4,14 +4,10 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentTextField
 import com.teamwizardry.librarianlib.features.gui.layers.SpriteLayer
 import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.BackgroundTexture
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryBackground
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryButton
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastryButton
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryTexture
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.windows.PastryWindow
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.div
-import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.math.Align2d
 
 class GuiTestPastryWindowExample: PastryWindow(200, 100) {

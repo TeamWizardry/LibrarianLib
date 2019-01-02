@@ -2,11 +2,10 @@ package com.teamwizardry.librarianlib.test.gui.tests
 
 import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryBackground
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Align2d
 import kotlinx.coroutines.launch
-import java.awt.Color
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.streams.asSequence
 
