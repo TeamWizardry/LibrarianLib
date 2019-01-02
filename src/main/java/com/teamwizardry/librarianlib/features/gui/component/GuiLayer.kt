@@ -59,6 +59,15 @@ open class GuiLayer private constructor(
 
     private var wrapper: LayerBackedComponent? = null
 
+    override fun drawDebugBoundingBox() {
+        val wrapper = wrapper
+        if(wrapper != null) {
+            wrapper.drawDebugBoundingBox()
+        } else {
+            render.drawDebugBoundingBox()
+        }
+    }
+
     /**
      * Wraps this layer in a GuiComponent
      */

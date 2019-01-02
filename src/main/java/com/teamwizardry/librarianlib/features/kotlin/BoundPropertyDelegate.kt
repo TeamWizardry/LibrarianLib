@@ -31,3 +31,11 @@ val <T> KProperty0<T>.delegate: ReadOnlyProperty<Any, T>
     get() = BoundPropertyDelegateReadOnly(this)
 val <T> KMutableProperty0<T>.delegate: ReadWriteProperty<Any, T>
     get() = BoundPropertyDelegateReadWrite(this)
+
+operator fun <T> KProperty0<T>.getValue(thisRef: Any, property: KProperty<*>): T {
+    return this.get()
+}
+
+operator fun <T> KMutableProperty0<T>.setValue(thisRef: Any, property: KProperty<*>, value: T) {
+    this.set(value)
+}

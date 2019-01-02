@@ -44,6 +44,7 @@ class GuiWindowManager(private val existingScreen: GuiScreen?): GuiBase() {
                 val top = windows.lastOrNull { !it.isFloating }
                 top?.also { requestFocus(it) }
             }
+            window.BUS.fire(GuiWindow.CloseEvent())
             if(windows.isEmpty()) {
                 Minecraft().displayGuiScreen(existingScreen)
             }
@@ -54,6 +55,7 @@ class GuiWindowManager(private val existingScreen: GuiScreen?): GuiBase() {
             window.windowManager = this
             root.add(window)
             sort()
+            window.BUS.fire(GuiWindow.OpenEvent())
         }
 
         override fun sort() {

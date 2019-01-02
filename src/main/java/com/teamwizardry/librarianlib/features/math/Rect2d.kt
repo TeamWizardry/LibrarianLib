@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.math
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.clamp
 import com.teamwizardry.librarianlib.features.kotlin.minus
+import com.teamwizardry.librarianlib.features.kotlin.plus
 
 class Rect2d(val x: Double, val y: Double, val width: Double, val height: Double) {
     constructor(pos: Vec2d, size: Vec2d) : this(
@@ -80,6 +81,14 @@ class Rect2d(val x: Double, val y: Double, val width: Double, val height: Double
             point.x.clamp(pos.x, pos.x + size.x),
             point.y.clamp(pos.y, pos.y + size.y)
         )
+    }
+
+    fun offset(offset: Vec2d): Rect2d {
+        return Rect2d(this.pos + offset, this.size)
+    }
+
+    fun expand(offset: Vec2d): Rect2d {
+        return Rect2d(this.pos, this.size + offset)
     }
 
     //=============================================================================

@@ -34,8 +34,6 @@ open class GuiWindow(width: Int, height: Int): RootComponent(0, 0, width, height
             windowManager?.sort()
         }
 
-    private var focusMouseDown = false
-
     final override var mouseHit: MouseHit? = null
         private set
     final override var mouseOver: Boolean = false
@@ -66,7 +64,7 @@ open class GuiWindow(width: Int, height: Int): RootComponent(0, 0, width, height
             tessellator.draw()
 
             GlStateManager.enableTexture2D()
-            GlStateManager.colorMask(true, true, true, true)
+            GlStateManager.colorMask(false, false, false, false)
             GlStateManager.depthFunc(GL11.GL_LEQUAL)
         }
     }
@@ -151,16 +149,16 @@ open class GuiWindow(width: Int, height: Int): RootComponent(0, 0, width, height
     }
 
     override fun mouseDown(button: EnumMouseButton) {
-        if(mouseOver) focusMouseDown = true
-        if(isFocused || isFloating) super.mouseDown(button)
+        windowManager?.requestFocus(this)
+        super.mouseDown(button)
     }
 
     override fun mouseUp(button: EnumMouseButton) {
-        if(mouseOver && focusMouseDown) windowManager?.requestFocus(this)
-        focusMouseDown = false
-        if(isFocused || isFloating) super.mouseUp(button)
+        super.mouseUp(button)
     }
 
-    class GainFocusEvent(): Event()
-    class LoseFocusEvent(): Event()
+    class GainFocusEvent: Event()
+    class LoseFocusEvent: Event()
+    class CloseEvent: Event()
+    class OpenEvent: Event()
 }

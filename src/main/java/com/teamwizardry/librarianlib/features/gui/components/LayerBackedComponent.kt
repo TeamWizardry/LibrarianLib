@@ -20,6 +20,10 @@ class LayerBackedComponent(val layer: GuiLayer): GuiComponent(0, 0, 0, 0),
         get() = layer.parent
         internal set(value) { layer.parent = value }
 
+    override fun drawDebugBoundingBox() {
+        super.drawDebugBoundingBox()
+    }
+
     override fun add(vararg components: GuiLayer?) {
         components.forEach { (it as? GuiComponent)?.allowAddingToLayer = true }
         layer.add(*components)

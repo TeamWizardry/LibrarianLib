@@ -15,9 +15,10 @@ import net.minecraft.client.renderer.GlStateManager
 
 interface ILayerGeometry: CoordinateSpace2D {
     /**
-     * The bounding rectangle of this layer in its parent's coordinate space. The "outer" edge.
+     * The bounding rectangle of this layer in its parent's coordinate space. The "outer" edge. Setting this value will
+     * not respect rotation.
      */
-    val frame: Rect2d
+    var frame: Rect2d
     /**
      * The bounding rectangle of this layer in its own coordinate space. The "inner" edge. Takes into account
      * [contentsOffset], so the rectangle's position may not be the origin
@@ -373,8 +374,16 @@ interface ILayerGeometry: CoordinateSpace2D {
 class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
     lateinit var layer: GuiLayer
 
-    override val frame: Rect2d
+    override var frame: Rect2d
         get() = layer.parentSpace?.let { this.convertRectTo(layer.bounds, it) } ?: layer.bounds
+        set(value) {
+            layer.pos = value.pos + value.size * layer.anchor
+            val scale = layer.scale2d
+            layer.size = vec(
+                if(scale.x == 0.0) layer.size.x else value.width / scale.x,
+                if(scale.y == 0.0) layer.size.y else value.height / scale.y
+            )
+        }
     override val bounds: Rect2d
         get() = Rect2d(-layer.contentsOffset, layer.size)
 

@@ -63,6 +63,9 @@ open class PastryWindowBase(width: Int, height: Int): GuiWindow(width, height) {
         moveHandler.endFrameDragOperation()
     }
 
+    val hasFrameDragOperation: Boolean
+        get() = moveHandler.clickedEdge != null
+
     fun frameCursor(side: Align2d): LibCursor? {
         val set = mutableSetOf<Align2d>()
         if(side.x != Align2d.X.CENTER) {
