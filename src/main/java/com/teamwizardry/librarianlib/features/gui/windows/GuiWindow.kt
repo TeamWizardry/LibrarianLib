@@ -150,7 +150,7 @@ open class GuiWindow(width: Int, height: Int): RootComponent(0, 0, width, height
     }
 
     override fun mouseDown(button: EnumMouseButton) {
-        windowManager?.requestFocus(this)
+        if(mouseOver) windowManager?.requestFocus(this)
         super.mouseDown(button)
     }
 
