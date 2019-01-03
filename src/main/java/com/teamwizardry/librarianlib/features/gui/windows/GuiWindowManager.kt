@@ -21,6 +21,10 @@ class GuiWindowManager(private val existingScreen: GuiScreen?): GuiBase() {
         delegate.open(window)
     }
 
+    override fun doesGuiPauseGame(): Boolean {
+        return delegate.windows.any { it.shouldPauseGame }
+    }
+
     // make it unreasonably difficult to get at the GuiWindowManager, as it should not be touched.
     private inner class WindowManagerDelegate: IWindowManager {
         override val windows: List<GuiWindow>
