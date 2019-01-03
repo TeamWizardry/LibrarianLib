@@ -138,3 +138,12 @@ class ComponentDataHandler: IComponentData {
         return hasData(clazz, "")
     }
 }
+
+inline fun <reified D : Any> IComponentData.setData(key: String, value: D) = this.setData(D::class.java, key, value)
+inline fun <reified D : Any> IComponentData.removeData(key: String) = this.removeData(D::class.java, key)
+inline fun <reified D> IComponentData.getData(key: String): D? = this.getData(D::class.java, key)
+inline fun <reified D> IComponentData.hasData(key: String): Boolean = this.hasData(D::class.java, key)
+inline fun <reified D : Any> IComponentData.setData(value: D) = this.setData(D::class.java, value)
+inline fun <reified D : Any> IComponentData.removeData() = this.removeData(D::class.java)
+inline fun <reified D : Any> IComponentData.getData(): D? = this.getData(D::class.java)
+inline fun <reified D : Any> IComponentData.hasData(): Boolean = this.hasData(D::class.java)

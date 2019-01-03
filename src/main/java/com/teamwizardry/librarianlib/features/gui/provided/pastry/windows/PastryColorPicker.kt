@@ -148,7 +148,9 @@ class PastryColorPicker: PastryWindow(100, 75, PastryWindow.Style.PANEL, true) {
         private val sprite = SpriteLayer(hueSprite, 0, 0)
 
         init {
+            Minecraft().textureManager.bindTexture(hueLoc)
             Minecraft().textureManager.getTexture(hueLoc).setBlurMipmap(false, false)
+
             add(background, sprite.componentWrapper())
 
             sprite.BUS.hook<GuiComponentEvents.MouseDownEvent> { updateH() }
