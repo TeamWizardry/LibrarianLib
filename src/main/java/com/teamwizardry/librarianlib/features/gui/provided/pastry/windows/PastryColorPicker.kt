@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.gui.provided.pastry.windows
 
+import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
@@ -38,6 +39,7 @@ class PastryColorPicker: PastryWindow(100, 75, PastryWindow.Style.PANEL, true) {
         set(value) {
             _hue = value
             _color = Color(Color.HSBtoRGB(hue, saturation, brightness))
+            BUS.fire(ColorChangeEvent())
         }
 
     private var _saturation: Float = 0f
@@ -46,6 +48,7 @@ class PastryColorPicker: PastryWindow(100, 75, PastryWindow.Style.PANEL, true) {
         set(value) {
             _saturation = value
             _color = Color(Color.HSBtoRGB(hue, saturation, brightness))
+            BUS.fire(ColorChangeEvent())
         }
 
     private var _brightness: Float = 0f
@@ -54,6 +57,7 @@ class PastryColorPicker: PastryWindow(100, 75, PastryWindow.Style.PANEL, true) {
         set(value) {
             _brightness = value
             _color = Color(Color.HSBtoRGB(hue, saturation, brightness))
+            BUS.fire(ColorChangeEvent())
         }
 
     private var _color: Color = Color.white
@@ -202,4 +206,6 @@ class PastryColorPicker: PastryWindow(100, 75, PastryWindow.Style.PANEL, true) {
         val hueLoc = "librarianlib:textures/gui/pastry/colorpicker_hue.png".toRl()
         val hueSprite = Sprite(hueLoc)
     }
+
+    class ColorChangeEvent(): Event()
 }
