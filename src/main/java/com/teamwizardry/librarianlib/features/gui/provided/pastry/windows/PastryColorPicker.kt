@@ -72,6 +72,7 @@ class PastryColorPicker: PastryWindow(100, 75, PastryWindow.Style.PANEL, true) {
         }
 
     init {
+        shouldPauseGame = false
         maxContentSize = vec(2000, 2000)
         minContentSize = vec(10, 10)
 
