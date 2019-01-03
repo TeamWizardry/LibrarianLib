@@ -11,6 +11,7 @@ import com.teamwizardry.librarianlib.features.gui.provided.pastry.layers.PastryB
 import com.teamwizardry.librarianlib.features.helpers.pos
 import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.kotlin.color
 import com.teamwizardry.librarianlib.features.kotlin.div
 import com.teamwizardry.librarianlib.features.kotlin.minus
@@ -147,6 +148,7 @@ class PastryColorPicker: PastryWindow(100, 75, PastryWindow.Style.PANEL, true) {
         private val sprite = SpriteLayer(hueSprite, 0, 0)
 
         init {
+            Minecraft().textureManager.getTexture(hueLoc).setBlurMipmap(false, false)
             add(background, sprite.componentWrapper())
 
             sprite.BUS.hook<GuiComponentEvents.MouseDownEvent> { updateH() }
@@ -169,6 +171,7 @@ class PastryColorPicker: PastryWindow(100, 75, PastryWindow.Style.PANEL, true) {
     }
 
     companion object {
-        val hueSprite = Sprite("librarianlib:textures/gui/pastry/colorpicker_hue.png".toRl())
+        val hueLoc = "librarianlib:textures/gui/pastry/colorpicker_hue.png".toRl()
+        val hueSprite = Sprite(hueLoc)
     }
 }

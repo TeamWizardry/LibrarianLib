@@ -209,8 +209,7 @@ class Texture(
             return
         }
         Minecraft.getMinecraft().textureManager.bindTexture(loc)
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR)
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR)
+        Minecraft.getMinecraft().textureManager.getTexture(loc).setBlurMipmap(true, false)
     }
 
     /**
@@ -222,8 +221,7 @@ class Texture(
             return
         }
         Minecraft.getMinecraft().textureManager.bindTexture(loc)
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST)
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST)
+        Minecraft.getMinecraft().textureManager.getTexture(loc).setBlurMipmap(false, false)
     }
 
     /**
