@@ -1,20 +1,17 @@
 package com.teamwizardry.librarianlib.test.particlesystem
 
 import com.teamwizardry.librarianlib.features.animator.Easing
-import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentColorPicker
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
+import com.teamwizardry.librarianlib.features.gui.components.ComponentTextField
+import com.teamwizardry.librarianlib.features.gui.layers.ColorLayer
 import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.*
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastryButton
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastrySlider
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastrySwitch
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastryTabPane
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastryToggle
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.layers.PastryBackground
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.*
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.windows.PastryWindow
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.math.Cardinal2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
@@ -35,7 +32,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.roundToInt
 
-class GuiParticleMaker : GuiBase() {
+class GuiParticleMaker : PastryWindow(500, 300) {
 
     enum class View {
         EMPTY, PARTICLE, SIMULATION
@@ -69,12 +66,22 @@ class GuiParticleMaker : GuiBase() {
     var maxVelY = 0.0
     var maxVelZ = 0.0
     var randomVelocity = false
+    var resourceLoc = ResourceLocation("minecraft", "textures/items/clay_ball.png")
+
+    val headerLayer = ColorLayer(Color.GREEN, 0, 0, 0, 0)
+
+    override fun layoutChildren() {
+        super.layoutChildren()
+        headerLayer.pos = vec(0, 0)
+        headerLayer.size = header.size
+    }
 
     init {
         system.reload()
 
-        val background = PastryBackground(BackgroundTexture.BLACK, -500 / 2, -300 / 2, 500, 300)
-        main.add(background.componentWrapper())
+        header.add(headerLayer)
+        content.add(ColorLayer(Color.RED, 0, 0, 100, 100))
+
 
         val renderBox = ComponentRect((-500 / 2) + 10, (-300 / 2) + 10, 300 - 20, 300 - 20)
         renderBox.zIndex = 2.0
@@ -91,13 +98,13 @@ class GuiParticleMaker : GuiBase() {
         renderBox.BUS.hook<GuiComponentEvents.MouseDownEvent> {
             if (renderBox.mouseOver) {
                 renderBoxMouseDown = true
-                preMouse = main.mousePos
+                preMouse = mousePos
             }
         }
 
         renderBox.BUS.hook<GuiComponentEvents.MouseDragEvent> {
             if (renderBoxMouseDown) {
-                postMouse = main.mousePos
+                postMouse = mousePos
                 val sub = postMouse.sub(preMouse)
                 pitchYaw = sub.add(lastPitchYaw)
             }
@@ -138,10 +145,10 @@ class GuiParticleMaker : GuiBase() {
             GlStateManager.popMatrix()
             // RENDER PARTICLE SYSTEM
         }
-        main.add(renderBox)
+        add(renderBox)
 
         val tabPane = PastryTabPane(500 - 190 - 10, 10, 190, 300 - 20)
-        background.componentWrapper().add(tabPane)
+        componentWrapper().add(tabPane)
 
 
         val spawning = tabPane.addTab("Spawning")
@@ -218,13 +225,34 @@ class GuiParticleMaker : GuiBase() {
         val aesthetics = tabPane.addTab("Aesthetics")
 
 
+        // --- RESOURCE LOCATION --- //
+        val resourceLocTitle = TextLayer(0, 0, 0, 0)
+        resourceLocTitle.fitToText = true
+        resourceLocTitle.text = "Resource Location"
+        val resourceLocation = ComponentTextField(0, 10, aesthetics.widthi, 12)
+        resourceLocation.text = resourceLoc.namespace + ":" + resourceLoc.path
+        resourceLocation.BUS.hook<ComponentTextField.TextEditEvent> {
+            val whole = it.whole.trim()
+            var domain = "minecraft"
+            val path: String
+            if (whole.contains(":")) {
+                val split = whole.split(":")
+                domain = split[0]
+                path = split[1]
+            } else path = whole
+            resourceLoc = ResourceLocation(domain, path)
+            system.reload()
+        }
+        aesthetics.add(resourceLocTitle, resourceLocation)
+        // --- RESOURCE LOCATION --- //
+
         val mainRadius = 30.0
-        val colorWheelPrimary = ComponentColorPicker(aesthetics.widthi / 2 - (mainRadius.toInt() * 2) / 2, 0, (mainRadius.toInt() * 2), (mainRadius.toInt() * 2))
+        val colorWheelPrimary = ComponentColorPicker(aesthetics.widthi / 2 - (mainRadius.toInt() * 2) / 2, 40, (mainRadius.toInt() * 2), (mainRadius.toInt() * 2))
         colorWheelPrimary.BUS.hook<ComponentColorPicker.ColorChangeEvent> {
             colorPrimary = it.color
         }
 
-        val colorWheelSecondary = ComponentColorPicker(aesthetics.widthi / 2 - (mainRadius.toInt() * 2) / 2, 0, (mainRadius.toInt() * 2), (mainRadius.toInt() * 2))
+        val colorWheelSecondary = ComponentColorPicker(aesthetics.widthi / 2 - (mainRadius.toInt() * 2) / 2, 40, (mainRadius.toInt() * 2), (mainRadius.toInt() * 2))
         colorWheelSecondary.isVisible = false
         colorWheelSecondary.BUS.hook<ComponentColorPicker.ColorChangeEvent> {
             colorSecondary = it.color
@@ -238,15 +266,16 @@ class GuiParticleMaker : GuiBase() {
                 colorWheelPrimary.pos_rm.animate(Vec2d.ZERO, 20f, Easing.easeOutQuart)
 
                 colorWheelSecondary.isVisible = true
-                colorWheelSecondary.pos_rm.animate(Vec2d(aesthetics.width - (mainRadius * 2), 0.0), 20f, Easing.easeOutQuart)
+                colorWheelSecondary.pos_rm.animate(Vec2d(aesthetics.width - (mainRadius * 2), 20.0), 40f, Easing.easeOutQuart)
             } else {
-                colorWheelPrimary.pos_rm.animate(Vec2d(aesthetics.width / 2.0 - (mainRadius * 2.0) / 2.0, 0.0), 20f, Easing.easeOutQuart)
+                colorWheelPrimary.pos_rm.animate(Vec2d(aesthetics.width / 2.0 - (mainRadius * 2.0) / 2.0, 40.0), 20f, Easing.easeOutQuart)
 
-                colorWheelSecondary.pos_rm.animate(Vec2d(aesthetics.width / 2.0 - (mainRadius * 2.0) / 2.0, 0.0), 20f, Easing.easeOutQuart).completion = Runnable {
+                colorWheelSecondary.pos_rm.animate(Vec2d(aesthetics.width / 2.0 - (mainRadius * 2.0) / 2.0, 40.0), 20f, Easing.easeOutQuart).completion = Runnable {
                     colorWheelSecondary.isVisible = false
                 }
             }
         }
+
         aesthetics.add(colorFade)
 
 
@@ -420,12 +449,16 @@ class GuiParticleMaker : GuiBase() {
 
                     colorFading = if (colorFading) 1 else 0,
                     colorPrimary = colorPrimary,
-                    colorSecondary = colorSecondary)
+                    colorSecondary = colorSecondary,
+
+                    resourceLocation = resourceLoc)
     }
 
-    override fun doesGuiPauseGame(): Boolean = false
+    //   override fun doesGuiPauseGame(): Boolean = false
 
     object PhysicsCurtainSystem : ParticleSystem() {
+
+        var resourceLocation = ResourceLocation("minecraft", "textures/items/clay_ball.png")
 
         init {
             manuallyRender = true
@@ -467,7 +500,7 @@ class GuiParticleMaker : GuiBase() {
             })
 
             renderModules.add(SpriteRenderModule(
-                    sprite = ResourceLocation("minecraft", "textures/items/clay_ball.png"),
+                    sprite = resourceLocation,
                     enableBlend = true,
                     blendMode = BlendMode.ADDITIVE,
                     previousPosition = previousPosition,
@@ -491,7 +524,11 @@ class GuiParticleMaker : GuiBase() {
 
                   colorFading: Int,
                   colorPrimary: Color,
-                  colorSecondary: Color = colorPrimary) {
+                  colorSecondary: Color = colorPrimary,
+
+                  resourceLocation: ResourceLocation) {
+
+            this.resourceLocation = resourceLocation
             this.addParticle(lifetime,
                     size,
                     pos.x, pos.y, pos.z,
@@ -508,7 +545,6 @@ class GuiParticleMaker : GuiBase() {
                     colorPrimary.red.toDouble() / 255.0, colorPrimary.green.toDouble() / 255.0, colorPrimary.blue.toDouble() / 255.0, colorPrimary.alpha.toDouble() / 255.0,
                     colorPrimary.red.toDouble() / 255.0, colorPrimary.green.toDouble() / 255.0, colorPrimary.blue.toDouble() / 255.0, colorPrimary.alpha.toDouble() / 255.0,
                     colorSecondary.red.toDouble() / 255.0, colorSecondary.green.toDouble() / 255.0, colorSecondary.blue.toDouble() / 255.0, colorSecondary.alpha.toDouble() / 255.0
-
             )
         }
     }

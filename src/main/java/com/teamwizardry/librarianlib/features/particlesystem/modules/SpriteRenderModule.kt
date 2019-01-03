@@ -101,7 +101,6 @@ class SpriteRenderModule @JvmOverloads constructor(
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
         GlStateManager.disableCull()
 
-        //if (is2D) 0.0 else
         val playerYaw = player.prevRotationYaw.toDouble()
         val playerPitch = player.prevRotationPitch.toDouble()
 

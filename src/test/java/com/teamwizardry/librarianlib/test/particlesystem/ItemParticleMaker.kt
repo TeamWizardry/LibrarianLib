@@ -2,7 +2,6 @@ package com.teamwizardry.librarianlib.test.particlesystem
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.base.item.ItemMod
-import com.teamwizardry.librarianlib.features.container.GuiHandler
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ActionResult
@@ -15,7 +14,7 @@ class ItemParticleMaker : ItemMod("particle_maker") {
 
     override fun onItemRightClick(worldIn: World, playerIn: EntityPlayer, handIn: EnumHand): ActionResult<ItemStack> {
         val stack = playerIn.getHeldItem(handIn)
-        GuiHandler.open(RESOURCE, playerIn)
+        GuiParticleMaker().open()
         return ActionResult(EnumActionResult.SUCCESS, stack)
     }
 
