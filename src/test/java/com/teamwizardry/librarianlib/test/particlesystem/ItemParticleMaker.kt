@@ -14,7 +14,8 @@ class ItemParticleMaker : ItemMod("particle_maker") {
 
     override fun onItemRightClick(worldIn: World, playerIn: EntityPlayer, handIn: EnumHand): ActionResult<ItemStack> {
         val stack = playerIn.getHeldItem(handIn)
-        GuiParticleMaker().open()
+        if(worldIn.isRemote)
+            GuiParticleMaker().open()
         return ActionResult(EnumActionResult.SUCCESS, stack)
     }
 
