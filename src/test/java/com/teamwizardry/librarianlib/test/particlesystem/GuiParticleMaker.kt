@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.components.ComponentTextField
 import com.teamwizardry.librarianlib.features.gui.layers.ColorLayer
 import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryTexture
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.*
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.windows.PastryWindow
 import com.teamwizardry.librarianlib.features.helpers.vec
@@ -77,6 +78,7 @@ class GuiParticleMaker : PastryWindow(500, 300) {
     }
 
     init {
+        PastryTexture.theme = PastryTexture.Theme.DARK
         system.reload()
 
         header.add(headerLayer)

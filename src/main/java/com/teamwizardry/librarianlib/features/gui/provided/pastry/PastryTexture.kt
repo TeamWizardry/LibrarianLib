@@ -3,9 +3,17 @@ package com.teamwizardry.librarianlib.features.gui.provided.pastry
 import com.teamwizardry.librarianlib.features.kotlin.toRl
 import com.teamwizardry.librarianlib.features.sprite.Sprite
 import com.teamwizardry.librarianlib.features.sprite.Texture
+import net.minecraft.util.ResourceLocation
 
 object PastryTexture {
-    val texture = Texture("librarianlib:textures/gui/pastry/light.png".toRl(), 256, 256)
+
+    var theme: Theme = Theme.NORMAL
+        set(value) {
+            field = value
+            texture.switchTexture(value.location)
+        }
+
+    val texture = Texture(Theme.NORMAL.location, 256, 256)
     val shadowTexture = Texture("librarianlib:textures/gui/pastry/shadow.png".toRl(), 256, 256)
     init {
         shadowTexture.enableBlending()
@@ -78,6 +86,12 @@ object PastryTexture {
 
     val shadowFadeSize = 48
     val shadowSprite = shadowTexture.getSprite("shadow")
+
+    enum class Theme(val location: ResourceLocation) {
+        NORMAL("librarianlib:textures/gui/pastry/light.png".toRl()),
+        DARK("librarianlib:textures/gui/pastry/dark.png".toRl()),
+        HIGH_CONTRAST("librarianlib:textures/gui/pastry/contrast.png".toRl()),
+    }
 }
 
 enum class BackgroundTexture(val background: Sprite, val innerCorners: Sprite) {
