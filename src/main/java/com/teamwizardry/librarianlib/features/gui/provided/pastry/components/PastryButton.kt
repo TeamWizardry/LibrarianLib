@@ -7,13 +7,14 @@ import com.teamwizardry.librarianlib.features.gui.layers.SpriteLayer
 import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryTexture
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 
 class PastryButton @JvmOverloads constructor(
-    buttonText: String = "",
-    posX: Int, posY: Int, width: Int, height: Int = 12,
-    callback: (() -> Unit)? = null
+        buttonText: String = "",
+        posX: Int, posY: Int, width: Int = Minecraft().fontRenderer.getStringWidth(buttonText) + 10, height: Int = 12,
+        callback: (() -> Unit)? = null
 ) : GuiComponent(posX, posY, width, height) {
     private val sprite = SpriteLayer(PastryTexture.button, 0, 0, width, height)
     val label = TextLayer(4, 2, width-8, height-4)
@@ -39,6 +40,8 @@ class PastryButton @JvmOverloads constructor(
                 callback()
             }
         this.add(sprite, label)
+
+        clipToBounds = true
     }
 
     @Hook

@@ -4,16 +4,15 @@ import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
-import com.teamwizardry.librarianlib.features.gui.components.ComponentColorPicker
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.components.ComponentTextField
-import com.teamwizardry.librarianlib.features.gui.layers.ColorLayer
 import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryTexture
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.*
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.windows.PastryColorPicker
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.windows.PastryWindow
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.Minecraft
+import com.teamwizardry.librarianlib.features.math.Align2d
 import com.teamwizardry.librarianlib.features.math.Cardinal2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.particlesystem.BlendMode
@@ -69,7 +68,7 @@ class GuiParticleMaker : PastryWindow(500, 300) {
     var randomVelocity = false
     var resourceLoc = ResourceLocation("minecraft", "textures/items/clay_ball.png")
 
-    val headerLayer = ColorLayer(Color.GREEN, 0, 0, 0, 0)
+    val headerLayer = TextLayer(0, 0, 0, 0)
 
     override fun layoutChildren() {
         super.layoutChildren()
@@ -82,11 +81,11 @@ class GuiParticleMaker : PastryWindow(500, 300) {
         PastryTexture.theme = PastryTexture.Theme.DARK
         system.reload()
 
+        headerLayer.text = "Particle Maker"
+        headerLayer.align = Align2d.CENTER
         header.add(headerLayer)
-        content.add(ColorLayer(Color.RED, 0, 0, 100, 100))
 
-
-        val renderBox = ComponentRect((-500 / 2) + 10, (-300 / 2) + 10, 300 - 20, 300 - 20)
+        val renderBox = ComponentRect(0, 0, 300 - 20, heighti)
         renderBox.zIndex = 2.0
         renderBox.cursor = LibCursor.MOVE
         renderBox.color = Color.BLACK
@@ -148,10 +147,10 @@ class GuiParticleMaker : PastryWindow(500, 300) {
             GlStateManager.popMatrix()
             // RENDER PARTICLE SYSTEM
         }
-        add(renderBox)
+        content.componentWrapper().add(renderBox)
 
         val tabPane = PastryTabPane(500 - 190 - 10, 10, 190, 300 - 20)
-        componentWrapper().add(tabPane)
+        content.componentWrapper().add(tabPane)
 
 
         val spawning = tabPane.addTab("Spawning")
@@ -199,29 +198,24 @@ class GuiParticleMaker : PastryWindow(500, 300) {
         spawning.add(continuousSpawning, spawnWhileHoldingButton, spawnButton, animatableWrapper1)
         // --- CONTINUOUS SPAWNING --- //
 
-
-        // --- LIFE TIME --- //
         val sliderLifetime = makeSlider(
                 text = "Set Particle Lifetime",
                 y = 10,
                 beginValue = lifetime,
-                range = 1 .. 500) {
+                range = 1..500) {
             lifetime = it
         }
         animatableWrapper1.add(sliderLifetime)
-        // --- LIFE TIME --- //
 
-
-        // --- PARTICLE COUNT --- //
         val sliderParticleCount = makeSlider(
                 text = "Set Particle Count",
                 y = sliderLifetime.yi + 20,
                 beginValue = 1,
-                range = 1 .. 1000) {
+                range = 1..1000) {
             particleCount = it
         }
-
         animatableWrapper1.add(sliderParticleCount)
+
         // --- PARTICLE COUNT --- //
 
 
@@ -250,31 +244,45 @@ class GuiParticleMaker : PastryWindow(500, 300) {
         // --- RESOURCE LOCATION --- //
 
         val mainRadius = 30.0
-        val colorWheelPrimary = ComponentColorPicker(aesthetics.widthi / 2 - (mainRadius.toInt() * 2) / 2, 40, (mainRadius.toInt() * 2), (mainRadius.toInt() * 2))
-        colorWheelPrimary.BUS.hook<ComponentColorPicker.ColorChangeEvent> {
-            colorPrimary = it.color
+        val buttonColorWheelPrimary = PastryButton("Pick Color", aesthetics.widthi / 2 - 90 / 2, resourceLocation.yi + 10 + 25, 110)
+        val colorWheelPrimary = PastryColorPicker()
+        colorWheelPrimary.BUS.hook<LoseFocusEvent> {
+            //       colorWheelPrimary.close()
+        }
+        colorWheelPrimary.BUS.hook<PastryColorPicker.ColorChangeEvent> {
+            colorPrimary = Color.getHSBColor(colorWheelPrimary.hue, colorWheelPrimary.saturation, colorWheelPrimary.brightness)
+        }
+        buttonColorWheelPrimary.BUS.hook<GuiComponentEvents.MouseClickEvent> {
+            colorWheelPrimary.open()
         }
 
-        val colorWheelSecondary = ComponentColorPicker(aesthetics.widthi / 2 - (mainRadius.toInt() * 2) / 2, 40, (mainRadius.toInt() * 2), (mainRadius.toInt() * 2))
-        colorWheelSecondary.isVisible = false
-        colorWheelSecondary.BUS.hook<ComponentColorPicker.ColorChangeEvent> {
-            colorSecondary = it.color
+        val buttonColorWheelSecondary = PastryButton("Secondary Color", aesthetics.widthi / 2 - 90 / 2, buttonColorWheelPrimary.yi + 15, 110)
+        buttonColorWheelSecondary.isVisible = false
+        val colorWheelSecondary = PastryColorPicker()
+        colorWheelSecondary.BUS.hook<LoseFocusEvent> {
+            //     colorWheelSecondary.close()
         }
-        aesthetics.add(colorWheelPrimary, colorWheelSecondary)
+        colorWheelSecondary.BUS.hook<PastryColorPicker.ColorChangeEvent> {
+            colorSecondary = Color.getHSBColor(colorWheelSecondary.hue, colorWheelSecondary.saturation, colorWheelSecondary.brightness)
+        }
+        buttonColorWheelSecondary.BUS.hook<GuiComponentEvents.MouseClickEvent> {
+            colorWheelSecondary.open()
+        }
+
+        aesthetics.add(buttonColorWheelPrimary, buttonColorWheelSecondary)
 
         // COLOR FADING
-        val colorFade = makeSwitch("Enable Color Fading", 0, mainRadius.toInt() * 2 + 10) {
+        val colorFade = makeSwitch("Enable Color Fading", 0, resourceLocation.yi + 20) {
             colorFading = !it
             if (!it) {
-                colorWheelPrimary.pos_rm.animate(Vec2d.ZERO, 20f, Easing.easeOutQuart)
+                buttonColorWheelSecondary.isVisible = true
+                buttonColorWheelSecondary.size_rm.animate(Vec2d(buttonColorWheelSecondary.width, 0.0), Vec2d(buttonColorWheelSecondary.width, 12.0), 20f, Easing.easeOutQuart)
 
-                colorWheelSecondary.isVisible = true
-                colorWheelSecondary.pos_rm.animate(Vec2d(aesthetics.width - (mainRadius * 2), 20.0), 40f, Easing.easeOutQuart)
+                buttonColorWheelPrimary.label.text = "Primary Color"
             } else {
-                colorWheelPrimary.pos_rm.animate(Vec2d(aesthetics.width / 2.0 - (mainRadius * 2.0) / 2.0, 40.0), 20f, Easing.easeOutQuart)
-
-                colorWheelSecondary.pos_rm.animate(Vec2d(aesthetics.width / 2.0 - (mainRadius * 2.0) / 2.0, 40.0), 20f, Easing.easeOutQuart).completion = Runnable {
-                    colorWheelSecondary.isVisible = false
+                buttonColorWheelPrimary.label.text = "Pick Color"
+                buttonColorWheelSecondary.size_rm.animate(Vec2d(buttonColorWheelSecondary.width, 12.0), Vec2d(buttonColorWheelSecondary.width, 0.0), 20f, Easing.easeOutQuart).completion = Runnable {
+                    buttonColorWheelSecondary.isVisible = false
                 }
             }
         }
@@ -291,31 +299,31 @@ class GuiParticleMaker : PastryWindow(500, 300) {
         val animatableWrapper2 = GuiComponent(0, 30)
         physics.add(animatableWrapper2)
 
-        val velXField = ComponentDescriptiveNumField("X", velX, 40, 40, 20, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
+        val velXField = ComponentFreeSlider("X", 40, physics.widthi, velX, -50.0..50.0, -1000.0..1000.0) {
             velX = it
         }
         velXField.isVisible = false
-        val velYField = ComponentDescriptiveNumField("Y", velY, 100, 40, 20, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
+        val velYField = ComponentFreeSlider("Y", velXField.yi + velXField.heighti, physics.widthi, velY, -50.0..50.0, -1000.0..1000.0) {
             velY = it
         }
         velYField.isVisible = false
-        val velZField = ComponentDescriptiveNumField("Z", velZ, 150, 40, 20, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
+        val velZField = ComponentFreeSlider("Z", velYField.yi + velYField.heighti, physics.widthi, velZ, -50.0..50.0, -1000.0..1000.0) {
             velZ = it
         }
         velZField.isVisible = false
         physics.add(velXField, velYField, velZField)
 
 
-        val maxVelXField = ComponentDescriptiveNumField("Max X", maxVelX, 40, 65, 20, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
-            velX = it
+        val maxVelXField = ComponentFreeSlider("Max X", 40, physics.widthi, maxVelX, -50.0..50.0, -1000.0..1000.0) {
+            maxVelX = it
         }
         maxVelXField.isVisible = false
-        val maxVelYField = ComponentDescriptiveNumField("Max Y", maxVelY, 100, 65, 20, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
-            velY = it
+        val maxVelYField = ComponentFreeSlider("Max Y", maxVelXField.yi + maxVelXField.heighti, physics.widthi, maxVelY, -50.0..50.0, -1000.0..1000.0) {
+            maxVelY = it
         }
         maxVelYField.isVisible = false
-        val maxVelZField = ComponentDescriptiveNumField("Max Z", maxVelZ, 165, 50, 20, Minecraft().fontRenderer.FONT_HEIGHT + 2) {
-            velZ = it
+        val maxVelZField = ComponentFreeSlider("Max Z", maxVelYField.yi + maxVelYField.heighti, physics.widthi, maxVelZ, -50.0..50.0, -1000.0..1000.0) {
+            maxVelZ = it
         }
         maxVelZField.isVisible = false
         physics.add(maxVelXField, maxVelYField, maxVelZField)
@@ -332,6 +340,7 @@ class GuiParticleMaker : PastryWindow(500, 300) {
                     maxVelXField.isVisible = true
                     maxVelYField.isVisible = true
                     maxVelZField.isVisible = true
+                    randomVelocity = true
                 }
             } else {
                 animatableWrapper2.pos_rm.animate(Vec2d(0.0, 60.0), 10f, Easing.easeOutQuart)
@@ -342,6 +351,7 @@ class GuiParticleMaker : PastryWindow(500, 300) {
                 maxVelXField.isVisible = false
                 maxVelYField.isVisible = false
                 maxVelZField.isVisible = false
+                randomVelocity = false
             }
         }
         randomVelocitySwitch.isVisible = false
@@ -354,7 +364,6 @@ class GuiParticleMaker : PastryWindow(500, 300) {
                     velYField.isVisible = true
                     velZField.isVisible = true
                     randomVelocitySwitch.isVisible = true
-                    randomVelocity = true
                 }
             } else {
                 animatableWrapper2.pos_rm.animate(Vec2d(0.0, 30.0), 10f, Easing.easeOutQuart)
@@ -362,15 +371,14 @@ class GuiParticleMaker : PastryWindow(500, 300) {
                 velYField.isVisible = false
                 velZField.isVisible = false
                 randomVelocitySwitch.isVisible = false
-                randomVelocity = false
             }
         })
 
 
-        animatableWrapper2.add(makeSlider("Gravity", 0, gravity, 0.0 .. 10.0) { gravity = it })
-        animatableWrapper2.add(makeSlider("Damping", 20, damping.toDouble(), 0.0 .. 1.0) { damping = it.toFloat() })
-        animatableWrapper2.add(makeSlider("Friction", 40, friction.toDouble(), 0.0 .. 1.0) { friction = it.toFloat() })
-        animatableWrapper2.add(makeSlider("Bounciness", 60, bounciness.toDouble(), 0.0 .. 1.0) { bounciness = it.toFloat() })
+        animatableWrapper2.add(makeSlider("Gravity", 0, gravity, 0.0..10.0) { gravity = it })
+        animatableWrapper2.add(makeSlider("Damping", 20, damping.toDouble(), 0.0..1.0) { damping = it.toFloat() })
+        animatableWrapper2.add(makeSlider("Friction", 40, friction.toDouble(), 0.0..1.0) { friction = it.toFloat() })
+        animatableWrapper2.add(makeSlider("Bounciness", 60, bounciness.toDouble(), 0.0..1.0) { bounciness = it.toFloat() })
     }
 
     private fun makeSlider(text: String, y: Int, beginValue: Double, range: ClosedRange<Double>, stateChange: (newProgress: Double) -> Unit): PastrySlider {
@@ -403,7 +411,7 @@ class GuiParticleMaker : PastryWindow(500, 300) {
         titleLayer.text = text
 
         val slider = PastrySlider(0, y + 10, 150, false, Cardinal2d.GUI.DOWN)
-        slider.range = range.start.toDouble() .. range.endInclusive.toDouble()
+        slider.range = range.start.toDouble()..range.endInclusive.toDouble()
         slider.value = beginValue.toDouble()
         slider.BUS.fire(PastryToggle.StateChangeEvent())
 
@@ -414,7 +422,7 @@ class GuiParticleMaker : PastryWindow(500, 300) {
         slider.BUS.hook<PastrySlider.ValueChangeEvent> { event ->
             val intValue = event.newValue.roundToInt()
             event.newValue = intValue.toDouble()
-            if(intValue != lastValue) {
+            if (intValue != lastValue) {
                 numberLayer.text = "$intValue"
                 stateChange(intValue)
                 lastValue = intValue
@@ -439,6 +447,7 @@ class GuiParticleMaker : PastryWindow(500, 300) {
     }
 
     private fun spawn() {
+
         for (i in 0 until particleCount)
             system.spawn(
                     lifetime = lifetime.toDouble(),
@@ -453,6 +462,17 @@ class GuiParticleMaker : PastryWindow(500, 300) {
                     colorFading = if (colorFading) 1 else 0,
                     colorPrimary = colorPrimary,
                     colorSecondary = colorSecondary,
+
+                    velocity = if (velX == maxVelX && velY == maxVelY && velZ == maxVelZ)
+                        vec(velX, velY, velZ)
+                    else if (randomVelocity) {
+                        vec(
+                                RandomUtils.nextDouble(Math.min(velX, maxVelX), Math.max(velX, maxVelX)),
+                                RandomUtils.nextDouble(Math.min(velY, maxVelY), Math.max(velY, maxVelY)),
+                                RandomUtils.nextDouble(Math.min(velZ, maxVelZ), Math.max(velZ, maxVelZ)))
+                    } else {
+                        vec(velX, velY, velZ)
+                    },
 
                     resourceLocation = resourceLoc)
     }
@@ -529,6 +549,8 @@ class GuiParticleMaker : PastryWindow(500, 300) {
                   colorPrimary: Color,
                   colorSecondary: Color = colorPrimary,
 
+                  velocity: Vec3d,
+
                   resourceLocation: ResourceLocation) {
 
             this.resourceLocation = resourceLocation
@@ -536,7 +558,7 @@ class GuiParticleMaker : PastryWindow(500, 300) {
                     size,
                     pos.x, pos.y, pos.z,
                     pos.x, pos.y, pos.z,
-                    RandomUtils.nextDouble(0.0, 2.0) - 1.0, RandomUtils.nextDouble(4.0, 7.0), RandomUtils.nextDouble(0.0, 2.0) - 1.0,
+                    velocity.x, velocity.y, velocity.z,
 
                     bounciness.toDouble(),
                     friction.toDouble(),

@@ -78,6 +78,13 @@ class PastrySlider(posX: Int, posY: Int, length: Int, var pointed: Boolean, faci
             setNeedsLayout()
         }
 
+        inner.BUS.hook<GuiComponentEvents.MouseDragEvent> {
+            if (mouseOver) {
+                mouseAdjustValue(mousePos)
+                setNeedsLayout()
+            }
+        }
+
         inner.BUS.hook<GuiComponentEvents.MouseClickEvent> {
             if (mouseOver) {
                 mouseAdjustValue(mousePos)
@@ -146,10 +153,6 @@ class PastrySlider(posX: Int, posY: Int, length: Int, var pointed: Boolean, faci
             fraction * (inner.width - 7) + 3.5,
             3.5
         )
-    }
-
-    override fun draw(partialTicks: Float) {
-        super.draw(partialTicks)
     }
 
     override fun layoutChildren() {
