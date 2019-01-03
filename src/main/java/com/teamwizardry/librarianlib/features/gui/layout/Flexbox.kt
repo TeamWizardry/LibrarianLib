@@ -103,6 +103,7 @@ class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d
                 var unitsLeft = growSum.toDouble()
 
                 list.forEach {
+                    if(unitsLeft == 0.0) return@forEach
                     val portion = (remaining * it.data.flexGrow / unitsLeft).roundToInt()
                     it.size += portion
                     remaining -= portion
@@ -126,6 +127,7 @@ class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d
                 var unitsLeft = basisSum.toDouble()
 
                 list.forEach {
+                    if(unitsLeft == 0.0) return@forEach
                     val portion = (remaining * it.data.flexShrink * max(1, it.data.flexBasis) / unitsLeft).roundToInt()
                     it.size += portion
                     remaining -= portion
