@@ -33,7 +33,7 @@ open class GuiWindow(width: Int, height: Int): RootComponent(0, 0, width, height
             field = value
             windowManager?.sort()
         }
-    var shouldPauseGame: Boolean = true
+    var shouldPauseGame: Boolean = false
 
     final override var mouseHit: MouseHit? = null
         private set
