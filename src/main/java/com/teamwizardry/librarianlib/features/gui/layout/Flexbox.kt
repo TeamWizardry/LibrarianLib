@@ -11,6 +11,7 @@ import com.teamwizardry.librarianlib.features.math.Align2d
 import com.teamwizardry.librarianlib.features.math.Axis2d
 import com.teamwizardry.librarianlib.features.math.Cardinal2d
 import com.teamwizardry.librarianlib.features.math.Rect2d
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d = Cardinal2d.GUI.RIGHT): GuiComponent(x, y, width, height) {
@@ -116,7 +117,7 @@ class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d
             }
         }
 
-        val basisSum = list.sumBy { it.data.flexBasis }
+        val basisSum = list.sumBy { max(1, it.data.flexBasis) }
         if(remaining < 0 && basisSum != 0) {
             var lastRemaining = 0
             while(remaining != lastRemaining) {
@@ -125,10 +126,10 @@ class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d
                 var unitsLeft = basisSum.toDouble()
 
                 list.forEach {
-                    val portion = (remaining * it.data.flexShrink * it.data.flexBasis / unitsLeft).roundToInt()
+                    val portion = (remaining * it.data.flexShrink * max(1, it.data.flexBasis) / unitsLeft).roundToInt()
                     it.size += portion
                     remaining -= portion
-                    unitsLeft -= it.data.flexBasis
+                    unitsLeft -= max(1, it.data.flexBasis)
 
                     if(it.size < it.data.minSize) {
                         leftover -= it.data.minSize - it.size
@@ -142,7 +143,7 @@ class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d
 
     private fun layoutAlignment(majorSpace: Int, crossSpace: Int, list: List<FlexItem>) {
         list.forEach {
-            when(alignItems) {
+            when(it.data.alignSelf ?: alignItems) {
                 Align.STRETCH -> it.crossSize = crossSpace
                 Align.START -> it.crossPos = 0
                 Align.CENTER -> it.crossPos = (crossSpace - it.crossSize) / 2
@@ -217,6 +218,11 @@ class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d
         var maxSize: Int,
         var alignSelf: Align?
     ) {
+        init {
+            if(flexBasis < minSize)
+                flexBasis = minSize
+        }
+
         fun config(
             order: Int = this.order,
             flexBasis: Int = this.flexBasis,
@@ -237,6 +243,9 @@ class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d
             this.minSize = minSize
             this.maxSize = maxSize
             this.alignSelf = alignSelf
+
+            if(this.flexBasis < this.minSize)
+                this.flexBasis = this.minSize
         }
     }
 

@@ -5,6 +5,8 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.layers.RectLayer
 import com.teamwizardry.librarianlib.features.gui.layers.SpriteLayer
+import com.teamwizardry.librarianlib.features.gui.layout.Flexbox
+import com.teamwizardry.librarianlib.features.gui.layout.flex
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.BackgroundTexture
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryTexture
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.layers.PastryBackground
@@ -25,10 +27,10 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 class PastryColorPicker: PastryWindow(100, 75, PastryWindow.Style.PANEL, true) {
+    private val flexbox = Flexbox(0, 0, 0, 0)
     private val gradient = GradientComponent()
     private val hueComponent = HueComponent()
-    private val colorWellBackground = PastryBackground(BackgroundTexture.SLIGHT_INSET, 0, 0, 0, 0)
-    private val colorWell = RectLayer(Color.white, 0, 0, 0, 0)
+    private val colorWell = ColorWellComponent()
 
     private var _hue: Float = 0f
     var hue: Float
@@ -68,16 +70,24 @@ class PastryColorPicker: PastryWindow(100, 75, PastryWindow.Style.PANEL, true) {
     init {
         maxContentSize = vec(2000, 2000)
         minContentSize = vec(10, 10)
-        content.add(gradient, hueComponent, colorWellBackground, colorWell)
-        colorWell.color_im { color }
+
+        content.add(flexbox)
+        flexbox.add(gradient, hueComponent, colorWell)
+        flexbox.spacing = 2
+        gradient.flex.config(
+            flexGrow = 3, minSize = 4
+        )
+        hueComponent.flex.config(
+            flexBasis = 10, flexGrow = 0, flexShrink = 0
+        )
+        colorWell.flex.config(
+            flexBasis = 32, flexGrow = 0, flexShrink = 0, alignSelf = Flexbox.Align.START
+        )
     }
 
     override fun layoutChildren() {
         super.layoutChildren()
-        gradient.frame = rect(2, 2, content.width/2, content.height - 4)
-        hueComponent.frame = rect(gradient.frame.max.x + 2, 2, content.width/8 - 2, content.height - 4)
-        colorWellBackground.frame = rect(hueComponent.frame.max.x, 2, content.width / 4, (content.height - 4)/4)
-        colorWell.frame = colorWellBackground.frame.shrink(1.0)
+        flexbox.frame = content.bounds.shrink(2.0)
     }
 
     private inner class GradientComponent: GuiComponent(0, 0, 0, 0) {
@@ -169,6 +179,22 @@ class PastryColorPicker: PastryWindow(100, 75, PastryWindow.Style.PANEL, true) {
             sprite.frame = bounds
             sprite.pos += vec(1, 1)
             sprite.size -= vec(2, 2)
+        }
+    }
+
+    private inner class ColorWellComponent: GuiComponent(0, 0, 0, 16) {
+        private val background = PastryBackground(BackgroundTexture.SLIGHT_INSET, 0, 0, 0, 0)
+        val colorRect = RectLayer(Color.white, 0, 0, 0, 0)
+
+        init {
+            add(background, colorRect)
+            colorRect.color_im { color }
+        }
+
+        override fun layoutChildren() {
+            super.layoutChildren()
+            background.frame = this.bounds
+            colorRect.frame = this.bounds.shrink(1.0)
         }
     }
 
