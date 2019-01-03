@@ -144,7 +144,7 @@ class Vec2d(val x: Double, val y: Double) {
         @JvmField
         val ZERO = Vec2d(0.0, 0.0)
         @JvmField
-        val INFINITY = Vec2d(Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY)
+        val INFINITY = Vec2d(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY)
         @JvmField
         val NEG_INFINITY = Vec2d(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY)
 
