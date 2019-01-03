@@ -67,6 +67,8 @@ interface ILayerRendering {
             GlStateManager.color(1f, 1f, 1f, 1f)
             GlStateManager.enableBlend()
             GlStateManager.shadeModel(GL11.GL_SMOOTH)
+            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+            GlStateManager.disableLighting()
         }
     }
 }

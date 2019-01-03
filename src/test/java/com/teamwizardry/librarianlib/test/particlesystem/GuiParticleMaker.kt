@@ -145,6 +145,7 @@ class GuiParticleMaker : PastryWindow(500, 300) {
             GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
             GlStateManager.disableBlend()
             GlStateManager.popMatrix()
+            GlStateManager.disableLighting()
             // RENDER PARTICLE SYSTEM
         }
         content.componentWrapper().add(renderBox)
