@@ -17,7 +17,7 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.Sprite
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import net.minecraft.client.Minecraft
-
+import kotlin.math.abs
 
 open class PastryWindow(width: Int, height: Int, style: Style = Style.DEFAULT, useShortHeader: Boolean = false)
     : PastryWindowBase(0, 0) {
@@ -59,8 +59,8 @@ open class PastryWindow(width: Int, height: Int, style: Style = Style.DEFAULT, u
     private var cornerSize: Int = 5
 
     override var cursor: LibCursor?
-        get() = (draggingSide ?: getMouseEdge(mousePos))?.let { frameCursor(it) }
-        set(value) {}
+        get() = (draggingSide ?: getMouseEdge(mousePos))?.let { frameCursor(it) } ?: super.cursor
+        set(value) { super.cursor = value }
 
     val headerHeight: Int
         get() = (if(useShortHeader) shortHeaderHeight else tallHeaderHeight) + style.bevelWidth
@@ -223,10 +223,10 @@ open class PastryWindow(width: Int, height: Int, style: Style = Style.DEFAULT, u
         val dTop = pos.y
         val dBottom = size.y - pos.y
 
-        if(dLeft > 0 && dTop > 0 && dLeft + dTop <= cornerSize) return Align2d.LEFT_TOP
-        if(dRight > 0 && dTop > 0 && dRight + dTop <= cornerSize) return Align2d.RIGHT_TOP
-        if(dLeft > 0 && dBottom > 0 && dLeft + dBottom <= cornerSize) return Align2d.LEFT_BOTTOM
-        if(dRight > 0 && dBottom > 0 && dRight + dBottom <= cornerSize) return Align2d.RIGHT_BOTTOM
+        if(dLeft > 0 && dTop > 0 && abs(dLeft) + abs(dTop) <= cornerSize) return Align2d.LEFT_TOP
+        if(dRight > 0 && dTop > 0 && abs(dRight) + abs(dTop) <= cornerSize) return Align2d.RIGHT_TOP
+        if(dLeft > 0 && dBottom > 0 && abs(dLeft) + abs(dBottom) <= cornerSize) return Align2d.LEFT_BOTTOM
+        if(dRight > 0 && dBottom > 0 && abs(dRight) + abs(dBottom) <= cornerSize) return Align2d.RIGHT_BOTTOM
 
         if(dTop > 0 && dBottom > 0 && dLeft in edgeRange) return Align2d.LEFT_CENTER
         if(dTop > 0 && dBottom > 0 && dRight in edgeRange) return Align2d.RIGHT_CENTER
