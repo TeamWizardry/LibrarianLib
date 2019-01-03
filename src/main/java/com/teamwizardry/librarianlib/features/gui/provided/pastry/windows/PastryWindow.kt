@@ -44,6 +44,11 @@ open class PastryWindow(width: Int, height: Int, style: Style = Style.DEFAULT, u
             field = value
             setNeedsLayout()
         }
+    var enableHeaderControls: Boolean = true
+        set(value) {
+            field = value
+            setNeedsLayout()
+        }
     private val shortHeaderHeight = 7
     private val tallHeaderHeight = 11
 
@@ -141,6 +146,9 @@ open class PastryWindow(width: Int, height: Int, style: Style = Style.DEFAULT, u
 
         val controlWidth: Double
 
+        closeButton.isVisible = enableHeaderControls
+        minimizeButton.isVisible = enableHeaderControls
+        maximizeButton.isVisible = enableHeaderControls
         if(Minecraft.IS_RUNNING_ON_MAC) {
             closeButton.pos = vec(style.bevelWidth, style.bevelWidth)
 

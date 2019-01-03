@@ -78,6 +78,7 @@ class GuiParticleMaker : PastryWindow(500, 300) {
     }
 
     init {
+        enableHeaderControls = false
         PastryTexture.theme = PastryTexture.Theme.DARK
         system.reload()
 
