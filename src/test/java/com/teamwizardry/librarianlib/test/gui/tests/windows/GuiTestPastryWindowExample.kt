@@ -39,6 +39,7 @@ class GuiTestPastryWindowExample: PastryWindow(200, 100) {
 
     fun wireEvents() {
         openDialogButton.BUS.hook<GuiComponentEvents.MouseClickEvent> {
+            println(this.debugPrint(true))
             GuiTestPastryWindowDialog({
                 valueText.text = "Bzzzzt!"
             }, {
@@ -100,6 +101,7 @@ private class GuiTestPastryWindowDialog(
             this.close()
         }
         this.BUS.hook<LoseFocusEvent> {
+            println(this.debugPrint(true))
             if(!hasRun) failureHandler()
             this.close()
         }

@@ -121,13 +121,43 @@ open class GuiComponent private constructor(
         return allowAddingToLayer || parent is GuiComponent
     }
 
+    override fun debugInfo(): MutableList<String> {
+        val list = super.debugInfo()
+        addGuiComponentDebugInfo(list)
+        return list
+    }
+
+    fun addGuiComponentDebugInfo(list: MutableList<String>) {
+        list.add("mouse: pos = $mousePos, hit = $mouseHit, over = $mouseOver, " +
+            "pressed = ${pressedButtons.joinToString("+")}")
+        list.add("mouse: opaque = $isOpaqueToMouse, propagate = $propagateMouse, disable = $disableMouseCollision")
+        if(tagList.isNotEmpty())
+            list.add("tags: [${tagList.joinToString(",")}]")
+        val dataClasses = getAllDataClasses()
+        if(dataClasses.isNotEmpty()) {
+            list.add("data: {")
+            dataClasses.forEach { clazz ->
+                val keys = getAllDataKeys(clazz).toList()
+                if(keys.size == 1) {
+                    list.add("    :   ${clazz.simpleName}: ${keys[0]} = ${getData(clazz, keys[0])}")
+                } else {
+                    keys.forEach { key ->
+                        list.add("    :   ${clazz.simpleName}:")
+                        list.add("    :     $key = ${getData(clazz, key)}")
+                    }
+                }
+            }
+            list.add("data: }")
+        }
+    }
+
     private var wrapper: ComponentBackedLayer? = null
 
     /**
      * Wraps this component in a layer, effectively removing it from UI calculations. This can be helpful for compat
      * with rendering-only components.
      */
-    fun layerWrapper(): GuiLayer {
+    open fun layerWrapper(): GuiLayer {
         val wrapper = this.wrapper ?: ComponentBackedLayer(this)
         this.wrapper = wrapper
         return wrapper

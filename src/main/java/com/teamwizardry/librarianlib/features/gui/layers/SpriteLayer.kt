@@ -31,4 +31,10 @@ class SpriteLayer @JvmOverloads constructor(var sprite: ISprite?, x: Int, y: Int
         sp.draw(animationFrame % sp.frameCount, 0f, 0f, size.xi.toFloat(), size.yi.toFloat())
     }
 
+    override fun debugInfo(): MutableList<String> {
+        val list = super.debugInfo()
+        list.add("sprite = $sprite")
+        list.add("tint = $tint, frame = $animationFrame")
+        return list
+    }
 }

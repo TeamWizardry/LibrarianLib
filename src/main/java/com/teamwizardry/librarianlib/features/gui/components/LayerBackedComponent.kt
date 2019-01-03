@@ -29,5 +29,15 @@ class LayerBackedComponent(val layer: GuiLayer): GuiComponent(0, 0, 0, 0),
         layer.add(*components)
         components.forEach { (it as? GuiComponent)?.allowAddingToLayer = false }
     }
+
+    override fun debugInfo(): MutableList<String> {
+        val list = layer.debugInfo()
+        super.addGuiComponentDebugInfo(list)
+        return list
+    }
+
+    override fun layerWrapper(): GuiLayer {
+        return layer
+    }
 }
 

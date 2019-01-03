@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.sprite
 import net.minecraft.client.resources.data.IMetadataSection
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import java.util.Arrays
 
 @SideOnly(Side.CLIENT)
 class SpritesMetadataSection(var width: Int, var height: Int, var sprites: List<SpriteDefinition>, var colors: List<ColorDefinition>) : IMetadataSection {
@@ -24,6 +25,13 @@ class SpriteDefinition(
         0, 0, 0, 0,
         false, false
     )
+
+    override fun toString(): String {
+        return "SpriteDefinition(" +
+            "name='$name', uv=($u,$v), wh=($w,$h), frames=${Arrays.toString(frames)}, offsetUV=($offsetU,$offsetV), " +
+            "cap=($minUCap,$minVCap,$maxUCap,$maxVCap), hardScaleUV=($hardScaleU,$hardScaleV)" +
+            ")"
+    }
 }
 
 class ColorDefinition(var name: String, var u: Int, var v: Int) {

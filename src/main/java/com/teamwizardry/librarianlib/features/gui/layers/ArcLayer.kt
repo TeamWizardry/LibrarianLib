@@ -101,4 +101,11 @@ class ArcLayer(color: Color = Color.white, posX: Int, posY: Int, width: Int, hei
         GlStateManager.enableCull()
         GlStateManager.enableTexture2D()
     }
+
+    override fun debugInfo(): MutableList<String> {
+        val list = super.debugInfo()
+        list.add("color = $color, segmentSize = $segmentSize")
+        list.add("start = $startAngle, end = $endAngle")
+        return list
+    }
 }

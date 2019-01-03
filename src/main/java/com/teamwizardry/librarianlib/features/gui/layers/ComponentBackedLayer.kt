@@ -19,4 +19,8 @@ class ComponentBackedLayer(val component: GuiComponent): GuiLayer(0, 0, 0, 0),
     override var parent: GuiLayer?
         get() = component.parent
         internal set(value) { component.parent = value }
+
+    override fun componentWrapper(): GuiComponent {
+        return component
+    }
 }

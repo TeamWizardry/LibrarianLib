@@ -37,4 +37,10 @@ class ColorLayer(color: Color = Color.white, posX: Int, posY: Int, width: Int, h
 
         GlStateManager.enableTexture2D()
     }
+
+    override fun debugInfo(): MutableList<String> {
+        val list = super.debugInfo()
+        list.add("color = $color")
+        return list
+    }
 }

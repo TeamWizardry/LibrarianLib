@@ -23,6 +23,9 @@ open class Sprite : ISprite {
         protected set
     protected var def: SpriteDefinition = SpriteDefinition("")
 
+    val name: String
+        get() = def.name
+
     override val hardScaleU: Boolean
         get() = def.hardScaleU
 
@@ -150,4 +153,9 @@ open class Sprite : ISprite {
         get() = def.maxVCap.toFloat() / def.h
 
     override fun bind() = tex.bind()
+
+
+    override fun toString(): String {
+        return "Sprite(texture=${tex.loc}, name=$name)"
+    }
 }

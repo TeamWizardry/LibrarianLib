@@ -101,5 +101,15 @@ class GradientLayer(val axis: Axis2d, posX: Int, posY: Int, width: Int, height: 
             result = 31 * result + color.hashCode()
             return result
         }
+
+        override fun toString(): String {
+            return "($color @ $location)"
+        }
+    }
+
+    override fun debugInfo(): MutableList<String> {
+        val list = super.debugInfo()
+        list.add("axis = $axis, stops = $stops")
+        return list
     }
 }
