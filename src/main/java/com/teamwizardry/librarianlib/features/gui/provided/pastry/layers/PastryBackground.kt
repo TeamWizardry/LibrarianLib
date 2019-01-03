@@ -10,13 +10,13 @@ class PastryBackground(type: BackgroundTexture, posX: Int, posY: Int, width: Int
     GuiLayer(posX, posY, width, height) {
     constructor(posX: Int, posY: Int, width: Int, height: Int): this(BackgroundTexture.DEFAULT, posX, posY, width, height)
 
-    private val sprite = SpriteLayer(type.background, -2, -2, 0, 0)
+    private val sprite = SpriteLayer(type.background, 0, 0, 0, 0)
 
     init {
         this.add(sprite)
     }
 
     override fun layoutChildren() {
-        sprite.size = this.size + vec(4, 4)
+        sprite.size = this.size
     }
 }

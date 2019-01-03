@@ -8,6 +8,7 @@ import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.PastryTexture
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.getValue
+import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.setValue
 import com.teamwizardry.librarianlib.features.kotlin.unaryMinus
@@ -17,7 +18,9 @@ import com.teamwizardry.librarianlib.features.sprite.Sprite
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import net.minecraft.client.Minecraft
 
-open class PastryWindow(width: Int, height: Int): PastryWindowBase(width, height) {
+
+open class PastryWindow(width: Int, height: Int, style: Style = Style.DEFAULT, useShortHeader: Boolean = false)
+    : PastryWindowBase(0, 0) {
     val header = GuiComponent(0, 0, width, 0)
     val content = GuiComponent(0, 15, width, height)
 
@@ -31,18 +34,18 @@ open class PastryWindow(width: Int, height: Int): PastryWindowBase(width, height
 
     var title: String by titleText::text
 
-    var style: Style = Style.DEFAULT
+    var style: Style = style
         set(value) {
             field = value
             setNeedsLayout()
         }
-    var useShortHeader: Boolean = false
+    var useShortHeader: Boolean = useShortHeader
         set(value) {
             field = value
             setNeedsLayout()
         }
-    private val shortHeaderHeight = 10
-    private val tallHeaderHeight = 14
+    private val shortHeaderHeight = 7
+    private val tallHeaderHeight = 11
 
     private var draggingSide: Align2d? = null
 
@@ -59,7 +62,29 @@ open class PastryWindow(width: Int, height: Int): PastryWindowBase(width, height
         get() = (draggingSide ?: getMouseEdge(mousePos))?.let { frameCursor(it) }
         set(value) {}
 
+    val headerHeight: Int
+        get() = (if(useShortHeader) shortHeaderHeight else tallHeaderHeight) + style.bevelWidth
+
+    var contentSize: Vec2d
+        get() = size - vec(style.bevelWidth*2, headerHeight + 2 + style.bevelWidth)
+        set(value) {
+            size = value + vec(style.bevelWidth*2, headerHeight + 2 + style.bevelWidth)
+        }
+
+    var maxContentSize: Vec2d
+        get() = maxSize - vec(style.bevelWidth*2, headerHeight + 2 + style.bevelWidth)
+        set(value) {
+            maxSize = value + vec(style.bevelWidth*2, headerHeight + 2 + style.bevelWidth)
+        }
+
+    var minContentSize: Vec2d
+        get() = minSize - vec(style.bevelWidth*2, headerHeight + 2 + style.bevelWidth)
+        set(value) {
+            minSize = value + vec(style.bevelWidth*2, headerHeight + 2 + style.bevelWidth)
+        }
+
     init {
+        this.contentSize = vec(width, height)
         header.clipToBounds = true
         content.clipToBounds = true
 
@@ -105,7 +130,6 @@ open class PastryWindow(width: Int, height: Int): PastryWindowBase(width, height
     }
 
     override fun layoutChildren() {
-        val headerHeight = if(useShortHeader) shortHeaderHeight else tallHeaderHeight
         headerBackground.sprite = style.header
         bodyBackground.sprite = style.body
 
@@ -115,11 +139,10 @@ open class PastryWindow(width: Int, height: Int): PastryWindowBase(width, height
         titleText.pos = vec(this.width/2, (if(style == Style.DEFAULT) 3 else 2) + 0)
         headerClickRegion.frame = headerBackground.frame
 
-        val bevelWidth = if(style == Style.DEFAULT) 3 else 2
         val controlWidth: Double
 
         if(Minecraft.IS_RUNNING_ON_MAC) {
-            closeButton.pos = vec(bevelWidth, bevelWidth)
+            closeButton.pos = vec(style.bevelWidth, style.bevelWidth)
 
             if(useShortHeader) {
                 closeButton.size = vec(5, 5)
@@ -140,7 +163,7 @@ open class PastryWindow(width: Int, height: Int): PastryWindowBase(width, height
             controlWidth = maximizeButton.frame.max.x
         } else {
             closeButton.size = vec(5, 5)
-            closeButton.pos = vec(this.width-closeButton.width-bevelWidth, bevelWidth)
+            closeButton.pos = vec(this.width-closeButton.width-style.bevelWidth, style.bevelWidth)
             minimizeButton.size = vec(6, 5)
             maximizeButton.size = vec(6, 5)
 
@@ -158,11 +181,11 @@ open class PastryWindow(width: Int, height: Int): PastryWindowBase(width, height
             controlWidth = this.width - maximizeButton.pos.x
         }
 
-        header.pos = vec(controlWidth + 3, bevelWidth)
+        header.pos = vec(controlWidth + 3, style.bevelWidth)
         header.size = vec(this.width - header.pos.x * 2, headerHeight - header.pos.y - 2)
 
-        content.pos = vec(bevelWidth, headerHeight + 2)
-        content.size = vec(this.width - bevelWidth * 2, this.height - content.pos.y - bevelWidth)
+        content.pos = vec(style.bevelWidth, headerHeight + 2)
+        content.size = vec(this.width - style.bevelWidth * 2, this.height - content.pos.y - style.bevelWidth)
 
         super.layoutChildren()
     }
@@ -213,9 +236,9 @@ open class PastryWindow(width: Int, height: Int): PastryWindowBase(width, height
         return null
     }
 
-    enum class Style(val header: Sprite, val body: Sprite) {
-        DEFAULT(PastryTexture.windowBackgroundTitlebar, PastryTexture.windowBackgroundBody),
-        PANEL(PastryTexture.windowSlightBackgroundTitlebar, PastryTexture.windowSlightBackgroundBody),
-        DIALOG(PastryTexture.windowDialogBackgroundTitlebar, PastryTexture.windowDialogBackgroundBody),
+    enum class Style(val header: Sprite, val body: Sprite, val bevelWidth: Int) {
+        DEFAULT(PastryTexture.windowBackgroundTitlebar, PastryTexture.windowBackgroundBody, 3),
+        PANEL(PastryTexture.windowSlightBackgroundTitlebar, PastryTexture.windowSlightBackgroundBody, 2),
+        DIALOG(PastryTexture.windowDialogBackgroundTitlebar, PastryTexture.windowDialogBackgroundBody, 2),
     }
 }

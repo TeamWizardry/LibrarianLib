@@ -211,7 +211,7 @@ class ComponentMouseHandler: IComponentMouse {
         if (!component.isVisible) return
 
         val wasOver = buttonsDownOver[button] ?: false
-        buttonsDownOver[button] = false
+        buttonsDownOver.remove(button)
 
         if (component.BUS.fire(GuiComponentEvents.MouseUpEvent(button)).isCanceled())
             return
