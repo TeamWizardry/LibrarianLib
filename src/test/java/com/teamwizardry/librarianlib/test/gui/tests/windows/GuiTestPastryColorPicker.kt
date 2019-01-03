@@ -12,10 +12,9 @@ import java.awt.Color
 
 class GuiTestPastryColorPicker: PastryWindow(100, 60) {
     init {
-        val button = PastryButton("Color", 10, 10, 45)
-        content.add(button)
-        button.BUS.hook<GuiComponentEvents.MouseClickEvent> {
+        val button = PastryButton("Color", 10, 10, 45) {
             PastryColorPicker().open()
         }
+        content.add(button)
     }
 }
