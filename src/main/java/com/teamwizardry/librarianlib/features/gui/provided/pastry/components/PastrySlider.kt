@@ -33,7 +33,7 @@ class PastrySlider(posX: Int, posY: Int, length: Int, var pointed: Boolean, faci
             field = value
             fixedSize = vec(
                 if(facing.axis == Axis2d.Y) length else 7,
-                if(facing.axis == Axis2d.X) 7 else length
+                if(facing.axis == Axis2d.X) length else 7
             )
             rightLine.x = length - 3.5
             inner.size = vec(length, 7)
