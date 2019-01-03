@@ -11,6 +11,7 @@ import com.teamwizardry.librarianlib.features.math.Align2d
 import com.teamwizardry.librarianlib.features.math.Axis2d
 import com.teamwizardry.librarianlib.features.math.Cardinal2d
 import com.teamwizardry.librarianlib.features.math.Rect2d
+import kotlin.math.roundToInt
 
 class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d = Cardinal2d.GUI.RIGHT): GuiComponent(x, y, width, height) {
     /**
@@ -42,13 +43,13 @@ class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d
         val items = subComponents.map {
             FlexItem(
                 it,
-                if(flexDirection.axis == Axis2d.X) it.frame.height else it.frame.width,
+                if(flexDirection.axis == Axis2d.X) it.frame.heighti else it.frame.widthi,
                 it.getData() ?: inertData(it)
             )
         }.sortedBy { it.data.order }
 
-        val majorLength = if(flexDirection.axis == Axis2d.X) this.width else this.height
-        val crossLength = if(flexDirection.axis == Axis2d.X) this.height else this.width
+        val majorLength = if(flexDirection.axis == Axis2d.X) this.widthi else this.heighti
+        val crossLength = if(flexDirection.axis == Axis2d.X) this.heighti else this.widthi
 
         layoutMajorAxis(majorLength, items)
         layoutAlignment(majorLength, crossLength, items)
@@ -84,59 +85,72 @@ class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d
         alignSelf = null
     )
 
-    private fun layoutMajorAxis(space: Double, list: List<FlexItem>) {
+    private fun layoutMajorAxis(space: Int, list: List<FlexItem>) {
         var remaining = space
 
         list.forEach {
             remaining -= it.data.flexBasis + it.data.marginBefore + it.data.marginAfter
         }
 
-        var leftover = remaining
 
         val growSum = list.sumBy { it.data.flexGrow }
         if(remaining > 0 && growSum != 0) {
-            do {
-                remaining = leftover
-                leftover = 0.0
+            var lastRemaining = 0
+            while(remaining != lastRemaining) {
+                lastRemaining = remaining
+                var leftover = 0
+                var unitsLeft = growSum.toDouble()
 
                 list.forEach {
-                    it.size += remaining * it.data.flexGrow / growSum
+                    val portion = (remaining * it.data.flexGrow / unitsLeft).roundToInt()
+                    it.size += portion
+                    remaining -= portion
+                    unitsLeft -= it.data.flexGrow
+
                     if(it.size > it.data.maxSize) {
                         leftover += it.size - it.data.maxSize
-                        it.size = it.data.maxSize.toDouble()
+                        it.size = it.data.maxSize
                     }
                 }
-            } while(remaining != leftover)
+                remaining += leftover
+            }
         }
 
         val basisSum = list.sumBy { it.data.flexBasis }
         if(remaining < 0 && basisSum != 0) {
-            do {
-                remaining = leftover
-                leftover = 0.0
+            var lastRemaining = 0
+            while(remaining != lastRemaining) {
+                lastRemaining = remaining
+                var leftover = 0
+                var unitsLeft = basisSum.toDouble()
 
                 list.forEach {
-                    it.size += remaining * it.data.flexShrink * it.data.flexBasis / basisSum
+                    val portion = (remaining * it.data.flexShrink * it.data.flexBasis / unitsLeft).roundToInt()
+                    it.size += portion
+                    remaining -= portion
+                    unitsLeft -= it.data.flexBasis
+
                     if(it.size < it.data.minSize) {
                         leftover -= it.data.minSize - it.size
-                        it.size = it.data.minSize.toDouble()
+                        it.size = it.data.minSize
                     }
                 }
-            } while(remaining != leftover)
+                remaining = leftover
+            }
         }
     }
 
-    private fun layoutAlignment(majorSpace: Double, crossSpace: Double, list: List<FlexItem>) {
+    private fun layoutAlignment(majorSpace: Int, crossSpace: Int, list: List<FlexItem>) {
         list.forEach {
             when(alignItems) {
                 Align.STRETCH -> it.crossSize = crossSpace
-                Align.START -> it.crossPos = 0.0
+                Align.START -> it.crossPos = 0
                 Align.CENTER -> it.crossPos = (crossSpace - it.crossSize) / 2
                 Align.END -> it.crossPos = crossSpace - it.crossSize
             }
         }
 
-        var width =  0.0
+        var width =  0
         list.forEach {
             it.pos = width + it.data.marginBefore
             width += it.data.marginBefore + it.size + it.data.marginAfter
@@ -162,34 +176,34 @@ class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d
                 }
                 Justify.SPACE_AROUND -> {
                     if(list.isNotEmpty()) {
-                        val gap = emptySpace / list.size
+                        val gap = emptySpace / list.size.toDouble()
                         list.forEachIndexed { i, it ->
-                            it.pos += gap * (i + 0.5)
+                            it.pos += (gap * (i + 0.5)).roundToInt()
                         }
                     }
                 }
                 Justify.SPACE_BETWEEN -> {
                     if(list.size > 1) {
-                        val gap = emptySpace / (list.size-1)
+                        val gap = emptySpace / (list.size-1).toDouble()
                         list.forEachIndexed { i, it ->
-                            it.pos += gap * i
+                            it.pos += (gap * i).roundToInt()
                         }
                     }
                 }
                 Justify.SPACE_EVENLY -> {
-                    val gap = emptySpace / (list.size + 1)
+                    val gap = emptySpace / (list.size + 1).toDouble()
                     list.forEachIndexed { i, it ->
-                        it.pos += gap * (i + 1)
+                        it.pos += (gap * (i + 1)).roundToInt()
                     }
                 }
             }
         }
     }
 
-    private class FlexItem(val component: GuiComponent, var crossSize: Double, val data: Data) {
-        var size: Double = data.flexBasis.toDouble()
-        var crossPos: Double = 0.0
-        var pos: Double = 0.0
+    private class FlexItem(val component: GuiComponent, var crossSize: Int, val data: Data) {
+        var size: Int = data.flexBasis
+        var crossPos: Int = 0
+        var pos: Int = 0
     }
 
     data class Data(
