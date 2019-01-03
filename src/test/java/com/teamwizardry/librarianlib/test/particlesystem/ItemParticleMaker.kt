@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.test.particlesystem
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.base.item.ItemMod
+import com.teamwizardry.librarianlib.test.particlesystem.particlemaker.GuiParticleMaker
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ActionResult

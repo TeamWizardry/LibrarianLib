@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.test.particlesystem
+package com.teamwizardry.librarianlib.test.particlesystem.particlemaker
 
 import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
@@ -450,32 +450,32 @@ class GuiParticleMaker : PastryWindow(500, 300) {
     private fun spawn() {
 
         for (i in 0 until particleCount)
-            system.spawn(
-                    lifetime = lifetime.toDouble(),
-                    size = 16.0, pos = Vec3d(0.0, 10.0, 0.0),
+            PhysicsCurtainSystem.spawn(
+                lifetime = lifetime.toDouble(),
+                size = 16.0, pos = Vec3d(0.0, 10.0, 0.0),
 
-                    bounciness = bounciness,
-                    friction = friction,
-                    dampness = damping,
-                    gravity = gravity,
-                    collision = if (enableCollision) 1 else 0,
+                bounciness = bounciness,
+                friction = friction,
+                dampness = damping,
+                gravity = gravity,
+                collision = if (enableCollision) 1 else 0,
 
-                    colorFading = if (colorFading) 1 else 0,
-                    colorPrimary = colorPrimary,
-                    colorSecondary = colorSecondary,
+                colorFading = if (colorFading) 1 else 0,
+                colorPrimary = colorPrimary,
+                colorSecondary = colorSecondary,
 
-                    velocity = if (velX == maxVelX && velY == maxVelY && velZ == maxVelZ)
-                        vec(velX, velY, velZ)
-                    else if (randomVelocity) {
-                        vec(
-                                RandomUtils.nextDouble(Math.min(velX, maxVelX), Math.max(velX, maxVelX)),
-                                RandomUtils.nextDouble(Math.min(velY, maxVelY), Math.max(velY, maxVelY)),
-                                RandomUtils.nextDouble(Math.min(velZ, maxVelZ), Math.max(velZ, maxVelZ)))
-                    } else {
-                        vec(velX, velY, velZ)
-                    },
+                velocity = if (velX == maxVelX && velY == maxVelY && velZ == maxVelZ)
+                    vec(velX, velY, velZ)
+                else if (randomVelocity) {
+                    vec(
+                        RandomUtils.nextDouble(Math.min(velX, maxVelX), Math.max(velX, maxVelX)),
+                        RandomUtils.nextDouble(Math.min(velY, maxVelY), Math.max(velY, maxVelY)),
+                        RandomUtils.nextDouble(Math.min(velZ, maxVelZ), Math.max(velZ, maxVelZ)))
+                } else {
+                    vec(velX, velY, velZ)
+                },
 
-                    resourceLocation = resourceLoc)
+                resourceLocation = resourceLoc)
     }
 
     //   override fun doesGuiPauseGame(): Boolean = false
@@ -554,7 +554,7 @@ class GuiParticleMaker : PastryWindow(500, 300) {
 
                   resourceLocation: ResourceLocation) {
 
-            this.resourceLocation = resourceLocation
+            PhysicsCurtainSystem.resourceLocation = resourceLocation
             this.addParticle(lifetime,
                     size,
                     pos.x, pos.y, pos.z,

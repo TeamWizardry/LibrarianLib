@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.test.particlesystem
+package com.teamwizardry.librarianlib.test.particlesystem.particlemaker
 
 import com.teamwizardry.librarianlib.features.gui.components.ComponentTextField
 import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
