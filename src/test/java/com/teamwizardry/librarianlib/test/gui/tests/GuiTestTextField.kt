@@ -18,7 +18,7 @@ class GuiTestTextField : GuiBase() {
 
         val fill = ColorLayer(Color.GREEN, 10, 10, 80, 10)
         val field = ComponentTextField(10, 10, 80, 10)
-        field.BUS.hook<ComponentTextField.TextEditEvent> {
+        field.BUS.hook<ComponentTextField.PreTextEditEvent> {
             try {
                 it.whole.toDouble()
             } catch (ignored: Exception) {

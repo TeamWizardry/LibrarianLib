@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.features.gui.provided.book.search
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentTextField
 import com.teamwizardry.librarianlib.features.gui.components.ComponentTextField.FocusEvent
-import com.teamwizardry.librarianlib.features.gui.components.ComponentTextField.TextEditEvent
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
 import com.teamwizardry.librarianlib.features.gui.provided.book.context.ComponentBookMark
 import net.minecraft.client.Minecraft
@@ -14,7 +13,7 @@ class ComponentSearchBar(book: IBookGui, id: Int, onType: ((String) -> Unit)?) :
             2, 1, size.xi - 44 - 2 * book.searchIconSprite.width, Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT + 2)
 
     init {
-        textField.BUS.hook(TextEditEvent::class.java) {
+        textField.BUS.hook(ComponentTextField.PostTextEditEvent::class.java) {
             if (textField.isFocused && it.whole.isEmpty())
                 slideOutShort()
             else if (it.whole.isNotEmpty())

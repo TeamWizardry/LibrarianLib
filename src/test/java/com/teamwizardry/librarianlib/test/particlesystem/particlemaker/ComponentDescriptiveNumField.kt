@@ -12,7 +12,7 @@ class ComponentDescriptiveNumField constructor(description: String? = null, defa
 
     init {
         writeText("$defaultValue")
-        BUS.hook<ComponentTextField.TextEditEvent> {
+        BUS.hook<ComponentTextField.PreTextEditEvent> {
             try {
                 onEdit(this,
                         if (it.whole.isBlank())

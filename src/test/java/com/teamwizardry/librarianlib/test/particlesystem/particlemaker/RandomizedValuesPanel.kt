@@ -12,17 +12,20 @@ import com.teamwizardry.librarianlib.features.gui.value.GuiAnimator
 import com.teamwizardry.librarianlib.features.gui.windows.GuiWindow
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
-import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.math.Align2d
 import com.teamwizardry.librarianlib.features.math.Cardinal2d
-import java.lang.NumberFormatException
 import kotlin.math.max
 
-class RandomizedValuesPanel: PastryWindow(200, 100, PastryWindow.Style.PANEL, false) {
+class RandomizedValuesPanel(val onEdit: (RandomizedValuesPanel) -> Unit) : PastryWindow(200, 100, PastryWindow.Style.PANEL, false) {
     private val flexbox = Flexbox(0, 0, 200, 100)
     private val columns: List<ComponentColumn>
-    private val switch = PastrySwitch(2, 2)
     private val label = TextLayer(16, 2, 30, 11)
+
+    val randomizedSwitch = PastrySwitch(2, 2)
+
+    val columnItemX = ComponentColumn("X")
+    val columnItemY = ComponentColumn("Y")
+    val columnItemZ = ComponentColumn("Z")
 
     init {
         title = "Velocity"
@@ -33,13 +36,10 @@ class RandomizedValuesPanel: PastryWindow(200, 100, PastryWindow.Style.PANEL, fa
         flexbox.alignItems = Flexbox.Align.START
         flexbox.stretch = false
 
-        content.add(switch, label, flexbox)
+        content.add(randomizedSwitch, label, flexbox)
 
-        columns = listOf(
-            ComponentColumn("X"),
-            ComponentColumn("Y"),
-            ComponentColumn("Z")
-        )
+        columns = listOf(columnItemX, columnItemY, columnItemZ)
+
         columns.forEach {
             it.flex.minSize = it.widthi
         }
@@ -48,7 +48,7 @@ class RandomizedValuesPanel: PastryWindow(200, 100, PastryWindow.Style.PANEL, fa
         BUS.hook<GuiWindow.LoseFocusEvent> {
             this.close()
         }
-        switch.BUS.hook<PastryToggle.StateChangeEvent> { event ->
+        randomizedSwitch.BUS.hook<PastryToggle.StateChangeEvent> { event ->
             this.add(GuiAnimator.animate(8f) {
                 modeSwitched(!event.newState)
             })
@@ -73,23 +73,23 @@ class RandomizedValuesPanel: PastryWindow(200, 100, PastryWindow.Style.PANEL, fa
     }
 
     sealed class RandomizedComponent {
-        data class Fixed(val value: Double): RandomizedComponent()
-        data class Range(val min: Double, val max: Double): RandomizedComponent()
+        data class Fixed(val value: Double) : RandomizedComponent()
+        data class Range(val min: Double, val max: Double) : RandomizedComponent()
     }
 
-    private inner class ComponentColumn(val columnName: String): GuiComponent(50, 20) {
+    inner class ComponentColumn(val columnName: String) : GuiComponent(50, 20) {
         var fixed = true
             set(value) {
                 field = value
                 minItem.showPrefix = !fixed
-                this.height = if(fixed) 10.0 else 20.0
+                this.height = if (fixed) 10.0 else 20.0
             }
         val minItem = Item("Min ")
         val maxItem = Item("Max ")
 
         val minWidth = max(
-            minItem.flexbox.minSize.x,
-            maxItem.flexbox.minSize.x
+                minItem.flexbox.minSize.x,
+                maxItem.flexbox.minSize.x
         )
 
         init {
@@ -114,7 +114,7 @@ class RandomizedValuesPanel: PastryWindow(200, 100, PastryWindow.Style.PANEL, fa
             maxItem.width = this.width
         }
 
-        private inner class Item(prefix: String): GuiComponent(0, 0, 50, 10) {
+        inner class Item(prefix: String) : GuiComponent(0, 0, 50, 10) {
             val flexbox = Flexbox(0, 0, 50, 10, Cardinal2d.GUI.LEFT)
 
             var showPrefix = true
@@ -140,26 +140,21 @@ class RandomizedValuesPanel: PastryWindow(200, 100, PastryWindow.Style.PANEL, fa
                 label.clipToBounds = true
 
                 field.flex.config(
-                    flexGrow = 0, flexShrink = 0
+                        flexGrow = 0, flexShrink = 0
                 )
                 label.componentWrapper().flex.config(
-                    flexGrow = 0, flexShrink = 0
+                        flexGrow = 0, flexShrink = 0
                 )
 
                 this.add(flexbox)
                 flexbox.add(field, label.componentWrapper())
 
-                field.writeText("0.0")
-                field.BUS.hook<ComponentTextField.TextEditEvent> { event ->
+                //  field.writeText("0.0")
+                field.BUS.hook<ComponentTextField.PostTextEditEvent> { event ->
                     try {
-//                        onEdit(this,
-//                            if (it.whole.isBlank())
-//                                0.0
-//                            else
-//                                it.whole.toDouble()
-//                        )
+                        event.whole.toDouble()
+                        onEdit(this@RandomizedValuesPanel)
                     } catch (ignored: NumberFormatException) {
-                        event.cancel()
                     }
                 }
             }
@@ -171,4 +166,15 @@ class RandomizedValuesPanel: PastryWindow(200, 100, PastryWindow.Style.PANEL, fa
         }
     }
 
+    fun setInputOf(item: ComponentColumn.Item, d: Double) {
+        item.field.writeText("$d")
+    }
+
+    fun getInputOf(item: ComponentColumn.Item): Double {
+        return try {
+            item.field.text.toDouble()
+        } catch (e: NumberFormatException) {
+            0.0
+        }
+    }
 }

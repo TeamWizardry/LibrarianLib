@@ -27,7 +27,6 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.Vec3d
-import org.apache.commons.lang3.RandomUtils
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.roundToInt
@@ -229,7 +228,7 @@ class GuiParticleMaker : PastryWindow(500, 300) {
         resourceLocTitle.text = "Resource Location"
         val resourceLocation = ComponentTextField(0, 10, aesthetics.widthi, 12)
         resourceLocation.text = resourceLoc.namespace + ":" + resourceLoc.path
-        resourceLocation.BUS.hook<ComponentTextField.TextEditEvent> {
+        resourceLocation.BUS.hook<ComponentTextField.PostTextEditEvent> {
             val whole = it.whole.trim()
             var domain = "minecraft"
             val path: String
@@ -297,92 +296,36 @@ class GuiParticleMaker : PastryWindow(500, 300) {
         physics.add(makeSwitch("Enable Collision", 0, 0) { enableCollision = it })
 
 
-        val animatableWrapper2 = GuiComponent(0, 30)
-        physics.add(animatableWrapper2)
+        physics.add(PastryButton("Set Velocity", 0, 15) {
+            RandomizedValuesPanel {
+                velX = it.getInputOf(it.columnItemX.minItem)
+                velY = it.getInputOf(it.columnItemY.minItem)
+                velZ = it.getInputOf(it.columnItemZ.minItem)
 
-        val velXField = ComponentFreeSlider("X", 40, physics.widthi, velX, -50.0..50.0, -1000.0..1000.0) {
-            velX = it
-        }
-        velXField.isVisible = false
-        val velYField = ComponentFreeSlider("Y", velXField.yi + velXField.heighti, physics.widthi, velY, -50.0..50.0, -1000.0..1000.0) {
-            velY = it
-        }
-        velYField.isVisible = false
-        val velZField = ComponentFreeSlider("Z", velYField.yi + velYField.heighti, physics.widthi, velZ, -50.0..50.0, -1000.0..1000.0) {
-            velZ = it
-        }
-        velZField.isVisible = false
-        physics.add(velXField, velYField, velZField)
+                maxVelX = it.getInputOf(it.columnItemX.maxItem)
+                maxVelY = it.getInputOf(it.columnItemY.maxItem)
+                maxVelZ = it.getInputOf(it.columnItemZ.maxItem)
+            }.also {
+                it.setInputOf(it.columnItemX.minItem, velX)
+                it.setInputOf(it.columnItemY.minItem, velY)
+                it.setInputOf(it.columnItemZ.minItem, velZ)
 
+                it.setInputOf(it.columnItemX.maxItem, maxVelX)
+                it.setInputOf(it.columnItemY.maxItem, maxVelY)
+                it.setInputOf(it.columnItemZ.maxItem, maxVelZ)
 
-        val maxVelXField = ComponentFreeSlider("Max X", 40, physics.widthi, maxVelX, -50.0..50.0, -1000.0..1000.0) {
-            maxVelX = it
-        }
-        maxVelXField.isVisible = false
-        val maxVelYField = ComponentFreeSlider("Max Y", maxVelXField.yi + maxVelXField.heighti, physics.widthi, maxVelY, -50.0..50.0, -1000.0..1000.0) {
-            maxVelY = it
-        }
-        maxVelYField.isVisible = false
-        val maxVelZField = ComponentFreeSlider("Max Z", maxVelYField.yi + maxVelYField.heighti, physics.widthi, maxVelZ, -50.0..50.0, -1000.0..1000.0) {
-            maxVelZ = it
-        }
-        maxVelZField.isVisible = false
-        physics.add(maxVelXField, maxVelYField, maxVelZField)
+                it.randomizedSwitch.state = randomVelocity // TODO
 
-
-        val randomVelocitySwitch = makeSwitch("Randomized Velocity", 10, 20) {
-            if (!it) {
-
-                animatableWrapper2.pos_rm.animate(Vec2d(0.0, 80.0), 10f, Easing.easeOutQuart).completion = Runnable {
-                    velXField.updateText("Min X")
-                    velYField.updateText("Min Y")
-                    velZField.updateText("Min Z")
-
-                    maxVelXField.isVisible = true
-                    maxVelYField.isVisible = true
-                    maxVelZField.isVisible = true
-                    randomVelocity = true
+                it.randomizedSwitch.BUS.hook<PastryToggle.StateChangeEvent> { e ->
+                    randomVelocity = e.newState
                 }
-            } else {
-                animatableWrapper2.pos_rm.animate(Vec2d(0.0, 60.0), 10f, Easing.easeOutQuart)
-                velXField.updateText("X")
-                velYField.updateText("Y")
-                velZField.updateText("Z")
-
-                maxVelXField.isVisible = false
-                maxVelYField.isVisible = false
-                maxVelZField.isVisible = false
-                randomVelocity = false
-            }
-        }
-        randomVelocitySwitch.isVisible = false
-        physics.add(randomVelocitySwitch)
-        physics.add(PastryButton("cool", 10, 60) {
-            RandomizedValuesPanel().open()
+            }.open()
         })
 
-        physics.add(makeSwitch("Set Velocity", 0, 10) {
-            if (!it) {
-                animatableWrapper2.pos_rm.animate(Vec2d(0.0, 60.0), 10f, Easing.easeOutQuart).completion = Runnable {
-                    velXField.isVisible = true
-                    velYField.isVisible = true
-                    velZField.isVisible = true
-                    randomVelocitySwitch.isVisible = true
-                }
-            } else {
-                animatableWrapper2.pos_rm.animate(Vec2d(0.0, 30.0), 10f, Easing.easeOutQuart)
-                velXField.isVisible = false
-                velYField.isVisible = false
-                velZField.isVisible = false
-                randomVelocitySwitch.isVisible = false
-            }
-        })
-
-
-        animatableWrapper2.add(makeSlider("Gravity", 0, gravity, 0.0..10.0) { gravity = it })
-        animatableWrapper2.add(makeSlider("Damping", 20, damping.toDouble(), 0.0..1.0) { damping = it.toFloat() })
-        animatableWrapper2.add(makeSlider("Friction", 40, friction.toDouble(), 0.0..1.0) { friction = it.toFloat() })
-        animatableWrapper2.add(makeSlider("Bounciness", 60, bounciness.toDouble(), 0.0..1.0) { bounciness = it.toFloat() })
+        physics.add(makeSlider("Gravity", 40, gravity, 0.0..10.0) { gravity = it })
+        physics.add(makeSlider("Damping", 60, damping.toDouble(), 0.0..1.0) { damping = it.toFloat() })
+        physics.add(makeSlider("Friction", 80, friction.toDouble(), 0.0..1.0) { friction = it.toFloat() })
+        physics.add(makeSlider("Bounciness", 100, bounciness.toDouble(), 0.0..1.0) { bounciness = it.toFloat() })
     }
 
     private fun makeSlider(text: String, y: Int, beginValue: Double, range: ClosedRange<Double>, stateChange: (newProgress: Double) -> Unit): PastrySlider {
@@ -454,31 +397,31 @@ class GuiParticleMaker : PastryWindow(500, 300) {
 
         for (i in 0 until particleCount)
             PhysicsCurtainSystem.spawn(
-                lifetime = lifetime.toDouble(),
-                size = 16.0, pos = Vec3d(0.0, 10.0, 0.0),
+                    lifetime = lifetime.toDouble(),
+                    size = 16.0, pos = Vec3d(0.0, 10.0, 0.0),
 
-                bounciness = bounciness,
-                friction = friction,
-                dampness = damping,
-                gravity = gravity,
-                collision = if (enableCollision) 1 else 0,
+                    bounciness = bounciness,
+                    friction = friction,
+                    dampness = damping,
+                    gravity = gravity,
+                    collision = if (enableCollision) 1 else 0,
 
-                colorFading = if (colorFading) 1 else 0,
-                colorPrimary = colorPrimary,
-                colorSecondary = colorSecondary,
+                    colorFading = if (colorFading) 1 else 0,
+                    colorPrimary = colorPrimary,
+                    colorSecondary = colorSecondary,
 
-                velocity = if (velX == maxVelX && velY == maxVelY && velZ == maxVelZ)
-                    vec(velX, velY, velZ)
-                else if (randomVelocity) {
-                    vec(
-                        RandomUtils.nextDouble(Math.min(velX, maxVelX), Math.max(velX, maxVelX)),
-                        RandomUtils.nextDouble(Math.min(velY, maxVelY), Math.max(velY, maxVelY)),
-                        RandomUtils.nextDouble(Math.min(velZ, maxVelZ), Math.max(velZ, maxVelZ)))
-                } else {
-                    vec(velX, velY, velZ)
-                },
+                    velocity = if (velX == maxVelX && velY == maxVelY && velZ == maxVelZ)
+                        vec(velX, velY, velZ)
+                    else if (randomVelocity) {
+                        vec(
+                                RandUtil.nextDouble(Math.min(velX, maxVelX), Math.max(velX, maxVelX)),
+                                RandUtil.nextDouble(Math.min(velY, maxVelY), Math.max(velY, maxVelY)),
+                                RandUtil.nextDouble(Math.min(velZ, maxVelZ), Math.max(velZ, maxVelZ)))
+                    } else {
+                        vec(velX, velY, velZ)
+                    },
 
-                resourceLocation = resourceLoc)
+                    resourceLocation = resourceLoc)
     }
 
     //   override fun doesGuiPauseGame(): Boolean = false

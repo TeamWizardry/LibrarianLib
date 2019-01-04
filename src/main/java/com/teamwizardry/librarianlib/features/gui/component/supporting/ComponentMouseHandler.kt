@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.RootComponent
-import com.teamwizardry.librarianlib.features.gui.components.StandaloneRootComponent
 import com.teamwizardry.librarianlib.features.gui.value.IMValue
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
@@ -53,7 +52,7 @@ interface IComponentMouse {
     val cursor_im: IMValue<LibCursor?>
 
     /**
-     * If nonnull, the cursor will switch to this when hovering.
+     * If nonnull, the cursor will randomizedSwitch to this when hovering.
      */
     var cursor: LibCursor?
 

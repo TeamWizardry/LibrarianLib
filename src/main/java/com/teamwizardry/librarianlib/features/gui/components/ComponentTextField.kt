@@ -2,12 +2,12 @@ package com.teamwizardry.librarianlib.features.gui.components
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.value.IMValue
 import com.teamwizardry.librarianlib.features.gui.value.IMValueBoolean
 import com.teamwizardry.librarianlib.features.gui.value.IMValueInt
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.kotlin.*
+import com.teamwizardry.librarianlib.features.kotlin.glColor
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
@@ -154,12 +154,13 @@ open class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y:
             build += fakeBuildEnd
         }
 
-        val editEvent = BUS.fire(TextEditEvent(set, build))
+        val editEvent = BUS.fire(PreTextEditEvent(set, build))
         if (!editEvent.isCanceled()) {
             val section = editEvent.section
 
             this.text = fakeBuildStart + section + fakeBuildEnd
             this.shiftCursor(selectionStart - this.selectionEnd + section.length)
+            BUS.fire(PostTextEditEvent(set, build))
         }
     }
 
@@ -190,12 +191,14 @@ open class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y:
                 }
 
 
-                val editEvent = BUS.fire(TextEditEvent("", build))
+                val editEvent = BUS.fire(PreTextEditEvent("", build))
                 if (!editEvent.isCanceled()) {
                     val section = editEvent.section
 
                     this.text = buildStart + section + buildEnd
                     if (backwards) this.shiftCursor(count)
+
+                    BUS.fire(PostTextEditEvent("", build))
                 }
             }
         }
@@ -470,7 +473,8 @@ open class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y:
         this.lineScrollOffset = MathHelper.clamp(this.lineScrollOffset, 0, length)
     }
 
-    class TextEditEvent(var section: String, val whole: String) : EventCancelable()
+    class PreTextEditEvent(var section: String, val whole: String) : EventCancelable()
+    class PostTextEditEvent(var section: String, val whole: String) : Event()
     class TextSentEvent(val content: String) : Event()
     class FocusEvent(val wasFocused: Boolean) : EventCancelable()
 }
