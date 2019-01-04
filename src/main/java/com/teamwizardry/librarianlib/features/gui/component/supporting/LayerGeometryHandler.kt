@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.value.RMValue
 import com.teamwizardry.librarianlib.features.gui.value.RMValueDouble
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.kotlin.unaryMinus
@@ -377,12 +378,17 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
     override var frame: Rect2d
         get() = layer.parentSpace?.let { this.convertRectTo(layer.bounds, it) } ?: layer.bounds
         set(value) {
-            layer.pos = value.pos + value.size * layer.anchor
-            val scale = layer.scale2d
-            layer.size = vec(
-                if(scale.x == 0.0) layer.size.x else value.width / scale.x,
-                if(scale.y == 0.0) layer.size.y else value.height / scale.y
-            )
+            val current = this.frame
+            if(value.size == current.size) {
+                layer.pos += value.pos - current.pos
+            } else {
+                layer.pos = value.pos + value.size * layer.anchor
+                val scale = layer.scale2d
+                layer.size = vec(
+                    if (scale.x == 0.0) layer.size.x else value.width / scale.x,
+                    if (scale.y == 0.0) layer.size.y else value.height / scale.y
+                )
+            }
         }
     override val bounds: Rect2d
         get() = Rect2d(-layer.contentsOffset, layer.size)
