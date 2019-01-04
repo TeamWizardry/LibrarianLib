@@ -1,20 +1,18 @@
 package com.teamwizardry.librarianlib.features.gui.layout
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
-import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.component.supporting.getData
 import com.teamwizardry.librarianlib.features.gui.component.supporting.setData
 import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.div
-import com.teamwizardry.librarianlib.features.math.Align2d
+import com.teamwizardry.librarianlib.features.kotlin.clamp
 import com.teamwizardry.librarianlib.features.math.Axis2d
 import com.teamwizardry.librarianlib.features.math.Cardinal2d
-import com.teamwizardry.librarianlib.features.math.Rect2d
+import com.teamwizardry.librarianlib.features.math.Vec2d
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d = Cardinal2d.GUI.RIGHT): GuiComponent(x, y, width, height) {
+open class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d = Cardinal2d.GUI.RIGHT): GuiComponent(x, y, width, height) {
     /**
      * The direction children should flow
      */
@@ -23,7 +21,13 @@ class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d
     /**
      * The alignment along the cross axis (perpendicular to [flexDirection])
      */
-    var alignItems: Align = Align.STRETCH
+    var alignItems: Align = Align.START
+
+    /**
+     * Whether to stretch/squash children along the cross axis. If this is true then [alignItems] will only be used when
+     * children reach their maximum size
+     */
+    var stretch: Boolean = true
 
     /**
      * The justification algorithm to apply when there is space left over
@@ -38,6 +42,29 @@ class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d
      * children, not before/after the first/last ones.
      */
     var spacing: Int = 0
+
+    val minSize: Vec2d
+        get() {
+            var major = 0
+            var cross = 0
+            val items = subComponents.map {
+                FlexItem(
+                    it,
+                    if(flexDirection.axis == Axis2d.X) it.frame.heighti else it.frame.widthi,
+                    it.getData() ?: inertData(it)
+                )
+            }
+            items.forEach {
+                major += it.flexBasis + it.data.marginBefore + it.data.marginAfter
+                cross = max(cross,
+                    if(it.data.stretchSelf ?: stretch)
+                        it.data.minCrossSize
+                    else
+                        it.crossSize
+                )
+            }
+            return if(flexDirection.axis == Axis2d.X) vec(major, cross) else vec(cross, major)
+        }
 
     override fun layoutChildren() {
         super.layoutChildren()
@@ -83,6 +110,11 @@ class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d
         marginAfter = 0,
         minSize = 0,
         maxSize = Int.MAX_VALUE,
+        marginCrossBefore = 0,
+        marginCrossAfter = 0,
+        minCrossSize = 0,
+        maxCrossSize = Int.MAX_VALUE,
+        stretchSelf = false,
         alignSelf = null
     )
 
@@ -90,9 +122,8 @@ class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d
         var remaining = space
 
         list.forEach {
-            remaining -= it.data.flexBasis + it.data.marginBefore + it.data.marginAfter
+            remaining -= it.flexBasis + it.data.marginBefore + it.data.marginAfter
         }
-
 
         val growSum = list.sumBy { it.data.flexGrow }
         if(remaining > 0 && growSum != 0) {
@@ -118,7 +149,7 @@ class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d
             }
         }
 
-        val basisSum = list.sumBy { max(1, it.data.flexBasis) }
+        val basisSum = list.sumBy { max(1, it.flexBasis) }
         if(remaining < 0 && basisSum != 0) {
             var lastRemaining = 0
             while(remaining != lastRemaining) {
@@ -128,10 +159,10 @@ class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d
 
                 list.forEach {
                     if(unitsLeft == 0.0) return@forEach
-                    val portion = (remaining * it.data.flexShrink * max(1, it.data.flexBasis) / unitsLeft).roundToInt()
+                    val portion = (remaining * it.data.flexShrink * max(1, it.flexBasis) / unitsLeft).roundToInt()
                     it.size += portion
                     remaining -= portion
-                    unitsLeft -= max(1, it.data.flexBasis)
+                    unitsLeft -= max(1, it.flexBasis)
 
                     if(it.size < it.data.minSize) {
                         leftover -= it.data.minSize - it.size
@@ -145,11 +176,15 @@ class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d
 
     private fun layoutAlignment(majorSpace: Int, crossSpace: Int, list: List<FlexItem>) {
         list.forEach {
+            if(it.data.stretchSelf ?: stretch)
+                it.crossSize = crossSpace.clamp(it.data.minCrossSize, it.data.maxCrossSize)
             when(it.data.alignSelf ?: alignItems) {
-                Align.STRETCH -> it.crossSize = crossSpace
-                Align.START -> it.crossPos = 0
-                Align.CENTER -> it.crossPos = (crossSpace - it.crossSize) / 2
-                Align.END -> it.crossPos = crossSpace - it.crossSize
+                Align.START -> it.crossPos =
+                    it.data.marginCrossBefore
+                Align.CENTER -> it.crossPos =
+                    (crossSpace - (it.crossSize + it.data.marginCrossBefore + it.data.marginCrossAfter)) / 2
+                Align.END -> it.crossPos =
+                    crossSpace - (it.crossSize + it.data.marginCrossAfter)
             }
         }
 
@@ -204,36 +239,42 @@ class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d
     }
 
     private class FlexItem(val component: GuiComponent, var crossSize: Int, val data: Data) {
-        var size: Int = data.flexBasis
+        val flexBasis = (data.flexBasis ?: component.frame.widthi).clamp(data.minSize, data.maxSize)
+        var size: Int = flexBasis
         var crossPos: Int = 0
         var pos: Int = 0
     }
 
     data class Data(
         var order: Int,
-        var flexBasis: Int,
+        var flexBasis: Int?,
         var flexGrow: Int,
         var flexShrink: Int,
         var marginBefore: Int,
         var marginAfter: Int,
         var minSize: Int,
         var maxSize: Int,
+        var marginCrossBefore: Int,
+        var marginCrossAfter: Int,
+        var minCrossSize: Int,
+        var maxCrossSize: Int,
+        var stretchSelf: Boolean?,
         var alignSelf: Align?
     ) {
-        init {
-            if(flexBasis < minSize)
-                flexBasis = minSize
-        }
-
         fun config(
             order: Int = this.order,
-            flexBasis: Int = this.flexBasis,
             flexGrow: Int = this.flexGrow,
             flexShrink: Int = this.flexShrink,
+            flexBasis: Int? = if(flexGrow == 0 && flexShrink == 0) null else this.flexBasis,
             marginBefore: Int = this.marginBefore,
             marginAfter: Int = this.marginAfter,
             minSize: Int = this.minSize,
             maxSize: Int = this.maxSize,
+            marginCrossBefore: Int = this.marginCrossBefore,
+            marginCrossAfter: Int = this.marginCrossAfter,
+            minCrossSize: Int = this.minCrossSize,
+            maxCrossSize: Int = this.maxCrossSize,
+            stretchSelf: Boolean? = this.stretchSelf,
             alignSelf: Align? = this.alignSelf
         ) {
             this.order = order
@@ -244,18 +285,17 @@ class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d
             this.marginAfter = marginAfter
             this.minSize = minSize
             this.maxSize = maxSize
-            this.alignSelf = alignSelf
 
-            if(this.flexBasis < this.minSize)
-                this.flexBasis = this.minSize
+            this.marginCrossBefore = marginCrossBefore
+            this.marginCrossAfter = marginCrossAfter
+            this.minCrossSize = minCrossSize
+            this.maxCrossSize = maxCrossSize
+            this.stretchSelf = stretchSelf
+            this.alignSelf = alignSelf
         }
     }
 
     enum class Align {
-        /**
-         * Stretch children along the cross axis to fit the size of the flexbox
-         */
-        STRETCH,
         /**
          * Align children along the max edge along the cross axis
          */
@@ -314,6 +354,11 @@ val GuiComponent.flex: Flexbox.Data
                 marginAfter = 0,
                 minSize = 0,
                 maxSize = Int.MAX_VALUE,
+                marginCrossBefore = 0,
+                marginCrossAfter = 0,
+                minCrossSize = 0,
+                maxCrossSize = Int.MAX_VALUE,
+                stretchSelf = null,
                 alignSelf = null
             ).also { this.setData(it) }
         return data
