@@ -390,7 +390,7 @@ class GuiParticleMaker : PastryWindow(500, 300) {
         val slider = PastrySlider(0, y + 10, 150, false, Cardinal2d.GUI.DOWN)
         slider.range = range
         slider.value = beginValue
-        slider.BUS.fire(PastryToggle.StateChangeEvent())
+        slider.BUS.fire(PastryToggle.StateChangeEvent(false))
 
         val numberLayer = TextLayer(150 + 10, 0, 0, 0)
         numberLayer.fitToText = true
@@ -414,7 +414,7 @@ class GuiParticleMaker : PastryWindow(500, 300) {
         val slider = PastrySlider(0, y + 10, 150, false, Cardinal2d.GUI.DOWN)
         slider.range = range.start.toDouble()..range.endInclusive.toDouble()
         slider.value = beginValue.toDouble()
-        slider.BUS.fire(PastryToggle.StateChangeEvent())
+        slider.BUS.fire(PastryToggle.StateChangeEvent(false))
 
         val numberLayer = TextLayer(150 + 10, 0, 0, 0)
         numberLayer.fitToText = true

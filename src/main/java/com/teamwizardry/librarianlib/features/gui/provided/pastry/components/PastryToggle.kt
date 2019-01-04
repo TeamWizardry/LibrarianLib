@@ -62,7 +62,7 @@ abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int): Fixe
     private fun click(e: GuiComponentEvents.MouseClickEvent) {
         val state = state
         pressed = false
-        if(mouseDown && !BUS.fire(StateChangeEvent()).isCanceled()) {
+        if(mouseDown && !BUS.fire(StateChangeEvent(!state)).isCanceled()) {
             this.state = !state
             updateVisualState()
         }
@@ -81,7 +81,7 @@ abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int): Fixe
     /**
      * Called before a state change is committed. Cancel this event to prevent the state change
      */
-    class StateChangeEvent: EventCancelable()
+    class StateChangeEvent(val newState: Boolean): EventCancelable()
 
     /**
      * Called before a toggle interaction begins. Cancel this event to prevent the interaction from starting.

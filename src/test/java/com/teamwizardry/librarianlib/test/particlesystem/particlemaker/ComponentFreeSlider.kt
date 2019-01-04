@@ -20,7 +20,7 @@ class ComponentFreeSlider(text: String, posY: Int, width: Int, beginValue: Doubl
         val slider = PastrySlider(0, posY + 10, width - 30, false, Cardinal2d.GUI.DOWN)
         slider.range = sliderRange
         slider.value = beginValue
-        slider.BUS.fire(PastryToggle.StateChangeEvent())
+        slider.BUS.fire(PastryToggle.StateChangeEvent(false))
 
         numberLayer = ComponentDescriptiveNumField(null, beginValue, slider.widthi + 10, 0, 40, 20) { field, progress ->
             val result = MathHelper.clamp((progress * 100).roundToInt() / 100.0, numFieldRange.start, numFieldRange.endInclusive)
