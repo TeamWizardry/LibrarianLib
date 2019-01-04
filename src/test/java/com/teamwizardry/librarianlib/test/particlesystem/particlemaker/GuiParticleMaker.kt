@@ -357,6 +357,9 @@ class GuiParticleMaker : PastryWindow(500, 300) {
         }
         randomVelocitySwitch.isVisible = false
         physics.add(randomVelocitySwitch)
+        physics.add(PastryButton("cool", 10, 60) {
+            RandomizedValuesPanel().open()
+        })
 
         physics.add(makeSwitch("Set Velocity", 0, 10) {
             if (!it) {
