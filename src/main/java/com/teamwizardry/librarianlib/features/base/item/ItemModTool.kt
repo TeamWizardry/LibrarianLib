@@ -3,6 +3,8 @@ package com.teamwizardry.librarianlib.features.base.item
 import com.teamwizardry.librarianlib.core.client.ModelHandler
 import com.teamwizardry.librarianlib.features.base.IModelGenerator
 import com.teamwizardry.librarianlib.features.base.ModCreativeTab
+import com.teamwizardry.librarianlib.features.base.item.ItemModTool.Companion.classAttackDamage
+import com.teamwizardry.librarianlib.features.base.item.ItemModTool.Companion.classAttackSpeed
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.currentModId
 import com.teamwizardry.librarianlib.features.utilities.generateBaseItemModel
@@ -12,13 +14,11 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
-import net.minecraft.item.Item
-import net.minecraft.item.ItemStack
-import net.minecraft.item.ItemTool
+import net.minecraft.item.*
 import net.minecraft.util.NonNullList
 
 /**
- * The default implementation for an IVariantHolder tool.
+ * The default implementation for a generic IVariantHolder tool.
  */
 @Suppress("LeakingThis")
 open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, toolMaterial: ToolMaterial, effectiveBlocks: Set<Block>) : ItemTool(attackDamage, attackSpeed, toolMaterial, effectiveBlocks), IModItemProvider, IModelGenerator {
@@ -124,3 +124,148 @@ open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, to
     }
 }
 
+/**
+ * The default implementation for an IVariantHolder axe.
+ */
+@Suppress("LeakingThis")
+open class ItemModAxe(name: String, attackDamage: Float, attackSpeed: Float, toolMaterial: ToolMaterial) : ItemAxe(toolMaterial, attackDamage, attackSpeed), IModItemProvider, IModelGenerator {
+
+    constructor(name: String, toolMaterial: ToolMaterial) : this(name, classAttackDamage("axe", toolMaterial), classAttackSpeed("axe", toolMaterial), toolMaterial)
+
+    override val providedItem: Item
+        get() = this
+
+    private val bareName = VariantHelper.toSnakeCase(name)
+    private val modId = currentModId
+    override val variants = VariantHelper.setupItem(this, bareName, arrayOf(), this::creativeTab)
+
+    override fun setTranslationKey(name: String): Item {
+        VariantHelper.setTranslationKeyForItem(this, modId, name)
+        return super.setTranslationKey(name)
+    }
+
+    override fun getTranslationKey(stack: ItemStack): String {
+        val dmg = stack.itemDamage
+        val variants = this.variants
+        val name = if (dmg >= variants.size) this.bareName else variants[dmg]
+
+        return "item.$modId:$name"
+    }
+
+    override fun getSubItems(tab: CreativeTabs, subItems: NonNullList<ItemStack>) {
+        if (isInCreativeTab(tab))
+            variants.indices.mapTo(subItems) { ItemStack(this, 1, it) }
+    }
+
+    /**
+     * Override this to have a custom creative tab. Leave blank to have a default tab (or none if no default tab is set).
+     */
+    open val creativeTab: ModCreativeTab?
+        get() = ModCreativeTab.defaultTabs[modId]
+
+    // Model Generation
+
+    override fun generateMissingItem(item: IModItemProvider, variant: String): Boolean {
+        ModelHandler.generateItemJson(this) {
+            getPathForItemModel(this, variant) to
+                    generateBaseItemModel(this, variant, "item/handheld")
+        }
+        return true
+    }
+}
+
+/**
+ * The default implementation for an IVariantHolder shovel.
+ */
+@Suppress("LeakingThis")
+open class ItemModSpade(name: String, toolMaterial: ToolMaterial) : ItemSpade(toolMaterial), IModItemProvider, IModelGenerator {
+
+    override val providedItem: Item
+        get() = this
+
+    private val bareName = VariantHelper.toSnakeCase(name)
+    private val modId = currentModId
+    override val variants = VariantHelper.setupItem(this, bareName, arrayOf(), this::creativeTab)
+
+    override fun setTranslationKey(name: String): Item {
+        VariantHelper.setTranslationKeyForItem(this, modId, name)
+        return super.setTranslationKey(name)
+    }
+
+    override fun getTranslationKey(stack: ItemStack): String {
+        val dmg = stack.itemDamage
+        val variants = this.variants
+        val name = if (dmg >= variants.size) this.bareName else variants[dmg]
+
+        return "item.$modId:$name"
+    }
+
+    override fun getSubItems(tab: CreativeTabs, subItems: NonNullList<ItemStack>) {
+        if (isInCreativeTab(tab))
+            variants.indices.mapTo(subItems) { ItemStack(this, 1, it) }
+    }
+
+    /**
+     * Override this to have a custom creative tab. Leave blank to have a default tab (or none if no default tab is set).
+     */
+    open val creativeTab: ModCreativeTab?
+        get() = ModCreativeTab.defaultTabs[modId]
+
+    // Model Generation
+
+    override fun generateMissingItem(item: IModItemProvider, variant: String): Boolean {
+        ModelHandler.generateItemJson(this) {
+            getPathForItemModel(this, variant) to
+                    generateBaseItemModel(this, variant, "item/handheld")
+        }
+        return true
+    }
+}
+
+/**
+ * The default implementation for an IVariantHolder pickaxe.
+ */
+@Suppress("LeakingThis")
+open class ItemModPickaxe(name: String, toolMaterial: ToolMaterial) : ItemPickaxe(toolMaterial), IModItemProvider, IModelGenerator {
+
+    override val providedItem: Item
+        get() = this
+
+    private val bareName = VariantHelper.toSnakeCase(name)
+    private val modId = currentModId
+    override val variants = VariantHelper.setupItem(this, bareName, arrayOf(), this::creativeTab)
+
+    override fun setTranslationKey(name: String): Item {
+        VariantHelper.setTranslationKeyForItem(this, modId, name)
+        return super.setTranslationKey(name)
+    }
+
+    override fun getTranslationKey(stack: ItemStack): String {
+        val dmg = stack.itemDamage
+        val variants = this.variants
+        val name = if (dmg >= variants.size) this.bareName else variants[dmg]
+
+        return "item.$modId:$name"
+    }
+
+    override fun getSubItems(tab: CreativeTabs, subItems: NonNullList<ItemStack>) {
+        if (isInCreativeTab(tab))
+            variants.indices.mapTo(subItems) { ItemStack(this, 1, it) }
+    }
+
+    /**
+     * Override this to have a custom creative tab. Leave blank to have a default tab (or none if no default tab is set).
+     */
+    open val creativeTab: ModCreativeTab?
+        get() = ModCreativeTab.defaultTabs[modId]
+
+    // Model Generation
+
+    override fun generateMissingItem(item: IModItemProvider, variant: String): Boolean {
+        ModelHandler.generateItemJson(this) {
+            getPathForItemModel(this, variant) to
+                    generateBaseItemModel(this, variant, "item/handheld")
+        }
+        return true
+    }
+}

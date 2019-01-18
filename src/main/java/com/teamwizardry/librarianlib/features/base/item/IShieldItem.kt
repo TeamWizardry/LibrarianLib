@@ -24,8 +24,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  * Created at 5:02 PM on 4/9/17.
  */
 @Deprecated("Use the forge method isShield")
-@Mod.EventBusSubscriber(modid = LibrarianLib.MODID)
 interface IShieldItem {
+    @Mod.EventBusSubscriber(modid = LibrarianLib.MODID)
     companion object {
 
         val canBlockDamageSource = MethodHandleHelper.wrapperForMethod(EntityLivingBase::class.java, "canBlockDamageSource", "func_184583_d", DamageSource::class.java)
