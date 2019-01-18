@@ -28,6 +28,7 @@ open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, to
         private val PICKAXE_EFFECTIVE_ON = setOf(Blocks.ACTIVATOR_RAIL, Blocks.COAL_ORE, Blocks.COBBLESTONE, Blocks.DETECTOR_RAIL, Blocks.DIAMOND_BLOCK, Blocks.DIAMOND_ORE, Blocks.DOUBLE_STONE_SLAB, Blocks.GOLDEN_RAIL, Blocks.GOLD_BLOCK, Blocks.GOLD_ORE, Blocks.ICE, Blocks.IRON_BLOCK, Blocks.IRON_ORE, Blocks.LAPIS_BLOCK, Blocks.LAPIS_ORE, Blocks.LIT_REDSTONE_ORE, Blocks.MOSSY_COBBLESTONE, Blocks.NETHERRACK, Blocks.PACKED_ICE, Blocks.RAIL, Blocks.REDSTONE_ORE, Blocks.SANDSTONE, Blocks.RED_SANDSTONE, Blocks.STONE, Blocks.STONE_SLAB)
         private val SHOVEL_EFFECTIVE_ON = setOf(Blocks.CLAY, Blocks.DIRT, Blocks.FARMLAND, Blocks.GRASS, Blocks.GRAVEL, Blocks.MYCELIUM, Blocks.SAND, Blocks.SNOW, Blocks.SNOW_LAYER, Blocks.SOUL_SAND)
 
+        @JvmStatic
         fun blocksClassIsEffectiveOn(toolClass: String) = when (toolClass) {
             "axe" -> AXE_EFFECTIVE_ON
             "shovel" -> SHOVEL_EFFECTIVE_ON
@@ -35,16 +36,18 @@ open class ItemModTool(name: String, attackDamage: Float, attackSpeed: Float, to
             else -> emptySet()
         }
 
+        @JvmStatic
         fun classAttackDamage(toolClass: String, material: ToolMaterial) = when (toolClass) {
             "axe" -> when (material.harvestLevel) {
                 0 -> 6f
                 else -> 8f
-            }
+            } - material.attackDamage
             "shovel" -> 1.5f
             "pickaxe" -> 1.0f
             else -> 0f
         }
 
+        @JvmStatic
         fun classAttackSpeed(toolClass: String, material: ToolMaterial) = when (toolClass) {
             "axe" -> when {
                 material.efficiency <= 5f -> -3.2f
