@@ -1,0 +1,106 @@
+package com.teamwizardry.librarianlib.features.text
+
+import com.ibm.icu.lang.UCharacter
+import com.teamwizardry.librarianlib.features.helpers.rect
+import com.teamwizardry.librarianlib.features.math.Rect2d
+import games.thecodewarrior.bitfont.data.Bitfont
+import games.thecodewarrior.bitfont.data.Glyph
+import games.thecodewarrior.bitfont.utils.RectanglePacker
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.texture.TextureUtil
+import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import java.awt.Color
+import java.awt.image.BufferedImage
+import java.awt.image.IndexColorModel
+import kotlin.math.ceil
+
+
+
+class BitfontAtlas private constructor(val font: Bitfont) {
+    var width: Int = 128
+        private set
+    var height: Int = 128
+        private set
+    private var image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+    private var textureDirty = true
+    private val texID = TextureUtil.glGenTextures()
+
+    private var packer = RectanglePacker<Int>(width, height, 0)
+    private val rects = Int2ObjectOpenHashMap<RectanglePacker.Rectangle>()
+    private var defaultRect = packer.insert(font.defaultGlyph.image.width, font.defaultGlyph.image.height, -1)!!
+
+    init {
+        MinecraftForge.EVENT_BUS.register(this)
+        draw(font.defaultGlyph, defaultRect.x, defaultRect.y)
+    }
+
+    fun bind() {
+        GlStateManager.bindTexture(texID)
+    }
+
+    fun texCoords(codepoint: Int): Rect2d {
+        if(codepoint !in rects) {
+            UnicodeBlock[codepoint]?.also {
+                it.range.forEach(::insert)
+            }
+            if(codepoint !in rects) {
+                rects[codepoint] = defaultRect
+            }
+        }
+        val rect = rects[codepoint] ?: return rect(0, 0, 0, 0)
+        val width = width.toDouble()
+        val height = height.toDouble()
+        return rect(rect.x/width, rect.y/height, rect.width/width, rect.height/height)
+    }
+
+    fun insert(codepoint: Int) {
+        val glyph = font.glyphs[codepoint] ?: return
+        var newRect: RectanglePacker.Rectangle? = packer.insert(glyph.image.width, glyph.image.height, codepoint)
+        if(newRect == null) {
+            expand()
+            newRect = packer.insert(glyph.image.width, glyph.image.height, codepoint)
+        }
+        rects[codepoint] = newRect!!
+        draw(glyph, newRect.x, newRect.y)
+    }
+
+    fun draw(glyph: Glyph, xOrigin: Int, yOrigin: Int) {
+        for(x in 0 until glyph.image.width) {
+            for(y in 0 until glyph.image.height) {
+                if(glyph.image[x, y]) {
+                    image.setRGB(xOrigin+x, yOrigin+y, Color.WHITE.rgb)
+                }
+            }
+        }
+        textureDirty = true
+    }
+
+    fun expand() {
+        width = ceil(width*1.5).toInt()
+        height = ceil(height*1.5).toInt()
+        packer.expand(width, height)
+        val newImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+        newImage.createGraphics().drawImage(image, 0, 0, null)
+        image = newImage
+        textureDirty = true
+    }
+
+    @SubscribeEvent
+    fun renderTickEnd(e: TickEvent.RenderTickEvent) {
+        if(e.phase != TickEvent.Phase.END) return
+        if(!textureDirty) return
+        textureDirty = false
+
+        TextureUtil.uploadTextureImage(texID, image)
+    }
+
+    companion object {
+        private val map = mutableMapOf<Bitfont, BitfontAtlas>()
+        operator fun get(font: Bitfont): BitfontAtlas {
+            return map.getOrPut(font) { BitfontAtlas(font) }
+        }
+    }
+}

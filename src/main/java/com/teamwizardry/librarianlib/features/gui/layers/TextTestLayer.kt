@@ -1,37 +1,45 @@
 package com.teamwizardry.librarianlib.features.gui.layers
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
-import com.teamwizardry.librarianlib.features.gui.value.IMValue
+import com.teamwizardry.librarianlib.features.helpers.pos
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.Minecraft
-import com.teamwizardry.librarianlib.features.math.Align2d
-import com.teamwizardry.librarianlib.features.text.Font
-import com.teamwizardry.librarianlib.features.text.TextLayout
-import com.teamwizardry.librarianlib.features.text.TextRun
-import com.teamwizardry.librarianlib.features.text.Typesetter
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.FontRenderer
-import java.awt.Color
+import com.teamwizardry.librarianlib.features.kotlin.color
+import com.teamwizardry.librarianlib.features.kotlin.pos
+import com.teamwizardry.librarianlib.features.text.BitfontAtlas
+import com.teamwizardry.librarianlib.features.text.Fonts
+import games.thecodewarrior.bitfont.data.Bitfont
+import games.thecodewarrior.bitfont.typesetting.Attribute
+import games.thecodewarrior.bitfont.typesetting.AttributedString
+import games.thecodewarrior.bitfont.typesetting.TypesetString
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11
+import java.awt.Color
 
 class TextTestLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, posY, width, height) {
-    private var runs = listOf<TextRun>()
-    var text: String = ""
+    var text: AttributedString = AttributedString("")
         set(value) {
             field = value
-            val runs = mutableListOf<TextRun>()
-            var remaining = text
-            while(true) {
-                val (rem, run) = Typesetter.createRun(Font.tinyMono, remaining, size.xi)
-                if(remaining == rem) break
-                remaining = rem
-                runs.add(run)
-            }
-            this.runs = runs
+            typesetString = TypesetString(Fonts.MCClassic, value, wrap)
         }
+    var wrap: Int = -1
+        set(value) {
+            field = value
+            typesetString = TypesetString(Fonts.MCClassic, text, value)
+        }
+    var typesetString = TypesetString(Fonts.MCClassic, AttributedString(""))
+        set(value) {
+            field = value
+            val map = mutableMapOf<Bitfont, MutableList<TypesetString.GlyphRender>>()
+            value.glyphs.forEach {
+                val font = it[Attribute.font] ?: Fonts.MCClassic
+                map.getOrPut(font) { mutableListOf() }.add(it)
+            }
+            batches = map
+        }
+
+    private var batches: Map<Bitfont, List<TypesetString.GlyphRender>> = emptyMap()
 
     override fun draw(partialTicks: Float) {
         GlStateManager.pushMatrix()
@@ -50,15 +58,31 @@ class TextTestLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(pos
         GlStateManager.disableCull()
         GlStateManager.enableTexture2D()
         GlStateManager.enableBlend()
-        Minecraft().renderEngine.bindTexture(Font.tinyMono.texture)
-        val vb = Tessellator.getInstance().buffer
-        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR)
-        var cursor = 0
-        runs.forEach { run ->
-            run.place(vb, Color.BLACK, 0, cursor, 1)
-            cursor += 9
+
+        batches.forEach { font, glyphs ->
+            val atlas = BitfontAtlas[font]
+            atlas.bind()
+            val vb = Tessellator.getInstance().buffer
+            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR)
+            glyphs.forEach {
+                val minX = it.pos.x + it.glyph.bearingX
+                val minY = it.pos.y + it.glyph.bearingY
+                val maxX = minX + it.glyph.image.width
+                val maxY = minY + it.glyph.image.height
+                val tex = atlas.texCoords(it.codepoint)
+                val minU = tex.x
+                val minV = tex.y
+                val maxU = tex.x + tex.width
+                val maxV = tex.y + tex.height
+
+                vb.pos(minX, minY, 0).tex(minU, minV).color(it[Attribute.color] ?: Color.BLACK).endVertex()
+                vb.pos(maxX, minY, 0).tex(maxU, minV).color(it[Attribute.color] ?: Color.BLACK).endVertex()
+                vb.pos(maxX, maxY, 0).tex(maxU, maxV).color(it[Attribute.color] ?: Color.BLACK).endVertex()
+                vb.pos(minX, maxY, 0).tex(minU, maxV).color(it[Attribute.color] ?: Color.BLACK).endVertex()
+            }
+            Tessellator.getInstance().draw()
         }
-        Tessellator.getInstance().draw()
+
         GlStateManager.enableCull()
 
         GlStateManager.popMatrix()

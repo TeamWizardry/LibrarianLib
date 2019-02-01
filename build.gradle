@@ -39,6 +39,9 @@ archivesBaseName = mod_name + branchSuffix + '-' + mc_version
 
 repositories {
     jcenter()
+    flatDir {
+        dirs 'libs'
+    }
     maven {
         url "http://maven.bluexin.be/repository/snapshots/"
     }
@@ -97,7 +100,14 @@ configurations {
 dependencies {
     compile "net.shadowfacts:Forgelin:1.8.0"
     required "org.magicwerk:brownies-collections:0.9.13"
+    required "com.ibm.icu:icu4j:63.1"
+    required "org.msgpack:msgpack-core:0.8.16"
+    required name: "bitfontcore-1.0"
+
     compile "org.magicwerk:brownies-collections:0.9.13" // Otherwise it doesn't get added to dep list
+    compile "com.ibm.icu:icu4j:63.1"
+    compile "org.msgpack:msgpack-core:0.8.16"
+    compile name: "bitfontcore-1.0"
 }
 
 compileKotlin {
