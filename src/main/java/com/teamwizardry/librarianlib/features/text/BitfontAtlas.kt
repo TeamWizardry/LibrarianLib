@@ -3,10 +3,13 @@ package com.teamwizardry.librarianlib.features.text
 import com.ibm.icu.lang.UCharacter
 import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.math.Rect2d
+import games.thecodewarrior.bitfont.data.BitGrid
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.data.Glyph
 import games.thecodewarrior.bitfont.utils.RectanglePacker
+import it.unimi.dsi.fastutil.ints.Int2ObjectAVLTreeMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraftforge.common.MinecraftForge
@@ -15,9 +18,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.awt.image.IndexColorModel
+import java.util.TreeMap
 import kotlin.math.ceil
-
-
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.random.Random
 
 class BitfontAtlas private constructor(val font: Bitfont) {
     var width: Int = 128
@@ -31,10 +36,12 @@ class BitfontAtlas private constructor(val font: Bitfont) {
     private var packer = RectanglePacker<Int>(width, height, 0)
     private val rects = Int2ObjectOpenHashMap<RectanglePacker.Rectangle>()
     private var defaultRect = packer.insert(font.defaultGlyph.image.width, font.defaultGlyph.image.height, -1)!!
+    private val advanceMap = TreeMap<Int, MutableList<Int>>()
 
     init {
         MinecraftForge.EVENT_BUS.register(this)
         draw(font.defaultGlyph, defaultRect.x, defaultRect.y)
+        load(' '..'~')
     }
 
     fun bind() {
@@ -54,6 +61,21 @@ class BitfontAtlas private constructor(val font: Bitfont) {
         return rect(rect.x/width, rect.y/height, rect.width/width, rect.height/height)
     }
 
+    fun obfTransform(codepoint: Int): Int {
+        val advance = font.glyphs[codepoint].calcAdvance(font.spacing)
+        return advanceMap.floorEntry(advance)?.value?.random() ?: codepoint
+    }
+
+    fun load(ints: IntRange) {
+        ints.forEach(::insert)
+    }
+    fun load(chars: ClosedRange<Char>) {
+        (chars.start.toInt() .. chars.endInclusive.toInt()).forEach(::insert)
+    }
+    fun load(string: String) {
+        string.codePoints().forEach(::insert)
+    }
+
     fun insert(codepoint: Int) {
         val glyph = font.glyphs[codepoint] ?: return
         var newRect: RectanglePacker.Rectangle? = packer.insert(glyph.image.width, glyph.image.height, codepoint)
@@ -63,6 +85,7 @@ class BitfontAtlas private constructor(val font: Bitfont) {
         }
         rects[codepoint] = newRect!!
         draw(glyph, newRect.x, newRect.y)
+        advanceMap.getOrPut(glyph.calcAdvance(font.spacing)) { mutableListOf() }.add(codepoint)
     }
 
     fun draw(glyph: Glyph, xOrigin: Int, yOrigin: Int) {

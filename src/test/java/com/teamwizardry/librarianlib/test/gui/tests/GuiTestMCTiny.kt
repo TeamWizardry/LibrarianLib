@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.features.gui.layers.TextTestLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Align2d
 import com.teamwizardry.librarianlib.features.text.Fonts
+import com.teamwizardry.librarianlib.features.text.fromMC
 import games.thecodewarrior.bitfont.typesetting.Attribute
 import games.thecodewarrior.bitfont.typesetting.AttributedString
 import java.awt.Color
@@ -24,25 +25,22 @@ class GuiTestMCTiny : GuiBase() {
         main.add(background)
 
         val textLayer = TextTestLayer(10, 10, 380, 380)
-        val str = AttributedString("""
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ornare purus ut rhoncus porttitor. \
-Phasellus vitae risus ac est suscipit condimentum et a sem. Proin tortor sapien, consectetur in volutpat ac, imperdiet a sapien. \
-営意都携学成朝俊権発画丘飛品委億輸面際。青追原高文載付万時玉生描院。会表社際覧以競整暴面態説時名。済供誌浩全戦二楽充戦投強部。態相更異過電転都声田皮一治止金圧周手介。 試携生旬必行創栄自提斉載更著。亡別色洋条丈顔入各記校琴文次。始害観碁紙話末日片交王定飾手。正害東現資必影丈掲手主光静本比大亨治。索前前存日風育学戦詳診月。 \
-Лорем ипсум долор сит амет, нам ан антиопам ехпетенда репрехендунт, ет солум убияуе перципит еум. Цонституам детерруиссет ат сед, цу дебет утинам сит. Аццусам аццусата нам ех, еу еам фалли чоро фиерент. Ид сит модус яуаеяуе саперет. Яуо пробо ипсум перпетуа ан. \
-Λορεμ ιπσθμ δολορ σιτ αμετ, ει vιδε cηορο δελεcτθσ εθμ. Θτ μθνδι ερρεμ vενιαμ ναμ, ιδ vιξ δελενιτ θλλαμcορπερ, απειριαν ταcιματεσ θτ εστ. \
-Νεc τε νοστρο οφφενδιτ σθαvιτατε. Αδ λιβρισ εξπετενδισ μει. Ατ σcριπσεριτ cοτιδιεqθε cοντεντιονεσ εοσ, ει ηισ cονσθλ θταμθρ. \
-Αφφερτ φαcιλισισ εστ ιν. Αθτεμ ερρορ μεα ιν. Ιθσ ποσσιτ αδιπισcι ρεcτεqθε αν, νε νιβη νομινατι cοντεντιονεσ περ. Αδ δθο δισcερε δολορεμ cομμθνε. \
-Ινανι cομμοδο πηαεδρθμ ιθσ αδ. Νε μει δελιcατα τορqθατοσ. Εξ μεα qθισ ελιτ νομιναvι. Ταλε vερι μθcιθσ εοσ ιν, ιν ιθστο διcιτ cομπρεηενσαμ εαμ.
-        """.trimIndent().replace("\\\n", ""))
-        str.setAttributesForRange(0 until str.string.length, mapOf(
-            Attribute.font to Fonts.Unifont
-        ))
-        val regex = """legib\w+""".toRegex()
-        regex.findAll(str.string).forEach { match ->
-            str.setAttributesForRange(match.range, mapOf(
-                Attribute.color to Color.RED
-            ))
-        }
+        textLayer.scale = 3.0
+        val str = AttributedString.fromMC("""
+§nMinecraft Formatting
+
+§r§00 §11 §22 §33
+§44 §55 §66 §77
+§88 §99 §aa §bb
+§cc §dd §ee §ff
+
+§r§0k §kMinecraft
+§rl §lMinecraft
+§rm §mMinecraft
+§rn §nMinecraft
+§ro §oMinecraft
+§rr §rMinecraft
+        """.trimIndent())
         textLayer.text = str
         textLayer.wrap = 380
         /*

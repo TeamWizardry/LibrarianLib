@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.features.kotlin.color
 import com.teamwizardry.librarianlib.features.kotlin.pos
 import com.teamwizardry.librarianlib.features.text.BitfontAtlas
 import com.teamwizardry.librarianlib.features.text.Fonts
+import com.teamwizardry.librarianlib.features.text.obfuscated
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.typesetting.Attribute
 import games.thecodewarrior.bitfont.typesetting.AttributedString
@@ -16,6 +17,7 @@ import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import kotlin.random.Random
 
 class TextTestLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, posY, width, height) {
     var text: AttributedString = AttributedString("")
@@ -65,11 +67,15 @@ class TextTestLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(pos
             val vb = Tessellator.getInstance().buffer
             vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR)
             glyphs.forEach {
-                val minX = it.pos.x + it.glyph.bearingX
-                val minY = it.pos.y + it.glyph.bearingY
-                val maxX = minX + it.glyph.image.width
-                val maxY = minY + it.glyph.image.height
-                val tex = atlas.texCoords(it.codepoint)
+                val obf = it[Attribute.obfuscated] == true
+                val codepoint = if(obf) atlas.obfTransform(it.codepoint) else it.codepoint
+                val glyph = if(obf) font.glyphs[codepoint] else it.glyph
+
+                val minX = it.pos.x + glyph.bearingX
+                val minY = it.pos.y + glyph.bearingY
+                val maxX = minX + glyph.image.width
+                val maxY = minY + glyph.image.height
+                val tex = atlas.texCoords(codepoint)
                 val minU = tex.x
                 val minV = tex.y
                 val maxU = tex.x + tex.width
