@@ -1,33 +1,16 @@
 package com.teamwizardry.librarianlib.features.text
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
-import com.teamwizardry.librarianlib.features.helpers.pos
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
-import com.teamwizardry.librarianlib.features.kotlin.color
-import com.teamwizardry.librarianlib.features.kotlin.pos
 import com.teamwizardry.librarianlib.features.kotlin.toRl
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import games.thecodewarrior.bitfont.data.Bitfont
-import it.unimi.dsi.fastutil.chars.Char2ObjectMap
-import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap
-import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.BufferBuilder
-import net.minecraft.client.renderer.vertex.VertexBuffer
-import net.minecraft.client.resources.IResourceManagerReloadListener
 import net.minecraft.util.ResourceLocation
-import org.msgpack.core.MessagePackException
-import java.awt.Color
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileNotFoundException
-import java.lang.ref.WeakReference
-import java.nio.ByteBuffer
-import kotlin.math.ceil
-import kotlin.math.sqrt
 
 object Fonts {
     lateinit var MCClassic: Bitfont
     lateinit var MCBitfont: Bitfont
+    lateinit var Unifont: Bitfont
 
     init {
         LibrarianLib.PROXY.addReloadHandler(ClientRunnable {
@@ -38,8 +21,9 @@ object Fonts {
     }
 
     fun reload() {
-        MCClassic = load("librarianlib:font/MCClassic.bitfont".toRl())
-        MCBitfont = load("librarianlib:font/MCBitfont.bitfont".toRl())
+        MCClassic = load("librarianlib:font/mcclassic.bitfont".toRl())
+        MCBitfont = load("librarianlib:font/mcbitfont.bitfont".toRl())
+        Unifont = load("librarianlib:font/unifont.bitfont".toRl())
     }
 
     fun load(fontLocation: ResourceLocation): Bitfont {

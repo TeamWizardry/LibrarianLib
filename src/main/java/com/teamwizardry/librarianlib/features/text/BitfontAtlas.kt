@@ -43,9 +43,7 @@ class BitfontAtlas private constructor(val font: Bitfont) {
 
     fun texCoords(codepoint: Int): Rect2d {
         if(codepoint !in rects) {
-            UnicodeBlock[codepoint]?.also {
-                it.range.forEach(::insert)
-            }
+            insert(codepoint)
             if(codepoint !in rects) {
                 rects[codepoint] = defaultRect
             }
