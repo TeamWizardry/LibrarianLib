@@ -10,6 +10,7 @@ import net.minecraft.util.ResourceLocation
 object Fonts {
     lateinit var MCClassic: Bitfont
     lateinit var MCBitfont: Bitfont
+    lateinit var MCBitfontBold: Bitfont
     lateinit var Unifont: Bitfont
 
     init {
@@ -21,8 +22,9 @@ object Fonts {
     }
 
     fun reload() {
-        MCClassic = load("librarianlib:font/mcclassic.bitfont".toRl())
+        MCClassic = load("librarianlib:font/mcclassicplus.bitfont".toRl())
         MCBitfont = load("librarianlib:font/mcbitfont.bitfont".toRl())
+        MCBitfontBold = load("librarianlib:font/mcbitfontbold.bitfont".toRl())
         Unifont = load("librarianlib:font/unifont.bitfont".toRl())
     }
 

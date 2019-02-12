@@ -36,16 +36,24 @@ class BitfontAtlas private constructor(val font: Bitfont) {
     private var packer = RectanglePacker<Int>(width, height, 0)
     private val rects = Int2ObjectOpenHashMap<RectanglePacker.Rectangle>()
     private var defaultRect = packer.insert(font.defaultGlyph.image.width, font.defaultGlyph.image.height, -1)!!
+    private var solidRect = packer.insert(1, 1, -1)!!
     private val advanceMap = TreeMap<Int, MutableList<Int>>()
 
     init {
         MinecraftForge.EVENT_BUS.register(this)
         draw(font.defaultGlyph, defaultRect.x, defaultRect.y)
+        draw(Glyph().also { it.image[0, 0] = true }, solidRect.x, solidRect.y)
         load(' '..'~')
     }
 
     fun bind() {
         GlStateManager.bindTexture(texID)
+    }
+
+    fun solidTex(): Rect2d {
+        val width = width.toDouble()
+        val height = height.toDouble()
+        return rect(solidRect.x/width, solidRect.y/height, solidRect.width/width, solidRect.height/height)
     }
 
     fun texCoords(codepoint: Int): Rect2d {
@@ -85,7 +93,8 @@ class BitfontAtlas private constructor(val font: Bitfont) {
         }
         rects[codepoint] = newRect!!
         draw(glyph, newRect.x, newRect.y)
-        advanceMap.getOrPut(glyph.calcAdvance(font.spacing)) { mutableListOf() }.add(codepoint)
+        if(!glyph.image.isEmpty())
+            advanceMap.getOrPut(glyph.calcAdvance(font.spacing)) { mutableListOf() }.add(codepoint)
     }
 
     fun draw(glyph: Glyph, xOrigin: Int, yOrigin: Int) {

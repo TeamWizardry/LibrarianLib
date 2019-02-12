@@ -1,8 +1,10 @@
 @file:JvmName("AttributedStringUtils")
 package com.teamwizardry.librarianlib.features.text
 
-import games.thecodewarrior.bitfont.typesetting.Attribute
 import games.thecodewarrior.bitfont.typesetting.AttributedString
+import games.thecodewarrior.bitfont.typesetting.color
+import games.thecodewarrior.bitfont.typesetting.font
+import games.thecodewarrior.bitfont.utils.Attribute
 import java.awt.Color
 
 private fun String.splitWithDelimiters(regex: String) = this.split("((?<=$regex)|(?=$regex))".toRegex())
@@ -76,6 +78,16 @@ fun attributedStringFromMC(mcString: String): AttributedString {
             Attribute.obfuscated to it
         )
     }
+    val underline = Formatting<Color>(attributed, { i }) {
+        mapOf(
+            Attribute.underline to it
+        )
+    }
+    val bold = Formatting<Boolean>(attributed, { i }) {
+        mapOf(
+            Attribute.font to Fonts.MCBitfontBold
+        )
+    }
 
     split.forEach { element ->
         if(element.startsWith("§") && element.length == 2) {
@@ -85,8 +97,12 @@ fun attributedStringFromMC(mcString: String): AttributedString {
                 'r' -> {
                     color.value = null
                     obfuscated.value = null
+                    underline.value = null
+                    bold.value = null
                 }
                 'k' -> obfuscated.value = true
+                'n' -> underline.value = Color(0, 0, 0, 0)
+                'l' -> bold.value = true
                 in colors -> {
                     val newColor = colors[code]!!
                     color.value = newColor
@@ -98,8 +114,10 @@ fun attributedStringFromMC(mcString: String): AttributedString {
         }
     }
 
-    obfuscated.end()
     color.end()
+    obfuscated.end()
+    underline.end()
+    bold.end()
 
     return attributed
 }

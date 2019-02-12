@@ -10,7 +10,6 @@ import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Align2d
 import com.teamwizardry.librarianlib.features.text.Fonts
 import com.teamwizardry.librarianlib.features.text.fromMC
-import games.thecodewarrior.bitfont.typesetting.Attribute
 import games.thecodewarrior.bitfont.typesetting.AttributedString
 import java.awt.Color
 
@@ -25,8 +24,7 @@ class GuiTestMCTiny : GuiBase() {
         main.add(background)
 
         val textLayer = TextTestLayer(10, 10, 380, 380)
-        textLayer.scale = 3.0
-        val str = AttributedString.fromMC("""
+        val str = AttributedString("""
 §nMinecraft Formatting
 
 §r§00 §11 §22 §33
@@ -40,6 +38,12 @@ class GuiTestMCTiny : GuiBase() {
 §rn §nMinecraft
 §ro §oMinecraft
 §rr §rMinecraft
+
+
+
+
+Z̖̓͌͌̏̈̔A̼͈͔ͦ̌̂̇ͦ͑͠L̾ͬ͒̔Gͥ̾͂ͭO̡̮̹̮͉̽͗ ͉͇̱͕ͥ̐ͅĤ̷̖͖̬͍̰̙ͨ͑̋E̡̩̝̅ͥͬ̎̀ ͉̹͈̩͕́ͦC̭̙̩̤̻͑́O̫̪͎̿͂͑͒̓M̻̳̤͋͠E̟̾̕S͇̩̣ͤ̑ͧ͛
+
         """.trimIndent())
         textLayer.text = str
         textLayer.wrap = 380

@@ -1,6 +1,14 @@
 package com.teamwizardry.librarianlib.features.text
 
-import games.thecodewarrior.bitfont.typesetting.Attribute
+import games.thecodewarrior.bitfont.utils.Attribute
+import java.awt.Color
 
-private val attrObfuscated = Attribute.get<Boolean>("obfuscated")
-val Attribute.Companion.obfuscated: Attribute<Boolean> get() = attrObfuscated
+private val obfuscatedAttr = Attribute.get<Boolean>("obfuscated")
+val Attribute.Companion.obfuscated: Attribute<Boolean> get() = obfuscatedAttr
+
+private val boldAttr = Attribute.get<Boolean>("bold")
+val Attribute.Companion.bold: Attribute<Boolean> get() = boldAttr
+
+
+private val underlineAttr = Attribute.get<Color>("underline")
+val Attribute.Companion.underline: Attribute<Color> get() = underlineAttr
