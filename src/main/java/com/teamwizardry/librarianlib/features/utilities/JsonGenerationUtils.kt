@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.utilities
 
 import com.google.gson.JsonObject
+import com.teamwizardry.librarianlib.features.base.ICustomTexturePath
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper.toSnakeCase
 import com.teamwizardry.librarianlib.features.helpers.currentModId
 import com.teamwizardry.librarianlib.features.kotlin.JsonDsl
@@ -73,10 +74,11 @@ fun generateBaseItemModel(item: FileDsl<Item>, variantName: String? = null, pare
 
 fun generateRegularItemModel(item: FileDsl<Item>, variantName: String? = null, parent: String = "item/generated"): JsonObject {
     val varname = variantName ?: item.key.path
+    val path = (item.value as? ICustomTexturePath)?.texturePath(varname) ?: "items/$varname"
     return jsonObject {
         "parent"(parent)
         "textures" {
-            "layer0"("${item.key.namespace}:items/$varname")
+            "layer0"("${item.key.namespace}:$path")
         }
     }
 }
@@ -86,10 +88,11 @@ fun generateBaseBlockModel(block: FileDsl<Block>): JsonObject {
 }
 
 fun generateBaseBlockModel(block: FileDsl<Block>, variant: String): JsonObject {
+    val path = (block.value as? ICustomTexturePath)?.texturePath(variant) ?: "blocks/$variant"
     return jsonObject {
         "parent"("block/cube_all")
         "textures" {
-            "all"("${block.key.namespace}:blocks/$variant")
+            "all"("${block.key.namespace}:$path")
         }
     }
 }

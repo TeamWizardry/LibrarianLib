@@ -38,3 +38,10 @@ interface IModelGenerator : IVariantHolder {
 
     fun generateMissingItem(item: IModItemProvider, variant: String): Boolean = false
 }
+
+/**
+ * Implement this interface to provide a custom default texture path for automatic json model generation.
+ */
+interface ICustomTexturePath {
+    fun texturePath(variant: String): String
+}
