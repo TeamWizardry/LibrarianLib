@@ -38,6 +38,10 @@ open class GuiBase : GuiScreen(), CoroutineScope {
         impl.initGui()
     }
 
+    override fun onGuiClosed() {
+        impl.onClose()
+    }
+
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         super.drawScreen(mouseX, mouseY, partialTicks)
         impl.drawScreen(mouseX, mouseY, partialTicks)
@@ -64,6 +68,10 @@ open class GuiBase : GuiScreen(), CoroutineScope {
     override fun handleMouseInput() {
         super.handleMouseInput()
         impl.handleMouseInput()
+    }
+
+    override fun updateScreen() {
+        impl.update()
     }
 
     fun tick() {

@@ -8,7 +8,18 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 import org.lwjgl.input.Keyboard
 
 interface IComponentGuiEvent {
+
     fun tick()
+
+    fun update()
+
+    /**
+     * Called when a key repeat is triggered in the parent component.
+     *
+     * @param key The actual character that was pressed
+     * @param keyCode The key code, codes listed in [Keyboard]
+     */
+    fun keyRepeat(key: Char, keyCode: Int)
 
     /**
      * Called when a key is pressed in the parent component.
@@ -37,6 +48,29 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
     override fun tick() {
         component.BUS.fire(GuiComponentEvents.ComponentTickEvent())
         component.subComponents.forEach { it.tick() }
+    }
+
+    override fun update() {
+        component.BUS.fire(GuiComponentEvents.ComponentUpdateEvent())
+        component.subComponents.forEach { it.update() }
+    }
+
+    /**
+     * Called when a key repeated is triggered in the parent component.
+     *
+     * @param key The actual character that was pressed
+     * @param keyCode The key code, codes listed in [Keyboard]
+     */
+    override fun keyRepeat(key: Char, keyCode: Int) {
+        if (!component.isVisible) return
+        if (component.BUS.fire(GuiComponentEvents.KeyRepeatEvent(key, keyCode)).isCanceled())
+            return
+
+        keysDown.put(Key[key, keyCode], true)
+
+        component.subComponents.forEach { child ->
+            child.keyRepeat(key, keyCode)
+        }
     }
 
     /**

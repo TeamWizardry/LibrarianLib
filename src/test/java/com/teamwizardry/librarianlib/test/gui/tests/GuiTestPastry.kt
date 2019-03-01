@@ -1,14 +1,18 @@
 package com.teamwizardry.librarianlib.test.gui.tests
 
+import com.teamwizardry.librarianlib.features.animator.Animation
+import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastryButton
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastryCheckbox
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.layers.PastryProgressBar
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastryRadioButtonSet
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastrySwitch
+import com.teamwizardry.librarianlib.features.gui.value.GuiAnimator
 import com.teamwizardry.librarianlib.features.helpers.vec
 
 /**
@@ -19,6 +23,8 @@ class GuiTestPastry : GuiBase() {
         main.size = vec(200, 200)
 
         main.add(PastryBackground(0, 0, 200, 200))
+        val button = PastryButton("Some text here that's too long to fit in the text thing wow", 10, 10, 50, 12)
+        main.add(button)
 
         val progress = PastryProgressBar(10, 35, 75, 5)
         progress.progress_im.animateKeyframes(0.0)

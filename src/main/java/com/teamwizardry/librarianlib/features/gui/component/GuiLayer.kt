@@ -141,7 +141,7 @@ open class GuiLayer private constructor(
 
     //region - Internal
     init {
-        ComponentEventHookAnnotSearcher.search(this)
+        BUS.register(this)
     }
     //endregion
 

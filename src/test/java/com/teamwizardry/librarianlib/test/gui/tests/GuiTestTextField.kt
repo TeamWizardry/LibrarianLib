@@ -3,6 +3,8 @@ package com.teamwizardry.librarianlib.test.gui.tests
 import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.components.ComponentTextField
 import com.teamwizardry.librarianlib.features.gui.layers.ColorLayer
+import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastryTextEditor
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.features.helpers.vec
 import java.awt.Color
@@ -12,20 +14,14 @@ import java.awt.Color
  */
 class GuiTestTextField : GuiBase() {
     init {
-        main.size = vec(100, 100)
+        main.size = vec(150, 150)
 
-        val background = PastryBackground(0, 0, 100, 100)
+        val background = PastryBackground(0, 0, 150, 150)
+        main.add(background)
 
-        val fill = ColorLayer(Color.GREEN, 10, 10, 80, 10)
-        val field = ComponentTextField(10, 10, 80, 10)
-        field.BUS.hook<ComponentTextField.PreTextEditEvent> {
-            try {
-                it.whole.toDouble()
-            } catch (ignored: Exception) {
-                it.cancel()
-            }
-        }
+        main.add(TextLayer(4, 4, "§2Compose message:"))
 
-        main.add(background, fill, field)
+        val field = PastryTextEditor(4, 14, 148, 138)
+        main.add(field)
     }
 }

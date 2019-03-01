@@ -2,7 +2,7 @@
 package com.teamwizardry.librarianlib.features.text
 
 import games.thecodewarrior.bitfont.typesetting.AttributedString
-import games.thecodewarrior.bitfont.typesetting.color
+import games.thecodewarrior.bitfont.typesetting.MutableAttributedString
 import games.thecodewarrior.bitfont.typesetting.font
 import games.thecodewarrior.bitfont.utils.Attribute
 import java.awt.Color
@@ -45,7 +45,7 @@ private val shadowColors = mapOf(
     'f' to Color(0x3f3f3f)
 )
 
-private class Formatting<T: Any>(val attributedString: AttributedString, val i: () -> Int, val mapGen: (T) -> Map<Attribute<*>, Any>) {
+private class Formatting<T: Any>(val attributedString: MutableAttributedString, val i: () -> Int, val mapGen: (T) -> Map<Attribute<*>, Any>) {
     var value: T? = null
         set(value) {
             end()
@@ -58,13 +58,13 @@ private class Formatting<T: Any>(val attributedString: AttributedString, val i: 
     private var start = 0
 
     fun end() {
-        value?.also { attributedString.setAttributesForRange(start until i(), mapGen(it)) }
+        value?.also { attributedString.setAttributes(start, i(), mapGen(it)) }
     }
 }
 
 fun attributedStringFromMC(mcString: String): AttributedString {
     val split = mcString.splitWithDelimiters("§.")
-    val attributed = AttributedString(mcString.replace("§[^§]".toRegex(), "").replace("§§", "§"))
+    val attributed = MutableAttributedString(mcString.replace("§[^§]".toRegex(), "").replace("§§", "§"))
 
     var i = 0
 
@@ -85,7 +85,7 @@ fun attributedStringFromMC(mcString: String): AttributedString {
     }
     val bold = Formatting<Boolean>(attributed, { i }) {
         mapOf(
-            Attribute.font to Fonts.MCBitfontBold
+//            Attribute.font to Fonts.MCBitfontBold
         )
     }
 
@@ -104,10 +104,8 @@ fun attributedStringFromMC(mcString: String): AttributedString {
                 'n' -> underline.value = Color(0, 0, 0, 0)
                 'l' -> bold.value = true
                 in colors -> {
-                    val newColor = colors[code]!!
-                    color.value = newColor
+                    color.value = colors[code]
                 }
-
             }
         } else {
             i += element.length

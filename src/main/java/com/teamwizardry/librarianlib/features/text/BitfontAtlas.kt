@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.awt.image.IndexColorModel
@@ -24,26 +25,21 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
 
-class BitfontAtlas private constructor(val font: Bitfont) {
+class BitfontAtlas private constructor() {
     var width: Int = 128
         private set
     var height: Int = 128
         private set
-    private var image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+    private var texture = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
     private var textureDirty = true
     private val texID = TextureUtil.glGenTextures()
 
-    private var packer = RectanglePacker<Int>(width, height, 0)
-    private val rects = Int2ObjectOpenHashMap<RectanglePacker.Rectangle>()
-    private var defaultRect = packer.insert(font.defaultGlyph.image.width, font.defaultGlyph.image.height, -1)!!
-    private var solidRect = packer.insert(1, 1, -1)!!
-    private val advanceMap = TreeMap<Int, MutableList<Int>>()
+    private var packer = RectanglePacker<BitGrid>(width, height, 0)
+    private val rects = mutableMapOf<BitGrid, RectanglePacker.Rectangle>()
+    private var solidRect = packer.insert(1, 1, BitGrid(1, 2).also { it[0, 0] = true })!!
 
     init {
         MinecraftForge.EVENT_BUS.register(this)
-        draw(font.defaultGlyph, defaultRect.x, defaultRect.y)
-        draw(Glyph().also { it.image[0, 0] = true }, solidRect.x, solidRect.y)
-        load(' '..'~')
     }
 
     fun bind() {
@@ -56,52 +52,36 @@ class BitfontAtlas private constructor(val font: Bitfont) {
         return rect(solidRect.x/width, solidRect.y/height, solidRect.width/width, solidRect.height/height)
     }
 
-    fun texCoords(codepoint: Int): Rect2d {
-        if(codepoint !in rects) {
-            insert(codepoint)
-            if(codepoint !in rects) {
-                rects[codepoint] = defaultRect
-            }
+    fun rectFor(image: BitGrid): Rect2d? {
+        var rect = rects[image]
+        if(rect == null) {
+            insert(image)
+            rect = rects[image] ?: return null
         }
-        val rect = rects[codepoint] ?: return rect(0, 0, 0, 0)
         val width = width.toDouble()
         val height = height.toDouble()
         return rect(rect.x/width, rect.y/height, rect.width/width, rect.height/height)
     }
 
-    fun obfTransform(codepoint: Int): Int {
-        val advance = font.glyphs[codepoint].calcAdvance(font.spacing)
-        return advanceMap.floorEntry(advance)?.value?.random() ?: codepoint
+    fun load(images: List<BitGrid>) {
+        images.forEach(::insert)
     }
 
-    fun load(ints: IntRange) {
-        ints.forEach(::insert)
-    }
-    fun load(chars: ClosedRange<Char>) {
-        (chars.start.toInt() .. chars.endInclusive.toInt()).forEach(::insert)
-    }
-    fun load(string: String) {
-        string.codePoints().forEach(::insert)
-    }
-
-    fun insert(codepoint: Int) {
-        val glyph = font.glyphs[codepoint] ?: return
-        var newRect: RectanglePacker.Rectangle? = packer.insert(glyph.image.width, glyph.image.height, codepoint)
+    fun insert(image: BitGrid) {
+        var newRect: RectanglePacker.Rectangle? = packer.insert(image.width, image.height, image)
         if(newRect == null) {
             expand()
-            newRect = packer.insert(glyph.image.width, glyph.image.height, codepoint)
+            newRect = packer.insert(image.width, image.height, image) ?: return
         }
-        rects[codepoint] = newRect!!
-        draw(glyph, newRect.x, newRect.y)
-        if(!glyph.image.isEmpty())
-            advanceMap.getOrPut(glyph.calcAdvance(font.spacing)) { mutableListOf() }.add(codepoint)
+        rects[image] = newRect
+        draw(image, newRect.x, newRect.y)
     }
 
-    fun draw(glyph: Glyph, xOrigin: Int, yOrigin: Int) {
-        for(x in 0 until glyph.image.width) {
-            for(y in 0 until glyph.image.height) {
-                if(glyph.image[x, y]) {
-                    image.setRGB(xOrigin+x, yOrigin+y, Color.WHITE.rgb)
+    fun draw(image: BitGrid, xOrigin: Int, yOrigin: Int) {
+        for(x in 0 until image.width) {
+            for(y in 0 until image.height) {
+                if(image[x, y]) {
+                    texture.setRGB(xOrigin+x, yOrigin+y, Color.WHITE.rgb)
                 }
             }
         }
@@ -109,12 +89,13 @@ class BitfontAtlas private constructor(val font: Bitfont) {
     }
 
     fun expand() {
-        width = ceil(width*1.5).toInt()
-        height = ceil(height*1.5).toInt()
+        if(width == gpuMaxTexSize && height == gpuMaxTexSize) return
+        width = min(ceil(width*1.5).toInt(), gpuMaxTexSize)
+        height = min(ceil(height*1.5).toInt(), gpuMaxTexSize)
         packer.expand(width, height)
         val newImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-        newImage.createGraphics().drawImage(image, 0, 0, null)
-        image = newImage
+        newImage.createGraphics().drawImage(texture, 0, 0, null)
+        texture = newImage
         textureDirty = true
     }
 
@@ -124,13 +105,21 @@ class BitfontAtlas private constructor(val font: Bitfont) {
         if(!textureDirty) return
         textureDirty = false
 
-        TextureUtil.uploadTextureImage(texID, image)
+        TextureUtil.uploadTextureImage(texID, texture)
     }
 
     companion object {
-        private val map = mutableMapOf<Bitfont, BitfontAtlas>()
-        operator fun get(font: Bitfont): BitfontAtlas {
-            return map.getOrPut(font) { BitfontAtlas(font) }
+        val gpuMaxTexSize = GL11.glGetInteger(GL11.GL_MAX_TEXTURE_SIZE)
+
+        private val atlases = mutableListOf(BitfontAtlas())
+        operator fun get(image: BitGrid): Pair<BitfontAtlas, Rect2d> {
+            for(i in 0 .. atlases.size) {
+                if(i == atlases.size)
+                    atlases.add(BitfontAtlas())
+                val rect = atlases[i].rectFor(image) ?: continue
+                return atlases[i] to rect
+            }
+            return atlases[0] to atlases[0].solidTex()
         }
     }
 }

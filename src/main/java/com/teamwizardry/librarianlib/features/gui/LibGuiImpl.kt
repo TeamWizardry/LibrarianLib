@@ -70,6 +70,7 @@ open class LibGuiImpl(protected val guiWidth: () -> Int, protected val guiHeight
         root.size_rm.set(resolution) //
         background.size = resolution
         main.setNeedsLayout()
+        Keyboard.enableRepeatEvents(true)
     }
 
     fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -84,11 +85,11 @@ open class LibGuiImpl(protected val guiWidth: () -> Int, protected val guiHeight
 
     @Throws(IOException::class)
     fun mouseClicked(button: Int) {
-            root.mouseDown(EnumMouseButton.getFromCode(button))
+        root.mouseDown(EnumMouseButton.getFromCode(button))
     }
 
     fun mouseReleased(button: Int) {
-            root.mouseUp(EnumMouseButton.getFromCode(button))
+        root.mouseUp(EnumMouseButton.getFromCode(button))
     }
 
     @Throws(IOException::class)
@@ -102,10 +103,12 @@ open class LibGuiImpl(protected val guiWidth: () -> Int, protected val guiHeight
             }
         }
 
-        if (Keyboard.getEventKeyState()) {
-                root.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
+        if(Keyboard.isRepeatEvent()) {
+            root.keyRepeat(Keyboard.getEventCharacter(), Keyboard.getEventKey())
+        } else if (Keyboard.getEventKeyState()) {
+            root.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey())
         } else {
-                root.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
+            root.keyReleased(Keyboard.getEventCharacter(), Keyboard.getEventKey())
         }
     }
 
@@ -114,11 +117,19 @@ open class LibGuiImpl(protected val guiWidth: () -> Int, protected val guiHeight
         val wheelAmount = Mouse.getEventDWheel()
 
         if (wheelAmount != 0) {
-                root.mouseWheel(GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
+            root.mouseWheel(GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
         }
+    }
+
+    fun update() {
+        root.update()
     }
 
     fun tick() {
         root.tick()
+    }
+
+    fun onClose() {
+        Keyboard.enableRepeatEvents(false)
     }
 }

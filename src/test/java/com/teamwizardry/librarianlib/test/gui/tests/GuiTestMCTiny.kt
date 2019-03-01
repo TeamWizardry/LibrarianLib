@@ -1,14 +1,10 @@
 package com.teamwizardry.librarianlib.test.gui.tests
 
 import com.teamwizardry.librarianlib.features.gui.GuiBase
-import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
-import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
 import com.teamwizardry.librarianlib.features.gui.layers.ColorLayer
 import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
-import com.teamwizardry.librarianlib.features.gui.layers.TextTestLayer
+import com.teamwizardry.librarianlib.features.gui.layers.TextLayerMC
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.math.Align2d
-import com.teamwizardry.librarianlib.features.text.Fonts
 import com.teamwizardry.librarianlib.features.text.fromMC
 import games.thecodewarrior.bitfont.typesetting.AttributedString
 import java.awt.Color
@@ -18,13 +14,14 @@ import java.awt.Color
  */
 class GuiTestMCTiny : GuiBase() {
     init {
-        main.size = vec(400, 400)
+        main.size = vec(600, 400)
 
-        val background = ColorLayer(Color.WHITE, 0, 0, 400, 400)
+        val background = ColorLayer(Color.WHITE, 0, 0, 600, 400)
         main.add(background)
 
-        val textLayer = TextTestLayer(10, 10, 380, 380)
-        val str = AttributedString("""
+        val textLayer = TextLayer(10, 10, 580, 380)
+//        val str = AttributedString(Fonts.MCClassic.glyphs.keys.sorted().joinToString(" ") { String(Character.toChars(it)) })
+        textLayer.text = """
 §nMinecraft Formatting
 
 §r§00 §11 §22 §33
@@ -44,9 +41,7 @@ class GuiTestMCTiny : GuiBase() {
 
 Z̖̓͌͌̏̈̔A̼͈͔ͦ̌̂̇ͦ͑͠L̾ͬ͒̔Gͥ̾͂ͭO̡̮̹̮͉̽͗ ͉͇̱͕ͥ̐ͅĤ̷̖͖̬͍̰̙ͨ͑̋E̡̩̝̅ͥͬ̎̀ ͉̹͈̩͕́ͦC̭̙̩̤̻͑́O̫̪͎̿͂͑͒̓M̻̳̤͋͠E̟̾̕S͇̩̣ͤ̑ͧ͛
 
-        """.trimIndent())
-        textLayer.text = str
-        textLayer.wrap = 380
+        """.trimIndent()
         /*
 ┍━━━━━━━━━━━━┑
 │ monospace! │
@@ -77,7 +72,7 @@ Z̖̓͌͌̏̈̔A̼͈͔ͦ̌̂̇ͦ͑͠L̾ͬ͒̔Gͥ̾͂ͭO̡̮̹̮͉̽͗ ͉͇̱͕ͥ
          */
         main.add(textLayer)
 
-        val uniTextLayer = TextLayer(310, 10, 280, 580)
+        val uniTextLayer = TextLayerMC(310, 10, 280, 580)
         uniTextLayer.unicode = true
         uniTextLayer.text = """
 So what makes a typeface legible? A long-standing typographic maxim is that the most legible typefaces are \

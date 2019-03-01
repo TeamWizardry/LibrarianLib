@@ -9,6 +9,9 @@ object GuiComponentEvents {
     /** Fired each tick while the component is a part of a screen */
     class ComponentTickEvent : Event()
 
+    /** Fired each frame after input has been processed and before the GUI renders */
+    class ComponentUpdateEvent : Event()
+
     /** Called when the mouse position is being calculated to allow event handlers to modify it */
     class CalculateMousePositionEvent(var mousePos: Vec2d): Event()
 
@@ -65,6 +68,9 @@ object GuiComponentEvents {
 
     /** Fired when a key is released */
     class KeyUpEvent(val key: Char, val keyCode: Int) : EventCancelable()
+
+    /** Fired when a key repeat is triggered */
+    class KeyRepeatEvent(val key: Char, val keyCode: Int) : EventCancelable()
 
     /** Fired when the mouse wheel is moved */
     class MouseWheelEvent(val direction: MouseWheelDirection) : EventCancelable()

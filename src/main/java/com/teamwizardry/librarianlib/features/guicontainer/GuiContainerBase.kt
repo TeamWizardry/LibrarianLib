@@ -46,7 +46,13 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
     }
 
     override fun initGui() {
+        super.initGui()
         impl.initGui()
+    }
+
+    override fun onGuiClosed() {
+        super.onGuiClosed()
+        impl.onClose()
     }
 
     override fun drawGuiContainerBackgroundLayer(partialTicks: Float, mouseX: Int, mouseY: Int) {
@@ -90,6 +96,10 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
     override fun handleMouseInput() {
         super.handleMouseInput()
         impl.handleMouseInput()
+    }
+
+    override fun updateScreen() {
+        impl.update()
     }
 
     fun tick() {

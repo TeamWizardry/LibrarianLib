@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.features.gui.provided.pastry.components
 
 import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
+import com.teamwizardry.librarianlib.features.eventbus.Hook
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.gui.component.Hook
 import com.teamwizardry.librarianlib.features.gui.components.FixedSizeComponent
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 

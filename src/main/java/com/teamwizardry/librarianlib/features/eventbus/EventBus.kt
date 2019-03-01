@@ -58,6 +58,10 @@ class EventBus {
         hooks[clazz]?.add(hook as Consumer<Event>)
     }
 
+    fun register(obj: Any) {
+        EventHookAnnotationReflector.apply(this, obj)
+    }
+
     companion object {
         private val classLists = mutableMapOf<Class<*>, List<Class<*>>>()
 
@@ -76,3 +80,4 @@ class EventBus {
         }
     }
 }
+
