@@ -6,16 +6,12 @@ import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Align2d
 import com.teamwizardry.librarianlib.features.math.Rect2d
-import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.text.Fonts
-import com.teamwizardry.librarianlib.features.text.TextLayout
 import com.teamwizardry.librarianlib.features.text.TypesetStringRenderer
 import com.teamwizardry.librarianlib.features.text.fromMC
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.typesetting.AttributedString
 import games.thecodewarrior.bitfont.typesetting.TypesetString
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import java.awt.Color
 import kotlin.math.min
@@ -38,7 +34,7 @@ class TextLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, p
     var text: String by text_im
     var wrap: Boolean = true
     var font: Bitfont = Fonts.MCClassic
-    var align: Align2d = Align2d.LEFT_TOP
+    var align: Align2d = Align2d.TOP_LEFT
     var maxLines: Int = Int.MAX_VALUE
     var lineSpacing: Int = 0
     var truncate: Boolean = false

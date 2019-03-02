@@ -167,18 +167,18 @@ open class PastryWindowBase(width: Int, height: Int): GuiWindow(width, height) {
 
     companion object {
         val ALIGN_CURSORS = mapOf(
-            setOf(Align2d.RIGHT_TOP) to LibCursor.RESIZE_NE,
-            setOf(Align2d.LEFT_TOP) to LibCursor.RESIZE_NW,
-            setOf(Align2d.RIGHT_BOTTOM) to LibCursor.RESIZE_SE,
-            setOf(Align2d.LEFT_BOTTOM) to LibCursor.RESIZE_SW,
-            setOf(Align2d.CENTER_TOP) to LibCursor.RESIZE_N,
-            setOf(Align2d.CENTER_BOTTOM) to LibCursor.RESIZE_S,
-            setOf(Align2d.RIGHT_CENTER) to LibCursor.RESIZE_E,
-            setOf(Align2d.LEFT_CENTER) to LibCursor.RESIZE_W,
-            setOf(Align2d.CENTER_TOP, Align2d.CENTER_BOTTOM ) to LibCursor.RESIZE_NS,
-            setOf(Align2d.RIGHT_CENTER, Align2d.LEFT_CENTER ) to LibCursor.RESIZE_EW,
-            setOf(Align2d.RIGHT_TOP, Align2d.LEFT_BOTTOM ) to LibCursor.RESIZE_NESW,
-            setOf(Align2d.LEFT_TOP, Align2d.RIGHT_BOTTOM ) to LibCursor.RESIZE_NWSE
+            setOf(Align2d.TOP_RIGHT) to LibCursor.RESIZE_NE,
+            setOf(Align2d.TOP_LEFT) to LibCursor.RESIZE_NW,
+            setOf(Align2d.BOTTOM_RIGHT) to LibCursor.RESIZE_SE,
+            setOf(Align2d.BOTTOM_LEFT) to LibCursor.RESIZE_SW,
+            setOf(Align2d.TOP_CENTER) to LibCursor.RESIZE_N,
+            setOf(Align2d.BOTTOM_CENTER) to LibCursor.RESIZE_S,
+            setOf(Align2d.CENTER_RIGHT) to LibCursor.RESIZE_E,
+            setOf(Align2d.CENTER_LEFT) to LibCursor.RESIZE_W,
+            setOf(Align2d.TOP_CENTER, Align2d.BOTTOM_CENTER ) to LibCursor.RESIZE_NS,
+            setOf(Align2d.CENTER_RIGHT, Align2d.CENTER_LEFT ) to LibCursor.RESIZE_EW,
+            setOf(Align2d.TOP_RIGHT, Align2d.BOTTOM_LEFT ) to LibCursor.RESIZE_NESW,
+            setOf(Align2d.TOP_LEFT, Align2d.BOTTOM_RIGHT ) to LibCursor.RESIZE_NWSE
         )
     }
 }

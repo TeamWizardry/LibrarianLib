@@ -6,14 +6,14 @@ package com.teamwizardry.librarianlib.features.math
  */
 enum class Align2d(val x: X, val y: Y) {
     CENTER(X.CENTER, Y.CENTER),
-    CENTER_TOP(X.CENTER, Y.TOP),
-    RIGHT_TOP(X.RIGHT, Y.TOP),
-    RIGHT_CENTER(X.RIGHT, Y.CENTER),
-    RIGHT_BOTTOM(X.RIGHT, Y.BOTTOM),
-    CENTER_BOTTOM(X.CENTER, Y.BOTTOM),
-    LEFT_BOTTOM(X.LEFT, Y.BOTTOM),
-    LEFT_CENTER(X.LEFT, Y.CENTER),
-    LEFT_TOP(X.LEFT, Y.TOP);
+    TOP_CENTER(X.CENTER, Y.TOP),
+    TOP_RIGHT(X.RIGHT, Y.TOP),
+    CENTER_RIGHT(X.RIGHT, Y.CENTER),
+    BOTTOM_RIGHT(X.RIGHT, Y.BOTTOM),
+    BOTTOM_CENTER(X.CENTER, Y.BOTTOM),
+    BOTTOM_LEFT(X.LEFT, Y.BOTTOM),
+    CENTER_LEFT(X.LEFT, Y.CENTER),
+    TOP_LEFT(X.LEFT, Y.TOP);
 
     /**
      * An alignment along the X axis. The positive X axis is assumed to point right.

@@ -22,7 +22,7 @@ class GuiTestAnimationAwait : GuiBase() {
         layer.anchor = vec(0.5, 0.5)
         layer.fitToText = true
         layer.wrap = false
-        layer.align = Align2d.CENTER_TOP
+        layer.align = Align2d.TOP_CENTER
         main.add(layer)
 
         launch {

@@ -46,7 +46,7 @@ class TextLayout {
             if(field != value) changed = true
             field = value
         }
-    var align: Align2d = Align2d.LEFT_TOP
+    var align: Align2d = Align2d.TOP_LEFT
         set(value) {
             if(field != value) changed = true
             field = value

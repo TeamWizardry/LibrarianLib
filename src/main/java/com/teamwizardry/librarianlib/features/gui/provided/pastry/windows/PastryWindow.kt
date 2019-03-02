@@ -103,7 +103,7 @@ open class PastryWindow(width: Int, height: Int, style: Style = Style.DEFAULT, u
         minimizeButton.componentWrapper().cursor = LibCursor.POINT
         maximizeButton.componentWrapper().cursor = LibCursor.POINT
 
-        titleText.align = Align2d.CENTER_TOP
+        titleText.align = Align2d.TOP_CENTER
         addDragHooks(headerClickRegion)
 
         var draggingButton: EnumMouseButton? = null
@@ -231,15 +231,15 @@ open class PastryWindow(width: Int, height: Int, style: Style = Style.DEFAULT, u
         val dTop = pos.y
         val dBottom = size.y - pos.y
 
-        if(dLeft > 0 && dTop > 0 && abs(dLeft) + abs(dTop) <= cornerSize) return Align2d.LEFT_TOP
-        if(dRight > 0 && dTop > 0 && abs(dRight) + abs(dTop) <= cornerSize) return Align2d.RIGHT_TOP
-        if(dLeft > 0 && dBottom > 0 && abs(dLeft) + abs(dBottom) <= cornerSize) return Align2d.LEFT_BOTTOM
-        if(dRight > 0 && dBottom > 0 && abs(dRight) + abs(dBottom) <= cornerSize) return Align2d.RIGHT_BOTTOM
+        if(dLeft > 0 && dTop > 0 && abs(dLeft) + abs(dTop) <= cornerSize) return Align2d.TOP_LEFT
+        if(dRight > 0 && dTop > 0 && abs(dRight) + abs(dTop) <= cornerSize) return Align2d.TOP_RIGHT
+        if(dLeft > 0 && dBottom > 0 && abs(dLeft) + abs(dBottom) <= cornerSize) return Align2d.BOTTOM_LEFT
+        if(dRight > 0 && dBottom > 0 && abs(dRight) + abs(dBottom) <= cornerSize) return Align2d.BOTTOM_RIGHT
 
-        if(dTop > 0 && dBottom > 0 && dLeft in edgeRange) return Align2d.LEFT_CENTER
-        if(dTop > 0 && dBottom > 0 && dRight in edgeRange) return Align2d.RIGHT_CENTER
-        if(dLeft > 0 && dRight > 0 && dTop in edgeRange) return Align2d.CENTER_TOP
-        if(dLeft > 0 && dRight > 0 && dBottom in edgeRange) return Align2d.CENTER_BOTTOM
+        if(dTop > 0 && dBottom > 0 && dLeft in edgeRange) return Align2d.CENTER_LEFT
+        if(dTop > 0 && dBottom > 0 && dRight in edgeRange) return Align2d.CENTER_RIGHT
+        if(dLeft > 0 && dRight > 0 && dTop in edgeRange) return Align2d.TOP_CENTER
+        if(dLeft > 0 && dRight > 0 && dBottom in edgeRange) return Align2d.BOTTOM_CENTER
 
         return null
     }

@@ -27,7 +27,7 @@ class TextLayerMC(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX,
     var wrap: Boolean = true
     var unicode: Boolean = false
     var enableUnicodeBidi: Boolean = true
-    var align: Align2d = Align2d.LEFT_TOP
+    var align: Align2d = Align2d.TOP_LEFT
     var maxLines: Int = Int.MAX_VALUE
     var lineSpacing: Int = 0
     var truncate: Boolean = false

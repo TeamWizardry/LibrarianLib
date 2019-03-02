@@ -20,7 +20,7 @@ class GuiTestPastryWindowExample: PastryWindow(200, 100) {
         this.title = "Such example, many wow"
 
         valueText.anchor = vec(0.5, 0)
-        valueText.align = Align2d.CENTER_TOP
+        valueText.align = Align2d.TOP_CENTER
         valueText.wrap = true
 
         openDialogButton.label.align = Align2d.CENTER

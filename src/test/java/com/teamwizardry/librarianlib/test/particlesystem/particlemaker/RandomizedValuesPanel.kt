@@ -135,7 +135,7 @@ class RandomizedValuesPanel(val onEdit: (RandomizedValuesPanel) -> Unit) : Pastr
 
                 label.text = prefix + columnName
                 label.wrap = false
-                label.align = Align2d.RIGHT_TOP
+                label.align = Align2d.TOP_RIGHT
                 label.widthi = labelWidth
                 label.clipToBounds = true
 
