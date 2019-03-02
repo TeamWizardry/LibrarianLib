@@ -16,9 +16,14 @@ class LayerBackedComponent(val layer: GuiLayer): GuiComponent(0, 0, 0, 0),
         BUS.delegateTo(layer.BUS)
     }
 
-    override var parent: GuiLayer?
-        get() = layer.parent
-        internal set(value) { layer.parent = value }
+    override val root: GuiComponent
+        get() = layer.root as GuiComponent
+    override val parent: GuiComponent?
+        get() = layer.parent as GuiComponent?
+
+    override fun setParentInternal(value: GuiLayer?) {
+        layer.setParentInternal(value)
+    }
 
     override fun drawDebugBoundingBox() {
         super.drawDebugBoundingBox()

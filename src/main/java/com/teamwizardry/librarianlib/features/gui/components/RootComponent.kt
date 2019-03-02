@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.features.gui.component.supporting.MouseHit
 
 abstract class RootComponent(x: Int, y: Int, width: Int, height: Int): GuiComponent(x, y, width, height) {
     var topMouseHit: MouseHit? = null
-    override val root: GuiLayer
+    var focusedComponent: GuiComponent? = null
+    override val root: GuiComponent
         get() = this
 }

@@ -1,11 +1,9 @@
 package com.teamwizardry.librarianlib.features.gui.component.supporting
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.value.RMValueDouble
-import com.teamwizardry.librarianlib.features.gui.value.RMValueInt
 import java.lang.Exception
 import java.util.*
 
@@ -144,7 +142,7 @@ class LayerRelationshipHandler: ILayerRelationships {
         if (component.BUS.fire(GuiLayerEvents.AddToParentEvent(this.component)).isCanceled())
             return
         subLayers.add(component)
-        component.parent = this.component
+        component.setParentInternal(this.component)
     }
 
     /**
@@ -164,7 +162,7 @@ class LayerRelationshipHandler: ILayerRelationships {
             return
         if (component.BUS.fire(GuiLayerEvents.RemoveFromParentEvent(this.component)).isCanceled())
             return
-        component.parent = null
+        component.setParentInternal(null)
         subLayers.remove(component)
     }
 

@@ -42,6 +42,10 @@ open class GuiBase : GuiScreen(), CoroutineScope {
         impl.onClose()
     }
 
+    override fun isFocused(): Boolean {
+        return impl.root.focusedComponent != null
+    }
+
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         super.drawScreen(mouseX, mouseY, partialTicks)
         impl.drawScreen(mouseX, mouseY, partialTicks)

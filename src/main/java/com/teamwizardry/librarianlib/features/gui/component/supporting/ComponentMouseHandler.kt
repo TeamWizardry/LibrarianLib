@@ -169,7 +169,7 @@ class ComponentMouseHandler: IComponentMouse {
         val wasMouseOver = component.mouseOver
 
         val mouseHit = this.component.mouseHit
-        val topHit = (this.component.rootComponent as? RootComponent)?.topMouseHit
+        val topHit = this.component.gui?.topMouseHit
 
         mouseOver = mouseHit != null && mouseHit >= topHit
 

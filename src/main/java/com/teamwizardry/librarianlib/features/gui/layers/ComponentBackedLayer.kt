@@ -16,9 +16,12 @@ class ComponentBackedLayer(val component: GuiComponent): GuiLayer(0, 0, 0, 0),
         BUS.delegateTo(component.BUS)
     }
 
-    override var parent: GuiLayer?
+    override val parent: GuiLayer?
         get() = component.parent
-        internal set(value) { component.parent = value }
+
+    override fun setParentInternal(value: GuiLayer?) {
+        component.setParentInternal(value)
+    }
 
     override fun componentWrapper(): GuiComponent {
         return component

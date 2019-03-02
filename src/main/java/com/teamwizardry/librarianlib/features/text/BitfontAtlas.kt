@@ -25,14 +25,16 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
 
-class BitfontAtlas private constructor() {
+object BitfontAtlas {
     var width: Int = 128
         private set
     var height: Int = 128
         private set
+
     private var texture = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
     private var textureDirty = true
     private val texID = TextureUtil.glGenTextures()
+    private val gpuMaxTexSize = GL11.glGetInteger(GL11.GL_MAX_TEXTURE_SIZE)
 
     private var packer = RectanglePacker<BitGrid>(width, height, 0)
     private val rects = mutableMapOf<BitGrid, RectanglePacker.Rectangle>()
@@ -52,11 +54,11 @@ class BitfontAtlas private constructor() {
         return rect(solidRect.x/width, solidRect.y/height, solidRect.width/width, solidRect.height/height)
     }
 
-    fun rectFor(image: BitGrid): Rect2d? {
+    fun rectFor(image: BitGrid): Rect2d {
         var rect = rects[image]
         if(rect == null) {
             insert(image)
-            rect = rects[image] ?: return null
+            rect = rects[image] ?: throw IllegalStateException()
         }
         val width = width.toDouble()
         val height = height.toDouble()
@@ -89,9 +91,11 @@ class BitfontAtlas private constructor() {
     }
 
     fun expand() {
-        if(width == gpuMaxTexSize && height == gpuMaxTexSize) return
-        width = min(ceil(width*1.5).toInt(), gpuMaxTexSize)
-        height = min(ceil(height*1.5).toInt(), gpuMaxTexSize)
+        if(width == gpuMaxTexSize && height == gpuMaxTexSize)
+            throw IllegalStateException("Ran out of atlas space! OpenGL max texture size: " +
+                "$gpuMaxTexSize x $gpuMaxTexSize and managed to fit ${rects.size} glyphs.")
+        width *= 2
+        height *= 2
         packer.expand(width, height)
         val newImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
         newImage.createGraphics().drawImage(texture, 0, 0, null)
@@ -108,18 +112,4 @@ class BitfontAtlas private constructor() {
         TextureUtil.uploadTextureImage(texID, texture)
     }
 
-    companion object {
-        val gpuMaxTexSize = GL11.glGetInteger(GL11.GL_MAX_TEXTURE_SIZE)
-
-        private val atlases = mutableListOf(BitfontAtlas())
-        operator fun get(image: BitGrid): Pair<BitfontAtlas, Rect2d> {
-            for(i in 0 .. atlases.size) {
-                if(i == atlases.size)
-                    atlases.add(BitfontAtlas())
-                val rect = atlases[i].rectFor(image) ?: continue
-                return atlases[i] to rect
-            }
-            return atlases[0] to atlases[0].solidTex()
-        }
-    }
 }

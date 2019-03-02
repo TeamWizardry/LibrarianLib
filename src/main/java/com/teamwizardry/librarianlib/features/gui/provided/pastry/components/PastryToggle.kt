@@ -4,9 +4,16 @@ import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
 import com.teamwizardry.librarianlib.features.eventbus.Hook
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.FixedSizeComponent
+import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 
-abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int): FixedSizeComponent(posX, posY, width, height) {
+abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int): PastryActivatedControl(posX, posY, width, height) {
+    protected var fixedSize = vec(width, height)
+    override var size: Vec2d
+        get() = fixedSize
+        set(value) { /* nop */ }
+
     private var mouseDown = false
     private var pressed = false
     private var visualState = false
@@ -32,6 +39,22 @@ abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int): Fixe
 
     init {
         this.cursor = LibCursor.POINT
+    }
+
+    override fun activate() {
+        if(!BUS.fire(BeginToggleEvent()).isCanceled()) {
+            pressed = true
+            updateVisualState()
+        }
+    }
+
+    override fun activationEnd() {
+        val state = state
+        pressed = false
+        if(!BUS.fire(StateChangeEvent(!state)).isCanceled()) {
+            this.state = !state
+        }
+        updateVisualState()
     }
 
     @Hook

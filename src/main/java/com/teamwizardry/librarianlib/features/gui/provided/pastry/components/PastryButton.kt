@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.gui.provided.pastry.components
 
+import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.Hook
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
@@ -15,10 +16,13 @@ class PastryButton @JvmOverloads constructor(
         buttonText: String = "",
         posX: Int, posY: Int, width: Int = Minecraft().fontRenderer.getStringWidth(buttonText) + 10, height: Int = 12,
         callback: (() -> Unit)? = null
-) : GuiComponent(posX, posY, width, height) {
-    private val sprite = SpriteLayer(PastryTexture.button, 0, 0, width, height)
+) : PastryActivatedControl(posX, posY, width, height) {
+    class ClickEvent(): Event()
+
     val label = TextLayer(4, 2, width-8, height-4)
+    private val sprite = SpriteLayer(PastryTexture.button, 0, 0, width, height)
     private var mouseDown = false
+
     var pressed = false
         set(value) {
             field = value
@@ -35,12 +39,26 @@ class PastryButton @JvmOverloads constructor(
         label.truncate = true
         label.text = buttonText
         if(callback != null)
-            this.BUS.hook<GuiComponentEvents.MouseClickEvent> {
+            this.BUS.hook<ClickEvent> {
                 callback()
             }
         this.add(sprite, label)
 
         clipToBounds = true
+    }
+
+    override fun activate() {
+        this.BUS.fire(ClickEvent())
+        pressed = true
+    }
+
+    override fun activationEnd() {
+        pressed = false
+    }
+
+    @Hook
+    private fun mouseClick(e: GuiComponentEvents.MouseClickEvent) {
+        this.BUS.fire(ClickEvent())
     }
 
     @Hook

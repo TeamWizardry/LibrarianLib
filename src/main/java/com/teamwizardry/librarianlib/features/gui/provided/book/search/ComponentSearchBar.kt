@@ -63,11 +63,11 @@ class ComponentSearchBar(book: IBookGui, id: Int, onType: ((String) -> Unit)?) :
                 if (focus == null || !focus.mouseOver) {
                     book.up()
                     textField.text = ""
-                    textField.isFocused = false
+                    textField.requestBlur()
                 }
             } else {
                 textField.text = ""
-                textField.isFocused = false
+                textField.requestBlur()
             }
         }
     }

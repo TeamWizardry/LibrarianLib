@@ -52,9 +52,12 @@ open class GuiLayer private constructor(
     @JvmField
     val BUS = EventBus()
 
-    override var parent: GuiLayer?
+    override val parent: GuiLayer?
         get() = relationships.parent
-        internal set(value) { relationships.parent = value }
+
+    open fun setParentInternal(value: GuiLayer?) {
+        relationships.parent = value
+    }
 
     private var wrapper: LayerBackedComponent? = null
 

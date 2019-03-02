@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.gui.component
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.gui.component.supporting.*
+import com.teamwizardry.librarianlib.features.gui.components.RootComponent
 import com.teamwizardry.librarianlib.features.gui.layers.ComponentBackedLayer
 import com.teamwizardry.librarianlib.features.gui.windows.GuiWindow
 import net.minecraft.client.gui.GuiScreen
@@ -61,28 +62,34 @@ open class GuiComponent private constructor(
     internal val data: ComponentDataHandler,
     internal val tags: ComponentTagHandler,
     internal val guiEventHandler: ComponentGuiEventHandler,
-    internal val mouseHandler: ComponentMouseHandler
+    internal val mouseHandler: ComponentMouseHandler,
+    internal val focusHandler: ComponentFocusHandler
 ) : GuiLayer(posX, posY, width, height),
     IComponentData by data, IComponentTag by tags,
-    IComponentGuiEvent by guiEventHandler, IComponentMouse by mouseHandler
+    IComponentGuiEvent by guiEventHandler, IComponentMouse by mouseHandler,
+    IComponentFocus by focusHandler
 {
-    @JvmOverloads constructor(posX: Int, posY: Int, width: Int = 0, height: Int = 0): this(
+    constructor(posX: Int, posY: Int): this(posX, posY, 0, 0)
+    constructor(posX: Int, posY: Int, width: Int, height: Int): this(
         posX, posY, width, height,
         ComponentDataHandler(),
         ComponentTagHandler(),
         ComponentGuiEventHandler(),
-        ComponentMouseHandler()
+        ComponentMouseHandler(),
+        ComponentFocusHandler()
     )
 
     open val subComponents: List<GuiComponent>
         get() = this.children.filterIsInstance<GuiComponent>()
-    open val rootComponent: GuiComponent
-        get() = this.root as GuiComponent
-    open val parentComponent: GuiComponent?
-        get() = this.parent as GuiComponent
+    override val root: GuiComponent
+        get() = super.root as GuiComponent
+    override val parent: GuiComponent?
+        get() = super.parent as GuiComponent?
+
     open val window: GuiWindow?
         get() = this.root as? GuiWindow
-
+    open val gui: RootComponent?
+        get() = this.root as? RootComponent
     override fun shouldDrawSkeleton(): Boolean = this.isPointInBounds(this.mousePos)
 
     override fun drawDebugBoundingBox() {
@@ -170,6 +177,7 @@ open class GuiComponent private constructor(
             tags.component = this
             guiEventHandler.component = this
             mouseHandler.component = this
+            focusHandler.component = this
         }()
     }
 }

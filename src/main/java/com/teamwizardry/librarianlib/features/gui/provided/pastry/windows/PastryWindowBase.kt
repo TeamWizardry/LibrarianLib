@@ -156,7 +156,7 @@ open class PastryWindowBase(width: Int, height: Int): GuiWindow(width, height) {
                         )
                         window.pos = frameEvent.newPos
                         window.size = frameEvent.newSize
-                        event.mousePos = window.parentComponent?.let { parent ->
+                        event.mousePos = window.parent?.let { parent ->
                             window.convertPointFromParent(parent.mousePos)
                         } ?: window.mousePos
                     }

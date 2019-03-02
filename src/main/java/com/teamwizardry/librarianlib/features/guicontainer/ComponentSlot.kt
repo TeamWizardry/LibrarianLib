@@ -31,7 +31,7 @@ class ComponentSlot(val slot: SlotBase, x: Int, y: Int) : GuiComponent(x, y) {
         try {
             val p = convertPointTo(Vec2d.ZERO, ScreenSpace)
 
-            if (scaler == null) scaler = this.rootComponent.subComponents.firstOrNull()
+            if (scaler == null) scaler = this.gui?.subComponents?.firstOrNull()
             val s = scaler?.pos ?: Vec2d.ZERO
 
             slot.xPos = p.xi - s.xi

@@ -39,9 +39,8 @@ open class StandaloneRootComponent: RootComponent(0, 0, 0, 0) {
 
     override val parentSpace: CoordinateSpace2D?
         get() = ScreenSpace
-    override var parent: GuiLayer?
+    override val parent: GuiComponent?
         get() = null
-        set(value) {}
 
     override fun glApplyTransform(inverse: Boolean) {
         if (GuiLayer.isDebugMode) {

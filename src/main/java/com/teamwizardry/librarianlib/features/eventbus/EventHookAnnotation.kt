@@ -35,6 +35,7 @@ internal object EventHookAnnotationReflector {
                 methods.addAll(cls.declaredMethods)
                 cls = cls.superclass
             }
+            methods.reverse() // superclasses first, subclasses last
 
             events = methods
                 .filter { it.isAnnotationPresent(Hook::class.java) }

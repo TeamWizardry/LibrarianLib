@@ -8,7 +8,6 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.value.IMValue
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
-import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
@@ -113,7 +112,7 @@ class LayerRenderHandler: ILayerRendering {
             if (e.BUS.fire(GuiLayerEvents.RemoveFromParentEvent(layer)).isCanceled())
                 b = false
             if (b) {
-                e.parent = null
+                e.setParentInternal(null)
             }
             return@removeAll b
         }

@@ -9,6 +9,8 @@ import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastryButton
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastryCheckbox
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastryControl
+import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastryControlSequence
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.layers.PastryProgressBar
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastryRadioButtonSet
 import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastrySwitch
@@ -19,12 +21,15 @@ import com.teamwizardry.librarianlib.features.helpers.vec
  * Created by TheCodeWarrior
  */
 class GuiTestPastry : GuiBase() {
+    val seq = PastryControlSequence()
+
     init {
         main.size = vec(200, 200)
 
         main.add(PastryBackground(0, 0, 200, 200))
         val button = PastryButton("Some text here that's too long to fit in the text thing wow", 10, 10, 50, 12)
-        main.add(button)
+        main.add(seq.add(button))
+        button.requestFocus()
 
         val progress = PastryProgressBar(10, 35, 75, 5)
         progress.progress_im.animateKeyframes(0.0)
@@ -46,10 +51,10 @@ class GuiTestPastry : GuiBase() {
         val panel = GuiComponent(0, 0, 55, 45)
 
         val radioSet = PastryRadioButtonSet<String>()
-        panel.add(radioSet.addOption("1", 5, 5))
-        panel.add(radioSet.addOption("2", 5, 15))
-        panel.add(radioSet.addOption("3", 5, 25))
-        panel.add(radioSet.addOption("4", 5, 35))
+        panel.add(seq.add(radioSet.addOption("1", 5, 5)))
+        panel.add(seq.add(radioSet.addOption("2", 5, 15)))
+        panel.add(seq.add(radioSet.addOption("3", 5, 25)))
+        panel.add(seq.add(radioSet.addOption("4", 5, 35)))
 
         val radioText = TextLayer(13, 5, 0, 0)
         radioText.text = "x"
@@ -60,15 +65,15 @@ class GuiTestPastry : GuiBase() {
             radioText.text = it.option ?: "x"
         }
 
-        panel.add(PastryCheckbox(23, 5))
-        panel.add(PastryCheckbox(23, 15))
-        panel.add(PastryCheckbox(23, 25))
-        panel.add(PastryCheckbox(23, 35))
+        panel.add(seq.add(PastryCheckbox(23, 5)))
+        panel.add(seq.add(PastryCheckbox(23, 15)))
+        panel.add(seq.add(PastryCheckbox(23, 25)))
+        panel.add(seq.add(PastryCheckbox(23, 35)))
 
-        panel.add(PastrySwitch(35, 5))
-        panel.add(PastrySwitch(35, 15))
-        panel.add(PastrySwitch(35, 25))
-        panel.add(PastrySwitch(35, 35))
+        panel.add(seq.add(PastrySwitch(35, 5)))
+        panel.add(seq.add(PastrySwitch(35, 15)))
+        panel.add(seq.add(PastrySwitch(35, 25)))
+        panel.add(seq.add(PastrySwitch(35, 35)))
 
         return panel
     }

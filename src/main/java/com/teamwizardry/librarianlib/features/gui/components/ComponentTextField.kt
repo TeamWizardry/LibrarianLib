@@ -66,20 +66,6 @@ open class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y:
      */
     var filter: ((String) -> String?)? = null
 
-    var isFocused: Boolean = false
-        set(isFocused) {
-            if ((isFocused == this.isFocused) || BUS.fire(FocusEvent(this.isFocused)).isCanceled())
-                return
-
-            if (isFocused && !this.isFocused)
-                this.cursorCounter = 0
-
-            field = isFocused
-
-            val currentScreen = Minecraft.getMinecraft().currentScreen
-            if (currentScreen != null) currentScreen.isFocused = isFocused
-        }
-
     var isEnabled = true
     var cursorPosition: Int = 0
         set(pos) {
@@ -112,7 +98,7 @@ open class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y:
         BUS.hook(GuiComponentEvents.MouseDownEvent::class.java) { mouseClicked(mousePos.xi, mousePos.yi, it.button.mouseCode) }
         BUS.hook(GuiComponentEvents.KeyDownEvent::class.java) {
             if (handleKeyTyped(it.key, it.keyCode))
-                isFocused = true
+                requestFocus()
         }
         BUS.hook(GuiComponentEvents.ComponentTickEvent::class.java) { updateCursorCounter() }
     }
@@ -354,8 +340,9 @@ open class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y:
     }
 
     fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean {
-        if (this.canLoseFocus)
-            this.isFocused = mouseOver
+        if (this.canLoseFocus) {
+            requestFocusedState(mouseOver)
+        }
 
         return if (this.isFocused && mouseOver && mouseButton == 0) {
             val visible = this.fontRenderer.trimStringToWidth(this.text.substring(this.lineScrollOffset), this.widthi)

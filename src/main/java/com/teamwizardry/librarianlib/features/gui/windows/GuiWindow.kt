@@ -22,7 +22,7 @@ open class GuiWindow(width: Int, height: Int): RootComponent(0, 0, width, height
     /**
      * True if this window is currently in focus
      */
-    val isFocused: Boolean
+    val isWindowFocused: Boolean
         get() = windowManager?.isFocused(this) ?: false
 
     /**
@@ -70,7 +70,7 @@ open class GuiWindow(width: Int, height: Int): RootComponent(0, 0, width, height
         }
     }
 
-    fun requestFocus() = windowManager?.requestFocus(this) ?: false
+    fun requestWindowFocus() = windowManager?.requestFocus(this) ?: false
     fun close() = windowManager?.close(this) ?: false
 
     /**
@@ -142,11 +142,11 @@ open class GuiWindow(width: Int, height: Int): RootComponent(0, 0, width, height
     }
 
     override fun keyPressed(key: Char, keyCode: Int) {
-        if(isFocused) super.keyPressed(key, keyCode)
+        if(isWindowFocused) super.keyPressed(key, keyCode)
     }
 
     override fun keyReleased(key: Char, keyCode: Int) {
-        if(isFocused) super.keyReleased(key, keyCode)
+        if(isWindowFocused) super.keyReleased(key, keyCode)
     }
 
     override fun mouseDown(button: EnumMouseButton) {

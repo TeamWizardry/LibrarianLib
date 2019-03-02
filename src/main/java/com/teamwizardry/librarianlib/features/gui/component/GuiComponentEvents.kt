@@ -6,6 +6,17 @@ import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
 object GuiComponentEvents {
+    /** Fired when a request is made that this component gain focus. Set [allow] to true to allow this. */
+    class RequestFocusEvent(var allow: Boolean = false) : Event()
+
+    /** Fired when a request is made that this component release focus. Set [allow] to false to prevent this. */
+    class RequestBlurEvent(var allow: Boolean = true) : Event()
+
+    /** Fired when this component gains focus */
+    class FocusEvent() : Event()
+    /** Fired when this component loses focus */
+    class BlurEvent() : Event()
+
     /** Fired each tick while the component is a part of a screen */
     class ComponentTickEvent : Event()
 
