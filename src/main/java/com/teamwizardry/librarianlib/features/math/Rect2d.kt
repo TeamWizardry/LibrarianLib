@@ -10,16 +10,19 @@ class Rect2d(val x: Double, val y: Double, val width: Double, val height: Double
         pos.x, pos.y,
         size.x, size.y
     )
+    init {
+        AllocationTracker.rect2dAllocations++
+    }
 
     val min: Vec2d
-        get() = Vec2d(x, y)
+        get() = vec(x, y)
     val max: Vec2d
-        get() = Vec2d(x+width, y+height)
+        get() = vec(x+width, y+height)
 
     val pos: Vec2d
-        get() = Vec2d(x, y)
+        get() = vec(x, y)
     val size: Vec2d
-        get() = Vec2d(width, height)
+        get() = vec(width, height)
 
     @Transient
     val xf: Float = x.toFloat()

@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentAnimatableVoid
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -24,7 +25,7 @@ class ComponentCategoryButton(posX: Int, posY: Int, width: Int, height: Int, boo
         BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) { book.placeInFocus(category) }
 
         // ------- BUTTON RENDERING AND ANIMATION ------- //
-        val iconMask = IBookGui.getRendererFor(icon, Vec2d(24.0, 24.0), true)
+        val iconMask = IBookGui.getRendererFor(icon, vec(24.0, 24.0), true)
 
         BUS.hook(GuiLayerEvents.PreDrawEvent::class.java) {
             GlStateManager.color(0f, 0f, 0f)

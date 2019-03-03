@@ -1,86 +1,42 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package com.teamwizardry.librarianlib.features.helpers
 
+import com.teamwizardry.librarianlib.features.math.AllocationTracker
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.util.math.Vec3d
 
-@Deprecated("Use primitive functions", level = DeprecationLevel.HIDDEN)
-fun vec(x: Number, y: Number) = Vec2d(x.toDouble(), y.toDouble())
 
-fun vec(x: Int, y: Int) = Vec2d(x.toDouble(), y.toDouble())
-fun vec(x: Int, y: Float) = Vec2d(x.toDouble(), y.toDouble())
-fun vec(x: Int, y: Double) = Vec2d(x.toDouble(), y)
-fun vec(x: Float, y: Int) = Vec2d(x.toDouble(), y.toDouble())
-fun vec(x: Float, y: Float) = Vec2d(x.toDouble(), y.toDouble())
-fun vec(x: Float, y: Double) = Vec2d(x.toDouble(), y)
-fun vec(x: Double, y: Int) = Vec2d(x, y.toDouble())
-fun vec(x: Double, y: Float) = Vec2d(x, y.toDouble())
-fun vec(x: Double, y: Double) = Vec2d(x, y)
+private val poolBits = 4
+private val poolMask = (1 shl poolBits)-1
+private val poolMax = (1 shl poolBits-1)-1
+private val poolMin = -(1 shl poolBits-1)
+private val vec3dPool = Array(1 shl poolBits*3) {
+    val x = (it shr poolBits*2) + poolMin
+    val y = (it shr poolBits and poolMask) + poolMin
+    val z = (it and poolMask) + poolMin
+    Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
+}
 
-@Deprecated("Use primitive functions", level = DeprecationLevel.HIDDEN)
-fun vec(x: Number, y: Number, z: Number) = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
+fun getPooledVec3d(x: Double, y: Double, z: Double): Vec3d {
+    val xi = x.toInt()
+    val yi = y.toInt()
+    val zi = z.toInt()
+    if (xi.toDouble() == x && xi in poolMin..poolMax &&
+        yi.toDouble() == y && yi in poolMin..poolMax &&
+        zi.toDouble() == z && zi in poolMin..poolMax) {
+        AllocationTracker.vec3dPooledAllocations++
+        return vec3dPool[
+            ((xi-poolMin) shl poolBits*2) or ((yi-poolMin) shl poolBits) or (zi-poolMin)
+        ]
+    }
+    AllocationTracker.vec3dAllocations++
+    return Vec3d(x, y, z)
+}
 
-fun vec(x: Int, y: Int, z: Int) = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
-fun vec(x: Int, y: Int, z: Float) = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
-fun vec(x: Int, y: Int, z: Double) = Vec3d(x.toDouble(), y.toDouble(), z)
-fun vec(x: Int, y: Float, z: Int) = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
-fun vec(x: Int, y: Float, z: Float) = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
-fun vec(x: Int, y: Float, z: Double) = Vec3d(x.toDouble(), y.toDouble(), z)
-fun vec(x: Int, y: Double, z: Int) = Vec3d(x.toDouble(), y, z.toDouble())
-fun vec(x: Int, y: Double, z: Float) = Vec3d(x.toDouble(), y, z.toDouble())
-fun vec(x: Int, y: Double, z: Double) = Vec3d(x.toDouble(), y, z)
-fun vec(x: Float, y: Int, z: Int) = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
-fun vec(x: Float, y: Int, z: Float) = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
-fun vec(x: Float, y: Int, z: Double) = Vec3d(x.toDouble(), y.toDouble(), z)
-fun vec(x: Float, y: Float, z: Int) = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
-fun vec(x: Float, y: Float, z: Float) = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
-fun vec(x: Float, y: Float, z: Double) = Vec3d(x.toDouble(), y.toDouble(), z)
-fun vec(x: Float, y: Double, z: Int) = Vec3d(x.toDouble(), y, z.toDouble())
-fun vec(x: Float, y: Double, z: Float) = Vec3d(x.toDouble(), y, z.toDouble())
-fun vec(x: Float, y: Double, z: Double) = Vec3d(x.toDouble(), y, z)
-fun vec(x: Double, y: Int, z: Int) = Vec3d(x, y.toDouble(), z.toDouble())
-fun vec(x: Double, y: Int, z: Float) = Vec3d(x, y.toDouble(), z.toDouble())
-fun vec(x: Double, y: Int, z: Double) = Vec3d(x, y.toDouble(), z)
-fun vec(x: Double, y: Float, z: Int) = Vec3d(x, y.toDouble(), z.toDouble())
-fun vec(x: Double, y: Float, z: Float) = Vec3d(x, y.toDouble(), z.toDouble())
-fun vec(x: Double, y: Float, z: Double) = Vec3d(x, y.toDouble(), z)
-fun vec(x: Double, y: Double, z: Int) = Vec3d(x, y, z.toDouble())
-fun vec(x: Double, y: Double, z: Float) = Vec3d(x, y, z.toDouble())
-fun vec(x: Double, y: Double, z: Double) = Vec3d(x, y, z)
+inline fun vec(x: Number, y: Number) = Vec2d.getPooled(x.toDouble(), y.toDouble())
+inline fun vec(x: Number, y: Number, z: Number) = getPooledVec3d(x.toDouble(), y.toDouble(), z.toDouble())
 
-fun BufferBuilder.pos(x: Int, y: Int, z: Int): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z.toDouble())
-fun BufferBuilder.pos(x: Int, y: Int, z: Float): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z.toDouble())
-fun BufferBuilder.pos(x: Int, y: Int, z: Double): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z)
-fun BufferBuilder.pos(x: Int, y: Float, z: Int): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z.toDouble())
-fun BufferBuilder.pos(x: Int, y: Float, z: Float): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z.toDouble())
-fun BufferBuilder.pos(x: Int, y: Float, z: Double): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z)
-fun BufferBuilder.pos(x: Int, y: Double, z: Int): BufferBuilder = this.pos(x.toDouble(), y, z.toDouble())
-fun BufferBuilder.pos(x: Int, y: Double, z: Float): BufferBuilder = this.pos(x.toDouble(), y, z.toDouble())
-fun BufferBuilder.pos(x: Int, y: Double, z: Double): BufferBuilder = this.pos(x.toDouble(), y, z)
-fun BufferBuilder.pos(x: Float, y: Int, z: Int): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z.toDouble())
-fun BufferBuilder.pos(x: Float, y: Int, z: Float): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z.toDouble())
-fun BufferBuilder.pos(x: Float, y: Int, z: Double): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z)
-fun BufferBuilder.pos(x: Float, y: Float, z: Int): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z.toDouble())
-fun BufferBuilder.pos(x: Float, y: Float, z: Float): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z.toDouble())
-fun BufferBuilder.pos(x: Float, y: Float, z: Double): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z)
-fun BufferBuilder.pos(x: Float, y: Double, z: Int): BufferBuilder = this.pos(x.toDouble(), y, z.toDouble())
-fun BufferBuilder.pos(x: Float, y: Double, z: Float): BufferBuilder = this.pos(x.toDouble(), y, z.toDouble())
-fun BufferBuilder.pos(x: Float, y: Double, z: Double): BufferBuilder = this.pos(x.toDouble(), y, z)
-fun BufferBuilder.pos(x: Double, y: Int, z: Int): BufferBuilder = this.pos(x, y.toDouble(), z.toDouble())
-fun BufferBuilder.pos(x: Double, y: Int, z: Float): BufferBuilder = this.pos(x, y.toDouble(), z.toDouble())
-fun BufferBuilder.pos(x: Double, y: Int, z: Double): BufferBuilder = this.pos(x, y.toDouble(), z)
-fun BufferBuilder.pos(x: Double, y: Float, z: Int): BufferBuilder = this.pos(x, y.toDouble(), z.toDouble())
-fun BufferBuilder.pos(x: Double, y: Float, z: Float): BufferBuilder = this.pos(x, y.toDouble(), z.toDouble())
-fun BufferBuilder.pos(x: Double, y: Float, z: Double): BufferBuilder = this.pos(x, y.toDouble(), z)
-fun BufferBuilder.pos(x: Double, y: Double, z: Int): BufferBuilder = this.pos(x, y, z.toDouble())
-fun BufferBuilder.pos(x: Double, y: Double, z: Float): BufferBuilder = this.pos(x, y, z.toDouble())
-
-fun BufferBuilder.pos(x: Int, y: Int): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), 0.0)
-fun BufferBuilder.pos(x: Int, y: Float): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), 0.0)
-fun BufferBuilder.pos(x: Int, y: Double): BufferBuilder = this.pos(x.toDouble(), y, 0.0)
-fun BufferBuilder.pos(x: Float, y: Int): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), 0.0)
-fun BufferBuilder.pos(x: Float, y: Float): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), 0.0)
-fun BufferBuilder.pos(x: Float, y: Double): BufferBuilder = this.pos(x.toDouble(), y, 0.0)
-fun BufferBuilder.pos(x: Double, y: Int): BufferBuilder = this.pos(x, y.toDouble(), 0.0)
-fun BufferBuilder.pos(x: Double, y: Float): BufferBuilder = this.pos(x, y.toDouble(), 0.0)
-fun BufferBuilder.pos(x: Double, y: Double): BufferBuilder = this.pos(x, y, 0.0)
+inline fun BufferBuilder.pos(x: Number, y: Number, z: Number): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z.toDouble())
+inline fun BufferBuilder.pos(x: Number, y: Number): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), 0.0)

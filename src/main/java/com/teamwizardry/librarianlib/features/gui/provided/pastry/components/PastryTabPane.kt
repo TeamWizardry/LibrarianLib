@@ -38,7 +38,7 @@ class PastryTabPane(type: BackgroundTexture, posX: Int, posY: Int, width: Int, h
 
         for ((i, entryButton) in tabs.keys.withIndex()) {
             entryButton.width = width / tabs.size.toDouble()
-            entryButton.pos = Vec2d(i * entryButton.width, entryButton.y)
+            entryButton.pos = vec(i * entryButton.width, entryButton.y)
         }
         return tab
     }

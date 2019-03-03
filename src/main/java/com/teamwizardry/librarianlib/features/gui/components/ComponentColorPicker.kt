@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.gui.components
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.renderer.BufferBuilder
@@ -25,11 +26,11 @@ class ComponentColorPicker(x: Int, y: Int, width: Int, height: Int) : GuiCompone
     private val valueMainRadius = colorWheelRadius + 3
     private val valueMaxRadius = colorWheelRadius + 5
 
-    private var colorWheelCursor = Vec2d(colorWheelRadius, colorWheelRadius)
+    private var colorWheelCursor = vec(colorWheelRadius, colorWheelRadius)
     private var colorWheelMouseDown = false
-    private val half = Vec2d(colorWheelRadius, colorWheelRadius)
+    private val half = vec(colorWheelRadius, colorWheelRadius)
     private var valueMouseDown = false
-    private var valueCursor = Vec2d(-valueMaxRadius, 0.0)
+    private var valueCursor = vec(-valueMaxRadius, 0.0)
     private var value = 1.0
 
     var color = Color.WHITE
@@ -70,10 +71,10 @@ class ComponentColorPicker(x: Int, y: Int, width: Int, height: Int) : GuiCompone
     }
 
     fun selectValue(mousePos: Vec2d) {
-        val sub = mousePos.sub(Vec2d(valueMaxRadius, valueMaxRadius))
+        val sub = mousePos.sub(vec(valueMaxRadius, valueMaxRadius))
         val rads = MathHelper.clamp(-Math.atan2(sub.y, sub.x), 0.0, Math.PI)
 
-        valueCursor = Vec2d(-MathHelper.sin(rads.toFloat() - Math.PI.toFloat() / 2.0f) * valueMaxRadius + valueMaxRadius, -MathHelper.cos(rads.toFloat() - Math.PI.toFloat() / 2.0f) * valueMaxRadius + valueMaxRadius).sub(4.0, 4.0)
+        valueCursor = vec(-MathHelper.sin(rads.toFloat() - Math.PI.toFloat() / 2.0f) * valueMaxRadius + valueMaxRadius, -MathHelper.cos(rads.toFloat() - Math.PI.toFloat() / 2.0f) * valueMaxRadius + valueMaxRadius).sub(4.0, 4.0)
 
 
         val degree = ((Math.toDegrees(rads) + 180.0) % 180.0)
@@ -95,7 +96,7 @@ class ComponentColorPicker(x: Int, y: Int, width: Int, height: Int) : GuiCompone
         colorWheelCursor = if (dist < radius) {
             mousePos
         } else {
-            Vec2d(MathHelper.cos(rads.toFloat()) * radius + radius, MathHelper.sin(rads.toFloat()) * radius + radius).add(2.0, 2.0)
+            vec(MathHelper.cos(rads.toFloat()) * radius + radius, MathHelper.sin(rads.toFloat()) * radius + radius).add(2.0, 2.0)
         }
 
         val degree = 90 - ((Math.toDegrees(rads) + 360.0) % 360.0)

@@ -26,7 +26,7 @@ object SerializeVec3d : Serializer<Vec3d>(FieldType.create(Vec3d::class.java)) {
 
     override fun readNBT(nbt: NBTBase, existing: Vec3d?, syncing: Boolean): Vec3d {
         val tag = nbt.safeCast<NBTTagCompound>()
-        return Vec3d(tag.getDouble("x"), tag.getDouble("y"), tag.getDouble("z"))
+        return vec(tag.getDouble("x"), tag.getDouble("y"), tag.getDouble("z"))
     }
 
     override fun writeNBT(value: Vec3d, syncing: Boolean): NBTBase {
@@ -38,7 +38,7 @@ object SerializeVec3d : Serializer<Vec3d>(FieldType.create(Vec3d::class.java)) {
     }
 
     override fun readBytes(buf: ByteBuf, existing: Vec3d?, syncing: Boolean): Vec3d {
-        return Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble())
+        return vec(buf.readDouble(), buf.readDouble(), buf.readDouble())
     }
 
     override fun writeBytes(buf: ByteBuf, value: Vec3d, syncing: Boolean) {
@@ -116,7 +116,7 @@ object SerializeVec2d : Serializer<Vec2d>(FieldType.create(Vec2d::class.java)) {
 
     override fun readNBT(nbt: NBTBase, existing: Vec2d?, syncing: Boolean): Vec2d {
         val tag = nbt.safeCast(NBTTagCompound::class.java)
-        return Vec2d(tag.getDouble("x"), tag.getDouble("y"))
+        return vec(tag.getDouble("x"), tag.getDouble("y"))
     }
 
     override fun writeNBT(value: Vec2d, syncing: Boolean): NBTBase {
@@ -127,7 +127,7 @@ object SerializeVec2d : Serializer<Vec2d>(FieldType.create(Vec2d::class.java)) {
     }
 
     override fun readBytes(buf: ByteBuf, existing: Vec2d?, syncing: Boolean): Vec2d {
-        return Vec2d(buf.readDouble(), buf.readDouble())
+        return vec(buf.readDouble(), buf.readDouble())
     }
 
     override fun writeBytes(buf: ByteBuf, value: Vec2d, syncing: Boolean) {

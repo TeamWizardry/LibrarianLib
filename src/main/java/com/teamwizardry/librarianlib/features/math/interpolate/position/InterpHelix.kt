@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.math.interpolate.position
 
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.math.interpolate.InterpFunction
 import com.teamwizardry.librarianlib.features.math.rotate
@@ -22,7 +23,7 @@ class InterpHelix(
     private val len = disp.length()
     private val radiansPerUnit = (rotations * 2 * Math.PI).toFloat()
 
-    private val transform = rotationMatrix(Vec3d(0.0, 1.0, 0.0), disp).withTranslation(point1)
+    private val transform = rotationMatrix(vec(0.0, 1.0, 0.0), disp).withTranslation(point1)
 
     override fun get(i: Float): Vec3d {
         val radius = radius1 + (radius2 - radius1) * i.toDouble()

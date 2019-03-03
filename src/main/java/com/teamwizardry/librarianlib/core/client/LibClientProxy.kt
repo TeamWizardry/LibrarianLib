@@ -8,6 +8,7 @@ import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.kotlin.unaryMinus
+import com.teamwizardry.librarianlib.features.math.AllocationDisplay
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.particlesystem.GameParticleSystems
 import com.teamwizardry.librarianlib.features.shader.LibShaders
@@ -60,6 +61,7 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
         LibShaders
         ShaderHelper.init()
         GameParticleSystems
+        AllocationDisplay
 
         val s = MethodHandleHelper.wrapperForGetter(Minecraft::class.java, "metadataSerializer", "field_110452_an")(Minecraft.getMinecraft()) as MetadataSerializer
         s.registerMetadataSectionType(SpritesMetadataSectionSerializer(), SpritesMetadataSection::class.java)

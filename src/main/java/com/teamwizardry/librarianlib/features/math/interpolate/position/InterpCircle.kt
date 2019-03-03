@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.math.interpolate.position
 
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.cross
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.times
@@ -17,10 +18,10 @@ class InterpCircle @JvmOverloads constructor(val origin: Vec3d, normalVector: Ve
     val normal = normalVector.normalize()
 
     private val perpX =
-            if (normal cross Vec3d(0.0, 1.0, 0.0) == Vec3d(0.0, 0.0, 0.0))
-                Vec3d(1.0, 0.0, 0.0)
+            if (normal cross vec(0, 1, 0) == vec(0, 0, 0))
+                vec(1, 0, 0)
             else
-                normal cross Vec3d(0.0, 1.0, 0.0)
+                normal cross vec(0, 1, 0)
     private val perpY = normal cross perpX
 
     override fun get(i: Float): Vec3d {

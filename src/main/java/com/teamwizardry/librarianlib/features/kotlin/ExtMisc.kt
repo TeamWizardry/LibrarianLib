@@ -200,7 +200,7 @@ fun Entity.setVelocityAndUpdate(x: Double = motionX, y: Double = motionY, z: Dou
 }
 
 var Entity.motionVec: Vec3d
-    get() = Vec3d(motionX, motionY, motionZ)
+    get() = vec(motionX, motionY, motionZ)
     set(value) {
         this.motionX = value.x
         this.motionY = value.y

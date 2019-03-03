@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.particle
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.math.interpolate.InterpFunction
 import com.teamwizardry.librarianlib.features.math.interpolate.InterpUnion
@@ -506,11 +507,11 @@ class ParticleBuilder(private var lifetime: Int) {
         private set
     var motion: Vec3d = Vec3d.ZERO
         private set
-    var acceleration: Vec3d = Vec3d(0.0, -0.01, 0.0)
+    var acceleration: Vec3d = vec(0.0, -0.01, 0.0)
         private set
-    var deceleration: Vec3d = Vec3d(0.95, 0.95, 0.95)
+    var deceleration: Vec3d = vec(0.95, 0.95, 0.95)
         private set
-    var friction: Vec3d = Vec3d(0.9, 1.0, 0.9)
+    var friction: Vec3d = vec(0.9, 1.0, 0.9)
         private set
     var tickFunction: TickFunction? = null
         private set
@@ -524,7 +525,7 @@ class ParticleBuilder(private var lifetime: Int) {
     var bounceMagnitude: Double = 0.9
 
     // randomization
-    var jitterMagnitude: Vec3d = Vec3d(0.05, 0.05, 0.05)
+    var jitterMagnitude: Vec3d = vec(0.05, 0.05, 0.05)
         private set
     var jitterChance: Float = 0.0f
         private set
@@ -561,13 +562,13 @@ class ParticleBuilder(private var lifetime: Int) {
 
         if (defaultRandomizations) {
 
-            pos_ += Vec3d(
+            pos_ += vec(
                     (ThreadLocalRandom.current().nextDouble() - 0.5) * posRandMultiplier,
                     (ThreadLocalRandom.current().nextDouble() - 0.5) * posRandMultiplier,
                     (ThreadLocalRandom.current().nextDouble() - 0.5) * posRandMultiplier
             )
 
-            motion_ += Vec3d(
+            motion_ += vec(
                     (ThreadLocalRandom.current().nextDouble() - 0.5) * motionRandMultiplier,
                     (ThreadLocalRandom.current().nextDouble() - 0.5) * motionRandMultiplier,
                     (ThreadLocalRandom.current().nextDouble() - 0.5) * motionRandMultiplier
