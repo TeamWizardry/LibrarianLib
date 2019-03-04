@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Align2d
 import com.teamwizardry.librarianlib.features.math.Rect2d
+import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.text.Fonts
 import com.teamwizardry.librarianlib.features.text.TypesetStringRenderer
 import com.teamwizardry.librarianlib.features.text.fromMC
@@ -32,8 +33,8 @@ class TextLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, p
 
     // options that change the layout
     var text: String by text_im
-    var wrap: Boolean = true
-    var font: Bitfont = Fonts.MCClassic
+    var wrap: Boolean = false
+    var font: Bitfont = Fonts.classic
     var align: Align2d = Align2d.TOP_LEFT
     var maxLines: Int = Int.MAX_VALUE
     var lineSpacing: Int = 0
@@ -132,4 +133,25 @@ class TextLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, p
         }
     }
 
+    companion object {
+        @JvmStatic
+        @JvmOverloads
+        fun stringSize(text: String, wrap: Int? = null, font: Bitfont = Fonts.classic)
+            = stringSize(AttributedString.fromMC(text), wrap, font)
+
+        @JvmStatic
+        @JvmOverloads
+        fun stringSize(text: AttributedString, wrap: Int? = null, font: Bitfont = Fonts.classic): Rect2d {
+            val typesetString = TypesetString(font, text, wrap ?: -1, 1)
+            if(typesetString.glyphs.isEmpty()) {
+                return Rect2d.ZERO
+            }
+
+            val minY = typesetString.lines.first().let { it.baseline-it.maxAscent }
+            val maxY = typesetString.lines.last().let { it.baseline+it.maxDescent }
+            val minX = 0
+            val maxX = typesetString.lines.map { it.endX }.max() ?: 0
+            return rect(minX, minY, maxX-minX, maxY-minY)
+        }
+    }
 }

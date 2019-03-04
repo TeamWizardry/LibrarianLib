@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.guicontainer
 
+import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.container.ContainerBase
 import com.teamwizardry.librarianlib.features.container.internal.ContainerImpl
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
@@ -7,8 +8,10 @@ import com.teamwizardry.librarianlib.features.gui.LibGuiImpl
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
+import com.teamwizardry.librarianlib.features.gui.provided.GuiSafetyNetError
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.Client
+import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.kotlin.delegate
 import com.teamwizardry.librarianlib.features.network.PacketHandler
 import com.teamwizardry.librarianlib.features.network.PacketSyncSlotVisibility
@@ -34,7 +37,12 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
         get() = Dispatchers.Client
 
     val impl = LibGuiImpl(
-        { this.width }, { this.height }
+        { this.width },
+        { this.height },
+        {
+            LibrarianLog.error(it, "The safety net caught an error")
+            Minecraft().displayGuiScreen(GuiSafetyNetError(it))
+        }
     )
 
     val main: GuiComponent by impl::main.delegate

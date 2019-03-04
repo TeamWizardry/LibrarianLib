@@ -1,30 +1,18 @@
 package com.teamwizardry.librarianlib.features.text
 
-import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.helpers.pos
-import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.color
-import com.teamwizardry.librarianlib.features.kotlin.pos
-import com.teamwizardry.librarianlib.features.text.BitfontAtlas
-import com.teamwizardry.librarianlib.features.text.Fonts
-import com.teamwizardry.librarianlib.features.text.color
-import com.teamwizardry.librarianlib.features.text.obfuscated
-import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.typesetting.AttributedString
 import games.thecodewarrior.bitfont.typesetting.TypesetString
-import games.thecodewarrior.bitfont.typesetting.font
 import games.thecodewarrior.bitfont.utils.Attribute
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11
 import java.awt.Color
-import java.util.TreeMap
-import kotlin.random.Random
-
 
 class TypesetStringRenderer {
-    var typesetString = TypesetString(Fonts.MCClassic, AttributedString(""))
+    var typesetString = TypesetString(Fonts.classic, AttributedString(""))
     var defaultColor: Color = Color.BLACK
 
     fun draw() {

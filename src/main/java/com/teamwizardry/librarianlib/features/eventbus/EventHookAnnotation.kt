@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.eventbus
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import java.lang.reflect.Method
@@ -14,8 +15,17 @@ annotation class Hook
 
 internal object EventHookAnnotationReflector {
     val cache = mutableMapOf<Class<*>, EventCache>()
+    private var nextClear = System.currentTimeMillis()
+    private val clearInterval = 10_000
 
     fun apply(bus: EventBus, obj: Any) {
+
+        // clear cache periodically to support hotswapped classes
+        if(LibrarianLib.DEV_ENVIRONMENT && System.currentTimeMillis() > nextClear) {
+            nextClear = System.currentTimeMillis() + clearInterval
+            cache.clear()
+        }
+
         cache.getOrPut(obj.javaClass) { EventCache(obj.javaClass) }.events.forEach {
             @Suppress("UNCHECKED_CAST")
             bus.hook(it.first as Class<Event>) { event: Event ->

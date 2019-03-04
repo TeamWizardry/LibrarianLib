@@ -26,7 +26,9 @@ open class GuiLayer private constructor(
 )
     : ILayerGeometry by geometry, ILayerRelationships by relationships,
     ILayerRendering by render, ILayerClipping by clipping, ILayerBase by base, CoroutineScope {
-    @JvmOverloads constructor(posX: Int, posY: Int, width: Int = 0, height: Int = 0): this(
+    constructor(): this(0, 0, 0, 0)
+    constructor(posX: Int, posY: Int): this(posX, posY, 0, 0)
+    constructor(posX: Int, posY: Int, width: Int, height: Int): this(
         LayerGeometryHandler(rect(posX, posY, width, height)),
         LayerRelationshipHandler(),
         LayerRenderHandler(),
@@ -151,6 +153,12 @@ open class GuiLayer private constructor(
     companion object {
         @JvmStatic
         var isDebugMode = false
+
+        @JvmStatic
+        val OVERLAY_Z: Double = 1e10
+
+        @JvmStatic
+        val UNDERLAY_Z: Double = -1e10
 
         private val layerFieldCache = mutableMapOf<Class<*>, List<Field>>()
 

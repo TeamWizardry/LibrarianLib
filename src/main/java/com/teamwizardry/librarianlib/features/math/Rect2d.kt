@@ -102,6 +102,10 @@ class Rect2d(val x: Double, val y: Double, val width: Double, val height: Double
         return Rect2d(this.pos + vec(offset, offset), this.size - vec(offset*2, offset*2))
     }
 
+    fun add(pos: Vec2d, size: Vec2d): Rect2d {
+        return Rect2d(this.pos + pos, this.size + size)
+    }
+
     //=============================================================================
 
     override fun hashCode(): Int {

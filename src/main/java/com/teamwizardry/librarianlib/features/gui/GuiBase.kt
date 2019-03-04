@@ -1,10 +1,13 @@
 package com.teamwizardry.librarianlib.features.gui
 
+import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
+import com.teamwizardry.librarianlib.features.gui.provided.GuiSafetyNetError
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.Client
+import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.kotlin.delegate
 import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import kotlinx.coroutines.CoroutineScope
@@ -27,7 +30,12 @@ open class GuiBase : GuiScreen(), CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Client
     val impl = LibGuiImpl(
-        { this.width }, { this.height }
+        { this.width },
+        { this.height },
+        {
+            LibrarianLog.error(it, "The safety net caught an error")
+            Minecraft().displayGuiScreen(GuiSafetyNetError(it))
+        }
     )
 
     val main: GuiComponent by impl::main.delegate

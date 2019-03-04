@@ -69,6 +69,7 @@ open class GuiComponent private constructor(
     IComponentGuiEvent by guiEventHandler, IComponentMouse by mouseHandler,
     IComponentFocus by focusHandler
 {
+    constructor(): this(0, 0, 0, 0)
     constructor(posX: Int, posY: Int): this(posX, posY, 0, 0)
     constructor(posX: Int, posY: Int, width: Int, height: Int): this(
         posX, posY, width, height,
@@ -81,9 +82,9 @@ open class GuiComponent private constructor(
 
     open val subComponents: List<GuiComponent>
         get() = this.children.filterIsInstance<GuiComponent>()
-    override val root: GuiComponent
+    val rootComponent: GuiComponent
         get() = super.root as GuiComponent
-    override val parent: GuiComponent?
+    val parentComponent: GuiComponent?
         get() = super.parent as GuiComponent?
 
     open val window: GuiWindow?

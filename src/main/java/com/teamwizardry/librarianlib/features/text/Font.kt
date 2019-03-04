@@ -8,9 +8,9 @@ import games.thecodewarrior.bitfont.data.Bitfont
 import net.minecraft.util.ResourceLocation
 
 object Fonts {
-    lateinit var MCClassic: Bitfont
-    lateinit var MCBitfont: Bitfont
-    lateinit var Unifont: Bitfont
+    lateinit var classic: Bitfont
+    lateinit var mcBitfont: Bitfont
+    lateinit var unifont: Bitfont
 
     init {
         LibrarianLib.PROXY.addReloadHandler(ClientRunnable {
@@ -21,9 +21,9 @@ object Fonts {
     }
 
     fun reload() {
-        MCClassic = load("librarianlib:font/mcclassicplus.bitfont".toRl())
-        MCBitfont = load("librarianlib:font/mcbitfont.bitfont".toRl())
-        Unifont = load("librarianlib:font/unifont.bitfont".toRl())
+        classic = load("librarianlib:font/mcclassicplus.bitfont".toRl())
+        mcBitfont = load("librarianlib:font/mcbitfont.bitfont".toRl())
+        unifont = load("librarianlib:font/unifont.bitfont".toRl())
     }
 
     fun load(fontLocation: ResourceLocation): Bitfont {

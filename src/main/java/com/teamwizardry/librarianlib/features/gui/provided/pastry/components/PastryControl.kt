@@ -96,7 +96,6 @@ open class PastryControl: GuiComponent {
 
     @Hook
     private fun mouseDown(e: GuiComponentEvents.MouseDownEvent) {
-        if(mouseOver)
-            requestFocus()
+        requestFocusedState(mouseOver)
     }
 }

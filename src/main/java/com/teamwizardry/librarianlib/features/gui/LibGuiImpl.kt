@@ -19,8 +19,12 @@ import org.lwjgl.input.Mouse
 import java.awt.Color
 import java.io.IOException
 
-open class LibGuiImpl(protected val guiWidth: () -> Int, protected val guiHeight: () -> Int) {
-    val root: StandaloneRootComponent = StandaloneRootComponent()
+open class LibGuiImpl(
+    protected val guiWidth: () -> Int,
+    protected val guiHeight: () -> Int,
+    catchSafetyNet: (e: Exception) -> Unit
+) {
+    val root: StandaloneRootComponent = StandaloneRootComponent(catchSafetyNet)
     val main: GuiComponent = object: GuiComponent(0, 0) {
         override var pos: Vec2d
             get() = vec(root.size.xi/2, root.size.yi/2)
@@ -131,5 +135,6 @@ open class LibGuiImpl(protected val guiWidth: () -> Int, protected val guiHeight
 
     fun onClose() {
         Keyboard.enableRepeatEvents(false)
+        Mouse.setNativeCursor(null)
     }
 }

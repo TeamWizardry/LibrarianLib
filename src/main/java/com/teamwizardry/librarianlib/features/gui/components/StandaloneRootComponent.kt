@@ -1,8 +1,12 @@
 package com.teamwizardry.librarianlib.features.gui.components
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
+import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.component.supporting.MouseHit
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Rect2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.CoordinateSpace2D
@@ -11,10 +15,22 @@ import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.Tessellator
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
 
-open class StandaloneRootComponent: RootComponent(0, 0, 0, 0) {
+open class StandaloneRootComponent(val closeGui: (Exception) -> Unit): RootComponent(0, 0, 0, 0) {
+    /**
+     * Set to true to enable the "safety net". When enabled, upon an exception the GUI will be closed instead of
+     * crashing the game and a best-effort cleanup will be done (ending in-progress BufferBuilder, etc.).
+     *
+     * This component will attempt any cleanup necessary and will pass the exception to the [closeGui] callback
+     * provided. The callback should handle how to present this error to the user/developer.
+     *
+     * On by default in development environments, disabled by default elsewhere.
+     */
+    var safetyNet: Boolean = LibrarianLib.DEV_ENVIRONMENT
+
     override var size: Vec2d
         get() = super.size
         set(value) {}
@@ -25,7 +41,10 @@ open class StandaloneRootComponent: RootComponent(0, 0, 0, 0) {
         get() = super.translateZ
         set(value) {}
     override var scale2d: Vec2d
-        get() = super.scale2d
+        get() {
+            val scaledResolution = ScaledResolution(Minecraft.getMinecraft())
+            return vec(scaledResolution.scaleFactor, scaledResolution.scaleFactor)
+        }
         set(value) {}
     override var rotation: Double
         get() = super.rotation
@@ -69,20 +88,61 @@ open class StandaloneRootComponent: RootComponent(0, 0, 0, 0) {
         StencilUtil.clear()
         GL11.glEnable(GL11.GL_STENCIL_TEST)
 
-        cleanUpChildren()
-        sortChildren()
+        try {
+            cleanUpChildren()
+            sortChildren()
 
-        runLayoutIfNeeded()
-        callPreFrame()
+            runLayoutIfNeeded()
+            callPreFrame()
 
-        topMouseHit = null
-        updateMouse(mousePos)
-        updateHits(this, 0.0)
-        propagateHits()
+            topMouseHit = null
+            updateMouse(mousePos)
+            updateHits(this, 0.0)
+            propagateHits()
 
-        Mouse.setNativeCursor(topMouseHit?.cursor?.lwjglCursor)
-        renderLayer(partialTicks)
+            Mouse.setNativeCursor(topMouseHit?.cursor?.lwjglCursor)
+            renderLayer(partialTicks)
+        } catch(e: Exception) {
+            if(!safetyNet) throw e
+
+            Mouse.setNativeCursor(null)
+            val tess = Tessellator.getInstance()
+            try {
+                tess.buffer.finishDrawing()
+            } catch(e2: IllegalStateException) {
+                // the buffer wasn't mid-draw
+            }
+
+            closeGui(e)
+        }
 
         GL11.glDisable(GL11.GL_STENCIL_TEST)
     }
+
+    override fun setNeedsLayout() = net { super.setNeedsLayout() }
+
+    override fun mouseDown(button: EnumMouseButton) = net { super.mouseDown(button) }
+
+    override fun mouseUp(button: EnumMouseButton) = net { super.mouseUp(button) }
+
+    override fun keyRepeat(key: Char, keyCode: Int) = net { super.keyRepeat(key, keyCode) }
+
+    override fun keyPressed(key: Char, keyCode: Int) = net { super.keyPressed(key, keyCode) }
+
+    override fun keyReleased(key: Char, keyCode: Int) = net { super.keyReleased(key, keyCode) }
+
+    override fun mouseWheel(direction: GuiComponentEvents.MouseWheelDirection) = net { super.mouseWheel(direction) }
+
+    override fun update() = net { super.update() }
+
+    override fun tick() = net { super.tick() }
+
+    private inline fun net(c: () -> Unit) {
+        try {
+            c()
+        } catch (e: Exception) {
+            if (!safetyNet) throw e else closeGui(e)
+        }
+    }
+
 }

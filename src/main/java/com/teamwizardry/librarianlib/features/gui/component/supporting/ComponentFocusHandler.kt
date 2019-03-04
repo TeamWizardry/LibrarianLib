@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.Key
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.gui.component.LayerHierarchyException
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import org.lwjgl.input.Keyboard
 
@@ -23,7 +24,7 @@ interface IComponentFocus {
      * If this component is the focused component, this method does nothing and returns true.
      *
      * @return true if this component successfully acquired focus.
-     * @throws IllegalStateException if this component isn't contained within a GUI (i.e. when [GuiComponent.gui] == null)
+     * @throws LayerHierarchyException if this component isn't contained within a GUI (i.e. when [GuiComponent.gui] == null)
      */
     fun requestFocus(): Boolean
 
@@ -33,7 +34,7 @@ interface IComponentFocus {
      * The current focused component will be forced to blur ([forceBlur]) then
      * this component will become the focused component then will fire a [FocusEvent][GuiComponentEvents.FocusEvent]
      *
-     * @throws IllegalStateException if this component isn't contained within a GUI (i.e. when [GuiComponent.gui] == null)
+     * @throws LayerHierarchyException if this component isn't contained within a GUI (i.e. when [GuiComponent.gui] == null)
      */
     fun forceFocus()
 
@@ -46,7 +47,7 @@ interface IComponentFocus {
      * If this component isn't the focused component, this method does nothing and returns true.
      *
      * @return true if this component successfully released focus.
-     * @throws IllegalStateException if this component isn't contained within a GUI (i.e. when [GuiComponent.gui] == null)
+     * @throws LayerHierarchyException if this component isn't contained within a GUI (i.e. when [GuiComponent.gui] == null)
      */
     fun requestBlur(): Boolean
 
@@ -55,7 +56,7 @@ interface IComponentFocus {
      *
      * This component will relinquish its focused status then will fire a [BlurEvent][GuiComponentEvents.BlurEvent]
      *
-     * @throws IllegalStateException if this component isn't contained within a GUI (i.e. when [GuiComponent.gui] == null)
+     * @throws LayerHierarchyException if this component isn't contained within a GUI (i.e. when [GuiComponent.gui] == null)
      */
     fun forceBlur()
 
@@ -65,7 +66,7 @@ interface IComponentFocus {
      * This is effectively shorthand for `if(focused) requestFocus() else requestBlur()`
      *
      * @return true if this component successfully acquired or released focus, depending on the [focused] parameter
-     * @throws IllegalStateException if this component isn't contained within a GUI (i.e. when [GuiComponent.gui] == null)
+     * @throws LayerHierarchyException if this component isn't contained within a GUI (i.e. when [GuiComponent.gui] == null)
      */
     fun requestFocusedState(focused: Boolean): Boolean
 
@@ -73,7 +74,7 @@ interface IComponentFocus {
      * Forces that this component to be focused or blurred depending on the value of the [focused] parameter.
      *
      * This is effectively shorthand for `if(focused) forceFocus() else forceBlur()`
-     * @throws IllegalStateException if this component isn't contained within a GUI (i.e. when [GuiComponent.gui] == null)
+     * @throws LayerHierarchyException if this component isn't contained within a GUI (i.e. when [GuiComponent.gui] == null)
      */
     fun forceFocusedState(focused: Boolean)
 }
@@ -85,7 +86,7 @@ class ComponentFocusHandler: IComponentFocus {
         get() = component.gui?.focusedComponent === component
 
     override fun requestFocus(): Boolean {
-        val gui = component.gui ?: throw IllegalStateException("Component not contained within GUI")
+        val gui = component.gui ?: throw LayerHierarchyException("Component not contained within GUI")
         if(component.isFocused) return true
 
         val focusRequest = GuiComponentEvents.RequestFocusEvent()
@@ -102,7 +103,7 @@ class ComponentFocusHandler: IComponentFocus {
     }
 
     override fun forceFocus() {
-        val gui = component.gui ?: throw IllegalStateException("Component not contained within GUI")
+        val gui = component.gui ?: throw LayerHierarchyException("Component not contained within GUI")
         if(component.isFocused) return
         gui.focusedComponent?.forceBlur()
         gui.focusedComponent = component
@@ -110,7 +111,7 @@ class ComponentFocusHandler: IComponentFocus {
     }
 
     override fun requestBlur(): Boolean {
-        val gui = component.gui ?: throw IllegalStateException("Component not contained within GUI")
+        val gui = component.gui ?: throw LayerHierarchyException("Component not contained within GUI")
         if(!component.isFocused) return true
         val blurRequest = GuiComponentEvents.RequestBlurEvent()
         component.BUS.fire(blurRequest)
@@ -125,7 +126,7 @@ class ComponentFocusHandler: IComponentFocus {
     }
 
     override fun forceBlur() {
-        val gui = component.gui ?: throw IllegalStateException("Component not contained within GUI")
+        val gui = component.gui ?: throw LayerHierarchyException("Component not contained within GUI")
         if(!component.isFocused) return
         gui.focusedComponent = null
         component.BUS.fire(GuiComponentEvents.BlurEvent())

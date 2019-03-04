@@ -25,6 +25,7 @@ class Matrix3 private constructor(private val matrix: Matrix3d, val frozen: Bool
      * @throws IllegalStateException if this matrix is [frozen]
      */
     fun translate(x: Double, y: Double) {
+        checkFrozen()
         transform.setIdentity()
         transform.m02 = x
         transform.m12 = y
@@ -39,6 +40,7 @@ class Matrix3 private constructor(private val matrix: Matrix3d, val frozen: Bool
      * @throws IllegalStateException if this matrix is [frozen]
      */
     fun scale(x: Double, y: Double) {
+        checkFrozen()
         transform.setIdentity()
         transform.m00 = x
         transform.m11 = y
@@ -52,6 +54,7 @@ class Matrix3 private constructor(private val matrix: Matrix3d, val frozen: Bool
      * @throws IllegalStateException if this matrix is [frozen]
      */
     fun rotate(angle: Double) {
+        checkFrozen()
         transform.setIdentity()
         val sin = Math.sin(-angle)
         val cos = Math.cos(-angle)
@@ -99,6 +102,7 @@ class Matrix3 private constructor(private val matrix: Matrix3d, val frozen: Bool
      * @throws IllegalStateException if this matrix is [frozen]
      */
     fun mul(matrix: Matrix3) {
+        checkFrozen()
         this.matrix.mul(matrix.matrix)
     }
 
@@ -163,6 +167,10 @@ class Matrix3 private constructor(private val matrix: Matrix3d, val frozen: Bool
         )
     }
 
+    private fun checkFrozen() {
+        if(frozen) throw IllegalArgumentException("This matrix is frozen. Use `copy` to create a mutable copy")
+    }
+
     companion object {
         /**
          * A frozen identity matrix
@@ -170,6 +178,4 @@ class Matrix3 private constructor(private val matrix: Matrix3d, val frozen: Bool
         @JvmField
         val identity = Matrix3().frozen()
     }
-
-
 }

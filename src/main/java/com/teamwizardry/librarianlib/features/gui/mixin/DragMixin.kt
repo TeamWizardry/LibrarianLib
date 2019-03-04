@@ -74,7 +74,7 @@ class DragMixin(protected var component: GuiComponent, protected var correctionF
                     component.pos = component.BUS.fire(
                             DragMoveEvent(component, mouseButton, component.pos, newPos)
                     ).newPos
-                    event.mousePos = component.parent?.let { parent ->
+                    event.mousePos = component.parentComponent?.let { parent ->
                         component.convertPointFromParent(parent.mousePos)
                     } ?: component.mousePos
                 }

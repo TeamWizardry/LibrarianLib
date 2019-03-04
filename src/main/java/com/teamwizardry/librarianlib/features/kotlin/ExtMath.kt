@@ -1,6 +1,8 @@
 package com.teamwizardry.librarianlib.features.kotlin
 
 import net.minecraft.util.math.MathHelper
+import kotlin.math.ceil
+import kotlin.math.floor
 
 // Clamping ============================================================================================================
 
@@ -16,3 +18,9 @@ fun fastCos(angle: Float): Float = MathHelper.cos(angle)
 fun fastCos(angle: Double): Double = MathHelper.cos(angle.toFloat()).toDouble()
 fun fastSin(angle: Float): Float = MathHelper.sin(angle)
 fun fastSin(angle: Double): Double = MathHelper.sin(angle.toFloat()).toDouble()
+
+fun floorInt(value: Float): Int = floor(value).toInt()
+fun floorInt(value: Double): Int = floor(value).toInt()
+
+fun ceilInt(value: Float): Int = ceil(value).toInt()
+fun ceilInt(value: Double): Int = ceil(value).toInt()

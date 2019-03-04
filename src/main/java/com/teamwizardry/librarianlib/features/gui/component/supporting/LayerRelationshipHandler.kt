@@ -3,12 +3,18 @@ package com.teamwizardry.librarianlib.features.gui.component.supporting
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
+import com.teamwizardry.librarianlib.features.gui.component.LayerHierarchyException
 import com.teamwizardry.librarianlib.features.gui.value.RMValueDouble
 import java.lang.Exception
 import java.util.*
 
 interface ILayerRelationships {
     val zIndex_rm: RMValueDouble
+    /**
+     * The sort index and render order for the layer. Use [GuiLayer.OVERLAY_Z] and [GuiLayer.UNDERLAY_Z] to create
+     * layers that appear on top or below _literally everything else._ In order to maintain this property, please
+     * limit your z index offsets to ±1,000,000. That should be more than enough.
+     */
     var zIndex: Double
 
     val children: List<GuiLayer>
@@ -119,22 +125,22 @@ class LayerRelationshipHandler: ILayerRelationships {
             return
         }
         if (component === this.component)
-            throw IllegalArgumentException("Immediately recursive component hierarchy")
+            throw LayerHierarchyException("Immediately recursive component hierarchy")
 
         if (!component.canAddToParent(this.component)) {
-            throw IllegalArgumentException("This is an invalid parent for the passed layer")
+            throw LayerHierarchyException("This is an invalid parent for the passed layer")
         }
         if (component.parent != null) {
             if (component.parent == this.component) {
                 LibrarianLog.error("You tried to add the component to the same parent twice. Why?", Exception())
                 return
             } else {
-                throw IllegalArgumentException("Component already had a parent")
+                throw LayerHierarchyException("Component already had a parent")
             }
         }
 
         if (component in parents) {
-            throw IllegalArgumentException("Recursive component hierarchy")
+            throw LayerHierarchyException("Recursive component hierarchy")
         }
 
         if (this.component.BUS.fire(GuiLayerEvents.AddChildEvent(component)).isCanceled())

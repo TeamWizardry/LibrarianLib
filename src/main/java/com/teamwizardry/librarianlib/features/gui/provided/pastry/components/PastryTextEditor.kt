@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.features.gui.provided.pastry.components
 import com.teamwizardry.librarianlib.features.eventbus.Hook
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.helpers.pos
 import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
@@ -36,7 +35,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 class PastryTextEditor(posX: Int, posY: Int, width: Int, height: Int): GuiComponent(posX, posY, width, height) {
-    val editor = Editor(Fonts.MCClassic, size.xi)
+    val editor = Editor(Fonts.classic, size.xi)
     val mode = editor.mode as DefaultEditorMode
     init {
         mode.clipboard = MCClipboard
@@ -94,7 +93,7 @@ class PastryTextEditor(posX: Int, posY: Int, width: Int, height: Int): GuiCompon
 
         val blinkSpeed = 500
         if(selection == null && (System.currentTimeMillis()-lastCursorChange) % (blinkSpeed*2) < blinkSpeed) {
-            val font = mode.cursorGlyph?.font ?: Fonts.MCClassic
+            val font = mode.cursorGlyph?.font ?: Fonts.classic
             val min = mode.cursorPos.toLL() - vec(1, font.ascent)
             val max = mode.cursorPos.toLL() + vec(0, font.descent)
 

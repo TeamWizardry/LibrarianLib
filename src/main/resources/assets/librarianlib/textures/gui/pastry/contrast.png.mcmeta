@@ -39,7 +39,7 @@
             "splitpane.vsplit": { "pos": [109,88,3,8], "caps": [0,2,0,2], "capstretch": true },
 
             "textfield": { "pos": [0,24,8,12], "caps": [2,0,2,0] },
-            "dropdown": { "pos": [16,24,16,12], "caps": [2,0,8,0] },
+            "dropdown": { "pos": [16,24,16,12], "caps": [2,2,8,2] },
             "dropdown.background": { "pos": [16,40,16,8], "caps": [2,2,2,2] },
             "dropdown.highlight": { "pos": [16,48,16,8], "caps": [2,2,2,2] },
             "dropdown.separator": { "pos": [16,56,16,5], "caps": [4,0,4,0] },
