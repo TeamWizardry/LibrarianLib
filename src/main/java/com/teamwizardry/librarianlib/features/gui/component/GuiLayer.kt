@@ -16,6 +16,9 @@ import java.lang.reflect.Field
 import java.util.IdentityHashMap
 import kotlin.coroutines.CoroutineContext
 
+/**
+ *
+ */
 @SideOnly(Side.CLIENT)
 open class GuiLayer private constructor(
     internal val geometry: LayerGeometryHandler,
@@ -42,17 +45,29 @@ open class GuiLayer private constructor(
         @Suppress("LeakingThis")
         {
             geometry.layer = this
-            relationships.component = this
+            relationships.layer = this
             render.layer = this
-            clipping.component = this
+            clipping.layer = this
             base.layer = this
         }()
     }
 
+    /**
+     * An optional display name that describes the role of this layer. This is not displayed to the user and is
+     * currently only used in [debugPrint], though may be utilized by future debugging tools. It can be set in line
+     * using the static `GuiLayer.name(layer, "name")`.
+     *
+     * Examples: "Center stack", "Alternate color swatch", "Machine Top"
+     */
     var name: String? = null
 
+    /**
+     * The event bus on which all events for this layer are fired.
+     */
     @JvmField
     val BUS = EventBus()
+
+    private var wrapper: LayerBackedComponent? = null
 
     override val parent: GuiLayer?
         get() = relationships.parent
@@ -60,8 +75,6 @@ open class GuiLayer private constructor(
     open fun setParentInternal(value: GuiLayer?) {
         relationships.parent = value
     }
-
-    private var wrapper: LayerBackedComponent? = null
 
     override fun drawDebugBoundingBox() {
         val wrapper = wrapper
@@ -81,6 +94,9 @@ open class GuiLayer private constructor(
         return wrapper
     }
 
+    /**
+     * Print this layer and its descendant hierarchy for debugging purposes.
+     */
     fun debugPrint(detailed: Boolean = false): String {
         return debugLayerInField(null, detailed)
     }
@@ -121,7 +137,7 @@ open class GuiLayer private constructor(
      * Get debug information for [debugPrint]. Each list element will be placed on a separate line and will be
      * automatically indented.
      *
-     * When overriding simply call `super.debugInfo()`, add to the returned list, then return it.
+     * When overriding call `super.debugInfo()`, add to the returned list, then return it.
      */
     open fun debugInfo(): MutableList<String> {
         val list = mutableListOf<String>()
@@ -163,7 +179,7 @@ open class GuiLayer private constructor(
         private val layerFieldCache = mutableMapOf<Class<*>, List<Field>>()
 
         @JvmStatic
-        fun getLayerFields(obj: Any): Map<GuiLayer, String> {
+        private fun getLayerFields(obj: Any): Map<GuiLayer, String> {
             val fields = layerFieldCache.getOrPut(obj.javaClass) {
                 obj.javaClass.allDeclaredFields.filter {
                     GuiLayer::class.java.isAssignableFrom(it.type)
@@ -185,10 +201,14 @@ open class GuiLayer private constructor(
                 }
                 .associateTo(IdentityHashMap()) { it }
         }
-    }
-}
 
-fun <T: GuiLayer> T.name(name: String): T {
-    this.name = name
-    return this
+        /**
+         * Set the layer's name inline without having to use a variable
+         */
+        @JvmStatic
+        fun <T: GuiLayer> T.name(name: String): T {
+            this.name = name
+            return this
+        }
+    }
 }

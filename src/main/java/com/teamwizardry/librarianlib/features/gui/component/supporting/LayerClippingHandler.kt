@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.value.RMValueDouble
 import com.teamwizardry.librarianlib.features.gui.value.RMValueInt
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.pos
 import com.teamwizardry.librarianlib.features.kotlin.times
@@ -59,7 +58,7 @@ interface ILayerClipping {
  * Created by TheCodeWarrior
  */
 class LayerClippingHandler: ILayerClipping {
-    lateinit var component: GuiLayer
+    lateinit var layer: GuiLayer
 
     /**
      * If true, clip component and its context to within its bounds. When this is set and both [clippingSprite] and
@@ -119,14 +118,14 @@ class LayerClippingHandler: ILayerClipping {
         if(sp != null) {
             GlStateManager.enableTexture2D()
             sp.bind()
-            sp.draw(component.animator.time.toInt(), 0f, 0f, component.size.xi.toFloat(), component.size.yi.toFloat())
+            sp.draw(layer.animator.time.toInt(), 0f, 0f, layer.size.xi.toFloat(), layer.size.yi.toFloat())
             return
         }
 
         GlStateManager.disableTexture2D()
         GlStateManager.color(1f, 0f, 1f, 0.5f)
         val vb = Tessellator.getInstance().buffer
-        val size = component.size
+        val size = layer.size
         val r = cornerRadius
 
         vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION)
@@ -235,10 +234,10 @@ class LayerClippingHandler: ILayerClipping {
 
     override fun isPointClipped(point: Vec2d): Boolean {
         if(clippingSprite != null || customClipping != null) return false // we can't clip these
-        val point = point + component.contentsOffset
+        val point = point + layer.contentsOffset
 
         if(clipToBounds) {
-            val size = component.size
+            val size = layer.size
             if (point.x < 0 || point.x > size.x ||
                     point.y < 0 || point.y > size.y) {
                 return true

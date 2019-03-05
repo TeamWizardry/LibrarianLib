@@ -54,7 +54,7 @@ class RandomizedValuesPanel(val onEdit: (RandomizedValuesPanel) -> Unit) : Pastr
             })
         }
 
-        runLayout()
+        runLayoutIfNeeded()
         modeSwitched(true)
     }
 
@@ -63,7 +63,7 @@ class RandomizedValuesPanel(val onEdit: (RandomizedValuesPanel) -> Unit) : Pastr
             it.fixed = fixed
         }
         contentSize = vec(contentSize.x, flexbox.pos.y + flexbox.minSize.y + 2)
-        runLayout()
+        runLayoutIfNeeded()
     }
 
     override fun layoutChildren() {

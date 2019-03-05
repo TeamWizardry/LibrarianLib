@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.gui.component.supporting
 
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.value.IMValueBoolean
@@ -7,47 +8,47 @@ import com.teamwizardry.librarianlib.features.gui.value.IMValueBoolean
 interface ILayerBase {
     val isVisible_im: IMValueBoolean
     /**
-     * Whether this component should be drawn or have events fire
+     * Whether this component should be drawn. For [components][GuiComponent] this also disables input events.
+     *
+     * By default this is driven by [isVisible_im]
      */
     var isVisible: Boolean
+
     /**
-     * Returns true if the component is in need of a layout update. Defaults to true upon layer creation
+     * Whether this layer is in need of a layout update. Defaults to true upon layer creation. It can and should be
+     * set using the zero-argument [setNeedsLayout] unless there is a good reason not to as it won't clobber existing
+     * values and is clearer to read.
      */
     var needsLayout: Boolean
+
     /**
      * Returns true if this component is invalid and it should be removed from its parent
      */
     var isInvalid: Boolean
 
     /**
-     * Called immediately before any layers are rendered or sorted by zIndex and after [mouseOver] has been updated.
-     */
-    fun preFrame()
-
-    /**
-     * Calls [preFrame] on this layer, fires a [GuiLayerEvents.PreFrameEvent], then calls [callPreFrame] on each
-     * child layer.
+     * Used internally to propagate pre-frame events
      */
     fun callPreFrame()
 
     /**
-     * Draws the component, this is called between pre and post draw events.
+     * Draws the layer's contents. This is the method to override when creating custom layer rendering
      *
-     * The only guranteed GL state when this method is called is the following:
+     * The guaranteed GL states for this method are defined in the listed "sample" method
      *
-     * - GL_TEXTURE_2D - enabled
-     * - GL_COLOR - (1, 1, 1, 1)
+     * @sample ILayerRendering.glStateGuarantees
      */
     fun draw(partialTicks: Float)
 
     /**
-     * Called to lay out the children of this layer. Unless overridden this is a no-op.
+     * Called to lay out the children of this layer.
      *
-     * This method is called before each frame if this component's bounds have changed, children are added/removed,
-     * or [setNeedsLayout] has been called. After this method completes, the children of this component will be
-     * checked for layout. This means that changes made in one layer can ripple downward. [needsLayout] is reset
-     * to `false` after this method is called, so any changes inside it will not cause the layout to be recalculated
-     * every frame.
+     * This method is called before each frame if this layer's bounds have changed, children have been added/removed,
+     * a child's frame has changed, or [setNeedsLayout] has been called on this layer. After this method completes,
+     * the children of this component will be checked for layout. This means that changes made in one layer can ripple
+     * downward, but also that children can override the layout of their parent. [needsLayout] is reset to false after
+     * this layer and its children are laid out, so any changes while laying out will not cause the layout to be
+     * recalculated on the next frame.
      *
      * The idea behind this method is that self-contained components/layers can lay out their children dynamically
      * themselves. Examples of such a component would be a self-contained list item, a component that spaces out its
@@ -57,15 +58,12 @@ interface ILayerBase {
     fun layoutChildren()
 
     /**
-     * Calls [layoutChildren] if [needsLayout] is true, then calls [runLayoutIfNeeded] on this layer's children
-     * regardless of [needsLayout]'s array. [needsLayout] is reset to false after [layoutChildren] completes,
-     * meaning size changes in that method won't cause a layout pass every frame.
+     * Runs the layout process on this layer and its children if their [needsLayout] flag is true.
      */
     fun runLayoutIfNeeded()
 
     /**
-     * Calls [layoutChildren] then calls [runLayout] on this layer's children. [needsLayout] is reset to false
-     * after [layoutChildren] completes, meaning size changes in that method won't cause a layout pass every frame.
+     * Runs the layout process on this layer and its children regardless of their [needsLayout] status.
      */
     fun runLayout()
 
@@ -74,9 +72,13 @@ interface ILayerBase {
      */
     fun setNeedsLayout()
 
-    fun clearInvalid()
     /**
      * Set this component invalid so it will be removed from it's parent element
+     */
+    fun clearInvalid()
+
+    /**
+     * Mark this layer as invalid so it will be removed from its parent element in the next frame
      */
     fun invalidate()
 }
@@ -84,54 +86,22 @@ interface ILayerBase {
 internal class LayerBaseHandler: ILayerBase {
     lateinit var layer: GuiLayer
 
-    /**
-     * Called immediately before any layers are rendered or sorted by zIndex and after [mouseOver] has been updated.
-     */
-    override fun preFrame() {
+    override val isVisible_im: IMValueBoolean = IMValueBoolean(true)
+    override var isVisible by isVisible_im
 
-    }
+    override var needsLayout: Boolean = true
 
-    /**
-     * Calls [preFrame] on this layer, fires a [GuiLayerEvents.PreFrameEvent], then calls [callPreFrame] on each
-     * child layer.
-     */
+    override var isInvalid = false
+
     override fun callPreFrame() {
-        layer.preFrame()
         layer.BUS.fire(GuiLayerEvents.PreFrameEvent())
         layer.children.forEach { it.callPreFrame() }
     }
 
-    /**
-     * Draws the component, this is called between pre and post draw events.
-     *
-     * The only guranteed GL state when this method is called is the following:
-     *
-     * - GL_TEXTURE_2D - enabled
-     * - GL_COLOR - (1, 1, 1, 1)
-     */
     override fun draw(partialTicks: Float) {}
 
-    /**
-     * Called to lay out the children of this layer. Unless overridden this is a no-op.
-     *
-     * This method is called before each frame if this component's bounds have changed, children are added/removed,
-     * or [setNeedsLayout] has been called. After this method completes, the children of this component will be
-     * checked for layout. This means that changes made in one layer can ripple downward. [needsLayout] is reset
-     * to `false` after this method is called, so any changes inside it will not cause the layout to be recalculated
-     * every frame.
-     *
-     * The idea behind this method is that self-contained components/layers can lay out their children dynamically
-     * themselves. Examples of such a component would be a self-contained list item, a component that spaces out its
-     * children equally along its length, or simply a component that needs to resize its background layer
-     * to fit its dimensions.
-     */
     override fun layoutChildren() {}
 
-    /**
-     * Calls [layoutChildren] if [needsLayout] is true, then calls [runLayoutIfNeeded] on this layer's children
-     * regardless of [needsLayout]'s array. [needsLayout] is reset to false after [layoutChildren] completes,
-     * meaning size changes in that method won't cause a layout pass every frame.
-     */
     override fun runLayoutIfNeeded() {
         if(needsLayout) {
             layer.layoutChildren()
@@ -141,10 +111,6 @@ internal class LayerBaseHandler: ILayerBase {
         layer.needsLayout = false
     }
 
-    /**
-     * Calls [layoutChildren] then calls [runLayout] on this layer's children. [needsLayout] is reset to false
-     * after [layoutChildren] completes, meaning size changes in that method won't cause a layout pass every frame.
-     */
     override fun runLayout() {
         layer.layoutChildren()
         layer.BUS.fire(GuiLayerEvents.LayoutChildren())
@@ -152,40 +118,15 @@ internal class LayerBaseHandler: ILayerBase {
         layer.needsLayout = false
     }
 
-    //region - Base component stuff
-
-    override val isVisible_im: IMValueBoolean = IMValueBoolean(true)
-    /**
-     * Whether this component should be drawn or have events fire
-     */
-    override var isVisible by isVisible_im
-
-    /**
-     * Returns true if the component is in need of a layout update. Defaults to true upon layer creation
-     */
-    override var needsLayout: Boolean = true
-
-    /**
-     * Marks this component to be laid out using [layoutChildren] before the next frame.
-     */
     override fun setNeedsLayout() {
         layer.needsLayout = true
     }
 
-    /**
-     * Returns true if this component is invalid and it should be removed from its parent
-     */
-    override var isInvalid = false
-
     @Deprecated("Directly set isInvalid", replaceWith = ReplaceWith("isInvalid = false"))
     override fun clearInvalid() { layer.isInvalid = false }
 
-    /**
-     * Set this component invalid so it will be removed from it's parent element
-     */
     @Deprecated("Directly set isInvalid", replaceWith = ReplaceWith("isInvalid = true"))
     override fun invalidate() {
         layer.isInvalid = true
     }
-    //endregion
 }

@@ -72,7 +72,7 @@ interface ILayerRelationships {
  * Created by TheCodeWarrior
  */
 class LayerRelationshipHandler: ILayerRelationships {
-    lateinit var component: GuiLayer
+    lateinit var layer: GuiLayer
 
     override val zIndex_rm = RMValueDouble(1.0)
     override var zIndex by zIndex_rm
@@ -116,7 +116,7 @@ class LayerRelationshipHandler: ILayerRelationships {
      */
     override fun add(vararg components: GuiLayer?) {
         components.forEach { addInternal(it) }
-        component.setNeedsLayout()
+        layer.setNeedsLayout()
     }
 
     protected fun addInternal(component: GuiLayer?) {
@@ -124,14 +124,14 @@ class LayerRelationshipHandler: ILayerRelationships {
             LibrarianLog.error("Null component, ignoring")
             return
         }
-        if (component === this.component)
+        if (component === this.layer)
             throw LayerHierarchyException("Immediately recursive component hierarchy")
 
-        if (!component.canAddToParent(this.component)) {
+        if (!component.canAddToParent(this.layer)) {
             throw LayerHierarchyException("This is an invalid parent for the passed layer")
         }
         if (component.parent != null) {
-            if (component.parent == this.component) {
+            if (component.parent == this.layer) {
                 LibrarianLog.error("You tried to add the component to the same parent twice. Why?", Exception())
                 return
             } else {
@@ -143,12 +143,12 @@ class LayerRelationshipHandler: ILayerRelationships {
             throw LayerHierarchyException("Recursive component hierarchy")
         }
 
-        if (this.component.BUS.fire(GuiLayerEvents.AddChildEvent(component)).isCanceled())
+        if (this.layer.BUS.fire(GuiLayerEvents.AddChildEvent(component)).isCanceled())
             return
-        if (component.BUS.fire(GuiLayerEvents.AddToParentEvent(this.component)).isCanceled())
+        if (component.BUS.fire(GuiLayerEvents.AddToParentEvent(this.layer)).isCanceled())
             return
         subLayers.add(component)
-        component.setParentInternal(this.component)
+        component.setParentInternal(this.layer)
     }
 
     /**
@@ -164,9 +164,9 @@ class LayerRelationshipHandler: ILayerRelationships {
     override fun remove(component: GuiLayer) {
         if (component !in subLayers)
             return
-        if (this.component.BUS.fire(GuiLayerEvents.RemoveChildEvent(component)).isCanceled())
+        if (this.layer.BUS.fire(GuiLayerEvents.RemoveChildEvent(component)).isCanceled())
             return
-        if (component.BUS.fire(GuiLayerEvents.RemoveFromParentEvent(this.component)).isCanceled())
+        if (component.BUS.fire(GuiLayerEvents.RemoveFromParentEvent(this.layer)).isCanceled())
             return
         component.setParentInternal(null)
         subLayers.remove(component)
@@ -218,6 +218,6 @@ class LayerRelationshipHandler: ILayerRelationships {
     /** [GuiLayer.root] */
     override val root: GuiLayer
         get() {
-            return component.parent?.root ?: this.component
+            return layer.parent?.root ?: this.layer
         }
 }

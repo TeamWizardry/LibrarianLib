@@ -61,7 +61,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
     }
 
     fun scrollTo(item: PastryDropdownItem<T>) {
-        runLayout()
+        runLayoutIfNeeded()
         val stackItem = items[item] ?: return
         val itemPos = stackItem.itemLayer.convertPointTo(vec(0, 0), this).y
         contents.yi -= itemPos.toInt() - 2
@@ -121,7 +121,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
         selected.isVisible = true
         selected.highlight.isVisible = false
 
-        runLayout()
+        runLayoutIfNeeded()
         disableLayout = true
 
         contents.pos += vec(0, 2)

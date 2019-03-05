@@ -14,47 +14,12 @@ import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.opengl.GL11
 
 /**
- * The base class of every on-screen object. These can be nested within each other using [add]. Subcomponents will be
- * positioned relative to their parent, so modifications to the parent's [pos] will change their rendering position.
+ * The base class of every **interactive** on-screen object. Components behave identically to [GuiLayer] except that
+ * they also handle user input, as opposed to being completely passive. Note that adding a [GuiComponent] as a child of
+ * a [GuiLayer] is considered an error and an exception will be thrown
  *
- * # Summery
- *
- * - Events - Fire when something happens, allow you to change what happens or cancel it alltogether. Register on [BUS]
- * - Tags - Mark a component for retrieval later.
- * - Data - Store metadata in a component.
- *
- * # Detail
- *
- * ## Events
- *
- * More advanced functionality is achieved through event hooks on the component's [BUS]. All events are subclasses of
- * [Event] so a type hierarchy of that should show all events available to you. Only the child classes of [GuiComponent]
- * are fired by default, all others are either a part of a particular component class or require some action on the
- * user's part to initialize.
- *
- * ## Tags
- *
- * If you want to mark a component for retrieval later you can use [addTag] to add an arbitrary object as a tag.
- * Children with a specific tag can be retrieved later using [ComponentTagHandler.getByTag], or you can check if a component has a tag using
- * [hasTag]. Tags are stored in a HashSet, so any object that overrides the [hashCode] and [equals] methods will work by
- * array, but any object will work by identity. [Explanation here.](http://stackoverflow.com/a/1692882/1541907)
- *
- * ## Data
- *
- * If you need to store additional metadata in a component, this can be done with [setData]. The class passed in must be
- * the class of the data, and is used to reduce unchecked cast warnings and to ensure that the same key can be used with
- * multiple types of data. The key is used to allow multiple instances of the same data type to be stored in a component,
- * and is independent per class.
- * ```
- * component.setData(MyCoolObject.class, "foo", myInstance);
- * component.setData(MyCoolObject.class, "bar", anotherInstance);
- * component.setData(YourCoolObject.class, "foo", yourInstance);
- *
- * component.getData(MyCoolObject.class, "foo"); // => myInstance
- * component.getData(MyCoolObject.class, "bar"); // => anotherInstance
- * component.getData(YourCoolObject.class, "foo"); // => yourInstance
- * ```
- *
+ * All the events fired by [GuiLayer] are also fired by [GuiComponent], in addition to the events in
+ * [GuiComponentEvents].
  */
 @SideOnly(Side.CLIENT)
 open class GuiComponent private constructor(
@@ -80,17 +45,35 @@ open class GuiComponent private constructor(
         ComponentFocusHandler()
     )
 
+    /**
+     * An immutable copy of [children] that has been filtered to only include components.
+     */
     open val subComponents: List<GuiComponent>
         get() = this.children.filterIsInstance<GuiComponent>()
-    val rootComponent: GuiComponent
-        get() = super.root as GuiComponent
+    /**
+     * The parent of this component as a [GuiComponent], or `null` if there isn't a parent or the parent isn't a
+     * [GuiComponent] (as can happen with components created using [componentWrapper])
+     */
     val parentComponent: GuiComponent?
-        get() = super.parent as GuiComponent?
+        get() = super.parent as? GuiComponent?
 
+    /**
+     * The window this component is contained within, or null if this component isn't in a [GuiWindow]
+     */
     open val window: GuiWindow?
         get() = this.root as? GuiWindow
+    /**
+     * The GUI this component is contained within, or the window if this component is in a [GuiWindow]
+     */
     open val gui: RootComponent?
         get() = this.root as? RootComponent
+
+    /**
+     * When enabled, this component can be added as a child of a [GuiLayer] without an error being thrown.
+     */
+    var allowAddingToLayer = false
+    private var wrapper: ComponentBackedLayer? = null
+
     override fun shouldDrawSkeleton(): Boolean = this.isPointInBounds(this.mousePos)
 
     override fun drawDebugBoundingBox() {
@@ -124,7 +107,6 @@ open class GuiComponent private constructor(
         super.drawDebugBoundingBox()
     }
 
-    internal var allowAddingToLayer = false
     override fun canAddToParent(parent: GuiLayer): Boolean {
         return allowAddingToLayer || parent is GuiComponent
     }
@@ -135,6 +117,9 @@ open class GuiComponent private constructor(
         return list
     }
 
+    /**
+     * Adds the base debug info for this component to the provided list. Used by [debugInfo]
+     */
     fun addGuiComponentDebugInfo(list: MutableList<String>) {
         list.add("mouse: pos = $mousePos, hit = $mouseHit, over = $mouseOver, " +
             "pressed = ${pressedButtons.joinToString("+")}")
@@ -159,11 +144,10 @@ open class GuiComponent private constructor(
         }
     }
 
-    private var wrapper: ComponentBackedLayer? = null
-
     /**
-     * Wraps this component in a layer, effectively removing it from UI calculations. This can be helpful for compat
-     * with rendering-only components.
+     * Wraps this component in a layer, effectively removing it from UI calculations. This can be helpful for
+     * compatibility to convert existing rendering-only components to layers or for when a more complex component
+     * is going to be used purely for visual appearance.
      */
     open fun layerWrapper(): GuiLayer {
         val wrapper = this.wrapper ?: ComponentBackedLayer(this)

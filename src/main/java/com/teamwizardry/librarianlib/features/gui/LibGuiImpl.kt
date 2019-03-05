@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.features.gui.components.StandaloneRootCompo
 import com.teamwizardry.librarianlib.features.gui.layers.GradientLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
+import com.teamwizardry.librarianlib.features.kotlin.delegate
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.math.Axis2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
@@ -25,6 +26,7 @@ open class LibGuiImpl(
     catchSafetyNet: (e: Exception) -> Unit
 ) {
     val root: StandaloneRootComponent = StandaloneRootComponent(catchSafetyNet)
+    val safetyNet: Boolean by root::safetyNet.delegate
     val main: GuiComponent = object: GuiComponent(0, 0) {
         override var pos: Vec2d
             get() = vec(root.size.xi/2, root.size.yi/2)

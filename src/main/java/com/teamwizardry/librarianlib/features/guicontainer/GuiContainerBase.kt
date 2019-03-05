@@ -47,6 +47,7 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
 
     val main: GuiComponent by impl::main.delegate
     val root: GuiComponent by impl::root.delegate
+    val safetyNet: Boolean by impl::safetyNet.delegate
     var useDefaultBackground by impl::useDefaultBackground.delegate
 
     init {
