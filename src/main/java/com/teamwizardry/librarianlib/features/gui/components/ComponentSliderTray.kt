@@ -51,7 +51,7 @@ class ComponentSliderTray(posX: Int, posY: Int, offsetX: Int, offsetY: Int) : Gu
                 if (currentOffsetX < rootPos.x && currentOffsetX + (-offsetX - Math.abs(currentOffsetX)) / 3 < rootPos.x)
                     currentOffsetX += (-offsetX - Math.abs(currentOffsetX)) / 3
                 else
-                    invalidate()
+                    removeFromParent()
             }
 
             // TODO: untested math.signum(x) < 0
@@ -60,13 +60,13 @@ class ComponentSliderTray(posX: Int, posY: Int, offsetX: Int, offsetY: Int) : Gu
                 if (currentOffsetX > rootPos.x && currentOffsetX - (offsetX - Math.abs(currentOffsetX)) / 3 > rootPos.x)
                     currentOffsetX -= (offsetX - Math.abs(currentOffsetX)) / 3
                 else
-                    invalidate()
+                    removeFromParent()
             if (animatingOut) {
                 if (currentOffsetX <= offsetX) currentOffsetX += (offsetX - Math.abs(currentOffsetX)) / 3
             }
 
         } else
-            invalidate()
+            removeFromParent()
 
         pos = vec(rootPos.x + currentOffsetX, rootPos.y)
     }

@@ -46,8 +46,7 @@ class PastryDropdown<T> constructor(
         } else {
             selected = newItem
             buttonContents?.also { remove(it) }
-            buttonContents = newItem.createLayer()
-            add(buttonContents)
+            buttonContents = newItem.createLayer().also { add(it) }
         }
         BUS.fire(SelectEvent(selected?.value))
     }

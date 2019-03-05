@@ -96,7 +96,7 @@ interface IBookGui {
     }
 
     fun focusOn(newContext: BookContext): BookContext {
-        focus?.invalidate()
+        focus?.removeFromParent()
         context = newContext
 
         val page = context.pages[context.position]

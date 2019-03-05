@@ -89,7 +89,6 @@ open class StandaloneRootComponent(val closeGui: (Exception) -> Unit): RootCompo
         GL11.glEnable(GL11.GL_STENCIL_TEST)
 
         try {
-            cleanUpChildren()
             sortChildren()
 
             runLayoutIfNeeded()

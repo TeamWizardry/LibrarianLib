@@ -5,7 +5,46 @@ import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
 /**
- *
+ * Order of events when rendering:
+ * - **Sort children**
+ * - **Run layout if needed**
+ * - |-- Calls [GuiLayer.runLayoutIfNeeded]
+ * - |-- Fires [GuiLayerEvents.LayoutChildren]
+ * - **Pre frame**
+ * - |-- Fires [GuiLayerEvents.PreFrameEvent]
+ * - **Update mouse (GuiComponent)**
+ * - |-- Fires [GuiComponentEvents.CalculateMousePositionEvent]
+ * - |-- Fires [GuiComponentEvents.MouseDragEvent]
+ * - |-- Fires [GuiComponentEvents.MouseMoveEvent]
+ * - **Update hits (GuiComponent)**
+ * - |-- Checks [GuiComponent.disableMouseCollision]
+ * - |-- Calls [GuiLayer.isPointInBounds]
+ * - **Propagate hits (GuiComponent)**
+ * - |-- Fires [GuiComponentEvents.MouseDragLeaveEvent]
+ * - |-- Fires [GuiComponentEvents.MouseLeaveEvent]
+ * - |-- Fires [GuiComponentEvents.MouseDragEnterEvent]
+ * - |-- Fires [GuiComponentEvents.MouseEnterEvent]
+ * - |-- Fires [GuiComponentEvents.MouseDragOutEvent]
+ * - |-- Fires [GuiComponentEvents.MouseMoveOutEvent]
+ * - |-- Fires [GuiComponentEvents.MouseDragInEvent]
+ * - |-- Fires [GuiComponentEvents.MouseMoveInEvent]
+ * - **Update cursor icon (GuiComponent)**
+ * - **Render**
+ * - |-- Calls [GuiLayer.drawDebugBoundingBox]
+ * - |-- Fires [GuiLayerEvents.PreTransformEvent]
+ * - |-- Applies layer transform
+ * - |-- Fires [GuiLayerEvents.PostTransformEvent]
+ * - |-- Pushes clipping
+ * - |-- Applies contents offset
+ * - |-- Fires [GuiLayerEvents.PreDrawEvent]
+ * - |-- Calls [GuiLayer.draw]
+ * - |-- Fires [GuiLayerEvents.PreChildrenDrawEvent]
+ * - |-- Renders children
+ * - |-- Fires [GuiLayerEvents.PostDrawEvent]
+ * - |-- Reverses contents offset
+ * - |-- Pops clipping clipping
+ * - |-- Draws debug bounding box, if enabled
+ * - |-- Reverses layer transform
  */
 object GuiLayerEvents {
     class PreFrameEvent : Event()

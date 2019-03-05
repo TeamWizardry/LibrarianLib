@@ -27,19 +27,19 @@ class ComponentDescriptiveNumField constructor(description: String? = null, defa
 
         if (description != null) {
             val stringWidth = Minecraft().fontRenderer.getStringWidth(description)
-            textLayer = TextLayer(-stringWidth - 5, 0, 0, 0)
-            textLayer!!.fitToText = true
-            textLayer!!.text = description
+            textLayer = TextLayer(-stringWidth - 5, 0, 0, 0).also {
+                it.fitToText = true
+                it.text = description
+                add(it)
+            }
 
-            add(textLayer)
         }
     }
 
     fun updateText(description: String) {
         val stringWidth = Minecraft().fontRenderer.getStringWidth(description)
         if (textLayer == null) {
-            textLayer = TextLayer(-stringWidth - 5, 0, 0, 0)
-            add(textLayer)
+            textLayer = TextLayer(-stringWidth - 5, 0, 0, 0).also { add(it) }
         } else {
             textLayer!!.pos = vec(-stringWidth - 5, 0)
         }

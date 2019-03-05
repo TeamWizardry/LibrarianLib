@@ -31,7 +31,7 @@ class ComponentMaterialList(book: IBookGui, structureMaterials: StructureMateria
 
         BUS.hook(GuiComponentEvents.MouseDownEvent::class.java) {
             if (mouseOver)
-                invalidate()
+                removeFromParent()
         }
     }
 }

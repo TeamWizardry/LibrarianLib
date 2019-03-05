@@ -29,10 +29,10 @@ class LayerBackedComponent(val layer: GuiLayer): GuiComponent(0, 0, 0, 0),
         super.drawDebugBoundingBox()
     }
 
-    override fun add(vararg components: GuiLayer?) {
-        components.forEach { (it as? GuiComponent)?.allowAddingToLayer = true }
-        layer.add(*components)
-        components.forEach { (it as? GuiComponent)?.allowAddingToLayer = false }
+    override fun add(vararg layers: GuiLayer) {
+        layers.forEach { (it as? GuiComponent)?.allowAddingToLayer = true }
+        layer.add(*layers)
+        layers.forEach { (it as? GuiComponent)?.allowAddingToLayer = false }
     }
 
     override fun debugInfo(): MutableList<String> {

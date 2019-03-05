@@ -14,7 +14,7 @@ class SearchBookmark : Bookmark {
 
     override fun createBookmarkComponent(book: IBookGui, bookmarkIndex: Int): ComponentBookMark {
         var c = component
-        if (c == null || c.isInvalid) {
+        if (c?.parent == null) {
             c = ComponentSearchBar(book, bookmarkIndex, TFIDFSearch(book).textBoxConsumer(book) { SearchResults(book.book, it) })
             component = c
         } else

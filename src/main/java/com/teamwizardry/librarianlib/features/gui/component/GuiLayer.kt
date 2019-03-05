@@ -18,6 +18,10 @@ import kotlin.coroutines.CoroutineContext
 
 /**
  *
+ *
+ * The implementation of various responsibilities are in separate classes and implemented by GuiLayer via delegation.
+ * This allows a large API to be accessible directly on the layer, while also allowing the various responsibilities to
+ * stay separate.
  */
 @SideOnly(Side.CLIENT)
 open class GuiLayer private constructor(
@@ -72,6 +76,10 @@ open class GuiLayer private constructor(
     override val parent: GuiLayer?
         get() = relationships.parent
 
+    /**
+     * ## !! Internal !! ##
+     * A method used to directly set this layer's parent.
+     */
     open fun setParentInternal(value: GuiLayer?) {
         relationships.parent = value
     }

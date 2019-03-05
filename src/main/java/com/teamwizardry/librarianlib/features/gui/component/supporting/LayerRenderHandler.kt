@@ -27,11 +27,6 @@ interface ILayerRendering {
     fun add(vararg animations: Animation<*>)
 
     /**
-     * Cleans up invalid layers. Runs before [updateMouseBeforeRender].
-     */
-    fun cleanUpChildren()
-
-    /**
      * Sorts the layers by zIndex
      */
     fun sortChildren()
@@ -101,27 +96,6 @@ class LayerRenderHandler: ILayerRendering {
         animator.add(*animations)
     }
 
-    override fun cleanUpChildren() {
-        val components = layer.relationships.subLayers
-        components.removeAll { e ->
-            var b = e.isInvalid
-            e.clearInvalid()
-            if (!b) return@removeAll false
-            if (layer.BUS.fire(GuiLayerEvents.RemoveChildEvent(e)).isCanceled())
-                b = false
-            if (e.BUS.fire(GuiLayerEvents.RemoveFromParentEvent(layer)).isCanceled())
-                b = false
-            if (b) {
-                e.setParentInternal(null)
-            }
-            return@removeAll b
-        }
-
-        components.forEach {
-            it.cleanUpChildren()
-        }
-    }
-
     override fun sortChildren() {
         val components = layer.relationships.subLayers
         components.sortBy { it.zIndex }
@@ -135,11 +109,7 @@ class LayerRenderHandler: ILayerRendering {
      * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
     override fun renderLayer(partialTicks: Float) {
-        if(layer.needsLayout) {
-            layer.layoutChildren()
-            layer.BUS.fire(GuiLayerEvents.LayoutChildren())
-            layer.needsLayout = false
-        }
+        layer.runLayoutIfNeeded()
 
         if(!layer.isVisible) {
             renderSkeleton()
@@ -187,11 +157,7 @@ class LayerRenderHandler: ILayerRendering {
     override fun shouldDrawSkeleton(): Boolean = false
 
     override fun renderSkeleton() {
-        if(layer.needsLayout) {
-            layer.layoutChildren()
-            layer.BUS.fire(GuiLayerEvents.LayoutChildren())
-            layer.needsLayout = false
-        }
+        layer.runLayoutIfNeeded()
 
         layer.glApplyTransform(false)
 

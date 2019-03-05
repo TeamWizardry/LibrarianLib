@@ -5,6 +5,9 @@ import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
+/**
+ * See [GuiLayerEvents] for a breakdown of when events fire while rendering
+ */
 object GuiComponentEvents {
     /** Fired when a request is made that this component gain focus. Set [allow] to true to allow this. */
     class RequestFocusEvent(var allow: Boolean = false) : Event()

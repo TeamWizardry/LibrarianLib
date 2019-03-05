@@ -6,12 +6,15 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.components.LayerBackedComponent
 import com.teamwizardry.librarianlib.features.gui.value.IMValueBoolean
 
+/**
+ *
+ */
 interface ILayerBase {
     val isVisible_im: IMValueBoolean
     /**
      * Whether this component should be drawn. For [components][GuiComponent] this also disables input events.
      *
-     * By default this is driven by [isVisible_im]
+     * Driven by [isVisible_im]
      */
     var isVisible: Boolean
 
@@ -21,11 +24,6 @@ interface ILayerBase {
      * values and is clearer to read.
      */
     var needsLayout: Boolean
-
-    /**
-     * Returns true if this component is invalid and it should be removed from its parent
-     */
-    var isInvalid: Boolean
 
     /**
      * Used internally to propagate pre-frame events
@@ -72,16 +70,6 @@ interface ILayerBase {
      * Marks this component to be laid out using [layoutChildren] before the next frame.
      */
     fun setNeedsLayout()
-
-    /**
-     * Set this component invalid so it will be removed from it's parent element
-     */
-    fun clearInvalid()
-
-    /**
-     * Mark this layer as invalid so it will be removed from its parent element in the next frame
-     */
-    fun invalidate()
 }
 
 internal class LayerBaseHandler: ILayerBase {
@@ -91,8 +79,6 @@ internal class LayerBaseHandler: ILayerBase {
     override var isVisible by isVisible_im
 
     override var needsLayout: Boolean = true
-
-    override var isInvalid = false
 
     override fun callPreFrame() {
         layer.BUS.fire(GuiLayerEvents.PreFrameEvent())
@@ -121,13 +107,5 @@ internal class LayerBaseHandler: ILayerBase {
 
     override fun setNeedsLayout() {
         layer.needsLayout = true
-    }
-
-    @Deprecated("Directly set isInvalid", replaceWith = ReplaceWith("isInvalid = false"))
-    override fun clearInvalid() { layer.isInvalid = false }
-
-    @Deprecated("Directly set isInvalid", replaceWith = ReplaceWith("isInvalid = true"))
-    override fun invalidate() {
-        layer.isInvalid = true
     }
 }

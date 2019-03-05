@@ -61,7 +61,7 @@ class GuiTestLayout : GuiBase() {
             if(addRemoveBox.parent == null) {
                 mainList.add(addRemoveBox)
             } else {
-                addRemoveBox.invalidate()
+                addRemoveBox.removeFromParent()
             }
         }
 
