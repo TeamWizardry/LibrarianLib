@@ -39,7 +39,7 @@ open class TranslationHolder(private val key: String, private val args: Array<An
                 if (jsonElement !is JsonObject)
                     return TranslationHolder(jsonElement.asString)
 
-                val key = jsonElement.getAsJsonPrimitive("array").asString
+                val key = jsonElement.getAsJsonPrimitive("value").asString
                 if (jsonElement.has("args"))
                     for (arg in jsonElement.getAsJsonArray("args"))
                         when {

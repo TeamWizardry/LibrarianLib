@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.animator.animations
 
 import com.teamwizardry.librarianlib.features.animator.AnimatableProperty
+import com.teamwizardry.librarianlib.features.animator.Animation
 import com.teamwizardry.librarianlib.features.animator.LerperHandler
 import java.util.*
 
@@ -11,7 +12,7 @@ class KeyframeAnimation<T : Any>(target: T, property: AnimatableProperty<T>) : P
     constructor(target: T, property: String) : this(target, AnimatableProperty.get(target.javaClass, property))
 
     /**
-     * The list of keyframes for this animation. Getting and setting this array copy the array, and it cannot be
+     * The list of keyframes for this animation. Getting and setting this value copy the array, and it cannot be
      * modified after the animation has been added to an animator. The array is also sorted by keyframe time before
      * being used.
      *

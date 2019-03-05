@@ -23,14 +23,14 @@ public class IMValueBoolean implements GuiAnimatable {
     }
 
     /**
-     * Gets the current array
+     * Gets the current value
      */
     public boolean get() {
         return storage.get();
     }
 
     /**
-     * Sets the callback, unsetting the fixed array in the process
+     * Sets the callback, unsetting the fixed value in the process
      */
     public void set(BooleanSupplier callback) {
         GuiAnimator.getCurrent().add(this);
@@ -43,7 +43,7 @@ public class IMValueBoolean implements GuiAnimatable {
 
     /**
      * Sets the fixed callback. This isn't often called as most classes will provide a delegated property to directly
-     * access this array (`someProperty` will call booleano `somePropery_im` for its array)
+     * access this value (`someProperty` will call booleano `somePropery_im` for its value)
      */
     public void setValue(boolean value) {
         GuiAnimator.getCurrent().add(this);
@@ -76,7 +76,7 @@ public class IMValueBoolean implements GuiAnimatable {
     }
 
     /**
-     * Gets the current callback, or null if this IMValueBoolean has a fixed array
+     * Gets the current callback, or null if this IMValueBoolean has a fixed value
      */
     @Nullable
     public BooleanSupplier getCallback() {

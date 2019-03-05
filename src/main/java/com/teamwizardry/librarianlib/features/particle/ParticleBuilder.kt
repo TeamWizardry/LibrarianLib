@@ -80,7 +80,7 @@ class ParticleBuilder(private var lifetime: Int) {
     // region Color function
 
     /**
-     * Set the colorPrimary function for the particle.
+     * Set the color function for the particle.
      *
      * @see InterpColorComponents
      * @see InterpColorHSV
@@ -91,7 +91,7 @@ class ParticleBuilder(private var lifetime: Int) {
     }
 
     /**
-     * Shortcut for creating a static colorPrimary
+     * Shortcut for creating a static color
      */
     fun setColor(value: Color): ParticleBuilder {
         colorFunc = StaticInterp(value)
@@ -110,7 +110,7 @@ class ParticleBuilder(private var lifetime: Int) {
     }
 
     /**
-     * Shortcut for creating a static colorPrimary
+     * Shortcut for creating a static color
      */
     fun setAlpha(value: Float): ParticleBuilder {
         alphaFunc = StaticInterp(value)
@@ -252,7 +252,7 @@ class ParticleBuilder(private var lifetime: Int) {
     /**
      * Sets the acceleration
      *
-     * Each tick this array is added to the particle's tick
+     * Each tick this value is added to the particle's tick
      *
      * (calling this method enables standard particle tick calculations)
      */
@@ -265,7 +265,7 @@ class ParticleBuilder(private var lifetime: Int) {
     /**
      * Adds to the acceleration
      *
-     * Each tick this array is added to the particle's tick
+     * Each tick this value is added to the particle's tick
      *
      * (calling this method enables standard particle tick calculations)
      */
@@ -302,7 +302,7 @@ class ParticleBuilder(private var lifetime: Int) {
     }
 
     /**
-     * Sets the frictionBinding
+     * Sets the friction
      *
      * Each tick while the particle is colliding with a block, it's tick is multiplied by this vector
      *
@@ -315,7 +315,7 @@ class ParticleBuilder(private var lifetime: Int) {
     }
 
     /**
-     * Adds to the frictionBinding
+     * Adds to the friction
      *
      * Each tick while the particle is colliding with a block, it's tick is multiplied by this vector
      *
@@ -549,7 +549,7 @@ class ParticleBuilder(private var lifetime: Int) {
     /**
      * Build an instance of the particle.
      *
-     * Returns null and prints a warning if the colorPrimary function or render function are null.
+     * Returns null and prints a warning if the color function or render function are null.
      */
     fun build(world: World, pos: Vec3d): ParticleBase? {
         randomizationLambdas.forEach { it.accept(this) }

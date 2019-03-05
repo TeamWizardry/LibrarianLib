@@ -115,7 +115,7 @@ public class SerializeCellFactory extends SerializerFactory {
 			boolean bool = compound.getBoolean("bool");
 			NBTBase componentTag = compound.getTag("component");
 			Object component = componentTag == null ? null : // if no tag, it's null
-					// if there is a tag, deserialize. The existing array is pulled from `existing` if there is an existing cell.
+				// if there is a tag, deserialize. The existing value is pulled from `existing` if there is an existing cell.
 				componentSerializer.getValue().read(componentTag, null, syncing);
 			
 			Cell returnCell = (Cell) constructor.invoke(component);
@@ -144,7 +144,7 @@ public class SerializeCellFactory extends SerializerFactory {
 			
 			boolean bool = buf.readBoolean();
 			Object component = buf.readBoolean() ? null : // if no tag, it's null
-					// if there is a tag, deserialize. The existing array is pulled from `existing` if there is an existing cell.
+				// if there is a tag, deserialize. The existing value is pulled from `existing` if there is an existing cell.
 				componentSerializer.getValue().read(buf, null, syncing);
 			
 			Cell returnCell = (Cell) constructor.invoke(component);
@@ -214,13 +214,13 @@ object SerializeListFactory : SerializerFactory("List") {
             return array
         }
 
-        override fun writeNBT(array: MutableList<Any?>, syncing: Boolean): NBTBase {
+        override fun writeNBT(value: MutableList<Any?>, syncing: Boolean): NBTBase {
             val list = NBTTagList()
 
-            for (i in 0..array.size - 1) {
+            for (i in 0..value.size - 1) {
                 val container = NBTTagCompound()
                 list.appendTag(container)
-                val v = array[i]
+                val v = value[i]
                 if (v != null) {
                     container.setTag("-", serGeneric.write(v, syncing))
                 }
@@ -249,13 +249,13 @@ object SerializeListFactory : SerializerFactory("List") {
             return array
         }
 
-        override fun writeBytes(buf: ByteBuf, array: MutableList<Any?>, syncing: Boolean) {
-            val nullsig = BooleanArray(array.size) { array[it] == null }
+        override fun writeBytes(buf: ByteBuf, value: MutableList<Any?>, syncing: Boolean) {
+            val nullsig = BooleanArray(value.size) { value[it] == null }
             buf.writeBooleanArray(nullsig)
 
-            (0..array.size - 1)
+            (0..value.size - 1)
                     .filterNot { nullsig[it] }
-                    .forEach { serGeneric.write(buf, array[it]!!, syncing) }
+                    .forEach { serGeneric.write(buf, value[it]!!, syncing) }
         }
 
         private fun createConstructorMH(): () -> MutableList<Any?> {

@@ -33,13 +33,13 @@ import net.minecraft.nbt.NBTTagCompound
 //        override fun readNBT(nbt: NBTBase, existing: _V_?, syncing: Boolean): _V_ {
 //        }
 //
-//        override fun writeNBT(array: _V_, syncing: Boolean): NBTBase {
+//        override fun writeNBT(value: _V_, syncing: Boolean): NBTBase {
 //        }
 //
 //        override fun readBytes(buf: ByteBuf, existing: _V_?, syncing: Boolean): _V_ {
 //        }
 //
-//        override fun writeBytes(buf: ByteBuf, array: _V_, syncing: Boolean) {
+//        override fun writeBytes(buf: ByteBuf, value: _V_, syncing: Boolean) {
 //        }
 //    }
 //}

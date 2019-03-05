@@ -16,14 +16,14 @@ class RMValue<T> @JvmOverloads constructor(
 ) {
 
     /**
-     * Gets the current array
+     * Gets the current value
      */
     fun get(): T {
         return value
     }
 
     /**
-     * Sets a new array
+     * Sets a new value
      */
     fun set(value: T) {
         GuiAnimator.current.add(animatable)

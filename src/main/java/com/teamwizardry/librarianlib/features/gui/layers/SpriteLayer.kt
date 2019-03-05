@@ -11,8 +11,8 @@ import java.awt.Color
 /**
  * Displays a sprite
  *
- * Animated sprites will start their animation the moment the `sprite` property is set to a new array (setting it
- * repeatedly to the same array will not restart the animation)
+ * Animated sprites will start their animation the moment the `sprite` property is set to a new value (setting it
+ * repeatedly to the same value will not restart the animation)
  */
 class SpriteLayer @JvmOverloads constructor(var sprite: ISprite?, x: Int, y: Int, width: Int = sprite?.width ?: 16, height: Int = sprite?.height ?: 16) : GuiLayer(x, y, width, height) {
 

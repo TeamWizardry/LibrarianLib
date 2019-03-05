@@ -37,7 +37,7 @@ class SpriteRenderModule @JvmOverloads constructor(
          */
         @JvmField val previousPosition: ReadParticleBinding? = null,
         /**
-         * The OpenGL colorPrimary of the particle
+         * The OpenGL color of the particle
          */
         @JvmField val color: ReadParticleBinding = ConstantBinding(1.0, 1.0, 1.0, 1.0),
         /**
@@ -51,7 +51,7 @@ class SpriteRenderModule @JvmOverloads constructor(
          */
         @JvmField val facingVector: ReadParticleBinding? = null,
         /**
-         * The alpha multiplier for the colorPrimary. Defaults to 1 if not present.
+         * The alpha multiplier for the color. Defaults to 1 if not present.
          */
         @JvmField val alphaMultiplier: ReadParticleBinding = ConstantBinding(1.0),
         /**

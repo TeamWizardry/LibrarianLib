@@ -78,8 +78,8 @@ open class SlotType {
     }
 
     /**
-     * handle a click on the slot, the first array in the returned pair is whether the click had custom handling, and the
-     * second is the array to return from the container slot click method. If the click was handled the default slot click
+     * handle a click on the slot, the first value in the returned pair is whether the click had custom handling, and the
+     * second is the value to return from the container slot click method. If the click was handled the default slot click
      * handling is not run.
      */
     open fun handleClick(slot: SlotBase, container: ContainerBase, dragType: Int, clickType: ClickType?, player: EntityPlayer)
@@ -109,7 +109,7 @@ open class SlotType {
 
     /**
      * Returned from the slot `getStack` method. It is passed the default stack, and may modify or entirely replace the
-     * return array
+     * return value
      */
     open fun getStack(slot: SlotBase, defaultStack: ItemStack) = defaultStack
 

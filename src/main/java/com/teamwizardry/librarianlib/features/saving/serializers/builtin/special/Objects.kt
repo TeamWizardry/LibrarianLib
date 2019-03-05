@@ -64,7 +64,7 @@ object SerializeObjectFactory : SerializerFactory("Object") {
                         try {
                             analysis.serializers[it]!!.value.read(tag.getTag(it), null, syncing)
                         } catch (e: Throwable) {
-                            throw SerializerException("Error reading array for field $it from NBT", e)
+                            throw SerializerException("Error reading value for field $it from NBT", e)
                         }
                     } else {
                         null
@@ -89,7 +89,7 @@ object SerializeObjectFactory : SerializerFactory("Object") {
                     }
                     if (it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
                         if (oldValue !== value) {
-                            throw SerializerException("Cannot set final field to new array. Either make the field " +
+                            throw SerializerException("Cannot set final field to new value. Either make the field " +
                                     "mutable or modify the serializer to change the existing object instead of " +
                                     "creating a new one.")
                         }
@@ -194,7 +194,7 @@ object SerializeObjectFactory : SerializerFactory("Object") {
                     }
                     if (it.value.meta.hasFlag(SavingFieldFlag.FINAL)) {
                         if (oldValue !== value) {
-                            throw SerializerException("Cannot set final field to new array. Either make the field " +
+                            throw SerializerException("Cannot set final field to new value. Either make the field " +
                                     "mutable or modify the serializer to change the existing object instead of " +
                                     "creating a new one.")
                         }

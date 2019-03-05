@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.animator.Animation
 import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.animator.LerperHandler
+import com.teamwizardry.librarianlib.features.animator.animations.Keyframe
 import java.util.function.Supplier
 import kotlin.reflect.KProperty
 
@@ -25,14 +26,14 @@ class IMValue<T> private constructor(private var storage: Storage<T>): GuiAnimat
     constructor(initialCallback: () -> T): this(Storage.Callback(Supplier(initialCallback)))
 
     /**
-     * Gets the current array
+     * Gets the current value
      */
     fun get(): T {
         return storage.get()
     }
 
     /**
-     * Sets the callback, unsetting the fixed array in the process
+     * Sets the callback, unsetting the fixed value in the process
      */
     fun set(f: Supplier<T>) {
         GuiAnimator.current.add(this)
@@ -40,7 +41,7 @@ class IMValue<T> private constructor(private var storage: Storage<T>): GuiAnimat
     }
 
     /**
-     * Gets the callback or null if this IMValue is storing a fixed array
+     * Gets the callback or null if this IMValue is storing a fixed value
      */
     fun getCallback(): Supplier<T>? {
         return (this.storage as? Storage.Callback<T>)?.callback
@@ -48,7 +49,7 @@ class IMValue<T> private constructor(private var storage: Storage<T>): GuiAnimat
 
     /**
      * Sets the fixed callback. This isn't often called as most classes will provide a delegated property to directly
-     * access this array (`someProperty` will call into `somePropery_im` for its array)
+     * access this value (`someProperty` will call into `somePropery_im` for its value)
      */
     fun setValue(value: T) {
         GuiAnimator.current.add(this)

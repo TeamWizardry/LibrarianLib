@@ -27,15 +27,15 @@ public class RMValueDouble {
     }
 
     /**
-     * Gets the current array
+     * Gets the current value
      */
     public double get() {
         return value;
     }
 
     /**
-     * Sets the array. This isn't often called as most classes will provide a delegated property to directly
-     * access this array (`someProperty` will call into `somePropery_rm` for its array)
+     * Sets the value. This isn't often called as most classes will provide a delegated property to directly
+     * access this value (`someProperty` will call into `somePropery_rm` for its value)
      */
     public void set(double value) {
         GuiAnimator.getCurrent().add(animatable);

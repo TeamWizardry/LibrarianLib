@@ -103,13 +103,13 @@ object SavingFieldCache {
             try {
                 getter(it)
             } catch (e: Exception) {
-                throw ReflectiveOperationException("Failed to get array of property $name", e)
+                throw ReflectiveOperationException("Failed to get value of property $name", e)
             }
         }, { target, value ->
             try {
                 setter(target, value)
             } catch (e: Exception) {
-                throw ReflectiveOperationException("Failed to set array of property $name", e)
+                throw ReflectiveOperationException("Failed to set value of property $name", e)
             }
         }, altName)
 

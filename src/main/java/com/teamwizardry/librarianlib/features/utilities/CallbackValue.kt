@@ -4,14 +4,14 @@ import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 /**
- * Allows a array to be set as either the result of a callback or a static array
+ * Allows a value to be set as either the result of a callback or a static value
  */
 class CallbackValue<T>(private var value: T) {
     val delegate: ReadWriteProperty<Any, T> = Delegate()
     private var callback: (() -> T)? = null
 
     /**
-     * Set the callback and override the current fixed array
+     * Set the callback and override the current fixed value
      */
     fun set(callback: () -> T) {
         this.callback = callback

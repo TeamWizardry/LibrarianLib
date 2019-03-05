@@ -22,7 +22,7 @@ class AnimatableProperty<T : Any> private constructor(val target: Class<T>, val 
     }
 
     fun get(target: T): Any {
-        return getter(target) ?: throw NullPointerException("Cannot have null array in animation!")
+        return getter(target) ?: throw NullPointerException("Cannot have null value in animation!")
     }
 
     fun set(target: T, value: Any) {

@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.gui.component.supporting
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
+import com.teamwizardry.librarianlib.features.gui.components.LayerBackedComponent
 import com.teamwizardry.librarianlib.features.gui.value.IMValueBoolean
 
 interface ILayerBase {

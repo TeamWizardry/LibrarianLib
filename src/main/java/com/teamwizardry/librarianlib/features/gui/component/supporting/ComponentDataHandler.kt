@@ -1,16 +1,8 @@
 package com.teamwizardry.librarianlib.features.gui.component.supporting
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import java.util.Collections
-import kotlin.collections.HashMap
-import kotlin.collections.MutableMap
-import kotlin.collections.Set
-import kotlin.collections.filter
-import kotlin.collections.isNotEmpty
-import kotlin.collections.map
-import kotlin.collections.mutableMapOf
-import kotlin.collections.setOf
-import kotlin.collections.toMutableSet
 
 interface IComponentData {
     /**
@@ -19,7 +11,7 @@ interface IComponentData {
     fun <D : Any> getAllDataKeys(clazz: Class<D>): Set<String>
 
     /**
-     * Returns all classes for data that contain at least one array.
+     * Returns all classes for data that contain at least one value.
      */
     fun getAllDataClasses(): Set<Class<*>>
 
@@ -32,23 +24,23 @@ interface IComponentData {
     fun <D> hasData(clazz: Class<D>, key: String): Boolean
 
     /**
-     * Sets the array associated with the pair of keys [clazz] and `""`. The array must be a subclass of [clazz]
+     * Sets the value associated with the pair of keys [clazz] and `""`. The value must be a subclass of [clazz]
      */
     fun <D : Any> setData(clazz: Class<D>, value: D)
 
     /**
-     * Removes the array associated with the pair of keys [clazz] and `""`
+     * Removes the value associated with the pair of keys [clazz] and `""`
      */
     fun <D : Any> removeData(clazz: Class<D>)
 
     /**
-     * Returns the array Associated with the pair of keys [clazz] and `""` if it exists, else it returns null.
-     * The array will be an instance of [clazz]
+     * Returns the value Associated with the pair of keys [clazz] and `""` if it exists, else it returns null.
+     * The value will be an instance of [clazz]
      */
     fun <D : Any> getData(clazz: Class<D>): D?
 
     /**
-     * Checks if there is a array associated with the pair of keys [clazz] and `""`
+     * Checks if there is a value associated with the pair of keys [clazz] and `""`
      */
     fun <D : Any> hasData(clazz: Class<D>): Boolean
 }
@@ -73,7 +65,7 @@ class ComponentDataHandler: IComponentData {
     }
 
     /**
-     * Returns all classes for data that contain at least one array.
+     * Returns all classes for data that contain at least one value.
      */
     override fun getAllDataClasses(): Set<Class<*>> {
         return data.entries.filter { it.value.isNotEmpty() }.map { it.key }.toMutableSet()
@@ -110,29 +102,29 @@ class ComponentDataHandler: IComponentData {
     }
 
     /**
-     * Sets the array associated with the pair of keys [clazz] and `""`. The array must be a subclass of [clazz]
+     * Sets the value associated with the pair of keys [clazz] and `""`. The value must be a subclass of [clazz]
      */
     override fun <D : Any> setData(clazz: Class<D>, value: D) {
         setData(clazz, "", value)
     }
 
     /**
-     * Removes the array associated with the pair of keys [clazz] and `""`
+     * Removes the value associated with the pair of keys [clazz] and `""`
      */
     override fun <D : Any> removeData(clazz: Class<D>) {
         removeData(clazz, "")
     }
 
     /**
-     * Returns the array Associated with the pair of keys [clazz] and `""` if it exists, else it returns null.
-     * The array will be an instance of [clazz]
+     * Returns the value Associated with the pair of keys [clazz] and `""` if it exists, else it returns null.
+     * The value will be an instance of [clazz]
      */
     override fun <D : Any> getData(clazz: Class<D>): D? {
         return getData(clazz, "")
     }
 
     /**
-     * Checks if there is a array associated with the pair of keys [clazz] and `""`
+     * Checks if there is a value associated with the pair of keys [clazz] and `""`
      */
     override fun <D : Any> hasData(clazz: Class<D>): Boolean {
         return hasData(clazz, "")

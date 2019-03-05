@@ -67,8 +67,8 @@ class Entry(override val bookParent: Book, parentSheet: String, parentOuter: Col
                 val obj = json.getAsJsonObject("style")
                 if (obj.has("sheet"))
                     sheet = obj.getAsJsonPrimitive("sheet").asString
-                if (obj.has("colorPrimary"))
-                    outerColor = Book.colorFromJson(obj.get("colorPrimary"))
+                if (obj.has("color"))
+                    outerColor = Book.colorFromJson(obj.get("color"))
                 if (obj.has("binding"))
                     bindingColor = Book.colorFromJson(obj.get("binding"))
             }

@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.gui.value;
 import com.teamwizardry.librarianlib.features.animator.Animation;
 import com.teamwizardry.librarianlib.features.animator.Animator;
 import com.teamwizardry.librarianlib.features.animator.Easing;
+import kotlin.properties.ReadWriteProperty;
 import kotlin.reflect.KProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,14 +27,14 @@ public class IMValueInt implements GuiAnimatable {
     }
 
     /**
-     * Gets the current array
+     * Gets the current value
      */
     public int get() {
         return storage.get();
     }
 
     /**
-     * Sets the callback, unsetting the fixed array in the process
+     * Sets the callback, unsetting the fixed value in the process
      */
     public void set(IntSupplier callback) {
         GuiAnimator.getCurrent().add(this);
@@ -46,7 +47,7 @@ public class IMValueInt implements GuiAnimatable {
 
     /**
      * Sets the fixed callback. This isn't often called as most classes will provide a delegated property to directly
-     * access this array (`someProperty` will call into `somePropery_im` for its array)
+     * access this value (`someProperty` will call into `somePropery_im` for its value)
      */
     public void setValue(int value) {
         GuiAnimator.getCurrent().add(this);
@@ -79,7 +80,7 @@ public class IMValueInt implements GuiAnimatable {
     }
 
     /**
-     * Gets the current callback, or null if this IMValueInt has a fixed array
+     * Gets the current callback, or null if this IMValueInt has a fixed value
      */
     @Nullable
     public IntSupplier getCallback() {

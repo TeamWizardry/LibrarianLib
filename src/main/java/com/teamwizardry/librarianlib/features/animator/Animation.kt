@@ -52,7 +52,7 @@ abstract class Animation<T : Any>(val target: T) {
         }
 
     /**
-     * If this array is set to true the animation will reverse before finishing.
+     * If this value is set to true the animation will reverse before finishing.
      *
      * This is applied before [repeatCount]. This means that a 5s animation that reverses and repeats three times
      * will take `5 seconds * 2 * 3 = 30 seconds`.
@@ -61,8 +61,8 @@ abstract class Animation<T : Any>(val target: T) {
 
     /**
      * The number of times the animation should loop.
-     * If this array is less than zero the animation will loop indefinitely
-     * If this array is set to 0 or 1 the animation will not loop.
+     * If this value is less than zero the animation will loop indefinitely
+     * If this value is set to 0 or 1 the animation will not loop.
      */
     var repeatCount = 0
 
@@ -98,7 +98,7 @@ abstract class Animation<T : Any>(val target: T) {
         get() = _id != -1
 
     /**
-     * Updates the array of this animation's property based on the passed time
+     * Updates the value of this animation's property based on the passed time
      * @param time The current time of the containing Animator
      */
     abstract fun update(time: Float)
@@ -124,7 +124,7 @@ abstract class Animation<T : Any>(val target: T) {
 
     /**
      * Whether this animation is over.
-     * This array is set after the [completion] callback is called.
+     * This value is set after the [completion] callback is called.
      */
     var finished = false
         internal set

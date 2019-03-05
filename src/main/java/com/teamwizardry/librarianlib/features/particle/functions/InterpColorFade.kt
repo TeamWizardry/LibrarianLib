@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.features.math.interpolate.InterpFunction
 import java.awt.Color
 
 /**
- * Fades from transparent to [color] in [fadeIn] units of time, holds the colorPrimary for [normal] units, then fades to
+ * Fades from transparent to [color] in [fadeIn] units of time, holds the color for [normal] units, then fades to
  * transparent in [fadeOut] units.
  *
  * [fadeIn], [normal], and [fadeOut] are proportions

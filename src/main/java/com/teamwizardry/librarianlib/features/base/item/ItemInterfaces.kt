@@ -30,7 +30,7 @@ interface IModItemProvider : IVariantHolder {
  */
 interface IItemColorProvider : IVariantHolder {
     /**
-     * Provides an item colorPrimary for the provided item. Leave null to use default behavior.
+     * Provides an item color for the provided item. Leave null to use default behavior.
      */
     val itemColorFunction: ((stack: ItemStack, tintIndex: Int) -> Int)?
 }

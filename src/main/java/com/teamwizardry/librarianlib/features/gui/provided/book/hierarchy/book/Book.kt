@@ -88,8 +88,8 @@ open class Book(val location: ResourceLocation) : IBookElement {
                 throw JsonSyntaxException(location.toString())
 
             val json = jsonElement.asJsonObject
-            bookColor = if (json.has("colorPrimary"))
-                colorFromJson(json.get("colorPrimary"))
+            bookColor = if (json.has("color"))
+                colorFromJson(json.get("color"))
             else
                 Color.WHITE
             bindingColor = if (json.has("binding"))
