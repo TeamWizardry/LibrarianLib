@@ -4,10 +4,12 @@ import com.teamwizardry.librarianlib.features.eventbus.EventBus
 import com.teamwizardry.librarianlib.features.gui.component.supporting.*
 import com.teamwizardry.librarianlib.features.gui.components.LayerBackedComponent
 import com.teamwizardry.librarianlib.features.gui.layers.ComponentBackedLayer
+import com.teamwizardry.librarianlib.features.gui.layers.SpriteLayer
 import com.teamwizardry.librarianlib.features.helpers.allDeclaredFields
 import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.kotlin.Client
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import com.teamwizardry.librarianlib.features.math.coordinatespaces.CoordinateSpace2D
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import net.minecraftforge.fml.relauncher.Side
@@ -17,11 +19,43 @@ import java.util.IdentityHashMap
 import kotlin.coroutines.CoroutineContext
 
 /**
+ * The fundamental building block of a LibrarianLib GUI. Generally a single unit of visual or organizational design.
  *
+ * **Origins:**
  *
- * The implementation of various responsibilities are in separate classes and implemented by GuiLayer via delegation.
- * This allows a large API to be accessible directly on the layer, while also allowing the various responsibilities to
- * stay separate.
+ * Vanilla GUIs very basic, where each frame you personally draw each texture and have to manually handle positioning
+ * as the layout changes (though most likely it won't, because the math quickly becomes a pain). Vanilla does have the
+ * [GuiButton][net.minecraft.client.gui.GuiButton], which isn't drawn or processed by you, however LibrarianLib's
+ * layers and [components][GuiComponent] blow GuiButton clean out of the water with their versatility and ability to
+ * easily create highly complex and dynamic interfaces.
+ *
+ * Over its evolution the GUI framework has been influenced largely by two things. It started out mostly inspired by
+ * HTML's hierarchical nature, then later in its life it started to acquire many of the traits and structures from
+ * Cocoa Touch. If you are familiar Cocoa Touch, many these concepts will be familiar to you, with layers and
+ * components being CGLayer and UIView respectively.
+ *
+ * **Usage:**
+ *
+ * Layers are structured hierarchically, with each layer's children positioned in the layer's coordinate space.
+ * Their relative transforms (position, rotation, and scale) can be accessed and modified using [pos], [rotation], and [scale].
+ * Each layer implements [CoordinateSpace2D] and has methods to convert points between its local coordinate system and
+ * another layer's local coordinate system.
+ *
+ * Each layer has its own event bus, which is used to hook into the many events fired by the GuiLayer/GuiComponent
+ * itself or by one of its subclasses.
+ *
+ * Layers that have custom rendering (as opposed to consisting solely of other layers) can override the [draw] method
+ * to draw their content.
+ *
+ * Note: The implementations of various responsibilities are in separate classes and implemented by GuiLayer via delegation.
+ * This allows a large API to be accessible and overridable directly on the layer, while also allowing the various
+ * responsibilities to stay separate.
+ *
+ * @see ILayerGeometry
+ * @see ILayerRelationships
+ * @see ILayerRendering
+ * @see ILayerClipping
+ * @See ILayerBase
  */
 @SideOnly(Side.CLIENT)
 open class GuiLayer private constructor(
@@ -57,9 +91,10 @@ open class GuiLayer private constructor(
     }
 
     /**
-     * An optional display name that describes the role of this layer. This is not displayed to the user and is
-     * currently only used in [debugPrint], though may be utilized by future debugging tools. It can be set in line
-     * using the static `GuiLayer.name(layer, "name")`.
+     * An optional internal display name that describes the role of this layer.
+     *
+     * This is not displayed to the user and is currently only used in [debugPrint], though may be utilized by future
+     * debugging tools. It can be set in-line using the static method `GuiLayer.name(layer, "name")`.
      *
      * Examples: "Center stack", "Alternate color swatch", "Machine Top"
      */
@@ -67,6 +102,8 @@ open class GuiLayer private constructor(
 
     /**
      * The event bus on which all events for this layer are fired.
+     *
+     * The built-in base events are located in [GuiLayerEvents] and [GuiComponentEvents]
      */
     @JvmField
     val BUS = EventBus()
@@ -78,7 +115,9 @@ open class GuiLayer private constructor(
 
     /**
      * ## !! Internal !! ##
-     * A method used to directly set this layer's parent.
+     *
+     * A method used to directly set this layer's parent. Use with _extreme_ care, as in not at all because you
+     * will definitely break something. This is public so people who know what they're doing can use it.
      */
     open fun setParentInternal(value: GuiLayer?) {
         relationships.parent = value
