@@ -12,6 +12,7 @@ import com.teamwizardry.librarianlib.test.fx.FXEntryPoint
 import com.teamwizardry.librarianlib.test.gui.GuiEntryPoint
 import com.teamwizardry.librarianlib.test.particlesystem.ParticleSystemEntryPoint
 import com.teamwizardry.librarianlib.test.saving.SavingEntryPoint
+import com.teamwizardry.librarianlib.test.shader.ShaderEntryPoint
 import com.teamwizardry.librarianlib.test.variants.VariantEntryPoint
 import com.teamwizardry.librarianlib.test.worlddata.WorldDataEntryPoint
 import net.minecraft.entity.player.EntityPlayer
@@ -92,7 +93,8 @@ class TestMod {
                 AnimatorEntryPoint,
 //                RenderEntryPoint, // DO NOT ENABLE THIS OR ALL IS SPONGE
                 EndEntryPoint,
-                ParticleSystemEntryPoint
+                ParticleSystemEntryPoint,
+                ShaderEntryPoint
         )
 
         object Tab : ModCreativeTab() {

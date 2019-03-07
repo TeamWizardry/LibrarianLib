@@ -1,10 +1,12 @@
 package com.teamwizardry.librarianlib.test.gui
 
+import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.gui.GuiBase
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
 import com.teamwizardry.librarianlib.features.gui.layers.ColorLayer
+import com.teamwizardry.librarianlib.features.gui.provided.GuiSafetyNetError
 import com.teamwizardry.librarianlib.features.gui.windows.GuiWindow
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.test.gui.tests.*
@@ -70,9 +72,14 @@ class GuiTestSelector : GuiBase() {
             text.size = vec(280, 12)
             text.text = item.name
             text.BUS.hook<GuiComponentEvents.MouseClickEvent> {
-                when(item) {
-                    is ListItem.Gui -> Minecraft.getMinecraft().displayGuiScreen(item.create())
-                    is ListItem.Window -> item.create().open()
+                try {
+                    when(item) {
+                        is ListItem.Gui -> Minecraft.getMinecraft().displayGuiScreen(item.create())
+                        is ListItem.Window -> item.create().open()
+                    }
+                } catch (e: Exception) {
+                    LibrarianLog.error(e, "The safety net caught an error initializing GUI")
+                    Minecraft.getMinecraft().displayGuiScreen(GuiSafetyNetError(e))
                 }
             }
             scrollComponent.add(text)
