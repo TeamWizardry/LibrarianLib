@@ -16,40 +16,32 @@ class GuiSafetyNetError(e: Exception): GuiBase() {
         main.width = max(300.0, TextLayer.stringSize(e.javaClass.simpleName).width+border*2)
         val width = main.widthi - border*2
 
+        val builder = StackLayout.build()
+            .space(2)
+            .alignCenterX()
+            .width(width)
+            .fit()
+
         val title = TextLayer(0, 0, "§4§nSafety net caught an exception:")
         val className = TextLayer(0, 0, e.javaClass.simpleName)
         className.fitToText()
+        builder.add(title, className)
 
-        val messageWrap = GuiLayer()
-        val message = TextLayer(0, 0, width, 0)
-        message.wrap = true
-        e.message?.also { message.text = it }
-        message.fitToText()
-        messageWrap.height = message.height
-        e.message?.also { messageWrap.width = TextLayer.stringSize(it, width).width }
-        messageWrap.add(message)
+        e.message?.also { text ->
+            val messageWrap = GuiLayer()
+            val message = TextLayer(0, 0, width, 0)
+            message.wrap = true
+            message.text = text
+            message.fitToText()
+            messageWrap.size = message.size
+            if(message.lineCount == 1)
+                messageWrap.width = TextLayer.stringSize(text, width).width
+            messageWrap.add(message)
+            val divider = ColorLayer(Color.darkGray, 0, 0, width, 1)
+            builder.add(divider, messageWrap)
+        }
 
-        val classStack = StackLayout.build()
-            .alignCenterX()
-            .add(title, className)
-            .space(5)
-            .width(width)
-            .fitLength()
-            .layer()
-
-        val divider = ColorLayer(Color.darkGray, 0, 0, width, 1)
-        val stack = StackLayout.build()
-            .space(2)
-            .add(classStack, divider, messageWrap)
-            .width(width)
-            .fit()
-            .also {
-                if(message.height <= className.height*1.5) {
-                    it.alignCenterX()
-                }
-            }
-            .layer()
-
+        val stack = builder.layer()
         main.height = stack.height + border*2
         stack.pos = vec(border, border)
 

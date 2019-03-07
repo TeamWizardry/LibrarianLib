@@ -44,6 +44,8 @@ class TextLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, p
     var color: Color by color_im
     var fitToText: Boolean = false
 
+    val lineCount: Int get() = typesetString.lines.size
+
     private var renderer = TypesetStringRenderer()
     private var typesetString: TypesetString = renderer.typesetString
     private var lastParams = emptyList<Any>()
