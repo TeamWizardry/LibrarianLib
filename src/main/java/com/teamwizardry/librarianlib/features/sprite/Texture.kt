@@ -24,24 +24,24 @@ import java.util.*
  * ```
  * {
  *     "spritesheet": {
- *         "textureWidth": &lt;texture width in pixels&gt;,
- *         "textureHeight": &lt;texture height in pixels&gt;,
+ *         "textureWidth": <texture width in pixels>,
+ *         "textureHeight": <texture height in pixels>,
  *         "sprites": {
- *             "&lt;sprite name&gt;": [&lt;u&gt;, &lt;v&gt;, &lt;w&gt;, &lt;h&gt;],       // static sprite
- *             "&lt;sprite name&gt;": {                           // animated sprite
- *                 "pos": [&lt;u&gt;, &lt;v&gt;, &lt;w&gt;, &lt;h&gt;],
+ *             "<sprite name>": [<u>, <v>, <w>, <h>],       // static sprite
+ *             "<sprite name>": {                           // animated sprite
+ *                 "pos": [<u>, <v>, <w>, <h>],
  *                 "frames": 12,                            // the number of frames, shorthand for [0, 1, 2, ..., n-1]
  *                 "frameTime": 2                           // default: 1 - the number of ticks per frame
  *             },
- *             "&lt;sprite name&gt;": {
- *                 "pos": [&lt;u&gt;, &lt;v&gt;, &lt;w&gt;, &lt;h&gt;],
+ *             "<sprite name>": {
+ *                 "pos": [<u>, <v>, <w>, <h>],
  *                 "frames": [0, 1, 2, 3, 2, 1],            // animation frame indices
- *                 "offset": [&lt;u&gt;, &lt;v&gt;]                     // default: [u, &lt;h&gt;] - uv offset per frame.
+ *                 "offset": [<u>, <v>]                     // default: [u, <h>] - uv offset per frame.
  *             },
- *             "&lt;sprite name&gt;": {
- *                 "pos": [&lt;u&gt;, &lt;v&gt;, &lt;w&gt;, &lt;h&gt;],
- *                 "caps": [&lt;minU&gt;, &lt;minV&gt;, &lt;maxU&gt;, &lt;maxV&gt;], // the number of pixels on each edge that should remain non-distorted when stretching the sprite
- *                 "hardScale": [&lt;uAxis&gt;, &lt;vAxis&gt;] // default: [false, false] - whether the texture should be repeated/truncated rather than stretched/squished along each axis
+ *             "<sprite name>": {
+ *                 "pos": [<u>, <v>, <w>, <h>],
+ *                 "caps": [<minU>, <minV>, <maxU>, <maxV>], // the number of pixels on each edge that should remain non-distorted when stretching the sprite
+ *                 "hardScale": [<uAxis>, <vAxis>] // default: [false, false] - whether the texture should be repeated/truncated rather than stretched/squished along each axis
  *             }
  *         }
  *     }
