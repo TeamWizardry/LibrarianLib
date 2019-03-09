@@ -14,7 +14,7 @@ class ComponentSlider(posX: Int, posY: Int, width: Int, height: Int, percentage:
 
     var percentageChange = HandlerList<Consumer<Double>>()
 
-    val handle: ComponentVoid
+    val handle: GuiComponent
     var percentage: Double = 0.0
         set(percentage) {
             var newPercent = percentage
@@ -30,7 +30,7 @@ class ComponentSlider(posX: Int, posY: Int, width: Int, height: Int, percentage:
 
     init {
 
-        handle = ComponentVoid(0, 0)
+        handle = GuiComponent(0, 0)
         this.percentage = percentage
 
         DragMixin(handle) { vecIn ->

@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
-import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.I18n
@@ -23,7 +22,7 @@ class ComponentSearchResults(book: IBookGui, results: List<ISearchAlgorithm.Resu
 
     private val margin = 16
     private val pageHeader = ComponentText(0, 0, ComponentText.TextAlignH.LEFT, ComponentText.TextAlignV.TOP)
-    private var resultSection: ComponentVoid = ComponentVoid(0, margin, size.xi, size.yi - margin)
+    private var resultSection: GuiComponent = GuiComponent(0, margin, size.xi, size.yi - margin)
 
     init {
         pageHeader.text = I18n.format("${LibrarianLib.MODID}.book.results.notfound")
@@ -42,7 +41,7 @@ class ComponentSearchResults(book: IBookGui, results: List<ISearchAlgorithm.Resu
             else
                 pageHeader.text = I18n.format("${LibrarianLib.MODID}.book.results.toobroad", results.size)
 
-            val pageComponent = ComponentVoid(0, 0, size.xi, size.yi)
+            val pageComponent = GuiComponent(0, 0, size.xi, size.yi)
             resultSection.add(pageComponent)
 
             var largestFrequency = 0.0

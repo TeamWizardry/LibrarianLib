@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.features.guicontainer.builtin
 import com.teamwizardry.librarianlib.features.container.InventoryWrapper
 import com.teamwizardry.librarianlib.features.container.builtin.BaseWrappers
 import com.teamwizardry.librarianlib.features.container.internal.SlotBase
-import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.guicontainer.ComponentSlot
 
 /**
@@ -19,9 +19,9 @@ object BaseLayouts {
 
     class GridLayout(inv: List<SlotBase>, rowLength: Int) {
         val rowCount = (inv.size + rowLength - 1) / rowLength
-        val root = ComponentVoid(0, 0)
+        val root = GuiComponent(0, 0)
         val rows = Array(rowCount) {
-            val row = ComponentVoid(0, it * 18)
+            val row = GuiComponent(0, it * 18)
             root.add(row)
             row
         }
@@ -38,15 +38,15 @@ object BaseLayouts {
     }
 
     class PlayerLayout(player: BaseWrappers.InventoryWrapperPlayer) {
-        val root: ComponentVoid
-        val armor: ComponentVoid
-        val mainWrapper: ComponentVoid
-        val main: ComponentVoid
-        val hotbar: ComponentVoid
-        val offhand: ComponentVoid
+        val root: GuiComponent
+        val armor: GuiComponent
+        val mainWrapper: GuiComponent
+        val main: GuiComponent
+        val hotbar: GuiComponent
+        val offhand: GuiComponent
 
         init {
-            armor = ComponentVoid(0, 0)
+            armor = GuiComponent(0, 0)
             armor.isVisible = false
             armor.add(
                     ComponentSlot(player.head, 0, 0),
@@ -55,29 +55,29 @@ object BaseLayouts {
                     ComponentSlot(player.feet, 0, 3 * 18)
             )
 
-            offhand = ComponentVoid(0, 0)
+            offhand = GuiComponent(0, 0)
             offhand.isVisible = false
             offhand.add(
                     ComponentSlot(player.offhand, 0, 0)
             )
 
-            mainWrapper = ComponentVoid(0, 0)
+            mainWrapper = GuiComponent(0, 0)
 
-            main = ComponentVoid(0, 0)
+            main = GuiComponent(0, 0)
             for (row in 0..2) {
                 for (column in 0..8) {
                     main.add(ComponentSlot(player.main[row * 9 + column], column * 18, row * 18))
                 }
             }
 
-            hotbar = ComponentVoid(0, 58)
+            hotbar = GuiComponent(0, 58)
             for (column in 0..8) {
                 hotbar.add(ComponentSlot(player.hotbar[column], column * 18, 0))
             }
             main.add(hotbar)
             mainWrapper.add(main)
 
-            root = ComponentVoid(0, 0)
+            root = GuiComponent(0, 0)
             root.add(armor, mainWrapper, offhand)
         }
     }

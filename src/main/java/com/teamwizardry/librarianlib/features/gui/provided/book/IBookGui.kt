@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.features.gui.provided.book
 import com.google.gson.JsonElement
 import com.teamwizardry.librarianlib.core.client.ClientTickHandler
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
-import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.gui.provided.book.context.BookContext
 import com.teamwizardry.librarianlib.features.gui.provided.book.context.ComponentNavBar
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.IBookElement
@@ -45,7 +44,7 @@ interface IBookGui {
 
     val cachedSearchContent: Map<Entry, String>
 
-    fun makeNavigationButton(offsetIndex: Int, entry: Entry, extra: ((ComponentVoid) -> Unit)?): GuiComponent
+    fun makeNavigationButton(offsetIndex: Int, entry: Entry, extra: ((GuiComponent) -> Unit)?): GuiComponent
 
     val bindingSprite: Sprite
 

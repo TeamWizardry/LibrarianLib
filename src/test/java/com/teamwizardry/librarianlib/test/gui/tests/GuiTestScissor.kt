@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.test.gui.tests
 
 import com.teamwizardry.librarianlib.features.gui.GuiBase
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
-import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.helpers.vec
 import java.awt.Color
 
@@ -25,7 +25,7 @@ class GuiTestScissor : GuiBase() {
         c3.color = Color.BLUE
 
 
-        val scissor = ComponentVoid(0, 0, 50, 50)
+        val scissor = GuiComponent(0, 0, 50, 50)
         c.add(scissor)
         c.scale = 2.0
         scissor.add(c2)

@@ -3,11 +3,11 @@ package com.teamwizardry.librarianlib.features.gui.provided.book.structure
 import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
+import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentAnimatableVoid
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
-import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
 import com.teamwizardry.librarianlib.features.gui.provided.book.ModGuiBook
 import com.teamwizardry.librarianlib.features.gui.provided.book.helper.TranslationHolder
@@ -101,7 +101,7 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
             }
         }
 
-        val drawPlatform = ComponentVoid(0, 0, size.xi, size.yi)
+        val drawPlatform = GuiComponent(0, 0, size.xi, size.yi)
         drawPlatform.clipToBounds = true
         drawPlatform.BUS.hook(GuiLayerEvents.PreDrawEvent::class.java) { event ->
             if (drawPlatform.isVisible) {

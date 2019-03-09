@@ -7,7 +7,6 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.gui.components.ComponentText
-import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.gui.provided.book.context.BookContext
 import com.teamwizardry.librarianlib.features.gui.provided.book.context.ComponentNavBar
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
@@ -75,8 +74,8 @@ open class ModGuiBook(override val book: Book) : GuiBase(), IBookGui {
 
     override var context: BookContext = focusOn(BookContext(this, book))
 
-    override fun makeNavigationButton(offsetIndex: Int, entry: Entry, extra: ((ComponentVoid) -> Unit)?): GuiComponent {
-        val indexButton = ComponentVoid(0, 16 * offsetIndex, this.mainBookComponent.size.xi - 32, 16)
+    override fun makeNavigationButton(offsetIndex: Int, entry: Entry, extra: ((GuiComponent) -> Unit)?): GuiComponent {
+        val indexButton = GuiComponent(0, 16 * offsetIndex, this.mainBookComponent.size.xi - 32, 16)
 
         extra?.invoke(indexButton)
         indexButton.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) { placeInFocus(entry) }

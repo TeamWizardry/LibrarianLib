@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.gui.components.ComponentStack
-import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
 import java.awt.Color
 
@@ -13,7 +12,7 @@ class ComponentMaterialList(book: IBookGui, structureMaterials: StructureMateria
     init {
         structurePage.released = false
 
-        val anchor = ComponentVoid(-16, -16)
+        val anchor = GuiComponent(-16, -16)
 
         val sprite = ComponentSprite(book.paperSprite, 0, 0)
         sprite.translateZ += 800

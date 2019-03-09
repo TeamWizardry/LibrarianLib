@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.features.gui
 import com.teamwizardry.librarianlib.features.eventbus.Hook
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.utilities.client.F3Handler
 import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
@@ -26,21 +25,21 @@ import java.util.function.Supplier
 object GuiOverlay {
 
     private data class StorageThing(val initializer: Consumer<GuiComponent>, val visible: BooleanSupplier) {
-        fun reinit(main: ComponentVoid) {
+        fun reinit(main: GuiComponent) {
             val comp = ComponentVisiblePredicate(visible)
             main.add(comp)
             initializer.accept(comp)
         }
     }
 
-    private var mainComp = ComponentVoid(0, 0)
+    private var mainComp = GuiComponent(0, 0)
     private val registered = mutableSetOf<StorageThing>()
     private val newlyRegistered = mutableSetOf<StorageThing>()
 
     init {
         MinecraftForge.EVENT_BUS.register(this)
         F3Handler.addHandler(Keyboard.KEY_O, "Reinitialize overlay components", Supplier { "Reloaded overlays" }, Runnable {
-            mainComp = ComponentVoid(0, 0)
+            mainComp = GuiComponent(0, 0)
             registered.forEach {
                 it.reinit(mainComp)
             }
