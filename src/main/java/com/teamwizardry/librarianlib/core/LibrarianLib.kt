@@ -10,7 +10,7 @@ import com.teamwizardry.librarianlib.features.container.ContainerBase
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventBus
 import com.teamwizardry.librarianlib.features.gui.GuiBase
-import com.teamwizardry.librarianlib.features.gui.GuiOverlay
+import com.teamwizardry.librarianlib.features.gui.hud.GuiHud
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.guicontainer.GuiContainerBase
 import com.teamwizardry.librarianlib.features.kotlin.jsonObject
@@ -41,7 +41,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
  * - Automatically generate missing models in development environments
  * - Automatically register Item colors, models, statemappers, and all other model-related things [ItemMod]
  * - Automatically sync tileentity fields and packet fields marked with @[Save]
- * - An easy—if slightly complicated—GUI creation framework [GuiComponent] [GuiBase] [GuiOverlay]
+ * - An easy—if slightly complicated—GUI creation framework [GuiComponent] [GuiBase] [GuiHud]
  * - A flexible container framework based on the GUI component system [ContainerBase] [GuiContainerBase]
  * - A highly customizable and easy to use particle system [ParticleBuilder] [ParticleSpawner]
  * - Automatic registration of TileEntities @[TileRegister]
