@@ -24,14 +24,14 @@ class ExperienceHudElement: HudElement(RenderGameOverlayEvent.ElementType.EXPERI
                 val barWidth = 182
                 val filled = (mc.player.experience * (barWidth + 1)).toInt()
                 val top = root.heighti - 29
-                xpBar.frame = this.convertRectFrom(rect(left, top, barWidth, 5), root)
+                xpBar.frame = rect(left, top, barWidth, 5)
 
                 if (filled > 0) {
                     xpBarFilled.isVisible = true
-                    xpBarFilled.frame = this.convertRectFrom(rect(left, top, filled, 5), root)
+                    xpBarFilled.frame = rect(left, top, filled, 5)
                 } else {
                     xpBarFilled.isVisible = false
-                    xpBarFilled.frame = this.convertRectFrom(rect(left, top, 0, 5), root)
+                    xpBarFilled.frame = rect(left, top, 0, 5)
                 }
             }
 
@@ -41,7 +41,7 @@ class ExperienceHudElement: HudElement(RenderGameOverlayEvent.ElementType.EXPERI
                 val y = root.heighti - 35
 
                 xpText.isVisible = true
-                xpText.frame = this.convertRectFrom(rect(x-1, y-1, textWidth+2, 9), root)
+                xpText.frame = rect(x-1, y-1, textWidth+2, 9)
             } else {
                 xpText.isVisible = false
             }

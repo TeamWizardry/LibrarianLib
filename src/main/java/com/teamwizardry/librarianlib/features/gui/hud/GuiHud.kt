@@ -42,7 +42,7 @@ object GuiHud {
     val healthMount = HealthMountHudElement()
     val jumpBar = JumpBarHudElement()
 
-    val chat = ChatHudElement(ElementType.CHAT)
+    val chat = ChatHudElement()
     val playerList = PlayerListHudElement() // finished
     val sidebar = SidebarHudElement() // finished
 

@@ -31,9 +31,6 @@ class BossHealthHudElement: HudElement(RenderGameOverlayEvent.ElementType.BOSSHE
             this.seenUUIDs.clear()
             this.bottom = 0
             this.index = 0
-
-            this.size = vec(182, root.height)
-            this.pos = vec((root.widthi - this.widthi)/2, 0)
         }
     }
 
@@ -67,7 +64,7 @@ class BossInfoLayer(val uuid: UUID): HudElement(RenderGameOverlayEvent.ElementTy
         super.hudEvent(e)
         e as RenderGameOverlayEvent.BossInfo
 
-        this.frame = parent!!.convertRectFrom(rect(e.x, e.y-12, 182, e.increment), root)
+        this.frame = rect(e.x, e.y-12, 182, e.increment)
 
         bossBarFill.isVisible = false
         overlay.isVisible = false
@@ -81,7 +78,7 @@ class BossInfoLayer(val uuid: UUID): HudElement(RenderGameOverlayEvent.ElementTy
             overlay.isVisible = true
         }
 
-        val i = (e.bossInfo.percent * 182).toInt()
+        val i = (e.bossInfo.percent * 183).toInt()
         bossBarFill.frame = rect(0, 12, i, 5)
         overlayFill.frame = rect(0, 12, i, 5)
 

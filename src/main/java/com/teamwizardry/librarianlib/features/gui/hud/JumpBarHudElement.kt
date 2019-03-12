@@ -5,10 +5,11 @@ import com.teamwizardry.librarianlib.features.helpers.rect
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 
 class JumpBarHudElement: HudElement(RenderGameOverlayEvent.ElementType.JUMPBAR) {
-    val filled = GuiLayer()
+    val bar = GuiLayer()
+    val barFilled = GuiLayer()
 
     init {
-        this.add(filled)
+        this.add(bar, barFilled)
     }
 
     override fun hudEvent(e: RenderGameOverlayEvent.Pre) {
@@ -16,12 +17,12 @@ class JumpBarHudElement: HudElement(RenderGameOverlayEvent.ElementType.JUMPBAR) 
 
         val charge = mc.player.horseJumpPower
         val barWidth = 182
-        val x = (width / 2) - 91
+        val x = (root.widthi / 2) - 91
         val filled = (charge * (barWidth + 1)).toInt()
-        val top = height - 32 + 3
+        val top = root.heighti - 32 + 3
 
-        this.frame = rect(x, top, barWidth, 5)
-        this.filled.frame = rect(0, 0, filled, 5)
-        this.filled.isVisible = filled > 0
+        bar.frame = rect(x, top, barWidth, 5)
+        barFilled.frame = rect(x, top, filled, 5)
+        barFilled.isVisible = filled > 0
     }
 }

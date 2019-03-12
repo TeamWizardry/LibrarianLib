@@ -44,16 +44,16 @@ class HotbarHudElement: HudElement(RenderGameOverlayEvent.ElementType.HOTBAR) {
         val hotbarRight = centerX + hotbarWidth/2
         val hotbarTop = root.heighti - 22
 
-        background.frame = this.convertRectFrom(rect(hotbarLeft, hotbarTop, hotbarWidth, 22), root)
-        slotHighlight.frame = this.convertRectFrom(rect(hotbarLeft - 1 + entityplayer.inventory.currentItem * 20, hotbarTop - 1, 24, 22), root)
+        background.frame = rect(hotbarLeft, hotbarTop, hotbarWidth, 22)
+        slotHighlight.frame = rect(hotbarLeft - 1 + entityplayer.inventory.currentItem * 20, hotbarTop - 1, 24, 22)
 
         if (!entityplayer.heldItemOffhand.isEmpty) {
             offhandBackground.isVisible = true
             offhandSlot.isVisible = true
             if (enumhandside == EnumHandSide.LEFT) {
-                offhandBackground.frame = this.convertRectFrom(rect(hotbarLeft - 7 - 22, hotbarTop, 22, 22), root)
+                offhandBackground.frame = rect(hotbarLeft - 7 - 22, hotbarTop, 22, 22)
             } else {
-                offhandBackground.frame = this.convertRectFrom(rect(hotbarRight + 7, hotbarTop, 22, 22), root)
+                offhandBackground.frame = rect(hotbarRight + 7, hotbarTop, 22, 22)
             }
             offhandSlot.pos = offhandBackground.pos + vec(3, 3)
             offhandSlot.size = vec(16, 16)
@@ -63,7 +63,7 @@ class HotbarHudElement: HudElement(RenderGameOverlayEvent.ElementType.HOTBAR) {
         }
 
         slots.forEachIndexed { i, slot ->
-            slot.frame = this.convertRectFrom(rect(hotbarLeft + 3 + i*20, hotbarTop + 3, 16, 16), root)
+            slot.frame = rect(hotbarLeft + 3 + i*20, hotbarTop + 3, 16, 16)
         }
 
         attackCooldown.isVisible = false
@@ -83,8 +83,8 @@ class HotbarHudElement: HudElement(RenderGameOverlayEvent.ElementType.HOTBAR) {
                 }
 
                 val k1 = (f1 * 19).toInt()
-                attackCooldown.frame = this.convertRectFrom(rect(j2, i2, 18, 18), root)
-                attackCooldownFill.frame = this.convertRectFrom(rect(j2, i2 + 18 - k1, 18, k1), root)
+                attackCooldown.frame = rect(j2, i2, 18, 18)
+                attackCooldownFill.frame = rect(j2, i2 + 18 - k1, 18, k1)
                 attackCooldown.isVisible = true
                 attackCooldownFill.isVisible = true
             }

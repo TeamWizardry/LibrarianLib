@@ -40,24 +40,25 @@ class SidebarHudElement: HudElement(RenderGameOverlayEvent.ElementType.CHAT) { /
 
     fun renderScoreboard(objective: ScoreObjective) {
         val scoreboard = objective.scoreboard
+        val fontRenderer = this.mc.fontRenderer
         val scores = scoreboard.getSortedScores(objective).filter { it?.playerName?.startsWith("#") != true }.take(15)
 
-        var textWidth = this.mc.fontRenderer.getStringWidth(objective.displayName)
+        var textWidth = fontRenderer.getStringWidth(objective.displayName)
 
         for (score in scores) {
             val scoreplayerteam = scoreboard.getPlayersTeam(score.playerName)
             val s = ScorePlayerTeam.formatPlayerName(scoreplayerteam, score.playerName) + ": " + TextFormatting.RED + score.scorePoints
-            textWidth = Math.max(textWidth, this.mc.fontRenderer.getStringWidth(s))
+            textWidth = Math.max(textWidth, fontRenderer.getStringWidth(s))
         }
 
-        val height = scores.size * this.mc.fontRenderer.FONT_HEIGHT
+        val height = scores.size * fontRenderer.FONT_HEIGHT
         val j1 = root.heighti / 2 + height / 3
         val left = root.widthi - textWidth - 3
         background.frame = rect(
             left - 2,
-            j1 - (scores.size + 1) * this.mc.fontRenderer.FONT_HEIGHT - 1,
+            j1 - (scores.size + 1) * fontRenderer.FONT_HEIGHT - 1,
             textWidth + 4,
-            (scores.size + 1) * this.mc.fontRenderer.FONT_HEIGHT + 1
+            (scores.size + 1) * fontRenderer.FONT_HEIGHT + 1
         )
 
         val scoreSet = scores.map { it.objective.name to it.playerName }.toSet()
@@ -81,22 +82,22 @@ class SidebarHudElement: HudElement(RenderGameOverlayEvent.ElementType.CHAT) { /
             newScores.add(layer)
 
             val playerName = ScorePlayerTeam.formatPlayerName(scoreboard.getPlayersTeam(score.playerName), score.playerName)
-            val y = j1 - row * this.mc.fontRenderer.FONT_HEIGHT
+            val y = j1 - row * fontRenderer.FONT_HEIGHT
 
-            layer.frame = rect(left - 2, y, textWidth + 4, this.mc.fontRenderer.FONT_HEIGHT)
+            layer.frame = rect(left - 2, y, textWidth + 4, fontRenderer.FONT_HEIGHT)
 
-            val playerWidth = this.mc.fontRenderer.getStringWidth(playerName)
-            layer.nameText.frame = rect(2, 0, playerWidth, this.mc.fontRenderer.FONT_HEIGHT)
+            val playerWidth = fontRenderer.getStringWidth(playerName)
+            layer.nameText.frame = rect(2, 0, playerWidth, fontRenderer.FONT_HEIGHT)
 
-            val scoreWidth = this.mc.fontRenderer.getStringWidth("${score.scorePoints}")
-            layer.scoreText.frame = rect(textWidth + 4 - scoreWidth, 0, scoreWidth, this.mc.fontRenderer.FONT_HEIGHT)
+            val scoreWidth = fontRenderer.getStringWidth("${score.scorePoints}")
+            layer.scoreText.frame = rect(textWidth + 4 - scoreWidth, 0, scoreWidth, fontRenderer.FONT_HEIGHT)
 
             if (row == scores.size) {
-                objectiveRow.frame = rect(left - 2, y - this.mc.fontRenderer.FONT_HEIGHT - 1, textWidth+4, this.mc.fontRenderer.FONT_HEIGHT)
+                objectiveRow.frame = rect(left - 2, y - fontRenderer.FONT_HEIGHT - 1, textWidth+4, fontRenderer.FONT_HEIGHT)
 //                drawRect(left - 2, y - 1, right, y, 1342177280) // separator
 
-                val titleWidth = this.mc.fontRenderer.getStringWidth(objective.displayName)
-                objectiveTitle.frame = rect(left+textWidth/2 - titleWidth / 2, y - this.mc.fontRenderer.FONT_HEIGHT, titleWidth, this.mc.fontRenderer.FONT_HEIGHT)
+                val titleWidth = fontRenderer.getStringWidth(objective.displayName)
+                objectiveTitle.frame = rect(left+textWidth/2 - titleWidth / 2, y - fontRenderer.FONT_HEIGHT, titleWidth, fontRenderer.FONT_HEIGHT)
             }
         }
 

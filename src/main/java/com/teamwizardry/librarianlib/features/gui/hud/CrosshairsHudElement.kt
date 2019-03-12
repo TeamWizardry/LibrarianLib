@@ -10,32 +10,31 @@ import net.minecraft.util.math.RayTraceResult
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 
 class CrosshairsHudElement: HudElement(RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
+    val crosshair: GuiLayer = GuiLayer()
     val attackIndicator: GuiLayer = GuiLayer()
     val cooldownIndicator: GuiLayer = GuiLayer()
     val cooldownIndicatorFill: GuiLayer = GuiLayer()
 
     init {
-        this.add(attackIndicator, cooldownIndicator, cooldownIndicatorFill)
+        this.add(crosshair, attackIndicator, cooldownIndicator, cooldownIndicatorFill)
     }
 
     override fun hudEvent(e: RenderGameOverlayEvent.Pre) {
         super.hudEvent(e)
-        this.size = vec(15, 15)
-
-        this.attackIndicator.isVisible = false
-        this.cooldownIndicator.isVisible = false
-        this.cooldownIndicatorFill.isVisible = false
-
         val gamesettings = mc.gameSettings
 
-        this.pos = vec(root.widthi / 2 - 7, root.heighti / 2 - 7)
-        this.isVisible = true
+        crosshair.size = vec(15, 15)
+        crosshair.pos = vec(root.widthi / 2 - 7, root.heighti / 2 - 7)
+
+        attackIndicator.isVisible = false
+        cooldownIndicator.isVisible = false
+        cooldownIndicatorFill.isVisible = false
 
         val i = root.heighti / 2 - 7 + 16
         val j = root.widthi / 2 - 8
-        attackIndicator.frame = this.convertRectFrom(rect(j, i, 16, 16), root)
-        cooldownIndicator.frame = this.convertRectFrom(rect(j, i, 16, 4), root)
-        cooldownIndicatorFill.frame = this.convertRectFrom(rect(j, i, 16, 4), root)
+        attackIndicator.frame = rect(j, i, 16, 7) // the sprite is 16x16 in MC but visually is only 7px tall
+        cooldownIndicator.frame = rect(j, i, 16, 4)
+        cooldownIndicatorFill.frame = rect(j, i, 16, 4)
 
         if (gamesettings.thirdPersonView == 0) {
             if (mc.playerController.isSpectator && mc.pointedEntity == null) {
