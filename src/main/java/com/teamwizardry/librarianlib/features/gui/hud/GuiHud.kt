@@ -43,8 +43,9 @@ object GuiHud {
     val jumpBar = JumpBarHudElement()
 
     val chat = ChatHudElement(ElementType.CHAT)
-    val playerList = PlayerListHudElement(ElementType.PLAYER_LIST)
-    // val sidebar
+    val playerList = PlayerListHudElement() // finished
+    val sidebar = SidebarHudElement() // finished
+
     val debug = DebugHudElement(ElementType.DEBUG)
     val potionIcons = PotionIconsHudElement(ElementType.POTION_ICONS)
     val subtitles = SubtitlesHudElement(ElementType.SUBTITLES)
@@ -81,6 +82,7 @@ object GuiHud {
     init {
         MinecraftForge.EVENT_BUS.register(this)
         root.add(*elements.values.toTypedArray())
+        root.add(sidebar)
     }
 
     fun element(type: ElementType): HudElement {
@@ -90,6 +92,10 @@ object GuiHud {
     @SubscribeEvent(priority = EventPriority.LOW)
     fun postEvent(e: RenderGameOverlayEvent.Post) {
         element(e.type).hudEvent(e)
+
+        if(e.type == ElementType.CHAT) {
+            sidebar.hudEvent(e)
+        }
 
         if(e.type == ElementType.ALL) {
             Minecraft.getMinecraft().profiler.startSection("liblib")
@@ -110,6 +116,10 @@ object GuiHud {
             val scaledResolution = ScaledResolution(Minecraft.getMinecraft())
             root.size_rm.set(vec(scaledResolution.scaledWidth, scaledResolution.scaledHeight))
             elements.values.forEach { it.isVisible = false }
+        }
+
+        if(e.type == ElementType.CHAT) {
+            sidebar.hudEvent(e)
         }
 
         element(e.type).hudEvent(e)

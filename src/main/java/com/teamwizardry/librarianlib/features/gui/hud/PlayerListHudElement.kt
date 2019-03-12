@@ -17,7 +17,7 @@ import net.minecraft.util.math.MathHelper
 import net.minecraft.scoreboard.ScoreObjective
 import kotlin.math.max
 
-class PlayerListHudElement(type: RenderGameOverlayEvent.ElementType): HudElement(type) {
+class PlayerListHudElement: HudElement(RenderGameOverlayEvent.ElementType.PLAYER_LIST) {
     val playerItems = mutableMapOf<UUID, PlayerItemLayer>()
     val headerBackground = GuiLayer()
     val headerText = GuiLayer()
