@@ -4,12 +4,15 @@ import com.teamwizardry.librarianlib.core.client.ClientTickHandler
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.components.StandaloneRootComponent
 import com.teamwizardry.librarianlib.features.helpers.vec
+import net.minecraft.block.material.Material
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 /**
@@ -27,18 +30,21 @@ object GuiHud {
     val crosshairs = CrosshairsHudElement()
     val bossHealth = BossHealthHudElement()
     val bossInfo = bossHealth.bosses
+    val armor = LeftStatusHudElement(ElementType.ARMOR) { true }
+    val health = LeftStatusHudElement(ElementType.HEALTH) { true }
+    val food = RightStatusHudElement(ElementType.FOOD) { true }
+    val air = RightStatusHudElement(ElementType.AIR) {
+        (Minecraft.getMinecraft().renderViewEntity as EntityPlayer).isInsideOfMaterial(Material.WATER)
+    }
+    val hotbar = HotbarHudElement()
+    val experience = ExperienceHudElement()
+    val text = FullscreenHudElement(ElementType.TEXT)
+    val healthMount = HealthMountHudElement()
+    val jumpBar = JumpBarHudElement()
 
-    val armor = ArmorHudElement()
-    val health = HealthHudElement(ElementType.HEALTH)
-    val food = FoodHudElement(ElementType.FOOD)
-    val air = AirHudElement(ElementType.AIR)
-    val hotbar = HotbarHudElement(ElementType.HOTBAR)
-    val experience = ExperienceHudElement(ElementType.EXPERIENCE)
-    val text = TextHudElement(ElementType.TEXT)
-    val healthMount = HealthMountHudElement(ElementType.HEALTHMOUNT)
-    val jumpBar = JumpBarHudElement(ElementType.JUMPBAR)
     val chat = ChatHudElement(ElementType.CHAT)
     val playerList = PlayerListHudElement(ElementType.PLAYER_LIST)
+    // val sidebar
     val debug = DebugHudElement(ElementType.DEBUG)
     val potionIcons = PotionIconsHudElement(ElementType.POTION_ICONS)
     val subtitles = SubtitlesHudElement(ElementType.SUBTITLES)
@@ -53,7 +59,7 @@ object GuiHud {
         ElementType.PORTAL to portal,
         ElementType.CROSSHAIRS to crosshairs,
         ElementType.BOSSHEALTH to bossHealth,
-        ElementType.BOSSINFO to bossHealth,
+        ElementType.BOSSINFO to bossHealth, // there's no single boss info component (there's one for each boss bar)
         ElementType.ARMOR to armor,
         ElementType.HEALTH to health,
         ElementType.FOOD to food,
@@ -77,39 +83,16 @@ object GuiHud {
         root.add(*elements.values.toTypedArray())
     }
 
-    fun element(type: ElementType): GuiComponent {
+    fun element(type: ElementType): HudElement {
         return elements.getValue(type)
     }
 
-    @SubscribeEvent
-    fun post(e: RenderGameOverlayEvent.Post) {
-        when(e.type) {
-            ElementType.ALL -> all.hudEvent(e)
-            ElementType.HELMET -> helmet.hudEvent(e)
-            ElementType.PORTAL -> portal.hudEvent(e)
-            ElementType.CROSSHAIRS -> crosshairs.hudEvent(e)
-            ElementType.BOSSHEALTH -> bossHealth.hudEvent(e)
-            ElementType.BOSSINFO -> bossHealth.hudEvent(e)
-            ElementType.ARMOR -> armor.hudEvent(e)
-            ElementType.HEALTH -> health.hudEvent(e)
-            ElementType.FOOD -> food.hudEvent(e)
-            ElementType.AIR -> air.hudEvent(e)
-            ElementType.HOTBAR -> hotbar.hudEvent(e)
-            ElementType.EXPERIENCE -> experience.hudEvent(e)
-            ElementType.TEXT -> text.hudEvent(e)
-            ElementType.HEALTHMOUNT -> healthMount.hudEvent(e)
-            ElementType.JUMPBAR -> jumpBar.hudEvent(e)
-            ElementType.CHAT -> chat.hudEvent(e)
-            ElementType.PLAYER_LIST -> playerList.hudEvent(e)
-            ElementType.DEBUG -> debug.hudEvent(e)
-            ElementType.POTION_ICONS -> potionIcons.hudEvent(e)
-            ElementType.SUBTITLES -> subtitles.hudEvent(e)
-            ElementType.FPS_GRAPH -> fpsGraph.hudEvent(e)
-            ElementType.VIGNETTE -> vignette.hudEvent(e)
-            null -> {}
-        }
+    @SubscribeEvent(priority = EventPriority.LOW)
+    fun postEvent(e: RenderGameOverlayEvent.Post) {
+        element(e.type).hudEvent(e)
 
         if(e.type == ElementType.ALL) {
+            Minecraft.getMinecraft().profiler.startSection("liblib")
             GlStateManager.enableBlend()
             GlStateManager.pushMatrix()
 
@@ -117,39 +100,18 @@ object GuiHud {
 
             GlStateManager.popMatrix()
             GlStateManager.enableTexture2D()
+            Minecraft.getMinecraft().profiler.endSection()
         }
     }
 
-    fun pre(e: RenderGameOverlayEvent.Pre) {
+    @SubscribeEvent(priority = EventPriority.LOW)
+    fun preEvent(e: RenderGameOverlayEvent.Pre) {
         if(e.type == ElementType.ALL) {
             val scaledResolution = ScaledResolution(Minecraft.getMinecraft())
             root.size_rm.set(vec(scaledResolution.scaledWidth, scaledResolution.scaledHeight))
+            elements.values.forEach { it.isVisible = false }
         }
 
-        when(e.type) {
-            ElementType.ALL -> all.hudEvent(e)
-            ElementType.HELMET -> helmet.hudEvent(e)
-            ElementType.PORTAL -> portal.hudEvent(e)
-            ElementType.CROSSHAIRS -> crosshairs.hudEvent(e)
-            ElementType.BOSSHEALTH -> bossHealth.hudEvent(e)
-            ElementType.BOSSINFO -> bossHealth.hudEvent(e)
-            ElementType.ARMOR -> armor.hudEvent(e)
-            ElementType.HEALTH -> health.hudEvent(e)
-            ElementType.FOOD -> food.hudEvent(e)
-            ElementType.AIR -> air.hudEvent(e)
-            ElementType.HOTBAR -> hotbar.hudEvent(e)
-            ElementType.EXPERIENCE -> experience.hudEvent(e)
-            ElementType.TEXT -> text.hudEvent(e)
-            ElementType.HEALTHMOUNT -> healthMount.hudEvent(e)
-            ElementType.JUMPBAR -> jumpBar.hudEvent(e)
-            ElementType.CHAT -> chat.hudEvent(e)
-            ElementType.PLAYER_LIST -> playerList.hudEvent(e)
-            ElementType.DEBUG -> debug.hudEvent(e)
-            ElementType.POTION_ICONS -> potionIcons.hudEvent(e)
-            ElementType.SUBTITLES -> subtitles.hudEvent(e)
-            ElementType.FPS_GRAPH -> fpsGraph.hudEvent(e)
-            ElementType.VIGNETTE -> vignette.hudEvent(e)
-            null -> {}
-        }
+        element(e.type).hudEvent(e)
     }
 }

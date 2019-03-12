@@ -146,7 +146,7 @@ class LayerRenderHandler: ILayerRendering {
         layer.clipping.popDisable()
 
         if (LibrarianLib.DEV_ENVIRONMENT && Minecraft.getMinecraft().renderManager.isDebugBoundingBox) {
-            GlStateManager.glLineWidth(1f)
+            GlStateManager.glLineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
             GlStateManager.color(.75f, 0f, .75f)
             layer.drawDebugBoundingBox()
         }
@@ -169,7 +169,7 @@ class LayerRenderHandler: ILayerRendering {
 
         if (LibrarianLib.DEV_ENVIRONMENT && Minecraft.getMinecraft().renderManager.isDebugBoundingBox &&
             GuiLayer.isDebugMode && layer.shouldDrawSkeleton()) {
-            GlStateManager.glLineWidth(1f)
+            GlStateManager.glLineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
             GlStateManager.color(.75f, 0f, .75f)
             GL11.glEnable(GL11.GL_LINE_STIPPLE)
             GL11.glLineStipple(2, 0b0011_0011_0011_0011.toShort())

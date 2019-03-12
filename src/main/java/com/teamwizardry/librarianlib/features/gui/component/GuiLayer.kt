@@ -223,6 +223,8 @@ open class GuiLayer private constructor(
         @JvmStatic
         val UNDERLAY_Z: Double = -1e10
 
+        var overrideDebugLineWidth: Float? = null
+
         private val layerFieldCache = mutableMapOf<Class<*>, List<Field>>()
 
         @JvmStatic

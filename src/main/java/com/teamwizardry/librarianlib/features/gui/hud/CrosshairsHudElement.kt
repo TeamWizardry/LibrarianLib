@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.features.gui.hud
 
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
@@ -10,9 +10,9 @@ import net.minecraft.util.math.RayTraceResult
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 
 class CrosshairsHudElement: HudElement(RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
-    val attackIndicator: GuiComponent = GuiComponent()
-    val cooldownIndicator: GuiComponent = GuiComponent()
-    val cooldownIndicatorFill: GuiComponent = GuiComponent()
+    val attackIndicator: GuiLayer = GuiLayer()
+    val cooldownIndicator: GuiLayer = GuiLayer()
+    val cooldownIndicatorFill: GuiLayer = GuiLayer()
 
     init {
         this.add(attackIndicator, cooldownIndicator, cooldownIndicatorFill)
@@ -20,7 +20,7 @@ class CrosshairsHudElement: HudElement(RenderGameOverlayEvent.ElementType.CROSSH
 
     override fun hudEvent(e: RenderGameOverlayEvent.Pre) {
         super.hudEvent(e)
-        this.size = vec(16, 16)
+        this.size = vec(15, 15)
 
         this.attackIndicator.isVisible = false
         this.cooldownIndicator.isVisible = false

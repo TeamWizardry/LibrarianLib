@@ -1,83 +1,73 @@
 package com.teamwizardry.librarianlib.features.gui.hud
 
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.unmodifiableView
-import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
-import net.minecraft.client.gui.BossInfoClient
-import net.minecraft.client.gui.GuiBossOverlay
 import net.minecraft.world.BossInfo
 import net.minecraftforge.client.event.RenderGameOverlayEvent
-import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.fml.common.eventhandler.EventPriority
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.UUID
 
 class BossHealthHudElement: HudElement(RenderGameOverlayEvent.ElementType.BOSSHEALTH) {
-    private val _infos = mutableMapOf<UUID, ComponentBossInfo>()
+    private val _infos = mutableMapOf<UUID, BossInfoLayer>()
+    private val seenUUIDs = mutableSetOf<UUID>()
     val bosses = _infos.unmodifiableView()
 
-    override fun layoutChildren() {
-        super.layoutChildren()
-        val mapBossInfos = this.mc.ingameGUI.bossOverlay.mapBossInfos
+    private var bottom = 0
+    private var index = 0
 
-        _infos.entries.toList().forEach { (uuid, bar) ->
-            if(uuid !in mapBossInfos) {
-                bar.removeFromParent()
-                _infos.remove(uuid)
+    override fun hudEvent(e: RenderGameOverlayEvent.Pre) {
+        super.hudEvent(e)
+        if(e is RenderGameOverlayEvent.BossInfo) {
+            val uuid = e.bossInfo.uniqueId
+            seenUUIDs.add(uuid)
+            val component = _infos.getOrPut(uuid) {
+                BossInfoLayer(uuid).also { this.add(it) }
             }
+            component.zIndex = (index++).toDouble()
+            component.hudEvent(e)
+            bottom = component.yi + component.heighti
+        } else {
+            this.seenUUIDs.clear()
+            this.bottom = 0
+            this.index = 0
+
+            this.size = vec(182, root.height)
+            this.pos = vec((root.widthi - this.widthi)/2, 0)
         }
-        mapBossInfos.forEach { (uuid, _) ->
-            if(uuid !in _infos) {
-                val component = ComponentBossInfo(uuid)
-                _infos[uuid] = component
-                this.add(component)
+    }
+
+    override fun hudEvent(e: RenderGameOverlayEvent.Post) {
+        super.hudEvent(e)
+        if(e.type == RenderGameOverlayEvent.ElementType.BOSSHEALTH) {
+            _infos.entries.toList().forEach { (uuid, component) ->
+                if (uuid !in seenUUIDs) {
+                    _infos.remove(uuid)
+                    component.removeFromParent()
+                }
             }
+            this.heighti = bottom
         }
-        _infos.values.forEach {
-            it.setNeedsLayout()
-            it.runLayoutIfNeeded() // runLayout() forces children to run layout too, which we don't want
-        }
-        var y = 0
-        mapBossInfos.values.forEach { // the default sorting of `values` is used in MC
-            _infos[it.uniqueId]?.also { info ->
-                info.pos = vec(0, y)
-                y += info.heighti
-            }
-        }
-        this.size = vec(182, y)
-        this.pos = vec((root.widthi - this.widthi)/2, 0)
     }
 
 }
 
-class ComponentBossInfo(val uuid: UUID): HudElement(RenderGameOverlayEvent.ElementType.BOSSINFO) {
-
-    val bossName: GuiComponent = GuiComponent()
-    val bossBar: GuiComponent = GuiComponent()
-    val bossBarFill: GuiComponent = GuiComponent()
-    val overlay: GuiComponent = GuiComponent()
-    val overlayFill: GuiComponent = GuiComponent()
+class BossInfoLayer(val uuid: UUID): HudElement(RenderGameOverlayEvent.ElementType.BOSSINFO) {
+    val bossName: GuiLayer = GuiLayer()
+    val bossBar: GuiLayer = GuiLayer()
+    val bossBarFill: GuiLayer = GuiLayer()
+    val overlay: GuiLayer = GuiLayer()
+    val overlayFill: GuiLayer = GuiLayer()
 
     init {
         add(bossName, bossBar, bossBarFill, overlay, overlayFill)
     }
 
-    /**
-     * @see net.minecraft.client.gui.GuiBossOverlay.render
-     */
-    override fun layoutChildren() {
-        super.layoutChildren()
+    override fun hudEvent(e: RenderGameOverlayEvent.Pre) {
+        super.hudEvent(e)
+        e as RenderGameOverlayEvent.BossInfo
 
-        val mapBossInfos = this.mc.ingameGUI.bossOverlay.mapBossInfos
-        val info = mapBossInfos[uuid] ?: return
-        val increment = increments[uuid] ?: run { // null means it was canceled
-            size = vec(182, 0)
-            isVisible = false
-            return
-        }
-        size = vec(182, increment)
+        this.frame = parent!!.convertRectFrom(rect(e.x, e.y-12, 182, e.increment), root)
 
         bossBarFill.isVisible = false
         overlay.isVisible = false
@@ -86,12 +76,12 @@ class ComponentBossInfo(val uuid: UUID): HudElement(RenderGameOverlayEvent.Eleme
         bossBar.frame = rect(0, 12, 182, 5)
         overlay.frame = rect(0, 12, 182, 5)
 
-        if (info.overlay != BossInfo.Overlay.PROGRESS)
+        if (e.bossInfo.overlay != BossInfo.Overlay.PROGRESS)
         {
             overlay.isVisible = true
         }
 
-        val i = (info.percent * 183.0F).toInt()
+        val i = (e.bossInfo.percent * 182).toInt()
         bossBarFill.frame = rect(0, 12, i, 5)
         overlayFill.frame = rect(0, 12, i, 5)
 
@@ -99,33 +89,13 @@ class ComponentBossInfo(val uuid: UUID): HudElement(RenderGameOverlayEvent.Eleme
         {
             bossBarFill.isVisible = true
 
-            if (info.overlay != BossInfo.Overlay.PROGRESS)
+            if (e.bossInfo.overlay != BossInfo.Overlay.PROGRESS)
             {
                 overlayFill.isVisible = true
             }
         }
 
-        val stringWidth = this.mc.fontRenderer.getStringWidth(info.name.formattedText)
+        val stringWidth = this.mc.fontRenderer.getStringWidth(e.bossInfo.name.formattedText)
         bossName.frame = rect(width / 2 - stringWidth / 2, 3, stringWidth, this.mc.fontRenderer.FONT_HEIGHT)
     }
-
-    private companion object {
-        init { MinecraftForge.EVENT_BUS.register(this) }
-
-        val increments = mutableMapOf<UUID, Int>()
-
-        @SubscribeEvent
-        fun overlay(e: RenderGameOverlayEvent.Pre) {
-            if (e.type != RenderGameOverlayEvent.ElementType.ALL) return
-            increments.clear()
-        }
-
-        @SubscribeEvent(priority = EventPriority.LOWEST)
-        fun overlay(e: RenderGameOverlayEvent.BossInfo) {
-            increments[e.bossInfo.uniqueId] = e.increment
-        }
-    }
 }
-
-private val GuiBossOverlay.mapBossInfos: Map<UUID, BossInfoClient>
-    by MethodHandleHelper.delegateForReadOnly(GuiBossOverlay::class.java, "mapBossInfos", "field_184060_g", "g")

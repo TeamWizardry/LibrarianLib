@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.features.gui.component
 
-import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.gui.component.supporting.*
 import com.teamwizardry.librarianlib.features.gui.components.RootComponent
 import com.teamwizardry.librarianlib.features.gui.layers.ComponentBackedLayer
@@ -81,7 +80,7 @@ open class GuiComponent private constructor(
         GlStateManager.disableTexture2D()
 
         if(GuiLayer.isDebugMode) {
-            GlStateManager.glLineWidth(1f)
+            GlStateManager.glLineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
             GlStateManager.color(0f, 0f, 0f)
             val tessellator = Tessellator.getInstance()
             val vb = tessellator.buffer
@@ -99,7 +98,7 @@ open class GuiComponent private constructor(
             tessellator.draw()
         }
 
-        GlStateManager.glLineWidth(2f)
+        GlStateManager.glLineWidth(overrideDebugLineWidth ?: 2f)
         GlStateManager.color(1f, 0f, 1f)
         if (this.mouseHit != null) GlStateManager.color(0.25f, 0.25f, 0.25f)
         if (mouseOver) GlStateManager.color(1f, 1f, 1f)
@@ -164,5 +163,9 @@ open class GuiComponent private constructor(
             mouseHandler.component = this
             focusHandler.component = this
         }()
+    }
+
+    companion object {
+        var overrideDebugLineWidth: Float? = null
     }
 }
