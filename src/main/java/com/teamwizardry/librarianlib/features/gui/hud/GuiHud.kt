@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType
+import net.minecraftforge.common.ForgeHooks
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -30,7 +31,9 @@ object GuiHud {
     val crosshairs = CrosshairsHudElement()
     val bossHealth = BossHealthHudElement()
     val bossInfo = bossHealth.bosses
-    val armor = LeftStatusHudElement(ElementType.ARMOR) { true }
+    val armor = LeftStatusHudElement(ElementType.ARMOR) {
+        ForgeHooks.getTotalArmorValue(Minecraft.getMinecraft().player) > 0
+    }
     val health = LeftStatusHudElement(ElementType.HEALTH) { true }
     val food = RightStatusHudElement(ElementType.FOOD) { true }
     val air = RightStatusHudElement(ElementType.AIR) {
@@ -102,7 +105,9 @@ object GuiHud {
             GlStateManager.enableBlend()
             GlStateManager.pushMatrix()
 
+            GuiComponent.overrideDebugLineWidth = 1f
             root.renderRoot(ClientTickHandler.partialTicks, vec(0, 0))
+            GuiComponent.overrideDebugLineWidth = null
 
             GlStateManager.popMatrix()
             GlStateManager.enableTexture2D()
