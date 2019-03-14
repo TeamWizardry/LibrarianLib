@@ -204,7 +204,7 @@ open class GuiLayer private constructor(
 
     override fun toString(): String {
         return "${this.javaClass.simpleName}@${System.identityHashCode(this).toString(16)}" +
-            (name?.let { "(name=$name)" } ?: "")
+            "($x, $y, $width, $height${name?.let { ", name=$name" } ?: ""})"
     }
 
     //region - Internal
