@@ -12,6 +12,9 @@ class Rect2d(val x: Double, val y: Double, val width: Double, val height: Double
     )
     init {
         AllocationTracker.rect2dAllocations++
+        AllocationTracker.rect2dAllocationStats?.also { stats ->
+            stats[this] = stats.getInt(this) + 1
+        }
     }
 
     val min: Vec2d

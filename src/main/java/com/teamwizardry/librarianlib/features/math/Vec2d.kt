@@ -1,21 +1,23 @@
 package com.teamwizardry.librarianlib.features.math
 
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.kotlin.fastInvSqrt
+import com.teamwizardry.librarianlib.features.kotlin.fastSqrt
 import net.minecraft.util.math.MathHelper
+import kotlin.math.sqrt
 
 class Vec2d(val x: Double, val y: Double) {
 
-    @Transient
-    val xf: Float = x.toFloat()
-    @Transient
-    val yf: Float = y.toFloat()
-    @Transient
-    val xi: Int = x.toInt()
-    @Transient
-    val yi: Int = y.toInt()
+    val xf: Float get() = x.toFloat()
+    val yf: Float get() = y.toFloat()
+    val xi: Int get() = x.toInt()
+    val yi: Int get() = y.toInt()
 
     init {
         AllocationTracker.vec2dAllocations++
+        AllocationTracker.vec2dAllocationStats?.also { stats ->
+            stats[this] = stats.getInt(this) + 1
+        }
     }
 
     fun floor(): Vec2d {
@@ -78,17 +80,16 @@ class Vec2d(val x: Double, val y: Double) {
         return x * point.x + y * point.y
     }
 
-    @Transient
-    private var len: Double = -1.0
-
     fun length(): Double {
-        if(len < 0)
-            len = Math.sqrt(x * x + y * y)
-        return len
+        return sqrt(x * x + y * y)
+    }
+
+    fun fastLength(): Double {
+        return fastSqrt(x * x + y * y)
     }
 
     fun normalize(): Vec2d {
-        val norm = length()
+        val norm = fastInvSqrt(x * x + y * y)
         return Vec2d.getPooled(x / norm, y / norm)
     }
 
@@ -192,7 +193,7 @@ class Vec2d(val x: Double, val y: Double) {
             return Vec2d.getPooled(Math.max(a.x, b.x), Math.max(a.y, b.y))
         }
 
-        private val poolBits = 4
+        private val poolBits = 7
         private val poolMask = (1 shl poolBits)-1
         private val poolMax = (1 shl poolBits-1)-1
         private val poolMin = -(1 shl poolBits-1)

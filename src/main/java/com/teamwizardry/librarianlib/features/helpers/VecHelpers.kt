@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.util.math.Vec3d
 
 
-private val poolBits = 4
+private val poolBits = 5
 private val poolMask = (1 shl poolBits)-1
 private val poolMax = (1 shl poolBits-1)-1
 private val poolMin = -(1 shl poolBits-1)
@@ -31,8 +31,12 @@ fun getPooledVec3d(x: Double, y: Double, z: Double): Vec3d {
             ((xi-poolMin) shl poolBits*2) or ((yi-poolMin) shl poolBits) or (zi-poolMin)
         ]
     }
+    val newVec = Vec3d(x, y, z)
     AllocationTracker.vec3dAllocations++
-    return Vec3d(x, y, z)
+    AllocationTracker.vec3dAllocationStats?.also { stats ->
+        stats[newVec] = stats.getInt(newVec) + 1
+    }
+    return newVec
 }
 
 inline fun vec(x: Number, y: Number) = Vec2d.getPooled(x.toDouble(), y.toDouble())

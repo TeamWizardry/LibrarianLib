@@ -19,6 +19,12 @@ fun fastCos(angle: Double): Double = MathHelper.cos(angle.toFloat()).toDouble()
 fun fastSin(angle: Float): Float = MathHelper.sin(angle)
 fun fastSin(angle: Double): Double = MathHelper.sin(angle.toFloat()).toDouble()
 
+fun fastSqrt(value: Float): Float = MathHelper.sqrt(value)
+fun fastSqrt(value: Double): Double = MathHelper.sqrt(value).toDouble()
+
+fun fastInvSqrt(value: Float): Float = MathHelper.fastInvSqrt(value.toDouble()).toFloat()
+fun fastInvSqrt(value: Double): Double = MathHelper.fastInvSqrt(value)
+
 fun floorInt(value: Float): Int = floor(value).toInt()
 fun floorInt(value: Double): Int = floor(value).toInt()
 
