@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.floorInt
 import com.teamwizardry.librarianlib.features.kotlin.identityMapOf
 import com.teamwizardry.librarianlib.features.kotlin.identitySetOf
+import com.teamwizardry.librarianlib.features.kotlin.toIdentitySet
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import net.minecraft.client.Minecraft
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -38,8 +39,7 @@ class ChatHudElement: HudElement(RenderGameOverlayEvent.ElementType.CHAT) {
         if (this.mc.gameSettings.chatVisibility == EntityPlayer.EnumChatVisibility.HIDDEN) {
             this.isVisible = false
         } else {
-            val linesToRemove = identitySetOf<ChatLine>()
-            linesToRemove.addAll(chatLines.keys)
+            val linesToRemove = chatLines.keys.toIdentitySet()
 
             val opacity = this.mc.gameSettings.chatOpacity * 0.9f + 0.1f
 

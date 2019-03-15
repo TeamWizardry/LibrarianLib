@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.teamwizardry.librarianlib.features.kotlin
 
 import java.util.Collections
@@ -50,6 +52,12 @@ fun <T> identitySetOf(vararg elements: T): MutableSet<T> {
     val map = IdentityHashMap<T, Boolean>(mapCapacity(elements.size))
     return elements.toCollection(Collections.newSetFromMap(map))
 }
+
+fun <K, V> Map<K, V>.toIdentityMap(): MutableMap<K, V> = IdentityHashMap(this)
+fun <T> Set<T>.toIdentitySet(): MutableSet<T> = identitySetOf<T>().also { it.addAll(this) }
+
+fun <K, V> Map<K, V>.unmodifiableIdentityCopy(): Map<K, V> = Collections.unmodifiableMap(this.toIdentityMap())
+fun <T> Set<T>.unmodifiableIdentityCopy(): Set<T> = Collections.unmodifiableSet(this.toIdentitySet())
 
 // Private utils =======================================================================================================
 

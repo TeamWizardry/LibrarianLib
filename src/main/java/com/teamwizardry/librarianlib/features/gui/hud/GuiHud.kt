@@ -44,15 +44,14 @@ object GuiHud {
     val text = FullscreenHudElement(ElementType.TEXT)
     val healthMount = HealthMountHudElement()
     val jumpBar = JumpBarHudElement()
-
     val chat = ChatHudElement()
     val playerList = PlayerListHudElement() // finished
     val sidebar = SidebarHudElement() // finished
+    val debug = FullscreenHudElement(ElementType.DEBUG)
 
-    val debug = DebugHudElement(ElementType.DEBUG)
-    val potionIcons = PotionIconsHudElement(ElementType.POTION_ICONS)
-    val subtitles = SubtitlesHudElement(ElementType.SUBTITLES)
-    val fpsGraph = FpsGraphHudElement(ElementType.FPS_GRAPH)
+    val potionIcons = PotionIconsHudElement()
+    val subtitles = SubtitlesHudElement()
+    val fpsGraph = FpsGraphHudElement()
 
     val vignette = FullscreenHudElement(ElementType.VIGNETTE)
 
