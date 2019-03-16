@@ -79,7 +79,7 @@ open class GuiComponent private constructor(
 
         GlStateManager.disableTexture2D()
 
-        if(GuiLayer.isDebugMode) {
+        if(GuiLayer.showDebugTilt) {
             GlStateManager.glLineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
             GlStateManager.color(0f, 0f, 0f)
             val tessellator = Tessellator.getInstance()

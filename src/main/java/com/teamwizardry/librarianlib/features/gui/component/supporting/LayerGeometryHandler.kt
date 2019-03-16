@@ -471,7 +471,7 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
     }
 
     override fun glApplyContentsOffset(inverse: Boolean) {
-        val z = if(GuiLayer.isDebugMode) 0.1 else 0.0
+        val z = if(GuiLayer.showDebugTilt) 0.1 else 0.0
         if(inverse) {
             GlStateManager.translate(-matrixParams.contentsOffset.x, -matrixParams.contentsOffset.y, z)
         } else {

@@ -5,9 +5,7 @@ import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
-import com.teamwizardry.librarianlib.features.gui.component.supporting.MouseHit
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.math.Rect2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.CoordinateSpace2D
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.ScreenSpace
@@ -62,7 +60,7 @@ open class StandaloneRootComponent(val closeGui: (Exception) -> Unit): RootCompo
         get() = null
 
     override fun glApplyTransform(inverse: Boolean) {
-        if (GuiLayer.isDebugMode) {
+        if (GuiLayer.showDebugTilt) {
             if(inverse) {
                 GlStateManager.translate(size.x / 2.0, size.y / 2.0, 0.0)
                 GlStateManager.rotate(20f, 0f, 1f, 0f)

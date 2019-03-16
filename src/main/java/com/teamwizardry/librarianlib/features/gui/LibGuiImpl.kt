@@ -1,12 +1,12 @@
 package com.teamwizardry.librarianlib.features.gui
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.gui.components.StandaloneRootComponent
 import com.teamwizardry.librarianlib.features.gui.layers.GradientLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.kotlin.delegate
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.math.Axis2d
@@ -100,12 +100,12 @@ open class LibGuiImpl(
 
     @Throws(IOException::class)
     fun handleKeyboardInput() {
-        if (Keyboard.getEventKeyState()) {
+        if (LibrarianLib.DEV_ENVIRONMENT && Keyboard.getEventKeyState()) {
             if (Keyboard.getEventKey() == Keyboard.KEY_D && GuiScreen.isShiftKeyDown() && GuiScreen.isCtrlKeyDown()) {
-                GuiLayer.isDebugMode = !GuiLayer.isDebugMode
+                GuiLayer.showDebugTilt = !GuiLayer.showDebugTilt
             }
             if (Keyboard.getEventKey() == Keyboard.KEY_B && Keyboard.isKeyDown(Keyboard.KEY_F3)) {
-                Minecraft.getMinecraft().renderManager.isDebugBoundingBox = !Minecraft.getMinecraft().renderManager.isDebugBoundingBox
+                GuiLayer.showDebugBoundingBox = !GuiLayer.showDebugBoundingBox
             }
         }
 

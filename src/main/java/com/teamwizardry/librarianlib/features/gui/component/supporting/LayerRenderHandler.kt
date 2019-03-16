@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.features.gui.component.supporting
 
-import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.animator.Animation
 import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
@@ -8,7 +7,6 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.gui.value.IMValue
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -145,7 +143,7 @@ class LayerRenderHandler: ILayerRendering {
         layer.glApplyContentsOffset(true)
         layer.clipping.popDisable()
 
-        if (LibrarianLib.DEV_ENVIRONMENT && Minecraft.getMinecraft().renderManager.isDebugBoundingBox) {
+        if (GuiLayer.showDebugBoundingBox) {
             GlStateManager.glLineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
             GlStateManager.color(.75f, 0f, .75f)
             layer.drawDebugBoundingBox()
@@ -167,8 +165,8 @@ class LayerRenderHandler: ILayerRendering {
 
         layer.glApplyContentsOffset(true)
 
-        if (LibrarianLib.DEV_ENVIRONMENT && Minecraft.getMinecraft().renderManager.isDebugBoundingBox &&
-            GuiLayer.isDebugMode && layer.shouldDrawSkeleton()) {
+        if (GuiLayer.showDebugBoundingBox &&
+            GuiLayer.showDebugTilt && layer.shouldDrawSkeleton()) {
             GlStateManager.glLineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
             GlStateManager.color(.75f, 0f, .75f)
             GL11.glEnable(GL11.GL_LINE_STIPPLE)
@@ -189,7 +187,7 @@ class LayerRenderHandler: ILayerRendering {
         points.forEach { vb.pos(it.x, it.y, 0.0).endVertex() }
         tessellator.draw()
         GlStateManager.color(0f, 0f, 0f, 0.15f)
-        if(GuiLayer.isDebugMode) {
+        if(GuiLayer.showDebugTilt) {
             vb.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION)
             points.forEach {
                 vb.pos(it.x, it.y, -100.0).endVertex()

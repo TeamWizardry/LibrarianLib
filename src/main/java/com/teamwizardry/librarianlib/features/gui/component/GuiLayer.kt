@@ -215,7 +215,10 @@ open class GuiLayer private constructor(
 
     companion object {
         @JvmStatic
-        var isDebugMode = false
+        var showDebugTilt = false
+
+        @JvmStatic
+        var showDebugBoundingBox = false
 
         @JvmStatic
         val OVERLAY_Z: Double = 1e10
@@ -223,7 +226,9 @@ open class GuiLayer private constructor(
         @JvmStatic
         val UNDERLAY_Z: Double = -1e10
 
+        @JvmStatic
         var overrideDebugLineWidth: Float? = null
+
 
         private val layerFieldCache = mutableMapOf<Class<*>, List<Field>>()
 

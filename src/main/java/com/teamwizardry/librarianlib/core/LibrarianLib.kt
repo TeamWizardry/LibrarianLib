@@ -33,10 +33,10 @@ import net.minecraftforge.fml.common.SidedProxy
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
-
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent
 
 /**
- * Current featureset:
+ * Out of date feature set:
  *
  * - Automatically generate missing models in development environments
  * - Automatically register Item colors, models, statemappers, and all other model-related things [ItemMod]
@@ -78,6 +78,11 @@ object LibrarianLib {
     @Mod.EventHandler
     fun postInit(e: FMLPostInitializationEvent) {
         PROXY.post(e)
+    }
+
+    @Mod.EventHandler
+    fun serverStarting(e: FMLServerStartingEvent) {
+        PROXY.serverStarting(e)
     }
 
     const val MODID = "librarianlib"

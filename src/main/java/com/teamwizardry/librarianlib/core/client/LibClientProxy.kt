@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.core.client
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
+import com.teamwizardry.librarianlib.core.client.commands.ClientCommands
 import com.teamwizardry.librarianlib.core.common.LibCommonProxy
 import com.teamwizardry.librarianlib.features.forgeevents.CustomWorldRenderEvent
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
@@ -29,6 +30,7 @@ import net.minecraft.client.resources.IResourceManagerReloadListener
 import net.minecraft.client.resources.data.MetadataSerializer
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
@@ -71,6 +73,13 @@ class LibClientProxy : LibCommonProxy(), IResourceManagerReloadListener {
 
         if (LibrarianLib.DEV_ENVIRONMENT)
             TextureMapExporter
+    }
+
+    override fun init(e: FMLInitializationEvent) {
+        super.init(e)
+
+        if(ClientCommands.root.subCommands.isNotEmpty())
+            ClientCommandHandler.instance.registerCommand(ClientCommands.root)
     }
 
     override fun latePre(e: FMLPreInitializationEvent) {
