@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.gui.hud
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
+import com.teamwizardry.librarianlib.features.gui.layout.StackLayout
 import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
@@ -10,21 +11,30 @@ import net.minecraft.util.math.RayTraceResult
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 
 class CrosshairsHudElement: HudElement(RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
+    val leftStack = StackLayout.build().horizontal().reverse().alignRight().alignCenterY().layer()
+    val rightStack = StackLayout.build().horizontal().alignLeft().alignCenterY().layer()
+    val bottomStack = StackLayout.build().vertical().alignTop().alignCenterX().layer()
+    val topStack = StackLayout.build().vertical().reverse().alignBottom().alignCenterX().layer()
+
     val crosshair: GuiLayer = GuiLayer()
     val attackIndicator: GuiLayer = GuiLayer()
     val cooldownIndicator: GuiLayer = GuiLayer()
     val cooldownIndicatorFill: GuiLayer = GuiLayer()
 
     init {
-        this.add(crosshair, attackIndicator, cooldownIndicator, cooldownIndicatorFill)
+        this.add(crosshair, attackIndicator, cooldownIndicator, cooldownIndicatorFill,
+            leftStack, rightStack, bottomStack, topStack)
     }
 
     override fun hudEvent(e: RenderGameOverlayEvent.Pre) {
         super.hudEvent(e)
         val gamesettings = mc.gameSettings
 
-        crosshair.size = vec(15, 15)
-        crosshair.pos = vec(root.widthi / 2 - 7, root.heighti / 2 - 7)
+        crosshair.frame = rect(root.widthi / 2 - 7, root.heighti / 2 - 7, 15, 15)
+        leftStack.frame = rect(root.widthi / 2 - 7, root.heighti / 2, 0, 0)
+        rightStack.frame = rect(root.widthi / 2 + 7, root.heighti / 2, 0, 0)
+        topStack.frame = rect(root.widthi / 2, root.heighti / 2 - 7, 0, 0)
+        bottomStack.frame = rect(root.widthi / 2, root.heighti / 2 + 7, 0, 0)
 
         attackIndicator.isVisible = false
         cooldownIndicator.isVisible = false

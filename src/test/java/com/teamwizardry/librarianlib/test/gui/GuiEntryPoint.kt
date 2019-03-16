@@ -13,9 +13,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 object GuiEntryPoint : TestEntryPoint {
     override fun preInit(event: FMLPreInitializationEvent) {
         GuiItems
-        ClientRunnable.run {
-            GuiHud
-        }
     }
 
     override fun init(event: FMLInitializationEvent) {
@@ -23,7 +20,9 @@ object GuiEntryPoint : TestEntryPoint {
     }
 
     override fun postInit(event: FMLPostInitializationEvent) {
-
+        ClientRunnable.run {
+            HudTest
+        }
     }
 }
 

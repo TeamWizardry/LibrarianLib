@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.gui.layout
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
+import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.ceilInt
 import com.teamwizardry.librarianlib.features.kotlin.floorInt
@@ -32,7 +33,8 @@ class StackLayout(posX: Int, posY: Int, width: Int, height: Int,
     var horizontal: Boolean,
     var align: Align2d,
     var reverse: Boolean,
-    var spacing: Double
+    var spacing: Double,
+    var collapseInvisible: Boolean
 ): GuiLayer(posX, posY, width, height) {
 
     fun fitChildren() {
@@ -50,6 +52,8 @@ class StackLayout(posX: Int, posY: Int, width: Int, height: Int,
         }
         var length = 0.0
         children.forEach { child ->
+            if(collapseInvisible && !child.isVisible)
+                return@forEach
             val frame = child.frame
             if(horizontal) {
                 length += frame.width + spacing
@@ -67,6 +71,8 @@ class StackLayout(posX: Int, posY: Int, width: Int, height: Int,
     fun fitBredth() {
         var bredth = 0.0
         children.forEach { child ->
+            if(collapseInvisible && !child.isVisible)
+                return@forEach
             val frame = child.frame
             if(horizontal) {
                 bredth = max(bredth, frame.height)
@@ -87,6 +93,8 @@ class StackLayout(posX: Int, posY: Int, width: Int, height: Int,
         var accumulator = 0.0
         val positions = children.map { child ->
             accumulator.also {
+                if(collapseInvisible && !child.isVisible)
+                    return@also
                 if (horizontal) {
                     accumulator += child.frame.width + spacing
                 } else {
@@ -95,41 +103,42 @@ class StackLayout(posX: Int, posY: Int, width: Int, height: Int,
             }
         }
 
+        val reverseOffset = if(reverse) accumulator else 0.0
         if(horizontal) {
             val xOffset = when (align.x) {
-                Align2d.X.LEFT -> 0.0
-                Align2d.X.CENTER -> floor((width-accumulator)/2)
-                Align2d.X.RIGHT -> ceil(width-accumulator)
+                Align2d.X.LEFT -> 0.0 + reverseOffset
+                Align2d.X.CENTER -> floor((width-accumulator)/2 + reverseOffset)
+                Align2d.X.RIGHT -> ceil(width-accumulator + reverseOffset)
             }
 
             children.zip(positions).forEach { (child, position) ->
                 val frame = child.frame
-                val x = position + xOffset
+                val x = xOffset + if(reverse) -position else position
                 val y = when(align.y) {
                     Align2d.Y.TOP -> 0
                     Align2d.Y.CENTER -> floorInt((height - frame.height)/2)
                     Align2d.Y.BOTTOM -> ceilInt(height - frame.height)
                 }
 
-                child.frame = Rect2d(vec(x, y), frame.size)
+                child.frame = rect(if(reverse) x-frame.width else x, y, frame.size)
             }
         } else {
             val yOffset = when (align.y) {
-                Align2d.Y.TOP -> 0.0
-                Align2d.Y.CENTER -> floor((height-accumulator)/2)
-                Align2d.Y.BOTTOM -> ceil(height-accumulator)
+                Align2d.Y.TOP -> 0.0 + reverseOffset
+                Align2d.Y.CENTER -> floor((height-accumulator)/2 + reverseOffset)
+                Align2d.Y.BOTTOM -> ceil(height-accumulator + reverseOffset)
             }
 
             children.zip(positions).forEach { (child, position) ->
                 val frame = child.frame
-                val y = position + yOffset
+                val y = yOffset + if(reverse) -position else position
                 val x = when(align.x) {
                     Align2d.X.LEFT -> 0
                     Align2d.X.CENTER -> floorInt((width - frame.width)/2)
                     Align2d.X.RIGHT -> ceilInt(width - frame.width)
                 }
 
-                child.frame = Rect2d(vec(x, y), frame.size)
+                child.frame = rect(x, if(reverse) y-frame.height else y, frame.size)
             }
         }
     }
@@ -158,6 +167,7 @@ class StackLayout(posX: Int, posY: Int, width: Int, height: Int,
      * - align: [TOP_LEFT][Align2d.TOP_LEFT]
      * - reverse: false
      * - spacing: 0.0
+     * - collapseInvisible: true
      */
     class Builder(private var posX: Double, private var posY: Double) {
         private var width: Double = 0.0
@@ -169,6 +179,7 @@ class StackLayout(posX: Int, posY: Int, width: Int, height: Int,
         private var children: MutableList<GuiLayer> = mutableListOf()
         private var fitLength: Boolean = false
         private var fitBredth: Boolean = false
+        private var collapseInvisible: Boolean = true
 
         /** Stack horizontally */
         fun horizontal() = build {
@@ -286,6 +297,11 @@ class StackLayout(posX: Int, posY: Int, width: Int, height: Int,
             this.spacing = spacing
         }
 
+        /** Include invisible layers in layout calculations, keeping an empty spot for them */
+        fun includeInvisible() = build {
+            this.collapseInvisible = false
+        }
+
         /** Add the passed layers to the stack when complete */
         fun add(vararg children: GuiLayer) = build {
             this.children.addAll(children)
@@ -310,7 +326,7 @@ class StackLayout(posX: Int, posY: Int, width: Int, height: Int,
         private fun buildLayer(): StackLayout {
             val stack = StackLayout(
                 0, 0, 0, 0,
-                horizontal, align, reverse, spacing
+                horizontal, align, reverse, spacing, collapseInvisible
             )
             stack.pos = vec(posX, posY)
             stack.size = vec(width, height)

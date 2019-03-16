@@ -1,10 +1,26 @@
 package com.teamwizardry.librarianlib.features.gui.hud
 
+import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
+import com.teamwizardry.librarianlib.features.gui.layout.StackLayout
+import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
 import net.minecraftforge.client.GuiIngameForge
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 
 class RightStatusHudElement(type: RenderGameOverlayEvent.ElementType, val shown: () -> Boolean): HudElement(type) {
+    val leftStack: GuiLayer = StackLayout.build().horizontal().reverse().alignRight().alignCenterY().layer()
+    val rightStack: GuiLayer = StackLayout.build().horizontal().alignRight().alignCenterY().layer()
+
+    init {
+        add(leftStack, rightStack)
+    }
+
+    override fun layoutChildren() {
+        super.layoutChildren()
+        leftStack.frame = rect(0, 0, 0, this.height)
+        rightStack.frame = rect(this.width, 0, 0, this.height)
+    }
+
     private var rightHeightBefore = 0
     override fun hudEvent(e: RenderGameOverlayEvent.Pre) {
         super.hudEvent(e)

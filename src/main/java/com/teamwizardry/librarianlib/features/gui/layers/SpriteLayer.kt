@@ -10,11 +10,9 @@ import java.awt.Color
 
 /**
  * Displays a sprite
- *
- * Animated sprites will start their animation the moment the `sprite` property is set to a new value (setting it
- * repeatedly to the same value will not restart the animation)
  */
-class SpriteLayer @JvmOverloads constructor(var sprite: ISprite?, x: Int, y: Int, width: Int = sprite?.width ?: 16, height: Int = sprite?.height ?: 16) : GuiLayer(x, y, width, height) {
+class SpriteLayer(var sprite: ISprite?, x: Int, y: Int, width: Int, height: Int) : GuiLayer(x, y, width, height) {
+    constructor(sprite: ISprite?, x: Int, y: Int): this(sprite, x, y, sprite?.width ?: 16, sprite?.height ?: 16)
 
     var tint_im: IMValue<Color> = IMValue(Color.WHITE)
     var tint: Color by tint_im

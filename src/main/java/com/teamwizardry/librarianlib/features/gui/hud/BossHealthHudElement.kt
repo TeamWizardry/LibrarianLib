@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.gui.hud
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
+import com.teamwizardry.librarianlib.features.gui.layout.StackLayout
 import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.unmodifiableView
@@ -9,12 +10,20 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent
 import java.util.UUID
 
 class BossHealthHudElement: HudElement(RenderGameOverlayEvent.ElementType.BOSSHEALTH) {
+    val leftStack = StackLayout.build().horizontal().reverse().alignRight().alignCenterY().layer()
+    val rightStack = StackLayout.build().horizontal().alignLeft().alignCenterY().layer()
+    val bottomStack = StackLayout.build().vertical().alignTop().alignCenterX().layer()
+
     private val _infos = mutableMapOf<UUID, BossInfoLayer>()
     private val seenUUIDs = mutableSetOf<UUID>()
     val bosses = _infos.unmodifiableView()
 
     private var bottom = 0
     private var index = 0
+
+    init {
+        this.add(leftStack, rightStack, bottomStack)
+    }
 
     override fun hudEvent(e: RenderGameOverlayEvent.Pre) {
         super.hudEvent(e)
@@ -47,9 +56,22 @@ class BossHealthHudElement: HudElement(RenderGameOverlayEvent.ElementType.BOSSHE
         }
     }
 
+    override fun layoutChildren() {
+        super.layoutChildren()
+        val bossesHeight = bosses.map { it.value.y + it.value.height }.max() ?: 0.0
+        val bossesLeft = bosses.map { it.value.x }.min() ?: this.root.width/2
+        val bossesRight = bosses.map { it.value.x + it.value.width }.max() ?: this.root.width/2
+
+        this.bottomStack.frame = rect(this.root.widthi/2, bossesHeight, 0, 0)
+        this.leftStack.frame = rect(bossesLeft, 0, 0, 0)
+        this.rightStack.frame = rect(bossesRight, 0, 0, 0)
+    }
 }
 
 class BossInfoLayer(val uuid: UUID): HudElement(RenderGameOverlayEvent.ElementType.BOSSINFO) {
+    val barLeft = StackLayout.build().horizontal().alignRight().alignCenterY().reverse().layer()
+    val barRight = StackLayout.build().horizontal().alignLeft().alignCenterY().layer()
+
     val bossName: GuiLayer = GuiLayer()
     val bossBar: GuiLayer = GuiLayer()
     val bossBarFill: GuiLayer = GuiLayer()
@@ -57,7 +79,7 @@ class BossInfoLayer(val uuid: UUID): HudElement(RenderGameOverlayEvent.ElementTy
     val overlayFill: GuiLayer = GuiLayer()
 
     init {
-        add(bossName, bossBar, bossBarFill, overlay, overlayFill)
+        add(bossName, bossBar, bossBarFill, overlay, overlayFill, barLeft, barRight)
     }
 
     override fun hudEvent(e: RenderGameOverlayEvent.Pre) {
@@ -72,6 +94,8 @@ class BossInfoLayer(val uuid: UUID): HudElement(RenderGameOverlayEvent.ElementTy
 
         bossBar.frame = rect(0, 12, 182, 5)
         overlay.frame = rect(0, 12, 182, 5)
+        barLeft.frame = rect(0, 14, 0, 0)
+        barRight.frame = rect(182, 14, 0, 0)
 
         if (e.bossInfo.overlay != BossInfo.Overlay.PROGRESS)
         {

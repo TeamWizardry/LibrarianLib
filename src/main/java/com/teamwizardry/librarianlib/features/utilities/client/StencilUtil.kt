@@ -20,7 +20,8 @@ object StencilUtil {
 
         glEnable(GL_STENCIL_TEST)
 
-        glStencilMask(0xFF)
+        glStencilFunc(GL_ALWAYS, 0x00, 0x00)
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)
         glStencilMask(0xFF)
         glClearStencil(0)
         glClear(GL_STENCIL_BUFFER_BIT)
