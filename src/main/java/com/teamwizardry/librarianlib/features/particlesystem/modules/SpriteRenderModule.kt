@@ -18,10 +18,11 @@ import org.lwjgl.opengl.GL11
  * The bread-and-butter render module, a simple billboarded sprite.
  *
  * Particles are drawn as dynamically sized/colored sprites that are either billboarded or with an arbitrary facing
- * defined by [facingVector]. The particles are drawn as squares [size] meters to a side and centered on the the
- * particle's position. One thing of note is that for some particle effects, particularly ones that should look
- * consistent, disabling interpolation by passing the current position for both [previousPosition] and [position] can
- * make the particles rock solid in their positions as opposed to jittering about.
+ * defined by [facingVector] (if any of facingVector's components are NaN the player's look vector will be used).
+ * The particles are drawn as squares [size] blocks to a side and centered on the the particle's position.
+ * One thing of note is that for some particle effects, particularly ones that should look consistent,
+ * disabling interpolation by passing the current position for both [previousPosition] and [position] can make
+ * the particles rock solid in their positions as opposed to jittering about slightly.
  */
 class SpriteRenderModule @JvmOverloads constructor(
         /**
@@ -109,13 +110,13 @@ class SpriteRenderModule @JvmOverloads constructor(
         val yawScale = MathHelper.sin(-Math.toRadians(playerPitch).toFloat()).toDouble()
         val pitchY = MathHelper.cos(-Math.toRadians(playerPitch).toFloat()).toDouble()
 
-        var iHatX = yawZ
-        var iHatY = 0.0
-        var iHatZ = -yawX
+        var lookRightX = yawZ
+        var lookRightY = 0.0
+        var lookRightZ = -yawX
 
-        var jHatX = yawX * yawScale
-        var jHatY = pitchY
-        var jHatZ = yawZ * yawScale
+        var lookUpX = yawX * yawScale
+        var lookUpY = pitchY
+        var lookUpZ = yawZ * yawScale
 
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
@@ -125,38 +126,48 @@ class SpriteRenderModule @JvmOverloads constructor(
             for (i in 0 until prepModules.size) {
                 prepModules[i].update(particle)
             }
+            var rightX = lookRightX
+            var rightY = lookRightY
+            var rightZ = lookRightZ
+
+            var upX = lookUpX
+            var upY = lookUpY
+            var upZ = lookUpZ
+
             if (facingVector != null) {
                 facingVector.load(particle)
                 val facingX = facingVector.getValue(0)
                 val facingY = facingVector.getValue(1)
                 val facingZ = facingVector.getValue(2)
-                // x axis, facing • (0, 1, 0)
-                iHatX = -facingZ
-                iHatY = 0.0
-                iHatZ = facingX
-                val iHatInvLength = MathHelper.fastInvSqrt(iHatX * iHatX + iHatY * iHatY + iHatZ * iHatZ)
-                iHatX *= iHatInvLength
-                iHatY *= iHatInvLength
-                iHatZ *= iHatInvLength
+                if(!facingX.isNaN() && !facingY.isNaN() && !facingZ.isNaN()) {
+                    // x axis, facing • (0, 1, 0)
+                    rightX = -facingZ
+                    rightY = 0.0
+                    rightZ = facingX
+                    val rightInvLength = MathHelper.fastInvSqrt(rightX * rightX + rightY * rightY + rightZ * rightZ)
+                    rightX *= -rightInvLength
+                    rightY *= -rightInvLength
+                    rightZ *= -rightInvLength
 
-                // y axis, facing • iHat
-                jHatX = facingY * facingX
-                jHatY = facingZ * -facingZ - facingX * facingX
-                jHatZ = facingY * facingZ
-                val jHatInvLength = MathHelper.fastInvSqrt(jHatX * jHatX + jHatY * jHatY + jHatZ * jHatZ)
-                jHatX *= -jHatInvLength
-                jHatY *= -jHatInvLength
-                jHatZ *= -jHatInvLength
+                    // y axis, facing • right
+                    upX = facingY * facingX
+                    upY = facingZ * -facingZ - facingX * facingX
+                    upZ = facingY * facingZ
+                    val upInvLength = MathHelper.fastInvSqrt(upX * upX + upY * upY + upZ * upZ)
+                    upX *= -upInvLength
+                    upY *= -upInvLength
+                    upZ *= -upInvLength
+                }
             }
 
             size.load(particle)
             val size = this.size.getValue(0) / 2
-            val localIHatX = iHatX * size
-            val localIHatY = iHatY * size
-            val localIHatZ = iHatZ * size
-            val localJHatX = jHatX * size
-            val localJHatY = jHatY * size
-            val localJHatZ = jHatZ * size
+            val localRightX = rightX * size
+            val localRightY = rightY * size
+            val localRightZ = rightZ * size
+            val localUpX = upX * size
+            val localUpY = upY * size
+            val localUpZ = upZ * size
 
             position.load(particle)
             var x = position.getValue(0)
@@ -176,10 +187,10 @@ class SpriteRenderModule @JvmOverloads constructor(
             val b = color.getValue(2).toFloat()
             val a = color.getValue(3).toFloat() * alphaMultiplier.getValue(0).toFloat()
 
-            vb.pos(x - localIHatX - localJHatX, y - localIHatY - localJHatY, z - localIHatZ - localJHatZ).tex(0.0, 0.0).color(r, g, b, a).endVertex()
-            vb.pos(x + localIHatX - localJHatX, y + localIHatY - localJHatY, z + localIHatZ - localJHatZ).tex(1.0, 0.0).color(r, g, b, a).endVertex()
-            vb.pos(x + localIHatX + localJHatX, y + localIHatY + localJHatY, z + localIHatZ + localJHatZ).tex(1.0, 1.0).color(r, g, b, a).endVertex()
-            vb.pos(x - localIHatX + localJHatX, y - localIHatY + localJHatY, z - localIHatZ + localJHatZ).tex(0.0, 1.0).color(r, g, b, a).endVertex()
+            vb.pos(x - localRightX + localUpX, y - localRightY + localUpY, z - localRightZ + localUpZ).tex(0.0, 0.0).color(r, g, b, a).endVertex()
+            vb.pos(x + localRightX + localUpX, y + localRightY + localUpY, z + localRightZ + localUpZ).tex(1.0, 0.0).color(r, g, b, a).endVertex()
+            vb.pos(x + localRightX - localUpX, y + localRightY - localUpY, z + localRightZ - localUpZ).tex(1.0, 1.0).color(r, g, b, a).endVertex()
+            vb.pos(x - localRightX - localUpX, y - localRightY - localUpY, z - localRightZ - localUpZ).tex(0.0, 1.0).color(r, g, b, a).endVertex()
         }
 
         tessellator.draw()
