@@ -7,6 +7,9 @@ import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.saving.Save
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
+import com.teamwizardry.librarianlib.test.particlesystem.examples.AccelerateAway
+import com.teamwizardry.librarianlib.test.particlesystem.examples.BeamLightning
+import com.teamwizardry.librarianlib.test.particlesystem.examples.ItemFacing
 import com.teamwizardry.librarianlib.test.particlesystem.examples.PhysicsCurtain
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
@@ -28,9 +31,12 @@ class BlockParticleTest : BlockModContainer("particle_test", Material.ROCK) {
 
     override fun onBlockActivated(worldIn: World, pos: BlockPos, state: IBlockState, playerIn: EntityPlayer, hand: EnumHand, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         val tile = (worldIn.getTileEntity(pos) as? TEContainer)
-        if (tile != null && worldIn.isRemote) tile.example += 1
+        if (tile != null && !worldIn.isRemote) {
+            tile.example += 1
+            tile.markDirty()
+        }
 
-        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)
+        return true
     }
 }
 
@@ -52,5 +58,6 @@ class TEContainer : TileMod(), ITickable {
 val particleExamples = listOf(
     AccelerateAway,
     BeamLightning,
-    PhysicsCurtain
+    PhysicsCurtain,
+    ItemFacing
 )
