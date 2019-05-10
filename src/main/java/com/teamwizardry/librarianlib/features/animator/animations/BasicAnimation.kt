@@ -1,13 +1,15 @@
 package com.teamwizardry.librarianlib.features.animator.animations
 
-import com.teamwizardry.librarianlib.features.animator.*
+import com.teamwizardry.librarianlib.features.animator.AnimatableProperty
+import com.teamwizardry.librarianlib.features.animator.Animation
+import com.teamwizardry.librarianlib.features.animator.Easing
+import com.teamwizardry.librarianlib.features.animator.LerperHandler
 
 /**
  * A basic animation from [from] to [to]. Both values default to the current value of this animation's property
  */
-class BasicAnimation<T : Any>(target: T, property: IAnimatable<T>) : Animation<T>(target, property) {
+class BasicAnimation<T : Any>(target: T, property: AnimatableProperty<T>) : Animation<T>(target, property) {
     constructor(target: T, property: String) : this(target, AnimatableProperty.get(target.javaClass, property))
-    @PublishedApi internal constructor(target: T, property: AnimatableProperty<T>) : this(target, property as IAnimatable<T>)
 
     /**
      * The value of the property at [start]
