@@ -7,7 +7,6 @@ import com.teamwizardry.librarianlib.features.particlesystem.ParticleSystem
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.CallbackBinding
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.features.particlesystem.modules.AccelerationUpdateModule
-import com.teamwizardry.librarianlib.features.particlesystem.modules.SetValueUpdateModule
 import com.teamwizardry.librarianlib.features.particlesystem.modules.SpriteRenderModule
 import com.teamwizardry.librarianlib.features.particlesystem.modules.VelocityUpdateModule
 import net.minecraft.util.ResourceLocation
