@@ -8,6 +8,7 @@ import com.teamwizardry.librarianlib.features.helpers.currentModId
 import com.teamwizardry.librarianlib.features.kotlin.array
 import com.teamwizardry.librarianlib.features.kotlin.jsonObject
 import com.teamwizardry.librarianlib.features.kotlin.key
+import com.teamwizardry.librarianlib.features.kotlin.toRl
 import com.teamwizardry.librarianlib.features.utilities.generateBaseItemModel
 import com.teamwizardry.librarianlib.features.utilities.getPathForItemModel
 import net.minecraft.creativetab.CreativeTabs
@@ -17,7 +18,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.NonNullList
 
 /**
- * The default implementation for an IVariantHolder sword.
+ * The default implementation for an IVariantHolder bow.
  */
 @Suppress("LeakingThis")
 open class ItemModBow(name: String) : ItemBow(), IModItemProvider, IModelGenerator {
@@ -28,6 +29,14 @@ open class ItemModBow(name: String) : ItemBow(), IModItemProvider, IModelGenerat
     private val bareName = VariantHelper.toSnakeCase(name)
     private val modId = currentModId
     override val variants = VariantHelper.setupItem(this, bareName, arrayOf(), this::creativeTab)
+
+    init {
+        this.addPropertyOverride("pull".toRl()) { stack, _, entityIn ->
+            if (entityIn == null || entityIn.activeItemStack.item != this)
+                0f
+            else (stack.maxItemUseDuration - entityIn.itemInUseCount) / 20f
+        }
+    }
 
     override fun setTranslationKey(name: String): Item {
         VariantHelper.setTranslationKeyForItem(this, modId, name)
