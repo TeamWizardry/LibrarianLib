@@ -71,7 +71,7 @@ object SerializeArrayFactory : SerializerFactory("Array") {
             val array = if (reuse) existing as Array<Any?> else ArrayReflect.newInstanceRaw(componentType.clazz, nullsig.size)
 
             repeat(nullsig.size) {
-                if (!nullsig[it]) array[it] = serComponent.read(buf, array[it], syncing)
+                array[it] = if (nullsig[it]) null else serComponent.read(buf, array[it], syncing)
             }
             return array
         }
