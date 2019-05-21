@@ -1,8 +1,6 @@
 import com.jfrog.bintray.gradle.BintrayExtension
 import groovy.lang.GroovyObject
-import net.minecraftforge.gradle.common.BaseExtension
 import net.minecraftforge.gradle.user.TaskSingleReobf
-import net.minecraftforge.gradle.user.patcherUser.forge.ForgeExtension
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.Coroutines
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -22,12 +20,11 @@ plugins {
 val branch = prop("branch") ?: "git rev-parse --abbrev-ref HEAD".execute(rootDir.absolutePath).lines().last()
 logger.info("On branch $branch")
 
-version = "$branch-".takeUnless { prop("mc_version")?.contains(branch) == true }.orEmpty() + prop("mod_version") + "." + prop("build_number")
+version = "${branch.replace('/', '-')}-".takeUnless { prop("mc_version")?.contains(branch) == true }.orEmpty() + prop("mod_version") + "." + prop("build_number")
 description = "A library for the TeamWizardry mods "
 base.archivesBaseName = prop("mod_name") + "-" + prop("mc_version")
 
-val minecraft: ForgeExtension by extensions
-minecraft.apply {
+minecraft {
     version = "${prop("mc_version")}-${prop("forge_version")}"
     mappings = prop("mc_mappings")
     runDir = "run"
@@ -59,14 +56,6 @@ dependencies {
     api("net.shadowfacts:Forgelin:1.8.0")
     implementation("org.magicwerk:brownies-collections:0.9.13")
     shade("org.magicwerk:brownies-collections:0.9.13")
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = "1.8"
-        javaParameters = true
-        freeCompilerArgs += "-Xjvm-default=enable"
-    }
 }
 
 kotlin.experimental.coroutines = Coroutines.ENABLE
@@ -113,6 +102,18 @@ tasks {
         from(sourceSets["main"].resources.srcDirs) {
             include("mcmod.info")
             expand(props)
+        }
+
+        from(sourceSets["main"].resources.srcDirs) {
+            exclude("mcmod.info")
+        }
+    }
+
+    withType<KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "1.8"
+            javaParameters = true
+            freeCompilerArgs += "-Xjvm-default=enable"
         }
     }
 }
@@ -209,8 +210,6 @@ artifactory {
         })
     })
 }
-
-
 
 fun String.execute(wd: String? = null, ignoreExitCode: Boolean = false): String =
         split(" ").execute(wd, ignoreExitCode)
