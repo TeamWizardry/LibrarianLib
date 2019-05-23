@@ -151,7 +151,7 @@ abstract class Animation<T : Any>(val target: T, val property: AnimatablePropert
     internal var _id: Int = -1
         private set
 
-    // builder methods
+    //region - Builder methods
 
     fun completion(fn: Runnable): Animation<T> {
         this.completion = fn
@@ -187,5 +187,6 @@ abstract class Animation<T : Any>(val target: T, val property: AnimatablePropert
         animator.add(this)
         return this
     }
+    //endregion
 }
 

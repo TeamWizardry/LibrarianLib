@@ -34,7 +34,7 @@ class BasicAnimation<T : Any>(target: T, property: AnimatableProperty<T>) : Anim
         property.set(target, new)
     }
 
-    // builder methods
+    //region - Builder methods
 
     @JvmName("from")
     fun fromValue(value: Any): BasicAnimation<T> {
@@ -52,4 +52,5 @@ class BasicAnimation<T : Any>(target: T, property: AnimatableProperty<T>) : Anim
         this.easing = easing
         return this
     }
+    //endregion
 }
