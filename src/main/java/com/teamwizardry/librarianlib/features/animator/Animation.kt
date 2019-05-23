@@ -21,7 +21,7 @@ abstract class Animation<T : Any>(val target: T, val property: AnimatablePropert
      * If this flag is set the start time will be treated as relative to the [Animator] time it is being added to. If it
      * is false, the start time will be unaffected by the Animator's time.
      */
-    @Deprecated("Use `useAbsoluteTime`", replaceWith = ReplaceWith("!useAbsoluteTime"))
+    @Deprecated("Use `useAbsoluteTime`")
     var isTimeRelative: Boolean
         get() = !useAbsoluteTime
         set(value) { useAbsoluteTime = !value }
