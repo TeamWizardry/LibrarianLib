@@ -2,14 +2,13 @@ package com.teamwizardry.librarianlib.features.animator
 
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.saving.ArrayReflect
-import io.netty.util.internal.StringUtil
-import org.apache.commons.lang3.StringUtils
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.staticProperties
 import kotlin.reflect.full.superclasses
 import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaGetter
@@ -25,6 +24,9 @@ import kotlin.reflect.jvm.javaSetter
  */
 
 data class KeyPathAccessor(val clazz: Class<Any>, val getter: (target: Any) -> Any?, val setter: (target: Any, value: Any?) -> Unit, val involvement: (target: Any, check: Any) -> Boolean)
+
+data class StaticKeyPathAccessor(val clazz: Class<Any>, val getter: () -> Any?, val setter: (value: Any?) -> Unit, val involvement: (check: Any) -> Boolean)
+
 
 /**
  * Foo.someField.anArrayField[3]
@@ -45,6 +47,25 @@ private fun getFieldList(target: Class<*>, keyPath: Array<String>): FieldListIte
         currentTarget = item.fieldClass
     }
     return firstItem
+}
+
+private fun getStaticFieldList(target: Class<*>, keyPath: Array<String>): StaticFieldListItem? {
+    if (keyPath.isEmpty())
+        return null
+    val host = StaticFieldListItem(target, keyPath.first())
+
+    var currentTarget = host.fieldClass
+    var lastItem: FieldListItem? = null
+    keyPath.drop(1).forEach { elem ->
+        val item = FieldListItem(currentTarget, elem)
+        if (host.child == null)
+            host.child = item
+        lastItem?.child = item
+        lastItem = item
+        currentTarget = item.fieldClass
+    }
+
+    return host
 }
 
 /**
@@ -68,6 +89,39 @@ fun generateGetterAndSetterForKeyPath(target: Class<*>, keyPath: Array<String>):
             setter = { holder, value -> setter(holder, value) },
             involvement = involvement
     )
+}
+
+fun generateGetterAndSetterForStaticKeyPath(target: Class<*>, keyPath: Array<String>): StaticKeyPathAccessor {
+    val item = getStaticFieldList(target, keyPath) ?: return StaticKeyPathAccessor(
+            Any::class.java,
+            { null },
+            { },
+            { false }
+    )
+
+    val getter = item.rootGetter
+    val setter = item.rootSetter
+    val involvement = item.involvementChecker
+    val type = item.rootType
+
+    return StaticKeyPathAccessor(
+            clazz = type,
+            getter = getter,
+            setter = { value -> setter(value) },
+            involvement = involvement
+    )
+}
+
+private fun KClass<*>.getStaticPropertyRecursive(name: String): KProperty<*>? {
+    var cls: KClass<*>? = this
+    var prop: KProperty<*>? = null
+    while (cls != null && prop == null) {
+        val props = cls.staticProperties
+        prop = props.firstOrNull { it.name == name }
+        val supers = cls.superclasses
+        cls = supers.firstOrNull { !it.java.isInterface }
+    }
+    return prop
 }
 
 private fun Class<*>.getDeclaredFieldRecursive(name: String): Field? {
@@ -269,6 +323,101 @@ private class FieldListItem(val target: Class<*>, val name: String) {
                 val us = getter(t) ?: return@ret false
                 us === c || childGetter(us, c)
             }
+        }
+    }
+}
+
+private class StaticFieldListItem(val target: Class<*>, val name: String) {
+    val fieldClass: Class<*>
+    var child: FieldListItem? = null
+
+    private val accessorOfChoice: Any
+
+    init {
+        val property = target.kotlin.getStaticPropertyRecursive(name)
+                ?: throw IllegalArgumentException("Couldn't find a static property `$name` in class `${target.canonicalName}` or any of its superclasses")
+        fieldClass = (property.returnType.classifier as KClass<*>).java
+
+        accessorOfChoice = if (property.javaGetter != null) {
+            property
+        } else {
+            property.javaField
+                    ?: throw IllegalArgumentException("Static property `$name` in class `${target.canonicalName}` has no getter and no backing field")
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    val rootType: Class<Any> by lazy {
+        child?.getRootType() ?: fieldClass as Class<Any>
+    }
+
+    val rootGetter: () -> Any? by lazy {
+        when (accessorOfChoice) {
+            is Field -> {
+                if (!Modifier.isPublic(accessorOfChoice.modifiers)) {
+                    throw IllegalAccessException("Could not access static field `$name` in class `${target.canonicalName}`")
+                }
+                MethodHandleHelper.wrapperForStaticGetter(accessorOfChoice)
+            }
+            is KProperty<*> -> {
+                if (!Modifier.isPublic(accessorOfChoice.javaGetter!!.modifiers)) {
+                    throw IllegalAccessException("Could not access static property getter for `$name` in class `${target.canonicalName}`")
+                }
+                val m = MethodHandleHelper.wrapperForStaticMethod(accessorOfChoice.javaGetter!!)
+                val x = { m(emptyArray()) }; x
+            }
+            else -> throw IllegalStateException("accessorOfChoice was neither a Field nor a KProperty, it was `${(accessorOfChoice as Any?)?.javaClass?.canonicalName
+                    ?: "null"}`")
+        }
+    }
+
+    private val rootMutator: (value: Any?) -> Any? by lazy {
+        if ((accessorOfChoice as? KMutableProperty<*>)?.javaSetter?.modifiers?.let { Modifier.isPublic(it) } == true ||
+                (accessorOfChoice is Field && !Modifier.isFinal(accessorOfChoice.modifiers)))
+            when (accessorOfChoice) {
+                is Field -> {
+                    val m = MethodHandleHelper.wrapperForStaticSetter(accessorOfChoice)
+
+                    val x = { it: Any? ->
+                        m(it)
+                        NULL_OBJECT
+                    }; x
+                }
+
+                is KMutableProperty<*> -> {
+                    val m = MethodHandleHelper.wrapperForStaticMethod(accessorOfChoice.javaSetter!!)
+
+                    val x = { it: Any? ->
+                        m(arrayOf(it))
+                        NULL_OBJECT
+                    }; x
+                }
+
+                else ->
+                    throw IllegalStateException("accessorOfChoice was neither a Field nor a KProperty, it was `${(
+                            accessorOfChoice as Any?)?.javaClass?.canonicalName ?: "null"}`")
+            }
+        else
+            throw IllegalAccessException("Static immutable field `$name` cannot have a mutator")
+    }
+
+    val rootSetter: (finalValue: Any?) -> Any? by lazy {
+        val childSetter = child?.createRootSetter() ?: { _, finalValue -> finalValue }
+
+        { finalValue: Any? ->
+            val fieldValue = rootGetter()!!
+            val childValue = childSetter(fieldValue, finalValue)
+
+            if (childValue !== NULL_OBJECT) {
+                rootMutator(childValue)
+            } else NULL_OBJECT
+        }
+    }
+
+    val involvementChecker: (check: Any) -> Boolean by lazy {
+        { c: Any ->
+            val us = rootGetter()
+            us !== null && us === c
         }
     }
 }

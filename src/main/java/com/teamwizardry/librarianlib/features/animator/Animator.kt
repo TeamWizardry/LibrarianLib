@@ -1,11 +1,13 @@
 package com.teamwizardry.librarianlib.features.animator
 
+import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.util.Timer
-import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.relauncher.Side
 import java.util.*
 
 val Minecraft.renderPartialTicksPaused by MethodHandleHelper.delegateForReadOnly<Minecraft, Float>(Minecraft::class.java, "renderPartialTicksPaused", "field_193996_ah")
@@ -20,6 +22,7 @@ val Minecraft.timer by MethodHandleHelper.delegateForReadOnly<Minecraft, Timer>(
  *
  * @sample AnimatorExamples.basic
  */
+@Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
 class Animator {
 
     init {
@@ -192,18 +195,17 @@ class Animator {
         private var worldTicks = 0
         private var screenTicks = 0
 
-        init {
-            MinecraftForge.EVENT_BUS.register(this)
-        }
 
         private val animators: MutableSet<Animator> = Collections.newSetFromMap(WeakHashMap<Animator, Boolean>())
 
+        @JvmStatic
         @SubscribeEvent
         @Suppress("UNUSED_PARAMETER")
         fun renderTick(e: TickEvent.RenderTickEvent) {
             animators.forEach { it.update() }
         }
 
+        @JvmStatic
         @SubscribeEvent
         @Suppress("UNUSED_PARAMETER")
         fun tick(e: TickEvent.ClientTickEvent) {

@@ -2,14 +2,16 @@ package com.teamwizardry.librarianlib.features.animator.animations
 
 import com.teamwizardry.librarianlib.features.animator.AnimatableProperty
 import com.teamwizardry.librarianlib.features.animator.Animation
+import com.teamwizardry.librarianlib.features.animator.IAnimatable
 import com.teamwizardry.librarianlib.features.animator.LerperHandler
 import java.util.*
 
 /**
  * A keyframe animation. Not much more to say.
  */
-class KeyframeAnimation<T : Any>(target: T, property: AnimatableProperty<T>) : Animation<T>(target, property) {
+class KeyframeAnimation<T : Any>(target: T, property: IAnimatable<T>) : Animation<T>(target, property) {
     constructor(target: T, property: String) : this(target, AnimatableProperty.get(target.javaClass, property))
+    @PublishedApi internal constructor(target: T, property: AnimatableProperty<T>) : this(target, property as IAnimatable<T>)
 
     /**
      * The list of keyframes for this animation. Getting and setting this value copy the array, and it cannot be
