@@ -8,12 +8,23 @@ import com.teamwizardry.librarianlib.features.kotlin.clamp
 abstract class Animation<T : Any>(val target: T, val property: AnimatableProperty<T>) {
 
     /**
+     * Default: false
+     *
+     * If this flag is set the start time will be treated as an absolute time, as opposed to being treated as an offset
+     * from the current [Animator] time.
+     */
+    var useAbsoluteTime = false
+
+    /**
      * Default: true
      *
      * If this flag is set the start time will be treated as relative to the [Animator] time it is being added to. If it
      * is false, the start time will be unaffected by the Animator's time.
      */
-    var isTimeRelative = true
+    @Deprecated("Use `useAbsoluteTime`", replaceWith = ReplaceWith("!useAbsoluteTime"))
+    var isTimeRelative: Boolean
+        get() = !useAbsoluteTime
+        set(value) { useAbsoluteTime = !value }
 
     /**
      * The start time of the animation in ticks.
@@ -139,5 +150,42 @@ abstract class Animation<T : Any>(val target: T, val property: AnimatablePropert
 
     internal var _id: Int = -1
         private set
+
+    // builder methods
+
+    fun completion(fn: Runnable): Animation<T> {
+        this.completion = fn
+        return this
+    }
+
+    fun start(time: Float): Animation<T> {
+        this.start = time
+        return this
+    }
+
+    fun duration(time: Float): Animation<T> {
+        this.duration = time
+        return this
+    }
+
+    fun repeat(count: Int): Animation<T> {
+        this.repeatCount = count
+        return this
+    }
+
+    fun reverseOnRepeat(): Animation<T> {
+        this.shouldReverse = true
+        return this
+    }
+
+    fun useAbsoluteTime(): Animation<T> {
+        this.useAbsoluteTime = true
+        return this
+    }
+
+    fun addTo(animator: Animator): Animation<T> {
+        animator.add(this)
+        return this
+    }
 }
 

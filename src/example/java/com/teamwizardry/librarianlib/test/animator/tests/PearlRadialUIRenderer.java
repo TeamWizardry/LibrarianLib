@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.test.animator.tests;
 
+import com.teamwizardry.librarianlib.features.animator.Animation;
 import com.teamwizardry.librarianlib.features.animator.Animator;
 import com.teamwizardry.librarianlib.features.animator.Easing;
 import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation;
@@ -45,7 +46,7 @@ public class PearlRadialUIRenderer {
 	private final int SELECTOR_SHIFT = 5;
 	private final float SELECTOR_ALPHA = 0.7F;
 	public float[] slotRadii = new float[20];
-	public BasicAnimation[] slotAnimations = new BasicAnimation[20];
+	public Animation[] slotAnimations = new Animation[20];
 	public Animator ANIMATOR = new Animator();
 	private boolean lastSneakTick = false;
 
@@ -86,27 +87,19 @@ public class PearlRadialUIRenderer {
 					ItemNBTHelper.setInt(stack, "scroll_slot", scrollSlot);
 
 					for (int i = 0; i < INSTANCE.slotAnimations.length; i++) {
-						BasicAnimation animation = INSTANCE.slotAnimations[i];
+						Animation animation = INSTANCE.slotAnimations[i];
 						if (animation != null)
 							INSTANCE.ANIMATOR.removeAnimations(animation);
 
 						if (i == scrollSlot) continue;
-						BasicAnimation<PearlRadialUIRenderer> newAnimation = new BasicAnimation<>(INSTANCE, "slotRadii[" + i + "]");
-						newAnimation.setTo(0);
-						newAnimation.setEasing(Easing.easeInQuint);
-						newAnimation.setDuration(50f);
-						INSTANCE.ANIMATOR.add(newAnimation);
-
-						INSTANCE.slotAnimations[i] = newAnimation;
+						INSTANCE.slotAnimations[i] = new BasicAnimation<>(INSTANCE, "slotRadii[" + i + "]")
+								.to(0).ease(Easing.easeInQuint)
+								.duration(50).addTo(INSTANCE.ANIMATOR);
 					}
 
-					BasicAnimation<PearlRadialUIRenderer> animation = new BasicAnimation<>(INSTANCE, "slotRadii[" + scrollSlot + "]");
-					animation.setTo(SELECTOR_SHIFT * 2);
-					animation.setEasing(Easing.easeOutQuint);
-					animation.setDuration(50f);
-					INSTANCE.ANIMATOR.add(animation);
-
-					INSTANCE.slotAnimations[scrollSlot] = animation;
+					INSTANCE.slotAnimations[scrollSlot] = new BasicAnimation<>(INSTANCE, "slotRadii[" + scrollSlot + "]")
+							.to(SELECTOR_SHIFT * 2).ease(Easing.easeOutQuint)
+							.duration(50f).addTo(INSTANCE.ANIMATOR);
 
 					event.setCanceled(true);
 				}
