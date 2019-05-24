@@ -44,7 +44,7 @@ object SerializeArrayFactory : SerializerFactory("Array") {
             val array = if (reuse) existing as Array<Any?> else ArrayReflect.newInstanceRaw(componentType.clazz, list.tagCount())
 
             list.forEachIndexed<NBTTagCompound> { i, container ->
-                if (container.hasKey("-")) array[i] = serComponent.read(container.getTag("-"), if (reuse) array[i] else null, syncing)
+                array[i] = if (container.hasKey("-")) serComponent.read(container.getTag("-"), if (reuse) array[i] else null, syncing) else null
             }
 
             return array
