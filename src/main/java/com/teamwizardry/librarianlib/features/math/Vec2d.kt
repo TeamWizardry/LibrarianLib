@@ -21,6 +21,10 @@ class Vec2d(val x: Double, val y: Double) {
         return Vec2d(Math.ceil(x), Math.ceil(y))
     }
 
+    fun round(): Vec2d {
+        return Vec2d(Math.round(x).toDouble(), Math.round(y).toDouble())
+    }
+
     fun setX(value: Double): Vec2d {
         return Vec2d(value, y)
     }
@@ -73,8 +77,12 @@ class Vec2d(val x: Double, val y: Double) {
         return x * point.x + y * point.y
     }
 
+    @get:JvmName("lengthSquared")
     @delegate:Transient
-    private val len by lazy { Math.sqrt(x * x + y * y) }
+    val lengthSquared by lazy { x * x + y * y }
+
+    @delegate:Transient
+    private val len by lazy { Math.sqrt(lengthSquared) }
 
     fun length(): Double {
         return len
