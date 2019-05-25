@@ -31,7 +31,7 @@ fun getPathPrefix(modid: String) = paths[modid] ?: "src/main/resources/assets"
 
 private val paths = mutableMapOf<String, String>()
 
-operator fun String.unaryPlus() = this.replace('/', File.separatorChar)
+private operator fun String.unaryPlus() = this.replace('/', File.separatorChar)
 
 fun getPathForBaseBlockstate(block: FileDsl<Block>): String = getPathForBaseBlockstate(block.value)
 
