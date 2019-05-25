@@ -31,7 +31,7 @@ fun getPathPrefix(modid: String) = paths[modid] ?: "src/main/resources/assets"
 
 private val paths = mutableMapOf<String, String>()
 
-private operator fun String.unaryPlus() = this.replace("/", File.separator)
+operator fun String.unaryPlus() = this.replace('/', File.separatorChar)
 
 fun getPathForBaseBlockstate(block: FileDsl<Block>): String = getPathForBaseBlockstate(block.value)
 
@@ -48,14 +48,17 @@ fun getPathsForBlockstate(block: FileDsl<Block>, stateMapper: ((block: Block) ->
 fun getPathForMRL(modelResourceLocation: ModelResourceLocation) =
         getAssetPath(modelResourceLocation.namespace) + +"/blockstates/${modelResourceLocation.path}.json"
 
+fun getPathForModel(type: String, namespace: String, name: String) =
+        getAssetPath(namespace) + +"/models/$type/$name.json"
+
 fun getPathForBlockModel(block: FileDsl<Block>) = getPathForBlockModel(block, block.key.path)
 
 fun getPathForBlockModel(block: FileDsl<Block>, variant: String) =
-        getAssetPath(block.key.namespace) + +"/models/block/$variant.json"
+        getPathForModel("block", block.key.namespace, variant)
 
 fun getPathForItemModel(item: FileDsl<Item>, variantName: String? = null): String {
     val varname = variantName ?: item.key.path
-    return getAssetPath(item.key.namespace) + +"/models/item/$varname.json"
+    return getPathForModel("item", varname.substringBefore(':', item.key.namespace), varname.substringAfter(':'))
 }
 
 fun getAssetPath(modid: String) =
@@ -74,11 +77,11 @@ fun generateBaseItemModel(item: FileDsl<Item>, variantName: String? = null, pare
 
 fun generateRegularItemModel(item: FileDsl<Item>, variantName: String? = null, parent: String = "item/generated"): JsonObject {
     val varname = variantName ?: item.key.path
-    val path = (item.value as? ICustomTexturePath)?.texturePath(varname) ?: "items/$varname"
+    val path = (item.value as? ICustomTexturePath)?.texturePath(varname) ?: "items/${varname.substringAfter(':')}"
     return jsonObject {
         "parent"(parent)
         "textures" {
-            "layer0"("${item.key.namespace}:$path")
+            "layer0"("${varname.substringBefore(':', item.key.namespace)}:$path")
         }
     }
 }
