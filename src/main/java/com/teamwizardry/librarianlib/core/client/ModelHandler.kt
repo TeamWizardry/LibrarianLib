@@ -189,7 +189,7 @@ object ModelHandler {
 
                 if (shouldGenItemJson(holder)) generateItemJson(holder, variant)
 
-                val model = ModelResourceLocation(ResourceLocation(modName, variant).toString(), "inventory")
+                val model = ModelResourceLocation(if (variant.contains(':')) variant else "$modName:variant", "inventory")
                 if (!extra) {
                     ModelLoader.setCustomModelResourceLocation(item, index, model)
                     addToCachedLocations(getKey(item, index), model)
