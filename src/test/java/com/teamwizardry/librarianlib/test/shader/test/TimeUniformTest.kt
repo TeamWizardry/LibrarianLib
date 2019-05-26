@@ -1,12 +1,11 @@
 package com.teamwizardry.librarianlib.test.shader.test
 
-import com.teamwizardry.librarianlib.features.gui.GuiBase
-import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
+import com.teamwizardry.librarianlib.features.neogui.GuiBase
+import com.teamwizardry.librarianlib.features.neogui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.toRl
 import com.teamwizardry.librarianlib.features.shader.Shader
 import com.teamwizardry.librarianlib.features.shader.ShaderHelper
-import com.teamwizardry.librarianlib.features.shader.uniforms.UniformFloat
 import com.teamwizardry.librarianlib.features.shader.uniforms.UniformFloatTime
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.Tessellator

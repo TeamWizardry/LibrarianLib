@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.features.eventbus
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
-import com.teamwizardry.librarianlib.features.gui.component.GuiLayer
+import com.teamwizardry.librarianlib.features.neogui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import java.lang.reflect.Method
 

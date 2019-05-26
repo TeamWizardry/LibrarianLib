@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.test.particlesystem.particlemaker
 
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
-import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastrySlider
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastryToggle
+import com.teamwizardry.librarianlib.features.neogui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.neogui.layers.TextLayer
+import com.teamwizardry.librarianlib.features.neogui.provided.pastry.components.PastrySlider
+import com.teamwizardry.librarianlib.features.neogui.provided.pastry.components.PastryToggle
 import com.teamwizardry.librarianlib.features.math.Cardinal2d
 import net.minecraft.util.math.MathHelper
 import kotlin.math.roundToInt

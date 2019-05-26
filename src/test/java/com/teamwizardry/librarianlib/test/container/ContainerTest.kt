@@ -5,12 +5,11 @@ import com.teamwizardry.librarianlib.features.container.GuiHandler
 import com.teamwizardry.librarianlib.features.container.InventoryWrapper
 import com.teamwizardry.librarianlib.features.container.builtin.BaseWrappers
 import com.teamwizardry.librarianlib.features.container.builtin.SlotTypeGhost
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
-import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
-import com.teamwizardry.librarianlib.features.guicontainer.GuiContainerBase
-import com.teamwizardry.librarianlib.features.guicontainer.builtin.BaseLayouts
+import com.teamwizardry.librarianlib.features.neogui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.neogui.components.ComponentRect
+import com.teamwizardry.librarianlib.features.neogui.components.ComponentSprite
+import com.teamwizardry.librarianlib.features.neoguicontainer.GuiContainerBase
+import com.teamwizardry.librarianlib.features.neoguicontainer.builtin.BaseLayouts
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.sprite.Texture
 import net.minecraft.entity.player.EntityPlayer

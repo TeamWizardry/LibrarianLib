@@ -10,7 +10,7 @@ import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.base.item.IShieldItem
 import com.teamwizardry.librarianlib.features.config.EasyConfigHandler
 import com.teamwizardry.librarianlib.features.container.GuiHandler
-import com.teamwizardry.librarianlib.features.gui.provided.book.structure.StructureCacheRegistry
+import com.teamwizardry.librarianlib.features.neogui.provided.book.structure.StructureCacheRegistry
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.saving.SavingFieldCache

@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.features.config
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.core.common.OwnershipHandler
-import com.teamwizardry.librarianlib.features.gui.provided.book.helper.BookTranslationDataEvent
+import com.teamwizardry.librarianlib.features.neogui.provided.book.helper.BookTranslationDataEvent
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.currentModId
 import com.teamwizardry.librarianlib.features.kotlin.times

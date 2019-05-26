@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.test.variants
 import com.teamwizardry.librarianlib.core.common.RecipeGeneratorHandler
 import com.teamwizardry.librarianlib.features.base.block.*
 import com.teamwizardry.librarianlib.features.base.item.*
-import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
+import com.teamwizardry.librarianlib.features.neogui.provided.book.hierarchy.book.Book
 import com.teamwizardry.librarianlib.features.kotlin.sendSpamlessMessage
 import com.teamwizardry.librarianlib.features.structure.dynamic.DynamicStructureBuilder
 import com.teamwizardry.librarianlib.test.module.BlockModule

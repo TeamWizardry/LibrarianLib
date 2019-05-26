@@ -1,15 +1,15 @@
 package com.teamwizardry.librarianlib.test.particlesystem.particlemaker
 
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
-import com.teamwizardry.librarianlib.features.gui.components.ComponentTextField
-import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
-import com.teamwizardry.librarianlib.features.gui.layout.Flexbox
-import com.teamwizardry.librarianlib.features.gui.layout.flex
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastrySwitch
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.components.PastryToggle
-import com.teamwizardry.librarianlib.features.gui.provided.pastry.windows.PastryWindow
-import com.teamwizardry.librarianlib.features.gui.value.GuiAnimator
-import com.teamwizardry.librarianlib.features.gui.windows.GuiWindow
+import com.teamwizardry.librarianlib.features.neogui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.neogui.components.ComponentTextField
+import com.teamwizardry.librarianlib.features.neogui.layers.TextLayer
+import com.teamwizardry.librarianlib.features.neogui.layout.Flexbox
+import com.teamwizardry.librarianlib.features.neogui.layout.flex
+import com.teamwizardry.librarianlib.features.neogui.provided.pastry.components.PastrySwitch
+import com.teamwizardry.librarianlib.features.neogui.provided.pastry.components.PastryToggle
+import com.teamwizardry.librarianlib.features.neogui.provided.pastry.windows.PastryWindow
+import com.teamwizardry.librarianlib.features.neogui.value.GuiAnimator
+import com.teamwizardry.librarianlib.features.neogui.windows.GuiWindow
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.math.Align2d

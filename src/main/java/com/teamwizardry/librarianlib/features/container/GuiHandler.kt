@@ -4,7 +4,7 @@ import com.google.common.collect.HashBiMap
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.base.item.ItemModBook
 import com.teamwizardry.librarianlib.features.container.internal.ContainerImpl
-import com.teamwizardry.librarianlib.features.guicontainer.GuiContainerBase
+import com.teamwizardry.librarianlib.features.neoguicontainer.GuiContainerBase
 import com.teamwizardry.librarianlib.features.kotlin.getTileEntitySafely
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.entity.player.EntityPlayer

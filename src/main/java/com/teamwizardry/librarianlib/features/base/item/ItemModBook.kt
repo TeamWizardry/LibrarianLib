@@ -2,9 +2,9 @@ package com.teamwizardry.librarianlib.features.base.item
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.container.GuiHandler
-import com.teamwizardry.librarianlib.features.gui.provided.book.IBookGui
-import com.teamwizardry.librarianlib.features.gui.provided.book.ModGuiBook
-import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
+import com.teamwizardry.librarianlib.features.neogui.provided.book.IBookGui
+import com.teamwizardry.librarianlib.features.neogui.provided.book.ModGuiBook
+import com.teamwizardry.librarianlib.features.neogui.provided.book.hierarchy.book.Book
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ActionResult

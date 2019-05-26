@@ -9,7 +9,7 @@ import com.teamwizardry.librarianlib.test.cap.CapabilityTest
 import com.teamwizardry.librarianlib.test.chunkdata.ChunkDataEntryPoint
 import com.teamwizardry.librarianlib.test.container.ContainerEntryPoint
 import com.teamwizardry.librarianlib.test.fx.FXEntryPoint
-import com.teamwizardry.librarianlib.test.gui.GuiEntryPoint
+import com.teamwizardry.librarianlib.test.neogui.GuiEntryPoint
 import com.teamwizardry.librarianlib.test.particlesystem.ParticleSystemEntryPoint
 import com.teamwizardry.librarianlib.test.saving.SavingEntryPoint
 import com.teamwizardry.librarianlib.test.shader.ShaderEntryPoint

@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.test.particlesystem.particlemaker
 
-import com.teamwizardry.librarianlib.features.gui.components.ComponentTextField
-import com.teamwizardry.librarianlib.features.gui.layers.TextLayer
+import com.teamwizardry.librarianlib.features.neogui.components.ComponentTextField
+import com.teamwizardry.librarianlib.features.neogui.layers.TextLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 
