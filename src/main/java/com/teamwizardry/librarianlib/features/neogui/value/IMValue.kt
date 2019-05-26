@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.animator.Animation
 import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.animator.LerperHandler
+import com.teamwizardry.librarianlib.features.animator.NullAnimatable
 import java.util.function.Supplier
 import kotlin.reflect.KProperty
 
@@ -19,7 +20,7 @@ import kotlin.reflect.KProperty
  * ```
  */
 @Suppress("Duplicates")
-class IMValue<T> private constructor(private var storage: Storage<T>): GuiAnimatable {
+class IMValue<T> private constructor(private var storage: Storage<T>): GuiAnimatable<IMValue<T>> {
     constructor(initialValue: T): this(Storage.Fixed(initialValue))
     constructor(initialCallback: Supplier<T>): this(Storage.Callback(initialCallback))
     constructor(initialCallback: () -> T): this(Storage.Callback(Supplier(initialCallback)))
@@ -123,7 +124,7 @@ class IMValue<T> private constructor(private var storage: Storage<T>): GuiAnimat
         return anim
     }
 
-    private class AnimationImpl<T: Any?>(var from: T, var to: T, target: IMValue<T>): Animation<IMValue<T>>(target) {
+    private class AnimationImpl<T: Any?>(var from: T, var to: T, target: IMValue<T>): Animation<IMValue<T>>(target, NullAnimatable()) {
         var easing: Easing = Easing.linear
         var implicitStart: Boolean = false
 
@@ -179,7 +180,7 @@ class IMValue<T> private constructor(private var storage: Storage<T>): GuiAnimat
     }
 
     private data class Keyframe(var time: Float, val value: Any, val easing: Easing = Easing.linear)
-    private class KeyframeAnimation<T>(target: IMValue<T>, private val keyframes: List<Keyframe>): Animation<IMValue<T>>(target) {
+    private class KeyframeAnimation<T>(target: IMValue<T>, private val keyframes: List<Keyframe>): Animation<IMValue<T>>(target, NullAnimatable()) {
         @Suppress("UNCHECKED_CAST")
         private var lerper = LerperHandler.getLerperOrError(
             keyframes.first().value.javaClass as Class<T>

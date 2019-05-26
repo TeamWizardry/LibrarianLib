@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.neogui.value;
 
 import com.teamwizardry.librarianlib.features.animator.Animation;
 import com.teamwizardry.librarianlib.features.animator.Animator;
+import com.teamwizardry.librarianlib.features.animator.NullAnimatable;
 import kotlin.reflect.KProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.BooleanSupplier;
 
 @SuppressWarnings("Duplicates")
-public class IMValueBoolean implements GuiAnimatable {
+public class IMValueBoolean implements GuiAnimatable<IMValueBoolean> {
     private Storage storage;
 
     private IMValueBoolean(Storage initialStorage) {
@@ -154,7 +155,7 @@ public class IMValueBoolean implements GuiAnimatable {
         boolean implicitStart;
 
         AnimationImpl(boolean from, boolean to, IMValueBoolean target) {
-            super(target);
+            super(target, new NullAnimatable<>());
             this.from = from;
             this.to = to;
         }

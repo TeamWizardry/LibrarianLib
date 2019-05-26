@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.neogui.value;
 
 import com.teamwizardry.librarianlib.features.animator.Animation;
 import com.teamwizardry.librarianlib.features.animator.Animator;
+import com.teamwizardry.librarianlib.features.animator.NullAnimatable;
 import kotlin.reflect.KProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -53,16 +54,16 @@ public class RMValueBoolean {
     }
 
     private Animatable animatable = new Animatable();
-    private class Animatable implements GuiAnimatable {
+    private class Animatable implements GuiAnimatable<Animatable> {
         @Nullable
         @Override
         public Object getAnimatableValue() {
-            return get();
+            return RMValueBoolean.this.get();
         }
 
         @Override
         public void setAnimatableValue(@Nullable Object value) {
-            set((boolean) value);
+            RMValueBoolean.this.set((boolean) value);
         }
 
         @Nullable
@@ -94,7 +95,7 @@ public class RMValueBoolean {
         boolean implicitStart;
 
         AnimationImpl(boolean from, boolean to, RMValueBoolean target) {
-            super(target);
+            super(target, new NullAnimatable<>());
             this.from = from;
             this.to = to;
         }

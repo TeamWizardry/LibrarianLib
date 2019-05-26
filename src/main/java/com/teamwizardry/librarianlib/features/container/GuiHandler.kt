@@ -81,7 +81,7 @@ object GuiHandler : IGuiHandler {
     @JvmStatic
     fun <T : ContainerBase> registerBasicContainer(name: ResourceLocation,
                                                    server: (player: EntityPlayer, pos: BlockPos, te: TileEntity?) -> T,
-                                                   client: (player: EntityPlayer, container: T) -> GuiContainerBase) {
+                                                   client: (player: EntityPlayer, container: T) -> com.teamwizardry.librarianlib.features.guicontainer.GuiContainerBase) {
         val rawServer: (EntityPlayer, World, BlockPos) -> T = { player, world, pos ->
             server(player, pos, world.getTileEntitySafely(pos))
         }
@@ -89,6 +89,22 @@ object GuiHandler : IGuiHandler {
         val rawClient: (EntityPlayer, World, BlockPos) -> GuiContainerBase = { player, world, pos ->
             client(player, rawServer(player, world, pos))
         }
+
+        registerRaw(name, rawServer, rawClient)
+    }
+
+    @JvmStatic
+    fun <T : ContainerBase> registerBasicNeoContainer(name: ResourceLocation,
+        server: (player: EntityPlayer, pos: BlockPos, te: TileEntity?) -> T,
+        client: (player: EntityPlayer, container: T) -> com.teamwizardry.librarianlib.features.neoguicontainer.GuiContainerBase) {
+        val rawServer: (EntityPlayer, World, BlockPos) -> T = { player, world, pos ->
+            server(player, pos, world.getTileEntitySafely(pos))
+        }
+
+        val rawClient: (EntityPlayer, World, BlockPos) -> com.teamwizardry.librarianlib.features.neoguicontainer.GuiContainerBase =
+            { player, world, pos ->
+                client(player, rawServer(player, world, pos))
+            }
 
         registerRaw(name, rawServer, rawClient)
     }

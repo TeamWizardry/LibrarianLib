@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.neogui.value;
 import com.teamwizardry.librarianlib.features.animator.Animation;
 import com.teamwizardry.librarianlib.features.animator.Animator;
 import com.teamwizardry.librarianlib.features.animator.Easing;
+import com.teamwizardry.librarianlib.features.animator.NullAnimatable;
 import kotlin.reflect.KProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,16 +58,16 @@ public class RMValueInt {
     }
 
     private Animatable animatable = new Animatable();
-    private class Animatable implements GuiAnimatable {
+    private class Animatable implements GuiAnimatable<Animatable> {
         @Nullable
         @Override
         public Object getAnimatableValue() {
-            return get();
+            return RMValueInt.this.get();
         }
 
         @Override
         public void setAnimatableValue(@Nullable Object value) {
-            set((int) value);
+            RMValueInt.this.set((int) value);
         }
 
         @Nullable
@@ -115,7 +116,7 @@ public class RMValueInt {
         boolean implicitStart;
 
         AnimationImpl(int from, int to, RMValueInt target) {
-            super(target);
+            super(target, new NullAnimatable<>());
             this.from = from;
             this.to = to;
         }
@@ -204,7 +205,7 @@ public class RMValueInt {
         private List<Keyframe> keyframes;
 
         KeyframeAnimation(RMValueInt target, List<Keyframe> keyframes) {
-            super(target);
+            super(target, new NullAnimatable<>());
             this.keyframes = keyframes;
         }
 

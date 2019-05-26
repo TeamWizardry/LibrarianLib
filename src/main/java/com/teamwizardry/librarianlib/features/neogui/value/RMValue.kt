@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.animator.Animation
 import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.animator.LerperHandler
+import com.teamwizardry.librarianlib.features.animator.NullAnimatable
 import kotlin.reflect.KProperty
 
 /**
@@ -51,7 +52,7 @@ class RMValue<T> @JvmOverloads constructor(
     }
 
     private val animatable = Animatable()
-    inner class Animatable: GuiAnimatable {
+    inner class Animatable: GuiAnimatable<Animatable> {
         override fun getAnimatableValue(): Any? {
             return value
         }
@@ -87,7 +88,7 @@ class RMValue<T> @JvmOverloads constructor(
         return anim
     }
 
-    private class AnimationImpl<T: Any?>(var from: T, var to: T, target: RMValue<T>): Animation<RMValue<T>>(target) {
+    private class AnimationImpl<T: Any?>(var from: T, var to: T, target: RMValue<T>): Animation<RMValue<T>>(target, NullAnimatable()) {
         var easing: Easing = Easing.linear
         var implicitStart: Boolean = false
 
@@ -142,7 +143,7 @@ class RMValue<T> @JvmOverloads constructor(
     }
 
     private data class Keyframe(var time: Float, val value: Any, val easing: Easing = Easing.linear)
-    private class KeyframeAnimation<T>(target: RMValue<T>, private val keyframes: List<Keyframe>): Animation<RMValue<T>>(target) {
+    private class KeyframeAnimation<T>(target: RMValue<T>, private val keyframes: List<Keyframe>): Animation<RMValue<T>>(target, NullAnimatable()) {
         @Suppress("UNCHECKED_CAST")
         private var lerper = LerperHandler.getLerperOrError(
             keyframes.first().value.javaClass as Class<T>

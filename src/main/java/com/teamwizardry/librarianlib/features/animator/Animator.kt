@@ -26,8 +26,18 @@ val Minecraft.timer by MethodHandleHelper.delegateForReadOnly<Minecraft, Timer>(
 class Animator {
 
     init {
-        newAnimators.add(this)
+        animators.add(this)
     }
+
+    /**
+     * If this value is true (which it is by default) this animator will delete any animations that have passed their
+     * end time. This keeps old animations from cluttering up memory, keeping references to dead objects, and reduces
+     * the amount of processing this animator has to do to sort through its animations.
+     *
+     * @sample AnimatorExamples.deletePastAnimationsTrue
+     * @sample AnimatorExamples.deletePastAnimationsFalse
+     */
+    var deletePastAnimations = true
 
     /**
      * If this value is true (which it isn't by default) this animator will pause when the world pauses.
@@ -100,10 +110,10 @@ class Animator {
      * Remove all animations involving [obj].
      * Values affected by the animations will be left as they are at the moment of calling this method.
      */
-    fun removeAnimationsOn(obj: Any) {
+    fun removeAnimationsFor(obj: Any) {
         val inlineRemove = mutableListOf<Animation<*>>()
         animations.forEach {
-            if (it.target === obj) {
+            if (it.doesInvolveObject(obj)) {
                 if (addLock) animationsToRemove.add(it)
                 else inlineRemove.add(it)
             }
@@ -140,21 +150,10 @@ class Animator {
     private fun updateCurrentAnimations() {
         val time = this.time
 
+        currentAnimations.clear()
+
         performLocked {
-            val properties = mutableMapOf<Pair<AnimatableProperty<*>, Any>, Float>()
-            currentAnimations.forEach { animation ->
-                if (animation is PropertyAnimation) {
-                    properties[animation.property to animation.target] = animation.start
-                }
-            }
-
-            animations.forEach {
-                if(it is PropertyAnimation && it.start < properties[it.property to it.target] ?: Float.NEGATIVE_INFINITY) {
-                    it.terminated = true
-                }
-            }
-
-            animations.removeIf {
+            if (deletePastAnimations) animations.removeIf {
                 when {
                     it.terminated -> {
                         it.finished = true
@@ -168,9 +167,7 @@ class Animator {
                     else -> false
                 }
             }
-
         }
-        currentAnimations.clear()
 
         currentAnimations.addAll(animations.takeWhile { it.start <= time })
     }
@@ -198,25 +195,13 @@ class Animator {
         private var worldTicks = 0
         private var screenTicks = 0
 
-
-        private val newAnimators: MutableSet<Animator> = HashSet()
-        private val animators: MutableSet<WeakReference<Animator>> = HashSet()
+        private val animators: MutableSet<Animator> = Collections.newSetFromMap(WeakHashMap<Animator, Boolean>())
 
         @JvmStatic
         @SubscribeEvent
         @Suppress("UNUSED_PARAMETER")
         fun renderTick(e: TickEvent.RenderTickEvent) {
-            animators.addAll(newAnimators.map { WeakReference(it) })
-            newAnimators.clear()
-            val iter = animators.iterator()
-            for(reference in iter) {
-                val animator = reference.get()
-                if(animator == null) {
-                    iter.remove()
-                    continue
-                }
-                animator.update()
-            }
+            animators.forEach { it.update() }
         }
 
         @JvmStatic

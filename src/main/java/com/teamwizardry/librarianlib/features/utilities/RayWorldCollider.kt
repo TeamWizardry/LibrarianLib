@@ -359,4 +359,3 @@ val Chunk.storageArrays_mh by MethodHandleHelper.delegateForReadOnly<Chunk, Arra
 val ExtendedBlockStorage.data_mh by MethodHandleHelper.delegateForReadOnly<ExtendedBlockStorage, BlockStateContainer>(ExtendedBlockStorage::class.java, "field_78725_b", "renderPosX")
 val BlockStateContainer.storage_mh by MethodHandleHelper.delegateForReadOnly<BlockStateContainer, BitArray>(BlockStateContainer::class.java, "field_78725_b", "renderPosX")
  */
- */

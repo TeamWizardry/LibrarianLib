@@ -62,6 +62,9 @@ class Texture(
      */
     val logicalHeight: Int
 ) {
+    @Deprecated("Assumes a 256x texture", replaceWith = ReplaceWith("Texture(loc, 256, 256)"))
+    constructor(loc: ResourceLocation): this(loc, 256, 256)
+
     var loc: ResourceLocation = loc
         private set
     /**
@@ -192,6 +195,15 @@ class Texture(
     }
 
     /**
+     * Gets the sprite with the specified name
+     */
+    @Deprecated("Ignores width and height parameters, width/height are based on the mcmeta file and the logical " +
+        "width/height", replaceWith = ReplaceWith("getSprite(name)"))
+    fun getSprite(name: String, width: Int, height: Int): Sprite {
+        return getSprite(name)
+    }
+
+    /**
      * Gets the color with the specified name
      */
     fun getColor(name: String): Color {
@@ -200,12 +212,13 @@ class Texture(
 
     private var blending = false
     private var textureLoaded = false
+
     /**
      * Enables linear blending
      */
     fun enableBlending() {
+        blending = true
         if(!textureLoaded) {
-            blending = true
             return
         }
         Minecraft.getMinecraft().textureManager.bindTexture(loc)
@@ -216,8 +229,8 @@ class Texture(
      * Disables linear blending
      */
     fun disableBlending() {
+        blending = false
         if(!textureLoaded) {
-            blending = false
             return
         }
         Minecraft.getMinecraft().textureManager.bindTexture(loc)

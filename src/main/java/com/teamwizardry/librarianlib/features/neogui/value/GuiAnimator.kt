@@ -2,8 +2,10 @@ package com.teamwizardry.librarianlib.features.neogui.value
 
 import com.teamwizardry.librarianlib.features.animator.Animation
 import com.teamwizardry.librarianlib.features.animator.Easing
+import com.teamwizardry.librarianlib.features.animator.IAnimatable
 import com.teamwizardry.librarianlib.features.animator.Lerper
 import com.teamwizardry.librarianlib.features.animator.LerperHandler
+import com.teamwizardry.librarianlib.features.animator.NullAnimatable
 
 /**
  * Creates implicit animations for [IMValues][IMValue] and [RMValues][RMValue].
@@ -121,7 +123,7 @@ class GuiAnimator {
         }
     }
 
-    private val animations = mutableMapOf<GuiAnimatable, Any?>()
+    private val animations = mutableMapOf<GuiAnimatable<*>, Any?>()
     private var isAnimating = false
 
     /**
@@ -179,14 +181,14 @@ class GuiAnimator {
     /**
      * Registers the given animatable to be included in the animation. See [animate] for details
      */
-    fun add(target: GuiAnimatable) {
+    fun add(target: GuiAnimatable<*>) {
         if(!isAnimating) return
         animations.getOrPut(target) { target.getAnimatableValue() }
     }
 }
 
 @Suppress("UNCHECKED_CAST")
-private class GuiImplicitAnimation(val targets: List<ValueAnimation>): Animation<Any>(Any()) {
+private class GuiImplicitAnimation(val targets: List<ValueAnimation>): Animation<Any>(Any(), NullAnimatable()) {
     var easing: Easing = Easing.linear
 
     override fun update(time: Float) {
@@ -203,7 +205,7 @@ private class GuiImplicitAnimation(val targets: List<ValueAnimation>): Animation
         var field = 0
     }
 
-    class ValueAnimation(val target: GuiAnimatable, val start: Any, val end: Any) {
+    class ValueAnimation(val target: GuiAnimatable<*>, val start: Any, val end: Any) {
         private var lerper: Lerper<Any>
         init {
             var clazz: Class<*> = Any::class.java
@@ -254,9 +256,26 @@ private class GuiImplicitAnimation(val targets: List<ValueAnimation>): Animation
     }
 }
 
-interface GuiAnimatable {
+interface GuiAnimatable<T>: IAnimatable<T> {
     fun getAnimatableValue(): Any?
     fun setAnimatableValue(value: Any?)
     fun getAnimatableCallback(): Any?
     fun setAnimatableCallback(supplier: Any)
+
+    @JvmDefault
+    override fun get(target: T): Any {
+        return getAnimatableValue()!!
+    }
+
+    @JvmDefault
+    override fun set(target: T, value: Any) {
+        setAnimatableValue(value)
+    }
+
+    @JvmDefault
+    override fun doesInvolve(target: T, obj: Any): Boolean = false
+
+    @JvmDefault
+    override val type: Class<Any>
+        get() = Any::class.java
 }

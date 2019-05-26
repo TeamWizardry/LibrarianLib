@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.neogui.value;
 import com.teamwizardry.librarianlib.features.animator.Animation;
 import com.teamwizardry.librarianlib.features.animator.Animator;
 import com.teamwizardry.librarianlib.features.animator.Easing;
+import com.teamwizardry.librarianlib.features.animator.NullAnimatable;
 import kotlin.reflect.KProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.function.LongSupplier;
 
 @SuppressWarnings("Duplicates")
-public class IMValueLong implements GuiAnimatable {
+public class IMValueLong implements GuiAnimatable<IMValueLong> {
     private Storage storage;
 
     private IMValueLong(Storage initialStorage) {
@@ -173,7 +174,7 @@ public class IMValueLong implements GuiAnimatable {
         boolean implicitStart;
 
         AnimationImpl(long from, long to, IMValueLong target) {
-            super(target);
+            super(target, new NullAnimatable<>());
             this.from = from;
             this.to = to;
         }
@@ -261,7 +262,7 @@ public class IMValueLong implements GuiAnimatable {
         private List<Keyframe> keyframes;
 
         KeyframeAnimation(IMValueLong target, List<Keyframe> keyframes) {
-            super(target);
+            super(target, new NullAnimatable<>());
             this.keyframes = keyframes;
         }
 

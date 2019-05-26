@@ -95,6 +95,16 @@ abstract class Animation<T : Any?>(val target: T, val property: IAnimatable<T>) 
     }
 
     /**
+     * Returns true if this animation's keypath involves the passed object.
+     *
+     * The equality is by identity
+     */
+    fun doesInvolveObject(obj: Any): Boolean {
+        if (target === obj) return true
+        return property.doesInvolve(target, obj)
+    }
+
+    /**
      * True if this animation has been added to an animator already.
      */
     val isInAnimator: Boolean

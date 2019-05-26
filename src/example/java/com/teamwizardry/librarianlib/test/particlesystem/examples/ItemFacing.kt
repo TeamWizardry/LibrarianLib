@@ -45,7 +45,7 @@ object ItemFacingSystem: ParticleSystem() {
             position.load(particle)
             origin.load(particle)
             for(i in 0 until 3) {
-                contents[i] = position.getValue(i) - origin.getValue(i)
+                contents[i] = position.contents[i] - origin.contents[i]
             }
         }))
         updateModules.add(VelocityUpdateModule(position, velocity, previousPosition))
