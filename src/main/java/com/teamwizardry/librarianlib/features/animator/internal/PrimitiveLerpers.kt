@@ -61,10 +61,10 @@ object PrimitiveLerpers {
         }
 
         LerperHandler.registerLerper(Boolean::class.javaObjectType) { from, to, frac ->
-            if (frac >= 1f) to else from
+            if (frac >= 0.5f) to else from
         }
         LerperHandler.registerLerper(Boolean::class.javaPrimitiveType!!) { from, to, frac ->
-            if (frac >= 1f) to else from
+            if (frac >= 0.5f) to else from
         }
     }
 }

@@ -59,6 +59,9 @@ dependencies {
     api("net.shadowfacts:Forgelin:1.8.0")
     implementation("org.magicwerk:brownies-collections:0.9.13")
     shade("org.magicwerk:brownies-collections:0.9.13")
+    shade("com.ibm.icu:icu4j:63.1")
+    shade("org.msgpack:msgpack-core:0.8.16")
+    shade(files("libs/bitfontcore-1.0.jar"))
 }
 
 tasks.withType<KotlinCompile> {

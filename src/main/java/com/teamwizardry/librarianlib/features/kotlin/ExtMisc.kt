@@ -200,7 +200,7 @@ fun Entity.setVelocityAndUpdate(x: Double = motionX, y: Double = motionY, z: Dou
 }
 
 var Entity.motionVec: Vec3d
-    get() = Vec3d(motionX, motionY, motionZ)
+    get() = vec(motionX, motionY, motionZ)
     set(value) {
         this.motionX = value.x
         this.motionY = value.y
@@ -268,16 +268,6 @@ fun Item.toStack(amount: Int = 1, meta: Int = 0) = ItemStack(this, amount, meta)
 // Block ===========================================================================================================
 
 fun Block.toStack(amount: Int = 1, meta: Int = 0) = ItemStack(this, amount, meta)
-
-// Numbers =============================================================================================================
-
-fun Int.clamp(min: Int, max: Int): Int = if (this < min) min else if (this > max) max else this
-fun Short.clamp(min: Short, max: Short): Short = if (this < min) min else if (this > max) max else this
-fun Long.clamp(min: Long, max: Long): Long = if (this < min) min else if (this > max) max else this
-fun Byte.clamp(min: Byte, max: Byte): Byte = if (this < min) min else if (this > max) max else this
-fun Char.clamp(min: Char, max: Char): Char = if (this < min) min else if (this > max) max else this
-fun Float.clamp(min: Float, max: Float): Float = if (this < min) min else if (this > max) max else this
-fun Double.clamp(min: Double, max: Double): Double = if (this < min) min else if (this > max) max else this
 
 // IBlockAccess ========================================================================================================
 

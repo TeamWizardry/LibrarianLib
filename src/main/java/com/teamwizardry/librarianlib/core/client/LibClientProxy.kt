@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.core.client
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
+import com.teamwizardry.librarianlib.core.client.commands.ClientCommands
 import com.teamwizardry.librarianlib.core.common.LibCommonProxy
 import com.teamwizardry.librarianlib.features.forgeevents.CustomWorldRenderEvent
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
@@ -8,6 +9,7 @@ import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.kotlin.unaryMinus
+import com.teamwizardry.librarianlib.features.math.AllocationDisplay
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.particlesystem.GameParticleSystems
 import com.teamwizardry.librarianlib.features.shader.LibShaders
@@ -27,6 +29,7 @@ import net.minecraft.client.resources.IResourceManager
 import net.minecraft.client.resources.data.MetadataSerializer
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.client.resource.IResourceType
 import net.minecraftforge.client.resource.ISelectiveResourceReloadListener
@@ -63,6 +66,7 @@ class LibClientProxy : LibCommonProxy(), ISelectiveResourceReloadListener {
         LibShaders
         ShaderHelper.init()
         GameParticleSystems
+        AllocationDisplay
 
         val s = MethodHandleHelper.wrapperForGetter(Minecraft::class.java, "metadataSerializer", "field_110452_an")(Minecraft.getMinecraft()) as MetadataSerializer
         s.registerMetadataSectionType(SpritesMetadataSectionSerializer(), SpritesMetadataSection::class.java)
@@ -72,6 +76,13 @@ class LibClientProxy : LibCommonProxy(), ISelectiveResourceReloadListener {
 
         if (LibrarianLib.DEV_ENVIRONMENT)
             TextureMapExporter
+    }
+
+    override fun init(e: FMLInitializationEvent) {
+        super.init(e)
+
+        if(ClientCommands.root.subCommands.isNotEmpty())
+            ClientCommandHandler.instance.registerCommand(ClientCommands.root)
     }
 
     override fun latePre(e: FMLPreInitializationEvent) {

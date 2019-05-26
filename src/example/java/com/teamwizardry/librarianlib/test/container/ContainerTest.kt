@@ -5,11 +5,11 @@ import com.teamwizardry.librarianlib.features.container.GuiHandler
 import com.teamwizardry.librarianlib.features.container.InventoryWrapper
 import com.teamwizardry.librarianlib.features.container.builtin.BaseWrappers
 import com.teamwizardry.librarianlib.features.container.builtin.SlotTypeGhost
-import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.gui.components.ComponentRect
-import com.teamwizardry.librarianlib.features.gui.components.ComponentSprite
-import com.teamwizardry.librarianlib.features.guicontainer.GuiContainerBase
-import com.teamwizardry.librarianlib.features.guicontainer.builtin.BaseLayouts
+import com.teamwizardry.librarianlib.features.neogui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.neogui.components.ComponentRect
+import com.teamwizardry.librarianlib.features.neogui.components.ComponentSprite
+import com.teamwizardry.librarianlib.features.neoguicontainer.GuiContainerBase
+import com.teamwizardry.librarianlib.features.neoguicontainer.builtin.BaseLayouts
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.sprite.Texture
 import net.minecraft.entity.player.EntityPlayer
@@ -59,14 +59,15 @@ class TestWrapper(te: TEContainer) : InventoryWrapper(te) {
 
 class GuiContainerTest(container: ContainerTest) : GuiContainerBase(container, 197, 166) {
     companion object {
-        val TEXTURE = Texture(ResourceLocation("librarianlibtest:textures/gui/containerTest.png"))
-        val bg = TEXTURE.getSprite("bg", 197, 166)
-        val slider = TEXTURE.getSprite("slider", 60, 62)
+        val TEXTURE = Texture(ResourceLocation("librarianlibtest:textures/gui/containerTest.png"), 256, 256)
+        val bg = TEXTURE.getSprite("bg")
+        val slider = TEXTURE.getSprite("slider")
     }
 
     init {
         val b = ComponentSprite(bg, 0, 0)
-        mainComponents.add(b)
+        main.add(b)
+        main.size = vec(197, 166)
 
         val layout = BaseLayouts.player(container.invPlayer)
         b.add(layout.root)
@@ -90,7 +91,7 @@ class GuiContainerTest(container: ContainerTest) : GuiContainerBase(container, 1
         s.add(miniGrid.root)
 
         val button = ComponentRect(178, 68, 12, 11)
-        button.color.setValue(Color(0, 0, 0, 127))
+        button.color = Color(0, 0, 0, 127)
 
         button.BUS.hook(GuiComponentEvents.MouseClickEvent::class.java) {
             s.isVisible = !s.isVisible

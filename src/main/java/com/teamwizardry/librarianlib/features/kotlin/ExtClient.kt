@@ -16,6 +16,8 @@ import java.awt.Color
 // Color ===============================================================================================================
 
 fun Color.glColor() = GlStateManager.color(red / 255f, green / 255f, blue / 255f, alpha / 255f)
+fun Color.copy(red: Int = this.red, blue: Int = this.blue, green: Int = this.green, alpha: Int = this.alpha) = Color(red, green, blue, alpha)
+fun Color.copy(red: Float = this.red/255f, blue: Float = this.blue/255f, green: Float = this.green/255f, alpha: Float = this.alpha/255f) = Color(red, green, blue, alpha)
 
 // VertexBuffer ========================================================================================================
 

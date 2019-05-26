@@ -4,6 +4,7 @@ package com.teamwizardry.librarianlib.core.common
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
+import com.teamwizardry.librarianlib.core.common.commands.ServerCommands
 import com.teamwizardry.librarianlib.features.autoregister.AnnotationMarkersHandler
 import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.base.item.IShieldItem
@@ -24,6 +25,7 @@ import net.minecraftforge.fml.common.discovery.ASMDataTable
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent
 import net.minecraftforge.fml.common.network.NetworkRegistry
 import java.io.File
 import java.io.InputStream
@@ -89,6 +91,11 @@ open class LibCommonProxy {
             print("$starBegin$starPad\n\n")
             FMLCommonHandler.instance().handleExit(0)
         }
+    }
+
+    open fun serverStarting(e: FMLServerStartingEvent) {
+        if(ServerCommands.root.subCommands.isNotEmpty())
+            e.registerServerCommand(ServerCommands.root)
     }
 
     // End internal methods

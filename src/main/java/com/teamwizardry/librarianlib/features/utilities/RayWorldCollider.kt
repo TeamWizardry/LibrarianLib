@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.minecraft.block.material.Material
+import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.AxisAlignedBB
@@ -40,7 +41,6 @@ class RayWorldCollider private constructor(world: World) {
     private val world: World
         get() = worldRef.get()!!
 
-    //private val cache = RayWorldCacheMap(5000, 0.5f)
     private val cache = Long2ObjectOpenHashMap<List<AxisAlignedBB>>()
 
     private var countdown = 0
@@ -197,8 +197,9 @@ class RayWorldCollider private constructor(world: World) {
         if (!world.isBlockLoaded(mutablePos) || mutablePos.y < 0 || mutablePos.y > world.actualHeight) {
             list = emptyList()
         } else {
-            val blockstate = world.getBlockState(mutablePos)
-            if (blockstate.block == Blocks.AIR || blockstate.material == Material.AIR || !blockstate.material.blocksMovement() || blockstate.material.isLiquid) {
+            val blockstate: IBlockState = world.getBlockState(mutablePos)
+            if (blockstate.material == Material.AIR ||
+                !blockstate.material.blocksMovement() || blockstate.material.isLiquid) {
                 list = emptyList()
             } else {
                 list = ArrayList(1)
@@ -357,4 +358,5 @@ private fun isAir(x: Int, y: Int, z: Int): Boolean {
 val Chunk.storageArrays_mh by MethodHandleHelper.delegateForReadOnly<Chunk, Array<ExtendedBlockStorage>>(Chunk::class.java, "field_78725_b", "renderPosX")
 val ExtendedBlockStorage.data_mh by MethodHandleHelper.delegateForReadOnly<ExtendedBlockStorage, BlockStateContainer>(ExtendedBlockStorage::class.java, "field_78725_b", "renderPosX")
 val BlockStateContainer.storage_mh by MethodHandleHelper.delegateForReadOnly<BlockStateContainer, BitArray>(BlockStateContainer::class.java, "field_78725_b", "renderPosX")
+ */
  */

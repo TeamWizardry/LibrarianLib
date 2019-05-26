@@ -1,6 +1,8 @@
 package com.teamwizardry.librarianlib.features.animator.internal
 
 import com.teamwizardry.librarianlib.features.animator.Lerper
+import com.teamwizardry.librarianlib.features.animator.LerperHandler
+import com.teamwizardry.librarianlib.features.animator.registerLerper
 import com.teamwizardry.librarianlib.features.kotlin.clamp
 import java.util.*
 
@@ -289,5 +291,9 @@ object StringLerper : Lerper<String> {
 
     override fun lerp(from: String, to: String, fraction: Float): String {
         return lerpInternal(from, to, fraction.clamp(0f, 1f))
+    }
+
+    init {
+        LerperHandler.registerLerper(String::class.java, this)
     }
 }

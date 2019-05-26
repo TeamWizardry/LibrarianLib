@@ -1,6 +1,7 @@
 @file:JvmName("Rotations3D")
 package com.teamwizardry.librarianlib.features.math
 
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.angle
 import com.teamwizardry.librarianlib.features.kotlin.cross
 import com.teamwizardry.librarianlib.features.kotlin.times
@@ -24,11 +25,11 @@ import kotlin.math.min
 typealias LinearTransformation = Matrix3f
 typealias AffineTransformation = Matrix4f
 
-private val I = Vec3d(1.0, 0.0, 0.0)
-private val J = Vec3d(0.0, 1.0, 0.0)
-private val K = Vec3d(0.0, 0.0, 1.0)
+private val I = vec(1.0, 0.0, 0.0)
+private val J = vec(0.0, 1.0, 0.0)
+private val K = vec(0.0, 0.0, 1.0)
 
-private val BLOCK_CENTER = Vec3d(0.5, 0.5, 0.5)
+private val BLOCK_CENTER = vec(0.5, 0.5, 0.5)
 
 private val IDENTITY = LinearTransformation().apply { setIdentity() }
 
@@ -124,7 +125,7 @@ fun LinearTransformation.rotate(x: Double, y: Double, z: Double): Vec3d {
     val newX = m00 * x + m01 * y + m02 * z
     val newY = m10 * x + m11 * y + m12 * z
     val newZ = m20 * x + m21 * y + m22 * z
-    return Vec3d(newX, newY, newZ)
+    return vec(newX, newY, newZ)
 }
 
 /**
@@ -174,7 +175,7 @@ fun AffineTransformation.rotate(x: Double, y: Double, z: Double): Vec3d {
     val newX = m00 * x + m01 * y + m02 * z + m03
     val newY = m10 * x + m11 * y + m12 * z + m13
     val newZ = m20 * x + m21 * y + m22 * z + m23
-    return Vec3d(newX, newY, newZ)
+    return vec(newX, newY, newZ)
 }
 
 /**

@@ -42,9 +42,13 @@ class LibCursor(val resourceLocation: ResourceLocation, val originX: Int, val or
         lwjglCursor = Cursor(image.width, image.height, originX, originY, 1, buf, null)
     }
 
+    override fun toString(): String {
+        return "LibCursor($resourceLocation)"
+    }
+
     @Suppress("unused")
     companion object {
-        private fun _c(name: String, originX: Int, originY: Int) = LibCursor("librarianlib:textures/libgui/cursors/$name.png".toRl(), originX, originY)
+        private fun _c(name: String, originX: Int, originY: Int) = LibCursor("librarianlib:textures/gui/cursors/$name.png".toRl(), originX, originY)
 
         @JvmField
         val DEFAULT: LibCursor? = null

@@ -10,10 +10,13 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 object ParticleSystemEntryPoint : TestEntryPoint {
     var item: ItemMod? = null
     var fountain: BlockMod? = null
+    var particleMaker: ItemParticleMaker? = null
 
     override fun preInit(event: FMLPreInitializationEvent) {
         item = ItemParticleSystemTest()
         fountain = BlockParticleTest()
+
+        particleMaker = ItemParticleMaker()
     }
 
     override fun init(event: FMLInitializationEvent) {
@@ -21,6 +24,4 @@ object ParticleSystemEntryPoint : TestEntryPoint {
 
     override fun postInit(event: FMLPostInitializationEvent) {
     }
-
-
 }

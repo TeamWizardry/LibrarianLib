@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.base.item
 import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.helpers.currentModId
+import com.teamwizardry.librarianlib.features.helpers.vec
 import net.minecraft.block.BlockDispenser
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.dispenser.BehaviorProjectileDispense
@@ -33,7 +34,7 @@ abstract class ItemModArrow(name: String, vararg variants: String) : ItemArrow()
     init {
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, object : BehaviorProjectileDispense() {
             override fun getProjectileEntity(worldIn: World, position: IPosition, stackIn: ItemStack)
-                    = generateArrowEntity(worldIn, stackIn, Vec3d(position.x, position.y, position.z), null)
+                    = generateArrowEntity(worldIn, stackIn, vec(position.x, position.y, position.z), null)
         })
     }
 

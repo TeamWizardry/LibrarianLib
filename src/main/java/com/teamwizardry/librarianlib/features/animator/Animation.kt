@@ -1,6 +1,10 @@
 package com.teamwizardry.librarianlib.features.animator
 
 import com.teamwizardry.librarianlib.features.kotlin.clamp
+import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * An animation applied to a specific object and property of that object
@@ -91,16 +95,6 @@ abstract class Animation<T : Any?>(val target: T, val property: IAnimatable<T>) 
     }
 
     /**
-     * Returns true if this animation's keypath involves the passed object.
-     *
-     * The equality is by identity
-     */
-    fun doesInvolveObject(obj: Any): Boolean {
-        if (target === obj) return true
-        return property.doesInvolve(target, obj)
-    }
-
-    /**
      * True if this animation has been added to an animator already.
      */
     val isInAnimator: Boolean
@@ -115,10 +109,15 @@ abstract class Animation<T : Any?>(val target: T, val property: IAnimatable<T>) 
     /**
      * runs the completion callback
      */
-    fun complete() {
+    open fun complete() {
         completion.run()
+        continuations.forEach {
+            it.resume(Unit)
+        }
         finished = true
     }
+
+    private val continuations = CopyOnWriteArrayList<Continuation<Unit>>()
 
     /**
      * Terminates this animation.
@@ -142,5 +141,12 @@ abstract class Animation<T : Any?>(val target: T, val property: IAnimatable<T>) 
 
     internal var _id: Int = -1
         private set
+
+    suspend fun await() {
+        if(finished) return
+        suspendCoroutine<Unit> { cont ->
+            continuations.add(cont)
+        }
+    }
 }
 
