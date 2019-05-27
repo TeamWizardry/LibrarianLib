@@ -18,9 +18,12 @@ import com.teamwizardry.librarianlib.features.sprite.SpritesMetadataSection
 import com.teamwizardry.librarianlib.features.sprite.SpritesMetadataSectionSerializer
 import com.teamwizardry.librarianlib.features.sprite.Texture
 import com.teamwizardry.librarianlib.features.tesr.TileRendererRegisterProcessor
+import com.teamwizardry.librarianlib.features.text.Fonts
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import com.teamwizardry.librarianlib.features.utilities.client.F3Handler
 import com.teamwizardry.librarianlib.features.utilities.client.ScissorUtil
+import games.thecodewarrior.bitfont.typesetting.AttributedString
+import games.thecodewarrior.bitfont.typesetting.TypesetString
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.resources.I18n
@@ -93,6 +96,13 @@ class LibClientProxy : LibCommonProxy(), ISelectiveResourceReloadListener {
 
         (Minecraft.getMinecraft().resourceManager as IReloadableResourceManager).registerReloadListener(this)
         onResourceManagerReload(Minecraft.getMinecraft().resourceManager)
+
+        // typeset a simple ASCII string. This does two things:
+        // - initializes the atlas with the basic ASCII characters
+        // - loads ICU and related files
+        // This process seems to take around a second, so frontloading this process prevents stutters when first
+        // opening a GUI that uses Bitfont
+        TypesetString(Fonts.classic, AttributedString(('\u0020'..'\u007E').joinToString("")))
     }
 
     override fun lateInit(e: FMLInitializationEvent) {
