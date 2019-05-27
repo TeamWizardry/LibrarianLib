@@ -36,7 +36,7 @@ object BitfontAtlas {
     private val texID = TextureUtil.glGenTextures()
     private val gpuMaxTexSize = GL11.glGetInteger(GL11.GL_MAX_TEXTURE_SIZE)
 
-    private var packer = RectanglePacker<BitGrid>(width, height, 0)
+    private var packer = RectanglePacker<BitGrid>(width, height, 1)
     private val rects = mutableMapOf<BitGrid, RectanglePacker.Rectangle>()
     private var solidRect = packer.insert(1, 1, BitGrid(1, 2).also { it[0, 0] = true })!!
 
