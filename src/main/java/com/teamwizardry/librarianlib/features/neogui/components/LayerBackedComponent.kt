@@ -19,7 +19,14 @@ class LayerBackedComponent(val layer: GuiLayer): GuiComponent(0, 0, 0, 0),
     override val root: GuiComponent
         get() = layer.root as GuiComponent
     override val parent: GuiComponent?
-        get() = layer.parent as GuiComponent?
+        get() {
+            val parent = layer.parent
+            return when(parent) {
+                null -> null
+                is GuiComponent -> parent
+                else -> parent.componentWrapper()
+            }
+        }
 
     override fun setParentInternal(value: GuiLayer?) {
         layer.setParentInternal(value)
