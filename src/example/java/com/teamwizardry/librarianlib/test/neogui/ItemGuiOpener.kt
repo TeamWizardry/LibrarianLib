@@ -13,7 +13,7 @@ import net.minecraft.world.World
 /**
  * Created by TheCodeWarrior
  */
-class ItemGuiOpener : ItemMod("guiopener") {
+class ItemGuiOpener : ItemMod("neo_guiopener") {
 
     companion object {
         val book = Book("book")
