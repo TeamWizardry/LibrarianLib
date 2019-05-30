@@ -6,7 +6,9 @@ import com.teamwizardry.librarianlib.features.neogui.layers.SpriteLayer
 import com.teamwizardry.librarianlib.features.neogui.provided.pastry.BackgroundTexture
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.plus
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 
+@ExperimentalBitfont
 class PastryTabPane(type: BackgroundTexture, posX: Int, posY: Int, width: Int, height: Int) : GuiComponent(posX, posY, width, height) {
 
     constructor(posX: Int, posY: Int, width: Int, height: Int) : this(BackgroundTexture.DEFAULT, posX, posY, width, height)

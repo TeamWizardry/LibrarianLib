@@ -10,7 +10,9 @@ import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 
+@ExperimentalBitfont
 class PastryButton @JvmOverloads constructor(
         buttonText: String = "",
         posX: Int, posY: Int, width: Int = Minecraft().fontRenderer.getStringWidth(buttonText) + 10, height: Int = 12,

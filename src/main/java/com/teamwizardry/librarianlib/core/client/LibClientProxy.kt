@@ -24,6 +24,7 @@ import com.teamwizardry.librarianlib.features.utilities.client.F3Handler
 import com.teamwizardry.librarianlib.features.utilities.client.ScissorUtil
 import games.thecodewarrior.bitfont.typesetting.AttributedString
 import games.thecodewarrior.bitfont.typesetting.TypesetString
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.resources.I18n
@@ -102,6 +103,7 @@ class LibClientProxy : LibCommonProxy(), ISelectiveResourceReloadListener {
         // - loads ICU and related files
         // This process seems to take around a second, so frontloading this process prevents stutters when first
         // opening a GUI that uses Bitfont
+        @UseExperimental(ExperimentalBitfont::class)
         TypesetString(Fonts.classic, AttributedString(('\u0020'..'\u007E').joinToString("")))
     }
 

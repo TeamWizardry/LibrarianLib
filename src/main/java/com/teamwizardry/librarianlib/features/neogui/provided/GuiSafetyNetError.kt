@@ -6,9 +6,11 @@ import com.teamwizardry.librarianlib.features.neogui.layers.ColorLayer
 import com.teamwizardry.librarianlib.features.neogui.layers.TextLayer
 import com.teamwizardry.librarianlib.features.neogui.layout.StackLayout
 import com.teamwizardry.librarianlib.features.helpers.vec
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import java.awt.Color
 import kotlin.math.max
 
+@UseExperimental(ExperimentalBitfont::class)
 class GuiSafetyNetError(e: Exception): GuiBase() {
     init {
         val border = 8

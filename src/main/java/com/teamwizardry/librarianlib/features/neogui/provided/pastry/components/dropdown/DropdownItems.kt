@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.neogui.component.GuiLayer
 import com.teamwizardry.librarianlib.features.neogui.layers.SpriteLayer
 import com.teamwizardry.librarianlib.features.neogui.layers.TextLayer
 import com.teamwizardry.librarianlib.features.neogui.provided.pastry.PastryTexture
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 
 abstract class PastryDropdownItem<T>(
     /**
@@ -27,6 +28,7 @@ abstract class PastryDropdownItem<T>(
     abstract fun createLayer(): GuiLayer
 }
 
+@ExperimentalBitfont
 class DropdownTextItem<T>(value: T, val string: String): PastryDropdownItem<T>(value, false, false) {
     override fun createLayer(): GuiLayer {
         val layer = TextLayer(0, 0, string)

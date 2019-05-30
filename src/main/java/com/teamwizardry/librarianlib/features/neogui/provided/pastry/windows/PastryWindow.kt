@@ -16,9 +16,11 @@ import com.teamwizardry.librarianlib.features.math.Align2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.Sprite
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import net.minecraft.client.Minecraft
 import kotlin.math.abs
 
+@UseExperimental(ExperimentalBitfont::class)
 open class PastryWindow(width: Int, height: Int, style: Style = Style.DEFAULT, useShortHeader: Boolean = false)
     : PastryWindowBase(0, 0) {
     val header = GuiComponent(0, 0, width, 0)

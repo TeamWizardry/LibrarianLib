@@ -9,7 +9,9 @@ import com.teamwizardry.librarianlib.features.neogui.provided.pastry.PastryTextu
 import com.teamwizardry.librarianlib.features.neogui.provided.pastry.windows.PastryWindow
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Align2d
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 
+@UseExperimental(ExperimentalBitfont::class)
 class GuiTestPastryWindowExample: PastryWindow(200, 100) {
     val valueText = TextLayer(0, 0, 0, 12)
     val openDialogButton = PastryButton("New text", 0, 0, 60)
@@ -64,6 +66,7 @@ class GuiTestPastryWindowExample: PastryWindow(200, 100) {
     }
 }
 
+@UseExperimental(ExperimentalBitfont::class)
 private class GuiTestPastryWindowDialog(
     val failureHandler: () -> Unit, val successHandler: (text: String) -> Unit
 ): PastryWindow(120, 75) {

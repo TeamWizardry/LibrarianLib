@@ -5,12 +5,14 @@ import com.teamwizardry.librarianlib.features.kotlin.color
 import games.thecodewarrior.bitfont.typesetting.AttributedString
 import games.thecodewarrior.bitfont.typesetting.TypesetString
 import games.thecodewarrior.bitfont.utils.Attribute
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
+@ExperimentalBitfont
 class TypesetStringRenderer {
     var typesetString = TypesetString(Fonts.classic, AttributedString(""))
     var defaultColor: Color = Color.BLACK

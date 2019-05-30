@@ -5,11 +5,13 @@ import com.teamwizardry.librarianlib.features.neogui.layers.ColorLayer
 import com.teamwizardry.librarianlib.features.neogui.layers.TextLayer
 import com.teamwizardry.librarianlib.features.neogui.layers.TextLayerMC
 import com.teamwizardry.librarianlib.features.helpers.vec
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import java.awt.Color
 
 /**
  * Created by TheCodeWarrior
  */
+@UseExperimental(ExperimentalBitfont::class)
 class GuiTestMCTiny : GuiBase() {
     init {
         main.size = vec(600, 400)

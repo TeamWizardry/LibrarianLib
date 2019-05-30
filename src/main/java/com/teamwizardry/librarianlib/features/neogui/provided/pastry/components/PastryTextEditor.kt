@@ -26,6 +26,7 @@ import games.thecodewarrior.bitfont.editor.mode.DefaultEditorMode
 import games.thecodewarrior.bitfont.editor.mode.MacEditorMode
 import games.thecodewarrior.bitfont.typesetting.AttributedString
 import games.thecodewarrior.bitfont.typesetting.TypesetString
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -34,6 +35,7 @@ import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
+@ExperimentalBitfont
 class PastryTextEditor(posX: Int, posY: Int, width: Int, height: Int): GuiComponent(posX, posY, width, height) {
     val editor = Editor(Fonts.classic, size.xi)
     val mode = editor.mode as DefaultEditorMode

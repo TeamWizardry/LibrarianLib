@@ -15,6 +15,7 @@ import com.teamwizardry.librarianlib.features.neogui.provided.pastry.components.
 import com.teamwizardry.librarianlib.features.neogui.provided.pastry.components.dropdown.DropdownTextItem
 import com.teamwizardry.librarianlib.features.neogui.provided.pastry.components.dropdown.PastryDropdown
 import com.teamwizardry.librarianlib.features.helpers.vec
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
@@ -22,6 +23,7 @@ import net.minecraft.item.ItemStack
 /**
  * Created by TheCodeWarrior
  */
+@UseExperimental(ExperimentalBitfont::class)
 class GuiTestPastry : GuiBase() {
     val dropdown: PastryDropdown<ItemStack>
 

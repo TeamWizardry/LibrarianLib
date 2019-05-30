@@ -6,8 +6,10 @@ import com.teamwizardry.librarianlib.features.neogui.provided.pastry.components.
 import com.teamwizardry.librarianlib.features.neogui.provided.pastry.windows.PastryWindowBase
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.plus
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import java.awt.Color
 
+@UseExperimental(ExperimentalBitfont::class)
 class GuiTestMultiPastryWindowBase: PastryWindowBase(100, 100) {
     init {
         add(ColorLayer(Color.RED, 0, 0, 100, 100))

@@ -12,10 +12,12 @@ import com.teamwizardry.librarianlib.features.text.fromMC
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.typesetting.AttributedString
 import games.thecodewarrior.bitfont.typesetting.TypesetString
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import net.minecraft.client.renderer.GlStateManager
 import java.awt.Color
 import kotlin.math.min
 
+@ExperimentalBitfont
 class TextLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, posY, width, height) {
     constructor(posX: Int, posY: Int, text: String): this(posX, posY, 0, 0) {
         this.text = text

@@ -5,10 +5,12 @@ import com.teamwizardry.librarianlib.features.neogui.layers.TextLayer
 import com.teamwizardry.librarianlib.features.neogui.provided.pastry.components.PastryTextEditor
 import com.teamwizardry.librarianlib.features.neogui.provided.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.features.helpers.vec
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 
 /**
  * Created by TheCodeWarrior
  */
+@UseExperimental(ExperimentalBitfont::class)
 class GuiTestTextField : GuiBase() {
     init {
         main.size = vec(150, 150)

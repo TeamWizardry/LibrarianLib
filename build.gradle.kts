@@ -63,15 +63,18 @@ dependencies {
     implementation("com.ibm.icu:icu4j:63.1")
     shade("org.msgpack:msgpack-core:0.8.16")
     implementation("org.msgpack:msgpack-core:0.8.16")
-    shade(files("libs/bitfontcore-1.0.jar"))
-    implementation(files("libs/bitfontcore-1.0.jar"))
+    shade(files("libs/bitfontcore-0.1.jar"))
+    implementation(files("libs/bitfontcore-0.1.jar"))
 }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "1.8"
         javaParameters = true
-        freeCompilerArgs += "-Xjvm-default=enable"
+        freeCompilerArgs += listOf(
+            "-Xjvm-default=enable",
+            "-Xuse-experimental=kotlin.Experimental"
+        )
     }
 }
 

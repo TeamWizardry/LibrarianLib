@@ -5,6 +5,7 @@ import games.thecodewarrior.bitfont.typesetting.AttributedString
 import games.thecodewarrior.bitfont.typesetting.MutableAttributedString
 import games.thecodewarrior.bitfont.typesetting.font
 import games.thecodewarrior.bitfont.utils.Attribute
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import java.awt.Color
 
 private fun String.splitWithDelimiters(regex: String) = this.split("((?<=$regex)|(?=$regex))".toRegex())
@@ -45,6 +46,7 @@ private val shadowColors = mapOf(
     'f' to Color(0x3f3f3f)
 )
 
+@ExperimentalBitfont
 private class Formatting<T: Any>(val attributedString: MutableAttributedString, val i: () -> Int, val mapGen: (T) -> Map<Attribute<*>, Any>) {
     var value: T? = null
         set(value) {
@@ -62,6 +64,7 @@ private class Formatting<T: Any>(val attributedString: MutableAttributedString, 
     }
 }
 
+@ExperimentalBitfont
 fun attributedStringFromMC(mcString: String): AttributedString {
     val split = mcString.splitWithDelimiters("§.")
     val attributed = MutableAttributedString(mcString.replace("§[^§]".toRegex(), "").replace("§§", "§"))
@@ -120,6 +123,7 @@ fun attributedStringFromMC(mcString: String): AttributedString {
     return attributed
 }
 
+@ExperimentalBitfont
 fun AttributedString.Companion.fromMC(mcString: String): AttributedString {
     return attributedStringFromMC(mcString)
 }
