@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.features.neogui.provided.pastry.windows
+package com.teamwizardry.librarianlib.features.neogui.provided.pastry.components
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.neogui.EnumMouseButton
@@ -25,7 +25,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class PastryColorPicker: PastryWindow(100, 75, PastryWindow.Style.PANEL, true) {
+class PastryColorPicker: GuiComponent() {
     private val flexbox = Flexbox(0, 0, 0, 0)
     private val gradient = GradientComponent()
     private val hueComponent = HueComponent()
@@ -70,10 +70,7 @@ class PastryColorPicker: PastryWindow(100, 75, PastryWindow.Style.PANEL, true) {
         }
 
     init {
-        maxContentSize = vec(2000, 2000)
-        minContentSize = vec(10, 10)
-
-        content.add(flexbox)
+        this.add(flexbox)
         flexbox.add(gradient, hueComponent, colorWell)
         flexbox.spacing = 2
         gradient.flex.config(
@@ -89,7 +86,7 @@ class PastryColorPicker: PastryWindow(100, 75, PastryWindow.Style.PANEL, true) {
 
     override fun layoutChildren() {
         super.layoutChildren()
-        flexbox.frame = content.bounds.shrink(2.0)
+        flexbox.frame = this.bounds
     }
 
     private inner class GradientComponent: GuiComponent(0, 0, 0, 0) {

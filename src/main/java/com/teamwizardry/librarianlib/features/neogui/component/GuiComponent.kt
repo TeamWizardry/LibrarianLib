@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.features.neogui.component
 import com.teamwizardry.librarianlib.features.neogui.component.supporting.*
 import com.teamwizardry.librarianlib.features.neogui.components.RootComponent
 import com.teamwizardry.librarianlib.features.neogui.layers.ComponentBackedLayer
-import com.teamwizardry.librarianlib.features.neogui.windows.GuiWindow
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -56,11 +55,6 @@ open class GuiComponent private constructor(
     val parentComponent: GuiComponent?
         get() = super.parent as? GuiComponent?
 
-    /**
-     * The window this component is contained within, or null if this component isn't in a [GuiWindow]
-     */
-    open val window: GuiWindow?
-        get() = this.root as? GuiWindow
     /**
      * The GUI this component is contained within, or the window if this component is in a [GuiWindow]
      */

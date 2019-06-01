@@ -7,10 +7,8 @@ import com.teamwizardry.librarianlib.features.neogui.component.GuiComponentEvent
 import com.teamwizardry.librarianlib.features.neogui.components.ComponentText
 import com.teamwizardry.librarianlib.features.neogui.layers.ColorLayer
 import com.teamwizardry.librarianlib.features.neogui.provided.GuiSafetyNetError
-import com.teamwizardry.librarianlib.features.neogui.windows.GuiWindow
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.test.neogui.tests.*
-import com.teamwizardry.librarianlib.test.neogui.tests.windows.*
 import net.minecraft.client.Minecraft
 import java.awt.Color
 import kotlin.math.max
@@ -47,16 +45,6 @@ class GuiTestSelector : GuiBase() {
         ListItem.Gui("Pastry") { GuiTestPastry() },
         ListItem.Gui("Text Field") { GuiTestTextField() },
 
-        ListItem.Window("Single Window") { GuiTestSingleWindow() },
-        ListItem.Window("Multi Window") { GuiTestMultiWindow() },
-        ListItem.Window("Pastry Window Base") { GuiTestPastryWindowBase() },
-        ListItem.Window("Multi Pastry Window Base") { GuiTestMultiPastryWindowBase() },
-        ListItem.Window("Pastry Window") { GuiTestPastryWindow() },
-        ListItem.Window("Pastry Window Example") { GuiTestPastryWindowExample() },
-        ListItem.Window("Pastry Color Picker") { GuiTestPastryColorPicker() },
-
-        ListItem.Window("Flexbox Layout") { GuiTestFlexBox() },
-
         ListItem.Gui("<fix for commas in diffs>") { throw RuntimeException("How was this called?") }
     ).dropLast(1)
 
@@ -75,7 +63,6 @@ class GuiTestSelector : GuiBase() {
                 try {
                     when(item) {
                         is ListItem.Gui -> Minecraft.getMinecraft().displayGuiScreen(item.create())
-                        is ListItem.Window -> item.create().open()
                     }
                 } catch (e: Exception) {
                     LibrarianLog.error(e, "The safety net caught an error initializing GUI")
@@ -101,6 +88,5 @@ class GuiTestSelector : GuiBase() {
 
     sealed class ListItem(val name: String) {
         class Gui(name: String, val create: () -> GuiBase): ListItem(name)
-        class Window(name: String, val create: () -> GuiWindow): ListItem(name)
     }
 }
