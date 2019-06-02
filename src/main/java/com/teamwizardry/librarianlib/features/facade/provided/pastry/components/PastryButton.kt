@@ -5,22 +5,33 @@ import com.teamwizardry.librarianlib.features.eventbus.Hook
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.features.facade.layers.TextLayer
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.Pastry
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.PastryTexture
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
+import com.teamwizardry.librarianlib.features.math.Align2d
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 
 @ExperimentalBitfont
 class PastryButton @JvmOverloads constructor(
         buttonText: String = "",
-        posX: Int, posY: Int, width: Int = Minecraft().fontRenderer.getStringWidth(buttonText) + 10, height: Int = 12,
+        posX: Int, posY: Int, width: Int? = null, height: Int = Pastry.lineHeight,
         callback: (() -> Unit)? = null
-) : PastryActivatedControl(posX, posY, width, height) {
+) : PastryActivatedControl(posX, posY, width ?: 0, height) {
+
     class ClickEvent(): Event()
 
-    val label = TextLayer(4, 2, width-8, height-4)
-    private val sprite = SpriteLayer(PastryTexture.button, 0, 0, width, height)
+    val label = TextLayer(4, 1, buttonText)
+
+    init {
+        if(width == null) {
+            this.width = label.width + 8
+        }
+        label.align = Align2d.CENTER
+    }
+
+    private val sprite = SpriteLayer(PastryTexture.button, 0, 0, this.widthi, height)
     private var mouseDown = false
 
     var pressed = false

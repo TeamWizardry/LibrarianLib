@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.facade.component.LayerHierarchyException
 import com.teamwizardry.librarianlib.features.facade.layers.SpriteLayer
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.Pastry
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.PastryTexture
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryActivatedControl
 import com.teamwizardry.librarianlib.features.helpers.rect
@@ -18,7 +19,7 @@ class PastryDropdown<T> constructor(
     posX: Int, posY: Int,
     width: Int,
     callback: ((T?) -> Unit)?
-) : PastryActivatedControl(posX, posY, width, 12) {
+) : PastryActivatedControl(posX, posY, width, Pastry.lineHeight) {
 
     val items = mutableListOf<PastryDropdownItem<T>>()
     var selected: PastryDropdownItem<T>? = null

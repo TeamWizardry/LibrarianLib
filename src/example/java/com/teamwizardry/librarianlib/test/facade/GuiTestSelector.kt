@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.features.facade.layers.ColorLayer
 import com.teamwizardry.librarianlib.features.facade.provided.GuiSafetyNetError
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.test.facade.tests.*
+import com.teamwizardry.librarianlib.test.facade.pastry.GuiTestPastry
 import net.minecraft.client.Minecraft
 import java.awt.Color
 import kotlin.math.max
