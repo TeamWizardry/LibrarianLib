@@ -1,52 +1,95 @@
 package com.teamwizardry.librarianlib.features.neogui.provided
 
-import com.teamwizardry.librarianlib.features.neogui.GuiBase
-import com.teamwizardry.librarianlib.features.neogui.component.GuiLayer
-import com.teamwizardry.librarianlib.features.neogui.layers.ColorLayer
-import com.teamwizardry.librarianlib.features.neogui.layers.TextLayer
-import com.teamwizardry.librarianlib.features.neogui.layout.StackLayout
 import com.teamwizardry.librarianlib.features.helpers.vec
-import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
+import com.teamwizardry.librarianlib.features.kotlin.roundBy
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.FontRenderer
+import net.minecraft.client.gui.Gui
+import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.renderer.GlStateManager
 import java.awt.Color
-import kotlin.math.max
+import kotlin.math.min
 
-@UseExperimental(ExperimentalBitfont::class)
-class GuiSafetyNetError(e: Exception): GuiBase() {
+class GuiSafetyNetError(e: Exception): GuiScreen() {
+
+    private val guiWidth: Int
+    private val guiHeight: Int
+
+    private val gap = 2
+    private val title = "§4§nSafety net caught an exception:"
+
+    private val errorClass: String = e.javaClass.simpleName
+    private val messageLines: List<String>
+
     init {
-        val border = 8
-        main.width = max(300.0, TextLayer.stringSize(e.javaClass.simpleName).width+border*2)
-        val width = main.widthi - border*2
+        val fontRenderer = Minecraft.getMinecraft().fontRenderer
 
-        val builder = StackLayout.build()
-            .space(2)
-            .alignCenterX()
-            .width(width)
-            .fit()
+        val maxWidth = 300
+        val strings = mutableListOf(
+            errorClass,
+            title
+        )
 
-        val title = TextLayer(0, 0, "§4§nSafety net caught an exception:")
-        val className = TextLayer(0, 0, e.javaClass.simpleName)
-        className.fitToText()
-        builder.add(title, className)
-
-        e.message?.also { text ->
-            val messageWrap = GuiLayer()
-            val message = TextLayer(0, 0, width, 0)
-            message.wrap = true
-            message.text = text
-            message.fitToText()
-            messageWrap.size = message.size
-            if(message.lineCount == 1)
-                messageWrap.width = TextLayer.stringSize(text, width).width
-            messageWrap.add(message)
-            val divider = ColorLayer(Color.darkGray, 0, 0, width, 1)
-            builder.add(divider, messageWrap)
+        val message = e.message
+        if(message != null) {
+            messageLines = fontRenderer.listFormattedStringToWidth(message, maxWidth)
+            strings += messageLines
+        } else {
+            messageLines = emptyList()
         }
 
-        val stack = builder.layer()
-        main.height = stack.height + border*2
-        stack.pos = vec(border, border)
+        guiWidth = min(maxWidth, strings.map { fontRenderer.getStringWidth(it) }.max()!!).roundBy(2)
+        guiHeight = 0 +
+            2 * fontRenderer.FONT_HEIGHT + gap + // title + gap + class name
+            if(messageLines.isEmpty()) {
+                0
+            } else { 0 +
+                2 * gap + 1 + // gap + separator + gap
+                messageLines.size * fontRenderer.FONT_HEIGHT + // line height
+                (messageLines.size-1) // 1px between message lines
+            }
+    }
 
-        val bg = ColorLayer(Color.lightGray, 0, 0, main.widthi, main.heighti)
-        main.add(bg, stack)
+    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        this.drawDefaultBackground()
+
+        val fontRenderer = Minecraft.getMinecraft().fontRenderer
+        val topLeft = vec(width-guiWidth, height-guiHeight) / 2
+        val border = 8
+
+        Gui.drawRect(
+            topLeft.xi - border, topLeft.yi - border,
+            topLeft.xi + guiWidth + border, topLeft.yi + guiHeight + border,
+            Color.lightGray.rgb
+        )
+
+        GlStateManager.pushMatrix()
+        GlStateManager.translate(((width)/2).toDouble(), ((height-guiHeight)/2).toDouble(), 0.0)
+
+        var y = 0
+        fun drawCenteredStringNoShadow(fontRenderer: FontRenderer, text: String , x: Int, y: Int, color: Int) {
+            fontRenderer.drawString(text, x - fontRenderer.getStringWidth(text) / 2, y, color)
+        }
+
+        drawCenteredStringNoShadow(fontRenderer, title, 0, y, 0)
+        y += fontRenderer.FONT_HEIGHT + gap
+        drawCenteredStringNoShadow(fontRenderer, errorClass, 0, y, 0)
+        y += fontRenderer.FONT_HEIGHT + gap
+
+        if(messageLines.isNotEmpty()) {
+            Gui.drawRect(-guiWidth/2, y-1, guiWidth/2, y, Color.darkGray.rgb)
+            y += 1 + gap
+            if(messageLines.size == 1) {
+                drawCenteredStringNoShadow(fontRenderer, messageLines[0], 0, y, 0)
+                y += fontRenderer.FONT_HEIGHT + 1
+            } else {
+                messageLines.forEach { line ->
+                    fontRenderer.drawString(line, -guiWidth/2, y, 0)
+                    y += fontRenderer.FONT_HEIGHT + 1
+                }
+            }
+        }
+
+        GlStateManager.popMatrix()
     }
 }
