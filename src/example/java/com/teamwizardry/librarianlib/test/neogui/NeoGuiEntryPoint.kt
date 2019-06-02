@@ -9,9 +9,9 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 /**
  * Created by TheCodeWarrior
  */
-object GuiEntryPoint : TestEntryPoint {
+object NeoGuiEntryPoint : TestEntryPoint {
     override fun preInit(event: FMLPreInitializationEvent) {
-        GuiItems
+        NeoGuiItems
     }
 
     override fun init(event: FMLInitializationEvent) {
@@ -25,6 +25,6 @@ object GuiEntryPoint : TestEntryPoint {
     }
 }
 
-object GuiItems {
+object NeoGuiItems {
     val guiitem = ItemGuiOpener()
 }
