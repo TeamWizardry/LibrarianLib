@@ -15,6 +15,7 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.lang.ref.WeakReference
 import java.util.*
+import kotlin.math.max
 
 /**
  * This class represents a texture and it's size. It is mostly used to create [Sprite]
@@ -82,10 +83,11 @@ class Texture(
         private set
 
     /**
-     * The ratio of texture pixels / logical pixels. Calculated by averaging the ratio on each axis.
+     * The ratio of texture pixels / logical pixels. Calculated by averaging the ratio on each axis. Values are clamped
+     * to be positive to avoid divide by zero errors
      */
     val logicalScale: Int
-        get() = ((logicalWidth.toFloat() / width + logicalHeight.toFloat() / height) / 2).toInt()
+        get() = max(1, ((logicalWidth.toFloat() / width + logicalHeight.toFloat() / height) / 2).toInt())
     private var section: SpritesMetadataSection? = null
     internal var sprites: MutableMap<String, Sprite> = mutableMapOf()
     private var colors: MutableMap<String, TextureColor> = mutableMapOf()
