@@ -167,7 +167,7 @@ private class FieldListItem(val target: Class<*>, val name: String) {
         child?.rootType ?: fieldClass as Class<Any>
     }
 
-    val rootGetter: (target: Any) -> Any? by lazy {
+    val valueGetter: (target: Any) -> Any? by lazy {
         val getter: (target: Any) -> Any?
 
         when (accessorOfChoice) {
@@ -186,12 +186,17 @@ private class FieldListItem(val target: Class<*>, val name: String) {
             }
             is Int -> getter = { t -> ArrayReflect.get(t, accessorOfChoice) }
             else -> throw IllegalStateException("accessorOfChoice was neither a Field nor a KProperty, it was `${(accessorOfChoice as Any?)?.javaClass?.canonicalName
-                    ?: "null"}`")
+                ?: "null"}`")
         }
 
-        val childGetter = child?.rootGetter
+        getter
+    }
 
-        if (childGetter == null) { getter } else { t -> childGetter(getter(t)!!) }
+    val rootGetter: (target: Any) -> Any? by lazy {
+        val childGetter = child?.rootGetter
+        val valueGetter = valueGetter
+
+        if (childGetter == null) { valueGetter } else { t -> childGetter(valueGetter(t)!!) }
     }
 
     private val rootMutator: (target: Any, value: Any?) -> Any? by lazy {
@@ -238,7 +243,7 @@ private class FieldListItem(val target: Class<*>, val name: String) {
     }
 
     val rootSetter: (target: Any, finalValue: Any?) -> Any? by lazy {
-        val getter = rootGetter
+        val getter = valueGetter
 
         val childSetter = child?.rootSetter ?: { _, finalValue -> finalValue }
 
