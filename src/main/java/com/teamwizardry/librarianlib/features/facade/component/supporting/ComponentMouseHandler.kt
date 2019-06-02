@@ -151,9 +151,11 @@ class ComponentMouseHandler: IComponentMouse {
             }
         }
 
-        for(child in component.subComponents) {
-            if(child.isVisible) {
-                child.updateHits(root, zIndex)
+        if(!component.isPointClipped(component.mousePos)) {
+            for (child in component.subComponents) {
+                if (child.isVisible) {
+                    child.updateHits(root, zIndex)
+                }
             }
         }
     }
