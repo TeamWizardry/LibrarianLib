@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.test.shader.test
 
-import com.teamwizardry.librarianlib.features.neogui.GuiBase
-import com.teamwizardry.librarianlib.features.neogui.component.GuiLayer
+import com.teamwizardry.librarianlib.features.facade.GuiBase
+import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.toRl
 import com.teamwizardry.librarianlib.features.shader.Shader

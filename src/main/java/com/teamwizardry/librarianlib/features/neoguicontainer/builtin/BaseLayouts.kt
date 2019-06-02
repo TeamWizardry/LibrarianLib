@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.features.neoguicontainer.builtin
 import com.teamwizardry.librarianlib.features.container.InventoryWrapper
 import com.teamwizardry.librarianlib.features.container.builtin.BaseWrappers
 import com.teamwizardry.librarianlib.features.container.internal.SlotBase
-import com.teamwizardry.librarianlib.features.neogui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.neoguicontainer.ComponentSlot
 
 /**

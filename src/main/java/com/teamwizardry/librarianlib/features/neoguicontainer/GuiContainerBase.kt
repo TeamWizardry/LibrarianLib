@@ -3,9 +3,9 @@ package com.teamwizardry.librarianlib.features.neoguicontainer
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.container.ContainerBase
 import com.teamwizardry.librarianlib.features.container.internal.ContainerImpl
-import com.teamwizardry.librarianlib.features.neogui.LibGuiImpl
-import com.teamwizardry.librarianlib.features.neogui.component.GuiComponent
-import com.teamwizardry.librarianlib.features.neogui.provided.GuiSafetyNetError
+import com.teamwizardry.librarianlib.features.facade.LibGuiImpl
+import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
+import com.teamwizardry.librarianlib.features.facade.provided.GuiSafetyNetError
 import com.teamwizardry.librarianlib.features.kotlin.Client
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.kotlin.delegate

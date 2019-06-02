@@ -1,12 +1,12 @@
 package com.teamwizardry.librarianlib.test.shader
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
-import com.teamwizardry.librarianlib.features.neogui.GuiBase
-import com.teamwizardry.librarianlib.features.neogui.component.GuiComponent
-import com.teamwizardry.librarianlib.features.neogui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.neogui.components.ComponentText
-import com.teamwizardry.librarianlib.features.neogui.layers.ColorLayer
-import com.teamwizardry.librarianlib.features.neogui.provided.GuiSafetyNetError
+import com.teamwizardry.librarianlib.features.facade.GuiBase
+import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
+import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.facade.components.ComponentText
+import com.teamwizardry.librarianlib.features.facade.layers.ColorLayer
+import com.teamwizardry.librarianlib.features.facade.provided.GuiSafetyNetError
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.test.shader.test.SimpleShaderTest
 import com.teamwizardry.librarianlib.test.shader.test.TimeUniformTest

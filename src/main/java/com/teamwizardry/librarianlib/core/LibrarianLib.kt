@@ -9,9 +9,9 @@ import com.teamwizardry.librarianlib.features.config.EasyConfigHandler
 import com.teamwizardry.librarianlib.features.container.ContainerBase
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventBus
-import com.teamwizardry.librarianlib.features.neogui.GuiBase
-import com.teamwizardry.librarianlib.features.neogui.hud.GuiHud
-import com.teamwizardry.librarianlib.features.neogui.component.GuiComponent
+import com.teamwizardry.librarianlib.features.facade.GuiBase
+import com.teamwizardry.librarianlib.features.facade.hud.GuiHud
+import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.neoguicontainer.GuiContainerBase
 import com.teamwizardry.librarianlib.features.kotlin.jsonObject
 import com.teamwizardry.librarianlib.features.kotlin.tagCompound

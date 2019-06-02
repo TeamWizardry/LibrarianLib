@@ -5,10 +5,10 @@ import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 import com.teamwizardry.librarianlib.features.animator.animations.Keyframe
 import com.teamwizardry.librarianlib.features.animator.animations.KeyframeAnimation
-import com.teamwizardry.librarianlib.features.neogui.GuiBase
-import com.teamwizardry.librarianlib.features.neogui.component.GuiComponent
-import com.teamwizardry.librarianlib.features.neogui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.neogui.components.ComponentRect
+import com.teamwizardry.librarianlib.features.facade.GuiBase
+import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
+import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.facade.components.ComponentRect
 import com.teamwizardry.librarianlib.features.helpers.vec
 import java.awt.Color
 

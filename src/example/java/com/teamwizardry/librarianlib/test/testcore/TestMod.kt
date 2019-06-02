@@ -10,7 +10,7 @@ import com.teamwizardry.librarianlib.test.chunkdata.ChunkDataEntryPoint
 import com.teamwizardry.librarianlib.test.container.ContainerEntryPoint
 import com.teamwizardry.librarianlib.test.fx.FXEntryPoint
 import com.teamwizardry.librarianlib.test.gui.GuiEntryPoint
-import com.teamwizardry.librarianlib.test.neogui.NeoGuiEntryPoint
+import com.teamwizardry.librarianlib.test.facade.FacadeEntryPoint
 import com.teamwizardry.librarianlib.test.particlesystem.ParticleSystemEntryPoint
 import com.teamwizardry.librarianlib.test.saving.SavingEntryPoint
 import com.teamwizardry.librarianlib.test.shader.ShaderEntryPoint
@@ -85,7 +85,7 @@ class TestMod {
         val entrypoints: Array<TestEntryPoint> = arrayOf(
             SavingEntryPoint,
             FXEntryPoint,
-            NeoGuiEntryPoint,
+            FacadeEntryPoint,
             GuiEntryPoint,
             VariantEntryPoint,
             UnsafeTest,

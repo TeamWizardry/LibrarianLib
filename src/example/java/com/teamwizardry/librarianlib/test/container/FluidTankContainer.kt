@@ -10,7 +10,7 @@ import com.teamwizardry.librarianlib.features.container.ContainerBase
 import com.teamwizardry.librarianlib.features.container.GuiHandler
 import com.teamwizardry.librarianlib.features.container.InventoryWrapper
 import com.teamwizardry.librarianlib.features.container.builtin.BaseWrappers
-import com.teamwizardry.librarianlib.test.neogui.tests.GuiFluidTank
+import com.teamwizardry.librarianlib.test.facade.tests.GuiFluidTank
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 

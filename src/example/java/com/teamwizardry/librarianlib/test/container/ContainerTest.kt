@@ -5,9 +5,9 @@ import com.teamwizardry.librarianlib.features.container.GuiHandler
 import com.teamwizardry.librarianlib.features.container.InventoryWrapper
 import com.teamwizardry.librarianlib.features.container.builtin.BaseWrappers
 import com.teamwizardry.librarianlib.features.container.builtin.SlotTypeGhost
-import com.teamwizardry.librarianlib.features.neogui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.neogui.components.ComponentRect
-import com.teamwizardry.librarianlib.features.neogui.components.ComponentSprite
+import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.facade.components.ComponentRect
+import com.teamwizardry.librarianlib.features.facade.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.neoguicontainer.GuiContainerBase
 import com.teamwizardry.librarianlib.features.neoguicontainer.builtin.BaseLayouts
 import com.teamwizardry.librarianlib.features.helpers.vec

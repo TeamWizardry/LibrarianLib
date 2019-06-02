@@ -2,9 +2,9 @@ package com.teamwizardry.librarianlib.test.animator.tests;
 
 import com.teamwizardry.librarianlib.features.animator.Animator;
 import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation;
-import com.teamwizardry.librarianlib.features.neogui.GuiBase;
-import com.teamwizardry.librarianlib.features.neogui.components.ComponentRect;
-import com.teamwizardry.librarianlib.features.neogui.components.ComponentText;
+import com.teamwizardry.librarianlib.features.facade.GuiBase;
+import com.teamwizardry.librarianlib.features.facade.components.ComponentRect;
+import com.teamwizardry.librarianlib.features.facade.components.ComponentText;
 import com.teamwizardry.librarianlib.features.math.Vec2d;
 
 import java.awt.*;

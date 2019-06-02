@@ -2,8 +2,8 @@ package com.teamwizardry.librarianlib.core.client.commands
 
 import com.teamwizardry.librarianlib.features.base.SimpleCommand
 import com.teamwizardry.librarianlib.features.base.SimpleCommandTree
-import com.teamwizardry.librarianlib.features.neogui.component.GuiLayer
-import com.teamwizardry.librarianlib.features.neogui.hud.GuiHud
+import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
+import com.teamwizardry.librarianlib.features.facade.hud.GuiHud
 
 object GuiCommands {
     val root = SimpleCommandTree("gui", "librarianlib.command.liblib.gui.usage")
