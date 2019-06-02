@@ -22,28 +22,29 @@ class Rect2d(val x: Double, val y: Double, val width: Double, val height: Double
     val max: Vec2d
         get() = vec(x+width, y+height)
 
+    val minX: Double
+        get() = x
+    val minY: Double
+        get() = y
+    val maxX: Double
+        get() = x+width
+    val maxY: Double
+        get() = y+height
+
     val pos: Vec2d
         get() = vec(x, y)
     val size: Vec2d
         get() = vec(width, height)
 
-    @Transient
-    val xf: Float = x.toFloat()
-    @Transient
-    val yf: Float = y.toFloat()
-    @Transient
-    val widthf: Float = width.toFloat()
-    @Transient
-    val heightf: Float = height.toFloat()
+    val xf: Float get() = x.toFloat()
+    val yf: Float get() = y.toFloat()
+    val widthf: Float get() = width.toFloat()
+    val heightf: Float get() = height.toFloat()
 
-    @Transient
-    val xi: Int = Math.floor(x).toInt()
-    @Transient
-    val yi: Int = Math.floor(y).toInt()
-    @Transient
-    val widthi: Int = Math.floor(width).toInt()
-    @Transient
-    val heighti: Int = Math.floor(height).toInt()
+    val xi: Int get() = x.toInt()
+    val yi: Int get() = y.toInt()
+    val widthi: Int get() = width.toInt()
+    val heighti: Int get() = height.toInt()
 
     fun setX(value: Double): Rect2d {
         return Rect2d(value, y, width, height)
@@ -72,10 +73,18 @@ class Rect2d(val x: Double, val y: Double, val width: Double, val height: Double
     }
 
     /**
-     * Test if the provided position is inside this rect, using the half-open range [min, max) on each axis
+     * Test if the provided position is inside this rect, using the half-open range `[min, max)` on each axis
      */
     operator fun contains(point: Vec2d): Boolean {
-        return point.x >= x && point.y >= y && point.x < x + width && point.y < y + height
+        return point.x >= minX && point.y >= minY && point.x < maxX && point.y < maxY
+    }
+
+    /**
+     * Test if the provided rect is inside this rect, using the open range `[min, max]` on each axis. Passing this
+     * rect to itself will return `true`
+     */
+    operator fun contains(other: Rect2d): Boolean {
+        return other.minX >= this.minX && other.minY >= this.minY && other.maxX <= this.maxX && other.maxY <= this.maxY
     }
 
     /**
@@ -103,6 +112,13 @@ class Rect2d(val x: Double, val y: Double, val width: Double, val height: Double
 
     fun shrink(offset: Double): Rect2d {
         return Rect2d(this.pos + vec(offset, offset), this.size - vec(offset*2, offset*2))
+    }
+
+    @Suppress("NOTHING_TO_INLINE")
+    inline fun offset(minX: Number, minY: Number, maxX: Number, maxY: Number): Rect2d =
+        offset(minX.toDouble(), minY.toDouble(), maxX.toDouble(), maxY.toDouble())
+    fun offset(minX: Double, minY: Double, maxX: Double, maxY: Double): Rect2d {
+        return Rect2d(this.pos + vec(minX, minY), this.size + vec(maxX - minX, maxY - minY))
     }
 
     fun add(pos: Vec2d, size: Vec2d): Rect2d {
