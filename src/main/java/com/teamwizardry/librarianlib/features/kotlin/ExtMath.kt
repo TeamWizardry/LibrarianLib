@@ -30,3 +30,54 @@ fun floorInt(value: Double): Int = floor(value).toInt()
 
 fun ceilInt(value: Float): Int = ceil(value).toInt()
 fun ceilInt(value: Double): Int = ceil(value).toInt()
+
+// https://gist.github.com/aslakhellesoy/1134482
+// "Note that this code only works if all values are integer/long (using float/double gives wrong results in some cases)."
+
+/** round n down to nearest multiple of m */
+fun Int.roundDownBy(m: Int): Int {
+    if(this >= 0)
+        return (this / m) * m
+    else
+        return ((this - m + 1) / m) * m
+}
+
+/** round n up to nearest multiple of m */
+fun Int.roundUpBy(m: Int): Int {
+    if(this >= 0)
+        return ((this + m - 1) / m) * m
+    else
+        return (this / m) * m
+}
+
+/** round n to nearest multiple of m */
+fun Int.roundBy(m: Int): Int {
+    if((this % m) > m/2)
+        return this + m - this%m
+    else
+        return this - this%m
+}
+
+/** round n down to nearest multiple of m */
+fun Long.roundDownBy(m: Long): Long {
+    if(this >= 0)
+        return (this / m) * m
+    else
+        return ((this - m + 1) / m) * m
+}
+
+/** round n up to nearest multiple of m */
+fun Long.roundUpBy(m: Long): Long {
+    if(this >= 0)
+        return ((this + m - 1) / m) * m
+    else
+        return (this / m) * m
+}
+
+/** round n to nearest multiple of m */
+fun Long.roundBy(m: Long): Long {
+    if((this % m) > m/2)
+        return this + m - this%m
+    else
+        return this - this%m
+}

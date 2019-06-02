@@ -36,6 +36,8 @@ class Vec2d(val x: Double, val y: Double) {
         return Vec2d.getPooled(x, value)
     }
 
+    @JvmSynthetic
+    operator fun plus(other: Vec2d): Vec2d = add(other)
     fun add(other: Vec2d): Vec2d {
         return Vec2d.getPooled(x + other.x, y + other.y)
     }
@@ -44,6 +46,8 @@ class Vec2d(val x: Double, val y: Double) {
         return Vec2d.getPooled(x + otherX, y + otherY)
     }
 
+    @JvmSynthetic
+    operator fun minus(other: Vec2d): Vec2d = sub(other)
     fun sub(other: Vec2d): Vec2d {
         return Vec2d.getPooled(x - other.x, y - other.y)
     }
@@ -52,6 +56,8 @@ class Vec2d(val x: Double, val y: Double) {
         return Vec2d.getPooled(x - otherX, y - otherY)
     }
 
+    @JvmSynthetic
+    operator fun times(other: Vec2d): Vec2d = mul(other)
     fun mul(other: Vec2d): Vec2d {
         return Vec2d.getPooled(x * other.x, y * other.y)
     }
@@ -60,10 +66,14 @@ class Vec2d(val x: Double, val y: Double) {
         return Vec2d.getPooled(x * otherX, y * otherY)
     }
 
+    @Suppress("NOTHING_TO_INLINE")
+    inline operator fun times(amount: Number): Vec2d = mul(amount.toDouble())
     fun mul(amount: Double): Vec2d {
         return Vec2d.getPooled(x * amount, y * amount)
     }
 
+    @JvmSynthetic
+    operator fun div(other: Vec2d): Vec2d = divide(other)
     fun divide(other: Vec2d): Vec2d {
         return Vec2d.getPooled(x / other.x, y / other.y)
     }
@@ -72,6 +82,8 @@ class Vec2d(val x: Double, val y: Double) {
         return Vec2d.getPooled(x / otherX, y / otherY)
     }
 
+    @Suppress("NOTHING_TO_INLINE")
+    inline operator fun div(amount: Number): Vec2d = divide(amount.toDouble())
     fun divide(amount: Double): Vec2d {
         return Vec2d.getPooled(x / amount, y / amount)
     }
