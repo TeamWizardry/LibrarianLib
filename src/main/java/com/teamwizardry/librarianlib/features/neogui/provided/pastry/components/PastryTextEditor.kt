@@ -8,8 +8,6 @@ import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.color
 import com.teamwizardry.librarianlib.features.kotlin.copy
-import com.teamwizardry.librarianlib.features.kotlin.minus
-import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.math.Rect2d
 import com.teamwizardry.librarianlib.features.text.Fonts
 import com.teamwizardry.librarianlib.features.text.MCClipboard
@@ -23,6 +21,8 @@ import games.thecodewarrior.bitfont.editor.Key
 import games.thecodewarrior.bitfont.editor.Modifiers
 import games.thecodewarrior.bitfont.editor.MouseButton
 import games.thecodewarrior.bitfont.editor.mode.DefaultEditorMode
+import games.thecodewarrior.bitfont.editor.mode.CursorPosition
+import games.thecodewarrior.bitfont.editor.mode.CursorRange
 import games.thecodewarrior.bitfont.editor.mode.MacEditorMode
 import games.thecodewarrior.bitfont.typesetting.AttributedString
 import games.thecodewarrior.bitfont.typesetting.TypesetString
@@ -52,9 +52,9 @@ class PastryTextEditor(posX: Int, posY: Int, width: Int, height: Int): GuiCompon
     private var lastParams = emptyList<Any>()
     private var textBounds: Rect2d = Rect2d.ZERO
 
-    private var lastCursor: Int = -1
+    private var lastCursor: CursorPosition = CursorPosition(-1, false)
     private var lastCursorChange: Long = 0L
-    private var selection: IntRange? = null
+    private var selection: CursorRange? = null
 
     override fun draw(partialTicks: Float) {
         updateLayout()
@@ -74,8 +74,8 @@ class PastryTextEditor(posX: Int, posY: Int, width: Int, height: Int): GuiCompon
             val vb = Tessellator.getInstance().buffer
             vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR)
             editor.typesetString.lines.forEach { line ->
-                val start = line.glyphs.firstOrNull { it.characterIndex in selection } ?: return@forEach
-                val end = line.glyphs.lastOrNull { it.characterIndex in selection && it.codepoint !in TypesetString.newlineInts } ?: return@forEach
+                val start = line.glyphs.firstOrNull { it.characterIndex in selection.indexRange } ?: return@forEach
+                val end = line.glyphs.lastOrNull { it.characterIndex in selection.indexRange && it.codepoint !in TypesetString.newlineInts } ?: return@forEach
                 val min = vec(start.pos.x, line.baseline-line.maxAscent)
                 val max = vec(end.posAfter.x, line.baseline+line.maxDescent)
 
@@ -95,7 +95,7 @@ class PastryTextEditor(posX: Int, posY: Int, width: Int, height: Int): GuiCompon
 
         val blinkSpeed = 500
         if(selection == null && (System.currentTimeMillis()-lastCursorChange) % (blinkSpeed*2) < blinkSpeed) {
-            val font = mode.cursorGlyph?.font ?: Fonts.classic
+            val font = editor.typesetString.glyphMap[mode.cursor.index]?.font ?: Fonts.classic
             val min = mode.cursorPos.toLL() - vec(1, font.ascent)
             val max = mode.cursorPos.toLL() + vec(0, font.descent)
 
