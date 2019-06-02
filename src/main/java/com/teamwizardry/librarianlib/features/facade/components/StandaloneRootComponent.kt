@@ -27,7 +27,11 @@ open class StandaloneRootComponent(val closeGui: (Exception) -> Unit): RootCompo
      *
      * On by default in development environments, disabled by default elsewhere.
      */
-    var safetyNet: Boolean = LibrarianLib.DEV_ENVIRONMENT
+    var safetyNet: Boolean = true
+    /**
+     * Set to true to change the native cursor based on the top mouse hit
+     */
+    var enableNativeCursor: Boolean = true
 
     override var size: Vec2d
         get() = super.size
@@ -97,7 +101,9 @@ open class StandaloneRootComponent(val closeGui: (Exception) -> Unit): RootCompo
             updateHits(this, 0.0)
             propagateHits()
 
-            Mouse.setNativeCursor(topMouseHit?.cursor?.lwjglCursor)
+            if(enableNativeCursor) {
+                Mouse.setNativeCursor(topMouseHit?.cursor?.lwjglCursor)
+            }
             renderLayer(partialTicks)
         } catch(e: Exception) {
             if(!safetyNet) throw e

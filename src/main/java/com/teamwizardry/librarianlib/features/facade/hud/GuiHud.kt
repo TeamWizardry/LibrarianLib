@@ -23,9 +23,7 @@ import java.util.UUID
  */
 object GuiHud {
 
-    var root = StandaloneRootComponent {
-        throw it
-    }
+    var root = createRoot()
 
     lateinit var all: AllHudElement private set
     lateinit var helmet: FullscreenHudElement private set
@@ -63,10 +61,16 @@ object GuiHud {
         }
     }
 
-    fun reload() {
-        this.root = StandaloneRootComponent {
+    private fun createRoot(): StandaloneRootComponent {
+        val root = StandaloneRootComponent {
             throw it
         }
+        root.enableNativeCursor = false
+        return root
+    }
+
+    fun reload() {
+        this.root = createRoot()
 
         this.all = AllHudElement()
         this.helmet = FullscreenHudElement(ElementType.HELMET)
