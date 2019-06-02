@@ -12,6 +12,7 @@ import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.
 import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.ScreenSpace
+import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 
 class PastryDropdown<T> constructor(
     posX: Int, posY: Int,
@@ -32,6 +33,7 @@ class PastryDropdown<T> constructor(
             this.BUS.hook<SelectEvent<T>> {
                 callback(it.value)
             }
+        this.cursor = LibCursor.POINT
         this.add(sprite)
     }
 

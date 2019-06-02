@@ -15,6 +15,7 @@ import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.identityMapOf
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.ScreenSpace
+import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import java.awt.Color
 import kotlin.math.max
 
@@ -164,6 +165,7 @@ class DropdownStackItem(val item: PastryDropdownItem<*>): GuiComponent(0, 0) {
 
     init {
         if(!item.decoration) {
+            cursor = LibCursor.POINT
             highlight.isVisible_im { mouseOver }
             add(highlight)
         }
