@@ -96,11 +96,12 @@ class TextLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, p
         fullTextBounds = measureTextBounds()
         textBounds = fullTextBounds
 
-        getTruncatedLength()?.also { truncatedLength ->
-            val attributedString = AttributedString.fromMC(newString.substring(0, truncatedLength) + "§r…")
-            typesetString = TypesetString(font, attributedString, if(wrap) size.xi else -1, lineSpacing + 1)
-            textBounds = measureTextBounds()
-        }
+        if(textBounds !in this.bounds)
+            getTruncatedLength()?.also { truncatedLength ->
+                val truncatedString = AttributedString.fromMC(newString.substring(0, truncatedLength) + "§r…")
+                typesetString = TypesetString(font, truncatedString, if(wrap) size.xi else -1, lineSpacing + 1)
+                textBounds = measureTextBounds()
+            }
 
         renderer.typesetString = typesetString
     }
@@ -132,7 +133,7 @@ class TextLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, p
         if(wrap) {
             this.size = vec(size.x, fullTextBounds.height)
         } else {
-            this.size = fullTextBounds.size
+            this.size = vec(fullTextBounds.maxX, fullTextBounds.maxY)
         }
     }
 
