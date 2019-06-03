@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.facade.component.supporting
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
 import com.teamwizardry.librarianlib.features.facade.value.RMValue
 import com.teamwizardry.librarianlib.features.facade.value.RMValueDouble
+import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.unaryMinus
 import com.teamwizardry.librarianlib.features.math.Matrix3
@@ -388,7 +389,7 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
             }
         }
     override val bounds: Rect2d
-        get() = Rect2d(-layer.contentsOffset, layer.size)
+        get() = rect(-layer.contentsOffset, layer.size)
 
     override val size_rm: RMValue<Vec2d> = RMValue(initialFrame.size) { old, new ->
         if(old != new) {

@@ -7,7 +7,6 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.util.math.Vec3d
 
-
 private val poolBits = 5
 private val poolMask = (1 shl poolBits)-1
 private val poolMax = (1 shl poolBits-1)-1
@@ -44,3 +43,13 @@ inline fun vec(x: Number, y: Number, z: Number) = getPooledVec3d(x.toDouble(), y
 
 inline fun BufferBuilder.pos(x: Number, y: Number, z: Number): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), z.toDouble())
 inline fun BufferBuilder.pos(x: Number, y: Number): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), 0.0)
+
+/**
+ * Get `Vec3d` instances, selecting from a pool of small integer instances
+ */
+object Vec3dPool {
+    @JvmStatic
+    fun create(x: Double, y: Double, z: Double) {
+        return vec(x, y, z)
+    }
+}

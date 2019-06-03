@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.gui.provided.book.structure
 
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.createCacheArrayAndReset
 import com.teamwizardry.librarianlib.features.structure.Structure
 import net.minecraft.block.material.Material
@@ -51,7 +52,7 @@ class RenderableStructure(val name: ResourceLocation, private val access: IBlock
 
         val size = max.subtract(min)
 
-        perfectCenter = Vec3d(
+        perfectCenter = vec(
                 size.x / 2.0,
                 size.y / 2.0,
                 size.z / 2.0)

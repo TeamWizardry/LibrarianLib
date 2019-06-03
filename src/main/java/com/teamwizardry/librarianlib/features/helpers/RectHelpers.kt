@@ -6,6 +6,6 @@ import com.teamwizardry.librarianlib.features.math.Rect2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
 inline fun rect(x: Number, y: Number, width: Number, height: Number) = Rect2d(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
-inline fun rect(pos: Vec2d, width: Number, height: Number) = Rect2d(pos.x, pos.y, width.toDouble(), height.toDouble())
-inline fun rect(x: Number, y: Number, size: Vec2d) = Rect2d(x.toDouble(), y.toDouble(), size.x, size.y)
-inline fun rect(pos: Vec2d, size: Vec2d) = Rect2d(pos.x, pos.y, size.x, size.y)
+inline fun rect(pos: Vec2d, width: Number, height: Number) = rect(pos.x, pos.y, width.toDouble(), height.toDouble())
+inline fun rect(x: Number, y: Number, size: Vec2d) = rect(x.toDouble(), y.toDouble(), size.x, size.y)
+inline fun rect(pos: Vec2d, size: Vec2d) = rect(pos.x, pos.y, size.x, size.y)
