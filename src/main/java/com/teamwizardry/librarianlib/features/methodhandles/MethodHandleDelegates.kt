@@ -15,22 +15,16 @@ data class ImmutableFieldDelegate<in T, out V> @JvmOverloads constructor(val get
 
     @JvmOverloads constructor(inst: T, getter: (T) -> Any?, cache: Boolean = false) : this(getter, cache) {
         this.inst = inst
-        instInitialized = true
     }
 
     private var inst: T? = null
-    private var instInitialized = false
 
     @Suppress("UNCHECKED_CAST")
     override operator fun getValue(thisRef: T, property: KProperty<*>): V {
         if (initialized) return cachedValue!!
 
-        if (!instInitialized) {
-            inst = thisRef
-            instInitialized = true
-        }
+        val gotten = getter(inst ?: thisRef) as V
 
-        val gotten = getter(inst!!) as V
         if (!initialized && cache) {
             cachedValue = gotten
             initialized = false
@@ -43,29 +37,17 @@ data class MutableFieldDelegate<in T, V>(val getter: (T) -> Any?, val setter: (T
 
     constructor(inst: T, getter: (T) -> Any?, setter: (T, Any?) -> Unit) : this(getter, setter) {
         this.inst = inst
-        instInitialized = true
     }
 
     private var inst: T? = null
-    private var instInitialized = false
 
     @Suppress("UNCHECKED_CAST")
     override operator fun getValue(thisRef: T, property: KProperty<*>): V {
-        if (!instInitialized) {
-            inst = thisRef
-            instInitialized = true
-        }
-
-        return getter(inst!!) as V
+        return getter(inst ?: thisRef) as V
     }
 
     override operator fun setValue(thisRef: T, property: KProperty<*>, value: V) {
-        if (!instInitialized) {
-            inst = thisRef
-            instInitialized = true
-        }
-
-        setter(inst!!, value)
+        setter(inst ?: thisRef, value)
     }
 }
 
