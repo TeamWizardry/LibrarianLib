@@ -35,8 +35,8 @@
             "tabs.body": { "pos": [80,88,8,8], "caps": [2,2,2,2] },
             "tabs.button.pressed": { "pos": [88,80,8,8], "caps": [2,2,2,2] },
             "splitpane.region": { "pos": [104,80,8,8], "caps": [2,2,2,2] },
-            "splitpane.hsplit": { "pos": [112,85,8,3], "caps": [2,0,2,0], "capstretch": true },
-            "splitpane.vsplit": { "pos": [109,88,3,8], "caps": [0,2,0,2], "capstretch": true },
+            "splitpane.hsplit": { "pos": [112,85,8,3], "caps": [2,0,2,0] },
+            "splitpane.vsplit": { "pos": [109,88,3,8], "caps": [0,2,0,2] },
 
             "textfield": { "pos": [0,24,8,12], "caps": [2,0,2,0] },
             "dropdown": { "pos": [16,24,16,12], "caps": [2,2,8,2] },
