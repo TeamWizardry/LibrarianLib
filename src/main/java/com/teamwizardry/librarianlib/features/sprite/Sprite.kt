@@ -26,11 +26,14 @@ open class Sprite : ISprite {
     val name: String
         get() = def.name
 
-    override val hardScaleU: Boolean
-        get() = def.hardScaleU
-
-    override val hardScaleV: Boolean
-        get() = def.hardScaleV
+    override val pinTop: Boolean
+        get() = def.pinTop
+    override val pinBottom: Boolean
+        get() = def.pinBottom
+    override val pinLeft: Boolean
+        get() = def.pinLeft
+    override val pinRight: Boolean
+        get() = def.pinRight
 
     override val frameCount: Int
         get() = max(1, def.frames.size)

@@ -20,11 +20,11 @@ open class ComponentSpriteTiled @JvmOverloads constructor(protected var main: Sp
     protected var borderSize = 3
 
     private val capped: ISprite = object: ISprite by main {
-        override val hardScaleU: Boolean = true
-        override val hardScaleV: Boolean = true
         override val minUCap: Float = borderSize / main.width.toFloat()
         override val minVCap: Float = borderSize / main.height.toFloat()
         override val maxUCap: Float = borderSize / main.width.toFloat()
+        override val pinBottom: Boolean = false
+        override val pinRight: Boolean = false
         override val maxVCap: Float = borderSize / main.height.toFloat()
     }
 

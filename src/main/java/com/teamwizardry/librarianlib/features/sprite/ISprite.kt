@@ -103,30 +103,60 @@ interface ISprite {
     /**
      * The fraction of the sprite along the minimum U edge that should not be distorted when stretching the sprite.
      */
-    val minUCap: Float
+    @JvmDefault
+    val minUCap: Float get() = 0f
 
     /**
      * The fraction of the sprite along the minimum V edge that should not be distorted when stretching the sprite.
      */
-    val minVCap: Float
+    @JvmDefault
+    val minVCap: Float get() = 0f
 
     /**
      * The fraction of the sprite along the maximum U edge that should not be distorted when stretching the sprite.
      */
-    val maxUCap: Float
+    @JvmDefault
+    val maxUCap: Float get() = 0f
 
     /**
      * The fraction of the sprite along the maximum V edge that should not be distorted when stretching the sprite.
      */
-    val maxVCap: Float
+    @JvmDefault
+    val maxVCap: Float get() = 0f
 
     /**
-     * Whether the sprite should be repeated/truncated rather than stretched/squished along the U axis
+     * Whether the top of this sprite should be pinned. If this is false the top of the texture will truncate or
+     * repeat if the sprite is drawn shorter or taller than normal.
+     *
+     * If both this and [pinBottom] are false, this sprite will render as if both were true
      */
-    val hardScaleU: Boolean
+    @JvmDefault
+    val pinTop: Boolean get() = true
 
     /**
-     * Whether the sprite should be repeated/truncated rather than stretched/squished along the V axis
+     * Whether the bottom of this sprite should be pinned. If this is false the bottom of the texture will truncate or
+     * repeat if the sprite is drawn shorter or taller than normal.
+     *
+     * If both this and [pinTop] are false, this sprite will render as if both were true
      */
-    val hardScaleV: Boolean
+    @JvmDefault
+    val pinBottom: Boolean get() = true
+
+    /**
+     * Whether the left side of this sprite should be pinned. If this is false the left side of the texture will
+     * truncate or repeat if the sprite is drawn narrower or wider than normal.
+     *
+     * If both this and [pinRight] are false, this sprite will render as if both were true
+     */
+    @JvmDefault
+    val pinLeft: Boolean get() = true
+
+    /**
+     * Whether the right side of this sprite should be pinned. If this is false the right side of the texture will
+     * truncate or repeat if the sprite is drawn narrower or wider than normal.
+     *
+     * If both this and [pinLeft] are false, this sprite will render as if both were true
+     */
+    @JvmDefault
+    val pinRight: Boolean get() = true
 }

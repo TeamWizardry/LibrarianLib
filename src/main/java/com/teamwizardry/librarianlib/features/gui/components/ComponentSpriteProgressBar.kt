@@ -99,8 +99,10 @@ class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: ISprite?,
         override val minVCap: Float get() = sprite!!.minVCap
         override val maxUCap: Float get() = sprite!!.maxUCap
         override val maxVCap: Float get() = sprite!!.maxVCap
-        override val hardScaleU: Boolean get() = sprite!!.hardScaleU
-        override val hardScaleV: Boolean get() = sprite!!.hardScaleV
+        override val pinTop: Boolean get() = dir != ProgressDirection.Y_NEG
+        override val pinBottom: Boolean get() = dir != ProgressDirection.Y_POS
+        override val pinLeft: Boolean get() = dir != ProgressDirection.X_NEG
+        override val pinRight: Boolean get() = dir != ProgressDirection.X_POS
     }
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {
@@ -130,7 +132,7 @@ class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: ISprite?,
         if (dir == ProgressDirection.X_POS || dir == ProgressDirection.X_NEG)
             w = (w * progressCache).toInt()
 
-        sp.draw(animationTicks, 0f, 0f, w.toFloat(), h.toFloat())
+        sp.draw(animationTicks, size.xf-w, size.yf-h, w.toFloat(), h.toFloat())
         
         if (alwaysTop)
             GlStateManager.depthFunc(GL11.GL_LESS)

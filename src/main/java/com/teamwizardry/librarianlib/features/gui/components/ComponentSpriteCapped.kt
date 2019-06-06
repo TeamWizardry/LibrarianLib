@@ -7,13 +7,11 @@ import com.teamwizardry.librarianlib.features.sprite.ISprite
 import com.teamwizardry.librarianlib.features.sprite.Sprite
 
 @Deprecated("Use a ComponentSprite and specify caps in the mcmeta file")
-class ComponentSpriteCapped(internal var topLeft:
-
-                            Sprite, internal var middle: Sprite, internal var bottomRight: Sprite, internal var horizontal: Boolean, posX: Int, posY: Int, width: Int, height: Int) : GuiComponent(posX, posY, width, height) {
+class ComponentSpriteCapped(internal var topLeft: Sprite, internal val middle: Sprite, internal val bottomRight: Sprite, internal val horizontal: Boolean, posX: Int, posY: Int, width: Int, height: Int) : GuiComponent(posX, posY, width, height) {
 
     private val middleClipped: ISprite = object: ISprite by middle {
-        override val hardScaleU: Boolean = true
-        override val hardScaleV: Boolean = true
+        override val pinBottom: Boolean = true
+        override val pinRight: Boolean = true
     }
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {

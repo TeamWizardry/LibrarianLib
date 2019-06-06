@@ -44,16 +44,4 @@ class LTextureAtlasSprite(private val tas: TextureAtlasSprite, inWidth: Int, inH
         get() = tas.maxU - tas.minU
     override val vSize: Float
         get() = tas.maxV - tas.minV
-    override val minUCap: Float
-        get() = 0f
-    override val minVCap: Float
-        get() = 0f
-    override val maxUCap: Float
-        get() = 0f
-    override val maxVCap: Float
-        get() = 0f
-    override val hardScaleU: Boolean
-        get() = false
-    override val hardScaleV: Boolean
-        get() = false
 }

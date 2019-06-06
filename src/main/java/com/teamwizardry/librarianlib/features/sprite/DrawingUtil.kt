@@ -49,7 +49,7 @@ object DrawingUtil {
         if (!isDrawing)
             vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
 
-        if(!sprite.hardScaleU && !sprite.hardScaleV &&
+        if(sprite.pinTop && sprite.pinBottom && sprite.pinLeft && sprite.pinRight &&
             sprite.minUCap == 0f && sprite.minVCap == 0f && sprite.maxUCap == 0f && sprite.maxVCap == 0f) {
             drawSimple(sprite, animFrames, x, y, width, height)
         } else {
@@ -77,18 +77,20 @@ object DrawingUtil {
     private fun drawComplex(sprite: ISprite, animFrames: Int, x: Float, y: Float, width: Float, height: Float) {
 
         val xSections = getSections(
-            size = sprite.width.toFloat(),
-            minCap = sprite.minUCap,
-            maxCap = sprite.maxUCap,
-            hard = sprite.hardScaleU,
+            logicalSize = sprite.width.toFloat(),
+            startCap = sprite.minUCap,
+            endCap = sprite.maxUCap,
+            pinStart = sprite.pinLeft,
+            pinEnd = sprite.pinRight,
             targetSize = width
         )
 
         val ySections = getSections(
-            size = sprite.height.toFloat(),
-            minCap = sprite.minVCap,
-            maxCap = sprite.maxVCap,
-            hard = sprite.hardScaleV,
+            logicalSize = sprite.height.toFloat(),
+            startCap = sprite.minVCap,
+            endCap = sprite.maxVCap,
+            pinStart = sprite.pinTop,
+            pinEnd = sprite.pinBottom,
             targetSize = height
         )
 
@@ -117,56 +119,76 @@ object DrawingUtil {
         }
     }
 
-    private fun getSections(size: Float, minCap: Float, maxCap: Float, hard: Boolean, targetSize: Float): List<Section> {
+    private fun getSections(logicalSize: Float, startCap: Float, endCap: Float, pinStart: Boolean, pinEnd: Boolean, targetSize: Float): List<Section> {
         if(targetSize == 0f) {
             return emptyList()
         }
         val sections = mutableListOf<Section>()
 
-        var logicalMinCap = size * minCap
-        var logicalMaxCap = size * maxCap
-        if(logicalMinCap + logicalMaxCap != 0f && logicalMinCap + logicalMaxCap > targetSize) {
-            val factor = (logicalMinCap + logicalMaxCap)/targetSize
-            sections.add(Section(0f, logicalMinCap/factor, 0f, minCap/factor))
-            sections.add(Section(logicalMinCap/factor, logicalMaxCap/factor, 1-maxCap/factor, 1f))
+        val logicalStartCap = logicalSize * startCap
+        val logicalEndCap = logicalSize * endCap
+        if(logicalStartCap + logicalEndCap != 0f && logicalStartCap + logicalEndCap > targetSize) {
+            val factor = (logicalStartCap + logicalEndCap)/targetSize
+            sections.add(Section(0f, logicalStartCap/factor, 0f, startCap/factor))
+            sections.add(Section(logicalStartCap/factor, logicalEndCap/factor, 1-endCap/factor, 1f))
             return sections
         }
 
-        if(!hard) {
-            if(logicalMinCap != 0f) {
-                sections.add(Section(0f, logicalMinCap, 0f, minCap))
-            }
-            sections.add(Section(logicalMinCap, targetSize - logicalMaxCap, minCap, 1-maxCap))
-            if(logicalMaxCap != 0f) {
-                sections.add(Section(targetSize - logicalMaxCap, targetSize, 1-maxCap, 1f))
-            }
+        var pos = 0f
+        if(logicalStartCap != 0f) {
+            sections.add(Section(0f, logicalStartCap, 0f, startCap))
+            pos += logicalStartCap
+        }
+
+        if(pinStart == pinEnd) { // both true or both false. Both being false is unclear so it defaults to pinning
+            sections.add(Section(logicalStartCap, targetSize - logicalEndCap, startCap, 1-endCap))
         } else {
-            val midSize = size - logicalMinCap - logicalMaxCap
+            addMiddleSections(sections,
+                1 - startCap - endCap,
+                logicalSize - logicalStartCap - logicalEndCap,
+                targetSize - logicalStartCap - logicalEndCap,
+                pos, startCap, pinStart
+            )
+        }
 
-            var pos = 0f
-            if(logicalMinCap != 0f) {
-                sections.add(Section(pos, logicalMinCap, 0f, minCap))
-                pos += logicalMinCap
-            }
-
-            // generate a bunch of middle sections
-            val endCapStart = targetSize - logicalMaxCap
-            while (pos < endCapStart) {
-                sections.add(Section(pos, pos + midSize, minCap, 1-maxCap))
-                pos += midSize
-            }
-
-            // trim last section to required size
-            val cut = pos - endCapStart
-            sections.last().maxPos = cut
-            sections.last().maxTex = minCap + cut / size
-            pos = endCapStart
-
-            if(logicalMaxCap != 0f) {
-                sections.add(Section(pos, targetSize, 1-maxCap, 1f))
-            }
+        if(logicalEndCap != 0f) {
+            sections.add(Section(targetSize - logicalEndCap, targetSize, 1-endCap, 1f))
         }
         return sections
+    }
+
+    /**
+     * If [pinStart] is false, `pinEnd` is implied
+     */
+    private fun addMiddleSections(sections: MutableList<Section>,
+        texSize: Float, logicalSize: Float, targetSize: Float,
+        minPos: Float, minTex: Float, pinStart: Boolean
+    ) {
+
+        val fractionSize = targetSize % logicalSize
+        val fractionTexSize = fractionSize * texSize / logicalSize
+        val wholeCount = (targetSize % logicalSize).toInt()
+
+        var pos = minPos
+        var tex = minTex
+
+        if(!pinStart) {
+            sections.add(Section(pos, pos + fractionSize, tex + texSize - fractionTexSize, tex + texSize))
+            pos += fractionSize
+            tex += fractionTexSize
+        }
+
+        for(i in 0 until wholeCount) {
+            sections.add(Section(pos, pos + logicalSize, tex, tex + texSize))
+            pos += logicalSize
+            tex += texSize
+        }
+
+        if(pinStart) {
+            sections.add(Section(pos, pos + fractionSize, tex, tex + fractionTexSize))
+            pos += fractionSize
+            tex += fractionTexSize
+        }
     }
 
     private class Section(var minPos: Float, var maxPos: Float, var minTex: Float, var maxTex: Float)

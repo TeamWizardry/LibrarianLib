@@ -20,46 +20,40 @@ class SpritesMetadataSectionSerializer : BaseMetadataSectionSerializer<SpritesMe
     }
 
     private fun parseSprite(name: String, element: JsonElement): SpriteDefinition? {
+        val def = SpriteDefinition(name)
         if (element.isJsonArray) {
             // uv/wh
             val arr = JsonUtils.getJsonArray(element, "spritesheet.sprites.$name")
             if (arr.size() != 4)
-                throw JsonSyntaxException("expected spritesheet.sprites." + name + " to have a length of 4, was " + arr.toString())
-            val u = JsonUtils.getInt(arr.get(0), "spritesheet.sprites.$name[0]")
-            val v = JsonUtils.getInt(arr.get(1), "spritesheet.sprites.$name[1]")
-            val w = JsonUtils.getInt(arr.get(2), "spritesheet.sprites.$name[2]")
-            val h = JsonUtils.getInt(arr.get(3), "spritesheet.sprites.$name[3]")
-
-            // create def
-            return SpriteDefinition(
-                name = name,
-                u = u, v = v, w = w, h = h,
-                frames = IntArray(0), offsetU = 0, offsetV = 0,
-                minUCap = 0, minVCap = 0, maxUCap = 0, maxVCap = 0,
-                hardScaleU = false, hardScaleV = false)
-
-        } else if (element.isJsonObject) {
-            val def = SpriteDefinition(name)
-            val obj = JsonUtils.getJsonObject(element, "spritesheet.sprites.$name")
-
-            // uv/wh
-            var arr = JsonUtils.getJsonArray(obj.get("pos"), "spritesheet.sprites.$name.pos")
-            if (arr.size() != 4)
-                throw JsonSyntaxException("expected spritesheet.sprites." + name + " to have a length of 4, was " + arr.toString())
+                throw JsonSyntaxException("expected spritesheet.sprites.$name to have a length of 4, was $arr")
             def.u = JsonUtils.getInt(arr.get(0), "spritesheet.sprites.$name[0]")
             def.v = JsonUtils.getInt(arr.get(1), "spritesheet.sprites.$name[1]")
             def.w = JsonUtils.getInt(arr.get(2), "spritesheet.sprites.$name[2]")
             def.h = JsonUtils.getInt(arr.get(3), "spritesheet.sprites.$name[3]")
 
+        } else if (element.isJsonObject) {
+            val obj = JsonUtils.getJsonObject(element, "spritesheet.sprites.$name")
+
+            // uv/wh
+            var arr = JsonUtils.getJsonArray(obj.get("pos"), "spritesheet.sprites.$name.pos")
+            if (arr.size() != 4)
+                throw JsonSyntaxException("expected spritesheet.sprites.$name to have a length of 4, was $arr")
+            def.u = JsonUtils.getInt(arr.get(0), "spritesheet.sprites.$name.pos[0]")
+            def.v = JsonUtils.getInt(arr.get(1), "spritesheet.sprites.$name.pos[1]")
+            def.w = JsonUtils.getInt(arr.get(2), "spritesheet.sprites.$name.pos[2]")
+            def.h = JsonUtils.getInt(arr.get(3), "spritesheet.sprites.$name.pos[3]")
+
             // frames
-            if (obj.get("frames") != null) {
-                if (obj.get("frames").isJsonArray) {
-                    arr = JsonUtils.getJsonArray(obj.get("frames"), "spritesheet.sprites.$name.frames")
+            val framesElement = obj.get("frames")
+            if (framesElement != null) {
+                if (framesElement.isJsonArray) {
+                    arr = JsonUtils.getJsonArray(framesElement, "spritesheet.sprites.$name.frames")
                     def.frames = IntArray(arr.size()) {
                         JsonUtils.getInt(arr.get(it), "spritesheet.sprites.$name.frames[$it]")
                     }
                 } else {
-                    def.frames = IntArray(JsonUtils.getInt(obj.get("frames"), "spritesheet.sprites.$name.frames")) { it }
+                    val count = JsonUtils.getInt(framesElement, "spritesheet.sprites.$name.frames")
+                    def.frames = IntArray(count) { it }
                 }
 
                 val frameTime = JsonUtils.getInt(obj, "frameTime", 1)
@@ -72,42 +66,56 @@ class SpritesMetadataSectionSerializer : BaseMetadataSectionSerializer<SpritesMe
             // animation offset
             def.offsetU = 0
             def.offsetV = def.h // default animates downward
-            if (obj.get("offset") != null) {
-                arr = JsonUtils.getJsonArray(obj.get("offset"), "spritesheet.sprites.$name.offset")
+            val offsetElement = obj.get("offset")
+            if (offsetElement != null) {
+                arr = JsonUtils.getJsonArray(offsetElement, "spritesheet.sprites.$name.offset")
                 if (arr.size() != 2)
-                    throw JsonSyntaxException("expected spritesheet.sprites." + name + ".offset to have a length of 2, was " + arr.toString())
+                    throw JsonSyntaxException("expected spritesheet.sprites.$name.offset to have a length of 2, was $arr")
                 def.offsetU = JsonUtils.getInt(arr.get(0), "spritesheet.sprites.$name.offset[0]")
                 def.offsetV = JsonUtils.getInt(arr.get(1), "spritesheet.sprites.$name.offset[1]")
             }
 
-            if(obj.get("caps") != null) {
-                arr = JsonUtils.getJsonArray(obj.get("caps"), "spritesheet.sprites.$name.caps")
+            val capsElement = obj.get("caps")
+            if(capsElement != null) {
+                arr = JsonUtils.getJsonArray(capsElement, "spritesheet.sprites.$name.caps")
                 if (arr.size() != 4)
-                    throw JsonSyntaxException("expected spritesheet.sprites." + name + ".caps to have a length of 4, was " + arr.toString())
+                    throw JsonSyntaxException("expected spritesheet.sprites.$name.caps to have a length of 4, was $arr")
                 def.minUCap = JsonUtils.getInt(arr.get(0), "spritesheet.sprites.$name.caps[0]")
                 def.minVCap = JsonUtils.getInt(arr.get(1), "spritesheet.sprites.$name.caps[1]")
                 def.maxUCap = JsonUtils.getInt(arr.get(2), "spritesheet.sprites.$name.caps[2]")
                 def.maxVCap = JsonUtils.getInt(arr.get(3), "spritesheet.sprites.$name.caps[3]")
             }
 
-            if(obj.get("hardScale") != null) {
-                arr = JsonUtils.getJsonArray(obj.get("hardScale"), "spritesheet.sprites.$name.hardScale")
-                if (arr.size() != 2)
-                    throw JsonSyntaxException("expected spritesheet.sprites." + name + ".hardScale to have a length of 2, was " + arr.toString())
-                def.hardScaleU = JsonUtils.getBoolean(arr.get(0), "spritesheet.sprites.$name.hardScale[0]")
-                def.hardScaleV = JsonUtils.getBoolean(arr.get(1), "spritesheet.sprites.$name.hardScale[1]")
+            val pinElement = obj.get("pinEdges")
+            if(pinElement != null) {
+                arr = JsonUtils.getJsonArray(pinElement, "spritesheet.sprites.$name.pinEdges")
+                when(arr.size()) {
+                    2 -> {
+                        def.pinLeft = JsonUtils.getBoolean(arr.get(0), "spritesheet.sprites.$name.pinEdges[0]")
+                        def.pinRight = def.pinLeft
+                        def.pinTop = JsonUtils.getBoolean(arr.get(1), "spritesheet.sprites.$name.pinEdges[1]")
+                        def.pinBottom = def.pinTop
+                    }
+                    4 -> {
+                        def.pinLeft = JsonUtils.getBoolean(arr.get(0), "spritesheet.sprites.$name.pinEdges[0]")
+                        def.pinTop = JsonUtils.getBoolean(arr.get(1), "spritesheet.sprites.$name.pinEdges[1]")
+                        def.pinRight = JsonUtils.getBoolean(arr.get(2), "spritesheet.sprites.$name.pinEdges[2]")
+                        def.pinBottom = JsonUtils.getBoolean(arr.get(3), "spritesheet.sprites.$name.pinEdges[3]")
+                    }
+                    else -> throw JsonSyntaxException("expected spritesheet.sprites.$name.pinEdges to have a length of 2 or 4, was $arr")
+                }
             }
-
-            return def
         } else {
             throw JsonSyntaxException("expected spritesheet.sprites.$name to be either an object or array")
         }
+
+        return def
     }
 
     private fun parseColor(name: String, element: JsonElement): ColorDefinition? {
         val arr = JsonUtils.getJsonArray(element, "spritesheet.colors.$name")
         if (arr.size() != 2)
-            throw JsonSyntaxException("expected spritesheet.colors." + name + " to have a length of 2, was " + arr.toString())
+            throw JsonSyntaxException("expected spritesheet.colors.$name to have a length of 2, was $arr")
         val u = JsonUtils.getInt(arr.get(0), "spritesheet.colors.$name[0]")
         val v = JsonUtils.getInt(arr.get(1), "spritesheet.colors.$name[1]")
 

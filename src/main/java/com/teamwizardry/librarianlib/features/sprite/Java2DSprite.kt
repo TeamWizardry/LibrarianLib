@@ -65,13 +65,6 @@ class Java2DSprite(width: Int, height: Int) : ISprite {
     override fun maxV(animFrames: Int) = 1f
     override val uSize: Float = 1f
     override val vSize: Float = 1f
-    override var minUCap: Float = 0f
-    override var minVCap: Float = 0f
-    override var maxUCap: Float = 0f
-    override var maxVCap: Float = 0f
-    override var hardScaleU: Boolean = false
-    override var hardScaleV: Boolean = false
-
     override val frameCount = 0
 
     fun finalize() {
