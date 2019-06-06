@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.test.facade.pastry.tests
 
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.layers.TextLayer
-import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryButton
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.ExperimentalPastryAPI
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryCheckbox
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryRadioButtonSet
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastrySwitch
@@ -10,7 +10,7 @@ import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.test.facade.pastry.PastryTestBase
 import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 
-@UseExperimental(ExperimentalBitfont::class)
+@UseExperimental(ExperimentalBitfont::class, ExperimentalPastryAPI::class)
 class PastryTestSwitches: PastryTestBase() {
     init {
         this.size = vec(40, 40)

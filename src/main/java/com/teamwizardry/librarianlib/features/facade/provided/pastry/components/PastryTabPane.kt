@@ -4,10 +4,12 @@ import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.BackgroundTexture
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.ExperimentalPastryAPI
 import com.teamwizardry.librarianlib.features.helpers.vec
 import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 
 @ExperimentalBitfont
+@ExperimentalPastryAPI
 class PastryTabPane(type: BackgroundTexture, posX: Int, posY: Int, width: Int, height: Int) : GuiComponent(posX, posY, width, height) {
 
     constructor(posX: Int, posY: Int, width: Int, height: Int) : this(BackgroundTexture.DEFAULT, posX, posY, width, height)

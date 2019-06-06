@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.facade.provided.pastry.components
 import com.teamwizardry.librarianlib.features.eventbus.Hook
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.ExperimentalPastryAPI
 import com.teamwizardry.librarianlib.features.helpers.pos
 import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
@@ -36,6 +37,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 @ExperimentalBitfont
+@ExperimentalPastryAPI
 class PastryTextEditor(posX: Int, posY: Int, width: Int, height: Int): GuiComponent(posX, posY, width, height) {
     val editor = Editor(Fonts.classic, size.xi)
     val mode = editor.mode as DefaultEditorMode

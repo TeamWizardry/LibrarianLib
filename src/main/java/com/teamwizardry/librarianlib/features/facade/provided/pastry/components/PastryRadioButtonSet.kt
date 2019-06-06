@@ -2,7 +2,9 @@ package com.teamwizardry.librarianlib.features.facade.provided.pastry.components
 
 import com.teamwizardry.librarianlib.features.eventbus.EventBus
 import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.ExperimentalPastryAPI
 
+@ExperimentalPastryAPI
 class PastryRadioButtonSet<T> {
     @JvmField val BUS = EventBus()
 

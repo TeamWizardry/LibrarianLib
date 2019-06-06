@@ -8,6 +8,7 @@ import com.teamwizardry.librarianlib.features.facade.layers.ColorLayer
 import com.teamwizardry.librarianlib.features.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.features.facade.mixin.DragMixin
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.PastryTexture
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.ExperimentalPastryAPI
 import com.teamwizardry.librarianlib.features.facade.value.RMValueDouble
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.clamp
@@ -18,6 +19,7 @@ import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import kotlin.math.PI
 import kotlin.math.max
 
+@ExperimentalPastryAPI
 class PastrySlider(posX: Int, posY: Int, length: Int, var pointed: Boolean, facing: Cardinal2d) : FixedSizeComponent(
     posX, posY,
     if(facing.axis == Axis2d.Y) length else 7,
