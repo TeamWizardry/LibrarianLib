@@ -45,11 +45,13 @@ inline fun BufferBuilder.pos(x: Number, y: Number, z: Number): BufferBuilder = t
 inline fun BufferBuilder.pos(x: Number, y: Number): BufferBuilder = this.pos(x.toDouble(), y.toDouble(), 0.0)
 
 /**
- * Get `Vec3d` instances, selecting from a pool of small integer instances
+ * Get `Vec3d` instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
+ * number of Vec3d allocations when they are used as intermediates, e.g. when adding one Vec3d to another to offset it,
+ * this allocates no objects: `Vec3dPool.get(1, 0, 0)`
  */
 object Vec3dPool {
     @JvmStatic
-    fun create(x: Double, y: Double, z: Double) {
+    fun create(x: Double, y: Double, z: Double): Vec3d {
         return vec(x, y, z)
     }
 }
