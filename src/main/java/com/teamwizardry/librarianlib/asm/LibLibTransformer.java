@@ -324,7 +324,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         boolean didAnything = findMethodAndTransform(node, sig, action);
 
         if (didAnything) {
-            ClassWriter writer = new SafeClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+            ClassWriter writer = new SafeClassWriter(ClassWriter.COMPUTE_FRAMES);
             node.accept(writer);
             return writer.toByteArray();
         }
