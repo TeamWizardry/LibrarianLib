@@ -44,8 +44,7 @@ object SerializeArrayFactory : SerializerFactory("Array") {
             val array = if (reuse) existing as Array<Any?> else ArrayReflect.newInstanceRaw(componentType.clazz, list.tagCount())
 
             list.forEachIndexed<NBTTagCompound> { i, container ->
-                val tag = container.getTag("-")
-                array[i] = serComponent.read(tag, if (reuse) array[i] else null, syncing)
+                array[i] = if (container.hasKey("-")) serComponent.read(container.getTag("-"), if (reuse) array[i] else null, syncing) else null
             }
 
             return array
@@ -58,11 +57,8 @@ object SerializeArrayFactory : SerializerFactory("Array") {
 
             for (i in 0 until len) {
                 val v = ArrayReflect.get(value, i)
-                val container = NBTTagCompound()
-                list.appendTag(container)
-                if (v != null) {
-                    container.setTag("-", serComponent.write(v, syncing))
-                }
+                val container = NBTTagCompound().apply(list::appendTag)
+                if (v != null) container.setTag("-", serComponent.write(v, syncing))
             }
 
             return list
@@ -74,8 +70,8 @@ object SerializeArrayFactory : SerializerFactory("Array") {
             @Suppress("UNCHECKED_CAST")
             val array = if (reuse) existing as Array<Any?> else ArrayReflect.newInstanceRaw(componentType.clazz, nullsig.size)
 
-            for (i in 0 until nullsig.size) {
-                array[i] = if (nullsig[i]) null else serComponent.read(buf, array[i], syncing)
+            repeat(nullsig.size) {
+                array[it] = if (nullsig[it]) null else serComponent.read(buf, array[it], syncing)
             }
             return array
         }
@@ -84,9 +80,8 @@ object SerializeArrayFactory : SerializerFactory("Array") {
             val len = ArrayReflect.getLength(value)
             val nullsig = BooleanArray(len) { ArrayReflect.get(value, it) == null }
             buf.writeBooleanArray(nullsig)
-            for (i in 0 until len) {
-                if (!nullsig[i])
-                    serComponent.write(buf, ArrayReflect.get(value, i), syncing)
+            repeat(len) {
+                if (!nullsig[it]) serComponent.write(buf, ArrayReflect.get(value, it), syncing)
             }
         }
     }

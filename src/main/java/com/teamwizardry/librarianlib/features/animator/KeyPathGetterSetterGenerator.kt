@@ -78,10 +78,10 @@ fun generateGetterAndSetterForKeyPath(target: Class<*>, keyPath: Array<String>):
             { _, _ -> },
             { _, _ -> false }
     )
-    val getter = item.rootGetter
-    val setter = item.rootSetter
-    val involvement = item.involvementChecker
-    val type = item.rootType
+    val getter = item.createRootGetter()
+    val setter = item.createRootSetter()
+    val involvement = item.createInvolvementChecker()
+    val type = item.getRootType()
 
     return KeyPathAccessor(
             clazz = type,
@@ -124,6 +124,20 @@ private fun KClass<*>.getStaticPropertyRecursive(name: String): KProperty<*>? {
     return prop
 }
 
+private fun Class<*>.getDeclaredFieldRecursive(name: String): Field? {
+    var cls: Class<*>? = this
+    var field: Field? = null
+    while (cls != null && field == null) {
+        try {
+            field = cls.getDeclaredField(name)
+        } catch (e: NoSuchFieldException) {
+            //noop
+        }
+        cls = cls.superclass
+    }
+    return field
+}
+
 private fun KClass<*>.getDeclaredPropertyRecursive(name: String): KProperty<*>? {
     var cls: KClass<*>? = this
     var prop: KProperty<*>? = null
@@ -146,6 +160,10 @@ private class FieldListItem(val target: Class<*>, val name: String) {
 
     init {
         if (target.isArray) {
+            // if (name.startsWith("[") && name.endsWith("]"))
+            //     accessorOfChoice = StringUtils.substringBetween(name, "[", "]").toIntOrNull()
+            //             ?: throw IllegalArgumentException("Name `$name` not a valid subscript string! (valid format: `\\[\\d+]`)")
+            // else throw IllegalArgumentException("Name `$name` not a valid subscript string! (valid format: `\\[\\d+]`)")
             accessorOfChoice = subscriptRegex.find(name)?.groupValues?.getOrNull(1)?.toIntOrNull() ?: throw IllegalArgumentException("Name `$name` not a valid subscript string! (valid format: `\\[\\d+]`)")
             fieldClass = target.componentType
         } else {
@@ -162,12 +180,12 @@ private class FieldListItem(val target: Class<*>, val name: String) {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    val rootType: Class<Any> by lazy {
-        child?.rootType ?: fieldClass as Class<Any>
+    fun getRootType(): Class<Any> {
+        @Suppress("UNCHECKED_CAST")
+        return child?.getRootType() ?: fieldClass as Class<Any>
     }
 
-    val rootGetter: (target: Any) -> Any? by lazy {
+    fun createRootGetter(): (target: Any) -> Any? {
         val getter: (target: Any) -> Any?
 
         when (accessorOfChoice) {
@@ -189,83 +207,125 @@ private class FieldListItem(val target: Class<*>, val name: String) {
                     ?: "null"}`")
         }
 
-        val childGetter = child?.rootGetter
+        val childGetter = child?.createRootGetter()
 
-        if (childGetter == null) { getter } else { t -> childGetter(getter(t)!!) }
-    }
-
-    private val rootMutator: (target: Any, value: Any?) -> Any? by lazy {
-        if (accessorOfChoice is Int) {
-            { t, v ->
-                ArrayReflect.set(t, accessorOfChoice, v)
-                NULL_OBJECT
-            }
-        } else if (
-                (accessorOfChoice as? KMutableProperty<*>)?.javaSetter?.modifiers?.let { Modifier.isPublic(it) } == true ||
-                (accessorOfChoice is Field && !Modifier.isFinal(accessorOfChoice.modifiers)))
-            when (accessorOfChoice) {
-                is Field -> {
-                    val m = MethodHandleHelper.wrapperForSetter<Any>(accessorOfChoice)
-
-                    val x = { t: Any, v: Any? ->
-                        m(t, v)
-                        NULL_OBJECT
-                    }; x
-                }
-
-                is KMutableProperty<*> -> {
-                    val m = MethodHandleHelper.wrapperForMethod<Any>(accessorOfChoice.javaSetter!!)
-
-                    val x = { t: Any, v: Any? ->
-                        m(t, arrayOf(v))
-                        NULL_OBJECT
-                    }; x
-                }
-
-                else ->
-                    throw IllegalStateException("accessorOfChoice was neither a Field nor a KProperty, it was `${(
-                            accessorOfChoice as Any?)?.javaClass?.canonicalName ?: "null"}`")
-            }
-        else {
-            val mutator = ImmutableFieldMutatorHandler.getMutator(target, name)
-
-            if (mutator == null)
-                throw IllegalAccessException("Cannot set the immutable field `$name` without a mutator")
-            else {
-                val x = { t: Any, v: Any? -> mutator.mutate(t, v) }; x
-            }
+        if (childGetter == null) {
+            return getter
+        } else {
+            return { t -> childGetter(getter(t)!!) }
         }
     }
 
-    val rootSetter: (target: Any, finalValue: Any?) -> Any? by lazy {
-        val getter = rootGetter
+    fun createRootSetter(): (target: Any, finalValue: Any?) -> Any? {
+        val getter: (target: Any) -> Any?
 
-        val childSetter = child?.rootSetter ?: { _, finalValue -> finalValue }
+        when (accessorOfChoice) {
+            is Field -> {
+                if (!Modifier.isPublic(accessorOfChoice.modifiers)) {
+                    throw IllegalAccessException("Could not access field `$name` in class `${target.canonicalName}`")
+                }
+                getter = MethodHandleHelper.wrapperForGetter(accessorOfChoice)
+            }
+            is KProperty<*> -> {
+                if (!Modifier.isPublic(accessorOfChoice.javaGetter!!.modifiers)) {
+                    throw IllegalAccessException("Could not access property getter for `$name` in class `${target.canonicalName}`")
+                }
+                val m = MethodHandleHelper.wrapperForMethod<Any>(accessorOfChoice.javaGetter!!)
+                getter = { t -> m(t, emptyArray()) }
+            }
+            is Int -> getter = { t -> ArrayReflect.get(t, accessorOfChoice) }
+            else -> throw IllegalStateException("accessorOfChoice was neither a Field nor a KProperty, it was `${(accessorOfChoice as Any?)?.javaClass?.canonicalName
+                    ?: "null"}`")
+        }
 
-        { target: Any, finalValue: Any? ->
+        val childSetter = child?.createRootSetter() ?: { _, finalValue -> finalValue }
+
+        val setter by lazy<(target: Any, value: Any?) -> Any?> {
+            if (accessorOfChoice is Int) {
+                return@lazy m@{ t, v ->
+                    ArrayReflect.set(t, accessorOfChoice, v)
+                    return@m NULL_OBJECT
+                }
+            } else if (
+                    (accessorOfChoice as? KMutableProperty<*>)?.javaSetter?.modifiers?.let { Modifier.isPublic(it) } == true ||
+                    (accessorOfChoice is Field && !Modifier.isFinal(accessorOfChoice.modifiers))
+            ) {
+                when (accessorOfChoice) {
+                    is Field -> {
+                        val m = MethodHandleHelper.wrapperForSetter<Any>(accessorOfChoice)
+                        return@lazy m@{ t, v ->
+                            m(t, v)
+                            return@m NULL_OBJECT
+                        }
+                    }
+                    is KMutableProperty<*> -> {
+                        val m = MethodHandleHelper.wrapperForMethod<Any>(accessorOfChoice.javaSetter!!)
+                        return@lazy m@{ t, v ->
+                            m(t, arrayOf(v))
+                            return@m NULL_OBJECT
+                        }
+                    }
+                    else -> throw IllegalStateException("accessorOfChoice was neither a Field nor a KProperty, it was `${(accessorOfChoice as Any?)?.javaClass?.canonicalName
+                            ?: "null"}`")
+                }
+            } else {
+                val mutator = ImmutableFieldMutatorHandler.getMutator(target, name)
+                        ?: throw IllegalAccessException("Cannot set the immutable field `$name` without a mutator")
+
+                return@lazy m@{ t, v ->
+                    return@m mutator.mutate(t, v)
+                }
+            }
+
+        }
+
+        return ret@{ target, finalValue ->
             val fieldValue = getter(target)!!
             val childValue = childSetter(fieldValue, finalValue)
 
             if (childValue !== NULL_OBJECT) {
-                rootMutator(target, childValue)
-            } else NULL_OBJECT
+                return@ret setter(target, childValue)
+            }
+
+            return@ret NULL_OBJECT
         }
+
     }
 
-    val involvementChecker: (target: Any, check: Any) -> Boolean by lazy {
-        val childGetter = child?.involvementChecker
+    fun createInvolvementChecker(): (target: Any, check: Any) -> Boolean {
+        val getter: (target: Any) -> Any?
+
+        when (accessorOfChoice) {
+            is Field -> {
+                if (!Modifier.isPublic(accessorOfChoice.modifiers)) {
+                    throw IllegalAccessException("Could not access field `$name` in class `${target.canonicalName}`")
+                }
+                getter = MethodHandleHelper.wrapperForGetter(accessorOfChoice)
+            }
+            is KProperty<*> -> {
+                if (!Modifier.isPublic(accessorOfChoice.javaGetter!!.modifiers)) {
+                    throw IllegalAccessException("Could not access property getter for `$name` in class `${target.canonicalName}`")
+                }
+                val m = MethodHandleHelper.wrapperForMethod<Any>(accessorOfChoice.javaGetter!!)
+                getter = { t -> m(t, emptyArray()) }
+            }
+            is Int -> getter = { t -> ArrayReflect.get(t, accessorOfChoice) }
+            else -> throw IllegalStateException("accessorOfChoice was neither a Field nor a KProperty, it was `${(accessorOfChoice as Any?)?.javaClass?.canonicalName
+                    ?: "null"}`")
+        }
+
+        val childGetter = child?.createInvolvementChecker()
 
         if (childGetter == null) {
-            { t: Any, c: Any -> rootGetter(t) === c }
+            return { t, c -> getter(t) === c }
         } else {
-            { t: Any, c: Any ->
-                val us = rootGetter(t)
-                us !== null && (us === c || childGetter(us, c))
+            return ret@{ t, c ->
+                val us = getter(t) ?: return@ret false
+                us === c || childGetter(us, c)
             }
         }
     }
 }
-
 
 private class StaticFieldListItem(val target: Class<*>, val name: String) {
     val fieldClass: Class<*>
@@ -288,7 +348,7 @@ private class StaticFieldListItem(val target: Class<*>, val name: String) {
 
     @Suppress("UNCHECKED_CAST")
     val rootType: Class<Any> by lazy {
-        child?.rootType ?: fieldClass as Class<Any>
+        child?.getRootType() ?: fieldClass as Class<Any>
     }
 
     val rootGetter: () -> Any? by lazy {
@@ -342,7 +402,7 @@ private class StaticFieldListItem(val target: Class<*>, val name: String) {
     }
 
     val rootSetter: (finalValue: Any?) -> Any? by lazy {
-        val childSetter = child?.rootSetter ?: { _, finalValue -> finalValue }
+        val childSetter = child?.createRootSetter() ?: { _, finalValue -> finalValue }
 
         { finalValue: Any? ->
             val fieldValue = rootGetter()!!
@@ -361,6 +421,5 @@ private class StaticFieldListItem(val target: Class<*>, val name: String) {
         }
     }
 }
-
 
 private val NULL_OBJECT = Any()

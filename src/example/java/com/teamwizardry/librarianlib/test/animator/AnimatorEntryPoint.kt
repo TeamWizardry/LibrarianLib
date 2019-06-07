@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 object AnimatorEntryPoint : TestEntryPoint {
     override fun preInit(event: FMLPreInitializationEvent) {
         AnimatorItems
-        PearlRadialUIRenderer.INSTANCE.javaClass
+        PearlRadialUIRenderer.INSTANCE
     }
 
     override fun init(event: FMLInitializationEvent) {

@@ -7,7 +7,6 @@ import com.teamwizardry.librarianlib.features.particlesystem.ParticleSystem
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.CallbackBinding
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.features.particlesystem.modules.AccelerationUpdateModule
-import com.teamwizardry.librarianlib.features.particlesystem.modules.SetValueUpdateModule
 import com.teamwizardry.librarianlib.features.particlesystem.modules.SpriteRenderModule
 import com.teamwizardry.librarianlib.features.particlesystem.modules.VelocityUpdateModule
 import net.minecraft.util.ResourceLocation
@@ -45,7 +44,7 @@ object ItemFacingSystem: ParticleSystem() {
             position.load(particle)
             origin.load(particle)
             for(i in 0 until 3) {
-                contents[i] = position.getValue(i) - origin.getValue(i)
+                contents[i] = position.contents[i] - origin.contents[i]
             }
         }))
         updateModules.add(VelocityUpdateModule(position, velocity, previousPosition))
