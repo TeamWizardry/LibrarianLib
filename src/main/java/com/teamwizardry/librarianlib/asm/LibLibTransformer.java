@@ -324,7 +324,7 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
         boolean didAnything = findMethodAndTransform(node, sig, action);
 
         if (didAnything) {
-            ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+            ClassWriter writer = new SafeClassWriter(ClassWriter.COMPUTE_FRAMES);
             node.accept(writer);
             return writer.toByteArray();
         }
@@ -687,6 +687,28 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
         public boolean matches(FieldNode field) {
             return matches(field.name, field.desc);
+        }
+    }
+
+    /**
+     * Safe class writer.
+     * The way COMPUTE_FRAMES works may require loading additional classes. This can cause ClassCircularityErrors.
+     * The override for getCommonSuperClass will ensure that COMPUTE_FRAMES works properly by using the right ClassLoader.
+     *
+     * Code from: https://github.com/JamiesWhiteShirt/clothesline/blob/master/src/core/java/com/jamieswhiteshirt/clothesline/core/SafeClassWriter.java
+     */
+    public static class SafeClassWriter extends ClassWriter {
+        public SafeClassWriter(int flags) {
+            super(flags);
+        }
+
+        public SafeClassWriter(ClassReader classReader, int flags) {
+            super(classReader, flags);
+        }
+
+        @Override
+        protected String getCommonSuperClass(String type1, String type2) {
+            return "java/lang/Object";
         }
     }
 
