@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.kotlin.glColor
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.ISprite
+import com.teamwizardry.librarianlib.features.sprite.WrappedSprite
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -25,10 +26,8 @@ class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: ISprite?,
 
     private var progressCache: Float = 1f
     private var dir: ProgressDirection = ProgressDirection.Y_POS
-    private val spriteWrapper = object : ISprite {
-        override fun bind() {
-            sprite!!.bind()
-        }
+    private val spriteWrapper = object : WrappedSprite() {
+        override val wrapped: ISprite? get() = sprite
 
         override fun minU(animFrames: Int): Float {
             return when(dir) {
@@ -82,23 +81,6 @@ class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: ISprite?,
             }
         }
 
-        override fun draw(animTicks: Int, x: Float, y: Float) {
-            sprite!!.draw(animTicks, x, y)
-        }
-
-        override fun draw(animTicks: Int, x: Float, y: Float, width: Float, height: Float) {
-            sprite!!.draw(animTicks, x, y, width, height)
-        }
-
-        override val width: Int get() = sprite!!.width
-        override val height: Int get() = sprite!!.height
-        override val uSize: Float get() = sprite!!.uSize
-        override val vSize: Float get() = sprite!!.vSize
-        override val frameCount: Int get() = sprite!!.frameCount
-        override val minUCap: Float get() = sprite!!.minUCap
-        override val minVCap: Float get() = sprite!!.minVCap
-        override val maxUCap: Float get() = sprite!!.maxUCap
-        override val maxVCap: Float get() = sprite!!.maxVCap
         override val pinTop: Boolean get() = dir != ProgressDirection.Y_NEG
         override val pinBottom: Boolean get() = dir != ProgressDirection.Y_POS
         override val pinLeft: Boolean get() = dir != ProgressDirection.X_NEG

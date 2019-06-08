@@ -5,11 +5,14 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.DrawingUtil
 import com.teamwizardry.librarianlib.features.sprite.ISprite
 import com.teamwizardry.librarianlib.features.sprite.Sprite
+import com.teamwizardry.librarianlib.features.sprite.WrappedSprite
 
 @Deprecated("Use a ComponentSprite and specify caps in the mcmeta file")
 class ComponentSpriteCapped(internal var topLeft: Sprite, internal val middle: Sprite, internal val bottomRight: Sprite, internal val horizontal: Boolean, posX: Int, posY: Int, width: Int, height: Int) : GuiComponent(posX, posY, width, height) {
 
-    private val middleClipped: ISprite = object: ISprite by middle {
+    private val middleClipped: ISprite = object: WrappedSprite() {
+        override val wrapped: ISprite? get() = middle
+
         override val pinBottom: Boolean = true
         override val pinRight: Boolean = true
     }

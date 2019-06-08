@@ -133,6 +133,15 @@ class Vec2d(val x: Double, val y: Double) {
 
     //=============================================================================
 
+    operator fun get(axis: Axis2d): Double {
+        return when(axis) {
+            Axis2d.X -> this.x
+            Axis2d.Y -> this.y
+        }
+    }
+
+    //=============================================================================
+
     override fun hashCode(): Int {
         val prime = 31
         var result = 1
@@ -163,30 +172,42 @@ class Vec2d(val x: Double, val y: Double) {
         @JvmField
         val ZERO = Vec2d(0.0, 0.0)
         @JvmField
+        @Deprecated("These are stupid. Past me was stupid.")
         val INFINITY = Vec2d(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY)
         @JvmField
+        @Deprecated("These are stupid. Past me was stupid.")
         val NEG_INFINITY = Vec2d(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY)
 
         @JvmField
+        @Deprecated("These are stupid. Past me was stupid.")
         val ONE = Vec2d(1.0, 1.0)
         @JvmField
+        @Deprecated("These are stupid. Past me was stupid.")
         val X = Vec2d(1.0, 0.0)
         @JvmField
+        @Deprecated("These are stupid. Past me was stupid.")
         val Y = Vec2d(0.0, 1.0)
         @JvmField
+        @Deprecated("These are stupid. Past me was stupid.")
         val X_INFINITY = Vec2d(Double.POSITIVE_INFINITY, 0.0)
         @JvmField
+        @Deprecated("These are stupid. Past me was stupid.")
         val Y_INFINITY = Vec2d(0.0, Double.POSITIVE_INFINITY)
 
         @JvmField
+        @Deprecated("These are stupid. Past me was stupid.")
         val NEG_ONE = Vec2d(-1.0, -1.0)
         @JvmField
+        @Deprecated("These are stupid. Past me was stupid.")
         val NEG_X = Vec2d(-1.0, 0.0)
         @JvmField
+        @Deprecated("These are stupid. Past me was stupid.")
         val NEG_Y = Vec2d(0.0, -1.0)
         @JvmField
+        @Deprecated("These are stupid. Past me was stupid.")
         val NEG_X_INFINITY = Vec2d(Double.NEGATIVE_INFINITY, 0.0)
         @JvmField
+        @Deprecated("These are stupid. Past me was stupid.")
         val NEG_Y_INFINITY = Vec2d(0.0, Double.NEGATIVE_INFINITY)
 
         /**
@@ -229,24 +250,5 @@ class Vec2d(val x: Double, val y: Double) {
             }
             return Vec2d(x, y)
         }
-    }
-}
-
-enum class Axis2d(val direction: Vec2d) {
-    X(vec(1, 0)),
-    Y(vec(0, 1))
-}
-
-enum class Cardinal2d(val direction: Vec2d, val axis: Axis2d, val sign: Int) {
-    POSITIVE_X(vec( 1,  0), Axis2d.X,  1),
-    POSITIVE_Y(vec( 0,  1), Axis2d.Y,  1),
-    NEGATIVE_X(vec(-1,  0), Axis2d.X, -1),
-    NEGATIVE_Y(vec( 0, -1), Axis2d.Y, -1);
-
-    object GUI {
-        @JvmStatic val UP = NEGATIVE_Y
-        @JvmStatic val DOWN = POSITIVE_Y
-        @JvmStatic val LEFT = NEGATIVE_X
-        @JvmStatic val RIGHT = POSITIVE_X
     }
 }

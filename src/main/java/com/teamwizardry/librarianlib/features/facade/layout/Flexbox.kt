@@ -12,7 +12,7 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-open class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d = Cardinal2d.GUI.RIGHT): GuiComponent(x, y, width, height) {
+open class Flexbox(x: Int, y: Int, width: Int, height: Int, flexDirection: Cardinal2d = Cardinal2d.RIGHT): GuiComponent(x, y, width, height) {
     /**
      * The direction children should flow
      */

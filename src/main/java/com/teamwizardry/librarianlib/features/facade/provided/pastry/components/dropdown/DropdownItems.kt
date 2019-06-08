@@ -8,7 +8,7 @@ import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 
 abstract class PastryDropdownItem<T>(
     /**
-     * The value associated with this item
+     * The value associated with this item, or null if the item is a decoration.
      */
     val value: T?,
     /**
@@ -16,7 +16,7 @@ abstract class PastryDropdownItem<T>(
      */
     val decoration: Boolean,
     /**
-     * Whether this item's list layer can have its width be modified to fit the menu
+     * Whether this item's layer should be adjusted to fill the dropdown's width
      */
     val listDynamicWidth: Boolean
 ) {

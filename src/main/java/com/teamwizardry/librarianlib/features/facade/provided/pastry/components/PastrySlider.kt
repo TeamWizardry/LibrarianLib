@@ -102,25 +102,25 @@ class PastrySlider(posX: Int, posY: Int, length: Int, var pointed: Boolean, faci
     fun updateFacing() {
         length = length // update size
         when(facing) {
-            Cardinal2d.NEGATIVE_Y -> { // up
+            Cardinal2d.UP -> { // up
                 inner.anchor = vec(1, 1)
                 inner.rotation = 2*PI
                 handleLayer.sprite = PastryTexture.sliderHandleUp
                 handleLayer.rotation = 0.0
             }
-            Cardinal2d.POSITIVE_Y -> { // down
+            Cardinal2d.DOWN -> { // down
                 inner.anchor = vec(0, 0)
                 inner.rotation = 0.0
                 handleLayer.sprite = PastryTexture.sliderHandleDown
                 handleLayer.rotation = 0.0
             }
-            Cardinal2d.NEGATIVE_X -> { // left
+            Cardinal2d.LEFT -> { // left
                 inner.anchor = vec(0, 1)
                 inner.rotation = PI
                 handleLayer.sprite = PastryTexture.sliderHandleLeft
                 handleLayer.rotation = 0.0
             }
-            Cardinal2d.POSITIVE_X -> { // right
+            Cardinal2d.RIGHT -> { // right
                 inner.anchor = vec(1, 0)
                 inner.rotation = -PI
                 handleLayer.sprite = PastryTexture.sliderHandleRight

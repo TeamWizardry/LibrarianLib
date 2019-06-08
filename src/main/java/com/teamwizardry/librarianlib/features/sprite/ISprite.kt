@@ -159,4 +159,15 @@ interface ISprite {
      */
     @JvmDefault
     val pinRight: Boolean get() = true
+
+    /**
+     * The number of clockwise 90° rotations should be made when drawing this sprite.
+     */
+    @JvmDefault
+    val rotation: Int get() = 0
+
+    @JvmDefault
+    fun pinnedWrapper(top: Boolean, bottom: Boolean, left: Boolean, right: Boolean): ISprite {
+        return PinnedWrapper(this, top, bottom, left, right)
+    }
 }

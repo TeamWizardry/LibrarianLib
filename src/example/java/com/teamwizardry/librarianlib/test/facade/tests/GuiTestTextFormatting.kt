@@ -12,7 +12,7 @@ import java.awt.Color
  * Created by TheCodeWarrior
  */
 @UseExperimental(ExperimentalBitfont::class)
-class GuiTestMCTiny : GuiBase() {
+class GuiTestTextFormatting : GuiBase() {
     init {
         main.size = vec(600, 400)
 

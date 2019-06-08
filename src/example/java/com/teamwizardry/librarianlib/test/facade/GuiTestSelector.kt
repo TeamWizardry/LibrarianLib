@@ -42,7 +42,8 @@ class GuiTestSelector : GuiBase() {
         ListItem.Gui("Arc") { GuiTestArc() },
         ListItem.Gui("Keyframe Builder") { GuiTestValueKeyframeBuilder() },
         ListItem.Gui("Text") { GuiTestTextLayer() },
-        ListItem.Gui("MCTiny Text") { GuiTestMCTiny() },
+        ListItem.Gui("Text Formatting") { GuiTestTextFormatting() },
+        ListItem.Gui("Fluid Gauge") { GuiTestFluidGauge() },
         ListItem.Gui("Pastry") { GuiTestPastry() },
         ListItem.Gui("Text Field") { GuiTestTextField() },
 

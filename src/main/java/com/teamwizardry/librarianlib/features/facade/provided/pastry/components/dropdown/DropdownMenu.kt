@@ -109,7 +109,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
             close()
             return
         }
-        button.select(index)
+        button.selectIndex(index)
         button.buttonContents?.isVisible = false
 
         items.values.forEach {

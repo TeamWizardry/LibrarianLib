@@ -6,14 +6,15 @@ package com.teamwizardry.librarianlib.test.facade.tests
  * (a copy of which can be found at the repo root)
  */
 
-import com.teamwizardry.librarianlib.features.facade.components.ComponentFluidStack
 import com.teamwizardry.librarianlib.features.facade.components.ComponentSprite
-import com.teamwizardry.librarianlib.features.facade.components.ComponentSpriteProgressBar
 import com.teamwizardry.librarianlib.features.facade.components.ComponentText
+import com.teamwizardry.librarianlib.features.facade.layers.SpriteLayer
+import com.teamwizardry.librarianlib.features.facade.layers.minecraft.FluidGaugeLayer
 import com.teamwizardry.librarianlib.features.neoguicontainer.ComponentSlot
 import com.teamwizardry.librarianlib.features.neoguicontainer.GuiContainerBase
 import com.teamwizardry.librarianlib.features.neoguicontainer.builtin.BaseLayouts
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.math.Cardinal2d
 import com.teamwizardry.librarianlib.features.sprite.Texture
 import com.teamwizardry.librarianlib.test.container.FluidTankContainer
 import com.teamwizardry.librarianlib.test.container.TEFluidTank
@@ -50,15 +51,22 @@ open class GuiFluidTank(inventorySlotsIn: FluidTankContainer) : GuiContainerBase
         title.text = I18n.format(ItemStack(state.block, 1, state.block.damageDropped(state)).displayName)
         bg.add(title)
 
-        val fluidBar = ComponentFluidStack(null, FLUID_BG, 15, 15,
-                bgWidth = 16,
-                tankProps = te.fluidHandler.tankPropertiesImpl[0])
-        fluidBar.direction = ComponentSpriteProgressBar.ProgressDirection.Y_NEG
+        val fluidBg = SpriteLayer(FLUID_BG, 15, 15)
+        fluidBg.width = 16.0
+        val fluidBar = FluidGaugeLayer(15, 15)
+        val tankProps = te.fluidHandler.tankPropertiesImpl[0]
+        fluidBar.fluid_im {
+            tankProps.contents?.fluid
+        }
+        fluidBar.fillFraction_im {
+            (tankProps.contents?.amount?.toDouble() ?: 0.0) / Math.max(1.0, tankProps.capacity.toDouble())
+        }
+        fluidBar.direction = Cardinal2d.UP
         fluidBar.tooltip_im {
             val f = te.fluidHandler.fluid
             listOf(if (f != null) I18n.format("llt:gui.fluid", f.localizedName, f.amount) else I18n.format("llt:gui.fluidEmpty"))
         }
-        bg.add(fluidBar)
+        bg.add(fluidBg, fluidBar)
     }
 
     companion object {

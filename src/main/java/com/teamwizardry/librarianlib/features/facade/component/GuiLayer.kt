@@ -219,9 +219,21 @@ open class GuiLayer private constructor(
         @JvmStatic
         var showDebugBoundingBox = false
 
+        /**
+         * In order to make an overlay layer, add a layer to the [root] with this [zIndex].
+         */
         @JvmStatic
         val OVERLAY_Z: Double = 1e10
 
+        /**
+         * In order to make a background layer, give the layer this [zIndex].
+         */
+        @JvmStatic
+        val BACKGROUND_Z: Double = -1e9
+
+        /**
+         * In order to make an underlay layer, add a layer to the [root] with this [zIndex].
+         */
         @JvmStatic
         val UNDERLAY_Z: Double = -1e10
 

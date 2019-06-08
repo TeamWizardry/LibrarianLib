@@ -18,7 +18,7 @@ import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 class PastryDropdown<T> constructor(
     posX: Int, posY: Int,
     width: Int,
-    callback: ((T?) -> Unit)?
+    callback: ((T) -> Unit)?
 ) : PastryActivatedControl(posX, posY, width, Pastry.lineHeight) {
 
     val items = mutableListOf<PastryDropdownItem<T>>()
@@ -38,7 +38,7 @@ class PastryDropdown<T> constructor(
         this.add(sprite)
     }
 
-    fun select(index: Int) {
+    fun selectIndex(index: Int) {
         val newItem = items[index]
         if(selected === newItem) return
         if(newItem.decoration) {
@@ -50,18 +50,26 @@ class PastryDropdown<T> constructor(
             buttonContents?.also { remove(it) }
             buttonContents = newItem.createLayer().also { add(it) }
         }
-        BUS.fire(SelectEvent(selected?.value))
+        if(!newItem.decoration)
+            BUS.fire(SelectEvent(newItem.value))
+    }
+
+    fun select(value: T) {
+        val index = items.indexOfFirst {
+            !it.decoration && it.value == value
+        }
+        if(index == -1)
+            throw IllegalArgumentException("Could not find dropdown item with value of $value")
+        selectIndex(index)
     }
 
     private fun openMenu(mouseActivated: Boolean) {
-        val gui = this.gui ?: throw LayerHierarchyException("Can't open dropdown menu without a GUI")
-
         val menu = DropdownMenu(this, mouseActivated)
         this.menu = menu
-        gui.add(menu)
+        root.add(menu)
 
-        menu.initialMousePos = gui.convertPointTo(gui.mousePos, ScreenSpace)
-        menu.pos = this.convertPointTo(vec(0, 0), gui)
+        menu.initialMousePos = convertPointTo(mousePos, ScreenSpace)
+        menu.pos = this.convertPointTo(vec(0, 0), root)
         selected?.also { menu.scrollTo(it) }
     }
 
@@ -92,5 +100,9 @@ class PastryDropdown<T> constructor(
         buttonContents?.frame = rect(2, 2, width - 10, height - 4)
     }
 
-    class SelectEvent<T>(val value: T?): EventCancelable()
+    fun sizeToFit() {
+        this.width = items.map { it.createLayer().width + 15 }.max() ?: this.width
+    }
+
+    class SelectEvent<T>(val value: T): EventCancelable()
 }
