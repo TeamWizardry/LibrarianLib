@@ -6,7 +6,6 @@ import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
-import net.minecraft.item.crafting.FurnaceRecipes
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.IBlockAccess
@@ -26,7 +25,7 @@ open class BlockModLog(name: String, vararg variants: String) : BlockModPillar(n
         if (form != null) {
             for (variant in this.variants.indices)
                 OreDictionaryRegistrar.registerOre("logWood") { ItemStack(form, 1, variant) }
-            FurnaceRecipes.instance().addSmeltingRecipeForBlock(this, ItemStack(Items.COAL, 1, 1), 0.15f)
+            OreDictionaryRegistrar.registerSmeltingBlock(this, { ItemStack(Items.COAL, 1, 1) }, 0.15f)
         }
     }
 

@@ -275,6 +275,10 @@ abstract class BlockModLeaves(name: String, vararg variants: String) : BlockMod(
         return ItemStack(this, 1, getMetaFromState(state.withProperty(DECAYABLE, false).withProperty(CHECK_DECAY, false)))
     }
 
+    override fun causesSuffocation(state: IBlockState?): Boolean {
+        return false
+    }
+
     override fun generateMissingBlockstate(block: IModBlockProvider, mapper: ((block: Block) -> Map<IBlockState, ModelResourceLocation>)?): Boolean {
         ModelHandler.generateBlockJson(this, {
             generateBaseBlockStates(this, mapper)
