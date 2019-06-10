@@ -1,3 +1,6 @@
+@file:JvmMultifileClass
+@file:JvmName("CommonUtilMethods")
+
 package com.teamwizardry.librarianlib.features.kotlin
 
 import net.minecraft.util.math.MathHelper

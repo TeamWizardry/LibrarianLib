@@ -8,11 +8,9 @@ import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.FileNotFoundException
-import java.io.IOException
 import java.lang.ref.WeakReference
 import java.util.*
 import kotlin.math.max
@@ -122,13 +120,13 @@ class Texture(
     init {
         textures.add(WeakReference(this))
         if (SpritesMetadataSection.registered)
-            load()
+            loadSpriteData()
     }
 
     /**
      * Loads the sprite data from disk
      */
-    fun load() {
+    fun loadSpriteData() {
         var pngWidth: Int
         var pngHeight: Int
         try {
@@ -213,7 +211,7 @@ class Texture(
         this.loc = loc
         this.textureLoaded = false
         if (SpritesMetadataSection.registered)
-            load()
+            loadSpriteData()
     }
 
     /**
@@ -287,7 +285,7 @@ class Texture(
                 val newList = ArrayList<WeakReference<Texture>>()
 
                 for (tex in Texture.textures) {
-                    tex.get()?.load()
+                    tex.get()?.loadSpriteData()
                     tex.get()?.loadImageData()
                     if (tex.get() != null) newList.add(tex)
                 }

@@ -83,7 +83,7 @@ open class Sprite : ISprite {
         this.tex = Texture(loc, pngWidth, pngHeight)
         tex.sprites[loc.path] = this
 
-        tex.load()
+        tex.loadSpriteData()
     }
 
     /**

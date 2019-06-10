@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.DrawingUtil
 import com.teamwizardry.librarianlib.features.sprite.ISprite
 import com.teamwizardry.librarianlib.features.sprite.Sprite
+import com.teamwizardry.librarianlib.features.sprite.WrappedSprite
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -19,7 +20,8 @@ open class ComponentSpriteTiled @JvmOverloads constructor(protected var main: Sp
 
     protected var borderSize = 3
 
-    private val capped: ISprite = object: ISprite by main {
+    private val capped: ISprite = object : WrappedSprite() {
+        override val wrapped: ISprite? get() = main
         override val minUCap: Float = borderSize / main.width.toFloat()
         override val minVCap: Float = borderSize / main.height.toFloat()
         override val maxUCap: Float = borderSize / main.width.toFloat()
