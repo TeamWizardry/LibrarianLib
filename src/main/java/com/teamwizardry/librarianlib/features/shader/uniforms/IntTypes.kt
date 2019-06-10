@@ -3,39 +3,34 @@ package com.teamwizardry.librarianlib.features.shader.uniforms
 import com.teamwizardry.librarianlib.features.shader.Shader
 import org.lwjgl.opengl.ARBShaderObjects
 
-class UniformInt(val defaultValue: Int): Uniform(UniformType.INT) {
+class IntTypes {
 
-    override fun loadDefault() = ifBound { set(defaultValue) }
+    class IntUniform(owner: Shader, name: String, type: UniformType, size: Int, location: Int) : Uniform(owner, name, type, size, location) {
 
-    fun set(value: Int) = ifBound {
-        ARBShaderObjects.glUniform1iARB(location, value)
+        fun set(value: Int) {
+            ARBShaderObjects.glUniform1iARB(location, value)
+        }
     }
-}
 
-class UniformIntVec2(val defaultX: Int, val defaultY: Int): Uniform(UniformType.INT_VEC2) {
+    class IntVec2Uniform(owner: Shader, name: String, type: UniformType, size: Int, location: Int) : Uniform(owner, name, type, size, location) {
 
-    override fun loadDefault() = ifBound { set(defaultX, defaultY) }
-
-    fun set(x: Int, y: Int) = ifBound {
-        ARBShaderObjects.glUniform2iARB(location, x, y)
+        fun set(x: Int, y: Int) {
+            ARBShaderObjects.glUniform2iARB(location, x, y)
+        }
     }
-}
 
-class UniformIntVec3(val defaultX: Int, val defaultY: Int, val defaultZ: Int): Uniform(UniformType.INT_VEC3) {
+    class IntVec3Uniform(owner: Shader, name: String, type: UniformType, size: Int, location: Int) : Uniform(owner, name, type, size, location) {
 
-    override fun loadDefault() = ifBound { set(defaultX, defaultY, defaultZ) }
-
-    fun set(x: Int, y: Int, z: Int) = ifBound {
-        ARBShaderObjects.glUniform3iARB(location, x, y, z)
+        fun set(x: Int, y: Int, z: Int) {
+            ARBShaderObjects.glUniform3iARB(location, x, y, z)
+        }
     }
-}
 
-class UniformIntVec4(val defaultX: Int, val defaultY: Int, val defaultZ: Int, val defaultW: Int): Uniform(UniformType.INT_VEC4) {
+    class IntVec4Uniform(owner: Shader, name: String, type: UniformType, size: Int, location: Int) : Uniform(owner, name, type, size, location) {
 
-    override fun loadDefault() = ifBound { set(defaultX, defaultY, defaultZ, defaultW) }
-
-    fun set(x: Int, y: Int, z: Int, w: Int) = ifBound {
-        ARBShaderObjects.glUniform4iARB(location, x, y, z, w)
+        fun set(x: Int, y: Int, z: Int, w: Int) {
+            ARBShaderObjects.glUniform4iARB(location, x, y, z, w)
+        }
     }
-}
 
+}
