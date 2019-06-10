@@ -28,6 +28,10 @@ class Vec2d(val x: Double, val y: Double) {
         return Vec2d.getPooled(Math.ceil(x), Math.ceil(y))
     }
 
+    fun round(): Vec2d {
+        return Vec2d(Math.round(x).toDouble(), Math.round(y).toDouble())
+    }
+
     fun setX(value: Double): Vec2d {
         return Vec2d.getPooled(value, y)
     }
@@ -91,6 +95,9 @@ class Vec2d(val x: Double, val y: Double) {
     infix fun dot(point: Vec2d): Double {
         return x * point.x + y * point.y
     }
+
+    @get:JvmName("lengthSquared")
+    val lengthSquared: Double get() = x * x + y * y
 
     fun length(): Double {
         return sqrt(x * x + y * y)

@@ -3,10 +3,9 @@ package com.teamwizardry.librarianlib.test.animator.tests;
 import com.teamwizardry.librarianlib.features.animator.Animation;
 import com.teamwizardry.librarianlib.features.animator.Animator;
 import com.teamwizardry.librarianlib.features.animator.Easing;
-import com.teamwizardry.librarianlib.features.animator.animations.StaticAnimation;
-import com.teamwizardry.librarianlib.features.helpers.NBTHelper;
+import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation;
+import com.teamwizardry.librarianlib.features.helpers.ItemNBTHelper;
 import com.teamwizardry.librarianlib.test.animator.AnimatorItems;
-import com.teamwizardry.librarianlib.test.testcore.TestMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -19,7 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -30,15 +29,22 @@ import java.awt.*;
 import java.util.Random;
 
 @SideOnly(Side.CLIENT)
-@Mod.EventBusSubscriber(value = Side.CLIENT, modid = TestMod.MODID)
 public class PearlRadialUIRenderer {
 
-	private static final int SELECTOR_RADIUS = 40;
-	private static final int SELECTOR_WIDTH = 25;
-	private static final int SELECTOR_SHIFT = 5;
-	public static float[] slotRadii = new float[20];
-	public static Animation[] slotAnimations = new Animation[20];
-	public static Animator ANIMATOR = new Animator();
+    public static PearlRadialUIRenderer INSTANCE = new PearlRadialUIRenderer();
+
+	private final int SELECTOR_RADIUS = 40;
+	private final int SELECTOR_WIDTH = 25;
+	private final int SELECTOR_SHIFT = 5;
+	private final float SELECTOR_ALPHA = 0.7F;
+	public float[] slotRadii = new float[20];
+	public Animation[] slotAnimations = new Animation[20];
+	public Animator ANIMATOR = new Animator();
+	private boolean lastSneakTick = false;
+
+	public PearlRadialUIRenderer() {
+		MinecraftForge.EVENT_BUS.register(this);
+	}
 
 	private static int getScrollSlot(MouseEvent event, int count, int scrollSlot) {
 		if (event.getDwheel() < 0) {
@@ -52,7 +58,7 @@ public class PearlRadialUIRenderer {
 	}
 
 	@SubscribeEvent
-	public static void onScroll(MouseEvent event) {
+	public void onScroll(MouseEvent event) {
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		if (player == null) return;
 
@@ -64,36 +70,28 @@ public class PearlRadialUIRenderer {
 
 				int count = 5;
 
-				int scrollSlot = NBTHelper.getInt(stack, "scroll_slot", -1);
+				int scrollSlot = ItemNBTHelper.getInt(stack, "scroll_slot", -1);
 				int lastSlot = scrollSlot;
 
 				scrollSlot = getScrollSlot(event, count, scrollSlot);
 
 				if (lastSlot != scrollSlot && scrollSlot >= 0) {
-					NBTHelper.setInt(stack, "scroll_slot", scrollSlot);
+					ItemNBTHelper.setInt(stack, "scroll_slot", scrollSlot);
 
-					for (int i = 0; i < slotAnimations.length; i++) {
-						Animation animation = slotAnimations[i];
+					for (int i = 0; i < INSTANCE.slotAnimations.length; i++) {
+						Animation animation = INSTANCE.slotAnimations[i];
 						if (animation != null)
-							ANIMATOR.removeAnimations(animation);
+							INSTANCE.ANIMATOR.removeAnimations(animation);
 
 						if (i == scrollSlot) continue;
-						StaticAnimation newAnimation = new StaticAnimation<>(PearlRadialUIRenderer.class, "slotRadii[" + i + "]");
-						newAnimation.setTo(0);
-						newAnimation.setEasing(Easing.easeInQuint);
-						newAnimation.setDuration(50f);
-						ANIMATOR.add(newAnimation);
-
-						slotAnimations[i] = newAnimation;
+						INSTANCE.slotAnimations[i] = new BasicAnimation<>(INSTANCE, "slotRadii[" + i + "]")
+								.to(0).ease(Easing.easeInQuint)
+								.duration(50).addTo(INSTANCE.ANIMATOR);
 					}
 
-					StaticAnimation animation = new StaticAnimation<>(PearlRadialUIRenderer.class, "slotRadii[" + scrollSlot + "]");
-					animation.setTo(SELECTOR_SHIFT * 2);
-					animation.setEasing(Easing.easeOutQuint);
-					animation.setDuration(50f);
-					ANIMATOR.add(animation);
-
-					slotAnimations[scrollSlot] = animation;
+					INSTANCE.slotAnimations[scrollSlot] = new BasicAnimation<>(INSTANCE, "slotRadii[" + scrollSlot + "]")
+							.to(SELECTOR_SHIFT * 2).ease(Easing.easeOutQuint)
+							.duration(50f).addTo(INSTANCE.ANIMATOR);
 
 					event.setCanceled(true);
 				}
@@ -103,7 +101,7 @@ public class PearlRadialUIRenderer {
 	}
 
 	@SubscribeEvent
-	public static void renderHud(RenderGameOverlayEvent.Post event) {
+	public void renderHud(RenderGameOverlayEvent.Post event) {
 		if (event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
 			EntityPlayer player = Minecraft.getMinecraft().player;
 			ItemStack stack = player.getHeldItemMainhand();
@@ -119,7 +117,7 @@ public class PearlRadialUIRenderer {
 				float anglePerSegment = anglePerColor / (numSegmentsPerArc);
 				float angle = 0;
 
-				int scrollSlot = NBTHelper.getInt(stack, "scroll_slot", -1);
+				int scrollSlot = ItemNBTHelper.getInt(stack, "scroll_slot", -1);
 
 				Tessellator tess = Tessellator.getInstance();
 				BufferBuilder bb = tess.getBuffer();
@@ -130,7 +128,7 @@ public class PearlRadialUIRenderer {
 					Color color = new Color(random.nextFloat(), random.nextFloat(), random.nextFloat(), 1.0f);
 
 					double innerRadius = SELECTOR_RADIUS - SELECTOR_WIDTH / 2.0;
-					double outerRadius = SELECTOR_RADIUS + SELECTOR_WIDTH / 2.0 + (slotRadii[j]);// + (scrollSlot == j ? SELECTOR_SHIFT : 0);
+					double outerRadius = SELECTOR_RADIUS + SELECTOR_WIDTH / 2.0 + (INSTANCE.slotRadii[j]);// + (scrollSlot == j ? SELECTOR_SHIFT : 0);
 
 					GlStateManager.pushMatrix();
 					GlStateManager.translate(width / 2.0, height / 2.0, 0);

@@ -29,11 +29,8 @@ public class GuiJavaAnimation extends GuiBase {
 		ComponentText text = new ComponentText(20, 20);
 		text.getText_im().set(() -> "Field = " + theJavaField);
 		
-		BasicAnimation<GuiJavaAnimation> anim = new BasicAnimation<>(this, "theJavaField");
-		anim.setDuration(40);
-		anim.setTo(100);
-		animator.add(anim);
-		
+		new BasicAnimation<>(this, "theJavaField").to(100).duration(40).addTo(animator);
+
 		this.getMain().add(rect, text);
 	}
 	

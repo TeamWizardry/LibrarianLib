@@ -31,4 +31,24 @@ class BasicAnimation<T : Any>(target: T, property: IAnimatable<T>) : Animation<T
         val new = lerper.lerp(from, to, progress)
         property.set(target, new)
     }
+
+    //region - Builder methods
+
+    @JvmName("from")
+    fun fromValue(value: Any): BasicAnimation<T> {
+        this.from = value
+        return this
+    }
+
+    @JvmName("to")
+    fun toValue(value: Any): BasicAnimation<T> {
+        this.to = value
+        return this
+    }
+
+    fun ease(easing: Easing): BasicAnimation<T> {
+        this.easing = easing
+        return this
+    }
+    //endregion
 }
