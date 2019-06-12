@@ -36,7 +36,6 @@ class GuiTestSelector : GuiBase() {
         ListItem.Gui("Layout") { GuiTestLayout() },
         ListItem.Gui("Implicit Animation") { GuiTestImplicitAnimation() },
         ListItem.Gui("Value Animation") { GuiTestIMRMValueAnimation() },
-        ListItem.Gui("Animation Await") { GuiTestAnimationAwait() },
         ListItem.Gui("Contents Bounds") { GuiTestGetContentBounds() },
         ListItem.Gui("Coordinate Conversion") { GuiTestCoordinateConversion() },
         ListItem.Gui("Arc") { GuiTestArc() },

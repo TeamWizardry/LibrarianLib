@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.provided.GuiSafetyNetError
 import com.teamwizardry.librarianlib.features.neoguicontainer.GuiContainerBase
-import com.teamwizardry.librarianlib.features.kotlin.Client
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.kotlin.delegate
 import kotlinx.coroutines.CoroutineScope
@@ -34,10 +33,7 @@ import kotlin.coroutines.CoroutineContext
  * crashing the game. However, it is impossible to wrap subclass constructors in try-catch statements so those will
  * still crash.
  */
-open class GuiBase : GuiScreen(), CoroutineScope {
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Client
-
+open class GuiBase : GuiScreen() {
     /**
      * The GUI implementation code common between [GuiBase] and [GuiContainerBase]
      */

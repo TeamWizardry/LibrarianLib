@@ -7,7 +7,6 @@ import com.teamwizardry.librarianlib.features.facade.LibGuiImpl
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.provided.GuiSafetyNetError
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.Client
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.kotlin.delegate
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.ScreenSpace
@@ -28,9 +27,7 @@ import kotlin.coroutines.CoroutineContext
  * Created by TheCodeWarrior
  */
 @Suppress("LeakingThis")
-open class GuiContainerBase(val container: ContainerBase) : GuiContainer(ContainerImpl(container)), CoroutineScope {
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Client
+open class GuiContainerBase(val container: ContainerBase) : GuiContainer(ContainerImpl(container)) {
 
     val impl = LibGuiImpl(
         { this.width },

@@ -6,7 +6,6 @@ import com.teamwizardry.librarianlib.features.facade.components.LayerBackedCompo
 import com.teamwizardry.librarianlib.features.facade.layers.ComponentBackedLayer
 import com.teamwizardry.librarianlib.features.helpers.allDeclaredFields
 import com.teamwizardry.librarianlib.features.helpers.rect
-import com.teamwizardry.librarianlib.features.kotlin.Client
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.CoordinateSpace2D
 import kotlinx.coroutines.CoroutineScope
@@ -65,7 +64,7 @@ open class GuiLayer private constructor(
     internal val base: LayerBaseHandler
 )
     : ILayerGeometry by geometry, ILayerRelationships by relationships,
-    ILayerRendering by render, ILayerClipping by clipping, ILayerBase by base, CoroutineScope {
+    ILayerRendering by render, ILayerClipping by clipping, ILayerBase by base {
     constructor(): this(0, 0, 0, 0)
     constructor(posX: Int, posY: Int): this(posX, posY, 0, 0)
     constructor(posX: Int, posY: Int, width: Int, height: Int): this(
@@ -75,8 +74,6 @@ open class GuiLayer private constructor(
         LayerClippingHandler(),
         LayerBaseHandler()
     )
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Client
 
     init {
         @Suppress("LeakingThis")

@@ -31,8 +31,6 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
     private static final Map<String, Transformer> transformers = new HashMap<>();
 
     static {
-        transformers.put("net.minecraft.client.Minecraft", LibLibTransformer::transformMinecraft);
-        transformers.put("net.minecraft.server.MinecraftServer", LibLibTransformer::transformMinecraftServer);
         transformers.put("net.minecraft.client.renderer.RenderItem", LibLibTransformer::transformRenderItem);
         transformers.put("net.minecraft.client.renderer.entity.layers.LayerArmorBase", LibLibTransformer::transformLayerArmorBase);
         transformers.put("net.minecraft.client.renderer.BlockRendererDispatcher", LibLibTransformer::transformBlockRenderDispatcher);
@@ -312,43 +310,6 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
 
                             return false;
                         }));
-    }
-
-    private static byte[] transformMinecraft(byte[] basicClass) {
-        MethodSignature sig = new MethodSignature("runGameLoop", "func_71411_J",
-                "()V");
-
-        return transform(basicClass, sig, "Pre client game loop event", (MethodNode method) -> { // Action
-            InsnList instructions = method.instructions;
-
-            InsnList newInstructions = new InsnList();
-            newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "preClientGameLoop", "()V", false));
-
-            instructions.insertBefore(instructions.getFirst(), newInstructions);
-            instructions.resetLabels();
-            return true;
-        });
-    }
-
-    private static byte[] transformMinecraftServer(byte[] basicClass) {
-        MethodSignature sig = new MethodSignature("run", "run", "()V");
-
-        MethodSignature target = new MethodSignature("areAllPlayersAsleep", "func_73056_e",
-                "()Z");
-
-        return transform(basicClass, sig, "Pre server game loop event",
-                combine(node -> node.getOpcode() == INVOKEVIRTUAL &&
-                                target.matches((MethodInsnNode) node),
-                        (method, node) -> {
-            InsnList instructions = method.instructions;
-
-            InsnList newInstructions = new InsnList();
-            newInstructions.add(new MethodInsnNode(INVOKESTATIC, ASM_HOOKS, "preServerGameLoop", "()V", false));
-
-            instructions.insertBefore(node, newInstructions);
-            instructions.resetLabels();
-            return true;
-        }));
     }
 
     // BOILERPLATE =====================================================================================================

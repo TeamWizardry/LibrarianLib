@@ -132,13 +132,8 @@ abstract class Animation<T : Any?>(val target: T, val property: IAnimatable<T>) 
      */
     open fun complete() {
         completion.run()
-        continuations.forEach {
-            it.resume(Unit)
-        }
         finished = true
     }
-
-    private val continuations = CopyOnWriteArrayList<Continuation<Unit>>()
 
     /**
      * Terminates this animation.
@@ -162,13 +157,6 @@ abstract class Animation<T : Any?>(val target: T, val property: IAnimatable<T>) 
 
     internal var _id: Int = -1
         private set
-
-    suspend fun await() {
-        if(finished) return
-        suspendCoroutine<Unit> { cont ->
-            continuations.add(cont)
-        }
-    }
 
     //region - Builder methods
 

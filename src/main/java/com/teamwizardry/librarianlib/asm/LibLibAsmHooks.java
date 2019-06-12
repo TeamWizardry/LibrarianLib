@@ -85,12 +85,4 @@ public class LibLibAsmHooks {
     public static void postUpdateMP(EntityPlayerMP entity) {
         MinecraftForge.EVENT_BUS.post(new EntityPostUpdateEvent(entity));
     }
-
-    public static void preClientGameLoop() {
-        MinecraftForge.EVENT_BUS.post(new PreGameLoopEvent.Client());
-    }
-
-    public static void preServerGameLoop() {
-        MinecraftForge.EVENT_BUS.post(new PreGameLoopEvent.Server());
-    }
 }

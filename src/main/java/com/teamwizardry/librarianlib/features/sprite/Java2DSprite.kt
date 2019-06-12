@@ -1,21 +1,15 @@
 package com.teamwizardry.librarianlib.features.sprite
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
-import com.teamwizardry.librarianlib.features.kotlin.Client
-import com.teamwizardry.librarianlib.features.kotlin.ClientScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
-import org.lwjgl.BufferUtils
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
-import java.awt.image.DataBufferInt
-import java.nio.IntBuffer
 
 @SideOnly(Side.CLIENT)
 class Java2DSprite(width: Int, height: Int) : ISprite {
@@ -69,7 +63,7 @@ class Java2DSprite(width: Int, height: Int) : ISprite {
 
     fun finalize() {
         val id = texID
-        ClientScope.async {
+        Minecraft.getMinecraft().addScheduledTask {
             LibrarianLog.debug("Deleting Java2DSprite $id")
             TextureUtil.deleteTexture(id)
         }
