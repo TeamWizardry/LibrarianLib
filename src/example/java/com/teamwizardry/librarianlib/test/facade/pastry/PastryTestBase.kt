@@ -10,7 +10,7 @@ import java.awt.Color
 import kotlin.math.max
 
 open class PastryTestBase: GuiComponent() {
-    val stack: GuiComponent = StackLayout.build()
+    val stack = StackLayout.build()
             .space(3)
             .vertical()
             .alignTop()

@@ -24,7 +24,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
     private val creationTime = ClientTickHandler.ticks
 
     val background = SpriteLayer(PastryTexture.dropdownBackground, 0, 0)
-    val stack = StackLayout.build(0, 0).space(1).layer()
+    val stack = StackLayout.build(0, 0).space(1).component()
     val items = identityMapOf<PastryDropdownItem<T>, DropdownStackItem>()
     val contents = GuiComponent(-2, 0)
     val contentsClip = GuiComponent(0, 0)
@@ -38,7 +38,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
         zIndex = GuiLayer.OVERLAY_Z
         this.add(background, contents)
         contents.add(contentsClip)
-        contentsClip.add(stack.componentWrapper())
+        contentsClip.add(stack)
         contentsClip.clipToBounds = true
 
         button.items.forEach { item ->
@@ -47,7 +47,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
             stack.componentWrapper().add(stackItem)
         }
 
-        stack.fitLength()
+        stack.fitToLength()
     }
 
     override fun layoutChildren() {

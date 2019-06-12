@@ -42,7 +42,7 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
 
     init {
         if (recipes.isNotEmpty()) {
-            val output = ComponentStack(
+            val output = ComponentItemStack(
                     (size.x / 2.0 - 8 + 40).toInt(), (size.y / 2.0 - 8).toInt() - 8)
             output.stack_im { recipe.recipeOutput }
             add(output)
@@ -51,7 +51,7 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
             val y = (-8 + size.y / 2.0 - 16.toDouble() - 8.0).toInt()
 
             for (row in 0 until 3) for (column in 0 until 3) {
-                val stack = ComponentStack(x + row * 16, y + column * 16 + (column * 0.5).toInt())
+                val stack = ComponentItemStack(x + row * 16, y + column * 16 + (column * 0.5).toInt())
 
                 add(stack)
 

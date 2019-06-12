@@ -13,15 +13,15 @@ import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.item.ItemStack
 import net.minecraft.util.text.TextFormatting
 
-open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 16) {
+open class ComponentItemStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 16) {
 
     val stack_im: IMValue<ItemStack> = IMValue(ItemStack.EMPTY)
     val enableTooltip_im: IMValueBoolean = IMValueBoolean(true)
 
     var stack: ItemStack by stack_im
     var enableTooltip: Boolean by enableTooltip_im
-    val quantityText = HandlerList<(ComponentStack, String?) -> String?>()
-    val itemInfo = HandlerList<(ComponentStack, MutableList<String>) -> Unit>()
+    val quantityText = HandlerList<(ComponentItemStack, String?) -> String?>()
+    val itemInfo = HandlerList<(ComponentItemStack, MutableList<String>) -> Unit>()
 
     override fun draw(partialTicks: Float) {
         RenderHelper.enableGUIStandardItemLighting()

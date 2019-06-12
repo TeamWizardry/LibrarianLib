@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.test.facade.pastry.tests
 
-import com.teamwizardry.librarianlib.features.facade.components.ComponentStack
+import com.teamwizardry.librarianlib.features.facade.components.ComponentItemStack
 import com.teamwizardry.librarianlib.features.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.features.facade.layout.StackLayout
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryButton
@@ -32,7 +32,7 @@ class PastryTestDropdown: PastryTestBase() {
             ItemStack(Blocks.COBBLESTONE),
             ItemStack(Blocks.PLANKS)
         )
-        val stackComponent = ComponentStack(0, 0)
+        val stackComponent = ComponentItemStack(0, 0)
 
         val dropdownWidth = stacks.map { stack ->
             stack?.let { TextLayer.stringSize(it.displayName).widthi } ?: 0

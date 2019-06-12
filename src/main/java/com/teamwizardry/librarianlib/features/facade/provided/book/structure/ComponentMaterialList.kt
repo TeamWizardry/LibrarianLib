@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.features.facade.provided.book.structure
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.facade.components.ComponentSprite
-import com.teamwizardry.librarianlib.features.facade.components.ComponentStack
+import com.teamwizardry.librarianlib.features.facade.components.ComponentItemStack
 import com.teamwizardry.librarianlib.features.facade.provided.book.IBookGui
 import java.awt.Color
 
@@ -22,7 +22,7 @@ class ComponentMaterialList(book: IBookGui, structureMaterials: StructureMateria
         add(anchor)
 
         for ((index, stack) in structureMaterials.stacks.withIndex()) {
-            val stackIcon = ComponentStack(index % 7 * 16, index / 7 * 16)
+            val stackIcon = ComponentItemStack(index % 7 * 16, index / 7 * 16)
             stackIcon.stack_im { stack[( structurePage.ticks / 80) % stack.size] }
             stackIcon.translateZ += 500
             add(stackIcon)

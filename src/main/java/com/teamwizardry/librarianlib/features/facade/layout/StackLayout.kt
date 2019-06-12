@@ -23,35 +23,64 @@ import kotlin.math.max
  *
  * Position the layers within this one using [align]. Note that this layer doesn't need to have a size and doesn't
  * resize to fit its contents. The layout is based on the child's [frame][GuiLayer.frame], meaning it takes into
- * account scaling, rotation, and the anchor.
- *
+ * account scaling, rotation, and the anchor. If [preserveCrosswise] is true the crosswise align (y if horizontal, x
+ * if vertical) will be ignored and children's positions along that axis will not be modified.
  *
  * The [build] static methods are provided to concisely build a stack layout.
  */
-class StackLayout(posX: Int, posY: Int, width: Int, height: Int,
-    var horizontal: Boolean,
-    var alignX: Align2d.X?,
-    var alignY: Align2d.Y?,
-    var reverse: Boolean,
-    var spacing: Double,
-    var collapseInvisible: Boolean
-): GuiLayer(posX, posY, width, height) {
+interface StackLayout {
 
-    fun fitChildren() {
-        this.fitLength()
-        this.fitBredth()
+    var horizontal: Boolean
+    var align: Align2d
+    var reverse: Boolean
+    var spacing: Double
+    var collapseInvisible: Boolean
+    var preserveCrosswise: Boolean
+
+    fun fitToLength()
+    fun fitToBreadth()
+
+    @JvmDefault
+    fun fitToChildren() {
+        this.fitToLength()
+        this.fitToBreadth()
     }
 
-    fun fitLength() {
-        if(children.isEmpty()) {
+    companion object {
+        fun build(): StackLayoutBuilder {
+            return StackLayoutBuilder(0.0, 0.0)
+        }
+
+        fun build(posX: Int, posY: Int): StackLayoutBuilder {
+            return StackLayoutBuilder(posX.toDouble(), posY.toDouble())
+        }
+
+        fun build(pos: Vec2d): StackLayoutBuilder {
+            return StackLayoutBuilder(pos.x, pos.y)
+        }
+    }
+}
+
+private class StackLayoutImpl(
+    override var horizontal: Boolean,
+    override var align: Align2d,
+    override var reverse: Boolean,
+    override var spacing: Double,
+    override var collapseInvisible: Boolean,
+    override var preserveCrosswise: Boolean
+): StackLayout {
+    lateinit var layer: GuiLayer
+
+    override fun fitToLength() {
+        if(layer.children.isEmpty()) {
             if(horizontal)
-                width = 0.0
+                layer.width = 0.0
             else
-                height = 0.0
+                layer.height = 0.0
             return
         }
         var length = 0.0
-        children.forEach { child ->
+        layer.children.forEach { child ->
             if(collapseInvisible && !child.isVisible)
                 return@forEach
             val frame = child.frame
@@ -63,14 +92,14 @@ class StackLayout(posX: Int, posY: Int, width: Int, height: Int,
         }
         length -= spacing
         if(horizontal)
-            width = length
+            layer.width = length
         else
-            height = length
+            layer.height = length
     }
 
-    fun fitBredth() {
+    override fun fitToBreadth() {
         var bredth = 0.0
-        children.forEach { child ->
+        layer.children.forEach { child ->
             if(collapseInvisible && !child.isVisible)
                 return@forEach
             val frame = child.frame
@@ -81,17 +110,15 @@ class StackLayout(posX: Int, posY: Int, width: Int, height: Int,
             }
         }
         if(horizontal)
-            height = bredth
+            layer.height = bredth
         else
-            width = bredth
+            layer.width = bredth
     }
 
 
-    override fun layoutChildren() {
-        super.layoutChildren()
-
+    fun layoutChildren() {
         var accumulator = 0.0
-        val positions = children.map { child ->
+        val positions = layer.children.map { child ->
             accumulator.also {
                 if(collapseInvisible && !child.isVisible)
                     return@also
@@ -105,268 +132,311 @@ class StackLayout(posX: Int, posY: Int, width: Int, height: Int,
 
         val reverseOffset = if(reverse) accumulator else 0.0
         if(horizontal) {
-            val xOffset = when (alignX) {
+            val xOffset = when (align.x) {
                 Align2d.X.LEFT -> 0.0 + reverseOffset
-                Align2d.X.CENTER -> floor((width-accumulator)/2 + reverseOffset)
-                Align2d.X.RIGHT -> ceil(width-accumulator + reverseOffset)
-                else -> 0.0
+                Align2d.X.CENTER -> floor((layer.width-accumulator)/2 + reverseOffset)
+                Align2d.X.RIGHT -> ceil(layer.width-accumulator + reverseOffset)
             }
 
-            children.zip(positions).forEach { (child, position) ->
+            layer.children.zip(positions).forEach { (child, position) ->
                 val frame = child.frame
                 val x = xOffset + if(reverse) -position else position
-                val y = when(alignY) {
+                val y = if(preserveCrosswise)
+                    child.frame.minY.toInt()
+                else when(align.y) {
                     Align2d.Y.TOP -> 0
-                    Align2d.Y.CENTER -> floorInt((height - frame.height)/2)
-                    Align2d.Y.BOTTOM -> ceilInt(height - frame.height)
-                    else -> child.frame.minY.toInt()
+                    Align2d.Y.CENTER -> floorInt((layer.height - frame.height)/2)
+                    Align2d.Y.BOTTOM -> ceilInt(layer.height - frame.height)
                 }
 
                 child.frame = rect(if(reverse) x-frame.width else x, y, frame.size)
             }
         } else {
-            val yOffset = when (alignY) {
+            val yOffset = when (align.y) {
                 Align2d.Y.TOP -> 0.0 + reverseOffset
-                Align2d.Y.CENTER -> floor((height-accumulator)/2 + reverseOffset)
-                Align2d.Y.BOTTOM -> ceil(height-accumulator + reverseOffset)
-                else -> 0.0
+                Align2d.Y.CENTER -> floor((layer.height-accumulator)/2 + reverseOffset)
+                Align2d.Y.BOTTOM -> ceil(layer.height-accumulator + reverseOffset)
             }
 
-            children.zip(positions).forEach { (child, position) ->
+            layer.children.zip(positions).forEach { (child, position) ->
                 val frame = child.frame
                 val y = yOffset + if(reverse) -position else position
-                val x = when(alignX) {
+                val x = if(preserveCrosswise)
+                    child.frame.minX.toInt()
+                else when(align.x) {
                     Align2d.X.LEFT -> 0
-                    Align2d.X.CENTER -> floorInt((width - frame.width)/2)
-                    Align2d.X.RIGHT -> ceilInt(width - frame.width)
-                    else -> child.frame.minX.toInt()
+                    Align2d.X.CENTER -> floorInt((layer.width - frame.width)/2)
+                    Align2d.X.RIGHT -> ceilInt(layer.width - frame.width)
                 }
 
                 child.frame = rect(x, if(reverse) y-frame.height else y, frame.size)
             }
         }
     }
+}
 
-    companion object {
-        fun build(): Builder {
-            return Builder(0.0, 0.0)
-        }
-
-        fun build(posX: Int, posY: Int): Builder {
-            return Builder(posX.toDouble(), posY.toDouble())
-        }
-
-        fun build(pos: Vec2d): Builder {
-            return Builder(pos.x, pos.y)
-        }
+class StackLayer private constructor(
+    posX: Int, posY: Int, width: Int, height: Int, private val impl: StackLayoutImpl
+): GuiLayer(posX, posY, width, height), StackLayout by impl {
+    constructor(
+        posX: Int, posY: Int, width: Int, height: Int,
+        horizontal: Boolean,
+        align: Align2d,
+        reverse: Boolean,
+        spacing: Double,
+        collapseInvisible: Boolean,
+        preserveCrosswise: Boolean
+    ): this(
+        posX, posY, width, height,
+        StackLayoutImpl(
+            horizontal, align, reverse, spacing, collapseInvisible, preserveCrosswise
+        )
+    ) {
+        impl.layer = this
     }
 
-    /**
-     * Defaults:
-     * - posX: passed value
-     * - posY: passed value
-     * - width: 0
-     * - height: 0
-     * - horizontal: false
-     * - align: [TOP_LEFT][Align2d.TOP_LEFT]
-     * - reverse: false
-     * - spacing: 0.0
-     * - collapseInvisible: true
-     */
-    class Builder(private var posX: Double, private var posY: Double) {
-        private var width: Double = 0.0
-        private var height: Double = 0.0
-        private var horizontal: Boolean = false
-        private var alignX: Align2d.X? = null
-        private var alignY: Align2d.Y? = null
-        private var reverse: Boolean = false
-        private var spacing: Double = 0.0
-        private var children: MutableList<GuiLayer> = mutableListOf()
-        private var fitLength: Boolean = false
-        private var fitBredth: Boolean = false
-        private var collapseInvisible: Boolean = true
+    override fun layoutChildren() {
+        super.layoutChildren()
+        impl.layoutChildren()
+    }
+}
 
-        /** Stack horizontally */
-        fun horizontal() = build {
-            horizontal = true
-        }
+class StackComponent private constructor(
+    posX: Int, posY: Int, width: Int, height: Int, private val impl: StackLayoutImpl
+): GuiComponent(posX, posY, width, height), StackLayout by impl {
+    constructor(
+        posX: Int, posY: Int, width: Int, height: Int,
+        horizontal: Boolean,
+        align: Align2d,
+        reverse: Boolean,
+        spacing: Double,
+        collapseInvisible: Boolean,
+        preserveCrosswise: Boolean
+    ): this(
+        posX, posY, width, height,
+        StackLayoutImpl(
+            horizontal, align, reverse, spacing, collapseInvisible, preserveCrosswise
+        )
+    ) {
+        impl.layer = this
+    }
 
-        /** Stack vertically */
-        fun vertical() = build {
-            horizontal = false
-        }
+    override fun layoutChildren() {
+        super.layoutChildren()
+        impl.layoutChildren()
+    }
+}
 
-        /** Set alignment */
-        fun align(alignment: Align2d) = build {
-            alignX = alignment.x
-            alignY = alignment.y
-        }
+/**
+ * Defaults:
+ * - posX: passed value
+ * - posY: passed value
+ * - width: 0
+ * - height: 0
+ * - horizontal: false
+ * - align: [TOP_LEFT][Align2d.TOP_LEFT]
+ * - reverse: false
+ * - spacing: 0.0
+ * - collapseInvisible: true
+ * - preserveCrosswise: false
+ */
+class StackLayoutBuilder(private var posX: Double, private var posY: Double) {
+    private var width: Double = 0.0
+    private var height: Double = 0.0
+    private var horizontal: Boolean = false
+    private var align: Align2d = Align2d.TOP_LEFT
+    private var reverse: Boolean = false
+    private var spacing: Double = 0.0
+    private var children: MutableList<GuiLayer> = mutableListOf()
+    private var fitToLength: Boolean = false
+    private var fitToBreadth: Boolean = false
+    private var collapseInvisible: Boolean = true
+    private var preserveCrosswise: Boolean = false
 
-        /** Set x alignment */
-        fun alignRight() = build {
-            alignX = Align2d.X.RIGHT
-        }
+    /** Stack horizontally */
+    fun horizontal() = build {
+        horizontal = true
+    }
 
-        /** Set x alignment */
-        fun alignCenterX() = build {
-            alignX = Align2d.X.CENTER
-        }
+    /** Stack vertically */
+    fun vertical() = build {
+        horizontal = false
+    }
 
-        /** Set x alignment */
-        fun alignLeft() = build {
-            alignX = Align2d.X.LEFT
-        }
+    fun preserveCrosswise() = build {
+        preserveCrosswise = true
+    }
 
-        /** Set y alignment */
-        fun alignTop() = build {
-            alignY = Align2d.Y.TOP
-        }
+    /** Set alignment. Disables [preserveCrosswise][StackLayout.preserveCrosswise] */
+    fun align(alignment: Align2d) = build {
+        align = alignment
+    }
 
-        /** Set y alignment */
-        fun alignCenterY() = build {
-            alignY = Align2d.Y.CENTER
-        }
+    /** Set x alignment */
+    fun alignRight() = build {
+        align = Align2d[Align2d.X.RIGHT, align.y]
+    }
 
-        /** Set y alignment */
-        fun alignBottom() = build {
-            alignY = Align2d.Y.BOTTOM
-        }
+    /** Set x alignment */
+    fun alignCenterX() = build {
+        align = Align2d[Align2d.X.CENTER, align.y]
+    }
 
-        /** Enable reverse */
-        fun reverse() = build {
-            reverse = true
-        }
+    /** Set x alignment */
+    fun alignLeft() = build {
+        align = Align2d[Align2d.X.LEFT, align.y]
+    }
 
-        /** Set position */
-        fun pos(posX: Int, posY: Int) = build {
-            this.posX = posX.toDouble()
-            this.posY = posY.toDouble()
-        }
+    /** Set y alignment */
+    fun alignTop() = build {
+        align = Align2d[align.x, Align2d.Y.TOP]
+    }
 
-        /** Set position */
-        fun pos(posX: Double, posY: Double) = build {
-            this.posX = posX
-            this.posY = posY
-        }
+    /** Set y alignment */
+    fun alignCenterY() = build {
+        align = Align2d[align.x, Align2d.Y.CENTER]
+    }
 
-        /** Set position */
-        fun pos(pos: Vec2d) = build {
-            this.posX = pos.x
-            this.posY = pos.y
-        }
+    /** Set y alignment */
+    fun alignBottom() = build {
+        align = Align2d[align.x, Align2d.Y.BOTTOM]
+    }
 
-        /** Set size */
-        fun size(width: Int, height: Int) = build {
-            this.width = width.toDouble()
-            this.height = height.toDouble()
-        }
+    /** Enable reverse */
+    fun reverse() = build {
+        reverse = true
+    }
 
-        /** Set size */
-        fun size(width: Double, height: Double) = build {
-            this.width = width
-            this.height = height
-        }
+    /** Set position */
+    fun pos(posX: Int, posY: Int) = build {
+        this.posX = posX.toDouble()
+        this.posY = posY.toDouble()
+    }
 
-        /** Set size */
-        fun size(size: Vec2d) = build {
-            this.width = size.x
-            this.height = size.y
-        }
+    /** Set position */
+    fun pos(posX: Double, posY: Double) = build {
+        this.posX = posX
+        this.posY = posY
+    }
 
-        /** Set width */
-        fun width(width: Int) = build {
-            this.width = width.toDouble()
-        }
+    /** Set position */
+    fun pos(pos: Vec2d) = build {
+        this.posX = pos.x
+        this.posY = pos.y
+    }
 
-        /** Set width */
-        fun width(width: Double) = build {
-            this.width = width
-        }
+    /** Set size */
+    fun size(width: Int, height: Int) = build {
+        this.width = width.toDouble()
+        this.height = height.toDouble()
+    }
 
-        /** Set height */
-        fun height(height: Int) = build {
-            this.height = height.toDouble()
-        }
+    /** Set size */
+    fun size(width: Double, height: Double) = build {
+        this.width = width
+        this.height = height
+    }
 
-        /** Set height */
-        fun height(height: Double) = build {
-            this.height = height
-        }
+    /** Set size */
+    fun size(size: Vec2d) = build {
+        this.width = size.x
+        this.height = size.y
+    }
 
-        /** Set spacing */
-        fun space(spacing: Int) = build {
-            this.spacing = spacing.toDouble()
-        }
+    /** Set width */
+    fun width(width: Int) = build {
+        this.width = width.toDouble()
+    }
 
-        /** Set spacing */
-        fun space(spacing: Double) = build {
-            this.spacing = spacing
-        }
+    /** Set width */
+    fun width(width: Double) = build {
+        this.width = width
+    }
 
-        /** Include invisible layers in layout calculations, keeping an empty spot for them */
-        fun includeInvisible() = build {
-            this.collapseInvisible = false
-        }
+    /** Set height */
+    fun height(height: Int) = build {
+        this.height = height.toDouble()
+    }
 
-        /** Add the passed layers to the stack when complete */
-        fun add(vararg children: GuiLayer) = build {
-            this.children.addAll(children)
-        }
+    /** Set height */
+    fun height(height: Double) = build {
+        this.height = height
+    }
 
-        /** fit children along the primary axis when complete */
-        fun fitLength() = build {
-            this.fitLength = true
-        }
+    /** Set spacing */
+    fun space(spacing: Int) = build {
+        this.spacing = spacing.toDouble()
+    }
 
-        /** fit children along the crosswise axis when complete */
-        fun fitBredth() = build {
-            this.fitBredth = true
-        }
+    /** Set spacing */
+    fun space(spacing: Double) = build {
+        this.spacing = spacing
+    }
 
-        /** fit children along both axes when complete */
-        fun fit() = build {
-            this.fitLength = true
-            this.fitBredth = true
-        }
+    /** Include invisible layers in layout calculations, keeping an empty spot for them */
+    fun includeInvisible() = build {
+        this.collapseInvisible = false
+    }
 
-        private fun buildLayer(): StackLayout {
-            val stack = StackLayout(
-                0, 0, 0, 0,
-                horizontal, alignX, alignY, reverse, spacing, collapseInvisible
-            )
-            stack.pos = vec(posX, posY)
-            stack.size = vec(width, height)
-            return stack
-        }
+    /** Add the passed layers to the stack when complete */
+    fun add(vararg children: GuiLayer) = build {
+        this.children.addAll(children)
+    }
 
-        fun layer(): StackLayout {
-            val layer = buildLayer()
-            layer.add(*children.toTypedArray())
-            if(fitLength) {
-                layer.fitLength()
-            }
-            if(fitBredth) {
-                layer.fitBredth()
-            }
-            return layer
-        }
+    /** fit children along the primary axis when complete */
+    fun fitLength() = build {
+        this.fitToLength = true
+    }
 
-        fun component(): GuiComponent {
-            val layer = buildLayer()
-            val component = layer.componentWrapper()
-            component.add(*children.toTypedArray())
-            if(fitLength) {
-                layer.fitLength()
-            }
-            if(fitBredth) {
-                layer.fitBredth()
-            }
-            return component
-        }
+    /** fit children along the crosswise axis when complete */
+    fun fitBreadth() = build {
+        this.fitToBreadth = true
+    }
 
-        private inline fun build(func: () -> Unit): Builder {
-            func()
-            return this
+    /** fit children along both axes when complete */
+    fun fit() = build {
+        this.fitToLength = true
+        this.fitToBreadth = true
+    }
+
+    fun layer(): StackLayer {
+        val layer = StackLayer(
+            0, 0, 0, 0,
+            horizontal, align, reverse, spacing, collapseInvisible, preserveCrosswise
+        )
+        layer.pos = vec(posX, posY) // constructor only accepts ints
+        layer.size = vec(width, height) // ditto
+
+        layer.add(*children.toTypedArray())
+        if(fitToLength) {
+            layer.fitToLength()
         }
+        if(fitToBreadth) {
+            layer.fitToBreadth()
+        }
+        return layer
+    }
+
+    fun component(): StackComponent {
+        val component = StackComponent(
+            0, 0, 0, 0,
+            horizontal, align, reverse, spacing, collapseInvisible, preserveCrosswise
+        )
+        component.pos = vec(posX, posY) // constructor only accepts ints
+        component.size = vec(width, height) // ditto
+
+        component.add(*children.toTypedArray())
+        if(fitToLength) {
+            component.fitToLength()
+        }
+        if(fitToBreadth) {
+            component.fitToBreadth()
+        }
+        return component
+    }
+
+    private inline fun build(func: () -> Unit): StackLayoutBuilder {
+        func()
+        return this
     }
 }
