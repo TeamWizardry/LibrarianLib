@@ -9,8 +9,23 @@ import java.util.Collections
 import java.util.IdentityHashMap
 
 interface CoordinateSpace2D {
+    /**
+     * The parent coordinate space. All points in this space are transformed relative to its parent.
+     */
     val parentSpace: CoordinateSpace2D?
+    /**
+     * The "normal" matrix.
+     *
+     * If the child space is embedded with an offset (x,y) within its parent, this will be `Matrix3().transform(x,y)`
+     *
+     * Counterintuitively, this matrix converts points from the child space to the parent space.
+     */
     val matrix: Matrix3
+    /**
+     * The inverse of [matrix], or a best guess. The best way to get this is to apply the same transforms that were
+     * used to create [matrix] while inverting both their values and order. This allows you to have an elegant failure
+     * state when scaling by zero.
+     */
     val inverseMatrix: Matrix3
 
     /**

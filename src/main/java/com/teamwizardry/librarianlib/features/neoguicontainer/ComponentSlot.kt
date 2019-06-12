@@ -28,13 +28,10 @@ class ComponentSlot(val slot: SlotBase, x: Int, y: Int) : GuiComponent(x, y) {
     @Suppress("UNUSED_PARAMETER")
     fun onTick(e: GuiComponentEvents.ComponentTickEvent) {
         try {
-            val p = convertPointTo(Vec2d.ZERO, ScreenSpace)
+            val p = convertPointTo(Vec2d.ZERO, ContainerSpace)
 
-            if (scaler == null) scaler = this.gui?.subComponents?.firstOrNull()
-            val s = scaler?.pos ?: Vec2d.ZERO
-
-            slot.xPos = p.xi - s.xi
-            slot.yPos = p.yi - s.yi
+            slot.xPos = p.xi
+            slot.yPos = p.yi
         } catch(e: UnrelatedCoordinateSpaceException) {
             // nop
         }

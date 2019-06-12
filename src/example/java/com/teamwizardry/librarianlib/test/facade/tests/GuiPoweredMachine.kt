@@ -25,11 +25,12 @@ import net.minecraft.util.ResourceLocation
  * The gui for our powered machine.
  * Nothing fancy here ^-^
  */
-open class GuiPoweredMachine(inventorySlotsIn: PoweredMachineContainer) : GuiContainerBase(inventorySlotsIn, 176, 166) {
+open class GuiPoweredMachine(inventorySlotsIn: PoweredMachineContainer) : GuiContainerBase(inventorySlotsIn) {
 
     init {
         val te = inventorySlotsIn.invBlock.inventory as TEPoweredMachine
         val bg = ComponentSprite(BG, 0, 0)
+        main.size = vec(176, 166)
         main.add(bg)
 
         val inventory = BaseLayouts.player(inventorySlotsIn.invPlayer)
