@@ -441,7 +441,7 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
     override var contentsOffset: Vec2d by contentsOffset_rm
 
     override fun isPointInBounds(point: Vec2d): Boolean {
-        return (point - layer.contentsOffset) in layer.bounds && !layer.isPointClipped(point)
+        return point in layer.bounds && !layer.isPointClipped(point)
     }
 
     private var didPush = false

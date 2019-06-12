@@ -16,9 +16,9 @@ import net.minecraft.item.ItemStack
 @UseExperimental(ExperimentalBitfont::class)
 class PastryTestDropdown: PastryTestBase() {
 
-    val dropdown: PastryDropdown<ItemStack>
 
     init {
+        val dropdown: PastryDropdown<ItemStack>
         val stacks = listOf(
             ItemStack(Items.DIAMOND_SWORD),
             ItemStack(Items.DIAMOND_PICKAXE),
@@ -32,14 +32,13 @@ class PastryTestDropdown: PastryTestBase() {
             ItemStack(Blocks.COBBLESTONE),
             ItemStack(Blocks.PLANKS)
         )
-        val stackComponent = ComponentStack(10, 45)
+        val stackComponent = ComponentStack(0, 0)
 
         val dropdownWidth = stacks.map { stack ->
             stack?.let { TextLayer.stringSize(it.displayName).widthi } ?: 0
         }.max() ?: 50
-        dropdown = PastryDropdown(30, 47, dropdownWidth + 15) {
-            if(it != null)
-                stackComponent.stack = it
+        dropdown = PastryDropdown(0, 0, dropdownWidth + 15) {
+            stackComponent.stack = it
         }
         dropdown.items.addAll(stacks.map { stack ->
             stack?.let { DropdownTextItem(it, it.displayName) } ?: DropdownSeparatorItem<ItemStack>()
@@ -52,5 +51,40 @@ class PastryTestDropdown: PastryTestBase() {
             .fit()
             .component()
         stack.add(horizontalStack)
+    }
+
+    init {
+        val dropdown: PastryDropdown<Int>
+        val label = TextLayer(0, 2, "Long dropdown:")
+        val valueLabel = TextLayer(0, 2)
+        valueLabel.fitToText = true
+
+        val dropdownWidth = TextLayer.stringSize("FizzBuzz").widthi
+        dropdown = PastryDropdown(0, 0, dropdownWidth + 15) {
+            valueLabel.text = "$it"
+        }
+
+        dropdown.items.addAll((1 until 50).map { num ->
+            DropdownTextItem(num, fizzBuzz(num))
+        })
+
+        dropdown.select(20)
+
+        val horizontalStack = StackLayout.build()
+            .add(label, valueLabel, dropdown)
+            .space(5)
+            .horizontal()
+            .fit()
+            .component()
+        stack.add(horizontalStack)
+    }
+
+    private fun fizzBuzz(num: Int): String {
+        return when {
+            num % 3 == 0 && num % 5 == 0 -> "FizzBuzz"
+            num % 3 == 0 -> "Fizz"
+            num % 5 == 0 -> "Buzz"
+            else -> "$num"
+        }
     }
 }

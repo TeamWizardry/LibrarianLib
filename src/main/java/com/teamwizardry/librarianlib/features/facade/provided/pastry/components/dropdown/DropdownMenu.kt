@@ -11,6 +11,7 @@ import com.teamwizardry.librarianlib.features.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.features.facade.layout.StackLayout
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.PastryTexture
 import com.teamwizardry.librarianlib.features.facade.value.GuiAnimator
+import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.identityMapOf
 import com.teamwizardry.librarianlib.features.math.Vec2d
@@ -23,9 +24,10 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
     private val creationTime = ClientTickHandler.ticks
 
     val background = SpriteLayer(PastryTexture.dropdownBackground, 0, 0)
-    val stack = StackLayout.build(0, 2).space(1).layer()
+    val stack = StackLayout.build(0, 0).space(1).layer()
     val items = identityMapOf<PastryDropdownItem<T>, DropdownStackItem>()
     val contents = GuiComponent(-2, 0)
+    val contentsClip = GuiComponent(0, 0)
     val dragSelectTime = 10
     val dragSelectDist = 10
     var mouseClickStarted = false
@@ -35,8 +37,10 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
     init {
         zIndex = GuiLayer.OVERLAY_Z
         this.add(background, contents)
-        contents.add(stack.componentWrapper())
-        contents.clipToBounds = true
+        contents.add(contentsClip)
+        contentsClip.add(stack.componentWrapper())
+        contentsClip.clipToBounds = true
+
         button.items.forEach { item ->
             val stackItem = DropdownStackItem(item)
             items[item] = stackItem
@@ -54,7 +58,24 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
         items.values.forEach { it.width = button.width }
 
         contents.size = vec(button.width, max(button.height, stack.height+4))
-        background.frame = contents.frame
+
+        val contentsFrame = contents.frame
+        var top = contentsFrame.minY
+        var bottom = contentsFrame.maxY
+
+        val rootMinLimit = root.bounds.minY + 10
+        val rootMaxLimit = root.bounds.maxY - 10
+        if(convertPointTo(vec(0, top), root).y < rootMinLimit) {
+            top = root.convertPointTo(vec(0, rootMinLimit), this).y
+        }
+        if(convertPointTo(vec(0, bottom), root).y > rootMaxLimit) {
+            bottom = root.convertPointTo(vec(0, rootMaxLimit), this).y
+        }
+
+        background.frame = rect(contentsFrame.minX, top, contentsFrame.width, bottom-top)
+        val clipY = top-contentsFrame.minY
+        contentsClip.frame = rect(0, clipY+2, contentsFrame.width, bottom-top-4)
+        contentsClip.contentsOffset = vec(0, -clipY)
     }
 
     fun scrollTo(item: PastryDropdownItem<T>) {
@@ -69,6 +90,22 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
         val parent = this.parent ?: return
         val min = button.convertPointTo(vec(0, 0), parent)
         this.pos = min
+        if(stack.frame.minY < contentsClip.bounds.minY && contentsClip.mouseHit != null) {
+            val y = contentsClip.mousePos.y - contentsClip.bounds.minY
+            when {
+                y <= 4.0 -> contents.yi += 3
+                y <= 8.0 -> contents.yi += 2
+                y <= 16.0 -> contents.yi += 1
+            }
+        }
+        if(stack.frame.maxY > contentsClip.bounds.maxY && contentsClip.mouseHit != null) {
+            val y = contentsClip.bounds.maxY - contentsClip.mousePos.y
+            when {
+                y <= 4.0 -> contents.yi -= 3
+                y <= 8.0 -> contents.yi -= 2
+                y <= 16.0 -> contents.yi -= 1
+            }
+        }
     }
 
     @Hook

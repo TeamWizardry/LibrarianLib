@@ -23,6 +23,10 @@ class TextLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, p
         this.text = text
         this.fitToText()
     }
+    constructor(text: String): this(0, 0, text)
+    constructor(posX: Int, posY: Int): this(posX, posY, "")
+    constructor(): this(0, 0, "")
+
     /**
      * The text to draw
      */
