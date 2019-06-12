@@ -30,7 +30,8 @@ import kotlin.math.max
  */
 class StackLayout(posX: Int, posY: Int, width: Int, height: Int,
     var horizontal: Boolean,
-    var align: Align2d,
+    var alignX: Align2d.X?,
+    var alignY: Align2d.Y?,
     var reverse: Boolean,
     var spacing: Double,
     var collapseInvisible: Boolean
@@ -104,37 +105,41 @@ class StackLayout(posX: Int, posY: Int, width: Int, height: Int,
 
         val reverseOffset = if(reverse) accumulator else 0.0
         if(horizontal) {
-            val xOffset = when (align.x) {
+            val xOffset = when (alignX) {
                 Align2d.X.LEFT -> 0.0 + reverseOffset
                 Align2d.X.CENTER -> floor((width-accumulator)/2 + reverseOffset)
                 Align2d.X.RIGHT -> ceil(width-accumulator + reverseOffset)
+                else -> 0.0
             }
 
             children.zip(positions).forEach { (child, position) ->
                 val frame = child.frame
                 val x = xOffset + if(reverse) -position else position
-                val y = when(align.y) {
+                val y = when(alignY) {
                     Align2d.Y.TOP -> 0
                     Align2d.Y.CENTER -> floorInt((height - frame.height)/2)
                     Align2d.Y.BOTTOM -> ceilInt(height - frame.height)
+                    else -> child.frame.minY.toInt()
                 }
 
                 child.frame = rect(if(reverse) x-frame.width else x, y, frame.size)
             }
         } else {
-            val yOffset = when (align.y) {
+            val yOffset = when (alignY) {
                 Align2d.Y.TOP -> 0.0 + reverseOffset
                 Align2d.Y.CENTER -> floor((height-accumulator)/2 + reverseOffset)
                 Align2d.Y.BOTTOM -> ceil(height-accumulator + reverseOffset)
+                else -> 0.0
             }
 
             children.zip(positions).forEach { (child, position) ->
                 val frame = child.frame
                 val y = yOffset + if(reverse) -position else position
-                val x = when(align.x) {
+                val x = when(alignX) {
                     Align2d.X.LEFT -> 0
                     Align2d.X.CENTER -> floorInt((width - frame.width)/2)
                     Align2d.X.RIGHT -> ceilInt(width - frame.width)
+                    else -> child.frame.minX.toInt()
                 }
 
                 child.frame = rect(x, if(reverse) y-frame.height else y, frame.size)
@@ -172,7 +177,8 @@ class StackLayout(posX: Int, posY: Int, width: Int, height: Int,
         private var width: Double = 0.0
         private var height: Double = 0.0
         private var horizontal: Boolean = false
-        private var align: Align2d = Align2d.TOP_LEFT
+        private var alignX: Align2d.X? = null
+        private var alignY: Align2d.Y? = null
         private var reverse: Boolean = false
         private var spacing: Double = 0.0
         private var children: MutableList<GuiLayer> = mutableListOf()
@@ -192,37 +198,38 @@ class StackLayout(posX: Int, posY: Int, width: Int, height: Int,
 
         /** Set alignment */
         fun align(alignment: Align2d) = build {
-            align = alignment
+            alignX = alignment.x
+            alignY = alignment.y
         }
 
         /** Set x alignment */
         fun alignRight() = build {
-            align = Align2d.get(Align2d.X.RIGHT, align.y)
+            alignX = Align2d.X.RIGHT
         }
 
         /** Set x alignment */
         fun alignCenterX() = build {
-            align = Align2d.get(Align2d.X.CENTER, align.y)
+            alignX = Align2d.X.CENTER
         }
 
         /** Set x alignment */
         fun alignLeft() = build {
-            align = Align2d.get(Align2d.X.LEFT, align.y)
+            alignX = Align2d.X.LEFT
         }
 
         /** Set y alignment */
         fun alignTop() = build {
-            align = Align2d.get(align.x, Align2d.Y.TOP)
+            alignY = Align2d.Y.TOP
         }
 
         /** Set y alignment */
         fun alignCenterY() = build {
-            align = Align2d.get(align.x, Align2d.Y.CENTER)
+            alignY = Align2d.Y.CENTER
         }
 
         /** Set y alignment */
         fun alignBottom() = build {
-            align = Align2d.get(align.x, Align2d.Y.BOTTOM)
+            alignY = Align2d.Y.BOTTOM
         }
 
         /** Enable reverse */
@@ -325,7 +332,7 @@ class StackLayout(posX: Int, posY: Int, width: Int, height: Int,
         private fun buildLayer(): StackLayout {
             val stack = StackLayout(
                 0, 0, 0, 0,
-                horizontal, align, reverse, spacing, collapseInvisible
+                horizontal, alignX, alignY, reverse, spacing, collapseInvisible
             )
             stack.pos = vec(posX, posY)
             stack.size = vec(width, height)
