@@ -96,6 +96,9 @@ class Vec2d(val x: Double, val y: Double) {
         return x * point.x + y * point.y
     }
 
+    @JvmSynthetic
+    operator fun unaryMinus(): Vec2d = this * -1
+
     @get:JvmName("lengthSquared")
     val lengthSquared: Double get() = x * x + y * y
 
