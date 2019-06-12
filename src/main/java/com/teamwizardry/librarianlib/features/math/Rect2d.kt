@@ -125,6 +125,18 @@ class Rect2d(val x: Double, val y: Double, val width: Double, val height: Double
         return Rect2d(this.pos + pos, this.size + size)
     }
 
+    @JvmSynthetic
+    operator fun plus(margins: Margins2d): Rect2d = add(margins)
+    fun add(margins: Margins2d): Rect2d {
+        return Rect2d(x - margins.left, y - margins.top, width + margins.width, height + margins.height)
+    }
+
+    @JvmSynthetic
+    operator fun minus(margins: Margins2d): Rect2d = subtract(margins)
+    fun subtract(margins: Margins2d): Rect2d {
+        return Rect2d(x + margins.left, y + margins.top, width - margins.width, height - margins.height)
+    }
+
     //=============================================================================
 
     override fun hashCode(): Int {

@@ -27,7 +27,7 @@ class GuiTestTextLayer : GuiBase() {
         textLayer = TextLayer(0, 0, 100, 35)
         textLayer.text = """
             <No wrap> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nibh sem, interdum ut nunc eu,
-            <newline> imperdiet molestie nibh. Etiam aliquet sapien non justo finibus, sit amet maximus ante sodales.
+            <newline> imperdiet molestie nibh. Etiam sit amet maximus ante sodales.
         """.trimIndent()
         textLayer.wrap = false
         textLayer.fitToText = true
@@ -36,7 +36,7 @@ class GuiTestTextLayer : GuiBase() {
         textLayer = TextLayer(0, 120, 100, 35)
         textLayer.text = """
             <Wrap> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nibh sem, interdum ut nunc eu,
-            <newline> imperdiet molestie nibh. Etiam aliquet sapien non justo finibus, sit amet maximus ante sodales.
+            <newline> imperdiet molestie nibh. Etiam sit amet maximus ante sodales.
         """.trimIndent()
         textLayer.fitToText = true
         main.add(textLayer)
@@ -47,7 +47,7 @@ class GuiTestTextLayer : GuiBase() {
         textLayer = TextLayer(110, 100, 150, 150)
         textLayer.text = """
             <Center> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nibh sem, interdum ut nunc eu,
-            <newline> imperdiet molestie nibh. Etiam aliquet sapien non justo finibus, sit amet maximus ante sodales.
+            <newline> imperdiet molestie nibh. Etiam sit amet maximus ante sodales.
         """.trimIndent()
         textLayer.align = Align2d.CENTER
         main.add(textLayer)

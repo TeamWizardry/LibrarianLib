@@ -22,7 +22,7 @@ class PastryButton @JvmOverloads constructor(
 
     class ClickEvent(): Event()
 
-    val label = TextLayer(4, 1, buttonText)
+    val label = PastryLabel(4, 0, buttonText)
 
     init {
         if(width == null) {
@@ -97,6 +97,6 @@ class PastryButton @JvmOverloads constructor(
 
     override fun layoutChildren() {
         sprite.size = this.size
-        label.size = this.size - vec(8, 4)
+        label.size = this.size - vec(8, 0)
     }
 }

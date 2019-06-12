@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.ExperimentalPastryAPI
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryCheckbox
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryLabel
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryRadioButtonSet
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastrySwitch
 import com.teamwizardry.librarianlib.features.helpers.vec
@@ -28,7 +29,7 @@ class PastryTestSwitches: PastryTestBase() {
         panel.add(radioSet.addOption("3", 5, 25))
         panel.add(radioSet.addOption("4", 5, 35))
 
-        val radioText = TextLayer(13, 5, 0, 0)
+        val radioText = PastryLabel(13, 0, 0, 0)
         radioText.text = "x"
         radioText.fitToText = true
         panel.add(radioText)

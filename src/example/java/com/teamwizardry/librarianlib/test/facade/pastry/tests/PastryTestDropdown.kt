@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.test.facade.pastry.tests
 import com.teamwizardry.librarianlib.features.facade.components.ComponentItemStack
 import com.teamwizardry.librarianlib.features.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.features.facade.layout.StackLayout
-import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryButton
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryLabel
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.dropdown.DropdownSeparatorItem
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.dropdown.DropdownTextItem
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.dropdown.PastryDropdown
@@ -35,7 +35,7 @@ class PastryTestDropdown: PastryTestBase() {
         val stackComponent = ComponentItemStack(0, 0)
 
         val dropdownWidth = stacks.map { stack ->
-            stack?.let { TextLayer.stringSize(it.displayName).widthi } ?: 0
+            stack?.let { PastryLabel.stringSize(it.displayName).widthi } ?: 0
         }.max() ?: 50
         dropdown = PastryDropdown(0, 0, dropdownWidth + 15) {
             stackComponent.stack = it
@@ -55,11 +55,11 @@ class PastryTestDropdown: PastryTestBase() {
 
     init {
         val dropdown: PastryDropdown<Int>
-        val label = TextLayer(0, 2, "Long dropdown:")
-        val valueLabel = TextLayer(0, 2)
+        val label = PastryLabel(0, 0, "Long dropdown:")
+        val valueLabel = PastryLabel(0, 0)
         valueLabel.fitToText = true
 
-        val dropdownWidth = TextLayer.stringSize("FizzBuzz").widthi
+        val dropdownWidth = PastryLabel.stringSize("FizzBuzz").widthi
         dropdown = PastryDropdown(0, 0, dropdownWidth + 15) {
             valueLabel.text = "$it"
         }

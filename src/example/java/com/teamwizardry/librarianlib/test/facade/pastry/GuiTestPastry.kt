@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.features.facade.layout.StackLayout
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.BackgroundTexture
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.Pastry
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryButton
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryLabel
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
@@ -35,7 +36,7 @@ class GuiTestPastry : GuiBase() {
         .fit()
         .also { selector ->
             tests.forEach { (clazz, name) ->
-                val label = TextLayer(0, 0, name)
+                val label = PastryLabel(0, 0, name)
                 val item = GuiComponent(0, 0, label.widthi, Pastry.lineHeight)
                 item.add(label)
                 item.BUS.hook<GuiLayerEvents.LayoutChildren> {
@@ -52,7 +53,7 @@ class GuiTestPastry : GuiBase() {
     val contentBackground = PastryBackground(BackgroundTexture.SLIGHT_INSET, 0, 0, 0, 0)
     val contentArea = GuiComponent()
     val selectorArea = GuiComponent()
-    val selectedTestLabel = TextLayer(0, 0, "")
+    val selectedTestLabel = PastryLabel(0, 1, "")
     val selectTestButton = PastryButton("Select Test", 1, 1) {
         selectorArea.isVisible = true
         contentArea.isVisible = false
@@ -69,7 +70,7 @@ class GuiTestPastry : GuiBase() {
             contentBackground.frame = main.bounds.offset(0, selectTestButton.frame.maxY + 1, 0, 0)
 
             selectedTestLabel.frame = rect(
-                selectTestButton.frame.maxX + 5, 3,
+                selectTestButton.frame.maxX + 5, 1,
                 main.width - selectTestButton.width - 2, Pastry.lineHeight
             )
             contentArea.frame = contentBackground.frame.offset(2, 2, -2, -2)

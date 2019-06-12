@@ -1,25 +1,22 @@
 package com.teamwizardry.librarianlib.test.facade.tests
 
 import com.teamwizardry.librarianlib.features.animator.Easing
-import com.teamwizardry.librarianlib.features.facade.GuiBase
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
-import com.teamwizardry.librarianlib.features.facade.components.ComponentStack
 import com.teamwizardry.librarianlib.features.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.features.facade.layers.minecraft.FluidGaugeLayer
 import com.teamwizardry.librarianlib.features.facade.layout.StackLayout
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.BackgroundTexture
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.GuiPastryBase
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.Pastry
-import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.dropdown.DropdownSeparatorItem
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryLabel
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.dropdown.DropdownTextItem
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.dropdown.PastryDropdown
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Axis2d
 import com.teamwizardry.librarianlib.features.math.Cardinal2d
-import com.teamwizardry.librarianlib.features.utilities.Cell
 import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import net.minecraftforge.fluids.FluidRegistry
 
@@ -78,13 +75,13 @@ class GuiTestFluidGauge: GuiPastryBase() {
 
             .add(GuiComponent(0, 0, 0, Pastry.lineHeight).also { row ->
                 row.add(
-                    TextLayer(0, 2, "Direction").also { it.x = -it.width - 3 },
+                    PastryLabel(0, 2, "Direction").also { it.x = -it.width - 3 },
                     directionDropdown
                 )
             })
             .add(GuiComponent(0, 0, 0, Pastry.lineHeight).also { row ->
                 row.add(
-                    TextLayer(0, 2, "Flow").also { it.x = -it.width - 3 },
+                    PastryLabel(0, 2, "Flow").also { it.x = -it.width - 3 },
                     flowDropdown
                 )
             })
