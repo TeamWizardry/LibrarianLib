@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.features.facade.component.supporting
 
-import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
+import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
 import java.util.Collections
 
-interface IComponentData {
+interface ILayerData {
     /**
      * Returns all valid data keys for [clazz].
      */
@@ -45,12 +45,12 @@ interface IComponentData {
 }
 
 /**
- * TODO: Document file ComponentDataHandler
+ * TODO: Document file LayerDataHandler
  *
  * Created by TheCodeWarrior
  */
-class ComponentDataHandler: IComponentData {
-    lateinit var component: GuiComponent
+class LayerDataHandler: ILayerData {
+    lateinit var layer: GuiLayer
 
     private val data: MutableMap<Class<*>, MutableMap<String, Any>> = mutableMapOf()
 
@@ -70,21 +70,21 @@ class ComponentDataHandler: IComponentData {
         return data.entries.filter { it.value.isNotEmpty() }.map { it.key }.toMutableSet()
     }
 
-    /** [GuiComponent.setData] */
+    /** [GuiLayer.setData] */
     override fun <D : Any> setData(clazz: Class<D>, key: String, value: D) {
         if (!data.containsKey(clazz))
             data.put(clazz, mutableMapOf())
             data[clazz]?.put(key, value)
     }
 
-    /** [GuiComponent.removeData] */
+    /** [GuiLayer.removeData] */
     override fun <D : Any> removeData(clazz: Class<D>, key: String) {
         if (!data.containsKey(clazz))
             data.put(clazz, mutableMapOf())
             data[clazz]?.remove(key)
     }
 
-    /** [GuiComponent.getData] */
+    /** [GuiLayer.getData] */
     @Suppress("UNCHECKED_CAST")
     override fun <D> getData(clazz: Class<D>, key: String): D? {
         if (!data.containsKey(clazz))
@@ -92,7 +92,7 @@ class ComponentDataHandler: IComponentData {
         return data[clazz]?.get(key) as D?
     }
 
-    /** [GuiComponent.hasData] */
+    /** [GuiLayer.hasData] */
     @Suppress("UNCHECKED_CAST")
     override fun <D> hasData(clazz: Class<D>, key: String): Boolean {
         if (!data.containsKey(clazz))
@@ -130,11 +130,11 @@ class ComponentDataHandler: IComponentData {
     }
 }
 
-inline fun <reified D : Any> IComponentData.setData(key: String, value: D) = this.setData(D::class.java, key, value)
-inline fun <reified D : Any> IComponentData.removeData(key: String) = this.removeData(D::class.java, key)
-inline fun <reified D> IComponentData.getData(key: String): D? = this.getData(D::class.java, key)
-inline fun <reified D> IComponentData.hasData(key: String): Boolean = this.hasData(D::class.java, key)
-inline fun <reified D : Any> IComponentData.setData(value: D) = this.setData(D::class.java, value)
-inline fun <reified D : Any> IComponentData.removeData() = this.removeData(D::class.java)
-inline fun <reified D : Any> IComponentData.getData(): D? = this.getData(D::class.java)
-inline fun <reified D : Any> IComponentData.hasData(): Boolean = this.hasData(D::class.java)
+inline fun <reified D : Any> ILayerData.setData(key: String, value: D) = this.setData(D::class.java, key, value)
+inline fun <reified D : Any> ILayerData.removeData(key: String) = this.removeData(D::class.java, key)
+inline fun <reified D> ILayerData.getData(key: String): D? = this.getData(D::class.java, key)
+inline fun <reified D> ILayerData.hasData(key: String): Boolean = this.hasData(D::class.java, key)
+inline fun <reified D : Any> ILayerData.setData(value: D) = this.setData(D::class.java, value)
+inline fun <reified D : Any> ILayerData.removeData() = this.removeData(D::class.java)
+inline fun <reified D : Any> ILayerData.getData(): D? = this.getData(D::class.java)
+inline fun <reified D : Any> ILayerData.hasData(): Boolean = this.hasData(D::class.java)

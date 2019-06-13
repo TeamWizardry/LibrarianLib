@@ -22,14 +22,11 @@ import org.lwjgl.opengl.GL11
 @SideOnly(Side.CLIENT)
 open class GuiComponent private constructor(
     posX: Int, posY: Int, width: Int, height: Int,
-    internal val data: ComponentDataHandler,
-    internal val tags: ComponentTagHandler,
     internal val guiEventHandler: ComponentGuiEventHandler,
     internal val mouseHandler: ComponentMouseHandler,
     internal val focusHandler: ComponentFocusHandler,
     internal val tooltipHandler: ComponentTooltipHandler
 ) : GuiLayer(posX, posY, width, height),
-    IComponentData by data, IComponentTag by tags,
     IComponentGuiEvent by guiEventHandler, IComponentMouse by mouseHandler,
     IComponentFocus by focusHandler, IComponentTooltip by tooltipHandler
 {
@@ -37,8 +34,6 @@ open class GuiComponent private constructor(
     constructor(posX: Int, posY: Int): this(posX, posY, 0, 0)
     constructor(posX: Int, posY: Int, width: Int, height: Int): this(
         posX, posY, width, height,
-        ComponentDataHandler(),
-        ComponentTagHandler(),
         ComponentGuiEventHandler(),
         ComponentMouseHandler(),
         ComponentFocusHandler(),
@@ -153,8 +148,6 @@ open class GuiComponent private constructor(
     init {
         @Suppress("LeakingThis")
         {
-            data.component = this
-            tags.component = this
             guiEventHandler.component = this
             mouseHandler.component = this
             focusHandler.component = this

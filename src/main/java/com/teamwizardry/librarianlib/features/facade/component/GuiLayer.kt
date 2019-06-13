@@ -61,10 +61,15 @@ open class GuiLayer private constructor(
     internal val relationships: LayerRelationshipHandler,
     internal val render: LayerRenderHandler,
     internal val clipping: LayerClippingHandler,
+    internal val dataHandler: LayerDataHandler,
+    internal val tagHandler: LayerTagHandler,
     internal val base: LayerBaseHandler
-)
-    : ILayerGeometry by geometry, ILayerRelationships by relationships,
-    ILayerRendering by render, ILayerClipping by clipping, ILayerBase by base {
+):
+    ILayerGeometry by geometry, ILayerRelationships by relationships,
+    ILayerRendering by render, ILayerClipping by clipping,
+    ILayerData by dataHandler, ILayerTag by tagHandler,
+    ILayerBase by base
+{
     constructor(): this(0, 0, 0, 0)
     constructor(posX: Int, posY: Int): this(posX, posY, 0, 0)
     constructor(posX: Int, posY: Int, width: Int, height: Int): this(
@@ -72,12 +77,16 @@ open class GuiLayer private constructor(
         LayerRelationshipHandler(),
         LayerRenderHandler(),
         LayerClippingHandler(),
+        LayerDataHandler(),
+        LayerTagHandler(),
         LayerBaseHandler()
     )
 
     init {
         @Suppress("LeakingThis")
         {
+            dataHandler.layer = this
+            tagHandler.layer = this
             geometry.layer = this
             relationships.layer = this
             render.layer = this
