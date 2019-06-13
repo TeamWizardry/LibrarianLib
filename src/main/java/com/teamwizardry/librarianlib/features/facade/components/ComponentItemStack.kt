@@ -4,6 +4,8 @@ import com.teamwizardry.librarianlib.features.facade.HandlerList
 import com.teamwizardry.librarianlib.features.facade.value.IMValue
 import com.teamwizardry.librarianlib.features.facade.value.IMValueBoolean
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.ItemStackTooltip
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.VanillaTooltip
 import com.teamwizardry.librarianlib.features.kotlin.isNotEmpty
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import net.minecraft.client.Minecraft
@@ -22,6 +24,17 @@ open class ComponentItemStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 1
     var enableTooltip: Boolean by enableTooltip_im
     val quantityText = HandlerList<(ComponentItemStack, String?) -> String?>()
     val itemInfo = HandlerList<(ComponentItemStack, MutableList<String>) -> Unit>()
+    private val vanillaTooltip = ItemStackTooltip()
+
+    init {
+        tooltip = vanillaTooltip
+        vanillaTooltip.stack_im {
+            stack
+        }
+        vanillaTooltip.isVisible_im {
+            enableTooltip
+        }
+    }
 
     override fun draw(partialTicks: Float) {
         RenderHelper.enableGUIStandardItemLighting()
@@ -56,18 +69,4 @@ open class ComponentItemStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 1
         GlStateManager.disableRescaleNormal()
         RenderHelper.disableStandardItemLighting()
     }
-
-    companion object {
-        fun getTooltip(stack: ItemStack, modifyList: (MutableList<String>) -> Unit): MutableList<String> {
-            val list = stack.getTooltip(Minecraft.getMinecraft().player,
-                    if (Minecraft.getMinecraft().gameSettings.advancedItemTooltips)
-                        ITooltipFlag.TooltipFlags.ADVANCED else ITooltipFlag.TooltipFlags.NORMAL)
-
-            list.mapIndexed { i, s -> (if (i == 0) stack.rarity.color else TextFormatting.GRAY) + s }
-            modifyList.invoke(list)
-
-            return list
-        }
-    }
-
 }

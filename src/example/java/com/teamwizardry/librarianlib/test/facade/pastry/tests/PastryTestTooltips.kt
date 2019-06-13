@@ -2,8 +2,10 @@ package com.teamwizardry.librarianlib.test.facade.pastry.tests
 
 import com.teamwizardry.librarianlib.features.facade.layers.ItemStackLayer
 import com.teamwizardry.librarianlib.features.facade.layers.TextLayer
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.ItemStackTooltip
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryButton
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryTooltip
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.VanillaTooltip
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.test.facade.pastry.PastryTestBase
 import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
@@ -28,6 +30,21 @@ class PastryTestTooltips: PastryTestBase() {
                     "Both restore 4 points of hunger and 9.6 hunger saturation."
             )
         })
+        this.stack.add(PastryButton("Vanilla", 0, 0, 100).also {
+            val tt = VanillaTooltip()
+            it.tooltip = tt
+            tt.lines = listOf(
+                "§6§nI'm important",
+                "Wheee! Such §evanilla§r, much §7plain"
+            )
+        })
+
+        this.stack.add(PastryButton("ItemStack", 0, 0, 100).also {
+            val tt = ItemStackTooltip()
+            it.tooltip = tt
+            val stack = ItemStack(Items.DIAMOND_AXE, 3)
+            tt.stack = stack
+        })
     }
 }
 
@@ -50,6 +67,5 @@ class ComplexTooltip(val stack: ItemStack, val text: String): PastryTooltip() {
         textLayer.fitToText()
 
         contents.size = vec(textLayer.textFrame.maxX + 2, textLayer.height + 2)
-        itemStackLayer.yi = 1//((contents.height - itemStackLayer.height)/2).toInt()
     }
 }

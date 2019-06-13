@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.features.facade.component.supporting
 
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
-import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryTooltip
+import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryBasicTooltip
 import com.teamwizardry.librarianlib.features.facade.value.IMValue
 import com.teamwizardry.librarianlib.features.facade.value.IMValueInt
@@ -23,13 +23,13 @@ interface IComponentTooltip {
     /**
      * @see tooltip
      */
-    val tooltip_rm: RMValue<PastryTooltip?>
+    val tooltip_rm: RMValue<GuiLayer?>
 
     /**
      * The layer to display as a tooltip when the mouse is over this component. If this value is null it will fall back
      * to [tooltipText].
      */
-    var tooltip: PastryTooltip?
+    var tooltip: GuiLayer?
 
     /**
      * @see tooltipDelay
@@ -41,7 +41,7 @@ interface IComponentTooltip {
      */
     var tooltipDelay: Int
 
-    val tooltipLayer: PastryTooltip?
+    val tooltipLayer: GuiLayer?
 }
 
 @UseExperimental(ExperimentalBitfont::class)
@@ -52,12 +52,12 @@ class ComponentTooltipHandler: IComponentTooltip {
 
     override val tooltipText_im: IMValue<String?> = IMValue()
     override var tooltipText: String? by tooltipText_im
-    override val tooltip_rm: RMValue<PastryTooltip?> = RMValue(null)
-    override var tooltip: PastryTooltip? by tooltip_rm
+    override val tooltip_rm: RMValue<GuiLayer?> = RMValue(null)
+    override var tooltip: GuiLayer? by tooltip_rm
     override val tooltipDelay_im: IMValueInt = IMValueInt(0)
     override var tooltipDelay: Int by tooltipDelay_im
 
-    override val tooltipLayer: PastryTooltip?
+    override val tooltipLayer: GuiLayer?
         get() {
             tooltip?.also { return it }
             tooltipText?.also {

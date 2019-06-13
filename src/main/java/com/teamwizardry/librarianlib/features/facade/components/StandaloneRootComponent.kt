@@ -87,7 +87,7 @@ open class StandaloneRootComponent(val closeGui: (Exception) -> Unit): RootCompo
         return false
     }
 
-    private var currentTooltip: PastryTooltip? = null
+    private var currentTooltip: GuiLayer? = null
 
     fun renderRoot(partialTicks: Float, mousePos: Vec2d) {
         StencilUtil.clear()

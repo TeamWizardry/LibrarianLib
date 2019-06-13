@@ -11,6 +11,11 @@ import com.teamwizardry.librarianlib.features.facade.value.IMValue
 import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
 import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.FontRenderer
+import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.item.ItemStack
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
@@ -76,5 +81,68 @@ class PastryBasicTooltip: PastryTooltip() {
         textLayer.fitToText()
 
         contents.size = vec(textLayer.textFrame.maxX + 2, textLayer.frame.maxY + 1)
+    }
+}
+
+class ItemStackTooltip: GuiLayer() {
+    val stack_im: IMValue<ItemStack?> = IMValue()
+    var stack: ItemStack? by stack_im
+
+    override fun draw(partialTicks: Float) {
+        super.draw(partialTicks)
+
+        val rootMousePos = (root as GuiComponent).mousePos
+
+        stack?.also { stack ->
+            TooltipProvider.renderToolTip(stack, rootMousePos.xi, rootMousePos.yi)
+        }
+    }
+}
+
+class VanillaTooltip: GuiLayer() {
+    val text_im: IMValue<String?> = IMValue()
+    var text: String? by text_im
+
+    val lines_im: IMValue<List<String>?> = IMValue()
+    var lines: List<String>? by lines_im
+
+    val font_im: IMValue<FontRenderer> = IMValue(Minecraft.getMinecraft().fontRenderer)
+    var font: FontRenderer by font_im
+
+    override fun draw(partialTicks: Float) {
+        super.draw(partialTicks)
+
+        val rootMousePos = (root as GuiComponent).mousePos
+
+        (lines ?: text?.let { listOf(it) })?.also { lines ->
+            TooltipProvider.drawHoveringText(lines.toMutableList(), rootMousePos.xi, rootMousePos.yi, font)
+        }
+    }
+}
+
+private object TooltipProvider: GuiScreen() {
+    init {
+        this.width = -1
+        this.height = -1
+        update()
+    }
+
+    private fun update() {
+        val scaledresolution = ScaledResolution(Minecraft.getMinecraft())
+        val w = scaledresolution.scaledWidth
+        val h = scaledresolution.scaledHeight
+        if(this.width != w || this.height != h) {
+            this.setWorldAndResolution(Minecraft.getMinecraft(), w, h)
+        }
+    }
+
+    public override fun renderToolTip(stack: ItemStack, x: Int, y: Int) {
+        update()
+        super.renderToolTip(stack, x, y)
+    }
+
+    public override fun drawHoveringText(textLines: MutableList<String>, x: Int, y: Int, font: FontRenderer) {
+        update()
+        super.drawHoveringText(textLines, x, y, font)
     }
 }
