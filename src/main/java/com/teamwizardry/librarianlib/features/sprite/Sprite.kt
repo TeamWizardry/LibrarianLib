@@ -13,7 +13,7 @@ import kotlin.math.max
  * This class represents a section of a [Texture]
  */
 @SideOnly(Side.CLIENT)
-open class Sprite : ISprite {
+class Sprite : ISprite {
 
     /**
      * The [Texture] that this sprite is a part of
@@ -21,7 +21,8 @@ open class Sprite : ISprite {
      */
     var tex: Texture
         protected set
-    protected var def: SpriteDefinition = SpriteDefinition("")
+    var def: SpriteDefinition = SpriteDefinition("")
+        private set
 
     val name: String
         get() = def.name
@@ -51,6 +52,15 @@ open class Sprite : ISprite {
 
     var images: List<BufferedImage> = listOf()
         private set
+
+    @Deprecated("UV coordinates should rarely be directly used", replaceWith = ReplaceWith("def.w"))
+    val uvWidth: Int get() = def.w
+    @Deprecated("UV coordinates should rarely be directly used", replaceWith = ReplaceWith("def.h"))
+    val uvHeight: Int get() = def.h
+    @Deprecated("UV coordinates should rarely be directly used", replaceWith = ReplaceWith("def.u"))
+    val u: Int get() = def.u
+    @Deprecated("UV coordinates should rarely be directly used", replaceWith = ReplaceWith("def.v"))
+    val v: Int get() = def.v
 
     constructor(tex: Texture) {
         this.tex = tex
