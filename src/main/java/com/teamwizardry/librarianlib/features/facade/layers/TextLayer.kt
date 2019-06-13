@@ -58,8 +58,26 @@ open class TextLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(po
     private var renderer = TypesetStringRenderer()
     private var typesetString: TypesetString = renderer.typesetString
     private var lastParams = emptyList<Any>()
-    private var fullTextBounds: Rect2d = Rect2d.ZERO
-    private var textBounds: Rect2d = Rect2d.ZERO
+    /**
+     * The bounds of the text pre-truncation.
+     */
+    var fullTextBounds: Rect2d = Rect2d.ZERO
+        private set
+    /**
+     * The bounds of the text post-truncation. If the text was not truncated this is equal to [fullTextBounds]
+     */
+    var textBounds: Rect2d = Rect2d.ZERO
+        private set
+    /**
+     * @see fullTextBounds
+     */
+    val fullTextFrame: Rect2d
+        get() = this.convertRectToParent(fullTextBounds)
+    /**
+     * @see textBounds
+     */
+    val textFrame: Rect2d
+        get() = this.convertRectToParent(textBounds)
 
     override fun draw(partialTicks: Float) {
         updateLayout()
@@ -93,6 +111,7 @@ open class TextLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(po
             Align2d.Y.BOTTOM -> GlStateManager.translate(0.0, contentVGap, 0.0)
         }
 
+        renderer.defaultColor = color
         renderer.draw()
 
         GlStateManager.popMatrix()
@@ -144,11 +163,15 @@ open class TextLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(po
         return lastGlyph.characterIndex+1
     }
 
+    /**
+     * Fits this layer's [size] to its text. If [wrap] is set this function will not set this layer's width in order to
+     * maintain wrapping behavior on subsequent layouts.
+     */
     fun fitToText() {
         updateLayout()
 
         if(wrap) {
-            this.size = vec(size.x, fullTextBounds.height + margins.height)
+            this.size = vec(size.x, fullTextBounds.maxY + margins.height)
         } else {
             this.size = vec(fullTextBounds.maxX + margins.width, fullTextBounds.maxY + margins.height)
         }

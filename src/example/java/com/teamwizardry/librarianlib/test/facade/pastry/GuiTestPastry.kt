@@ -17,6 +17,7 @@ import com.teamwizardry.librarianlib.test.facade.pastry.tests.PastryTestButton
 import com.teamwizardry.librarianlib.test.facade.pastry.tests.PastryTestDropdown
 import com.teamwizardry.librarianlib.test.facade.pastry.tests.PastryTestProgress
 import com.teamwizardry.librarianlib.test.facade.pastry.tests.PastryTestSwitches
+import com.teamwizardry.librarianlib.test.facade.pastry.tests.PastryTestTooltips
 import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 
 @UseExperimental(ExperimentalBitfont::class)
@@ -26,6 +27,7 @@ class GuiTestPastry : GuiBase() {
         PastryTestDropdown::class.java to "Dropdown",
         PastryTestProgress::class.java to "Progress",
         PastryTestSwitches::class.java to "Switches",
+        PastryTestTooltips::class.java to "Tooltips",
         Any::class.java to "<Fix commas in git diffs>"
     ).also { it.remove(Any::class.java) }
 

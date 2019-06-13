@@ -15,8 +15,8 @@ import org.lwjgl.opengl.GL11
 
 interface ILayerRendering {
     val tooltip_im: IMValue<List<String>?>
-    var tooltip: List<String>?
-    var tooltipFont: FontRenderer?
+//    var tooltip: List<String>?
+//    var tooltipFont: FontRenderer?
     var animator: Animator
 
     /**
@@ -69,8 +69,8 @@ class LayerRenderHandler: ILayerRendering {
     lateinit var layer: GuiLayer
 
     override val tooltip_im: IMValue<List<String>?> = IMValue()
-    override var tooltip: List<String>? by tooltip_im
-    override var tooltipFont: FontRenderer? = null
+//    override var tooltip: List<String>? by tooltip_im
+//    override var tooltipFont: FontRenderer? = null
 
     override var animator: Animator
         get() {

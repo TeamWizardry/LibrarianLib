@@ -217,6 +217,12 @@ open class GuiLayer private constructor(
         var showDebugBoundingBox = false
 
         /**
+         * The z index of tooltips. Overlays should not go above this level.
+         */
+        @JvmStatic
+        val TOOLTIP_Z: Double = 1e11
+
+        /**
          * In order to make an overlay layer, add a layer to the [root] with this [zIndex].
          */
         @JvmStatic

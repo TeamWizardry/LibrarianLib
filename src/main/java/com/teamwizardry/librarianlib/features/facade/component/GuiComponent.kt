@@ -26,11 +26,12 @@ open class GuiComponent private constructor(
     internal val tags: ComponentTagHandler,
     internal val guiEventHandler: ComponentGuiEventHandler,
     internal val mouseHandler: ComponentMouseHandler,
-    internal val focusHandler: ComponentFocusHandler
+    internal val focusHandler: ComponentFocusHandler,
+    internal val tooltipHandler: ComponentTooltipHandler
 ) : GuiLayer(posX, posY, width, height),
     IComponentData by data, IComponentTag by tags,
     IComponentGuiEvent by guiEventHandler, IComponentMouse by mouseHandler,
-    IComponentFocus by focusHandler
+    IComponentFocus by focusHandler, IComponentTooltip by tooltipHandler
 {
     constructor(): this(0, 0, 0, 0)
     constructor(posX: Int, posY: Int): this(posX, posY, 0, 0)
@@ -40,7 +41,8 @@ open class GuiComponent private constructor(
         ComponentTagHandler(),
         ComponentGuiEventHandler(),
         ComponentMouseHandler(),
-        ComponentFocusHandler()
+        ComponentFocusHandler(),
+        ComponentTooltipHandler()
     )
 
     /**
@@ -156,6 +158,7 @@ open class GuiComponent private constructor(
             guiEventHandler.component = this
             mouseHandler.component = this
             focusHandler.component = this
+            tooltipHandler.component = this
         }()
     }
 

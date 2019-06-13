@@ -1,5 +1,6 @@
-package com.teamwizardry.librarianlib.features.facade.components
+package com.teamwizardry.librarianlib.features.facade.layers
 
+import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.facade.HandlerList
 import com.teamwizardry.librarianlib.features.facade.value.IMValue
 import com.teamwizardry.librarianlib.features.facade.value.IMValueBoolean
@@ -13,15 +14,12 @@ import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.item.ItemStack
 import net.minecraft.util.text.TextFormatting
 
-open class ComponentItemStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 16) {
+class ItemStackLayer(posX: Int, posY: Int) : FixedSizeLayer(posX, posY, 16, 16) {
 
     val stack_im: IMValue<ItemStack> = IMValue(ItemStack.EMPTY)
-    val enableTooltip_im: IMValueBoolean = IMValueBoolean(true)
-
     var stack: ItemStack by stack_im
-    var enableTooltip: Boolean by enableTooltip_im
-    val quantityText = HandlerList<(ComponentItemStack, String?) -> String?>()
-    val itemInfo = HandlerList<(ComponentItemStack, MutableList<String>) -> Unit>()
+
+    class QuantityTextEvent(var text: String?): Event()
 
     override fun draw(partialTicks: Float) {
         RenderHelper.enableGUIStandardItemLighting()
@@ -30,9 +28,11 @@ open class ComponentItemStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 1
 
         val stack = this.stack
         if (stack.isNotEmpty) {
-            var str: String? = stack.count.toString()
-            if (str == "1") str = null
-            str = quantityText.fireModifier(str) { h, v -> h(this, v) }
+            val str: String? =
+                if(stack.count == 1)
+                    null
+                else
+                    BUS.fire(QuantityTextEvent(stack.count.toString())).text
 
             val itemRender = Minecraft.getMinecraft().renderItem
             itemRender.zLevel = -130f
@@ -44,30 +44,10 @@ open class ComponentItemStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 1
             itemRender.renderItemOverlayIntoGUI(fr, stack, 0, 0, str)
 
             itemRender.zLevel = 0.0f
-
-            if (mouseOver && enableTooltip) {
-                val font = stack.item.getFontRenderer(stack)
-//                tooltip = getTooltip(stack) { itemInfo.fireAll { h -> h(this, it) } }
-//                tooltipFont = font ?: Minecraft.getMinecraft().fontRenderer
-            }
         }
 
         GlStateManager.popMatrix()
         GlStateManager.disableRescaleNormal()
         RenderHelper.disableStandardItemLighting()
     }
-
-    companion object {
-        fun getTooltip(stack: ItemStack, modifyList: (MutableList<String>) -> Unit): MutableList<String> {
-            val list = stack.getTooltip(Minecraft.getMinecraft().player,
-                    if (Minecraft.getMinecraft().gameSettings.advancedItemTooltips)
-                        ITooltipFlag.TooltipFlags.ADVANCED else ITooltipFlag.TooltipFlags.NORMAL)
-
-            list.mapIndexed { i, s -> (if (i == 0) stack.rarity.color else TextFormatting.GRAY) + s }
-            modifyList.invoke(list)
-
-            return list
-        }
-    }
-
 }

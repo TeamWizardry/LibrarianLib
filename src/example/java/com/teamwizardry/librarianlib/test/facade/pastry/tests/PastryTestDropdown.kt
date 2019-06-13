@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.dropdown.DropdownSeparatorItem
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.dropdown.DropdownTextItem
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.dropdown.PastryDropdown
+import com.teamwizardry.librarianlib.features.math.Align2d
 import com.teamwizardry.librarianlib.test.facade.pastry.PastryTestBase
 import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import net.minecraft.init.Blocks
@@ -49,6 +50,7 @@ class PastryTestDropdown: PastryTestBase() {
             .space(5)
             .horizontal()
             .fit()
+            .align(Align2d.CENTER_LEFT)
             .component()
         stack.add(horizontalStack)
     }

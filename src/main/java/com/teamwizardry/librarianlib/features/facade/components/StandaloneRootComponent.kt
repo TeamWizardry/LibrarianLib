@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.features.facade.EnumMouseButton
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryTooltip
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.CoordinateSpace2D
@@ -86,6 +87,8 @@ open class StandaloneRootComponent(val closeGui: (Exception) -> Unit): RootCompo
         return false
     }
 
+    private var currentTooltip: PastryTooltip? = null
+
     fun renderRoot(partialTicks: Float, mousePos: Vec2d) {
         StencilUtil.clear()
         GL11.glEnable(GL11.GL_STENCIL_TEST)
@@ -100,6 +103,13 @@ open class StandaloneRootComponent(val closeGui: (Exception) -> Unit): RootCompo
             updateMouse(mousePos)
             updateHits(this, 0.0)
             propagateHits()
+
+            val tooltip = topMouseHit?.component?.tooltipLayer
+            if(tooltip != currentTooltip) {
+                currentTooltip?.removeFromParent()
+                currentTooltip = tooltip
+                tooltip?.also { this.add(it) }
+            }
 
             if(enableNativeCursor) {
                 Mouse.setNativeCursor(topMouseHit?.cursor?.lwjglCursor)
