@@ -33,7 +33,8 @@ class FpsGraphHudElement: HudElement(RenderGameOverlayEvent.ElementType.FPS_GRAP
 
             while (cursorIndex != headIndex) {
                 val value = frametimer.getLagometerValue(frames[cursorIndex], 30)
-                lines[239 - lineIndex].frame = rect(lineIndex, 0, 1, value - 1)
+                lines[239 - lineIndex].pos = vec(lineIndex, this.height)
+                lines[239 - lineIndex].size = vec(1, value - 1)
                 ++lineIndex
                 cursorIndex = frametimer.parseIndex(cursorIndex + 1)
             }
