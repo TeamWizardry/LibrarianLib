@@ -10,14 +10,15 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent
 class HotbarHudElement: HudElement(RenderGameOverlayEvent.ElementType.HOTBAR) {
 
     val background = GuiLayer()
-    val slotHighlight = GuiLayer()
-    val offhandBackground = GuiLayer()
-    val slots = Array(9) { GuiLayer() }
-    val offhandSlot = GuiLayer()
-    val attackCooldown = GuiLayer()
-    val attackCooldownFill = GuiLayer()
+    val slotHighlight = HudElement()
+    val offhandBackground = HudElement()
+    val slots = Array(9) { HudElement() }
+    val offhandSlot = HudElement()
+    val attackCooldown = HudElement()
+    val attackCooldownFill = HudElement()
 
     init {
+        autoContentBounds = AutoContentBounds.CONTENTS
         this.add(background,
             slotHighlight,
             offhandBackground,

@@ -14,6 +14,10 @@ class PotionIconsHudElement: HudElement(RenderGameOverlayEvent.ElementType.POTIO
     val effects = identityMapOf<PotionEffect, EffectLayer>()
     var effectsByPotion: Map<Potion, EffectLayer> = identityMapOf<Potion, EffectLayer>().unmodifiableView()
 
+    init {
+        autoContentBounds = AutoContentBounds.CONTENTS
+    }
+
     override fun hudEvent(e: RenderGameOverlayEvent.Pre) {
         super.hudEvent(e)
         val effects = this.mc.player.activePotionEffects

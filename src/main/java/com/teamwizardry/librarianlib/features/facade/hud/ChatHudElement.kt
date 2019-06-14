@@ -27,7 +27,11 @@ class ChatHudElement: HudElement(RenderGameOverlayEvent.ElementType.CHAT) {
     val field = MockGuiTextField()
 
     init {
+        this.forEachChild {
+            this.remove(it)
+        }
         add(chatScrollbar, inputArea, field)
+        autoContentBounds = AutoContentBounds.CONTENTS
     }
 
     override fun hudEvent(e: RenderGameOverlayEvent.Pre) {

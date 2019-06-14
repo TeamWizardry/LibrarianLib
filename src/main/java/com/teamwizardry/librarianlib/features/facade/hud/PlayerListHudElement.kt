@@ -27,6 +27,7 @@ class PlayerListHudElement: HudElement(RenderGameOverlayEvent.ElementType.PLAYER
 
     init {
         this.add(headerBackground, headerText, background, footerBackground, footerText)
+        autoContentBounds = AutoContentBounds.CONTENTS
     }
 
     override fun hudEvent(e: RenderGameOverlayEvent.Pre) {

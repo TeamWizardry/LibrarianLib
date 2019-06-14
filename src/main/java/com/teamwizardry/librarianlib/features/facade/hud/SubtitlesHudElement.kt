@@ -19,6 +19,7 @@ class SubtitlesHudElement: HudElement(RenderGameOverlayEvent.ElementType.SUBTITL
 
     init {
         this.add(panel)
+        autoContentBounds = AutoContentBounds.CONTENTS
     }
 
     override fun hudEvent(e: RenderGameOverlayEvent.Pre) {

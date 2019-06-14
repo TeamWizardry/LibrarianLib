@@ -25,7 +25,7 @@ object GuiHud {
 
     var root = createRoot()
 
-    lateinit var all: AllHudElement private set
+    lateinit var all: FullscreenHudElement private set
     lateinit var helmet: FullscreenHudElement private set
     lateinit var portal: FullscreenHudElement private set
     lateinit var crosshairs: CrosshairsHudElement private set
@@ -38,7 +38,7 @@ object GuiHud {
     lateinit var hotbar: HotbarHudElement private set
     lateinit var experience: ExperienceHudElement private set
     lateinit var text: FullscreenHudElement private set
-    lateinit var healthMount: HealthMountHudElement private set
+    lateinit var healthMount: RightStatusHudElement private set
     lateinit var jumpBar: JumpBarHudElement private set
     lateinit var chat: ChatHudElement private set
     lateinit var playerList: PlayerListHudElement private set
@@ -49,7 +49,7 @@ object GuiHud {
     lateinit var fpsGraph: FpsGraphHudElement private set
     lateinit var vignette: FullscreenHudElement private set
 
-    private lateinit var elements: Map<ElementType, HudElement>
+    private lateinit var elements: Map<ElementType, HudElementListener>
 
     private val reloadListeners = mutableListOf<IHudReloadListener>()
 
@@ -72,7 +72,7 @@ object GuiHud {
     fun reload() {
         this.root = createRoot()
 
-        this.all = AllHudElement()
+        this.all = FullscreenHudElement(ElementType.ALL)
         this.helmet = FullscreenHudElement(ElementType.HELMET)
         this.portal = FullscreenHudElement(ElementType.PORTAL)
         this.crosshairs = CrosshairsHudElement()
@@ -90,7 +90,7 @@ object GuiHud {
         this.hotbar = HotbarHudElement()
         this.experience = ExperienceHudElement()
         this.text = FullscreenHudElement(ElementType.TEXT)
-        this.healthMount = HealthMountHudElement()
+        this.healthMount = RightStatusHudElement(ElementType.HEALTHMOUNT) { true }
         this.jumpBar = JumpBarHudElement()
         this.chat = ChatHudElement()
         this.playerList = PlayerListHudElement() // finished
@@ -137,7 +137,7 @@ object GuiHud {
         reloadListeners.add(listener)
     }
 
-    fun element(type: ElementType): HudElement {
+    fun element(type: ElementType): HudElementListener {
         return elements.getValue(type)
     }
 

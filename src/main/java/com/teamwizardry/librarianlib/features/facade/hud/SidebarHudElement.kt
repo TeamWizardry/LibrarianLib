@@ -17,6 +17,7 @@ class SidebarHudElement: HudElement(RenderGameOverlayEvent.ElementType.CHAT) { /
 
     init {
         this.add(background, objectiveRow, objectiveTitle)
+        autoContentBounds = AutoContentBounds.CONTENTS
     }
 
     override fun hudEvent(e: RenderGameOverlayEvent.Pre) {
