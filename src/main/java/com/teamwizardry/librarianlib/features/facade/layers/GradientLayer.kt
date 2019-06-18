@@ -17,6 +17,9 @@ class GradientLayer(val axis: Axis2d, posX: Int, posY: Int, width: Int, height: 
         this.addStop(0.0, min)
         this.addStop(1.0, max)
     }
+    constructor(axis: Axis2d, min: Color, max: Color, x: Int, y: Int): this(axis, min, max, x, y, 0, 0)
+    constructor(axis: Axis2d, min: Color, max: Color): this(axis, min, max, 0, 0, 0, 0)
+
     val stops = mutableListOf<ColorStop>()
 
     fun addStop(location: Double, color: Color): ColorStop {

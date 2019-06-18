@@ -31,7 +31,9 @@ import kotlin.math.roundToInt
  * foreground [Sprite] will be rendered over it (overlay).
  */
 @SideOnly(Side.CLIENT)
-class FluidGaugeLayer(x: Int, y: Int) : GuiLayer(x, y) {
+class FluidGaugeLayer(x: Int, y: Int, width: Int, height: Int) : GuiLayer(x, y, width, height) {
+    constructor(x: Int, y: Int): this(x, y, 0, 0)
+    constructor(): this(0, 0, 0, 0)
 
     /**
      * @see fluid
@@ -87,7 +89,7 @@ class FluidGaugeLayer(x: Int, y: Int) : GuiLayer(x, y) {
             get() = direction == Cardinal2d.LEFT ||
                 (direction != Cardinal2d.RIGHT && flow == Cardinal2d.LEFT)
     }
-    private val fluidLayer = SpriteLayer(pinnedFluidSprite, 0, 0)
+    private val fluidLayer = SpriteLayer(pinnedFluidSprite)
 
     init {
         this.add(fluidLayer)

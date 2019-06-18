@@ -13,7 +13,10 @@ import java.awt.Color
 import java.lang.Math.PI
 import kotlin.math.atan2
 
-class ArcLayer(color: Color = Color.white, posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, posY, width, height) {
+class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y, width, height) {
+    constructor(color: Color, x: Int, y: Int): this(color, x, y, 0, 0)
+    constructor(color: Color): this(color, 0, 0, 0, 0)
+
     init {
         anchor = vec(0.5, 0.5)
     }

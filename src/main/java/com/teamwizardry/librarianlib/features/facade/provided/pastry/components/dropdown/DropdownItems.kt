@@ -40,6 +40,6 @@ class DropdownTextItem<T>(value: T, val string: String): PastryDropdownItem<T>(v
 
 class DropdownSeparatorItem<T>: PastryDropdownItem<T>(null, true, true) {
     override fun createLayer(): GuiLayer {
-        return SpriteLayer(PastryTexture.dropdownSeparator, 0, 0)
+        return SpriteLayer(PastryTexture.dropdownSeparator)
     }
 }

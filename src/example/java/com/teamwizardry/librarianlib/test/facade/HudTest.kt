@@ -25,7 +25,7 @@ object HudTest: IHudReloadListener {
 
     override fun reloadHud() {
         val healthWarning = SpriteLayer(warning, 4, 9)
-        val airWarning = SpriteLayer(warning, 0, 0)
+        val airWarning = SpriteLayer(warning)
         val eat = TextLayer("EAT!")
         eat.color = Color.WHITE
 

@@ -151,7 +151,7 @@ class PastryColorPicker: GuiComponent() {
 
     private inner class HueComponent: GuiComponent(0, 0, 0, 0) {
         private val background = PastryBackground(BackgroundTexture.SLIGHT_INSET, 0, 0, 0, 0)
-        private val sprite = SpriteLayer(hueSprite, 0, 0)
+        private val sprite = SpriteLayer(hueSprite)
 
         init {
             Minecraft().textureManager.bindTexture(hueLoc)

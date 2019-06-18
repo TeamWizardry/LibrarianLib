@@ -23,7 +23,7 @@ import kotlin.math.max
 class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean): GuiComponent(0, 0) {
     private val creationTime = ClientTickHandler.ticks
 
-    val background = SpriteLayer(PastryTexture.dropdownBackground, 0, 0)
+    val background = SpriteLayer(PastryTexture.dropdownBackground)
     val stack = StackLayout.build(0, 0).space(1).component()
     val items = identityMapOf<PastryDropdownItem<T>, DropdownStackItem>()
     val contents = GuiComponent(-2, 0)
@@ -188,7 +188,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
 
 class DropdownStackItem(val item: PastryDropdownItem<*>): GuiComponent(0, 0) {
     val itemLayer = item.createLayer()
-    val highlight = SpriteLayer(PastryTexture.dropdownHighlight, 0, 0)
+    val highlight = SpriteLayer(PastryTexture.dropdownHighlight)
     val inset: Vec2d =
         if(item.decoration) {
             if(item.listDynamicWidth) {

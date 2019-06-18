@@ -12,6 +12,8 @@ import java.awt.Color
  */
 class SpriteLayer(var sprite: ISprite?, x: Int, y: Int, width: Int, height: Int) : GuiLayer(x, y, width, height) {
     constructor(sprite: ISprite?, x: Int, y: Int): this(sprite, x, y, sprite?.width ?: 16, sprite?.height ?: 16)
+    constructor(sprite: ISprite?): this(sprite, 0, 0)
+    constructor(): this(null, 0, 0)
 
     var tint_im: IMValue<Color> = IMValue(Color.WHITE)
     var tint: Color by tint_im

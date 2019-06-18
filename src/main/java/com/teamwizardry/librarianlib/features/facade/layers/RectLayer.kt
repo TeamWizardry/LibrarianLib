@@ -8,7 +8,12 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class RectLayer(color: Color = Color.white, posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, posY, width, height) {
+class RectLayer(color: Color, x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y, width, height) {
+    constructor(color: Color, x: Int, y: Int): this(color, x, y, 0, 0)
+    constructor(x: Int, y: Int): this(Color.white, x, y)
+    constructor(color: Color): this(color, 0, 0)
+    constructor(): this(Color.white)
+
     val color_im: IMValue<Color> = IMValue(color)
     var color: Color by color_im
 

@@ -11,6 +11,8 @@ import net.minecraft.client.renderer.GlStateManager
 import java.awt.Color
 
 class TextLayerMC(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, posY, width, height) {
+    constructor(posX: Int, posY: Int): this(posX, posY, 0, 0)
+    constructor(): this(0, 0, 0, 0)
     var fontRenderer: FontRenderer = Minecraft.getMinecraft().fontRenderer
 
     /**
