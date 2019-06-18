@@ -42,11 +42,12 @@ interface ILayerBase {
      * Called to lay out the children of this layer.
      *
      * This method is called before each frame if this layer's bounds have changed, children have been added/removed,
-     * a child's frame has changed, or [setNeedsLayout] has been called on this layer. After this method completes,
-     * the children of this component will be checked for layout. This means that changes made in one layer can ripple
-     * downward, but also that children can override the layout of their parent. [needsLayout] is reset to false after
-     * this layer and its children are laid out, so any changes while laying out will not cause the layout to be
-     * recalculated on the next frame.
+     * a child's frame has changed, or [setNeedsLayout] has been called on this layer.
+     *
+     * After this method completes, the children of this component will be checked for layout. This means that changes
+     * made in one layer can ripple downward, but also that children can override the layout of their parent.
+     * [needsLayout] is reset to false after this layer and its children are laid out, so any changes while laying out
+     * will not cause the layout to be recalculated on the next frame.
      *
      * The idea behind this method is that self-contained components/layers can lay out their children dynamically
      * themselves. Examples of such a component would be a self-contained list item, a component that spaces out its
