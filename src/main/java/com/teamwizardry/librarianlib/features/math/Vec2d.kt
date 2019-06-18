@@ -40,6 +40,13 @@ class Vec2d(val x: Double, val y: Double) {
         return Vec2d.getPooled(x, value)
     }
 
+    fun setAxis(axis: Axis2d, value: Double): Vec2d {
+        return when(axis) {
+            Axis2d.X -> Vec2d.getPooled(value, y)
+            Axis2d.Y -> Vec2d.getPooled(x, value)
+        }
+    }
+
     @JvmSynthetic
     operator fun plus(other: Vec2d): Vec2d = add(other)
     fun add(other: Vec2d): Vec2d {

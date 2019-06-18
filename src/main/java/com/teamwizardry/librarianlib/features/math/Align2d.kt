@@ -8,6 +8,12 @@ import com.teamwizardry.librarianlib.features.helpers.vec
 enum class Axis2d(val direction: Vec2d) {
     X(vec(1, 0)),
     Y(vec(0, 1));
+
+    val other: Axis2d
+        get() = when(this) {
+            X -> Y
+            Y -> X
+        }
 }
 
 /**
