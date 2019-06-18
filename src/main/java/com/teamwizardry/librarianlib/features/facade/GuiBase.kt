@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.facade
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
+import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.facade.provided.GuiSafetyNetError
 import com.teamwizardry.librarianlib.features.neoguicontainer.GuiContainerBase
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
@@ -64,6 +65,27 @@ open class GuiBase : GuiScreen() {
      * Whether to enable Minecraft's standard translucent GUI background.
      */
     var useDefaultBackground by impl::useDefaultBackground.delegate
+
+    /**
+     * Automatic hook into the [LayoutChildren][GuiLayerEvents.LayoutChildren] event on [main]
+     */
+    open fun layoutMain() {
+    }
+
+    /**
+     * Automatic hook into the [LayoutChildren][GuiLayerEvents.LayoutChildren] event on [root]
+     */
+    open fun layoutRoot() {
+    }
+
+    init {
+        main.BUS.hook<GuiLayerEvents.LayoutChildren> {
+            layoutMain()
+        }
+        root.BUS.hook<GuiLayerEvents.LayoutChildren> {
+            layoutRoot()
+        }
+    }
 
     override fun initGui() {
         impl.initGui()

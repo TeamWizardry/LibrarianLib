@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.features.container.ContainerBase
 import com.teamwizardry.librarianlib.features.container.internal.ContainerImpl
 import com.teamwizardry.librarianlib.features.facade.LibGuiImpl
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
+import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.facade.provided.GuiSafetyNetError
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
@@ -42,6 +43,27 @@ open class GuiContainerBase(val container: ContainerBase) : GuiContainer(Contain
     val root: GuiComponent by impl::root.delegate
     val safetyNet: Boolean by impl::safetyNet.delegate
     var useDefaultBackground by impl::useDefaultBackground.delegate
+
+    /**
+     * Automatic hook into the [LayoutChildren][GuiLayerEvents.LayoutChildren] event on [main]
+     */
+    open fun layoutMain() {
+    }
+
+    /**
+     * Automatic hook into the [LayoutChildren][GuiLayerEvents.LayoutChildren] event on [root]
+     */
+    open fun layoutRoot() {
+    }
+
+    init {
+        main.BUS.hook<GuiLayerEvents.LayoutChildren> {
+            layoutMain()
+        }
+        root.BUS.hook<GuiLayerEvents.LayoutChildren> {
+            layoutRoot()
+        }
+    }
 
     init {
         useDefaultBackground = true
