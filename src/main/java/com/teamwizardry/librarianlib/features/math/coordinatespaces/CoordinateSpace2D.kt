@@ -119,6 +119,7 @@ interface CoordinateSpace2D {
      *
      * If this space has no parent, this method returns the original point.
      */
+    @JvmDefault
     fun convertPointToParent(point: Vec2d) = parentSpace?.let { convertPointTo(point, it) } ?: point
 
     /**
@@ -126,6 +127,7 @@ interface CoordinateSpace2D {
      *
      * If this space has no parent, this method returns the original point.
      */
+    @JvmDefault
     fun convertPointFromParent(point: Vec2d) = parentSpace?.let { convertPointFrom(point, it) } ?: point
 
     /**
@@ -139,6 +141,7 @@ interface CoordinateSpace2D {
      * This operation _**IS NOT REVERSIBLE**_. If there is any rotation returned rect will not equal the passed rect,
      * instead it will _contain_ it.
      */
+    @JvmDefault
     fun convertRectToParent(rect: Rect2d) = parentSpace?.let { convertRectTo(rect, it) } ?: rect
 
     /**
@@ -152,6 +155,7 @@ interface CoordinateSpace2D {
      * This operation _**IS NOT REVERSIBLE**_. If there is any rotation the returned rect will not equal the passed
      * rect, instead it will _contain_ it.
      */
+    @JvmDefault
     fun convertRectFromParent(rect: Rect2d) = parentSpace?.let { convertRectFrom(rect, it) } ?: rect
 
     private fun lowestCommonAncestor(other: CoordinateSpace2D): CoordinateSpace2D? {
