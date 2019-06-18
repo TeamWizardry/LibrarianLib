@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.test.facade.pastry.tests
 
-import com.teamwizardry.librarianlib.features.facade.layers.ItemStackLayer
+import com.teamwizardry.librarianlib.features.facade.layers.minecraft.ItemStackLayer
 import com.teamwizardry.librarianlib.features.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.ItemStackTooltip
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryButton
