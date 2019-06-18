@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.test.facade.tests
 
 import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 import com.teamwizardry.librarianlib.features.facade.GuiBase
-import com.teamwizardry.librarianlib.features.facade.layers.ColorLayer
+import com.teamwizardry.librarianlib.features.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
 import java.awt.Color
 
@@ -13,9 +13,9 @@ class GuiTestStencil : GuiBase() {
     init {
         main.size = vec(100, 100)
 
-        val unclipped = ColorLayer(Color.PINK, 0, 0, 100, 100)
-        val clipped = ColorLayer(Color.RED, -25, -25, 100, 100)
-        val clipping = ColorLayer(Color.GREEN, 25, 25, 50, 50)
+        val unclipped = RectLayer(Color.PINK, 0, 0, 100, 100)
+        val clipped = RectLayer(Color.RED, -25, -25, 100, 100)
+        val clipping = RectLayer(Color.GREEN, 25, 25, 50, 50)
 
         main.add(unclipped, clipping)
         clipping.add(clipped)

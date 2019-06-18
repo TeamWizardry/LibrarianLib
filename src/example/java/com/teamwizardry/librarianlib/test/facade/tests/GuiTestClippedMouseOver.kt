@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.test.facade.tests
 import com.teamwizardry.librarianlib.features.facade.GuiBase
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.facade.components.ComponentRect
-import com.teamwizardry.librarianlib.features.facade.layers.ColorLayer
+import com.teamwizardry.librarianlib.features.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
 import java.awt.Color
 
@@ -14,7 +14,7 @@ class GuiTestClippedMouseOver : GuiBase() {
 
     init {
         main.size = vec(500, 200)
-        val background = ColorLayer(Color.WHITE, 0, 0, 500, 200)
+        val background = RectLayer(Color.WHITE, 0, 0, 500, 200)
         main.add(background)
 
         rectMouseOver(10, 10, 75, 75, Color.GREEN) { rect ->

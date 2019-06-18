@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.facade.components.FixedSizeComponent
-import com.teamwizardry.librarianlib.features.facade.layers.ColorLayer
+import com.teamwizardry.librarianlib.features.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.features.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.features.facade.mixin.DragMixin
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.PastryTexture
@@ -27,8 +27,8 @@ class PastrySlider(posX: Int, posY: Int, length: Int, var pointed: Boolean, faci
 ) {
     private val inner = GuiComponent(0, 0, length, 7)
 
-    val leftLine = ColorLayer(PastryTexture.sliderLinesColor, 3, 3, 0, 1)
-    val rightLine = ColorLayer(PastryTexture.sliderLinesColor, widthi-3, 3, 0, 1)
+    val leftLine = RectLayer(PastryTexture.sliderLinesColor, 3, 3, 0, 1)
+    val rightLine = RectLayer(PastryTexture.sliderLinesColor, widthi-3, 3, 0, 1)
 
     var length: Int = length
         set(value) {

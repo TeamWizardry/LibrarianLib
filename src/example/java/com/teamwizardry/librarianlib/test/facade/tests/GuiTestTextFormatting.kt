@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.test.facade.tests
 
 import com.teamwizardry.librarianlib.features.facade.GuiBase
-import com.teamwizardry.librarianlib.features.facade.layers.ColorLayer
+import com.teamwizardry.librarianlib.features.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.features.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.features.facade.layers.TextLayerMC
 import com.teamwizardry.librarianlib.features.helpers.vec
@@ -16,7 +16,7 @@ class GuiTestTextFormatting : GuiBase() {
     init {
         main.size = vec(600, 400)
 
-        val background = ColorLayer(Color.WHITE, 0, 0, 600, 400)
+        val background = RectLayer(Color.WHITE, 0, 0, 600, 400)
         main.add(background)
 
         val textLayer = TextLayer(10, 10, 580, 380)

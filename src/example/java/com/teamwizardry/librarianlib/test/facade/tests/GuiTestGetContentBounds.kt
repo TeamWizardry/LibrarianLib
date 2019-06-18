@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.test.facade.tests
 
 import com.teamwizardry.librarianlib.features.facade.GuiBase
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
-import com.teamwizardry.librarianlib.features.facade.layers.ColorLayer
+import com.teamwizardry.librarianlib.features.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.features.facade.value.GuiAnimator
 import com.teamwizardry.librarianlib.features.helpers.vec
 import net.minecraft.client.renderer.GlStateManager
@@ -18,11 +18,11 @@ class GuiTestGetContentBounds : GuiBase() {
     init {
         main.size = vec(100, 100)
 
-        val background = ColorLayer(Color.WHITE, 0, 0, 100, 100)
+        val background = RectLayer(Color.WHITE, 0, 0, 100, 100)
 
-        val containerContents = ColorLayer(Color.GREEN.darker(), 20, 5, 40, 10)
-        val containerContentsContents = ColorLayer(Color.GREEN.darker().darker(), 15, 5, 10, 10)
-        val containerIgnoredContents = ColorLayer(Color.RED, 15, 5, 10, 20)
+        val containerContents = RectLayer(Color.GREEN.darker(), 20, 5, 40, 10)
+        val containerContentsContents = RectLayer(Color.GREEN.darker().darker(), 15, 5, 10, 10)
+        val containerIgnoredContents = RectLayer(Color.RED, 15, 5, 10, 20)
 
         val anim = GuiAnimator.animate(20f) {
             containerContentsContents.isVisible = false
@@ -33,7 +33,7 @@ class GuiTestGetContentBounds : GuiBase() {
 
         val container = object: GuiLayer(0, 0, 40, 10) {
             init {
-                this.add(ColorLayer(Color.GREEN, 0, 0, 40, 10))
+                this.add(RectLayer(Color.GREEN, 0, 0, 40, 10))
             }
             override fun draw(partialTicks: Float) {
                 var contentsBounds = getContentsBounds({ it != containerIgnoredContents && it.isVisible }, { it.isVisible })!!

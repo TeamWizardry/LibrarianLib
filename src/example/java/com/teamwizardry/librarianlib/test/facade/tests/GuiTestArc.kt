@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.facade.GuiBase
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.facade.layers.ArcLayer
-import com.teamwizardry.librarianlib.features.facade.layers.ColorLayer
+import com.teamwizardry.librarianlib.features.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
 import java.awt.Color
 import java.lang.Math.PI
@@ -17,7 +17,7 @@ class GuiTestArc : GuiBase() {
     init {
         main.size = vec(230, 120)
 
-        val bg = ColorLayer(Color.GRAY, 0, 0, 230, 100)
+        val bg = RectLayer(Color.GRAY, 0, 0, 230, 100)
         main.add(bg)
 
         val arc = ArcLayer(Color.BLACK, 60, 60, 100, 100)

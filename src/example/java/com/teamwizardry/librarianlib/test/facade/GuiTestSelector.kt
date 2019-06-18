@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.features.facade.GuiBase
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.facade.components.ComponentText
-import com.teamwizardry.librarianlib.features.facade.layers.ColorLayer
+import com.teamwizardry.librarianlib.features.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.features.facade.provided.GuiSafetyNetError
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.test.facade.tests.*
@@ -51,7 +51,7 @@ class GuiTestSelector : GuiBase() {
 
     init {
         main.size = vec(300, 200)
-        val background = ColorLayer(Color.GRAY, 0, 0, 300, 200)
+        val background = RectLayer(Color.GRAY, 0, 0, 300, 200)
         val height = 12 * items.size
         val scrollComponent = GuiComponent(10, 10, 280, 180)
         val scrollAmount = max(0, height-scrollComponent.size.yi).toDouble()

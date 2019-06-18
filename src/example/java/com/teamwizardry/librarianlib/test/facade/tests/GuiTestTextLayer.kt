@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.test.facade.tests
 
 import com.teamwizardry.librarianlib.features.facade.GuiBase
-import com.teamwizardry.librarianlib.features.facade.layers.ColorLayer
+import com.teamwizardry.librarianlib.features.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.features.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Align2d
@@ -16,11 +16,11 @@ class GuiTestTextLayer : GuiBase() {
     init {
         main.size = vec(300, 300)
 
-        val background = ColorLayer(Color.WHITE, 0, 0, 300, 300)
+        val background = RectLayer(Color.WHITE, 0, 0, 300, 300)
         main.add(background)
 
-        var panel: ColorLayer
-        panel = ColorLayer(Color.LIGHT_GRAY, 0, 0, 100, 300)
+        var panel: RectLayer
+        panel = RectLayer(Color.LIGHT_GRAY, 0, 0, 100, 300)
         main.add(panel)
 
         var textLayer: TextLayer
@@ -41,7 +41,7 @@ class GuiTestTextLayer : GuiBase() {
         textLayer.fitToText = true
         main.add(textLayer)
 
-        panel = ColorLayer(Color.LIGHT_GRAY, 110, 100, 150, 150)
+        panel = RectLayer(Color.LIGHT_GRAY, 110, 100, 150, 150)
         main.add(panel)
 
         textLayer = TextLayer(110, 100, 150, 150)

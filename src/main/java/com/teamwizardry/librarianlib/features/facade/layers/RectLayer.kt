@@ -10,7 +10,7 @@ import java.awt.Color
 
 class RectLayer(color: Color = Color.white, posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, posY, width, height) {
     val color_im: IMValue<Color> = IMValue(color)
-    val color: Color by color_im
+    var color: Color by color_im
 
     override fun draw(partialTicks: Float) {
         val minX = 0.0
@@ -36,5 +36,11 @@ class RectLayer(color: Color = Color.white, posX: Int, posY: Int, width: Int, he
         tessellator.draw()
 
         GlStateManager.enableTexture2D()
+    }
+
+    override fun debugInfo(): MutableList<String> {
+        val list = super.debugInfo()
+        list.add("color = $color")
+        return list
     }
 }

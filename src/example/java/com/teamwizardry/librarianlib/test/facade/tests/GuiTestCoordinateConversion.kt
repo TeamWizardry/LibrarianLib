@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.test.facade.tests
 
 import com.teamwizardry.librarianlib.features.facade.GuiBase
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
-import com.teamwizardry.librarianlib.features.facade.layers.ColorLayer
+import com.teamwizardry.librarianlib.features.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.features.facade.value.GuiAnimator
 import com.teamwizardry.librarianlib.features.helpers.vec
 import net.minecraft.client.gui.GuiScreen
@@ -19,21 +19,21 @@ class GuiTestCoordinateConversion : GuiBase() {
     init {
         main.size = vec(300, 100)
 
-        val background = ColorLayer(Color.WHITE, 0, 0, 300, 100)
+        val background = RectLayer(Color.WHITE, 0, 0, 300, 100)
 
-        val targetContainer = ColorLayer(Color.GREEN, 0, 0, 40, 40).componentWrapper()
-        val targetContainerIndicator = ColorLayer(Color.GREEN
+        val targetContainer = RectLayer(Color.GREEN, 0, 0, 40, 40).componentWrapper()
+        val targetContainerIndicator = RectLayer(Color.GREEN
             .let { Color(it.red, it.green, it.blue, 128) }, 0, 0, 40, 40)
-        val target = ColorLayer(Color.GREEN.darker(), 20, 20, 40, 40).componentWrapper()
-        val targetIndicator = ColorLayer(Color.GREEN.darker()
+        val target = RectLayer(Color.GREEN.darker(), 20, 20, 40, 40).componentWrapper()
+        val targetIndicator = RectLayer(Color.GREEN.darker()
             .let { Color(it.red, it.green, it.blue, 128) }, 20, 20, 40, 40)
         targetContainer.add(targetIndicator, target)
 
-        val sourceContainer = ColorLayer(Color.RED, 260, 0, 40, 40).componentWrapper()
-        val sourceContainerIndicator = ColorLayer(Color.RED.darker()
+        val sourceContainer = RectLayer(Color.RED, 260, 0, 40, 40).componentWrapper()
+        val sourceContainerIndicator = RectLayer(Color.RED.darker()
             .let { Color(it.red, it.green, it.blue, 128) }, 260, 0, 40, 40)
-        val source = ColorLayer(Color.RED.darker(), -20, 20, 40, 40).componentWrapper()
-        val sourceIndicator = ColorLayer(Color.RED.darker()
+        val source = RectLayer(Color.RED.darker(), -20, 20, 40, 40).componentWrapper()
+        val sourceIndicator = RectLayer(Color.RED.darker()
             .let { Color(it.red, it.green, it.blue, 128) }, -20, 20, 40, 40)
         sourceContainer.add(sourceIndicator, source)
 
