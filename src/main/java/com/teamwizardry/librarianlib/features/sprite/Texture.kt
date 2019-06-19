@@ -61,7 +61,7 @@ import kotlin.math.max
  *                 // will default to pinning on both sides along that axis. Defaults to [true, true, true, true]
  *                 "pinEdges": [<left>, <top>, <right>, <bottom>]
  *
- *                 // shorthand for "pinEdges": [<horizontal>, <vertical>, <horizontal>, <vertical>]
+ *                 // shorthand for "pinEdges": [<horizontal>, <vertical>, false, false]
  *                 "pinEdges": [<horizontal>, <vertical>]
  *             }
  *         },

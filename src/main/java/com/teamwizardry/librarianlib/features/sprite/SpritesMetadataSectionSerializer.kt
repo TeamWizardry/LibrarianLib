@@ -92,9 +92,9 @@ class SpritesMetadataSectionSerializer : BaseMetadataSectionSerializer<SpritesMe
                 when(arr.size()) {
                     2 -> {
                         def.pinLeft = JsonUtils.getBoolean(arr.get(0), "spritesheet.sprites.$name.pinEdges[0]")
-                        def.pinRight = def.pinLeft
+                        def.pinRight = false
                         def.pinTop = JsonUtils.getBoolean(arr.get(1), "spritesheet.sprites.$name.pinEdges[1]")
-                        def.pinBottom = def.pinTop
+                        def.pinBottom = false
                     }
                     4 -> {
                         def.pinLeft = JsonUtils.getBoolean(arr.get(0), "spritesheet.sprites.$name.pinEdges[0]")
