@@ -79,8 +79,10 @@ open class LibGuiImpl(
     }
 
     fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        val scaleFactor = ScaledResolution(Minecraft.getMinecraft()).scaleFactor
         GlStateManager.enableBlend()
-        val relPos = vec(mouseX, mouseY)
+        // convert logical to real position
+        val relPos = vec(mouseX*scaleFactor, mouseY*scaleFactor)
         GlStateManager.pushMatrix()
 
         root.renderRoot(partialTicks, relPos)
