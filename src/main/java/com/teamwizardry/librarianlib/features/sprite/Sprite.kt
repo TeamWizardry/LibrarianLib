@@ -91,7 +91,7 @@ class Sprite : ISprite {
         def.frames = IntArray(0)
 
         this.tex = Texture(loc, pngWidth, pngHeight)
-        tex.sprites[loc.path] = this
+        tex._sprites[loc.path] = this
 
         tex.loadSpriteData()
     }

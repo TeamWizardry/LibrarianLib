@@ -14,6 +14,7 @@ import java.io.FileNotFoundException
 import java.lang.ref.WeakReference
 import java.util.*
 import kotlin.math.max
+import kotlin.reflect.KProperty
 
 /**
  * This class represents a texture and it's size. It is mostly used to create [Sprite]
@@ -114,8 +115,8 @@ class Texture(
     val logicalScale: Int
         get() = max(1, ((logicalWidth.toFloat() / width + logicalHeight.toFloat() / height) / 2).toInt())
     private var section: SpritesMetadataSection? = null
-    internal var sprites: MutableMap<String, Sprite> = mutableMapOf()
-    private var colors: MutableMap<String, TextureColor> = mutableMapOf()
+    internal var _sprites: MutableMap<String, Sprite> = mutableMapOf()
+    private var _colors: MutableMap<String, TextureColor> = mutableMapOf()
 
     init {
         textures.add(WeakReference(this))
@@ -164,9 +165,9 @@ class Texture(
     private fun readSection() {
         val section = this.section
 
-        val oldSprites = this.sprites
-        val oldColors = this.colors
-        this.sprites = mutableMapOf()
+        val oldSprites = this._sprites
+        val oldColors = this._colors
+        this._sprites = mutableMapOf()
 
         if (section != null) {
             this.width = section.width
@@ -174,13 +175,13 @@ class Texture(
 
             for (def in section.sprites) {
                 val sprite = oldSprites[def.name] ?: Sprite(this)
-                sprites[def.name] = sprite
+                _sprites[def.name] = sprite
                 sprite.init(def)
             }
 
             for (def in section.colors) {
                 val color = oldColors[def.name] ?: TextureColor()
-                colors[def.name] = color
+                _colors[def.name] = color
                 color.init(def)
             }
         }
@@ -190,14 +191,14 @@ class Texture(
         try {
             val image = TextureUtil.readBufferedImage(Minecraft().resourceManager.getResource(loc).inputStream)
             this.image = image
-            this.sprites.forEach { name, sprite ->
+            this._sprites.forEach { name, sprite ->
                 try {
                     sprite.loadImage(image)
                 } catch(e: Exception) {
                     RuntimeException("Error loading sprite image $name in texture $loc", e).printStackTrace()
                 }
             }
-            this.colors.forEach { _, color ->
+            this._colors.forEach { _, color ->
                 val x = (color.u.toDouble() / this.width * image.width).toInt()
                 val y = (color.v.toDouble() / this.height * image.height).toInt()
                 color.color.replaceColor(Color(image.getRGB(x, y), true))
@@ -218,7 +219,7 @@ class Texture(
      * Gets the sprite with the specified name
      */
     fun getSprite(name: String): Sprite {
-        return sprites.getOrPut(name) { Sprite(this) }
+        return _sprites.getOrPut(name) { Sprite(this) }
     }
 
     /**
@@ -234,7 +235,7 @@ class Texture(
      * Gets the color with the specified name
      */
     fun getColor(name: String): Color {
-        return colors.getOrPut(name) { TextureColor() }.color
+        return _colors.getOrPut(name) { TextureColor() }.color
     }
 
     private var blending = false
@@ -275,6 +276,24 @@ class Texture(
                 enableBlending()
             else
                 disableBlending()
+        }
+    }
+
+    @JvmSynthetic
+    val sprites: TextureSprites = TextureSprites()
+
+    inner class TextureSprites {
+        operator fun getValue(thisRef: Any?, property: KProperty<*>): Sprite {
+            return getSprite(property.name)
+        }
+    }
+
+    @JvmSynthetic
+    val colors: TextureColors = TextureColors()
+
+    inner class TextureColors {
+        operator fun getValue(thisRef: Any?, property: KProperty<*>): Color {
+            return getColor(property.name)
         }
     }
 
