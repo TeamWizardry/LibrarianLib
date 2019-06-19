@@ -6,6 +6,8 @@ import com.teamwizardry.librarianlib.features.facade.components.LayerBackedCompo
 import com.teamwizardry.librarianlib.features.facade.layers.ComponentBackedLayer
 import com.teamwizardry.librarianlib.features.helpers.allDeclaredFields
 import com.teamwizardry.librarianlib.features.helpers.rect
+import com.teamwizardry.librarianlib.features.math.Matrix3
+import com.teamwizardry.librarianlib.features.math.Rect2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.CoordinateSpace2D
 import kotlinx.coroutines.CoroutineScope
@@ -287,5 +289,91 @@ open class GuiLayer private constructor(
             this.name = name
             return this
         }
+    }
+
+    //TODO: IntelliJ for some reason can't see the @JvmDefault members, so we override them and call super
+    override var width: Double
+        get() = super.width
+        set(value) { super.width = value }
+    override var widthf: Float
+        get() = super.widthf
+        set(value) { super.widthf = value }
+    override var widthi: Int
+        get() = super.widthi
+        set(value) { super.widthi = value }
+    override var height: Double
+        get() = super.height
+        set(value) { super.height = value }
+    override var heightf: Float
+        get() = super.heightf
+        set(value) { super.heightf = value }
+    override var heighti: Int
+        get() = super.heighti
+        set(value) { super.heighti = value }
+    override var x: Double
+        get() = super.x
+        set(value) { super.x = value }
+    override var xf: Float
+        get() = super.xf
+        set(value) { super.xf = value }
+    override var xi: Int
+        get() = super.xi
+        set(value) { super.xi = value }
+    override var y: Double
+        get() = super.y
+        set(value) { super.y = value }
+    override var yf: Float
+        get() = super.yf
+        set(value) { super.yf = value }
+    override var yi: Int
+        get() = super.yi
+        set(value) { super.yi = value }
+
+    override fun getContentsBounds(includeLayer: (layer: GuiLayer) -> Boolean): Rect2d? {
+        return super.getContentsBounds(includeLayer)
+    }
+
+    override fun getContentsBounds(): Rect2d? {
+        return super.getContentsBounds()
+    }
+
+    override fun conversionMatrixTo(other: CoordinateSpace2D): Matrix3 {
+        return super.conversionMatrixTo(other)
+    }
+
+    override fun conversionMatrixFrom(other: CoordinateSpace2D): Matrix3 {
+        return super.conversionMatrixFrom(other)
+    }
+
+    override fun convertPointTo(point: Vec2d, other: CoordinateSpace2D): Vec2d {
+        return super.convertPointTo(point, other)
+    }
+
+    override fun convertPointFrom(point: Vec2d, other: CoordinateSpace2D): Vec2d {
+        return super.convertPointFrom(point, other)
+    }
+
+    override fun convertRectTo(rect: Rect2d, other: CoordinateSpace2D): Rect2d {
+        return super.convertRectTo(rect, other)
+    }
+
+    override fun convertRectFrom(rect: Rect2d, other: CoordinateSpace2D): Rect2d {
+        return super.convertRectFrom(rect, other)
+    }
+
+    override fun convertPointToParent(point: Vec2d): Vec2d {
+        return super.convertPointToParent(point)
+    }
+
+    override fun convertPointFromParent(point: Vec2d): Vec2d {
+        return super.convertPointFromParent(point)
+    }
+
+    override fun convertRectToParent(rect: Rect2d): Rect2d {
+        return super.convertRectToParent(rect)
+    }
+
+    override fun convertRectFromParent(rect: Rect2d): Rect2d {
+        return super.convertRectFromParent(rect)
     }
 }
