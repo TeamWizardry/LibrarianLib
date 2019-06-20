@@ -59,9 +59,7 @@ class PastryScrollPane(x: Int, y: Int, width: Int, height: Int): GuiComponent(x,
         scrollPane.horizontalScrollBar.handle.add(horizontalHandleBackground, horizontalHandleDashes)
         verticalHandleDashes.anchor = vec(0.5, 0.5)
         horizontalHandleDashes.anchor = vec(0.5, 0.5)
-    }
 
-    init {
         scrollPane.verticalScrollBar.handle.BUS.hook(::layoutVerticalHandle)
         scrollPane.horizontalScrollBar.handle.BUS.hook(::layoutHorizontalHandle)
         scrollPane.BUS.hook<GuiLayerEvents.LayoutChildren> { layoutChildren() }

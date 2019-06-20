@@ -73,15 +73,14 @@ class GuiTestSelector : GuiBase() {
             scrollComponent.add(text)
         }
         scrollComponent.BUS.hook<GuiComponentEvents.MouseWheelEvent> {
-            when(it.direction) {
-                GuiComponentEvents.MouseWheelDirection.UP ->
-                    scrollComponent.contentsOffset = scrollComponent.contentsOffset.setY(
-                        max(-scrollAmount, scrollComponent.contentsOffset.y - 12)
-                    )
-                GuiComponentEvents.MouseWheelDirection.DOWN ->
-                    scrollComponent.contentsOffset = scrollComponent.contentsOffset.setY(
-                        min(0.0, scrollComponent.contentsOffset.y + 12)
-                    )
+            if(it.amount < 0) {
+                scrollComponent.contentsOffset = scrollComponent.contentsOffset.setY(
+                    max(-scrollAmount, scrollComponent.contentsOffset.y - 12)
+                )
+            } else {
+                scrollComponent.contentsOffset = scrollComponent.contentsOffset.setY(
+                    min(0.0, scrollComponent.contentsOffset.y + 12)
+                )
             }
         }
         main.add(background, scrollComponent)

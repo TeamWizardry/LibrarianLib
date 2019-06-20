@@ -6,7 +6,7 @@ import java.util.function.Consumer
  * Created by TheCodeWarrior
  */
 class EventBus {
-    private var hooks = mutableMapOf<Class<*>, MutableList<Consumer<Event>>>()
+    private var hooks = mutableMapOf<Class<*>, MutableList<EventHook>>()
 
     /**
      * Causes this event bus to delegate all its event handling to the given bus. This effectively makes the two busses
@@ -34,11 +34,11 @@ class EventBus {
         if (clazz in hooks) {
             if (event.reversed)
                 hooks[clazz]?.asReversed()?.forEach {
-                    it.accept(event)
+                    it.fire(event)
                 }
             else
                 hooks[clazz]?.forEach {
-                    it.accept(event)
+                    it.fire(event)
                 }
         }
     }
@@ -55,11 +55,24 @@ class EventBus {
     fun <E : Event> hook(clazz: Class<E>, hook: Consumer<E>) {
         if (!hooks.containsKey(clazz))
             hooks.put(clazz, mutableListOf())
-        hooks[clazz]?.add(hook as Consumer<Event>)
+        hooks[clazz]?.add(EventHook(hook as Consumer<Event>))
     }
 
     fun register(obj: Any) {
         EventHookAnnotationReflector.apply(this, obj)
+    }
+
+    private class EventHook(val callback: Consumer<Event>) {
+        var data: Any? = null
+
+        fun fire(event: Event) {
+            event.hookDataInternal = data
+            event.initializeHookStateInternal()
+            callback.accept(event)
+            event.finalizeHookStateInternal()
+            data = event.hookDataInternal
+            event.hookDataInternal = null
+        }
     }
 
     companion object {

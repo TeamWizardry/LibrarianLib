@@ -25,6 +25,7 @@ class ScrollPane(x: Int, y: Int, width: Int, height: Int): GuiComponent(x, y, wi
      */
     val content: GuiComponent = GuiComponent()
 
+    var useScrollWheel: Boolean = true
     @Suppress("LeakingThis")
     val verticalScrollBar: ScrollBar = ScrollBar(this, Axis2d.Y)
     @Suppress("LeakingThis")
@@ -35,6 +36,13 @@ class ScrollPane(x: Int, y: Int, width: Int, height: Int): GuiComponent(x, y, wi
     init {
         this.add(content)
         this.clipToBounds = true
+    }
+
+    @Hook
+    private fun scroll(e: GuiComponentEvents.MouseWheelEvent) {
+        if(useScrollWheel) {
+            verticalScrollBar.scrollPosition += e.amount
+        }
     }
 
     @Hook
@@ -135,9 +143,9 @@ class ScrollBar internal constructor(private val scrollPane: ScrollPane, val axi
             _scrollPosition = neededScroll * if(handleGap == 0.0) 0.0 else handlePos / handleGap
         } else {
             var scrollFraction = if(neededScroll == 0.0) 0.0 else _scrollPosition / neededScroll
-            if(scrollFraction > 1) {
-                scrollFraction = 1.0
-                _scrollPosition = neededScroll
+            if(scrollFraction !in 0.0 .. 1.0) {
+                scrollFraction = scrollFraction.clamp(0.0, 1.0)
+                _scrollPosition = neededScroll * scrollFraction
             }
 
             var handlePos = handleGap * scrollFraction

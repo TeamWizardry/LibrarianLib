@@ -80,7 +80,7 @@ interface IComponentMouse {
 
     fun mouseUp(button: EnumMouseButton)
 
-    fun mouseWheel(direction: GuiComponentEvents.MouseWheelDirection)
+    fun mouseWheel(amount: Double)
 }
 
 enum class MousePropagationType {
@@ -236,14 +236,14 @@ class ComponentMouseHandler: IComponentMouse {
         }
     }
 
-    override fun mouseWheel(direction: GuiComponentEvents.MouseWheelDirection) {
+    override fun mouseWheel(amount: Double) {
         if (!component.isVisible) return
 
-        if (component.BUS.fire(GuiComponentEvents.MouseWheelEvent(direction)).isCanceled())
+        if (component.BUS.fire(GuiComponentEvents.MouseWheelEvent(amount)).isCanceled())
             return
 
         component.subComponents.forEach { child ->
-            child.mouseWheel(direction)
+            child.mouseWheel(amount)
         }
     }
 

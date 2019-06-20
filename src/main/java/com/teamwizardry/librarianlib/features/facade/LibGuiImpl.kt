@@ -123,8 +123,9 @@ open class LibGuiImpl(
     fun handleMouseInput() {
         val wheelAmount = Mouse.getEventDWheel()
 
+        var mouseWheelModifier: Double = -16.0/360
         if (wheelAmount != 0) {
-            root.mouseWheel(GuiComponentEvents.MouseWheelDirection.fromSign(wheelAmount))
+            root.mouseWheel(wheelAmount / mouseWheelModifier)
         }
     }
 
@@ -139,5 +140,12 @@ open class LibGuiImpl(
     fun onClose() {
         Keyboard.enableRepeatEvents(false)
         Mouse.setNativeCursor(null)
+    }
+
+    companion object {
+        /**
+         * The LWJGL mouse wheel -> pixel modifier.
+         */
+        internal var mouseWheelModifier: Double = -16.0/360
     }
 }

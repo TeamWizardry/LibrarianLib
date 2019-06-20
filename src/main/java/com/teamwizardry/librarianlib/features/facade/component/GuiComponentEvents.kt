@@ -3,7 +3,10 @@ package com.teamwizardry.librarianlib.features.facade.component
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
 import com.teamwizardry.librarianlib.features.facade.EnumMouseButton
+import com.teamwizardry.librarianlib.features.kotlin.clamp
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import kotlin.math.floor
+import kotlin.math.sign
 
 /**
  * See [GuiLayerEvents] for a breakdown of when events fire while rendering
@@ -86,17 +89,58 @@ object GuiComponentEvents {
     /** Fired when a key repeat is triggered */
     class KeyRepeatEvent(val key: Char, val keyCode: Int) : EventCancelable()
 
-    /** Fired when the mouse wheel is moved */
-    class MouseWheelEvent(val direction: MouseWheelDirection) : EventCancelable()
+    /**
+     * Fired when the mouse wheel is moved. A negative scroll value indicates that the _content_ should move in the
+     * negative Y direction.
+     *
+     * **NOTE:** *Do not perform discrete actions every time this is fired. See [accumulated] for info.*
+     */
+    class MouseWheelEvent(
+        /**
+         * The scroll offset in pixels. This is only the amount scrolled _in this frame,_ so if your scroll operation
+         * operates in discreet steps, use [accumulated].
+         */
+        val amount: Double
+    ) : EventCancelable() {
+        /**
+         * The sum of all wheel movements. Before each hook is called, [amount] is added to this value. This value
+         * persists independently for each event hook.
+         *
+         * This value is not reset automatically, so it is up to the event hook to keep it in check. For the best
+         * experience when working with discrete scroll steps, subtract your step value instead of setting this to zero.
+         * The helper method [consumeStep] is provided to simplify this common operation.
+         */
+        var accumulated: Double = 0.0
 
-    enum class MouseWheelDirection(@JvmField val ydirection: Int) {
-        UP(+1), DOWN(-1);
-
-        companion object {
-            @JvmStatic
-            fun fromSign(dir: Int): MouseWheelDirection {
-                return if (dir >= 0) UP else DOWN
+        /**
+         * Tests for and "consumes" discrete scroll steps. If the [accumulated] scroll distance exceeds ±[size],
+         * this method "consumes" up to [max] steps (or as many as possible if [max] is not positive), and returns
+         * the number of steps consumed (a negative count if [accumulated] is negative).
+         *
+         * A negative [size] inverts the direction, returning a positive count if [accumulated] is negative and vice
+         * versa.
+         *
+         * @param size The step size. Must be nonzero
+         * @param max The maximum number of steps to consume, or unlimited if this value is not positive
+         * @return the number of steps consumed, negative if reversed
+         */
+        @JvmOverloads
+        fun consumeStep(size: Double, max: Int = 1): Int {
+            var count = (accumulated / size).toInt()
+            if(max > 0) {
+                count = count.clamp(-max, max)
             }
+            accumulated -= size * count
+            return count
+        }
+
+        override fun initializeHookState() {
+            accumulated = hookData as Double? ?: 0.0
+            accumulated += amount
+        }
+
+        override fun finalizeHookState() {
+            hookData = accumulated
         }
     }
 }

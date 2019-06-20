@@ -56,10 +56,9 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
                     && released
                     && this.isVisible) {
                 var tmpZoom = this.animX
-                if (event.direction === GuiComponentEvents.MouseWheelDirection.UP)
-                    tmpZoom += 3.0
-                else
-                    tmpZoom -= 3.0
+
+                val steps = event.consumeStep(25.0)
+                tmpZoom += 3.0 * steps
 
                 tmpZoom = MathHelper.clamp(tmpZoom, 0.0, 30.0)
 

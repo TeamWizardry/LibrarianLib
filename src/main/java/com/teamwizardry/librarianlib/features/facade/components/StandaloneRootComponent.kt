@@ -144,7 +144,7 @@ open class StandaloneRootComponent(val closeGui: (Exception) -> Unit): RootCompo
 
     override fun keyReleased(key: Char, keyCode: Int) = net { super.keyReleased(key, keyCode) }
 
-    override fun mouseWheel(direction: GuiComponentEvents.MouseWheelDirection) = net { super.mouseWheel(direction) }
+    override fun mouseWheel(amount: Double) = net { super.mouseWheel(amount) }
 
     override fun update() = net { super.update() }
 
