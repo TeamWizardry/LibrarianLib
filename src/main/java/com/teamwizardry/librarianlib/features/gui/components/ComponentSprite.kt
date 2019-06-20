@@ -10,6 +10,10 @@ import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
+/**
+ * ## Facade equivalent: [SpriteLayer][com.teamwizardry.librarianlib.features.facade.layers.SpriteLayer]
+ */
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 class ComponentSprite @JvmOverloads constructor(var sprite: ISprite?, x: Int, y: Int, width: Int = sprite?.width ?: 16, height: Int = sprite?.height ?: 16) : GuiComponent(x, y, width, height) {
 
     class AnimationLoopEvent(val component: ComponentSprite) : Event()

@@ -8,8 +8,8 @@ import com.teamwizardry.librarianlib.features.container.builtin.SlotTypeGhost
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.facade.components.ComponentRect
 import com.teamwizardry.librarianlib.features.facade.components.ComponentSprite
-import com.teamwizardry.librarianlib.features.neoguicontainer.GuiContainerBase
-import com.teamwizardry.librarianlib.features.neoguicontainer.builtin.BaseLayouts
+import com.teamwizardry.librarianlib.features.facadecontainer.GuiContainerBase
+import com.teamwizardry.librarianlib.features.facadecontainer.builtin.BaseLayouts
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.sprite.Texture
 import net.minecraft.entity.player.EntityPlayer
@@ -43,7 +43,7 @@ class ContainerTest(player: EntityPlayer, tile: TEContainer) : ContainerBase(pla
         val NAME = ResourceLocation("librarianlibtest:container")
 
         init {
-            GuiHandler.registerBasicNeoContainer(NAME, { player, _, tile -> ContainerTest(player, tile as TEContainer) }, { _, container -> GuiContainerTest(container) })
+            GuiHandler.registerBasicFacadeContainer(NAME, { player, _, tile -> ContainerTest(player, tile as TEContainer) }, { _, container -> GuiContainerTest(container) })
         }
     }
 }

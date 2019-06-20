@@ -8,8 +8,9 @@ import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
 /**
- * Created by TheCodeWarrior
+ * ## Facade equivalent: [ComponentSlot][com.teamwizardry.librarianlib.features.facadecontainer.ComponentSlot]
  */
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 class ComponentSlot(val slot: SlotBase, x: Int, y: Int) : GuiComponent(x, y) {
     val background = ComponentVoid(0, 0)
     var scaler: GuiComponent? = null

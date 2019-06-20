@@ -10,9 +10,9 @@ import com.teamwizardry.librarianlib.features.facade.components.ComponentProgres
 import com.teamwizardry.librarianlib.features.facade.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.facade.components.ComponentSpriteProgressBar
 import com.teamwizardry.librarianlib.features.facade.components.ComponentText
-import com.teamwizardry.librarianlib.features.neoguicontainer.ComponentSlot
-import com.teamwizardry.librarianlib.features.neoguicontainer.GuiContainerBase
-import com.teamwizardry.librarianlib.features.neoguicontainer.builtin.BaseLayouts
+import com.teamwizardry.librarianlib.features.facadecontainer.ComponentSlot
+import com.teamwizardry.librarianlib.features.facadecontainer.GuiContainerBase
+import com.teamwizardry.librarianlib.features.facadecontainer.builtin.BaseLayouts
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.sprite.Texture
 import com.teamwizardry.librarianlib.test.container.PoweredMachineContainer

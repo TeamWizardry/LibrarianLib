@@ -10,9 +10,9 @@ import com.teamwizardry.librarianlib.features.facade.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.facade.components.ComponentText
 import com.teamwizardry.librarianlib.features.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.features.facade.layers.minecraft.FluidGaugeLayer
-import com.teamwizardry.librarianlib.features.neoguicontainer.ComponentSlot
-import com.teamwizardry.librarianlib.features.neoguicontainer.GuiContainerBase
-import com.teamwizardry.librarianlib.features.neoguicontainer.builtin.BaseLayouts
+import com.teamwizardry.librarianlib.features.facadecontainer.ComponentSlot
+import com.teamwizardry.librarianlib.features.facadecontainer.GuiContainerBase
+import com.teamwizardry.librarianlib.features.facadecontainer.builtin.BaseLayouts
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Cardinal2d
 import com.teamwizardry.librarianlib.features.sprite.Texture

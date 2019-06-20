@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.features.neoguicontainer
+package com.teamwizardry.librarianlib.features.facadecontainer
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.container.ContainerBase
@@ -13,8 +13,6 @@ import com.teamwizardry.librarianlib.features.kotlin.delegate
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.ScreenSpace
 import com.teamwizardry.librarianlib.features.network.PacketHandler
 import com.teamwizardry.librarianlib.features.network.PacketSyncSlotVisibility
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.renderer.GlStateManager
@@ -22,7 +20,6 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.io.IOException
-import kotlin.coroutines.CoroutineContext
 
 /**
  * Created by TheCodeWarrior

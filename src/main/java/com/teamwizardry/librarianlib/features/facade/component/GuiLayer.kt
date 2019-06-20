@@ -140,7 +140,10 @@ open class GuiLayer private constructor(
     }
 
     /**
-     * Wraps this layer in a GuiComponent
+     * Wraps this layer in a [GuiComponent]. This exists for the few times it is necessary, however in many cases it is
+     * better to create a [GuiComponent] and add this layer to it, hooking into [GuiLayerEvents.LayoutChildren] to
+     * adjust this layer's size to match that wrapper if needed. Or, better yet, consider if creating a custom
+     * component class makes sense in the situation.
      */
     open fun componentWrapper(): GuiComponent {
         val wrapper = this.wrapper ?: LayerBackedComponent(this)

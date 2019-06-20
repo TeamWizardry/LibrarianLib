@@ -12,7 +12,12 @@ import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-@Deprecated("Use a ComponentSprite and specify caps in the mcmeta file")
+/**
+ * ## Facade equivalent:
+ * [SpriteLayer][com.teamwizardry.librarianlib.features.facade.layers.SpriteLayer] plus edge pinning (see
+ * [Texture][com.teamwizardry.librarianlib.features.sprite.Texture] docs)
+ */
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 open class ComponentSpriteTiled @JvmOverloads constructor(protected var main: Sprite, borderSize: Int, x: Int, y: Int, width: Int = main.width, height: Int = main.height) : GuiComponent(x, y, width, height) {
 
     var depth = Option<ComponentSpriteTiled, Boolean>(true)

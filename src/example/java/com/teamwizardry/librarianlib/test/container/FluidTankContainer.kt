@@ -31,7 +31,7 @@ class FluidTankContainer(player: EntityPlayer, te: TEFluidTank) : ContainerBase(
         val NAME = ResourceLocation("librarianlibtest", "fluidtankcontainer")
 
         init {
-            GuiHandler.registerBasicNeoContainer(NAME, { player, _, tile -> FluidTankContainer(player, tile as TEFluidTank) }, { _, container -> GuiFluidTank(container) })
+            GuiHandler.registerBasicFacadeContainer(NAME, { player, _, tile -> FluidTankContainer(player, tile as TEFluidTank) }, { _, container -> GuiFluidTank(container) })
         }
     }
 }

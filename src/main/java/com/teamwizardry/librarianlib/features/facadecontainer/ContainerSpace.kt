@@ -1,7 +1,6 @@
-package com.teamwizardry.librarianlib.features.neoguicontainer
+package com.teamwizardry.librarianlib.features.facadecontainer
 
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.unaryMinus
 import com.teamwizardry.librarianlib.features.math.Matrix3
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.CoordinateSpace2D

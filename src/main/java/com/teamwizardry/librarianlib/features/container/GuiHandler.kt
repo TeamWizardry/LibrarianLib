@@ -4,7 +4,6 @@ import com.google.common.collect.HashBiMap
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.base.item.ItemModBook
 import com.teamwizardry.librarianlib.features.container.internal.ContainerImpl
-import com.teamwizardry.librarianlib.features.guicontainer.GuiContainerBase
 import com.teamwizardry.librarianlib.features.kotlin.getTileEntitySafely
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.entity.player.EntityPlayer
@@ -79,6 +78,10 @@ object GuiHandler : IGuiHandler {
     }
 
     @JvmStatic
+    /**
+     * ## Facade equivalent: [registerBasicFacadeContainer]
+     */
+    @Deprecated("As of version 4.20 this has been superseded by Facade")
     fun <T : ContainerBase> registerBasicContainer(name: ResourceLocation,
                                                    server: (player: EntityPlayer, pos: BlockPos, te: TileEntity?) -> T,
                                                    client: (player: EntityPlayer, container: T) -> com.teamwizardry.librarianlib.features.guicontainer.GuiContainerBase) {
@@ -86,7 +89,7 @@ object GuiHandler : IGuiHandler {
             server(player, pos, world.getTileEntitySafely(pos))
         }
 
-        val rawClient: (EntityPlayer, World, BlockPos) -> GuiContainerBase = { player, world, pos ->
+        val rawClient: (EntityPlayer, World, BlockPos) -> com.teamwizardry.librarianlib.features.guicontainer.GuiContainerBase = { player, world, pos ->
             client(player, rawServer(player, world, pos))
         }
 
@@ -94,14 +97,14 @@ object GuiHandler : IGuiHandler {
     }
 
     @JvmStatic
-    fun <T : ContainerBase> registerBasicNeoContainer(name: ResourceLocation,
+    fun <T : ContainerBase> registerBasicFacadeContainer(name: ResourceLocation,
         server: (player: EntityPlayer, pos: BlockPos, te: TileEntity?) -> T,
-        client: (player: EntityPlayer, container: T) -> com.teamwizardry.librarianlib.features.neoguicontainer.GuiContainerBase) {
+        client: (player: EntityPlayer, container: T) -> com.teamwizardry.librarianlib.features.facadecontainer.GuiContainerBase) {
         val rawServer: (EntityPlayer, World, BlockPos) -> T = { player, world, pos ->
             server(player, pos, world.getTileEntitySafely(pos))
         }
 
-        val rawClient: (EntityPlayer, World, BlockPos) -> com.teamwizardry.librarianlib.features.neoguicontainer.GuiContainerBase =
+        val rawClient: (EntityPlayer, World, BlockPos) -> com.teamwizardry.librarianlib.features.facadecontainer.GuiContainerBase =
             { player, world, pos ->
                 client(player, rawServer(player, world, pos))
             }

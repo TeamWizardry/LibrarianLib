@@ -26,9 +26,10 @@ import java.util.function.Consumer
 import java.util.function.Supplier
 
 /**
- * Created by TheCodeWarrior
+ * ## Facade equivalent [GuiHud][com.teamwizardry.librarianlib.features.facade.hud.GuiHud]
  */
 @Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 object GuiOverlay {
 
     private data class StorageThing(val initializer: Consumer<GuiComponent>, val visible: BooleanSupplier) {

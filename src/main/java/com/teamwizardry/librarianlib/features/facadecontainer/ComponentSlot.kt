@@ -1,11 +1,10 @@
-package com.teamwizardry.librarianlib.features.neoguicontainer
+package com.teamwizardry.librarianlib.features.facadecontainer
 
 import com.teamwizardry.librarianlib.features.container.internal.SlotBase
 import com.teamwizardry.librarianlib.features.eventbus.Hook
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.math.Vec2d
-import com.teamwizardry.librarianlib.features.math.coordinatespaces.ScreenSpace
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.UnrelatedCoordinateSpaceException
 
 /**

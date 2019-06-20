@@ -15,6 +15,10 @@ import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
+/**
+ * ## Facade equivalent: [ComponentStructure][com.teamwizardry.librarianlib.features.facade.components.ComponentStructure]
+ */
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 class ComponentStructure(posX: Int, posY: Int, var structure: Structure?) : GuiComponent(posX, posY) {
 
     val color = Option<ComponentStructure, Color>(Color.WHITE)

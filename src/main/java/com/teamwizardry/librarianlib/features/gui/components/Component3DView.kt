@@ -12,6 +12,10 @@ import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11
 
+/**
+ * ## Facade equivalent: None, so far
+ */
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 class Component3DView(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent(posX, posY, width, height) {
 
     init {
