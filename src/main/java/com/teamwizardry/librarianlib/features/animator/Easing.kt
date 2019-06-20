@@ -269,7 +269,7 @@ abstract class Easing {
          * over [fadeOut] units of time.
          */
         @JvmStatic
-        fun easeInOut(fadeIn: Float, fadeInEasing: Easing, hold: Float, fadeOut: Float, fadeOutEasing: Easing): Easing {
+        fun easeInOut(fadeIn: Float, hold: Float, fadeOut: Float, fadeInEasing: Easing, fadeOutEasing: Easing): Easing {
             val totalUnits = fadeIn + hold + fadeOut
             val fadeInFraction = fadeIn / totalUnits
             val holdFraction = hold / totalUnits
