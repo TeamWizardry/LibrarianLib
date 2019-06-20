@@ -12,7 +12,8 @@ import com.teamwizardry.librarianlib.features.sprite.WrappedSprite
  * [SpriteLayer][com.teamwizardry.librarianlib.features.facade.layers.SpriteLayer] plus caps (see
  * [Texture][com.teamwizardry.librarianlib.features.sprite.Texture] docs)
  */
-@Deprecated("As of version 4.20 this has been superseded by Facade")
+//@Deprecated("As of version 4.20 this has been superseded by Facade")
+@Deprecated("Use a ComponentSprite and specify caps in the mcmeta file")
 class ComponentSpriteCapped(internal var topLeft: Sprite, internal val middle: Sprite, internal val bottomRight: Sprite, internal val horizontal: Boolean, posX: Int, posY: Int, width: Int, height: Int) : GuiComponent(posX, posY, width, height) {
 
     private val middleClipped: ISprite = object: WrappedSprite() {

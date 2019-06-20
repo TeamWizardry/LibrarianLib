@@ -24,7 +24,7 @@ import java.awt.Color
 /**
  * ## Facade equivalent: None, so far
  */
-@Deprecated("As of version 4.20 this has been superseded by Facade")
+//@Deprecated("As of version 4.20 this has been superseded by Facade")
 class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: Color, keys: List<ResourceLocation>, arrow: Sprite, subtext: TranslationHolder?) : GuiComponent(posX, posY, width, height) {
 
     var time = 0

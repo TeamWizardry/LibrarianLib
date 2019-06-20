@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.features.math.Vec2d
 /**
  * ## Facade equivalent: [GuiComponent][com.teamwizardry.librarianlib.features.facade.GuiComponent]
  */
-@Deprecated("As of version 4.20 this has been superseded by Facade")
+//@Deprecated("As of version 4.20 this has been superseded by Facade")
 class ComponentVoid : GuiComponent {
 
     constructor(posX: Int, posY: Int, width: Int, height: Int) : super(posX, posY, width, height)

@@ -17,7 +17,8 @@ import java.awt.Color
  * [SpriteLayer][com.teamwizardry.librarianlib.features.facade.layers.SpriteLayer] plus edge pinning (see
  * [Texture][com.teamwizardry.librarianlib.features.sprite.Texture] docs)
  */
-@Deprecated("As of version 4.20 this has been superseded by Facade")
+//@Deprecated("As of version 4.20 this has been superseded by Facade")
+@Deprecated("Use a ComponentSprite and specify caps in the mcmeta file")
 open class ComponentSpriteTiled @JvmOverloads constructor(protected var main: Sprite, borderSize: Int, x: Int, y: Int, width: Int = main.width, height: Int = main.height) : GuiComponent(x, y, width, height) {
 
     var depth = Option<ComponentSpriteTiled, Boolean>(true)

@@ -11,7 +11,7 @@ import java.awt.Color
 /**
  * ## Facade equivalent: [TextLayer][com.teamwizardry.librarianlib.features.facade.layers.TextLayer]
  */
-@Deprecated("As of version 4.20 this has been superseded by Facade")
+//@Deprecated("As of version 4.20 this has been superseded by Facade")
 class ComponentText @JvmOverloads constructor(posX: Int, posY: Int, var horizontal: ComponentText.TextAlignH = ComponentText.TextAlignH.LEFT, var vertical: ComponentText.TextAlignV = ComponentText.TextAlignV.TOP) : GuiComponent(posX, posY) {
 
     /**

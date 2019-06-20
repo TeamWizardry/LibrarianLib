@@ -11,7 +11,7 @@ import java.util.function.Consumer
 /**
  * ## Facade equivalent: [PastrySlider][com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastrySlider] (unimplemented)
  */
-@Deprecated("As of version 4.20 this has been superseded by Facade")
+//@Deprecated("As of version 4.20 this has been superseded by Facade")
 class ComponentSlider(posX: Int, posY: Int, width: Int, height: Int, percentage: Double, var increments: Int) : GuiComponent(posX, posY, width, height) {
 
     var percentageChange = HandlerList<Consumer<Double>>()

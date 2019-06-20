@@ -27,7 +27,7 @@ import java.io.IOException
  */
 @Suppress("LeakingThis")
 @Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
-@Deprecated("As of version 4.20 this has been superseded by Facade")
+//@Deprecated("As of version 4.20 this has been superseded by Facade")
 open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var guiHeight: Int) : GuiContainer(ContainerImpl(container)) {
     protected val mainComponents: ComponentVoid = ComponentVoid(0, 0)
     protected val fullscreenComponents: ComponentVoid = ComponentVoid(0, 0)
