@@ -15,6 +15,15 @@ abstract class Easing {
      */
     abstract operator fun invoke(progress: Float): Float
 
+    open val reversed: Easing = object : Easing() {
+        override fun invoke(progress: Float): Float {
+            return this@Easing(1 - progress)
+        }
+
+        override val reversed: Easing
+            get() = this@Easing
+    }
+
     /**
      * Source: http://greweb.me/2012/02/bezier-curve-based-easing-functions-from-concept-to-implementation/
      *
@@ -73,9 +82,23 @@ abstract class Easing {
     @Suppress("unused")
     companion object {
         @JvmField
+        @Deprecated("Inconsistent naming", replaceWith = ReplaceWith("easeInLinear"))
         val linear = object : Easing() {
             override fun invoke(progress: Float): Float {
                 return progress
+            }
+        }
+
+        @JvmField
+        val easeInLinear = object : Easing() {
+            override fun invoke(progress: Float): Float {
+                return progress
+            }
+        }
+        @JvmField
+        val easeOutLinear = object : Easing() {
+            override fun invoke(progress: Float): Float {
+                return 1 - progress
             }
         }
 
@@ -228,6 +251,40 @@ abstract class Easing {
                 val t = progress
                 return if (t < d / 2) Easing.easeInBounce(t * 2) * .5f + b
                 else Easing.easeOutBounce(t * 2 - d) * .5f + c * .5f + b
+            }
+        }
+
+        /**
+         * Creates an easing for a basic linear fade in, hold, fade out progression. Proportionally the easing will
+         * linearly fade from 0 to 1 over [fadeIn] units of time, hold 1 for [hold] units of time, then linearly
+         * fade out over [fadeOut] units of time.
+         */
+        @JvmStatic
+        fun easeInOutLinear(fadeIn: Float, hold: Float, fadeOut: Float): Easing
+            = easeInOut(fadeIn, easeInLinear, hold, fadeOut, easeOutLinear)
+
+        /**
+         * Creates an easing for a fade in, hold, fade out progression. Proportionally the easing will go through
+         * [fadeInEasing] over [fadeIn] units of time, hold 1 for [hold] units of time, then go through [fadeOutEasing]
+         * over [fadeOut] units of time.
+         */
+        @JvmStatic
+        fun easeInOut(fadeIn: Float, fadeInEasing: Easing, hold: Float, fadeOut: Float, fadeOutEasing: Easing): Easing {
+            val totalUnits = fadeIn + hold + fadeOut
+            val fadeInFraction = fadeIn / totalUnits
+            val holdFraction = hold / totalUnits
+            val fadeOutStart = fadeInFraction + holdFraction
+            val fadeOutFraction = fadeOut / totalUnits
+
+            return object: Easing() {
+                override fun invoke(progress: Float): Float {
+                    return when (progress) {
+                        in 0f .. fadeInFraction -> fadeInEasing(progress / fadeInFraction)
+                        in fadeInFraction .. fadeOutStart -> 1f
+                        in fadeOutStart .. 1f -> fadeOutEasing((progress-fadeOutStart) / fadeOutFraction)
+                        else -> 0f
+                    }
+                }
             }
         }
     }
