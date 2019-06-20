@@ -50,6 +50,10 @@ repositories {
         name = "Bluexin repo"
         url = uri("https://maven.bluexin.be/repository/snapshots/")
     }
+    maven {
+        name = "Jitpack.io"
+        url = uri("https://jitpack.io")
+    }
 }
 
 dependencies {
@@ -60,8 +64,8 @@ dependencies {
     implementation("com.ibm.icu:icu4j:63.1")
     shade("org.msgpack:msgpack-core:0.8.16")
     implementation("org.msgpack:msgpack-core:0.8.16")
-    shade(files("libs/bitfontcore-0.1.jar"))
-    implementation(files("libs/bitfontcore-0.1.jar"))
+    shade("com.github.thecodewarrior:bitfont:-SNAPSHOT")
+    implementation("com.github.thecodewarrior:bitfont:-SNAPSHOT")
 }
 
 kotlin.experimental.coroutines = Coroutines.ENABLE
