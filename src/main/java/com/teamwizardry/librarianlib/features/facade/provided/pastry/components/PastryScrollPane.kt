@@ -26,6 +26,18 @@ class PastryScrollPane(x: Int, y: Int, width: Int, height: Int): GuiComponent(x,
     constructor(x: Int, y: Int): this(x, y, 0, 0)
     constructor(): this(0, 0, 0, 0)
 
+    /**
+     * Whether to show the vertical scroll bar. If this value is null the scroll bar will automatically shown or
+     * hidden when needed. Defaults to true
+     */
+    var showVerticalScrollbar: Boolean? = true
+
+    /**
+     * Whether to show the horizontal scroll bar. If this value is null the scroll bar will automatically shown or
+     * hidden when needed. Defaults to false
+     */
+    var showHorizontalScrollbar: Boolean? = false
+
     private val scrollPane = ScrollPane()
 
     val content: GuiComponent = scrollPane.content
@@ -74,12 +86,10 @@ class PastryScrollPane(x: Int, y: Int, width: Int, height: Int): GuiComponent(x,
     override fun layoutChildren() {
         super.layoutChildren()
 
-        val scrollBarWidth = 12
-
         val contentSize = content.frame.size
 
-        var needsVertical = contentSize.y > this.height - 2
-        var needsHorizontal = contentSize.x > this.width - 2
+        var needsVertical = showVerticalScrollbar ?: (contentSize.y > this.height - 2)
+        var needsHorizontal = showHorizontalScrollbar ?: (contentSize.x > this.width - 2)
 
         if(needsHorizontal)
             needsVertical = contentSize.y > this.height - 2 - scrollBarWidth
@@ -103,5 +113,10 @@ class PastryScrollPane(x: Int, y: Int, width: Int, height: Int): GuiComponent(x,
         scrollPane.verticalScrollBar.frame = verticalBackground.frame.shrink(1.0)
         horizontalBackground.frame = rect(0, this.height - scrollBarWidth, contentAreaSize.x, scrollBarWidth)
         scrollPane.horizontalScrollBar.frame = horizontalBackground.frame.shrink(1.0)
+    }
+
+    companion object {
+        @JvmStatic
+        val scrollBarWidth = 12
     }
 }

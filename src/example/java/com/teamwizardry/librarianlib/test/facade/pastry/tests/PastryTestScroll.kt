@@ -20,6 +20,8 @@ class PastryTestScroll: PastryTestBase() {
         val scroll = PastryScrollPane(0, 0, size.xi + 2, size.yi + 2)
         val contentBackground = SpriteLayer(Sprite(ResourceLocation("textures/blocks/dirt.png")))
         scroll.content.add(contentBackground)
+        scroll.showHorizontalScrollbar = null
+        scroll.showVerticalScrollbar = null
 
         val sizeDropdown = PastryDropdown<Vec2d>(3, 0, 0) {
             scroll.content.size = it
