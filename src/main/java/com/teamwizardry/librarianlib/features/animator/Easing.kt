@@ -261,7 +261,7 @@ abstract class Easing {
          */
         @JvmStatic
         fun easeInOutLinear(fadeIn: Float, hold: Float, fadeOut: Float): Easing
-            = easeInOut(fadeIn, easeInLinear, hold, fadeOut, easeOutLinear)
+            = easeInOut(fadeIn, hold, fadeOut, easeInLinear, easeOutLinear)
 
         /**
          * Creates an easing for a fade in, hold, fade out progression. Proportionally the easing will go through
