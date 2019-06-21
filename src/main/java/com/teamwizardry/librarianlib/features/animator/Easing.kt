@@ -15,14 +15,15 @@ abstract class Easing {
      */
     abstract operator fun invoke(progress: Float): Float
 
-    open val reversed: Easing = object : Easing() {
-        override fun invoke(progress: Float): Float {
-            return this@Easing(1 - progress)
-        }
+    open val reversed: Easing
+        get() = object : Easing() {
+            override fun invoke(progress: Float): Float {
+                return this@Easing(1 - progress)
+            }
 
-        override val reversed: Easing
-            get() = this@Easing
-    }
+            override val reversed: Easing
+                get() = this@Easing
+        }
 
     /**
      * Source: http://greweb.me/2012/02/bezier-curve-based-easing-functions-from-concept-to-implementation/
