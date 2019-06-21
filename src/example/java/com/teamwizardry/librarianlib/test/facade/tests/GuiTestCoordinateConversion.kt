@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.test.facade.tests
 
+import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.facade.GuiBase
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.layers.RectLayer
@@ -54,7 +55,7 @@ class GuiTestCoordinateConversion : GuiBase() {
             }
             anim.shouldReverse = true
             anim.repeatCount = -1
-            main.add(anim)
+            Animator.global.add(anim)
         } else {
             source.anchor = vec(0.5, 0.5)
             val anim = GuiAnimator.animate(60f) {
@@ -62,7 +63,7 @@ class GuiTestCoordinateConversion : GuiBase() {
             }
             anim.shouldReverse = true
             anim.repeatCount = -1
-            main.add(anim)
+            Animator.global.add(anim)
         }
 
 

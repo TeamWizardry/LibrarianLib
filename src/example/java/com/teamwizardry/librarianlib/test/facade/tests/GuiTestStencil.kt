@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.test.facade.tests
 
+import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 import com.teamwizardry.librarianlib.features.facade.GuiBase
 import com.teamwizardry.librarianlib.features.facade.layers.RectLayer
@@ -32,6 +33,6 @@ class GuiTestStencil : GuiBase() {
         anim.duration = 2 * 20f
         anim.shouldReverse = true
         anim.repeatCount = -1
-        clipping.animator.add(anim)
+        Animator.global.add(anim)
     }
 }

@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.test.facade.tests
 
+import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.facade.GuiBase
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
 import com.teamwizardry.librarianlib.features.facade.layers.RectLayer
@@ -29,7 +30,7 @@ class GuiTestGetContentBounds : GuiBase() {
         }
         anim.shouldReverse = true
         anim.repeatCount = -1
-        containerContentsContents.add(anim)
+        Animator.global.add(anim)
 
         val container = object: GuiLayer(0, 0, 40, 10) {
             init {

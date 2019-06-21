@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.facade.provided.book.structure
 
+import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 import com.teamwizardry.librarianlib.features.facade.EnumMouseButton
@@ -66,7 +67,7 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
                 mouseOutAnim.duration = 4f
                 mouseOutAnim.easing = Easing.easeOutQuart
                 mouseOutAnim.to = tmpZoom
-                add(mouseOutAnim)
+                Animator.global.add(mouseOutAnim)
             }
         }
 

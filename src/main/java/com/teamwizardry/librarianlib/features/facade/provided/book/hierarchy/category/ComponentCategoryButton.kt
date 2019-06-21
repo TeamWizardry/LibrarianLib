@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.facade.provided.book.hierarchy.category
 
+import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
@@ -75,7 +76,7 @@ class ComponentCategoryButton(posX: Int, posY: Int, width: Int, height: Int, boo
             mouseInAnim.duration = 20f
             mouseInAnim.easing = Easing.easeOutQuint
             mouseInAnim.to = radius
-            circleWipe.add(mouseInAnim)
+            Animator.global.add(mouseInAnim)
         }
 
         circleWipe.BUS.hook(GuiComponentEvents.MouseMoveOutEvent::class.java) {
@@ -84,7 +85,7 @@ class ComponentCategoryButton(posX: Int, posY: Int, width: Int, height: Int, boo
             mouseOutAnim.duration = 20f
             mouseOutAnim.easing = Easing.easeOutQuint
             mouseOutAnim.to = 0
-            circleWipe.add(mouseOutAnim)
+            Animator.global.add(mouseOutAnim)
         }
 
         val wipeColor = category.color

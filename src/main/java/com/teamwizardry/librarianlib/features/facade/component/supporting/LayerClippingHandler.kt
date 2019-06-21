@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.facade.component.supporting
 
+import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
 import com.teamwizardry.librarianlib.features.facade.value.RMValueDouble
 import com.teamwizardry.librarianlib.features.facade.value.RMValueInt
@@ -118,7 +119,7 @@ class LayerClippingHandler: ILayerClipping {
         if(sp != null) {
             GlStateManager.enableTexture2D()
             sp.bind()
-            sp.draw(layer.animator.time.toInt(), 0f, 0f, layer.size.xi.toFloat(), layer.size.yi.toFloat())
+            sp.draw(Animator.global.time.toInt(), 0f, 0f, layer.size.xi.toFloat(), layer.size.yi.toFloat())
             return
         }
 

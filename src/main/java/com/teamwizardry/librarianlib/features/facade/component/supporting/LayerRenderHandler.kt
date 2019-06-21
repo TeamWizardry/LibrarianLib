@@ -1,7 +1,5 @@
 package com.teamwizardry.librarianlib.features.facade.component.supporting
 
-import com.teamwizardry.librarianlib.features.animator.Animation
-import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.facade.value.IMValue
@@ -17,12 +15,6 @@ interface ILayerRendering {
     val tooltip_im: IMValue<List<String>?>
 //    var tooltip: List<String>?
 //    var tooltipFont: FontRenderer?
-    var animator: Animator
-
-    /**
-     * Adds animations to [animator]
-     */
-    fun add(vararg animations: Animation<*>)
 
     /**
      * Sorts the layers by zIndex
@@ -71,28 +63,6 @@ class LayerRenderHandler: ILayerRendering {
     override val tooltip_im: IMValue<List<String>?> = IMValue()
 //    override var tooltip: List<String>? by tooltip_im
 //    override var tooltipFont: FontRenderer? = null
-
-    override var animator: Animator
-        get() {
-            var a = animatorStorage ?: layer.parent?.animator
-            if (a == null) {
-                a = Animator()
-                animatorStorage = a
-            }
-            return a
-        }
-        set(value) {
-            animatorStorage = value
-        }
-
-    private var animatorStorage: Animator? = null
-
-    /**
-     * Adds animations to [animator]
-     */
-    override fun add(vararg animations: Animation<*>) {
-        animator.add(*animations)
-    }
 
     override fun sortChildren() {
         val components = layer.relationships.subLayers

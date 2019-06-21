@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.test.facade.tests
 
+import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.facade.GuiBase
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
@@ -27,7 +28,7 @@ class GuiTestImplicitAnimation : GuiBase() {
                 c.color = Color.GREEN
             }
             anim.shouldReverse = true
-            c.add(anim)
+            Animator.global.add(anim)
         }
 
     }

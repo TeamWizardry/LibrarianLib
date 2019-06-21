@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.facade.provided.pastry.components.dropdown
 
 import com.teamwizardry.librarianlib.core.client.ClientTickHandler
+import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.eventbus.Hook
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
@@ -176,7 +177,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
             button.buttonContents?.isVisible = true
             close()
         }
-        this.add(anim)
+        Animator.global.add(anim)
     }
 
     fun close() {

@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.facade.provided.book.context
 
+import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.animator.animations.BasicAnimation
 import com.teamwizardry.librarianlib.features.facade.components.ComponentAnimatableVoid
@@ -56,7 +57,7 @@ open class ComponentBookMark(val book: IBookGui, val icon: Sprite, val id: Int, 
         mouseOutAnim.duration = 10f
         mouseOutAnim.easing = Easing.easeOutQuart
         mouseOutAnim.to = amount - slideWidth
-        bar.add(mouseOutAnim)
+        Animator.global.add(mouseOutAnim)
     }
 
     private val slideWidth = bar.size.xi - 20

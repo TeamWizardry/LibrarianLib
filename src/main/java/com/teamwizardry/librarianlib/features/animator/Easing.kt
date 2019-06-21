@@ -83,23 +83,9 @@ abstract class Easing {
     @Suppress("unused")
     companion object {
         @JvmField
-        @Deprecated("Inconsistent naming", replaceWith = ReplaceWith("easeInLinear"))
         val linear = object : Easing() {
             override fun invoke(progress: Float): Float {
                 return progress
-            }
-        }
-
-        @JvmField
-        val easeInLinear = object : Easing() {
-            override fun invoke(progress: Float): Float {
-                return progress
-            }
-        }
-        @JvmField
-        val easeOutLinear = object : Easing() {
-            override fun invoke(progress: Float): Float {
-                return 1 - progress
             }
         }
 
@@ -262,7 +248,7 @@ abstract class Easing {
          */
         @JvmStatic
         fun easeInOutLinear(fadeIn: Float, hold: Float, fadeOut: Float): Easing
-            = easeInOut(fadeIn, hold, fadeOut, easeInLinear, easeOutLinear)
+            = easeInOut(fadeIn, hold, fadeOut, linear, linear)
 
         /**
          * Creates an easing for a fade in, hold, fade out progression. Proportionally the easing will go through

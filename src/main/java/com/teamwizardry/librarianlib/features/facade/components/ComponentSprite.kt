@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.facade.components
 
+import com.teamwizardry.librarianlib.features.animator.Animator
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.facade.value.IMValue
 import com.teamwizardry.librarianlib.features.facade.value.IMValueBoolean
@@ -25,7 +26,7 @@ class ComponentSprite @JvmOverloads constructor(var sprite: ISprite?, x: Int, y:
     override fun draw(partialTicks: Float) {
         val alwaysTop = !depth
         val sp = sprite ?: return
-        val animationTicks = animator.time.toInt()
+        val animationTicks = Animator.global.time.toInt()
         if (alwaysTop)
             GlStateManager.depthFunc(GL11.GL_ALWAYS)
 
