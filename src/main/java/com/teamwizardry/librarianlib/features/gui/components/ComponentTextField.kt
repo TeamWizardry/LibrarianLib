@@ -30,7 +30,7 @@ import java.awt.Color
  * multi-line editing (WIP / unstable)
  */
 @SideOnly(Side.CLIENT)
-//@Deprecated("As of version 4.20 this has been superseded by Facade")
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int, width: Int, height: Int) : GuiComponent(x, y, width, height) {
 
     constructor(x: Int, y: Int, width: Int, height: Int) : this(Minecraft.getMinecraft().fontRenderer, x, y, width, height)

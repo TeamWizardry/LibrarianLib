@@ -8,7 +8,7 @@ import java.util.function.Consumer
 /**
  * ## Facade equivalent: None
  */
-//@Deprecated("As of version 4.20 this has been superseded by Facade")
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 class ComponentRaw : GuiComponent {
 
     var func: Consumer<ComponentRaw>

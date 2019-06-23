@@ -26,7 +26,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
  * ## Facade equivalent: [FluidGaugeLayer][com.teamwizardry.librarianlib.features.facade.layers.minecraft.FluidGaugeLayer]
  */
 @SideOnly(Side.CLIENT)
-//@Deprecated("As of version 4.20 this has been superseded by Facade")
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 class ComponentFluidStack @JvmOverloads constructor(fgSprite: ISprite?, bgSprite: ISprite?,
                                                     x: Int, y: Int,
                                                     fgWidth: Int = fgSprite?.width ?: 16, fgHeight: Int = fgSprite?.height ?: 16,

@@ -7,10 +7,9 @@ import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
 /**
- * ## Facade equivalent: [GuiLayer.anchor = vec(0.5, 0.5)][com.teamwizardry.librarianlib.features.facade.component.GuiLayer.anchor]
+ * ## Facade equivalent: [StackLayout][com.teamwizardry.librarianlib.features.facade.layout.StackLayout]
  */
-//@Deprecated("As of version 4.20 this has been superseded by Facade")
-@Deprecated("Use `component.transform.postTranslate = -component.size/2` instead")
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 class ComponentCenterAlign(posX: Int, posY: Int, var centerHorizontal: Boolean, var centerVertical: Boolean) : GuiComponent(posX, posY) {
 
     override fun drawComponent(mousePos: Vec2d, partialTicks: Float) {

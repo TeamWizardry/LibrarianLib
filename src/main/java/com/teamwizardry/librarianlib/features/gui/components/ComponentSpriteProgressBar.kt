@@ -16,8 +16,7 @@ import java.awt.Color
  * [SpriteLayer][com.teamwizardry.librarianlib.features.facade.layers.SpriteLayer] plus edge pinning (see
  * [Texture][com.teamwizardry.librarianlib.features.sprite.Texture] docs)
  */
-//@Deprecated("As of version 4.20 this has been superseded by Facade")
-@Deprecated("Use a ComponentSprite and specify caps in the mcmeta file")
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 class ComponentSpriteProgressBar @JvmOverloads constructor(var sprite: ISprite?, x: Int, y: Int, width: Int = sprite?.width ?: 16, height: Int = sprite?.height ?: 16) : GuiComponent(x, y, width, height) {
 
     class AnimationLoopEvent(val component: ComponentSpriteProgressBar) : Event()

@@ -22,7 +22,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
  * edge pinning (see [Texture][com.teamwizardry.librarianlib.features.sprite.Texture] docs)
  */
 @SideOnly(Side.CLIENT)
-//@Deprecated("As of version 4.20 this has been superseded by Facade")
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 class ComponentProgressBar @JvmOverloads constructor(fgSprite: ISprite?, bgSprite: ISprite?,
                                                      x: Int, y: Int,
                                                      fgWidth: Int = fgSprite?.width ?: 16, fgHeight: Int = fgSprite?.height ?: 16,

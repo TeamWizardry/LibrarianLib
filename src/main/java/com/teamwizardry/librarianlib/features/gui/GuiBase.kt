@@ -23,7 +23,7 @@ import java.io.IOException
  * ## Facade equivalent [GuiBase][com.teamwizardry.librarianlib.features.facade.GuiBase]
  */
 @Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
-//@Deprecated("As of version 4.20 this has been superseded by Facade")
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : GuiScreen() {
     val mainComponents: ComponentVoid = ComponentVoid(0, 0)
     val fullscreenComponents: ComponentVoid = ComponentVoid(0, 0)

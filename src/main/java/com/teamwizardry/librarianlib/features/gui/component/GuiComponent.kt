@@ -55,7 +55,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
  * ## Facade equivalent: [GuiComponent][com.teamwizardry.librarianlib.features.facade.component.GuiComponent]
  */
 @SideOnly(Side.CLIENT)
-//@Deprecated("As of version 4.20 this has been superseded by Facade")
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 abstract class GuiComponent @JvmOverloads constructor(posX: Int, posY: Int, width: Int = 0, height: Int = 0) {
     /**
      * Draws the component, this is called between pre and post draw events.
