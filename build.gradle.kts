@@ -25,30 +25,30 @@ logger.info("On branch $branch")
 
 val mod_version_prefix = if(mc_version.contains(branch)) "" else "${branch.replace('/', '-')}-"
 
+val mod_version: String by gradleProperties
+val mod_name: String by gradleProperties
+val mod_group: String by gradleProperties
+
 // ===================================================== Common ===================================================== //
 
 allprojects {
-    val mod_version: String by gradleProperties
-    val mod_name: String by gradleProperties
-    val mod_group: String by gradleProperties
+    apply(plugin = "idea")
+    apply(plugin = "eclipse")
+    apply(plugin = "maven-publish")
+    apply(plugin = "java")
+    apply(plugin = "kotlin")
+    apply(plugin = "net.minecraftforge.gradle")
+
 
     group = mod_group
     version = mod_version_prefix + mod_version
-    description = "A library for the TeamWizardry mods "
     if(project == rootProject)
         base.archivesBaseName = "$mod_name-$mod_version_prefix$mc_version"
     else
-        base.archivesBaseName = "librarianlib-$mod_name"
+        base.archivesBaseName = "librarianlib-${project.name}"
 
     minecraft {
         mappings = "$mc_mappings-$mc_version"
-        // accessTransformer = file("build/resources/main/META-INF/accesstransformer.cfg")
-//        runDir = "run"
-//        coreMod = core_plugin
-
-//        replace("GRADLE:VERSION", mod_version)
-//        replace("GRADLE:BUILD", build_number)
-//        replaceIn("LibrarianLib.kt")
     }
 
     repositories {
@@ -88,10 +88,17 @@ allprojects {
                 "-Xuse-experimental=kotlin.Experimental"
             )
         }
+        destinationDir = File(destinationDir.absolutePath.replace("kotlin/([^/]+)$".toRegex(), "java/$1"))
     }
 }
 
 // ====================================================== Root ====================================================== //
+
+dependencies {
+//    subprojects.forEach {
+//        compile(it)
+//    }
+}
 
 minecraft {
     runs {
@@ -108,6 +115,11 @@ minecraft {
                 "librarianlib" {
                     source(java.sourceSets["main"])
                 }
+                subprojects.forEach {
+                    "librarianlib-${it.name}" {
+                        source(it.java.sourceSets["main"])
+                    }
+                }
             }
         }
 
@@ -123,6 +135,11 @@ minecraft {
             mods {
                 "librarianlib" {
                     source(java.sourceSets["main"])
+                }
+                subprojects.forEach {
+                    "librarianlib-${it.name}" {
+                        source(it.java.sourceSets["main"])
+                    }
                 }
             }
         }

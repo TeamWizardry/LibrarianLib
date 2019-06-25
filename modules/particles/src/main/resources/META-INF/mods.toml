@@ -2,9 +2,9 @@ modLoader="javafml"
 loaderVersion="[26,)"
 issueTrackerURL="https://github.com/TeamWizardry/LibrarianLib/issues"
 [[mods]]
-modId="librarianlib"
+modId="librarianlib-particles"
 version="${file.jarVersion}"
-displayName="LibrarianLib"
+displayName="LibrarianLib Particles"
 # A URL to query for updates for this mod. See the JSON update specification <here>
 # updateJSONURL="http://myurl.me/" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
@@ -13,17 +13,5 @@ logoFile="icon.png"
 # credits="Thanks for this example mod goes to Java"
 # authors="Love, Cheese and small house plants" #optional
 description='''
-A collection of libraries designed to make creating great Minecraft mods easier.
+A versatile and highly efficient particle system library
 '''
-[[dependencies.librarianlib]]
-    modId="forge"
-    mandatory=true
-    versionRange="[26,)"
-    ordering="NONE"
-    side="BOTH"
-[[dependencies.librarianlib]]
-    modId="minecraft"
-    mandatory=true
-    versionRange="[1.14.2]"
-    ordering="NONE"
-    side="BOTH"

@@ -1,4 +1,4 @@
-package com.example.examplemod
+package com.teamwizardry.particles
 
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
@@ -20,20 +20,14 @@ import java.util.stream.Collectors
 import kotlin.streams.asSequence
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod("examplemod")
-class ExampleMod {
+@Mod("librarianlib-particles")
+class LibrarianLibParticles {
     init {
         FMLJavaModLoadingContext.get().modEventBus.addListener<FMLCommonSetupEvent> {
             this.setup(it)
         }
-        FMLJavaModLoadingContext.get().modEventBus.addListener<InterModEnqueueEvent> {
-            this.enqueueIMC(it)
-        }
-        FMLJavaModLoadingContext.get().modEventBus.addListener<InterModProcessEvent> {
-            this.processIMC(it)
-        }
         FMLJavaModLoadingContext.get().modEventBus.addListener<FMLClientSetupEvent> {
-            this.doClientStuff(it)
+            this.clientSetup(it)
         }
 
         // Register ourselves for server and other game events we are interested in
@@ -41,34 +35,13 @@ class ExampleMod {
     }
 
     private fun setup(event: FMLCommonSetupEvent) {
-        // some preinit code
-        LOGGER.info("HELLO FROM PREINIT")
-        LOGGER.info("DIRT BLOCK >> {}", Blocks.DIRT.registryName)
     }
 
-    private fun doClientStuff(event: FMLClientSetupEvent) {
-        // do something that can only be done on the client
-        LOGGER.info("Got game settings {}", event.minecraftSupplier.get().gameSettings)
+    private fun clientSetup(event: FMLClientSetupEvent) {
     }
 
-    private fun enqueueIMC(event: InterModEnqueueEvent) {
-        // some example code to dispatch IMC to another mod
-        InterModComms.sendTo("examplemod", "helloworld") {
-            LOGGER.info("Hello world from the MDK")
-            "Hello world"
-        }
-    }
-
-    private fun processIMC(event: InterModProcessEvent) {
-        // some example code to receive and process InterModComms from other mods
-        LOGGER.info("Got IMC {}", event.imcStream.asSequence().map { m -> m.getMessageSupplier<Any>().get() }.toList())
-    }
-
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
     fun onServerStarting(event: FMLServerStartingEvent) {
-        // do something when the server starts
-        LOGGER.info("HELLO from server starting")
     }
 
     // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
@@ -76,9 +49,10 @@ class ExampleMod {
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     object RegistryEvents {
         @SubscribeEvent
+        @JvmStatic
         fun onBlocksRegistry(blockRegistryEvent: RegistryEvent.Register<Block>) {
             // register a new block here
-            LOGGER.info("HELLO from Register Block")
+//            LOGGER.info("HELLO from Register Block")
         }
     }
 

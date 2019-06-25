@@ -20,3 +20,12 @@ pluginManagement {
 }
 
 rootProject.name = "librarianlib"
+
+val modules = listOf(
+    "particles"
+)
+
+modules.forEach { name ->
+    include(name)
+    project(":$name").projectDir = rootDir.resolve("modules/$name")
+}
