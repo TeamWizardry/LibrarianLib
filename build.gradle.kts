@@ -53,6 +53,7 @@ allprojects {
 
     repositories {
         maven(url = "http://maven.shadowfacts.net/")
+        maven(url = "https://jitpack.io")
     }
 
     dependencies {
@@ -95,15 +96,16 @@ allprojects {
 // ====================================================== Root ====================================================== //
 
 dependencies {
-//    subprojects.forEach {
-//        compile(it)
-//    }
+    subprojects.forEach {
+        compileOnly(it)
+    }
 }
 
 minecraft {
     runs {
         "client" {
             workingDirectory(project.file("run"))
+            isSingleInstance = true
 
             // Recommended logging data for a userdev environment
 //            property("forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP")
@@ -125,6 +127,8 @@ minecraft {
 
         "server" {
             workingDirectory(project.file("run"))
+            isSingleInstance = true
+            this.ideaModule
 
             // Recommended logging data for a userdev environment
 //            property("forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP")

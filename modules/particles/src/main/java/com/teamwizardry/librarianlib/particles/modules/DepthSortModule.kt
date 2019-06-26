@@ -1,0 +1,52 @@
+package com.teamwizardry.librarianlib.particles.modules
+
+import com.teamwizardry.librarianlib.core.utils.GameTime
+import com.teamwizardry.librarianlib.particles.*
+import com.teamwizardry.librarianlib.particles.bindings.StoredBinding
+import net.minecraft.client.Minecraft
+
+/**
+ * A simple module that performs a depth sort based on the player's look vector.
+ *
+ * The sort first stores the depth in the provided [depth] binding, allowing the depth to be calculated once per
+ * particle and not repeatedly with each comparison, then sorts based upon the values in that binding.
+ */
+class DepthSortModule(
+        /**
+         * The binding for the position of a given particle. Any tomfoolery with renderers not drawing at this position
+         * means that information can't be factored into the sorting
+         */
+        @JvmField val position: ReadParticleBinding,
+        /**
+         * The binding used to cache the distance from the player before sorting. The value is in blocks from the player
+         * along their look vector.
+         */
+        @JvmField val depth: StoredBinding
+): ParticleGlobalUpdateModule {
+    init {
+        position.require(3)
+        depth.require(1)
+    }
+
+    override fun update(particles: MutableList<DoubleArray>) {
+        val player = Minecraft.getInstance().player
+        val normal = player.lookVec
+        val eyeX = GameTime.world.interpolate(player.prevPosX, player.posX)
+        val eyeY = GameTime.world.interpolate(player.prevPosY, player.posY) + player.eyeHeight
+        val eyeZ = GameTime.world.interpolate(player.prevPosZ, player.posZ)
+
+        //dot(particle-eye,normal)
+
+        for(particle in particles) {
+            position.load(particle)
+            val distance = (position.contents[0]-eyeX)*normal.x +
+                    (position.contents[1]-eyeY)*normal.y +
+                    (position.contents[2]-eyeZ)*normal.z
+            particle[depth.index] = distance
+        }
+
+        particles.sortByDescending {
+            it[depth.index]
+        }
+    }
+}

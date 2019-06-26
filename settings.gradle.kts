@@ -22,6 +22,8 @@ pluginManagement {
 rootProject.name = "librarianlib"
 
 val modules = listOf(
+    "core",
+    "utilities",
     "particles"
 )
 

@@ -1,4 +1,4 @@
-package com.teamwizardry.particles
+package com.teamwizardry.librarianlib.utilities
 
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
@@ -19,9 +19,8 @@ import org.apache.logging.log4j.Logger
 import java.util.stream.Collectors
 import kotlin.streams.asSequence
 
-// The value here should match an entry in the META-INF/mods.toml file
-@Mod("librarianlib-particles")
-class LibrarianLibParticles {
+@Mod("librarianlib-utilities")
+class LibrarianLibUtilities {
     init {
         FMLJavaModLoadingContext.get().modEventBus.addListener<FMLCommonSetupEvent> {
             this.setup(it)

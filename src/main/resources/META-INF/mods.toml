@@ -1,6 +1,6 @@
 modLoader="javafml"
 loaderVersion="[26,)"
-issueTrackerURL="https://github.com/TeamWizardry/LibrarianLib/issues"
+issueTrackerURL="https://github.com/LibrarianLib/LibrarianLib/issues"
 [[mods]]
 modId="librarianlib"
 version="${file.jarVersion}"

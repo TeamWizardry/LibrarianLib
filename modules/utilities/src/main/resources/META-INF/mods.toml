@@ -2,9 +2,9 @@ modLoader="javafml"
 loaderVersion="[26,)"
 issueTrackerURL="https://github.com/LibrarianLib/LibrarianLib/issues"
 [[mods]]
-modId="librarianlib-particles"
+modId="librarianlib-utilities"
 version="${file.jarVersion}"
-displayName="LibrarianLib Particles"
+displayName="LibrarianLib Utilities"
 # A URL to query for updates for this mod. See the JSON update specification <here>
 # updateJSONURL="http://myurl.me/" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
@@ -13,13 +13,11 @@ logoFile="icon.png"
 # credits="Thanks for this example mod goes to Java"
 # authors="Love, Cheese and small house plants" #optional
 description='''
-A versatile and highly efficient particle system library
+Utilities too specific to belong in LibrarianLib Core, but general enough that they shouldn't be contstrained to the
+module(s) they were made for.
 '''
-[[dependencies.librarianlib-particles]]
+[[dependencies.librarianlib-utilities]]
     modId="librarianlib-core"
     mandatory=true
     versionRange="*"
-[[dependencies.librarianlib-particles]]
-    modId="librarianlib-utilities"
-    mandatory=true
-    versionRange="*"
+    side="BOTH"
