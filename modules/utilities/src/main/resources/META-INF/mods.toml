@@ -13,7 +13,7 @@ logoFile="icon.png"
 # credits="Thanks for this example mod goes to Java"
 # authors="Love, Cheese and small house plants" #optional
 description='''
-Utilities too specific to belong in LibrarianLib Core, but general enough that they shouldn't be contstrained to the
+Utilities too specific to belong in LibrarianLib Core, but general enough that they shouldn't be contstrained to the \
 module(s) they were made for.
 '''
 [[dependencies.librarianlib-utilities]]
