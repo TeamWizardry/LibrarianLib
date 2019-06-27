@@ -2,9 +2,9 @@ modLoader="javafml"
 loaderVersion="[26,)"
 issueTrackerURL="https://github.com/LibrarianLib/LibrarianLib/issues"
 [[mods]]
-modId="librarianlib"
+modId="librarianlib-template"
 version="${file.jarVersion}"
-displayName="LibrarianLib"
+displayName="LibrarianLib Template"
 # A URL to query for updates for this mod. See the JSON update specification <here>
 # updateJSONURL="http://myurl.me/" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
@@ -13,13 +13,9 @@ logoFile="icon.png"
 # credits="Thanks for this example mod goes to Java"
 # authors="Love, Cheese and small house plants" #optional
 description='''
-A collection of libraries designed to make creating great Minecraft mods easier.
+<<Template description>>
 '''
-[[dependencies.librarianlib]]
-    modId="forge"
+[[dependencies.librarianlib-template]]
+    modId="librarianlib-core"
     mandatory=true
-    versionRange="[26,)"
-[[dependencies.librarianlib]]
-    modId="minecraft"
-    mandatory=true
-    versionRange="[1.14.2]"
+    versionRange="*"

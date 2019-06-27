@@ -148,14 +148,14 @@ abstract class ParticleSystem {
      * @param lifetime the lifetime of the particle in ticks
      * @param params an array of values to initialize the particle array with.
      */
-    fun addParticle(lifetime: Double, vararg params: Double): DoubleArray {
+    fun addParticle(lifetime: Int, vararg params: Double): DoubleArray {
         if (!systemInitialized) {
             reload()
             systemInitialized = true
         }
 
         val particle = DoubleArray(fieldCount)
-        particle[0] = lifetime
+        particle[0] = lifetime.toDouble()
         particle[1] = 0.0
         (2 until particle.size).forEach { i ->
             if (i - 2 < params.size)
@@ -179,14 +179,14 @@ abstract class ParticleSystem {
      * Adds the particle system to the game for rendering and updates.
      */
     fun addToGame() {
-        GameParticleSystems.add(this)
+        ParticleSystemManager.add(this)
     }
 
     /**
      * Removes the particle system from the game, meaning it will no longer render or receive updates.
      */
     fun removeFromGame() {
-        GameParticleSystems.remove(this)
+        ParticleSystemManager.remove(this)
     }
 
     /**

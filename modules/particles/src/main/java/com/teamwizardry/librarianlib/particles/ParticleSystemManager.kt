@@ -20,7 +20,7 @@ import java.util.*
  * are sent to be rendered and ticked.
  */
 @Mod.EventBusSubscriber(value = [Dist.CLIENT])
-internal object GameParticleSystems {
+internal object ParticleSystemManager {
 
     var needsReload: Boolean = false
 

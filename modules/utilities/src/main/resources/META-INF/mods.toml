@@ -20,4 +20,3 @@ module(s) they were made for.
     modId="librarianlib-core"
     mandatory=true
     versionRange="*"
-    side="BOTH"

@@ -78,6 +78,10 @@ allprojects {
     java {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+        sourceSets {
+            sourceSets["test"].compileClasspath += sourceSets["main"].compileClasspath
+            sourceSets["test"].runtimeClasspath += sourceSets["main"].runtimeClasspath
+        }
     }
 
     tasks.withType<KotlinCompile> {
@@ -97,7 +101,8 @@ allprojects {
 
 dependencies {
     subprojects.forEach {
-        compileOnly(it)
+        compileOnly(it.java.sourceSets["main"].output)
+        compileOnly(it.java.sourceSets["test"].output)
     }
 }
 
@@ -117,9 +122,15 @@ minecraft {
                 "librarianlib" {
                     source(java.sourceSets["main"])
                 }
+                "librarianlib-testmod" {
+                    source(java.sourceSets["test"])
+                }
                 subprojects.forEach {
                     "librarianlib-${it.name}" {
                         source(it.java.sourceSets["main"])
+                    }
+                    "librarianlib-${it.name}-testmod" {
+                        source(it.java.sourceSets["test"])
                     }
                 }
             }
@@ -128,7 +139,6 @@ minecraft {
         "server" {
             workingDirectory(project.file("run"))
             isSingleInstance = true
-            this.ideaModule
 
             // Recommended logging data for a userdev environment
 //            property("forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP")
@@ -140,9 +150,15 @@ minecraft {
                 "librarianlib" {
                     source(java.sourceSets["main"])
                 }
+                "librarianlib-testmod" {
+                    source(java.sourceSets["test"])
+                }
                 subprojects.forEach {
                     "librarianlib-${it.name}" {
                         source(it.java.sourceSets["main"])
+                    }
+                    "librarianlib-${it.name}-testmod" {
+                        source(it.java.sourceSets["test"])
                     }
                 }
             }
