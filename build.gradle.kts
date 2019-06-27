@@ -100,10 +100,14 @@ allprojects {
 // ====================================================== Root ====================================================== //
 
 dependencies {
+    println("root deps")
     subprojects.forEach {
+        println("root deps on: ${it.name}")
         compileOnly(it.java.sourceSets["main"].output)
         compileOnly(it.java.sourceSets["test"].output)
     }
+    compile("com.github.TeamWizardry:Mirror:-SNAPSHOT")
+    compile("org.magicwerk:brownies-collections:0.9.13")
 }
 
 minecraft {
@@ -149,6 +153,7 @@ minecraft {
             mods {
                 "librarianlib" {
                     source(java.sourceSets["main"])
+
                 }
                 "librarianlib-testmod" {
                     source(java.sourceSets["test"])

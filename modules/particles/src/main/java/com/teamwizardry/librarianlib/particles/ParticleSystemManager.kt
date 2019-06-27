@@ -125,10 +125,10 @@ internal object ParticleSystemManager {
         GlStateManager.popMatrix()
     }
 
+    //TODO forge event fires every frame
     @JvmStatic
     @SubscribeEvent
     fun unloadWorld(event: WorldEvent.Unload) {
-        systems.forEach { it.particles.clear() }
+//        systems.forEach { it.particles.clear() }
     }
 }
-

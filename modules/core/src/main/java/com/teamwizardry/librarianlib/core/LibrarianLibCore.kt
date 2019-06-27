@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.core
 
+import com.teamwizardry.librarianlib.core.utils.GameTime
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraftforge.common.MinecraftForge
@@ -31,8 +32,7 @@ class LibrarianLibCore {
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this)
-
-
+        GameTime // start counting ticks immediately
     }
 
     private fun setup(event: FMLCommonSetupEvent) {

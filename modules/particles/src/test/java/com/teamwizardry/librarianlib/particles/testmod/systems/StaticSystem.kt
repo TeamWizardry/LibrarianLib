@@ -26,7 +26,7 @@ object StaticSystem: TestSystem() {
         val eyePos = player.getEyePosition(0f)
         val look = player.lookVec
 
-        this.addParticle(20,
+        this.addParticle(200,
             eyePos.x + look.x * 2,
             eyePos.y + look.y * 2,
             eyePos.z + look.z * 2,
