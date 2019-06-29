@@ -123,18 +123,17 @@ minecraft {
             property("forge.logging.console.level", "debug")
 
             mods {
-                "librarianlib" {
-                    source(java.sourceSets["main"])
-                }
-                "librarianlib-testmod" {
-                    source(java.sourceSets["test"])
-                }
-                subprojects.forEach {
-                    "librarianlib-${it.name}" {
-                        source(it.java.sourceSets["main"])
+                allprojects.forEach {
+                    val name = "librarianlib" + if(it == rootProject) "" else "-${it.name}"
+                    name {
+                        val ss = it.java.sourceSets["main"]
+                        classes(ss.output.classesDirs)
+                        resource(ss.resources.sourceDirectories)
                     }
-                    "librarianlib-${it.name}-testmod" {
-                        source(it.java.sourceSets["test"])
+                    "$name-testmod" {
+                        val ss = it.java.sourceSets["test"]
+                        classes(ss.output.classesDirs)
+                        resource(ss.resources.sourceDirectories)
                     }
                 }
             }

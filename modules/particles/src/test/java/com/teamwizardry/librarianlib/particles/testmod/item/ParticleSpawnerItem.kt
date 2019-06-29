@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.particles.testmod.item
 
 import com.teamwizardry.librarianlib.core.utils.SidedRunnable
+import com.teamwizardry.librarianlib.particles.testmod.entity.ParticleSpawnerEntity
 import com.teamwizardry.librarianlib.particles.testmod.init.TestItemGroup
 import com.teamwizardry.librarianlib.particles.testmod.modid
 import com.teamwizardry.librarianlib.particles.testmod.systems.ParticleSystems
@@ -40,7 +41,21 @@ class ParticleSpawnerItem(val type: String): Item(
     }
 
     override fun onItemRightClick(worldIn: World, playerIn: PlayerEntity, handIn: Hand): ActionResult<ItemStack> {
-        playerIn.activeHand = handIn
+        if(playerIn.isSneaking) {
+            if(!worldIn.isRemote) {
+                val eye = playerIn.getEyePosition(0f)
+                val spawner = ParticleSpawnerEntity(worldIn)
+                spawner.system = type
+                spawner.posX = eye.x
+                spawner.posY = eye.y - spawner.eyeHeight
+                spawner.posZ = eye.z
+                spawner.rotationPitch = playerIn.rotationPitch
+                spawner.rotationYaw = playerIn.rotationYaw
+                worldIn.addEntity(spawner)
+            }
+        } else {
+            playerIn.activeHand = handIn
+        }
         return ActionResult(ActionResultType.SUCCESS, playerIn.getHeldItem(handIn))
     }
 

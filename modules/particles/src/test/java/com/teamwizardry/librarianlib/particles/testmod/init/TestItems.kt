@@ -5,7 +5,8 @@ import net.minecraftforge.registries.ForgeRegistries
 
 object TestItems {
     val items = listOf(
-        "static"
+        "static",
+        "physics"
     ).associateWith { ParticleSpawnerItem(it) }
 
     fun register() {

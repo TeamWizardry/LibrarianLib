@@ -1,11 +1,13 @@
 package com.teamwizardry.librarianlib.particles.testmod.systems
 
 import com.teamwizardry.librarianlib.particles.ParticleSystemManager
+import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 
 object ParticleSystems {
     val systems = mapOf(
-        "static" to StaticSystem
+        "static" to StaticSystem,
+        "physics" to PhysicsSystem
     )
 
     init {
@@ -14,7 +16,7 @@ object ParticleSystems {
         }
     }
 
-    fun spawn(name: String, player: LivingEntity) {
+    fun spawn(name: String, player: Entity) {
         systems[name]?.spawn(player)
     }
 }

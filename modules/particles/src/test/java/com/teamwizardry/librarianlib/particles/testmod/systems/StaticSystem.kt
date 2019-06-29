@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.particles.testmod.systems
 import com.teamwizardry.librarianlib.particles.ParticleSystem
 import com.teamwizardry.librarianlib.particles.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.particles.modules.SpriteRenderModule
+import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.Vec3d
@@ -22,7 +23,7 @@ object StaticSystem: TestSystem() {
         ))
     }
 
-    override fun spawn(player: LivingEntity) {
+    override fun spawn(player: Entity) {
         val eyePos = player.getEyePosition(0f)
         val look = player.lookVec
 

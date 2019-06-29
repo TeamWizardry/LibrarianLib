@@ -145,5 +145,6 @@ class GlLineBeamRenderModule(
         GlStateManager.depthMask(true)
         GlStateManager.disableBlend()
         GlStateManager.enableLighting()
+        GlStateManager.enableTexture()
     }
 }

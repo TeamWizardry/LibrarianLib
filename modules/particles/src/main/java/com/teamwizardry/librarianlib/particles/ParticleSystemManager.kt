@@ -109,10 +109,9 @@ internal object ParticleSystemManager {
         val entity = Minecraft.getInstance().renderViewEntity
         if (entity != null) {
             try {
-            systems.forEach {
-                it.render()
-            }
-
+                systems.forEach {
+                    it.render()
+                }
             } catch (e: ConcurrentModificationException) {
                 e.printStackTrace()
             }
