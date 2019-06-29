@@ -123,16 +123,18 @@ class RayWorldCollider private constructor(world: World) {
         val invVelY = 1 / velY
         val invVelZ = 1 / velZ
 
+        val tiny = 0.000_000_000_1
+
         for (x in minTestX..maxTestX) {
             for (y in minTestY..maxTestY) {
                 for (z in minTestZ..maxTestZ) {
                     val shape = getShape(x, y, z)
                     shape.forEachBox { minX, minY, minZ, maxX, maxY, maxZ ->
                         collide(result,
-                            minX + x, minY + y, minZ + z,
-                            maxX + x, maxY + y, maxZ + z,
+                            minX - tiny, minY - tiny, minZ - tiny,
+                            maxX + tiny, maxY + tiny, maxZ + tiny,
                             x, y, z,
-                            posX, posY, posZ,
+                            posX - x, posY - y, posZ - z,
                             invVelX, invVelY, invVelZ
                         )
                     }
@@ -141,6 +143,9 @@ class RayWorldCollider private constructor(world: World) {
         }
     }
 
+    /**
+     * Algorithm used is from this page: https://tavianator.com/fast-branchless-raybounding-box-intersections/
+     */
     private fun collide(
         result: RayHitResult,
         minX: Double, minY: Double, minZ: Double,

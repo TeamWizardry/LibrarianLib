@@ -177,9 +177,9 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
         )
 
         // (4.2 in class docs)
-        posX += velX * rayHit.collisionFraction
-        posY += velY * rayHit.collisionFraction
-        posZ += velZ * rayHit.collisionFraction
+        posX += velX * rayHit.collisionFraction * velocityMultiplier
+        posY += velY * rayHit.collisionFraction * velocityMultiplier
+        posZ += velZ * rayHit.collisionFraction * velocityMultiplier
 
         // (4.3 in class docs)
         if (rayHit.collisionFraction >= 1.0) {
