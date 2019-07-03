@@ -91,19 +91,19 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
         val parent = this.parent ?: return
         val min = button.convertPointTo(vec(0, 0), parent)
         this.pos = min
-        if(stack.frame.minY < contentsClip.bounds.minY && contentsClip.mouseHit != null) {
+        if(stack.frame.minY < contentsClip.bounds.minY && this.mouseHit != null && !disableLayout) {
             val y = contentsClip.mousePos.y - contentsClip.bounds.minY
             when {
-                y <= 4.0 -> contents.yi += 3
-                y <= 8.0 -> contents.yi += 2
+                y <= 4.0 -> contents.yi += 5
+                y <= 8.0 -> contents.yi += 3
                 y <= 16.0 -> contents.yi += 1
             }
         }
-        if(stack.frame.maxY > contentsClip.bounds.maxY && contentsClip.mouseHit != null) {
+        if(stack.frame.maxY > contentsClip.bounds.maxY && this.mouseHit != null && !disableLayout) {
             val y = contentsClip.bounds.maxY - contentsClip.mousePos.y
             when {
-                y <= 4.0 -> contents.yi -= 3
-                y <= 8.0 -> contents.yi -= 2
+                y <= 4.0 -> contents.yi -= 5
+                y <= 8.0 -> contents.yi -= 3
                 y <= 16.0 -> contents.yi -= 1
             }
         }
@@ -155,6 +155,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
         }
         selected.isVisible = true
         selected.highlight.isVisible = false
+        contentsClip.clipToBounds = false
 
         runLayoutIfNeeded()
         disableLayout = true
@@ -163,16 +164,17 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
         stack.pos -= vec(0, 2)
         contents.size -= vec(0, 4)
 
-        val collapseTime = 5f
+        val collapseTime = 11f
+        val easing = Easing.easeOutQuint
         val fadeTime = 2f
-        val anim = GuiAnimator.animate(collapseTime) {
+        val anim = GuiAnimator.animate(collapseTime, easing) {
             background.pos = vec(0, 0)
             background.size = button.size
 
             val itemLayerPos = selected.itemLayer.convertPointTo(vec(0, 0), this)
             stack.pos -= itemLayerPos - vec(2, 2)
         }
-        val bgAnim = background.tint_im.animate(Color(1f, 1f, 1f, 0f), fadeTime, Easing.linear, collapseTime)
+        val bgAnim = background.tint_im.animate(Color(1f, 1f, 1f, 0f), fadeTime, easing, collapseTime)
         bgAnim.completion = Runnable {
             button.buttonContents?.isVisible = true
             close()
