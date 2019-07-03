@@ -42,6 +42,7 @@ object BitfontAtlas {
 
     init {
         MinecraftForge.EVENT_BUS.register(this)
+        TextureUtil.uploadTextureImage(texID, texture)
     }
 
     fun bind() {
@@ -80,14 +81,16 @@ object BitfontAtlas {
     }
 
     fun draw(image: BitGrid, xOrigin: Int, yOrigin: Int) {
+        val bufferedImage = BufferedImage(image.width, image.height, BufferedImage.TYPE_INT_ARGB)
         for(x in 0 until image.width) {
             for(y in 0 until image.height) {
                 if(image[x, y]) {
-                    texture.setRGB(xOrigin+x, yOrigin+y, Color.WHITE.rgb)
+                    bufferedImage.setRGB(x, y, Color.WHITE.rgb)
                 }
             }
         }
-        textureDirty = true
+
+        TextureUtil.uploadTextureImageSub(texID, bufferedImage, xOrigin, yOrigin, false, false)
     }
 
     fun expand() {
@@ -100,15 +103,6 @@ object BitfontAtlas {
         val newImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
         newImage.createGraphics().drawImage(texture, 0, 0, null)
         texture = newImage
-        textureDirty = true
-    }
-
-    @SubscribeEvent
-    fun renderTickEnd(e: TickEvent.RenderTickEvent) {
-        if(e.phase != TickEvent.Phase.END) return
-        if(!textureDirty) return
-        textureDirty = false
-
         TextureUtil.uploadTextureImage(texID, texture)
     }
 

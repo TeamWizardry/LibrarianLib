@@ -59,7 +59,7 @@ class Java2DSprite(width: Int, height: Int) : ISprite {
     override fun maxV(animFrames: Int) = 1f
     override val uSize: Float = 1f
     override val vSize: Float = 1f
-    override val frameCount = 0
+    override val frameCount = 1
 
     fun finalize() {
         val id = texID

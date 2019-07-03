@@ -45,6 +45,7 @@ class GuiTestSelector : GuiBase() {
         ListItem.Gui("Fluid Gauge") { GuiTestFluidGauge() },
         ListItem.Gui("Pastry") { GuiTestPastry() },
         ListItem.Gui("Text Field") { GuiTestTextField() },
+        ListItem.Gui("Mid-frame texture upload order") { GuiTestMidFrameTexUpload() },
 
         ListItem.Gui("<fix for commas in diffs>") { throw RuntimeException("How was this called?") }
     ).dropLast(1)
