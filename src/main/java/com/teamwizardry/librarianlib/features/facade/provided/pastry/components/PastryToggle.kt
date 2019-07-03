@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.facade.provided.pastry.components
 
+import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
 import com.teamwizardry.librarianlib.features.eventbus.Hook
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
@@ -50,8 +51,9 @@ abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int): Past
     override fun activationEnd() {
         val state = state
         pressed = false
-        if(!BUS.fire(StateChangeEvent(!state)).isCanceled()) {
+        if(!BUS.fire(StateWillChangeEvent(!state)).isCanceled()) {
             this.state = !state
+            BUS.fire(StateChangedEvent())
         }
         updateVisualState()
     }
@@ -84,9 +86,10 @@ abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int): Past
     private fun click(e: GuiComponentEvents.MouseClickEvent) {
         val state = state
         pressed = false
-        if(mouseDown && !BUS.fire(StateChangeEvent(!state)).isCanceled()) {
+        if(mouseDown && !BUS.fire(StateWillChangeEvent(!state)).isCanceled()) {
             this.state = !state
             updateVisualState()
+            BUS.fire(StateChangedEvent())
         }
         mouseDown = false
     }
@@ -101,9 +104,14 @@ abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int): Past
     }
 
     /**
+     * Called after a state change is committed.
+     */
+    class StateChangedEvent(): Event()
+
+    /**
      * Called before a state change is committed. Cancel this event to prevent the state change
      */
-    class StateChangeEvent(val newState: Boolean): EventCancelable()
+    class StateWillChangeEvent(val newState: Boolean): EventCancelable()
 
     /**
      * Called before a toggle interaction begins. Cancel this event to prevent the interaction from starting.

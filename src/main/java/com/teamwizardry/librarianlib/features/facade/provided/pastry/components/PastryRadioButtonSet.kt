@@ -28,7 +28,7 @@ class PastryRadioButtonSet<T> {
         checkbox.BUS.hook<PastryToggle.BeginToggleEvent> {
             if(checkbox.state) it.cancel()
         }
-        checkbox.BUS.hook<PastryToggle.StateChangeEvent> {
+        checkbox.BUS.hook<PastryToggle.StateWillChangeEvent> {
             if(!BUS.fire(OptionSelected(option)).isCanceled()) {
                 selectedValue = option
             }

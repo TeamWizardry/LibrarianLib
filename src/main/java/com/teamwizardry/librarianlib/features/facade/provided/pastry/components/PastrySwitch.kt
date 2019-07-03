@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.features.facade.provided.pastry.PastryTextu
 import com.teamwizardry.librarianlib.features.helpers.vec
 
 class PastrySwitch(posX: Int, posY: Int): PastryToggle(posX, posY, 11, 7) {
+    constructor() : this(0, 0)
     private val background = SpriteLayer(PastryTexture.switchOff, 0, 0, 11, 7)
     private val handle = SpriteLayer(PastryTexture.switchHandle, 0, 0, 7, 7)
     private val switchOn = SpriteLayer(PastryTexture.switchOn, 0, 0, 11, 7)

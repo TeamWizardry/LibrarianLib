@@ -1,15 +1,23 @@
 package com.teamwizardry.librarianlib.features.facade
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
+import com.teamwizardry.librarianlib.features.eventbus.Hook
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
+import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.facade.components.StandaloneRootComponent
 import com.teamwizardry.librarianlib.features.facade.layers.GradientLayer
+import com.teamwizardry.librarianlib.features.facade.layout.StackLayout
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryLabel
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastrySwitch
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryToggle
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.delegate
 import com.teamwizardry.librarianlib.features.math.Axis2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
@@ -18,6 +26,7 @@ import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import java.awt.Color
 import java.io.IOException
+import kotlin.reflect.KMutableProperty0
 
 open class LibGuiImpl(
     protected val guiWidth: () -> Int,
@@ -50,6 +59,7 @@ open class LibGuiImpl(
         Color(0x10, 0x10, 0x10, 0xD0),
         0, 0, 0, 0
     )
+    private val debugDialog = DebugDialogComponent()
     var useDefaultBackground = false
         set(value) {
             field = value
@@ -59,12 +69,20 @@ open class LibGuiImpl(
                 root.remove(background)
             }
         }
+    /**
+     * Whether to cloes the GUI when the escape key is pressed
+     */
+    var escapeClosesGUI: Boolean = true
 
     init {
         background.zIndex = Double.NEGATIVE_INFINITY
         main.disableMouseCollision = true
         root.disableMouseCollision = true
         root.add(main)
+
+        root.add(debugDialog)
+        debugDialog.zIndex = GuiLayer.DIALOG_Z
+        debugDialog.isVisible = false
 
         initGui()
     }
@@ -99,11 +117,25 @@ open class LibGuiImpl(
         root.mouseUp(EnumMouseButton.getFromCode(button))
     }
 
+    fun keyTyped(typedChar: Char, keyCode: Int) {
+        if (keyCode == 1 && escapeClosesGUI) {
+            if(debugDialog.isVisible) {
+                debugDialog.isVisible = false
+            } else {
+                Minecraft.getMinecraft().displayGuiScreen(null)
+
+                if (Minecraft.getMinecraft().currentScreen == null) {
+                    Minecraft.getMinecraft().setIngameFocus()
+                }
+            }
+        }
+    }
+
     @Throws(IOException::class)
     fun handleKeyboardInput() {
         if (LibrarianLib.DEV_ENVIRONMENT && Keyboard.getEventKeyState()) {
             if (Keyboard.getEventKey() == Keyboard.KEY_D && GuiScreen.isShiftKeyDown() && GuiScreen.isCtrlKeyDown()) {
-                GuiLayer.showDebugTilt = !GuiLayer.showDebugTilt
+                debugDialog.isVisible = !debugDialog.isVisible
             }
             if (Keyboard.getEventKey() == Keyboard.KEY_B && Keyboard.isKeyDown(Keyboard.KEY_F3)) {
                 GuiLayer.showDebugBoundingBox = !GuiLayer.showDebugBoundingBox
@@ -147,5 +179,97 @@ open class LibGuiImpl(
          * The LWJGL mouse wheel -> pixel modifier.
          */
         internal var mouseWheelModifier: Double = -16.0/360
+    }
+
+    @UseExperimental(ExperimentalBitfont::class)
+    private class DebugDialogComponent : GuiComponent() {
+        override var pos: Vec2d
+            get() = vec(root.size.xi/2, root.size.yi/2)
+            set(value) {}
+        override var anchor: Vec2d
+            get() = vec(0.5, 0.5)
+            set(value) {}
+
+        val bg = PastryBackground()
+        val contents = StackLayout.build()
+            .vertical().alignTop().alignLeft()
+            .add(ToggleRow(
+                "Bounding boxes",
+                """
+                    Show bounding boxes of layers and components.
+                    
+                    • Layers have thin bounding boxes, components have thick ones
+                    • Components with the mouse over them have white bounding boxes
+                    • When holding Shift, components will draw a line from their origin to the mouse cursor
+                """.trimIndent(),
+                GuiLayer.Companion::showDebugBoundingBox
+            ))
+            .add(ToggleRow(
+                "Visualize layoutChildren",
+                """
+                    Display a translucent red overlay on layers that were just laid out. Useful to identify layers \
+                    that are causing excessive layouts
+                """.trimIndent(),
+                GuiLayer.Companion::showLayoutOverlay
+            ))
+            .add(ToggleRow(
+                "Tilt",
+                """
+                    Tilt the UI slightly to make the Z axis visible.
+                """.trimIndent(),
+                GuiLayer.Companion::showDebugTilt
+            ))
+            .fit()
+            .component()
+
+        init {
+            this.add(bg, contents)
+            val margin = vec(6, 3)
+            this.size = contents.size + margin * 2
+            contents.pos = margin
+            bg.frame = this.bounds
+        }
+
+        @Hook
+        fun mouseDown(e: GuiComponentEvents.MouseDownEvent) {
+            if(this.mouseHit == null)
+                this.isVisible = false
+        }
+
+        private class ToggleRow(
+            name: String,
+            description: String,
+            val property: KMutableProperty0<Boolean>
+        ) : GuiComponent() {
+            val switch = PastrySwitch()
+            val label = PastryLabel(name)
+            val contents = StackLayout.build()
+                .horizontal().alignLeft().alignCenterY()
+                .space(3)
+                .add(switch, label).fit()
+                .component()
+            private var currentPropertyState = property.get()
+
+            init {
+                this.add(contents)
+                this.size = contents.size
+
+                switch.state = property.get()
+                switch.hook<PastryToggle.StateChangedEvent> {
+                    property.set(switch.state)
+                    currentPropertyState = property.get()
+                }
+
+                this.tooltipText = description
+            }
+
+            @Hook
+            fun preFrame(e: GuiLayerEvents.PreFrameEvent) {
+                if(property.get() != currentPropertyState) {
+                    switch.state = property.get()
+                    currentPropertyState = property.get()
+                }
+            }
+        }
     }
 }

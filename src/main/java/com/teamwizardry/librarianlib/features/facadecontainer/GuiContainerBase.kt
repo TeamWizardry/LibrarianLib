@@ -109,6 +109,10 @@ open class GuiContainerBase(val container: ContainerBase) : GuiContainer(Contain
         impl.mouseReleased(button)
     }
 
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
+        impl.keyTyped(typedChar, keyCode)
+    }
+
     @Throws(IOException::class)
     override fun handleKeyboardInput() {
         super.handleKeyboardInput()

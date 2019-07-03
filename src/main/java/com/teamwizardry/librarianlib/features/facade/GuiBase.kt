@@ -7,6 +7,8 @@ import com.teamwizardry.librarianlib.features.facade.provided.GuiSafetyNetError
 import com.teamwizardry.librarianlib.features.facadecontainer.GuiContainerBase
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.kotlin.delegate
+import com.teamwizardry.librarianlib.features.kotlin.getValue
+import com.teamwizardry.librarianlib.features.kotlin.setValue
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.inventory.GuiContainer
@@ -48,20 +50,25 @@ open class GuiBase : GuiScreen() {
      * The main component of the GUI, within which the contents of most GUIs will be placed. It will always center
      * itself in the screen and will dynamically adjust its effective GUI scale if it can't fit on the screen.
      */
-    val main: GuiComponent by impl::main.delegate
+    val main: GuiComponent by impl::main
     /**
      * The root component, whose position and size represents the entirety of the game screen.
      */
-    val root: GuiComponent by impl::root.delegate
+    val root: GuiComponent by impl::root
     /**
      * Whether to enable the Safety Net feature. By default this is true in development environments and false
      * elsewhere, but can be enabled/disabled manually.
      */
-    val safetyNet: Boolean by impl::safetyNet.delegate
+    val safetyNet: Boolean by impl::safetyNet
     /**
      * Whether to enable Minecraft's standard translucent GUI background.
      */
-    var useDefaultBackground by impl::useDefaultBackground.delegate
+    var useDefaultBackground by impl::useDefaultBackground
+
+    /**
+     * Whether to close the GUI when the escape key is pressed
+     */
+    var escapeClosesGUI by impl::escapeClosesGUI
 
     /**
      * Automatic hook into the [LayoutChildren][GuiLayerEvents.LayoutChildren] event on [main]
@@ -110,6 +117,10 @@ open class GuiBase : GuiScreen() {
     override fun mouseReleased(mouseX: Int, mouseY: Int, button: Int) {
         super.mouseReleased(mouseX, mouseY, button)
         impl.mouseReleased(button)
+    }
+
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
+        impl.keyTyped(typedChar, keyCode)
     }
 
     @Throws(IOException::class)
