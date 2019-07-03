@@ -28,6 +28,7 @@ class GuiTestSelector : GuiBase() {
         ListItem.Gui("Stencil") { GuiTestStencil() },
         ListItem.Gui("Stencil Sprite") { GuiTestStencilSprite() },
         ListItem.Gui("Stencil mouseOver") { GuiTestClippedMouseOver() },
+        ListItem.Gui("Layer opacity") { GuiTestOpacity() },
         ListItem.Gui("GUI auto-scale") { GuiTestAutoSizeScale() },
         ListItem.Gui("Sprite") { GuiTestSprite() },
         ListItem.Gui("Mouse Clicks") { GuiTestClickEvents() },

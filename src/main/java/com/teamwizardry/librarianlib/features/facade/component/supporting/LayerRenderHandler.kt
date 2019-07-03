@@ -1,20 +1,37 @@
 package com.teamwizardry.librarianlib.features.facade.component.supporting
 
+import com.teamwizardry.librarianlib.core.client.ClientTickHandler
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.facade.value.IMValue
+import com.teamwizardry.librarianlib.features.facade.value.RMValueDouble
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.kotlin.color
+import com.teamwizardry.librarianlib.features.kotlin.fastCos
+import com.teamwizardry.librarianlib.features.kotlin.fastSin
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.shader.Framebuffer
+import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
+import java.awt.Color
+import java.util.LinkedList
+import kotlin.math.PI
 
 interface ILayerRendering {
     val tooltip_im: IMValue<List<String>?>
-//    var tooltip: List<String>?
-//    var tooltipFont: FontRenderer?
+
+    /**
+     * An opacity value in the range [0, 1]. If this is not equal to 1 the layer will be rendered to an FBO and drawn
+     * to a texture. This process clips the layer to its bounds.
+     */
+    val opacity_rm: RMValueDouble
+    var opacity: Double
 
     /**
      * Sorts the layers by zIndex
@@ -57,6 +74,7 @@ interface ILayerRendering {
             GlStateManager.enableBlend()
             GlStateManager.shadeModel(GL11.GL_SMOOTH)
             GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+            GlStateManager.alphaFunc(GL11.GL_GREATER, 1/255f)
             GlStateManager.disableLighting()
         }
     }
@@ -66,8 +84,9 @@ class LayerRenderHandler: ILayerRendering {
     lateinit var layer: GuiLayer
 
     override val tooltip_im: IMValue<List<String>?> = IMValue()
-//    override var tooltip: List<String>? by tooltip_im
-//    override var tooltipFont: FontRenderer? = null
+
+    override val opacity_rm: RMValueDouble = RMValueDouble(1.0)
+    override var opacity: Double by opacity_rm
 
     override fun sortChildren() {
         val components = layer.relationships.subLayers
@@ -97,6 +116,46 @@ class LayerRenderHandler: ILayerRendering {
 
         layer.clipping.pushEnable()
 
+        if(opacity < 1.0) {
+            val fbo = useFramebuffer {
+                drawContent(partialTicks)
+            }
+            fbo.bindFramebufferTexture()
+            val uSize = layer.width / fbo.framebufferTextureWidth
+            val vSize = layer.height / fbo.framebufferTextureHeight
+            val size = layer.size
+            val color = Color(1f, 1f, 1f, opacity.toFloat())
+
+            GlStateManager.enableTexture2D()
+            val tessellator = Tessellator.getInstance()
+            val vb = tessellator.buffer
+            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR)
+            vb.pos(0.0, size.y, 0.0).tex(0.0, 1.0-vSize).color(color).endVertex()
+            vb.pos(size.x, size.y, 0.0).tex(uSize, 1.0-vSize).color(color).endVertex()
+            vb.pos(size.x, 0.0, 0.0).tex(uSize, 1.0).color(color).endVertex()
+            vb.pos(0.0, 0.0, 0.0).tex(0.0, 1.0).color(color).endVertex()
+            tessellator.draw()
+        } else {
+            drawContent(partialTicks)
+        }
+
+        layer.clipping.popDisable()
+
+        if (GuiLayer.showDebugBoundingBox) {
+            GlStateManager.glLineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
+            GlStateManager.color(.75f, 0f, .75f)
+            layer.drawDebugBoundingBox()
+        }
+        if (GuiLayer.showLayoutOverlay && layer.didLayout) {
+            GlStateManager.color(1f, 0f, 0f, 0.1f)
+            layer.drawLayerOverlay()
+        }
+        layer.didLayout = false
+
+        layer.glApplyTransform(true)
+    }
+
+    private fun drawContent(partialTicks: Float) {
         layer.glApplyContentsOffset(false)
 
         GlStateManager.pushMatrix()
@@ -116,22 +175,6 @@ class LayerRenderHandler: ILayerRendering {
         GlStateManager.popMatrix()
 
         layer.glApplyContentsOffset(true)
-        layer.clipping.popDisable()
-
-        if (GuiLayer.showDebugBoundingBox) {
-            GlStateManager.glLineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
-            GlStateManager.color(.75f, 0f, .75f)
-            layer.drawDebugBoundingBox()
-        }
-        if (GuiLayer.showLayoutOverlay && layer.didLayout) {
-            GlStateManager.enableBlend()
-            GlStateManager.alphaFunc(GL11.GL_GREATER, 1/255f)
-            GlStateManager.color(1f, 0f, 0f, 0.1f)
-            layer.drawLayerOverlay()
-        }
-        layer.didLayout = false
-
-        layer.glApplyTransform(true)
     }
 
     override fun shouldDrawSkeleton(): Boolean = false
@@ -195,30 +238,30 @@ class LayerRenderHandler: ILayerRendering {
         val list = mutableListOf<Vec2d>()
         if(layer.clipToBounds && layer.cornerRadius != 0.0) {
             val rad = layer.cornerRadius
-            val d = (Math.PI / 2) / 16
+            val d = (PI / 2) / 16
 
             // top-left
             (0..16).forEach { i ->
                 val angle = d * i
-                val diff = vec(Math.cos(angle) * rad, Math.sin(angle) * rad)
+                val diff = vec(fastCos(angle) * rad, fastSin(angle) * rad)
                 list.add(vec(rad - diff.x, rad - diff.y))
             }
 
             (0..16).forEach { i ->
                 val angle = d * i
-                val diff = vec(Math.sin(angle) * rad, Math.cos(angle) * rad)
+                val diff = vec(fastSin(angle) * rad, fastCos(angle) * rad)
                 list.add(vec(layer.size.x - rad + diff.x, rad - diff.y))
             }
 
             (0..16).forEach { i ->
                 val angle = d * i
-                val diff = vec(Math.cos(angle) * rad, Math.sin(angle) * rad)
+                val diff = vec(fastCos(angle) * rad, fastSin(angle) * rad)
                 list.add(vec(layer.size.x - rad + diff.x, layer.size.y - rad + diff.y))
             }
 
             (0..16).forEach { i ->
                 val angle = d * i
-                val diff = vec(Math.sin(angle) * rad, Math.cos(angle) * rad)
+                val diff = vec(fastSin(angle) * rad, fastCos(angle) * rad)
                 list.add(vec(rad - diff.x, layer.size.y - rad + diff.y))
             }
 
@@ -231,5 +274,77 @@ class LayerRenderHandler: ILayerRendering {
             list.add(vec(0.0, 0.0))
         }
         return list
+    }
+
+    companion object {
+        val maxFramebufferCount = 16
+        var createdBuffers = 0
+        val framebufferSize = 3 * 512
+        val buffers = LinkedList<Framebuffer>()
+
+        val bufferStack = LinkedList<Framebuffer>()
+        val currentFramebuffer: Framebuffer? = bufferStack.peekFirst()
+
+        fun pushFramebuffer(): Framebuffer {
+
+            val fbo = buffers.pollFirst() ?: createFramebuffer()
+            bufferStack.addFirst(fbo)
+
+            GL11.glPushAttrib(GL11.GL_VIEWPORT_BIT)
+
+//            if(ClientTickHandler.ticks % 40 == 0)
+            fbo.framebufferClear()
+            fbo.bindFramebuffer(true)
+
+
+            GlStateManager.matrixMode(GL11.GL_PROJECTION)
+            GlStateManager.pushMatrix()
+            GlStateManager.loadIdentity()
+            GlStateManager.ortho(0.0, framebufferSize.toDouble(), framebufferSize.toDouble(), 0.0, 1000.0, 3000.0)
+
+            GlStateManager.matrixMode(GL11.GL_MODELVIEW)
+            GlStateManager.pushMatrix()
+            GlStateManager.loadIdentity()
+//            GlStateManager.scale(1f, -1f, 1f)
+            GlStateManager.translate(0.0f, 0.0f, -2000.0f)
+
+            return fbo
+        }
+
+        fun popFramebuffer() {
+            buffers.addFirst(bufferStack.removeFirst())
+            val newFbo = currentFramebuffer
+            if(newFbo == null) {
+                Minecraft.getMinecraft().framebuffer.bindFramebuffer(true)
+            } else {
+                newFbo.bindFramebuffer(true)
+            }
+
+            GL11.glPopAttrib()
+            GlStateManager.matrixMode(GL11.GL_PROJECTION)
+            GlStateManager.popMatrix()
+            GlStateManager.matrixMode(GL11.GL_MODELVIEW)
+            GlStateManager.popMatrix()
+        }
+
+        inline fun useFramebuffer(callback: () -> Unit): Framebuffer {
+            val fbo = pushFramebuffer()
+            try {
+                callback()
+            } finally {
+                popFramebuffer()
+            }
+            return fbo
+        }
+
+        fun createFramebuffer(): Framebuffer {
+            if(createdBuffers == maxFramebufferCount)
+                throw IllegalStateException("Exceeded maximum of 16 nested framebuffers")
+            val fbo = Framebuffer(framebufferSize, framebufferSize, true)
+            fbo.enableStencil()
+            fbo.framebufferColor = floatArrayOf(0f, 0f, 0f, 0f)
+            createdBuffers++
+            return fbo
+        }
     }
 }
