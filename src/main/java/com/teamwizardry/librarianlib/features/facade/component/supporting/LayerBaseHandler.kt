@@ -93,6 +93,7 @@ internal class LayerBaseHandler: ILayerBase {
         if(needsLayout) {
             layer.layoutChildren()
             layer.BUS.fire(GuiLayerEvents.LayoutChildren())
+            layer.didLayout = true
         }
         layer.children.forEach { it.runLayoutIfNeeded() }
         layer.needsLayout = false
@@ -103,6 +104,7 @@ internal class LayerBaseHandler: ILayerBase {
         layer.BUS.fire(GuiLayerEvents.LayoutChildren())
         layer.children.forEach { it.runLayout() }
         layer.needsLayout = false
+        layer.didLayout = true
     }
 
     override fun setNeedsLayout() {

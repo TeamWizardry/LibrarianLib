@@ -32,6 +32,11 @@ interface ILayerRendering {
     fun renderSkeleton()
 
     /**
+     * Draws a flat colored box over this layer, rounding corners as necessary
+     */
+    fun drawLayerOverlay()
+
+    /**
      * Draws a bounding box around the edge of this component
      */
     fun drawDebugBoundingBox()
@@ -118,6 +123,13 @@ class LayerRenderHandler: ILayerRendering {
             GlStateManager.color(.75f, 0f, .75f)
             layer.drawDebugBoundingBox()
         }
+        if (GuiLayer.showLayoutOverlay && layer.didLayout) {
+            GlStateManager.enableBlend()
+            GlStateManager.alphaFunc(GL11.GL_GREATER, 1/255f)
+            GlStateManager.color(1f, 0f, 0f, 0.1f)
+            layer.drawLayerOverlay()
+        }
+        layer.didLayout = false
 
         layer.glApplyTransform(true)
     }
@@ -146,6 +158,18 @@ class LayerRenderHandler: ILayerRendering {
         }
 
         layer.glApplyTransform(true)
+    }
+
+    override fun drawLayerOverlay() {
+        GlStateManager.disableTexture2D()
+        val points = createDebugBoundingBoxPoints()
+        val tessellator = Tessellator.getInstance()
+        val vb = tessellator.buffer
+        vb.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION)
+        val size = layer.size
+        vb.pos(size.x/2, size.y/2, 0.0).endVertex()
+        points.reversed().forEach { vb.pos(it.x, it.y, 0.0).endVertex() }
+        tessellator.draw()
     }
 
     override fun drawDebugBoundingBox() {

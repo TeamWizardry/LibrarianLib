@@ -218,6 +218,11 @@ open class GuiLayer private constructor(
     }
 
     //region - Internal
+    /**
+     * Set to true when the layer is laid out, and set to false after the layout debug overlay is rendered
+     */
+    internal var didLayout = false
+
     init {
         BUS.register(this)
     }
@@ -229,6 +234,9 @@ open class GuiLayer private constructor(
 
         @JvmStatic
         var showDebugBoundingBox = false
+
+        @JvmStatic
+        var showLayoutOverlay = false
 
         /**
          * The z index of tooltips. Overlays should not go above this level.
