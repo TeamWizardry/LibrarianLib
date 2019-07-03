@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.facade.component
 
+import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventBus
 import com.teamwizardry.librarianlib.features.facade.component.supporting.*
 import com.teamwizardry.librarianlib.features.facade.components.LayerBackedComponent
@@ -16,6 +17,7 @@ import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.lang.reflect.Field
 import java.util.IdentityHashMap
+import java.util.function.Consumer
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -223,6 +225,13 @@ open class GuiLayer private constructor(
      */
     internal var didLayout = false
 
+    inline fun <reified  E : Event> hook(noinline hook: (E) -> Unit) = BUS.hook<E>(hook)
+
+    fun <E : Event> hook(clazz: Class<E>, hook: (E) -> Unit) = BUS.hook(clazz, hook)
+
+    @Suppress("UNCHECKED_CAST")
+    fun <E : Event> hook(clazz: Class<E>, hook: Consumer<E>) = BUS.hook(clazz, hook)
+
     init {
         BUS.register(this)
     }
@@ -249,6 +258,12 @@ open class GuiLayer private constructor(
          */
         @JvmStatic
         val OVERLAY_Z: Double = 1e10
+
+        /**
+         * In order to make a background layer, give the layer this [zIndex].
+         */
+        @JvmStatic
+        val DIALOG_Z: Double = 1e9
 
         /**
          * In order to make a background layer, give the layer this [zIndex].
