@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.features.facade.GuiBase
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
-import com.teamwizardry.librarianlib.features.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.features.facade.layout.StackLayout
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.BackgroundTexture
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.Pastry
@@ -13,12 +12,7 @@ import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.test.facade.pastry.tests.PastryTestButton
-import com.teamwizardry.librarianlib.test.facade.pastry.tests.PastryTestDropdown
-import com.teamwizardry.librarianlib.test.facade.pastry.tests.PastryTestProgress
-import com.teamwizardry.librarianlib.test.facade.pastry.tests.PastryTestScroll
-import com.teamwizardry.librarianlib.test.facade.pastry.tests.PastryTestSwitches
-import com.teamwizardry.librarianlib.test.facade.pastry.tests.PastryTestTooltips
+import com.teamwizardry.librarianlib.test.facade.pastry.tests.*
 import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 
 @UseExperimental(ExperimentalBitfont::class)
@@ -30,6 +24,7 @@ class GuiTestPastry : GuiBase() {
         PastryTestSwitches::class.java to "Switches",
         PastryTestTooltips::class.java to "Tooltips",
         PastryTestScroll::class.java to "Scroll Pane",
+        PastryTestTabs::class.java to "Tabs",
         Any::class.java to "<Fix commas in git diffs>"
     ).also { it.remove(Any::class.java) }
 

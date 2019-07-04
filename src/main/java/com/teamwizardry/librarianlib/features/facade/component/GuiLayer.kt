@@ -11,14 +11,11 @@ import com.teamwizardry.librarianlib.features.math.Matrix3
 import com.teamwizardry.librarianlib.features.math.Rect2d
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.CoordinateSpace2D
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.lang.reflect.Field
 import java.util.IdentityHashMap
 import java.util.function.Consumer
-import kotlin.coroutines.CoroutineContext
 
 /**
  * The fundamental building block of a LibrarianLib GUI. Generally a single unit of visual or organizational design.
@@ -107,7 +104,7 @@ open class GuiLayer private constructor(
      *
      * Examples: "Center stack", "Alternate color swatch", "Machine Top"
      */
-    var name: String? = null
+    var debugName: String? = null
 
     /**
      * The event bus on which all events for this layer are fired.
@@ -167,7 +164,7 @@ open class GuiLayer private constructor(
             else -> this
         }
 
-        val name = layer.name ?: name
+        val name = layer.debugName ?: debugName
         val infoStr = if(!detailed) null else
             layer.debugInfo().let {
                 if(it.isEmpty())
@@ -216,7 +213,7 @@ open class GuiLayer private constructor(
 
     override fun toString(): String {
         return "${this.javaClass.simpleName}@${System.identityHashCode(this).toString(16)}" +
-            "($x, $y, $width, $height${name?.let { ", name=$name" } ?: ""})"
+            "($x, $y, $width, $height${debugName?.let { ", name=$debugName" } ?: ""})"
     }
 
     //region - Internal
@@ -225,7 +222,7 @@ open class GuiLayer private constructor(
      */
     internal var didLayout = false
 
-    inline fun <reified  E : Event> hook(noinline hook: (E) -> Unit) = BUS.hook<E>(hook)
+    inline fun <reified  E : Event> hook(noinline hook: (E) -> Unit) = BUS.hook(hook)
 
     fun <E : Event> hook(clazz: Class<E>, hook: (E) -> Unit) = BUS.hook(clazz, hook)
 
@@ -312,7 +309,7 @@ open class GuiLayer private constructor(
          */
         @JvmStatic
         fun <T: GuiLayer> T.name(name: String): T {
-            this.name = name
+            this.debugName = name
             return this
         }
     }

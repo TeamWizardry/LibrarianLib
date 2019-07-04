@@ -25,6 +25,11 @@ interface ILayerBase {
     var needsLayout: Boolean
 
     /**
+     * If this is true, when a child's [needsLayout] is set to true, this layer's [needsLayout] will also be set to true
+     */
+    var listenToChildrenNeedsLayout: Boolean
+
+    /**
      * Used internally to propagate pre-frame events
      */
     fun callPreFrame()
@@ -77,12 +82,28 @@ internal class LayerBaseHandler: ILayerBase {
 
     override val isVisible_im: IMValueBoolean = IMValueBoolean(true)
     override var isVisible by isVisible_im
+    private var lastIsVisible = true
 
     override var needsLayout: Boolean = true
+        set(value) {
+            field = value
+            layer.parent?.also { parent ->
+                if(value && parent.listenToChildrenNeedsLayout)
+                    parent.setNeedsLayout()
+            }
+            if(value)
+                lastIsVisible = isVisible
+        }
+
+    override var listenToChildrenNeedsLayout: Boolean = false
 
     override fun callPreFrame() {
         layer.BUS.fire(GuiLayerEvents.PreFrameEvent())
         layer.children.forEach { it.callPreFrame() }
+        if(isVisible != lastIsVisible) {
+            layer.setNeedsLayout()
+            lastIsVisible = isVisible
+        }
     }
 
     override fun draw(partialTicks: Float) {}
