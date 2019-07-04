@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.features.text
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
+import com.teamwizardry.librarianlib.features.kotlin.Client
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.kotlin.toRl
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
@@ -28,7 +29,7 @@ object Fonts {
 
     fun load(fontLocation: ResourceLocation): Bitfont {
         try {
-            val bytes = Minecraft().resourceManager.getResource(fontLocation).inputStream.readBytes()
+            val bytes = Client.minecraft.resourceManager.getResource(fontLocation).inputStream.readBytes()
             return Bitfont.unpack(bytes)
         } catch(e: Exception) {
             RuntimeException("Error loading $fontLocation", e).printStackTrace()

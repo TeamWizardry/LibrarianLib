@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.sprite
 
+import com.teamwizardry.librarianlib.features.kotlin.Client
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.Side
@@ -69,7 +70,7 @@ class Sprite : ISprite {
     @Suppress("LeakingThis")
     @JvmOverloads constructor(
             loc: ResourceLocation, width: Int = 0, height: Int = 0) {
-        val pngSizeInfo = PngSizeInfo.makeFromResource(Minecraft().resourceManager.getResource(loc))
+        val pngSizeInfo = PngSizeInfo.makeFromResource(Client.minecraft.resourceManager.getResource(loc))
         var pngWidth = pngSizeInfo.pngWidth
         var pngHeight = pngSizeInfo.pngHeight
 

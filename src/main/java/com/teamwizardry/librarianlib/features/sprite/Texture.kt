@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.sprite
 
+import com.teamwizardry.librarianlib.features.kotlin.Client
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import net.minecraft.client.Minecraft
@@ -131,7 +132,7 @@ class Texture(
         var pngWidth: Int
         var pngHeight: Int
         try {
-            val pngSizeInfo = PngSizeInfo.makeFromResource(Minecraft().resourceManager.getResource(loc))
+            val pngSizeInfo = PngSizeInfo.makeFromResource(Client.minecraft.resourceManager.getResource(loc))
             pngWidth = pngSizeInfo.pngWidth
             pngHeight = pngSizeInfo.pngHeight
 
@@ -154,7 +155,7 @@ class Texture(
         this.height = pngHeight
         this.section = null
         try {
-            this.section = Minecraft().resourceManager.getResource(loc).getMetadata("spritesheet")
+            this.section = Client.minecraft.resourceManager.getResource(loc).getMetadata("spritesheet")
         } catch (e: FileNotFoundException) {
             // nop
         }
@@ -189,7 +190,7 @@ class Texture(
 
     fun loadImageData() {
         try {
-            val image = TextureUtil.readBufferedImage(Minecraft().resourceManager.getResource(loc).inputStream)
+            val image = TextureUtil.readBufferedImage(Client.minecraft.resourceManager.getResource(loc).inputStream)
             this.image = image
             this._sprites.forEach { name, sprite ->
                 try {

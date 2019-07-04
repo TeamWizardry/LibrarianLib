@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.facade.provided.GuiSafetyNetError
 import com.teamwizardry.librarianlib.features.facadecontainer.GuiContainerBase
+import com.teamwizardry.librarianlib.features.kotlin.Client
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.kotlin.delegate
 import com.teamwizardry.librarianlib.features.kotlin.getValue
@@ -43,7 +44,7 @@ open class GuiBase : GuiScreen() {
         { this.height },
         {
             LibrarianLog.error(it, "The safety net caught an error")
-            Minecraft().displayGuiScreen(GuiSafetyNetError(it))
+            Client.minecraft.displayGuiScreen(GuiSafetyNetError(it))
         }
     )
 

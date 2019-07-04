@@ -12,6 +12,7 @@ import com.teamwizardry.librarianlib.features.facade.provided.pastry.BackgroundT
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.features.helpers.pos
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.kotlin.Client
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.kotlin.color
 import com.teamwizardry.librarianlib.features.kotlin.toRl
@@ -154,8 +155,8 @@ class PastryColorPicker: GuiComponent() {
         private val sprite = SpriteLayer(hueSprite)
 
         init {
-            Minecraft().textureManager.bindTexture(hueLoc)
-            Minecraft().textureManager.getTexture(hueLoc).setBlurMipmap(false, false)
+            Client.minecraft.textureManager.bindTexture(hueLoc)
+            Client.minecraft.textureManager.getTexture(hueLoc).setBlurMipmap(false, false)
 
             add(background, sprite.componentWrapper())
 

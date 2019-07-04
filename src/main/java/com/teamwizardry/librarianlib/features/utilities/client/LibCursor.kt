@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.utilities.client
 
+import com.teamwizardry.librarianlib.features.kotlin.Client
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.kotlin.toRl
 import net.minecraft.client.Minecraft
@@ -16,7 +17,7 @@ class LibCursor(val resourceLocation: ResourceLocation, val originX: Int, val or
 
     init {
         loadCursor()
-        (Minecraft().resourceManager as? IReloadableResourceManager)?.registerReloadListener {
+        (Client.minecraft.resourceManager as? IReloadableResourceManager)?.registerReloadListener {
             loadCursor()
         }
     }

@@ -47,6 +47,7 @@ import kotlin.reflect.jvm.kotlinFunction
 
 @Suppress("FunctionName")
 @SideOnly(Side.CLIENT)
+@Deprecated("Really confusing", replaceWith = ReplaceWith("Client.minecraft"))
 fun Minecraft(): Minecraft = Minecraft.getMinecraft()
 
 fun Int.abs() = if (this < 0) -this else this
