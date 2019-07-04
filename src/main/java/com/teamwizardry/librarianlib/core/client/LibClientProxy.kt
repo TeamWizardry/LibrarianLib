@@ -40,6 +40,7 @@ import net.minecraftforge.client.resource.ISelectiveResourceReloadListener
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.Side
@@ -68,7 +69,6 @@ class LibClientProxy : LibCommonProxy(), ISelectiveResourceReloadListener {
         F3Handler
         ScissorUtil
         LibShaders
-        ShaderHelper.init()
         GameParticleSystems
         AllocationDisplay
 
@@ -110,6 +110,11 @@ class LibClientProxy : LibCommonProxy(), ISelectiveResourceReloadListener {
     override fun lateInit(e: FMLInitializationEvent) {
         super.lateInit(e)
         ModelHandler.init()
+    }
+
+    override fun latePost(e: FMLPostInitializationEvent) {
+        super.latePost(e)
+        ShaderHelper.init()
     }
 
     override fun translate(s: String, vararg format: Any?): String {

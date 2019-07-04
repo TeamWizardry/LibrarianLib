@@ -11,6 +11,8 @@ import com.teamwizardry.librarianlib.features.kotlin.color
 import com.teamwizardry.librarianlib.features.kotlin.fastCos
 import com.teamwizardry.librarianlib.features.kotlin.fastSin
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import com.teamwizardry.librarianlib.features.shader.Shader
+import com.teamwizardry.librarianlib.features.shader.ShaderHelper
 import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
@@ -119,31 +121,26 @@ class LayerRenderHandler: ILayerRendering {
         layer.clipping.pushEnable()
 
         if(opacity < 1.0) {
-            var scale = Client.guiScaleFactor
-            var effectiveSize = layer.size * scale
-            while(scale > 1 && (effectiveSize.x > framebufferSize || effectiveSize.y > framebufferSize)) {
-                scale--
-                effectiveSize = layer.size * scale
-            }
-
-            val fbo = useFramebuffer(scale.toDouble()) {
+            val fbo = useFramebuffer {
                 drawContent(partialTicks)
             }
             fbo.bindFramebufferTexture()
-            val uSize = effectiveSize.x / fbo.framebufferTextureWidth
-            val vSize = effectiveSize.y / fbo.framebufferTextureHeight
+//            Client.minecraft.renderEngine.bindTexture(ResourceLocation("minecraft:textures/blocks/dirt.png"))
+
             val size = layer.size
             val color = Color(1f, 1f, 1f, opacity.toFloat())
 
             GlStateManager.enableTexture2D()
+            ShaderHelper.useShader(ScreenDirectShader)
             val tessellator = Tessellator.getInstance()
             val vb = tessellator.buffer
-            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR)
-            vb.pos(0.0, size.y, 0.0).tex(0.0, 1.0-vSize).color(color).endVertex()
-            vb.pos(size.x, size.y, 0.0).tex(uSize, 1.0-vSize).color(color).endVertex()
-            vb.pos(size.x, 0.0, 0.0).tex(uSize, 1.0).color(color).endVertex()
-            vb.pos(0.0, 0.0, 0.0).tex(0.0, 1.0).color(color).endVertex()
+            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR)
+            vb.pos(0.0, size.y, 0.0).color(color).endVertex()
+            vb.pos(size.x, size.y, 0.0).color(color).endVertex()
+            vb.pos(size.x, 0.0, 0.0).color(color).endVertex()
+            vb.pos(0.0, 0.0, 0.0).color(color).endVertex()
             tessellator.draw()
+            ShaderHelper.releaseShader()
         } else {
             drawContent(partialTicks)
         }
@@ -288,34 +285,27 @@ class LayerRenderHandler: ILayerRendering {
     companion object {
         val maxFramebufferCount = 16
         var createdBuffers = 0
-        val framebufferSize = 3 * 512
         val buffers = LinkedList<Framebuffer>()
 
         val bufferStack = LinkedList<Framebuffer>()
         val currentFramebuffer: Framebuffer? = bufferStack.peekFirst()
 
         fun pushFramebuffer(): Framebuffer {
-
-            val fbo = buffers.pollFirst() ?: createFramebuffer()
+            var fbo = buffers.pollFirst() ?: createFramebuffer()
+            if(
+                fbo.framebufferWidth != Client.minecraft.displayWidth ||
+                fbo.framebufferWidth != Client.minecraft.displayWidth
+            ) {
+                fbo.deleteFramebuffer()
+                createdBuffers--
+                fbo = createFramebuffer()
+            }
             bufferStack.addFirst(fbo)
 
             GL11.glPushAttrib(GL11.GL_VIEWPORT_BIT)
 
-//            if(ClientTickHandler.ticks % 40 == 0)
             fbo.framebufferClear()
             fbo.bindFramebuffer(true)
-
-
-            GlStateManager.matrixMode(GL11.GL_PROJECTION)
-            GlStateManager.pushMatrix()
-            GlStateManager.loadIdentity()
-            GlStateManager.ortho(0.0, framebufferSize.toDouble(), framebufferSize.toDouble(), 0.0, 1000.0, 3000.0)
-
-            GlStateManager.matrixMode(GL11.GL_MODELVIEW)
-            GlStateManager.pushMatrix()
-            GlStateManager.loadIdentity()
-//            GlStateManager.scale(1f, -1f, 1f)
-            GlStateManager.translate(0.0f, 0.0f, -2000.0f)
 
             return fbo
         }
@@ -330,18 +320,13 @@ class LayerRenderHandler: ILayerRendering {
             }
 
             GL11.glPopAttrib()
-            GlStateManager.matrixMode(GL11.GL_PROJECTION)
-            GlStateManager.popMatrix()
-            GlStateManager.matrixMode(GL11.GL_MODELVIEW)
-            GlStateManager.popMatrix()
         }
 
-        inline fun useFramebuffer(scale: Double, callback: () -> Unit): Framebuffer {
+        inline fun useFramebuffer(callback: () -> Unit): Framebuffer {
             val stencilLevel = StencilUtil.currentStencil
             val fbo = pushFramebuffer()
             StencilUtil.clear()
             try {
-                GlStateManager.scale(scale, scale, 1.0)
                 callback()
             } finally {
                 popFramebuffer()
@@ -353,7 +338,7 @@ class LayerRenderHandler: ILayerRendering {
         fun createFramebuffer(): Framebuffer {
             if(createdBuffers == maxFramebufferCount)
                 throw IllegalStateException("Exceeded maximum of $maxFramebufferCount nested framebuffers")
-            val fbo = Framebuffer(framebufferSize, framebufferSize, true)
+            val fbo = Framebuffer(Client.minecraft.displayWidth, Client.minecraft.displayHeight, true)
             fbo.enableStencil()
             fbo.framebufferColor = floatArrayOf(0f, 0f, 0f, 0f)
             createdBuffers++
