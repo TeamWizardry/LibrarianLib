@@ -91,7 +91,6 @@ open class StandaloneRootComponent(val closeGui: (Exception) -> Unit): RootCompo
 
     fun renderRoot(partialTicks: Float, mousePos: Vec2d) {
         StencilUtil.clear()
-        GL11.glEnable(GL11.GL_STENCIL_TEST)
 
         try {
             sortChildren()

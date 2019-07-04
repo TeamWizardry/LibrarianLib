@@ -73,6 +73,10 @@ open class LibGuiImpl(
      * Whether to cloes the GUI when the escape key is pressed
      */
     var escapeClosesGUI: Boolean = true
+    /**
+     * The GUI to reopen when closing this GUI.
+     */
+    var lastGui: GuiScreen? = null
 
     init {
         background.zIndex = Double.NEGATIVE_INFINITY
@@ -122,7 +126,7 @@ open class LibGuiImpl(
             if(debugDialog.isVisible) {
                 debugDialog.isVisible = false
             } else {
-                Minecraft.getMinecraft().displayGuiScreen(null)
+                Minecraft.getMinecraft().displayGuiScreen(lastGui)
 
                 if (Minecraft.getMinecraft().currentScreen == null) {
                     Minecraft.getMinecraft().setIngameFocus()

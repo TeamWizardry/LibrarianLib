@@ -25,8 +25,13 @@ object StencilUtil {
         glStencilMask(0xFF)
         glClearStencil(0)
         glClear(GL_STENCIL_BUFFER_BIT)
+    }
 
-        glDisable(GL_STENCIL_TEST)
+    fun resetTest(level: Int) {
+        currentStencil = level
+
+        glStencilMask(0x00)
+        glStencilFunc(GL_EQUAL, currentStencil, 0xFF)
     }
 
     @JvmStatic

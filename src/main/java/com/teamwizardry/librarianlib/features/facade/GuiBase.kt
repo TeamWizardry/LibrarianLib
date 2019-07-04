@@ -34,6 +34,7 @@ import java.io.IOException
  * still crash.
  */
 open class GuiBase : GuiScreen() {
+
     /**
      * The GUI implementation code common between [GuiBase] and [GuiContainerBase]
      */
@@ -80,6 +81,13 @@ open class GuiBase : GuiScreen() {
      * Automatic hook into the [LayoutChildren][GuiLayerEvents.LayoutChildren] event on [root]
      */
     open fun layoutRoot() {
+    }
+
+    /**
+     * Stores the current GUI and reopens it when this GUI is closed
+     */
+    fun reopenLast() {
+        impl.lastGui = Minecraft.getMinecraft().currentScreen
     }
 
     init {

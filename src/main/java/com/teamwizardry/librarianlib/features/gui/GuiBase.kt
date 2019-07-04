@@ -89,7 +89,6 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         super.drawScreen(mouseX, mouseY, partialTicks)
         GlStateManager.enableBlend()
         StencilUtil.clear()
-        GL11.glEnable(GL11.GL_STENCIL_TEST)
         val relPos = vec(mouseX, mouseY)
         GlStateManager.pushMatrix()
 

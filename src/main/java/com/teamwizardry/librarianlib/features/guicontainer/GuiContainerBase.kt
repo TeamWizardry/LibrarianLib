@@ -106,7 +106,6 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
 
         super.drawScreen(mouseX, mouseY, partialTicks)
         StencilUtil.clear()
-        GL11.glEnable(GL11.GL_STENCIL_TEST)
         fullscreenComponents.render.drawLate(relPos, partialTicks)
         GL11.glDisable(GL11.GL_STENCIL_TEST)
 

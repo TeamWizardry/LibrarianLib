@@ -5,6 +5,8 @@ package com.teamwizardry.librarianlib.features.kotlin
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.entity.RenderManager
@@ -12,6 +14,14 @@ import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.awt.Color
+
+// Easy client access ==================================================================================================
+
+object Client {
+    val minecraft: Minecraft get() = Minecraft.getMinecraft()
+    val resolution: ScaledResolution get() = ScaledResolution(minecraft)
+    val guiScaleFactor: Int get() = resolution.scaleFactor
+}
 
 // Color ===============================================================================================================
 

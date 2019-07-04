@@ -6,10 +6,12 @@ import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.facade.value.IMValue
 import com.teamwizardry.librarianlib.features.facade.value.RMValueDouble
 import com.teamwizardry.librarianlib.features.helpers.vec
+import com.teamwizardry.librarianlib.features.kotlin.Client
 import com.teamwizardry.librarianlib.features.kotlin.color
 import com.teamwizardry.librarianlib.features.kotlin.fastCos
 import com.teamwizardry.librarianlib.features.kotlin.fastSin
 import com.teamwizardry.librarianlib.features.math.Vec2d
+import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
@@ -117,12 +119,19 @@ class LayerRenderHandler: ILayerRendering {
         layer.clipping.pushEnable()
 
         if(opacity < 1.0) {
-            val fbo = useFramebuffer {
+            var scale = Client.guiScaleFactor
+            var effectiveSize = layer.size * scale
+            while(scale > 1 && (effectiveSize.x > framebufferSize || effectiveSize.y > framebufferSize)) {
+                scale--
+                effectiveSize = layer.size * scale
+            }
+
+            val fbo = useFramebuffer(scale.toDouble()) {
                 drawContent(partialTicks)
             }
             fbo.bindFramebufferTexture()
-            val uSize = layer.width / fbo.framebufferTextureWidth
-            val vSize = layer.height / fbo.framebufferTextureHeight
+            val uSize = effectiveSize.x / fbo.framebufferTextureWidth
+            val vSize = effectiveSize.y / fbo.framebufferTextureHeight
             val size = layer.size
             val color = Color(1f, 1f, 1f, opacity.toFloat())
 
@@ -327,19 +336,23 @@ class LayerRenderHandler: ILayerRendering {
             GlStateManager.popMatrix()
         }
 
-        inline fun useFramebuffer(callback: () -> Unit): Framebuffer {
+        inline fun useFramebuffer(scale: Double, callback: () -> Unit): Framebuffer {
+            val stencilLevel = StencilUtil.currentStencil
             val fbo = pushFramebuffer()
+            StencilUtil.clear()
             try {
+                GlStateManager.scale(scale, scale, 1.0)
                 callback()
             } finally {
                 popFramebuffer()
+                StencilUtil.resetTest(stencilLevel)
             }
             return fbo
         }
 
         fun createFramebuffer(): Framebuffer {
             if(createdBuffers == maxFramebufferCount)
-                throw IllegalStateException("Exceeded maximum of 16 nested framebuffers")
+                throw IllegalStateException("Exceeded maximum of $maxFramebufferCount nested framebuffers")
             val fbo = Framebuffer(framebufferSize, framebufferSize, true)
             fbo.enableStencil()
             fbo.framebufferColor = floatArrayOf(0f, 0f, 0f, 0f)

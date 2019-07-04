@@ -29,6 +29,7 @@ class GuiTestSelector : GuiBase() {
         ListItem.Gui("Stencil Sprite") { GuiTestStencilSprite() },
         ListItem.Gui("Stencil mouseOver") { GuiTestClippedMouseOver() },
         ListItem.Gui("Layer opacity") { GuiTestOpacity() },
+        ListItem.Gui("Flatten Stencil") { GuiTestFlattenStencil() },
         ListItem.Gui("GUI auto-scale") { GuiTestAutoSizeScale() },
         ListItem.Gui("Sprite") { GuiTestSprite() },
         ListItem.Gui("Mouse Clicks") { GuiTestClickEvents() },
@@ -64,9 +65,9 @@ class GuiTestSelector : GuiBase() {
             text.text = item.name
             text.BUS.hook<GuiComponentEvents.MouseClickEvent> {
                 try {
-                    when(item) {
-                        is ListItem.Gui -> Minecraft.getMinecraft().displayGuiScreen(item.create())
-                    }
+                    val gui = item.create()
+                    gui.reopenLast()
+                    Minecraft.getMinecraft().displayGuiScreen(gui)
                 } catch (e: Exception) {
                     LibrarianLog.error(e, "The safety net caught an error initializing GUI")
                     Minecraft.getMinecraft().displayGuiScreen(GuiSafetyNetError(e))
