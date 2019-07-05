@@ -32,7 +32,7 @@ object ShaderHelper {
 
     fun <T : Shader> addShader(shader: T): T {
         shaders.add(shader)
-        if (hasLoaded && !useShaders())
+        if (hasLoaded && useShaders())
             createProgram(shader)
         return shader
     }
