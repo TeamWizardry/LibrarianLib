@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.facade.component.LayerHierarchyException
+import com.teamwizardry.librarianlib.features.facade.layers.MaskLayer
 import com.teamwizardry.librarianlib.features.facade.value.RMValueDouble
 import com.teamwizardry.librarianlib.features.kotlin.unmodifiableView
 import java.lang.Exception
@@ -37,6 +38,12 @@ interface ILayerRelationships {
      * A read-only set containing all the parents of this layer, recursively.
      */
     val parents: Set<GuiLayer>
+
+    /**
+     * True if this layer is inside a mask layer. This is useful to prevent debug rendering messing with a mask. (for
+     * example, the layout visualization overlay can screw up a luma mask)
+     */
+    val isInMask: Boolean
 
     /**
      * The immediate parent of this layer, or null if this layer has no parent.
@@ -123,6 +130,19 @@ class LayerRelationshipHandler: ILayerRelationships {
                 head = head.parent
             }
             return set.unmodifiableView()
+        }
+
+    override val isInMask: Boolean
+        get() {
+            if(layer is MaskLayer)
+                return true
+            var head = parent
+            while(head != null) {
+                if(head is MaskLayer)
+                    return true
+                head = head.parent
+            }
+            return false
         }
 
     override var parent: GuiLayer? = null

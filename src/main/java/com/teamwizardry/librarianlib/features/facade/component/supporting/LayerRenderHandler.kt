@@ -196,12 +196,12 @@ class LayerRenderHandler: ILayerRendering {
 
         layer.clipping.popDisable()
 
-        if (GuiLayer.showDebugBoundingBox) {
+        if (GuiLayer.showDebugBoundingBox && !layer.isInMask) {
             GlStateManager.glLineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
             GlStateManager.color(.75f, 0f, .75f)
             layer.drawDebugBoundingBox()
         }
-        if (GuiLayer.showLayoutOverlay && layer.didLayout) {
+        if (GuiLayer.showLayoutOverlay && layer.didLayout && !layer.isInMask) {
             GlStateManager.color(1f, 0f, 0f, 0.1f)
             layer.drawLayerOverlay()
         }
@@ -245,7 +245,7 @@ class LayerRenderHandler: ILayerRendering {
 
         layer.glApplyContentsOffset(true)
 
-        if (GuiLayer.showDebugBoundingBox &&
+        if (GuiLayer.showDebugBoundingBox && !layer.isInMask &&
             GuiLayer.showDebugTilt && layer.shouldDrawSkeleton()) {
             GlStateManager.glLineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
             GlStateManager.color(.75f, 0f, .75f)
