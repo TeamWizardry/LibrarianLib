@@ -9,5 +9,6 @@ internal object ClientCommands {
 
     init {
         root.addSubcommand(GuiCommands.root)
+        root.addSubcommand(ShaderCommands.root)
     }
 }
