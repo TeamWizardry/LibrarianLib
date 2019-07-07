@@ -9,6 +9,8 @@ import com.teamwizardry.librarianlib.features.helpers.rect
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.color
 import com.teamwizardry.librarianlib.features.kotlin.copy
+import com.teamwizardry.librarianlib.features.kotlin.getValue
+import com.teamwizardry.librarianlib.features.kotlin.setValue
 import com.teamwizardry.librarianlib.features.math.Rect2d
 import com.teamwizardry.librarianlib.features.text.Fonts
 import com.teamwizardry.librarianlib.features.text.MCClipboard
@@ -43,10 +45,25 @@ class PastryTextEditor(posX: Int, posY: Int, width: Int, height: Int): GuiCompon
     val mode = editor.mode as DefaultEditorMode
     init {
         mode.clipboard = MCClipboard
+        editor.validator = { string ->
+            if(singleLine) {
+                val plaintext = string.plaintext
+                for(i in string.length - 1 downTo 0) {
+                    if(plaintext[i] == '\n' || plaintext[i] == '\r')
+                        string.delete(i, i + 1)
+                }
+            }
+            string
+        }
     }
 
-    val text: AttributedString
-        get() = editor.attributedString
+    var singleLine: Boolean = false
+    var plaintext: String
+        get() = attributedText.plaintext
+        set(value) {
+            attributedText = AttributedString(value)
+        }
+    var attributedText: AttributedString by editor::attributedString
     var wrap: Boolean = true
     var color: Color = Color.BLACK
 
@@ -194,7 +211,7 @@ class PastryTextEditor(posX: Int, posY: Int, width: Int, height: Int): GuiCompon
     @Hook
     fun mouseMove(e: GuiComponentEvents.MouseMoveEvent) {
         updateModifiers()
-        editor.inputMouseMove(pos.toBit())
+        editor.inputMouseMove(mousePos.toBit())
     }
 
     private fun measureTextBounds(): Rect2d {

@@ -5,7 +5,9 @@ import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
 import com.teamwizardry.librarianlib.features.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.features.facade.layout.StackLayout
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.PastryTexture
+import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryLabel
 import com.teamwizardry.librarianlib.features.helpers.rect
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import java.awt.Color
 import kotlin.math.max
 
@@ -19,6 +21,14 @@ open class PastryTestBase: GuiComponent() {
 
     init {
         this.add(stack)
+    }
+
+    /**
+     * Add a label line
+     */
+    @UseExperimental(ExperimentalBitfont::class)
+    fun label(text: String) {
+        stack.add(PastryLabel(text))
     }
 
     /**

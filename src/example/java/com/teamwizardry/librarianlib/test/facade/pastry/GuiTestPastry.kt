@@ -25,6 +25,7 @@ class GuiTestPastry : GuiBase() {
         PastryTestTooltips::class.java to "Tooltips",
         PastryTestScroll::class.java to "Scroll Pane",
         PastryTestTabs::class.java to "Tabs",
+        PastryTestEditor::class.java to "Text Editor",
         Any::class.java to "<Fix commas in git diffs>"
     ).also { it.remove(Any::class.java) }
 

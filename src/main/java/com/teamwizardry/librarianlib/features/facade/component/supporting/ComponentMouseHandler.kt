@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.features.facade.components.RootComponent
 import com.teamwizardry.librarianlib.features.facade.value.IMValue
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import java.util.Collections
@@ -123,16 +124,18 @@ class ComponentMouseHandler: IComponentMouse {
     override var cursor: LibCursor? by cursor_im
 
     private var hadMouseHit = false
+    private var lastMouseDragPos = vec(0, 0)
 
     override fun updateMouse(parentMousePos: Vec2d) {
         this.lastMousePos = mousePos
         this.mousePos = component.BUS.fire(GuiComponentEvents.CalculateMousePositionEvent(
             component.convertPointFromParent(parentMousePos)
         )).mousePos
-        if(lastMousePos.squareDist(mousePos) > 0.1 * 0.1) {
+        if(lastMouseDragPos.squareDist(mousePos) > 0.1 * 0.1) {
             if(pressedButtons.isNotEmpty())
                 component.BUS.fire(GuiComponentEvents.MouseDragEvent())
             component.BUS.fire(GuiComponentEvents.MouseMoveEvent())
+            lastMouseDragPos = mousePos
         }
         component.subComponents.forEach {
             it.updateMouse(this.mousePos)
