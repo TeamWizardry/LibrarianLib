@@ -41,11 +41,12 @@ import java.awt.Color
 @ExperimentalBitfont
 @ExperimentalPastryAPI
 class PastryTextEditor(posX: Int, posY: Int, width: Int, height: Int): GuiComponent(posX, posY, width, height) {
+    var focused: Boolean = false
     val editor = Editor(Fonts.classic, size.xi)
     val mode = editor.mode as DefaultEditorMode
     init {
         mode.clipboard = MCClipboard
-        editor.validator = { string ->
+        editor.validate = { string ->
             if(singleLine) {
                 val plaintext = string.plaintext
                 for(i in string.length - 1 downTo 0) {
@@ -113,7 +114,7 @@ class PastryTextEditor(posX: Int, posY: Int, width: Int, height: Int): GuiCompon
         GlStateManager.disableTexture2D()
 
         val blinkSpeed = 500
-        if(selection == null && (System.currentTimeMillis()-lastCursorChange) % (blinkSpeed*2) < blinkSpeed) {
+        if(focused && selection == null && (System.currentTimeMillis()-lastCursorChange) % (blinkSpeed*2) < blinkSpeed) {
             val font = editor.typesetString.glyphMap[mode.cursor.index]?.font ?: Fonts.classic
             val min = mode.cursorPos.toLL() - vec(1, font.ascent)
             val max = mode.cursorPos.toLL() + vec(0, font.descent)
@@ -166,6 +167,8 @@ class PastryTextEditor(posX: Int, posY: Int, width: Int, height: Int): GuiCompon
 
     @Hook
     fun keyRepeat(e: GuiComponentEvents.KeyRepeatEvent) {
+        if(!focused)
+            return
         updateModifiers()
         if(e.key.toInt() != Keyboard.CHAR_NONE)
             if(e.key !in consumedKeys)
@@ -174,6 +177,8 @@ class PastryTextEditor(posX: Int, posY: Int, width: Int, height: Int): GuiCompon
 
     @Hook
     fun keyDown(e: GuiComponentEvents.KeyDownEvent) {
+        if(!focused)
+            return
         updateModifiers()
         var consumed = false
 
@@ -198,6 +203,8 @@ class PastryTextEditor(posX: Int, posY: Int, width: Int, height: Int): GuiCompon
 
     @Hook
     fun mouseDown(e: GuiComponentEvents.MouseDownEvent) {
+        if(!focused)
+            return
         updateModifiers()
         editor.inputMouseDown(MouseButton.fromLwjgl(e.button.mouseCode))
     }
