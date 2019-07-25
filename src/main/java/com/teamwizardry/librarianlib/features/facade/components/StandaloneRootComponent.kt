@@ -101,9 +101,15 @@ open class StandaloneRootComponent(val closeGui: (Exception) -> Unit): RootCompo
             topMouseHit = null
             updateMouse(mousePos)
             updateHits(this, 0.0)
+            mouseOverComponents.clear()
             propagateHits()
 
-            val tooltip = topMouseHit?.component?.tooltipLayer
+            val tooltip: GuiLayer? = mouseOverComponents
+                .mapNotNull { component ->
+                    component.tooltipLayer?.let { tt -> component to tt }
+                }
+                .maxBy { it.first.mouseHit?.zIndex ?: Double.NEGATIVE_INFINITY }
+                ?.second
             if(tooltip != currentTooltip) {
                 currentTooltip?.removeFromParent()
                 currentTooltip = tooltip

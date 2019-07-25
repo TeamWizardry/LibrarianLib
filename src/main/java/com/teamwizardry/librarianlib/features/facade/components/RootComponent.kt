@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.features.facade.component.supporting.MouseH
 
 abstract class RootComponent(x: Int, y: Int, width: Int, height: Int): GuiComponent(x, y, width, height) {
     var topMouseHit: MouseHit? = null
+    var mouseOverComponents: MutableSet<GuiComponent> = mutableSetOf()
     var focusedComponent: GuiComponent? = null
     override val root: GuiComponent
         get() = this

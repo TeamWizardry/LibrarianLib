@@ -25,6 +25,8 @@ interface IComponentMouse {
 
     val mouseOver: Boolean
 
+    val mouseInside: Boolean
+
     /**
      * The set of mouse buttons currently being pressed
      */
@@ -64,16 +66,11 @@ interface IComponentMouse {
 
     /**
      * Update the mouseInside of this component and its children based on the current mousePos.
-     *
-     * @return whether the parent component should set its mouseInside to true
      */
     fun updateHits(root: RootComponent, parentZ: Double)
 
     /**
      * Update the mouseOver of this component and its children based on the current mousePos
-     *
-     * @param occluded whether the mouse has already been occluded
-     * @return whether this component should occlude the mouse
      */
     fun propagateHits()
 
@@ -111,6 +108,8 @@ class ComponentMouseHandler: IComponentMouse {
         private set
     override var mouseOver: Boolean = false
         private set
+    override val mouseInside: Boolean
+        get() = mouseHit != null
     override var mouseHit: MouseHit? = null
         private set
 
@@ -177,6 +176,8 @@ class ComponentMouseHandler: IComponentMouse {
         val topHit = this.component.gui?.topMouseHit
 
         mouseOver = mouseHit != null && mouseHit >= topHit
+        if(mouseOver)
+            this.component.gui?.mouseOverComponents?.add(this.component)
 
         if(wasMouseOver && !component.mouseOver) {
             if(pressedButtons.isNotEmpty())

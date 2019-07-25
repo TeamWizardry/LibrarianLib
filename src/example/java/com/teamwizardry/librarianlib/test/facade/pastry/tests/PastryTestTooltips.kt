@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.test.facade.pastry.tests
 
+import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
+import com.teamwizardry.librarianlib.features.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.features.facade.layers.minecraft.ItemStackLayer
 import com.teamwizardry.librarianlib.features.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.ItemStackTooltip
@@ -44,6 +46,22 @@ class PastryTestTooltips: PastryTestBase() {
             it.tooltip = tt
             val stack = ItemStack(Items.DIAMOND_AXE, 3)
             tt.stack = stack
+        })
+
+        this.stack.add(GuiComponent(0, 0, 200, 50).also { outer ->
+            outer.add(RectLayer(Color.WHITE).also {
+                it.frame = outer.bounds
+            })
+            outer.add(GuiComponent(150, 10, 40, 30).also { inner ->
+                inner.add(RectLayer(Color.BLUE).also {
+                    it.frame = inner.bounds
+                })
+            })
+            outer.tooltipText = "Outer tooltip"
+            outer.add(PastryButton("Short text", 10, 10, 100).also {
+                it.tooltipText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+                    "Duis ultricies sit amet purus vel sagittis. Nunc commodo est est."
+            })
         })
     }
 }
