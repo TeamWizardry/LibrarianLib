@@ -23,20 +23,14 @@ object GuiComponentEvents {
     /** Fired when this component loses focus */
     class BlurEvent() : Event()
 
-    /** Fired each tick while the component is a part of a screen */
-    class ComponentTickEvent : Event()
-
-    /** Fired each frame after input has been processed and before the GUI renders */
-    class ComponentUpdateEvent : Event()
-
     /** Called when the mouse position is being calculated to allow event handlers to modify it */
     class CalculateMousePositionEvent(var mousePos: Vec2d): Event()
 
     /** Fired whenever the mouse is pressed */
-    class MouseDownEvent(val button: EnumMouseButton) : EventCancelable()
+    class MouseDownEvent(val button: EnumMouseButton) : Event()
 
     /** Fired whenever the mouse is released */
-    class MouseUpEvent(val button: EnumMouseButton) : EventCancelable()
+    class MouseUpEvent(val button: EnumMouseButton) : Event()
 
     /** Fired whenever the mouse is moved while a button is being pressed */
     class MouseMoveEvent() : Event()
@@ -69,7 +63,7 @@ object GuiComponentEvents {
     class MouseDragLeaveEvent() : Event()
 
     /** Fired in addition to any of [MouseClickEvent], [MouseClickOutsideEvent], [MouseClickDragInEvent], or [MouseClickDragOutEvent] */
-    open class MouseClickAnyEvent(val button: EnumMouseButton) : EventCancelable()
+    open class MouseClickAnyEvent(val button: EnumMouseButton) : Event()
 
     /** Fired when the mouse is clicked within the component (mouse goes both down and up inside the component) */
     class MouseClickEvent(button: EnumMouseButton) : MouseClickAnyEvent(button)
@@ -81,13 +75,13 @@ object GuiComponentEvents {
     class MouseClickDragOutEvent(button: EnumMouseButton) : MouseClickAnyEvent(button)
 
     /** Fired when a key is pressed */
-    class KeyDownEvent(val key: Char, val keyCode: Int) : EventCancelable()
+    class KeyDownEvent(val key: Char, val keyCode: Int) : Event()
 
     /** Fired when a key is released */
-    class KeyUpEvent(val key: Char, val keyCode: Int) : EventCancelable()
+    class KeyUpEvent(val key: Char, val keyCode: Int) : Event()
 
     /** Fired when a key repeat is triggered */
-    class KeyRepeatEvent(val key: Char, val keyCode: Int) : EventCancelable()
+    class KeyRepeatEvent(val key: Char, val keyCode: Int) : Event()
 
     /**
      * Fired when the mouse wheel is moved. A negative scroll value indicates that the _content_ should move in the
@@ -101,7 +95,7 @@ object GuiComponentEvents {
          * operates in discreet steps, use [accumulated].
          */
         val amount: Double
-    ) : EventCancelable() {
+    ) : Event() {
         /**
          * The sum of all wheel movements. Before each hook is called, [amount] is added to this value. This value
          * persists independently for each event hook.

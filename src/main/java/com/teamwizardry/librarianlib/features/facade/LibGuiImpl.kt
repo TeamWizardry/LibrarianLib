@@ -166,11 +166,11 @@ open class LibGuiImpl(
     }
 
     fun update() {
-        root.update()
+        root.callUpdate()
     }
 
     fun tick() {
-        root.tick()
+        root.callTick()
     }
 
     fun onClose() {

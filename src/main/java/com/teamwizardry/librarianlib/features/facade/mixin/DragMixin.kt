@@ -51,13 +51,11 @@ class DragMixin(protected var component: GuiComponent, protected var correctionF
                 mouseDown = event.button
                 clickedPoint = component.mousePos
                 previousPos = component.pos
-                event.cancel()
             }
         }
         component.BUS.hook(GuiComponentEvents.MouseUpEvent::class.java) { event ->
             if (mouseDown == event.button && !component.BUS.fire(DragDropEvent(component, event.button, previousPos)).isCanceled()) {
                 mouseDown = null
-                event.cancel()
             }
         }
 

@@ -9,10 +9,6 @@ import org.lwjgl.input.Keyboard
 
 interface IComponentGuiEvent {
 
-    fun tick()
-
-    fun update()
-
     /**
      * Called when a key repeat is triggered in the parent component.
      *
@@ -45,16 +41,6 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
     internal var mouseButtonsDownOutside = arrayOfNulls<Vec2d?>(EnumMouseButton.values().size)
     internal var keysDown: MutableMap<Key, Boolean> = HashMap<Key, Boolean>().withDefault { false }
 
-    override fun tick() {
-        component.BUS.fire(GuiComponentEvents.ComponentTickEvent())
-        component.subComponents.forEach { it.tick() }
-    }
-
-    override fun update() {
-        component.BUS.fire(GuiComponentEvents.ComponentUpdateEvent())
-        component.subComponents.forEach { it.update() }
-    }
-
     /**
      * Called when a key repeated is triggered in the parent component.
      *
@@ -63,10 +49,9 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
      */
     override fun keyRepeat(key: Char, keyCode: Int) {
         if (!component.isVisible) return
-        if (component.BUS.fire(GuiComponentEvents.KeyRepeatEvent(key, keyCode)).isCanceled())
-            return
+        component.BUS.fire(GuiComponentEvents.KeyRepeatEvent(key, keyCode))
 
-        keysDown.put(Key[key, keyCode], true)
+        keysDown[Key[key, keyCode]] = true
 
         component.subComponents.forEach { child ->
             child.keyRepeat(key, keyCode)
@@ -81,8 +66,7 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
      */
     override fun keyPressed(key: Char, keyCode: Int) {
         if (!component.isVisible) return
-        if (component.BUS.fire(GuiComponentEvents.KeyDownEvent(key, keyCode)).isCanceled())
-            return
+        component.BUS.fire(GuiComponentEvents.KeyDownEvent(key, keyCode))
 
         keysDown.put(Key[key, keyCode], true)
 
@@ -99,10 +83,9 @@ class ComponentGuiEventHandler: IComponentGuiEvent {
      */
     override fun keyReleased(key: Char, keyCode: Int) {
         if (!component.isVisible) return
-        keysDown.put(Key[key, keyCode], false) // do this before so we don't have lingering keyDown entries
+        keysDown[Key[key, keyCode]] = false // do this before so we don't have lingering keyDown entries
 
-        if (component.BUS.fire(GuiComponentEvents.KeyUpEvent(key, keyCode)).isCanceled())
-            return
+        component.BUS.fire(GuiComponentEvents.KeyUpEvent(key, keyCode))
 
         component.subComponents.forEach { child ->
             child.keyReleased(key, keyCode)

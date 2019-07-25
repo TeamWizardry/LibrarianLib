@@ -201,8 +201,7 @@ class ComponentMouseHandler: IComponentMouse {
 
     override fun mouseDown(button: EnumMouseButton) {
         if (!component.isVisible) return
-        if (component.BUS.fire(GuiComponentEvents.MouseDownEvent(button)).isCanceled())
-            return
+        component.BUS.fire(GuiComponentEvents.MouseDownEvent(button))
 
         buttonsDownOver[button] = mouseOver
 
@@ -217,8 +216,7 @@ class ComponentMouseHandler: IComponentMouse {
         val wasOver = buttonsDownOver[button] ?: false
         buttonsDownOver.remove(button)
 
-        if (component.BUS.fire(GuiComponentEvents.MouseUpEvent(button)).isCanceled())
-            return
+        component.BUS.fire(GuiComponentEvents.MouseUpEvent(button))
 
         if (component.mouseOver) {
             if(wasOver) {
@@ -242,8 +240,7 @@ class ComponentMouseHandler: IComponentMouse {
     override fun mouseWheel(amount: Double) {
         if (!component.isVisible) return
 
-        if (component.BUS.fire(GuiComponentEvents.MouseWheelEvent(amount)).isCanceled())
-            return
+        component.BUS.fire(GuiComponentEvents.MouseWheelEvent(amount))
 
         component.subComponents.forEach { child ->
             child.mouseWheel(amount)

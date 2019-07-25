@@ -9,6 +9,15 @@ import com.teamwizardry.librarianlib.features.facade.value.IMValueBoolean
  *
  */
 interface ILayerBase {
+
+    fun callTick()
+
+    fun callUpdate()
+
+    fun tick()
+
+    fun update()
+
     val isVisible_im: IMValueBoolean
     /**
      * Whether this component should be drawn. For [components][GuiComponent] this also disables input events.
@@ -96,6 +105,21 @@ internal class LayerBaseHandler: ILayerBase {
         }
 
     override var listenToChildrenNeedsLayout: Boolean = false
+
+    override fun callTick() {
+        tick()
+        layer.BUS.fire(GuiLayerEvents.Tick())
+        layer.forEachChild { it.callTick() }
+    }
+
+    override fun callUpdate() {
+        update()
+        layer.BUS.fire(GuiLayerEvents.Update())
+        layer.forEachChild { it.callUpdate() }
+    }
+
+    override fun tick() {}
+    override fun update() {}
 
     override fun callPreFrame() {
         layer.BUS.fire(GuiLayerEvents.PreFrameEvent())

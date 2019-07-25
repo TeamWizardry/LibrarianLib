@@ -5,6 +5,11 @@ import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
 
 /**
  * Order of events when rendering:
+ * - **Update/Tick**
+ * - |-- Calls [GuiLayer.tick]
+ * - |-- Fires [GuiLayerEvents.Tick]
+ * - |-- Calls [GuiLayer.update]
+ * - |-- Fires [GuiLayerEvents.Update]
  * - **Sort children**
  * - **Run layout if needed**
  * - |-- Calls [GuiLayer.runLayoutIfNeeded]
@@ -46,6 +51,8 @@ import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
  * - |-- Reverses layer transform
  */
 object GuiLayerEvents {
+    class Update : Event()
+    class Tick : Event()
     class PreFrameEvent : Event()
     class PreTransformEvent(val partialTicks: Float) : Event()
     class PostTransformEvent(val partialTicks: Float) : Event()
