@@ -11,7 +11,22 @@ import org.lwjgl.input.Cursor
 import java.nio.IntBuffer
 
 
-class LibCursor(val resourceLocation: ResourceLocation, val originX: Int, val originY: Int) {
+class LibCursor(
+    /**
+     * The location of the cursor texture
+     */
+    val resourceLocation: ResourceLocation,
+    /**
+     * The position of the cursor point within the image (e.g. the tip of an arrow cursor). The origin is in the
+     * bottom-left of the image, with the X axis extending to the right.
+     */
+    val originX: Int,
+    /**
+     * The position of the cursor point within the image (e.g. the tip of an arrow cursor). The origin is in the
+     * bottom-left of the image, with the Y axis extending upward.
+     */
+    val originY: Int
+) {
     lateinit var lwjglCursor: Cursor
         private set
 
