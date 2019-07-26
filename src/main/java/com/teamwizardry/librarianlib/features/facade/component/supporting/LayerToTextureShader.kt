@@ -7,17 +7,16 @@ import com.teamwizardry.librarianlib.features.shader.uniforms.FloatTypes
 import com.teamwizardry.librarianlib.features.shader.uniforms.IntTypes
 import com.teamwizardry.librarianlib.features.shader.uniforms.Uniform
 import net.minecraft.util.ResourceLocation
-import org.lwjgl.opengl.ARBShaderObjects
-import org.lwjgl.opengl.GL13
-import org.lwjgl.opengl.GL20
 
-object ScreenDirectShader : Shader(null, ResourceLocation("librarianlib:shaders/screen_direct.frag")) {
+object LayerToTextureShader : Shader(null, ResourceLocation("librarianlib:shaders/guilayer.frag")) {
     var maskMode: MaskMode = MaskMode.NONE
+    var renderMode: RenderMode = RenderMode.RENDER_TO_FBO
     var alphaMultiply: Float = 1f
 
     private var displaySize: FloatTypes.FloatVec2Uniform? = null
     private var alphaMultiplyUniform: FloatTypes.FloatUniform? = null
     private var maskModeUniform: IntTypes.IntUniform? = null
+    private var renderModeUniform: IntTypes.IntUniform? = null
     var layerImage: Uniform? = null
     var maskImage: Uniform? = null
 
@@ -26,6 +25,7 @@ object ScreenDirectShader : Shader(null, ResourceLocation("librarianlib:shaders/
         displaySize = getUniform("displaySize")
         alphaMultiplyUniform = getUniform("alphaMultiply")
         maskModeUniform = getUniform("maskMode")
+        renderModeUniform = getUniform("renderMode")
         layerImage = getUniform("layerImage")
         maskImage = getUniform("maskImage")
     }
@@ -38,6 +38,7 @@ object ScreenDirectShader : Shader(null, ResourceLocation("librarianlib:shaders/
         )
         alphaMultiplyUniform?.set(alphaMultiply)
         maskModeUniform?.set(maskMode.ordinal)
+        renderModeUniform?.set(renderMode.ordinal)
     }
 
     init {
@@ -78,4 +79,22 @@ enum class MaskMode {
      * transparent mask = black background = opaque layer.
      */
     INV_LUMA_ON_BLACK;
+}
+
+enum class RenderMode {
+    /**
+     * The default, this renders onto the current FBO
+     */
+    DIRECT,
+    /**
+     * The default when rendering to a texture, this renders onto an FBO which is then rendered onto the screen. This
+     * mode uses a technique that renders to an FBO the same resolution as the window and avoids issues of lost
+     * resolution due to scale.
+     */
+    RENDER_TO_FBO,
+    /**
+     * Draws the layer to a texture at a native resolution multiple (one unit = N texture pixels) and draws that to a
+     * quad. This mode can lead to lost resolution, however it is also the only one that supports antialiasing.
+     */
+    RENDER_TO_QUAD
 }

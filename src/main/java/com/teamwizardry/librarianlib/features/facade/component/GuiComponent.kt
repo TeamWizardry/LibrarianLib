@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.facade.component
 import com.teamwizardry.librarianlib.features.facade.component.supporting.*
 import com.teamwizardry.librarianlib.features.facade.components.RootComponent
 import com.teamwizardry.librarianlib.features.facade.layers.ComponentBackedLayer
+import com.teamwizardry.librarianlib.features.helpers.vec
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -39,6 +40,17 @@ open class GuiComponent private constructor(
         ComponentFocusHandler(),
         ComponentTooltipHandler()
     )
+
+    /**
+     * Creates a component with the same frame as the given component that contains the given component. This
+     * constructor resets the given component's position to (0, 0).
+     */
+    constructor(other: GuiLayer): this() {
+        this.size = other.size
+        this.pos = other.pos
+        other.pos = vec(0, 0)
+        this.add(other)
+    }
 
     /**
      * An immutable copy of [children] that has been filtered to only include components.

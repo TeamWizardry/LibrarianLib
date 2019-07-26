@@ -2,13 +2,16 @@ package com.teamwizardry.librarianlib.features.shader
 
 import com.teamwizardry.librarianlib.core.LibrarianLog
 import com.teamwizardry.librarianlib.core.common.LibLibConfig
+import com.teamwizardry.librarianlib.features.kotlin.Client
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import net.minecraft.client.renderer.OpenGlHelper
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.opengl.*
 import java.io.BufferedReader
+import java.io.FileNotFoundException
 import java.io.InputStreamReader
 import java.util.*
 import java.util.function.Consumer
@@ -89,8 +92,8 @@ object ShaderHelper {
     }
 
     private fun createProgram(shader: Shader): Int {
-        val vert = shader.vert
-        val frag = shader.frag
+        val vert = shader.vertRl
+        val frag = shader.fragRl
 
         var vertId = 0
         var fragId = 0
@@ -183,57 +186,7 @@ object ShaderHelper {
     }
 
     @Throws(Exception::class)
-    private fun readFileAsString(filename: String): String {
-        val source = StringBuilder()
-        val `in` = ShaderHelper::class.java.getResourceAsStream(filename)
-        var exception: Exception? = null
-        val reader: BufferedReader
-
-        if (`in` == null)
-            return ""
-
-        try {
-            reader = BufferedReader(InputStreamReader(`in`, "UTF-8"))
-
-            var innerExc: Exception? = null
-            try {
-                var line: String? = reader.readLine()
-                while (line != null) {
-                    source.append(line).append('\n')
-                    line = reader.readLine()
-                }
-            } catch (exc: Exception) {
-                exception = exc
-            }
-
-            try {
-                reader.close()
-            } catch (exc: Exception) {
-                if (innerExc == null)
-                    innerExc = exc
-                else
-                    exc.printStackTrace()
-            }
-
-            if (innerExc != null)
-                throw innerExc
-        } catch (exc: Exception) {
-            exception = exc
-        } finally {
-            try {
-                `in`.close()
-            } catch (exc: Exception) {
-                if (exception == null)
-                    exception = exc
-                else
-                    exc.printStackTrace()
-            }
-
-            if (exception != null)
-                throw exception
-        }
-
-        return source.toString()
+    private fun readFileAsString(resourceLocation: ResourceLocation): String {
+        return Client.resourceManager.getResource(resourceLocation).inputStream.use { it.reader().readText() }
     }
-
 }

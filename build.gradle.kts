@@ -41,8 +41,8 @@ sourceSets["main"].resources.srcDir("src/example/resources")
 
 val shade by configurations.creating // TODO: investigate contained deps
 
-configurations.compileOnly.extendsFrom(shade)
-configurations.testCompileOnly.extendsFrom(shade)
+configurations.compile.extendsFrom(shade)
+configurations.testCompile.extendsFrom(shade)
 
 repositories {
     jcenter()
@@ -58,14 +58,17 @@ repositories {
 
 dependencies {
     api("net.shadowfacts:Forgelin:1.8.0")
-    implementation("org.magicwerk:brownies-collections:0.9.13")
+    runtime("net.shadowfacts:Forgelin:1.8.0")
+
     shade("org.magicwerk:brownies-collections:0.9.13")
+//    implementation("org.magicwerk:brownies-collections:0.9.13")
+
     shade("com.ibm.icu:icu4j:63.1")
-    implementation("com.ibm.icu:icu4j:63.1")
     shade("org.msgpack:msgpack-core:0.8.16")
-    implementation("org.msgpack:msgpack-core:0.8.16")
     shade("com.github.thecodewarrior:bitfont:-SNAPSHOT")
-    implementation("com.github.thecodewarrior:bitfont:-SNAPSHOT")
+//    implementation("com.ibm.icu:icu4j:63.1")
+//    implementation("org.msgpack:msgpack-core:0.8.16")
+//    implementation("com.github.thecodewarrior:bitfont:-SNAPSHOT")
 }
 
 kotlin.experimental.coroutines = Coroutines.ENABLE

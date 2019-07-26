@@ -10,6 +10,8 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.entity.RenderManager
+import net.minecraft.client.renderer.texture.TextureManager
+import net.minecraft.client.resources.IResourceManager
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -21,6 +23,8 @@ object Client {
     val minecraft: Minecraft get() = Minecraft.getMinecraft()
     val resolution: ScaledResolution get() = ScaledResolution(minecraft)
     val guiScaleFactor: Int get() = resolution.scaleFactor
+    val resourceManager: IResourceManager get() = minecraft.resourceManager
+    val renderEngine: TextureManager get() = minecraft.renderEngine
 }
 
 // Color ===============================================================================================================

@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.features.facade.component.supporting
 
-import com.teamwizardry.librarianlib.core.client.ClientTickHandler
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.facade.layers.MaskLayer
@@ -8,25 +7,20 @@ import com.teamwizardry.librarianlib.features.facade.value.IMValue
 import com.teamwizardry.librarianlib.features.facade.value.RMValueDouble
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.Client
-import com.teamwizardry.librarianlib.features.kotlin.color
 import com.teamwizardry.librarianlib.features.kotlin.fastCos
 import com.teamwizardry.librarianlib.features.kotlin.fastSin
 import com.teamwizardry.librarianlib.features.math.Vec2d
-import com.teamwizardry.librarianlib.features.shader.Shader
 import com.teamwizardry.librarianlib.features.shader.ShaderHelper
 import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.shader.Framebuffer
-import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL13
 import org.lwjgl.opengl.GL20
-import java.awt.Color
 import java.util.LinkedList
 import kotlin.math.PI
 
@@ -44,6 +38,11 @@ interface ILayerRendering {
      * How to apply [MaskLayer] masks (docs todo)
      */
     var maskMode: MaskMode
+
+    /**
+     * What technique to use to render this layer
+     */
+    var renderMode: RenderMode
 
     /**
      * Sorts the layers by zIndex
@@ -100,11 +99,20 @@ class LayerRenderHandler: ILayerRendering {
     override val opacity_rm: RMValueDouble = RMValueDouble(1.0)
     override var opacity: Double by opacity_rm
     override var maskMode: MaskMode = MaskMode.NONE
+    override var renderMode: RenderMode = RenderMode.DIRECT
 
     override fun sortChildren() {
         val components = layer.relationships.subLayers
         components.sortBy { it.zIndex }
         components.forEach { it.sortChildren() }
+    }
+
+    fun actualRenderMode(): RenderMode {
+        if(renderMode != RenderMode.DIRECT)
+            return renderMode
+        if(opacity < 1.0 || maskMode != MaskMode.NONE)
+            return RenderMode.RENDER_TO_FBO
+        return RenderMode.DIRECT
     }
 
     /**
@@ -129,9 +137,10 @@ class LayerRenderHandler: ILayerRendering {
 
         layer.clipping.pushEnable()
 
-        if(opacity < 1.0) {
+        val renderMode = actualRenderMode()
+        if(renderMode != RenderMode.DIRECT) {
             var maskFBO: Framebuffer? = null
-            val layerFBO = useFramebuffer {
+            val layerFBO = useFramebuffer(renderMode == RenderMode.RENDER_TO_QUAD) {
                 drawContent(partialTicks) {
                     // draw all the non-mask children to the current FBO (layerFBO)
                     layer.forEachChild {
@@ -141,7 +150,7 @@ class LayerRenderHandler: ILayerRendering {
 
                     // draw all the mask children to an FBO, if needed
                     maskFBO = if(maskMode != MaskMode.NONE)
-                        useFramebuffer {
+                        useFramebuffer(false) {
                             layer.forEachChild {
                                 if(it is MaskLayer)
                                     it.renderLayer(partialTicks)
@@ -153,9 +162,10 @@ class LayerRenderHandler: ILayerRendering {
             }
 
             // load the shader
-            ScreenDirectShader.alphaMultiply = opacity.toFloat()
-            ScreenDirectShader.maskMode = maskMode
-            ShaderHelper.useShader(ScreenDirectShader)
+            LayerToTextureShader.alphaMultiply = opacity.toFloat()
+            LayerToTextureShader.maskMode = maskMode
+            LayerToTextureShader.renderMode = renderMode
+            ShaderHelper.useShader(LayerToTextureShader)
 
             GlStateManager.setActiveTexture(GL13.GL_TEXTURE2)
             layerFBO.bindFramebufferTexture()
@@ -164,10 +174,10 @@ class LayerRenderHandler: ILayerRendering {
             maskFBO?.bindFramebufferTexture()
 
             // these have to occur _after_ the textures are bound
-            ScreenDirectShader.layerImage?.also { layerImage ->
+            LayerToTextureShader.layerImage?.also { layerImage ->
                 GL20.glUniform1i(layerImage.location, 2)
             }
-            ScreenDirectShader.maskImage?.also { maskImage ->
+            LayerToTextureShader.maskImage?.also { maskImage ->
                 GL20.glUniform1i(maskImage.location, 3)
             }
 
@@ -175,13 +185,16 @@ class LayerRenderHandler: ILayerRendering {
             GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit)
 
             val size = layer.size
+            val maxU = size.x / Client.minecraft.displayWidth
+            val maxV = size.y / Client.minecraft.displayHeight
+
             val tessellator = Tessellator.getInstance()
             val vb = tessellator.buffer
-            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION)
-            vb.pos(0.0, size.y, 0.0).endVertex()
-            vb.pos(size.x, size.y, 0.0).endVertex()
-            vb.pos(size.x, 0.0, 0.0).endVertex()
-            vb.pos(0.0, 0.0, 0.0).endVertex()
+            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
+            vb.pos(0.0, size.y, 0.0).tex(0.0, 1.0-maxV).endVertex()
+            vb.pos(size.x, size.y, 0.0).tex(maxU, 1.0-maxV).endVertex()
+            vb.pos(size.x, 0.0, 0.0).tex(maxU, 1.0).endVertex()
+            vb.pos(0.0, 0.0, 0.0).tex(0.0, 1.0).endVertex()
             tessellator.draw()
 
             ShaderHelper.releaseShader()
@@ -339,11 +352,34 @@ class LayerRenderHandler: ILayerRendering {
         val bufferStack = LinkedList<Framebuffer>()
         val currentFramebuffer: Framebuffer? = bufferStack.peekFirst()
 
+        fun resetTransform(scale: Double) {
+//            GlStateManager.matrixMode(GL11.GL_PROJECTION)
+//            GlStateManager.pushMatrix()
+//            GlStateManager.loadIdentity()
+//            GlStateManager.ortho(0.0, Client.minecraft.displayWidth.toDouble(), Client.minecraft.displayHeight.toDouble(), 0.0, 1000.0, 3000.0)
+
+//            GlStateManager.matrixMode(GL11.GL_MODELVIEW)
+            GlStateManager.pushMatrix()
+            GlStateManager.loadIdentity()
+            GlStateManager.translate(0.0f, 0.0f, -2000.0f)
+
+            val scaleFactor = Client.resolution.scaleFactor
+            GlStateManager.scale(1.0/scaleFactor, 1.0/scaleFactor, 1.0)
+            GlStateManager.scale(scale, scale, 1.0)
+        }
+
+        fun revertTransform() {
+//            GlStateManager.matrixMode(GL11.GL_MODELVIEW)
+            GlStateManager.popMatrix()
+//            GlStateManager.matrixMode(GL11.GL_PROJECTION)
+//            GlStateManager.popMatrix()
+        }
+
         fun pushFramebuffer(): Framebuffer {
             var fbo = buffers.pollFirst() ?: createFramebuffer()
             if(
                 fbo.framebufferWidth != Client.minecraft.displayWidth ||
-                fbo.framebufferWidth != Client.minecraft.displayWidth
+                fbo.framebufferHeight != Client.minecraft.displayHeight
             ) {
                 fbo.deleteFramebuffer()
                 createdBuffers--
@@ -365,9 +401,11 @@ class LayerRenderHandler: ILayerRendering {
             }
         }
 
-        inline fun useFramebuffer(callback: () -> Unit): Framebuffer {
+        fun useFramebuffer(loadIdentity: Boolean, callback: () -> Unit): Framebuffer {
             val stencilLevel = StencilUtil.currentStencil
             val fbo = pushFramebuffer()
+            if(loadIdentity)
+                resetTransform(1.0)
 
             try {
                 fbo.framebufferClear()
@@ -378,6 +416,8 @@ class LayerRenderHandler: ILayerRendering {
                 callback()
 
             } finally {
+                if(loadIdentity)
+                    revertTransform()
                 popFramebuffer()
                 StencilUtil.resetTest(stencilLevel)
             }

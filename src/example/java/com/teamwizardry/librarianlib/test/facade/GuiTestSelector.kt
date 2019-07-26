@@ -31,6 +31,7 @@ class GuiTestSelector : GuiBase() {
         ListItem.Gui("Layer opacity") { GuiTestOpacity() },
         ListItem.Gui("Flatten Stencil") { GuiTestFlattenStencil() },
         ListItem.Gui("Masking") { GuiTestMasking() },
+        ListItem.Gui("Render to quad") { GuiTestRenderToQuad() },
         ListItem.Gui("GUI auto-scale") { GuiTestAutoSizeScale() },
         ListItem.Gui("Sprite") { GuiTestSprite() },
         ListItem.Gui("Mouse Clicks") { GuiTestClickEvents() },
