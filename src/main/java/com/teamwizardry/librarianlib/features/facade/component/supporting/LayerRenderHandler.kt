@@ -170,7 +170,7 @@ class LayerRenderHandler: ILayerRendering {
                     }
                 }
 
-                layerFilter?.filter(layerFBO, maskFBO)
+                layerFilter?.filter(this.layer, layerFBO, maskFBO)
 
                 // load the shader
                 LayerToTextureShader.alphaMultiply = opacity.toFloat()

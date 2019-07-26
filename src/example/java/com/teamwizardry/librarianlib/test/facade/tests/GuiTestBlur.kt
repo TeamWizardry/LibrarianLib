@@ -25,9 +25,9 @@ class GuiTestBlur : GuiBase() {
         flat.add(RectLayer(Color.RED, 0, 0, 75, 75))
         val flatBlue = RectLayer(Color.BLUE, 25, 25, 75, 75)
         flat.add(flatBlue)
-        flat.layerFilter = GaussianBlurFilter(3)
+        flat.layerFilter = GaussianBlurFilter(8)
 
-        main.add(normal, flat)
+        main.add(RectLayer(Color.WHITE, -100, -25, 300, 150), normal, flat)
 
         main.hook<GuiLayerEvents.PreFrameEvent> {
             val y = 100 * (ClientTickHandler.ticks % 40.0) / 40.0

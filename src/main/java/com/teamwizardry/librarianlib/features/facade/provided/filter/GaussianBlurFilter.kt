@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.facade.provided.filter
 
+import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayerFilter
 import com.teamwizardry.librarianlib.features.facade.value.RMValueInt
 import com.teamwizardry.librarianlib.features.helpers.vec
@@ -15,56 +16,39 @@ class GaussianBlurFilter(sigma: Int): GuiLayerFilter() {
     var sigma: Int by sigma_rm
     var blurMask: Boolean = true
 
-    override fun filter(layerFBO: Framebuffer, maskFBO: Framebuffer?) {
-        blur(layerFBO)
+    override fun filter(layer: GuiLayer, layerFBO: Framebuffer, maskFBO: Framebuffer?) {
+        blur(layer, layerFBO)
         if(blurMask)
-            maskFBO?.also { blur(it) }
+            maskFBO?.also { blur(layer, it) }
     }
 
-    private fun blur(framebuffer: Framebuffer) {
+    private fun blur(layer: GuiLayer, framebuffer: Framebuffer) {
 
-        val intermediateFBO = useFramebuffer(true, 1) {
+        val intermediateFBO = useFramebuffer(false, 1) {
             GaussianBlurShader.sigma = sigma
             GaussianBlurShader.horizontal = true
             ShaderHelper.useShader(GaussianBlurShader)
 
             GaussianBlurShader.bindTexture(framebuffer.framebufferTexture)
 
-            val size = vec(Client.minecraft.displayWidth, Client.minecraft.displayHeight)
-            val tessellator = Tessellator.getInstance()
-            val vb = tessellator.buffer
-            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION)
-            vb.pos(0.0, size.y, 0.0).endVertex()
-            vb.pos(size.x, size.y, 0.0).endVertex()
-            vb.pos(size.x, 0.0, 0.0).endVertex()
-            vb.pos(0.0, 0.0, 0.0).endVertex()
-            tessellator.draw()
+            drawLayerQuad(layer)
 
             ShaderHelper.releaseShader()
         }
 
-        useFramebuffer(true, 1, true, framebuffer) {
+        useFramebuffer(false, 1, true, framebuffer) {
             GaussianBlurShader.sigma = sigma
             GaussianBlurShader.horizontal = false
             ShaderHelper.useShader(GaussianBlurShader)
 
             GaussianBlurShader.bindTexture(intermediateFBO.framebufferTexture)
 
-            val size = vec(Client.minecraft.displayWidth, Client.minecraft.displayHeight)
-            val tessellator = Tessellator.getInstance()
-            val vb = tessellator.buffer
-            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION)
-            vb.pos(0.0, size.y, 0.0).endVertex()
-            vb.pos(size.x, size.y, 0.0).endVertex()
-            vb.pos(size.x, 0.0, 0.0).endVertex()
-            vb.pos(0.0, 0.0, 0.0).endVertex()
-            tessellator.draw()
+            drawLayerQuad(layer)
 
             ShaderHelper.releaseShader()
             releaseFramebuffer(intermediateFBO)
         }
 
         GL11.glDisable(GL11.GL_TEXTURE_1D)
-        ShaderHelper.releaseShader()
     }
 }
