@@ -34,8 +34,7 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
     val grid: Array<Ingredient>
         get() = grids[MathHelper.floor(time / 90f) % grids.size]
 
-    @Hook
-    fun tick(e: GuiComponentEvents.ComponentTickEvent) {
+    override fun tick() {
         if (!GuiScreen.isShiftKeyDown() && isVisible)
             time++
     }

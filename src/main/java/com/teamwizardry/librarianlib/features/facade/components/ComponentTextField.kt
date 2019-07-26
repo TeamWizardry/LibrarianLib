@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.facade.value.IMValue
 import com.teamwizardry.librarianlib.features.facade.value.IMValueBoolean
 import com.teamwizardry.librarianlib.features.facade.value.IMValueInt
@@ -100,7 +101,7 @@ open class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y:
             if (handleKeyTyped(it.key, it.keyCode))
                 requestFocus()
         }
-        BUS.hook(GuiComponentEvents.ComponentTickEvent::class.java) { updateCursorCounter() }
+        BUS.hook(GuiLayerEvents.Tick::class.java) { updateCursorCounter() }
     }
 
     override fun draw(partialTicks: Float) {

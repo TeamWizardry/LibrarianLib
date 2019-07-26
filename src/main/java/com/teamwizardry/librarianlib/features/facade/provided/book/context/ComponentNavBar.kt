@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.facade.provided.book.context
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.facade.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.facade.components.ComponentText
 import com.teamwizardry.librarianlib.features.facade.provided.book.IBookGui
@@ -35,7 +36,7 @@ class ComponentNavBar(private val book: IBookGui, posX: Int, posY: Int, width: I
 
     init {
 
-        BUS.hook(GuiComponentEvents.ComponentTickEvent::class.java) {
+        BUS.hook(GuiLayerEvents.Tick::class.java) {
             isVisible = maxPage > 0 || book.context.parent != null
         }
 
@@ -67,11 +68,11 @@ class ComponentNavBar(private val book: IBookGui, posX: Int, posY: Int, width: I
             } else
                 book.up()
         }
-        home.BUS.hook(GuiComponentEvents.ComponentTickEvent::class.java) {
+        home.BUS.hook(GuiLayerEvents.Tick::class.java) {
             home.isVisible = book.context.parent != null
         }
 
-        back.BUS.hook(GuiComponentEvents.ComponentTickEvent::class.java) {
+        back.BUS.hook(GuiLayerEvents.Tick::class.java) {
             val x = MathHelper.clamp(this.page - 1, 0, maxPage)
             back.isVisible = this.page != x
 
@@ -95,7 +96,7 @@ class ComponentNavBar(private val book: IBookGui, posX: Int, posY: Int, width: I
         backTooltip.add(I18n.format("${LibrarianLib.MODID}.book.nav.previous"))
 //        back.tooltip = backTooltip
 
-        next.BUS.hook(GuiComponentEvents.ComponentTickEvent::class.java) { event ->
+        next.BUS.hook(GuiLayerEvents.Tick::class.java) { event ->
             val x = MathHelper.clamp(this.page + 1, 0, maxPage)
             next.isVisible = this.page != x
 
@@ -124,7 +125,7 @@ class ComponentNavBar(private val book: IBookGui, posX: Int, posY: Int, width: I
         pageStringComponent.unicode = false
 
         pageStringComponent.text_im { "${this.page + 1}/${maxPage + 1}" }
-        pageStringComponent.BUS.hook(GuiComponentEvents.ComponentTickEvent::class.java) {
+        pageStringComponent.BUS.hook(GuiLayerEvents.Tick::class.java) {
             pageStringComponent.isVisible = this.maxPage > 0
         }
         add(pageStringComponent)

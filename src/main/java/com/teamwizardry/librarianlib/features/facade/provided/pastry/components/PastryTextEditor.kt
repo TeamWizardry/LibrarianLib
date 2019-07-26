@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.facade.provided.pastry.components
 import com.teamwizardry.librarianlib.features.eventbus.Hook
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.ExperimentalPastryAPI
 import com.teamwizardry.librarianlib.features.helpers.pos
 import com.teamwizardry.librarianlib.features.helpers.rect
@@ -157,8 +158,7 @@ class PastryTextEditor(posX: Int, posY: Int, width: Int, height: Int): GuiCompon
         modifiers = Modifiers.fromKeyboard()
     }
 
-    @Hook
-    fun update(e: GuiComponentEvents.ComponentUpdateEvent) {
+    override fun update() {
         updateModifiers()
         if(insertedText.isNotEmpty()) editor.inputText(insertedText)
         insertedText = ""

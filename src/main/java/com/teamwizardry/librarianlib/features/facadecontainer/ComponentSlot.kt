@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.container.internal.SlotBase
 import com.teamwizardry.librarianlib.features.eventbus.Hook
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.UnrelatedCoordinateSpaceException
 
@@ -23,9 +24,7 @@ class ComponentSlot(val slot: SlotBase, x: Int, y: Int) : GuiComponent(x, y) {
         slot.visible = true
     }
 
-    @Hook
-    @Suppress("UNUSED_PARAMETER")
-    fun onTick(e: GuiComponentEvents.ComponentTickEvent) {
+    override fun tick() {
         try {
             val p = convertPointTo(Vec2d.ZERO, ContainerSpace)
 

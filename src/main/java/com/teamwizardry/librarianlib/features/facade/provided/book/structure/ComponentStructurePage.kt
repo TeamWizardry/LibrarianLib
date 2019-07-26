@@ -47,7 +47,7 @@ abstract class ComponentStructurePage(val book: IBookGui, x: Int, y: Int, width:
 
         animX = 1.0
 
-        BUS.hook(GuiComponentEvents.ComponentTickEvent::class.java) {
+        BUS.hook(GuiLayerEvents.Tick::class.java) {
             if (!GuiScreen.isShiftKeyDown() && isVisible)
                 ticks++
         }
