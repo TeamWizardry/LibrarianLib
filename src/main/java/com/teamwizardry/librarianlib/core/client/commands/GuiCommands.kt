@@ -15,10 +15,11 @@ object GuiCommands {
             }
         )
 
-        root.addSubcommand(GuiOptionCommand)
-        GuiOptionCommand.options.add(BooleanGuiOption("showDebugTilt", GuiLayer.Companion::showDebugTilt))
-        GuiOptionCommand.options.add(BooleanGuiOption("showDebugBoundingBox", GuiLayer.Companion::showDebugBoundingBox))
-        GuiOptionCommand.options.add(BooleanGuiOption("showLayoutOverlay", GuiLayer.Companion::showLayoutOverlay))
+        val options = OptionCommand("options")
+        root.addSubcommand(options)
+        options.add(BooleanGuiOption("showDebugTilt", GuiLayer.Companion::showDebugTilt))
+        options.add(BooleanGuiOption("showDebugBoundingBox", GuiLayer.Companion::showDebugBoundingBox))
+        options.add(BooleanGuiOption("showLayoutOverlay", GuiLayer.Companion::showLayoutOverlay))
     }
 }
 

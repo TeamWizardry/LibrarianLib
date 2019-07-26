@@ -15,6 +15,10 @@ object ShaderCommands {
                 ShaderHelper.initShaders()
             }
         )
+
+        val options = OptionCommand("options")
+        root.addSubcommand(options)
+        options.add(BooleanGuiOption("validateShaders", ShaderHelper::enableValidation))
     }
 }
 

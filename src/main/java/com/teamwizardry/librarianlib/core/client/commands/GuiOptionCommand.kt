@@ -12,11 +12,15 @@ import net.minecraft.util.math.BlockPos
 
 
 
-object GuiOptionCommand: CommandBase() {
-    val options = mutableListOf<GuiOption<*>>()
+class OptionCommand(private val _name: String): CommandBase() {
+    private val options = mutableListOf<Option<*>>()
 
-    override fun getName(): String = "option"
-    override fun getUsage(sender: ICommandSender): String = "librarianlib.command.liblib.gui.option.usage"
+    fun add(option: Option<*>) {
+        options.add(option)
+    }
+
+    override fun getName(): String = _name
+    override fun getUsage(sender: ICommandSender): String = "librarianlib.command.liblib.option.usage"
 
     override fun execute(server: MinecraftServer, sender: ICommandSender, args: Array<String>) {
         if(args.isEmpty()) {
@@ -25,7 +29,7 @@ object GuiOptionCommand: CommandBase() {
         }
 
         val option = options.find { it.name == args[0] }
-            ?: throw CommandException("librarianlib.command.liblib.gui.option.nosuchoption", args[0])
+            ?: throw CommandException("librarianlib.command.liblib.option.nosuchoption", args[0])
         if(args.size == 1) {
             sender.sendMessage(TextComponentString(args[0]).appendText(" = ").appendText(option.valueString()))
             return
@@ -45,7 +49,7 @@ object GuiOptionCommand: CommandBase() {
     }
 }
 
-abstract class GuiOption<T>(val name: String,
+abstract class Option<T>(val name: String,
     val getter: () -> T, val setter: (T) -> Unit
 ) {
     constructor(name: String, property: KMutableProperty0<T>): this(name, property::get, property::set)
@@ -54,7 +58,7 @@ abstract class GuiOption<T>(val name: String,
     abstract fun setValue(arg: String)
 }
 
-class BooleanGuiOption: GuiOption<Boolean> {
+class BooleanGuiOption: Option<Boolean> {
     constructor(name: String, getter: () -> Boolean, setter: (Boolean) -> Unit): super(name, getter, setter)
     constructor(name: String, property: KMutableProperty0<Boolean>): super(name, property)
 

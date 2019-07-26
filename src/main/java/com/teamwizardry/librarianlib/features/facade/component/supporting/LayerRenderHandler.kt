@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.facade.component.supporting
 
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
+import com.teamwizardry.librarianlib.features.facade.component.GuiLayerFilter
 import com.teamwizardry.librarianlib.features.facade.layers.MaskLayer
 import com.teamwizardry.librarianlib.features.facade.value.IMValue
 import com.teamwizardry.librarianlib.features.facade.value.RMValueDouble
@@ -11,18 +12,13 @@ import com.teamwizardry.librarianlib.features.kotlin.fastCos
 import com.teamwizardry.librarianlib.features.kotlin.fastSin
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.shader.ShaderHelper
-import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
-import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.shader.Framebuffer
 import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL13
-import org.lwjgl.opengl.GL20
-import java.util.LinkedList
 import kotlin.math.PI
+import kotlin.math.max
 
 interface ILayerRendering {
     val tooltip_im: IMValue<List<String>?>
@@ -43,6 +39,17 @@ interface ILayerRendering {
      * What technique to use to render this layer
      */
     var renderMode: RenderMode
+
+    /**
+     * What scaling factor to use when rasterizing this layer using [RenderMode.RENDER_TO_QUAD]
+     */
+    var rasterizationScale: Int
+
+    /**
+     * A filter to apply to this layer. If this is not null this layer will be drawn to a texture and passed to the
+     * filter.
+     */
+    var layerFilter: GuiLayerFilter?
 
     /**
      * Sorts the layers by zIndex
@@ -100,6 +107,8 @@ class LayerRenderHandler: ILayerRendering {
     override var opacity: Double by opacity_rm
     override var maskMode: MaskMode = MaskMode.NONE
     override var renderMode: RenderMode = RenderMode.DIRECT
+    override var rasterizationScale: Int = 1
+    override var layerFilter: GuiLayerFilter? = null
 
     override fun sortChildren() {
         val components = layer.relationships.subLayers
@@ -110,7 +119,7 @@ class LayerRenderHandler: ILayerRendering {
     fun actualRenderMode(): RenderMode {
         if(renderMode != RenderMode.DIRECT)
             return renderMode
-        if(opacity < 1.0 || maskMode != MaskMode.NONE)
+        if(opacity < 1.0 || maskMode != MaskMode.NONE || layerFilter != null)
             return RenderMode.RENDER_TO_FBO
         return RenderMode.DIRECT
     }
@@ -140,64 +149,55 @@ class LayerRenderHandler: ILayerRendering {
         val renderMode = actualRenderMode()
         if(renderMode != RenderMode.DIRECT) {
             var maskFBO: Framebuffer? = null
-            val layerFBO = useFramebuffer(renderMode == RenderMode.RENDER_TO_QUAD) {
-                drawContent(partialTicks) {
-                    // draw all the non-mask children to the current FBO (layerFBO)
-                    layer.forEachChild {
-                        if(it !is MaskLayer)
-                            it.renderLayer(partialTicks)
-                    }
-
-                    // draw all the mask children to an FBO, if needed
-                    maskFBO = if(maskMode != MaskMode.NONE)
-                        useFramebuffer(false) {
-                            layer.forEachChild {
-                                if(it is MaskLayer)
-                                    it.renderLayer(partialTicks)
-                            }
+            var layerFBO: Framebuffer? = null
+            try {
+                 layerFBO = GuiLayerFilter.useFramebuffer(renderMode == RenderMode.RENDER_TO_QUAD, max(1, rasterizationScale)) {
+                    drawContent(partialTicks) {
+                        // draw all the non-mask children to the current FBO (layerFBO)
+                        layer.forEachChild {
+                            if (it !is MaskLayer)
+                                it.renderLayer(partialTicks)
                         }
-                    else
-                        null
+
+                        // draw all the mask children to an FBO, if needed
+                        if (maskMode != MaskMode.NONE)
+                            maskFBO = GuiLayerFilter.useFramebuffer(false, 1) {
+                                layer.forEachChild {
+                                    if (it is MaskLayer)
+                                        it.renderLayer(partialTicks)
+                                }
+                            }
+                    }
                 }
+
+                layerFilter?.filter(layerFBO, maskFBO)
+
+                // load the shader
+                LayerToTextureShader.alphaMultiply = opacity.toFloat()
+                LayerToTextureShader.maskMode = maskMode
+                LayerToTextureShader.renderMode = renderMode
+                ShaderHelper.useShader(LayerToTextureShader)
+
+                LayerToTextureShader.bindTextures(layerFBO.framebufferTexture, maskFBO?.framebufferTexture)
+
+                val size = layer.size
+                val maxU = (size.x * rasterizationScale) / Client.minecraft.displayWidth
+                val maxV = (size.y * rasterizationScale) / Client.minecraft.displayHeight
+
+                val tessellator = Tessellator.getInstance()
+                val vb = tessellator.buffer
+                vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
+                vb.pos(0.0, size.y, 0.0).tex(0.0, 1.0 - maxV).endVertex()
+                vb.pos(size.x, size.y, 0.0).tex(maxU, 1.0 - maxV).endVertex()
+                vb.pos(size.x, 0.0, 0.0).tex(maxU, 1.0).endVertex()
+                vb.pos(0.0, 0.0, 0.0).tex(0.0, 1.0).endVertex()
+                tessellator.draw()
+
+                ShaderHelper.releaseShader()
+            } finally {
+                layerFBO?.also { GuiLayerFilter.releaseFramebuffer(it) }
+                maskFBO?.also { GuiLayerFilter.releaseFramebuffer(it) }
             }
-
-            // load the shader
-            LayerToTextureShader.alphaMultiply = opacity.toFloat()
-            LayerToTextureShader.maskMode = maskMode
-            LayerToTextureShader.renderMode = renderMode
-            ShaderHelper.useShader(LayerToTextureShader)
-
-            GlStateManager.setActiveTexture(GL13.GL_TEXTURE2)
-            layerFBO.bindFramebufferTexture()
-
-            GlStateManager.setActiveTexture(GL13.GL_TEXTURE3)
-            maskFBO?.bindFramebufferTexture()
-
-            // these have to occur _after_ the textures are bound
-            LayerToTextureShader.layerImage?.also { layerImage ->
-                GL20.glUniform1i(layerImage.location, 2)
-            }
-            LayerToTextureShader.maskImage?.also { maskImage ->
-                GL20.glUniform1i(maskImage.location, 3)
-            }
-
-            // return to the default texture unit
-            GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit)
-
-            val size = layer.size
-            val maxU = size.x / Client.minecraft.displayWidth
-            val maxV = size.y / Client.minecraft.displayHeight
-
-            val tessellator = Tessellator.getInstance()
-            val vb = tessellator.buffer
-            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
-            vb.pos(0.0, size.y, 0.0).tex(0.0, 1.0-maxV).endVertex()
-            vb.pos(size.x, size.y, 0.0).tex(maxU, 1.0-maxV).endVertex()
-            vb.pos(size.x, 0.0, 0.0).tex(maxU, 1.0).endVertex()
-            vb.pos(0.0, 0.0, 0.0).tex(0.0, 1.0).endVertex()
-            tessellator.draw()
-
-            ShaderHelper.releaseShader()
         } else {
             drawContent(partialTicks) {
                 layer.forEachChild {
@@ -344,95 +344,4 @@ class LayerRenderHandler: ILayerRendering {
         return list
     }
 
-    companion object {
-        val maxFramebufferCount = 16
-        var createdBuffers = 0
-        val buffers = LinkedList<Framebuffer>()
-
-        val bufferStack = LinkedList<Framebuffer>()
-        val currentFramebuffer: Framebuffer? = bufferStack.peekFirst()
-
-        fun resetTransform(scale: Double) {
-//            GlStateManager.matrixMode(GL11.GL_PROJECTION)
-//            GlStateManager.pushMatrix()
-//            GlStateManager.loadIdentity()
-//            GlStateManager.ortho(0.0, Client.minecraft.displayWidth.toDouble(), Client.minecraft.displayHeight.toDouble(), 0.0, 1000.0, 3000.0)
-
-//            GlStateManager.matrixMode(GL11.GL_MODELVIEW)
-            GlStateManager.pushMatrix()
-            GlStateManager.loadIdentity()
-            GlStateManager.translate(0.0f, 0.0f, -2000.0f)
-
-            val scaleFactor = Client.resolution.scaleFactor
-            GlStateManager.scale(1.0/scaleFactor, 1.0/scaleFactor, 1.0)
-            GlStateManager.scale(scale, scale, 1.0)
-        }
-
-        fun revertTransform() {
-//            GlStateManager.matrixMode(GL11.GL_MODELVIEW)
-            GlStateManager.popMatrix()
-//            GlStateManager.matrixMode(GL11.GL_PROJECTION)
-//            GlStateManager.popMatrix()
-        }
-
-        fun pushFramebuffer(): Framebuffer {
-            var fbo = buffers.pollFirst() ?: createFramebuffer()
-            if(
-                fbo.framebufferWidth != Client.minecraft.displayWidth ||
-                fbo.framebufferHeight != Client.minecraft.displayHeight
-            ) {
-                fbo.deleteFramebuffer()
-                createdBuffers--
-                fbo = createFramebuffer()
-            }
-            bufferStack.addFirst(fbo)
-
-            return fbo
-        }
-
-        fun popFramebuffer() {
-            buffers.addFirst(bufferStack.removeFirst())
-
-            val newFbo = currentFramebuffer
-            if(newFbo == null) {
-                Minecraft.getMinecraft().framebuffer.bindFramebuffer(true)
-            } else {
-                newFbo.bindFramebuffer(true)
-            }
-        }
-
-        fun useFramebuffer(loadIdentity: Boolean, callback: () -> Unit): Framebuffer {
-            val stencilLevel = StencilUtil.currentStencil
-            val fbo = pushFramebuffer()
-            if(loadIdentity)
-                resetTransform(1.0)
-
-            try {
-                fbo.framebufferClear()
-                fbo.bindFramebuffer(true)
-
-                StencilUtil.clear()
-
-                callback()
-
-            } finally {
-                if(loadIdentity)
-                    revertTransform()
-                popFramebuffer()
-                StencilUtil.resetTest(stencilLevel)
-            }
-
-            return fbo
-        }
-
-        fun createFramebuffer(): Framebuffer {
-            if(createdBuffers == maxFramebufferCount)
-                throw IllegalStateException("Exceeded maximum of $maxFramebufferCount nested framebuffers")
-            val fbo = Framebuffer(Client.minecraft.displayWidth, Client.minecraft.displayHeight, true)
-            fbo.enableStencil()
-            fbo.framebufferColor = floatArrayOf(0f, 0f, 0f, 0f)
-            createdBuffers++
-            return fbo
-        }
-    }
 }

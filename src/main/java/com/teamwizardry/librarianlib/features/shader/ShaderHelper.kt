@@ -22,6 +22,7 @@ import java.util.function.Consumer
 
 @SideOnly(Side.CLIENT)
 object ShaderHelper {
+    var enableValidation: Boolean = false
 
     fun init() {
         initShaders()
@@ -69,6 +70,13 @@ object ShaderHelper {
         }
 
         shader.uniformDefaults()
+
+        if(enableValidation) {
+            ARBShaderObjects.glValidateProgramARB(shader.glName)
+            if (ARBShaderObjects.glGetObjectParameteriARB(shader.glName, ARBShaderObjects.GL_OBJECT_VALIDATE_STATUS_ARB) == GL11.GL_FALSE) {
+                LibrarianLog.error(getLogInfo(shader.glName))
+            }
+        }
 
         callback?.accept(shader)
     }
@@ -142,11 +150,6 @@ object ShaderHelper {
             return 0
         }
 
-        ARBShaderObjects.glValidateProgramARB(program)
-        if (ARBShaderObjects.glGetObjectParameteriARB(program, ARBShaderObjects.GL_OBJECT_VALIDATE_STATUS_ARB) == GL11.GL_FALSE) {
-            LibrarianLog.error(getLogInfo(program))
-            return 0
-        }
         LibrarianLog.info("Created program %d - VERT:'%s' FRAG:'%s'", program, vert, frag)
 
         shader.init(program)

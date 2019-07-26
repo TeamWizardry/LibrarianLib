@@ -6,7 +6,11 @@ import com.teamwizardry.librarianlib.features.shader.ShaderHelper
 import com.teamwizardry.librarianlib.features.shader.uniforms.FloatTypes
 import com.teamwizardry.librarianlib.features.shader.uniforms.IntTypes
 import com.teamwizardry.librarianlib.features.shader.uniforms.Uniform
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.util.ResourceLocation
+import org.lwjgl.opengl.GL13
+import org.lwjgl.opengl.GL20
 
 object LayerToTextureShader : Shader(null, ResourceLocation("librarianlib:shaders/guilayer.frag")) {
     var maskMode: MaskMode = MaskMode.NONE
@@ -17,8 +21,8 @@ object LayerToTextureShader : Shader(null, ResourceLocation("librarianlib:shader
     private var alphaMultiplyUniform: FloatTypes.FloatUniform? = null
     private var maskModeUniform: IntTypes.IntUniform? = null
     private var renderModeUniform: IntTypes.IntUniform? = null
-    var layerImage: Uniform? = null
-    var maskImage: Uniform? = null
+    private var layerImage: Uniform? = null
+    private var maskImage: Uniform? = null
 
     override fun initUniforms() {
         super.initUniforms()
@@ -39,6 +43,25 @@ object LayerToTextureShader : Shader(null, ResourceLocation("librarianlib:shader
         alphaMultiplyUniform?.set(alphaMultiply)
         maskModeUniform?.set(maskMode.ordinal)
         renderModeUniform?.set(renderMode.ordinal)
+    }
+
+    fun bindTextures(layerTexture: Int, maskTexture: Int?) {
+        GlStateManager.setActiveTexture(GL13.GL_TEXTURE2)
+        GlStateManager.bindTexture(layerTexture)
+
+        GlStateManager.setActiveTexture(GL13.GL_TEXTURE3)
+        maskTexture?.also { GlStateManager.bindTexture(it) }
+
+        // these have to occur _after_ the textures are bound
+        layerImage?.also { layerImage ->
+            GL20.glUniform1i(layerImage.location, 2)
+        }
+        maskImage?.also { maskImage ->
+            GL20.glUniform1i(maskImage.location, 3)
+        }
+
+        // return to the default texture unit
+        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit)
     }
 
     init {
