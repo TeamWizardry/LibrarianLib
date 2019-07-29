@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.features.helpers.vec
 /**
  * Created by TheCodeWarrior on 7/31/16.
  */
+@Deprecated("Use StackLayout")
 class ComponentList(posX: Int, posY: Int, var rowHeight: Int) : GuiComponent(posX, posY) {
 
     override fun draw(partialTicks: Float) {

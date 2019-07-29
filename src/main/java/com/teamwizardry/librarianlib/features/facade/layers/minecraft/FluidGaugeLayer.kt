@@ -8,6 +8,7 @@ import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.features.facade.components.ComponentProgressBar
 import com.teamwizardry.librarianlib.features.facade.components.ComponentSprite
 import com.teamwizardry.librarianlib.features.facade.components.ComponentSpriteProgressBar
+import com.teamwizardry.librarianlib.features.facade.layers.LinearGaugeLayer
 import com.teamwizardry.librarianlib.features.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.features.facade.value.IMValueDouble
 import com.teamwizardry.librarianlib.features.helpers.rect
@@ -31,7 +32,7 @@ import kotlin.math.roundToInt
  * foreground [Sprite] will be rendered over it (overlay).
  */
 @SideOnly(Side.CLIENT)
-class FluidGaugeLayer(x: Int, y: Int, width: Int, height: Int) : GuiLayer(x, y, width, height) {
+class FluidGaugeLayer(x: Int, y: Int, width: Int, height: Int) : LinearGaugeLayer(x, y, width, height) {
     constructor(x: Int, y: Int): this(x, y, 0, 0)
     constructor(): this(0, 0, 0, 0)
 
@@ -43,24 +44,6 @@ class FluidGaugeLayer(x: Int, y: Int, width: Int, height: Int) : GuiLayer(x, y, 
      * The fluid to render. No fluid is rendered if this is null
      */
     var fluid: Fluid? by fluid_im
-
-    /**
-     * @see fillFraction
-     */
-    val fillFraction_im: IMValueDouble = IMValueDouble(1.0)
-    /**
-     * How full the tank is. Ranges from 0–1
-     */
-    var fillFraction: Double by fillFraction_im
-
-    /**
-     * @see direction
-     */
-    val direction_im: IMValue<Cardinal2d> = IMValue(Cardinal2d.UP)
-    /**
-     * The direction to expand (e.g. [UP][Cardinal2d.UP] means the fluid will sit at the bottom and rise up)
-     */
-    var direction: Cardinal2d by direction_im
 
     /**
      * @see flow
@@ -92,28 +75,12 @@ class FluidGaugeLayer(x: Int, y: Int, width: Int, height: Int) : GuiLayer(x, y, 
     private val fluidLayer = SpriteLayer(pinnedFluidSprite)
 
     init {
-        this.add(fluidLayer)
+        contents.add(fluidLayer)
         fluidSprite.fluid_im { fluid }
         fluidSprite.flow_im { flow }
-    }
 
-    @Hook
-    private fun preFrame(e: GuiLayerEvents.PreFrameEvent) {
-        setNeedsLayout()
-    }
-
-    override fun layoutChildren() {
-        super.layoutChildren()
-        val fillFraction = fillFraction
-        val totalSize = this.size[direction.axis]
-        val fullSize = (totalSize * fillFraction).roundToInt()
-        val emptySize = (totalSize * (1-fillFraction)).roundToInt()
-
-        fluidLayer.frame = when(direction) {
-            Cardinal2d.UP -> rect(0, emptySize, width, fullSize)
-            Cardinal2d.DOWN -> rect(0, 0, width, fullSize)
-            Cardinal2d.LEFT -> rect(emptySize, 0, fullSize, height)
-            Cardinal2d.RIGHT -> rect(0, 0, fullSize, height)
+        contents.onLayout {
+            fluidLayer.frame = contents.bounds
         }
     }
 }

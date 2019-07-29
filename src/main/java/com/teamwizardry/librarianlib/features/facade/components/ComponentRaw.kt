@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 
 import java.util.function.Consumer
 
+@Deprecated("Just use an anonymous subclass")
 class ComponentRaw : GuiComponent {
 
     var func: Consumer<ComponentRaw>

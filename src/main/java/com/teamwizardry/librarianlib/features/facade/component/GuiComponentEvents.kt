@@ -92,7 +92,7 @@ object GuiComponentEvents {
     class MouseWheelEvent(
         /**
          * The scroll offset in pixels. This is only the amount scrolled _in this frame,_ so if your scroll operation
-         * operates in discreet steps, use [accumulated].
+         * operates in discrete steps, use [accumulated].
          */
         val amount: Double
     ) : Event() {

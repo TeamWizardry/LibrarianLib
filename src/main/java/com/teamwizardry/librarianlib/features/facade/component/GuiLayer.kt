@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.facade.component
 
 import com.teamwizardry.librarianlib.features.eventbus.Event
 import com.teamwizardry.librarianlib.features.eventbus.EventBus
+import com.teamwizardry.librarianlib.features.eventbus.Hook
 import com.teamwizardry.librarianlib.features.facade.component.supporting.*
 import com.teamwizardry.librarianlib.features.facade.components.LayerBackedComponent
 import com.teamwizardry.librarianlib.features.facade.layers.ComponentBackedLayer
@@ -216,18 +217,32 @@ open class GuiLayer private constructor(
             "($x, $y, $width, $height${debugName?.let { ", name=$debugName" } ?: ""})"
     }
 
-    //region - Internal
-    /**
-     * Set to true when the layer is laid out, and set to false after the layout debug overlay is rendered
-     */
-    internal var didLayout = false
-
     inline fun <reified  E : Event> hook(noinline hook: (E) -> Unit) = BUS.hook(hook)
 
     fun <E : Event> hook(clazz: Class<E>, hook: (E) -> Unit) = BUS.hook(clazz, hook)
 
     @Suppress("UNCHECKED_CAST")
     fun <E : Event> hook(clazz: Class<E>, hook: Consumer<E>) = BUS.hook(clazz, hook)
+
+    private val layoutHooks = mutableListOf<Runnable>()
+    fun onLayout(hook: () -> Unit) {
+        layoutHooks.add(Runnable(hook))
+    }
+
+    fun onLayout(hook: Runnable) {
+        layoutHooks.add(hook)
+    }
+
+    @Hook
+    private fun runLayoutHooks(e: GuiLayerEvents.LayoutChildren) {
+        layoutHooks.forEach(Runnable::run)
+    }
+
+    //region - Internal
+    /**
+     * Set to true when the layer is laid out, and set to false after the layout debug overlay is rendered
+     */
+    internal var didLayout = false
 
     init {
         BUS.register(this)
@@ -302,15 +317,6 @@ open class GuiLayer private constructor(
                     return@flatMap listOf(value to it.name )
                 }
                 .associateTo(IdentityHashMap()) { it }
-        }
-
-        /**
-         * Set the layer's name inline without having to use a variable
-         */
-        @JvmStatic
-        fun <T: GuiLayer> T.name(name: String): T {
-            this.debugName = name
-            return this
         }
     }
 

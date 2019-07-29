@@ -11,6 +11,7 @@ import java.awt.Color
 /**
  * Created by TheCodeWarrior
  */
+@Deprecated("Use RectLayer")
 class ComponentRect(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent(posX, posY, width, height) {
 
     val color_im: IMValue<Color> = IMValue(Color.WHITE)

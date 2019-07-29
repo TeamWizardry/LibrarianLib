@@ -10,12 +10,24 @@ import com.teamwizardry.librarianlib.features.facade.value.IMValueBoolean
  */
 interface ILayerBase {
 
+    /**
+     * Calls the [tick] method on this layer and its descendents.
+     */
     fun callTick()
 
+    /**
+     * Calls the [update] method on this layer and its descendents.
+     */
     fun callUpdate()
 
+    /**
+     * Called each tick
+     */
     fun tick()
 
+    /**
+     * Called each frame before layers are processed
+     */
     fun update()
 
     val isVisible_im: IMValueBoolean
