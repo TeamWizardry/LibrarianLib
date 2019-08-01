@@ -25,7 +25,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
     private val creationTime = ClientTickHandler.ticks
 
     val background = SpriteLayer(PastryTexture.dropdownBackground)
-    val stack = StackLayout.build(0, 0).space(1).component()
+    val stack = StackLayout.build(0, 0).spacing(1).component()
     val items = identityMapOf<PastryDropdownItem<T>, DropdownStackItem>()
     val contents = GuiComponent(-2, 0)
     val contentsClip = GuiComponent(0, 0)

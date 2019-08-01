@@ -119,13 +119,13 @@ internal class LayerBaseHandler: ILayerBase {
     override var listenToChildrenNeedsLayout: Boolean = false
 
     override fun callTick() {
-        tick()
+        layer.tick()
         layer.BUS.fire(GuiLayerEvents.Tick())
         layer.forEachChild { it.callTick() }
     }
 
     override fun callUpdate() {
-        update()
+        layer.update()
         layer.BUS.fire(GuiLayerEvents.Update())
         layer.forEachChild { it.callUpdate() }
     }

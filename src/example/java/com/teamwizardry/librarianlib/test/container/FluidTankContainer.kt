@@ -14,7 +14,7 @@ import com.teamwizardry.librarianlib.test.facade.tests.GuiFluidTank
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 
-class FluidTankContainer(player: EntityPlayer, te: TEFluidTank) : ContainerBase(player) {
+class FluidTankContainer(val player: EntityPlayer, te: TEFluidTank) : ContainerBase() {
 
     val invPlayer = BaseWrappers.player(player)
     val invBlock = FluidTankWrapper(te)

@@ -11,6 +11,8 @@ import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.Client
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.kotlin.delegate
+import com.teamwizardry.librarianlib.features.kotlin.getValue
+import com.teamwizardry.librarianlib.features.kotlin.setValue
 import com.teamwizardry.librarianlib.features.math.coordinatespaces.ScreenSpace
 import com.teamwizardry.librarianlib.features.network.PacketHandler
 import com.teamwizardry.librarianlib.features.network.PacketSyncSlotVisibility
@@ -37,10 +39,29 @@ open class GuiContainerBase(val container: ContainerBase) : GuiContainer(Contain
         }
     )
 
-    val main: GuiComponent by impl::main.delegate
-    val root: GuiComponent by impl::root.delegate
-    val safetyNet: Boolean by impl::safetyNet.delegate
-    var useDefaultBackground by impl::useDefaultBackground.delegate
+    /**
+     * The main component of the GUI, within which the contents of most GUIs will be placed. It will always center
+     * itself in the screen and will dynamically adjust its effective GUI scale if it can't fit on the screen.
+     */
+    val main: GuiComponent by impl::main
+    /**
+     * The root component, whose position and size represents the entirety of the game screen.
+     */
+    val root: GuiComponent by impl::root
+    /**
+     * Whether to enable the Safety Net feature. By default this is true in development environments and false
+     * elsewhere, but can be enabled/disabled manually.
+     */
+    val safetyNet: Boolean by impl::safetyNet
+    /**
+     * Whether to enable Minecraft's standard translucent GUI background.
+     */
+    var useDefaultBackground by impl::useDefaultBackground
+
+    /**
+     * Whether to close the GUI when the escape key is pressed
+     */
+    var escapeClosesGUI by impl::escapeClosesGUI
 
     /**
      * Automatic hook into the [LayoutChildren][GuiLayerEvents.LayoutChildren] event on [main]

@@ -364,12 +364,12 @@ class StackLayoutBuilder(private var posX: Double, private var posY: Double) {
     }
 
     /** Set spacing */
-    fun space(spacing: Int) = build {
+    fun spacing(spacing: Int) = build {
         this.spacing = spacing.toDouble()
     }
 
     /** Set spacing */
-    fun space(spacing: Double) = build {
+    fun spacing(spacing: Double) = build {
         this.spacing = spacing
     }
 

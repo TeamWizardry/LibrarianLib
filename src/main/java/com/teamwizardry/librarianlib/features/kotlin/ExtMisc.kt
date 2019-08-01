@@ -349,3 +349,9 @@ inline fun <T> whileNonNull(statement: () -> T?, body: (T) -> Unit) {
         value = statement()
     }
 }
+
+fun unreachable(): Nothing {
+    throw UnreachableException()
+}
+
+class UnreachableException: RuntimeException()

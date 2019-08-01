@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.features.animator.Easing
 import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayerEvents
-import com.teamwizardry.librarianlib.features.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.features.facade.layers.minecraft.FluidGaugeLayer
 import com.teamwizardry.librarianlib.features.facade.layout.StackLayout
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.BackgroundTexture
@@ -70,7 +69,7 @@ class GuiTestFluidGauge: GuiPastryBase() {
         // ======= main layout
         main.add(StackLayout.build()
             .vertical()
-            .size(main.size).space(5)
+            .size(main.size).spacing(5)
             .alignTop().alignCenterX()
 
             .add(GuiComponent(0, 0, 0, Pastry.lineHeight).also { row ->

@@ -17,7 +17,7 @@ import net.minecraft.util.ResourceLocation
 /**
  * Container for the gui of our [TEPoweredMachine].
  */
-class PoweredMachineContainer(player: EntityPlayer, te: TEPoweredMachine) : ContainerBase(player) {
+class PoweredMachineContainer(val player: EntityPlayer, te: TEPoweredMachine) : ContainerBase() {
 
     val invPlayer = BaseWrappers.player(player)
     val invBlock = PoweredMachineWrapper(te)

@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.features.facade.component.GuiComponent
 import com.teamwizardry.librarianlib.features.facade.component.GuiLayer
 import com.teamwizardry.librarianlib.features.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.features.facade.layout.StackLayout
-import com.teamwizardry.librarianlib.features.facade.provided.pastry.PastryTexture
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryLabel
 import com.teamwizardry.librarianlib.features.helpers.rect
 import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
@@ -13,7 +12,7 @@ import kotlin.math.max
 
 open class PastryTestBase: GuiComponent() {
     val stack = StackLayout.build()
-            .space(3)
+            .spacing(3)
             .vertical()
             .alignTop()
             .alignLeft()

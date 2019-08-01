@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.test.facade.pastry.tests
 
 import com.teamwizardry.librarianlib.features.facade.components.ComponentItemStack
-import com.teamwizardry.librarianlib.features.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.features.facade.layout.StackLayout
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryLabel
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.dropdown.DropdownSeparatorItem
@@ -47,7 +46,7 @@ class PastryTestDropdown: PastryTestBase() {
 
         val horizontalStack = StackLayout.build()
             .add(stackComponent, dropdown)
-            .space(5)
+            .spacing(5)
             .horizontal()
             .fit()
             .align(Align2d.CENTER_LEFT)
@@ -74,7 +73,7 @@ class PastryTestDropdown: PastryTestBase() {
 
         val horizontalStack = StackLayout.build()
             .add(label, valueLabel, dropdown)
-            .space(5)
+            .spacing(5)
             .horizontal()
             .fit()
             .component()

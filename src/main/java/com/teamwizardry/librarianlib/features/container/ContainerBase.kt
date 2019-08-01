@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack
  * Created by TheCodeWarrior
  */
 @SaveInPlace
-abstract class ContainerBase(val player: EntityPlayer) {
+abstract class ContainerBase {
 
     lateinit var impl: ContainerImpl // hopefully people don't do anything screwy, cause lateinit would cause problems.
 
@@ -54,4 +54,5 @@ abstract class ContainerBase(val player: EntityPlayer) {
         allSlots.forEach { impl.addSlotToContainer(it) }
     }
 
+    class Empty: ContainerBase()
 }

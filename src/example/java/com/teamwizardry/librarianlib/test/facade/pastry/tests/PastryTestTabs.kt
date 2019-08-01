@@ -8,7 +8,6 @@ import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryTabPane
 import com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryToggle
 import com.teamwizardry.librarianlib.features.helpers.rect
-import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Align2d
 import com.teamwizardry.librarianlib.test.facade.pastry.PastryTestBase
 import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
@@ -33,7 +32,7 @@ class PastryTestTabs: PastryTestBase() {
         pages[4].isVisible = false
         fun toggle(index: Int, label: String) {
             stack.add(StackLayout.build(150, 0)
-                .horizontal().alignCenterY().space(2)
+                .horizontal().alignCenterY().spacing(2)
                 .add(
                     PastrySwitch().also { switch ->
                         switch.state = pages[index].isVisible

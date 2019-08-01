@@ -253,7 +253,7 @@ open class LibGuiImpl(
             val label = PastryLabel(name)
             val contents = StackLayout.build()
                 .horizontal().alignLeft().alignCenterY()
-                .space(3)
+                .spacing(3)
                 .add(switch, label).fit()
                 .component()
             private var currentPropertyState = property.get()
