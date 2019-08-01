@@ -2,9 +2,7 @@ package com.teamwizardry.librarianlib.asm;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.apache.logging.log4j.LogManager;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.util.Printer;
 import org.objectweb.asm.util.Textifier;
@@ -12,10 +10,12 @@ import org.objectweb.asm.util.TraceMethodVisitor;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.ref.Reference;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -312,6 +312,65 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
                         }));
     }
 
+    // credit: https://stackoverflow.com/a/49454118/1541907
+    private static byte[] transformICU(String transformedName, byte[] basicClass) {
+        ClassReader cr = new ClassReader(basicClass);
+        ClassWriter cw = new ClassWriter(cr, 0);
+        AtomicInteger count = new AtomicInteger(0);
+        cr.accept(new ClassVisitor(Opcodes.ASM5, cw) {
+            @Override
+            public FieldVisitor visitField(int access, String name, String desc,
+                                           String signature, Object cst) {
+                if(cst instanceof String) {
+                    String tmp = transformICU((String) cst);
+                    if(!tmp.equals(cst))
+                        count.incrementAndGet();
+                    cst = tmp;
+                }
+                return super.visitField(access, name, desc, signature, cst);
+            }
+
+            @Override
+            public MethodVisitor visitMethod(int access, String name, String desc,
+                                             String signature, String[] exceptions) {
+                MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
+                return new MethodVisitor(Opcodes.ASM5, mv) {
+                    @Override
+                    public void visitLdcInsn(Object cst) {
+                        if(cst instanceof String) {
+                            String tmp = transformICU((String) cst);
+                            if(!tmp.equals(cst))
+                                count.incrementAndGet();
+                            cst = tmp;
+                        }
+                        super.visitLdcInsn(cst);
+                    }
+                };
+            }
+        }, 0);
+
+        if(count.get() > 0) {
+            String[] arr = transformedName.split("\\.");
+            log("Shaded " + count.get() + " string constants in " + arr[arr.length - 1]);
+        }
+        return cw.toByteArray();
+    }
+
+    private final static String icuDotNotation = "com.ibm.icu";
+    private final static String shadedIcuDotNotation = "com.teamwizardry.librarianlib.shade.icu";
+    private final static String icuSlashNotation = "com/ibm/icu";
+    private final static String shadedIcuSlashNotation = "com/teamwizardry/librarianlib/shade/icu";
+
+    private static String transformICU(String constant) {
+        if(constant.startsWith(icuDotNotation)) {
+            return shadedIcuDotNotation + constant.substring(icuDotNotation.length());
+        } else if(constant.startsWith(icuSlashNotation)) {
+            return shadedIcuSlashNotation + constant.substring(icuSlashNotation.length());
+        }
+
+        return constant;
+    }
+
     // BOILERPLATE =====================================================================================================
 
     public static byte[] transform(byte[] basicClass, MethodSignature sig, String simpleDesc, MethodAction action) {
@@ -546,6 +605,10 @@ public class LibLibTransformer implements IClassTransformer, Opcodes {
             String[] arr = transformedName.split("\\.");
             log("Transforming " + arr[arr.length - 1]);
             return transformers.get(transformedName).apply(basicClass);
+        }
+
+        if (transformedName.startsWith(shadedIcuDotNotation)) {
+            return transformICU(transformedName, basicClass);
         }
 
         return basicClass;

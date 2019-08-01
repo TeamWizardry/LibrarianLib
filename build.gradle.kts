@@ -35,6 +35,10 @@ minecraft {
     replaceIn("LibrarianLib.kt")
 }
 
+reobf.getByName("jar") {
+    extraLines("PK: com/ibm/icu com/teamwizardry/librarianlib/shade/icu")
+}
+
 sourceSets["main"].allSource.srcDir("src/example/java")
 sourceSets["main"].allSource.srcDir("src/api/java")
 sourceSets["main"].resources.srcDir("src/example/resources")
@@ -94,6 +98,11 @@ tasks {
         for (dep in shade) {
             from(zipTree(dep)) {
                 exclude("META-INF", "META-INF/**")
+                includeEmptyDirs = false
+                eachFile {
+                    path = path.replace("com/ibm/icu", "com/teamwizardry/librarianlib/shade/icu")
+                }
+//                extraLines("PK: com/ibm/icu com/teamwizardry/librarianlib/shade/icu")
             }
         }
         exclude("*/**/librarianlibtest/**", "*/**/librarianlib.test/**")
