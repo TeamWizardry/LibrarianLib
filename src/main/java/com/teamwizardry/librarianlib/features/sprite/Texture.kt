@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.features.kotlin.Client
 import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.texture.ITextureObject
 import net.minecraft.client.renderer.texture.PngSizeInfo
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.util.ResourceLocation
@@ -304,14 +305,34 @@ class Texture(
             ClientRunnable.registerReloadHandler {
                 val newList = ArrayList<WeakReference<Texture>>()
 
-                for (tex in Texture.textures) {
-                    tex.get()?.loadSpriteData()
-                    tex.get()?.loadImageData()
-                    if (tex.get() != null) newList.add(tex)
+                for (weakRef in textures) {
+                    val tex = weakRef.get() ?: continue
+                    newList.add(weakRef)
+                    tex.loadSpriteData()
+                    tex.loadImageData()
                 }
 
-                Texture.textures = newList
+                textures = newList
             }
+        }
+
+        fun reloadTextures() {
+            val newList = ArrayList<WeakReference<Texture>>()
+            val textureManager = Client.renderEngine
+
+            for (weakRef in textures) {
+                val tex = weakRef.get() ?: continue
+                newList.add(weakRef)
+
+                val texObject: ITextureObject? = textureManager.getTexture(tex.loc)
+                if(texObject != null)
+                    textureManager.loadTexture(tex.loc, texObject)
+
+                tex.loadSpriteData()
+                tex.loadImageData()
+            }
+
+            textures = newList
         }
 
         var textures: MutableList<WeakReference<Texture>> = ArrayList()
