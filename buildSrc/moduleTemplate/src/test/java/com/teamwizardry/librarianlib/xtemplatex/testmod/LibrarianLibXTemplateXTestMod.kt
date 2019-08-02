@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.template
+package com.teamwizardry.librarianlib.xtemplatex.testmod
 
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
@@ -19,8 +19,8 @@ import org.apache.logging.log4j.Logger
 import java.util.stream.Collectors
 import kotlin.streams.asSequence
 
-@Mod("librarianlib-template")
-class LibrarianLibTemplate {
+@Mod(LibrarianLibXTemplateXTestMod.MODID)
+class LibrarianLibXTemplateXTestMod {
     init {
         FMLJavaModLoadingContext.get().modEventBus.addListener<FMLCommonSetupEvent> {
             this.setup(it)
@@ -58,6 +58,7 @@ class LibrarianLibTemplate {
     }
 
     companion object {
+        const val MODID: String = "librarianlib-xtemplatex-testmod"
         // Directly reference a log4j logger.
         @JvmStatic
         private val LOGGER = LogManager.getLogger()

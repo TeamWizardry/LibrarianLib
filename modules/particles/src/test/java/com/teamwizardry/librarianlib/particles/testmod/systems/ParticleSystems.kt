@@ -7,7 +7,8 @@ import net.minecraft.entity.LivingEntity
 object ParticleSystems {
     val systems = mapOf(
         "static" to StaticSystem,
-        "physics" to PhysicsSystem
+        "physics" to PhysicsSystem,
+        "flood" to FloodSystem
     )
 
     init {

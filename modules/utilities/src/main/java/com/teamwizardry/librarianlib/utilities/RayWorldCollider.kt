@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.utilities
 
 import com.teamwizardry.librarianlib.core.utils.ClientRunnable
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.minecraft.block.material.Material
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.AxisAlignedBB
@@ -40,25 +41,38 @@ class RayWorldCollider private constructor(world: World) {
     private val world: World
         get() = worldRef.get()!!
 
-    private val cache = Long2ObjectOpenHashMap<VoxelShape>()
+    private val blockCache = Long2ObjectOpenHashMap<List<AxisAlignedBB>>()
+    private val shapeCache = Object2ObjectOpenHashMap<VoxelShape, List<AxisAlignedBB>>()
 
-    private var countdown = 0
+    private var blockCacheAge = 0
+    private var shapeCacheAge = 0
 
     /**
      * This specifies when to reset the blockstate cache for collision checking.
-     * Setting it to 2, for example, will clear the cache every 2 ticks.
+     * Setting it to 2, for example, will clear the cache every 2 ticks. The default value is 10 ticks (half a second).
      *
      * Setting it to -1 will disable cache clearing. BE VERY CAREFUL WHEN YOU DO THIS.
      * SERIOUSLY. BE ABSOLUTELY SURE YOU RESET IT PROPERLY YOURSELF. YOU WILL RUN OUT OF MEMORY IF YOU DON'T.
      * Run requestRefresh() to clear it yourself.
      *
      * The cache will only reset when the world unloads on the client if the timer is set to -1.
+     */
+    @JvmField
+    var blockCacheRefreshInterval: Int = 10
+
+    /**
+     * This specifies when to reset the `VoxelShape` -> `List<AxisAlignedBB>` cache for collision checking.
+     * Setting it to 2, for example, will clear the cache every 2 ticks. Default 1,200 ticks (one minute).
      *
-     * It is heavily advised to just set to a massive number instead.
+     * Setting it to -1 will disable cache clearing. This is not advised, though nowhere near as bad as setting
+     * [blockCacheRefreshInterval] to -1.
+     *
+     * The cache will only reset when the world unloads on the client if the timer is set to -1.
+     *
      * Remember, this works in game ticks.
      */
     @JvmField
-    var cacheResetTimer: Int = 10
+    var shapeCacheRefreshInterval: Int = 1200
 
     /**
      * Request that the cache be cleared. Use this sparingly as it can negatively impact performance.
@@ -66,7 +80,12 @@ class RayWorldCollider private constructor(world: World) {
      * This method _immediately_ clears the cache, meaning calling it repeatedly between [collide] calls can severely
      * impact performance.
      */
-    fun requestRefresh() = cache.clear()
+    fun requestRefresh() {
+        blockCache.clear()
+        blockCacheAge = 0
+        shapeCache.clear()
+        shapeCacheAge = 0
+    }
 
     /**
      * Traces a collision with the world given the specified start position and velocity.
@@ -128,11 +147,10 @@ class RayWorldCollider private constructor(world: World) {
         for (x in minTestX..maxTestX) {
             for (y in minTestY..maxTestY) {
                 for (z in minTestZ..maxTestZ) {
-                    val shape = getShape(x, y, z)
-                    shape.forEachBox { minX, minY, minZ, maxX, maxY, maxZ ->
+                    getBoundingBoxes(x, y, z).forEach { bb ->
                         collide(result,
-                            minX - tiny, minY - tiny, minZ - tiny,
-                            maxX + tiny, maxY + tiny, maxZ + tiny,
+                            bb.minX - tiny, bb.minY - tiny, bb.minZ - tiny,
+                            bb.maxX + tiny, bb.maxY + tiny, bb.maxZ + tiny,
                             x, y, z,
                             posX - x, posY - y, posZ - z,
                             invVelX, invVelY, invVelZ
@@ -191,32 +209,32 @@ class RayWorldCollider private constructor(world: World) {
     }
 
     private val mutablePos = BlockPos.MutableBlockPos()
-    private val infiniteAABB = AxisAlignedBB(
-        Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY,
-        Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY
-    )
 
-    private fun getShape(x: Int, y: Int, z: Int): VoxelShape {
+    private fun getBoundingBoxes(x: Int, y: Int, z: Int): List<AxisAlignedBB> {
         mutablePos.setPos(x, y, z)
-        cache[mutablePos.toLong()]?.let { return it }
+        val toLong = mutablePos.toLong()
+        blockCache[toLong]?.let { return it }
 
-        val shape: VoxelShape
+        val boundingBoxes: List<AxisAlignedBB>
         if (!world.isBlockLoaded(mutablePos) || mutablePos.y < 0 || mutablePos.y > world.actualHeight) {
-            shape = VoxelShapes.empty()
+            boundingBoxes = emptyList()
         } else {
             val blockstate = world.getBlockState(mutablePos)
             if (blockstate.material == Material.AIR ||
                 !blockstate.material.blocksMovement() || blockstate.material.isLiquid) {
-                shape = VoxelShapes.empty()
+                boundingBoxes = emptyList()
             } else {
-                shape = blockstate.getCollisionShape(world, mutablePos)
+                boundingBoxes = getBoundingBoxes(blockstate.getCollisionShape(world, mutablePos))
             }
         }
-        cache[mutablePos.toLong()] = shape
+        blockCache[toLong] = boundingBoxes
 
-        return shape
+        return boundingBoxes
     }
 
+    private fun getBoundingBoxes(shape: VoxelShape): List<AxisAlignedBB> {
+        return shapeCache.getOrPut(shape) { shape.toBoundingBoxList() }
+    }
 
     companion object {
         @JvmStatic
@@ -226,17 +244,34 @@ class RayWorldCollider private constructor(world: World) {
         @JvmStatic
         fun tick(e: TickEvent.ClientTickEvent) {
             for (value in worldMap.values) {
-                if (value.cacheResetTimer == -1) return
-                if (value.cache.size == 0) {
-                    value.countdown = value.cacheResetTimer
-                    return
-                }
+                run {
+                    if (value.blockCache.size == 0) {
+                        value.blockCacheAge = 0
+                        return@run
+                    }
+                    value.blockCacheAge++
 
-                if (value.countdown <= 0) {
-                    value.cache.clear()
-                    value.countdown = value.cacheResetTimer
+                    if (value.blockCacheRefreshInterval < -1)
+                        return@run
+                    if (value.blockCacheAge >= value.blockCacheRefreshInterval) {
+                        value.blockCache.clear()
+                        value.blockCacheAge = 0
+                    }
                 }
-                value.countdown--
+                run {
+                    if (value.shapeCache.size == 0) {
+                        value.shapeCacheAge = 0
+                        return@run
+                    }
+                    value.shapeCacheAge++
+
+                    if (value.shapeCacheRefreshInterval < -1)
+                        return@run
+                    if (value.shapeCacheAge >= value.shapeCacheRefreshInterval) {
+                        value.shapeCache.clear()
+                        value.shapeCacheAge = 0
+                    }
+                }
             }
         }
 

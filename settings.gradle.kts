@@ -24,8 +24,9 @@ rootProject.name = "librarianlib"
 val modules = listOf(
     "core",
     "utilities",
-    "particles"
-)
+    "particles",
+    "xtemplatex" // marker for createModule task
+).dropLast(1)
 
 modules.forEach { name ->
     include(name)

@@ -114,7 +114,7 @@ minecraft {
     runs {
         "client" {
             workingDirectory(project.file("run"))
-            isSingleInstance = true
+            singleInstance(true)
 
             // Recommended logging data for a userdev environment
 //            property("forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP")
@@ -141,7 +141,7 @@ minecraft {
 
         "server" {
             workingDirectory(project.file("run"))
-            isSingleInstance = true
+            singleInstance(true)
 
             // Recommended logging data for a userdev environment
 //            property("forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP")
@@ -169,6 +169,8 @@ minecraft {
         }
     }
 }
+
+tasks.register("createModule", CreateModuleTask::class.java)
 
 // ==================================================== Utilities =================================================== //
 
