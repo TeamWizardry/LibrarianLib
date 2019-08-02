@@ -1,7 +1,9 @@
 @file:JvmName("MathUtils")
 package com.teamwizardry.librarianlib.math
 
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.Vec3i
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.round
@@ -70,7 +72,20 @@ inline fun vec(x: Number, y: Number, z: Number): Vec3d = vec(x.toDouble(), y.toD
  * this allocates no objects: `MathUtils.vec(1, 0, 0)`
  */
 fun vec(x: Double, y: Double, z: Double): Vec3d = Vec3dPool.getPooled(x, y, z)
-//fun veci(x: Int, y: Int, z: Int): Vec2i = Vec3i.getPooled(x, y, z)
+
+/**
+ * Get `Vec3i` instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
+ * number of Vec3i allocations when they are used as intermediates, e.g. when adding one Vec3i to another to offset it,
+ * this allocates no objects: `MathUtils.veci(1, 0, 0)`
+ */
+fun veci(x: Int, y: Int, z: Int): Vec3i = Vec3iPool.getPooled(x, y, z)
+
+/**
+ * Get `BlockPos` instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
+ * number of BlockPos allocations when they are used as intermediates, e.g. when adding one BlockPos to another to
+ * offset it, this allocates no objects: `MathUtils.block(1, 0, 0)`
+ */
+fun block(x: Int, y: Int, z: Int): BlockPos = BlockPosPool.getPooled(x, y, z)
 
 
 private object Vec3dPool {
@@ -78,7 +93,7 @@ private object Vec3dPool {
     private val poolMask = (1 shl poolBits)-1
     private val poolMax = (1 shl poolBits-1)-1
     private val poolMin = -(1 shl poolBits-1)
-    private val vec3dPool = Array(1 shl poolBits*3) {
+    private val pool = Array(1 shl poolBits*3) {
         val x = (it shr poolBits*2) + poolMin
         val y = (it shr poolBits and poolMask) + poolMin
         val z = (it and poolMask) + poolMin
@@ -94,11 +109,73 @@ private object Vec3dPool {
             yi.toDouble() == y && yi in poolMin..poolMax &&
             zi.toDouble() == z && zi in poolMin..poolMax) {
 //            AllocationTracker.vec3dPooledAllocations++
-            return vec3dPool[
+            return pool[
                 ((xi-poolMin) shl poolBits*2) or ((yi-poolMin) shl poolBits) or (zi-poolMin)
             ]
         }
         val newVec = Vec3d(x, y, z)
+//        AllocationTracker.vec3dAllocations++
+//        AllocationTracker.vec3dAllocationStats?.also { stats ->
+//            stats[newVec] = stats.getInt(newVec) + 1
+//        }
+        return newVec
+    }
+}
+
+private object Vec3iPool {
+    private val poolBits = 5
+    private val poolMask = (1 shl poolBits)-1
+    private val poolMax = (1 shl poolBits-1)-1
+    private val poolMin = -(1 shl poolBits-1)
+    private val pool = Array(1 shl poolBits*3) {
+        val x = (it shr poolBits*2) + poolMin
+        val y = (it shr poolBits and poolMask) + poolMin
+        val z = (it and poolMask) + poolMin
+        Vec3i(x, y, z)
+    }
+
+    @JvmStatic
+    fun getPooled(x: Int, y: Int, z: Int): Vec3i {
+        if (x in poolMin..poolMax &&
+            y in poolMin..poolMax &&
+            z in poolMin..poolMax) {
+//            AllocationTracker.vec3dPooledAllocations++
+            return pool[
+                ((x-poolMin) shl poolBits*2) or ((y-poolMin) shl poolBits) or (z-poolMin)
+            ]
+        }
+        val newVec = Vec3i(x, y, z)
+//        AllocationTracker.vec3dAllocations++
+//        AllocationTracker.vec3dAllocationStats?.also { stats ->
+//            stats[newVec] = stats.getInt(newVec) + 1
+//        }
+        return newVec
+    }
+}
+
+private object BlockPosPool {
+    private val poolBits = 5
+    private val poolMask = (1 shl poolBits)-1
+    private val poolMax = (1 shl poolBits-1)-1
+    private val poolMin = -(1 shl poolBits-1)
+    private val pool = Array(1 shl poolBits*3) {
+        val x = (it shr poolBits*2) + poolMin
+        val y = (it shr poolBits and poolMask) + poolMin
+        val z = (it and poolMask) + poolMin
+        BlockPos(x, y, z)
+    }
+
+    @JvmStatic
+    fun getPooled(x: Int, y: Int, z: Int): BlockPos {
+        if (x in poolMin..poolMax &&
+            y in poolMin..poolMax &&
+            z in poolMin..poolMax) {
+//            AllocationTracker.vec3dPooledAllocations++
+            return pool[
+                ((x-poolMin) shl poolBits*2) or ((y-poolMin) shl poolBits) or (z-poolMin)
+            ]
+        }
+        val newVec = BlockPos(x, y, z)
 //        AllocationTracker.vec3dAllocations++
 //        AllocationTracker.vec3dAllocationStats?.also { stats ->
 //            stats[newVec] = stats.getInt(newVec) + 1

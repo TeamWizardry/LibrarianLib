@@ -180,6 +180,11 @@ class Vec2i(val x: Int, val y: Int) {
         return Vec2i.getPooled(fn(this.x, a.x, b.x), fn(this.y, a.y, b.y))
     }
 
+    @JvmSynthetic
+    operator fun component1(): Int = this.x
+    @JvmSynthetic
+    operator fun component2(): Int = this.y
+
     //=============================================================================
 
     override fun toString(): String {
