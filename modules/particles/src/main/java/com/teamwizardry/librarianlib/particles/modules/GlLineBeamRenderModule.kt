@@ -1,14 +1,12 @@
 package com.teamwizardry.librarianlib.particles.modules
 
 import com.mojang.blaze3d.platform.GlStateManager
-import com.teamwizardry.librarianlib.core.utils.GameTime
+import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.particles.ParticleRenderModule
 import com.teamwizardry.librarianlib.particles.ParticleUpdateModule
 import com.teamwizardry.librarianlib.particles.ReadParticleBinding
-import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.util.math.MathHelper
 import org.lwjgl.opengl.GL11
 
 /**
@@ -106,9 +104,9 @@ class GlLineBeamRenderModule(
             alpha?.load(particle)
             isEnd.load(particle)
 
-            val x = GameTime.world.interpolate(previousPosition.contents[0], position.contents[0])
-            val y = GameTime.world.interpolate(previousPosition.contents[1], position.contents[1])
-            val z = GameTime.world.interpolate(previousPosition.contents[2], position.contents[2])
+            val x = Client.worldTime.interp(previousPosition.contents[0], position.contents[0])
+            val y = Client.worldTime.interp(previousPosition.contents[1], position.contents[1])
+            val z = Client.worldTime.interp(previousPosition.contents[2], position.contents[2])
 
             val r = color.contents[0].toFloat()
             val g = color.contents[1].toFloat()

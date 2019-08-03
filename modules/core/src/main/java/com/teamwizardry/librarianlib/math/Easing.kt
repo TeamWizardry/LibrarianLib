@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.core.math
+package com.teamwizardry.librarianlib.math
 
 import net.minecraft.util.math.MathHelper
 
@@ -207,7 +207,7 @@ abstract class Easing {
         val easeInBounce = object : PenningEasing() {
             override fun invoke(progress: Float): Float {
                 val t = progress / d
-                return c - Easing.easeOutBounce(d - t) + b
+                return c - easeOutBounce(d - t) + b
             }
         }
         /** http://easings.net/#easeOutBounce */
@@ -234,8 +234,8 @@ abstract class Easing {
         val easeInOutBounce = object : PenningEasing() {
             override fun invoke(progress: Float): Float {
                 val t = progress
-                return if (t < d / 2) Easing.easeInBounce(t * 2) * .5f + b
-                else Easing.easeOutBounce(t * 2 - d) * .5f + c * .5f + b
+                return if (t < d / 2) easeInBounce(t * 2) * .5f + b
+                else easeOutBounce(t * 2 - d) * .5f + c * .5f + b
             }
         }
 

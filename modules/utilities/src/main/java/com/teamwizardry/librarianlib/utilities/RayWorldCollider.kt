@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.utilities
 
-import com.teamwizardry.librarianlib.core.utils.ClientRunnable
+import com.teamwizardry.librarianlib.core.util.ClientRunnable
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.minecraft.block.material.Material
@@ -9,7 +9,6 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.math.shapes.VoxelShape
-import net.minecraft.util.math.shapes.VoxelShapes
 import net.minecraft.world.World
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn

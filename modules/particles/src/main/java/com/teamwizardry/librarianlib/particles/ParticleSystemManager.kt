@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.particles
 
 import com.mojang.blaze3d.platform.GlStateManager
-import com.teamwizardry.librarianlib.core.utils.ClientRunnable
 import net.minecraft.client.Minecraft
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.client.event.RenderGameOverlayEvent

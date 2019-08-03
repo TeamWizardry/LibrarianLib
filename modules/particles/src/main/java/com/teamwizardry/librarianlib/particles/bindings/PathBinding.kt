@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.particles.bindings
 
-import com.teamwizardry.librarianlib.core.math.Easing
+import com.teamwizardry.librarianlib.math.Easing
 import com.teamwizardry.librarianlib.particles.ParticlePath
 import com.teamwizardry.librarianlib.particles.ParticleSystem
 import com.teamwizardry.librarianlib.particles.ReadParticleBinding

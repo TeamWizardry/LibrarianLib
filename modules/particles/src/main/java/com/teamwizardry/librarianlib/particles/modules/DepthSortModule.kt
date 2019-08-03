@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.particles.modules
 
-import com.teamwizardry.librarianlib.core.utils.GameTime
+import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.particles.*
 import com.teamwizardry.librarianlib.particles.bindings.StoredBinding
 import net.minecraft.client.Minecraft
@@ -31,9 +31,9 @@ class DepthSortModule(
     override fun update(particles: MutableList<DoubleArray>) {
         val player = Minecraft.getInstance().player
         val normal = player.lookVec
-        val eyeX = GameTime.world.interpolate(player.prevPosX, player.posX)
-        val eyeY = GameTime.world.interpolate(player.prevPosY, player.posY) + player.eyeHeight
-        val eyeZ = GameTime.world.interpolate(player.prevPosZ, player.posZ)
+        val eyeX = Client.worldTime.interp(player.prevPosX, player.posX)
+        val eyeY = Client.worldTime.interp(player.prevPosY, player.posY) + player.eyeHeight
+        val eyeZ = Client.worldTime.interp(player.prevPosZ, player.posZ)
 
         //dot(particle-eye,normal)
 

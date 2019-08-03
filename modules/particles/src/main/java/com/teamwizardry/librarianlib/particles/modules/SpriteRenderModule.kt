@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.particles.modules
 
 import com.mojang.blaze3d.platform.GlStateManager
-import com.teamwizardry.librarianlib.core.utils.GameTime
+import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.particles.*
 import com.teamwizardry.librarianlib.particles.bindings.ConstantBinding
 import net.minecraft.client.Minecraft
@@ -167,9 +167,9 @@ class SpriteRenderModule @JvmOverloads constructor(
             var z = position.contents[2]
             if(previousPosition != null) {
                 previousPosition.load(particle)
-                x = GameTime.world.interpolate(previousPosition.contents[0], x)
-                y = GameTime.world.interpolate(previousPosition.contents[1], y)
-                z = GameTime.world.interpolate(previousPosition.contents[2], z)
+                x = Client.worldTime.interp(previousPosition.contents[0], x)
+                y = Client.worldTime.interp(previousPosition.contents[1], y)
+                z = Client.worldTime.interp(previousPosition.contents[2], z)
             }
 
             color.load(particle)

@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.core.utils;
+package com.teamwizardry.librarianlib.core.util;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

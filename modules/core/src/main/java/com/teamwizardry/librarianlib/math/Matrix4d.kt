@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.math
 
-import com.teamwizardry.librarianlib.core.kotlin.utils.threadLocal
+import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import net.minecraft.util.math.Vec3d
 import kotlin.math.PI
 import kotlin.math.pow

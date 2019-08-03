@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.core.kotlin.utils
+package com.teamwizardry.librarianlib.core.util.kotlin
 
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty0
