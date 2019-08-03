@@ -61,11 +61,11 @@ object Client {
 
     private val timer: Timer = Minecraft::class.java.let {
         it.getDeclaredField("timer") ?: it.getDeclaredField("field_71428_T")
-    }.get(minecraft) as Timer
+    }.also { it.isAccessible = true }.get(minecraft) as Timer
 
     private val renderPartialTicksPaused = Minecraft::class.java.let {
         it.getDeclaredField("renderPartialTicksPaused") ?: it.getDeclaredField("field_193996_ah")
-    }
+    }.also { it.isAccessible = true }
 
     private var worldTicks: Int = 0
     private var globalTicks: Int = 0
