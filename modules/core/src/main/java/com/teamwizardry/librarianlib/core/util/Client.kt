@@ -4,6 +4,8 @@ import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.MainWindow
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.FontRenderer
+import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.renderer.texture.TextureManager
 import net.minecraft.resources.IResourceManager
 import net.minecraft.util.Timer
@@ -13,10 +15,13 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object Client {
     val minecraft: Minecraft get() = Minecraft.getInstance()
-    val window: MainWindow get() = minecraft.mainWindow
-    val guiScaleFactor: Double get() = window.guiScaleFactor
     val resourceManager: IResourceManager get() = minecraft.resourceManager
     val renderEngine: TextureManager get() = minecraft.textureManager
+    val fontRenderer: FontRenderer get() = minecraft.fontRenderer
+
+    val window: MainWindow get() = minecraft.mainWindow
+    val currentScreen: Screen? get() = minecraft.currentScreen
+    val guiScaleFactor: Double get() = window.guiScaleFactor
 
     /**
      * The game time, as measured from the game launch

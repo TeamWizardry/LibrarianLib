@@ -11,7 +11,7 @@
 - `vec`/`veci`/`block` pooled vector creation methods
 - Immutable and mutable 3x3/4x4 matrices
 - Quaternion
-- 2d and 2d rays with bounding box intercept tests
+- 2D and 3D rays with bounding box intercept tests
 - `Rect2d`
 - `Vec2d`/`Vec2i`
 - `Vec3d`/`Vec3i`/`BlockPos` Kotlin math operators
@@ -33,3 +33,6 @@
 ### com.teamwizardry.libarianlib.utilities
 - Fast isAir checks
 - Highly efficient ray-world collision detection
+
+
+# Planned modules
