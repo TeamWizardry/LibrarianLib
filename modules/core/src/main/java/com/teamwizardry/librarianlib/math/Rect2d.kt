@@ -68,10 +68,10 @@ class Rect2d(val x: Double, val y: Double, val width: Double, val height: Double
     }
 
     fun expandToFit(rect: Rect2d): Rect2d {
-        val min = this.min.zip(rect.min) { a, b -> min(a, b) }
+        val min = Vec2d.zip(this.min, rect.min) { a, b -> min(a, b) }
         return Rect2d(
             min,
-            min.zip(this.max, rect.max) { m, a, b -> max(a, b) - m }
+            Vec2d.zip(this.max, rect.max, min) { a, b, m -> max(a, b) - m }
         )
     }
 

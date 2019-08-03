@@ -146,20 +146,6 @@ class Vec2d(val x: Double, val y: Double) {
         return Vec2d.getPooled(fn(this.x), fn(this.y))
     }
 
-    /**
-     * Run the passed function on the axes of this vector and the [other] vector, then return a vector of the results.
-     */
-    inline fun zip(other: Vec2d, fn: (Double, Double) -> Double): Vec2d {
-        return Vec2d.getPooled(fn(this.x, other.x), fn(this.y, other.y))
-    }
-
-    /**
-     * Run the passed function on the axes of this vector and the other vectors, then return a vector of the results.
-     */
-    inline fun zip(a: Vec2d, b: Vec2d, fn: (Double, Double, Double) -> Double): Vec2d {
-        return Vec2d.getPooled(fn(this.x, a.x, b.x), fn(this.y, a.y, b.y))
-    }
-
     @JvmSynthetic
     operator fun component1(): Double = this.x
     @JvmSynthetic
@@ -215,6 +201,27 @@ class Vec2d(val x: Double, val y: Double) {
                 ]
             }
             return Vec2d(x, y)
+        }
+
+        /**
+         * Run the passed function on the axes of the passed vectors, then return a vector of the results.
+         */
+        inline fun zip(a: Vec2d, b: Vec2d, fn: (a: Double, b: Double) -> Double): Vec2d {
+            return Vec2d.getPooled(fn(a.x, b.x), fn(a.y, b.y))
+        }
+
+        /**
+         * Run the passed function on the axes of the passed vectors, then return a vector of the results.
+         */
+        inline fun zip(a: Vec2d, b: Vec2d, c: Vec2d, fn: (a: Double, b: Double, c: Double) -> Double): Vec2d {
+            return Vec2d.getPooled(fn(a.x, b.x, c.x), fn(a.y, b.y, c.y))
+        }
+
+        /**
+         * Run the passed function on the axes of the passed vectors, then return a vector of the results.
+         */
+        inline fun zip(a: Vec2d, b: Vec2d, c: Vec2d, d: Vec2d, fn: (a: Double, b: Double, c: Double, d: Double) -> Double): Vec2d {
+            return Vec2d.getPooled(fn(a.x, b.x, c.x, d.x), fn(a.y, b.y, c.y, d.y))
         }
     }
 }

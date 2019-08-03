@@ -2,6 +2,8 @@ package com.teamwizardry.librarianlib.math
 
 import java.util.Collections
 import java.util.IdentityHashMap
+import kotlin.math.max
+import kotlin.math.min
 
 interface CoordinateSpace2D {
     /**
@@ -12,32 +14,32 @@ interface CoordinateSpace2D {
      * The "normal" matrix that converts points from this space to the parent space.
      *
      * e.g. if the child space is embedded with an offset (x,y) within its parent, this will be
-     * `Matrix3().transform(x,y)`
+     * `Matrix3d().transform(x,y)`
      */
-    val matrix: Matrix3
+    val matrix: Matrix3d
     /**
      * The inverse of [matrix]. Often the best way to get this is to apply inverse transforms instead of directly
      * inverting the matrix. This allows elegant failure state when scaling by zero. Inverting a matrix with zero
      * scale is impossible, but when applying inverse transforms this can be accounted for by ignoring inverse scales.
      */
-    val inverseMatrix: Matrix3
+    val inverseMatrix: Matrix3d
 
     /**
      * Create a matrix that, when applied to a point in this coordinate space, returns the corresponding point in the
      * [other] coordinate space.
      */
     @JvmDefault
-    fun conversionMatrixTo(other: CoordinateSpace2D): Matrix3 {
-        if(other === this) return Matrix3.identity
-        if(other === this.parentSpace) return this.matrix.copy()
-        if(other.parentSpace === this) return other.inverseMatrix.copy()
+    fun conversionMatrixTo(other: CoordinateSpace2D): Matrix3d {
+        if(other === this) return Matrix3d.IDENTITY
+        if(other === this.parentSpace) return this.matrix
+        if(other.parentSpace === this) return other.inverseMatrix
 
         val lca = lowestCommonAncestor(other) ?: throw UnrelatedCoordinateSpaceException(this, other)
 
         if(lca === other) return this.matrixToParent(other)
         if(lca === this) return other.matrixFromParent(this)
 
-        val matrix = Matrix3()
+        val matrix = MutableMatrix3d()
         matrix *= other.matrixFromParent(lca)
         matrix *= this.matrixToParent(lca)
         return matrix
@@ -48,19 +50,19 @@ interface CoordinateSpace2D {
      * in the this coordinate space.
      */
     @JvmDefault
-    fun conversionMatrixFrom(other: CoordinateSpace2D) = other.conversionMatrixTo(this)
+    fun conversionMatrixFrom(other: CoordinateSpace2D): Matrix3d = other.conversionMatrixTo(this)
 
     /**
      * Converts a point in this coordinate space into the corresponding point in the [other] coordinate space
      */
     @JvmDefault
-    fun convertPointTo(point: Vec2d, other: CoordinateSpace2D) = conversionMatrixTo(other) * point
+    fun convertPointTo(point: Vec2d, other: CoordinateSpace2D): Vec2d = conversionMatrixTo(other) * point
 
     /**
      * Converts a point in the [other] coordinate space into the corresponding point in this coordinate space
      */
     @JvmDefault
-    fun convertPointFrom(point: Vec2d, other: CoordinateSpace2D) = other.convertPointTo(point, this)
+    fun convertPointFrom(point: Vec2d, other: CoordinateSpace2D): Vec2d = other.convertPointTo(point, this)
 
     /**
      * Converts a rect in this coordinate space to the _**smallest bounding rectangle**_ around it in the [other]
@@ -84,14 +86,8 @@ interface CoordinateSpace2D {
         minmax = matrix * minmax
         maxmin = matrix * maxmin
 
-        val pos = Vec2d.min(
-            Vec2d.min(min, max),
-            Vec2d.min(minmax, maxmin)
-        )
-        val size = Vec2d.max(
-            Vec2d.max(min, max),
-            Vec2d.max(minmax, maxmin)
-        ) - pos
+        val pos = Vec2d.zip(min, max, minmax, maxmin) { a, b, c, d -> min(min(a, b), min(c, d)) }
+        val size = Vec2d.zip(min, max, minmax, maxmin) { a, b, c, d -> max(max(a, b), max(c, d)) } - pos
 
         return Rect2d(pos, size)
     }
@@ -182,7 +178,7 @@ interface CoordinateSpace2D {
     /**
      * The matrix to get our coordinates back to [other]'s space. [other] is one of our ancestors
      */
-    private fun matrixToParent(parent: CoordinateSpace2D): Matrix3 {
+    private fun matrixToParent(parent: CoordinateSpace2D): MutableMatrix3d {
         val ancestors = mutableListOf<CoordinateSpace2D>()
         var space: CoordinateSpace2D = this
         while(space !== parent) {
@@ -190,7 +186,7 @@ interface CoordinateSpace2D {
             space = space.parentSpace!!
         }
 
-        val matrix = Matrix3()
+        val matrix = MutableMatrix3d()
         ancestors.reversed().forEach {
             matrix *= it.matrix
         }
@@ -200,7 +196,7 @@ interface CoordinateSpace2D {
     /**
      * The matrix to get [other]'s coordinates down to our space. [other] is one of our ancestors
      */
-    private fun matrixFromParent(other: CoordinateSpace2D): Matrix3 {
+    private fun matrixFromParent(other: CoordinateSpace2D): MutableMatrix3d {
         val ancestors = mutableListOf<CoordinateSpace2D>()
         var space: CoordinateSpace2D = this
         while(space !== other) {
@@ -208,7 +204,7 @@ interface CoordinateSpace2D {
             space = space.parentSpace!!
         }
 
-        val matrix = Matrix3()
+        val matrix = MutableMatrix3d()
         ancestors.forEach {
             matrix *= it.inverseMatrix
         }

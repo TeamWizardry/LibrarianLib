@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.math
 
+import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import net.minecraft.util.math.Vec3d
 import kotlin.math.abs
 import kotlin.math.ceil
@@ -336,7 +337,7 @@ class MutableMatrix3d: Matrix3d {
         return this.set(createScaling(x, y, z).mul(this))
     }
 
-    override fun rotate(rot: Quaterniond): MutableMatrix3d {
+    override fun rotate(rot: Quaternion): MutableMatrix3d {
         return this.set(createRotation(rot).mul(this))
     }
 
@@ -354,5 +355,7 @@ class MutableMatrix3d: Matrix3d {
 
     companion object {
         private val DBL_EPSILON = Double.fromBits(0x3cb0000000000000L)
+
+        private val temporaryMatrix: MutableMatrix3d by threadLocal { MutableMatrix3d() }
     }
 }

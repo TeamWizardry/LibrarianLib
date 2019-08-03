@@ -212,7 +212,7 @@ open class Matrix3d: Cloneable {
         return createScaling(x, y, z).mul(this)
     }
 
-    open fun rotate(rot: Quaterniond): Matrix3d {
+    open fun rotate(rot: Quaternion): Matrix3d {
         return createRotation(rot).mul(this)
     }
 
@@ -390,7 +390,7 @@ open class Matrix3d: Cloneable {
                 0.0, 0.0, 1.0)
         }
 
-        internal fun createRotation(rot: Quaterniond): MutableMatrix3d {
+        internal fun createRotation(rot: Quaternion): MutableMatrix3d {
             var rot = rot
             rot = rot.normalize()
 

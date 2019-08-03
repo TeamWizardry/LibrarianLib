@@ -280,7 +280,7 @@ open class Matrix4d: Cloneable {
         return createScaling(x, y, z, w).mul(this).toImmutable()
     }
 
-    open fun rotate(rot: Quaterniond): Matrix4d {
+    open fun rotate(rot: Quaternion): Matrix4d {
         return createRotation(rot).mul(this).toImmutable()
     }
 
@@ -450,7 +450,7 @@ open class Matrix4d: Cloneable {
                 0.0, 0.0, 0.0, 1.0)
         }
 
-        internal fun createRotation(rot: Quaterniond): MutableMatrix4d {
+        internal fun createRotation(rot: Quaternion): MutableMatrix4d {
             var rot = rot
             rot = rot.normalize()
             return temporaryMatrix.set(

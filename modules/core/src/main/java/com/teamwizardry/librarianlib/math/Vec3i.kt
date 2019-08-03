@@ -2,14 +2,14 @@ package com.teamwizardry.librarianlib.math
 
 import net.minecraft.util.math.Vec3i
 
-operator fun Vec3i.plus(other: Vec3i): Vec3i = vec(this.x + other.x, this.y + other.y, this.z + other.z)
-operator fun Vec3i.minus(other: Vec3i): Vec3i = vec(this.x - other.x, this.y - other.y, this.z - other.z)
-operator fun Vec3i.times(other: Vec3i): Vec3i = vec(this.x * other.x, this.y * other.y, this.z * other.z)
-operator fun Vec3i.div(other: Vec3i): Vec3i = vec(this.x / other.x, this.y / other.y, this.z / other.z)
+operator fun Vec3i.plus(other: Vec3i): Vec3i = veci(this.x + other.x, this.y + other.y, this.z + other.z)
+operator fun Vec3i.minus(other: Vec3i): Vec3i = veci(this.x - other.x, this.y - other.y, this.z - other.z)
+operator fun Vec3i.times(other: Vec3i): Vec3i = veci(this.x * other.x, this.y * other.y, this.z * other.z)
+operator fun Vec3i.div(other: Vec3i): Vec3i = veci(this.x / other.x, this.y / other.y, this.z / other.z)
 
-operator fun Vec3i.div(other: Int): Vec3i = vec(this.x / other, this.y / other, this.z / other)
+operator fun Vec3i.div(other: Int): Vec3i = veci(this.x / other, this.y / other, this.z / other)
 
-operator fun Vec3i.times(other: Int): Vec3i = vec(this.x * other, this.y * other, this.z * other)
+operator fun Vec3i.times(other: Int): Vec3i = veci(this.x * other, this.y * other, this.z * other)
 
 operator fun Vec3i.unaryMinus(): Vec3i = this * -1
 

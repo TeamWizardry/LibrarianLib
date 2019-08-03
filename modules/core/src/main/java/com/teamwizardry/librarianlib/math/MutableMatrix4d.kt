@@ -263,7 +263,7 @@ class MutableMatrix4d: Matrix4d {
         return this.set(createScaling(x, y, z, w).mul(this))
     }
 
-    override fun rotate(rot: Quaterniond): MutableMatrix4d {
+    override fun rotate(rot: Quaternion): MutableMatrix4d {
         return this.set(createRotation(rot).mul(this))
     }
 
