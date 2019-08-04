@@ -1,19 +1,12 @@
 package com.teamwizardry.librarianlib.gui.component
 
-import com.teamwizardry.librarianlib.features.eventbus.Event
-import com.teamwizardry.librarianlib.features.eventbus.EventBus
-import com.teamwizardry.librarianlib.features.eventbus.Hook
 import com.teamwizardry.librarianlib.gui.component.supporting.*
 import com.teamwizardry.librarianlib.gui.components.LayerBackedComponent
 import com.teamwizardry.librarianlib.gui.layers.ComponentBackedLayer
-import com.teamwizardry.librarianlib.features.helpers.allDeclaredFields
-import com.teamwizardry.librarianlib.features.helpers.rect
-import com.teamwizardry.librarianlib.features.math.Matrix3
-import com.teamwizardry.librarianlib.features.math.Rect2d
-import com.teamwizardry.librarianlib.features.math.Vec2d
-import com.teamwizardry.librarianlib.features.math.coordinatespaces.CoordinateSpace2D
-import net.minecraftforge.fml.relauncher.Side
-import net.minecraftforge.fml.relauncher.SideOnly
+import com.teamwizardry.librarianlib.math.CoordinateSpace2D
+import com.teamwizardry.librarianlib.math.Matrix3d
+import com.teamwizardry.librarianlib.math.Rect2d
+import com.teamwizardry.librarianlib.math.Vec2d
 import java.lang.reflect.Field
 import java.util.IdentityHashMap
 import java.util.function.Consumer
@@ -57,7 +50,6 @@ import java.util.function.Consumer
  * @see ILayerClipping
  * @See ILayerBase
  */
-@SideOnly(Side.CLIENT)
 open class GuiLayer private constructor(
     internal val geometry: LayerGeometryHandler,
     internal val relationships: LayerRelationshipHandler,
@@ -366,11 +358,11 @@ open class GuiLayer private constructor(
         return super.getContentsBounds()
     }
 
-    override fun conversionMatrixTo(other: CoordinateSpace2D): Matrix3 {
+    override fun conversionMatrixTo(other: CoordinateSpace2D): Matrix3d {
         return super.conversionMatrixTo(other)
     }
 
-    override fun conversionMatrixFrom(other: CoordinateSpace2D): Matrix3 {
+    override fun conversionMatrixFrom(other: CoordinateSpace2D): Matrix3d {
         return super.conversionMatrixFrom(other)
     }
 

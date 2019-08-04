@@ -1,10 +1,10 @@
 package com.teamwizardry.librarianlib.gui.component.supporting
 
+import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.gui.component.GuiLayer
-import java.util.*
 
 interface ILayerTag {
-    val tagList: MutableSet<Any>
+    val tagList: Set<Any>
 
     /** [GuiLayer.addTag] */
     fun addTag(tag: Any): Boolean
@@ -30,7 +30,7 @@ class LayerTagHandler: ILayerTag {
     private var tagStorage: MutableSet<Any> = HashSet()
 
     /** [GuiLayer.tagList] */
-    override val tagList = Collections.unmodifiableSet<Any>(tagStorage)!!
+    override val tagList: Set<Any> = tagStorage.unmodifiableView()
 
     /** [GuiLayer.addTag] */
     override fun addTag(tag: Any): Boolean {

@@ -1,16 +1,15 @@
 package com.teamwizardry.librarianlib.gui.component.supporting
 
+import com.mojang.blaze3d.platform.GlStateManager
 import com.teamwizardry.librarianlib.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.gui.value.RMValue
 import com.teamwizardry.librarianlib.gui.value.RMValueDouble
-import com.teamwizardry.librarianlib.features.helpers.rect
-import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.unaryMinus
-import com.teamwizardry.librarianlib.features.math.Matrix3
-import com.teamwizardry.librarianlib.features.math.Rect2d
-import com.teamwizardry.librarianlib.features.math.Vec2d
-import com.teamwizardry.librarianlib.features.math.coordinatespaces.CoordinateSpace2D
-import net.minecraft.client.renderer.GlStateManager
+import com.teamwizardry.librarianlib.math.CoordinateSpace2D
+import com.teamwizardry.librarianlib.math.Matrix3d
+import com.teamwizardry.librarianlib.math.MutableMatrix3d
+import com.teamwizardry.librarianlib.math.Rect2d
+import com.teamwizardry.librarianlib.math.Vec2d
+import com.teamwizardry.librarianlib.math.vec
 
 interface ILayerGeometry: CoordinateSpace2D {
     /**
@@ -409,7 +408,7 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
     override val translateZ_rm: RMValueDouble = RMValueDouble(0.0)
     override var translateZ: Double by translateZ_rm
 
-    override val scale_rm: RMValue<Vec2d> = RMValue(Vec2d.ONE) { old, new ->
+    override val scale_rm: RMValue<Vec2d> = RMValue(vec(1, 1)) { old, new ->
         if(old != new) {
             frameChange()
         }
@@ -450,10 +449,10 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
             if(didPush) {
                 GlStateManager.popMatrix()
             } else {
-                GlStateManager.translate(matrixParams.anchor.x, matrixParams.anchor.y, 0.0)
-                GlStateManager.scale(matrixParams.inverseScale.x, matrixParams.inverseScale.y, 1.0)
-                GlStateManager.rotate(-Math.toDegrees(matrixParams.rotation).toFloat(), 0f, 0f, 1f)
-                GlStateManager.translate(-matrixParams.pos.x, -matrixParams.pos.y, -layer.translateZ)
+                GlStateManager.translated(matrixParams.anchor.x, matrixParams.anchor.y, 0.0)
+                GlStateManager.scaled(matrixParams.inverseScale.x, matrixParams.inverseScale.y, 1.0)
+                GlStateManager.rotated(-Math.toDegrees(matrixParams.rotation), 0.0, 0.0, 1.0)
+                GlStateManager.translated(-matrixParams.pos.x, -matrixParams.pos.y, -layer.translateZ)
             }
         } else {
             updateMatrixIfNeeded()
@@ -461,19 +460,19 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
             if(didPush) {
                 GlStateManager.pushMatrix()
             }
-            GlStateManager.translate(matrixParams.pos.x, matrixParams.pos.y, layer.translateZ)
-            GlStateManager.rotate(Math.toDegrees(matrixParams.rotation).toFloat(), 0f, 0f, 1f)
-            GlStateManager.scale(matrixParams.scale.x, matrixParams.scale.y, 1.0)
-            GlStateManager.translate(-matrixParams.anchor.x, -matrixParams.anchor.y, 0.0)
+            GlStateManager.translated(matrixParams.pos.x, matrixParams.pos.y, layer.translateZ)
+            GlStateManager.rotated(Math.toDegrees(matrixParams.rotation), 0.0, 0.0, 1.0)
+            GlStateManager.scaled(matrixParams.scale.x, matrixParams.scale.y, 1.0)
+            GlStateManager.translated(-matrixParams.anchor.x, -matrixParams.anchor.y, 0.0)
         }
     }
 
     override fun glApplyContentsOffset(inverse: Boolean) {
         val z = if(GuiLayer.showDebugTilt) 0.1 else 0.0
         if(inverse) {
-            GlStateManager.translate(-matrixParams.contentsOffset.x, -matrixParams.contentsOffset.y, z)
+            GlStateManager.translated(-matrixParams.contentsOffset.x, -matrixParams.contentsOffset.y, z)
         } else {
-            GlStateManager.translate(matrixParams.contentsOffset.x, matrixParams.contentsOffset.y, z)
+            GlStateManager.translated(matrixParams.contentsOffset.x, matrixParams.contentsOffset.y, z)
         }
     }
 
@@ -498,40 +497,40 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
     override val parentSpace: CoordinateSpace2D?
         get() = layer.parent
 
-    override var matrix: Matrix3 = Matrix3.identity
+    override var matrix: Matrix3d = Matrix3d.identity
         get() {
             updateMatrixIfNeeded()
             return field
         }
         private set
 
-    override var inverseMatrix: Matrix3 = Matrix3.identity
+    override var inverseMatrix: Matrix3d = Matrix3d.identity
         get() {
             updateMatrixIfNeeded()
             return field
         }
         private set
 
-    data class MatrixParams(val pos: Vec2d = Vec2d.ZERO, val rotation: Double = 0.0, val scale: Vec2d = Vec2d.ONE,
-        val inverseScale: Vec2d = Vec2d.ONE, val anchor: Vec2d = Vec2d.ZERO, val contentsOffset: Vec2d = Vec2d.ZERO)
+    data class MatrixParams(val pos: Vec2d = Vec2d.ZERO, val rotation: Double = 0.0, val scale: Vec2d = vec(1, 1),
+        val inverseScale: Vec2d = vec(1, 1), val anchor: Vec2d = Vec2d.ZERO, val contentsOffset: Vec2d = Vec2d.ZERO)
     var matrixParams = MatrixParams()
 
     private fun createMatrix() {
-        val matrix = Matrix3()
+        val matrix = MutableMatrix3d()
         matrix.translate(matrixParams.pos)
         matrix.rotate(matrixParams.rotation)
         matrix.scale(matrixParams.scale)
         matrix.translate(-matrixParams.anchor)
         matrix.translate(matrixParams.contentsOffset)
-        this.matrix = matrix.frozen()
+        this.matrix = Matrix3d(matrix)
 
-        val inverseMatrix = Matrix3()
+        val inverseMatrix = Matrix3d()
         inverseMatrix.translate(-matrixParams.contentsOffset)
         inverseMatrix.translate(matrixParams.anchor)
         inverseMatrix.scale(matrixParams.inverseScale)
         inverseMatrix.rotate(-matrixParams.rotation)
         inverseMatrix.translate(-matrixParams.pos)
-        this.inverseMatrix = inverseMatrix.frozen()
+        this.inverseMatrix = Matrix3d(inverseMatrix)
     }
 
     private fun updateMatrixIfNeeded() {

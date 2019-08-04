@@ -1,6 +1,8 @@
 package com.teamwizardry.librarianlib.gui
 
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.kotlin.getValue
+import com.teamwizardry.librarianlib.core.util.kotlin.setValue
 import com.teamwizardry.librarianlib.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.gui.provided.SafetyNetErrorScreen
@@ -30,13 +32,7 @@ import java.util.stream.Stream
  * Any crashes from the GUI code will be caught and displayed as an error screen instead of crashing the game. However,
  * it is impossible to wrap subclass constructors in try-catch statements so those may still crash.
  */
-open class GuiBase private constructor(private val titleComponent: TitleTextComponent): Screen(titleComponent), TickingScreen {
-    constructor(): this(TitleTextComponent())
-
-    init {
-        //titleComponent.wrapped =
-    }
-
+open class GuiBase(title: ITextComponent): Screen(title /* todo behavior #2 */) {
     /**
      * The GUI implementation code common between [GuiBase] and [GuiContainerBase]
      */
@@ -86,10 +82,10 @@ open class GuiBase private constructor(private val titleComponent: TitleTextComp
     }
 
     /**
-     * Stores the current GUI and reopens it when this GUI is closed
+     * Stores the current GUI to reopen it when this GUI is closed
      */
     fun reopenLast() {
-        impl.lastGui = Minecraft.getMinecraft().currentScreen
+        impl.lastGui = Client.currentScreen
     }
 
     init {
@@ -101,36 +97,35 @@ open class GuiBase private constructor(private val titleComponent: TitleTextComp
         }
     }
 
-    override fun initGui() {
+    override fun init() {
         impl.initGui()
     }
 
-    override fun onGuiClosed() {
+    override fun onClose() {
         impl.onClose()
     }
 
-    override fun isFocused(): Boolean {
-        return impl.root.focusedComponent != null
-    }
-
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        super.drawScreen(mouseX, mouseY, partialTicks)
+    override fun render(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        super.render(mouseX, mouseY, partialTicks)
         impl.drawScreen(mouseX, mouseY, partialTicks)
     }
 
     @Throws(IOException::class)
-    override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
+    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
         super.mouseClicked(mouseX, mouseY, button)
         impl.mouseClicked(button)
+        return true // todo behavior #1
     }
 
-    override fun mouseReleased(mouseX: Int, mouseY: Int, button: Int) {
+    override fun mouseReleased(mouseX: Double, mouseY: Double, button: Int): Boolean {
         super.mouseReleased(mouseX, mouseY, button)
         impl.mouseReleased(button)
+        return true // todo behavior #1
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun charTyped(typedChar: Char, keyCode: Int): Boolean {
         impl.keyTyped(typedChar, keyCode)
+        return true // todo behavior #1
     }
 
     @Throws(IOException::class)
@@ -145,37 +140,8 @@ open class GuiBase private constructor(private val titleComponent: TitleTextComp
         impl.handleMouseInput()
     }
 
-    override fun updateScreen() {
-        impl.update()
-    }
-
-    internal fun tick() {
+    override fun tick() {
+        impl.update() // todo update #4
         impl.tick()
-    }
-
-    companion object {
-        init {
-            MinecraftForge.EVENT_BUS.register(this)
-        }
-
-        @SubscribeEvent
-        @Suppress("UNUSED_PARAMETER")
-        fun tick(e: TickEvent.ClientTickEvent) {
-            val gui = Client.currentScreen
-            if (gui is GuiBase) {
-                gui.tick()
-            }
-        }
-    }
-
-    private class TitleTextComponent: ITextComponent {
-        var wrapped: () -> ITextComponent = { StringTextComponent("") }
-        override fun shallowCopy(): ITextComponent = wrapped().shallowCopy()
-        override fun getStyle(): Style = wrapped().style
-        override fun stream(): Stream<ITextComponent> = wrapped().stream()
-        override fun setStyle(style: Style): ITextComponent = wrapped().setStyle(style)
-        override fun getSiblings(): MutableList<ITextComponent> = wrapped().siblings
-        override fun getUnformattedComponentText(): String = wrapped().unformattedComponentText
-        override fun appendSibling(component: ITextComponent): ITextComponent = wrapped().appendSibling(component)
     }
 }

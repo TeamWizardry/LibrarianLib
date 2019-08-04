@@ -1,6 +1,8 @@
 package com.teamwizardry.librarianlib.gui.provided
 
+import com.mojang.blaze3d.platform.GlStateManager
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.screen.Screen
@@ -9,7 +11,6 @@ import java.awt.Color
 import kotlin.math.min
 
 class SafetyNetErrorScreen(e: Exception): Screen(StringTextComponent("§4§nSafety net caught an exception:")) {
-
     private val guiWidth: Int
     private val guiHeight: Int
 
@@ -47,10 +48,10 @@ class SafetyNetErrorScreen(e: Exception): Screen(StringTextComponent("§4§nSafe
             }
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        this.drawDefaultBackground()
+    override fun render(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        this.renderBackground()
 
-        val fontRenderer = Minecraft.getMinecraft().fontRenderer
+        val fontRenderer = Client.fontRenderer
         val topLeft = vec(width-guiWidth, height-guiHeight) / 2
         val border = 8
 
@@ -61,14 +62,14 @@ class SafetyNetErrorScreen(e: Exception): Screen(StringTextComponent("§4§nSafe
         )
 
         GlStateManager.pushMatrix()
-        GlStateManager.translate(((width)/2).toDouble(), ((height-guiHeight)/2).toDouble(), 0.0)
+        GlStateManager.translatef(width/2f, (height-guiHeight)/2f, 0f)
 
         var y = 0
         fun drawCenteredStringNoShadow(fontRenderer: FontRenderer, text: String , x: Int, y: Int, color: Int) {
-            fontRenderer.drawString(text, x - fontRenderer.getStringWidth(text) / 2, y, color)
+            fontRenderer.drawString(text, x - fontRenderer.getStringWidth(text) / 2f, y.toFloat(), color)
         }
 
-        drawCenteredStringNoShadow(fontRenderer, title, 0, y, 0)
+        drawCenteredStringNoShadow(fontRenderer, title.formattedText, 0, y, 0)
         y += fontRenderer.FONT_HEIGHT + gap
         drawCenteredStringNoShadow(fontRenderer, errorClass, 0, y, 0)
         y += fontRenderer.FONT_HEIGHT + gap
@@ -81,7 +82,7 @@ class SafetyNetErrorScreen(e: Exception): Screen(StringTextComponent("§4§nSafe
                 y += fontRenderer.FONT_HEIGHT + 1
             } else {
                 messageLines.forEach { line ->
-                    fontRenderer.drawString(line, -guiWidth/2, y, 0)
+                    fontRenderer.drawString(line, -guiWidth/2f, y.toFloat(), 0)
                     y += fontRenderer.FONT_HEIGHT + 1
                 }
             }

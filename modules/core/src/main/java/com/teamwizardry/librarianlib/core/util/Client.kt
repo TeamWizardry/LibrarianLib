@@ -10,22 +10,31 @@ import net.minecraft.client.renderer.texture.TextureManager
 import net.minecraft.resources.IResourceManager
 import net.minecraft.util.Timer
 import net.minecraft.util.math.Vec3d
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object Client {
+    @JvmStatic
     val minecraft: Minecraft get() = Minecraft.getInstance()
+    @JvmStatic
     val resourceManager: IResourceManager get() = minecraft.resourceManager
+    @JvmStatic
     val renderEngine: TextureManager get() = minecraft.textureManager
+    @JvmStatic
     val fontRenderer: FontRenderer get() = minecraft.fontRenderer
 
+    @JvmStatic
     val window: MainWindow get() = minecraft.mainWindow
+    @JvmStatic
     val currentScreen: Screen? get() = minecraft.currentScreen
+    @JvmStatic
     val guiScaleFactor: Double get() = window.guiScaleFactor
 
     /**
      * The game time, as measured from the game launch
      */
+    @JvmStatic
     val time: Time = object: Time() {
         override val ticks: Int
             get() = globalTicks
@@ -35,6 +44,7 @@ object Client {
     /**
      * The world time, as measured from the game launch
      */
+    @JvmStatic
     val worldTime: Time = object: Time() {
         override val ticks: Int
             get() = worldTicks
@@ -85,4 +95,6 @@ object Client {
             globalTicks += timer.elapsedTicks
         }
     }
+
+    init { MinecraftForge.EVENT_BUS.register(this) }
 }

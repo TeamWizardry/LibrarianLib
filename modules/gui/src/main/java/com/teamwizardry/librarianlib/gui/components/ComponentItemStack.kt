@@ -1,19 +1,15 @@
 package com.teamwizardry.librarianlib.gui.components
 
-import com.teamwizardry.librarianlib.gui.HandlerList
 import com.teamwizardry.librarianlib.gui.value.IMValue
 import com.teamwizardry.librarianlib.gui.value.IMValueBoolean
 import com.teamwizardry.librarianlib.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.gui.provided.pastry.components.ItemStackTooltip
-import com.teamwizardry.librarianlib.gui.provided.pastry.components.VanillaTooltip
 import com.teamwizardry.librarianlib.features.kotlin.isNotEmpty
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
-import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.item.ItemStack
-import net.minecraft.util.text.TextFormatting
 
 open class ComponentItemStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 16) {
 

@@ -26,13 +26,35 @@
     - Access game and world tick and partial tick time, with easy tick interpolation
 
 ## Particles
-### com.teamwizardry.librarianlib.particles
+#### com.teamwizardry.librarianlib.particles
 - Particle system
 
 ## Utilities
-### com.teamwizardry.libarianlib.utilities
+#### com.teamwizardry.libarianlib.utilities
 - Fast isAir checks
 - Highly efficient ray-world collision detection
 
 
+
+# WIP modules
+
+## GUI
+
 # Planned modules
+
+## Homeless
+- Keystroke helper (e.g. `shift+prim+d`, a la in the Bitfont editor)
+
+## Rendering
+#### helpers
+- Scissor test helper
+- Stencil test helper
+- Render-to-texture helper?
+- Render-to-texture FBO pool
+
+#### shaders
+- Shader creation utilities
+- Make easier-to-use custom shader/vbo tools?
+
+#### other
+- easy custom cursor support (currently LibCursor in 1.12)

@@ -1,17 +1,15 @@
 package com.teamwizardry.librarianlib.gui.component.supporting
 
-import com.teamwizardry.librarianlib.features.animator.Animator
+import com.mojang.blaze3d.platform.GlStateManager
+import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.kotlin.pos
 import com.teamwizardry.librarianlib.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.gui.value.RMValueDouble
 import com.teamwizardry.librarianlib.gui.value.RMValueInt
-import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.plus
-import com.teamwizardry.librarianlib.features.kotlin.pos
-import com.teamwizardry.librarianlib.features.kotlin.times
-import com.teamwizardry.librarianlib.features.math.Vec2d
-import com.teamwizardry.librarianlib.features.sprite.ISprite
-import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
-import net.minecraft.client.renderer.GlStateManager
+import com.teamwizardry.librarianlib.math.Vec2d
+import com.teamwizardry.librarianlib.math.plus
+import com.teamwizardry.librarianlib.math.times
+import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11
@@ -110,21 +108,21 @@ class LayerClippingHandler: ILayerClipping {
     private fun stencil() {
         customClipping?.let {
             it()
-            GlStateManager.enableTexture2D()
+            GlStateManager.enableTexture()
             return
 
         }
 
         val sp = clippingSprite
         if(sp != null) {
-            GlStateManager.enableTexture2D()
+            GlStateManager.enableTexture()
             sp.bind()
-            sp.draw(Animator.global.time.toInt(), 0f, 0f, layer.size.xi.toFloat(), layer.size.yi.toFloat())
+            sp.draw(Client.time, 0f, 0f, layer.size.xi.toFloat(), layer.size.yi.toFloat())
             return
         }
 
-        GlStateManager.disableTexture2D()
-        GlStateManager.color(1f, 0f, 1f, 0.5f)
+        GlStateManager.disableTexture()
+        GlStateManager.color4f(1f, 0f, 1f, 0.5f)
         val vb = Tessellator.getInstance().buffer
         val size = layer.size
         val r = cornerRadius
@@ -161,7 +159,7 @@ class LayerClippingHandler: ILayerClipping {
                 pixelatedArc(size.x - r, r, vec(1, 0), vec(0, -1))
             }
         }
-        GlStateManager.enableTexture2D()
+        GlStateManager.enableTexture()
     }
 
     private fun arc(x: Double, y: Double, vecA: Vec2d, vecB: Vec2d) {

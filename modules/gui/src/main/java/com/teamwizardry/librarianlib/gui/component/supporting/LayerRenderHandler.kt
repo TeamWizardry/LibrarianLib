@@ -1,18 +1,17 @@
 package com.teamwizardry.librarianlib.gui.component.supporting
 
+import com.mojang.blaze3d.platform.GlStateManager
+import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.gui.component.GuiLayerFilter
 import com.teamwizardry.librarianlib.gui.layers.MaskLayer
 import com.teamwizardry.librarianlib.gui.value.IMValue
 import com.teamwizardry.librarianlib.gui.value.RMValueDouble
-import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.Client
-import com.teamwizardry.librarianlib.features.kotlin.fastCos
-import com.teamwizardry.librarianlib.features.kotlin.fastSin
-import com.teamwizardry.librarianlib.features.math.Vec2d
-import com.teamwizardry.librarianlib.features.shader.ShaderHelper
-import net.minecraft.client.renderer.GlStateManager
+import com.teamwizardry.librarianlib.math.Vec2d
+import com.teamwizardry.librarianlib.math.fastCos
+import com.teamwizardry.librarianlib.math.fastSin
+import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.shader.Framebuffer
@@ -87,8 +86,8 @@ interface ILayerRendering {
     companion object {
         @JvmStatic
         fun glStateGuarantees() {
-            GlStateManager.enableTexture2D()
-            GlStateManager.color(1f, 1f, 1f, 1f)
+            GlStateManager.enableTexture()
+            GlStateManager.color4f(1f, 1f, 1f, 1f)
             GlStateManager.enableBlend()
             GlStateManager.shadeModel(GL11.GL_SMOOTH)
             GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
@@ -210,12 +209,12 @@ class LayerRenderHandler: ILayerRendering {
         layer.clipping.popDisable()
 
         if (GuiLayer.showDebugBoundingBox && !layer.isInMask) {
-            GlStateManager.glLineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
-            GlStateManager.color(.75f, 0f, .75f)
+            GlStateManager.lineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
+            GlStateManager.color3f(.75f, 0f, .75f)
             layer.drawDebugBoundingBox()
         }
         if (GuiLayer.showLayoutOverlay && layer.didLayout && !layer.isInMask) {
-            GlStateManager.color(1f, 0f, 0f, 0.1f)
+            GlStateManager.color4f(1f, 0f, 0f, 0.1f)
             layer.drawLayerOverlay()
         }
         layer.didLayout = false
@@ -260,8 +259,8 @@ class LayerRenderHandler: ILayerRendering {
 
         if (GuiLayer.showDebugBoundingBox && !layer.isInMask &&
             GuiLayer.showDebugTilt && layer.shouldDrawSkeleton()) {
-            GlStateManager.glLineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
-            GlStateManager.color(.75f, 0f, .75f)
+            GlStateManager.lineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
+            GlStateManager.color3f(.75f, 0f, .75f)
             GL11.glEnable(GL11.GL_LINE_STIPPLE)
             GL11.glLineStipple(2, 0b0011_0011_0011_0011.toShort())
             layer.drawDebugBoundingBox()
@@ -272,7 +271,7 @@ class LayerRenderHandler: ILayerRendering {
     }
 
     override fun drawLayerOverlay() {
-        GlStateManager.disableTexture2D()
+        GlStateManager.disableTexture()
         val points = createDebugBoundingBoxPoints()
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
@@ -284,14 +283,14 @@ class LayerRenderHandler: ILayerRendering {
     }
 
     override fun drawDebugBoundingBox() {
-        GlStateManager.disableTexture2D()
+        GlStateManager.disableTexture()
         val points = createDebugBoundingBoxPoints()
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
         vb.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
         points.forEach { vb.pos(it.x, it.y, 0.0).endVertex() }
         tessellator.draw()
-        GlStateManager.color(0f, 0f, 0f, 0.15f)
+        GlStateManager.color4f(0f, 0f, 0f, 0.15f)
         if(GuiLayer.showDebugTilt) {
             vb.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION)
             points.forEach {

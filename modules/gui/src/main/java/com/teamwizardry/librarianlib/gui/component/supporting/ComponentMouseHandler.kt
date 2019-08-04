@@ -5,9 +5,6 @@ import com.teamwizardry.librarianlib.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.gui.components.RootComponent
 import com.teamwizardry.librarianlib.gui.value.IMValue
-import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.math.Vec2d
-import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 import java.util.Collections
 
 interface IComponentMouse {

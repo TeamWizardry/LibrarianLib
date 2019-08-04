@@ -1,7 +1,5 @@
 package com.teamwizardry.librarianlib.gui
 
-import com.teamwizardry.librarianlib.core.LibrarianLib
-import com.teamwizardry.librarianlib.features.eventbus.Hook
 import com.teamwizardry.librarianlib.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.gui.component.GuiLayer
@@ -13,18 +11,9 @@ import com.teamwizardry.librarianlib.gui.provided.pastry.components.PastryLabel
 import com.teamwizardry.librarianlib.gui.provided.pastry.components.PastrySwitch
 import com.teamwizardry.librarianlib.gui.provided.pastry.components.PastryToggle
 import com.teamwizardry.librarianlib.gui.provided.pastry.layers.PastryBackground
-import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.kotlin.delegate
-import com.teamwizardry.librarianlib.features.math.Axis2d
-import com.teamwizardry.librarianlib.features.math.Vec2d
-import com.teamwizardry.librarianlib.features.sprite.Texture
-import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
+import com.teamwizardry.librarianlib.math.Vec2d
+import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiScreen
-import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.client.renderer.GlStateManager
-import org.lwjgl.input.Keyboard
-import org.lwjgl.input.Mouse
 import java.awt.Color
 import java.io.IOException
 import kotlin.reflect.KMutableProperty0
@@ -189,7 +178,6 @@ open class LibGuiImpl(
         internal var mouseWheelModifier: Double = -16.0/360
     }
 
-    @UseExperimental(ExperimentalBitfont::class)
     private class DebugDialogComponent : GuiComponent() {
         override var pos: Vec2d
             get() = vec(root.size.xi/2, root.size.yi/2)

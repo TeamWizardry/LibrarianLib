@@ -1,15 +1,13 @@
 package com.teamwizardry.librarianlib.gui.component
 
+import com.mojang.blaze3d.platform.GlStateManager
 import com.teamwizardry.librarianlib.gui.component.supporting.*
 import com.teamwizardry.librarianlib.gui.components.RootComponent
 import com.teamwizardry.librarianlib.gui.layers.ComponentBackedLayer
-import com.teamwizardry.librarianlib.features.helpers.vec
-import net.minecraft.client.gui.GuiScreen
-import net.minecraft.client.renderer.GlStateManager
+import com.teamwizardry.librarianlib.math.vec
+import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraftforge.fml.relauncher.Side
-import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.opengl.GL11
 
 /**
@@ -20,7 +18,6 @@ import org.lwjgl.opengl.GL11
  * All the events fired by [GuiLayer] are also fired by [GuiComponent], in addition to the events in
  * [GuiComponentEvents].
  */
-@SideOnly(Side.CLIENT)
 open class GuiComponent private constructor(
     posX: Int, posY: Int, width: Int, height: Int,
     internal val guiEventHandler: ComponentGuiEventHandler,
@@ -80,15 +77,15 @@ open class GuiComponent private constructor(
 
     override fun drawDebugBoundingBox() {
 
-        GlStateManager.disableTexture2D()
+        GlStateManager.disableTexture()
 
         if(GuiLayer.showDebugTilt) {
-            GlStateManager.glLineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
-            GlStateManager.color(0f, 0f, 0f)
+            GlStateManager.lineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
+            GlStateManager.color3f(0f, 0f, 0f)
             val tessellator = Tessellator.getInstance()
             val vb = tessellator.buffer
             vb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION)
-            if(GuiScreen.isShiftKeyDown() && GuiScreen.isCtrlKeyDown()) {
+            if(Screen.isShiftKeyDown() && Screen.isCtrlKeyDown()) {
                 vb.pos(0.0, 0.0, 0.0).endVertex()
                 vb.pos(mousePos.x, mousePos.y, 0.0).endVertex()
             }
@@ -101,10 +98,10 @@ open class GuiComponent private constructor(
             tessellator.draw()
         }
 
-        GlStateManager.glLineWidth(overrideDebugLineWidth ?: 2f)
-        GlStateManager.color(1f, 0f, 1f)
-        if (this.mouseHit != null) GlStateManager.color(0.25f, 0.25f, 0.25f)
-        if (mouseOver) GlStateManager.color(1f, 1f, 1f)
+        GlStateManager.lineWidth(overrideDebugLineWidth ?: 2f)
+        GlStateManager.color3f(1f, 0f, 1f)
+        if (this.mouseHit != null) GlStateManager.color3f(0.25f, 0.25f, 0.25f)
+        if (mouseOver) GlStateManager.color3f(1f, 1f, 1f)
 
         super.drawDebugBoundingBox()
     }

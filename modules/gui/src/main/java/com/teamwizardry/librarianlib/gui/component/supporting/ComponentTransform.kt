@@ -1,11 +1,12 @@
 package com.teamwizardry.librarianlib.gui.component.supporting
 
+import com.mojang.blaze3d.platform.GlStateManager
 import com.teamwizardry.librarianlib.gui.value.RMValue
 import com.teamwizardry.librarianlib.gui.value.RMValueDouble
-import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.math.Matrix4
-import com.teamwizardry.librarianlib.features.math.Vec2d
-import net.minecraft.client.renderer.GlStateManager
+import com.teamwizardry.librarianlib.math.Matrix4d
+import com.teamwizardry.librarianlib.math.Quaternion
+import com.teamwizardry.librarianlib.math.Vec2d
+import com.teamwizardry.librarianlib.math.vec
 
 /**
  * A container for all of a component's transformation options.
@@ -65,10 +66,10 @@ class ComponentTransform {
     internal var size: Vec2d by size_rm
 
     /**
-     * Create a [Matrix4] containing this transform
+     * Create a [Matrix4d] containing this transform
      */
-    fun matrix(): Matrix4 {
-        val mat = Matrix4()
+    fun matrix(): Matrix4d {
+        val mat = Matrix4d()
         apply(mat)
         return mat
     }
@@ -76,11 +77,11 @@ class ComponentTransform {
     /**
      * Applies this transform to the passed matrix
      */
-    fun apply(other: Matrix4) {
+    fun apply(other: Matrix4d) {
         other.translate(vec(translate.x, translate.y, translateZ))
-        other.rotate(rotate, vec(0, 0, 1))
+        other.rotate(Quaternion.fromAngleRadAxis(rotate, vec(0, 0, 1))) // todo other #1
 
-        other.scale(vec(scale2D.x, scale2D.y, 1))
+        other.scale(scale2D.x, scale2D.y, 1.0, 1.0) // todo other #1
         other.translate(vec(-anchor.x * size.x, -anchor.y * size.y, 0))
     }
 
@@ -112,9 +113,9 @@ class ComponentTransform {
      * Applies this transform to the current GL state
      */
     fun glApply() {
-        GlStateManager.translate(translate.x, translate.y, translateZ)
-        GlStateManager.rotate(Math.toDegrees(rotate).toFloat(), 0f, 0f, 1f)
-        GlStateManager.scale(scale2D.x, scale2D.y, 1.0)
-        GlStateManager.translate(-anchor.x * size.x, -anchor.y * size.y, 0.0)
+        GlStateManager.translated(translate.x, translate.y, translateZ)
+        GlStateManager.rotated(Math.toDegrees(rotate), 0.0, 0.0, 1.0)
+        GlStateManager.scaled(scale2D.x, scale2D.y, 1.0)
+        GlStateManager.translated(-anchor.x * size.x, -anchor.y * size.y, 0.0)
     }
 }

@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.gui.components
 
-import com.teamwizardry.librarianlib.gui.HandlerList
 import com.teamwizardry.librarianlib.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.gui.mixin.DragMixin

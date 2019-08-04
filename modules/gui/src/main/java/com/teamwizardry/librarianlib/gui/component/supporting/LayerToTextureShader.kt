@@ -1,13 +1,5 @@
 package com.teamwizardry.librarianlib.gui.component.supporting
 
-import com.teamwizardry.librarianlib.features.kotlin.Client
-import com.teamwizardry.librarianlib.features.shader.Shader
-import com.teamwizardry.librarianlib.features.shader.ShaderHelper
-import com.teamwizardry.librarianlib.features.shader.uniforms.FloatTypes
-import com.teamwizardry.librarianlib.features.shader.uniforms.IntTypes
-import com.teamwizardry.librarianlib.features.shader.uniforms.Uniform
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL13
 import org.lwjgl.opengl.GL20

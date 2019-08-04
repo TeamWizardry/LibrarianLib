@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.gui.component.supporting
 
 import com.teamwizardry.librarianlib.gui.component.GuiComponent
-import com.teamwizardry.librarianlib.features.utilities.client.LibCursor
 
 data class MouseHit(val component: GuiComponent, val zIndex: Double, val cursor: LibCursor?) {
     companion object {

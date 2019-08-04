@@ -1,12 +1,12 @@
 package com.teamwizardry.librarianlib.gui.component.supporting
 
-import com.teamwizardry.librarianlib.core.LibrarianLog
+import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.gui.component.LayerHierarchyException
 import com.teamwizardry.librarianlib.gui.layers.MaskLayer
+import com.teamwizardry.librarianlib.gui.logger
 import com.teamwizardry.librarianlib.gui.value.RMValueDouble
-import com.teamwizardry.librarianlib.features.kotlin.unmodifiableView
 import java.lang.Exception
 import java.util.*
 
@@ -161,7 +161,7 @@ class LayerRelationshipHandler: ILayerRelationships {
         }
         if (layer.parent != null) {
             if (layer.parent == this.layer) {
-                LibrarianLog.warn(Exception(), "The passed layer was already a child of this layer")
+                logger.warn("The passed layer was already a child of this layer", Exception())
                 return
             } else {
                 throw LayerHierarchyException("The passed layer already had another parent")
@@ -185,7 +185,7 @@ class LayerRelationshipHandler: ILayerRelationships {
 
     override fun remove(layer: GuiLayer) {
         if(layer.parent == null) {
-            LibrarianLog.warn(Exception(), "The passed layer has no parent")
+            logger.warn("The passed layer has no parent", Exception())
             return
         } else if (layer.parent != this.layer) {
             throw LayerHierarchyException("This isn't the layer's parent")

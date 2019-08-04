@@ -4,8 +4,7 @@ import com.teamwizardry.librarianlib.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.gui.Key
 import com.teamwizardry.librarianlib.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.gui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.features.math.Vec2d
-import org.lwjgl.input.Keyboard
+import com.teamwizardry.librarianlib.math.Vec2d
 
 interface IComponentGuiEvent {
 

@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.gui
 
 import java.util.*
 
+// todo axe this
 class Key private constructor(val character: Char, val keyCode: Int) {
 
     override fun hashCode(): Int {
