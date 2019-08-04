@@ -26,7 +26,7 @@ open class CreateModuleTask: DefaultTask() {
             throw IllegalArgumentException("No module name specified")
         }
 
-        val transformer = NameTransformer(moduleName, humanName, description)
+        val transformer = NameTransformer(moduleName, humanName, moduleDescription)
         logger.lifecycle("Creating \"$humanName\" module")
         logger.lifecycle("$transformer")
 
