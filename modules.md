@@ -19,6 +19,38 @@
 - `BufferBuilder` extensions accepting `Vec3d`/`Vec2d`/`Color`
 - Immutable/synchronized `Collection` creation extensions
 - `KProperty0`/`KMutableProperty0` property delegates
+- Kotlin DSL for parsing JSON:
+    ```json
+    {
+        "property1": 10,
+        "property2": 10,
+        "children_array": [
+            "child1",
+            { "name": "child2" }
+        ],
+        "optional": {
+            "name": "optional_child"
+        }
+    }
+    ```
+    ```kotlin
+    val parsedValue: ParsedType = jsonElement.parse("root") {
+        val property1 = get("property1").asInt()
+        val property2 = get("property2").asInt()
+        val children: List<ChildType> = "children_array" {
+            elements.map { 
+                if(it.isString)
+                    ChildType(it.asString())
+                else
+                    ChildType(it["name"].asString())
+            }
+        }
+        val optionalChild: OptionalChild? = "optional" / {
+            OptionalChild(get("name").asString())
+        }
+        ParsedType(property1, property2, children)
+    }
+    ```
 #### com.teamwizardry.librarianlib.core
 - Client/server side aware `Runnable`/`Consumer`/`Function`
 - `Client` helper object
