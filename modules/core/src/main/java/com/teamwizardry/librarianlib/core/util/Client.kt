@@ -16,7 +16,7 @@ object Client {
     val window: MainWindow get() = minecraft.mainWindow
     val guiScaleFactor: Double get() = window.guiScaleFactor
     val resourceManager: IResourceManager get() = minecraft.resourceManager
-    val renderEngine: TextureManager get() = minecraft.textureManager
+    val textureManager: TextureManager get() = minecraft.textureManager
 
     /**
      * The game time, as measured from the game launch
