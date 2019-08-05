@@ -1,10 +1,7 @@
 package com.teamwizardry.librarianlib.sprite
 
-import com.teamwizardry.librarianlib.features.kotlin.Client
-import com.teamwizardry.librarianlib.features.kotlin.Minecraft
+import com.teamwizardry.librarianlib.core.util.Client
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.fml.relauncher.Side
-import net.minecraftforge.fml.relauncher.SideOnly
 import net.minecraft.client.renderer.texture.PngSizeInfo
 import java.awt.image.BufferedImage
 import java.awt.image.RasterFormatException
@@ -13,7 +10,6 @@ import kotlin.math.max
 /**
  * This class represents a section of a [Texture]
  */
-@SideOnly(Side.CLIENT)
 class Sprite : ISprite {
 
     /**
@@ -54,25 +50,16 @@ class Sprite : ISprite {
     var images: List<BufferedImage> = listOf()
         private set
 
-    @Deprecated("UV coordinates should rarely be directly used", replaceWith = ReplaceWith("def.w"))
-    val uvWidth: Int get() = def.w
-    @Deprecated("UV coordinates should rarely be directly used", replaceWith = ReplaceWith("def.h"))
-    val uvHeight: Int get() = def.h
-    @Deprecated("UV coordinates should rarely be directly used", replaceWith = ReplaceWith("def.u"))
-    val u: Int get() = def.u
-    @Deprecated("UV coordinates should rarely be directly used", replaceWith = ReplaceWith("def.v"))
-    val v: Int get() = def.v
-
     constructor(tex: Texture) {
         this.tex = tex
     }
 
     @Suppress("LeakingThis")
-    @JvmOverloads constructor(
-            loc: ResourceLocation, width: Int = 0, height: Int = 0) {
-        val pngSizeInfo = PngSizeInfo.makeFromResource(Client.minecraft.resourceManager.getResource(loc))
-        var pngWidth = pngSizeInfo.pngWidth
-        var pngHeight = pngSizeInfo.pngHeight
+    @JvmOverloads constructor(loc: ResourceLocation, width: Int = 0, height: Int = 0) {
+        val resource = Client.minecraft.resourceManager.getResource(loc)
+        val pngSizeInfo = PngSizeInfo(resource.toString(), resource.inputStream)
+        var pngWidth = pngSizeInfo.width
+        var pngHeight = pngSizeInfo.height
 
         if (width > 0 && height <= 0) {
             pngWidth = width
@@ -99,8 +86,6 @@ class Sprite : ISprite {
 
     /**
      * Initializes the sprite. Used to reinitialize on resource pack reload.
-
-     * --Package private--
      */
     internal fun init(def: SpriteDefinition) {
         this.def = def
@@ -167,7 +152,6 @@ class Sprite : ISprite {
         get() = def.maxVCap.toFloat() / def.h
 
     override fun bind() = tex.bind()
-
 
     override fun toString(): String {
         return "Sprite(texture=${tex.loc}, name=$name)"

@@ -1,21 +1,10 @@
 package com.teamwizardry.librarianlib.sprite
 
-/*
- * Created by bluexin.
- * Made for LibrarianLib, under GNU LGPL v3.0
- * (a copy of which can be found at the repo root)
- */
-
-import net.minecraftforge.fml.relauncher.Side
-import net.minecraftforge.fml.relauncher.SideOnly
-
-
 /**
  * Abstraction for Sprites.
  * Most use cases will use the [Sprite] implementation, however
  * the [LTextureAtlasSprite] is needed in some cases.
  */
-@SideOnly(Side.CLIENT)
 interface ISprite {
 
     /**
@@ -76,44 +65,14 @@ interface ISprite {
     }
 
     /**
-     * Draws the sprite to the screen with a custom width and height by clipping or tiling instead of stretching/squashing
-     * @param x
-     * *
-     * @param y
-     * *
-     * @param width
-     * *
-     * @param height
-     */
-    @Deprecated("Replaced with sprite pinning functionality", replaceWith = ReplaceWith(
-        "pinnedWrapper(!reverseY, reverseY, !reverseX, reverseX)" +
-            ".draw(animTicks, x, y, width.toFloat(), height.toFloat())"
-    ))
-    fun drawClipped(animTicks: Int, x: Float, y: Float, width: Int, height: Int, reverseX: Boolean = false, reverseY: Boolean = false) {
-        this.pinnedWrapper(!reverseY, reverseY, !reverseX, reverseX).draw(animTicks, x, y, width.toFloat(), height.toFloat())
-    }
-
-    @Deprecated("Replaced with sprite pinning functionality", replaceWith = ReplaceWith(
-        "pinnedWrapper(true, true, false, false).draw(animTicks, x, y, width.toFloat(), height.toFloat())"
-    ))
-    fun drawClipped(animTicks: Int, x: Float, y: Float, width: Int, height: Int) =
-        drawClipped(animTicks, x, y, width, height, false, false)
-
-    /**
      * The logical width of this sprite.
      */
     val width: Int
-
-    @Deprecated("`width` is now logical width", replaceWith = ReplaceWith("width"))
-    val inWidth: Int get() = width
 
     /**
      * The logical height of this sprite.
      */
     val height: Int
-
-    @Deprecated("`height` is now logical height", replaceWith = ReplaceWith("height"))
-    val inHeight: Int get() = height
 
     /**
      * The UV width of this sprite.

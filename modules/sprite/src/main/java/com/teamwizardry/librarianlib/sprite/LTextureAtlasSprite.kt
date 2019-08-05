@@ -6,11 +6,9 @@ package com.teamwizardry.librarianlib.sprite
  * (a copy of which can be found at the repo root)
  */
 
-import net.minecraft.client.Minecraft
+import com.teamwizardry.librarianlib.core.util.Client
+import net.minecraft.client.renderer.texture.AtlasTexture
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
-import net.minecraft.client.renderer.texture.TextureMap
-import net.minecraftforge.fml.relauncher.Side
-import net.minecraftforge.fml.relauncher.SideOnly
 
 /**
  * [ISprite] wrapper for [TextureAtlasSprite].
@@ -18,10 +16,9 @@ import net.minecraftforge.fml.relauncher.SideOnly
  *
  * Nothing special needs to be done for animations to work ([TextureAtlasSprite] handles them out of the box).
  */
-@SideOnly(Side.CLIENT)
-class LTextureAtlasSprite(private val tas: TextureAtlasSprite, inWidth: Int, inHeight: Int) : ISprite {
+class LTextureAtlasSprite(private val tas: TextureAtlasSprite) : ISprite {
 
-    override fun bind() = Minecraft.getMinecraft().textureManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE)
+    override fun bind() = Client.textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE)
 
     override fun minU(animFrames: Int) = tas.minU
 
@@ -32,10 +29,10 @@ class LTextureAtlasSprite(private val tas: TextureAtlasSprite, inWidth: Int, inH
     override fun maxV(animFrames: Int) = tas.maxV
 
     override val width: Int
-        get() = tas.iconWidth
+        get() = tas.width
 
     override val height: Int
-        get() = tas.iconHeight
+        get() = tas.height
 
     override val frameCount: Int
         get() = 1

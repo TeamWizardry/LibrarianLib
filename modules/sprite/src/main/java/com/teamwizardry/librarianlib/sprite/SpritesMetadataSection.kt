@@ -1,14 +1,10 @@
 package com.teamwizardry.librarianlib.sprite
 
-import net.minecraft.client.resources.data.IMetadataSection
-import net.minecraftforge.fml.relauncher.Side
-import net.minecraftforge.fml.relauncher.SideOnly
 import java.util.Arrays
 
-@SideOnly(Side.CLIENT)
-class SpritesMetadataSection(var width: Int, var height: Int, var sprites: List<SpriteDefinition>, var colors: List<ColorDefinition>) : IMetadataSection {
+class SpritesMetadataSection(var width: Int, var height: Int, var sprites: List<SpriteDefinition>, var colors: List<ColorDefinition>) {
     companion object {
-        var registered = false
+        val SERIALIZER = SpritesMetadataSectionSerializer()
     }
 }
 

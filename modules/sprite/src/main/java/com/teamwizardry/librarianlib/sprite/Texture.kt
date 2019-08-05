@@ -1,20 +1,19 @@
 package com.teamwizardry.librarianlib.sprite
 
-import com.teamwizardry.librarianlib.features.kotlin.Client
-import com.teamwizardry.librarianlib.features.kotlin.Minecraft
-import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
+import com.mojang.blaze3d.platform.TextureUtil
+import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.ClientRunnable
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.ITextureObject
 import net.minecraft.client.renderer.texture.PngSizeInfo
-import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.fml.relauncher.Side
-import net.minecraftforge.fml.relauncher.SideOnly
+import net.minecraftforge.resource.VanillaResourceType
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.FileNotFoundException
 import java.lang.ref.WeakReference
 import java.util.*
+import javax.imageio.ImageIO
 import kotlin.math.max
 import kotlin.reflect.KProperty
 
@@ -77,7 +76,6 @@ import kotlin.reflect.KProperty
  * }
  * ```
  */
-@SideOnly(Side.CLIENT)
 class Texture(
     loc: ResourceLocation,
     /**
@@ -122,8 +120,7 @@ class Texture(
 
     init {
         textures.add(WeakReference(this))
-        if (SpritesMetadataSection.registered)
-            loadSpriteData()
+        loadSpriteData()
     }
 
     /**
@@ -133,9 +130,10 @@ class Texture(
         var pngWidth: Int
         var pngHeight: Int
         try {
-            val pngSizeInfo = PngSizeInfo.makeFromResource(Client.minecraft.resourceManager.getResource(loc))
-            pngWidth = pngSizeInfo.pngWidth
-            pngHeight = pngSizeInfo.pngHeight
+            val resource = Client.minecraft.resourceManager.getResource(loc)
+            val pngSizeInfo = PngSizeInfo("$resource", resource.inputStream)
+            pngWidth = pngSizeInfo.width
+            pngHeight = pngSizeInfo.height
 
             if (width > 0 && height <= 0) {
                 pngWidth = width
@@ -156,7 +154,7 @@ class Texture(
         this.height = pngHeight
         this.section = null
         try {
-            this.section = Client.minecraft.resourceManager.getResource(loc).getMetadata("spritesheet")
+            this.section = Client.minecraft.resourceManager.getResource(loc).getMetadata(SpritesMetadataSection.SERIALIZER)
         } catch (e: FileNotFoundException) {
             // nop
         }
@@ -191,9 +189,9 @@ class Texture(
 
     fun loadImageData() {
         try {
-            val image = TextureUtil.readBufferedImage(Client.minecraft.resourceManager.getResource(loc).inputStream)
+            val image = ImageIO.read(Client.minecraft.resourceManager.getResource(loc).inputStream)
             this.image = image
-            this._sprites.forEach { name, sprite ->
+            this._sprites.forEach { (name, sprite) ->
                 try {
                     sprite.loadImage(image)
                 } catch(e: Exception) {
@@ -203,7 +201,7 @@ class Texture(
             this._colors.forEach { _, color ->
                 val x = (color.u.toDouble() / this.width * image.width).toInt()
                 val y = (color.v.toDouble() / this.height * image.height).toInt()
-                color.color.replaceColor(Color(image.getRGB(x, y), true))
+                color.color = Color(image.getRGB(x, y), true)
             }
         } catch (e: FileNotFoundException) {
             // nop
@@ -213,8 +211,7 @@ class Texture(
     fun switchTexture(loc: ResourceLocation) {
         this.loc = loc
         this.textureLoaded = false
-        if (SpritesMetadataSection.registered)
-            loadSpriteData()
+        loadSpriteData()
     }
 
     /**
@@ -251,8 +248,8 @@ class Texture(
         if(!textureLoaded) {
             return
         }
-        Minecraft.getMinecraft().textureManager.bindTexture(loc)
-        Minecraft.getMinecraft().textureManager.getTexture(loc).setBlurMipmap(true, false)
+        Client.textureManager.bindTexture(loc)
+        Client.textureManager.getTexture(loc).setBlurMipmap(true, false)
     }
 
     /**
@@ -263,15 +260,15 @@ class Texture(
         if(!textureLoaded) {
             return
         }
-        Minecraft.getMinecraft().textureManager.bindTexture(loc)
-        Minecraft.getMinecraft().textureManager.getTexture(loc).setBlurMipmap(false, false)
+        Client.textureManager.bindTexture(loc)
+        Client.textureManager.getTexture(loc).setBlurMipmap(false, false)
     }
 
     /**
      * Bind this texture
      */
     fun bind() {
-        Minecraft.getMinecraft().textureManager.bindTexture(loc)
+        Client.textureManager.bindTexture(loc)
         if(!textureLoaded) {
             textureLoaded = true
             if (blending)
@@ -302,7 +299,7 @@ class Texture(
     companion object {
 
         internal fun register() {
-            ClientRunnable.registerReloadHandler {
+            ClientRunnable.registerReloadHandler(VanillaResourceType.TEXTURES) {
                 val newList = ArrayList<WeakReference<Texture>>()
 
                 for (weakRef in textures) {
@@ -318,15 +315,14 @@ class Texture(
 
         fun reloadTextures() {
             val newList = ArrayList<WeakReference<Texture>>()
-            val textureManager = Client.renderEngine
 
             for (weakRef in textures) {
                 val tex = weakRef.get() ?: continue
                 newList.add(weakRef)
 
-                val texObject: ITextureObject? = textureManager.getTexture(tex.loc)
+                val texObject: ITextureObject? = Client.textureManager.getTexture(tex.loc)
                 if(texObject != null)
-                    textureManager.loadTexture(tex.loc, texObject)
+                    Client.textureManager.loadTexture(tex.loc, texObject)
 
                 tex.loadSpriteData()
                 tex.loadImageData()
@@ -341,7 +337,8 @@ class Texture(
     private class TextureColor {
         var u: Int = 0
         var v: Int = 0
-        val color = MutableColor()
+        var color = Color.WHITE
+            internal set
 
         fun init(def: ColorDefinition) {
             this.u = def.u

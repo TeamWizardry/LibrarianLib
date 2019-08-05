@@ -4,7 +4,7 @@ import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11
 
-object DrawingUtil {
+internal object DrawingUtil {
     var isDrawing = false
 
     /**
@@ -23,44 +23,6 @@ object DrawingUtil {
         isDrawing = false
     }
 
-    /**
-     * **!!! Use [Sprite.drawClipped] instead !!!**
-
-     *
-     * Draw a sprite at a location with the width and height specified by clipping or tiling instead of stretching/squishing
-     * @param sprite The sprite to draw
-     * *
-     * @param x The x position to draw at
-     * *
-     * @param y The y position to draw at
-     * *
-     * @param width The width to draw the sprite
-     * *
-     * @param height The height to draw the sprite
-     */
-    @Deprecated("Replaced with sprite pinning functionality", replaceWith = ReplaceWith(
-        "draw(sprite.pinnedWrapper(!reverseY, reverseY, !reverseX, reverseX), " +
-            "animTicks, x, y, width.toFloat(), height.toFloat())"
-    ))
-    fun drawClipped(sprite: ISprite, animTicks: Int, x: Float, y: Float, width: Int, height: Int, reverseX: Boolean, reverseY: Boolean) {
-        draw(sprite.pinnedWrapper(!reverseY, reverseY, !reverseX, reverseX), animTicks, x, y, width.toFloat(), height.toFloat())
-    }
-
-    /**
-     * **!!! Use [Sprite.draw] or [Sprite.draw] instead !!!**
-
-     *
-     * Draw a sprite at a location with the width and height specified.
-     * @param sprite The sprite to draw
-     * *
-     * @param x The x position to draw at
-     * *
-     * @param y The y position to draw at
-     * *
-     * @param width The width to draw the sprite
-     * *
-     * @param height The height to draw the sprite
-     */
     fun draw(sprite: ISprite, animFrames: Int, x: Float, y: Float, width: Float, height: Float) {
 
         val tessellator = Tessellator.getInstance()

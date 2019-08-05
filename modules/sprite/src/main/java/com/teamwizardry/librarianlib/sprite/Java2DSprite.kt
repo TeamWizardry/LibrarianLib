@@ -1,17 +1,15 @@
 package com.teamwizardry.librarianlib.sprite
 
-import com.teamwizardry.librarianlib.core.LibrarianLog
+import com.mojang.blaze3d.platform.GlStateManager
+import com.mojang.blaze3d.platform.TextureUtil
+import com.teamwizardry.librarianlib.core.util.Client
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.texture.TextureUtil
-import net.minecraftforge.fml.relauncher.Side
-import net.minecraftforge.fml.relauncher.SideOnly
+import net.minecraft.client.renderer.texture.NativeImage
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 
-@SideOnly(Side.CLIENT)
 class Java2DSprite(width: Int, height: Int) : ISprite {
     private var deleted = false
     override var width = width
@@ -20,10 +18,12 @@ class Java2DSprite(width: Int, height: Int) : ISprite {
         private set
 
     private val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-    private val texID = TextureUtil.glGenTextures()
+    private val native = NativeImage(NativeImage.PixelFormat.RGBA, width, height, true)
+    private val texID = TextureUtil.generateTextureId()
 
     init {
-        TextureUtil.allocateTexture(texID, width, height)
+        TextureUtil.prepareImage(texID, width, height)
+        native.uploadTextureSub(0, 0, 0, false)
     }
 
     @JvmOverloads
@@ -40,7 +40,8 @@ class Java2DSprite(width: Int, height: Int) : ISprite {
     }
 
     fun end() {
-        TextureUtil.uploadTextureImageSub(texID, image, 0, 0, false, false)
+        //todo This does nothing
+        native.uploadTextureSub(0, 0, 0, false)
     }
 
     override fun bind() {
@@ -50,7 +51,7 @@ class Java2DSprite(width: Int, height: Int) : ISprite {
 
     fun delete() {
         deleted = true
-        TextureUtil.deleteTexture(texID)
+        TextureUtil.releaseTextureId(texID)
     }
 
     override fun minU(animFrames: Int) = 0f
@@ -62,10 +63,11 @@ class Java2DSprite(width: Int, height: Int) : ISprite {
     override val frameCount = 1
 
     fun finalize() {
+        if(deleted) return
         val id = texID
-        Minecraft.getMinecraft().addScheduledTask {
-            LibrarianLog.debug("Deleting Java2DSprite $id")
-            TextureUtil.deleteTexture(id)
+        Client.minecraft.deferTask {
+            logger.debug("Deleting Java2DSprite $id")
+            TextureUtil.releaseTextureId(id)
         }
     }
 }
