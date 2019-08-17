@@ -23,10 +23,11 @@ import org.lwjgl.opengl.GL11
 import java.io.IOException
 
 /**
- * Created by TheCodeWarrior
+ * ## Facade equivalent: [GuiContainerBase][com.teamwizardry.librarianlib.features.facadecontainer.GuiContainerBase]
  */
 @Suppress("LeakingThis")
 @Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var guiHeight: Int) : GuiContainer(ContainerImpl(container)) {
     protected val mainComponents: ComponentVoid = ComponentVoid(0, 0)
     protected val fullscreenComponents: ComponentVoid = ComponentVoid(0, 0)
@@ -105,7 +106,6 @@ open class GuiContainerBase(val container: ContainerBase, var guiWidth: Int, var
 
         super.drawScreen(mouseX, mouseY, partialTicks)
         StencilUtil.clear()
-        GL11.glEnable(GL11.GL_STENCIL_TEST)
         fullscreenComponents.render.drawLate(relPos, partialTicks)
         GL11.glDisable(GL11.GL_STENCIL_TEST)
 

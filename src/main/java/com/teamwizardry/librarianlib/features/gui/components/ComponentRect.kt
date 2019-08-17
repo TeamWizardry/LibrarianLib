@@ -12,6 +12,10 @@ import java.awt.Color
 /**
  * Created by TheCodeWarrior
  */
+/**
+ * ## Facade equivalent: [RectLayer][com.teamwizardry.librarianlib.features.facade.layers.RectLayer]
+ */
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 class ComponentRect(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent(posX, posY, width, height) {
 
     val color = Option<ComponentRect, Color>(Color.WHITE)

@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.core.client
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
+import com.teamwizardry.librarianlib.core.client.commands.ClientCommands
 import com.teamwizardry.librarianlib.core.common.LibCommonProxy
 import com.teamwizardry.librarianlib.features.forgeevents.CustomWorldRenderEvent
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
@@ -8,6 +9,7 @@ import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.kotlin.unaryMinus
+import com.teamwizardry.librarianlib.features.math.AllocationDisplay
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import com.teamwizardry.librarianlib.features.particlesystem.GameParticleSystems
 import com.teamwizardry.librarianlib.features.shader.LibShaders
@@ -16,9 +18,13 @@ import com.teamwizardry.librarianlib.features.sprite.SpritesMetadataSection
 import com.teamwizardry.librarianlib.features.sprite.SpritesMetadataSectionSerializer
 import com.teamwizardry.librarianlib.features.sprite.Texture
 import com.teamwizardry.librarianlib.features.tesr.TileRendererRegisterProcessor
+import com.teamwizardry.librarianlib.features.text.Fonts
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import com.teamwizardry.librarianlib.features.utilities.client.F3Handler
 import com.teamwizardry.librarianlib.features.utilities.client.ScissorUtil
+import games.thecodewarrior.bitfont.typesetting.AttributedString
+import games.thecodewarrior.bitfont.typesetting.TypesetString
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.resources.I18n
@@ -27,12 +33,14 @@ import net.minecraft.client.resources.IResourceManager
 import net.minecraft.client.resources.data.MetadataSerializer
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.client.resource.IResourceType
 import net.minecraftforge.client.resource.ISelectiveResourceReloadListener
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.Side
@@ -61,8 +69,8 @@ class LibClientProxy : LibCommonProxy(), ISelectiveResourceReloadListener {
         F3Handler
         ScissorUtil
         LibShaders
-        ShaderHelper.init()
         GameParticleSystems
+        AllocationDisplay
 
         val s = MethodHandleHelper.wrapperForGetter(Minecraft::class.java, "metadataSerializer", "field_110452_an")(Minecraft.getMinecraft()) as MetadataSerializer
         s.registerMetadataSectionType(SpritesMetadataSectionSerializer(), SpritesMetadataSection::class.java)
@@ -74,6 +82,13 @@ class LibClientProxy : LibCommonProxy(), ISelectiveResourceReloadListener {
             TextureMapExporter
     }
 
+    override fun init(e: FMLInitializationEvent) {
+        super.init(e)
+
+        if(ClientCommands.root.subCommands.isNotEmpty())
+            ClientCommandHandler.instance.registerCommand(ClientCommands.root)
+    }
+
     override fun latePre(e: FMLPreInitializationEvent) {
         super.latePre(e)
 
@@ -82,11 +97,24 @@ class LibClientProxy : LibCommonProxy(), ISelectiveResourceReloadListener {
 
         (Minecraft.getMinecraft().resourceManager as IReloadableResourceManager).registerReloadListener(this)
         onResourceManagerReload(Minecraft.getMinecraft().resourceManager)
+
+        // typeset a simple ASCII string. This does two things:
+        // - initializes the atlas with the basic ASCII characters
+        // - loads ICU and related files
+        // This process seems to take around a second, so frontloading this process prevents stutters when first
+        // opening a GUI that uses Bitfont
+        @UseExperimental(ExperimentalBitfont::class)
+        TypesetString(Fonts.classic, AttributedString(('\u0020'..'\u007E').joinToString("")))
     }
 
     override fun lateInit(e: FMLInitializationEvent) {
         super.lateInit(e)
         ModelHandler.init()
+    }
+
+    override fun latePost(e: FMLPostInitializationEvent) {
+        super.latePost(e)
+        ShaderHelper.init()
     }
 
     override fun translate(s: String, vararg format: Any?): String {

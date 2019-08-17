@@ -22,7 +22,15 @@ import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
+/**
+ * ## Facade equivalent:
+ * [PastryTextField][com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryTextField] for
+ * single-line editing (unimplemented),
+ * [PastryTextEditor][com.teamwizardry.librarianlib.features.facade.provided.pastry.components.PastryTextEditor] for
+ * multi-line editing (WIP / unstable)
+ */
 @SideOnly(Side.CLIENT)
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 class ComponentTextField(private val fontRenderer: FontRenderer, x: Int, y: Int, width: Int, height: Int) : GuiComponent(x, y, width, height) {
 
     constructor(x: Int, y: Int, width: Int, height: Int) : this(Minecraft.getMinecraft().fontRenderer, x, y, width, height)

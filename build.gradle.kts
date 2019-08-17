@@ -35,14 +35,18 @@ minecraft {
     replaceIn("LibrarianLib.kt")
 }
 
+reobf.getByName("jar") {
+    extraLines("PK: com/ibm/icu com/teamwizardry/librarianlib/shade/icu")
+}
+
 sourceSets["main"].allSource.srcDir("src/example/java")
 sourceSets["main"].allSource.srcDir("src/api/java")
 sourceSets["main"].resources.srcDir("src/example/resources")
 
 val shade by configurations.creating // TODO: investigate contained deps
 
-configurations.compileOnly.extendsFrom(shade)
-configurations.testCompileOnly.extendsFrom(shade)
+configurations.compile.extendsFrom(shade)
+configurations.testCompile.extendsFrom(shade)
 
 repositories {
     jcenter()
@@ -50,12 +54,25 @@ repositories {
         name = "Bluexin repo"
         url = uri("https://maven.bluexin.be/repository/snapshots/")
     }
+    maven {
+        name = "Jitpack.io"
+        url = uri("https://jitpack.io")
+    }
 }
 
 dependencies {
     api("net.shadowfacts:Forgelin:1.8.0")
-    implementation("org.magicwerk:brownies-collections:0.9.13")
+    runtime("net.shadowfacts:Forgelin:1.8.0")
+
     shade("org.magicwerk:brownies-collections:0.9.13")
+//    implementation("org.magicwerk:brownies-collections:0.9.13")
+
+    shade("com.ibm.icu:icu4j:63.1")
+    shade("org.msgpack:msgpack-core:0.8.16")
+    shade("com.github.thecodewarrior:bitfont:-SNAPSHOT")
+//    implementation("com.ibm.icu:icu4j:63.1")
+//    implementation("org.msgpack:msgpack-core:0.8.16")
+//    implementation("com.github.thecodewarrior:bitfont:-SNAPSHOT")
 }
 
 kotlin.experimental.coroutines = Coroutines.ENABLE
@@ -81,6 +98,11 @@ tasks {
         for (dep in shade) {
             from(zipTree(dep)) {
                 exclude("META-INF", "META-INF/**")
+                includeEmptyDirs = false
+                eachFile {
+                    path = path.replace("com/ibm/icu", "com/teamwizardry/librarianlib/shade/icu")
+                }
+//                extraLines("PK: com/ibm/icu com/teamwizardry/librarianlib/shade/icu")
             }
         }
         exclude("*/**/librarianlibtest/**", "*/**/librarianlib.test/**")
@@ -114,6 +136,7 @@ tasks {
             jvmTarget = "1.8"
             javaParameters = true
             freeCompilerArgs += "-Xjvm-default=enable"
+            freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental"
         }
     }
 }

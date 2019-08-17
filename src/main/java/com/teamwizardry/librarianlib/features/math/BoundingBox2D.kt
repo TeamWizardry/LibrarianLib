@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.math
 
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.kotlin.times
@@ -7,7 +8,7 @@ import com.teamwizardry.librarianlib.features.kotlin.times
 
 class BoundingBox2D(val min: Vec2d, val max: Vec2d) {
 
-    constructor(minX: Double, minY: Double, maxX: Double, maxY: Double) : this(Vec2d(minX, minY), Vec2d(maxX, maxY))
+    constructor(minX: Double, minY: Double, maxX: Double, maxY: Double) : this(vec(minX, minY), vec(maxX, maxY))
 
     fun union(other: BoundingBox2D): BoundingBox2D {
         return BoundingBox2D(

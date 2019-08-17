@@ -28,6 +28,22 @@ class AnimatableProperty<T : Any> private constructor(val target: Class<T>, val 
 
     override fun doesInvolve(target: T, obj: Any) = involvement(target, obj)
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is AnimatableProperty<*>) return false
+
+        if (target != other.target) return false
+        if (keyPath != other.keyPath) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = target.hashCode()
+        result = 31 * result + keyPath.hashCode()
+        return result
+    }
+
     companion object {
         private var map = mutableMapOf<Pair<Class<*>, String>, AnimatableProperty<*>>()
         fun <T : Any> get(target: Class<T>, keyPath: String): AnimatableProperty<T> {

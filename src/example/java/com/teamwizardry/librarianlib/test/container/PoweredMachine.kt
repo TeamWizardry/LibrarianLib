@@ -204,10 +204,10 @@ class MachineProgress(@Save var iss: ItemStack) {
         get() = currentProgress >= totalTime
 
     /**
-     * Current progress of this operation, ranging [0f, 1f].
+     * Current progress of this operation, ranging [0, 1].
      */
-    val progress: Float
-        get() = Math.min(currentProgress / totalTime.toFloat(), 1f)
+    val progress: Double
+        get() = Math.min(currentProgress / totalTime.toDouble(), 1.0)
 }
 
 /**

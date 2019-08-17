@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.gui.mixin.gl
 import com.teamwizardry.librarianlib.features.gui.Option
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.glColor
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.Vec3d
@@ -62,7 +63,7 @@ object GlMixin {
         pushPopMatrix(component)
 
         return getData(component).getData("scale") {
-            val o = Option<GuiComponent, Vec3d>(Vec3d(1.0, 1.0, 1.0))
+            val o = Option<GuiComponent, Vec3d>(vec(1.0, 1.0, 1.0))
             component.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) {
                 val v = o.getValue(component)
                 GlStateManager.scale(v.x, v.y, v.z)

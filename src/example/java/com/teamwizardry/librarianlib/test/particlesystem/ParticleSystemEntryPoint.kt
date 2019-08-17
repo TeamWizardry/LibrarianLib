@@ -21,6 +21,4 @@ object ParticleSystemEntryPoint : TestEntryPoint {
 
     override fun postInit(event: FMLPostInitializationEvent) {
     }
-
-
 }

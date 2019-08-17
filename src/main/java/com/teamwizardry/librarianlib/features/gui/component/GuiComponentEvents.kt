@@ -5,6 +5,10 @@ import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
 import com.teamwizardry.librarianlib.features.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
+/**
+ * ## Facade equivalent: [GuiComponentEvents][com.teamwizardry.librarianlib.features.facade.component.GuiComponentEvents]
+ */
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 object GuiComponentEvents {
     /** Fired each tick while the component is a part of a screen */
     class ComponentTickEvent(@JvmField val component: GuiComponent) : Event()

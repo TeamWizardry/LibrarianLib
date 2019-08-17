@@ -3,6 +3,7 @@
 
 package com.teamwizardry.librarianlib.features.kotlin
 
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
@@ -15,12 +16,12 @@ import kotlin.math.acos
 
 // Vec3d ===============================================================================================================
 
-operator fun Vec3d.times(other: Vec3d): Vec3d = Vec3d(x * other.x, y * other.y, z * other.z)
+operator fun Vec3d.times(other: Vec3d): Vec3d = vec(x * other.x, y * other.y, z * other.z)
 operator fun Vec3d.times(other: Double): Vec3d = scale(other)
 operator fun Vec3d.times(other: Float): Vec3d = this * other.toDouble()
 operator fun Vec3d.times(other: Int): Vec3d = this * other.toDouble()
 
-operator fun Vec3d.div(other: Vec3d) = Vec3d(x / other.x, y / other.y, z / other.z)
+operator fun Vec3d.div(other: Vec3d) = vec(x / other.x, y / other.y, z / other.z)
 operator fun Vec3d.div(other: Double): Vec3d = this * (1 / other)
 operator fun Vec3d.div(other: Float): Vec3d = this / other.toDouble()
 operator fun Vec3d.div(other: Int): Vec3d = this / other.toDouble()
@@ -35,9 +36,9 @@ infix fun Vec3d.cross(other: Vec3d): Vec3d = crossProduct(other)
 
 infix fun Vec3d.angle(other: Vec3d) = acos((this dot other) / (length() * other.length()))
 
-fun Vec3d.withX(other: Double) = Vec3d(other, y, z)
-fun Vec3d.withY(other: Double) = Vec3d(x, other, z)
-fun Vec3d.withZ(other: Double) = Vec3d(x, y, other)
+fun Vec3d.withX(other: Double) = vec(other, y, z)
+fun Vec3d.withY(other: Double) = vec(x, other, z)
+fun Vec3d.withZ(other: Double) = vec(x, y, other)
 
 fun Vec3d.withX(other: Float) = withX(other.toDouble())
 fun Vec3d.withY(other: Float) = withY(other.toDouble())
@@ -116,7 +117,7 @@ fun randomNormal(): Vec3d {
     x *= multiplier
     z *= multiplier
 
-    return Vec3d(x, y, z)
+    return vec(x, y, z)
 }
 
 
@@ -137,8 +138,8 @@ operator fun Vec2d.plus(other: Vec2d) = add(other)
 operator fun Vec2d.minus(other: Vec2d) = sub(other)
 operator fun Vec2d.unaryMinus() = this * -1
 
-fun Vec2d.withX(other: Double) = Vec2d(other, y)
-fun Vec2d.withY(other: Double) = Vec2d(x, other)
+fun Vec2d.withX(other: Double) = vec(other, y)
+fun Vec2d.withY(other: Double) = vec(x, other)
 
 fun Vec2d.withX(other: Float) = withX(other.toDouble())
 fun Vec2d.withY(other: Float) = withY(other.toDouble())

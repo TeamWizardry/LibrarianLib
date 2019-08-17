@@ -13,6 +13,12 @@ import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.item.ItemStack
 import net.minecraft.util.text.TextFormatting
 
+/**
+ * ## Facade equivalents:
+ * [ItemStackLayer][com.teamwizardry.librarianlib.features.facade.layers.minecraft.ItemStackLayer] for pure rendering
+ * [ItemStackComponent][com.teamwizardry.librarianlib.features.facade.components.ComponentItemStack] for rendering + tooltip
+ */
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 open class ComponentStack(posX: Int, posY: Int) : GuiComponent(posX, posY, 16, 16) {
 
     val stack = Option<ComponentStack, ItemStack>(ItemStack.EMPTY)

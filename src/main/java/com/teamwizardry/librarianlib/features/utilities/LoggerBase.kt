@@ -57,6 +57,10 @@ abstract class LoggerBase(name: String) {
         logger.log(Level.WARN, String.format(message, *processFormatting(args)))
     }
 
+    fun warn(e: Exception, message: String, vararg args: Any?) {
+        logger.log(Level.WARN, String.format(message, *processFormatting(args)), e)
+    }
+
     fun info(message: String, vararg args: Any?) {
         logger.log(Level.INFO, String.format(message, *processFormatting(args)))
     }

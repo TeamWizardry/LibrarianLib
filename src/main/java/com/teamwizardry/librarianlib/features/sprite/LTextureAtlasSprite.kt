@@ -19,7 +19,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
  * Nothing special needs to be done for animations to work ([TextureAtlasSprite] handles them out of the box).
  */
 @SideOnly(Side.CLIENT)
-class LTextureAtlasSprite(private val tas: TextureAtlasSprite, override val inWidth: Int, override val inHeight: Int) : ISprite {
+class LTextureAtlasSprite(private val tas: TextureAtlasSprite, inWidth: Int, inHeight: Int) : ISprite {
 
     override fun bind() = Minecraft.getMinecraft().textureManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE)
 
@@ -38,5 +38,10 @@ class LTextureAtlasSprite(private val tas: TextureAtlasSprite, override val inWi
         get() = tas.iconHeight
 
     override val frameCount: Int
-        get() = 0
+        get() = 1
+
+    override val uSize: Float
+        get() = tas.maxU - tas.minU
+    override val vSize: Float
+        get() = tas.maxV - tas.minV
 }

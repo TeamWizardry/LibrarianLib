@@ -7,8 +7,9 @@ import com.teamwizardry.librarianlib.features.gui.components.ComponentVoid
 import com.teamwizardry.librarianlib.features.guicontainer.ComponentSlot
 
 /**
- * Created by TheCodeWarrior
+ * ## Facade equivalent: [BaseLayouts][com.teamwizardry.librarianlib.features.facadecontainer.builtin.BaseLayouts]
  */
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 object BaseLayouts {
 
     fun player(inv: BaseWrappers.InventoryWrapperPlayer) = PlayerLayout(inv)

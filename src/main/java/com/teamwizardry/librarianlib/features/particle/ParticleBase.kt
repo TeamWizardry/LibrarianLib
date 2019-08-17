@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.particle
 
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.*
 import com.teamwizardry.librarianlib.features.math.interpolate.InterpFunction
 import com.teamwizardry.librarianlib.features.particle.functions.RenderFunction
@@ -37,7 +38,7 @@ open class ParticleBase internal constructor(
         var acceleration: Vec3d,
         var deceleration: Vec3d,
         var friction: Vec3d,
-        var jitterMagnitude: Vec3d = Vec3d(0.05, 0.05, 0.05),
+        var jitterMagnitude: Vec3d = vec(0.05, 0.05, 0.05),
         var jitterChance: Float = 0.1f,
         var canBounce: Boolean = false,
         var bounceMagnitude: Double = 0.9
@@ -51,7 +52,7 @@ open class ParticleBase internal constructor(
         // NO-OP
     }
 
-    val radius: Vec3d = Vec3d(0.1, 0.1, 0.1)
+    val radius: Vec3d = vec(0.1, 0.1, 0.1)
 
     var pos: Vec3d = position
         set(value) {
@@ -95,7 +96,7 @@ open class ParticleBase internal constructor(
         var jitter = Vec3d.ZERO
 
         if (ThreadLocalRandom.current().nextDouble() < jitterChance)
-            jitter = jitterMagnitude * Vec3d(
+            jitter = jitterMagnitude * vec(
                     ThreadLocalRandom.current().nextDouble() * 2.0 - 1.0,
                     ThreadLocalRandom.current().nextDouble() * 2.0 - 1.0,
                     ThreadLocalRandom.current().nextDouble() * 2.0 - 1.0
@@ -134,7 +135,7 @@ open class ParticleBase internal constructor(
 
         val i = animPos()
 
-        val pos = this.prevPos + (this.pos - prevPos) * info.partialTicks.toDouble() - Vec3d(Particle.interpPosX, Particle.interpPosY, Particle.interpPosZ)
+        val pos = this.prevPos + (this.pos - prevPos) * info.partialTicks.toDouble() - vec(Particle.interpPosX, Particle.interpPosY, Particle.interpPosZ)
 
         val brightness = this.getBrightnessForRender()
         val skyLight = brightness shr 16 and 65535
@@ -211,7 +212,7 @@ open class ParticleBase internal constructor(
 
     protected fun resetPositionToBB() {
         val axisalignedbb = this.entityBoundingBox
-        this.pos = Vec3d(
+        this.pos = vec(
                 (axisalignedbb.minX + axisalignedbb.maxX) / 2.0,
                 (axisalignedbb.minY + axisalignedbb.maxY) / 2.0,
                 (axisalignedbb.minZ + axisalignedbb.maxZ) / 2.0

@@ -1,6 +1,10 @@
 package com.teamwizardry.librarianlib.features.animator
 
 import com.teamwizardry.librarianlib.features.kotlin.clamp
+import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * An animation applied to a specific object and property of that object
@@ -126,7 +130,7 @@ abstract class Animation<T : Any?>(val target: T, val property: IAnimatable<T>) 
     /**
      * runs the completion callback
      */
-    fun complete() {
+    open fun complete() {
         completion.run()
         finished = true
     }

@@ -85,40 +85,119 @@ interface ISprite {
      * *
      * @param height
      */
+    @Deprecated("Replaced with sprite pinning functionality", replaceWith = ReplaceWith(
+        "pinnedWrapper(!reverseY, reverseY, !reverseX, reverseX)" +
+            ".draw(animTicks, x, y, width.toFloat(), height.toFloat())"
+    ))
     fun drawClipped(animTicks: Int, x: Float, y: Float, width: Int, height: Int, reverseX: Boolean = false, reverseY: Boolean = false) {
-        DrawingUtil.drawClipped(this, animTicks, x, y, width, height, reverseX, reverseY)
+        this.pinnedWrapper(!reverseY, reverseY, !reverseX, reverseX).draw(animTicks, x, y, width.toFloat(), height.toFloat())
     }
 
+    @Deprecated("Replaced with sprite pinning functionality", replaceWith = ReplaceWith(
+        "pinnedWrapper(true, true, false, false).draw(animTicks, x, y, width.toFloat(), height.toFloat())"
+    ))
     fun drawClipped(animTicks: Int, x: Float, y: Float, width: Int, height: Int) =
-            drawClipped(animTicks, x, y, width, height, false, false)
-
+        drawClipped(animTicks, x, y, width, height, false, false)
 
     /**
-     * Width of this sprite.
+     * The logical width of this sprite.
      */
     val width: Int
 
-    /**
-     * Intended width for this sprite.
-     * Used for automatic repetition (instead of bad scaling).
-     */
-    val inWidth
-        get() = width
+    @Deprecated("`width` is now logical width", replaceWith = ReplaceWith("width"))
+    val inWidth: Int get() = width
 
     /**
-     * Height of this sprite.
+     * The logical height of this sprite.
      */
     val height: Int
 
-    /**
-     * Intended height for this sprite.
-     * Used for automatic repetition (instead of bad scaling).
-     */
-    val inHeight
-        get() = height
+    @Deprecated("`height` is now logical height", replaceWith = ReplaceWith("height"))
+    val inHeight: Int get() = height
 
     /**
-     * Frames for this sprite (if animated).
+     * The UV width of this sprite.
+     */
+    val uSize: Float
+
+    /**
+     * The UV height of this sprite.
+     */
+    val vSize: Float
+
+    /**
+     * Frames for this sprite (if animated). Must be >= 1
      */
     val frameCount: Int
+
+    /**
+     * The fraction of the sprite along the minimum U edge that should not be distorted when stretching the sprite.
+     */
+    @JvmDefault
+    val minUCap: Float get() = 0f
+
+    /**
+     * The fraction of the sprite along the minimum V edge that should not be distorted when stretching the sprite.
+     */
+    @JvmDefault
+    val minVCap: Float get() = 0f
+
+    /**
+     * The fraction of the sprite along the maximum U edge that should not be distorted when stretching the sprite.
+     */
+    @JvmDefault
+    val maxUCap: Float get() = 0f
+
+    /**
+     * The fraction of the sprite along the maximum V edge that should not be distorted when stretching the sprite.
+     */
+    @JvmDefault
+    val maxVCap: Float get() = 0f
+
+    /**
+     * Whether the top of this sprite should be pinned. If this is false the top of the texture will truncate or
+     * repeat if the sprite is drawn shorter or taller than normal.
+     *
+     * If both this and [pinBottom] are false, this sprite will render as if both were true
+     */
+    @JvmDefault
+    val pinTop: Boolean get() = true
+
+    /**
+     * Whether the bottom of this sprite should be pinned. If this is false the bottom of the texture will truncate or
+     * repeat if the sprite is drawn shorter or taller than normal.
+     *
+     * If both this and [pinTop] are false, this sprite will render as if both were true
+     */
+    @JvmDefault
+    val pinBottom: Boolean get() = true
+
+    /**
+     * Whether the left side of this sprite should be pinned. If this is false the left side of the texture will
+     * truncate or repeat if the sprite is drawn narrower or wider than normal.
+     *
+     * If both this and [pinRight] are false, this sprite will render as if both were true
+     */
+    @JvmDefault
+    val pinLeft: Boolean get() = true
+
+    /**
+     * Whether the right side of this sprite should be pinned. If this is false the right side of the texture will
+     * truncate or repeat if the sprite is drawn narrower or wider than normal.
+     *
+     * If both this and [pinLeft] are false, this sprite will render as if both were true
+     */
+    @JvmDefault
+    val pinRight: Boolean get() = true
+
+    /**
+     * The number of clockwise 90° rotations should be made when drawing this sprite.
+     */
+    @JvmDefault
+    val rotation: Int get() = 0
+
+    @JvmDefault
+    fun pinnedWrapper(top: Boolean, bottom: Boolean, left: Boolean, right: Boolean): ISprite {
+        return PinnedWrapper(this, top, bottom, left, right)
+    }
 }
