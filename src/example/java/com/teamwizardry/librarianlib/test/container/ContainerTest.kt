@@ -20,7 +20,7 @@ import java.awt.Color
 /**
  * Created by TheCodeWarrior
  */
-class ContainerTest(val player: EntityPlayer, tile: TEContainer) : ContainerBase() {
+class ContainerTest(player: EntityPlayer, tile: TEContainer) : ContainerBase(player) {
 
     val invPlayer = BaseWrappers.player(player)
     val invBlock = TestWrapper(tile)
