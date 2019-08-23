@@ -72,7 +72,7 @@ object Client {
 
     @JvmStatic
     @SubscribeEvent
-    private fun clientTickEnd(event: TickEvent.ClientTickEvent) {
+    internal fun clientTickEnd(event: TickEvent.ClientTickEvent) {
         if (event.phase == TickEvent.Phase.END) {
             val mc = Minecraft.getInstance()
             if(!mc.isGamePaused)
