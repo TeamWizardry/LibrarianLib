@@ -9,6 +9,7 @@ import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.ModLoadingContext
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
@@ -18,7 +19,7 @@ abstract class LibrarianLibModule(val name: String, val logger: Logger) {
     val modid: String = "librarianlib-$name"
 
     init {
-        register(modid, this)
+        register(this)
 
         FMLJavaModLoadingContext.get().modEventBus.addListener<FMLCommonSetupEvent> {
             this.setup(it)
@@ -64,12 +65,38 @@ abstract class LibrarianLibModule(val name: String, val logger: Logger) {
     }
 
     companion object {
-        private val _modules = mutableMapOf<String, LibrarianLibModule>()
+        private val _modules = mutableListOf<LibrarianLibModule>()
 
-        val modules: Map<String, LibrarianLibModule> = _modules.unmodifiableView()
+        val modules: List<LibrarianLibModule> = _modules.unmodifiableView()
 
-        private fun register(modid: String, module: LibrarianLibModule) {
-            _modules[modid] = module
+        private fun register(module: LibrarianLibModule) {
+            _modules.add(module)
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        fun <T: LibrarianLibModule> findByName(name: String): T? {
+            return modules.find { it.name == name } as T?
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        fun <T: LibrarianLibModule> findByModId(modid: String): T? {
+            return modules.find { it.modid == modid } as T?
+        }
+
+        inline fun <reified T: LibrarianLibModule> get(): T {
+            return find<T>()
+                ?: error("Couldn't find a LibrarianLib module with the type ${T::class.simpleName}. " +
+                    "Maybe it hasn't loaded yet?")
+        }
+
+        inline fun <reified T: LibrarianLibModule> find(): T? {
+            return modules.find { it is T } as T?
+        }
+
+        inline fun <reified T: LibrarianLibModule> current(): T {
+            val currentModId = ModLoadingContext.get().activeContainer.modId
+            return findByModId(currentModId)
+                ?: error("The currently loading mod `$currentModId` is not a LibrarianLib Module")
         }
     }
 }
