@@ -19,6 +19,8 @@
 - `BufferBuilder` extensions accepting `Vec3d`/`Vec2d`/`Color`
 - Immutable/synchronized `Collection` creation extensions
 - `KProperty0`/`KMutableProperty0` property delegates
+- A constant that indicates whether the current environment is obfuscated
+- A method to automatically select between srg and deobfuscated names
 #### com.teamwizardry.librarianlib.core
 - Client/server side aware `Runnable`/`Consumer`/`Function`
 - `Client` helper object
@@ -28,6 +30,11 @@
 ## Particles
 ### com.teamwizardry.librarianlib.particles
 - Particle system
+
+## Test Base
+### com.teamwizardry.librarianlib.testbase
+- A base test mod class to be used in LibrarianLib module tests
+- A base test item DSL
 
 ## Utilities
 ### com.teamwizardry.libarianlib.utilities

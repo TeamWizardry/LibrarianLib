@@ -60,28 +60,6 @@ public interface ClientRunnable {
     }
 
     @OnlyIn(Dist.CLIENT)
-    static boolean isLoading(IResourceType type) {
-        return SelectiveReloadStateHandler.INSTANCE.get().test(type);
-    }
-
-    static void registerReloadHandler(List<IResourceType> types, ClientRunnable runnable) {
-        ISelectiveResourceReloadListener listener = (resourceManager, resourcePredicate) -> {
-            boolean hasMatch = false;
-            for (IResourceType type : types) {
-                hasMatch = hasMatch || resourcePredicate.test(type);
-            }
-            if(hasMatch)
-                runnable.runIfClient();
-        };
-
-        ((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).addReloadListener(listener);
-    }
-
-    static void registerReloadHandler(IResourceType type, ClientRunnable runnable) {
-        registerReloadHandler(Lists.newArrayList(type), runnable);
-    }
-
-    @OnlyIn(Dist.CLIENT)
     void runIfClient();
 
     @FunctionalInterface

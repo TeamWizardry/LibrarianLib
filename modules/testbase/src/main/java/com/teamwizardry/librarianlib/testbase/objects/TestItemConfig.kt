@@ -13,10 +13,10 @@ import net.minecraft.world.World
 import net.minecraftforge.fml.ModLoadingContext
 
 @TestItemDslMarker
-class TestItemConfig(val name: String) {
+class TestItemConfig(val id: String, val name: String) {
     val modid: String = ModLoadingContext.get().activeContainer.modId
 
-    constructor(name: String, block: TestItemConfig.() -> Unit): this(name) {
+    constructor(id: String, name: String, block: TestItemConfig.() -> Unit): this(id, name) {
         this.block()
     }
 

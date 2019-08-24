@@ -16,7 +16,7 @@ import net.minecraftforge.fml.ModLoadingContext
 
 class TestItem(val config: TestItemConfig): Item(config.properties), TestObject {
     init {
-        this.registryName = ResourceLocation(ModLoadingContext.get().activeContainer.modId, config.name)
+        this.registryName = ResourceLocation(ModLoadingContext.get().activeContainer.modId, config.id)
     }
 
     override fun onItemRightClick(worldIn: World, playerIn: PlayerEntity, handIn: Hand): ActionResult<ItemStack> {

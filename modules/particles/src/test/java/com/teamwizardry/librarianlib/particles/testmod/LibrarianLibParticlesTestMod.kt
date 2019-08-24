@@ -32,13 +32,13 @@ internal const val modid: String = "librarianlib-particles-test"
 class LibrarianLibParticlesTestMod: TestMod("particles", logger) {
     init {
         val systems = listOf(
-            "static",
-            "physics",
-            "flood"
+            "static" to "Spawn Static Particle",
+            "physics" to "Spawn Particle with Physics",
+            "flood" to "Spray Physics Particles"
         )
 
-        systems.forEach { type ->
-            +TestItem(TestItemConfig("spawn_$type") {
+        systems.forEach { (type, name) ->
+            +TestItem(TestItemConfig("spawn_$type", name) {
                 server.rightClick {
                     if(player.isSneaking) {
                         val eye = player.getEyePosition(0f)
