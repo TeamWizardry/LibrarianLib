@@ -98,16 +98,20 @@ allprojects {
 }
 
 // ====================================================== Root ====================================================== //
-
 dependencies {
-    println("root deps")
+    println("root dependencies")
     subprojects.forEach {
-        println("root deps on: ${it.name}")
+        println("root depends on: ${it.name}")
         compileOnly(it.java.sourceSets["main"].output)
         compileOnly(it.java.sourceSets["test"].output)
     }
-    compile("com.github.TeamWizardry:Mirror:-SNAPSHOT")
-    compile("org.magicwerk:brownies-collections:0.9.13")
+    val runtimeClasspath = project.files()
+    runtimeClasspath.from(project.java.sourceSets["main"].runtimeClasspath)
+    subprojects.forEach {
+        runtimeClasspath.from(it.java.sourceSets["main"].runtimeClasspath)
+        runtimeClasspath.from(it.java.sourceSets["test"].runtimeClasspath)
+    }
+    project.java.sourceSets["main"].runtimeClasspath = runtimeClasspath
 }
 
 minecraft {
