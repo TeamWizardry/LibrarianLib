@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.core.util.kotlin.obf
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.testbase.objects.TestItem
 import com.teamwizardry.librarianlib.testbase.objects.TestObject
+import com.teamwizardry.librarianlib.virtualresources.VirtualResources
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.color.IItemColor
 import net.minecraft.client.renderer.color.ItemColors
@@ -75,11 +76,7 @@ abstract class TestMod(name: String, logger: Logger): LibrarianLibModule("$name-
     }
 
     init {
-        ClientRunnable.run {
-            Client.resourceReloadHandler.register(VanillaResourceType.LANGUAGES) {
-                registerNames()
-            }
-        }
+        LibTestBaseModule.add(this)
     }
 
     override fun setup(event: FMLCommonSetupEvent) {
@@ -100,6 +97,22 @@ abstract class TestMod(name: String, logger: Logger): LibrarianLibModule("$name-
 //            override fun accepts(modelLocation: ResourceLocation): Boolean {
 //            }
 //        })
+
+
+        items.forEach { item ->
+            ForgeRegistries.ITEMS.register(item)
+            if(item is TestItem) {
+                val name = item.registryName!!
+                VirtualResources.client.add(
+                    ResourceLocation(name.namespace, "models/item/${name.path}.json"),
+                    """
+                        {
+                            "parent": "librarianlib-testbase:item/test_tool"
+                        }
+                    """.trimIndent()
+                )
+            }
+        }
     }
 
     @SubscribeEvent
@@ -110,33 +123,6 @@ abstract class TestMod(name: String, logger: Logger): LibrarianLibModule("$name-
             else
                 Color.WHITE.rgb
         }, *items.toTypedArray())
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    private fun registerNames() {
-        val localeField = LanguageManager::class.java.getDeclaredField(obf("CURRENT_LOCALE", "field_135049_a"))
-        localeField.isAccessible = true
-        val locale = localeField.get(null) as Locale
-        val propertiesField = Locale::class.java.getDeclaredField(obf("properties", "field_135032_a"))
-        propertiesField.isAccessible = true
-        @Suppress("UNCHECKED_CAST")
-        val properties = propertiesField.get(locale) as MutableMap<String, String>
-        items.forEach { item ->
-            if(item !is TestItem) return@forEach
-            properties[Util.makeTranslationKey("item", item.registryName)] = item.config.name
-        }
-    }
-
-    @SubscribeEvent
-    internal fun bakeModels(event: ModelBakeEvent) {
-        val toolModel = event.modelLoader.func_217845_a(
-            ModelResourceLocation("librarianlib-testbase:test_tool", "inventory"),
-            ModelRotation.X0_Y0
-        )
-        items.forEach { item ->
-            val name = item.registryName!!
-            event.modelRegistry[ModelResourceLocation("${name.namespace}:item/${name.path}", "inventory")] = toolModel
-        }
     }
 
     override fun registerBlocks(blockRegistryEvent: RegistryEvent.Register<Block>) {

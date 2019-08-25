@@ -5,6 +5,6 @@ import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
 
 @Mod("librarianlib-xtemplatex")
-class LibXTEmplateXModule : LibrarianLibModule("xtemplatex", logger)
+class LibXTemplateXModule : LibrarianLibModule("xtemplatex", logger)
 
 internal val logger = LogManager.getLogger("LibrarianLib/UTemplateU")

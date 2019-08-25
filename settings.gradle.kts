@@ -26,6 +26,7 @@ val modules = listOf(
     "utilities",
     "particles",
     "testbase",
+    "virtualresources",
     "xtemplatex" // marker for createModule task
 ).dropLast(1)
 

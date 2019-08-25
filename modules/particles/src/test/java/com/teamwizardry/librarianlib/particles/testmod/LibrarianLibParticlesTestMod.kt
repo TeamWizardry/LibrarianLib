@@ -61,6 +61,7 @@ class LibrarianLibParticlesTestMod: TestMod("particles", logger) {
     }
 
     override fun clientSetup(event: FMLClientSetupEvent) {
+        super.clientSetup(event)
         RenderingRegistry.registerEntityRenderingHandler(ParticleSpawnerEntity::class.java) { ParticleSpawnerEntityRenderer(it) }
     }
 

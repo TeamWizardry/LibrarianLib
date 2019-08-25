@@ -28,15 +28,21 @@
     - Access game and world tick and partial tick time, with easy tick interpolation
 
 ## Particles
-### com.teamwizardry.librarianlib.particles
+#### com.teamwizardry.librarianlib.particles
 - Particle system
 
 ## Test Base
-### com.teamwizardry.librarianlib.testbase
+#### com.teamwizardry.librarianlib.testbase
 - A base test mod class to be used in LibrarianLib module tests
 - A base test item DSL
 
 ## Utilities
-### com.teamwizardry.libarianlib.utilities
+#### com.teamwizardry.libarianlib.utilities
 - Fast isAir checks
 - Highly efficient ray-world collision detection
+
+## Virtual Resources
+#### com.teamwizardry.libarianlib.virtualresources
+- A virtual resource pack, allowing custom resources to be injected at runtime
+- Methods to directly inject a single resource location 
+- Methods to add dynamic virtual resource pack objects
