@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.testbase
 import com.teamwizardry.librarianlib.core.LibrarianLibModule
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.ClientRunnable
+import com.teamwizardry.librarianlib.core.util.DistinctColors
 import com.teamwizardry.librarianlib.core.util.kotlin.obf
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.testbase.objects.TestItem
@@ -44,11 +45,16 @@ import net.minecraftforge.resource.VanillaResourceType
 import org.apache.logging.log4j.Logger
 import java.awt.Color
 
-abstract class TestMod(name: String, logger: Logger): LibrarianLibModule("$name-test", logger) {
+abstract class TestMod(name: String, val humanName: String, logger: Logger): LibrarianLibModule("$name-test", logger) {
 
-    val itemGroup = object : ItemGroup("librarianlib-$name-test.itemgroup") {
+    val itemGroup = object : ItemGroup(modid) {
+        private val stack: ItemStack by lazy {
+            val stack = ItemStack(LibTestBaseModule.testTool)
+            stack.orCreateTag.putString("mod", modid)
+            return@lazy stack
+        }
         override fun createIcon(): ItemStack {
-            return ItemStack(Items.IRON_INGOT)
+            return stack
         }
     }
 
@@ -86,21 +92,8 @@ abstract class TestMod(name: String, logger: Logger): LibrarianLibModule("$name-
         entities.forEach {
 //            RenderingRegistry.registerEntityRenderingHandler(entityClass) { ParticleSpawnerEntityRenderer(it) }
         }
-//
-//        ModelLoaderRegistry.registerLoader(object : ICustomModelLoader {
-//            override fun loadModel(modelLocation: ResourceLocation): IUnbakedModel {
-//            }
-//
-//            override fun onResourceManagerReload(resourceManager: IResourceManager) {
-//            }
-//
-//            override fun accepts(modelLocation: ResourceLocation): Boolean {
-//            }
-//        })
-
 
         items.forEach { item ->
-            ForgeRegistries.ITEMS.register(item)
             if(item is TestItem) {
                 val name = item.registryName!!
                 VirtualResources.client.add(
@@ -119,7 +112,7 @@ abstract class TestMod(name: String, logger: Logger): LibrarianLibModule("$name-
     internal fun registerColors(colorHandlerEvent: ColorHandlerEvent.Item) {
         colorHandlerEvent.itemColors.register(IItemColor { stack, tintIndex ->
             if(tintIndex == 1 && stack.item is TestItem)
-                Color.getHSBColor((stack.item.registryName.hashCode() / 1000.toFloat()) % 1, 0.8f, 0.8f).rgb
+                DistinctColors.forObject(stack.item.registryName).rgb
             else
                 Color.WHITE.rgb
         }, *items.toTypedArray())

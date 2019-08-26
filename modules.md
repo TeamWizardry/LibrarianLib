@@ -21,6 +21,8 @@
 - `KProperty0`/`KMutableProperty0` property delegates
 - A constant that indicates whether the current environment is obfuscated
 - A method to automatically select between srg and deobfuscated names
+- A set of [20 visually distinct colors](https://sashat.me/2017/01/11/list-of-20-simple-distinct-colors/),
+plus a method to color code objects using their hashcode
 #### com.teamwizardry.librarianlib.core
 - Client/server side aware `Runnable`/`Consumer`/`Function`
 - `Client` helper object
@@ -34,7 +36,16 @@
 ## Test Base
 #### com.teamwizardry.librarianlib.testbase
 - A base test mod class to be used in LibrarianLib module tests
-- A base test item DSL
+- A DSL for creating test items, with client/common/server hooks for:
+  - Right clicking
+  - Right clicking air
+  - Right clicking blocks
+  - Holding right click
+  - Releasing right click
+  - Left clicking an entity
+  - Right clicking an entity
+  - Inventory ticks
+  - Ticks while being held
 
 ## Utilities
 #### com.teamwizardry.libarianlib.utilities
