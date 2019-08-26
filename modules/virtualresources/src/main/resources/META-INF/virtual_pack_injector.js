@@ -20,7 +20,7 @@ function initializeCoreMod() {
                         insnList.add(
                             new MethodInsnNode(Opcodes.INVOKESTATIC,
                                 "com/teamwizardry/librarianlib/virtualresources/VirtualResources",
-                                "inject", "(Lnet/minecraft/resources/FallbackResourceManager;)V"
+                                "inject-asm", "(Lnet/minecraft/resources/FallbackResourceManager;)V"
                             )
                         );
                         for(var i = 0; i < method.instructions.size(); i++) {

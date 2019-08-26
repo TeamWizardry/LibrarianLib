@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.virtualresources
 
 import net.minecraft.resources.FallbackResourceManager
+import net.minecraft.resources.IResourceManager
 import net.minecraft.resources.IResourcePack
 import net.minecraft.resources.ResourcePack
 import net.minecraft.resources.ResourcePackType
@@ -14,6 +15,7 @@ import java.io.InputStream
 import java.util.function.Predicate
 
 class VirtualResources internal constructor(val type: ResourcePackType) {
+    internal val fallback = FallbackResourceManager(type)
     internal val files = mutableMapOf<ResourceLocation, ByteArray>()
     internal val generators = mutableMapOf<ResourceLocation, () -> ByteArray>()
     internal val packs = mutableListOf<VirtualResourcePack>()
@@ -66,12 +68,19 @@ class VirtualResources internal constructor(val type: ResourcePackType) {
         }
 
         @JvmStatic
-        fun inject(pack: FallbackResourceManager) {
+        fun `inject-asm`(pack: FallbackResourceManager) {
             pack.resourcePacks.add(Pack)
+        }
+
+        @JvmStatic
+        fun `fallbackManager-asm`(manager: IResourceManager?, type: ResourcePackType): IResourceManager? {
+            if(manager != null) return manager
+            return resources(type).fallback
         }
     }
 
     private object Pack: IResourcePack {
+
         override fun getResourceStream(type: ResourcePackType, location: ResourceLocation): InputStream {
             val resources = resources(type)
             resources.files[location]?.also {
