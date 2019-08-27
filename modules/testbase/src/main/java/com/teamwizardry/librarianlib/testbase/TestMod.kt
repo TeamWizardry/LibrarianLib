@@ -19,6 +19,7 @@ import net.minecraft.client.resources.LanguageManager
 import net.minecraft.client.resources.Locale
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityType
+import net.minecraft.item.BlockItem
 import net.minecraft.item.Item
 import net.minecraft.item.ItemGroup
 import net.minecraft.item.ItemStack
@@ -72,7 +73,10 @@ abstract class TestMod(name: String, val humanName: String, logger: Logger): Lib
     }
 
     operator fun <T: Block> T.unaryPlus(): T {
+        val item = BlockItem(this, Item.Properties())
+        item.registryName = ResourceLocation(this.registryName!!.namespace, this.registryName!!.path + "_block")
         _blocks.add(this)
+        _items.add(item)
         return this
     }
 

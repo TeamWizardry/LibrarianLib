@@ -1,6 +1,8 @@
 package com.teamwizardry.librarianlib.testbase.testmod
 
 import com.teamwizardry.librarianlib.testbase.TestMod
+import com.teamwizardry.librarianlib.testbase.objects.TestBlock
+import com.teamwizardry.librarianlib.testbase.objects.TestBlockConfig
 import com.teamwizardry.librarianlib.testbase.objects.TestItem
 import com.teamwizardry.librarianlib.testbase.objects.TestItemConfig
 import net.minecraftforge.fml.common.Mod
@@ -62,6 +64,10 @@ class LibTestBaseTestModule: TestMod("testbase", "Test Base", logger) {
                 inventoryTick { sneaking { chat("[Server] inventoryTick") } }
                 tickInHand { sneaking { chat("[Server] tickInHand") } }
             }
+        })
+
+        +TestBlock(TestBlockConfig("right_click", "Right Click") {
+
         })
     }
 }

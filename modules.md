@@ -42,6 +42,7 @@ plus a method to color code objects using their hashcode
   - Right clicking blocks
   - Holding right click
   - Releasing right click
+  - Left clicking a block
   - Left clicking an entity
   - Right clicking an entity
   - Inventory ticks
