@@ -6,10 +6,14 @@ import com.teamwizardry.librarianlib.core.util.ClientRunnable
 import com.teamwizardry.librarianlib.core.util.DistinctColors
 import com.teamwizardry.librarianlib.core.util.kotlin.obf
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
+import com.teamwizardry.librarianlib.testbase.objects.TestBlock
+import com.teamwizardry.librarianlib.testbase.objects.TestBlockItem
 import com.teamwizardry.librarianlib.testbase.objects.TestItem
 import com.teamwizardry.librarianlib.testbase.objects.TestObject
 import com.teamwizardry.librarianlib.virtualresources.VirtualResources
 import net.minecraft.block.Block
+import net.minecraft.block.BlockState
+import net.minecraft.client.renderer.color.IBlockColor
 import net.minecraft.client.renderer.color.IItemColor
 import net.minecraft.client.renderer.color.ItemColors
 import net.minecraft.client.renderer.model.IUnbakedModel
@@ -27,7 +31,9 @@ import net.minecraft.item.Items
 import net.minecraft.resources.IResourceManager
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Util
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.registry.Registry
+import net.minecraft.world.IEnviromentBlockReader
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.event.ColorHandlerEvent
@@ -73,7 +79,7 @@ abstract class TestMod(name: String, val humanName: String, logger: Logger): Lib
     }
 
     operator fun <T: Block> T.unaryPlus(): T {
-        val item = BlockItem(this, Item.Properties())
+        val item = TestBlockItem(this, Item.Properties().maxStackSize(1))
         item.registryName = ResourceLocation(this.registryName!!.namespace, this.registryName!!.path + "_block")
         _blocks.add(this)
         _items.add(item)
@@ -109,17 +115,52 @@ abstract class TestMod(name: String, val humanName: String, logger: Logger): Lib
                     """.trimIndent()
                 )
             }
+            if(item is TestBlockItem) {
+                val name = item.registryName!!
+                VirtualResources.client.add(
+                    ResourceLocation(name.namespace, "models/item/${name.path}.json"),
+                    """
+                        {
+                            "parent": "librarianlib-testbase:block/test_block_solid"
+                        }
+                    """.trimIndent()
+                )
+            }
+        }
+        blocks.forEach { block ->
+            if(block is TestBlock) {
+                val name = block.registryName!!
+                VirtualResources.client.add(
+                    ResourceLocation(name.namespace, "blockstates/${name.path}.json"),
+                    """
+                        {
+                            "variants": {
+                                "": { "model": "librarianlib-testbase:block/test_block_solid" }
+                            }
+                        }
+                    """.trimIndent()
+                )
+            }
         }
     }
 
     @SubscribeEvent
     internal fun registerColors(colorHandlerEvent: ColorHandlerEvent.Item) {
         colorHandlerEvent.itemColors.register(IItemColor { stack, tintIndex ->
-            if(tintIndex == 1 && stack.item is TestItem)
-                DistinctColors.forObject(stack.item.registryName).rgb
+            val item = stack.item
+            if(tintIndex == 1 && item is TestBlockItem)
+                DistinctColors.forObject(item.block.registryName).rgb
+            else if(tintIndex == 1 && item is TestItem)
+                DistinctColors.forObject(item.registryName).rgb
             else
                 Color.WHITE.rgb
         }, *items.toTypedArray())
+        colorHandlerEvent.blockColors.register(IBlockColor { state, _, _, tintIndex ->
+            if(tintIndex == 1 && state.block is TestBlock)
+                DistinctColors.forObject(state.block.registryName).rgb
+            else
+                Color.WHITE.rgb
+        }, *blocks.toTypedArray())
     }
 
     override fun registerBlocks(blockRegistryEvent: RegistryEvent.Register<Block>) {
