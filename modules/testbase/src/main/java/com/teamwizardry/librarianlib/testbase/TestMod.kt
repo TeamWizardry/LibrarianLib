@@ -1,54 +1,27 @@
 package com.teamwizardry.librarianlib.testbase
 
 import com.teamwizardry.librarianlib.core.LibrarianLibModule
-import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.ClientRunnable
 import com.teamwizardry.librarianlib.core.util.DistinctColors
-import com.teamwizardry.librarianlib.core.util.kotlin.obf
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.testbase.objects.TestBlock
 import com.teamwizardry.librarianlib.testbase.objects.TestBlockItem
 import com.teamwizardry.librarianlib.testbase.objects.TestItem
-import com.teamwizardry.librarianlib.testbase.objects.TestObject
 import com.teamwizardry.librarianlib.virtualresources.VirtualResources
 import net.minecraft.block.Block
-import net.minecraft.block.BlockState
 import net.minecraft.client.renderer.color.IBlockColor
 import net.minecraft.client.renderer.color.IItemColor
-import net.minecraft.client.renderer.color.ItemColors
-import net.minecraft.client.renderer.model.IUnbakedModel
-import net.minecraft.client.renderer.model.ModelResourceLocation
-import net.minecraft.client.renderer.model.ModelRotation
-import net.minecraft.client.resources.LanguageManager
-import net.minecraft.client.resources.Locale
-import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityType
 import net.minecraft.item.BlockItem
 import net.minecraft.item.Item
 import net.minecraft.item.ItemGroup
 import net.minecraft.item.ItemStack
-import net.minecraft.item.Items
-import net.minecraft.resources.IResourceManager
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.Util
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.registry.Registry
-import net.minecraft.world.IEnviromentBlockReader
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.event.ColorHandlerEvent
-import net.minecraftforge.client.event.ModelBakeEvent
-import net.minecraftforge.client.event.ModelRegistryEvent
-import net.minecraftforge.client.model.ICustomModelLoader
-import net.minecraftforge.client.model.ModelLoader
-import net.minecraftforge.client.model.ModelLoaderRegistry
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.client.registry.RenderingRegistry
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.registries.ForgeRegistries
-import net.minecraftforge.resource.VanillaResourceType
 import org.apache.logging.log4j.Logger
 import java.awt.Color
 
@@ -79,7 +52,12 @@ abstract class TestMod(name: String, val humanName: String, logger: Logger): Lib
     }
 
     operator fun <T: Block> T.unaryPlus(): T {
-        val item = TestBlockItem(this, Item.Properties().maxStackSize(1))
+        val properties = Item.Properties()
+            .group(itemGroup)
+        val item = if(this is TestBlock)
+            TestBlockItem(this, properties.maxStackSize(1))
+        else
+            BlockItem(this, properties)
         item.registryName = ResourceLocation(this.registryName!!.namespace, this.registryName!!.path + "_block")
         _blocks.add(this)
         _items.add(item)
@@ -104,7 +82,17 @@ abstract class TestMod(name: String, val humanName: String, logger: Logger): Lib
         }
 
         items.forEach { item ->
-            if(item is TestItem) {
+            if(item is TestBlockItem) {
+                val name = item.registryName!!
+                VirtualResources.client.add(
+                    ResourceLocation(name.namespace, "models/item/${name.path}.json"),
+                    """
+                        {
+                            "parent": "librarianlib-testbase:block/test_block/${item.block.modelName}"
+                        }
+                    """.trimIndent()
+                )
+            } else if(item is TestItem) {
                 val name = item.registryName!!
                 VirtualResources.client.add(
                     ResourceLocation(name.namespace, "models/item/${name.path}.json"),
@@ -115,30 +103,35 @@ abstract class TestMod(name: String, val humanName: String, logger: Logger): Lib
                     """.trimIndent()
                 )
             }
-            if(item is TestBlockItem) {
-                val name = item.registryName!!
-                VirtualResources.client.add(
-                    ResourceLocation(name.namespace, "models/item/${name.path}.json"),
-                    """
-                        {
-                            "parent": "librarianlib-testbase:block/test_block_solid"
-                        }
-                    """.trimIndent()
-                )
-            }
         }
         blocks.forEach { block ->
             if(block is TestBlock) {
                 val name = block.registryName!!
+                val model = "block/test_block/${block.modelName}"
                 VirtualResources.client.add(
                     ResourceLocation(name.namespace, "blockstates/${name.path}.json"),
-                    """
-                        {
-                            "variants": {
-                                "": { "model": "librarianlib-testbase:block/test_block_solid" }
+                    if(block.config.directional) {
+                        """
+                            {
+                                "variants": {
+                                    "facing=up": { "model": "librarianlib-testbase:$model" },
+                                    "facing=down": { "model": "librarianlib-testbase:$model", "x": 180 },
+                                    "facing=east": { "model": "librarianlib-testbase:$model", "y": 90, "x": 90 },
+                                    "facing=south": { "model": "librarianlib-testbase:$model", "y": 180, "x": 90 },
+                                    "facing=west": { "model": "librarianlib-testbase:$model", "y": 270, "x": 90 },
+                                    "facing=north": { "model": "librarianlib-testbase:$model", "y": 0, "x": 90 }
+                                }
                             }
-                        }
-                    """.trimIndent()
+                        """.trimIndent()
+                    } else {
+                        """
+                            {
+                                "variants": {
+                                    "": { "model": "librarianlib-testbase:$model" }
+                                }
+                            }
+                        """.trimIndent()
+                    }
                 )
             }
         }

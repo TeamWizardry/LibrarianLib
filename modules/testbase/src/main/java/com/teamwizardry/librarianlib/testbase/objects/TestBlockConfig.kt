@@ -17,7 +17,7 @@ class TestBlockConfig(val id: String, val name: String) {
     val properties: Block.Properties = Block.Properties.create(testMaterial)
 
     var transparent: Boolean = false
-    var facing: Boolean = false
+    var directional: Boolean = false
 
     companion object {
         val testMaterial: Material = Material(

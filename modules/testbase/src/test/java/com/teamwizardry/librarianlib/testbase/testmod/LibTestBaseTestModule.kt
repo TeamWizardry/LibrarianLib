@@ -66,8 +66,18 @@ class LibTestBaseTestModule: TestMod("testbase", "Test Base", logger) {
             }
         })
 
-        +TestBlock(TestBlockConfig("right_click", "Right Click") {
+        +TestBlock(TestBlockConfig("normal_solid", "Normal Solid Block") {
+        })
+        +TestBlock(TestBlockConfig("normal_transparent", "Normal Transparent Block") {
+            transparent = true
+        })
 
+        +TestBlock(TestBlockConfig("directional_solid", "Directional Solid Block") {
+            directional = true
+        })
+        +TestBlock(TestBlockConfig("directional_transparent", "Directional Transparent Block") {
+            directional = true
+            transparent = true
         })
     }
 }

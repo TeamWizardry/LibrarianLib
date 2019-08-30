@@ -6,7 +6,11 @@ import net.minecraft.item.BlockItem
 import net.minecraft.item.BlockItemUseContext
 import net.minecraft.util.ActionResultType
 
-class TestBlockItem(block: Block, builder: Properties): BlockItem(block, builder) {
+class TestBlockItem(block: TestBlock, builder: Properties): BlockItem(block, builder) {
+    override fun getBlock(): TestBlock {
+        return super.getBlock() as TestBlock
+    }
+
     override fun placeBlock(context: BlockItemUseContext, state: BlockState): Boolean {
         if(super.placeBlock(context, state)) {
             context.item.grow(1)

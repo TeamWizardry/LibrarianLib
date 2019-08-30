@@ -1,8 +1,6 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "bg": "librarianlib-testbase:block/test_block_solid",
-    "fg": "librarianlib-testbase:block/test_block_solid_bands",
     "particle": "#bg"
   },
   "elements": [
