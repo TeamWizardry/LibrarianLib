@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.testbase
 
 import com.teamwizardry.librarianlib.core.LibrarianLibModule
 import com.teamwizardry.librarianlib.core.util.DistinctColors
+import com.teamwizardry.librarianlib.testbase.objects.TestBlock
 import com.teamwizardry.librarianlib.testbase.objects.TestItem
 import com.teamwizardry.librarianlib.testbase.objects.TestItemConfig
 import com.teamwizardry.librarianlib.virtualresources.VirtualResources
@@ -80,6 +81,10 @@ class LibTestBaseModule : LibrarianLibModule("testbase", logger) {
                 mod.items.forEach forEachItem@{ item ->
                     if(item !is TestItem) return@forEachItem
                     keys[Util.makeTranslationKey("item", item.registryName)] = item.config.name
+                }
+                mod.blocks.forEach forEachBlock@{ block ->
+                    if(block !is TestBlock) return@forEachBlock
+                    keys[Util.makeTranslationKey("block", block.registryName)] = block.config.name
                 }
             }
             return keys
