@@ -2,19 +2,31 @@ package com.teamwizardry.librarianlib.testbase.objects
 
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import net.minecraft.block.Block
+import net.minecraft.block.BlockRenderType
 import net.minecraft.block.BlockState
 import net.minecraft.block.DirectionalBlock
+import net.minecraft.entity.Entity
+import net.minecraft.entity.LivingEntity
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.BlockItemUseContext
 import net.minecraft.item.ItemStack
 import net.minecraft.state.StateContainer
 import net.minecraft.state.properties.BlockStateProperties
 import net.minecraft.util.BlockRenderLayer
 import net.minecraft.util.Direction
+import net.minecraft.util.Hand
 import net.minecraft.util.Mirror
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Rotation
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.BlockRayTraceResult
+import net.minecraft.world.IBlockReader
+import net.minecraft.world.IWorld
+import net.minecraft.world.IWorldReader
+import net.minecraft.world.World
 import net.minecraft.world.storage.loot.LootContext
 import net.minecraftforge.fml.ModLoadingContext
+import java.util.Random
 
 open class TestBlock(val config: TestBlockConfig): Block(config.also { configHolder = it }.properties) {
     init {
@@ -61,6 +73,88 @@ open class TestBlock(val config: TestBlockConfig): Block(config.also { configHol
             return
         builder.add(FACING)
     }
+
+    // ticks ===========================================================================================================
+    override fun tickRate(worldIn: IWorldReader): Int {
+        return config.tickRate
+    }
+
+    override fun animateTick(stateIn: BlockState, worldIn: World, pos: BlockPos, rand: Random) {
+        super.animateTick(stateIn, worldIn, pos, rand)
+    }
+
+    override fun tick(state: BlockState, worldIn: World, pos: BlockPos, random: Random) {
+        super.tick(state, worldIn, pos, random)
+    }
+
+    override fun randomTick(state: BlockState, worldIn: World, pos: BlockPos, random: Random) {
+        super.randomTick(state, worldIn, pos, random)
+    }
+
+    // placed/broken ===================================================================================================
+    override fun onBlockAdded(p_220082_1_: BlockState, worldIn: World, pos: BlockPos, p_220082_4_: BlockState, p_220082_5_: Boolean) {
+        super.onBlockAdded(p_220082_1_, worldIn, pos, p_220082_4_, p_220082_5_)
+    }
+    override fun updatePostPlacement(stateIn: BlockState, facing: Direction, facingState: BlockState, worldIn: IWorld, currentPos: BlockPos, facingPos: BlockPos): BlockState {
+        return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos)
+    }
+
+    override fun onLanded(worldIn: IBlockReader, entityIn: Entity) {
+        super.onLanded(worldIn, entityIn)
+    }
+
+    override fun onBlockHarvested(worldIn: World, pos: BlockPos, state: BlockState, player: PlayerEntity) {
+        if(config.destroy.exists)
+            config.destroy.run(worldIn.isRemote, TestBlockConfig.DestroyContext(state, worldIn, pos, player))
+        else
+            super.onBlockHarvested(worldIn, pos, state, player)
+    }
+
+    override fun onBlockPlacedBy(worldIn: World, pos: BlockPos, state: BlockState, placer: LivingEntity?, stack: ItemStack) {
+        if(placer is PlayerEntity)
+            config.place.run(worldIn.isRemote, TestBlockConfig.PlaceContext(state, worldIn, pos, placer, stack))
+        else
+            super.onBlockPlacedBy(worldIn, pos, state, placer, stack)
+    }
+
+
+    // interaction =====================================================================================================
+    override fun onBlockActivated(state: BlockState, worldIn: World, pos: BlockPos, player: PlayerEntity, handIn: Hand, hit: BlockRayTraceResult): Boolean {
+        config.rightClick.run(worldIn.isRemote(), TestBlockConfig.RightClickContext(state, worldIn, pos, player, handIn, hit))
+        if(config.rightClick.exists)
+            return true
+        else
+            return super.onBlockActivated(state, worldIn, pos, player, handIn, hit)
+    }
+    override fun onBlockClicked(state: BlockState, worldIn: World, pos: BlockPos, player: PlayerEntity) {
+        if(config.leftClick.exists)
+            config.leftClick.run(worldIn.isRemote(), TestBlockConfig.LeftClickContext(state, worldIn, pos, player))
+        else
+            super.onBlockClicked(state, worldIn, pos, player)
+    }
+
+
+    // entity interaction ==============================================================================================
+    override fun onEntityCollision(state: BlockState, worldIn: World, pos: BlockPos, entityIn: Entity) {
+        super.onEntityCollision(state, worldIn, pos, entityIn)
+    }
+    override fun onEntityWalk(worldIn: World, pos: BlockPos, entityIn: Entity) {
+        super.onEntityWalk(worldIn, pos, entityIn)
+    }
+    override fun onFallenUpon(worldIn: World, pos: BlockPos, entityIn: Entity, fallDistance: Float) {
+        super.onFallenUpon(worldIn, pos, entityIn, fallDistance)
+    }
+    override fun onProjectileCollision(worldIn: World, state: BlockState, hit: BlockRayTraceResult, projectile: Entity) {
+        super.onProjectileCollision(worldIn, state, hit, projectile)
+    }
+
+
+    // misc ============================================================================================================
+
+    override fun onNeighborChange(state: BlockState?, world: IWorldReader?, pos: BlockPos?, neighbor: BlockPos?) {
+        super.onNeighborChange(state, world, pos, neighbor)
+    }
+
 
     companion object {
         val FACING = BlockStateProperties.FACING

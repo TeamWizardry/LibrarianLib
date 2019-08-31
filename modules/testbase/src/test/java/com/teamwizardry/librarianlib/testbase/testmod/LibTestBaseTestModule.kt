@@ -79,6 +79,18 @@ class LibTestBaseTestModule: TestMod("testbase", "Test Base", logger) {
             directional = true
             transparent = true
         })
+
+        +TestBlock(TestBlockConfig("right_click", "Right Click Block") {
+            client {
+                rightClick { chat("[Client] rightClick") }
+            }
+            common {
+                rightClick { chat("[Common] rightClick") }
+            }
+            server {
+                rightClick { chat("[Server] rightClick") }
+            }
+        })
     }
 }
 
