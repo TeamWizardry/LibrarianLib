@@ -3,6 +3,8 @@ package com.teamwizardry.librarianlib.testbase
 import com.teamwizardry.librarianlib.core.LibrarianLibModule
 import com.teamwizardry.librarianlib.core.util.DistinctColors
 import com.teamwizardry.librarianlib.testbase.objects.TestBlock
+import com.teamwizardry.librarianlib.testbase.objects.TestEntity
+import com.teamwizardry.librarianlib.testbase.objects.TestEntityRenderer
 import com.teamwizardry.librarianlib.testbase.objects.TestItem
 import com.teamwizardry.librarianlib.testbase.objects.TestItemConfig
 import com.teamwizardry.librarianlib.virtualresources.VirtualResources
@@ -15,6 +17,7 @@ import net.minecraftforge.client.event.ColorHandlerEvent
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.event.world.BlockEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.client.registry.RenderingRegistry
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.registries.ForgeRegistries
@@ -36,6 +39,7 @@ class LibTestBaseModule : LibrarianLibModule("testbase", logger) {
     }
 
     override fun clientSetup(event: FMLClientSetupEvent) {
+        RenderingRegistry.registerEntityRenderingHandler(TestEntity::class.java) { TestEntityRenderer(it) }
         VirtualResources.client.add(ResourceLocation(modid, "lang/en_us.json")) {
             val keys = languageKeys()
             return@add "{\n" + keys.map {
@@ -59,9 +63,7 @@ class LibTestBaseModule : LibrarianLibModule("testbase", logger) {
         val stack = event.player.heldItemMainhand
         val item = stack.item
         if(item is TestItem) {
-            if(item.config.common.leftClickBlock != null ||
-                item.config.client.leftClickBlock != null ||
-                item.config.server.leftClickBlock != null) {
+            if(item.config.leftClickBlock.exists) {
                 event.isCanceled = true
             }
         }

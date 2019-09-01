@@ -40,22 +40,26 @@ class LibrarianLibParticlesTestMod: TestMod("particles", "Particle System", logg
 
         systems.forEach { (type, name) ->
             +TestItem(TestItemConfig("spawn_$type", name) {
-                server.rightClick {
-                    if(player.isSneaking) {
-                        val eye = player.getEyePosition(0f)
-                        val spawner = ParticleSpawnerEntity(world)
-                        spawner.system = type
-                        spawner.posX = eye.x
-                        spawner.posY = eye.y - spawner.eyeHeight
-                        spawner.posZ = eye.z
-                        spawner.rotationPitch = player.rotationPitch
-                        spawner.rotationYaw = player.rotationYaw
-                        world.addEntity(spawner)
+                server {
+                    rightClick {
+                        if(player.isSneaking) {
+                            val eye = player.getEyePosition(0f)
+                            val spawner = ParticleSpawnerEntity(world)
+                            spawner.system = type
+                            spawner.posX = eye.x
+                            spawner.posY = eye.y - spawner.eyeHeight
+                            spawner.posZ = eye.z
+                            spawner.rotationPitch = player.rotationPitch
+                            spawner.rotationYaw = player.rotationYaw
+                            world.addEntity(spawner)
+                        }
                     }
                 }
 
-                client.rightClickHold {
-                    ParticleSystems.spawn(type, player)
+                client {
+                    rightClickHold {
+                        ParticleSystems.spawn(type, player)
+                    }
                 }
             })
         }

@@ -23,8 +23,6 @@ class TestBlockConfig(val id: String, val name: String): TestConfig() {
         this.config()
     }
 
-    val modid: String = ModLoadingContext.get().activeContainer.modId
-
     val properties: Block.Properties = Block.Properties.create(testMaterial)
 
     /**

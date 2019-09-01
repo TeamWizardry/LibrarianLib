@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.core.util.DistinctColors
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.testbase.objects.TestBlock
 import com.teamwizardry.librarianlib.testbase.objects.TestBlockItem
+import com.teamwizardry.librarianlib.testbase.objects.TestEntityConfig
 import com.teamwizardry.librarianlib.testbase.objects.TestItem
 import com.teamwizardry.librarianlib.virtualresources.VirtualResources
 import net.minecraft.block.Block
@@ -66,6 +67,12 @@ abstract class TestMod(name: String, val humanName: String, logger: Logger): Lib
 
     operator fun <T: EntityType<*>> T.unaryPlus(): T {
         _entities.add(this)
+        return this
+    }
+
+    operator fun TestEntityConfig.unaryPlus(): TestEntityConfig {
+        _entities.add(this.type)
+        +this.createSpawnerItem()
         return this
     }
 

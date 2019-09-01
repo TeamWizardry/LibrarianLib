@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.testbase.testmod
 import com.teamwizardry.librarianlib.testbase.TestMod
 import com.teamwizardry.librarianlib.testbase.objects.TestBlock
 import com.teamwizardry.librarianlib.testbase.objects.TestBlockConfig
+import com.teamwizardry.librarianlib.testbase.objects.TestEntityConfig
 import com.teamwizardry.librarianlib.testbase.objects.TestItem
 import com.teamwizardry.librarianlib.testbase.objects.TestItemConfig
 import net.minecraftforge.fml.common.Mod
@@ -91,6 +92,10 @@ class LibTestBaseTestModule: TestMod("testbase", "Test Base", logger) {
                 rightClick { chat("[Server] rightClick") }
             }
         })
+
+        +TestEntityConfig("cube_renderer", "Cube Renderer") {
+
+        }
     }
 }
 
