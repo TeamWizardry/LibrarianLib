@@ -8,7 +8,8 @@ object ParticleSystems {
     val systems = mapOf(
         "static" to StaticSystem,
         "physics" to PhysicsSystem,
-        "flood" to FloodSystem
+        "flood" to FloodSystem,
+        "perfect_bouncy" to PerfectBouncySystem
     )
 
     init {

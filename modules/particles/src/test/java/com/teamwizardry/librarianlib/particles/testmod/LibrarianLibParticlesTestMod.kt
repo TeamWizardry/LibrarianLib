@@ -34,7 +34,8 @@ class LibrarianLibParticlesTestMod: TestMod("particles", "Particle System", logg
         val systems = listOf(
             "static" to "Spawn Static Particle",
             "physics" to "Spawn Particle with Physics",
-            "flood" to "Spray Physics Particles"
+            "flood" to "Spray Physics Particles",
+            "perfect_bouncy" to "Perfectly Bouncy Physics Particles"
         )
 
         systems.forEach { (type, name) ->
