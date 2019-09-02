@@ -15,7 +15,6 @@ import net.minecraft.util.Direction
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Rotations
 import net.minecraft.util.text.ITextComponent
-import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 class TestEntityConfig(val id: String, val name: String): TestConfig() {
@@ -23,14 +22,17 @@ class TestEntityConfig(val id: String, val name: String): TestConfig() {
         this.block()
     }
 
-    val type = EntityType.Builder.create<TestEntity>({ _, world ->
+    val typeBuilder = EntityType.Builder.create<TestEntity>({ _, world ->
         TestEntity(this, world)
     }, EntityClassification.MISC)
         .setCustomClientFactory { _, world ->
             TestEntity(this, world)
         }
-        .size(0.5f, 0.5f).build(id)
-        .setRegistryName(modid, id)
+        .size(0.5f, 0.5f)
+
+    val type by lazy { typeBuilder.build(id).setRegistryName(modid, id) }
+
+    val lookLength: Double = 1.0
 
     internal val entityProperties = mutableListOf<Property<*>>()
 

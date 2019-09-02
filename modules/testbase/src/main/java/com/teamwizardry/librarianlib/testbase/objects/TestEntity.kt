@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
-import com.teamwizardry.librarianlib.core.util.SidedRunnable
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntitySize
@@ -8,10 +7,7 @@ import net.minecraft.entity.Pose
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.network.IPacket
-import net.minecraft.network.datasync.DataSerializers
-import net.minecraft.network.datasync.EntityDataManager
 import net.minecraft.util.math.AxisAlignedBB
-import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import net.minecraftforge.fml.network.NetworkHooks
 

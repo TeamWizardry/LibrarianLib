@@ -16,7 +16,9 @@
 - `Vec2d`/`Vec2i`
 - `Vec3d`/`Vec3i`/`BlockPos` Kotlin math operators
 #### com.teamwizardry.librarianlib.core.util
-- `BufferBuilder` extensions accepting `Vec3d`/`Vec2d`/`Color`
+- `BufferBuilder` extensions for `pos`/`tex`/`color` that accept `Vec3d`/`Vec2d`/`Color`
+- inline `BufferBuilder` extensions for `pos`/`tex` that accept `Number` parameters (number object creation is 
+optimized away at compile time)
 - Immutable/synchronized `Collection` creation extensions
 - `KProperty0`/`KMutableProperty0` property delegates
 - A constant that indicates whether the current environment is obfuscated
