@@ -25,7 +25,20 @@ class TestItemConfig(val id: String, val name: String): TestConfig() {
         this.block()
     }
 
+    /**
+     * Additional text to show in the item tooltip
+     */
+    var description: String? = null
+
+    /**
+     * The maximum stack size. Defaults to 1
+     */
     var stackSize: Int = 1
+    /**
+     * How long the right click and hold action should last in ticks. Setting this to a non-negative value will cause
+     * override the default behavior of returning one hour when either the [rightClickHold] or [rightClickRelease]
+     * actions are enabled
+     */
     var rightClickHoldDuration: Int = -1
         get() {
             if(field < 0) {
@@ -35,10 +48,17 @@ class TestItemConfig(val id: String, val name: String): TestConfig() {
             return field
         }
 
+    /**
+     * The properties of the test item. Do not mutate this after this configuration has been passed to the [TestItem]
+     * constructor.
+     */
     val properties: Item.Properties = Item.Properties()
         .group(LibrarianLibModule.current<TestMod>().itemGroup)
         .maxStackSize(stackSize)
 
+    /**
+     * Execute the passed block with this object as the receiver. Useful for using this object as a DSL
+     */
     inline operator fun invoke(crossinline block: TestItemConfig.() -> Unit): TestItemConfig {
         this.block()
         return this

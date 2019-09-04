@@ -12,7 +12,7 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.Vec3d
 
-object PerfectBouncySystem: TestSystem() {
+object PerfectBouncySystem: TestSystem("perfect_bouncy") {
     override fun configure() {
         val position = bind(3)
         val previousPosition = bind(3)

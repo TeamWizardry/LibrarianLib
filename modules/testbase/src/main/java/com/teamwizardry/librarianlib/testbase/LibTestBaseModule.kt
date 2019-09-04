@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.testbase
 
 import com.teamwizardry.librarianlib.core.LibrarianLibModule
 import com.teamwizardry.librarianlib.core.util.DistinctColors
+import com.teamwizardry.librarianlib.core.util.kotlin.translationKey
 import com.teamwizardry.librarianlib.testbase.objects.TestBlock
 import com.teamwizardry.librarianlib.testbase.objects.TestEntity
 import com.teamwizardry.librarianlib.testbase.objects.TestEntityRenderer
@@ -82,11 +83,15 @@ class LibTestBaseModule : LibrarianLibModule("testbase", logger) {
                 keys["itemGroup.${mod.modid}"] = "${mod.humanName} Test"
                 mod.items.forEach forEachItem@{ item ->
                     if(item !is TestItem) return@forEachItem
-                    keys[Util.makeTranslationKey("item", item.registryName)] = item.config.name
+                    val registryName = item.registryName!!
+                    keys[registryName.translationKey("item")] = item.config.name
+                    item.config.description?.also {
+                        keys[registryName.translationKey("item", "tooltip")] = it.replace("\n", "\\n")
+                    }
                 }
                 mod.blocks.forEach forEachBlock@{ block ->
                     if(block !is TestBlock) return@forEachBlock
-                    keys[Util.makeTranslationKey("block", block.registryName)] = block.config.name
+                    keys[block.registryName!!.translationKey("block")] = block.config.name
                 }
             }
             return keys

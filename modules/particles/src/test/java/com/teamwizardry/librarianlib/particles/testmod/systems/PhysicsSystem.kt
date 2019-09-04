@@ -11,7 +11,7 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.Vec3d
 
-object PhysicsSystem: TestSystem() {
+object PhysicsSystem: TestSystem("physics") {
     override fun configure() {
         val position = bind(3)
         val previousPosition = bind(3)

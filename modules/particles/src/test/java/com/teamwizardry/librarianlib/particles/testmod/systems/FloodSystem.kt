@@ -14,7 +14,7 @@ import net.minecraft.util.math.MathHelper
 
 
 
-object FloodSystem: TestSystem() {
+object FloodSystem: TestSystem("flood") {
     override fun configure() {
         val position = bind(3)
         val previousPosition = bind(3)

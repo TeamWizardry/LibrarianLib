@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.particles.testmod.entity.ParticleSpawnerEnt
 import com.teamwizardry.librarianlib.particles.testmod.init.TestEntities
 import com.teamwizardry.librarianlib.particles.testmod.init.TestItems
 import com.teamwizardry.librarianlib.particles.testmod.systems.ParticleSystems
+import com.teamwizardry.librarianlib.particles.testmod.systems.SystemNames
 import com.teamwizardry.librarianlib.testbase.TestMod
 import com.teamwizardry.librarianlib.testbase.objects.TestItem
 import com.teamwizardry.librarianlib.testbase.objects.TestItemConfig
@@ -31,21 +32,16 @@ internal const val modid: String = "librarianlib-particles-test"
 @Mod(modid)
 class LibrarianLibParticlesTestMod: TestMod("particles", "Particle System", logger) {
     init {
-        val systems = listOf(
-            "static" to "Spawn Static Particle",
-            "physics" to "Spawn Particle with Physics",
-            "flood" to "Spray Physics Particles",
-            "perfect_bouncy" to "Perfectly Bouncy Physics Particles"
-        )
-
-        systems.forEach { (type, name) ->
-            +TestItem(TestItemConfig("spawn_$type", name) {
+        SystemNames.systems.forEach { system ->
+            val entity =
+            +TestItem(TestItemConfig("spawn_${system.id}", system.name) {
+                description = system.description
                 server {
                     rightClick {
                         if(player.isSneaking) {
                             val eye = player.getEyePosition(0f)
                             val spawner = ParticleSpawnerEntity(world)
-                            spawner.system = type
+                            spawner.system = system.id
                             spawner.posX = eye.x
                             spawner.posY = eye.y - spawner.eyeHeight
                             spawner.posZ = eye.z
@@ -58,7 +54,7 @@ class LibrarianLibParticlesTestMod: TestMod("particles", "Particle System", logg
 
                 client {
                     rightClickHold {
-                        ParticleSystems.spawn(type, player)
+                        ParticleSystems.spawn(system.id, player)
                     }
                 }
             })

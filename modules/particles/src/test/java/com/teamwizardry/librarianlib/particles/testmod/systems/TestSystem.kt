@@ -4,6 +4,6 @@ import com.teamwizardry.librarianlib.particles.ParticleSystem
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 
-abstract class TestSystem: ParticleSystem() {
+abstract class TestSystem(val id: String): ParticleSystem() {
     abstract fun spawn(player: Entity)
 }

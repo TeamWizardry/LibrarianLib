@@ -10,6 +10,9 @@ class Action<T> {
     val exists: Boolean
         get() = client != null || server != null || common != null
 
+    /**
+     * Run the common and client or server callbacks, depending on [isClient]
+     */
     fun run(isClient: Boolean, context: T) {
         common?.also { context.it() }
         if(isClient)
@@ -23,10 +26,22 @@ class Action<T> {
         this.client = client
     }
 
+    /**
+     * Sets the client callback. This is only called on the logical client. This inlines to a [SidedConsumer.Client]
+     * SAM object, so client-only code is safe to call inside it.
+     */
     inline fun client(crossinline client: T.() -> Unit) = addClientRaw(SidedConsumer.Client { it.client() })
+
+    /**
+     * Sets the common callback, which is called before both the server and client callbacks.
+     */
     fun common(common: T.() -> Unit) {
         this.common = common
     }
+
+    /**
+     * Sets the server callback. This is only called on the logical server.
+     */
     fun server(server: T.() -> Unit) {
         this.server = server
     }

@@ -5,20 +5,21 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 
 object ParticleSystems {
-    val systems = mapOf(
-        "static" to StaticSystem,
-        "physics" to PhysicsSystem,
-        "flood" to FloodSystem,
-        "perfect_bouncy" to PerfectBouncySystem
+    val systems = listOf(
+        StaticSystem,
+        PhysicsSystem,
+        FloodSystem,
+        PerfectBouncySystem
     )
+    private val systemMap = systems.associateBy { it.id }
 
     init {
-        systems.values.forEach {
+        systems.forEach {
             ParticleSystemManager.add(it)
         }
     }
 
     fun spawn(name: String, player: Entity) {
-        systems[name]?.spawn(player)
+        systemMap[name]?.spawn(player)
     }
 }

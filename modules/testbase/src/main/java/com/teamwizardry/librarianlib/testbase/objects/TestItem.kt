@@ -1,6 +1,8 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
+import com.teamwizardry.librarianlib.core.util.kotlin.translationKey
 import net.minecraft.block.BlockState
+import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
@@ -12,13 +14,26 @@ import net.minecraft.util.ActionResult
 import net.minecraft.util.ActionResultType
 import net.minecraft.util.Hand
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Util
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.text.ITextComponent
+import net.minecraft.util.text.TextFormatting
+import net.minecraft.util.text.TranslationTextComponent
 import net.minecraft.world.World
 import net.minecraftforge.fml.ModLoadingContext
 
 class TestItem(val config: TestItemConfig): Item(config.properties), TestObject {
     init {
         this.registryName = ResourceLocation(ModLoadingContext.get().activeContainer.modId, config.id)
+    }
+
+    override fun addInformation(stack: ItemStack, worldIn: World?, tooltip: MutableList<ITextComponent>, flagIn: ITooltipFlag) {
+        super.addInformation(stack, worldIn, tooltip, flagIn)
+        if(config.description != null) {
+            val description = TranslationTextComponent(registryName!!.translationKey("item", "tooltip"))
+            description.style.color = TextFormatting.GRAY
+            tooltip.add(description)
+        }
     }
 
     override fun onItemRightClick(worldIn: World, playerIn: PlayerEntity, handIn: Hand): ActionResult<ItemStack> {
