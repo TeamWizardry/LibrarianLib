@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityClassification
 import net.minecraft.entity.EntityType
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundNBT
@@ -12,15 +13,25 @@ import net.minecraft.network.datasync.DataSerializers
 import net.minecraft.network.datasync.EntityDataManager
 import net.minecraft.network.datasync.IDataSerializer
 import net.minecraft.util.Direction
+import net.minecraft.util.Hand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Rotations
+import net.minecraft.util.math.Vec3d
 import net.minecraft.util.text.ITextComponent
+import net.minecraft.world.World
 import kotlin.reflect.KProperty
 
 class TestEntityConfig(val id: String, val name: String): TestConfig() {
     constructor(id: String, name: String, block: TestEntityConfig.() -> Unit): this(id, name) {
         this.block()
     }
+
+    override var description: String?
+        get() = super.description
+        set(value) {
+            super.description = value
+            spawnerItem.config.description = value
+        }
 
     val typeBuilder = EntityType.Builder.create<TestEntity>({ _, world ->
         TestEntity(this, world)
@@ -29,10 +40,37 @@ class TestEntityConfig(val id: String, val name: String): TestConfig() {
             TestEntity(this, world)
         }
         .size(0.5f, 0.5f)
-
     val type by lazy { typeBuilder.build(id).setRegistryName(modid, id) }
 
     val lookLength: Double = 1.0
+    /**
+     * Designed to be modified at runtime. When true, all entities using this config will have the "glowing" effect
+     * applied.
+     */
+    var enableGlow: Boolean = false
+
+    /**
+     * Called when the player right-clicks this entity
+     *
+     * @see Entity.applyPlayerInteraction
+     */
+    var rightClick = Action<RightClickContext>()
+
+    /**
+     * Called every tick
+     *
+     * @see Entity.tick
+     */
+    var tick = Action<TickContext>()
+
+    data class RightClickContext(val target: TestEntity, val player: PlayerEntity, val hand: Hand, val hitPos: Vec3d): PlayerTestContext(player) {
+        val world: World = target.world
+        val stack: ItemStack = player.getHeldItem(hand)
+    }
+    data class TickContext(val target: TestEntity): TestContext() {
+        val world: World = target.world
+    }
+
 
     internal val entityProperties = mutableListOf<Property<*>>()
 
@@ -88,21 +126,26 @@ class TestEntityConfig(val id: String, val name: String): TestConfig() {
         }
     }
 
-    internal fun createSpawnerItem(): Item {
-        return TestItem(TestItemConfig(this.id + "_entity", this.name + " Entity") {
-            server {
-                rightClick {
-                    val eye = player.getEyePosition(0f)
-                    val entity = TestEntity(this@TestEntityConfig, world)
-                    entity.posX = eye.x
-                    entity.posY = eye.y - entity.eyeHeight
-                    entity.posZ = eye.z
-                    entity.rotationPitch = player.rotationPitch
-                    entity.rotationYaw = player.rotationYaw
-//                    entity.system = type
-                    world.addEntity(entity)
-                }
-            }
-        })
+    /**
+     * Spawns this entity with the same eye position and look vector as the passed player. Only call this on the logical
+     * server.
+     */
+    fun spawn(player: PlayerEntity) {
+        val eye = player.getEyePosition(0f)
+        val entity = TestEntity(this@TestEntityConfig, player.world)
+        entity.posX = eye.x
+        entity.posY = eye.y - entity.eyeHeight
+        entity.posZ = eye.z
+        entity.rotationPitch = player.rotationPitch
+        entity.rotationYaw = player.rotationYaw
+        player.world.addEntity(entity)
     }
+
+    var spawnerItem = TestItem(TestItemConfig(this.id + "_entity", this.name + " Entity") {
+        server {
+            rightClick {
+                spawn(player)
+            }
+        }
+    })
 }

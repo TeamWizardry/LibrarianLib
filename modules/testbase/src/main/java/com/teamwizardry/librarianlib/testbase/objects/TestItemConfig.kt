@@ -14,7 +14,6 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import net.minecraftforge.event.world.BlockEvent
-import net.minecraftforge.fml.ModLoadingContext
 
 /**
  * The DSL for configuring an item
@@ -24,11 +23,6 @@ class TestItemConfig(val id: String, val name: String): TestConfig() {
     constructor(id: String, name: String, block: TestItemConfig.() -> Unit): this(id, name) {
         this.block()
     }
-
-    /**
-     * Additional text to show in the item tooltip
-     */
-    var description: String? = null
 
     /**
      * The maximum stack size. Defaults to 1
@@ -129,10 +123,10 @@ class TestItemConfig(val id: String, val name: String): TestConfig() {
      */
     var tickInHand = Action<InventoryTickContext>()
 
-    data class RightClickContext(val world: World, val player: PlayerEntity, val hand: Hand): PlayerTestItemContext(player) {
+    data class RightClickContext(val world: World, val player: PlayerEntity, val hand: Hand): PlayerTestContext(player) {
         val stack: ItemStack = player.getHeldItem(hand)
     }
-    data class RightClickBlockContext(private val context: ItemUseContext): PlayerTestItemContext(context.player!!) {
+    data class RightClickBlockContext(private val context: ItemUseContext): PlayerTestContext(context.player!!) {
         val stack: ItemStack = context.item
 
         val world: World = context.world
@@ -142,10 +136,10 @@ class TestItemConfig(val id: String, val name: String): TestConfig() {
         val block: BlockPos = context.pos
         val hitVec: Vec3d = context.hitVec
     }
-    data class RightClickHoldContext(val stack: ItemStack, val player: PlayerEntity, val count: Int): PlayerTestItemContext(player)
-    data class RightClickReleaseContext(val stack: ItemStack, val world: World, val player: PlayerEntity, val timeLeft: Int): PlayerTestItemContext(player)
-    data class LeftClickBlockContext(val stack: ItemStack, val pos: BlockPos, val player: PlayerEntity): PlayerTestItemContext(player)
-    data class LeftClickEntityContext(val stack: ItemStack, val player: PlayerEntity, val entity: Entity): PlayerTestItemContext(player)
-    data class RightClickEntityContext(val stack: ItemStack, val player: PlayerEntity, val target: LivingEntity, val hand: Hand): PlayerTestItemContext(player)
-    data class InventoryTickContext(val stack: ItemStack, val world: World, val player: PlayerEntity, val itemSlot: Int, val isSelected: Boolean): PlayerTestItemContext(player)
+    data class RightClickHoldContext(val stack: ItemStack, val player: PlayerEntity, val count: Int): PlayerTestContext(player)
+    data class RightClickReleaseContext(val stack: ItemStack, val world: World, val player: PlayerEntity, val timeLeft: Int): PlayerTestContext(player)
+    data class LeftClickBlockContext(val stack: ItemStack, val pos: BlockPos, val player: PlayerEntity): PlayerTestContext(player)
+    data class LeftClickEntityContext(val stack: ItemStack, val player: PlayerEntity, val entity: Entity): PlayerTestContext(player)
+    data class RightClickEntityContext(val stack: ItemStack, val player: PlayerEntity, val target: LivingEntity, val hand: Hand): PlayerTestContext(player)
+    data class InventoryTickContext(val stack: ItemStack, val world: World, val player: PlayerEntity, val itemSlot: Int, val isSelected: Boolean): PlayerTestContext(player)
 }

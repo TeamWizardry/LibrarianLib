@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.particles.testmod.init.TestItems
 import com.teamwizardry.librarianlib.particles.testmod.systems.ParticleSystems
 import com.teamwizardry.librarianlib.particles.testmod.systems.SystemNames
 import com.teamwizardry.librarianlib.testbase.TestMod
+import com.teamwizardry.librarianlib.testbase.objects.TestEntityConfig
 import com.teamwizardry.librarianlib.testbase.objects.TestItem
 import com.teamwizardry.librarianlib.testbase.objects.TestItemConfig
 import net.minecraft.block.Block
@@ -33,31 +34,28 @@ internal const val modid: String = "librarianlib-particles-test"
 class LibrarianLibParticlesTestMod: TestMod("particles", "Particle System", logger) {
     init {
         SystemNames.systems.forEach { system ->
-            val entity =
-            +TestItem(TestItemConfig("spawn_${system.id}", system.name) {
+            +TestEntityConfig(system.id, system.name) {
                 description = system.description
-                server {
-                    rightClick {
-                        if(player.isSneaking) {
-                            val eye = player.getEyePosition(0f)
-                            val spawner = ParticleSpawnerEntity(world)
-                            spawner.system = system.id
-                            spawner.posX = eye.x
-                            spawner.posY = eye.y - spawner.eyeHeight
-                            spawner.posZ = eye.z
-                            spawner.rotationPitch = player.rotationPitch
-                            spawner.rotationYaw = player.rotationYaw
-                            world.addEntity(spawner)
+
+                tick.client {
+                    ParticleSystems.spawn(system.id, target)
+                }
+
+                spawnerItem.config {
+                    rightClick.clear()
+
+                    rightClick.server {
+                        sneaking {
+                            spawn(player)
+                        }
+                    }
+                    rightClickHold.client {
+                        notSneaking {
+                            ParticleSystems.spawn(system.id, player)
                         }
                     }
                 }
-
-                client {
-                    rightClickHold {
-                        ParticleSystems.spawn(system.id, player)
-                    }
-                }
-            })
+            }
         }
     }
 

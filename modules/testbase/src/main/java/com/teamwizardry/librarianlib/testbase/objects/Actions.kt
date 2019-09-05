@@ -21,6 +21,12 @@ class Action<T> {
             server?.also { context.it() }
     }
 
+    fun clear() {
+        client = null
+        common = null
+        server = null
+    }
+
     @PublishedApi
     internal fun addClientRaw(client: SidedConsumer.Client<T>) {
         this.client = client

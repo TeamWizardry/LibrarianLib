@@ -72,7 +72,7 @@ abstract class TestMod(name: String, val humanName: String, logger: Logger): Lib
 
     operator fun TestEntityConfig.unaryPlus(): TestEntityConfig {
         _entities.add(this.type)
-        +this.createSpawnerItem()
+        +this.spawnerItem
         return this
     }
 

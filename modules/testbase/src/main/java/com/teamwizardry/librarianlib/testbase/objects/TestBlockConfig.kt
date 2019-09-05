@@ -1,7 +1,5 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
-import com.teamwizardry.librarianlib.core.util.ClientRunnable
-import com.teamwizardry.librarianlib.core.util.SidedConsumer
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.block.material.Material
@@ -13,9 +11,6 @@ import net.minecraft.util.Hand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.BlockRayTraceResult
 import net.minecraft.world.World
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.fml.ModLoadingContext
 
 @TestObjectDslMarker
 class TestBlockConfig(val id: String, val name: String): TestConfig() {
@@ -47,26 +42,26 @@ class TestBlockConfig(val id: String, val name: String): TestConfig() {
     data class RightClickContext(
         val state: BlockState, val world: World, val pos: BlockPos,
         val player: PlayerEntity, val hand: Hand, val hit: BlockRayTraceResult
-    ): PlayerTestItemContext(player) {
+    ): PlayerTestContext(player) {
         val stack: ItemStack = player.getHeldItem(hand)
     }
 
     data class LeftClickContext(
         val state: BlockState, val world: World, val pos: BlockPos,
         val player: PlayerEntity
-    ): PlayerTestItemContext(player) {
+    ): PlayerTestContext(player) {
     }
 
     data class DestroyContext(
         val state: BlockState, val world: World, val pos: BlockPos,
         val player: PlayerEntity
-    ): PlayerTestItemContext(player) {
+    ): PlayerTestContext(player) {
     }
 
     data class PlaceContext(
         val state: BlockState, val world: World, val pos: BlockPos,
         val player: PlayerEntity, val stack: ItemStack
-    ): PlayerTestItemContext(player) {
+    ): PlayerTestContext(player) {
     }
 
     companion object {

@@ -4,13 +4,13 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.util.text.StringTextComponent
 
 @TestObjectDslMarker
-abstract class TestItemContext {
+abstract class TestContext {
 }
 
 /**
  * A common class for all test contexts that include a player, providing methods to easily respond to them
  */
-abstract class PlayerTestItemContext(player: PlayerEntity): TestItemContext() {
+abstract class PlayerTestContext(player: PlayerEntity): TestContext() {
     private val _player: PlayerEntity = player
     val sneaking: Boolean get() = _player.isSneaking
 

@@ -91,7 +91,11 @@ class LibTestBaseModule : LibrarianLibModule("testbase", logger) {
                 }
                 mod.blocks.forEach forEachBlock@{ block ->
                     if(block !is TestBlock) return@forEachBlock
-                    keys[block.registryName!!.translationKey("block")] = block.config.name
+                    val registryName = block.registryName!!
+                    keys[registryName.translationKey("block")] = block.config.name
+                    block.config.description?.also {
+                        keys[registryName.translationKey("block", "tooltip")] = it.replace("\n", "\\n")
+                    }
                 }
             }
             return keys
