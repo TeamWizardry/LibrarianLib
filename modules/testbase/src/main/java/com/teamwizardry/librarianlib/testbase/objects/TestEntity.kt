@@ -33,7 +33,10 @@ class TestEntity(val config: TestEntityConfig, world: World): Entity(config.also
     }
 
     override fun hitByEntity(entity: Entity): Boolean {
-        if(entity is PlayerEntity) {
+        val context = TestEntityConfig.HitContext(this, entity, entity is PlayerEntity)
+
+        config.hit.run(this.world.isRemote, context)
+        if(context.kill) {
             this.remove()
             return true
         }
@@ -65,12 +68,9 @@ class TestEntity(val config: TestEntityConfig, world: World): Entity(config.also
         config.tick.run(this.world.isRemote, TestEntityConfig.TickContext(this))
     }
 
-    override fun isInvulnerable(): Boolean {
-        return super.isInvulnerable()
-    }
-
     override fun attackEntityFrom(source: DamageSource, amount: Float): Boolean {
-        return super.attackEntityFrom(source, amount)
+        config.attack.run(this.world.isRemote, TestEntityConfig.AttackContext(this, source, amount))
+        return false
     }
 
     override fun applyEntityCollision(entityIn: Entity) {

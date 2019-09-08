@@ -14,6 +14,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
 import org.apache.logging.log4j.Logger
+import java.util.concurrent.CopyOnWriteArrayList
 
 abstract class LibrarianLibModule(val name: String, val logger: Logger) {
     val modid: String = "librarianlib-$name"
@@ -65,7 +66,7 @@ abstract class LibrarianLibModule(val name: String, val logger: Logger) {
     }
 
     companion object {
-        private val _modules = mutableListOf<LibrarianLibModule>()
+        private val _modules = CopyOnWriteArrayList<LibrarianLibModule>()
 
         val modules: List<LibrarianLibModule> = _modules.unmodifiableView()
 

@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
+import com.teamwizardry.librarianlib.core.util.SidedFunction
+import com.teamwizardry.librarianlib.core.util.SidedSupplier
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityClassification
@@ -12,6 +14,7 @@ import net.minecraft.network.datasync.DataParameter
 import net.minecraft.network.datasync.DataSerializers
 import net.minecraft.network.datasync.EntityDataManager
 import net.minecraft.network.datasync.IDataSerializer
+import net.minecraft.util.DamageSource
 import net.minecraft.util.Direction
 import net.minecraft.util.Hand
 import net.minecraft.util.math.BlockPos
@@ -33,11 +36,18 @@ class TestEntityConfig(val id: String, val name: String): TestConfig() {
             spawnerItem.config.description = value
         }
 
-    val typeBuilder = EntityType.Builder.create<TestEntity>({ _, world ->
+    var serverFactory: (World) -> TestEntity = { world ->
         TestEntity(this, world)
+    }
+    var clientFactory: SidedFunction.Client<World, TestEntity> = SidedFunction.Client { world ->
+        TestEntity(this, world)
+    }
+
+    val typeBuilder = EntityType.Builder.create<TestEntity>({ _, world ->
+        serverFactory(world)
     }, EntityClassification.MISC)
         .setCustomClientFactory { _, world ->
-            TestEntity(this, world)
+            clientFactory.apply(world)
         }
         .size(0.5f, 0.5f)
     val type by lazy { typeBuilder.build(id).setRegistryName(modid, id) }
@@ -54,20 +64,40 @@ class TestEntityConfig(val id: String, val name: String): TestConfig() {
      *
      * @see Entity.applyPlayerInteraction
      */
-    var rightClick = Action<RightClickContext>()
+    val rightClick = Action<RightClickContext>()
 
     /**
      * Called every tick
      *
      * @see Entity.tick
      */
-    var tick = Action<TickContext>()
+    val tick = Action<TickContext>()
+
+    /**
+     * Called when the entity is hit. Set [HitContext.kill] to false if the entity should not be killed.
+     *
+     * @see Entity.hitByEntity
+     */
+    val hit = Action<HitContext>()
+
+    /**
+     * Called when the entity is attacked.
+     *
+     * @see Entity.attackEntityFrom
+     */
+    val attack = Action<AttackContext>()
 
     data class RightClickContext(val target: TestEntity, val player: PlayerEntity, val hand: Hand, val hitPos: Vec3d): PlayerTestContext(player) {
         val world: World = target.world
         val stack: ItemStack = player.getHeldItem(hand)
     }
     data class TickContext(val target: TestEntity): TestContext() {
+        val world: World = target.world
+    }
+    data class HitContext(val target: TestEntity, val actor: Entity, var kill: Boolean): TestContext() {
+        val world: World = target.world
+    }
+    data class AttackContext(val target: TestEntity, val source: DamageSource, var amount: Float): TestContext() {
         val world: World = target.world
     }
 

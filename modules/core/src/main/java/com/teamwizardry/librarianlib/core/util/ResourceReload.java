@@ -17,21 +17,20 @@ public class ResourceReload {
         return SelectiveReloadStateHandler.INSTANCE.get().test(type);
     }
 
-    public void register(List<IResourceType> types, ClientRunnable runnable) {
+    public void register(List<IResourceType> types, SidedRunnable.Client runnable) {
         ISelectiveResourceReloadListener listener = (resourceManager, resourcePredicate) -> {
             boolean hasMatch = false;
             for (IResourceType type : types) {
                 hasMatch = hasMatch || resourcePredicate.test(type);
             }
             if(hasMatch)
-                runnable.runIfClient();
+                runnable.run();
         };
 
         ((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).addReloadListener(listener);
     }
 
-    public void register(IResourceType type, ClientRunnable runnable) {
+    public void register(IResourceType type, SidedRunnable.Client runnable) {
         register(Lists.newArrayList(type), runnable);
     }
-
 }
