@@ -8,7 +8,7 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.Vec3d
 
-object StaticSystem: TestSystem() {
+object StaticSystem: TestSystem("static") {
     override fun configure() {
         val pos = bind(3)
         val color = bind(4)

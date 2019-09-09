@@ -1,0 +1,4 @@
+{
+  "virtual_pack_injector": "META-INF/virtual_pack_injector.js",
+  "virtual_namespace_fallback": "META-INF/virtual_namespace_fallback.js"
+}

@@ -2,7 +2,7 @@ modLoader="javafml"
 loaderVersion="[26,)"
 issueTrackerURL="https://github.com/LibrarianLib/LibrarianLib/issues"
 [[mods]]
-modId="librarianlib-particles-testmod"
+modId="librarianlib-particles-test"
 version="${file.jarVersion}"
 displayName="LibrarianLib Particles Test Mod"
 # A URL to query for updates for this mod. See the JSON update specification <here>
@@ -15,7 +15,11 @@ logoFile="icon.png"
 description='''
 The test mod for the LibrarianLib Particles module
 '''
-[[dependencies.librarianlib-particles-testmod]]
+[[dependencies.librarianlib-particles-test]]
     modId="librarianlib-particles"
+    mandatory=true
+    versionRange="*"
+[[dependencies.librarianlib-particles-test]]
+    modId="librarianlib-testbase"
     mandatory=true
     versionRange="*"

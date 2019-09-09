@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "librarianlib-testbase:item/test_tool",
+    "layer1": "librarianlib-testbase:item/test_tool_band"
+  }
+}

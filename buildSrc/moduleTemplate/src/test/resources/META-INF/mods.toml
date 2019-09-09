@@ -19,3 +19,7 @@ The test mod for the LibrarianLib UTemplateU module
     modId="librarianlib-xtemplatex"
     mandatory=true
     versionRange="*"
+[[dependencies.librarianlib-xtemplatex-testmod]]
+    modId="librarianlib-testbase"
+    mandatory=true
+    versionRange="*"

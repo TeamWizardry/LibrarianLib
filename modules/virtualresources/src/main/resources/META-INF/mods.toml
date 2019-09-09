@@ -1,0 +1,21 @@
+modLoader="javafml"
+loaderVersion="[26,)"
+issueTrackerURL="https://github.com/LibrarianLib/LibrarianLib/issues"
+[[mods]]
+modId="librarianlib-virtualresources"
+version="${file.jarVersion}"
+displayName="LibrarianLib Virtual Resources"
+# A URL to query for updates for this mod. See the JSON update specification <here>
+# updateJSONURL="http://myurl.me/" #optional
+# A URL for the "homepage" for this mod, displayed in the mod UI
+# displayURL="http://example.com/" #optional
+logoFile="icon.png"
+# credits="Thanks for this example mod goes to Java"
+# authors="Love, Cheese and small house plants" #optional
+description='''
+A LibrarianLib module that allows the creation of virtual resource packs
+'''
+[[dependencies.librarianlib-virtualresources]]
+    modId="librarianlib-core"
+    mandatory=true
+    versionRange="*"

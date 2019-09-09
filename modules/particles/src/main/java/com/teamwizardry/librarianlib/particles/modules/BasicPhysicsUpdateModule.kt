@@ -31,6 +31,9 @@ import java.lang.Math.abs
  * Item 5 ensures that the downward velocity added to particles resting on the ground—and the resulting 0-distance
  * collision with the ground—doesn't lock them in place. In the second iteration that downward velocity will have
  * been zeroed or negated by the first collision, allowing the particle to slide or bounce as would be expected.
+ *
+ * Perfect bounciness is, as far as I am aware, infeasible. Discrete time steps don't mix well with linear motion:
+ * http://jsfiddle.net/thecodewarrior/7a8snb49
  */
 class BasicPhysicsUpdateModule @JvmOverloads constructor(
         /**

@@ -8,14 +8,7 @@ import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
 
 @Mod("librarianlib-xtemplatex")
-class LibParticlesModule : LibrarianLibModule("xtemplatex", logger) {
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
-    object RegistryEvents {
-        @SubscribeEvent
-        @JvmStatic
-        fun onBlocksRegistry(blockRegistryEvent: RegistryEvent.Register<Block>) {
-        }
-    }
+class LibXTemplateXModule : LibrarianLibModule("xtemplatex", logger) {
 }
 
 internal val logger = LogManager.getLogger("LibrarianLib/UTemplateU")

@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.utilities
 
-import com.teamwizardry.librarianlib.core.util.ClientRunnable
+import com.teamwizardry.librarianlib.core.util.SidedRunnable
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.minecraft.block.material.Material
@@ -290,7 +290,7 @@ class RayWorldCollider private constructor(world: World) {
         val client: RayWorldCollider?
             get() {
                 var handler: RayWorldCollider? = null
-                ClientRunnable.run {
+                SidedRunnable.client {
                     handler = ClientRayWorldCollider.get()
                 }
                 return handler

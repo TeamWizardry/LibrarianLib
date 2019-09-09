@@ -1,26 +1,40 @@
 package com.teamwizardry.librarianlib.core.util
 
+import com.google.common.collect.Lists
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.MainWindow
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.TextureManager
+import net.minecraft.resources.IFutureReloadListener
+import net.minecraft.resources.IReloadableResourceManager
 import net.minecraft.resources.IResourceManager
 import net.minecraft.util.Timer
 import net.minecraft.util.math.Vec3d
+import net.minecraftforge.api.distmarker.Dist
+import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.resource.IResourceType
+import net.minecraftforge.resource.ISelectiveResourceReloadListener
+import net.minecraftforge.resource.SelectiveReloadStateHandler
 
 object Client {
+    @JvmStatic
     val minecraft: Minecraft get() = Minecraft.getInstance()
+    @JvmStatic
     val window: MainWindow get() = minecraft.mainWindow
+    @JvmStatic
     val guiScaleFactor: Double get() = window.guiScaleFactor
+    @JvmStatic
     val resourceManager: IResourceManager get() = minecraft.resourceManager
+    @JvmStatic
     val renderEngine: TextureManager get() = minecraft.textureManager
 
     /**
      * The game time, as measured from the game launch
      */
+    @JvmStatic
     val time: Time = object: Time() {
         override val ticks: Int
             get() = globalTicks
@@ -30,12 +44,16 @@ object Client {
     /**
      * The world time, as measured from the game launch
      */
+    @JvmStatic
     val worldTime: Time = object: Time() {
         override val ticks: Int
             get() = worldTicks
         override val partialTicks: Float
             get() = renderPartialTicksPaused.getFloat(minecraft)
     }
+
+    @JvmStatic
+    val resourceReloadHandler = ResourceReload()
 
     abstract class Time {
         abstract val ticks: Int
