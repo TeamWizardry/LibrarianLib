@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.oredict.OreDictionary
+import java.util.LinkedList
 
 /**
  * @author WireSegal
@@ -17,10 +18,10 @@ import net.minecraftforge.oredict.OreDictionary
  */
 @Mod.EventBusSubscriber(modid = LibrarianLib.MODID)
 object OreDictionaryRegistrar {
-    val toRegister = mutableMapOf<() -> ItemStack, String>()
-    val furnaceRecipeStacks = mutableMapOf<() -> ItemStack, Pair<() -> ItemStack, Float>>()
-    val furnaceRecipeItems = mutableMapOf<() -> Item, Pair<() -> ItemStack, Float>>()
-    val furnaceRecipeBlocks = mutableMapOf<() -> Block, Pair<() -> ItemStack, Float>>()
+    private val toRegister = mutableMapOf<() -> ItemStack, String>()
+    private val furnaceRecipeStacks = LinkedList<Triple<() -> ItemStack, () -> ItemStack, Float>>()
+    private val furnaceRecipeItems = LinkedList<Triple<() -> Item, () -> ItemStack, Float>>()
+    private val furnaceRecipeBlocks = LinkedList<Triple<() -> Block, () -> ItemStack, Float>>()
 
     @JvmStatic
     fun registerOre(name: String, stack: () -> ItemStack) {
@@ -35,7 +36,7 @@ object OreDictionaryRegistrar {
 
     @JvmStatic
     fun registerSmeltingItem(item: () -> Item, output: () -> ItemStack, xp: Float) {
-        furnaceRecipeItems[item] = output to xp
+        furnaceRecipeItems.add(Triple(item, output, xp))
     }
 
     @JvmStatic
@@ -43,7 +44,7 @@ object OreDictionaryRegistrar {
 
     @JvmStatic
     fun registerSmeltingStack(item: () -> ItemStack, output: () -> ItemStack, xp: Float) {
-        furnaceRecipeStacks[item] = output to xp
+        furnaceRecipeStacks.add(Triple(item, output, xp))
     }
 
     @JvmStatic
@@ -51,7 +52,7 @@ object OreDictionaryRegistrar {
 
     @JvmStatic
     fun registerSmeltingBlock(item: () -> Block, output: () -> ItemStack, xp: Float) {
-        furnaceRecipeBlocks[item] = output to xp
+        furnaceRecipeBlocks.add(Triple(item, output, xp))
     }
 
     @JvmStatic
@@ -61,11 +62,17 @@ object OreDictionaryRegistrar {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     fun init(e: RegistryEvent.Register<Item>) {
         toRegister.forEach { stack, key -> OreDictionary.registerOre(key, stack()) }
-        furnaceRecipeStacks.forEach { stack, out -> FurnaceRecipes.instance()
-                .addSmeltingRecipe(stack(), out.first(), out.second)}
-        furnaceRecipeItems.forEach { item, out -> FurnaceRecipes.instance()
-                .addSmelting(item(), out.first(), out.second)}
-        furnaceRecipeBlocks.forEach { block, out -> FurnaceRecipes.instance()
-                .addSmeltingRecipeForBlock(block(), out.first(), out.second)}
+        furnaceRecipeStacks.forEach { (stack, output, xp) ->
+            FurnaceRecipes.instance()
+                .addSmeltingRecipe(stack(), output(), xp)
+        }
+        furnaceRecipeItems.forEach { (item, output, xp) ->
+            FurnaceRecipes.instance()
+                .addSmelting(item(), output(), xp)
+        }
+        furnaceRecipeBlocks.forEach { (block, output, xp) ->
+            FurnaceRecipes.instance()
+                .addSmeltingRecipeForBlock(block(), output(), xp)
+        }
     }
 }
