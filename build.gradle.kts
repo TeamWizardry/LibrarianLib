@@ -23,7 +23,7 @@ val mc_mappings: String by gradleProperties
 val branch: String = gradleProperties["branch"] ?: "git rev-parse --abbrev-ref HEAD".execute(rootDir.absolutePath).lines().last()
 logger.info("On branch $branch")
 
-val mod_version_prefix = if(mc_version.contains(branch)) "" else "${branch.replace('/', '-')}-"
+val mod_version_suffix = if(mc_version.contains(branch)) "" else "-${branch.replace('/', '_')}"
 
 val mod_version: String by gradleProperties
 val mod_name: String by gradleProperties
@@ -41,9 +41,9 @@ allprojects {
 
 
     group = mod_group
-    version = mod_version_prefix + mod_version
+    version = mod_version + mod_version_suffix
     if(project == rootProject)
-        base.archivesBaseName = "$mod_name-$mod_version_prefix$mc_version"
+        base.archivesBaseName = "$mod_name-$mc_version"
     else
         base.archivesBaseName = "librarianlib-${project.name}"
 
@@ -56,9 +56,21 @@ allprojects {
         maven(url = "https://jitpack.io")
     }
 
+    val contained by configurations.creating
+
+    configurations.compile.extendsFrom(contained)
+
     dependencies {
         minecraft("net.minecraftforge:forge:$mc_version-$forge_version")
         compile(kotlin("stdlib-jdk8"))
+    }
+
+    if(project !in setOf(project(":testbase"), project(":core"), project(":virtualresources"), rootProject)) {
+        java.sourceSets["test"].apply {
+            dependencies {
+                compileOnly(project(":testbase"))
+            }
+        }
     }
 
     tasks.getByName<Jar>("jar") {
@@ -108,11 +120,37 @@ dependencies {
     val runtimeClasspath = project.files()
     runtimeClasspath.from(project.java.sourceSets["main"].runtimeClasspath)
     subprojects.forEach {
+        runtimeClasspath.from(it.configurations["contained"])
         runtimeClasspath.from(it.java.sourceSets["main"].runtimeClasspath)
         runtimeClasspath.from(it.java.sourceSets["test"].runtimeClasspath)
     }
     project.java.sourceSets["main"].runtimeClasspath = runtimeClasspath
 }
+
+tasks.getByName<Jar>("jar") {
+    subprojects.forEach {
+        dependsOn(it.tasks.getByName("assemble"))
+    }
+
+    doFirst {
+        val contained = mutableSetOf<File>()
+
+        contained.addAll(configurations["contained"].files)
+        subprojects.forEach {
+            contained.addAll(it.configurations["contained"].files)
+            contained.add(it.tasks.getByName<Jar>("jar").archivePath)
+        }
+
+        manifest {
+            attributes(mapOf(
+                "ContainedDeps" to contained.joinToString(" ") { it.name }
+            ))
+        }
+
+        from(contained)
+    }
+}
+
 
 minecraft {
     runs {
