@@ -15,11 +15,4 @@ logoFile="icon.png"
 description='''
 A set of base classes for LibrarianLib module tests
 '''
-[[dependencies.librarianlib-testbase]]
-    modId="librarianlib-core"
-    mandatory=true
-    versionRange="*"
-[[dependencies.librarianlib-testbase]]
-    modId="librarianlib-virtualresources"
-    mandatory=true
-    versionRange="*"
+## module_dependencies ##

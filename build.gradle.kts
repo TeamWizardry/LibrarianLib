@@ -1,5 +1,7 @@
 @file:Suppress("PropertyName")
 
+import net.minecraftforge.gradle.userdev.tasks.GenerateSRG
+import org.apache.tools.ant.filters.ReplaceTokens
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.time.format.DateTimeFormatter
 import java.time.LocalDateTime
@@ -23,7 +25,7 @@ val mc_mappings: String by gradleProperties
 val branch: String = gradleProperties["branch"] ?: "git rev-parse --abbrev-ref HEAD".execute(rootDir.absolutePath).lines().last()
 logger.info("On branch $branch")
 
-val mod_version_suffix = if(mc_version.contains(branch)) "" else "-${branch.replace('/', '_')}"
+val mod_version_suffix = if(mc_version.contains(branch)) "" else "-${branch.split('/').last()}"
 
 val mod_version: String by gradleProperties
 val mod_name: String by gradleProperties
@@ -62,29 +64,61 @@ allprojects {
 
     dependencies {
         minecraft("net.minecraftforge:forge:$mc_version-$forge_version")
-        compile(kotlin("stdlib-jdk8"))
+        if(project == rootProject)
+            contained(kotlin("stdlib-jdk8"))
+        else
+            compile(kotlin("stdlib-jdk8"))
     }
 
     if(project !in setOf(project(":testbase"), project(":core"), project(":virtualresources"), rootProject)) {
-        java.sourceSets["test"].apply {
-            dependencies {
-                compileOnly(project(":testbase"))
+        dependencies {
+            testCompileOnly(project(":testbase"))
+        }
+    }
+
+    fun AbstractCopyTask.appendTomlDependencies() {
+        val dependencies = configurations.compileOnly.allDependencies.filterIsInstance<ProjectDependency>()
+        filesMatching("META-INF/mods.toml") {
+            filter { line ->
+                if (line == "## module_dependencies ##")
+                    dependencies.joinToString("\n") { dep ->
+                        """
+                        [[dependencies.librarianlib-${project.name}]]
+                            modId="librarianlib-${dep.dependencyProject.name}"
+                            mandatory=true
+                            versionRange="*"
+                        """.trimIndent()
+                    }
+                else
+                    line
             }
         }
     }
 
     tasks.getByName<Jar>("jar") {
-        manifest {
-//            attributes(mapOf(
-//                "Specification-Title" to mod_name,
-//                "Specification-Vendor" to "Team Wizardry",
-//                "Specification-Version" to version,
-//                "Implementation-Title" to project.name,
-//                "Implementation-Version" to version,
-//                "Implementation-Vendor" to "examplemodsareus",
-//                "Implementation-Timestamp" to DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss").format(LocalDateTime.now(ZoneId.of("UTC")))
-//            ))
+        doFirst {
+            appendTomlDependencies()
         }
+    }
+
+    tasks.create<Jar>("mavenJar") {
+        val jarInJar = containedDeps()
+        doFirst {
+            from(java.sourceSets["main"].output)
+
+            appendTomlDependencies()
+
+            jarInJar {
+                add(configurations["contained"])
+            }
+        }
+
+        classifier = "maven"
+    }
+
+    reobf.create("mavenJar") {
+        dependsOn(tasks.getByName("createMcpToSrg"))
+        mappings = tasks.getByName<GenerateSRG>("createMcpToSrg").output
     }
 
     java {
@@ -127,30 +161,33 @@ dependencies {
     project.java.sourceSets["main"].runtimeClasspath = runtimeClasspath
 }
 
-tasks.getByName<Jar>("jar") {
+tasks.create<Jar>("fatJar") {
     subprojects.forEach {
         dependsOn(it.tasks.getByName("assemble"))
     }
+    val jarInJar = containedDeps()
+
+    from(java.sourceSets["main"].output)
 
     doFirst {
-        val contained = mutableSetOf<File>()
-
-        contained.addAll(configurations["contained"].files)
-        subprojects.forEach {
-            contained.addAll(it.configurations["contained"].files)
-            contained.add(it.tasks.getByName<Jar>("jar").archivePath)
+        jarInJar {
+            add(configurations["contained"])
+            subprojects.forEach {
+                if(it == project(":testbase"))
+                    return@forEach
+                add(it.configurations["contained"])
+                add("${it.group}:${it.name}:${it.version}", it.tasks.getByName<Jar>("jar").archivePath)
+            }
         }
-
-        manifest {
-            attributes(mapOf(
-                "ContainedDeps" to contained.joinToString(" ") { it.name }
-            ))
-        }
-
-        from(contained)
     }
+
+    classifier = "fat"
 }
 
+reobf.create("fatJar") {
+    dependsOn(tasks.getByName("createMcpToSrg"))
+    mappings = tasks.getByName<GenerateSRG>("createMcpToSrg").output
+}
 
 minecraft {
     runs {

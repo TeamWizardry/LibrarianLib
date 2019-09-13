@@ -15,7 +15,4 @@ logoFile="icon.png"
 description='''
 UDescriptionU
 '''
-[[dependencies.librarianlib-xtemplatex]]
-    modId="librarianlib-core"
-    mandatory=true
-    versionRange="*"
+## module_dependencies ##

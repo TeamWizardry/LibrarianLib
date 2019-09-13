@@ -16,7 +16,4 @@ description='''
 Utilities too specific to belong in LibrarianLib Core, but general enough that they shouldn't be contstrained to the \
 module(s) they were made for.
 '''
-[[dependencies.librarianlib-utilities]]
-    modId="librarianlib-core"
-    mandatory=true
-    versionRange="*"
+## module_dependencies ##

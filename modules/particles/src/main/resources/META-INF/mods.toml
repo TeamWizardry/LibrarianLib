@@ -15,11 +15,4 @@ logoFile="icon.png"
 description='''
 A versatile and highly efficient particle system library
 '''
-[[dependencies.librarianlib-particles]]
-    modId="librarianlib-core"
-    mandatory=true
-    versionRange="*"
-[[dependencies.librarianlib-particles]]
-    modId="librarianlib-utilities"
-    mandatory=true
-    versionRange="*"
+## module_dependencies ##

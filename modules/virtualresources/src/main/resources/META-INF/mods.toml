@@ -15,7 +15,4 @@ logoFile="icon.png"
 description='''
 A LibrarianLib module that allows the creation of virtual resource packs
 '''
-[[dependencies.librarianlib-virtualresources]]
-    modId="librarianlib-core"
-    mandatory=true
-    versionRange="*"
+## module_dependencies ##
