@@ -18,7 +18,6 @@ import net.minecraft.block.material.MapColor
 import net.minecraft.block.material.Material
 import net.minecraft.block.properties.IProperty
 import net.minecraft.block.properties.PropertyEnum
-import net.minecraft.block.state.BlockFaceShape
 import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
@@ -26,7 +25,6 @@ import net.minecraft.entity.Entity
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
-import net.minecraft.util.EnumFacing
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.Explosion
@@ -163,14 +161,6 @@ open class BlockModSlab(name: String, val parent: IBlockState) : BlockSlab(wrapM
 
     override val ignoredProperties: Array<IProperty<*>>?
         get() = arrayOf(DUMMY_PROP)
-
-    @Suppress("OverridingDeprecatedMember")
-    override fun getBlockFaceShape(world: IBlockAccess, state: IBlockState, pos: BlockPos, side: EnumFacing): BlockFaceShape {
-        return if (isDouble) BlockFaceShape.SOLID
-        else if (side == EnumFacing.UP && state.getValue(HALF) == BlockSlab.EnumBlockHalf.TOP) BlockFaceShape.SOLID
-        else if (side == EnumFacing.DOWN && state.getValue(HALF) == BlockSlab.EnumBlockHalf.BOTTOM) BlockFaceShape.SOLID
-        else BlockFaceShape.UNDEFINED
-    }
 
     override fun getItemDropped(state: IBlockState, rand: Random, fortune: Int): Item? {
         return singleBlock.itemForm
