@@ -18,14 +18,14 @@ import java.util.LinkedList
  */
 @Mod.EventBusSubscriber(modid = LibrarianLib.MODID)
 object OreDictionaryRegistrar {
-    private val toRegister = mutableMapOf<() -> ItemStack, String>()
+    private val toRegister = LinkedList<Pair<() -> ItemStack, String>>()
     private val furnaceRecipeStacks = LinkedList<Triple<() -> ItemStack, () -> ItemStack, Float>>()
     private val furnaceRecipeItems = LinkedList<Triple<() -> Item, () -> ItemStack, Float>>()
     private val furnaceRecipeBlocks = LinkedList<Triple<() -> Block, () -> ItemStack, Float>>()
 
     @JvmStatic
     fun registerOre(name: String, stack: () -> ItemStack) {
-        toRegister[stack] = name
+        toRegister.add(stack to name)
     }
 
     @JvmStatic
@@ -61,7 +61,7 @@ object OreDictionaryRegistrar {
     @JvmStatic
     @SubscribeEvent(priority = EventPriority.LOWEST)
     fun init(e: RegistryEvent.Register<Item>) {
-        toRegister.forEach { stack, key -> OreDictionary.registerOre(key, stack()) }
+        toRegister.forEach { (stack, key) -> OreDictionary.registerOre(key, stack()) }
         furnaceRecipeStacks.forEach { (stack, output, xp) ->
             FurnaceRecipes.instance()
                 .addSmeltingRecipe(stack(), output(), xp)
@@ -74,5 +74,11 @@ object OreDictionaryRegistrar {
             FurnaceRecipes.instance()
                 .addSmeltingRecipeForBlock(block(), output(), xp)
         }
+
+        // garbage collect the stuff
+        toRegister.clear()
+        furnaceRecipeStacks.clear()
+        furnaceRecipeItems.clear()
+        furnaceRecipeBlocks.clear()
     }
 }
