@@ -4,12 +4,14 @@ package com.teamwizardry.librarianlib.core.common
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.LibrarianLog
+import com.teamwizardry.librarianlib.core.common.commands.ServerCommands
 import com.teamwizardry.librarianlib.features.autoregister.AnnotationMarkersHandler
 import com.teamwizardry.librarianlib.features.base.ModCreativeTab
 import com.teamwizardry.librarianlib.features.base.item.IShieldItem
 import com.teamwizardry.librarianlib.features.config.EasyConfigHandler
 import com.teamwizardry.librarianlib.features.container.GuiHandler
 import com.teamwizardry.librarianlib.features.gui.provided.book.structure.StructureCacheRegistry
+import com.teamwizardry.librarianlib.features.facade.provided.book.structure.StructureCacheRegistry as FacadeStructureCacheRegistry
 import com.teamwizardry.librarianlib.features.helpers.VariantHelper
 import com.teamwizardry.librarianlib.features.kotlin.times
 import com.teamwizardry.librarianlib.features.saving.SavingFieldCache
@@ -24,6 +26,7 @@ import net.minecraftforge.fml.common.discovery.ASMDataTable
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent
 import net.minecraftforge.fml.common.network.NetworkRegistry
 import java.io.File
 import java.io.InputStream
@@ -62,6 +65,7 @@ open class LibCommonProxy {
 
     open fun lateInit(e: FMLInitializationEvent) {
         StructureCacheRegistry.passInit()
+        FacadeStructureCacheRegistry.passInit()
     }
 
     open fun post(e: FMLPostInitializationEvent) {
@@ -89,6 +93,11 @@ open class LibCommonProxy {
             print("$starBegin$starPad\n\n")
             FMLCommonHandler.instance().handleExit(0)
         }
+    }
+
+    open fun serverStarting(e: FMLServerStartingEvent) {
+        if(ServerCommands.root.subCommands.isNotEmpty())
+            e.registerServerCommand(ServerCommands.root)
     }
 
     // End internal methods

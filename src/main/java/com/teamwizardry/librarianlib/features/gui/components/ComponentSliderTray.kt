@@ -5,6 +5,10 @@ import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
+/**
+ * ## Facade equivalent: None
+ */
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 class ComponentSliderTray(posX: Int, posY: Int, internal var offsetX: Int, internal var offsetY: Int) : GuiComponent(posX, posY) {
 
     internal var animatingIn = true

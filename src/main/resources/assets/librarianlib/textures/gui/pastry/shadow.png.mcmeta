@@ -1,0 +1,9 @@
+ {
+     "spritesheet": {
+         "textureWidth": 256,
+         "textureHeight": 256,
+         "sprites": {
+            "shadow": { "pos": [0,0,256,256], "caps": [96,96,96,96] }
+         }
+     }
+ }

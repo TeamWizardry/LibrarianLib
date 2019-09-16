@@ -1,0 +1,42 @@
+I use `n/r` as an abbreviation of "not relevant"
+
+```
+z
+3    C1 _______v___       C1: propagate=true,  mouseHit=MouseHit(C1, z=3)
+2         B2 __v_______   B2: propagate=true,  mouseHit=MouseHit(B2, z=2)
+1  B1 ________            B1: propagate=true,  mouseHit=MouseHit(C1, z=3) [C1.hit.z > B1.hit=null: C1 -> B1]
+0 A1 __________v______    A1: propagate=n/r,   mouseHit=MouseHit(C1, z=3) [B1.hit.z > A1.hit.z   : B1 -> A1] [B2.hit.z < B1.hit.z: -]
+
+A1 > B1 > C1
+A1 > B2
+```
+
+```
+z
+4        C2 ___v_____     C2: propagate=true,  mouseHit=MouseHit(C2, z=4)
+3    C1 _______v___       C1: propagate=true,  mouseHit=MouseHit(C1, z=3)
+1  B1 ________            B1: propagate=false, mouseHit=MouseHit(C2, z=4) [C1.hit.z > B1.hit=null: C1 -> B1] [C2.hit.z > C1.hit.z: C2 -> B1]
+0 A1 __________v______    A1: propagate=n/r,   mouseHit=MouseHit(A1, z=0)
+
+A1 > B1 > C1
+A1 > B1 > C2
+```
+
+```
+z
+3    C1 ___====v==––– C2  C1: propagate=true,  mouseHit=MouseHit(C1, z=3); C2: propagate=true,  mouseHit=MouseHit(C2, z=3)
+1  B1 ________            B1: propagate=false, mouseHit=MouseHit(C1, z=3) [C1.hit.z > B1.hit=null: C1 -> B1] [C2.hit.z == C1.hit.z: -]
+0 A1 __________v______    A1: propagate=n/r,   mouseHit=MouseHit(A1, z=0)
+
+A1 > B1 > C1
+A1 > B1 > C2
+```
+
+```
+z                         global.hitZ = 3 [hitZ = global.allMouseHits.filter { it.component.occludesMouse }.map { it.z }.max]
+3    C1 _______v_____     C1: opaque=true,  propagate=true, mouseHit=MouseHit(C1, z=3), mouseOver=true                                     [mouseHit.z >= global.hitZ: mouseOver = true]
+1  B1 ________            B1: opaque=false, propagate=true, mouseHit=MouseHit(C1, z=3), mouseOver=true  [C1.hit.z > B1.hit=null: C1 -> B1] [mouseHit.z >= global.hitZ: mouseOver = true]
+0 A1 __________.______    A1: opaque=n/r,   propagate=n/r,  mouseHit=MouseHit(A1, z=0), mouseOver=false                                    [mouseHit.z <  global.hitZ: mouseOver = false]
+
+A1 > B1 > C1
+```

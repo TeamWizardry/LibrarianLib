@@ -11,6 +11,7 @@ import com.teamwizardry.librarianlib.features.gui.provided.book.context.BookCont
 import com.teamwizardry.librarianlib.features.gui.provided.book.context.ComponentNavBar
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.book.Book
 import com.teamwizardry.librarianlib.features.gui.provided.book.hierarchy.entry.Entry
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.sprite.Sprite
 import com.teamwizardry.librarianlib.features.sprite.Texture
@@ -101,7 +102,7 @@ open class ModGuiBook(override val book: Book) : GuiBase(146, 180), IBookGui {
             list
         }
 
-        val render = IBookGui.getRendererFor(icon, Vec2d(16.0, 16.0))
+        val render = IBookGui.getRendererFor(icon, vec(16.0, 16.0))
 
         indexButton.BUS.hook(GuiComponentEvents.PreDrawEvent::class.java) { render() }
 

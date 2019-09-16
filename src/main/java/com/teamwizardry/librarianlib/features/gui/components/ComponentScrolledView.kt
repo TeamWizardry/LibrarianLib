@@ -6,6 +6,10 @@ import com.teamwizardry.librarianlib.features.gui.mixin.ScissorMixin
 import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
 
+/**
+ * ## Facade equivalent: [ScrollPane][com.teamwizardry.librarianlib.features.facade.provided.pastry.components.ScrollPane]
+ */
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 class ComponentScrolledView(posX: Int, posY: Int, width: Int, height: Int) : GuiComponent(posX, posY, width, height) {
 
     val scroll = HandlerList<(ComponentScrolledView, Vec2d, Vec2d?) -> Vec2d?>()

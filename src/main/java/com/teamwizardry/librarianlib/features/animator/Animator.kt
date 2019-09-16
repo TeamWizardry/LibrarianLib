@@ -195,7 +195,6 @@ class Animator {
         private var worldTicks = 0
         private var screenTicks = 0
 
-
         private val animators: MutableSet<Animator> = Collections.newSetFromMap(WeakHashMap<Animator, Boolean>())
 
         @JvmStatic
@@ -212,5 +211,8 @@ class Animator {
             if (!Minecraft.getMinecraft().isGamePaused) worldTicks++
             screenTicks++
         }
+
+        @JvmField
+        val global = Animator()
     }
 }

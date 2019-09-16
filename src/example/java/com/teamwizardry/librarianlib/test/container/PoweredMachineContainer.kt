@@ -10,7 +10,7 @@ import com.teamwizardry.librarianlib.features.container.ContainerBase
 import com.teamwizardry.librarianlib.features.container.GuiHandler
 import com.teamwizardry.librarianlib.features.container.InventoryWrapper
 import com.teamwizardry.librarianlib.features.container.builtin.BaseWrappers
-import com.teamwizardry.librarianlib.test.gui.tests.GuiPoweredMachine
+import com.teamwizardry.librarianlib.test.facade.tests.GuiPoweredMachine
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 
@@ -34,7 +34,7 @@ class PoweredMachineContainer(player: EntityPlayer, te: TEPoweredMachine) : Cont
         val NAME = ResourceLocation("librarianlibtest", "poweredmachinecontainer")
 
         init {
-            GuiHandler.registerBasicContainer(NAME, { player, _, tile -> PoweredMachineContainer(player, tile as TEPoweredMachine) }, { _, container -> GuiPoweredMachine(container) })
+            GuiHandler.registerBasicFacadeContainer(NAME, { player, _, tile -> PoweredMachineContainer(player, tile as TEPoweredMachine) }, { _, container -> GuiPoweredMachine(container) })
         }
     }
 }

@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.particle
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.core.client.ClientTickHandler
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.client.particle.Particle
@@ -284,7 +285,7 @@ abstract class ParticleRenderLayer(val name: String, val shouldSort: Boolean) {
         val d1 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks.toDouble()
         val d2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks.toDouble()
 
-        val playerPos = Vec3d(d0, d1, d2)
+        val playerPos = vec(d0, d1, d2)
         val look = playerPos.add(entity.getLook(partialTicks))
 
         for (particle in particleList) {

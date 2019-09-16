@@ -41,33 +41,4 @@ object AnimatorExamples {
         // field is unset the old animations will replay backwards
         animator.speed = -0.5f
     }
-
-    fun deletePastAnimationsTrue() {
-        // set to true, the default
-        animator.deletePastAnimations = true
-
-        // add an animation that stretches from 0 ticks to 10 ticks
-        animator.add(animation)
-
-        /* wait for animation to finish */
-
-        // set the animator time to 0. You will find that the animation you added earlier won't play again. It was
-        // deleted the moment it passed
-        animator.time = 0f
-    }
-
-    fun deletePastAnimationsFalse() {
-        // set to false
-        animator.deletePastAnimations = false
-
-        // add an animation that stretches from 0 ticks to 10 ticks
-        animator.add(animation)
-
-        /* wait for animation to finish */
-
-        // set the animator time to 0. You will find that the animation you added earlier will play again. Because
-        // deletePastAnimations was set to false, the animation was kept around, and could be replayed by setting the
-        // time backwards a bit
-        animator.time = 0f
-    }
 }

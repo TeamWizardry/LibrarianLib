@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.math.interpolate.position
 
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.kotlin.div
 import com.teamwizardry.librarianlib.features.kotlin.minus
 import com.teamwizardry.librarianlib.features.kotlin.plus
@@ -22,7 +23,7 @@ class InterpBezier3D @JvmOverloads constructor(
     private val absoluteEndControl = end + endControl
 
     override fun get(i: Float): Vec3d {
-        return Vec3d(
+        return vec(
                 getBezierComponent(i.toDouble(), start.x, end.x, absoluteStartControl.x, absoluteEndControl.x),
                 getBezierComponent(i.toDouble(), start.y, end.y, absoluteStartControl.y, absoluteEndControl.y),
                 getBezierComponent(i.toDouble(), start.z, end.z, absoluteStartControl.z, absoluteEndControl.z)

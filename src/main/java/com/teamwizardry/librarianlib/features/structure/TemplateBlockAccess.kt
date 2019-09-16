@@ -7,12 +7,14 @@ import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
+import net.minecraft.world.EnumSkyBlock
 import net.minecraft.world.IBlockAccess
 import net.minecraft.world.WorldType
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.gen.structure.template.Template
 import net.minecraft.world.gen.structure.template.Template.BlockInfo
 import java.util.*
+import kotlin.math.max
 
 /**
  * Used to access the block in a template. Made for getActualState()
@@ -55,7 +57,9 @@ open class TemplateBlockAccess(protected var template: Template?) : IBlockAccess
     }
 
     override fun getCombinedLight(pos: BlockPos, lightValue: Int): Int {
-        return 0
+        val sky = EnumSkyBlock.SKY.defaultLightValue
+        val block = max(EnumSkyBlock.BLOCK.defaultLightValue, lightValue)
+        return (sky shl 20) or (block shl 4)
     }
 
     override fun getBlockState(pos: BlockPos): IBlockState {

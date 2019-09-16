@@ -12,13 +12,13 @@ import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.opengl.GL20
 
 @SideOnly(Side.CLIENT)
-open class Shader(vert: ResourceLocation?, frag: ResourceLocation?) {
+open class Shader(val vertRl: ResourceLocation?, val fragRl: ResourceLocation?) {
 
     constructor(vert: String?, frag: String?)
             : this(vert?.let { ResourceLocation(currentModId, it) }, frag?.let { ResourceLocation(currentModId, it) })
 
-    val vert: String? = if (vert == null) null else "/assets/${vert.namespace}/${VariantHelper.pathToSnakeCase(vert.path).removePrefix("/")}"
-    val frag: String? = if (frag == null) null else "/assets/${frag.namespace}/${VariantHelper.pathToSnakeCase(frag.path).removePrefix("/")}"
+    val vert: String? = if (vertRl == null) null else "/assets/${vertRl.namespace}/${VariantHelper.pathToSnakeCase(vertRl.path).removePrefix("/")}"
+    val frag: String? = if (fragRl == null) null else "/assets/${fragRl.namespace}/${VariantHelper.pathToSnakeCase(fragRl.path).removePrefix("/")}"
 
     var time: FloatTypes.FloatUniform? = null
 

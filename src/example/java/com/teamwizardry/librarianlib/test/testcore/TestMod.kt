@@ -10,6 +10,7 @@ import com.teamwizardry.librarianlib.test.chunkdata.ChunkDataEntryPoint
 import com.teamwizardry.librarianlib.test.container.ContainerEntryPoint
 import com.teamwizardry.librarianlib.test.fx.FXEntryPoint
 import com.teamwizardry.librarianlib.test.gui.GuiEntryPoint
+import com.teamwizardry.librarianlib.test.facade.FacadeEntryPoint
 import com.teamwizardry.librarianlib.test.particlesystem.ParticleSystemEntryPoint
 import com.teamwizardry.librarianlib.test.saving.SavingEntryPoint
 import com.teamwizardry.librarianlib.test.variants.VariantEntryPoint
@@ -81,18 +82,19 @@ class TestMod {
         lateinit var PROXY: LibTestCommonProxy
 
         val entrypoints: Array<TestEntryPoint> = arrayOf(
-                SavingEntryPoint,
-                FXEntryPoint,
-                GuiEntryPoint,
-                VariantEntryPoint,
-                UnsafeTest,
-                ContainerEntryPoint,
-                ChunkDataEntryPoint,
-                WorldDataEntryPoint,
-                AnimatorEntryPoint,
+            SavingEntryPoint,
+            FXEntryPoint,
+            FacadeEntryPoint,
+            GuiEntryPoint,
+            VariantEntryPoint,
+            UnsafeTest,
+            ContainerEntryPoint,
+            ChunkDataEntryPoint,
+            WorldDataEntryPoint,
+            AnimatorEntryPoint,
 //                RenderEntryPoint, // DO NOT ENABLE THIS OR ALL IS SPONGE
-                EndEntryPoint,
-                ParticleSystemEntryPoint
+            EndEntryPoint,
+            ParticleSystemEntryPoint
         )
 
         object Tab : ModCreativeTab() {

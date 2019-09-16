@@ -19,7 +19,11 @@ import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
 import java.io.IOException
 
+/**
+ * ## Facade equivalent [GuiBase][com.teamwizardry.librarianlib.features.facade.GuiBase]
+ */
 @Mod.EventBusSubscriber(value = [Side.CLIENT], modid = LibrarianLib.MODID)
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : GuiScreen() {
     val mainComponents: ComponentVoid = ComponentVoid(0, 0)
     val fullscreenComponents: ComponentVoid = ComponentVoid(0, 0)
@@ -85,7 +89,6 @@ open class GuiBase(protected var guiWidth: Int, protected var guiHeight: Int) : 
         super.drawScreen(mouseX, mouseY, partialTicks)
         GlStateManager.enableBlend()
         StencilUtil.clear()
-        GL11.glEnable(GL11.GL_STENCIL_TEST)
         val relPos = vec(mouseX, mouseY)
         GlStateManager.pushMatrix()
 

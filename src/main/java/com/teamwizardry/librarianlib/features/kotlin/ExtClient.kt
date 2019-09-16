@@ -5,17 +5,33 @@ package com.teamwizardry.librarianlib.features.kotlin
 
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.methodhandles.MethodHandleHelper
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.entity.RenderManager
+import net.minecraft.client.renderer.texture.TextureManager
+import net.minecraft.client.resources.IResourceManager
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.awt.Color
 
+// Easy client access ==================================================================================================
+
+object Client {
+    val minecraft: Minecraft get() = Minecraft.getMinecraft()
+    val resolution: ScaledResolution get() = ScaledResolution(minecraft)
+    val guiScaleFactor: Int get() = resolution.scaleFactor
+    val resourceManager: IResourceManager get() = minecraft.resourceManager
+    val renderEngine: TextureManager get() = minecraft.renderEngine
+}
+
 // Color ===============================================================================================================
 
 fun Color.glColor() = GlStateManager.color(red / 255f, green / 255f, blue / 255f, alpha / 255f)
+fun Color.copy(red: Int = this.red, blue: Int = this.blue, green: Int = this.green, alpha: Int = this.alpha) = Color(red, green, blue, alpha)
+fun Color.copy(red: Float = this.red/255f, blue: Float = this.blue/255f, green: Float = this.green/255f, alpha: Float = this.alpha/255f) = Color(red, green, blue, alpha)
 
 // VertexBuffer ========================================================================================================
 

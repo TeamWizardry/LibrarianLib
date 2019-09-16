@@ -10,7 +10,7 @@ import com.teamwizardry.librarianlib.features.container.ContainerBase
 import com.teamwizardry.librarianlib.features.container.GuiHandler
 import com.teamwizardry.librarianlib.features.container.InventoryWrapper
 import com.teamwizardry.librarianlib.features.container.builtin.BaseWrappers
-import com.teamwizardry.librarianlib.test.gui.tests.GuiFluidTank
+import com.teamwizardry.librarianlib.test.facade.tests.GuiFluidTank
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 
@@ -31,7 +31,7 @@ class FluidTankContainer(player: EntityPlayer, te: TEFluidTank) : ContainerBase(
         val NAME = ResourceLocation("librarianlibtest", "fluidtankcontainer")
 
         init {
-            GuiHandler.registerBasicContainer(NAME, { player, _, tile -> FluidTankContainer(player, tile as TEFluidTank) }, { _, container -> GuiFluidTank(container) })
+            GuiHandler.registerBasicFacadeContainer(NAME, { player, _, tile -> FluidTankContainer(player, tile as TEFluidTank) }, { _, container -> GuiFluidTank(container) })
         }
     }
 }

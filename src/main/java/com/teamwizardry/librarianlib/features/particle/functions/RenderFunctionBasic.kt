@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.particle.functions
 
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.particle.ParticleBase
 import com.teamwizardry.librarianlib.features.particle.ParticleRenderLayer
 import com.teamwizardry.librarianlib.features.particle.ParticleRenderManager
@@ -44,10 +45,10 @@ class RenderFunctionBasic(val texture: TextureAtlasSprite, layer: ParticleRender
         val radius = 0.1f * scale
 
         val vertOffsets = arrayOf(
-                Vec3d((-rotationX * radius - rotationXY * radius).toDouble(), (-rotationZ * radius).toDouble(), (-rotationYZ * radius - rotationXZ * radius).toDouble()),
-                Vec3d((-rotationX * radius + rotationXY * radius).toDouble(), (rotationZ * radius).toDouble(), (-rotationYZ * radius + rotationXZ * radius).toDouble()),
-                Vec3d((rotationX * radius + rotationXY * radius).toDouble(), (rotationZ * radius).toDouble(), (rotationYZ * radius + rotationXZ * radius).toDouble()),
-                Vec3d((rotationX * radius - rotationXY * radius).toDouble(), (-rotationZ * radius).toDouble(), (rotationYZ * radius - rotationXZ * radius).toDouble())
+                vec((-rotationX * radius - rotationXY * radius).toDouble(), (-rotationZ * radius).toDouble(), (-rotationYZ * radius - rotationXZ * radius).toDouble()),
+                vec((-rotationX * radius + rotationXY * radius).toDouble(), (rotationZ * radius).toDouble(), (-rotationYZ * radius + rotationXZ * radius).toDouble()),
+                vec((rotationX * radius + rotationXY * radius).toDouble(), (rotationZ * radius).toDouble(), (rotationYZ * radius + rotationXZ * radius).toDouble()),
+                vec((rotationX * radius - rotationXY * radius).toDouble(), (-rotationZ * radius).toDouble(), (rotationYZ * radius - rotationXZ * radius).toDouble())
         )
 
         if (rotation != 0.0F) {

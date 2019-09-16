@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.features.gui.components
 import com.teamwizardry.librarianlib.features.gui.Option
 import com.teamwizardry.librarianlib.features.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.features.gui.mixin.gl.GlMixin
+import com.teamwizardry.librarianlib.features.helpers.vec
 import com.teamwizardry.librarianlib.features.math.Vec2d
 import com.teamwizardry.librarianlib.features.structure.Structure
 import com.teamwizardry.librarianlib.features.structure.StructureRenderUtil
@@ -14,12 +15,16 @@ import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
+/**
+ * ## Facade equivalent: [ComponentStructure][com.teamwizardry.librarianlib.features.facade.components.ComponentStructure]
+ */
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 class ComponentStructure(posX: Int, posY: Int, var structure: Structure?) : GuiComponent(posX, posY) {
 
     val color = Option<ComponentStructure, Color>(Color.WHITE)
 
     init {
-        GlMixin.transform(this).func { Vec3d(this.pos.x, this.pos.y, 0.0) }
+        GlMixin.transform(this).func { vec(this.pos.x, this.pos.y, 0.0) }
         initStructure()
     }
 

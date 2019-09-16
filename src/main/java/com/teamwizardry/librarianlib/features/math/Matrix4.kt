@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.features.math
 
+import com.teamwizardry.librarianlib.features.helpers.vec
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -310,14 +311,14 @@ class Matrix4 {
         val y = m10 * vec.x + m11 * vec.y + m12 * vec.z
         val z = m20 * vec.x + m21 * vec.y + m22 * vec.z
 
-        return Vec3d(x, y, z)
+        return vec(x, y, z)
     }
 
     private fun mult2x2(vec: Vec2d): Vec2d {
         val x = m00 * vec.x + m01 * vec.y
         val y = m10 * vec.x + m11 * vec.y
 
-        return Vec2d(x, y)
+        return vec(x, y)
     }
 
     fun apply(vec: Vec3d): Vec3d {

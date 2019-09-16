@@ -51,8 +51,8 @@ open class GuiPoweredMachine(inventorySlotsIn: PoweredMachineContainer) : GuiCon
 
         val progressBar = ComponentProgressBar(PROGRESS_FG, PROGRESS_BG, 77, 37,
                 direction = Option(ComponentSpriteProgressBar.ProgressDirection.X_POS),
-                progress = Option(0f, { te.currentOperation?.progress ?: 0f }))
-        progressBar.render.tooltip { listOf(I18n.format("llt:gui.progress", ((te.currentOperation?.progress ?: 0f) * 100).toInt())) }
+                progress = Option(0f, { te.currentOperation?.progress?.toFloat() ?: 0f }))
+        progressBar.render.tooltip { listOf(I18n.format("llt:gui.progress", ((te.currentOperation?.progress?.toFloat() ?: 0f) * 100).toInt())) }
         bg.add(progressBar)
 
         val powerBar = ComponentProgressBar(POWER_FG, POWER_BG, 15, 15,

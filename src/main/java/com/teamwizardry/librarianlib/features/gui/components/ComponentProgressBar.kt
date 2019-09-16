@@ -16,8 +16,13 @@ import net.minecraftforge.fml.relauncher.SideOnly
 
 /**
  * Easy way to render a progress bar with a foreground [Sprite], used to show the progress, as well as a background [Sprite].
+ *
+ * ## Facade equivalent:
+ * A combination of [SpriteLayer][com.teamwizardry.librarianlib.features.facade.layers.SpriteLayer] and
+ * edge pinning (see [Texture][com.teamwizardry.librarianlib.features.sprite.Texture] docs)
  */
 @SideOnly(Side.CLIENT)
+@Deprecated("As of version 4.20 this has been superseded by Facade")
 class ComponentProgressBar @JvmOverloads constructor(fgSprite: ISprite?, bgSprite: ISprite?,
                                                      x: Int, y: Int,
                                                      fgWidth: Int = fgSprite?.width ?: 16, fgHeight: Int = fgSprite?.height ?: 16,
