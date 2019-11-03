@@ -18,6 +18,8 @@ plugins {
     id("net.minecraftforge.gradle")
 }
 
+apply<LibrarianLibDevPlugin>()
+
 val mc_version: String by gradleProperties
 val forge_version: String by gradleProperties
 val mc_mappings: String by gradleProperties

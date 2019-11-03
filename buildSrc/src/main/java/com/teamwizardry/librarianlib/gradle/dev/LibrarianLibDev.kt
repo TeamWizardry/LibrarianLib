@@ -1,12 +1,9 @@
+package com.teamwizardry.librarianlib.gradle.dev
+
 import org.gradle.api.Project
 
-open class LibrarianLibModule(private val project: Project) {
-    /**
-     * The name of the liblib module. e.g. "core", "utilities", "particles".
-     * Defaults to the project name.
-     */
-    var name: String = project.name
-    var dependencies: List<String> = listOf()
+open class LibrarianLibDev(private val project: Project) {
+    internal lateinit var instance: LibrarianLibDevPluginInstance
 
     // ==================================================== DSL ===================================================== //
 

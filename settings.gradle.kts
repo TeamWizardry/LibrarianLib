@@ -1,3 +1,7 @@
+import com.teamwizardry.librarianlib.gradle.settings.LibrarianLibSettingsPlugin
+
+apply<LibrarianLibSettingsPlugin>()
+
 val kotlin_version: String by settings
 val forgegradle_version: String by settings
 
@@ -21,16 +25,6 @@ pluginManagement {
 
 rootProject.name = "librarianlib"
 
-val modules = listOf(
-    "core",
-    "utilities",
-    "particles",
-    "testbase",
-    "virtualresources",
-    "xtemplatex" // marker for createModule task
-).dropLast(1)
-
-modules.forEach { name ->
-    include(name)
-    project(":$name").projectDir = rootDir.resolve("modules/$name")
+librarianlib {
+    findModules(rootDir.resolve("modules"))
 }

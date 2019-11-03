@@ -1,4 +1,6 @@
-dependencies {
-    compileOnly(project(":core"))
-    compileOnly(project(":virtualresources"))
+apply<LibrarianLibModulePlugin>()
+
+configure<LibrarianLibModule>() {
+    includeCoreDependencies = false
+    dependencies = listOf("core", "virtualresources")
 }
