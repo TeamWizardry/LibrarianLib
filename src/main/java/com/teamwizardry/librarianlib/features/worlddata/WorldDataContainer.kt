@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.features.worlddata
 
 import com.teamwizardry.librarianlib.core.LibrarianLib
 import com.teamwizardry.librarianlib.features.chunkdata.ChunkDataRegistry
+import com.teamwizardry.librarianlib.features.helpers.threadLocal
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.world.World
 import net.minecraft.world.storage.WorldSavedData
@@ -39,7 +40,7 @@ class WorldDataContainer(ident: String) : WorldSavedData(NAME) {
             return wdc
         }
 
-        private var gettingWorld: World? = null
+        private var gettingWorld: World? by threadLocal()
     }
 
     init {
