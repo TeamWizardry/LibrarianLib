@@ -13,13 +13,12 @@ class LibrarianLibDevPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         if(target.rootProject != target)
             throw InvalidPluginException("LibrarianLibDevPlugin can only be applied to the root project")
-        val extension = target.extensions.create("LibrarianLibDev", LibrarianLibDev::class.java, target)
-        extension.instance = LibrarianLibDevPluginInstance(target, extension)
+        target.extensions.create("LibrarianLibDev", LibrarianLibDev::class.java, target)
     }
 
     companion object {
-        internal fun getInstance(project: Project): LibrarianLibDevPluginInstance? {
-            return (project.extensions.findByName("LibrarianLibDev") as LibrarianLibDev?)?.instance
+        internal fun getInstance(project: Project): LibrarianLibDev? {
+            return project.extensions.findByName("LibrarianLibDev") as LibrarianLibDev?
         }
 
         fun findModuleProject(project: Project, moduleName: String): Project? {

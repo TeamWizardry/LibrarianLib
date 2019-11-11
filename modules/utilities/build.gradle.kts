@@ -1,4 +1,4 @@
 apply<LibrarianLibModulePlugin>()
 
-configure<LibrarianLibModule>() {
+module {
 }

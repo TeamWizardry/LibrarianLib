@@ -19,13 +19,14 @@ class LibrarianLibModulePlugin : Plugin<Project> {
         val root = LibrarianLibDevPlugin.getInstance(target.rootProject)
             ?: throw InvalidPluginException("LibrarianLibModulePlugin requires that the root project have " +
                 "LibrarianLibDevPlugin applied")
-        val extension = target.extensions.create("LibrarianLibModule", LibrarianLibModule::class.java, target)
-        extension.instance = LibrarianLibModulePluginInstance(target, extension, root)
+        target.extensions.create("LibrarianLibModule", LibrarianLibModule::class.java, target, root)
     }
 
     companion object {
-        internal fun getInstance(project: Project): LibrarianLibModulePluginInstance? {
-            return (project.extensions.findByName("LibrarianLibModule") as LibrarianLibModule?)?.instance
+        @PublishedApi
+        internal fun getInstance(project: Project): LibrarianLibModule {
+            return project.extensions.findByName("LibrarianLibModule") as LibrarianLibModule?
+                ?: throw IllegalStateException("LibrarianLibModulePlugin has not been applied yet")
         }
     }
 }

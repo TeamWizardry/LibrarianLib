@@ -72,11 +72,11 @@ allprojects {
             compile(kotlin("stdlib-jdk8"))
     }
 
-    if(project !in setOf(project(":testbase"), project(":core"), project(":virtualresources"), rootProject)) {
-        dependencies {
-            testCompileOnly(project(":testbase"))
-        }
-    }
+//    if(project !in setOf(project(":testbase"), project(":core"), project(":virtualresources"), rootProject)) {
+//        dependencies {
+//            testCompileOnly(project(":testbase"))
+//        }
+//    }
 
     fun AbstractCopyTask.appendTomlDependencies() {
         val dependencies = configurations.compileOnly.allDependencies.filterIsInstance<ProjectDependency>()

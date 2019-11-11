@@ -1,6 +1,6 @@
 apply<LibrarianLibModulePlugin>()
 
-configure<LibrarianLibModule>() {
+module {
     includeCoreDependencies = false
-    dependencies = listOf("core")
+    require("core")
 }

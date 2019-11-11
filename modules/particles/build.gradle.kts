@@ -1,7 +1,7 @@
 apply<LibrarianLibModulePlugin>()
 
-configure<LibrarianLibModule>() {
-    dependencies = listOf("core", "utilities")
+module {
+    require("utilities")
 }
 
 dependencies {
