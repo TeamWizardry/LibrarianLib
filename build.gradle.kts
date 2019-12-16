@@ -18,7 +18,7 @@ plugins {
     id("net.minecraftforge.gradle")
 }
 
-apply<LibrarianLibDevPlugin>()
+//apply<LibrarianLibDevPlugin>()
 
 val mc_version: String by gradleProperties
 val forge_version: String by gradleProperties
@@ -52,7 +52,7 @@ allprojects {
         base.archivesBaseName = "librarianlib-${project.name}"
 
     minecraft {
-        mappings = "$mc_mappings-$mc_version"
+        mappings = mc_mappings
     }
 
     repositories {
@@ -60,67 +60,13 @@ allprojects {
         maven(url = "https://jitpack.io")
     }
 
-    val contained by configurations.creating
-
-    configurations.compile.extendsFrom(contained)
-
     dependencies {
         minecraft("net.minecraftforge:forge:$mc_version-$forge_version")
-        if(project == rootProject)
-            contained(kotlin("stdlib-jdk8"))
-        else
-            compile(kotlin("stdlib-jdk8"))
-    }
-
-//    if(project !in setOf(project(":testbase"), project(":core"), project(":virtualresources"), rootProject)) {
-//        dependencies {
-//            testCompileOnly(project(":testbase"))
-//        }
-//    }
-
-    fun AbstractCopyTask.appendTomlDependencies() {
-        val dependencies = configurations.compileOnly.allDependencies.filterIsInstance<ProjectDependency>()
-        filesMatching("META-INF/mods.toml") {
-            filter { line ->
-                if (line == "## module_dependencies ##")
-                    dependencies.joinToString("\n") { dep ->
-                        """
-                        [[dependencies.librarianlib-${project.name}]]
-                            modId="librarianlib-${dep.dependencyProject.name}"
-                            mandatory=true
-                            versionRange="*"
-                        """.trimIndent()
-                    }
-                else
-                    line
-            }
-        }
-    }
-
-    tasks.getByName<Jar>("jar") {
-        doFirst {
-            appendTomlDependencies()
-        }
-    }
-
-    tasks.create<Jar>("mavenJar") {
-        val jarInJar = containedDeps()
-        doFirst {
-            from(java.sourceSets["main"].output)
-
-            appendTomlDependencies()
-
-            jarInJar {
-                add(configurations["contained"])
-            }
-        }
-
-        classifier = "maven"
-    }
-
-    reobf.create("mavenJar") {
-        dependsOn(tasks.getByName("createMcpToSrg"))
-        mappings = tasks.getByName<GenerateSRG>("createMcpToSrg").output
+//        if(project == rootProject)
+//            contained(kotlin("stdlib-jdk8"))
+//        else
+//            compile(kotlin("stdlib-jdk8"))
+        compile(kotlin("stdlib-jdk8"))
     }
 
     java {
@@ -146,51 +92,6 @@ allprojects {
 }
 
 // ====================================================== Root ====================================================== //
-dependencies {
-    println("root dependencies")
-    subprojects.forEach {
-        println("root depends on: ${it.name}")
-        compileOnly(it.java.sourceSets["main"].output)
-        compileOnly(it.java.sourceSets["test"].output)
-    }
-    val runtimeClasspath = project.files()
-    runtimeClasspath.from(project.java.sourceSets["main"].runtimeClasspath)
-    subprojects.forEach {
-        runtimeClasspath.from(it.configurations["contained"])
-        runtimeClasspath.from(it.java.sourceSets["main"].runtimeClasspath)
-        runtimeClasspath.from(it.java.sourceSets["test"].runtimeClasspath)
-    }
-    project.java.sourceSets["main"].runtimeClasspath = runtimeClasspath
-}
-
-tasks.create<Jar>("fatJar") {
-    subprojects.forEach {
-        dependsOn(it.tasks.getByName("assemble"))
-    }
-    val jarInJar = containedDeps()
-
-    from(java.sourceSets["main"].output)
-
-    doFirst {
-        jarInJar {
-            add(configurations["contained"])
-            subprojects.forEach {
-                if(it == project(":testbase"))
-                    return@forEach
-                add(it.configurations["contained"])
-                add("${it.group}:${it.name}:${it.version}", it.tasks.getByName<Jar>("jar").archivePath)
-            }
-        }
-    }
-
-    classifier = "fat"
-}
-
-reobf.create("fatJar") {
-    dependsOn(tasks.getByName("createMcpToSrg"))
-    mappings = tasks.getByName<GenerateSRG>("createMcpToSrg").output
-}
-
 minecraft {
     runs {
         "client" {
@@ -207,14 +108,16 @@ minecraft {
                 allprojects.forEach {
                     val name = "librarianlib" + if(it == rootProject) "" else "-${it.name}"
                     name {
-                        val ss = it.java.sourceSets["main"]
-                        classes(ss.output.classesDirs)
-                        resource(ss.resources.sourceDirectories)
+                        source(it.java.sourceSets["main"])
+//                        val ss = it.java.sourceSets["main"]
+//                        classes(ss.output.classesDirs)
+//                        resource(ss.resources.sourceDirectories)
                     }
                     "$name-testmod" {
-                        val ss = it.java.sourceSets["test"]
-                        classes(ss.output.classesDirs)
-                        resource(ss.resources.sourceDirectories)
+                        source(it.java.sourceSets["test"])
+//                        val ss = it.java.sourceSets["test"]
+//                        classes(ss.output.classesDirs)
+//                        resource(ss.resources.sourceDirectories)
                     }
                 }
             }
@@ -250,8 +153,6 @@ minecraft {
         }
     }
 }
-
-tasks.register("createModule", CreateModuleTask::class.java)
 
 // ==================================================== Utilities =================================================== //
 

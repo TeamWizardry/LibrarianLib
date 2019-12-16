@@ -1,9 +1,8 @@
-apply<LibrarianLibModulePlugin>()
-
-module {
-    require("utilities")
-}
+//apply<LibrarianLibModulePlugin>()
 
 dependencies {
-    contained("org.magicwerk:brownies-collections:0.9.13")
+    compile("org.magicwerk:brownies-collections:0.9.13")
+    compileOnly(project(":core"))
+    testCompileOnly(project(":testbase"))
+    compileOnly(project(":utilities"))
 }

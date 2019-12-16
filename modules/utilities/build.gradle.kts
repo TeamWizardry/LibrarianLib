@@ -1,4 +1,6 @@
-apply<LibrarianLibModulePlugin>()
+//apply<LibrarianLibModulePlugin>()
 
-module {
+dependencies {
+    compileOnly(project(":core"))
+    testCompileOnly(project(":testbase"))
 }

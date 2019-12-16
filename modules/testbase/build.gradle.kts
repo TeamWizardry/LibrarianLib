@@ -1,6 +1,6 @@
-apply<LibrarianLibModulePlugin>()
+//apply<LibrarianLibModulePlugin>()
 
-module {
-    includeCoreDependencies = false
-    require("core", "virtualresources")
+dependencies {
+    compileOnly(project(":core"))
+    compileOnly(project(":virtualresources"))
 }

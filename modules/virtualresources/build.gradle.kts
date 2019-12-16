@@ -1,6 +1,5 @@
-apply<LibrarianLibModulePlugin>()
+//apply<LibrarianLibModulePlugin>()
 
-module {
-    includeCoreDependencies = false
-    require("core")
+dependencies {
+    compileOnly(project(":core"))
 }

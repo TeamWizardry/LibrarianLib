@@ -1,8 +1,4 @@
-apply<LibrarianLibModulePlugin>()
-
-module {
-    includeCoreDependencies = false
-}
+//apply<LibrarianLibModulePlugin>()
 
 dependencies {
     compile("com.github.TeamWizardry:Mirror:-SNAPSHOT")
