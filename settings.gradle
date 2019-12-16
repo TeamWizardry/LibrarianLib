@@ -24,3 +24,11 @@
 //}
 
 rootProject.name = "librarianlib"
+
+def includeModule(String name) {
+    include(name)
+    project(":$name").projectDir = new File(rootDir.path + "/modules/" + name)
+}
+
+includeModule("core")
+includeModule("virtualresources")
