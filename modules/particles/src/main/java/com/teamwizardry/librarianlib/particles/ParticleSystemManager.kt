@@ -8,7 +8,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.event.TickEvent
 import org.lwjgl.opengl.GL11
 import java.util.*
 

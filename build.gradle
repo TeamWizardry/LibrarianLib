@@ -1,3 +1,5 @@
+import net.minecraftforge.gradle.common.util.RunConfig
+
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
@@ -38,7 +40,7 @@ allprojects {
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     }
 
-    compileKotlin {
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         kotlinOptions {
             jvmTarget = "1.8"
             freeCompilerArgs += [
@@ -53,50 +55,49 @@ minecraft {
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    Closure runDefaults = {
+        workingDirectory project.file('run')
 
-    // Default run configurations.
-    // These can be tweaked, removed, or duplicated as needed.
-    runs { // NamedDomainObjectContainer<RunConfig>
-        client { // RunConfig
-            workingDirectory project.file('run')
+        property 'forge.logging.markers', 'REGISTRIES'
+        property 'forge.logging.console.level', 'debug'
+        ideaModule 'librarianlib.main' // ForgeGradle generates `librarianlib_main` by default, which doesn't work.
 
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'debug'
-
-            mods { // NamedDomainObjectContainer<ModConfig>
-                examplemod { // ModConfig
-                    source sourceSets.main
+        mods { // NamedDomainObjectContainer<ModConfig>
+            create(name) {
+                source sourceSets.main
+            }
+            subprojects.each { mod ->
+                create("librarianlib-${mod.name}") {
+                    source mod.sourceSets.main
+                }
+                create("librarianlib-${mod.name}-test") {
+                    source mod.sourceSets.test
                 }
             }
+        }
+    }
+
+    runs { // NamedDomainObjectContainer<RunConfig>
+        client { // RunConfig
+            configure(delegate, runDefaults)
         }
 
         server {
-            workingDirectory project.file('run')
-
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                examplemod {
-                    source sourceSets.main
-                }
-            }
+            configure(delegate, runDefaults)
         }
 
         data {
-            workingDirectory project.file('run')
+            configure(delegate, runDefaults)
 
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'debug'
-
-            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/')
-
-            mods {
-                examplemod {
-                    source sourceSets.main
-                }
-            }
+            args '--mod', 'librarianlib', '--all', '--output', file('src/generated/resources/')
         }
+    }
+}
+
+dependencies {
+    subprojects.each {
+        compileOnly(it)
+        compileOnly(it.sourceSets.test.output)
     }
 }
 

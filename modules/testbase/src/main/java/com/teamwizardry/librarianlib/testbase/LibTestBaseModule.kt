@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.testbase
 
 import com.teamwizardry.librarianlib.core.LibrarianLibModule
 import com.teamwizardry.librarianlib.core.util.DistinctColors
+import com.teamwizardry.librarianlib.core.util.kotlin.synchronized
 import com.teamwizardry.librarianlib.core.util.kotlin.translationKey
 import com.teamwizardry.librarianlib.testbase.objects.TestBlock
 import com.teamwizardry.librarianlib.testbase.objects.TestEntity
@@ -74,7 +75,7 @@ class LibTestBaseModule : LibrarianLibModule("testbase", logger) {
         val testTool: Item get() = _testTool
         private lateinit var _testTool: Item
 
-        private val mods = mutableListOf<TestMod>()
+        private val mods = mutableListOf<TestMod>().synchronized()
 
         private fun languageKeys(): Map<String, String> {
             val keys = mutableMapOf<String, String>()

@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.virtualresources
 
+import com.teamwizardry.librarianlib.core.util.kotlin.synchronized
 import net.minecraft.resources.FallbackResourceManager
 import net.minecraft.resources.IResourceManager
 import net.minecraft.resources.IResourcePack
@@ -16,22 +17,32 @@ import java.util.function.Predicate
 
 class VirtualResources internal constructor(val type: ResourcePackType) {
     internal val fallback = FallbackResourceManager(type)
-    internal val files = mutableMapOf<ResourceLocation, ByteArray>()
-    internal val generators = mutableMapOf<ResourceLocation, () -> ByteArray>()
-    internal val packs = mutableListOf<VirtualResourcePack>()
+    internal val files = mutableMapOf<ResourceLocation, ByteArray>().synchronized()
+    internal val generators = mutableMapOf<ResourceLocation, () -> ByteArray>().synchronized()
+    internal val packs = mutableListOf<VirtualResourcePack>().synchronized()
 
-    fun remove(location: ResourceLocation) {
-        if(location in files) {
-            files.remove(location)
-            logger.debug("Removed resource $location")
-        }
+    fun remove(location: ResourceLocation): Boolean {
+        var removed = false
+        removed = removeFile(location) || removed // can't do removeFile || removeGenerator because of short-circuiting
+        removed = removeGenerator(location) || removed
+        return removed
     }
 
-    fun removeGenerator(location: ResourceLocation) {
-        if(location in files) {
-            files.remove(location)
-            logger.debug("Removed generator $location")
+
+    fun removeFile(location: ResourceLocation): Boolean {
+        if(files.remove(location) != null) {
+            logger.debug("Removed file $location")
+            return true
         }
+        return false
+    }
+
+    fun removeGenerator(location: ResourceLocation): Boolean {
+        if(generators.remove(location) != null) {
+            logger.debug("Removed generator $location")
+            return true
+        }
+        return false
     }
 
     fun add(location: ResourceLocation, text: String) {
@@ -43,12 +54,18 @@ class VirtualResources internal constructor(val type: ResourcePackType) {
         logger.debug("Added resource $location")
     }
 
+    /**
+     * Note: the passed generator may be run on another thread
+     */
     fun add(location: ResourceLocation, generator: () -> String) {
         addRaw(location) {
             generator().toByteArray()
         }
     }
 
+    /**
+     * Note: the passed generator may be run on another thread
+     */
     fun addRaw(location: ResourceLocation, generator: () -> ByteArray) {
         generators[location] = generator
         logger.debug("Added resource generator $location")

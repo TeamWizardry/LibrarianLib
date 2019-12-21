@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger
 import java.util.stream.Collectors
 import kotlin.streams.asSequence
 
-@Mod("librarianlib-core-testmod")
+@Mod("librarianlib-core-test")
 class LibrarianLibCoreTestMod {
     init {
         FMLJavaModLoadingContext.get().modEventBus.addListener<FMLCommonSetupEvent> {

@@ -58,7 +58,7 @@ class LibrarianLibVirtualResourcesTestMod {
     }
 
     companion object {
-        const val MODID: String = "librarianlib-virtualresources-testmod"
+        const val MODID: String = "librarianlib-virtualresources-test"
         // Directly reference a log4j logger.
         @JvmStatic
         private val LOGGER = LogManager.getLogger()
