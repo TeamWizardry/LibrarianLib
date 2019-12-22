@@ -1,6 +1,7 @@
 dependencies {
     implementation "org.magicwerk:brownies-collections:0.9.13"
     api project(":core")
+    testImplementation "org.magicwerk:brownies-collections:0.9.13"
     testImplementation project(":testbase")
     implementation project(":utilities")
 }

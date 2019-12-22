@@ -103,6 +103,7 @@ class LibTestBaseModule : LibrarianLibModule("testbase", logger) {
         }
 
         internal fun add(mod: TestMod) {
+            logger.warn("Adding test mod $mod")
             mods.add(mod)
         }
     }
