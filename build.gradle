@@ -49,6 +49,13 @@ allprojects {
     }
 }
 
+dependencies {
+    subprojects.each {
+        implementation(it)
+        implementation(it.sourceSets.test.runtimeClasspath)
+    }
+}
+
 minecraft {
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
@@ -92,12 +99,26 @@ minecraft {
     }
 }
 
-dependencies {
-    subprojects.each {
-        implementation(it)
-        implementation(it.sourceSets.test.runtimeClasspath)
+task collectCoreMods << {
+    def resourceDirs = files([])
+    subprojects.each { it.sourceSets.each { resourceDirs.from it.resources.sourceDirectories } }
+    def coremods = resourceDirs.collect {
+        file(it.path + "/META-INF/coremods.txt")
+    }.findAll { it.exists() }
+
+    file('src/main/resources/META-INF/coremods.json').text =
+            "{\n" + coremods.collect { it.text.replaceAll("\\s+\$", "") }.join(",\n") + "\n}"
+}
+
+task clearCoreMods << {
+    try {
+        file('src/main/resources/META-INF/coremods.json').delete()
+    } catch(IOException e) {
     }
 }
+
+processResources.dependsOn(collectCoreMods)
+processResources.finalizedBy(clearCoreMods)
 
 // Example for how to get properties into the manifest for reading by the runtime..
 //jar {
