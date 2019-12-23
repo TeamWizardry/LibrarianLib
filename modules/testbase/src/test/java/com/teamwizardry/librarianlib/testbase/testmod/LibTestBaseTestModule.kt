@@ -98,4 +98,4 @@ object LibTestBaseTestModule: TestMod("testbase", "Test Base", logger) {
     }
 }
 
-internal val logger = LogManager.getLogger("LibrarianLib/Test Base/Test")
+internal val logger = LogManager.getLogger("LibrarianLib: Test Base Test")

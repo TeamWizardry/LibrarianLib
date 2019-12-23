@@ -64,4 +64,4 @@ class LibrarianLibCoreTestMod: LibrarianLibModule("core-test", logger) {
     }
 }
 
-internal val logger = LogManager.getLogger("LibrarianLib/Core/Test")
+internal val logger = LogManager.getLogger("LibrarianLib: Core Test")

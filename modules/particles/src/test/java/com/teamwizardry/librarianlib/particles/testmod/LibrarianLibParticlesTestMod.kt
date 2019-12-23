@@ -73,4 +73,4 @@ object LibrarianLibParticlesTestMod: TestMod("particles", "Particle System", log
     }
 }
 
-internal val logger = LogManager.getLogger("LibrarianLib/Particles/Test")
+internal val logger = LogManager.getLogger("LibrarianLib: Particles Test")

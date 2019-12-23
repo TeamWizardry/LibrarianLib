@@ -5,4 +5,4 @@ import org.apache.logging.log4j.LogManager
 
 object LibVirtualResourcesModule : LibrarianLibModule("virtualresources", logger)
 
-internal val logger = LogManager.getLogger("LibrarianLib/Virtual Resources")
+internal val logger = LogManager.getLogger("LibrarianLib: Virtual Resources")

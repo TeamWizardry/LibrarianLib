@@ -96,4 +96,4 @@ object LibTestBaseModule : LibrarianLibModule("testbase", logger) {
     }
 }
 
-internal val logger = LogManager.getLogger("LibrarianLib/Test Base")
+internal val logger = LogManager.getLogger("LibrarianLib: Test Base")
