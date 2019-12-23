@@ -70,12 +70,8 @@ minecraft {
         mods { // NamedDomainObjectContainer<ModConfig>
             create(name) {
                 source sourceSets.main
-            }
-            subprojects.each { mod ->
-                create("librarianlib-${mod.name}") {
+                subprojects.each { mod ->
                     source mod.sourceSets.main
-                }
-                create("librarianlib-${mod.name}-test") {
                     source mod.sourceSets.test
                 }
             }
@@ -99,26 +95,43 @@ minecraft {
     }
 }
 
-task collectCoreMods << {
-    def resourceDirs = files([])
-    subprojects.each { it.sourceSets.each { resourceDirs.from it.resources.sourceDirectories } }
-    def coremods = resourceDirs.collect {
-        file(it.path + "/META-INF/coremods.txt")
-    }.findAll { it.exists() }
 
-    file('src/main/resources/META-INF/coremods.json').text =
-            "{\n" + coremods.collect { it.text.replaceAll("\\s+\$", "") }.join(",\n") + "\n}"
-}
-
-task clearCoreMods << {
-    try {
-        file('src/main/resources/META-INF/coremods.json').delete()
-    } catch(IOException e) {
+subprojects {
+    processResources {
+        exclude "META-INF/coremods.txt"
     }
 }
 
-processResources.dependsOn(collectCoreMods)
-processResources.finalizedBy(clearCoreMods)
+processResources {
+    def allResources = files([])
+    def resourceRoots = files([])
+    subprojects.each { [it.sourceSets.main, it.sourceSets.test].each {
+        allResources.from(it.resources)
+        resourceRoots.from(it.resources.sourceDirectories)
+    } }
+
+    copy {
+        from allResources
+        into sourceSets.main.output.resourcesDir
+        include "/META-INF/**"
+    }
+
+    doLast {
+        def output = sourceSets.main.output.resourcesDir
+
+        def coremods = resourceRoots.collect { file(it.path + "/META-INF/coremods.txt") }.findAll { it.exists() }
+
+        file(output.path + '/META-INF').mkdirs()
+        file(output.path + '/META-INF/coremods.json').text =
+                "{\n" + coremods.collect { it.text.replaceAll("\\s+\$", "") }.join(",\n") + "\n}"
+
+        file(output.path + '/META-INF/modules').mkdirs()
+        file(output.path + '/META-INF/modules/index.txt').text = subprojects.collect {
+            [it.name, it.name + "-test"]
+        }.flatten().join("\n")
+    }
+}
+
 
 // Example for how to get properties into the manifest for reading by the runtime..
 //jar {

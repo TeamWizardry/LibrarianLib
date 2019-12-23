@@ -1,5 +1,7 @@
-package com.teamwizardry.librarianlib.core
+package com.teamwizardry.librarianlib
 
+import com.teamwizardry.librarianlib.LibrarianLib
+import com.teamwizardry.librarianlib.core.util.kotlin.synchronized
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import net.minecraft.block.Block
 import net.minecraft.entity.EntityType
@@ -17,11 +19,9 @@ import org.apache.logging.log4j.Logger
 import java.util.concurrent.CopyOnWriteArrayList
 
 abstract class LibrarianLibModule(val name: String, val logger: Logger) {
-    val modid: String = "librarianlib-$name"
+    val info: ModuleInfo = LibrarianLib.currentInfo!!
 
     init {
-        register(this)
-
         FMLJavaModLoadingContext.get().modEventBus.addListener<FMLCommonSetupEvent> {
             this.setup(it)
         }
@@ -63,41 +63,5 @@ abstract class LibrarianLibModule(val name: String, val logger: Logger) {
     @SubscribeEvent
     internal fun onEntityRegister(entityRegistryEvent: RegistryEvent.Register<@JvmSuppressWildcards EntityType<*>>) {
         registerEntities(entityRegistryEvent)
-    }
-
-    companion object {
-        private val _modules = CopyOnWriteArrayList<LibrarianLibModule>()
-
-        val modules: List<LibrarianLibModule> = _modules.unmodifiableView()
-
-        private fun register(module: LibrarianLibModule) {
-            _modules.add(module)
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        fun <T: LibrarianLibModule> findByName(name: String): T? {
-            return modules.find { it.name == name } as T?
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        fun <T: LibrarianLibModule> findByModId(modid: String): T? {
-            return modules.find { it.modid == modid } as T?
-        }
-
-        inline fun <reified T: LibrarianLibModule> get(): T {
-            return find<T>()
-                ?: error("Couldn't find a LibrarianLib module with the type ${T::class.simpleName}. " +
-                    "Maybe it hasn't loaded yet?")
-        }
-
-        inline fun <reified T: LibrarianLibModule> find(): T? {
-            return modules.find { it is T } as T?
-        }
-
-        inline fun <reified T: LibrarianLibModule> current(): T {
-            val currentModId = ModLoadingContext.get().activeContainer.modId
-            return findByModId(currentModId)
-                ?: error("The currently loading mod `$currentModId` is not a LibrarianLib Module")
-        }
     }
 }

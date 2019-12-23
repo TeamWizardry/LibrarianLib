@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.core.testmod
 
+import com.teamwizardry.librarianlib.LibrarianLibModule
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraftforge.common.MinecraftForge
@@ -19,8 +20,7 @@ import org.apache.logging.log4j.Logger
 import java.util.stream.Collectors
 import kotlin.streams.asSequence
 
-@Mod("librarianlib-core-test")
-class LibrarianLibCoreTestMod {
+class LibrarianLibCoreTestMod: LibrarianLibModule("core-test", logger) {
     init {
         FMLJavaModLoadingContext.get().modEventBus.addListener<FMLCommonSetupEvent> {
             this.setup(it)
@@ -35,10 +35,10 @@ class LibrarianLibCoreTestMod {
 
     }
 
-    private fun setup(event: FMLCommonSetupEvent) {
+    override fun setup(event: FMLCommonSetupEvent) {
     }
 
-    private fun clientSetup(event: FMLClientSetupEvent) {
+    override fun clientSetup(event: FMLClientSetupEvent) {
     }
 
     @SubscribeEvent
@@ -63,3 +63,5 @@ class LibrarianLibCoreTestMod {
         private val LOGGER = LogManager.getLogger()
     }
 }
+
+internal val logger = LogManager.getLogger("LibrarianLib/Core/Test")

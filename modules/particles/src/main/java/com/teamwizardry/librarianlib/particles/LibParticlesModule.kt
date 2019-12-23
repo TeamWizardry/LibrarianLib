@@ -1,9 +1,7 @@
 package com.teamwizardry.librarianlib.particles
 
-import com.teamwizardry.librarianlib.core.LibrarianLibModule
-import net.minecraftforge.fml.common.Mod
+import com.teamwizardry.librarianlib.LibrarianLibModule
 import org.apache.logging.log4j.LogManager
 
-@Mod("librarianlib-particles")
-class LibParticlesModule : LibrarianLibModule("particles", logger)
+object LibParticlesModule : LibrarianLibModule("particles", logger)
 internal val logger = LogManager.getLogger("LibrarianLib/Particles")

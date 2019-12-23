@@ -1,2 +1,2 @@
-"virtual_pack_injector": "transformers/virtualresources/virtual_pack_injector.js",
-"virtual_namespace_fallback": "transformers/virtualresources/virtual_namespace_fallback.js"
+"virtual_pack_injector": "META-INF/transformers/virtualresources/virtual_pack_injector.js",
+"virtual_namespace_fallback": "META-INF/transformers/virtualresources/virtual_namespace_fallback.js"

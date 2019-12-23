@@ -30,8 +30,7 @@ import org.apache.logging.log4j.LogManager
 
 internal const val modid: String = "librarianlib-particles-test"
 
-@Mod(modid)
-class LibrarianLibParticlesTestMod: TestMod("particles", "Particle System", logger) {
+object LibrarianLibParticlesTestMod: TestMod("particles", "Particle System", logger) {
     init {
         SystemNames.systems.forEach { system ->
             +TestEntityConfig(system.id, system.name) {

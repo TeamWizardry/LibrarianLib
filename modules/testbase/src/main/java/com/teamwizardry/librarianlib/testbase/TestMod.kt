@@ -1,12 +1,13 @@
 package com.teamwizardry.librarianlib.testbase
 
-import com.teamwizardry.librarianlib.core.LibrarianLibModule
+import com.teamwizardry.librarianlib.LibrarianLibModule
 import com.teamwizardry.librarianlib.core.util.DistinctColors
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.testbase.objects.TestBlock
 import com.teamwizardry.librarianlib.testbase.objects.TestBlockItem
 import com.teamwizardry.librarianlib.testbase.objects.TestEntityConfig
 import com.teamwizardry.librarianlib.testbase.objects.TestItem
+import com.teamwizardry.librarianlib.testbase.objects.TestItemConfig
 import com.teamwizardry.librarianlib.virtualresources.VirtualResources
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.color.IBlockColor
@@ -26,12 +27,11 @@ import net.minecraftforge.registries.ForgeRegistries
 import org.apache.logging.log4j.Logger
 import java.awt.Color
 
-abstract class TestMod(name: String, val humanName: String, logger: Logger): LibrarianLibModule("$name-test", logger) {
-
-    val itemGroup = object : ItemGroup(modid) {
+abstract class TestMod(targetName: String, val humanName: String, logger: Logger): LibrarianLibModule("$targetName-test", logger) {
+    val itemGroup = object : ItemGroup("librarianlib-$name") {
         private val stack: ItemStack by lazy {
             val stack = ItemStack(LibTestBaseModule.testTool)
-            stack.orCreateTag.putString("mod", modid)
+            stack.orCreateTag.putString("mod", name)
             return@lazy stack
         }
         override fun createIcon(): ItemStack {
@@ -46,6 +46,16 @@ abstract class TestMod(name: String, val humanName: String, logger: Logger): Lib
     val items: List<Item> = _items.unmodifiableView()
     val blocks: List<Block> = _blocks.unmodifiableView()
     val entities: List<EntityType<*>> = _entities.unmodifiableView()
+
+    // auto-fill the item group
+    fun TestItemConfig(id: String, name: String, block: TestItemConfig.() -> Unit): TestItemConfig
+        = TestItemConfig(id, name, itemGroup, block)
+    fun TestItemConfig(id: String, name: String): TestItemConfig
+        = TestItemConfig(id, name, itemGroup)
+    fun TestEntityConfig(id: String, name: String, block: TestEntityConfig.() -> Unit): TestEntityConfig
+        = TestEntityConfig(id, name, itemGroup, block)
+    fun TestEntityConfig(id: String, name: String): TestEntityConfig
+        = TestEntityConfig(id, name, itemGroup)
 
     operator fun <T: Item> T.unaryPlus(): T {
         _items.add(this)
