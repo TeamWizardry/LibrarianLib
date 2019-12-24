@@ -1,5 +1,5 @@
-modLoader="javafml"
-loaderVersion="[26,)"
+modLoader="kotlinfml"
+loaderVersion="[1,)"
 issueTrackerURL="https://github.com/LibrarianLib/LibrarianLib/issues"
 [[mods]]
 modId="librarianlib"

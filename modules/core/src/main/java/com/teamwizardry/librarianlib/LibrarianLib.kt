@@ -4,8 +4,12 @@ import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.teamwizardry.librarianlib.core.util.kotlin.synchronized
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
+import net.minecraftforge.fml.ModLoader
+import net.minecraftforge.fml.ModLoadingContext
+import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
 
+@Mod("librarianlib")
 object LibrarianLib {
     val logger = LogManager.getLogger("LibrarianLib")
 

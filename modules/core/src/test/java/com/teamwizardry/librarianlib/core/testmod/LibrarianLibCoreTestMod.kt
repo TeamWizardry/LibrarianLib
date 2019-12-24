@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.core.testmod
 
 import com.teamwizardry.librarianlib.LibrarianLibModule
+import net.alexwells.kottle.FMLKotlinModLoadingContext
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraftforge.common.MinecraftForge
@@ -13,7 +14,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 
@@ -22,10 +22,10 @@ import kotlin.streams.asSequence
 
 class LibrarianLibCoreTestMod: LibrarianLibModule("core-test", logger) {
     init {
-        FMLJavaModLoadingContext.get().modEventBus.addListener<FMLCommonSetupEvent> {
+        FMLKotlinModLoadingContext.get().modEventBus.addListener<FMLCommonSetupEvent> {
             this.setup(it)
         }
-        FMLJavaModLoadingContext.get().modEventBus.addListener<FMLClientSetupEvent> {
+        FMLKotlinModLoadingContext.get().modEventBus.addListener<FMLClientSetupEvent> {
             this.clientSetup(it)
         }
 

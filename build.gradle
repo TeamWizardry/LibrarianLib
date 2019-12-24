@@ -26,16 +26,23 @@ allprojects {
     repositories {
         maven { url = "http://maven.shadowfacts.net/" }
         maven { url = "https://jitpack.io" }
+        maven { url = "https://minecraft.curseforge.com/api/maven/" }
     }
 
     minecraft {
         mappings channel: mc_mappings_channel, version: mc_mappings_version
     }
 
+    configurations {
+        api.extendsFrom(libApi)
+        implementation.extendsFrom(libImplementation)
+        testImplementation.extendsFrom(libTestImplementation)
+        libRuntime.extendsFrom(libApi, libImplementation, libTestImplementation)
+    }
+
     dependencies {
         minecraft "net.minecraftforge:forge:$mc_version-$forge_version"
-        implementation "org.jetbrains.kotlin:kotlin-stdlib"
-        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+        implementation "kottle:Kottle:$kottle_version"
     }
 
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
@@ -52,7 +59,8 @@ allprojects {
 dependencies {
     subprojects.each {
         implementation(it)
-        implementation(it.sourceSets.test.runtimeClasspath)
+        implementation(it.sourceSets.test.output)
+        implementation(it.configurations.testImplementation)
     }
 }
 
@@ -68,10 +76,15 @@ minecraft {
         ideaModule 'librarianlib.main' // ForgeGradle generates `librarianlib_main` by default, which doesn't work.
 
         mods { // NamedDomainObjectContainer<ModConfig>
-            create(name) {
-                source sourceSets.main
-                subprojects.each { mod ->
-                    source mod.sourceSets.main
+            create("librarianlib") {
+                source project(":core").sourceSets.main
+                allprojects.each {
+                    if(it != project(":core")) source it.sourceSets.main
+                }
+            }
+
+            subprojects.each { mod ->
+                create("librarianlib-${mod.name}-test") {
                     source mod.sourceSets.test
                 }
             }
@@ -96,41 +109,6 @@ minecraft {
 }
 
 
-subprojects {
-    processResources {
-        exclude "META-INF/coremods.txt"
-    }
-}
-
-processResources {
-    def allResources = files([])
-    def resourceRoots = files([])
-    subprojects.each { [it.sourceSets.main, it.sourceSets.test].each {
-        allResources.from(it.resources)
-        resourceRoots.from(it.resources.sourceDirectories)
-    } }
-
-    copy {
-        from allResources
-        into sourceSets.main.output.resourcesDir
-        include "/META-INF/**"
-    }
-
-    doLast {
-        def output = sourceSets.main.output.resourcesDir
-
-        def coremods = resourceRoots.collect { file(it.path + "/META-INF/coremods.txt") }.findAll { it.exists() }
-
-        file(output.path + '/META-INF').mkdirs()
-        file(output.path + '/META-INF/coremods.json').text =
-                "{\n" + coremods.collect { it.text.replaceAll("\\s+\$", "") }.join(",\n") + "\n}"
-
-        file(output.path + '/META-INF/modules').mkdirs()
-        file(output.path + '/META-INF/modules/index.txt').text = subprojects.collect {
-            [it.name, it.name + "-test"]
-        }.flatten().join("\n")
-    }
-}
 
 
 // Example for how to get properties into the manifest for reading by the runtime..
