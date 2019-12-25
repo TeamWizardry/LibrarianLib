@@ -24,6 +24,7 @@ allprojects {
     sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
     repositories {
+        jcenter()
         maven { url = "http://maven.shadowfacts.net/" }
         maven { url = "https://jitpack.io" }
         maven { url = "https://minecraft.curseforge.com/api/maven/" }
@@ -58,10 +59,17 @@ allprojects {
 
 dependencies {
     subprojects.each {
-        implementation(it)
-        implementation(it.sourceSets.test.output)
-        implementation(it.configurations.testImplementation)
+//        implementation(it)
+//        implementation(it.sourceSets.test.output)
+//        implementation(it.configurations.testImplementation)
+        implementation(project(path: it.path, configuration: "libRuntime"))
     }
+}
+subprojects.each {
+    classes.dependsOn(it.classes)
+    processResources.dependsOn(it.processResources)
+    classes.dependsOn(it.testClasses)
+    processResources.dependsOn(it.processTestResources)
 }
 
 minecraft {

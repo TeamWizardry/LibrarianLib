@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger
 import java.util.stream.Collectors
 import kotlin.streams.asSequence
 
+@Mod("librarianlib-core-test")
 class LibrarianLibCoreTestMod: LibrarianLibModule("core-test", logger) {
     init {
         FMLKotlinModLoadingContext.get().modEventBus.addListener<FMLCommonSetupEvent> {

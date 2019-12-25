@@ -1,0 +1,14 @@
+modLoader="kotlinfml"
+loaderVersion="[1,)"
+issueTrackerURL="https://github.com/LibrarianLib/LibrarianLib/issues"
+[[mods]]
+modId="librarianlib-testbase-test"
+version="${file.jarVersion}"
+displayName="LibrarianLib Test Base Test"
+logoFile="icon.png"
+description='''
+A LibLib test mod
+'''
+[[dependencies.librarianlib-testbase-test]]
+    modId="librarianlib"
+    mandatory=true

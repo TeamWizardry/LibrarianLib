@@ -25,7 +25,7 @@ import java.awt.Color
 
 object LibTestBaseModule : LibrarianLibModule("testbase", logger) {
     val testTool: Item = Item(Item.Properties().maxStackSize(1)).also {
-        it.registryName = ResourceLocation("librarianlib", "test_tool")
+        it.registryName = ResourceLocation("librarianlib-testbase", "test_tool")
     }
 
     private val mods = mutableListOf<TestMod>().synchronized()
@@ -36,7 +36,7 @@ object LibTestBaseModule : LibrarianLibModule("testbase", logger) {
 
     override fun clientSetup(event: FMLClientSetupEvent) {
         RenderingRegistry.registerEntityRenderingHandler(TestEntity::class.java) { TestEntityRenderer(it) }
-        VirtualResources.client.add(ResourceLocation("librarianlib", "lang/en_us.json")) {
+        VirtualResources.client.add(ResourceLocation("librarianlib-testbase", "lang/en_us.json")) {
             val keys = languageKeys()
             return@add "{\n" + keys.map {
                 "    '${it.key}': \"${it.value.replace("\n", "\\n").replace("\"", "\\\"")}\""
