@@ -1,0 +1,53 @@
+dependencies {
+    allmodules.each {
+        implementation(project(path: it.path, configuration: "libRuntime"))
+    }
+}
+
+allmodules.each {
+    classes.dependsOn(it.classes)
+    processResources.dependsOn(it.processResources)
+    classes.dependsOn(it.testClasses)
+    processResources.dependsOn(it.processTestResources)
+}
+
+minecraft {
+    Closure runDefaults = {
+        workingDirectory rootProject.file('run')
+
+        property 'forge.logging.markers', 'REGISTRIES'
+        property 'forge.logging.console.level', 'debug'
+        ideaModule 'librarianlib.runtime.main'
+
+        mods { // NamedDomainObjectContainer<ModConfig>
+            create("librarianlib") {
+                source project(":core").sourceSets.main
+                allmodules.each {
+                    if(it != project(":core")) source it.sourceSets.main
+                }
+            }
+
+            allmodules.each { mod ->
+                create("librarianlib-${mod.name}-test") {
+                    source mod.sourceSets.test
+                }
+            }
+        }
+    }
+
+    runs { // NamedDomainObjectContainer<RunConfig>
+        client { // RunConfig
+            configure(delegate, runDefaults)
+        }
+
+        server {
+            configure(delegate, runDefaults)
+        }
+
+        data {
+            configure(delegate, runDefaults)
+
+            args '--mod', 'librarianlib', '--all', '--output', file('src/generated/resources/')
+        }
+    }
+}

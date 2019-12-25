@@ -5,6 +5,7 @@ def includeModule(String name) {
     project(":$name").projectDir = new File(rootDir.path + "/modules/" + name)
 }
 
+include("runtime")
 includeModule("core")
 includeModule("virtualresources")
 includeModule("testbase")

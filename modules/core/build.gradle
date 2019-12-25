@@ -1,7 +1,6 @@
 dependencies {
 }
 
-def allmodules = rootProject.subprojects
 
 processResources {
     copy {

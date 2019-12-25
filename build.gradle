@@ -17,6 +17,8 @@ allprojects {
     apply plugin: 'maven-publish'
     apply plugin: 'kotlin'
 
+    ext.allmodules = rootProject.subprojects.findAll { it.path != ":runtime" }
+
     version = '1.0'
     group = mod_group
     archivesBaseName = mod_id
@@ -58,62 +60,15 @@ allprojects {
 }
 
 dependencies {
-    subprojects.each {
+    allmodules.each {
         implementation(it)
-        implementation(it.sourceSets.test.output)
-//        implementation(it.configurations.testImplementation)
-        implementation(project(path: it.path, configuration: "libRuntime"))
     }
-}
-subprojects.each {
-    classes.dependsOn(it.classes)
-    processResources.dependsOn(it.processResources)
-    classes.dependsOn(it.testClasses)
-    processResources.dependsOn(it.processTestResources)
 }
 
 minecraft {
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-    Closure runDefaults = {
-        workingDirectory project.file('run')
-
-        property 'forge.logging.markers', 'REGISTRIES'
-        property 'forge.logging.console.level', 'debug'
-        ideaModule 'librarianlib.main' // ForgeGradle generates `librarianlib_main` by default, which doesn't work.
-
-        mods { // NamedDomainObjectContainer<ModConfig>
-            create("librarianlib") {
-                source project(":core").sourceSets.main
-                allprojects.each {
-                    if(it != project(":core")) source it.sourceSets.main
-                }
-            }
-
-            subprojects.each { mod ->
-                create("librarianlib-${mod.name}-test") {
-                    source mod.sourceSets.test
-                }
-            }
-        }
-    }
-
-    runs { // NamedDomainObjectContainer<RunConfig>
-        client { // RunConfig
-            configure(delegate, runDefaults)
-        }
-
-        server {
-            configure(delegate, runDefaults)
-        }
-
-        data {
-            configure(delegate, runDefaults)
-
-            args '--mod', 'librarianlib', '--all', '--output', file('src/generated/resources/')
-        }
-    }
 }
 
 
