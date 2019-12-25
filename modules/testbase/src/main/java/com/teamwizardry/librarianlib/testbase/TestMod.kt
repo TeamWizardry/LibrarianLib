@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.testbase
 
 import com.teamwizardry.librarianlib.LibrarianLibModule
 import com.teamwizardry.librarianlib.core.util.DistinctColors
+import com.teamwizardry.librarianlib.core.util.kotlin.translationKey
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.testbase.objects.TestBlock
 import com.teamwizardry.librarianlib.testbase.objects.TestBlockItem
@@ -18,9 +19,11 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemGroup
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Util
 import net.minecraftforge.client.event.ColorHandlerEvent
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.ModLoadingContext
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.registries.ForgeRegistries
@@ -97,7 +100,12 @@ abstract class TestMod(targetName: String, val humanName: String, logger: Logger
         entities.forEach {
 //            RenderingRegistry.registerEntityRenderingHandler(entityClass) { ParticleSpawnerEntityRenderer(it) }
         }
+        generateItemAssets()
+        generateBlockAssets()
+        generateLanguageAssets()
+    }
 
+    private fun generateItemAssets() {
         items.forEach { item ->
             if(item is TestBlockItem) {
                 val name = item.registryName!!
@@ -121,37 +129,72 @@ abstract class TestMod(targetName: String, val humanName: String, logger: Logger
                 )
             }
         }
-        blocks.forEach { block ->
-            if(block is TestBlock) {
-                val name = block.registryName!!
-                val model = "block/test_block/${block.modelName}"
-                VirtualResources.client.add(
-                    ResourceLocation(name.namespace, "blockstates/${name.path}.json"),
-                    if(block.config.directional) {
-                        """
-                            {
-                                "variants": {
-                                    "facing=up": { "model": "librarianlib-testbase:$model" },
-                                    "facing=down": { "model": "librarianlib-testbase:$model", "x": 180 },
-                                    "facing=east": { "model": "librarianlib-testbase:$model", "y": 90, "x": 90 },
-                                    "facing=south": { "model": "librarianlib-testbase:$model", "y": 180, "x": 90 },
-                                    "facing=west": { "model": "librarianlib-testbase:$model", "y": 270, "x": 90 },
-                                    "facing=north": { "model": "librarianlib-testbase:$model", "y": 0, "x": 90 }
-                                }
+    }
+
+    private fun generateBlockAssets() {
+        blocks.filterIsInstance<TestBlock>().forEach { block ->
+            val name = block.registryName!!
+            val model = "block/test_block/${block.modelName}"
+            VirtualResources.client.add(
+                ResourceLocation(name.namespace, "blockstates/${name.path}.json"),
+                if(block.config.directional) {
+                    """
+                        {
+                            "variants": {
+                                "facing=up": { "model": "librarianlib-testbase:$model" },
+                                "facing=down": { "model": "librarianlib-testbase:$model", "x": 180 },
+                                "facing=east": { "model": "librarianlib-testbase:$model", "y": 90, "x": 90 },
+                                "facing=south": { "model": "librarianlib-testbase:$model", "y": 180, "x": 90 },
+                                "facing=west": { "model": "librarianlib-testbase:$model", "y": 270, "x": 90 },
+                                "facing=north": { "model": "librarianlib-testbase:$model", "y": 0, "x": 90 }
                             }
-                        """.trimIndent()
-                    } else {
-                        """
-                            {
-                                "variants": {
-                                    "": { "model": "librarianlib-testbase:$model" }
-                                }
+                        }
+                    """.trimIndent()
+                } else {
+                    """
+                        {
+                            "variants": {
+                                "": { "model": "librarianlib-testbase:$model" }
                             }
-                        """.trimIndent()
-                    }
-                )
+                        }
+                    """.trimIndent()
+                }
+            )
+        }
+    }
+
+    private fun generateLanguageAssets() {
+        VirtualResources.client.add(ResourceLocation(ModLoadingContext.get().activeContainer.modId, "lang/en_us.json")) {
+            val keys = languageKeys()
+            return@add "{\n" + keys.map {
+                "    '${it.key}': \"${it.value.replace("\n", "\\n").replace("\"", "\\\"")}\""
+            }.joinToString(",\n") + "\n}"
+        }
+
+    }
+
+    private fun languageKeys(): Map<String, String> {
+        val keys = mutableMapOf<String, String>()
+        keys["itemGroup.$name"] = "$humanName Test"
+        items.forEach { item ->
+            if(item is TestItem) {
+                val registryName = item.registryName!!
+                keys[registryName.translationKey("item")] = item.config.name
+                item.config.description?.also {
+                    keys[registryName.translationKey("item", "tooltip")] = it.replace("\n", "\\n")
+                }
             }
         }
+        blocks.forEach { block ->
+            if(block is TestBlock) {
+                val registryName = block.registryName!!
+                keys[registryName.translationKey("block")] = block.config.name
+                block.config.description?.also {
+                    keys[registryName.translationKey("block", "tooltip")] = it.replace("\n", "\\n")
+                }
+            }
+        }
+        return keys
     }
 
     @SubscribeEvent

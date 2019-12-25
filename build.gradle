@@ -59,8 +59,8 @@ allprojects {
 
 dependencies {
     subprojects.each {
-//        implementation(it)
-//        implementation(it.sourceSets.test.output)
+        implementation(it)
+        implementation(it.sourceSets.test.output)
 //        implementation(it.configurations.testImplementation)
         implementation(project(path: it.path, configuration: "libRuntime"))
     }

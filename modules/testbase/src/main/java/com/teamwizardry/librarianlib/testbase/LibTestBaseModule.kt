@@ -36,12 +36,6 @@ object LibTestBaseModule : LibrarianLibModule("testbase", logger) {
 
     override fun clientSetup(event: FMLClientSetupEvent) {
         RenderingRegistry.registerEntityRenderingHandler(TestEntity::class.java) { TestEntityRenderer(it) }
-        VirtualResources.client.add(ResourceLocation("librarianlib-testbase", "lang/en_us.json")) {
-            val keys = languageKeys()
-            return@add "{\n" + keys.map {
-                "    '${it.key}': \"${it.value.replace("\n", "\\n").replace("\"", "\\\"")}\""
-            }.joinToString(",\n") + "\n}"
-        }
     }
 
     @SubscribeEvent
@@ -63,31 +57,6 @@ object LibTestBaseModule : LibrarianLibModule("testbase", logger) {
                 event.isCanceled = true
             }
         }
-    }
-
-    private fun languageKeys(): Map<String, String> {
-        val keys = mutableMapOf<String, String>()
-        keys[Util.makeTranslationKey("item", testTool.registryName)] = "<Test creative tab icon>"
-        mods.forEach { mod ->
-            keys["itemGroup.${mod.name}"] = "${mod.humanName} Test"
-            mod.items.forEach forEachItem@{ item ->
-                if(item !is TestItem) return@forEachItem
-                val registryName = item.registryName!!
-                keys[registryName.translationKey("item")] = item.config.name
-                item.config.description?.also {
-                    keys[registryName.translationKey("item", "tooltip")] = it.replace("\n", "\\n")
-                }
-            }
-            mod.blocks.forEach forEachBlock@{ block ->
-                if(block !is TestBlock) return@forEachBlock
-                val registryName = block.registryName!!
-                keys[registryName.translationKey("block")] = block.config.name
-                block.config.description?.also {
-                    keys[registryName.translationKey("block", "tooltip")] = it.replace("\n", "\\n")
-                }
-            }
-        }
-        return keys
     }
 
     internal fun add(mod: TestMod) {
