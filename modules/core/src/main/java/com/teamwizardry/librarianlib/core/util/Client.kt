@@ -88,7 +88,6 @@ object Client {
     private var worldTicks: Int = 0
     private var globalTicks: Int = 0
 
-    @JvmStatic
     @SubscribeEvent
     internal fun clientTickEnd(event: TickEvent.ClientTickEvent) {
         if (event.phase == TickEvent.Phase.END) {

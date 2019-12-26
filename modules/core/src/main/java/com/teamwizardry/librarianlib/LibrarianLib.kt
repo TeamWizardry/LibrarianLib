@@ -44,6 +44,12 @@ object LibrarianLib {
             _modules.remove(name)
             return
         }
+        try {
+            Class.forName(info.mainClass, false, this.javaClass.classLoader)
+        } catch(e: ClassNotFoundException) {
+            logger.warn("Unable to find module class ${info.mainClass}, skipping.")
+            return
+        }
         currentInfo = info
         val clazz = Class.forName(info.mainClass)
         val instance = (clazz.kotlin.objectInstance ?: clazz.newInstance()) as LibrarianLibModule

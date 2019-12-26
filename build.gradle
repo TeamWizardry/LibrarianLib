@@ -21,7 +21,7 @@ allprojects {
 
     version = '1.0'
     group = mod_group
-    archivesBaseName = mod_id
+    archivesBaseName = mod_id + (project == rootProject ? "" : "-${project.name}")
 
     sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
@@ -60,6 +60,75 @@ allprojects {
     }
 }
 
+configure(allmodules) {
+    if(path != ":core") {
+
+        task generateSkeletonModInfo << {
+            def output = sourceSets.main.output.resourcesDir
+
+            def tomlString = """
+                modLoader="kotlinfml"
+                loaderVersion="[1,)"
+                [[mods]]
+                modId="librarianlib-$project.name"
+                version="0"
+                displayName="LibrarianLib $humanName"
+                description="The LibrarianLib $humanName module"
+                [[dependencies.librarianlib-$project.name]]
+                    modId="librarianlib"
+                    mandatory=true
+            """.stripIndent()
+
+            def packMcMeta = """
+                {
+                    "pack": {
+                        "description": "LibrarianLib $humanName resources",
+                        "pack_format": 4
+                    }
+                }
+            """.stripIndent()
+
+            file(output.path + '/META-INF').mkdirs()
+            file(output.path + '/META-INF/mods.toml').text = tomlString
+            file(output.path + '/pack.mcmeta').text = packMcMeta
+        }
+
+        processResources.finalizedBy(generateSkeletonModInfo)
+    }
+
+    task generateTestModInfo << {
+        def output = sourceSets.test.output.resourcesDir
+
+        def tomlString = """
+            modLoader="kotlinfml"
+            loaderVersion="[1,)"
+            [[mods]]
+            modId="librarianlib-$project.name-test"
+            version="0"
+            displayName="LibrarianLib $humanName Test"
+            description="The LibrarianLib $humanName test mod"
+            [[dependencies.librarianlib-$project.name-test]]
+                modId="librarianlib"
+                mandatory=true
+        """.stripIndent()
+
+        def packMcMeta = """
+            {
+                "pack": {
+                    "description": "LibrarianLib $humanName test resources",
+                    "pack_format": 4
+                }
+            }
+        """.stripIndent()
+
+        file(output.path + '/META-INF').mkdirs()
+        file(output.path + '/META-INF/mods.toml').text = tomlString
+        file(output.path + '/pack.mcmeta').text = packMcMeta
+    }
+
+    processTestResources.finalizedBy(generateTestModInfo)
+}
+
 configurations {
     implementation.extendsFrom libModule
 }
@@ -83,24 +152,53 @@ minecraft {
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 }
 
+task collectCoreMods << {
+    def resourceRoots = files([])
+    allmodules.each { [it.sourceSets.main, it.sourceSets.test].each {
+        resourceRoots.from(it.resources.sourceDirectories)
+    } }
+
+    def output = sourceSets.main.output.resourcesDir
+
+    def coremods = resourceRoots.collect { file(it.path + "/META-INF/coremods.json") }.findAll { it.exists() }
+
+    // collect coremods
+    file(output.path + '/META-INF').mkdirs()
+    file(output.path + '/META-INF/coremods.json').text =
+            "{\n" + coremods.collect {
+                it.text
+                        .replaceAll("[{}]", "") // replace enclosing brackets with blank lines
+                        .replaceAll("\\s+\$", "") // remove trailing whitespace
+                        .split("\n").findAll { !it.matches("^\\s*\$") } // remove blank lines
+                        .join("\n") // re-join lines
+            }.join(",\n") + "\n}"
+}
+
+processResources.finalizedBy(collectCoreMods)
+
 jar {
     configurations.shade.each { dep ->
-        println("shade: " + it.path)
         from(zipTree(dep)) {
             exclude 'META-INF', 'META-INF/**'
         }
     }
-    allmodules.each {
-        if(it.path == ":testbase") return
-        from(it.sourceSets.main.output.classesDirs)
-        from(it.sourceSets.main.output.resourcesDir) {
-            exclude 'META-INF/coremods.txt'
-            filesMatching('META-INF/modules/index.txt') {
-                filter { line ->
-                    if(line == "testbase")
-                        return null
-                    return line
+    allmodules.each { mod ->
+        if(mod.path == ":testbase") return
+        from(mod.sourceSets.main.output.classesDirs) {
+            exclude '**/LibModuleSkeleton.class'
+        }
+        from(mod.sourceSets.main.output.resourcesDir) {
+            if(mod.path == ":core") {
+                filesMatching('META-INF/modules/index.txt') {
+                    filter { line ->
+                        if (line == "testbase")
+                            return null
+                        return line
+                    }
                 }
+            } else {
+                exclude 'META-INF/coremods.json'
+                exclude 'META-INF/mods.toml'
             }
         }
     }

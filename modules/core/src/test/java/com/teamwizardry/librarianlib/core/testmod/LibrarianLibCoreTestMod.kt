@@ -51,7 +51,6 @@ class LibrarianLibCoreTestMod: LibrarianLibModule("core-test", logger) {
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     object RegistryEvents {
         @SubscribeEvent
-        @JvmStatic
         fun onBlocksRegistry(blockRegistryEvent: RegistryEvent.Register<Block>) {
             // register a new block here
 //            LOGGER.info("HELLO from Register Block")

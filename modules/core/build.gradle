@@ -1,30 +1,13 @@
 dependencies {
 }
 
-processResources {
-    copy {
-        allmodules.each {
-            from it.sourceSets.main.resources
-        }
-        into sourceSets.main.output.resourcesDir
-        include "/META-INF/**"
-    }
-}
-
-task collectRootAssets << {
+task generateModuleIndex << {
     def resourceRoots = files([])
     allmodules.each { [it.sourceSets.main, it.sourceSets.test].each {
         resourceRoots.from(it.resources.sourceDirectories)
     } }
 
     def output = sourceSets.main.output.resourcesDir
-
-    def coremods = resourceRoots.collect { file(it.path + "/META-INF/coremods.txt") }.findAll { it.exists() }
-
-    // collect coremods
-    file(output.path + '/META-INF').mkdirs()
-    file(output.path + '/META-INF/coremods.json').text =
-            "{\n" + coremods.collect { it.text.replaceAll("\\s+\$", "") }.join(",\n") + "\n}"
 
     // assemble module names
     file(output.path + '/META-INF/modules').mkdirs()
@@ -33,4 +16,4 @@ task collectRootAssets << {
     }.join("\n")
 }
 
-processResources.finalizedBy(collectRootAssets)
+processResources.finalizedBy(generateModuleIndex)

@@ -14,20 +14,22 @@ allmodules.each {
 minecraft {
     Closure runDefaults = {
         workingDirectory rootProject.file('run')
+        ideaModule 'librarianlib.runtime.main'
+        taskName name
 
         property 'forge.logging.markers', 'REGISTRIES'
         property 'forge.logging.console.level', 'debug'
-        ideaModule 'librarianlib.runtime.main'
 
-        mods { // NamedDomainObjectContainer<ModConfig>
+        mods {
             create("librarianlib") {
                 source project(":core").sourceSets.main
-                allmodules.each {
-                    if(it != project(":core")) source it.sourceSets.main
-                }
             }
-
             allmodules.each { mod ->
+                if(it != project(":core")) {
+                    create("librarianlib-${mod.name}") {
+                        source mod.sourceSets.main
+                    }
+                }
                 create("librarianlib-${mod.name}-test") {
                     source mod.sourceSets.test
                 }
@@ -35,19 +37,13 @@ minecraft {
         }
     }
 
-    runs { // NamedDomainObjectContainer<RunConfig>
-        client { // RunConfig
+    runs {
+        client {
             configure(delegate, runDefaults)
         }
 
         server {
             configure(delegate, runDefaults)
-        }
-
-        data {
-            configure(delegate, runDefaults)
-
-            args '--mod', 'librarianlib', '--all', '--output', file('src/generated/resources/')
         }
     }
 }

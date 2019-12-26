@@ -41,7 +41,6 @@ internal object ParticleSystemManager {
         systems.remove(system)
     }
 
-    @JvmStatic
     @SubscribeEvent
     fun tick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START)
@@ -69,7 +68,6 @@ internal object ParticleSystemManager {
         profiler.endSection()
     }
 
-    @JvmStatic
     @SubscribeEvent
     fun debug(event: RenderGameOverlayEvent.Text) {
         if (!Minecraft.getInstance().gameSettings.showDebugInfo)
@@ -88,7 +86,6 @@ internal object ParticleSystemManager {
         }
     }
 
-    @JvmStatic
     @SubscribeEvent
     fun render(event: RenderWorldLastEvent) {
         val profiler = Minecraft.getInstance().profiler
@@ -124,7 +121,6 @@ internal object ParticleSystemManager {
     }
 
     //TODO forge event fires every frame
-    @JvmStatic
     @SubscribeEvent
     fun unloadWorld(event: WorldEvent.Unload) {
 //        systems.forEach { it.particles.clear() }
