@@ -1,7 +1,6 @@
 dependencies {
 }
 
-
 processResources {
     copy {
         allmodules.each {

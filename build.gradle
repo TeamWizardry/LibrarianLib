@@ -37,6 +37,7 @@ allprojects {
     }
 
     configurations {
+        shade
         api.extendsFrom(libApi)
         implementation.extendsFrom(libImplementation)
         testImplementation.extendsFrom(libTestImplementation)
@@ -59,10 +60,21 @@ allprojects {
     }
 }
 
+configurations {
+    implementation.extendsFrom libModule
+}
+
 dependencies {
     allmodules.each {
         implementation(it)
+        shade(project(path: it.path, configuration: "shade"))
     }
+}
+
+allmodules.each {
+    classes.dependsOn(it.classes)
+    processResources.dependsOn(it.processResources)
+    jar.dependsOn(it.jar)
 }
 
 minecraft {
@@ -71,8 +83,28 @@ minecraft {
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 }
 
-
-
+jar {
+    configurations.shade.each { dep ->
+        println("shade: " + it.path)
+        from(zipTree(dep)) {
+            exclude 'META-INF', 'META-INF/**'
+        }
+    }
+    allmodules.each {
+        if(it.path == ":testbase") return
+        from(it.sourceSets.main.output.classesDirs)
+        from(it.sourceSets.main.output.resourcesDir) {
+            exclude 'META-INF/coremods.txt'
+            filesMatching('META-INF/modules/index.txt') {
+                filter { line ->
+                    if(line == "testbase")
+                        return null
+                    return line
+                }
+            }
+        }
+    }
+}
 
 // Example for how to get properties into the manifest for reading by the runtime..
 //jar {

@@ -25,7 +25,7 @@ object LibrarianLib {
             _modules[it] = null
         }
 
-        logger.debug("Found ${names.size} modules")
+        logger.debug("Module index had ${names.size} modules")
         names.forEach {
             try {
                 loadModule(it)
@@ -40,7 +40,7 @@ object LibrarianLib {
         logger.info("Loading $name module")
         val info = resource("/META-INF/modules/$name.json")?.let { Gson().fromJson(it, ModuleInfo::class.java) }
         if(info == null) {
-            logger.warn("Unable to find module info file for $name")
+            logger.warn("Unable to find module info file for $name, skipping")
             _modules.remove(name)
             return
         }
