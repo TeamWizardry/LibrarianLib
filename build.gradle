@@ -96,7 +96,7 @@ configure(allmodules) {
                     }
 
             resourceRoots.collect { file(it.path + "/META-INF/dependencies.toml") }.findAll { it.exists() }.each {
-                def dep = it.text.replaceAll("MOD_NAME", "librarianlib-$project.name")
+                def dep = it.text.replaceAll("MOD_ID", "librarianlib-$project.name")
                 if(!dep.endsWith("\n"))
                     dep += "\n"
                 tomlString += dep
@@ -134,7 +134,18 @@ configure(allmodules) {
                 modId="librarianlib"
                 versionRange="[${rootProject.mod_version}]"
                 mandatory=true
+            [[dependencies.librarianlib-$project.name-test]]
+                modId="librarianlib-$project.name"
+                versionRange="[${rootProject.mod_version}]"
+                mandatory=true
         """.stripIndent()
+        if(project.path != ":testbase" && project.path != ":core")
+            tomlString += """\
+                [[dependencies.librarianlib-$project.name-test]]
+                    modId="librarianlib-testbase"
+                    versionRange="[${rootProject.mod_version}]"
+                    mandatory=true
+            """.stripIndent()
 
 
         // add module dependencies, so missing modules will produce meaningful errors
@@ -198,29 +209,6 @@ minecraft {
 
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 }
-
-//processResources {
-//    productionModules.each { mod ->
-//        if(mod.properties.get("developmentOnly") == "true") return
-//
-//        from(mod.sourceSets.main.output.resourcesDir) {
-//            if(mod.path == ":core") {
-//                filesMatching('META-INF/modules/index.txt') {
-//                    filter { line ->
-//                        if (project(":$line").properties.get("developmentOnly") == "true")
-//                            return null
-//                        return line
-//                    }
-//                }
-//            } else {
-//                exclude 'META-INF/coremods.json'
-//                exclude 'META-INF/mods.toml'
-//                exclude 'META-INF/dependencies.toml'
-//            }
-//        }
-//    }
-//}
-
 
 task mergeClasses(type: Copy) {
     productionModules.each { mod ->
@@ -320,6 +308,7 @@ def reobfArtifact = artifacts.add('default', reobfFile) {
     type 'jar'
     builtBy 'reobfJar'
 }
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
