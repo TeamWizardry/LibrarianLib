@@ -43,3 +43,14 @@ External mod dependencies should be added to the module's `META-INF/dependencies
 appended to the generated `mods.toml` file. However, the `dependencies.toml` file should use `MOD_ID` instead of the 
 actual mod ID, since the dependencies may be appended to either the module or the merged `mods.toml`, which means its
 mod ID may be either `librarianlib-<module id>` or just `librarianlib`, depending on where it's being used.
+
+## Module `gradle.properties`
+Each module's `gradle.properties` has some standard properties (these must be defined in the `gradle.properties`, not
+at runtime):
+- `human_name`: The name of the module, as opposed to the module's ID. e.g. the `virtualresources` module's name would 
+be `Virtual Resources` 
+- `module_description`: A short description of the module
+- `maven_developers`: An optional list of developers to be added to the maven POM file. The list consists of a series of
+comma-separated developers, with three fields separated by colons: `id:name:email`. Any empty fields or trailing fields
+that are omitted will not be added, e.g. `id:name`, `:name:email`
+

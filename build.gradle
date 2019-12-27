@@ -14,14 +14,13 @@ allprojects {
     apply plugin: 'net.minecraftforge.gradle'
     apply plugin: 'eclipse'
     apply plugin: 'idea'
-    apply plugin: 'maven-publish'
     apply plugin: 'kotlin'
 
     ext.allmodules = rootProject.subprojects.findAll { it.path != ":runtime" }
 
-    version = '1.0'
-    group = mod_group
-    archivesBaseName = mod_id + (project == rootProject ? "" : "-${project.name}")
+    version = rootProject.mod_version
+    group = "com.teamwizardry.librarianlib"
+    archivesBaseName = project == rootProject ? "librarianlib" : "librarianlib-${project.name}"
 
     sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
@@ -74,8 +73,8 @@ configure(allmodules) {
                 [[mods]]
                 modId="librarianlib-$project.name"
                 version="${rootProject.mod_version}"
-                displayName="LibrarianLib $humanName"
-                description="The LibrarianLib $humanName module"
+                displayName="LibrarianLib $human_name"
+                description="$module_description"
                 [[dependencies.librarianlib-$project.name]]
                     modId="librarianlib"
                     versionRange="[${rootProject.mod_version}]"
@@ -105,7 +104,7 @@ configure(allmodules) {
             def packMcMeta = """\
                 {
                     "pack": {
-                        "description": "LibrarianLib $humanName resources",
+                        "description": "LibrarianLib $human_name resources",
                         "pack_format": 4
                     }
                 }
@@ -128,8 +127,8 @@ configure(allmodules) {
             [[mods]]
             modId="librarianlib-$project.name-test"
             version="${rootProject.mod_version}"
-            displayName="LibrarianLib $humanName Test"
-            description="The LibrarianLib $humanName test mod"
+            displayName="LibrarianLib $human_name Test"
+            description="The LibrarianLib $human_name module test mod"
             [[dependencies.librarianlib-$project.name-test]]
                 modId="librarianlib"
                 versionRange="[${rootProject.mod_version}]"
@@ -162,7 +161,7 @@ configure(allmodules) {
                 }
 
         testResourceRoots.collect { file(it.path + "/META-INF/dependencies.toml") }.findAll { it.exists() }.each {
-            def dep = it.text.replaceAll("MOD_NAME", "librarianlib-$project.name-test")
+            def dep = it.text.replaceAll("MOD_ID", "librarianlib-$project.name-test")
             if(!dep.endsWith("\n"))
                 dep += "\n"
             tomlString += dep
@@ -171,7 +170,7 @@ configure(allmodules) {
         def packMcMeta = """\
             {
                 "pack": {
-                    "description": "LibrarianLib $humanName test resources",
+                    "description": "LibrarianLib $human_name test resources",
                     "pack_format": 4
                 }
             }
@@ -185,7 +184,7 @@ configure(allmodules) {
     processTestResources.finalizedBy(generateTestModInfo)
 }
 
-ext.productionModules = allmodules.findAll { it.findProperty("developmentOnly") != "true" }
+ext.productionModules = allmodules.findAll { it.findProperty("development_only") != "true" }
 
 configurations {
     implementation.extendsFrom libModule
@@ -204,11 +203,7 @@ productionModules.each {
     jar.dependsOn(it.jar)
 }
 
-minecraft {
-    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
-
-    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-}
+minecraft { }
 
 task mergeClasses(type: Copy) {
     productionModules.each { mod ->
@@ -226,7 +221,7 @@ task mergeResources(type: Copy) {
             if (mod.path == ":core") {
                 filesMatching('META-INF/modules/index.txt') {
                     filter { line ->
-                        if (project(":$line").findProperty("developmentOnly") == "true")
+                        if (project(":$line").findProperty("development_only") == "true")
                             return null
                         return line
                     }
@@ -266,7 +261,7 @@ task mergeResources(type: Copy) {
                 .collect { file(it.path + "/META-INF/dependencies.toml") }.findAll { it.exists() }
                 .collect {
                     it.text
-                            .replaceAll("MOD_NAME", "librarianlib")
+                            .replaceAll("MOD_ID", "librarianlib")
                             .replaceAll("\\s+\$", "")
                 }.join("\n")
         def modsToml = file("$outputDir/META-INF/mods.toml")
@@ -284,40 +279,125 @@ jar {
     from(mergeResources)
 }
 
-// Example for how to get properties into the manifest for reading by the runtime..
-//jar {
-//    manifest {
-//        attributes([
-//                "Specification-Title": "examplemod",
-//                "Specification-Vendor": "examplemodsareus",
-//                "Specification-Version": "1", // We are version 1 of ourselves
-//                "Implementation-Title": project.name,
-//                "Implementation-Version": "${version}",
-//                "Implementation-Vendor" :"examplemodsareus",
-//                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-//        ])
-//    }
-//}
-
-// Example configuration to allow publishing using the maven-publish task
-// we define a custom artifact that is sourced from the reobfJar output task
-// and then declare that to be published
-// Note you'll need to add a repository here
-def reobfFile = file("$buildDir/reobfJar/output.jar")
-def reobfArtifact = artifacts.add('default', reobfFile) {
-    type 'jar'
-    builtBy 'reobfJar'
+jar {
+    manifest {
+        attributes([
+                "Implementation-Title": "LibrarianLib",
+                "Implementation-Version": "$mod_version",
+                "Implementation-Vendor" :"Team Wizardry",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact reobfArtifact
+configure(productionModules) {
+    jar {
+        manifest {
+            attributes([
+                    "Implementation-Title"    : "LibrarianLib $human_name Module",
+                    "Implementation-Version"  : "$mod_version",
+                    "Implementation-Vendor"   : "Team Wizardry",
+                    "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+            ])
         }
     }
-    repositories {
-        maven {
-            url "file:///${project.projectDir}/mcmodsrepo"
+    components.java
+
+    // Example configuration to allow publishing using the maven-publish task
+    // we define a custom artifact that is sourced from the reobfJar output task
+    // and then declare that to be published
+    // Note you'll need to add a repository here
+    def reobfArtifact = artifacts.add('archives', file("$buildDir/reobfJar/output.jar")) {
+        type 'jar'
+        builtBy 'reobfJar'
+    }
+
+
+    task sourceJar(type: Jar) {
+        from sourceSets.main.allSource
+        from sourceSets.main.output.resourcesDir
+        dependsOn processResources
+    }
+    task deobfJar(type: Jar) {
+        from sourceSets.main.output
+        dependsOn classes
+        dependsOn processResources
+    }
+
+    apply plugin: 'maven-publish'
+    publishing {
+        publications {
+            mod(MavenPublication) {
+                from components.java
+                artifact(reobfArtifact) {
+                    classifier "reobf"
+                }
+                artifact deobfJar {
+                    classifier "deobf"
+                }
+                artifact sourceJar {
+                    classifier "sources"
+                }
+                pom {
+                    // `.toString()` immediately evaluates the `GString` to a `String`, which is apparently necessary
+                    // for the maven-publish plugin
+                    name = "Librarianlib $human_name".toString()
+                    description = "$module_description".toString()
+                    url = 'http://github.com/LibrarianLib/LibrarianLib'
+                    licenses {
+                        license {
+                            name = 'GNU Lesser General Public License v3'
+                            url = 'https://www.gnu.org/licenses/lgpl-3.0.txt'
+                        }
+                    }
+                    developers {
+                        if(project.hasProperty("maven_developers")) {
+                            "$maven_developers".split(',').each {
+                                def fields = it.split(':').collect { it.trim() }
+                                developer {
+                                    if(fields.size() > 0 && fields.get(0)) {
+                                        id = fields.get(0)
+                                    }
+                                    if(fields.size() > 1 && fields.get(1)) {
+                                        name = fields.get(1)
+                                    }
+                                    if(fields.size() > 2 && fields.get(2)) {
+                                        email = fields.get(2)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:https://github.com/LibrarianLib/LibrarianLib.git'
+                        developerConnection = 'scm:git:ssh://github.com/LibrarianLib/LibrarianLib.git'
+                        url = 'https://github.com/LibrarianLib/LibrarianLib'
+                    }
+                }
+            }
         }
+        repositories {
+            maven {
+                // change URLs to point to your repos, e.g. http://my.org/repo
+                def releasesRepoUrl = "file://$buildDir/repos/releases"
+                def snapshotsRepoUrl = "file://$buildDir/repos/snapshots"
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            }
+        }
+    }
+}
+
+
+task publishAllToMavenLocal {
+    group = 'Publishing'
+    productionModules.each {
+        dependsOn it.publishToMavenLocal
+    }
+}
+
+task publishAll {
+    group = 'Publishing'
+    productionModules.each {
+        dependsOn it.publish
     }
 }
