@@ -61,25 +61,48 @@ allprojects {
 }
 
 configure(allmodules) {
-    if(path != ":core") {
+    def resourceRoots = project.sourceSets.main.resources.sourceDirectories
+    def testResourceRoots = project.sourceSets.test.resources.sourceDirectories
 
+    if(path != ":core") {
         task generateSkeletonModInfo << {
             def output = sourceSets.main.output.resourcesDir
 
-            def tomlString = """
+            def tomlString = """\
                 modLoader="kotlinfml"
                 loaderVersion="[1,)"
                 [[mods]]
                 modId="librarianlib-$project.name"
-                version="0"
+                version="${rootProject.mod_version}"
                 displayName="LibrarianLib $humanName"
                 description="The LibrarianLib $humanName module"
                 [[dependencies.librarianlib-$project.name]]
                     modId="librarianlib"
+                    versionRange="[${rootProject.mod_version}]"
                     mandatory=true
             """.stripIndent()
 
-            def packMcMeta = """
+            // add module dependencies, so missing modules will produce meaningful errors
+            project.compileJava.taskDependencies.getDependencies().collect { it.project }.unique()
+                    .each { dep ->
+                        if(dep == project || dep.path == ":core")
+                            return
+                        tomlString += """\
+                            [[dependencies.librarianlib-$project.name]]
+                                modId="librarianlib-$dep.name"
+                                versionRange="[${rootProject.mod_version}]"
+                                mandatory=true
+                        """.stripIndent()
+                    }
+
+            resourceRoots.collect { file(it.path + "/META-INF/dependencies.toml") }.findAll { it.exists() }.each {
+                def dep = it.text.replaceAll("MOD_NAME", "librarianlib-$project.name")
+                if(!dep.endsWith("\n"))
+                    dep += "\n"
+                tomlString += dep
+            }
+
+            def packMcMeta = """\
                 {
                     "pack": {
                         "description": "LibrarianLib $humanName resources",
@@ -99,20 +122,42 @@ configure(allmodules) {
     task generateTestModInfo << {
         def output = sourceSets.test.output.resourcesDir
 
-        def tomlString = """
+        def tomlString = """\
             modLoader="kotlinfml"
             loaderVersion="[1,)"
             [[mods]]
             modId="librarianlib-$project.name-test"
-            version="0"
+            version="${rootProject.mod_version}"
             displayName="LibrarianLib $humanName Test"
             description="The LibrarianLib $humanName test mod"
             [[dependencies.librarianlib-$project.name-test]]
                 modId="librarianlib"
+                versionRange="[${rootProject.mod_version}]"
                 mandatory=true
         """.stripIndent()
 
-        def packMcMeta = """
+
+        // add module dependencies, so missing modules will produce meaningful errors
+        project.compileTestJava.taskDependencies.getDependencies().collect { it.project }.unique()
+                .each { dep ->
+                    if(dep.path == ":core")
+                        return
+                    tomlString += """\
+                            [[dependencies.librarianlib-$project.name-test]]
+                                modId="librarianlib-$dep.name"
+                                versionRange="[${rootProject.mod_version}]"
+                                mandatory=true
+                        """.stripIndent()
+                }
+
+        testResourceRoots.collect { file(it.path + "/META-INF/dependencies.toml") }.findAll { it.exists() }.each {
+            def dep = it.text.replaceAll("MOD_NAME", "librarianlib-$project.name-test")
+            if(!dep.endsWith("\n"))
+                dep += "\n"
+            tomlString += dep
+        }
+
+        def packMcMeta = """\
             {
                 "pack": {
                     "description": "LibrarianLib $humanName test resources",
@@ -129,18 +174,20 @@ configure(allmodules) {
     processTestResources.finalizedBy(generateTestModInfo)
 }
 
+ext.productionModules = allmodules.findAll { it.findProperty("developmentOnly") != "true" }
+
 configurations {
     implementation.extendsFrom libModule
 }
 
 dependencies {
-    allmodules.each {
+    productionModules.each {
         implementation(it)
         shade(project(path: it.path, configuration: "shade"))
     }
 }
 
-allmodules.each {
+productionModules.each {
     classes.dependsOn(it.classes)
     processResources.dependsOn(it.processResources)
     jar.dependsOn(it.jar)
@@ -152,46 +199,46 @@ minecraft {
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 }
 
-task collectCoreMods << {
-    def resourceRoots = files([])
-    allmodules.each { [it.sourceSets.main, it.sourceSets.test].each {
-        resourceRoots.from(it.resources.sourceDirectories)
-    } }
+//processResources {
+//    productionModules.each { mod ->
+//        if(mod.properties.get("developmentOnly") == "true") return
+//
+//        from(mod.sourceSets.main.output.resourcesDir) {
+//            if(mod.path == ":core") {
+//                filesMatching('META-INF/modules/index.txt') {
+//                    filter { line ->
+//                        if (project(":$line").properties.get("developmentOnly") == "true")
+//                            return null
+//                        return line
+//                    }
+//                }
+//            } else {
+//                exclude 'META-INF/coremods.json'
+//                exclude 'META-INF/mods.toml'
+//                exclude 'META-INF/dependencies.toml'
+//            }
+//        }
+//    }
+//}
 
-    def output = sourceSets.main.output.resourcesDir
 
-    def coremods = resourceRoots.collect { file(it.path + "/META-INF/coremods.json") }.findAll { it.exists() }
-
-    // collect coremods
-    file(output.path + '/META-INF').mkdirs()
-    file(output.path + '/META-INF/coremods.json').text =
-            "{\n" + coremods.collect {
-                it.text
-                        .replaceAll("[{}]", "") // replace enclosing brackets with blank lines
-                        .replaceAll("\\s+\$", "") // remove trailing whitespace
-                        .split("\n").findAll { !it.matches("^\\s*\$") } // remove blank lines
-                        .join("\n") // re-join lines
-            }.join(",\n") + "\n}"
-}
-
-processResources.finalizedBy(collectCoreMods)
-
-jar {
-    configurations.shade.each { dep ->
-        from(zipTree(dep)) {
-            exclude 'META-INF', 'META-INF/**'
-        }
-    }
-    allmodules.each { mod ->
-        if(mod.path == ":testbase") return
+task mergeClasses(type: Copy) {
+    productionModules.each { mod ->
         from(mod.sourceSets.main.output.classesDirs) {
             exclude '**/LibModuleSkeleton.class'
         }
+    }
+    into(file("$buildDir/merged/classes"))
+}
+
+task mergeResources(type: Copy) {
+    ext.outputDir = file("$buildDir/merged/resources")
+    productionModules.each { mod ->
         from(mod.sourceSets.main.output.resourcesDir) {
-            if(mod.path == ":core") {
+            if (mod.path == ":core") {
                 filesMatching('META-INF/modules/index.txt') {
                     filter { line ->
-                        if (line == "testbase")
+                        if (project(":$line").findProperty("developmentOnly") == "true")
                             return null
                         return line
                     }
@@ -199,9 +246,54 @@ jar {
             } else {
                 exclude 'META-INF/coremods.json'
                 exclude 'META-INF/mods.toml'
+                exclude 'META-INF/dependencies.toml'
             }
         }
     }
+    into(outputDir)
+
+    doLast { // do final post-processing to merge the mods
+        ext.outputDir = file("$buildDir/merged/resources")
+
+        def resources = files([])
+        productionModules.each { resources.from(it.sourceSets.main.resources.sourceDirectories) }
+
+        file("$outputDir/META-INF").mkdirs()
+
+        // merge coremods
+        def coremodsJson = file("$outputDir/META-INF/coremods.json")
+        def allCoremods = resources.collect { file(it.path + "/META-INF/coremods.json") }.findAll { it.exists() }
+
+        coremodsJson.text =
+                "{\n" + allCoremods.collect {
+                    it.text
+                            .replaceAll("[{}]", "") // replace enclosing brackets with blank lines
+                            .replaceAll("\\s+\$", "") // remove trailing whitespace
+                            .split("\n").findAll { !it.matches("^\\s*\$") } // remove blank lines
+                            .join("\n") // re-join lines
+                }.join(",\n") + "\n}"
+
+        // add additional external dependencies to main mods.toml
+        def additionalDependencies = resources
+                .collect { file(it.path + "/META-INF/dependencies.toml") }.findAll { it.exists() }
+                .collect {
+                    it.text
+                            .replaceAll("MOD_NAME", "librarianlib")
+                            .replaceAll("\\s+\$", "")
+                }.join("\n")
+        def modsToml = file("$outputDir/META-INF/mods.toml")
+        modsToml.text = modsToml.text + additionalDependencies
+    }
+}
+
+jar {
+    configurations.shade.each { dep ->
+        from(zipTree(dep)) {
+            exclude 'META-INF', 'META-INF/**'
+        }
+    }
+    from(mergeClasses)
+    from(mergeResources)
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

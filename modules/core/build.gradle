@@ -1,4 +1,12 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 dependencies {
+}
+
+processResources {
+    filesMatching("**/mods.toml") {
+        filter(ReplaceTokens, tokens: ['version': rootProject.mod_version])
+    }
 }
 
 task generateModuleIndex << {

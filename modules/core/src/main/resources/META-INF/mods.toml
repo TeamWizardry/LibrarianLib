@@ -3,7 +3,7 @@ loaderVersion="[1,)"
 issueTrackerURL="https://github.com/LibrarianLib/LibrarianLib/issues"
 [[mods]]
 modId="librarianlib"
-version="${file.jarVersion}"
+version="@version@"
 displayName="LibrarianLib"
 # A URL to query for updates for this mod. See the JSON update specification <here>
 # updateJSONURL="http://myurl.me/" #optional
