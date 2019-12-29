@@ -12,9 +12,6 @@ import net.minecraft.client.renderer.entity.EntityRendererManager
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import realms.z
-import realms.y
-import realms.x
 import net.minecraft.command.arguments.EntityArgument.entity
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.BufferBuilder

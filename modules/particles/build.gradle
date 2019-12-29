@@ -1,0 +1,7 @@
+dependencies {
+    shade "org.magicwerk:brownies-collections:0.9.13"
+    libImplementation "org.magicwerk:brownies-collections:0.9.13"
+    api project(":core")
+    testImplementation project(":testbase")
+    implementation project(":utilities")
+}

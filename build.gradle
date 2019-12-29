@@ -1,0 +1,403 @@
+buildscript {
+    repositories {
+        maven { url = 'https://files.minecraftforge.net/maven' }
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.61"
+    }
+}
+
+allprojects {
+    apply plugin: 'net.minecraftforge.gradle'
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+    apply plugin: 'kotlin'
+
+    ext.allmodules = rootProject.subprojects.findAll { it.path != ":runtime" }
+
+    version = rootProject.mod_version
+    group = "com.teamwizardry.librarianlib"
+    archivesBaseName = project == rootProject ? "librarianlib" : "librarianlib-${project.name}"
+
+    sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+
+    repositories {
+        jcenter()
+        maven { url = "http://maven.shadowfacts.net/" }
+        maven { url = "https://jitpack.io" }
+        maven { url = "https://minecraft.curseforge.com/api/maven/" }
+    }
+
+    minecraft {
+        mappings channel: mc_mappings_channel, version: mc_mappings_version
+    }
+
+    configurations {
+        shade
+        api.extendsFrom(libApi)
+        implementation.extendsFrom(libImplementation)
+        testImplementation.extendsFrom(libTestImplementation)
+        libRuntime.extendsFrom(libApi, libImplementation, libTestImplementation)
+    }
+
+    dependencies {
+        minecraft "net.minecraftforge:forge:$mc_version-$forge_version"
+        implementation "kottle:Kottle:$kottle_version"
+    }
+
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+        kotlinOptions {
+            jvmTarget = "1.8"
+            freeCompilerArgs += [
+                "-Xjvm-default=enable",
+                "-Xuse-experimental=kotlin.Experimental"
+            ]
+        }
+    }
+}
+
+configure(allmodules) {
+    def resourceRoots = project.sourceSets.main.resources.sourceDirectories
+    def testResourceRoots = project.sourceSets.test.resources.sourceDirectories
+
+    if(path != ":core") {
+        task generateSkeletonModInfo << {
+            def output = sourceSets.main.output.resourcesDir
+
+            def tomlString = """\
+                modLoader="kotlinfml"
+                loaderVersion="[1,)"
+                [[mods]]
+                modId="librarianlib-$project.name"
+                version="${rootProject.mod_version}"
+                displayName="LibrarianLib $human_name"
+                description="$module_description"
+                [[dependencies.librarianlib-$project.name]]
+                    modId="librarianlib"
+                    versionRange="[${rootProject.mod_version}]"
+                    mandatory=true
+            """.stripIndent()
+
+            // add module dependencies, so missing modules will produce meaningful errors
+            project.compileJava.taskDependencies.getDependencies().collect { it.project }.unique()
+                    .each { dep ->
+                        if(dep == project || dep.path == ":core")
+                            return
+                        tomlString += """\
+                            [[dependencies.librarianlib-$project.name]]
+                                modId="librarianlib-$dep.name"
+                                versionRange="[${rootProject.mod_version}]"
+                                mandatory=true
+                        """.stripIndent()
+                    }
+
+            resourceRoots.collect { file(it.path + "/META-INF/dependencies.toml") }.findAll { it.exists() }.each {
+                def dep = it.text.replaceAll("MOD_ID", "librarianlib-$project.name")
+                if(!dep.endsWith("\n"))
+                    dep += "\n"
+                tomlString += dep
+            }
+
+            def packMcMeta = """\
+                {
+                    "pack": {
+                        "description": "LibrarianLib $human_name resources",
+                        "pack_format": 4
+                    }
+                }
+            """.stripIndent()
+
+            file(output.path + '/META-INF').mkdirs()
+            file(output.path + '/META-INF/mods.toml').text = tomlString
+            file(output.path + '/pack.mcmeta').text = packMcMeta
+        }
+
+        processResources.finalizedBy(generateSkeletonModInfo)
+    }
+
+    task generateTestModInfo << {
+        def output = sourceSets.test.output.resourcesDir
+
+        def tomlString = """\
+            modLoader="kotlinfml"
+            loaderVersion="[1,)"
+            [[mods]]
+            modId="librarianlib-$project.name-test"
+            version="${rootProject.mod_version}"
+            displayName="LibrarianLib $human_name Test"
+            description="The LibrarianLib $human_name module test mod"
+            [[dependencies.librarianlib-$project.name-test]]
+                modId="librarianlib"
+                versionRange="[${rootProject.mod_version}]"
+                mandatory=true
+            [[dependencies.librarianlib-$project.name-test]]
+                modId="librarianlib-$project.name"
+                versionRange="[${rootProject.mod_version}]"
+                mandatory=true
+        """.stripIndent()
+        if(project.path != ":testbase" && project.path != ":core")
+            tomlString += """\
+                [[dependencies.librarianlib-$project.name-test]]
+                    modId="librarianlib-testbase"
+                    versionRange="[${rootProject.mod_version}]"
+                    mandatory=true
+            """.stripIndent()
+
+
+        // add module dependencies, so missing modules will produce meaningful errors
+        project.compileTestJava.taskDependencies.getDependencies().collect { it.project }.unique()
+                .each { dep ->
+                    if(dep.path == ":core")
+                        return
+                    tomlString += """\
+                            [[dependencies.librarianlib-$project.name-test]]
+                                modId="librarianlib-$dep.name"
+                                versionRange="[${rootProject.mod_version}]"
+                                mandatory=true
+                        """.stripIndent()
+                }
+
+        testResourceRoots.collect { file(it.path + "/META-INF/dependencies.toml") }.findAll { it.exists() }.each {
+            def dep = it.text.replaceAll("MOD_ID", "librarianlib-$project.name-test")
+            if(!dep.endsWith("\n"))
+                dep += "\n"
+            tomlString += dep
+        }
+
+        def packMcMeta = """\
+            {
+                "pack": {
+                    "description": "LibrarianLib $human_name test resources",
+                    "pack_format": 4
+                }
+            }
+        """.stripIndent()
+
+        file(output.path + '/META-INF').mkdirs()
+        file(output.path + '/META-INF/mods.toml').text = tomlString
+        file(output.path + '/pack.mcmeta').text = packMcMeta
+    }
+
+    processTestResources.finalizedBy(generateTestModInfo)
+}
+
+ext.productionModules = allmodules.findAll { it.findProperty("development_only") != "true" }
+
+configurations {
+    implementation.extendsFrom libModule
+}
+
+dependencies {
+    productionModules.each {
+        implementation(it)
+        shade(project(path: it.path, configuration: "shade"))
+    }
+}
+
+productionModules.each {
+    classes.dependsOn(it.classes)
+    processResources.dependsOn(it.processResources)
+    jar.dependsOn(it.jar)
+}
+
+minecraft { }
+
+task mergeClasses(type: Copy) {
+    productionModules.each { mod ->
+        from(mod.sourceSets.main.output.classesDirs) {
+            exclude '**/LibModuleSkeleton.class'
+        }
+    }
+    into(file("$buildDir/merged/classes"))
+}
+
+task mergeResources(type: Copy) {
+    ext.outputDir = file("$buildDir/merged/resources")
+    productionModules.each { mod ->
+        from(mod.sourceSets.main.output.resourcesDir) {
+            if (mod.path == ":core") {
+                filesMatching('META-INF/modules/index.txt') {
+                    filter { line ->
+                        if (project(":$line").findProperty("development_only") == "true")
+                            return null
+                        return line
+                    }
+                }
+            } else {
+                exclude 'META-INF/coremods.json'
+                exclude 'META-INF/mods.toml'
+                exclude 'META-INF/dependencies.toml'
+            }
+        }
+    }
+    into(outputDir)
+
+    doLast { // do final post-processing to merge the mods
+        ext.outputDir = file("$buildDir/merged/resources")
+
+        def resources = files([])
+        productionModules.each { resources.from(it.sourceSets.main.resources.sourceDirectories) }
+
+        file("$outputDir/META-INF").mkdirs()
+
+        // merge coremods
+        def coremodsJson = file("$outputDir/META-INF/coremods.json")
+        def allCoremods = resources.collect { file(it.path + "/META-INF/coremods.json") }.findAll { it.exists() }
+
+        coremodsJson.text =
+                "{\n" + allCoremods.collect {
+                    it.text
+                            .replaceAll("[{}]", "") // replace enclosing brackets with blank lines
+                            .replaceAll("\\s+\$", "") // remove trailing whitespace
+                            .split("\n").findAll { !it.matches("^\\s*\$") } // remove blank lines
+                            .join("\n") // re-join lines
+                }.join(",\n") + "\n}"
+
+        // add additional external dependencies to main mods.toml
+        def additionalDependencies = resources
+                .collect { file(it.path + "/META-INF/dependencies.toml") }.findAll { it.exists() }
+                .collect {
+                    it.text
+                            .replaceAll("MOD_ID", "librarianlib")
+                            .replaceAll("\\s+\$", "")
+                }.join("\n")
+        def modsToml = file("$outputDir/META-INF/mods.toml")
+        modsToml.text = modsToml.text + additionalDependencies
+    }
+}
+
+jar {
+    configurations.shade.each { dep ->
+        from(zipTree(dep)) {
+            exclude 'META-INF', 'META-INF/**'
+        }
+    }
+    from(mergeClasses)
+    from(mergeResources)
+}
+
+jar {
+    manifest {
+        attributes([
+                "Implementation-Title": "LibrarianLib",
+                "Implementation-Version": "$mod_version",
+                "Implementation-Vendor" :"Team Wizardry",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+configure(productionModules) {
+    jar {
+        manifest {
+            attributes([
+                    "Implementation-Title"    : "LibrarianLib $human_name Module",
+                    "Implementation-Version"  : "$mod_version",
+                    "Implementation-Vendor"   : "Team Wizardry",
+                    "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+            ])
+        }
+    }
+    components.java
+
+    // Example configuration to allow publishing using the maven-publish task
+    // we define a custom artifact that is sourced from the reobfJar output task
+    // and then declare that to be published
+    // Note you'll need to add a repository here
+    def reobfArtifact = artifacts.add('archives', file("$buildDir/reobfJar/output.jar")) {
+        type 'jar'
+        builtBy 'reobfJar'
+    }
+
+
+    task sourceJar(type: Jar) {
+        from sourceSets.main.allSource
+        from sourceSets.main.output.resourcesDir
+        dependsOn processResources
+    }
+    task deobfJar(type: Jar) {
+        from sourceSets.main.output
+        dependsOn classes
+        dependsOn processResources
+    }
+
+    apply plugin: 'maven-publish'
+    publishing {
+        publications {
+            mod(MavenPublication) {
+                from components.java
+                artifact(reobfArtifact) {
+                    classifier "reobf"
+                }
+                artifact deobfJar {
+                    classifier "deobf"
+                }
+                artifact sourceJar {
+                    classifier "sources"
+                }
+                pom {
+                    // `.toString()` immediately evaluates the `GString` to a `String`, which is apparently necessary
+                    // for the maven-publish plugin
+                    name = "Librarianlib $human_name".toString()
+                    description = "$module_description".toString()
+                    url = 'http://github.com/LibrarianLib/LibrarianLib'
+                    licenses {
+                        license {
+                            name = 'GNU Lesser General Public License v3'
+                            url = 'https://www.gnu.org/licenses/lgpl-3.0.txt'
+                        }
+                    }
+                    developers {
+                        if(project.hasProperty("maven_developers")) {
+                            "$maven_developers".split(',').each {
+                                def fields = it.split(':').collect { it.trim() }
+                                developer {
+                                    if(fields.size() > 0 && fields.get(0)) {
+                                        id = fields.get(0)
+                                    }
+                                    if(fields.size() > 1 && fields.get(1)) {
+                                        name = fields.get(1)
+                                    }
+                                    if(fields.size() > 2 && fields.get(2)) {
+                                        email = fields.get(2)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:https://github.com/LibrarianLib/LibrarianLib.git'
+                        developerConnection = 'scm:git:ssh://github.com/LibrarianLib/LibrarianLib.git'
+                        url = 'https://github.com/LibrarianLib/LibrarianLib'
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                // change URLs to point to your repos, e.g. http://my.org/repo
+                def releasesRepoUrl = "file://$buildDir/repos/releases"
+                def snapshotsRepoUrl = "file://$buildDir/repos/snapshots"
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            }
+        }
+    }
+}
+
+
+task publishAllToMavenLocal {
+    group = 'Publishing'
+    productionModules.each {
+        dependsOn it.publishToMavenLocal
+    }
+}
+
+task publishAll {
+    group = 'Publishing'
+    productionModules.each {
+        dependsOn it.publish
+    }
+}

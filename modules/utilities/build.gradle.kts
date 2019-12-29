@@ -1,4 +1,0 @@
-
-dependencies {
-    compileOnly(project(":core"))
-}

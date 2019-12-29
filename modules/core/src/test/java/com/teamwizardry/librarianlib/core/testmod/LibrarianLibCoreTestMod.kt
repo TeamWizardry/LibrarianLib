@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.core.testmod
 
+import com.teamwizardry.librarianlib.LibrarianLibModule
+import net.alexwells.kottle.FMLKotlinModLoadingContext
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraftforge.common.MinecraftForge
@@ -12,20 +14,19 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 
 import java.util.stream.Collectors
 import kotlin.streams.asSequence
 
-@Mod("librarianlib-core-testmod")
-class LibrarianLibCoreTestMod {
+@Mod("librarianlib-core-test")
+class LibrarianLibCoreTestMod: LibrarianLibModule("core-test", logger) {
     init {
-        FMLJavaModLoadingContext.get().modEventBus.addListener<FMLCommonSetupEvent> {
+        FMLKotlinModLoadingContext.get().modEventBus.addListener<FMLCommonSetupEvent> {
             this.setup(it)
         }
-        FMLJavaModLoadingContext.get().modEventBus.addListener<FMLClientSetupEvent> {
+        FMLKotlinModLoadingContext.get().modEventBus.addListener<FMLClientSetupEvent> {
             this.clientSetup(it)
         }
 
@@ -35,10 +36,10 @@ class LibrarianLibCoreTestMod {
 
     }
 
-    private fun setup(event: FMLCommonSetupEvent) {
+    override fun setup(event: FMLCommonSetupEvent) {
     }
 
-    private fun clientSetup(event: FMLClientSetupEvent) {
+    override fun clientSetup(event: FMLClientSetupEvent) {
     }
 
     @SubscribeEvent
@@ -50,7 +51,6 @@ class LibrarianLibCoreTestMod {
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     object RegistryEvents {
         @SubscribeEvent
-        @JvmStatic
         fun onBlocksRegistry(blockRegistryEvent: RegistryEvent.Register<Block>) {
             // register a new block here
 //            LOGGER.info("HELLO from Register Block")
@@ -63,3 +63,5 @@ class LibrarianLibCoreTestMod {
         private val LOGGER = LogManager.getLogger()
     }
 }
+
+internal val logger = LogManager.getLogger("LibrarianLib: Core Test")

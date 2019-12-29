@@ -1,0 +1,27 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+dependencies {
+}
+
+processResources {
+    filesMatching("**/mods.toml") {
+        filter(ReplaceTokens, tokens: ['version': rootProject.mod_version])
+    }
+}
+
+task generateModuleIndex << {
+    def resourceRoots = files([])
+    allmodules.each { [it.sourceSets.main, it.sourceSets.test].each {
+        resourceRoots.from(it.resources.sourceDirectories)
+    } }
+
+    def output = sourceSets.main.output.resourcesDir
+
+    // assemble module names
+    file(output.path + '/META-INF/modules').mkdirs()
+    file(output.path + '/META-INF/modules/index.txt').text = allmodules.collect {
+        it.name
+    }.join("\n")
+}
+
+processResources.finalizedBy(generateModuleIndex)

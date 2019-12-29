@@ -1,0 +1,13 @@
+rootProject.name = "librarianlib"
+
+def includeModule(String name) {
+    include(name)
+    project(":$name").projectDir = new File(rootDir.path + "/modules/" + name)
+}
+
+include("runtime")
+includeModule("core")
+includeModule("virtualresources")
+includeModule("testbase")
+includeModule("utilities")
+includeModule("particles")

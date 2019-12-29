@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
 
 @Mod("librarianlib-testbase-test")
-class LibTestBaseTestModule: TestMod("testbase", "Test Base", logger) {
+object LibTestBaseTestModule: TestMod("testbase", "Test Base", logger) {
     init {
         +TestItem(TestItemConfig("right_click", "Right Click") {
             common {
@@ -99,4 +99,4 @@ class LibTestBaseTestModule: TestMod("testbase", "Test Base", logger) {
     }
 }
 
-internal val logger = LogManager.getLogger("LibrarianLib/Test Base/Test")
+internal val logger = LogManager.getLogger("LibrarianLib: Test Base Test")

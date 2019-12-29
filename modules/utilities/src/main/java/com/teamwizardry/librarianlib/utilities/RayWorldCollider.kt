@@ -15,7 +15,7 @@ import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.event.TickEvent
 import java.lang.ref.WeakReference
 import java.util.*
 import kotlin.math.floor
@@ -240,7 +240,6 @@ class RayWorldCollider private constructor(world: World) {
         private val worldMap = WeakHashMap<World, RayWorldCollider>()
 
         @SubscribeEvent
-        @JvmStatic
         fun tick(e: TickEvent.ClientTickEvent) {
             for (value in worldMap.values) {
                 run {
@@ -346,7 +345,6 @@ class RayHitResult {
 private object ClientRayWorldCollider {
     var cache: RayWorldCollider? = null
 
-    @JvmStatic
     @SubscribeEvent
     fun unloadWorld(e: WorldEvent.Unload) {
         cache = null
