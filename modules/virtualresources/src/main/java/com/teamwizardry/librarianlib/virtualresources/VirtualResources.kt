@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.virtualresources
 
+import com.teamwizardry.librarianlib.core.util.kotlin.synchronized
 import net.minecraft.resources.FallbackResourceManager
 import net.minecraft.resources.IResourceManager
 import net.minecraft.resources.IResourcePack
@@ -12,25 +13,45 @@ import net.minecraftforge.api.distmarker.OnlyIn
 import java.io.ByteArrayInputStream
 import java.io.FileNotFoundException
 import java.io.InputStream
+import java.util.concurrent.locks.ReentrantReadWriteLock
 import java.util.function.Predicate
+import kotlin.concurrent.read
+import kotlin.concurrent.write
 
 class VirtualResources internal constructor(val type: ResourcePackType) {
     internal val fallback = FallbackResourceManager(type)
-    internal val files = mutableMapOf<ResourceLocation, ByteArray>()
-    internal val generators = mutableMapOf<ResourceLocation, () -> ByteArray>()
-    internal val packs = mutableListOf<VirtualResourcePack>()
+    internal val files = mutableMapOf<ResourceLocation, ByteArray>().synchronized()
+    internal val generators = mutableMapOf<ResourceLocation, () -> ByteArray>().synchronized()
+    internal val packs = mutableListOf<VirtualResourcePack>().synchronized()
+    internal val lock = ReentrantReadWriteLock()
 
-    fun remove(location: ResourceLocation) {
-        if(location in files) {
-            files.remove(location)
-            logger.debug("Removed resource $location")
+    fun remove(location: ResourceLocation): Boolean {
+        lock.write {
+            var removed = false
+            removed = removeFile(location) || removed // can't do removeFile || removeGenerator because of short-circuiting
+            removed = removeGenerator(location) || removed
+            return removed
         }
     }
 
-    fun removeGenerator(location: ResourceLocation) {
-        if(location in files) {
-            files.remove(location)
-            logger.debug("Removed generator $location")
+
+    fun removeFile(location: ResourceLocation): Boolean {
+        lock.write {
+            if(files.remove(location) != null) {
+                logger.debug("Removed file $location")
+                return true
+            }
+            return false
+        }
+    }
+
+    fun removeGenerator(location: ResourceLocation): Boolean {
+        lock.write {
+            if(generators.remove(location) != null) {
+                logger.debug("Removed generator $location")
+                return true
+            }
+            return false
         }
     }
 
@@ -39,20 +60,33 @@ class VirtualResources internal constructor(val type: ResourcePackType) {
     }
 
     fun addRaw(location: ResourceLocation, data: ByteArray) {
-        files[location] = data
-        logger.debug("Added resource $location")
+        lock.write {
+            files[location] = data
+            logger.debug("Added resource $location")
+        }
     }
 
+    /**
+     * Note: the passed generator may be run on another thread
+     */
     fun add(location: ResourceLocation, generator: () -> String) {
         addRaw(location) {
             generator().toByteArray()
         }
     }
 
+    /**
+     * Note: the passed generator may be run on another thread
+     */
     fun addRaw(location: ResourceLocation, generator: () -> ByteArray) {
-        generators[location] = generator
-        logger.debug("Added resource generator $location")
+        lock.write {
+            generators[location] = generator
+            logger.debug("Added resource generator $location")
+        }
     }
+
+    internal inline fun <T> read(callback: (VirtualResources) -> T): T = lock.read { callback(this) }
+    internal inline fun <T> write(callback: (VirtualResources) -> T): T = lock.write { callback(this) }
 
     companion object {
         @OnlyIn(Dist.CLIENT)
@@ -82,45 +116,50 @@ class VirtualResources internal constructor(val type: ResourcePackType) {
     private object Pack: IResourcePack {
 
         override fun getResourceStream(type: ResourcePackType, location: ResourceLocation): InputStream {
-            val resources = resources(type)
-            resources.files[location]?.also {
-                return ByteArrayInputStream(it)
-            }
-            resources.generators[location]?.also {
-                return ByteArrayInputStream(it())
-            }
-            resources.packs.forEach { pack ->
-                pack.getStream(location)?.also {
-                    return it
+            resources(type).read { resources ->
+                resources.files[location]?.also {
+                    return ByteArrayInputStream(it)
                 }
+                resources.generators[location]?.also {
+                    return ByteArrayInputStream(it())
+                }
+                resources.packs.forEach { pack ->
+                    pack.getStream(location)?.also {
+                        return it
+                    }
+                }
+                throw FileNotFoundException("Virtual resource $location not found")
             }
-            throw FileNotFoundException("Virtual resource $location not found")
         }
 
         override fun getAllResourceLocations(type: ResourcePackType, pathIn: String, maxDepth: Int, filter: Predicate<String>): Collection<ResourceLocation> {
-            val resources = resources(type)
+            resources(type).read { resources ->
+                val resources = resources(type)
 
-            val locations = mutableSetOf<ResourceLocation>()
+                val locations = mutableSetOf<ResourceLocation>()
 
-            locations.addAll(resources.files.keys)
-            locations.addAll(resources.generators.keys)
-            resources.packs.forEach {
-                locations.addAll(it.listResources(pathIn, maxDepth))
-            }
-
-            return locations.filter {
-                when {
-                    !it.path.startsWith(pathIn) -> false
-                    it.path.removePrefix(pathIn).count { it == '/' } > maxDepth -> false
-                    it.path.endsWith(".mcmeta") -> false
-                    else -> filter.test(it.path.split('/').last())
+                locations.addAll(resources.files.keys)
+                locations.addAll(resources.generators.keys)
+                resources.packs.forEach {
+                    locations.addAll(it.listResources(pathIn, maxDepth))
                 }
-            }.sortedBy { it.path }
+
+                return locations.filter {
+                    when {
+                        !it.path.startsWith(pathIn) -> false
+                        it.path.removePrefix(pathIn).count { it == '/' } > maxDepth -> false
+                        it.path.endsWith(".mcmeta") -> false
+                        else -> filter.test(it.path.split('/').last())
+                    }
+                }.sortedBy { it.path }
+            }
         }
 
         override fun resourceExists(type: ResourcePackType, location: ResourceLocation): Boolean {
-            val resources = resources(type)
-            return location in resources.files || location in resources.generators || resources.packs.any { location in it }
+            resources(type).read { resources ->
+                val resources = resources(type)
+                return location in resources.files || location in resources.generators || resources.packs.any { location in it }
+            }
         }
 
         override fun getName(): String = "LibrarianLib Virtual Resources"

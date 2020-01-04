@@ -14,7 +14,7 @@ import net.minecraft.util.math.Vec3d
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.event.TickEvent
 import net.minecraftforge.resource.IResourceType
 import net.minecraftforge.resource.ISelectiveResourceReloadListener
 import net.minecraftforge.resource.SelectiveReloadStateHandler
@@ -88,7 +88,6 @@ object Client {
     private var worldTicks: Int = 0
     private var globalTicks: Int = 0
 
-    @JvmStatic
     @SubscribeEvent
     internal fun clientTickEnd(event: TickEvent.ClientTickEvent) {
         if (event.phase == TickEvent.Phase.END) {

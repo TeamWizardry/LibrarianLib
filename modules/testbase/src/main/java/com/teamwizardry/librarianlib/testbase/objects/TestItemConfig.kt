@@ -1,11 +1,13 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
-import com.teamwizardry.librarianlib.core.LibrarianLibModule
+import com.teamwizardry.librarianlib.LibrarianLibModule
+import com.teamwizardry.librarianlib.testbase.LibTestBaseModule
 import com.teamwizardry.librarianlib.testbase.TestMod
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.Item
+import net.minecraft.item.ItemGroup
 import net.minecraft.item.ItemStack
 import net.minecraft.item.ItemUseContext
 import net.minecraft.util.Direction
@@ -19,8 +21,8 @@ import net.minecraftforge.event.world.BlockEvent
  * The DSL for configuring an item
  */
 @TestObjectDslMarker
-class TestItemConfig(val id: String, val name: String): TestConfig() {
-    constructor(id: String, name: String, block: TestItemConfig.() -> Unit): this(id, name) {
+class TestItemConfig(val id: String, val name: String, group: ItemGroup): TestConfig() {
+    constructor(id: String, name: String, group: ItemGroup, block: TestItemConfig.() -> Unit): this(id, name, group) {
         this.block()
     }
 
@@ -47,7 +49,7 @@ class TestItemConfig(val id: String, val name: String): TestConfig() {
      * constructor.
      */
     val properties: Item.Properties = Item.Properties()
-        .group(LibrarianLibModule.current<TestMod>().itemGroup)
+        .group(group)
         .maxStackSize(stackSize)
 
     /**

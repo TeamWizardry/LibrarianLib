@@ -25,13 +25,12 @@ import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
 import org.apache.logging.log4j.LogManager
 
 internal const val modid: String = "librarianlib-particles-test"
 
-@Mod(modid)
-class LibrarianLibParticlesTestMod: TestMod("particles", "Particle System", logger) {
+@Mod("librarianlib-particles-test")
+object LibrarianLibParticlesTestMod: TestMod("particles", "Particle System", logger) {
     init {
         SystemNames.systems.forEach { system ->
             +TestEntityConfig(system.id, system.name) {
@@ -74,4 +73,4 @@ class LibrarianLibParticlesTestMod: TestMod("particles", "Particle System", logg
     }
 }
 
-internal val logger = LogManager.getLogger("LibrarianLib/Particles/Test")
+internal val logger = LogManager.getLogger("LibrarianLib: Particles Test")

@@ -22,7 +22,7 @@ import net.minecraft.util.text.TranslationTextComponent
 import net.minecraft.world.World
 import net.minecraftforge.fml.ModLoadingContext
 
-class TestItem(val config: TestItemConfig): Item(config.properties), TestObject {
+class TestItem(val config: TestItemConfig): Item(config.properties) {
     init {
         this.registryName = ResourceLocation(ModLoadingContext.get().activeContainer.modId, config.id)
     }
