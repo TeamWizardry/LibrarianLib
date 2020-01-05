@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.testbase.objects.TestBlockItem
 import com.teamwizardry.librarianlib.testbase.objects.TestEntityConfig
 import com.teamwizardry.librarianlib.testbase.objects.TestItem
 import com.teamwizardry.librarianlib.testbase.objects.TestItemConfig
+import com.teamwizardry.librarianlib.testbase.objects.TestScreenConfig
 import com.teamwizardry.librarianlib.virtualresources.VirtualResources
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.color.IBlockColor
@@ -59,6 +60,10 @@ abstract class TestMod(targetName: String, val humanName: String, logger: Logger
         = TestEntityConfig(id, name, itemGroup, block)
     fun TestEntityConfig(id: String, name: String): TestEntityConfig
         = TestEntityConfig(id, name, itemGroup)
+    fun TestScreenConfig(id: String, name: String, block: TestScreenConfig.() -> Unit): TestScreenConfig
+        = TestScreenConfig(id, name, itemGroup, block)
+    fun TestScreenConfig(id: String, name: String): TestScreenConfig
+        = TestScreenConfig(id, name, itemGroup)
 
     operator fun <T: Item> T.unaryPlus(): T {
         _items.add(this)
@@ -86,6 +91,11 @@ abstract class TestMod(targetName: String, val humanName: String, logger: Logger
     operator fun TestEntityConfig.unaryPlus(): TestEntityConfig {
         _entities.add(this.type)
         +this.spawnerItem
+        return this
+    }
+
+    operator fun TestScreenConfig.unaryPlus(): TestScreenConfig {
+        +this.activatorItem
         return this
     }
 

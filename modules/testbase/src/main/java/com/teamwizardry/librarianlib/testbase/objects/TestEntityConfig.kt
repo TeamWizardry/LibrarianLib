@@ -65,28 +65,28 @@ class TestEntityConfig(val id: String, val name: String, spawnerItemGroup: ItemG
      *
      * @see Entity.applyPlayerInteraction
      */
-    val rightClick = Action<RightClickContext>()
+    val rightClick = SidedAction<RightClickContext>()
 
     /**
      * Called every tick
      *
      * @see Entity.tick
      */
-    val tick = Action<TickContext>()
+    val tick = SidedAction<TickContext>()
 
     /**
      * Called when the entity is hit. Set [HitContext.kill] to false if the entity should not be killed.
      *
      * @see Entity.hitByEntity
      */
-    val hit = Action<HitContext>()
+    val hit = SidedAction<HitContext>()
 
     /**
      * Called when the entity is attacked.
      *
      * @see Entity.attackEntityFrom
      */
-    val attack = Action<AttackContext>()
+    val attack = SidedAction<AttackContext>()
 
     data class RightClickContext(val target: TestEntity, val player: PlayerEntity, val hand: Hand, val hitPos: Vec3d): PlayerTestContext(player) {
         val world: World = target.world

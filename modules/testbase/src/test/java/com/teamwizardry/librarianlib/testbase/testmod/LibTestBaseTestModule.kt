@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.testbase.testmod
 
+import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.testbase.TestMod
 import com.teamwizardry.librarianlib.testbase.objects.TestBlock
 import com.teamwizardry.librarianlib.testbase.objects.TestBlockConfig
@@ -95,6 +96,25 @@ object LibTestBaseTestModule: TestMod("testbase", "Test Base", logger) {
 
         +TestEntityConfig("cube_renderer", "Cube Renderer") {
 
+        }
+
+        +TestScreenConfig("blank", "Empty Screen") {
+
+        }
+
+        +TestScreenConfig("screen_size_zero", "Zero-sized screen") {
+            description = "(0, 0) should be located at the center of the screen"
+            draw {
+                fill(0, 0, 10, 10, 0xFFFF00FFu)
+            }
+        }
+
+        +TestScreenConfig("screen_size_nonzero", "Non-zero sized screen") {
+            description = "The (20, 20) size means (10, 10) should be located at the center of the screen"
+            size = vec(20, 20)
+            draw {
+                fill(0, 0, 20, 20, 0x7FFF00FFu)
+            }
         }
     }
 }
