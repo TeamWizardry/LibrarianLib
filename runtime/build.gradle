@@ -11,6 +11,32 @@ allmodules.each {
     processResources.dependsOn(it.processTestResources)
 }
 
+/*
+ * Without these forge spews dozens of errors about missing directories when searching for mods:
+ * [18:17:04] [pool-2-thread-1/ERROR] [ne.mi.fm.lo.mo.ExplodedDirectoryLocator/SCAN]: Exception scanning <<project dir>>/modules/utilities/build/classes/java/test
+ * java.nio.file.NoSuchFileException: <<project dir>>/modules/utilities/build/classes/java/test
+ *     at sun.nio.fs.UnixException.translateToIOException(UnixException.java:86) ~[?:1.8.0_181] {}
+ */
+
+task createEmptyMainOutputDirs << {
+    allmodules.each { module ->
+        module.sourceSets.main.output.classesDirs.each {
+            it.mkdirs()
+        }
+        module.sourceSets.main.output.resourcesDir.mkdirs()
+    }
+}
+task createEmptyTestOutputDirs << {
+    allmodules.each { module ->
+        module.sourceSets.test.output.classesDirs.each {
+            it.mkdirs()
+        }
+        module.sourceSets.test.output.resourcesDir.mkdirs()
+    }
+}
+processResources.finalizedBy(createEmptyMainOutputDirs)
+processTestResources.finalizedBy(createEmptyTestOutputDirs)
+
 minecraft {
     Closure runDefaults = {
         workingDirectory rootProject.file('run')
@@ -21,16 +47,11 @@ minecraft {
         property 'forge.logging.console.level', 'debug'
 
         mods {
-            create("librarianlib") {
-                source project(":core").sourceSets.main
-            }
             allmodules.each { mod ->
-                if(it != project(":core")) {
-                    create("librarianlib-${mod.name}") {
-                        source mod.sourceSets.main
-                    }
+                create(mod.modid) {
+                    source mod.sourceSets.main
                 }
-                create("librarianlib-${mod.name}-test") {
+                create(mod.modid_test) {
                     source mod.sourceSets.test
                 }
             }

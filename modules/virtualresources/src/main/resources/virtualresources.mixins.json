@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.teamwizardry.librarianlib.virtualresources.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "virtualresources.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+    "MinecraftMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

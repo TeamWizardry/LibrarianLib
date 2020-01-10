@@ -1,26 +1,31 @@
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = 'http://repo.spongepowered.org/maven' }
         jcenter()
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.61"
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
 
 allprojects {
     apply plugin: 'net.minecraftforge.gradle'
+    apply plugin: 'org.spongepowered.mixin'
     apply plugin: 'eclipse'
     apply plugin: 'idea'
     apply plugin: 'kotlin'
 
     ext.allmodules = rootProject.subprojects.findAll { it.path != ":runtime" }
+    ext.modid = project == rootProject ? "librarianlib" : "librarianlib-${project.name}"
+    ext.modid_test = "librarianlib-${project.name}-test"
 
     version = rootProject.mod_version
     group = "com.teamwizardry.librarianlib"
-    archivesBaseName = project == rootProject ? "librarianlib" : "librarianlib-${project.name}"
+    archivesBaseName = modid
 
     sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
@@ -29,10 +34,16 @@ allprojects {
         maven { url = "http://maven.shadowfacts.net/" }
         maven { url = "https://jitpack.io" }
         maven { url = "https://minecraft.curseforge.com/api/maven/" }
+        maven { url = 'http://repo.spongepowered.org/maven' }
     }
 
     minecraft {
         mappings channel: mc_mappings_channel, version: mc_mappings_version
+    }
+
+    mixin {
+        add sourceSets.main, "${project.name}.refmap.json"
+        add sourceSets.test, "${project.name}-test.refmap.json"
     }
 
     configurations {
@@ -42,10 +53,19 @@ allprojects {
         testImplementation.extendsFrom(libTestImplementation)
         libRuntime.extendsFrom(libApi, libImplementation, libTestImplementation)
     }
+//    compileJava.source()
 
     dependencies {
         minecraft "net.minecraftforge:forge:$mc_version-$forge_version"
         implementation "kottle:Kottle:$kottle_version"
+        implementation("org.spongepowered:mixin:0.8-SNAPSHOT") {
+            // Mixin includes a lot of dependencies that are too up-to-date
+//        exclude module: 'launchwrapper'
+//        exclude module: 'guava'
+//        exclude module: 'gson'
+//        exclude module: 'commons-io'
+//        exclude module: 'log4j-core'
+        }
     }
 
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
@@ -63,6 +83,7 @@ allprojects {
 configure(allmodules) {
     def resourceRoots = project.sourceSets.main.resources.sourceDirectories
     def testResourceRoots = project.sourceSets.test.resources.sourceDirectories
+    def generatedDir = "$buildDir/generated"
 
     if(path != ":core") {
         task generateSkeletonModInfo << {
@@ -72,11 +93,11 @@ configure(allmodules) {
                 modLoader="kotlinfml"
                 loaderVersion="[1,)"
                 [[mods]]
-                modId="librarianlib-$project.name"
+                modId="$project.modid"
                 version="${rootProject.mod_version}"
                 displayName="LibrarianLib $human_name"
                 description="$module_description"
-                [[dependencies.librarianlib-$project.name]]
+                [[dependencies.$project.modid]]
                     modId="librarianlib"
                     versionRange="[${rootProject.mod_version}]"
                     mandatory=true
@@ -88,15 +109,15 @@ configure(allmodules) {
                         if(dep == project || dep.path == ":core")
                             return
                         tomlString += """\
-                            [[dependencies.librarianlib-$project.name]]
-                                modId="librarianlib-$dep.name"
+                            [[dependencies.$project.modid]]
+                                modId="$dep.modid"
                                 versionRange="[${rootProject.mod_version}]"
                                 mandatory=true
                         """.stripIndent()
                     }
 
             resourceRoots.collect { file(it.path + "/META-INF/dependencies.toml") }.findAll { it.exists() }.each {
-                def dep = it.text.replaceAll("MOD_ID", "librarianlib-$project.name")
+                def dep = it.text.replaceAll("MOD_ID", project.modid)
                 if(!dep.endsWith("\n"))
                     dep += "\n"
                 tomlString += dep
@@ -126,25 +147,25 @@ configure(allmodules) {
             modLoader="kotlinfml"
             loaderVersion="[1,)"
             [[mods]]
-            modId="librarianlib-$project.name-test"
+            modId="$project.modid_test"
             version="${rootProject.mod_version}"
             displayName="LibrarianLib $human_name Test"
             description="The LibrarianLib $human_name module test mod"
-            [[dependencies.librarianlib-$project.name-test]]
+            [[dependencies.$project.modid_test]]
                 modId="librarianlib"
                 versionRange="[${rootProject.mod_version}]"
                 mandatory=true
         """.stripIndent()
         if(project.path != ":core")
             tomlString += """\
-                [[dependencies.librarianlib-$project.name-test]]
-                    modId="librarianlib-$project.name"
+                [[dependencies.$project.modid_test]]
+                    modId="$project.modid"
                     versionRange="[${rootProject.mod_version}]"
                     mandatory=true
             """.stripIndent()
         if(project.path != ":testbase" && project.path != ":core")
             tomlString += """\
-                [[dependencies.librarianlib-$project.name-test]]
+                [[dependencies.$project.modid_test]]
                     modId="librarianlib-testbase"
                     versionRange="[${rootProject.mod_version}]"
                     mandatory=true
@@ -157,15 +178,15 @@ configure(allmodules) {
                     if(dep.path == ":core")
                         return
                     tomlString += """\
-                            [[dependencies.librarianlib-$project.name-test]]
-                                modId="librarianlib-$dep.name"
+                            [[dependencies.$project.modid_test]]
+                                modId="$dep.modid"
                                 versionRange="[${rootProject.mod_version}]"
                                 mandatory=true
                         """.stripIndent()
                 }
 
         testResourceRoots.collect { file(it.path + "/META-INF/dependencies.toml") }.findAll { it.exists() }.each {
-            def dep = it.text.replaceAll("MOD_ID", "librarianlib-$project.name-test")
+            def dep = it.text.replaceAll("MOD_ID", "$project.modid_test")
             if(!dep.endsWith("\n"))
                 dep += "\n"
             tomlString += dep
@@ -186,6 +207,108 @@ configure(allmodules) {
     }
 
     processTestResources.finalizedBy(generateTestModInfo)
+
+    task generateSkeletonMixinConnector << {
+        def output = file("$generatedDir/main/java")
+        output.mkdirs()
+        def resourceOutput = sourceSets.main.output.resourcesDir
+
+        def configs = []
+
+        resourceRoots.collect { file(it.path + "/META-INF/mixins.txt") }.findAll { it.exists() }.each {
+            configs += it.readLines()
+        }
+
+        if(configs.size() == 0) {
+            file(output.path + '/SkeletonMixinConnector.java').delete()
+            file(output.path + "/META-INF/MANIFEST.MF").delete()
+        } else {
+            def connectorString = """\
+                import org.spongepowered.asm.mixin.Mixins;
+                import org.spongepowered.asm.mixin.connect.IMixinConnector;
+
+                public class SkeletonMixinConnector implements IMixinConnector {
+                    @Override
+                    public void connect() {
+                        ${
+                            configs.collect {
+                                "Mixins.addConfiguration(\"$it\");"
+                            }.join("\n        ")
+                        }
+                    }
+                }
+            """.stripIndent()
+
+            file(output.path + '/SkeletonMixinConnector.java').text = connectorString
+
+            file(resourceOutput.path + "/META-INF").mkdirs()
+            file(resourceOutput.path + "/META-INF/MANIFEST.MF").text =
+                resourceRoots.collect { file(it.path + "/META-INF/MANIFEST.MF") }.findAll { it.exists() }.collect {
+                    it.text
+                }.join("\n") + "MixinConnector: SkeletonMixinConnector\n"
+        }
+    }
+
+    task generateTestSkeletonMixinConnector << {
+        def output = file("$generatedDir/test/java")
+        output.mkdirs()
+        def resourceOutput = sourceSets.main.output.resourcesDir
+
+        def configs = []
+
+        testResourceRoots.collect { file(it.path + "/META-INF/mixins.txt") }.findAll { it.exists() }.each {
+            configs += it.readLines()
+        }
+
+        if(configs.size() == 0) {
+            file(output.path + '/SkeletonMixinConnector.java').delete()
+            file(output.path + "/META-INF/MANIFEST.MF").delete()
+        } else {
+            def connectorString = """\
+                import org.spongepowered.asm.mixin.Mixins;
+                import org.spongepowered.asm.mixin.connect.IMixinConnector;
+
+                public class SkeletonMixinConnector implements IMixinConnector {
+                    @Override
+                    public void connect() {
+                        ${
+                            configs.collect {
+                                "Mixins.addConfiguration(\"$it\");"
+                            }.join("\n        ")
+                        }
+                    }
+                }
+            """.stripIndent()
+
+            file(output.path + '/SkeletonMixinConnector.java').text = connectorString
+
+            file(resourceOutput.path + "/META-INF").mkdirs()
+            file(resourceOutput.path + "/META-INF/MANIFEST.MF").text =
+                    testResourceRoots.collect { file(it.path + "/META-INF/MANIFEST.MF") }.findAll { it.exists() }.collect {
+                        it.text
+                    }.join("\n") + "MixinConnector: SkeletonMixinConnector\n"
+        }
+    }
+
+    compileKotlin.source = files(compileKotlin.source) {
+        from("$buildDir/generated/main/kotlin")
+    }
+    compileJava.source = files(compileJava.source) {
+        from("$buildDir/generated/main/java")
+    }
+    generateSkeletonMixinConnector.dependsOn(processResources)
+    compileJava.dependsOn(generateSkeletonMixinConnector)
+    compileKotlin.dependsOn(generateSkeletonMixinConnector)
+
+    compileTestKotlin.source = files(compileTestKotlin.source) {
+        from("$buildDir/generated/main/kotlin")
+    }
+    compileTestJava.source = files(compileTestJava.source) {
+        from("$buildDir/generated/test/java")
+    }
+    generateTestSkeletonMixinConnector.dependsOn(processTestResources)
+    compileTestJava.dependsOn(generateTestSkeletonMixinConnector)
+    compileTestKotlin.dependsOn(generateTestSkeletonMixinConnector)
 }
 
 ext.productionModules = allmodules.findAll { it.findProperty("development_only") != "true" }
@@ -234,6 +357,7 @@ task mergeResources(type: Copy) {
                 exclude 'META-INF/coremods.json'
                 exclude 'META-INF/mods.toml'
                 exclude 'META-INF/dependencies.toml'
+                exclude 'META-INF/mixins.txt'
             }
         }
     }
