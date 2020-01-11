@@ -20,7 +20,7 @@ allprojects {
     apply plugin: 'kotlin'
 
     ext.allmodules = rootProject.subprojects.findAll { it.path != ":runtime" }
-    ext.modid = project == rootProject ? "librarianlib" : "librarianlib-${project.name}"
+    ext.modid = (project == rootProject || project.name == "core") ? "librarianlib" : "librarianlib-${project.name}"
     ext.modid_test = "librarianlib-${project.name}-test"
 
     version = rootProject.mod_version
@@ -29,6 +29,8 @@ allprojects {
 
     sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
+    // unfortunately, due to the interdependence of the modules, all the repositories used must be specified here. Any
+    // repositories defined in the module `build.gradle` files won't be seen by any of the other modules
     repositories {
         jcenter()
         maven { url = "http://maven.shadowfacts.net/" }
@@ -46,6 +48,8 @@ allprojects {
         add sourceSets.test, "${project.name}-test.refmap.json"
     }
 
+    // Create `lib___` configurations so those dependencies can be cherry-picked for inclusion in the runtime project
+    // Also create a `shade` configuration to specify dependencies that should be shaded into the final jar
     configurations {
         shade
         api.extendsFrom(libApi)
@@ -53,7 +57,6 @@ allprojects {
         testImplementation.extendsFrom(libTestImplementation)
         libRuntime.extendsFrom(libApi, libImplementation, libTestImplementation)
     }
-//    compileJava.source()
 
     dependencies {
         minecraft "net.minecraftforge:forge:$mc_version-$forge_version"
@@ -80,16 +83,10 @@ allprojects {
     }
 }
 
-configure(allmodules) {
-    apply from: "$rootDir/generators.gradle"
-}
-
+// Properties defined in the `gradle.properties` file are accessible even before the project is evaluated.
 ext.productionModules = allmodules.findAll { it.findProperty("development_only") != "true" }
 
-configurations {
-    implementation.extendsFrom libModule
-}
-
+// include the projects and shade their shade configurations
 dependencies {
     productionModules.each {
         implementation(it)
@@ -103,22 +100,39 @@ productionModules.each {
     jar.dependsOn(it.jar)
 }
 
+// liblib generates a few of the base files for the modules. The generators are a lot of code, so they get their on file
+configure(allmodules) {
+    apply from: "$rootDir/generators.gradle"
+}
+
 minecraft { }
 
+// find a file in all the passed roots
+def findFiles(FileCollection roots, String path) {
+    return roots.collect { file(it.path + path) }.findAll { it.exists() }
+}
+
+// merge the contents of all the modules' `build/classes` directories into root project's `build/merged/classes` directory
 task mergeClasses(type: Copy) {
     productionModules.each { mod ->
         from(mod.sourceSets.main.output.classesDirs) {
+            // exclude some of the generated files
             exclude '**/LibModuleSkeleton.class'
+            exclude 'MixinConnector.class'
         }
     }
     into(file("$buildDir/merged/classes"))
 }
 
+// merge the contents of all the modules' `build/resources` directories into root project's `build/merged/resources` directory
 task mergeResources(type: Copy) {
     ext.outputDir = file("$buildDir/merged/resources")
+
     productionModules.each { mod ->
         from(mod.sourceSets.main.output.resourcesDir) {
             if (mod.path == ":core") {
+                // the core module generates an `index.txt` that stores a list of modules to load at runtime. This list
+                // includes development_only mods, so we have to strip those out first
                 filesMatching('META-INF/modules/index.txt') {
                     filter { line ->
                         if (project(":$line").findProperty("development_only") == "true")
@@ -127,6 +141,8 @@ task mergeResources(type: Copy) {
                     }
                 }
             } else {
+                // these are all either generated for the dev environment or data files that are used to generate files
+                // in the post-processing step
                 exclude 'META-INF/coremods.json'
                 exclude 'META-INF/mods.toml'
                 exclude 'META-INF/dependencies.toml'
@@ -144,9 +160,9 @@ task mergeResources(type: Copy) {
 
         file("$outputDir/META-INF").mkdirs()
 
-        // merge coremods
+        // merge the coremods.json files
         def coremodsJson = file("$outputDir/META-INF/coremods.json")
-        def allCoremods = resources.collect { file(it.path + "/META-INF/coremods.json") }.findAll { it.exists() }
+        def allCoremods = findFiles(resources, "/META-INF/coremods.json")
 
         coremodsJson.text =
                 "{\n" + allCoremods.collect {
@@ -176,6 +192,7 @@ jar {
             exclude 'META-INF', 'META-INF/**'
         }
     }
+    // include the merged classes and resources
     from(mergeClasses)
     from(mergeResources)
 }
@@ -187,12 +204,15 @@ jar {
                 "Implementation-Version": "$mod_version",
                 "Implementation-Vendor" :"Team Wizardry",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                // mixin
+                // Specify the IMixinConnector. This class is present at runtime, but the runtime manifest
+                // specifies a different mixin container with only the mixin files from that specific module.
+                // https://github.com/SpongePowered/Mixin/wiki/Release-Notes---Mixin-0.8#toolchain-and-environment-changes
                 "MixinConnector": "com.teamwizardry.librarianlib.MixinConnector"
         ])
     }
 }
 
+// set up the output jar for each of the production modules
 configure(productionModules) {
     jar {
         manifest {
@@ -200,7 +220,10 @@ configure(productionModules) {
                     "Implementation-Title"    : "LibrarianLib $human_name Module",
                     "Implementation-Version"  : "$mod_version",
                     "Implementation-Vendor"   : "Team Wizardry",
-                    "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                    "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                    // Specify the IMixinConnector. This contains only the mixin files from this specific module.
+                    // https://github.com/SpongePowered/Mixin/wiki/Release-Notes---Mixin-0.8#toolchain-and-environment-changes
+                    "MixinConnector": "MixinConnector"
             ])
         }
     }
@@ -214,7 +237,6 @@ configure(productionModules) {
         type 'jar'
         builtBy 'reobfJar'
     }
-
 
     task sourceJar(type: Jar) {
         from sourceSets.main.allSource
@@ -254,6 +276,7 @@ configure(productionModules) {
                         }
                     }
                     developers {
+                        // set up the maven developer list. This is really just here because I can.
                         if(project.hasProperty("maven_developers")) {
                             "$maven_developers".split(',').each {
                                 def fields = it.split(':').collect { it.trim() }
