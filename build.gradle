@@ -113,7 +113,7 @@ def findFiles(FileCollection roots, String path) {
 }
 
 // merge the contents of all the modules' `build/classes` directories into root project's `build/merged/classes` directory
-task mergeClasses(type: Copy) {
+task mergeClasses(type: Sync) {
     productionModules.each { mod ->
         from(mod.sourceSets.main.output.classesDirs) {
             // exclude some of the generated files
@@ -125,7 +125,7 @@ task mergeClasses(type: Copy) {
 }
 
 // merge the contents of all the modules' `build/resources` directories into root project's `build/merged/resources` directory
-task mergeResources(type: Copy) {
+task mergeResources(type: Sync) {
     ext.outputDir = file("$buildDir/merged/resources")
 
     productionModules.each { mod ->
