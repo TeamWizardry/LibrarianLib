@@ -198,7 +198,6 @@ if(project.path == ":core") {
 
     task generateFullMixinConnector << {
         def classesDir = "$generatedDir/main/java"
-        def resourcesDir = "$generatedDir/main/resources"
 
         def configs = []
 
@@ -206,10 +205,7 @@ if(project.path == ":core") {
             configs.addAll(it.readLines())
         }
 
-        if(configs.size() == 0) {
-            file("$classesDir/MixinConnector.java").delete()
-            file("$resourcesDir/META-INF/MANIFEST.MF").delete()
-        } else {
+        if(!configs.empty) {
             def connectorString = """\
                |package com.teamwizardry.librarianlib;
 
@@ -227,4 +223,5 @@ if(project.path == ":core") {
             mkdirsAnd(file("$classesDir/com/teamwizardry/librarianlib/MixinConnector.java")).text = connectorString
         }
     }
+    generateClasses.dependsOn(generateFullMixinConnector)
 }
