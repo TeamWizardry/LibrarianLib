@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.MainWindow
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.renderer.texture.TextureManager
 import net.minecraft.resources.IFutureReloadListener
 import net.minecraft.resources.IReloadableResourceManager
@@ -18,6 +19,7 @@ import net.minecraftforge.event.TickEvent
 import net.minecraftforge.resource.IResourceType
 import net.minecraftforge.resource.ISelectiveResourceReloadListener
 import net.minecraftforge.resource.SelectiveReloadStateHandler
+import java.util.concurrent.CompletableFuture
 
 object Client {
     @JvmStatic
@@ -54,6 +56,23 @@ object Client {
 
     @JvmStatic
     val resourceReloadHandler = ResourceReload()
+
+    @JvmStatic
+    fun displayGuiScreen(screen: Screen?) {
+        minecraft.displayGuiScreen(screen)
+    }
+
+    @JvmStatic
+    fun runAsync(task: Runnable): CompletableFuture<Void> {
+        return minecraft.runAsync(task)
+    }
+
+    /**
+     * Runs a block asynchronously on the client thread
+     */
+    inline fun run(crossinline task: () -> Unit): CompletableFuture<Void> {
+        return minecraft.runAsync { task() }
+    }
 
     abstract class Time {
         abstract val ticks: Int

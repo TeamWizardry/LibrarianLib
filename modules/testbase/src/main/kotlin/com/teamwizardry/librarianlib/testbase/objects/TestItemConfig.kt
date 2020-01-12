@@ -67,63 +67,63 @@ class TestItemConfig(val id: String, val name: String, group: ItemGroup): TestCo
      * @see Item.onItemUse
      * @see Item.itemInteractionForEntity
      */
-    var rightClick = Action<RightClickContext>()
+    var rightClick = SidedAction<RightClickContext>()
     /**
      * Called when the item is right clicked in the air (i.e. not on a block or entity).
      * @see Item.onItemRightClick
      */
-    var rightClickAir = Action<RightClickContext>()
+    var rightClickAir = SidedAction<RightClickContext>()
     /**
      * Called when the item is right clicked on a block.
      *
      * @see Item.onItemUse
      */
-    var rightClickBlock = Action<RightClickBlockContext>()
+    var rightClickBlock = SidedAction<RightClickBlockContext>()
 
     /**
      * Called each tick while the player is holding down the right mouse button.
      *
      * @see Item.onUsingTick
      */
-    var rightClickHold = Action<RightClickHoldContext>()
+    var rightClickHold = SidedAction<RightClickHoldContext>()
     /**
      * Called when the player releases the right mouse button.
      *
      * @see Item.onPlayerStoppedUsing
      */
-    var rightClickRelease = Action<RightClickReleaseContext>()
+    var rightClickRelease = SidedAction<RightClickReleaseContext>()
 
     /**
      * Called when this item is left-clicked on a block. If this callback exists the block will not be broken.
      * @see Item.onBlockStartBreak
      * @see BlockEvent.BreakEvent
      */
-    var leftClickBlock = Action<LeftClickBlockContext>()
+    var leftClickBlock = SidedAction<LeftClickBlockContext>()
     /**
      * Called when this item is left-clicked on an entity. If this callback exists the entity will not take damage.
      * @see Item.onLeftClickEntity
      */
-    var leftClickEntity = Action<LeftClickEntityContext>()
+    var leftClickEntity = SidedAction<LeftClickEntityContext>()
     /**
      * Called when this item is right-clicked on an entity. If this callback exists the entity will not receive a
      * click event.
      *
      * @see Item.itemInteractionForEntity
      */
-    var rightClickEntity = Action<RightClickEntityContext>()
+    var rightClickEntity = SidedAction<RightClickEntityContext>()
 
     /**
      * Called each tick when the item is in the player's inventory.
      *
      * @see Item.inventoryTick
      */
-    var inventoryTick = Action<InventoryTickContext>()
+    var inventoryTick = SidedAction<InventoryTickContext>()
     /**
      * Called each tick when the item is in the player's hand.
      *
      * @see Item.inventoryTick
      */
-    var tickInHand = Action<InventoryTickContext>()
+    var tickInHand = SidedAction<InventoryTickContext>()
 
     data class RightClickContext(val world: World, val player: PlayerEntity, val hand: Hand): PlayerTestContext(player) {
         val stack: ItemStack = player.getHeldItem(hand)

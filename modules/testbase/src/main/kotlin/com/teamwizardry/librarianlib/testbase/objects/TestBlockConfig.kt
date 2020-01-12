@@ -34,10 +34,10 @@ class TestBlockConfig(val id: String, val name: String): TestConfig() {
      */
     var tickRate: Int = 10
 
-    val rightClick = Action<RightClickContext>()
-    val leftClick = Action<LeftClickContext>()
-    val destroy = Action<DestroyContext>()
-    val place = Action<PlaceContext>()
+    val rightClick = SidedAction<RightClickContext>()
+    val leftClick = SidedAction<LeftClickContext>()
+    val destroy = SidedAction<DestroyContext>()
+    val place = SidedAction<PlaceContext>()
 
     data class RightClickContext(
         val state: BlockState, val world: World, val pos: BlockPos,

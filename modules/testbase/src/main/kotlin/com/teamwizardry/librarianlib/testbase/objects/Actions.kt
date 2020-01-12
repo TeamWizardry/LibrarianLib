@@ -2,7 +2,61 @@ package com.teamwizardry.librarianlib.testbase.objects
 
 import com.teamwizardry.librarianlib.core.util.SidedConsumer
 
-class Action<T> {
+
+class ClientAction<T> {
+    private var client: SidedConsumer.Client<T>? = null
+    val exists: Boolean
+        get() = client != null
+
+    /**
+     * Run the common and client or server callbacks, depending on [isClient]
+     */
+    fun run(context: T) {
+        client?.accept(context)
+    }
+
+    fun clear() {
+        client = null
+    }
+
+    @PublishedApi
+    internal fun addClientRaw(client: SidedConsumer.Client<T>) {
+        this.client = client
+    }
+
+    /**
+     * Sets the client callback. This is only called on the logical client. This inlines to a [SidedConsumer.Client]
+     * SAM object, so client-only code is safe to call inside it.
+     */
+    inline operator fun invoke(crossinline client: T.() -> Unit) = addClientRaw(SidedConsumer.Client { it.client() })
+}
+
+class ServerAction<T> {
+    private var server: (T.() -> Unit)? = null
+
+    val exists: Boolean
+        get() = server != null
+
+    /**
+     * Run the common and client or server callbacks, depending on [isClient]
+     */
+    fun run(context: T) {
+        server?.also { context.it() }
+    }
+
+    fun clear() {
+        server = null
+    }
+
+    /**
+     * Sets the server callback. This is only called on the logical server.
+     */
+    operator fun invoke(server: T.() -> Unit) {
+        this.server = server
+    }
+}
+
+class SidedAction<T> {
     private var client: SidedConsumer.Client<T>? = null
     private var server: (T.() -> Unit)? = null
     private var common: (T.() -> Unit)? = null
@@ -54,17 +108,17 @@ class Action<T> {
 }
 
 object ClientActions {
-    inline operator fun <T> Action<T>.invoke(crossinline block: T.() -> Unit) {
+    inline operator fun <T> SidedAction<T>.invoke(crossinline block: T.() -> Unit) {
         this.client(block)
     }
 }
 object ServerActions {
-    operator fun <T> Action<T>.invoke(block: T.() -> Unit) {
+    operator fun <T> SidedAction<T>.invoke(block: T.() -> Unit) {
         this.server(block)
     }
 }
 object CommonActions {
-    operator fun <T> Action<T>.invoke(block: T.() -> Unit) {
+    operator fun <T> SidedAction<T>.invoke(block: T.() -> Unit) {
         this.common(block)
     }
 }
