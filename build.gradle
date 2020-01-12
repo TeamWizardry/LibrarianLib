@@ -195,6 +195,10 @@ jar {
     // include the merged classes and resources
     from(mergeClasses)
     from(mergeResources)
+
+    productionModules.each { module ->
+        from(file("$module.compileJava.refMapFile.parent/$module.compileJava.refMap"))
+    }
 }
 
 jar {
