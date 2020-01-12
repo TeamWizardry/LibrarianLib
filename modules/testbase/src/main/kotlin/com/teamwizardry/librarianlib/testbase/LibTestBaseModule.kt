@@ -60,7 +60,7 @@ object LibTestBaseModule : LibrarianLibModule("testbase", logger) {
     }
 
     internal fun add(mod: TestMod) {
-        logger.warn("Adding test mod $mod")
+        logger.debug("Adding test mod $mod")
         mods.add(mod)
     }
 }

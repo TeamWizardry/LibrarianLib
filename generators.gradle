@@ -1,0 +1,227 @@
+def mainResourceRoots = project.sourceSets.main.resources.sourceDirectories
+def testResourceRoots = project.sourceSets.test.resources.sourceDirectories
+
+def findFiles(FileCollection collection, String path) {
+    return collection.collect { file(it.path + path) }.findAll { it.exists() }
+}
+
+File mkdirsAnd(File file) {
+    file.parentFile.mkdirs()
+    return file
+}
+
+//region Generated directories
+def generatedDir = "$buildDir/generated"
+// All the generated files are completely temporary and put in the `$buildDir/generated` directory. Resources are copied
+// into the output resources directory after `processResources`, and Java/Kotlin sources are added directly to the
+// compile task inputs. The `$buildDir/generated/*` directories are deleted before each build so files don't hold over
+// from one build to the next
+
+task cleanGenerated << {
+    file("$generatedDir/main").deleteDir()
+}
+task cleanTestGenerated << {
+    file("$generatedDir/test").deleteDir()
+}
+task generateClasses << {}
+task generateTestClasses << {}
+task generateResources(type: Copy) {
+    from("$generatedDir/main/resources")
+    into(sourceSets.main.output.resourcesDir)
+}
+task generateTestResources(type: Copy) {
+    from("$generatedDir/test/resources")
+    into(sourceSets.test.output.resourcesDir)
+}
+
+generateClasses.dependsOn(cleanGenerated)
+generateTestClasses.dependsOn(cleanTestGenerated)
+generateResources.dependsOn(cleanGenerated)
+generateTestResources.dependsOn(cleanTestGenerated)
+
+compileKotlin.dependsOn(generateClasses)
+compileJava.dependsOn(generateClasses)
+processResources.finalizedBy(generateResources)
+compileTestKotlin.dependsOn(generateTestClasses)
+compileTestJava.dependsOn(generateTestClasses)
+processTestResources.finalizedBy(generateTestResources)
+
+// the sources are added directly so we don't have the added complexity and IDE clutter of a `generated` source set
+def addSource(Object compile, String file) {
+    compile.source = files(compile.source) {
+        from(file)
+    }
+}
+
+addSource(compileKotlin, "$buildDir/generated/main/kotlin")
+addSource(compileJava, "$buildDir/generated/main/java")
+addSource(compileTestKotlin, "$buildDir/generated/test/kotlin")
+addSource(compileTestJava, "$buildDir/generated/test/java")
+//endregion
+
+
+//region Skeleton mod info
+
+def tomlDependency(String modid, String dependencyid, String version) {
+    return """\
+        [[dependencies.$modid]]
+            modId="$dependencyid"
+            versionRange="$version"
+            mandatory=true
+    """.stripIndent()
+}
+
+def skeletonModInfo(String output, FileCollection resourceRoots, String modid, String human_name, String description, String additionalDependencies) {
+    def tomlString = """\
+            modLoader="kotlinfml"
+            loaderVersion="[1,)"
+            [[mods]]
+            modId="$modid"
+            version="${rootProject.mod_version}"
+            displayName="LibrarianLib $human_name"
+            description="$description"
+            ${tomlDependency(modid, "librarianlib", "[${rootProject.mod_version}]")}
+        """.stripIndent()
+    tomlString += additionalDependencies
+
+    def projectDependencies = project.compileJava.taskDependencies.getDependencies().collect { it.project }.unique()
+    // add module dependencies, so missing modules will produce meaningful errors
+    projectDependencies.each { dep ->
+        if(dep == project || dep.path == ":core")
+            return
+        tomlString += tomlDependency(modid, "$dep.modid", "[${rootProject.mod_version}]")
+    }
+
+    // grab all the supplemental dependencies, replacing the `MOD_ID` placeholder with the mod id. This needs a
+    // placeholder since the same dependencies will later be added to the root `librarianlib` mod in the final jar.
+    findFiles(resourceRoots, "/META-INF/dependencies.toml").each {
+        def dep = it.text.replaceAll("MOD_ID", modid)
+        if(!dep.endsWith("\n"))
+            dep += "\n"
+        tomlString += dep
+    }
+
+    def packMcMeta = """\
+                {
+                    "pack": {
+                        "description": "LibrarianLib $human_name resources",
+                        "pack_format": 4
+                    }
+                }
+            """.stripIndent()
+
+    mkdirsAnd(file("$output/META-INF/mods.toml")).text = tomlString
+    mkdirsAnd(file("$output/META-INF/pack.mcmeta")).text = packMcMeta
+}
+
+// The core module's mod info files already exist. They're the ones that are included in the final jar.
+if(path != ":core") {
+    task generateSkeletonModInfo << {
+        skeletonModInfo("$generatedDir/main/resources", mainResourceRoots,
+                project.modid, project.human_name, project.module_description,
+                ""
+        )
+    }
+    generateResources.dependsOn(generateSkeletonModInfo)
+}
+
+task generateTestModInfo << {
+    // The test mods depend on their parent module
+    def additionalDependencies = tomlDependency(project.modid_test, project.modid, "[${rootProject.mod_version}]")
+
+    // They also depend on the testbase module. Well, testbase-test already depends on itself because of the previous
+    // line, and the core module can't depend on the test module because that would lead to a circular dependency
+    if(project.path != ":testbase" && project.path != ":core")
+        additionalDependencies += tomlDependency(project.modid_test, project(":testbase").modid, "[${rootProject.mod_version}]")
+
+    skeletonModInfo("$generatedDir/test/resources", testResourceRoots,
+            project.modid_test, project.human_name + " Test", "The $project.human_name test mod",
+            additionalDependencies
+    )
+}
+generateTestResources.dependsOn(generateTestModInfo)
+//endregion
+
+// Generate a skeleton IMixinContainer for each module. When the final jar is assembled all the configs will be merged
+// into a single container.
+// https://github.com/SpongePowered/Mixin/wiki/Release-Notes---Mixin-0.8#toolchain-and-environment-changes
+def generateMixinContainer(String classesDir, String resourcesDir, FileCollection resourceRoots) {
+    def configs = []
+
+    findFiles(resourceRoots, "/META-INF/mixins.txt").each {
+        configs.addAll(it.readLines())
+    }
+
+    if(!configs.isEmpty()) {
+        def connectorString = """\
+           |import org.spongepowered.asm.mixin.Mixins;
+           |import org.spongepowered.asm.mixin.connect.IMixinConnector;
+
+           |public class MixinConnector implements IMixinConnector {
+           |    @Override
+           |    public void connect() {
+           |        ${configs.collect { "Mixins.addConfiguration(\"$it\");" }.join("\n|        ")}
+           |    }
+           |}
+        """.stripMargin()
+
+        mkdirsAnd(file("$classesDir/MixinConnector.java")).text = connectorString
+
+        mkdirsAnd(file("$resourcesDir/META-INF/MANIFEST.MF")).text =
+                findFiles(resourceRoots, "/META-INF/MANIFEST.MF").collect {
+                    it.text
+                }.join("\n") + "MixinConnector: MixinConnector\n"
+    }
+
+}
+
+task generateSkeletonMixinConnector << {
+    generateMixinContainer("$generatedDir/main/java", "$generatedDir/main/resources", mainResourceRoots)
+}
+generateSkeletonMixinConnector.dependsOn(processResources)
+generateResources.dependsOn(generateSkeletonMixinConnector)
+generateClasses.dependsOn(generateSkeletonMixinConnector)
+
+task generateTestMixinConnector << {
+    generateMixinContainer("$generatedDir/test/java", "$generatedDir/test/resources", testResourceRoots)
+}
+generateTestMixinConnector.dependsOn(processTestResources)
+generateTestResources.dependsOn(generateTestMixinConnector)
+generateTestClasses.dependsOn(generateTestMixinConnector)
+
+// generate the mixin connector for the final jar that lists the configs from all the modules. Present even when running
+// modules separately since it isn't hurting anything.
+if(project.path == ":core") {
+    def productionModules = allmodules.findAll { it.findProperty("development_only") != "true" }
+    def productionResources = files([])
+    productionModules.each { productionResources.from(it.sourceSets.main.resources.sourceDirectories) }
+
+    task generateFullMixinConnector << {
+        def classesDir = "$generatedDir/main/java"
+
+        def configs = []
+
+        findFiles(productionResources, "/META-INF/mixins.txt").each {
+            configs.addAll(it.readLines())
+        }
+
+        if(!configs.empty) {
+            def connectorString = """\
+               |package com.teamwizardry.librarianlib;
+
+               |import org.spongepowered.asm.mixin.Mixins;
+               |import org.spongepowered.asm.mixin.connect.IMixinConnector;
+
+               |public class MixinConnector implements IMixinConnector {
+               |    @Override
+               |    public void connect() {
+               |        ${configs.collect { "Mixins.addConfiguration(\"$it\");" }.join("\n|        ")}
+               |    }
+               |}
+            """.stripMargin()
+
+            mkdirsAnd(file("$classesDir/com/teamwizardry/librarianlib/MixinConnector.java")).text = connectorString
+        }
+    }
+    generateClasses.dependsOn(generateFullMixinConnector)
+}

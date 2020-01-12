@@ -38,6 +38,12 @@ into the final mod.
 At the moment maven repositories must be added to the `allprojects` block in the root `build.gradle`, since the 
 `:runtime` project needs to be able to resolve them. This restriction may be lifted in the future however.
 
+## Maven dependencies
+Any external dependencies that are required in the runtime classpath should be added to the 
+`libApi`/`libImplementation`/`libRuntime` configurations instead of the `api`/`implementation`/`runtime` configurations.
+Adding a dependency to the `shade` configuration will shade it into the final jar, however it must still be added to one
+of the other configurations to be usable.
+
 ## External dependencies
 External mod dependencies should be added to the module's `META-INF/dependencies.toml` file, which will be directly
 appended to the generated `mods.toml` file. However, the `dependencies.toml` file should use `MOD_ID` instead of the 

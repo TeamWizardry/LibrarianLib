@@ -1,9 +1,14 @@
+// We can't include libraries from other projects with forge's system, so we have to pull them all in using the
+// libRuntime configuration. Pulling in all dependencies just ended in a nightmare of duplicate dependencies because one
+// is a normal forge dep and the other is a direct jar reference and two copies of mods being loaded because they were
+// in the root classpath and included by forge's classloader.
 dependencies {
     allmodules.each {
         implementation(project(path: it.path, configuration: "libRuntime"))
     }
 }
 
+// we need all the modules to compile first
 allmodules.each {
     classes.dependsOn(it.classes)
     processResources.dependsOn(it.processResources)
@@ -11,9 +16,38 @@ allmodules.each {
     processResources.dependsOn(it.processTestResources)
 }
 
+// Create empty directories for all of the build outputs.
+// ForgeGradle gives all the output directories to forge to search, but when the directories don't exist forge spews
+// dozens of errors about missing directories when searching for mods:
+//   [18:17:04] [pool-2-thread-1/ERROR] [ne.mi.fm.lo.mo.ExplodedDirectoryLocator/SCAN]: Exception scanning <<project dir>>/modules/utilities/build/classes/java/test
+//   java.nio.file.NoSuchFileException: <<project dir>>/modules/utilities/build/classes/java/test
+//       at sun.nio.fs.UnixException.translateToIOException(UnixException.java:86) ~[?:1.8.0_181] {}
+task createEmptyMainOutputDirs << {
+    allmodules.each { module ->
+        module.sourceSets.main.output.classesDirs.each {
+            it.mkdirs()
+        }
+        module.sourceSets.main.output.resourcesDir.mkdirs()
+    }
+}
+task createEmptyTestOutputDirs << {
+    allmodules.each { module ->
+        module.sourceSets.test.output.classesDirs.each {
+            it.mkdirs()
+        }
+        module.sourceSets.test.output.resourcesDir.mkdirs()
+    }
+}
+processResources.finalizedBy(createEmptyMainOutputDirs)
+processTestResources.finalizedBy(createEmptyTestOutputDirs)
+
 minecraft {
     Closure runDefaults = {
         workingDirectory rootProject.file('run')
+        // ForgeGradle would generate `runtime_main`, which is wrong on two counts. Firstly it needs to be `.main` and
+        // not `_main` (which is a _known issue_ https://github.com/MinecraftForge/ForgeGradle/issues/425), and secondly
+        // it doesn't take into account the fact that this project may not be the root project.
+        // https://github.com/MinecraftForge/ForgeGradle/blob/bd92a0d384b987be361ed3f7df28b1980f7fae1e/src/common/java/net/minecraftforge/gradle/common/util/RunConfig.java#L240
         ideaModule 'librarianlib.runtime.main'
         taskName name
 
@@ -21,16 +55,11 @@ minecraft {
         property 'forge.logging.console.level', 'debug'
 
         mods {
-            create("librarianlib") {
-                source project(":core").sourceSets.main
-            }
             allmodules.each { mod ->
-                if(it != project(":core")) {
-                    create("librarianlib-${mod.name}") {
-                        source mod.sourceSets.main
-                    }
+                create(mod.modid) {
+                    source mod.sourceSets.main
                 }
-                create("librarianlib-${mod.name}-test") {
+                create(mod.modid_test) {
                     source mod.sourceSets.test
                 }
             }
