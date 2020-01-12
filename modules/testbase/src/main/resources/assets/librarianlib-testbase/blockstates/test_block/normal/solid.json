@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "librarianlib-testbase:block/test_block_solid" }
+  }
+}

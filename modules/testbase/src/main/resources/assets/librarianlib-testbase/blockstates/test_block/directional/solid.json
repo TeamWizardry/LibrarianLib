@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "directional=up": { "model": "librarianlib-testbase:block/test_block_solid_directional" },
+    "directional=down": { "model": "librarianlib-testbase:block/test_block_solid_directional", "x": 180 },
+    "directional=east": { "model": "librarianlib-testbase:block/test_block_solid_directional", "y": 90, "x": 90 },
+    "directional=south": { "model": "librarianlib-testbase:block/test_block_solid_directional", "y": 180, "x": 90 },
+    "directional=west": { "model": "librarianlib-testbase:block/test_block_solid_directional", "y": 270, "x": 90 },
+    "directional=north": { "model": "librarianlib-testbase:block/test_block_solid_directional", "y": 0, "x": 90 }
+  }
+}
