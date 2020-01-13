@@ -17,8 +17,10 @@ class SpritesMetadataSectionSerializer : IMetadataSectionSerializer<SpritesMetad
 
     override fun deserialize(json: JsonObject): SpritesMetadataSection {
         return json.parse("spritesheet") {
-            val width = get("textureWidth").asInt()
-            val height = get("textureWidth").asInt()
+            val (width, height) = get("size") {
+                expectExactSize(2)
+                get(0).asInt() to get(1).asInt()
+            }
 
             val sprites = getOrNull("sprites")?.properties?.map { (name, value) ->
                 parseSprite(name, value)
@@ -72,14 +74,14 @@ class SpritesMetadataSectionSerializer : IMetadataSectionSerializer<SpritesMetad
                     // ========== animation offset
                     def.offsetU = 0
                     def.offsetV = def.h // default animates downward
-                    "offset" / {
+                    optional("offset") {
                         expectExactSize(2)
                         def.offsetU = get(0).asInt()
                         def.offsetV = get(1).asInt()
                     }
 
                     // ========== caps
-                    "caps" / {
+                    optional("caps") {
                         expectExactSize(4)
 
                         def.minUCap = get(0).asInt()
@@ -89,7 +91,7 @@ class SpritesMetadataSectionSerializer : IMetadataSectionSerializer<SpritesMetad
                     }
 
                     // ========== pinning
-                    "pinEdges" / {
+                    optional("pinEdges") {
                         when(size()) {
                             2 -> {
                                 def.pinLeft = get(0).asBoolean()

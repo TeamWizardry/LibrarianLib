@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.SidedRunnable
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.Minecraft
@@ -86,6 +87,15 @@ class TestScreenConfig(val id: String, val name: String, activatorItemGroup: Ite
 
     val keyReleased = ClientAction<KeyContext>()
 
+    private val lazies = mutableListOf<() -> Unit>()
+
+    /**
+     * Run the passed configuration block lazily the first time the screen is used.
+     */
+    fun lazyConfig(block: () -> Unit) {
+        lazies.add(block)
+    }
+
     @Suppress("NOTHING_TO_INLINE")
     @OnlyIn(Dist.CLIENT)
     data class DrawContext(val screen: TestScreen, val mousePos: Vec2d, val partialTicks: Float): TestContext() {
@@ -158,6 +168,8 @@ class TestScreenConfig(val id: String, val name: String, activatorItemGroup: Ite
 
     @OnlyIn(Dist.CLIENT)
     fun activate() {
+        lazies.forEach { it() }
+        lazies.clear()
         Client.displayGuiScreen(TestScreen(this))
     }
 

@@ -27,12 +27,8 @@ import kotlin.reflect.KProperty
  *     // spritesheet definition
  *     "spritesheet": {
  *         // required:
- *         // texture width in pixels
- *         "textureWidth": <positive int>,
- *
- *         // required:
- *         // texture height in pixels
- *         "textureHeight": <positive int>,
+ *         // texture size in pixels (used for UV calculations)
+ *         "size": [<w>, <h>],
  *
  *         "sprites": {
  *             // static sprite shorthand

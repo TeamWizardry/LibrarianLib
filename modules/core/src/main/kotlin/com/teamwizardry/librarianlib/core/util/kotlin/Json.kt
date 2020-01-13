@@ -243,6 +243,18 @@ class JsonParsingDSL @PublishedApi internal constructor(val jsonElement: JsonEle
         = asObject()[property]?.let { JsonParsingDSL(it, path.child(jsonElement, property)) }
 
     /**
+     * Gets the property value for the target name and runs it through the passed dsl
+     * @throws JsonSyntaxException if this element is not an object or the target property doesn't exist
+     */
+    inline fun <T> get(property: String, dsl: JsonParsingDSL.() -> T): T = get(property).dsl()
+
+    /**
+     * Gets the property value for the target name, if it exists, and runs it through the passed dsl
+     * @throws JsonSyntaxException if this element is not an object
+     */
+    inline fun <T> optional(property: String, dsl: JsonParsingDSL.() -> T): T? = getOrNull(property)?.dsl()
+
+    /**
      * Gets the value at the passed index.
      * @throws JsonSyntaxException if this element is not an array or the index is out of bounds
      */
@@ -253,6 +265,12 @@ class JsonParsingDSL @PublishedApi internal constructor(val jsonElement: JsonEle
         }
         return JsonParsingDSL(array[index], path.child(jsonElement, index))
     }
+
+    /**
+     * Gets the property value for the target name and runs it through the passed dsl
+     * @throws JsonSyntaxException if this element is not an array or the index is out of bounds
+     */
+    inline fun <T> get(index: Int, dsl: JsonParsingDSL.() -> T): T = get(index).dsl()
 
     /**
      * Gets the number of elements in this array
@@ -319,18 +337,13 @@ class JsonParsingDSL @PublishedApi internal constructor(val jsonElement: JsonEle
     /**
      * Runs this element, if it isn't null, through the passed dsl function
      */
-    inline operator fun <T> JsonParsingDSL?.div(dsl: JsonParsingDSL.() -> T): T? = this?.dsl()
+    inline infix fun <T> JsonParsingDSL?.ifExists(dsl: JsonParsingDSL.() -> T): T? = this?.dsl()
 
     /**
      * Gets the property value for the target name and runs it through the passed dsl
      * @throws JsonSyntaxException if this element is not an object or the target property doesn't exist
      */
     inline operator fun <T> String.invoke(dsl: JsonParsingDSL.() -> T): T = get(this).dsl()
-    /**
-     * Gets the property value for the target name, if it exists, and runs it through the passed dsl
-     * @throws JsonSyntaxException if this element is not an object
-     */
-    inline operator fun <T> String.div(dsl: JsonParsingDSL.() -> T): T? = getOrNull(this)?.dsl()
 
     /**
      * Throws an exception stating that this element is the wrong type. The passed string should fit into the phrase
