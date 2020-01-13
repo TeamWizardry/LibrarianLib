@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.sprite
+package com.teamwizardry.librarianlib.sprites
 
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonElement

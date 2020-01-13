@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.sprite
+package com.teamwizardry.librarianlib.sprites
 
 class PinnedWrapper(
     val wrapped: ISprite,

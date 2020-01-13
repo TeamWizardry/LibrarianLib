@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.sprite
+package com.teamwizardry.librarianlib.sprites
 
 abstract class WrappedSprite: ISprite {
     abstract val wrapped: ISprite?

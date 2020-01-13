@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.sprite
+package com.teamwizardry.librarianlib.sprites
 
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -24,7 +24,7 @@ internal object DrawingUtil {
     }
 
     fun draw(sprite: ISprite, animFrames: Int, x: Float, y: Float, width: Float, height: Float) {
-
+        sprite.bind()
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
 

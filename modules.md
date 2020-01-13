@@ -65,19 +65,6 @@ plus a method to color code objects using their hashcode
     - Easy access to various values without having to use `Minecraft.getInstance()`
     - Access game and world tick and partial tick time, with easy tick interpolation
 
-## Sprite
-#### com.teamwizardry.librarianlib.sprite
-- Sprites
-    - Animated sprites with manual frame indexing
-    - [9-slice texture scaling](https://en.wikipedia.org/wiki/9-slice_scaling)
-    - Customizable stretching/tiling behavior using pinned edges
-- Sprite sheet definition using .mcmeta
-    - Hot-reloadable without reloading all the game assets (useful for quick iteration)
-    - Direct access to the pixel data as a BufferedImage
-    - 
-- `BufferedImage`/`Graphics2D` sprite implementation (automatically uploads the texture) (reimplementation pending)
-- 
-
 ## Particles
 #### com.teamwizardry.librarianlib.particles
 - Particle system

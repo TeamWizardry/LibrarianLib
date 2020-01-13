@@ -1,8 +1,8 @@
-package com.teamwizardry.librarianlib.sprite
+package com.teamwizardry.librarianlib.sprites
 
 import com.mojang.blaze3d.platform.TextureUtil
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.ClientRunnable
+import com.teamwizardry.librarianlib.core.util.ResourceReload
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.ITextureObject
 import net.minecraft.client.renderer.texture.PngSizeInfo
@@ -127,23 +127,24 @@ class Texture(
      * Loads the sprite data from disk
      */
     fun loadSpriteData() {
-        var pngWidth: Int
-        var pngHeight: Int
+        var pngWidth: Int = 16
+        var pngHeight: Int = 16
         try {
-            val resource = Client.minecraft.resourceManager.getResource(loc)
-            val pngSizeInfo = PngSizeInfo("$resource", resource.inputStream)
-            pngWidth = pngSizeInfo.width
-            pngHeight = pngSizeInfo.height
+            Client.minecraft.resourceManager.getResource(loc).use { resource ->
+                val pngSizeInfo = PngSizeInfo("$resource", resource.inputStream)
+                pngWidth = pngSizeInfo.width
+                pngHeight = pngSizeInfo.height
 
-            if (width > 0 && height <= 0) {
-                pngWidth = width
-                pngHeight = pngHeight * width / pngWidth
-            } else if (width <= 0 && height > 0) {
-                pngHeight = height
-                pngWidth = pngWidth * height / pngHeight
-            } else if (width > 0 && height > 0) {
-                pngWidth = width
-                pngHeight = height
+                if (width > 0 && height <= 0) {
+                    pngWidth = width
+                    pngHeight = pngHeight * width / pngWidth
+                } else if (width <= 0 && height > 0) {
+                    pngHeight = height
+                    pngWidth = pngWidth * height / pngHeight
+                } else if (width > 0 && height > 0) {
+                    pngWidth = width
+                    pngHeight = height
+                }
             }
         } catch (e: FileNotFoundException) {
             pngWidth = 16
@@ -154,7 +155,7 @@ class Texture(
         this.height = pngHeight
         this.section = null
         try {
-            this.section = Client.minecraft.resourceManager.getResource(loc).getMetadata(SpritesMetadataSection.SERIALIZER)
+            this.section = Client.minecraft.resourceManager.getResource(loc).use { it.getMetadata(SpritesMetadataSection.SERIALIZER) }
         } catch (e: FileNotFoundException) {
             // nop
         }
@@ -189,7 +190,7 @@ class Texture(
 
     fun loadImageData() {
         try {
-            val image = ImageIO.read(Client.minecraft.resourceManager.getResource(loc).inputStream)
+            val image = Client.minecraft.resourceManager.getResource(loc).use { ImageIO.read(it.inputStream) }
             this.image = image
             this._sprites.forEach { (name, sprite) ->
                 try {
@@ -297,9 +298,8 @@ class Texture(
     }
 
     companion object {
-
-        internal fun register() {
-            ClientRunnable.registerReloadHandler(VanillaResourceType.TEXTURES) {
+        internal fun registerReloadHandler() {
+            Client.resourceReloadHandler.register(VanillaResourceType.TEXTURES) {
                 val newList = ArrayList<WeakReference<Texture>>()
 
                 for (weakRef in textures) {

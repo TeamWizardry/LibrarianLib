@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.sprite
+package com.teamwizardry.librarianlib.sprites
 
 import com.teamwizardry.librarianlib.core.util.Client
 import net.minecraft.util.ResourceLocation
@@ -16,7 +16,7 @@ class Sprite : ISprite {
      * The [Texture] that this sprite is a part of
      * @return
      */
-    var tex: Texture
+    lateinit var tex: Texture
         protected set
     var def: SpriteDefinition = SpriteDefinition("")
         private set
@@ -56,32 +56,33 @@ class Sprite : ISprite {
 
     @Suppress("LeakingThis")
     @JvmOverloads constructor(loc: ResourceLocation, width: Int = 0, height: Int = 0) {
-        val resource = Client.minecraft.resourceManager.getResource(loc)
-        val pngSizeInfo = PngSizeInfo(resource.toString(), resource.inputStream)
-        var pngWidth = pngSizeInfo.width
-        var pngHeight = pngSizeInfo.height
+        Client.minecraft.resourceManager.getResource(loc).use { resource ->
+            val pngSizeInfo = PngSizeInfo(resource.toString(), resource.inputStream)
+            var pngWidth = pngSizeInfo.width
+            var pngHeight = pngSizeInfo.height
 
-        if (width > 0 && height <= 0) {
-            pngWidth = width
-            pngHeight = pngHeight * width / pngWidth
-        } else if (width <= 0 && height > 0) {
-            pngHeight = height
-            pngWidth = pngWidth * height / pngHeight
-        } else if (width > 0 && height > 0) {
-            pngWidth = width
-            pngHeight = height
+            if (width > 0 && height <= 0) {
+                pngWidth = width
+                pngHeight = pngHeight * width / pngWidth
+            } else if (width <= 0 && height > 0) {
+                pngHeight = height
+                pngWidth = pngWidth * height / pngHeight
+            } else if (width > 0 && height > 0) {
+                pngWidth = width
+                pngHeight = height
+            }
+
+            def.u = 0
+            def.v = 0
+            def.w = pngWidth
+            def.h = pngHeight
+            def.frames = IntArray(0)
+
+            this.tex = Texture(loc, pngWidth, pngHeight)
+            tex._sprites[loc.path] = this
+
+            tex.loadSpriteData()
         }
-
-        def.u = 0
-        def.v = 0
-        def.w = pngWidth
-        def.h = pngHeight
-        def.frames = IntArray(0)
-
-        this.tex = Texture(loc, pngWidth, pngHeight)
-        tex._sprites[loc.path] = this
-
-        tex.loadSpriteData()
     }
 
     /**
