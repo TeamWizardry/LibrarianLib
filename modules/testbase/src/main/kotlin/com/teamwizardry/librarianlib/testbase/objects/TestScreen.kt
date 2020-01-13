@@ -24,8 +24,8 @@ class TestScreen(val config: TestScreenConfig): Screen(StringTextComponent(confi
     }
 
     override fun init() {
-        this.left = (width - config.size.x) / 2
-        this.top = (height - config.size.y) / 2
+        this.left = (width - config.size.x * config.scale) / 2
+        this.top = (height - config.size.y * config.scale) / 2
         config.init.run(screenContext)
         super.init()
     }
@@ -42,7 +42,11 @@ class TestScreen(val config: TestScreenConfig): Screen(StringTextComponent(confi
 
     override fun render(mouseX: Int, mouseY: Int, partialTicks: Float) {
         GlStateManager.translated(left, top, 0.0)
-        config.draw.run(TestScreenConfig.DrawContext(this, vec(mouseX - left, mouseY - top), partialTicks))
+        GlStateManager.scaled(config.scale.toDouble(), config.scale.toDouble(), 1.0)
+
+        config.draw.run(TestScreenConfig.DrawContext(this, vec(mouseX - left, mouseY - top) / config.scale, partialTicks))
+
+        GlStateManager.scaled(1/config.scale.toDouble(), 1/config.scale.toDouble(), 1.0)
         GlStateManager.translated(-left, -top, 0.0)
         super.render(mouseX, mouseY, partialTicks)
     }
@@ -63,27 +67,27 @@ class TestScreen(val config: TestScreenConfig): Screen(StringTextComponent(confi
     }
 
     override fun mouseClicked(x: Double, y: Double, button: Int): Boolean {
-        config.mouseClicked.run(TestScreenConfig.MouseButtonContext(this, vec(x - left, y - top), button))
+        config.mouseClicked.run(TestScreenConfig.MouseButtonContext(this, vec(x - left, y - top) / config.scale, button))
         return super.mouseClicked(x, y, button)
     }
 
     override fun mouseReleased(x: Double, y: Double, button: Int): Boolean {
-        config.mouseReleased.run(TestScreenConfig.MouseButtonContext(this, vec(x - left, y - top), button))
+        config.mouseReleased.run(TestScreenConfig.MouseButtonContext(this, vec(x - left, y - top) / config.scale, button))
         return super.mouseReleased(x, y, button)
     }
 
     override fun mouseScrolled(x: Double, y: Double, amount: Double): Boolean {
-        config.mouseScrolled.run(TestScreenConfig.MouseScrollContext(this, vec(x - left, y - top), amount))
+        config.mouseScrolled.run(TestScreenConfig.MouseScrollContext(this, vec(x - left, y - top) / config.scale, amount))
         return super.mouseScrolled(x, y, amount)
     }
 
     override fun mouseMoved(x: Double, y: Double) {
-        config.mouseMoved.run(TestScreenConfig.MouseMovedContext(this, vec(x - left, y - top)))
+        config.mouseMoved.run(TestScreenConfig.MouseMovedContext(this, vec(x - left, y - top) / config.scale))
         super.mouseMoved(x, y)
     }
 
     override fun mouseDragged(startX: Double, startY: Double, button: Int, deltaX: Double, deltaY: Double): Boolean {
-        config.mouseDragged.run(TestScreenConfig.MouseDraggedContext(this, vec(startX - left, startY - top), vec(deltaX, deltaY), button))
+        config.mouseDragged.run(TestScreenConfig.MouseDraggedContext(this, vec(startX - left, startY - top) / config.scale, vec(deltaX, deltaY) / config.scale, button))
         return super.mouseDragged(startX, startY, button, deltaX, deltaY)
     }
 

@@ -63,7 +63,7 @@ class SpritesMetadataSectionSerializer : IMetadataSectionSerializer<SpritesMetad
                     }
 
                     // ========== frame count/indices
-                    "frames" {
+                    optional("frames") {
                         when {
                             isArray -> def.frames = elements.map { it.asInt() }.toList().toIntArray()
                             isNumber -> def.frames = IntArray(asInt())

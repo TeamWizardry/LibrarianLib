@@ -80,6 +80,26 @@ allprojects {
             ]
         }
     }
+
+    // exclude "master" files from output
+    def masterPatterns = [
+            "**/*.psd",
+            "**/*.xcf",
+            "**/*.kra",
+            "**/*.blend",
+            "**/_master/**"
+    ]
+
+    processResources {
+        masterPatterns.each {
+            exclude it
+        }
+    }
+    processTestResources {
+        masterPatterns.each {
+            exclude it
+        }
+    }
 }
 
 // Properties defined in the `gradle.properties` file are accessible even before the project is evaluated.

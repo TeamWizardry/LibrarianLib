@@ -36,6 +36,11 @@ class TestScreenConfig(val id: String, val name: String, activatorItemGroup: Ite
     var size: Vec2d = vec(0, 0)
 
     /**
+     * The scaling factor of the GUI pane.
+     */
+    var scale: Int = 1
+
+    /**
      * Whether the screen should be closed when pressing the escape key
      */
     var closeOnEsc: Boolean = true
