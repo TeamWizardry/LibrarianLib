@@ -66,7 +66,7 @@ class SpritesMetadataSectionSerializer : IMetadataSectionSerializer<SpritesMetad
                     optional("frames") {
                         when {
                             isArray -> def.frames = elements.map { it.asInt() }.toList().toIntArray()
-                            isNumber -> def.frames = IntArray(asInt())
+                            isNumber -> def.frames = IntArray(asInt()) { it }
                             else -> throw typeError("an array or an integer")
                         }
                     }

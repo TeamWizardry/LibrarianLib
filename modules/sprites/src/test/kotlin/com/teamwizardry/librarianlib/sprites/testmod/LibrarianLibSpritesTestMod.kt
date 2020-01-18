@@ -2,6 +2,7 @@
 
 package com.teamwizardry.librarianlib.sprites.testmod
 
+import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.toRl
 import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.sprites.ISprite
@@ -29,7 +30,7 @@ object LibrarianLibSpritesTestMod: TestMod("sprites", "Sprites", logger) {
             }
         }
 
-        +TestScreenConfig("two_sprites", "Two sprites") {
+        +TestScreenConfig("two_sprites", "Two Sprites") {
             description = """
                 A spritesheet consisting of two sprites with opposing arrows, drawn so the arrows point together
             """.trimIndent()
@@ -49,7 +50,7 @@ object LibrarianLibSpritesTestMod: TestMod("sprites", "Sprites", logger) {
             }
         }
 
-        +TestScreenConfig("sprite_pinning", "Sprite pinning") {
+        +TestScreenConfig("sprite_pinning", "Sprite Pinning") {
             description = """
                 A spritesheet with all the valid combinations of pinned edges.
             """.trimIndent()
@@ -91,7 +92,7 @@ object LibrarianLibSpritesTestMod: TestMod("sprites", "Sprites", logger) {
             }
         }
 
-        +TestScreenConfig("sprite_caps", "Sprite caps") {
+        +TestScreenConfig("sprite_caps", "Sprite Caps") {
             description = """
                 A spritesheet with various sprite cap scenarios
             """.trimIndent()
@@ -145,6 +146,33 @@ object LibrarianLibSpritesTestMod: TestMod("sprites", "Sprites", logger) {
                         y_top.draw(0, 74, 55, 6, 18)
                         y_all.draw(0, 82, 60, 6, 8)
                         y_all.draw(0, 90, 62, 6, 4)
+                    }
+                }
+            }
+        }
+
+        +TestScreenConfig("sprite_animation", "Sprite Animation") {
+            description = """
+                A spritesheet with various types of animation
+            """.trimIndent()
+            scale = 2
+            lazyConfig {
+                client {
+                    val tex = Texture("librarianlib-sprites-test:textures/gui/sprite_animations.png".toRl(), 64, 64)
+                    val background = tex.getSprite("background")
+                    size = vec(background.width, background.height)
+
+                    val simple = tex.getSprite("simple")
+                    val marquee = tex.getSprite("marquee")
+                    val arrow = tex.getSprite("arrow")
+                    val bounce = tex.getSprite("bounce")
+
+                    draw {
+                        background.draw(0, 0f, 0f)
+                        simple.draw(Client.time.ticks, 5f, 17f)
+                        marquee.draw(Client.time.ticks, 13f, 22f)
+                        arrow.draw(Client.time.ticks, 24f, 5f)
+                        bounce.draw(Client.time.ticks, 5f, 5f)
                     }
                 }
             }

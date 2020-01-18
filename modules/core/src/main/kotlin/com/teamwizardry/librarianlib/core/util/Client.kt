@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.core.util
 
 import com.google.common.collect.Lists
+import com.teamwizardry.librarianlib.core.logger
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.MainWindow
@@ -14,6 +15,7 @@ import net.minecraft.util.Timer
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.resource.IResourceType
@@ -106,6 +108,10 @@ object Client {
 
     private var worldTicks: Int = 0
     private var globalTicks: Int = 0
+
+    init {
+        MinecraftForge.EVENT_BUS.register(this)
+    }
 
     @SubscribeEvent
     internal fun clientTickEnd(event: TickEvent.ClientTickEvent) {
