@@ -1,7 +1,10 @@
+@file:Suppress("LocalVariableName")
+
 package com.teamwizardry.librarianlib.sprites.testmod
 
 import com.teamwizardry.librarianlib.core.util.kotlin.toRl
 import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.sprites.ISprite
 import com.teamwizardry.librarianlib.sprites.Sprite
 import com.teamwizardry.librarianlib.sprites.Texture
 import com.teamwizardry.librarianlib.testbase.TestMod
@@ -87,6 +90,73 @@ object LibrarianLibSpritesTestMod: TestMod("sprites", "Sprites", logger) {
                 }
             }
         }
+
+        +TestScreenConfig("sprite_caps", "Sprite caps") {
+            description = """
+                A spritesheet with various sprite cap scenarios
+            """.trimIndent()
+            scale = 2
+            lazyConfig {
+                client {
+                    val tex = Texture("librarianlib-sprites-test:textures/gui/sprite_caps.png".toRl(), 64, 64)
+                    val background = tex.getSprite("background")
+                    size = vec(background.width, background.height)
+
+                    val xy_plain = tex.getSprite("xy_plain")
+                    val x_plain = tex.getSprite("x_plain")
+                    val y_plain = tex.getSprite("y_plain")
+
+                    val xy_all = tex.getSprite("xy_all")
+                    val xy_topleft = tex.getSprite("xy_topleft")
+                    val xy_bottomright = tex.getSprite("xy_bottomright")
+
+                    val xy_pinned = tex.getSprite("xy_pinned")
+                    val xy_not_pinned = tex.getSprite("xy_not_pinned")
+
+                    val x_all = tex.getSprite("x_all")
+                    val x_left = tex.getSprite("x_left")
+                    val x_right = tex.getSprite("x_right")
+
+                    val y_all = tex.getSprite("y_all")
+                    val y_top = tex.getSprite("y_top")
+                    val y_bottom = tex.getSprite("y_bottom")
+
+                    draw {
+                        background.draw(0, 0f, 0f)
+                        xy_plain.draw(0, 16f, 8f)
+                        x_plain.draw(0, 81, 9)
+                        y_plain.draw(0, 50, 58)
+
+                        xy_all.draw(0, 13, 22, 18, 18)
+                        xy_topleft.draw(0, 13, 42, 18, 18)
+                        xy_bottomright.draw(0, 13, 62, 18, 18)
+
+                        xy_pinned.draw(0, 38, 8, 20, 20)
+                        xy_not_pinned.draw(0, 38, 30, 20, 20)
+
+                        x_all.draw(0, 78, 17, 18, 6)
+                        x_left.draw(0, 78, 25, 18, 6)
+                        x_right.draw(0, 78, 33, 18, 6)
+                        x_all.draw(0, 83, 41, 8, 6)
+                        x_all.draw(0, 85, 49, 4, 6)
+
+                        y_all.draw(0, 58, 55, 6, 18)
+                        y_bottom.draw(0, 66, 55, 6, 18)
+                        y_top.draw(0, 74, 55, 6, 18)
+                        y_all.draw(0, 82, 60, 6, 8)
+                        y_all.draw(0, 90, 62, 6, 4)
+                    }
+                }
+            }
+        }
+    }
+
+    private inline fun ISprite.draw(animTicks: Int, x: Number, y: Number, width: Number, height: Number) {
+        this.draw(animTicks, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
+    }
+
+    private inline fun ISprite.draw(animTicks: Int, x: Number, y: Number) {
+        this.draw(animTicks, x.toFloat(), y.toFloat())
     }
 }
 
