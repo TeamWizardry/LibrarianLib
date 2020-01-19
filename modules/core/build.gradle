@@ -1,6 +1,6 @@
-import org.apache.tools.ant.filters.ReplaceTokens
-
 dependencies {
+    api "com.github.thecodewarrior:Mirror:6ee2facc67"
+    shade "com.github.thecodewarrior:Mirror:6ee2facc67"
 }
 
 processResources {
