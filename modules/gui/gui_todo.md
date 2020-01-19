@@ -9,6 +9,8 @@ mods that insert UI elements will work well with LibLib's interfaces. This would
    - Reporting when the mouse is hovering over a liblib component, as well as occluding when the mouse is over an 
      external UI element
    - Sending appropriate events to the external elements
+4. Look into the popular trickle-down bubble-up event system, and see if it would fit in liblib (changing mouse events 
+yet again)
    
 # Updates
 1. The old `updateScreen` method has been renamed to `tick`, revealing its true nature! I was under the impression it 
