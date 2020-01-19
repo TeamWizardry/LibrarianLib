@@ -21,10 +21,10 @@ object LibrarianLibSpritesTestMod: TestMod("sprites", "Sprites", logger) {
             scale = 4
             lazyConfig {
                 client {
-                    val sprite = Sprite("librarianlib-sprites-test:textures/gui/no_mcmeta.png".toRl())
+//                    val sprite = Sprite("librarianlib-sprites-test:textures/gui/no_mcmeta.png".toRl())
 
                     draw {
-                        sprite.draw(0, 0f, 0f)
+//                        sprite.draw(0, 0f, 0f)
                     }
                 }
             }
@@ -35,7 +35,7 @@ object LibrarianLibSpritesTestMod: TestMod("sprites", "Sprites", logger) {
                 A spritesheet consisting of two sprites with opposing arrows, drawn so the arrows point together
             """.trimIndent()
             size = vec(64, 64)
-            scale = 4
+            scale = 2
             lazyConfig {
                 client {
                     val tex = Texture("librarianlib-sprites-test:textures/gui/two_sprites.png".toRl(), 64, 64)
@@ -54,10 +54,10 @@ object LibrarianLibSpritesTestMod: TestMod("sprites", "Sprites", logger) {
             description = """
                 A spritesheet with all the valid combinations of pinned edges.
             """.trimIndent()
-            scale = 4
+            scale = 2
             lazyConfig {
                 client {
-                    val tex = Texture("librarianlib-sprites-test:textures/gui/edge_pinning.png".toRl(), 64, 64)
+                    val tex = Texture("librarianlib-sprites-test:textures/gui/edge_pinning.png".toRl(), 128, 128)
                     val background = tex.getSprite("bg")
                     size = vec(background.width, background.height)
 
@@ -99,7 +99,7 @@ object LibrarianLibSpritesTestMod: TestMod("sprites", "Sprites", logger) {
             scale = 2
             lazyConfig {
                 client {
-                    val tex = Texture("librarianlib-sprites-test:textures/gui/sprite_caps.png".toRl(), 64, 64)
+                    val tex = Texture("librarianlib-sprites-test:textures/gui/sprite_caps.png".toRl(), 256, 128)
                     val background = tex.getSprite("background")
                     size = vec(background.width, background.height)
 
@@ -158,7 +158,7 @@ object LibrarianLibSpritesTestMod: TestMod("sprites", "Sprites", logger) {
             scale = 2
             lazyConfig {
                 client {
-                    val tex = Texture("librarianlib-sprites-test:textures/gui/sprite_animations.png".toRl(), 64, 64)
+                    val tex = Texture("librarianlib-sprites-test:textures/gui/sprite_animations.png".toRl(), 128, 256)
                     val background = tex.getSprite("background")
                     size = vec(background.width, background.height)
 

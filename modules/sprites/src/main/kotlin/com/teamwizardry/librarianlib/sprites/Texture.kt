@@ -1,9 +1,7 @@
 package com.teamwizardry.librarianlib.sprites
 
-import com.mojang.blaze3d.platform.TextureUtil
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.ResourceReload
-import net.minecraft.client.Minecraft
+import com.teamwizardry.librarianlib.core.util.kotlin.synchronized
 import net.minecraft.client.renderer.texture.ITextureObject
 import net.minecraft.client.renderer.texture.PngSizeInfo
 import net.minecraft.util.ResourceLocation
@@ -73,165 +71,65 @@ import kotlin.reflect.KProperty
  * ```
  */
 class Texture(
-    loc: ResourceLocation,
+    val location: ResourceLocation,
     /**
      * The logical width of this texture in pixels. Used to determine the scaling factor from texture pixels to
      * logical pixels
      */
-    val logicalWidth: Int,
+    val width: Int,
     /**
      * The logical height of this texture in pixels. Used to determine the scaling factor from texture pixels to
      * logical pixels
      */
-    val logicalHeight: Int
+    val height: Int
 ) {
-    @Deprecated("Assumes a 256x texture", replaceWith = ReplaceWith("Texture(loc, 256, 256)"))
-    constructor(loc: ResourceLocation): this(loc, 256, 256)
+    lateinit var definition: SpritesheetDefinition
+        internal set
 
-    var loc: ResourceLocation = loc
-        private set
-    /**
-     * The width of the texture in pixels
-     */
-    var width: Int = 0
-        private set
-    /**
-     * The height of the texture in pixels
-     */
-    var height: Int = 0
+    lateinit var image: BufferedImage
         private set
 
-    var image: BufferedImage? = null
-        private set
-
-    /**
-     * The ratio of texture pixels / logical pixels. Calculated by averaging the ratio on each axis. Values are clamped
-     * to be positive to avoid divide by zero errors
-     */
-    val logicalScale: Int
-        get() = max(1, ((logicalWidth.toFloat() / width + logicalHeight.toFloat() / height) / 2).toInt())
-    private var section: SpritesMetadataSection? = null
-    internal var _sprites: MutableMap<String, Sprite> = mutableMapOf()
-    private var _colors: MutableMap<String, TextureColor> = mutableMapOf()
+    private var sprites: MutableMap<String, Sprite> = mutableMapOf()
+    private var colors: MutableMap<String, TextureColor> = mutableMapOf()
 
     init {
-        textures.add(WeakReference(this))
-        loadSpriteData()
+        synchronized(textures) {
+            textures.add(WeakReference(this))
+        }
+        loadDefinition()
     }
 
-    /**
-     * Loads the sprite data from disk
-     */
-    fun loadSpriteData() {
-        var pngWidth: Int = 16
-        var pngHeight: Int = 16
-        try {
-            Client.minecraft.resourceManager.getResource(loc).use { resource ->
-                val pngSizeInfo = PngSizeInfo("$resource", resource.inputStream)
-                pngWidth = pngSizeInfo.width
-                pngHeight = pngSizeInfo.height
-
-                if (width > 0 && height <= 0) {
-                    pngWidth = width
-                    pngHeight = pngHeight * width / pngWidth
-                } else if (width <= 0 && height > 0) {
-                    pngHeight = height
-                    pngWidth = pngWidth * height / pngHeight
-                } else if (width > 0 && height > 0) {
-                    pngWidth = width
-                    pngHeight = height
-                }
-            }
-        } catch (e: FileNotFoundException) {
-            pngWidth = 16
-            pngHeight = 16
-        }
-
-        this.width = pngWidth
-        this.height = pngHeight
-        this.section = null
-        try {
-            this.section = Client.minecraft.resourceManager.getResource(loc).use { it.getMetadata(SpritesMetadataSection.SERIALIZER) }
-        } catch (e: FileNotFoundException) {
-            // nop
-        }
-        readSection()
-        loadImageData()
-    }
-
-    private fun readSection() {
-        val section = this.section
-
-        val oldSprites = this._sprites
-        val oldColors = this._colors
-        this._sprites = mutableMapOf()
-
-        if (section != null) {
-            this.width = section.width
-            this.height = section.height
-
-            for (def in section.sprites) {
-                val sprite = oldSprites[def.name] ?: Sprite(this)
-                _sprites[def.name] = sprite
-                sprite.init(def)
-            }
-
-            for (def in section.colors) {
-                val color = oldColors[def.name] ?: TextureColor()
-                _colors[def.name] = color
-                color.init(def)
-            }
+    internal fun loadDefinition() {
+        definition = SpritesheetLoader.getDefinition(location)
+        sprites.forEach { (name, sprite) ->
+            sprite.loadDefinition()
         }
     }
 
-    fun loadImageData() {
-        try {
-            val image = Client.minecraft.resourceManager.getResource(loc).use { ImageIO.read(it.inputStream) }
-            this.image = image
-            this._sprites.forEach { (name, sprite) ->
-                try {
-                    sprite.loadImage(image)
-                } catch(e: Exception) {
-                    RuntimeException("Error loading sprite image $name in texture $loc", e).printStackTrace()
-                }
-            }
-            this._colors.forEach { _, color ->
-                val x = (color.u.toDouble() / this.width * image.width).toInt()
-                val y = (color.v.toDouble() / this.height * image.height).toInt()
-                color.color = Color(image.getRGB(x, y), true)
-            }
-        } catch (e: FileNotFoundException) {
-            // nop
-        }
+    internal fun getSpriteDefinition(name: String): SpriteDefinition {
+        return definition.sprites.find { it.name == name } ?: SpritesheetLoader.missingnoSprite
     }
 
-    fun switchTexture(loc: ResourceLocation) {
-        this.loc = loc
-        this.textureLoaded = false
-        loadSpriteData()
+    internal fun logicalU(pixels: Int): Int {
+        return pixels * width / definition.uvSize.x
+    }
+
+    internal fun logicalV(pixels: Int): Int {
+        return pixels * height / definition.uvSize.y
     }
 
     /**
      * Gets the sprite with the specified name
      */
     fun getSprite(name: String): Sprite {
-        return _sprites.getOrPut(name) { Sprite(this) }
-    }
-
-    /**
-     * Gets the sprite with the specified name
-     */
-    @Deprecated("Ignores width and height parameters, width/height are based on the mcmeta file and the logical " +
-        "width/height", replaceWith = ReplaceWith("getSprite(name)"))
-    fun getSprite(name: String, width: Int, height: Int): Sprite {
-        return getSprite(name)
+        return sprites.getOrPut(name) { Sprite(this, name) }
     }
 
     /**
      * Gets the color with the specified name
      */
     fun getColor(name: String): Color {
-        return _colors.getOrPut(name) { TextureColor() }.color
+        return colors.getOrPut(name) { TextureColor() }.color
     }
 
     private var blending = false
@@ -245,8 +143,8 @@ class Texture(
         if(!textureLoaded) {
             return
         }
-        Client.textureManager.bindTexture(loc)
-        Client.textureManager.getTexture(loc).setBlurMipmap(true, false)
+        Client.textureManager.bindTexture(location)
+        Client.textureManager.getTexture(location).setBlurMipmap(true, false)
     }
 
     /**
@@ -257,15 +155,15 @@ class Texture(
         if(!textureLoaded) {
             return
         }
-        Client.textureManager.bindTexture(loc)
-        Client.textureManager.getTexture(loc).setBlurMipmap(false, false)
+        Client.textureManager.bindTexture(location)
+        Client.textureManager.getTexture(location).setBlurMipmap(false, false)
     }
 
     /**
      * Bind this texture
      */
     fun bind() {
-        Client.textureManager.bindTexture(loc)
+        Client.textureManager.bindTexture(location)
         if(!textureLoaded) {
             textureLoaded = true
             if (blending)
@@ -275,59 +173,8 @@ class Texture(
         }
     }
 
-    @JvmSynthetic
-    val sprites: TextureSprites = TextureSprites()
-
-    inner class TextureSprites {
-        operator fun getValue(thisRef: Any?, property: KProperty<*>): Sprite {
-            return getSprite(property.name)
-        }
-    }
-
-    @JvmSynthetic
-    val colors: TextureColors = TextureColors()
-
-    inner class TextureColors {
-        operator fun getValue(thisRef: Any?, property: KProperty<*>): Color {
-            return getColor(property.name)
-        }
-    }
-
     companion object {
-        internal fun registerReloadHandler() {
-            Client.resourceReloadHandler.register(VanillaResourceType.TEXTURES) {
-                val newList = ArrayList<WeakReference<Texture>>()
-
-                for (weakRef in textures) {
-                    val tex = weakRef.get() ?: continue
-                    newList.add(weakRef)
-                    tex.loadSpriteData()
-                    tex.loadImageData()
-                }
-
-                textures = newList
-            }
-        }
-
-        fun reloadTextures() {
-            val newList = ArrayList<WeakReference<Texture>>()
-
-            for (weakRef in textures) {
-                val tex = weakRef.get() ?: continue
-                newList.add(weakRef)
-
-                val texObject: ITextureObject? = Client.textureManager.getTexture(tex.loc)
-                if(texObject != null)
-                    Client.textureManager.loadTexture(tex.loc, texObject)
-
-                tex.loadSpriteData()
-                tex.loadImageData()
-            }
-
-            textures = newList
-        }
-
-        var textures: MutableList<WeakReference<Texture>> = ArrayList()
+        internal var textures = mutableListOf<WeakReference<Texture>>().synchronized()
     }
 
     private class TextureColor {
@@ -336,7 +183,7 @@ class Texture(
         var color = Color.WHITE
             internal set
 
-        fun init(def: ColorDefinition) {
+        fun init(def: ColorJson) {
             this.u = def.u
             this.v = def.v
         }

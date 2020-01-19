@@ -174,10 +174,11 @@ internal object DrawingUtil {
 
         val logicalStartCap = logicalSize * startCap
         val logicalEndCap = logicalSize * endCap
+
         if(logicalStartCap + logicalEndCap != 0f && logicalStartCap + logicalEndCap > targetSize) {
             val factor = (logicalStartCap + logicalEndCap)/targetSize
             sections.add(Section(0f, logicalStartCap/factor, 0f, startCap/factor))
-            sections.add(Section(logicalStartCap/factor, logicalEndCap/factor, 1-endCap/factor, 1f))
+            sections.add(Section(logicalStartCap/factor, targetSize, 1-endCap/factor, 1f))
             return sections
         }
 

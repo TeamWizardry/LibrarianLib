@@ -1,21 +1,13 @@
 package com.teamwizardry.librarianlib.sprites
 
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import com.google.gson.JsonParseException
-import com.google.gson.JsonSyntaxException
 import com.teamwizardry.librarianlib.core.util.kotlin.JsonParsingDSL
 import com.teamwizardry.librarianlib.core.util.kotlin.parse
 import net.minecraft.resources.data.IMetadataSectionSerializer
-import net.minecraftforge.common.util.JsonUtils
-import java.awt.Color
-import java.lang.reflect.Type
-import java.util.*
 
-class SpritesMetadataSectionSerializer : IMetadataSectionSerializer<SpritesMetadataSection> {
+internal class SpritesMetadataSectionSerializer : IMetadataSectionSerializer<SpritesheetJson> {
 
-    override fun deserialize(json: JsonObject): SpritesMetadataSection {
+    override fun deserialize(json: JsonObject): SpritesheetJson {
         return json.parse("spritesheet") {
             val (width, height) = get("size") {
                 expectExactSize(2)
@@ -30,7 +22,7 @@ class SpritesMetadataSectionSerializer : IMetadataSectionSerializer<SpritesMetad
                 parseColor(name, value)
             }?.toList() ?: emptyList()
 
-            SpritesMetadataSection(width, height, sprites, colors)
+            SpritesheetJson(width, height, sprites, colors)
         }
     }
 
@@ -38,8 +30,8 @@ class SpritesMetadataSectionSerializer : IMetadataSectionSerializer<SpritesMetad
         return "spritesheet"
     }
 
-    private fun parseSprite(name: String, element: JsonParsingDSL): SpriteDefinition {
-        val def = SpriteDefinition(name)
+    private fun parseSprite(name: String, element: JsonParsingDSL): SpriteJson {
+        val def = SpriteJson(name)
 
         element {
             when {
@@ -116,11 +108,11 @@ class SpritesMetadataSectionSerializer : IMetadataSectionSerializer<SpritesMetad
         return def
     }
 
-    private fun parseColor(name: String, element: JsonParsingDSL): ColorDefinition {
+    private fun parseColor(name: String, element: JsonParsingDSL): ColorJson {
         return element {
             expectExactSize(2)
 
-            ColorDefinition(name = name, u = get(0).asInt(), v = get(1).asInt())
+            ColorJson(name = name, u = get(0).asInt(), v = get(1).asInt())
         }
     }
 }

@@ -210,7 +210,7 @@ class Vec2i(val x: Int, val y: Int) {
     companion object {
 
         @JvmField
-        val ZERO = Vec2d(0.0, 0.0)
+        val ZERO = Vec2i(0, 0)
 
         private val poolBits = 7
         private val poolMask = (1 shl poolBits)-1

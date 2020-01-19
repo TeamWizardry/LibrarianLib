@@ -29,18 +29,21 @@
                   "frames": {
                     "anyOf": [
                       {
-                        "type": "integer"
+                        "type": "integer",
+                        "minimum": 1
                       },
                       {
                         "type": "array",
                         "items": {
-                          "type": "integer"
+                          "type": "integer",
+                          "minimum": 0
                         }
                       }
                     ]
                   },
                   "frameTime": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 1
                   },
                   "offset": {
                     "$ref": "#/definitions/vec2i"
