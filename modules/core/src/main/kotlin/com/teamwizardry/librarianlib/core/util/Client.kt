@@ -64,15 +64,20 @@ object Client {
         minecraft.displayGuiScreen(screen)
     }
 
+    /**
+     * Queue a task to be executed on the client thread. The task is executed immediately if this is called from the
+     * client thread.
+     */
     @JvmStatic
     fun runAsync(task: Runnable): CompletableFuture<Void> {
         return minecraft.runAsync(task)
     }
 
     /**
-     * Runs a block asynchronously on the client thread
+     * Queue a block to run on the client thread. The block is executed immediately if this is called from the client
+     * thread.
      */
-    inline fun run(crossinline task: () -> Unit): CompletableFuture<Void> {
+    inline fun runAsync(crossinline task: () -> Unit): CompletableFuture<Void> {
         return minecraft.runAsync { task() }
     }
 

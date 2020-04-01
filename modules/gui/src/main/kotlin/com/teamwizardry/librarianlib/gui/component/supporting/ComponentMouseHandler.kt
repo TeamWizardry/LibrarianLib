@@ -4,7 +4,10 @@ import com.teamwizardry.librarianlib.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.gui.components.RootComponent
+import com.teamwizardry.librarianlib.gui.input.Cursor
 import com.teamwizardry.librarianlib.gui.value.IMValue
+import com.teamwizardry.librarianlib.math.Vec2d
+import com.teamwizardry.librarianlib.math.vec
 import java.util.Collections
 
 interface IComponentMouse {
@@ -49,12 +52,12 @@ interface IComponentMouse {
      */
     var disableMouseCollision: Boolean
 
-    val cursor_im: IMValue<LibCursor?>
+    val cursor_im: IMValue<Cursor?>
 
     /**
      * If nonnull, the cursor will randomizedSwitch to this when hovering.
      */
-    var cursor: LibCursor?
+    var cursor: Cursor?
 
     /**
      * Update the mousePos of this component and its children based on the given mouse position in its parent.
@@ -116,8 +119,8 @@ class ComponentMouseHandler: IComponentMouse {
     override var isOpaqueToMouse: Boolean = true
     override var propagateMouse: Boolean = true
     override var disableMouseCollision: Boolean = false
-    override val cursor_im: IMValue<LibCursor?> = IMValue()
-    override var cursor: LibCursor? by cursor_im
+    override val cursor_im: IMValue<Cursor?> = IMValue()
+    override var cursor: Cursor? by cursor_im
 
     private var hadMouseHit = false
     private var lastMouseDragPos = vec(0, 0)

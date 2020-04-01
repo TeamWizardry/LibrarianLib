@@ -1,8 +1,10 @@
 package com.teamwizardry.librarianlib.gui.component.supporting
 
+import com.teamwizardry.librarianlib.core.util.kotlin.unreachable
 import com.teamwizardry.librarianlib.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.gui.input.Cursor
 
-data class MouseHit(val component: GuiComponent, val zIndex: Double, val cursor: LibCursor?) {
+data class MouseHit(val component: GuiComponent, val zIndex: Double, val cursor: Cursor?) {
     companion object {
         /**
          * @param   left the object on the left of the comparison.
@@ -17,8 +19,7 @@ data class MouseHit(val component: GuiComponent, val zIndex: Double, val cursor:
                 left != null && right == null -> 1
                 left == null && right != null -> -1
                 left != null && right != null -> left.zIndex.compareTo(right.zIndex)
-                else -> throw RuntimeException("Inconceivable! ... You keep using that word. " +
-                    "I do not think it means what you think it means.")
+                else -> unreachable()
             }
         }
     }
