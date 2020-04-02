@@ -1,8 +1,6 @@
 package com.teamwizardry.librarianlib.gui.value;
 
-import com.teamwizardry.librarianlib.features.animator.Animation;
-import com.teamwizardry.librarianlib.features.animator.Animator;
-import com.teamwizardry.librarianlib.features.animator.NullAnimatable;
+import com.teamwizardry.librarianlib.math.Easing;
 import kotlin.reflect.KProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.BooleanSupplier;
 
 @SuppressWarnings("Duplicates")
-public class IMValueBoolean implements GuiAnimatable<IMValueBoolean> {
+public class IMValueBoolean {
     private Storage storage;
 
     private IMValueBoolean(Storage initialStorage) {
@@ -34,7 +32,6 @@ public class IMValueBoolean implements GuiAnimatable<IMValueBoolean> {
      * Sets the callback, unsetting the fixed value in the process
      */
     public void set(BooleanSupplier callback) {
-        GuiAnimator.getCurrent().add(this);
         if(storage instanceof Storage.Callback) {
             ((Storage.Callback) storage).callback = callback;
         } else {
@@ -47,7 +44,6 @@ public class IMValueBoolean implements GuiAnimatable<IMValueBoolean> {
      * access this value (`someProperty` will call booleano `somePropery_im` for its value)
      */
     public void setValue(boolean value) {
-        GuiAnimator.getCurrent().add(this);
         if(storage instanceof Storage.Fixed) {
             ((Storage.Fixed) storage).value = value;
         } else {
@@ -88,28 +84,6 @@ public class IMValueBoolean implements GuiAnimatable<IMValueBoolean> {
         }
     }
 
-    @Nullable
-    @Override
-    public Object getAnimatableValue() {
-        return this.get();
-    }
-
-    @Override
-    public void setAnimatableValue(@Nullable Object value) {
-        this.setValue((boolean) value);
-    }
-
-    @Nullable
-    @Override
-    public Object getAnimatableCallback() {
-        return this.getCallback();
-    }
-
-    @Override
-    public void setAnimatableCallback(@NotNull Object supplier) {
-        this.set((BooleanSupplier) supplier);
-    }
-
     private static abstract class Storage {
         abstract boolean get();
 
@@ -135,37 +109,6 @@ public class IMValueBoolean implements GuiAnimatable<IMValueBoolean> {
             boolean get() {
                 return callback.getAsBoolean();
             }
-        }
-    }
-
-    public Animation<IMValueBoolean> animate(boolean to, float delay) {
-        AnimationImpl anim = (AnimationImpl) animate(get(), to, delay);
-        anim.implicitStart = true;
-        return anim;
-    }
-    public Animation<IMValueBoolean> animate(boolean from, boolean to, float delay) {
-        AnimationImpl animation = new AnimationImpl(from, to, this);
-        animation.setDuration(delay);
-        Animator.global.add(animation);
-        return animation;
-    }
-
-    private class AnimationImpl extends Animation<IMValueBoolean> {
-        boolean from, to;
-        boolean implicitStart;
-
-        AnimationImpl(boolean from, boolean to, IMValueBoolean target) {
-            super(target, new NullAnimatable<>());
-            this.from = from;
-            this.to = to;
-        }
-
-        public void update(float time) {
-            if(implicitStart) {
-                from = getTarget().get();
-                implicitStart = false;
-            }
-            getTarget().setValue(time == 1 ? to : from);
         }
     }
 }

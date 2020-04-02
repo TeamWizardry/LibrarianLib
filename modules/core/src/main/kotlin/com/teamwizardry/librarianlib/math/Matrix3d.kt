@@ -2,9 +2,13 @@ package com.teamwizardry.librarianlib.math
 
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import net.minecraft.util.math.Vec3d
+import kotlin.math.ceil
+import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.roundToLong
+import kotlin.math.sin
+import kotlin.math.abs
 
 // adapted from flow/math: https://github.com/flow/math
 open class Matrix3d: Cloneable {
@@ -209,11 +213,15 @@ open class Matrix3d: Cloneable {
     }
 
     open fun scale(x: Double, y: Double, z: Double): Matrix3d {
-        return createScaling(x, y, z).mul(this)
+        return createScaling(x, y, z).mul(this).toImmutable()
     }
 
     open fun rotate(rot: Quaternion): Matrix3d {
-        return createRotation(rot).mul(this)
+        return createRotation(rot).mul(this).toImmutable()
+    }
+
+    open fun rotate(axis: Vec3d, angle: Double): Matrix3d {
+        return createRotation(axis, angle).mul(this).toImmutable()
     }
 
     fun transformAffine2d(v: Vec2d): Vec2d {
@@ -250,9 +258,9 @@ open class Matrix3d: Cloneable {
 
     open fun ceil(): Matrix3d {
         return Matrix3d(
-            kotlin.math.ceil(m00), kotlin.math.ceil(m01), kotlin.math.ceil(m02),
-            kotlin.math.ceil(m10), kotlin.math.ceil(m11), kotlin.math.ceil(m12),
-            kotlin.math.ceil(m20), kotlin.math.ceil(m21), kotlin.math.ceil(m22))
+            ceil(m00), ceil(m01), ceil(m02),
+            ceil(m10), ceil(m11), ceil(m12),
+            ceil(m20), ceil(m21), ceil(m22))
     }
 
     open fun round(): Matrix3d {
@@ -264,9 +272,9 @@ open class Matrix3d: Cloneable {
 
     open fun abs(): Matrix3d {
         return Matrix3d(
-            kotlin.math.abs(m00), kotlin.math.abs(m01), kotlin.math.abs(m02),
-            kotlin.math.abs(m10), kotlin.math.abs(m11), kotlin.math.abs(m12),
-            kotlin.math.abs(m20), kotlin.math.abs(m21), kotlin.math.abs(m22))
+            abs(m00), abs(m01), abs(m02),
+            abs(m10), abs(m11), abs(m12),
+            abs(m20), abs(m21), abs(m22))
     }
 
     open fun negate(): Matrix3d {
@@ -404,6 +412,22 @@ open class Matrix3d: Cloneable {
                     2 * rot.x * rot.z - 2 * rot.w * rot.y,
                     2 * rot.y * rot.z + 2 * rot.x * rot.w,
                 1 - 2 * rot.x * rot.x - 2 * rot.y * rot.y)
+        }
+
+        internal fun createRotation(axis: Vec3d, angle: Double): MutableMatrix3d {
+            // https://en.wikipedia.org/wiki/Rotation_matrix#Conversion_from_and_to_axis%E2%80%93angle
+            val len = axis.length()
+            val x = axis.x / len
+            val y = axis.x / len
+            val z = axis.x / len
+            val cos = cos(angle)
+            val sin = sin(angle)
+
+            return temporaryMatrix.set(
+                cos + x*x*(1-cos), x*y*(1-cos) - z*sin, x*z*(1-cos) + y*sin,
+                y*x*(1-cos) + z*sin, cos + y*y*(1-cos), y*z*(1-cos) - x*sin,
+                z*x*(1-cos) - y*sin, z*y*(1-cos) + x*sin, cos + z*z*(1-cos)
+            )
         }
     }
 }

@@ -4,6 +4,8 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL13
 import org.lwjgl.opengl.GL20
 
+//TODO: Waiting on shaders
+/*
 object LayerToTextureShader : Shader(null, ResourceLocation("librarianlib:shaders/guilayer.frag")) {
     var maskMode: MaskMode = MaskMode.NONE
     var renderMode: RenderMode = RenderMode.RENDER_TO_FBO
@@ -60,6 +62,7 @@ object LayerToTextureShader : Shader(null, ResourceLocation("librarianlib:shader
         ShaderHelper.addShader(this)
     }
 }
+*/
 
 enum class MaskMode {
     /**

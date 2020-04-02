@@ -13,7 +13,6 @@ import net.minecraft.util.text.StringTextComponent
 import net.minecraft.util.text.Style
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.io.IOException
 import java.util.stream.Stream
 
@@ -85,7 +84,7 @@ open class GuiBase(title: ITextComponent): Screen(title /* todo behavior #2 */) 
      * Stores the current GUI to reopen it when this GUI is closed
      */
     fun reopenLast() {
-        impl.lastGui = Client.currentScreen
+        impl.lastGui = Client.minecraft.currentScreen
     }
 
     init {

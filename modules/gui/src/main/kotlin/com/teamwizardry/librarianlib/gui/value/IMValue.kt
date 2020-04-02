@@ -1,10 +1,5 @@
 package com.teamwizardry.librarianlib.gui.value
 
-import com.teamwizardry.librarianlib.features.animator.Animation
-import com.teamwizardry.librarianlib.features.animator.Animator
-import com.teamwizardry.librarianlib.features.animator.Easing
-import com.teamwizardry.librarianlib.features.animator.LerperHandler
-import com.teamwizardry.librarianlib.features.animator.NullAnimatable
 import java.util.function.Supplier
 import kotlin.reflect.KProperty
 
@@ -20,7 +15,7 @@ import kotlin.reflect.KProperty
  * ```
  */
 @Suppress("Duplicates")
-class IMValue<T> private constructor(private var storage: Storage<T>): GuiAnimatable<IMValue<T>> {
+class IMValue<T> private constructor(private var storage: Storage<T>) {
     constructor(initialValue: T): this(Storage.Fixed(initialValue))
     constructor(initialCallback: Supplier<T>): this(Storage.Callback(initialCallback))
     constructor(initialCallback: () -> T): this(Storage.Callback(Supplier(initialCallback)))
@@ -36,7 +31,6 @@ class IMValue<T> private constructor(private var storage: Storage<T>): GuiAnimat
      * Sets the callback, unsetting the fixed value in the process
      */
     fun set(f: Supplier<T>) {
-        GuiAnimator.current.add(this)
         storage = (this.storage as? Storage.Callback<T>)?.also { it.callback = f } ?: Storage.Callback(f)
     }
 
@@ -52,7 +46,6 @@ class IMValue<T> private constructor(private var storage: Storage<T>): GuiAnimat
      * access this value (`someProperty` will call into `somePropery_im` for its value)
      */
     fun setValue(value: T) {
-        GuiAnimator.current.add(this)
         storage = (this.storage as? Storage.Fixed<T>)?.also { it.value = value } ?: Storage.Fixed(value)
     }
 
@@ -88,125 +81,6 @@ class IMValue<T> private constructor(private var storage: Storage<T>): GuiAnimat
             override fun get() = callback.get()
         }
     }
-
-    override fun getAnimatableValue(): Any? {
-        return this.get()
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    override fun setAnimatableValue(value: Any?) {
-        this.setValue(value as T)
-    }
-
-    override fun getAnimatableCallback(): Any? {
-        return this.getCallback()
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    override fun setAnimatableCallback(supplier: Any) {
-        this.set(supplier as Supplier<T>)
-    }
-
-    @JvmOverloads
-    fun animate(from: T, to: T, duration: Float, easing: Easing = Easing.linear, delay: Float = 0f): Animation<IMValue<T>> {
-        val animation = AnimationImpl(from, to, this)
-        animation.duration = duration
-        animation.easing = easing
-        animation.start = delay
-        Animator.global.add(animation)
-        return animation
-    }
-
-    @JvmOverloads
-    fun animate(to: T, duration: Float, easing: Easing = Easing.linear, delay: Float = 0f): Animation<IMValue<T>> {
-        val anim = animate(get(), to, duration, easing, delay) as AnimationImpl<T>
-        anim.implicitStart = true
-        return anim
-    }
-
-    private class AnimationImpl<T: Any?>(var from: T, var to: T, target: IMValue<T>): Animation<IMValue<T>>(target, NullAnimatable()) {
-        var easing: Easing = Easing.linear
-        var implicitStart: Boolean = false
-
-        @Suppress("UNCHECKED_CAST")
-        private var lerper = LerperHandler.getLerperOrError(((from as Any?)?.javaClass ?: (to as Any?)?.javaClass) as Class<T>)
-        override fun update(time: Float) {
-            if(implicitStart) {
-                from = target.get()
-                implicitStart = false
-            }
-            val progress = easing(timeFraction(time))
-            val new = lerper.lerp(from, to, progress)
-            target.setValue(new)
-        }
-    }
-
-    @JvmOverloads
-    fun animateKeyframes(initialValue: T, delay: Float = 0f): KeyframeAnimationBuilder<T> {
-        return KeyframeAnimationBuilder(initialValue, delay, this)
-    }
-
-    class KeyframeAnimationBuilder<T>(initialValue: T, private val delay: Float, private val target: IMValue<T>) {
-        private val keyframes = mutableListOf<Keyframe>()
-
-        init {
-            keyframes.add(Keyframe(0f, initialValue as Any))
-        }
-        /**
-         * Add a keyframe [time] ticks after the previous one
-         */
-        @JvmOverloads
-        fun add(time: Float, value: T, easing: Easing = Easing.linear): KeyframeAnimationBuilder<T> {
-            keyframes.add(Keyframe(time, value as Any, easing))
-            return this
-        }
-
-        fun finish(): Animation<IMValue<T>> {
-            if(keyframes.isEmpty()) throw IllegalStateException("Cannot create an empty keyframe animation")
-
-            val duration = keyframes.fold(0f) { s, it -> s + it.time }
-            var total = 0f
-            keyframes.map {
-                total += it.time
-                it.time = total / duration
-            }
-
-            val animation = KeyframeAnimation(target, keyframes)
-            animation.duration = duration
-            animation.start = delay
-            Animator.global.add(animation)
-            return animation
-        }
-    }
-
-    private data class Keyframe(var time: Float, val value: Any, val easing: Easing = Easing.linear)
-    private class KeyframeAnimation<T>(target: IMValue<T>, private val keyframes: List<Keyframe>): Animation<IMValue<T>>(target, NullAnimatable()) {
-        @Suppress("UNCHECKED_CAST")
-        private var lerper = LerperHandler.getLerperOrError(
-            keyframes.first().value.javaClass as Class<T>
-        )
-
-        @Suppress("UNCHECKED_CAST")
-        override fun update(time: Float) {
-            val progress = timeFraction(time)
-            val prev = keyframes.lastOrNull { it.time <= progress }
-            val next = keyframes.firstOrNull { it.time >= progress }
-            if (prev != null && next != null) {
-                if (next.time == prev.time) { // this can only happen with single-keyframe animations or when we are on top of a keyframe
-                    target.setValue(next.value as T)
-                } else {
-                    val partialProgress = next.easing((progress - prev.time) / (next.time - prev.time))
-                    target.setValue(lerper.lerp(prev.value as T, next.value as T, partialProgress))
-                }
-            } else if (next != null) {
-                target.setValue(next.value as T)
-            } else if (prev != null) {
-                target.setValue(prev.value as T)
-            }
-
-        }
-    }
-
 
     companion object {
         /**

@@ -1,8 +1,9 @@
 package com.teamwizardry.librarianlib.gui.component
 
-import com.teamwizardry.librarianlib.features.kotlin.Client
-import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
-import net.minecraft.client.renderer.GlStateManager
+import com.mojang.blaze3d.platform.GlStateManager
+import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.gui.component.supporting.StencilUtil
+import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.shader.Framebuffer
@@ -15,8 +16,8 @@ abstract class GuiLayerFilter {
 
     fun drawLayerQuad(layer: GuiLayer) {
         val size = layer.size
-        val maxU = (size.x * layer.rasterizationScale) / Client.minecraft.displayWidth
-        val maxV = (size.y * layer.rasterizationScale) / Client.minecraft.displayHeight
+        val maxU = (size.x * layer.rasterizationScale) / Client.window.framebufferWidth
+        val maxV = (size.y * layer.rasterizationScale) / Client.window.framebufferHeight
 
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
@@ -39,10 +40,10 @@ abstract class GuiLayerFilter {
         fun resetTransform(scale: Int) {
             GlStateManager.pushMatrix()
             GlStateManager.loadIdentity()
-            GlStateManager.translate(0.0f, 0.0f, -2000.0f)
+            GlStateManager.translatef(0.0f, 0.0f, -2000.0f)
 
-            val scaleFactor = Client.resolution.scaleFactor.toDouble()
-            GlStateManager.scale(scale/scaleFactor, scale/scaleFactor, 1.0)
+            val scaleFactor = Client.guiScaleFactor
+            GlStateManager.scaled(scale/scaleFactor, scale/scaleFactor, 1.0)
         }
 
         fun revertTransform() {
@@ -52,8 +53,8 @@ abstract class GuiLayerFilter {
         fun pushFramebuffer(): Framebuffer {
             var fbo = buffers.pollFirst() ?: createFramebuffer()
             if(
-                fbo.framebufferWidth != Client.minecraft.displayWidth ||
-                fbo.framebufferHeight != Client.minecraft.displayHeight
+                fbo.framebufferWidth != Client.window.framebufferWidth ||
+                fbo.framebufferHeight != Client.window.framebufferHeight
             ) {
                 fbo.deleteFramebuffer()
                 createdBuffers--
@@ -91,7 +92,7 @@ abstract class GuiLayerFilter {
 
             try {
                 if(clear)
-                    framebuffer.framebufferClear()
+                    framebuffer.framebufferClear(Minecraft.IS_RUNNING_ON_MAC)
                 framebuffer.bindFramebuffer(true)
 
                 StencilUtil.clear()
@@ -109,9 +110,9 @@ abstract class GuiLayerFilter {
         fun createFramebuffer(): Framebuffer {
             if(createdBuffers == maxFramebufferCount)
                 throw IllegalStateException("Exceeded maximum of $maxFramebufferCount nested framebuffers")
-            val fbo = Framebuffer(Client.minecraft.displayWidth, Client.minecraft.displayHeight, true)
-            fbo.enableStencil()
-            fbo.framebufferColor = floatArrayOf(0f, 0f, 0f, 0f)
+            val fbo = Framebuffer(Client.window.framebufferWidth, Client.window.framebufferHeight, true, Minecraft.IS_RUNNING_ON_MAC)
+            // fbo.enableStencil() // TODO: https://github.com/MinecraftForge/MinecraftForge/pull/6543
+            fbo.setFramebufferColor(0f, 0f, 0f, 0f)
             createdBuffers++
             return fbo
         }

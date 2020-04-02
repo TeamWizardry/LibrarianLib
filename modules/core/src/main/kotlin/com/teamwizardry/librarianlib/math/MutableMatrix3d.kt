@@ -341,6 +341,10 @@ class MutableMatrix3d: Matrix3d {
         return this.set(createRotation(rot).mul(this))
     }
 
+    override fun rotate(axis: Vec3d, angle: Double): MutableMatrix3d {
+        return this.set(createRotation(axis, angle).mul(this))
+    }
+
     override fun unaryMinus(): MutableMatrix3d {
         return negate()
     }

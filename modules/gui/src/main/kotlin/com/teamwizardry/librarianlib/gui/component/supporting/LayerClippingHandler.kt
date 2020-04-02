@@ -10,6 +10,7 @@ import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.plus
 import com.teamwizardry.librarianlib.math.times
 import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.sprites.ISprite
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11
@@ -117,7 +118,7 @@ class LayerClippingHandler: ILayerClipping {
         if(sp != null) {
             GlStateManager.enableTexture()
             sp.bind()
-            sp.draw(Client.time, 0f, 0f, layer.size.xi.toFloat(), layer.size.yi.toFloat())
+            sp.draw(Client.time.ticks, 0f, 0f, layer.size.xi.toFloat(), layer.size.yi.toFloat())
             return
         }
 

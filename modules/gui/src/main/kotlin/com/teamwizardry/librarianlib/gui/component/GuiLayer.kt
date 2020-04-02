@@ -7,6 +7,12 @@ import com.teamwizardry.librarianlib.math.CoordinateSpace2D
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Rect2d
 import com.teamwizardry.librarianlib.math.Vec2d
+import com.teamwizardry.librarianlib.math.rect
+import com.teamwizardry.librarianlib.utilities.eventbus.Event
+import com.teamwizardry.librarianlib.utilities.eventbus.EventBus
+import com.teamwizardry.librarianlib.utilities.eventbus.Hook
+import dev.thecodewarrior.mirror.Mirror
+import dev.thecodewarrior.mirror.member.FieldMirror
 import java.lang.reflect.Field
 import java.util.IdentityHashMap
 import java.util.function.Consumer
@@ -285,17 +291,17 @@ open class GuiLayer private constructor(
         var overrideDebugLineWidth: Float? = null
 
 
-        private val layerFieldCache = mutableMapOf<Class<*>, List<Field>>()
+        private val layerFieldCache = mutableMapOf<Class<*>, List<FieldMirror>>()
 
         @JvmStatic
         private fun getLayerFields(obj: Any): Map<GuiLayer, String> {
             val fields = layerFieldCache.getOrPut(obj.javaClass) {
-                obj.javaClass.allDeclaredFields.filter {
-                    GuiLayer::class.java.isAssignableFrom(it.type)
-                }.also {
-                    it.forEach { it.isAccessible = true }
-                }
-
+                generateSequence(Mirror.reflectClass(obj.javaClass)) { it.superclass }
+                    .flatMap { it.declaredFields.asSequence() }
+                    .filter {
+                        Mirror.reflect<GuiLayer>().isAssignableFrom(it.type)
+                    }
+                    .toList()
             }
 
             return fields

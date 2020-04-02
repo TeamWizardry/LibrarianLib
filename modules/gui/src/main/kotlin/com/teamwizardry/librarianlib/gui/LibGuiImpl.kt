@@ -1,5 +1,8 @@
 package com.teamwizardry.librarianlib.gui
 
+import com.mojang.blaze3d.platform.GlStateManager
+import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.kotlin.IS_DEOBFUSCATED
 import com.teamwizardry.librarianlib.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.gui.component.GuiLayer
@@ -13,7 +16,9 @@ import com.teamwizardry.librarianlib.gui.provided.pastry.components.PastryToggle
 import com.teamwizardry.librarianlib.gui.provided.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.utilities.eventbus.Hook
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.screen.Screen
 import java.awt.Color
 import java.io.IOException
 import kotlin.reflect.KMutableProperty0
@@ -24,7 +29,8 @@ open class LibGuiImpl(
     catchSafetyNet: (e: Exception) -> Unit
 ) {
     val root: StandaloneRootComponent = StandaloneRootComponent(catchSafetyNet)
-    val safetyNet: Boolean by root::safetyNet.delegate
+    val safetyNet: Boolean
+        get() = root.safetyNet
     val main: GuiComponent = object: GuiComponent(0, 0) {
         override var pos: Vec2d
             get() = vec(root.size.xi/2, root.size.yi/2)
@@ -35,8 +41,7 @@ open class LibGuiImpl(
 
         override fun layoutChildren() {
             val parentSize = this.parent!!.size - vec(20, 20)
-            val scaledResolution = ScaledResolution(Minecraft.getMinecraft())
-            val maxScale = scaledResolution.scaleFactor
+            val maxScale = Client.guiScaleFactor
             var scale = 1
             while((size.x / scale > parentSize.x || size.y / scale > parentSize.y) && scale < maxScale) {
                 scale++
@@ -66,7 +71,7 @@ open class LibGuiImpl(
     /**
      * The GUI to reopen when closing this GUI.
      */
-    var lastGui: GuiScreen? = null
+    var lastGui: Screen? = null
 
     init {
         background.zIndex = Double.NEGATIVE_INFINITY
@@ -82,8 +87,7 @@ open class LibGuiImpl(
     }
 
     fun initGui() {
-        val scaledResolution = ScaledResolution(Minecraft.getMinecraft())
-        val resolution = vec(scaledResolution.scaledWidth, scaledResolution.scaledHeight)
+        val resolution = vec(Client.window.scaledWidth, Client.window.scaledHeight)
         root.size_rm.set(resolution) //
         background.size = resolution
         main.setNeedsLayout()
@@ -91,7 +95,7 @@ open class LibGuiImpl(
     }
 
     fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        val scaleFactor = ScaledResolution(Minecraft.getMinecraft()).scaleFactor
+        val scaleFactor = Client.guiScaleFactor
         GlStateManager.enableBlend()
         // convert logical to real position
         val relPos = vec(mouseX*scaleFactor, mouseY*scaleFactor)
@@ -116,10 +120,10 @@ open class LibGuiImpl(
             if(debugDialog.isVisible) {
                 debugDialog.isVisible = false
             } else {
-                Minecraft.getMinecraft().displayGuiScreen(lastGui)
+                Client.minecraft.displayGuiScreen(lastGui)
 
-                if (Minecraft.getMinecraft().currentScreen == null) {
-                    Minecraft.getMinecraft().setIngameFocus()
+                if (Client.minecraft.currentScreen == null) {
+                    Client.minecraft.isGameFocused = true
                 }
             }
         }
@@ -127,8 +131,8 @@ open class LibGuiImpl(
 
     @Throws(IOException::class)
     fun handleKeyboardInput() {
-        if (LibrarianLib.DEV_ENVIRONMENT && Keyboard.getEventKeyState()) {
-            if (Keyboard.getEventKey() == Keyboard.KEY_D && GuiScreen.isShiftKeyDown() && GuiScreen.isCtrlKeyDown()) {
+        if (IS_DEOBFUSCATED && Keyboard.getEventKeyState()) {
+            if (Keyboard.getEventKey() == Keyboard.KEY_D && Screen.hasShiftDown() && Screen.hasControlDown()) {
                 debugDialog.isVisible = !debugDialog.isVisible
             }
             if (Keyboard.getEventKey() == Keyboard.KEY_B && Keyboard.isKeyDown(Keyboard.KEY_F3)) {

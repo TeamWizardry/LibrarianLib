@@ -40,10 +40,12 @@ internal object EventHookAnnotationReflector {
 
         init {
             val mirror = Mirror.reflectClass(clazz)
-            events = mirror.allMethods
+            events = generateSequence(mirror) { mirror.superclass }
+                .flatMap { it.declaredMethods.asSequence() }
                 .filter { it.annotations.any { it is Hook } }
                 .filter { it.parameters.size == 1 && it.parameterTypes[0].isAssignableFrom(Mirror.reflectClass<Event>()) }
                 .map { it.parameterTypes[0] to it }
+                .toList()
         }
     }
 }

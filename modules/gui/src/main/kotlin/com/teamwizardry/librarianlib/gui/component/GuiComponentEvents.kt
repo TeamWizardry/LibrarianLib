@@ -1,12 +1,9 @@
 package com.teamwizardry.librarianlib.gui.component
 
-import com.teamwizardry.librarianlib.features.eventbus.Event
-import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
+import com.teamwizardry.librarianlib.utilities.eventbus.Event
 import com.teamwizardry.librarianlib.gui.EnumMouseButton
-import com.teamwizardry.librarianlib.features.kotlin.clamp
-import com.teamwizardry.librarianlib.features.math.Vec2d
-import kotlin.math.floor
-import kotlin.math.sign
+import com.teamwizardry.librarianlib.math.Vec2d
+import com.teamwizardry.librarianlib.math.clamp
 
 /**
  * See [GuiLayerEvents] for a breakdown of when events fire while rendering

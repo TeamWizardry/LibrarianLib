@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.gui.value.RMValueDouble
 import com.teamwizardry.librarianlib.math.CoordinateSpace2D
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.MutableMatrix3d
+import com.teamwizardry.librarianlib.math.Quaternion
 import com.teamwizardry.librarianlib.math.Rect2d
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.vec
@@ -388,7 +389,7 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
             }
         }
     override val bounds: Rect2d
-        get() = rect(-layer.contentsOffset, layer.size)
+        get() = Rect2d(-layer.contentsOffset, layer.size)
 
     override val size_rm: RMValue<Vec2d> = RMValue(initialFrame.size) { old, new ->
         if(old != new) {
@@ -497,14 +498,14 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
     override val parentSpace: CoordinateSpace2D?
         get() = layer.parent
 
-    override var matrix: Matrix3d = Matrix3d.identity
+    override var matrix: Matrix3d = Matrix3d.IDENTITY
         get() {
             updateMatrixIfNeeded()
             return field
         }
         private set
 
-    override var inverseMatrix: Matrix3d = Matrix3d.identity
+    override var inverseMatrix: Matrix3d = Matrix3d.IDENTITY
         get() {
             updateMatrixIfNeeded()
             return field
@@ -518,17 +519,17 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
     private fun createMatrix() {
         val matrix = MutableMatrix3d()
         matrix.translate(matrixParams.pos)
-        matrix.rotate(matrixParams.rotation)
-        matrix.scale(matrixParams.scale)
+        matrix.rotate(vec(0, 0, 1), matrixParams.rotation)
+        matrix.scale(matrixParams.scale.x, matrixParams.scale.y, 1.0)
         matrix.translate(-matrixParams.anchor)
         matrix.translate(matrixParams.contentsOffset)
         this.matrix = Matrix3d(matrix)
 
-        val inverseMatrix = Matrix3d()
+        val inverseMatrix = MutableMatrix3d()
         inverseMatrix.translate(-matrixParams.contentsOffset)
         inverseMatrix.translate(matrixParams.anchor)
-        inverseMatrix.scale(matrixParams.inverseScale)
-        inverseMatrix.rotate(-matrixParams.rotation)
+        inverseMatrix.scale(matrixParams.inverseScale.x, matrixParams.inverseScale.y, 1.0)
+        inverseMatrix.rotate(vec(0, 0, 1), -matrixParams.rotation)
         inverseMatrix.translate(-matrixParams.pos)
         this.inverseMatrix = Matrix3d(inverseMatrix)
     }

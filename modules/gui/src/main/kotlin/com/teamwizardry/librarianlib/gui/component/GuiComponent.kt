@@ -85,7 +85,7 @@ open class GuiComponent private constructor(
             val tessellator = Tessellator.getInstance()
             val vb = tessellator.buffer
             vb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION)
-            if(Screen.isShiftKeyDown() && Screen.isCtrlKeyDown()) {
+            if(Screen.hasShiftDown() && Screen.hasControlDown()) {
                 vb.pos(0.0, 0.0, 0.0).endVertex()
                 vb.pos(mousePos.x, mousePos.y, 0.0).endVertex()
             }

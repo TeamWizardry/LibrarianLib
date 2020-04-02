@@ -53,11 +53,8 @@ interface ISprite {
     /**
      * Draws the sprite to the screen with a custom width and height
      * @param x The x position to draw at
-     * *
      * @param y The y position to draw at
-     * *
      * @param width The width to draw the sprite
-     * *
      * @param height The height to draw the sprite
      */
     fun draw(animTicks: Int, x: Float, y: Float, width: Float, height: Float) {

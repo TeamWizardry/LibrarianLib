@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.gui.component
 
-import com.teamwizardry.librarianlib.features.eventbus.Event
-import com.teamwizardry.librarianlib.features.eventbus.EventCancelable
+import com.teamwizardry.librarianlib.utilities.eventbus.CancelableEvent
+import com.teamwizardry.librarianlib.utilities.eventbus.Event
 
 /**
  * Order of events when rendering:
@@ -59,9 +59,9 @@ object GuiLayerEvents {
     class PreDrawEvent(val partialTicks: Float) : Event()
     class PostDrawEvent(val partialTicks: Float) : Event(true)
     class PreChildrenDrawEvent(val partialTicks: Float) : Event()
-    class AddChildEvent(val child: GuiLayer) : EventCancelable()
-    class RemoveChildEvent(val child: GuiLayer) : EventCancelable()
-    class AddToParentEvent(val parent: GuiLayer) : EventCancelable()
-    class RemoveFromParentEvent(val parent: GuiLayer) : EventCancelable()
+    class AddChildEvent(val child: GuiLayer) : CancelableEvent()
+    class RemoveChildEvent(val child: GuiLayer) : CancelableEvent()
+    class AddToParentEvent(val parent: GuiLayer) : CancelableEvent()
+    class RemoveFromParentEvent(val parent: GuiLayer) : CancelableEvent()
     class LayoutChildren : Event()
 }

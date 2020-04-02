@@ -1,5 +1,6 @@
 dependencies {
     api project(":core")
     api project(":sprites")
+    api project(":utilities")
     testImplementation project(":testbase")
 }

@@ -147,6 +147,8 @@ class LayerRenderHandler: ILayerRendering {
 
         val renderMode = actualRenderMode()
         if(renderMode != RenderMode.DIRECT) {
+            TODO("Waiting on shaders")
+            /*
             var maskFBO: Framebuffer? = null
             var layerFBO: Framebuffer? = null
             try {
@@ -197,6 +199,7 @@ class LayerRenderHandler: ILayerRendering {
                 layerFBO?.also { GuiLayerFilter.releaseFramebuffer(it) }
                 maskFBO?.also { GuiLayerFilter.releaseFramebuffer(it) }
             }
+            */
         } else {
             drawContent(partialTicks) {
                 layer.forEachChild {

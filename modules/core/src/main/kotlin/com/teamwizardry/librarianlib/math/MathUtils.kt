@@ -37,7 +37,7 @@ fun roundInt(value: Float): Int = round(value).toInt()
 fun roundInt(value: Double): Int = round(value).toInt()
 
 /**
- * Get `Vec2d` instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
+ * Get [Vec2d] instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
  * number of Vec2d allocations when they are used as intermediates, e.g. when adding one Vec2d to another to offset it,
  * this allocates no objects: `vec(1, 0)`
  */
@@ -45,21 +45,21 @@ fun roundInt(value: Double): Int = round(value).toInt()
 inline fun vec(x: Number, y: Number): Vec2d = Vec2d.getPooled(x.toDouble(), y.toDouble())
 
 /**
- * Get `Vec2d` instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
+ * Get [Vec2d] instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
  * number of Vec2d allocations when they are used as intermediates, e.g. when adding one Vec2d to another to offset it,
  * this allocates no objects: `MathUtils.vec(1, 0)`
  */
 fun vec(x: Double, y: Double): Vec2d = Vec2d.getPooled(x, y)
 
 /**
- * Get `Vec2i` instances, selecting from a pool of small value instances when possible. This can vastly reduce the
+ * Get [Vec2i] instances, selecting from a pool of small value instances when possible. This can vastly reduce the
  * number of Vec2i allocations when they are used as intermediates, e.g. when adding one Vec2i to another to offset it,
  * this allocates no objects: `MathUtils.ivec(1, 0)`
  */
 fun ivec(x: Int, y: Int): Vec2i = Vec2i.getPooled(x, y)
 
 /**
- * Get `Vec3d` instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
+ * Get [Vec3d] instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
  * number of Vec3d allocations when they are used as intermediates, e.g. when adding one Vec3d to another to offset it,
  * this allocates no objects: `vec(1, 0, 0)`
  */
@@ -67,26 +67,32 @@ fun ivec(x: Int, y: Int): Vec2i = Vec2i.getPooled(x, y)
 inline fun vec(x: Number, y: Number, z: Number): Vec3d = vec(x.toDouble(), y.toDouble(), z.toDouble())
 
 /**
- * Get `Vec3d` instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
+ * Get [Vec3d] instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
  * number of Vec3d allocations when they are used as intermediates, e.g. when adding one Vec3d to another to offset it,
  * this allocates no objects: `MathUtils.vec(1, 0, 0)`
  */
 fun vec(x: Double, y: Double, z: Double): Vec3d = Vec3dPool.getPooled(x, y, z)
 
 /**
- * Get `Vec3i` instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
+ * Get [Vec3i] instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
  * number of Vec3i allocations when they are used as intermediates, e.g. when adding one Vec3i to another to offset it,
  * this allocates no objects: `MathUtils.ivec(1, 0, 0)`
  */
 fun ivec(x: Int, y: Int, z: Int): Vec3i = Vec3iPool.getPooled(x, y, z)
 
 /**
- * Get `BlockPos` instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
+ * Get [BlockPos] instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
  * number of BlockPos allocations when they are used as intermediates, e.g. when adding one BlockPos to another to
  * offset it, this allocates no objects: `MathUtils.block(1, 0, 0)`
  */
 fun block(x: Int, y: Int, z: Int): BlockPos = BlockPosPool.getPooled(x, y, z)
 
+/**
+ * Convenience function for creating [Rect2d]s in Kotlin without needing to explicitly convert parameters to doubles.
+ */
+@Suppress("NOTHING_TO_INLINE")
+inline fun rect(x: Number, y: Number, width: Number, height: Number): Rect2d
+    = Rect2d(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
 
 private object Vec3dPool {
     private val poolBits = 5
