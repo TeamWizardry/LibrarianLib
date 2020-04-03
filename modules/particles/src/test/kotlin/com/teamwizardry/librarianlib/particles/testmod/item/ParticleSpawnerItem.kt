@@ -38,14 +38,12 @@ class ParticleSpawnerItem(val type: String): Item(
     }
 
     override fun onItemRightClick(worldIn: World, playerIn: PlayerEntity, handIn: Hand): ActionResult<ItemStack> {
-        if(playerIn.isSneaking) {
+        if(playerIn.isCrouching) {
             if(!worldIn.isRemote) {
                 val eye = playerIn.getEyePosition(0f)
                 val spawner = ParticleSpawnerEntity(worldIn)
                 spawner.system = type
-                spawner.posX = eye.x
-                spawner.posY = eye.y - spawner.eyeHeight
-                spawner.posZ = eye.z
+                spawner.setPosition(eye.x, eye.y - spawner.eyeHeight, eye.z)
                 spawner.rotationPitch = playerIn.rotationPitch
                 spawner.rotationYaw = playerIn.rotationYaw
                 worldIn.addEntity(spawner)

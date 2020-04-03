@@ -18,8 +18,8 @@ A collection of libraries designed to make creating great Minecraft mods easier.
 [[dependencies.librarianlib]]
     modId="forge"
     mandatory=true
-    versionRange="[26,)"
+    versionRange="[31,)"
 [[dependencies.librarianlib]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.14.4]"
+    versionRange="[1.15.2]"

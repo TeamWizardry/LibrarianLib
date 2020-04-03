@@ -1,8 +1,10 @@
 package com.teamwizardry.librarianlib.particles
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.particles.bindings.StoredBinding
 import com.teamwizardry.librarianlib.particles.bindings.VariableBinding
 import com.teamwizardry.librarianlib.particles.modules.DepthSortModule
+import net.minecraft.client.renderer.Matrix4f
 import org.magicwerk.brownies.collections.GapList
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -249,13 +251,13 @@ abstract class ParticleSystem {
         }
     }
 
-    internal fun render() {
+    internal fun render(stack: MatrixStack, projectionMatrix: Matrix4f) {
         shouldQueue.set(true)
         while(true) {
             particles.add(queuedAdditions.poll() ?: break)
         }
         for (i in 0 until renderModules.size) {
-            renderModules[i].render(particles, renderPrepModules)
+            renderModules[i].render(stack, projectionMatrix, particles, renderPrepModules)
         }
         shouldQueue.set(false)
     }

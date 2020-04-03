@@ -6,7 +6,9 @@ import com.teamwizardry.librarianlib.core.util.kotlin.translationKey
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.testbase.objects.TestBlock
 import com.teamwizardry.librarianlib.testbase.objects.TestBlockItem
+import com.teamwizardry.librarianlib.testbase.objects.TestEntity
 import com.teamwizardry.librarianlib.testbase.objects.TestEntityConfig
+import com.teamwizardry.librarianlib.testbase.objects.TestEntityRenderer
 import com.teamwizardry.librarianlib.testbase.objects.TestItem
 import com.teamwizardry.librarianlib.testbase.objects.TestItemConfig
 import com.teamwizardry.librarianlib.testbase.objects.TestScreenConfig
@@ -25,6 +27,7 @@ import net.minecraftforge.client.event.ColorHandlerEvent
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.ModLoadingContext
+import net.minecraftforge.fml.client.registry.RenderingRegistry
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.registries.ForgeRegistries
@@ -46,6 +49,7 @@ abstract class TestMod(targetName: String, val humanName: String, logger: Logger
     val _items: MutableList<Item> = mutableListOf()
     val _blocks: MutableList<Block> = mutableListOf()
     val _entities: MutableList<EntityType<*>> = mutableListOf()
+    val _testEntities: MutableList<EntityType<TestEntity>> = mutableListOf()
 
     val items: List<Item> = _items.unmodifiableView()
     val blocks: List<Block> = _blocks.unmodifiableView()
@@ -90,6 +94,7 @@ abstract class TestMod(targetName: String, val humanName: String, logger: Logger
 
     operator fun TestEntityConfig.unaryPlus(): TestEntityConfig {
         _entities.add(this.type)
+        _testEntities.add(this.type)
         +this.spawnerItem
         return this
     }
@@ -107,8 +112,8 @@ abstract class TestMod(targetName: String, val humanName: String, logger: Logger
     }
 
     override fun clientSetup(event: FMLClientSetupEvent) {
-        entities.forEach {
-//            RenderingRegistry.registerEntityRenderingHandler(entityClass) { ParticleSpawnerEntityRenderer(it) }
+        _testEntities.forEach { entity ->
+            RenderingRegistry.registerEntityRenderingHandler(entity) { TestEntityRenderer(it) }
         }
         generateItemAssets()
         generateBlockAssets()

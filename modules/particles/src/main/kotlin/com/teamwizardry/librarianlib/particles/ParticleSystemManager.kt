@@ -1,16 +1,19 @@
 package com.teamwizardry.librarianlib.particles
 
-import com.mojang.blaze3d.platform.GlStateManager
+import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.math.Matrix4d
+import com.teamwizardry.librarianlib.math.MutableMatrix4d
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.Vector3f
+import net.minecraft.client.renderer.Vector4f
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.TickEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.event.TickEvent
-import org.lwjgl.opengl.GL11
-import java.util.*
+import java.util.ConcurrentModificationException
 
 /**
  * The soon-to-be-renamed central hub for particle systems.
@@ -90,34 +93,39 @@ internal object ParticleSystemManager {
     fun render(event: RenderWorldLastEvent) {
         val profiler = Minecraft.getInstance().profiler
 
-        GlStateManager.pushMatrix()
+//        GlStateManager.pushMatrix()
 
-        val renderInfo = Minecraft.getInstance().gameRenderer.activeRenderInfo
-        val pos = renderInfo.projectedView
-        GlStateManager.translated(-pos.x, -pos.y, -pos.z)
+//        val renderInfo = Minecraft.getInstance().gameRenderer.activeRenderInfo
+//        val pos = renderInfo.projectedView
+//        GlStateManager.translated(-pos.x, -pos.y, -pos.z)
 
-        GlStateManager.enableBlend()
-        GlStateManager.alphaFunc(GL11.GL_GREATER, 1 / 256f)
-        GlStateManager.disableLighting()
+//        GlStateManager.enableBlend()
+//        GlStateManager.alphaFunc(GL11.GL_GREATER, 1 / 256f)
+//        GlStateManager.disableLighting()
 
         profiler.startSection("liblib_particles")
+
+        event.matrixStack.push()
+        val viewPos = Client.minecraft.gameRenderer.activeRenderInfo.projectedView
+        event.matrixStack.translate(-viewPos.x, -viewPos.y, -viewPos.z)
 
         val entity = Minecraft.getInstance().renderViewEntity
         if (entity != null) {
             try {
                 systems.forEach {
-                    it.render()
+                    it.render(event.matrixStack, event.projectionMatrix)
                 }
             } catch (e: ConcurrentModificationException) {
                 e.printStackTrace()
             }
         }
+        event.matrixStack.pop()
 
         profiler.endSection()
 
-        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
-        GlStateManager.disableBlend()
-        GlStateManager.popMatrix()
+//        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
+//        GlStateManager.disableBlend()
+//        GlStateManager.popMatrix()
     }
 
     //TODO forge event fires every frame

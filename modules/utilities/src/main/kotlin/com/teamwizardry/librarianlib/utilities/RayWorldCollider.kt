@@ -207,7 +207,7 @@ class RayWorldCollider private constructor(world: World) {
         }
     }
 
-    private val mutablePos = BlockPos.MutableBlockPos()
+    private val mutablePos = BlockPos.Mutable()
 
     private fun getBoundingBoxes(x: Int, y: Int, z: Int): List<AxisAlignedBB> {
         mutablePos.setPos(x, y, z)
@@ -350,13 +350,15 @@ private object ClientRayWorldCollider {
         cache = null
     }
 
-    fun get(): RayWorldCollider {
+    fun get(): RayWorldCollider? {
+        val world = Minecraft.getInstance().world
         var cache = this.cache
-        if (cache == null) {
-            cache = RayWorldCollider[Minecraft.getInstance().world]
-            this.cache = cache
-            return cache
+        if (world == null) {
+            cache = null
+        } else if(cache == null) {
+            cache = RayWorldCollider[world]
         }
+        this.cache = cache
         return cache
     }
 }

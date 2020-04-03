@@ -51,7 +51,10 @@ class TestEntityConfig(val id: String, val name: String, spawnerItemGroup: ItemG
             clientFactory.apply(world)
         }
         .size(0.5f, 0.5f)
-    val type by lazy { typeBuilder.build(id).setRegistryName(modid, id) }
+    val type by lazy {
+        @Suppress("UNCHECKED_CAST")
+        typeBuilder.build(id).setRegistryName(modid, id) as EntityType<TestEntity>
+    }
 
     val lookLength: Double = 1.0
     /**
@@ -164,9 +167,7 @@ class TestEntityConfig(val id: String, val name: String, spawnerItemGroup: ItemG
     fun spawn(player: PlayerEntity) {
         val eye = player.getEyePosition(0f)
         val entity = TestEntity(this@TestEntityConfig, player.world)
-        entity.posX = eye.x
-        entity.posY = eye.y - entity.eyeHeight
-        entity.posZ = eye.z
+        entity.setPosition(eye.x, eye.y - entity.eyeHeight, eye.z)
         entity.rotationPitch = player.rotationPitch
         entity.rotationYaw = player.rotationYaw
         player.world.addEntity(entity)

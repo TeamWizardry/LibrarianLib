@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.sprites
 
+import com.teamwizardry.librarianlib.core.util.kotlin.pos
+import com.teamwizardry.librarianlib.core.util.kotlin.tex
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11
@@ -50,10 +52,10 @@ internal object DrawingUtil {
 
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
-        vb.pos(minX.toDouble(), maxY.toDouble(), 0.0).tex(sprite.minU(animFrames).toDouble(), sprite.maxV(animFrames).toDouble()).endVertex()
-        vb.pos(maxX.toDouble(), maxY.toDouble(), 0.0).tex(sprite.maxU(animFrames).toDouble(), sprite.maxV(animFrames).toDouble()).endVertex()
-        vb.pos(maxX.toDouble(), minY.toDouble(), 0.0).tex(sprite.maxU(animFrames).toDouble(), sprite.minV(animFrames).toDouble()).endVertex()
-        vb.pos(minX.toDouble(), minY.toDouble(), 0.0).tex(sprite.minU(animFrames).toDouble(), sprite.minV(animFrames).toDouble()).endVertex()
+        vb.pos(minX, maxY, 0).tex(sprite.minU(animFrames), sprite.maxV(animFrames)).endVertex()
+        vb.pos(maxX, maxY, 0).tex(sprite.maxU(animFrames), sprite.maxV(animFrames)).endVertex()
+        vb.pos(maxX, minY, 0).tex(sprite.maxU(animFrames), sprite.minV(animFrames)).endVertex()
+        vb.pos(minX, minY, 0).tex(sprite.minU(animFrames), sprite.minV(animFrames)).endVertex()
     }
 
     private fun drawComplex(sprite: ISprite, animFrames: Int, x: Float, y: Float, width: Float, height: Float) {
@@ -99,10 +101,10 @@ internal object DrawingUtil {
                     xSection.minTex, ySection.minTex
                 )
 
-                vb.pos(minX.toDouble(), maxY.toDouble(), 0.0).tex(u0, v0).endVertex()
-                vb.pos(maxX.toDouble(), maxY.toDouble(), 0.0).tex(u1, v1).endVertex()
-                vb.pos(maxX.toDouble(), minY.toDouble(), 0.0).tex(u2, v2).endVertex()
-                vb.pos(minX.toDouble(), minY.toDouble(), 0.0).tex(u3, v3).endVertex()
+                vb.pos(minX, maxY, 0).tex(u0, v0).endVertex()
+                vb.pos(maxX, maxY, 0).tex(u1, v1).endVertex()
+                vb.pos(maxX, minY, 0).tex(u2, v2).endVertex()
+                vb.pos(minX, minY, 0).tex(u3, v3).endVertex()
             }
         }
     }

@@ -12,7 +12,7 @@ abstract class TestContext {
  */
 abstract class PlayerTestContext(player: PlayerEntity): TestContext() {
     private val _player: PlayerEntity = player
-    val sneaking: Boolean get() = _player.isSneaking
+    val sneaking: Boolean get() = _player.isCrouching
 
     inline fun <T> sneaking(block: () -> T): T? {
         if(sneaking)

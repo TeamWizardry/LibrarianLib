@@ -2,18 +2,10 @@ package com.teamwizardry.librarianlib.sprites
 
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.synchronized
-import net.minecraft.client.renderer.texture.ITextureObject
-import net.minecraft.client.renderer.texture.PngSizeInfo
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.resource.VanillaResourceType
 import java.awt.Color
 import java.awt.image.BufferedImage
-import java.io.FileNotFoundException
 import java.lang.ref.WeakReference
-import java.util.*
-import javax.imageio.ImageIO
-import kotlin.math.max
-import kotlin.reflect.KProperty
 
 /**
  * This class represents a texture and it's size. It is mostly used to create [Sprite]
@@ -143,8 +135,10 @@ class Texture(
         if(!textureLoaded) {
             return
         }
-        Client.textureManager.bindTexture(location)
-        Client.textureManager.getTexture(location).setBlurMipmap(true, false)
+        Client.textureManager.getTexture(location)?.also { tex ->
+            tex.bindTexture()
+            tex.setBlurMipmap(true, false)
+        }
     }
 
     /**
@@ -155,8 +149,10 @@ class Texture(
         if(!textureLoaded) {
             return
         }
-        Client.textureManager.bindTexture(location)
-        Client.textureManager.getTexture(location).setBlurMipmap(false, false)
+        Client.textureManager.getTexture(location)?.also { tex ->
+            tex.bindTexture()
+            tex.setBlurMipmap(false, false)
+        }
     }
 
     /**

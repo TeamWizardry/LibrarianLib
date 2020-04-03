@@ -1,10 +1,9 @@
 package com.teamwizardry.librarianlib.sprites
 
 import com.mojang.blaze3d.platform.GlStateManager
-import com.mojang.blaze3d.platform.TextureUtil
 import com.teamwizardry.librarianlib.core.util.Client
-import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.NativeImage
+import net.minecraft.client.renderer.texture.TextureUtil
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.RenderingHints

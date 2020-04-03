@@ -142,10 +142,10 @@ task generateTestModInfo << {
 generateTestResources.dependsOn(generateTestModInfo)
 //endregion
 
-// Generate a skeleton IMixinContainer for each module. When the final jar is assembled all the configs will be merged
+// Generate a skeleton IMixinConnector for each module. When the final jar is assembled all the configs will be merged
 // into a single container.
 // https://github.com/SpongePowered/Mixin/wiki/Release-Notes---Mixin-0.8#toolchain-and-environment-changes
-def generateMixinContainer(String classesDir, String resourcesDir, FileCollection resourceRoots) {
+def generateMixinConnector(String classesDir, String resourcesDir, FileCollection resourceRoots) {
     def configs = []
 
     findFiles(resourceRoots, "/META-INF/mixins.txt").each {
@@ -176,14 +176,14 @@ def generateMixinContainer(String classesDir, String resourcesDir, FileCollectio
 }
 
 task generateSkeletonMixinConnector << {
-    generateMixinContainer("$generatedDir/main/java", "$generatedDir/main/resources", mainResourceRoots)
+    generateMixinConnector("$generatedDir/main/java", "$generatedDir/main/resources", mainResourceRoots)
 }
 generateSkeletonMixinConnector.dependsOn(processResources)
 generateResources.dependsOn(generateSkeletonMixinConnector)
 generateClasses.dependsOn(generateSkeletonMixinConnector)
 
 task generateTestMixinConnector << {
-    generateMixinContainer("$generatedDir/test/java", "$generatedDir/test/resources", testResourceRoots)
+    generateMixinConnector("$generatedDir/test/java", "$generatedDir/test/resources", testResourceRoots)
 }
 generateTestMixinConnector.dependsOn(processTestResources)
 generateTestResources.dependsOn(generateTestMixinConnector)

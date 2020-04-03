@@ -1,6 +1,10 @@
 package com.teamwizardry.librarianlib.math
 
+import com.teamwizardry.librarianlib.core.util.kotlin.obf
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
+import dev.thecodewarrior.mirror.Mirror
+import dev.thecodewarrior.mirror.member.FieldMirror
+import net.minecraft.client.renderer.Matrix3f
 import net.minecraft.util.math.Vec3d
 import kotlin.math.floor
 import kotlin.math.pow
@@ -54,36 +58,29 @@ open class Matrix3d: Cloneable {
         this.m22 = m22
     }
 
+    constructor(m: Matrix3f) {
+        this.m00 = mojangMatrixFields[0].get(m)
+        this.m01 = mojangMatrixFields[1].get(m)
+        this.m02 = mojangMatrixFields[2].get(m)
+        this.m10 = mojangMatrixFields[3].get(m)
+        this.m11 = mojangMatrixFields[4].get(m)
+        this.m12 = mojangMatrixFields[5].get(m)
+        this.m20 = mojangMatrixFields[6].get(m)
+        this.m21 = mojangMatrixFields[7].get(m)
+        this.m22 = mojangMatrixFields[8].get(m)
+    }
+
     operator fun get(row: Int, col: Int): Double {
         when (row) {
-            0 -> {
-                when (col) {
-                    0 -> return m00
-                    1 -> return m01
-                    2 -> return m02
-                }
-                when (col) {
-                    0 -> return m10
-                    1 -> return m11
-                    2 -> return m12
-                }
-                when (col) {
-                    0 -> return m20
-                    1 -> return m21
-                    2 -> return m22
-                }
+            0 -> when (col) {
+                0 -> return m00
+                1 -> return m01
+                2 -> return m02
             }
-            1 -> {
-                when (col) {
-                    0 -> return m10
-                    1 -> return m11
-                    2 -> return m12
-                }
-                when (col) {
-                    0 -> return m20
-                    1 -> return m21
-                    2 -> return m22
-                }
+            1 -> when (col) {
+                0 -> return m10
+                1 -> return m11
+                2 -> return m12
             }
             2 -> when (col) {
                 0 -> return m20
@@ -404,6 +401,37 @@ open class Matrix3d: Cloneable {
                     2 * rot.x * rot.z - 2 * rot.w * rot.y,
                     2 * rot.y * rot.z + 2 * rot.x * rot.w,
                 1 - 2 * rot.x * rot.x - 2 * rot.y * rot.y)
+        }
+
+        internal fun createRotation(axis: Vec3d, angle: Double): MutableMatrix3d {
+            // https://en.wikipedia.org/wiki/Rotation_matrix#Conversion_from_and_to_axis%E2%80%93angle
+            val len = axis.length()
+            val x = axis.x / len
+            val y = axis.x / len
+            val z = axis.x / len
+            val cos = cos(angle)
+            val sin = sin(angle)
+
+            return temporaryMatrix.set(
+                cos + x*x*(1-cos), x*y*(1-cos) - z*sin, x*z*(1-cos) + y*sin,
+                y*x*(1-cos) + z*sin, cos + y*y*(1-cos), y*z*(1-cos) - x*sin,
+                z*x*(1-cos) - y*sin, z*y*(1-cos) + x*sin, cos + z*z*(1-cos)
+            )
+        }
+
+        internal val mojangMatrixFields: List<FieldMirror> by lazy {
+            val matrix = Mirror.reflectClass<Matrix3f>()
+            listOf(
+                matrix.getDeclaredField(obf("m00", "field_226097_a_")),
+                matrix.getDeclaredField(obf("m01", "field_226098_b_")),
+                matrix.getDeclaredField(obf("m02", "field_226099_c_")),
+                matrix.getDeclaredField(obf("m10", "field_226100_d_")),
+                matrix.getDeclaredField(obf("m11", "field_226101_e_")),
+                matrix.getDeclaredField(obf("m12", "field_226102_f_")),
+                matrix.getDeclaredField(obf("m20", "field_226103_g_")),
+                matrix.getDeclaredField(obf("m21", "field_226104_h_")),
+                matrix.getDeclaredField(obf("m22", "field_226105_i_"))
+            )
         }
     }
 }

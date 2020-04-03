@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.math
 
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
+import net.minecraft.client.renderer.Matrix3f
 import net.minecraft.util.math.Vec3d
 import kotlin.math.abs
 import kotlin.math.ceil
@@ -23,6 +24,42 @@ class MutableMatrix3d: Matrix3d {
         m10: Double, m11: Double, m12: Double,
         m20: Double, m21: Double, m22: Double
     ): super(m00, m01, m02, m10, m11, m12, m20, m21, m22)
+
+    constructor(m: Matrix3f) {
+        this.m00 = mojangMatrixFields[0].get(m)
+        this.m01 = mojangMatrixFields[1].get(m)
+        this.m02 = mojangMatrixFields[2].get(m)
+        this.m10 = mojangMatrixFields[3].get(m)
+        this.m11 = mojangMatrixFields[4].get(m)
+        this.m12 = mojangMatrixFields[5].get(m)
+        this.m20 = mojangMatrixFields[6].get(m)
+        this.m21 = mojangMatrixFields[7].get(m)
+        this.m22 = mojangMatrixFields[8].get(m)
+    }
+
+    operator fun set(row: Int, col: Int, value: Double) {
+        if(row !in 0 .. 2 || col !in 0 .. 2) {
+            throw IllegalArgumentException(
+                (if (row < 0 || row > 2) "row must be greater than zero and smaller than 2. " else "") + if (col < 0 || col > 2) "col must be greater than zero and smaller than 2." else "")
+        }
+        when (row) {
+            0 -> when (col) {
+                0 -> m00 = value
+                1 -> m01 = value
+                2 -> m02 = value
+            }
+            1 -> when (col) {
+                0 -> m10 = value
+                1 -> m11 = value
+                2 -> m12 = value
+            }
+            2 -> when (col) {
+                0 -> m20 = value
+                1 -> m21 = value
+                2 -> m22 = value
+            }
+        }
+    }
 
     fun set(
         m00: Double, m01: Double, m02: Double,
@@ -51,6 +88,19 @@ class MutableMatrix3d: Matrix3d {
         this.m20 = m.m20
         this.m21 = m.m21
         this.m22 = m.m22
+        return this
+    }
+
+    fun set(m: Matrix3f): MutableMatrix3d {
+        this.m00 = mojangMatrixFields[0].get(m)
+        this.m01 = mojangMatrixFields[1].get(m)
+        this.m02 = mojangMatrixFields[2].get(m)
+        this.m10 = mojangMatrixFields[3].get(m)
+        this.m11 = mojangMatrixFields[4].get(m)
+        this.m12 = mojangMatrixFields[5].get(m)
+        this.m20 = mojangMatrixFields[6].get(m)
+        this.m21 = mojangMatrixFields[7].get(m)
+        this.m22 = mojangMatrixFields[8].get(m)
         return this
     }
 

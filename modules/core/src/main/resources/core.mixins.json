@@ -1,12 +1,13 @@
 {
   "required": true,
-  "package": "com.teamwizardry.librarianlib.virtualresources.mixin",
+  "package": "com.teamwizardry.librarianlib.core.mixin",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "virtualresources.refmap.json",
+  "refmap": "core.refmap.json",
   "mixins": [
   ],
   "client": [
-    "MinecraftMixin"
+    "Matrix4fMixin",
+    "Matrix3fMixin"
   ],
   "injectors": {
     "defaultRequire": 1

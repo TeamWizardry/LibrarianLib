@@ -182,7 +182,7 @@ internal object SpritesheetLoader : ReloadListener<Map<ResourceLocation, Sprites
                 if(animation.isInterpolate) {
                     logger.warn("Ignoring interpolation for raw animation of $location")
                 }
-                sprite.size = ivec(sheet.uvSize.x, sheet.uvSize.x * animation.frameHeight / animation.frameWidth)
+                sprite.size = ivec(sheet.uvSize.x, sheet.uvSize.x * animation.getFrameHeight(1) / animation.getFrameWidth(1))
                 val offset = ivec(0, sprite.size.y)
                 val frames = mutableListOf<Vec2i>()
                 for(it in 0 until animation.frameCount) {

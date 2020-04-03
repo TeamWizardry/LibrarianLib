@@ -12,7 +12,7 @@ import net.minecraft.item.BlockItemUseContext
 import net.minecraft.item.ItemStack
 import net.minecraft.state.StateContainer
 import net.minecraft.state.properties.BlockStateProperties
-import net.minecraft.util.BlockRenderLayer
+import net.minecraft.util.ActionResultType
 import net.minecraft.util.Direction
 import net.minecraft.util.Hand
 import net.minecraft.util.Mirror
@@ -24,6 +24,7 @@ import net.minecraft.world.IBlockReader
 import net.minecraft.world.IWorld
 import net.minecraft.world.IWorldReader
 import net.minecraft.world.World
+import net.minecraft.world.server.ServerWorld
 import net.minecraft.world.storage.loot.LootContext
 import net.minecraftforge.fml.ModLoadingContext
 import java.util.Random
@@ -38,10 +39,6 @@ open class TestBlock(val config: TestBlockConfig): Block(config.also { configHol
 
     open val modelName: String
         get() = "${if(config.directional) "directional" else "normal"}/${if(config.transparent) "transparent" else "solid"}"
-
-    override fun getRenderLayer(): BlockRenderLayer {
-        return BlockRenderLayer.CUTOUT_MIPPED
-    }
 
     override fun getDrops(state: BlockState, builder: LootContext.Builder): MutableList<ItemStack> {
         return mutableListOf()
@@ -83,11 +80,11 @@ open class TestBlock(val config: TestBlockConfig): Block(config.also { configHol
         super.animateTick(stateIn, worldIn, pos, rand)
     }
 
-    override fun tick(state: BlockState, worldIn: World, pos: BlockPos, random: Random) {
-        super.tick(state, worldIn, pos, random)
+    override fun tick(state: BlockState, worldIn: ServerWorld, pos: BlockPos, rand: Random) {
+        super.tick(state, worldIn, pos, rand)
     }
 
-    override fun randomTick(state: BlockState, worldIn: World, pos: BlockPos, random: Random) {
+    override fun randomTick(state: BlockState, worldIn: ServerWorld, pos: BlockPos, random: Random) {
         super.randomTick(state, worldIn, pos, random)
     }
 
@@ -119,10 +116,10 @@ open class TestBlock(val config: TestBlockConfig): Block(config.also { configHol
 
 
     // interaction =====================================================================================================
-    override fun onBlockActivated(state: BlockState, worldIn: World, pos: BlockPos, player: PlayerEntity, handIn: Hand, hit: BlockRayTraceResult): Boolean {
+    override fun onBlockActivated(state: BlockState, worldIn: World, pos: BlockPos, player: PlayerEntity, handIn: Hand, hit: BlockRayTraceResult): ActionResultType {
         config.rightClick.run(worldIn.isRemote(), TestBlockConfig.RightClickContext(state, worldIn, pos, player, handIn, hit))
         if(config.rightClick.exists)
-            return true
+            return ActionResultType.CONSUME
         else
             return super.onBlockActivated(state, worldIn, pos, player, handIn, hit)
     }
