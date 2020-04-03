@@ -1,10 +1,12 @@
 package com.teamwizardry.librarianlib.particles.testmod.modules
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.platform.GlStateManager
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.particles.ParticleRenderModule
 import com.teamwizardry.librarianlib.particles.ParticleUpdateModule
 import com.teamwizardry.librarianlib.particles.ReadParticleBinding
+import net.minecraft.client.renderer.Matrix4f
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11
@@ -58,7 +60,7 @@ class VelocityRenderModule(
         alpha?.require(1)
     }
 
-    override fun render(particles: List<DoubleArray>, prepModules: List<ParticleUpdateModule>) {
+    override fun render(matrixStack: MatrixStack, projectionMatrix: Matrix4f, particles: List<DoubleArray>, prepModules: List<ParticleUpdateModule>) {
         GlStateManager.disableTexture()
         if(blend) {
             GlStateManager.enableBlend()
@@ -66,7 +68,7 @@ class VelocityRenderModule(
             GlStateManager.disableBlend()
         }
         if(blendFactors != null) {
-            GlStateManager.blendFunc(blendFactors.first, blendFactors.second)
+            GlStateManager.blendFunc(blendFactors.first.param, blendFactors.second.param)
         }
         GlStateManager.depthMask(depthMask)
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F)
@@ -107,7 +109,7 @@ class VelocityRenderModule(
 
         tessellator.draw()
 
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
+        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA.param, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA.param)
         GlStateManager.enableCull()
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
         GlStateManager.depthMask(true)

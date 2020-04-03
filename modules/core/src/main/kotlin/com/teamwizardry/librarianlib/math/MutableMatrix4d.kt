@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.math
 
+import net.minecraft.client.renderer.Matrix4f
 import net.minecraft.util.math.Vec3d
 import kotlin.math.abs
 import kotlin.math.pow
@@ -21,6 +22,57 @@ class MutableMatrix4d: Matrix4d {
         m20: Double, m21: Double, m22: Double, m23: Double,
         m30: Double, m31: Double, m32: Double, m33: Double
     ): super(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33)
+    constructor(m: Matrix4f) {
+        this.m00 = mojangMatrixFields[ 0].get(m)
+        this.m01 = mojangMatrixFields[ 1].get(m)
+        this.m02 = mojangMatrixFields[ 2].get(m)
+        this.m03 = mojangMatrixFields[ 3].get(m)
+        this.m10 = mojangMatrixFields[ 4].get(m)
+        this.m11 = mojangMatrixFields[ 5].get(m)
+        this.m12 = mojangMatrixFields[ 6].get(m)
+        this.m13 = mojangMatrixFields[ 7].get(m)
+        this.m20 = mojangMatrixFields[ 8].get(m)
+        this.m21 = mojangMatrixFields[ 9].get(m)
+        this.m22 = mojangMatrixFields[10].get(m)
+        this.m23 = mojangMatrixFields[11].get(m)
+        this.m30 = mojangMatrixFields[12].get(m)
+        this.m31 = mojangMatrixFields[13].get(m)
+        this.m32 = mojangMatrixFields[14].get(m)
+        this.m33 = mojangMatrixFields[15].get(m)
+    }
+
+    operator fun set(row: Int, col: Int, value: Double) {
+        if(row !in 0 .. 3 || col !in 0 .. 3) {
+            throw IllegalArgumentException(
+                (if (row < 0 || row > 3) "row must be greater than zero and smaller than 3. " else "") + if (col < 0 || col > 3) "col must be greater than zero and smaller than 3." else "")
+        }
+        when (row) {
+            0 -> when (col) {
+                0 -> m00 = value
+                1 -> m01 = value
+                2 -> m02 = value
+                3 -> m03 = value
+            }
+            1 -> when (col) {
+                0 -> m10 = value
+                1 -> m11 = value
+                2 -> m12 = value
+                3 -> m13 = value
+            }
+            2 -> when (col) {
+                0 -> m20 = value
+                1 -> m21 = value
+                2 -> m22 = value
+                3 -> m23 = value
+            }
+            3 -> when (col) {
+                0 -> m30 = value
+                1 -> m31 = value
+                2 -> m32 = value
+                3 -> m33 = value
+            }
+        }
+    }
 
     fun set(
         m00: Float, m01: Float, m02: Float, m03: Float,
@@ -76,6 +128,26 @@ class MutableMatrix4d: Matrix4d {
         this.m31 = other.m31
         this.m32 = other.m32
         this.m33 = other.m33
+        return this
+    }
+
+    fun set(m: Matrix4f): MutableMatrix4d {
+        this.m00 = mojangMatrixFields[ 0].get(m)
+        this.m01 = mojangMatrixFields[ 1].get(m)
+        this.m02 = mojangMatrixFields[ 2].get(m)
+        this.m03 = mojangMatrixFields[ 3].get(m)
+        this.m10 = mojangMatrixFields[ 4].get(m)
+        this.m11 = mojangMatrixFields[ 5].get(m)
+        this.m12 = mojangMatrixFields[ 6].get(m)
+        this.m13 = mojangMatrixFields[ 7].get(m)
+        this.m20 = mojangMatrixFields[ 8].get(m)
+        this.m21 = mojangMatrixFields[ 9].get(m)
+        this.m22 = mojangMatrixFields[10].get(m)
+        this.m23 = mojangMatrixFields[11].get(m)
+        this.m30 = mojangMatrixFields[12].get(m)
+        this.m31 = mojangMatrixFields[13].get(m)
+        this.m32 = mojangMatrixFields[14].get(m)
+        this.m33 = mojangMatrixFields[15].get(m)
         return this
     }
 

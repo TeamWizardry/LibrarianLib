@@ -7,7 +7,7 @@ def includeModule(String name) {
 
 include("runtime")
 includeModule("core")
-includeModule("gui")
+//includeModule("gui")
 includeModule("particles")
 includeModule("sprites")
 includeModule("testbase")

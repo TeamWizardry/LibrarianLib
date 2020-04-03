@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.core.util.kotlin.synchronized
 import com.teamwizardry.librarianlib.core.util.kotlin.translationKey
 import com.teamwizardry.librarianlib.testbase.objects.TestBlock
 import com.teamwizardry.librarianlib.testbase.objects.TestEntity
-import com.teamwizardry.librarianlib.testbase.objects.TestEntityRenderer
+//import com.teamwizardry.librarianlib.testbase.objects.TestEntityRenderer
 import com.teamwizardry.librarianlib.testbase.objects.TestItem
 import com.teamwizardry.librarianlib.virtualresources.VirtualResources
 import net.minecraft.client.renderer.color.IItemColor
@@ -35,7 +35,7 @@ object LibTestBaseModule : LibrarianLibModule("testbase", logger) {
     }
 
     override fun clientSetup(event: FMLClientSetupEvent) {
-        RenderingRegistry.registerEntityRenderingHandler(TestEntity::class.java) { TestEntityRenderer(it) }
+//        RenderingRegistry.registerEntityRenderingHandler(TestEntity::class.java) { TestEntityRenderer(it) }
     }
 
     @SubscribeEvent

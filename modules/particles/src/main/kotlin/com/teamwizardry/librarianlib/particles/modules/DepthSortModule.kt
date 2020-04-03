@@ -29,7 +29,7 @@ class DepthSortModule(
     }
 
     override fun update(particles: MutableList<DoubleArray>) {
-        val player = Minecraft.getInstance().player
+        val player = Minecraft.getInstance().player!!
         val normal = player.lookVec
         val eyeX = Client.worldTime.interp(player.prevPosX, player.posX)
         val eyeY = Client.worldTime.interp(player.prevPosY, player.posY) + player.eyeHeight

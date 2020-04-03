@@ -1,6 +1,11 @@
 package com.teamwizardry.librarianlib.math
 
+import com.teamwizardry.librarianlib.core.util.kotlin.obf
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
+import dev.thecodewarrior.mirror.Mirror
+import dev.thecodewarrior.mirror.member.FieldMirror
+import net.minecraft.client.renderer.Matrix3f
+import net.minecraft.client.renderer.Matrix4f
 import net.minecraft.util.math.Vec3d
 import kotlin.math.PI
 import kotlin.math.pow
@@ -78,67 +83,44 @@ open class Matrix4d: Cloneable {
         this.m33 = m33
     }
 
+    constructor(m: Matrix4f) {
+        this.m00 = mojangMatrixFields[ 0].get(m)
+        this.m01 = mojangMatrixFields[ 1].get(m)
+        this.m02 = mojangMatrixFields[ 2].get(m)
+        this.m03 = mojangMatrixFields[ 3].get(m)
+        this.m10 = mojangMatrixFields[ 4].get(m)
+        this.m11 = mojangMatrixFields[ 5].get(m)
+        this.m12 = mojangMatrixFields[ 6].get(m)
+        this.m13 = mojangMatrixFields[ 7].get(m)
+        this.m20 = mojangMatrixFields[ 8].get(m)
+        this.m21 = mojangMatrixFields[ 9].get(m)
+        this.m22 = mojangMatrixFields[10].get(m)
+        this.m23 = mojangMatrixFields[11].get(m)
+        this.m30 = mojangMatrixFields[12].get(m)
+        this.m31 = mojangMatrixFields[13].get(m)
+        this.m32 = mojangMatrixFields[14].get(m)
+        this.m33 = mojangMatrixFields[15].get(m)
+    }
+
     operator fun get(row: Int, col: Int): Double {
         when (row) {
-            0 -> {
-                when (col) {
-                    0 -> return m00
-                    1 -> return m01
-                    2 -> return m02
-                    3 -> return m03
-                }
-                when (col) {
-                    0 -> return m10
-                    1 -> return m11
-                    2 -> return m12
-                    3 -> return m13
-                }
-                when (col) {
-                    0 -> return m20
-                    1 -> return m21
-                    2 -> return m22
-                    3 -> return m23
-                }
-                when (col) {
-                    0 -> return m30
-                    1 -> return m31
-                    2 -> return m32
-                    3 -> return m33
-                }
+            0 -> when (col) {
+                0 -> return m00
+                1 -> return m01
+                2 -> return m02
+                3 -> return m03
             }
-            1 -> {
-                when (col) {
-                    0 -> return m10
-                    1 -> return m11
-                    2 -> return m12
-                    3 -> return m13
-                }
-                when (col) {
-                    0 -> return m20
-                    1 -> return m21
-                    2 -> return m22
-                    3 -> return m23
-                }
-                when (col) {
-                    0 -> return m30
-                    1 -> return m31
-                    2 -> return m32
-                    3 -> return m33
-                }
+            1 -> when (col) {
+                0 -> return m10
+                1 -> return m11
+                2 -> return m12
+                3 -> return m13
             }
-            2 -> {
-                when (col) {
-                    0 -> return m20
-                    1 -> return m21
-                    2 -> return m22
-                    3 -> return m23
-                }
-                when (col) {
-                    0 -> return m30
-                    1 -> return m31
-                    2 -> return m32
-                    3 -> return m33
-                }
+            2 -> when (col) {
+                0 -> return m20
+                1 -> return m21
+                2 -> return m22
+                3 -> return m23
             }
             3 -> when (col) {
                 0 -> return m30
@@ -148,7 +130,7 @@ open class Matrix4d: Cloneable {
             }
         }
         throw IllegalArgumentException(
-            (if (row < 0 || row > 2) "row must be greater than zero and smaller than 3. " else "") + if (col < 0 || col > 2) "col must be greater than zero and smaller than 3." else "")
+            (if (row < 0 || row > 3) "row must be greater than zero and smaller than 3. " else "") + if (col < 0 || col > 3) "col must be greater than zero and smaller than 3." else "")
     }
 
     open fun add(m: Matrix4d): Matrix4d {
@@ -284,6 +266,32 @@ open class Matrix4d: Cloneable {
         return createRotation(rot).mul(this).toImmutable()
     }
 
+    fun transformAffine3d(v: Vec3d): Vec3d {
+        return transformAffine3d(v.x, v.y, v.z)
+    }
+
+    fun transformAffine3d(x: Double, y: Double, z: Double): Vec3d {
+        return vec(
+            m00 * x + m01 * y + m02 * z + m03 * 1,
+            m10 * x + m11 * y + m12 * z + m13 * 1,
+            m20 * x + m21 * y + m22 * z + m23 * 1)
+    }
+
+    fun transform(v: Vec3d): Vec3d {
+        return transform(v.x, v.y, v.z)
+    }
+
+    fun transform(x: Float, y: Float, z: Float): Vec3d {
+        return transform(x.toDouble(), y.toDouble(), z.toDouble())
+    }
+
+    fun transform(x: Double, y: Double, z: Double): Vec3d {
+        return vec(
+            m00 * x + m01 * y + m02 * z,
+            m10 * x + m11 * y + m12 * z,
+            m20 * x + m21 * y + m22 * z)
+    }
+
     open fun floor(): Matrix4d {
         return Matrix4d(
             floor(m00), floor(m01), floor(m02), floor(m03),
@@ -328,6 +336,10 @@ open class Matrix4d: Cloneable {
     open operator fun unaryMinus(): Matrix4d {
         return negate()
     }
+
+    /** Applies an affine transform on the passed vector. Equivalent to `transform(v.x, v.y, 1).xy` */
+    @JvmSynthetic
+    operator fun times(v: Vec3d): Vec3d = transformAffine3d(v)
 
     open fun transpose(): Matrix4d {
         return Matrix4d(
@@ -557,6 +569,28 @@ open class Matrix4d: Cloneable {
             m10: Double, m11: Double, m12: Double,
             m20: Double, m21: Double, m22: Double): Double {
             return m00 * (m11 * m22 - m12 * m21) - m01 * (m10 * m22 - m12 * m20) + m02 * (m10 * m21 - m11 * m20)
+        }
+
+        internal val mojangMatrixFields: List<FieldMirror> by lazy {
+            val matrix = Mirror.reflectClass<Matrix4f>()
+            listOf(
+                matrix.getDeclaredField(obf("m00", "field_226575_a_")),
+                matrix.getDeclaredField(obf("m01", "field_226576_b_")),
+                matrix.getDeclaredField(obf("m02", "field_226577_c_")),
+                matrix.getDeclaredField(obf("m03", "field_226578_d_")),
+                matrix.getDeclaredField(obf("m10", "field_226579_e_")),
+                matrix.getDeclaredField(obf("m11", "field_226580_f_")),
+                matrix.getDeclaredField(obf("m12", "field_226581_g_")),
+                matrix.getDeclaredField(obf("m13", "field_226582_h_")),
+                matrix.getDeclaredField(obf("m20", "field_226583_i_")),
+                matrix.getDeclaredField(obf("m21", "field_226584_j_")),
+                matrix.getDeclaredField(obf("m22", "field_226585_k_")),
+                matrix.getDeclaredField(obf("m23", "field_226586_l_")),
+                matrix.getDeclaredField(obf("m30", "field_226587_m_")),
+                matrix.getDeclaredField(obf("m31", "field_226588_n_")),
+                matrix.getDeclaredField(obf("m32", "field_226589_o_")),
+                matrix.getDeclaredField(obf("m33", "field_226590_p_"))
+            )
         }
     }
 }

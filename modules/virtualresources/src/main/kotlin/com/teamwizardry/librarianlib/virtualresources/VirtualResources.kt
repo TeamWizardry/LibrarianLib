@@ -19,7 +19,7 @@ import kotlin.concurrent.read
 import kotlin.concurrent.write
 
 class VirtualResources internal constructor(val type: ResourcePackType) {
-    internal val fallback = FallbackResourceManager(type)
+    internal val fallback = FallbackResourceManager(type, "librarianlib")
     internal val files = mutableMapOf<ResourceLocation, ByteArray>().synchronized()
     internal val generators = mutableMapOf<ResourceLocation, () -> ByteArray>().synchronized()
     internal val packs = mutableListOf<VirtualResourcePack>().synchronized()
@@ -101,11 +101,21 @@ class VirtualResources internal constructor(val type: ResourcePackType) {
             ResourcePackType.SERVER_DATA -> data
         }
 
+        /**
+         * This injects our virtual resource pack as a last resort for every FallbackResourceManager
+         * in the game.
+         */
         @JvmStatic
         fun `inject-asm`(pack: FallbackResourceManager) {
             pack.resourcePacks.add(Pack)
         }
 
+        /**
+         * This allows virtual resources to be in any namespace. Without this patch, if the
+         * SimpleReloadableResourceManager isn't aware of a namespace it'll bail out early, never
+         * even checking if any packs contain that asset. This provides a default manager in case
+         * the namespace isn't recognized, making sure that it'll still query our pack.
+         */
         @JvmStatic
         fun `fallbackManager-asm`(manager: IResourceManager?, type: ResourcePackType): IResourceManager? {
             if(manager != null) return manager
@@ -132,10 +142,8 @@ class VirtualResources internal constructor(val type: ResourcePackType) {
             }
         }
 
-        override fun getAllResourceLocations(type: ResourcePackType, pathIn: String, maxDepth: Int, filter: Predicate<String>): Collection<ResourceLocation> {
+        override fun getAllResourceLocations(type: ResourcePackType, namespaceIn: String, pathIn: String, maxDepth: Int, filter: Predicate<String>): Collection<ResourceLocation> {
             resources(type).read { resources ->
-                val resources = resources(type)
-
                 val locations = mutableSetOf<ResourceLocation>()
 
                 locations.addAll(resources.files.keys)
@@ -157,7 +165,6 @@ class VirtualResources internal constructor(val type: ResourcePackType) {
 
         override fun resourceExists(type: ResourcePackType, location: ResourceLocation): Boolean {
             resources(type).read { resources ->
-                val resources = resources(type)
                 return location in resources.files || location in resources.generators || resources.packs.any { location in it }
             }
         }
