@@ -11,6 +11,7 @@ import com.teamwizardry.librarianlib.particles.ParticleUpdateModule
 import com.teamwizardry.librarianlib.particles.ReadParticleBinding
 import com.teamwizardry.librarianlib.particles.bindings.ConstantBinding
 import net.minecraft.client.renderer.Matrix4f
+import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.Vector4f
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.MathHelper
@@ -27,9 +28,9 @@ import net.minecraft.util.math.MathHelper
  */
 class SpriteRenderModule @JvmOverloads constructor(
     /**
-     * The sprite texture to use
+     * The [RenderType] that is used to draw the particles. It should have both position and texture components.
      */
-    @JvmField val sprite: ResourceLocation,
+    @JvmField var renderType: RenderType,
     /**
      * The current position of the particle
      */
@@ -48,26 +49,13 @@ class SpriteRenderModule @JvmOverloads constructor(
     @JvmField val size: ReadParticleBinding = ConstantBinding(1.0),
     /**
      * If present, an artificial facing vector used instead of the player's look vector. This vector _does not need
-     * to be normalized_ as normalization is already being done for an unrelated reason. The additional computation
-     * is unnecessary and will lead to more performance degradation than is required for this feature.
+     * to be normalized._
      */
     @JvmField val facingVector: ReadParticleBinding? = null,
     /**
      * The alpha multiplier for the color. Defaults to 1 if not present.
      */
-    @JvmField val alphaMultiplier: ReadParticleBinding = ConstantBinding(1.0),
-    /**
-     * The OpenGL source/dest enableBlend factors. Leave null to keep the defaults.
-     */
-    @JvmField val blendMode: BlendMode = BlendMode.NORMAL,
-    /**
-     * Whether to enable OpenGL depth masking. (false = no writing to the depth buffer)
-     */
-    @JvmField val depthMask: Boolean = false,
-    /**
-     * Whether to enable OpenGL blending
-     */
-    @JvmField val enableBlend: Boolean = true
+    @JvmField val alphaMultiplier: ReadParticleBinding = ConstantBinding(1.0)
 ) : ParticleRenderModule {
     init {
         previousPosition?.require(3)
@@ -78,17 +66,13 @@ class SpriteRenderModule @JvmOverloads constructor(
         alphaMultiplier.require(1)
     }
 
-    @Suppress("CAST_NEVER_SUCCEEDS")
+    @Suppress("CAST_NEVER_SUCCEEDS", "LocalVariableName")
     override fun render(matrixStack: MatrixStack, projectionMatrix: Matrix4f, particles: List<DoubleArray>, prepModules: List<ParticleUpdateModule>) {
-//        Minecraft.getInstance().textureManager.bindTexture(sprite)
-
         val modelViewMatrix = matrixStack.last.matrix
         val buffer = Client.minecraft.renderTypeBuffers.bufferSource
-        val builder = buffer.getBuffer(SpriteRenderType.spriteRenderType(sprite))
+        val builder = buffer.getBuffer(renderType)
 
-        val transformMatrix = matrixStack.last.matrix as IMatrix4f
-        val normalMatrix = matrixStack.last.normal as IMatrix3f
-
+        val transformMatrix = modelViewMatrix as IMatrix4f
         val tm00 = transformMatrix.m00
         val tm01 = transformMatrix.m01
         val tm02 = transformMatrix.m02
@@ -102,25 +86,7 @@ class SpriteRenderModule @JvmOverloads constructor(
         val tm22 = transformMatrix.m22
         val tm23 = transformMatrix.m23
 
-        val nm00 = normalMatrix.m00
-        val nm01 = normalMatrix.m01
-        val nm02 = normalMatrix.m02
-        val nm10 = normalMatrix.m10
-        val nm11 = normalMatrix.m11
-        val nm12 = normalMatrix.m12
-        val nm20 = normalMatrix.m20
-        val nm21 = normalMatrix.m21
-        val nm22 = normalMatrix.m22
-
-        GlStateManager.enableTexture()
-        if (enableBlend) {
-            GlStateManager.enableBlend()
-        } else {
-            GlStateManager.disableBlend()
-        }
-
-        blendMode.glApply()
-
+        // `w = 0` means we won't apply translation when we use the matrix later
         val lookRightVec = Vector4f(-1f, 0f, 0f, 0f)
         val lookUpVec = Vector4f(0f, 1f, 0f, 0f)
 
@@ -160,30 +126,46 @@ class SpriteRenderModule @JvmOverloads constructor(
                 val facingZ = facingVector.contents[2]
                 if(!facingX.isNaN() && !facingY.isNaN() && !facingZ.isNaN()) {
                     // x axis, facing • (0, 1, 0)
-                    rightX = -facingZ
-                    rightY = 0.0
-                    rightZ = facingX
-                    val rightInvLength = MathHelper.fastInvSqrt(rightX * rightX + rightY * rightY + rightZ * rightZ)
-                    rightX *= -rightInvLength
-                    rightY *= -rightInvLength
-                    rightZ *= -rightInvLength
+                    if(facingX == 0.0 && facingZ == 0.0) {
+                        rightX = 1.0
+                        rightY = 0.0
+                        rightZ = 0.0
 
-                    // y axis, facing • right
-                    upX = facingY * facingX
-                    upY = facingZ * -facingZ - facingX * facingX
-                    upZ = facingY * facingZ
-                    val upInvLength = MathHelper.fastInvSqrt(upX * upX + upY * upY + upZ * upZ)
-                    upX *= -upInvLength
-                    upY *= -upInvLength
-                    upZ *= -upInvLength
+                        upX = 0.0
+                        upY = 0.0
+                        upZ = 1.0
+                    } else {
+                        rightX = -facingZ
+                        rightY = 0.0
+                        rightZ = facingX
+                        val rightInvLength = MathHelper.fastInvSqrt(rightX * rightX + rightY * rightY + rightZ * rightZ)
+                        rightX *= -rightInvLength
+                        rightY *= -rightInvLength
+                        rightZ *= -rightInvLength
 
+                        // y axis, facing • right
+                        upX = facingY * facingX
+                        upY = facingZ * -facingZ - facingX * facingX
+                        upZ = facingY * facingZ
+                        val upInvLength = MathHelper.fastInvSqrt(upX * upX + upY * upY + upZ * upZ)
+                        upX *= -upInvLength
+                        upY *= -upInvLength
+                        upZ *= -upInvLength
+                    }
 
-                    rightX = nm00 * rightX + nm01 * rightY + nm02 * rightZ
-                    rightY = nm10 * rightX + nm11 * rightY + nm12 * rightZ
-                    rightZ = nm20 * rightX + nm21 * rightY + nm22 * rightZ
-                    upX = nm00 * upX + nm01 * upY + nm02 * upZ
-                    upY = nm10 * upX + nm11 * upY + nm12 * upZ
-                    upZ = nm20 * upX + nm21 * upY + nm22 * upZ
+                    val _rightX = rightX
+                    val _rightY = rightY
+                    val _rightZ = rightZ
+                    rightX = tm00 * _rightX + tm01 * _rightY + tm02 * _rightZ
+                    rightY = tm10 * _rightX + tm11 * _rightY + tm12 * _rightZ
+                    rightZ = tm20 * _rightX + tm21 * _rightY + tm22 * _rightZ
+
+                    val _upX = upX
+                    val _upY = upY
+                    val _upZ = upZ
+                    upX = tm00 * _upX + tm01 * _upY + tm02 * _upZ
+                    upY = tm10 * _upX + tm11 * _upY + tm12 * _upZ
+                    upZ = tm20 * _upX + tm21 * _upY + tm22 * _upZ
                 }
             }
 
@@ -207,12 +189,12 @@ class SpriteRenderModule @JvmOverloads constructor(
                 z = Client.worldTime.interp(previousPosition.contents[2], z)
             }
 
-            val x1 = x
-            val y1 = y
-            val z1 = z
-            x = tm00 * x1 + tm01 * y1 + tm02 * z1 + tm03 * 1
-            y = tm10 * x1 + tm11 * y1 + tm12 * z1 + tm13 * 1
-            z = tm20 * x1 + tm21 * y1 + tm22 * z1 + tm23 * 1
+            val _x = x
+            val _y = y
+            val _z = z
+            x = tm00 * _x + tm01 * _y + tm02 * _z + tm03 * 1
+            y = tm10 * _x + tm11 * _y + tm12 * _z + tm13 * 1
+            z = tm20 * _x + tm21 * _y + tm22 * _z + tm23 * 1
 
             color.load(particle)
             alphaMultiplier.load(particle)
@@ -228,7 +210,30 @@ class SpriteRenderModule @JvmOverloads constructor(
         }
 
         buffer.finish()
+    }
 
-        blendMode.reset()
+    companion object {
+        @JvmStatic
+        fun simpleRenderType(
+            /**
+             * The sprite texture to use
+             */
+            sprite: ResourceLocation,
+            /**
+             * The OpenGL source/dest enableBlend factors. A null value disables blending.
+             */
+            blendMode: BlendMode? = BlendMode.NORMAL,
+            /**
+             * Whether to write to the depth buffer
+             */
+            writeDepth: Boolean = true,
+            /**
+             * Whether to automatically sort particles by depth. It hasn't yet been determined whether this or the
+             * [DepthSortModule] are faster.
+             */
+            depthSort: Boolean = false
+        ): RenderType {
+            return SpriteRenderType.spriteRenderType(sprite, blendMode, writeDepth, depthSort)
+        }
     }
 }

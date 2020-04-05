@@ -6,13 +6,12 @@ import com.teamwizardry.librarianlib.particles.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.particles.modules.BasicPhysicsUpdateModule
 import com.teamwizardry.librarianlib.particles.modules.GlLineBeamRenderModule
 import com.teamwizardry.librarianlib.particles.modules.SpriteRenderModule
-import com.teamwizardry.librarianlib.particles.testmod.modules.VelocityRenderModule
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.Vec3d
 
-object PerfectBouncySystem: TestSystem("perfect_bouncy") {
+object ForwardFacingSystem: TestSystem("forward_facing") {
     override fun configure() {
         val position = bind(3)
         val previousPosition = bind(3)
@@ -25,28 +24,20 @@ object PerfectBouncySystem: TestSystem("perfect_bouncy") {
             velocity = velocity,
             enableCollision = true,
             gravity = 0.02,
-            bounciness = 1.0f,
-            friction = 0.00f,
-            damping = 0.0f
+            bounciness = 0.8f,
+            friction = 0.02f,
+            damping = 0.01f
         ))
 
         renderModules.add(SpriteRenderModule(
             renderType = SpriteRenderModule.simpleRenderType(
                 sprite = ResourceLocation("minecraft", "textures/item/clay_ball.png")
             ),
-            previousPosition = position,
+            previousPosition = previousPosition,
             position = position,
             color = color,
-            size = ConstantBinding(0.05)
-        ))
-        renderModules.add(VelocityRenderModule(
-            blend = true,
-            previousPosition = position,
-            position = position,
-            velocity = velocity,
-            color = color,
-            size = 1f,
-            alpha = null
+            size = ConstantBinding(0.2),
+            facingVector = velocity
         ))
     }
 

@@ -14,8 +14,9 @@ object StaticSystem: TestSystem("static") {
         val color = bind(4)
 
         renderModules.add(SpriteRenderModule(
-            sprite = ResourceLocation("minecraft", "textures/item/clay_ball.png"), // #balance,
-            enableBlend = true,
+            renderType = SpriteRenderModule.simpleRenderType(
+                sprite = ResourceLocation("minecraft", "textures/item/clay_ball.png")
+            ),
             previousPosition = pos,
             position = pos,
             color = color,

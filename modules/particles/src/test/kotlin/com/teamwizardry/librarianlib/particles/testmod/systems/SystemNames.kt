@@ -27,6 +27,12 @@ object SystemNames {
             """
                 Spawns randomly colored, motionless particles.
             """.trimIndent()
+        ),
+        System("forward_facing",
+            "Spawn Forward-Facing Particle",
+            """
+                Spawns randomly colored particles that face forward along their velocity vector
+            """.trimIndent()
         )
     )
 
