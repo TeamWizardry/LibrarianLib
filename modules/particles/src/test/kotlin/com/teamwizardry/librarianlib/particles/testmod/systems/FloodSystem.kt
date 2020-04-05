@@ -33,8 +33,9 @@ object FloodSystem: TestSystem("flood") {
         ))
 
         renderModules.add(SpriteRenderModule(
-            sprite = ResourceLocation("minecraft", "textures/item/clay_ball.png"), // #balance,
-            enableBlend = true,
+            renderType = SpriteRenderModule.simpleRenderType(
+                sprite = ResourceLocation("minecraft", "textures/item/clay_ball.png")
+            ),
             previousPosition = previousPosition,
             position = position,
             color = color,

@@ -9,7 +9,8 @@ object ParticleSystems {
         StaticSystem,
         PhysicsSystem,
         FloodSystem,
-        PerfectBouncySystem
+        PerfectBouncySystem,
+        ForwardFacingSystem
     )
     private val systemMap = systems.associateBy { it.id }
 

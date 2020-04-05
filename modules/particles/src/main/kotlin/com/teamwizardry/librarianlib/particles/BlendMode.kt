@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.particles
 
+import com.mojang.blaze3d.systems.RenderSystem
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL14
 import org.lwjgl.opengl.GL15
@@ -16,7 +17,7 @@ class BlendMode(
     constructor(src: Factor, dst: Factor) : this(src, dst, src, dst)
 
     fun glApply() {
-        GL14.glBlendFuncSeparate(srcRGB.glConst, dstRGB.glConst, srcAlpha.glConst, dstAlpha.glConst)
+        RenderSystem.blendFuncSeparate(srcRGB.glConst, dstRGB.glConst, srcAlpha.glConst, dstAlpha.glConst)
         GL20.glBlendEquationSeparate(modeRGB.glConst, modeAlpha.glConst)
     }
 
