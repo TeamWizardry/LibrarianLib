@@ -6,9 +6,11 @@ import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.member.FieldMirror
 import net.minecraft.client.renderer.Matrix3f
 import net.minecraft.util.math.Vec3d
+import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.roundToLong
+import kotlin.math.sin
 
 // adapted from flow/math: https://github.com/flow/math
 open class Matrix3d: Cloneable {

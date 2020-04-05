@@ -240,6 +240,7 @@ class RayWorldCollider private constructor(world: World) {
         private val worldMap = WeakHashMap<World, RayWorldCollider>()
 
         @SubscribeEvent
+        @JvmStatic
         fun tick(e: TickEvent.ClientTickEvent) {
             for (value in worldMap.values) {
                 run {
