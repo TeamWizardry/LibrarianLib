@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.math
 
+import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import net.minecraft.client.renderer.Matrix3f
 import net.minecraft.util.math.Vec3d
@@ -12,7 +13,9 @@ import kotlin.math.round
 // adapted from flow/math: https://github.com/flow/math
 class MutableMatrix3d: Matrix3d {
     constructor(m: Matrix3d): super(m)
+
     constructor(): super()
+
     constructor(
         m00: Float, m01: Float, m02: Float,
         m10: Float, m11: Float, m12: Float,
@@ -26,15 +29,16 @@ class MutableMatrix3d: Matrix3d {
     ): super(m00, m01, m02, m10, m11, m12, m20, m21, m22)
 
     constructor(m: Matrix3f) {
-        this.m00 = mojangMatrixFields[0].get(m)
-        this.m01 = mojangMatrixFields[1].get(m)
-        this.m02 = mojangMatrixFields[2].get(m)
-        this.m10 = mojangMatrixFields[3].get(m)
-        this.m11 = mojangMatrixFields[4].get(m)
-        this.m12 = mojangMatrixFields[5].get(m)
-        this.m20 = mojangMatrixFields[6].get(m)
-        this.m21 = mojangMatrixFields[7].get(m)
-        this.m22 = mojangMatrixFields[8].get(m)
+        @Suppress("CAST_NEVER_SUCCEEDS") val imatrix = m as IMatrix3f
+        this.m00 = imatrix.m00.toDouble()
+        this.m01 = imatrix.m01.toDouble()
+        this.m02 = imatrix.m02.toDouble()
+        this.m10 = imatrix.m10.toDouble()
+        this.m11 = imatrix.m11.toDouble()
+        this.m12 = imatrix.m12.toDouble()
+        this.m20 = imatrix.m20.toDouble()
+        this.m21 = imatrix.m21.toDouble()
+        this.m22 = imatrix.m22.toDouble()
     }
 
     operator fun set(row: Int, col: Int, value: Double) {
@@ -92,15 +96,16 @@ class MutableMatrix3d: Matrix3d {
     }
 
     fun set(m: Matrix3f): MutableMatrix3d {
-        this.m00 = mojangMatrixFields[0].get(m)
-        this.m01 = mojangMatrixFields[1].get(m)
-        this.m02 = mojangMatrixFields[2].get(m)
-        this.m10 = mojangMatrixFields[3].get(m)
-        this.m11 = mojangMatrixFields[4].get(m)
-        this.m12 = mojangMatrixFields[5].get(m)
-        this.m20 = mojangMatrixFields[6].get(m)
-        this.m21 = mojangMatrixFields[7].get(m)
-        this.m22 = mojangMatrixFields[8].get(m)
+        @Suppress("CAST_NEVER_SUCCEEDS") val imatrix = m as IMatrix3f
+        this.m00 = imatrix.m00.toDouble()
+        this.m01 = imatrix.m01.toDouble()
+        this.m02 = imatrix.m02.toDouble()
+        this.m10 = imatrix.m10.toDouble()
+        this.m11 = imatrix.m11.toDouble()
+        this.m12 = imatrix.m12.toDouble()
+        this.m20 = imatrix.m20.toDouble()
+        this.m21 = imatrix.m21.toDouble()
+        this.m22 = imatrix.m22.toDouble()
         return this
     }
 
@@ -389,10 +394,6 @@ class MutableMatrix3d: Matrix3d {
 
     override fun rotate(rot: Quaternion): MutableMatrix3d {
         return this.set(createRotation(rot).mul(this))
-    }
-
-    override fun rotate(axis: Vec3d, angle: Double): MutableMatrix3d {
-        return this.set(createRotation(axis, angle).mul(this))
     }
 
     override fun unaryMinus(): MutableMatrix3d {

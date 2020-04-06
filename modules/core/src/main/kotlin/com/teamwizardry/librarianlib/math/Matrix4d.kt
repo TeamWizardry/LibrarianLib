@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.math
 
+import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
 import com.teamwizardry.librarianlib.core.util.kotlin.obf
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import dev.thecodewarrior.mirror.Mirror
@@ -84,22 +85,23 @@ open class Matrix4d: Cloneable {
     }
 
     constructor(m: Matrix4f) {
-        this.m00 = mojangMatrixFields[ 0].get(m)
-        this.m01 = mojangMatrixFields[ 1].get(m)
-        this.m02 = mojangMatrixFields[ 2].get(m)
-        this.m03 = mojangMatrixFields[ 3].get(m)
-        this.m10 = mojangMatrixFields[ 4].get(m)
-        this.m11 = mojangMatrixFields[ 5].get(m)
-        this.m12 = mojangMatrixFields[ 6].get(m)
-        this.m13 = mojangMatrixFields[ 7].get(m)
-        this.m20 = mojangMatrixFields[ 8].get(m)
-        this.m21 = mojangMatrixFields[ 9].get(m)
-        this.m22 = mojangMatrixFields[10].get(m)
-        this.m23 = mojangMatrixFields[11].get(m)
-        this.m30 = mojangMatrixFields[12].get(m)
-        this.m31 = mojangMatrixFields[13].get(m)
-        this.m32 = mojangMatrixFields[14].get(m)
-        this.m33 = mojangMatrixFields[15].get(m)
+        @Suppress("CAST_NEVER_SUCCEEDS") val imatrix = m as IMatrix4f
+        this.m00 = imatrix.m00.toDouble()
+        this.m01 = imatrix.m01.toDouble()
+        this.m02 = imatrix.m02.toDouble()
+        this.m03 = imatrix.m03.toDouble()
+        this.m10 = imatrix.m10.toDouble()
+        this.m11 = imatrix.m11.toDouble()
+        this.m12 = imatrix.m12.toDouble()
+        this.m13 = imatrix.m13.toDouble()
+        this.m20 = imatrix.m20.toDouble()
+        this.m21 = imatrix.m21.toDouble()
+        this.m22 = imatrix.m22.toDouble()
+        this.m23 = imatrix.m23.toDouble()
+        this.m30 = imatrix.m30.toDouble()
+        this.m31 = imatrix.m31.toDouble()
+        this.m32 = imatrix.m32.toDouble()
+        this.m33 = imatrix.m33.toDouble()
     }
 
     operator fun get(row: Int, col: Int): Double {
@@ -266,30 +268,48 @@ open class Matrix4d: Cloneable {
         return createRotation(rot).mul(this).toImmutable()
     }
 
-    fun transformAffine3d(v: Vec3d): Vec3d {
-        return transformAffine3d(v.x, v.y, v.z)
+    /**
+     * Transforms the passed vector using this [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix).
+     */
+    fun transform(v: Vec3d): Vec3d {
+        return transform(v.x, v.y, v.z)
     }
 
-    fun transformAffine3d(x: Double, y: Double, z: Double): Vec3d {
+    /**
+     * Transforms the passed vector using this [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix).
+     */
+    fun transform(x: Double, y: Double, z: Double): Vec3d {
         return vec(
             m00 * x + m01 * y + m02 * z + m03 * 1,
             m10 * x + m11 * y + m12 * z + m13 * 1,
             m20 * x + m21 * y + m22 * z + m23 * 1)
     }
 
-    fun transform(v: Vec3d): Vec3d {
-        return transform(v.x, v.y, v.z)
+    /**
+     * Transforms the passed vector using this [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix),
+     * returning the X axis of the result. This method, along with [transformY] and [transformZ], allow applying
+     * transforms without creating new [Vec3d] objects.
+     */
+    fun transformX(x: Double, y: Double, z: Double): Double {
+        return m00 * x + m01 * y + m02 * z + m03 * 1
     }
 
-    fun transform(x: Float, y: Float, z: Float): Vec3d {
-        return transform(x.toDouble(), y.toDouble(), z.toDouble())
+    /**
+     * Transforms the passed vector using this [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix),
+     * returning the Y axis of the result. This method, along with [transformX] and [transformZ], allow applying
+     * transforms without creating new [Vec3d] objects.
+     */
+    fun transformY(x: Double, y: Double, z: Double): Double {
+        return m10 * x + m11 * y + m12 * z + m13 * 1
     }
 
-    fun transform(x: Double, y: Double, z: Double): Vec3d {
-        return vec(
-            m00 * x + m01 * y + m02 * z,
-            m10 * x + m11 * y + m12 * z,
-            m20 * x + m21 * y + m22 * z)
+    /**
+     * Transforms the passed vector using this [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix),
+     * returning the Z axis of the result. This method, along with [transformX] and [transformY], allow applying
+     * transforms without creating new [Vec3d] objects.
+     */
+    fun transformZ(x: Double, y: Double, z: Double): Double {
+        return m20 * x + m21 * y + m22 * z + m23 * 1
     }
 
     open fun floor(): Matrix4d {
@@ -337,9 +357,9 @@ open class Matrix4d: Cloneable {
         return negate()
     }
 
-    /** Applies an affine transform on the passed vector. Equivalent to `transform(v.x, v.y, 1).xy` */
+    /** Transforms the vector using this matrix */
     @JvmSynthetic
-    operator fun times(v: Vec3d): Vec3d = transformAffine3d(v)
+    operator fun times(v: Vec3d): Vec3d = transform(v)
 
     open fun transpose(): Matrix4d {
         return Matrix4d(
@@ -569,28 +589,6 @@ open class Matrix4d: Cloneable {
             m10: Double, m11: Double, m12: Double,
             m20: Double, m21: Double, m22: Double): Double {
             return m00 * (m11 * m22 - m12 * m21) - m01 * (m10 * m22 - m12 * m20) + m02 * (m10 * m21 - m11 * m20)
-        }
-
-        internal val mojangMatrixFields: List<FieldMirror> by lazy {
-            val matrix = Mirror.reflectClass<Matrix4f>()
-            listOf(
-                matrix.getDeclaredField(obf("m00", "field_226575_a_")),
-                matrix.getDeclaredField(obf("m01", "field_226576_b_")),
-                matrix.getDeclaredField(obf("m02", "field_226577_c_")),
-                matrix.getDeclaredField(obf("m03", "field_226578_d_")),
-                matrix.getDeclaredField(obf("m10", "field_226579_e_")),
-                matrix.getDeclaredField(obf("m11", "field_226580_f_")),
-                matrix.getDeclaredField(obf("m12", "field_226581_g_")),
-                matrix.getDeclaredField(obf("m13", "field_226582_h_")),
-                matrix.getDeclaredField(obf("m20", "field_226583_i_")),
-                matrix.getDeclaredField(obf("m21", "field_226584_j_")),
-                matrix.getDeclaredField(obf("m22", "field_226585_k_")),
-                matrix.getDeclaredField(obf("m23", "field_226586_l_")),
-                matrix.getDeclaredField(obf("m30", "field_226587_m_")),
-                matrix.getDeclaredField(obf("m31", "field_226588_n_")),
-                matrix.getDeclaredField(obf("m32", "field_226589_o_")),
-                matrix.getDeclaredField(obf("m33", "field_226590_p_"))
-            )
         }
     }
 }
