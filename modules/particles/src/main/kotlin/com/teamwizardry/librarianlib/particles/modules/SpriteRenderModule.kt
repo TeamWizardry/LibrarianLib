@@ -2,34 +2,24 @@ package com.teamwizardry.librarianlib.particles.modules
 
 import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.platform.GlStateManager
-<<<<<<< HEAD
-import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
-import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
-import com.teamwizardry.librarianlib.core.util.Client
-=======
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
 import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.DefaultRenderStates
->>>>>>> master
 import com.teamwizardry.librarianlib.particles.BlendMode
 import com.teamwizardry.librarianlib.particles.ParticleRenderModule
 import com.teamwizardry.librarianlib.particles.ParticleUpdateModule
 import com.teamwizardry.librarianlib.particles.ReadParticleBinding
 import com.teamwizardry.librarianlib.particles.bindings.ConstantBinding
 import net.minecraft.client.renderer.Matrix4f
-<<<<<<< HEAD
-import net.minecraft.client.renderer.RenderType
-import net.minecraft.client.renderer.Vector4f
-=======
 import net.minecraft.client.renderer.RenderState
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.Vector4f
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
->>>>>>> master
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.MathHelper
+import org.lwjgl.opengl.GL11
 
 /**
  * The bread-and-butter render module, a simple billboarded sprite.
@@ -226,31 +216,6 @@ class SpriteRenderModule @JvmOverloads constructor(
 
         buffer.finish()
     }
-<<<<<<< HEAD
-
-    companion object {
-        @JvmStatic
-        fun simpleRenderType(
-            /**
-             * The sprite texture to use
-             */
-            sprite: ResourceLocation,
-            /**
-             * The OpenGL source/dest enableBlend factors. A null value disables blending.
-             */
-            blendMode: BlendMode? = BlendMode.NORMAL,
-            /**
-             * Whether to write to the depth buffer
-             */
-            writeDepth: Boolean = true,
-            /**
-             * Whether to automatically sort particles by depth. It hasn't yet been determined whether this or the
-             * [DepthSortModule] are faster.
-             */
-            depthSort: Boolean = false
-        ): RenderType {
-            return SpriteRenderType.spriteRenderType(sprite, blendMode, writeDepth, depthSort)
-=======
 
     companion object {
         @JvmStatic
@@ -298,7 +263,6 @@ class SpriteRenderModule @JvmOverloads constructor(
             return RenderType.makeType(
                 "particle_type", DefaultVertexFormats.POSITION_COLOR_TEX, GL11.GL_QUADS, 256, false, false, renderState.build(true)
             )
->>>>>>> master
         }
     }
 }
