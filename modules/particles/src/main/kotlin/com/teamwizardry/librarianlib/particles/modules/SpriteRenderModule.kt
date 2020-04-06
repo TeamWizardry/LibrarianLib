@@ -2,19 +2,24 @@ package com.teamwizardry.librarianlib.particles.modules
 
 import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.platform.GlStateManager
+import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
 import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.kotlin.DefaultRenderStates
 import com.teamwizardry.librarianlib.particles.BlendMode
 import com.teamwizardry.librarianlib.particles.ParticleRenderModule
 import com.teamwizardry.librarianlib.particles.ParticleUpdateModule
 import com.teamwizardry.librarianlib.particles.ReadParticleBinding
 import com.teamwizardry.librarianlib.particles.bindings.ConstantBinding
 import net.minecraft.client.renderer.Matrix4f
+import net.minecraft.client.renderer.RenderState
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.Vector4f
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.MathHelper
+import org.lwjgl.opengl.GL11
 
 /**
  * The bread-and-butter render module, a simple billboarded sprite.
@@ -233,7 +238,31 @@ class SpriteRenderModule @JvmOverloads constructor(
              */
             depthSort: Boolean = false
         ): RenderType {
-            return SpriteRenderType.spriteRenderType(sprite, blendMode, writeDepth, depthSort)
+
+            val renderState = RenderType.State.getBuilder()
+                .texture(RenderState.TextureState(sprite, false, false))
+                .cull(DefaultRenderStates.CULL_DISABLED)
+                .alpha(DefaultRenderStates.DEFAULT_ALPHA)
+                .depthTest(DefaultRenderStates.DEPTH_LEQUAL)
+
+            if(blendMode != null) {
+                renderState.transparency(RenderState.TransparencyState("particle_transparency", Runnable {
+                    RenderSystem.enableBlend()
+                    blendMode.glApply()
+                }, Runnable {
+                    RenderSystem.disableBlend()
+                    RenderSystem.defaultBlendFunc()
+                }))
+            }
+
+            if(!writeDepth) {
+                renderState.writeMask(DefaultRenderStates.COLOR_WRITE)
+            }
+
+
+            return RenderType.makeType(
+                "particle_type", DefaultVertexFormats.POSITION_COLOR_TEX, GL11.GL_QUADS, 256, false, false, renderState.build(true)
+            )
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.math
 
+import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
 import net.minecraft.client.renderer.Matrix4f
 import net.minecraft.util.math.Vec3d
 import kotlin.math.abs
@@ -9,36 +10,41 @@ import kotlin.math.roundToLong
 // adapted from flow/math: https://github.com/flow/math
 class MutableMatrix4d: Matrix4d {
     constructor(m: Matrix4d): super(m)
+
     constructor(): super()
+
     constructor(
         m00: Float, m01: Float, m02: Float, m03: Float,
         m10: Float, m11: Float, m12: Float, m13: Float,
         m20: Float, m21: Float, m22: Float, m23: Float,
         m30: Float, m31: Float, m32: Float, m33: Float
     ): super(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33)
+
     constructor(
         m00: Double, m01: Double, m02: Double, m03: Double,
         m10: Double, m11: Double, m12: Double, m13: Double,
         m20: Double, m21: Double, m22: Double, m23: Double,
         m30: Double, m31: Double, m32: Double, m33: Double
     ): super(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33)
+
     constructor(m: Matrix4f) {
-        this.m00 = mojangMatrixFields[ 0].get(m)
-        this.m01 = mojangMatrixFields[ 1].get(m)
-        this.m02 = mojangMatrixFields[ 2].get(m)
-        this.m03 = mojangMatrixFields[ 3].get(m)
-        this.m10 = mojangMatrixFields[ 4].get(m)
-        this.m11 = mojangMatrixFields[ 5].get(m)
-        this.m12 = mojangMatrixFields[ 6].get(m)
-        this.m13 = mojangMatrixFields[ 7].get(m)
-        this.m20 = mojangMatrixFields[ 8].get(m)
-        this.m21 = mojangMatrixFields[ 9].get(m)
-        this.m22 = mojangMatrixFields[10].get(m)
-        this.m23 = mojangMatrixFields[11].get(m)
-        this.m30 = mojangMatrixFields[12].get(m)
-        this.m31 = mojangMatrixFields[13].get(m)
-        this.m32 = mojangMatrixFields[14].get(m)
-        this.m33 = mojangMatrixFields[15].get(m)
+        @Suppress("CAST_NEVER_SUCCEEDS") val imatrix = m as IMatrix4f
+        this.m00 = imatrix.m00.toDouble()
+        this.m01 = imatrix.m01.toDouble()
+        this.m02 = imatrix.m02.toDouble()
+        this.m03 = imatrix.m03.toDouble()
+        this.m10 = imatrix.m10.toDouble()
+        this.m11 = imatrix.m11.toDouble()
+        this.m12 = imatrix.m12.toDouble()
+        this.m13 = imatrix.m13.toDouble()
+        this.m20 = imatrix.m20.toDouble()
+        this.m21 = imatrix.m21.toDouble()
+        this.m22 = imatrix.m22.toDouble()
+        this.m23 = imatrix.m23.toDouble()
+        this.m30 = imatrix.m30.toDouble()
+        this.m31 = imatrix.m31.toDouble()
+        this.m32 = imatrix.m32.toDouble()
+        this.m33 = imatrix.m33.toDouble()
     }
 
     operator fun set(row: Int, col: Int, value: Double) {
@@ -132,22 +138,23 @@ class MutableMatrix4d: Matrix4d {
     }
 
     fun set(m: Matrix4f): MutableMatrix4d {
-        this.m00 = mojangMatrixFields[ 0].get(m)
-        this.m01 = mojangMatrixFields[ 1].get(m)
-        this.m02 = mojangMatrixFields[ 2].get(m)
-        this.m03 = mojangMatrixFields[ 3].get(m)
-        this.m10 = mojangMatrixFields[ 4].get(m)
-        this.m11 = mojangMatrixFields[ 5].get(m)
-        this.m12 = mojangMatrixFields[ 6].get(m)
-        this.m13 = mojangMatrixFields[ 7].get(m)
-        this.m20 = mojangMatrixFields[ 8].get(m)
-        this.m21 = mojangMatrixFields[ 9].get(m)
-        this.m22 = mojangMatrixFields[10].get(m)
-        this.m23 = mojangMatrixFields[11].get(m)
-        this.m30 = mojangMatrixFields[12].get(m)
-        this.m31 = mojangMatrixFields[13].get(m)
-        this.m32 = mojangMatrixFields[14].get(m)
-        this.m33 = mojangMatrixFields[15].get(m)
+        @Suppress("CAST_NEVER_SUCCEEDS") val imatrix = m as IMatrix4f
+        this.m00 = imatrix.m00.toDouble()
+        this.m01 = imatrix.m01.toDouble()
+        this.m02 = imatrix.m02.toDouble()
+        this.m03 = imatrix.m03.toDouble()
+        this.m10 = imatrix.m10.toDouble()
+        this.m11 = imatrix.m11.toDouble()
+        this.m12 = imatrix.m12.toDouble()
+        this.m13 = imatrix.m13.toDouble()
+        this.m20 = imatrix.m20.toDouble()
+        this.m21 = imatrix.m21.toDouble()
+        this.m22 = imatrix.m22.toDouble()
+        this.m23 = imatrix.m23.toDouble()
+        this.m30 = imatrix.m30.toDouble()
+        this.m31 = imatrix.m31.toDouble()
+        this.m32 = imatrix.m32.toDouble()
+        this.m33 = imatrix.m33.toDouble()
         return this
     }
 
