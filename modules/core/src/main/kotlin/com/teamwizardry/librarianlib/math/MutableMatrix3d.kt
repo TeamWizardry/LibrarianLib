@@ -11,7 +11,7 @@ import kotlin.math.pow
 import kotlin.math.round
 
 // adapted from flow/math: https://github.com/flow/math
-class MutableMatrix3d: Matrix3d {
+open class MutableMatrix3d: Matrix3d {
     constructor(m: Matrix3d): super(m)
 
     constructor(): super()
@@ -28,18 +28,7 @@ class MutableMatrix3d: Matrix3d {
         m20: Double, m21: Double, m22: Double
     ): super(m00, m01, m02, m10, m11, m12, m20, m21, m22)
 
-    constructor(m: Matrix3f) {
-        @Suppress("CAST_NEVER_SUCCEEDS") val imatrix = m as IMatrix3f
-        this.m00 = imatrix.m00.toDouble()
-        this.m01 = imatrix.m01.toDouble()
-        this.m02 = imatrix.m02.toDouble()
-        this.m10 = imatrix.m10.toDouble()
-        this.m11 = imatrix.m11.toDouble()
-        this.m12 = imatrix.m12.toDouble()
-        this.m20 = imatrix.m20.toDouble()
-        this.m21 = imatrix.m21.toDouble()
-        this.m22 = imatrix.m22.toDouble()
-    }
+    constructor(m: Matrix3f): super(m)
 
     operator fun set(row: Int, col: Int, value: Double) {
         if(row !in 0 .. 2 || col !in 0 .. 2) {
@@ -394,6 +383,10 @@ class MutableMatrix3d: Matrix3d {
 
     override fun rotate(rot: Quaternion): MutableMatrix3d {
         return this.set(createRotation(rot).mul(this))
+    }
+
+    override fun rotate(axis: Vec3d, angle: Double): Matrix3d {
+        return this.set(createRotation(axis, angle).mul(this))
     }
 
     override fun unaryMinus(): MutableMatrix3d {

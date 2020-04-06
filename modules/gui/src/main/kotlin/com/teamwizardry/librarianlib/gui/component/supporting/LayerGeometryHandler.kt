@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.gui.value.RMValue
 import com.teamwizardry.librarianlib.gui.value.RMValueDouble
 import com.teamwizardry.librarianlib.math.CoordinateSpace2D
 import com.teamwizardry.librarianlib.math.Matrix3d
+import com.teamwizardry.librarianlib.math.Matrix3dView
 import com.teamwizardry.librarianlib.math.MutableMatrix3d
 import com.teamwizardry.librarianlib.math.Quaternion
 import com.teamwizardry.librarianlib.math.Rect2d
@@ -105,23 +106,6 @@ interface ILayerGeometry: CoordinateSpace2D {
     var anchor: Vec2d
 
     /**
-     * An offset in this layer's coordinate space to apply to the contents of this layer
-     * (including the layer's own draw method).
-     *
-     * The X and Y position of the [bounds] property will be shifted to reflect this offset, keeping the bounds in
-     * the same position onscreen. All clipping happens before this transform, making it useful for scrolling content.
-     */
-    var contentsOffset_rm: RMValue<Vec2d>
-    /**
-     * An offset in this layer's coordinate space to apply to the contents of this layer
-     * (including the layer's own draw method).
-     *
-     * The X and Y position of the [bounds] property will be shifted to reflect this offset, keeping the bounds in
-     * the same position onscreen. All clipping happens before this transform, making it useful for scrolling content.
-     */
-    var contentsOffset: Vec2d
-
-    /**
      * The width of this layer as a double.
      *
      * Shorthand for `layer.size.x`
@@ -150,7 +134,7 @@ interface ILayerGeometry: CoordinateSpace2D {
             size = vec(value, size.y)
         }
     /**
-     * The width of this layer as an int. (rounding toward 0)
+     * The width of this layer as an int (truncating)
      *
      * Shorthand for `layer.size.xi`
      *
@@ -193,7 +177,7 @@ interface ILayerGeometry: CoordinateSpace2D {
             size = vec(size.x, value)
         }
     /**
-     * The height of this layer as an int. (rounding toward 0)
+     * The height of this layer as an int (truncating)
      *
      * Shorthand for `layer.size.yi`
      *
@@ -236,7 +220,7 @@ interface ILayerGeometry: CoordinateSpace2D {
             pos = vec(value, pos.y)
         }
     /**
-     * The X position of this layer as an int. (rounding toward 0)
+     * The X position of this layer as an int (truncating)
      *
      * Shorthand for `layer.pos.xi`
      *
@@ -279,7 +263,7 @@ interface ILayerGeometry: CoordinateSpace2D {
             pos = vec(pos.x, value)
         }
     /**
-     * The Y position of this layer as an int. (rounding toward 0)
+     * The Y position of this layer as an int (truncating)
      *
      * Shorthand for `layer.pos.yi`
      *
@@ -298,16 +282,6 @@ interface ILayerGeometry: CoordinateSpace2D {
      * this method's implementation is recommended in order to maintain normal clipping behavior.
      */
     fun isPointInBounds(point: Vec2d): Boolean
-
-    /**
-     * Applies this layer's transforms, barring the final content offset operation
-     */
-    fun glApplyTransform(inverse: Boolean)
-
-    /**
-     * Performs the final content offset operation
-     */
-    fun glApplyContentsOffset(inverse: Boolean)
 
     /**
      * Get the aggregate of this layer's contents recursively. The returned rect is in this layer's coordinates.
@@ -389,10 +363,11 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
             }
         }
     override val bounds: Rect2d
-        get() = Rect2d(-layer.contentsOffset, layer.size)
+        get() = Rect2d(vec(0, 0), layer.size)
 
     override val size_rm: RMValue<Vec2d> = RMValue(initialFrame.size) { old, new ->
         if(old != new) {
+            matrixDirty = true
             boundsChange()
             frameChange()
         }
@@ -401,16 +376,22 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
 
     override val pos_rm: RMValue<Vec2d> = RMValue(initialFrame.pos) { old, new ->
         if(old != new) {
+            matrixDirty = true
             frameChange()
         }
     }
     override var pos: Vec2d by pos_rm
 
-    override val translateZ_rm: RMValueDouble = RMValueDouble(0.0)
+    override val translateZ_rm: RMValueDouble = RMValueDouble(0.0) { old, new ->
+        if(old != new) {
+            matrixDirty = true
+        }
+    }
     override var translateZ: Double by translateZ_rm
 
     override val scale_rm: RMValue<Vec2d> = RMValue(vec(1, 1)) { old, new ->
         if(old != new) {
+            matrixDirty = true
             frameChange()
         }
     }
@@ -421,6 +402,7 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
 
     override val rotation_rm: RMValueDouble = RMValueDouble(0.0) { old, new ->
         if(old != new) {
+            matrixDirty = true
             frameChange()
         }
     }
@@ -428,53 +410,14 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
 
     override val anchor_rm: RMValue<Vec2d> = RMValue(Vec2d.ZERO) { old, new ->
         if(old != new) {
+            matrixDirty = true
             frameChange()
         }
     }
     override var anchor: Vec2d by anchor_rm
 
-    override var contentsOffset_rm: RMValue<Vec2d> = RMValue(Vec2d.ZERO) { old, new ->
-        if(old != new) {
-            boundsChange()
-        }
-    }
-    override var contentsOffset: Vec2d by contentsOffset_rm
-
     override fun isPointInBounds(point: Vec2d): Boolean {
         return point in layer.bounds && !layer.isPointClipped(point)
-    }
-
-    private var didPush = false
-    override fun glApplyTransform(inverse: Boolean) {
-        if(inverse) {
-            if(didPush) {
-                GlStateManager.popMatrix()
-            } else {
-                GlStateManager.translated(matrixParams.anchor.x, matrixParams.anchor.y, 0.0)
-                GlStateManager.scaled(matrixParams.inverseScale.x, matrixParams.inverseScale.y, 1.0)
-                GlStateManager.rotated(-Math.toDegrees(matrixParams.rotation), 0.0, 0.0, 1.0)
-                GlStateManager.translated(-matrixParams.pos.x, -matrixParams.pos.y, -layer.translateZ)
-            }
-        } else {
-            updateMatrixIfNeeded()
-            didPush = matrixParams.scale.x == 0.0 || matrixParams.scale.y == 0.0
-            if(didPush) {
-                GlStateManager.pushMatrix()
-            }
-            GlStateManager.translated(matrixParams.pos.x, matrixParams.pos.y, layer.translateZ)
-            GlStateManager.rotated(Math.toDegrees(matrixParams.rotation), 0.0, 0.0, 1.0)
-            GlStateManager.scaled(matrixParams.scale.x, matrixParams.scale.y, 1.0)
-            GlStateManager.translated(-matrixParams.anchor.x, -matrixParams.anchor.y, 0.0)
-        }
-    }
-
-    override fun glApplyContentsOffset(inverse: Boolean) {
-        val z = if(GuiLayer.showDebugTilt) 0.1 else 0.0
-        if(inverse) {
-            GlStateManager.translated(-matrixParams.contentsOffset.x, -matrixParams.contentsOffset.y, z)
-        } else {
-            GlStateManager.translated(matrixParams.contentsOffset.x, matrixParams.contentsOffset.y, z)
-        }
     }
 
     override fun getContentsBounds(
@@ -498,62 +441,53 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
     override val parentSpace: CoordinateSpace2D?
         get() = layer.parent
 
-    override var matrix: Matrix3d = Matrix3d.IDENTITY
+    // TODO: Maybe change how layout is done? If users can override pos/rot/scale properties, we can't cache the matrix.
+    private var matrixDirty = true
+    private var _matrix = MutableMatrix3d()
+    override var matrix: Matrix3d = Matrix3dView(_matrix)
         get() {
-            updateMatrixIfNeeded()
+            if(matrixDirty) {
+                updateMatrix()
+            }
             return field
         }
         private set
 
-    override var inverseMatrix: Matrix3d = Matrix3d.IDENTITY
+    private var _inverseMatrix = MutableMatrix3d()
+    override var inverseMatrix: Matrix3d = Matrix3dView(_inverseMatrix)
         get() {
-            updateMatrixIfNeeded()
+            if(matrixDirty) {
+                updateMatrix()
+            }
             return field
         }
         private set
 
-    data class MatrixParams(val pos: Vec2d = Vec2d.ZERO, val rotation: Double = 0.0, val scale: Vec2d = vec(1, 1),
-        val inverseScale: Vec2d = vec(1, 1), val anchor: Vec2d = Vec2d.ZERO, val contentsOffset: Vec2d = Vec2d.ZERO)
-    var matrixParams = MatrixParams()
-
-    private fun createMatrix() {
-        val matrix = MutableMatrix3d()
-        matrix.translate(matrixParams.pos)
-        matrix.rotate(vec(0, 0, 1), matrixParams.rotation)
-        matrix.scale(matrixParams.scale.x, matrixParams.scale.y, 1.0)
-        matrix.translate(-matrixParams.anchor)
-        matrix.translate(matrixParams.contentsOffset)
-        this.matrix = Matrix3d(matrix)
-
-        val inverseMatrix = MutableMatrix3d()
-        inverseMatrix.translate(-matrixParams.contentsOffset)
-        inverseMatrix.translate(matrixParams.anchor)
-        inverseMatrix.scale(matrixParams.inverseScale.x, matrixParams.inverseScale.y, 1.0)
-        inverseMatrix.rotate(vec(0, 0, 1), -matrixParams.rotation)
-        inverseMatrix.translate(-matrixParams.pos)
-        this.inverseMatrix = Matrix3d(inverseMatrix)
-    }
-
-    private fun updateMatrixIfNeeded() {
+    private fun updateMatrix() {
         val inverseScale = vec(
             if(layer.scale2d.x == 0.0) Double.POSITIVE_INFINITY else 1.0/layer.scale2d.x,
             if(layer.scale2d.y == 0.0) Double.POSITIVE_INFINITY else 1.0/layer.scale2d.y
         )
-        val newParams = MatrixParams(layer.pos, layer.rotation, layer.scale2d, inverseScale,
-            layer.anchor * layer.size, layer.contentsOffset)
 
-        if(newParams != matrixParams) {
-            matrixParams = newParams
-            createMatrix()
-        }
+        val matrix = MutableMatrix3d()
+        matrix.translate(layer.pos)
+        matrix.rotate(vec(0, 0, 1), layer.rotation)
+        matrix.scale(layer.scale2d.x, layer.scale2d.y, 1.0)
+        matrix.translate(-layer.anchor * layer.size)
+        this.matrix = Matrix3d(matrix)
+
+        val inverseMatrix = MutableMatrix3d()
+        inverseMatrix.translate(layer.anchor * layer.size)
+        inverseMatrix.scale(inverseScale.x, inverseScale.y, 1.0)
+        inverseMatrix.rotate(vec(0, 0, 1), -layer.rotation)
+        inverseMatrix.translate(-layer.pos)
+        this.inverseMatrix = Matrix3d(inverseMatrix)
     }
 
-    // MAKE PUBLIC AND RENAME
     private fun boundsChange() {
         layer.setNeedsLayout()
     }
 
-    // MAKE PUBLIC AND RENAME
     private fun frameChange() {
         layer.parent?.setNeedsLayout()
     }

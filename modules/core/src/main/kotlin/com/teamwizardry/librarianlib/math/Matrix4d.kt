@@ -13,27 +13,29 @@ import kotlin.math.pow
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.ceil
+import kotlin.math.cos
 import kotlin.math.roundToLong
+import kotlin.math.sin
 import kotlin.math.tan
 
 // adapted from flow/math: https://github.com/flow/math
 open class Matrix4d: Cloneable {
-    internal var m00: Double
-    internal var m01: Double
-    internal var m02: Double
-    internal var m03: Double
-    internal var m10: Double
-    internal var m11: Double
-    internal var m12: Double
-    internal var m13: Double
-    internal var m20: Double
-    internal var m21: Double
-    internal var m22: Double
-    internal var m23: Double
-    internal var m30: Double
-    internal var m31: Double
-    internal var m32: Double
-    internal var m33: Double
+    internal open var m00: Double
+    internal open var m01: Double
+    internal open var m02: Double
+    internal open var m03: Double
+    internal open var m10: Double
+    internal open var m11: Double
+    internal open var m12: Double
+    internal open var m13: Double
+    internal open var m20: Double
+    internal open var m21: Double
+    internal open var m22: Double
+    internal open var m23: Double
+    internal open var m30: Double
+    internal open var m31: Double
+    internal open var m32: Double
+    internal open var m33: Double
     @Volatile
     @Transient
     private var hashCode = 0
@@ -268,6 +270,10 @@ open class Matrix4d: Cloneable {
         return createRotation(rot).mul(this).toImmutable()
     }
 
+    open fun rotate(axis: Vec3d, angle: Double): Matrix4d {
+        return createRotation(axis, angle).mul(this).toImmutable()
+    }
+
     /**
      * Transforms the passed vector using this [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix).
      */
@@ -496,6 +502,23 @@ open class Matrix4d: Cloneable {
                 2 * rot.y * rot.z + 2 * rot.x * rot.w,
                 1 - 2 * rot.x * rot.x - 2 * rot.y * rot.y, 0.0,
                 0.0, 0.0, 0.0, 1.0)
+        }
+
+        internal fun createRotation(axis: Vec3d, angle: Double): MutableMatrix4d {
+            // https://en.wikipedia.org/wiki/Rotation_matrix#Conversion_from_and_to_axis%E2%80%93angle
+            val len = axis.length()
+            val x = axis.x / len
+            val y = axis.y / len
+            val z = axis.z / len
+            val cos = cos(angle)
+            val sin = sin(angle)
+
+            return temporaryMatrix.set(
+                cos + x*x*(1-cos), x*y*(1-cos) - z*sin, x*z*(1-cos) + y*sin, 0.0,
+                y*x*(1-cos) + z*sin, cos + y*y*(1-cos), y*z*(1-cos) - x*sin, 0.0,
+                z*x*(1-cos) - y*sin, z*y*(1-cos) + x*sin, cos + z*z*(1-cos), 0.0,
+                0.0, 0.0, 0.0, 1.0
+            )
         }
 
         /**

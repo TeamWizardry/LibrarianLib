@@ -1,5 +1,5 @@
 package com.teamwizardry.librarianlib.gui.provided.filter
-
+/*
 import com.teamwizardry.librarianlib.features.kotlin.Client
 import com.teamwizardry.librarianlib.features.shader.Shader
 import com.teamwizardry.librarianlib.features.shader.ShaderHelper
@@ -118,3 +118,4 @@ object GaussianBlurShader : Shader(null, ResourceLocation("librarianlib:shaders/
         return kernel
     }
 }
+ */

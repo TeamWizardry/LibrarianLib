@@ -1,5 +1,5 @@
 package com.teamwizardry.librarianlib.gui.provided.filter
-
+/*
 import com.teamwizardry.librarianlib.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.gui.component.GuiLayerFilter
 import com.teamwizardry.librarianlib.gui.value.RMValueInt
@@ -52,3 +52,4 @@ class GaussianBlurFilter(sigma: Int): GuiLayerFilter() {
         GL11.glDisable(GL11.GL_TEXTURE_1D)
     }
 }
+ */

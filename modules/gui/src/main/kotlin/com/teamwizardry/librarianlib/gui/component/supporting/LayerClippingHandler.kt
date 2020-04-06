@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.gui.component.supporting
 import com.mojang.blaze3d.platform.GlStateManager
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.pos
+import com.teamwizardry.librarianlib.gui.component.GuiDrawContext
 import com.teamwizardry.librarianlib.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.gui.value.RMValueDouble
 import com.teamwizardry.librarianlib.gui.value.RMValueInt
@@ -94,24 +95,23 @@ class LayerClippingHandler: ILayerClipping {
      */
     override var customClipping: (() -> Unit)? = null
 
-    internal fun pushEnable() {
+    internal fun pushEnable(context: GuiDrawContext) {
         if (clipToBounds || clippingSprite != null || customClipping != null) {
-            StencilUtil.push { stencil() }
+            StencilUtil.push { stencil(context) }
         }
     }
 
-    internal fun popDisable() {
+    internal fun popDisable(context: GuiDrawContext) {
         if (clipToBounds || clippingSprite != null || customClipping != null) {
-            StencilUtil.pop { stencil() }
+            StencilUtil.pop { stencil(context) }
         }
     }
 
-    private fun stencil() {
+    private fun stencil(context: GuiDrawContext) {
         customClipping?.let {
             it()
             GlStateManager.enableTexture()
             return
-
         }
 
         val sp = clippingSprite

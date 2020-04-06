@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.gui.component.supporting
 
 import com.teamwizardry.librarianlib.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.gui.component.GuiDrawContext
 import com.teamwizardry.librarianlib.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.gui.value.IMValueBoolean
@@ -62,7 +63,7 @@ interface ILayerBase {
      *
      * @sample ILayerRendering.glStateGuarantees
      */
-    fun draw(partialTicks: Float)
+    fun draw(context: GuiDrawContext)
 
     /**
      * Called to lay out the children of this layer.
@@ -142,7 +143,7 @@ internal class LayerBaseHandler: ILayerBase {
         }
     }
 
-    override fun draw(partialTicks: Float) {}
+    override fun draw(context: GuiDrawContext) {}
 
     override fun layoutChildren() {}
 

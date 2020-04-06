@@ -128,12 +128,12 @@ open class GuiLayer private constructor(
         relationships.parent = value
     }
 
-    override fun drawDebugBoundingBox() {
+    override fun drawDebugBoundingBox(context: GuiDrawContext) {
         val wrapper = wrapper
         if(wrapper != null) {
-            wrapper.drawDebugBoundingBox()
+            wrapper.drawDebugBoundingBox(context)
         } else {
-            render.drawDebugBoundingBox()
+            render.drawDebugBoundingBox(context)
         }
     }
 

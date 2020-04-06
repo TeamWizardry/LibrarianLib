@@ -81,7 +81,7 @@ open class GuiComponent private constructor(
 
         if(GuiLayer.showDebugTilt) {
             GlStateManager.lineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
-            GlStateManager.color3f(0f, 0f, 0f)
+            GlStateManager.color4f(0f, 0f, 0f, 1f)
             val tessellator = Tessellator.getInstance()
             val vb = tessellator.buffer
             vb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION)
@@ -99,9 +99,9 @@ open class GuiComponent private constructor(
         }
 
         GlStateManager.lineWidth(overrideDebugLineWidth ?: 2f)
-        GlStateManager.color3f(1f, 0f, 1f)
-        if (this.mouseHit != null) GlStateManager.color3f(0.25f, 0.25f, 0.25f)
-        if (mouseOver) GlStateManager.color3f(1f, 1f, 1f)
+        GlStateManager.color4f(1f, 0f, 1f, 1f)
+        if (this.mouseHit != null) GlStateManager.color4f(0.25f, 0.25f, 0.25f, 1f)
+        if (mouseOver) GlStateManager.color4f(1f, 1f, 1f, 1f)
 
         super.drawDebugBoundingBox()
     }

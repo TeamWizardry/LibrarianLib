@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.gui.component.supporting
 
 import com.mojang.blaze3d.platform.GlStateManager
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.gui.component.GuiDrawContext
 import com.teamwizardry.librarianlib.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.gui.component.GuiLayerFilter
@@ -58,32 +59,31 @@ interface ILayerRendering {
     /**
      * Renders this layer and its sublayers. This method handles the internals of rendering a layer, to simply render
      * content in a layer use [GuiLayer.draw]
-     * @param mousePos Mouse position relative to the position of this component
-     * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
      */
-    fun renderLayer(partialTicks: Float)
+    fun renderLayer(context: GuiDrawContext)
 
-    fun renderSkeleton()
+    fun renderSkeleton(context: GuiDrawContext)
 
     /**
      * Draws a flat colored box over this layer, rounding corners as necessary
      */
-    fun drawLayerOverlay()
+    fun drawLayerOverlay(context: GuiDrawContext)
 
     /**
      * Draws a bounding box around the edge of this component
      */
-    fun drawDebugBoundingBox()
+    fun drawDebugBoundingBox(context: GuiDrawContext)
 
     /**
      * Creates a series of points defining the path the debug bounding box follows. For culling reasons this list
      * must be in clockwise order
      */
-    fun createDebugBoundingBoxPoints(): List<Vec2d>
+    fun createDebugBoundingBoxPoints(context: GuiDrawContext): List<Vec2d>
 
     fun shouldDrawSkeleton(): Boolean
 
     companion object {
+        //TODO: Remove once we've safely ported old code that depends on these guarantees.
         @JvmStatic
         fun glStateGuarantees() {
             GlStateManager.enableTexture()
@@ -123,27 +123,17 @@ class LayerRenderHandler: ILayerRendering {
         return RenderMode.DIRECT
     }
 
-    /**
-     * Draw this component, don't override in subclasses unless you know what you're doing.
-     *
-     * @param mousePos Mouse position relative to the position of this component
-     * @param partialTicks From 0-1 the additional fractional ticks, used for smooth animations that aren't dependant on wall-clock time
-     */
-    override fun renderLayer(partialTicks: Float) {
-        layer.runLayoutIfNeeded()
+    override fun renderLayer(context: GuiDrawContext) {
+        context.matrix.push()
 
         if(!layer.isVisible) {
-            renderSkeleton()
+            renderSkeleton(context)
             return
         }
 
-        layer.BUS.fire(GuiLayerEvents.PreTransformEvent(partialTicks))
+        context.matrix *= layer.matrix
 
-        layer.glApplyTransform(false)
-
-        layer.BUS.fire(GuiLayerEvents.PostTransformEvent(partialTicks))
-
-        layer.clipping.pushEnable()
+        layer.clipping.pushEnable(context)
 
         val renderMode = actualRenderMode()
         if(renderMode != RenderMode.DIRECT) {
@@ -201,81 +191,49 @@ class LayerRenderHandler: ILayerRendering {
             }
             */
         } else {
-            drawContent(partialTicks) {
-                layer.forEachChild {
-                    if(it !is MaskLayer)
-                        it.renderLayer(partialTicks)
-                }
+            context.matrix.assertEvenDepth {
+                ILayerRendering.glStateGuarantees()
+                layer.draw(context)
+            }
+            layer.forEachChild {
+                if(it !is MaskLayer)
+                    it.renderLayer(context)
             }
         }
 
-        layer.clipping.popDisable()
+        layer.clipping.popDisable(context)
 
         if (GuiLayer.showDebugBoundingBox && !layer.isInMask) {
             GlStateManager.lineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
-            GlStateManager.color3f(.75f, 0f, .75f)
-            layer.drawDebugBoundingBox()
+            GlStateManager.color4f(.75f, 0f, .75f, 1f)
+            layer.drawDebugBoundingBox(context)
         }
         if (GuiLayer.showLayoutOverlay && layer.didLayout && !layer.isInMask) {
             GlStateManager.color4f(1f, 0f, 0f, 0.1f)
-            layer.drawLayerOverlay()
+            layer.drawLayerOverlay(context)
         }
         layer.didLayout = false
-
-        layer.glApplyTransform(true)
-    }
-
-    private fun drawContent(partialTicks: Float, drawChildren: () -> Unit) {
-        layer.glApplyContentsOffset(false)
-
-        GlStateManager.pushMatrix()
-        layer.BUS.fire(GuiLayerEvents.PreDrawEvent(partialTicks))
-
-        ILayerRendering.glStateGuarantees()
-        layer.draw(partialTicks)
-        ILayerRendering.glStateGuarantees()
-
-        GlStateManager.popMatrix()
-
-        layer.BUS.fire(GuiLayerEvents.PreChildrenDrawEvent(partialTicks))
-        drawChildren()
-
-        GlStateManager.pushMatrix()
-        layer.BUS.fire(GuiLayerEvents.PostDrawEvent(partialTicks))
-        GlStateManager.popMatrix()
-
-        layer.glApplyContentsOffset(true)
     }
 
     override fun shouldDrawSkeleton(): Boolean = false
 
-    override fun renderSkeleton() {
-        layer.runLayoutIfNeeded()
-
-        layer.glApplyTransform(false)
-
-        layer.glApplyContentsOffset(false)
-
-        layer.forEachChild { it.render.renderSkeleton() }
-
-        layer.glApplyContentsOffset(true)
+    override fun renderSkeleton(context: GuiDrawContext) {
+        layer.forEachChild { it.render.renderSkeleton(context) }
 
         if (GuiLayer.showDebugBoundingBox && !layer.isInMask &&
             GuiLayer.showDebugTilt && layer.shouldDrawSkeleton()) {
             GlStateManager.lineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
-            GlStateManager.color3f(.75f, 0f, .75f)
+            GlStateManager.color4f(.75f, 0f, .75f, 1f)
             GL11.glEnable(GL11.GL_LINE_STIPPLE)
             GL11.glLineStipple(2, 0b0011_0011_0011_0011.toShort())
-            layer.drawDebugBoundingBox()
+            layer.drawDebugBoundingBox(context)
             GL11.glDisable(GL11.GL_LINE_STIPPLE)
         }
-
-        layer.glApplyTransform(true)
     }
 
-    override fun drawLayerOverlay() {
+    override fun drawLayerOverlay(context: GuiDrawContext) {
         GlStateManager.disableTexture()
-        val points = createDebugBoundingBoxPoints()
+        val points = createDebugBoundingBoxPoints(context)
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
         vb.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION)
@@ -285,9 +243,9 @@ class LayerRenderHandler: ILayerRendering {
         tessellator.draw()
     }
 
-    override fun drawDebugBoundingBox() {
+    override fun drawDebugBoundingBox(context: GuiDrawContext) {
         GlStateManager.disableTexture()
-        val points = createDebugBoundingBoxPoints()
+        val points = createDebugBoundingBoxPoints(context)
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
         vb.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
@@ -304,7 +262,7 @@ class LayerRenderHandler: ILayerRendering {
         }
     }
 
-    override fun createDebugBoundingBoxPoints(): List<Vec2d> {
+    override fun createDebugBoundingBoxPoints(context: GuiDrawContext): List<Vec2d> {
         val list = mutableListOf<Vec2d>()
         if(layer.clipToBounds && layer.cornerRadius != 0.0) {
             val rad = layer.cornerRadius

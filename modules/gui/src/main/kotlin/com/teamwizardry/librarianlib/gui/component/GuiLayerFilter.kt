@@ -22,10 +22,10 @@ abstract class GuiLayerFilter {
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
         vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
-        vb.pos(0.0, size.y, 0.0).tex(0.0, 1.0 - maxV).endVertex()
-        vb.pos(size.x, size.y, 0.0).tex(maxU, 1.0 - maxV).endVertex()
-        vb.pos(size.x, 0.0, 0.0).tex(maxU, 1.0).endVertex()
-        vb.pos(0.0, 0.0, 0.0).tex(0.0, 1.0).endVertex()
+        vb.pos(0.0, size.y, 0.0).tex(0f, 1f - maxV.toFloat()).endVertex()
+        vb.pos(size.x, size.y, 0.0).tex(maxU.toFloat(), 1f - maxV.toFloat()).endVertex()
+        vb.pos(size.x, 0.0, 0.0).tex(maxU.toFloat(), 1f).endVertex()
+        vb.pos(0.0, 0.0, 0.0).tex(0f, 1f).endVertex()
         tessellator.draw()
     }
 

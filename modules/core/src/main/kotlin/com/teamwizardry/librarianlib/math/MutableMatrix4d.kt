@@ -4,11 +4,13 @@ import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
 import net.minecraft.client.renderer.Matrix4f
 import net.minecraft.util.math.Vec3d
 import kotlin.math.abs
+import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.roundToLong
 
 // adapted from flow/math: https://github.com/flow/math
-class MutableMatrix4d: Matrix4d {
+open class MutableMatrix4d: Matrix4d {
     constructor(m: Matrix4d): super(m)
 
     constructor(): super()
@@ -239,22 +241,27 @@ class MutableMatrix4d: Matrix4d {
     }
 
     override fun mul(m: Matrix4d): MutableMatrix4d {
-        m00 = m00 * m.m00 + m01 * m.m10 + m02 * m.m20 + m03 * m.m30
-        m01 = m00 * m.m01 + m01 * m.m11 + m02 * m.m21 + m03 * m.m31
-        m02 = m00 * m.m02 + m01 * m.m12 + m02 * m.m22 + m03 * m.m32
-        m03 = m00 * m.m03 + m01 * m.m13 + m02 * m.m23 + m03 * m.m33
-        m10 = m10 * m.m00 + m11 * m.m10 + m12 * m.m20 + m13 * m.m30
-        m11 = m10 * m.m01 + m11 * m.m11 + m12 * m.m21 + m13 * m.m31
-        m12 = m10 * m.m02 + m11 * m.m12 + m12 * m.m22 + m13 * m.m32
-        m13 = m10 * m.m03 + m11 * m.m13 + m12 * m.m23 + m13 * m.m33
-        m20 = m20 * m.m00 + m21 * m.m10 + m22 * m.m20 + m23 * m.m30
-        m21 = m20 * m.m01 + m21 * m.m11 + m22 * m.m21 + m23 * m.m31
-        m22 = m20 * m.m02 + m21 * m.m12 + m22 * m.m22 + m23 * m.m32
-        m23 = m20 * m.m03 + m21 * m.m13 + m22 * m.m23 + m23 * m.m33
-        m30 = m30 * m.m00 + m31 * m.m10 + m32 * m.m20 + m33 * m.m30
-        m31 = m30 * m.m01 + m31 * m.m11 + m32 * m.m21 + m33 * m.m31
-        m32 = m30 * m.m02 + m31 * m.m12 + m32 * m.m22 + m33 * m.m32
-        m33 = m30 * m.m03 + m31 * m.m13 + m32 * m.m23 + m33 * m.m33
+        val _m00 = m00; val _m01 = m01; val _m02 = m02; val _m03 = m03
+        val _m10 = m10; val _m11 = m11; val _m12 = m12; val _m13 = m13
+        val _m20 = m20; val _m21 = m21; val _m22 = m22; val _m23 = m23
+        val _m30 = m30; val _m31 = m31; val _m32 = m32; val _m33 = m33
+
+        m00 = _m00 * m.m00 + _m01 * m.m10 + _m02 * m.m20 + _m03 * m.m30
+        m01 = _m00 * m.m01 + _m01 * m.m11 + _m02 * m.m21 + _m03 * m.m31
+        m02 = _m00 * m.m02 + _m01 * m.m12 + _m02 * m.m22 + _m03 * m.m32
+        m03 = _m00 * m.m03 + _m01 * m.m13 + _m02 * m.m23 + _m03 * m.m33
+        m10 = _m10 * m.m00 + _m11 * m.m10 + _m12 * m.m20 + _m13 * m.m30
+        m11 = _m10 * m.m01 + _m11 * m.m11 + _m12 * m.m21 + _m13 * m.m31
+        m12 = _m10 * m.m02 + _m11 * m.m12 + _m12 * m.m22 + _m13 * m.m32
+        m13 = _m10 * m.m03 + _m11 * m.m13 + _m12 * m.m23 + _m13 * m.m33
+        m20 = _m20 * m.m00 + _m21 * m.m10 + _m22 * m.m20 + _m23 * m.m30
+        m21 = _m20 * m.m01 + _m21 * m.m11 + _m22 * m.m21 + _m23 * m.m31
+        m22 = _m20 * m.m02 + _m21 * m.m12 + _m22 * m.m22 + _m23 * m.m32
+        m23 = _m20 * m.m03 + _m21 * m.m13 + _m22 * m.m23 + _m23 * m.m33
+        m30 = _m30 * m.m00 + _m31 * m.m10 + _m32 * m.m20 + _m33 * m.m30
+        m31 = _m30 * m.m01 + _m31 * m.m11 + _m32 * m.m21 + _m33 * m.m31
+        m32 = _m30 * m.m02 + _m31 * m.m12 + _m32 * m.m22 + _m33 * m.m32
+        m33 = _m30 * m.m03 + _m31 * m.m13 + _m32 * m.m23 + _m33 * m.m33
         return this
     }
 
@@ -346,43 +353,47 @@ class MutableMatrix4d: Matrix4d {
         return this.set(createRotation(rot).mul(this))
     }
 
+    override fun rotate(axis: Vec3d, angle: Double): Matrix4d {
+        return this.set(createRotation(axis, angle).mul(this))
+    }
+
     override fun floor(): MutableMatrix4d {
-        m00 = kotlin.math.floor(m00)
-        m01 = kotlin.math.floor(m01)
-        m02 = kotlin.math.floor(m02)
-        m03 = kotlin.math.floor(m03)
-        m10 = kotlin.math.floor(m10)
-        m11 = kotlin.math.floor(m11)
-        m12 = kotlin.math.floor(m12)
-        m13 = kotlin.math.floor(m13)
-        m20 = kotlin.math.floor(m20)
-        m21 = kotlin.math.floor(m21)
-        m22 = kotlin.math.floor(m22)
-        m23 = kotlin.math.floor(m23)
-        m30 = kotlin.math.floor(m30)
-        m31 = kotlin.math.floor(m31)
-        m32 = kotlin.math.floor(m32)
-        m33 = kotlin.math.floor(m33)
+        m00 = floor(m00)
+        m01 = floor(m01)
+        m02 = floor(m02)
+        m03 = floor(m03)
+        m10 = floor(m10)
+        m11 = floor(m11)
+        m12 = floor(m12)
+        m13 = floor(m13)
+        m20 = floor(m20)
+        m21 = floor(m21)
+        m22 = floor(m22)
+        m23 = floor(m23)
+        m30 = floor(m30)
+        m31 = floor(m31)
+        m32 = floor(m32)
+        m33 = floor(m33)
         return this
     }
 
     override fun ceil(): MutableMatrix4d {
-        m00 = kotlin.math.ceil(m00)
-        m01 = kotlin.math.ceil(m01)
-        m02 = kotlin.math.ceil(m02)
-        m03 = kotlin.math.ceil(m03)
-        m10 = kotlin.math.ceil(m10)
-        m11 = kotlin.math.ceil(m11)
-        m12 = kotlin.math.ceil(m12)
-        m13 = kotlin.math.ceil(m13)
-        m20 = kotlin.math.ceil(m20)
-        m21 = kotlin.math.ceil(m21)
-        m22 = kotlin.math.ceil(m22)
-        m23 = kotlin.math.ceil(m23)
-        m30 = kotlin.math.ceil(m30)
-        m31 = kotlin.math.ceil(m31)
-        m32 = kotlin.math.ceil(m32)
-        m33 = kotlin.math.ceil(m33)
+        m00 = ceil(m00)
+        m01 = ceil(m01)
+        m02 = ceil(m02)
+        m03 = ceil(m03)
+        m10 = ceil(m10)
+        m11 = ceil(m11)
+        m12 = ceil(m12)
+        m13 = ceil(m13)
+        m20 = ceil(m20)
+        m21 = ceil(m21)
+        m22 = ceil(m22)
+        m23 = ceil(m23)
+        m30 = ceil(m30)
+        m31 = ceil(m31)
+        m32 = ceil(m32)
+        m33 = ceil(m33)
         return this
     }
 
@@ -407,22 +418,22 @@ class MutableMatrix4d: Matrix4d {
     }
 
     override fun abs(): MutableMatrix4d {
-        m00 = kotlin.math.abs(m00)
-        m01 = kotlin.math.abs(m01)
-        m02 = kotlin.math.abs(m02)
-        m03 = kotlin.math.abs(m03)
-        m10 = kotlin.math.abs(m10)
-        m11 = kotlin.math.abs(m11)
-        m12 = kotlin.math.abs(m12)
-        m13 = kotlin.math.abs(m13)
-        m20 = kotlin.math.abs(m20)
-        m21 = kotlin.math.abs(m21)
-        m22 = kotlin.math.abs(m22)
-        m23 = kotlin.math.abs(m23)
-        m30 = kotlin.math.abs(m30)
-        m31 = kotlin.math.abs(m31)
-        m32 = kotlin.math.abs(m32)
-        m33 = kotlin.math.abs(m33)
+        m00 = abs(m00)
+        m01 = abs(m01)
+        m02 = abs(m02)
+        m03 = abs(m03)
+        m10 = abs(m10)
+        m11 = abs(m11)
+        m12 = abs(m12)
+        m13 = abs(m13)
+        m20 = abs(m20)
+        m21 = abs(m21)
+        m22 = abs(m22)
+        m23 = abs(m23)
+        m30 = abs(m30)
+        m31 = abs(m31)
+        m32 = abs(m32)
+        m33 = abs(m33)
         return this
     }
 
@@ -451,22 +462,27 @@ class MutableMatrix4d: Matrix4d {
     }
 
     override fun transpose(): MutableMatrix4d {
-        m00 = m00
-        m01 = m10
-        m02 = m20
-        m03 = m30
-        m10 = m01
-        m11 = m11
-        m12 = m21
-        m13 = m31
-        m20 = m02
-        m21 = m12
-        m22 = m22
-        m23 = m32
-        m30 = m03
-        m31 = m13
-        m32 = m23
-        m33 = m33
+        val _m00 = m00; val _m01 = m01; val _m02 = m02; val _m03 = m03
+        val _m10 = m10; val _m11 = m11; val _m12 = m12; val _m13 = m13
+        val _m20 = m20; val _m21 = m21; val _m22 = m22; val _m23 = m23
+        val _m30 = m30; val _m31 = m31; val _m32 = m32; val _m33 = m33
+
+        m00 = _m00
+        m01 = _m10
+        m02 = _m20
+        m03 = _m30
+        m10 = _m01
+        m11 = _m11
+        m12 = _m21
+        m13 = _m31
+        m20 = _m02
+        m21 = _m12
+        m22 = _m22
+        m23 = _m32
+        m30 = _m03
+        m31 = _m13
+        m32 = _m23
+        m33 = _m33
         return this
     }
 
@@ -475,22 +491,27 @@ class MutableMatrix4d: Matrix4d {
         if (abs(det) < DBL_EPSILON) {
             throw ArithmeticException("Cannot inverse a matrix with a zero determinant")
         }
-        m00 = det3(m11, m21, m31, m12, m22, m32, m13, m23, m33) / det
-        m01 = -det3(m01, m21, m31, m02, m22, m32, m03, m23, m33) / det
-        m02 = det3(m01, m11, m31, m02, m12, m32, m03, m13, m33) / det
-        m03 = -det3(m01, m11, m21, m02, m12, m22, m03, m13, m23) / det
-        m10 = -det3(m10, m20, m30, m12, m22, m32, m13, m23, m33) / det
-        m11 = det3(m00, m20, m30, m02, m22, m32, m03, m23, m33) / det
-        m12 = -det3(m00, m10, m30, m02, m12, m32, m03, m13, m33) / det
-        m13 = det3(m00, m10, m20, m02, m12, m22, m03, m13, m23) / det
-        m20 = det3(m10, m20, m30, m11, m21, m31, m13, m23, m33) / det
-        m21 = -det3(m00, m20, m30, m01, m21, m31, m03, m23, m33) / det
-        m22 = det3(m00, m10, m30, m01, m11, m31, m03, m13, m33) / det
-        m23 = -det3(m00, m10, m20, m01, m11, m21, m03, m13, m23) / det
-        m30 = -det3(m10, m20, m30, m11, m21, m31, m12, m22, m32) / det
-        m31 = det3(m00, m20, m30, m01, m21, m31, m02, m22, m32) / det
-        m32 = -det3(m00, m10, m30, m01, m11, m31, m02, m12, m32) / det
-        m33 = det3(m00, m10, m20, m01, m11, m21, m02, m12, m22) / det
+        val _m00 = m00; val _m01 = m01; val _m02 = m02; val _m03 = m03
+        val _m10 = m10; val _m11 = m11; val _m12 = m12; val _m13 = m13
+        val _m20 = m20; val _m21 = m21; val _m22 = m22; val _m23 = m23
+        val _m30 = m30; val _m31 = m31; val _m32 = m32; val _m33 = m33
+
+        m00 = det3(_m11, _m21, _m31, _m12, _m22, _m32, _m13, _m23, _m33) / det
+        m01 = -det3(_m01, _m21, _m31, _m02, _m22, _m32, _m03, _m23, _m33) / det
+        m02 = det3(_m01, _m11, _m31, _m02, _m12, _m32, _m03, _m13, _m33) / det
+        m03 = -det3(_m01, _m11, _m21, _m02, _m12, _m22, _m03, _m13, _m23) / det
+        m10 = -det3(_m10, _m20, _m30, _m12, _m22, _m32, _m13, _m23, _m33) / det
+        m11 = det3(_m00, _m20, _m30, _m02, _m22, _m32, _m03, _m23, _m33) / det
+        m12 = -det3(_m00, _m10, _m30, _m02, _m12, _m32, _m03, _m13, _m33) / det
+        m13 = det3(_m00, _m10, _m20, _m02, _m12, _m22, _m03, _m13, _m23) / det
+        m20 = det3(_m10, _m20, _m30, _m11, _m21, _m31, _m13, _m23, _m33) / det
+        m21 = -det3(_m00, _m20, _m30, _m01, _m21, _m31, _m03, _m23, _m33) / det
+        m22 = det3(_m00, _m10, _m30, _m01, _m11, _m31, _m03, _m13, _m33) / det
+        m23 = -det3(_m00, _m10, _m20, _m01, _m11, _m21, _m03, _m13, _m23) / det
+        m30 = -det3(_m10, _m20, _m30, _m11, _m21, _m31, _m12, _m22, _m32) / det
+        m31 = det3(_m00, _m20, _m30, _m01, _m21, _m31, _m02, _m22, _m32) / det
+        m32 = -det3(_m00, _m10, _m30, _m01, _m11, _m31, _m02, _m12, _m32) / det
+        m33 = det3(_m00, _m10, _m20, _m01, _m11, _m21, _m02, _m12, _m22) / det
         return this
     }
 

@@ -14,16 +14,20 @@ import kotlin.math.roundToLong
 import kotlin.math.sin
 
 // adapted from flow/math: https://github.com/flow/math
-open class Matrix3d: Cloneable {
-    internal var m00: Double
-    internal var m01: Double
-    internal var m02: Double
-    internal var m10: Double
-    internal var m11: Double
-    internal var m12: Double
-    internal var m20: Double
-    internal var m21: Double
-    internal var m22: Double
+open class Matrix3d(
+    m00: Double, m01: Double, m02: Double,
+    m10: Double, m11: Double, m12: Double,
+    m20: Double, m21: Double, m22: Double
+): Cloneable {
+    internal open var m00: Double = m00
+    internal open var m01: Double = m01
+    internal open var m02: Double = m02
+    internal open var m10: Double = m10
+    internal open var m11: Double = m11
+    internal open var m12: Double = m12
+    internal open var m20: Double = m20
+    internal open var m21: Double = m21
+    internal open var m22: Double = m22
     @Volatile
     @Transient
     private var hashCode = 0
@@ -33,46 +37,34 @@ open class Matrix3d: Cloneable {
         m.m10, m.m11, m.m12,
         m.m20, m.m21, m.m22)
 
-    constructor() : this(
-        1f, 0f, 0f,
-        0f, 1f, 0f,
-        0f, 0f, 1f)
-
     constructor(
         m00: Float, m01: Float, m02: Float,
         m10: Float, m11: Float, m12: Float,
-        m20: Float, m21: Float, m22: Float): this(
+        m20: Float, m21: Float, m22: Float
+    ): this(
         m00.toDouble(), m01.toDouble(), m02.toDouble(),
         m10.toDouble(), m11.toDouble(), m12.toDouble(),
-        m20.toDouble(), m21.toDouble(), m22.toDouble())
+        m20.toDouble(), m21.toDouble(), m22.toDouble()
+    )
 
-    constructor(
-        m00: Double, m01: Double, m02: Double,
-        m10: Double, m11: Double, m12: Double,
-        m20: Double, m21: Double, m22: Double) {
-        this.m00 = m00
-        this.m01 = m01
-        this.m02 = m02
-        this.m10 = m10
-        this.m11 = m11
-        this.m12 = m12
-        this.m20 = m20
-        this.m21 = m21
-        this.m22 = m22
-    }
+    constructor(): this(
+        1.0, 0.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 0.0, 1.0
+    )
 
-    constructor(m: Matrix3f) {
-        @Suppress("CAST_NEVER_SUCCEEDS") val imatrix = m as IMatrix3f
-        this.m00 = imatrix.m00.toDouble()
-        this.m01 = imatrix.m01.toDouble()
-        this.m02 = imatrix.m02.toDouble()
-        this.m10 = imatrix.m10.toDouble()
-        this.m11 = imatrix.m11.toDouble()
-        this.m12 = imatrix.m12.toDouble()
-        this.m20 = imatrix.m20.toDouble()
-        this.m21 = imatrix.m21.toDouble()
-        this.m22 = imatrix.m22.toDouble()
-    }
+    @Suppress("CAST_NEVER_SUCCEEDS")
+    constructor(m: Matrix3f): this(
+        (m as IMatrix3f).m00,
+        (m as IMatrix3f).m01,
+        (m as IMatrix3f).m02,
+        (m as IMatrix3f).m10,
+        (m as IMatrix3f).m11,
+        (m as IMatrix3f).m12,
+        (m as IMatrix3f).m20,
+        (m as IMatrix3f).m21,
+        (m as IMatrix3f).m22
+    )
 
     operator fun get(row: Int, col: Int): Double {
         when (row) {
@@ -210,11 +202,15 @@ open class Matrix3d: Cloneable {
     }
 
     open fun scale(x: Double, y: Double, z: Double): Matrix3d {
-        return createScaling(x, y, z).mul(this)
+        return createScaling(x, y, z).mul(this).toImmutable()
     }
 
     open fun rotate(rot: Quaternion): Matrix3d {
-        return createRotation(rot).mul(this)
+        return createRotation(rot).mul(this).toImmutable()
+    }
+
+    open fun rotate(axis: Vec3d, angle: Double): Matrix3d {
+        return createRotation(axis, angle).mul(this).toImmutable()
     }
 
     /**
@@ -427,8 +423,8 @@ open class Matrix3d: Cloneable {
             // https://en.wikipedia.org/wiki/Rotation_matrix#Conversion_from_and_to_axis%E2%80%93angle
             val len = axis.length()
             val x = axis.x / len
-            val y = axis.x / len
-            val z = axis.x / len
+            val y = axis.y / len
+            val z = axis.z / len
             val cos = cos(angle)
             val sin = sin(angle)
 

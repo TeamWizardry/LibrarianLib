@@ -32,33 +32,21 @@ import com.teamwizardry.librarianlib.utilities.eventbus.Event
  * - |-- Fires [GuiComponentEvents.MouseMoveOutEvent]
  * - |-- Fires [GuiComponentEvents.MouseDragInEvent]
  * - |-- Fires [GuiComponentEvents.MouseMoveInEvent]
+ * (TODO: this is a good spot for the update event. Right after input but before rendering)
  * - **Update cursor icon (GuiComponent)**
  * - **Render**
  * - |-- Calls [GuiLayer.drawDebugBoundingBox]
- * - |-- Fires [GuiLayerEvents.PreTransformEvent]
  * - |-- Applies layer transform
- * - |-- Fires [GuiLayerEvents.PostTransformEvent]
  * - |-- Pushes clipping
- * - |-- Applies contents offset
- * - |-- Fires [GuiLayerEvents.PreDrawEvent]
  * - |-- Calls [GuiLayer.draw]
- * - |-- Fires [GuiLayerEvents.PreChildrenDrawEvent]
  * - |-- Renders children
- * - |-- Fires [GuiLayerEvents.PostDrawEvent]
- * - |-- Reverses contents offset
- * - |-- Pops clipping clipping
+ * - |-- Pops clipping
  * - |-- Draws debug bounding box, if enabled
- * - |-- Reverses layer transform
  */
 object GuiLayerEvents {
     class Update : Event()
     class Tick : Event()
     class PreFrameEvent : Event()
-    class PreTransformEvent(val partialTicks: Float) : Event()
-    class PostTransformEvent(val partialTicks: Float) : Event()
-    class PreDrawEvent(val partialTicks: Float) : Event()
-    class PostDrawEvent(val partialTicks: Float) : Event(true)
-    class PreChildrenDrawEvent(val partialTicks: Float) : Event()
     class AddChildEvent(val child: GuiLayer) : CancelableEvent()
     class RemoveChildEvent(val child: GuiLayer) : CancelableEvent()
     class AddToParentEvent(val parent: GuiLayer) : CancelableEvent()

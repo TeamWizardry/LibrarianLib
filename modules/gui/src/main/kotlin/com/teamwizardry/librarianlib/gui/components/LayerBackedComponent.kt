@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.gui.components
 
 import com.teamwizardry.librarianlib.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.gui.component.GuiDrawContext
 import com.teamwizardry.librarianlib.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.gui.component.supporting.ILayerBase
 import com.teamwizardry.librarianlib.gui.component.supporting.ILayerClipping
@@ -32,8 +33,8 @@ class LayerBackedComponent(val layer: GuiLayer): GuiComponent(0, 0, 0, 0),
         layer.setParentInternal(value)
     }
 
-    override fun drawDebugBoundingBox() {
-        super.drawDebugBoundingBox()
+    override fun drawDebugBoundingBox(context: GuiDrawContext) {
+        super.drawDebugBoundingBox(context)
     }
 
     override fun add(vararg layers: GuiLayer) {
