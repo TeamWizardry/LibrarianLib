@@ -21,10 +21,11 @@ object LibrarianLibSpritesTestMod: TestMod("sprites", "Sprites", logger) {
             scale = 4
             lazyConfig {
                 client {
-//                    val sprite = Sprite("librarianlib-sprites-test:textures/gui/no_mcmeta.png".toRl())
+                    val tex = Texture("librarianlib-sprites-test:textures/gui/no_mcmeta.png".toRl(), 32, 32)
+                    val sprite = tex.getSprite("")
 
                     draw {
-//                        sprite.draw(0, 0f, 0f)
+                        sprite.draw(0, 0f, 0f)
                     }
                 }
             }

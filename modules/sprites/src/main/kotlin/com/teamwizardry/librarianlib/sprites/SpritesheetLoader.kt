@@ -27,6 +27,7 @@ internal object SpritesheetLoader : ReloadListener<Map<ResourceLocation, Sprites
 
     val missingnoSheet: SpritesheetDefinition get() = getDefinition(missingno)
     val missingnoSprite: SpriteDefinition get() = getDefinition(missingno).sprites[0]
+    val missingnoColor: ColorDefinition get() = getDefinition(missingno).colors[0]
 
     fun getDefinition(location: ResourceLocation): SpritesheetDefinition {
         val def = definitions.getOrPut(location) {
@@ -79,9 +80,13 @@ internal object SpritesheetLoader : ReloadListener<Map<ResourceLocation, Sprites
         val (json, image) = resource.use {
             val image = ImageIO.read(resource.inputStream)
             return@use Pair(
-                resource.getMetadata(SpritesheetJson.SERIALIZER) ?: throw IllegalStateException("Couldn't find sprite sheet metadata for $location"),
+                resource.getMetadata(SpritesheetJson.SERIALIZER),
                 image
             )
+        }
+
+        if(json == null) {
+            return loadRaw(manager, location, resource, image)
         }
 
         val sheet = SpritesheetDefinition(location)
@@ -160,9 +165,8 @@ internal object SpritesheetLoader : ReloadListener<Map<ResourceLocation, Sprites
     }
 
     private fun loadRaw(manager: IResourceManager, location: ResourceLocation, resource: IResource, image: BufferedImage): SpritesheetDefinition {
-        logger.warn("No spritesheet MCMETA found for $location. Loading it as a single sprite.")
-
         val sheet = SpritesheetDefinition(location)
+        sheet.singleSprite = true
 
         val animation = resource.getMetadata(AnimationMetadataSection.SERIALIZER)
 

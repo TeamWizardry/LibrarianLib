@@ -9,7 +9,8 @@ import java.lang.ref.WeakReference
 
 /**
  * This class represents a texture and it's size. It is mostly used to create [Sprite]
- * objects
+ * objects. If there is no spritesheet mcmeta the texture will be loaded as a "raw"
+ * texture, which contains a single sprite with an empty name (`""`).
  *
  * sprite information is stored in the texture .mcmeta file
  * ```json
@@ -93,13 +94,26 @@ class Texture(
 
     internal fun loadDefinition() {
         definition = SpritesheetLoader.getDefinition(location)
-        sprites.forEach { (name, sprite) ->
+        sprites.forEach { (_, sprite) ->
             sprite.loadDefinition()
+        }
+        colors.forEach { (_, color) ->
+            color.loadDefinition()
         }
     }
 
     internal fun getSpriteDefinition(name: String): SpriteDefinition {
+        if(definition.singleSprite && name != "") {
+            logger.warn("Attempted to load a named sprite ('$name') from a raw texture ('$location')")
+        }
         return definition.sprites.find { it.name == name } ?: SpritesheetLoader.missingnoSprite
+    }
+
+    internal fun getColorDefinition(name: String): ColorDefinition {
+        if(definition.singleSprite && name != "") {
+            logger.warn("Attempted to load a color ('$name') from a raw texture ('$location')")
+        }
+        return definition.colors.find { it.name == name } ?: SpritesheetLoader.missingnoColor
     }
 
     internal fun logicalU(pixels: Int): Int {
@@ -121,7 +135,7 @@ class Texture(
      * Gets the color with the specified name
      */
     fun getColor(name: String): Color {
-        return colors.getOrPut(name) { TextureColor() }.color
+        return colors.getOrPut(name) { TextureColor(this, name) }.color
     }
 
     private var blending = false
@@ -173,15 +187,26 @@ class Texture(
         internal var textures = mutableListOf<WeakReference<Texture>>().synchronized()
     }
 
-    private class TextureColor {
-        var u: Int = 0
-        var v: Int = 0
-        var color = Color.WHITE
+    private class TextureColor(private val texture: Texture, val name: String) {
+        lateinit var definition: ColorDefinition
             internal set
 
-        fun init(def: ColorJson) {
-            this.u = def.u
-            this.v = def.v
+        var u: Int = 0
+            private set
+        var v: Int = 0
+            private set
+        var color = Color.WHITE
+            private set
+
+        init {
+            loadDefinition()
+        }
+
+        internal fun loadDefinition() {
+            definition = texture.getColorDefinition(name)
+            u = definition.uv.x
+            v = definition.uv.y
+            color = definition.color
         }
     }
 }
