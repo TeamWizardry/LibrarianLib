@@ -5,7 +5,7 @@ var Opcodes = org.objectweb.asm.Opcodes;
 
 function initializeCoreMod() {
     return {
-        "virtual_pack_injector": {
+        "fallbackresourcemanager": {
             "target": {
                 "type": "CLASS",
                 "name": "net/minecraft/resources/FallbackResourceManager"
@@ -20,7 +20,7 @@ function initializeCoreMod() {
                         insnList.add(
                             new MethodInsnNode(Opcodes.INVOKESTATIC,
                                 "com/teamwizardry/librarianlib/virtualresources/VirtualResources",
-                                "inject-asm", "(Lnet/minecraft/resources/FallbackResourceManager;)V"
+                                "fallbackresourcemanager-init-asm", "(Lnet/minecraft/resources/FallbackResourceManager;)V"
                             )
                         );
                         for(var i = 0; i < method.instructions.size(); i++) {

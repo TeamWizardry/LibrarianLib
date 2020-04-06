@@ -16,7 +16,7 @@ var methodNames = [
 
 function initializeCoreMod() {
     return {
-        "virtual_namespace_fallback": {
+        "simplereloadableresourcemanager": {
             "target": {
                 "type": "CLASS",
                 "name": "net/minecraft/resources/SimpleReloadableResourceManager"
@@ -43,7 +43,7 @@ function initializeCoreMod() {
 //   CHECKCAST net/minecraft/resources/IResourceManager
 // + ALOAD 0
 // + GETFIELD net/minecraft/resources/SimpleReloadableResourceManager.type : Lnet/minecraft/resources/ResourcePackType;
-// + INVOKESTATIC com/teamwizardry/librarianlib/virtualresources/VirtualResources.fallbackManager-asm (Lnet/minecraft/resources/IResourceManager;Lnet/minecraft/resources/ResourcePackType;)Lnet/minecraft/resources/IResourceManager;
+// + INVOKESTATIC com/teamwizardry/librarianlib/virtualresources/VirtualResources.simplereloadableresourcemanager-namespace_fallback-asm (Lnet/minecraft/resources/IResourceManager;Lnet/minecraft/resources/ResourcePackType;)Lnet/minecraft/resources/IResourceManager;
 //   ASTORE 2
 //
 function transform(method) {
@@ -60,7 +60,7 @@ function transform(method) {
                     ),
                     new MethodInsnNode(Opcodes.INVOKESTATIC,
                         "com/teamwizardry/librarianlib/virtualresources/VirtualResources",
-                        "fallbackManager-asm", "(Lnet/minecraft/resources/IResourceManager;Lnet/minecraft/resources/ResourcePackType;)Lnet/minecraft/resources/IResourceManager;"
+                        "simplereloadableresourcemanager-namespace_fallback-asm", "(Lnet/minecraft/resources/IResourceManager;Lnet/minecraft/resources/ResourcePackType;)Lnet/minecraft/resources/IResourceManager;"
                     )
                 )
             );

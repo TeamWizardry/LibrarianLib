@@ -1,13 +1,16 @@
 package com.teamwizardry.librarianlib.virtualresources
 
 import com.teamwizardry.librarianlib.core.util.kotlin.synchronized
+import net.minecraft.client.resources.Locale
 import net.minecraft.resources.FallbackResourceManager
 import net.minecraft.resources.IResourceManager
 import net.minecraft.resources.IResourcePack
 import net.minecraft.resources.ResourcePack
 import net.minecraft.resources.ResourcePackType
+import net.minecraft.resources.SimpleReloadableResourceManager
 import net.minecraft.resources.data.IMetadataSectionSerializer
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.text.LanguageMap
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import java.io.ByteArrayInputStream
@@ -23,6 +26,7 @@ class VirtualResources internal constructor(val type: ResourcePackType) {
     internal val files = mutableMapOf<ResourceLocation, ByteArray>().synchronized()
     internal val generators = mutableMapOf<ResourceLocation, () -> ByteArray>().synchronized()
     internal val packs = mutableListOf<VirtualResourcePack>().synchronized()
+    internal val languageKeys = mutableMapOf<String, String>().synchronized()
     internal val lock = ReentrantReadWriteLock()
 
     fun remove(location: ResourceLocation): Boolean {
@@ -33,7 +37,6 @@ class VirtualResources internal constructor(val type: ResourcePackType) {
             return removed
         }
     }
-
 
     fun removeFile(location: ResourceLocation): Boolean {
         lock.write {
@@ -85,6 +88,16 @@ class VirtualResources internal constructor(val type: ResourcePackType) {
         }
     }
 
+    /**
+     * Add a language key.
+     */
+    fun addLanguageKey(name: String, value: String) {
+        lock.write {
+            languageKeys[name] = value
+            logger.debug("Added language key")
+        }
+    }
+
     internal inline fun <T> read(callback: (VirtualResources) -> T): T = lock.read { callback(this) }
     internal inline fun <T> write(callback: (VirtualResources) -> T): T = lock.write { callback(this) }
 
@@ -104,9 +117,12 @@ class VirtualResources internal constructor(val type: ResourcePackType) {
         /**
          * This injects our virtual resource pack as a last resort for every FallbackResourceManager
          * in the game.
+         *
+         * Injects in:
+         * - [FallbackResourceManager.&lt;init&gt;][FallbackResourceManager]
          */
         @JvmStatic
-        fun `inject-asm`(pack: FallbackResourceManager) {
+        fun `fallbackresourcemanager-init-asm`(pack: FallbackResourceManager) {
             pack.resourcePacks.add(Pack)
         }
 
@@ -115,11 +131,58 @@ class VirtualResources internal constructor(val type: ResourcePackType) {
          * SimpleReloadableResourceManager isn't aware of a namespace it'll bail out early, never
          * even checking if any packs contain that asset. This provides a default manager in case
          * the namespace isn't recognized, making sure that it'll still query our pack.
+         *
+         * Injects in:
+         * - [SimpleReloadableResourceManager.getResource]
+         * - [SimpleReloadableResourceManager.hasResource]
+         * - [SimpleReloadableResourceManager.getAllResources]
+         * - [SimpleReloadableResourceManager.getAllResourceLocations]
          */
         @JvmStatic
-        fun `fallbackManager-asm`(manager: IResourceManager?, type: ResourcePackType): IResourceManager? {
-            if(manager != null) return manager
-            return resources(type).fallback
+        fun `simplereloadableresourcemanager-namespace_fallback-asm`(manager: IResourceManager?, type: ResourcePackType): IResourceManager? {
+            return manager ?: resources(type).fallback
+        }
+
+        /**
+         * Injects in:
+         * - [LanguageMap.tryTranslateKey]
+         */
+        @JvmStatic
+        fun `languagemap-trytranslatekey-asm`(result: String?, key: String?): String? {
+            return result
+                ?: resources(ResourcePackType.SERVER_DATA).read { it.languageKeys[key] }
+                ?: resources(ResourcePackType.CLIENT_RESOURCES).read { it.languageKeys[key] }
+        }
+
+        /**
+         * Injects in:
+         * - [LanguageMap.exists]
+         */
+        @JvmStatic
+        fun `languagemap-exists-asm`(result: Boolean, key: String?): Boolean {
+            return result ||
+                resources(ResourcePackType.SERVER_DATA).read { key in it.languageKeys } ||
+                resources(ResourcePackType.CLIENT_RESOURCES).read { key in it.languageKeys }
+        }
+
+        /**
+         *
+         */
+        @JvmStatic
+        fun `locale-translatekeyprivate-asm`(result: String?, key: String?): String? {
+            return result
+                ?: resources(ResourcePackType.SERVER_DATA).read { it.languageKeys[key] }
+                ?: resources(ResourcePackType.CLIENT_RESOURCES).read { it.languageKeys[key] }
+        }
+
+        /**
+         *
+         */
+        @JvmStatic
+        fun `locale-haskey-asm`(result: Boolean, key: String?): Boolean {
+            return result ||
+                resources(ResourcePackType.SERVER_DATA).read { key in it.languageKeys } ||
+                resources(ResourcePackType.CLIENT_RESOURCES).read { key in it.languageKeys }
         }
     }
 

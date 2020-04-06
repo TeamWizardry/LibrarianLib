@@ -179,24 +179,20 @@ abstract class TestMod(targetName: String, val humanName: String, logger: Logger
     }
 
     private fun generateLanguageAssets() {
-        VirtualResources.client.add(ResourceLocation(ModLoadingContext.get().activeContainer.modId, "lang/en_us.json")) {
-            val keys = languageKeys()
-            return@add "{\n" + keys.map {
-                "    '${it.key}': \"${it.value.replace("\n", "\\n").replace("\"", "\\\"")}\""
-            }.joinToString(",\n") + "\n}"
+        languageKeys().forEach { (key, value) ->
+            VirtualResources.client.addLanguageKey(key, value)
         }
-
     }
 
     private fun languageKeys(): Map<String, String> {
         val keys = mutableMapOf<String, String>()
-        keys["itemGroup.$name"] = "$humanName Test"
+        keys[itemGroup.translationKey] = "$humanName Test"
         items.forEach { item ->
             if(item is TestItem) {
                 val registryName = item.registryName!!
                 keys[registryName.translationKey("item")] = item.config.name
                 item.config.description?.also {
-                    keys[registryName.translationKey("item", "tooltip")] = it.replace("\n", "\\n")
+                    keys[registryName.translationKey("item", "tooltip")] = it
                 }
             }
         }
@@ -205,7 +201,7 @@ abstract class TestMod(targetName: String, val humanName: String, logger: Logger
                 val registryName = block.registryName!!
                 keys[registryName.translationKey("block")] = block.config.name
                 block.config.description?.also {
-                    keys[registryName.translationKey("block", "tooltip")] = it.replace("\n", "\\n")
+                    keys[registryName.translationKey("block", "tooltip")] = it
                 }
             }
         }
