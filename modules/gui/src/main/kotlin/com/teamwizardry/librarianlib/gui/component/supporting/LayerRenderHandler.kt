@@ -6,7 +6,6 @@ import com.teamwizardry.librarianlib.gui.component.GuiDrawContext
 import com.teamwizardry.librarianlib.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.gui.component.GuiLayerFilter
-import com.teamwizardry.librarianlib.gui.layers.MaskLayer
 import com.teamwizardry.librarianlib.gui.value.IMValue
 import com.teamwizardry.librarianlib.gui.value.RMValueDouble
 import com.teamwizardry.librarianlib.math.Vec2d
@@ -125,13 +124,13 @@ class LayerRenderHandler: ILayerRendering {
 
     override fun renderLayer(context: GuiDrawContext) {
         context.matrix.push()
+        context.matrix *= layer.matrix
 
         if(!layer.isVisible) {
             renderSkeleton(context)
+            context.matrix.pop()
             return
         }
-
-        context.matrix *= layer.matrix
 
         layer.clipping.pushEnable(context)
 
@@ -196,7 +195,7 @@ class LayerRenderHandler: ILayerRendering {
                 layer.draw(context)
             }
             layer.forEachChild {
-                if(it !is MaskLayer)
+//                if(it !is MaskLayer) // TODO: masking
                     it.renderLayer(context)
             }
         }
@@ -213,6 +212,8 @@ class LayerRenderHandler: ILayerRendering {
             layer.drawLayerOverlay(context)
         }
         layer.didLayout = false
+
+        context.matrix.pop()
     }
 
     override fun shouldDrawSkeleton(): Boolean = false

@@ -1,21 +1,19 @@
 package com.teamwizardry.librarianlib.gui.components
 
-import com.teamwizardry.librarianlib.core.LibrarianLib
+import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.gui.component.GuiComponentEvents
+import com.teamwizardry.librarianlib.gui.component.GuiDrawContext
 import com.teamwizardry.librarianlib.gui.component.GuiLayer
-import com.teamwizardry.librarianlib.gui.provided.pastry.components.PastryTooltip
-import com.teamwizardry.librarianlib.features.helpers.vec
-import com.teamwizardry.librarianlib.features.math.Vec2d
-import com.teamwizardry.librarianlib.features.math.coordinatespaces.CoordinateSpace2D
-import com.teamwizardry.librarianlib.features.math.coordinatespaces.ScreenSpace
-import com.teamwizardry.librarianlib.features.utilities.client.StencilUtil
+import com.teamwizardry.librarianlib.gui.component.supporting.StencilUtil
+import com.teamwizardry.librarianlib.math.CoordinateSpace2D
+import com.teamwizardry.librarianlib.math.Matrix3dStack
+import com.teamwizardry.librarianlib.math.ScreenSpace
+import com.teamwizardry.librarianlib.math.Vec2d
+import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
-import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
 
 open class StandaloneRootComponent(val closeGui: (Exception) -> Unit): RootComponent(0, 0, 0, 0) {
@@ -45,8 +43,8 @@ open class StandaloneRootComponent(val closeGui: (Exception) -> Unit): RootCompo
         set(value) {}
     override var scale2d: Vec2d
         get() {
-            val scaledResolution = ScaledResolution(Minecraft.getMinecraft())
-            return vec(scaledResolution.scaleFactor, scaledResolution.scaleFactor)
+            val scaleFactor = Client.guiScaleFactor
+            return vec(scaleFactor, scaleFactor)
         }
         set(value) {}
     override var rotation: Double
@@ -55,33 +53,11 @@ open class StandaloneRootComponent(val closeGui: (Exception) -> Unit): RootCompo
     override var anchor: Vec2d
         get() = super.anchor
         set(value) {}
-    override var contentsOffset: Vec2d
-        get() = super.contentsOffset
-        set(value) {}
 
     override val parentSpace: CoordinateSpace2D?
         get() = ScreenSpace
     override val parent: GuiComponent?
         get() = null
-
-    override fun glApplyTransform(inverse: Boolean) {
-        if (GuiLayer.showDebugTilt) {
-            if(inverse) {
-                GlStateManager.translate(size.x / 2.0, size.y / 2.0, 0.0)
-                GlStateManager.rotate(20f, 0f, 1f, 0f)
-                GlStateManager.rotate(20f, 1f, 0f, 0f)
-                GlStateManager.translate(-size.x / 2.0, -size.y / 2.0, 0.0)
-            } else {
-                GlStateManager.translate(size.x / 2.0, size.y / 2.0, 0.0)
-                GlStateManager.rotate(-20f, 1f, 0f, 0f)
-                GlStateManager.rotate(-20f, 0f, 1f, 0f)
-                GlStateManager.translate(-size.x / 2.0, -size.y / 2.0, 0.0)
-            }
-        }
-    }
-    override fun glApplyContentsOffset(inverse: Boolean) {
-        // nop
-    }
 
     override fun canAddToParent(parent: GuiLayer): Boolean {
         return false
@@ -117,13 +93,14 @@ open class StandaloneRootComponent(val closeGui: (Exception) -> Unit): RootCompo
             }
 
             if(enableNativeCursor) {
-                Mouse.setNativeCursor(topMouseHit?.cursor?.lwjglCursor)
+//                Mouse.setNativeCursor(topMouseHit?.cursor?.lwjglCursor)
             }
-            renderLayer(partialTicks)
+            val context = GuiDrawContext(Matrix3dStack())
+            renderLayer(context)
         } catch(e: Exception) {
             if(!safetyNet) throw e
 
-            Mouse.setNativeCursor(null)
+//            Mouse.setNativeCursor(null)
             val tess = Tessellator.getInstance()
             try {
                 tess.buffer.finishDrawing()

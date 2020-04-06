@@ -20,7 +20,7 @@ class SafetyNetErrorScreen(e: Exception): Screen(StringTextComponent("§4§nSafe
     private val messageLines: List<String>
 
     init {
-        val fontRenderer = Client.fontRenderer
+        val fontRenderer = Client.minecraft.fontRenderer
 
         val maxWidth = 300
         val strings = mutableListOf(
@@ -36,7 +36,7 @@ class SafetyNetErrorScreen(e: Exception): Screen(StringTextComponent("§4§nSafe
             messageLines = emptyList()
         }
 
-        guiWidth = min(maxWidth, strings.map { fontRenderer.getStringWidth(it) }.max()!!).roundBy(2)
+        guiWidth = min(maxWidth, strings.map { fontRenderer.getStringWidth(it) }.max()!!) / 2 * 2
         guiHeight = 0 +
             2 * fontRenderer.FONT_HEIGHT + gap + // title + gap + class name
             if(messageLines.isEmpty()) {
@@ -51,11 +51,11 @@ class SafetyNetErrorScreen(e: Exception): Screen(StringTextComponent("§4§nSafe
     override fun render(mouseX: Int, mouseY: Int, partialTicks: Float) {
         this.renderBackground()
 
-        val fontRenderer = Client.fontRenderer
+        val fontRenderer = Client.minecraft.fontRenderer
         val topLeft = vec(width-guiWidth, height-guiHeight) / 2
         val border = 8
 
-        Gui.drawRect(
+        fill(
             topLeft.xi - border, topLeft.yi - border,
             topLeft.xi + guiWidth + border, topLeft.yi + guiHeight + border,
             Color.lightGray.rgb
@@ -75,7 +75,7 @@ class SafetyNetErrorScreen(e: Exception): Screen(StringTextComponent("§4§nSafe
         y += fontRenderer.FONT_HEIGHT + gap
 
         if(messageLines.isNotEmpty()) {
-            Gui.drawRect(-guiWidth/2, y-1, guiWidth/2, y, Color.darkGray.rgb)
+            fill(-guiWidth/2, y-1, guiWidth/2, y, Color.darkGray.rgb)
             y += 1 + gap
             if(messageLines.size == 1) {
                 drawCenteredStringNoShadow(fontRenderer, messageLines[0], 0, y, 0)

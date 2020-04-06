@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.gui.component.supporting
 
 import com.teamwizardry.librarianlib.gui.component.GuiComponent
 import com.teamwizardry.librarianlib.gui.component.GuiLayer
-import com.teamwizardry.librarianlib.gui.provided.pastry.components.PastryBasicTooltip
+//import com.teamwizardry.librarianlib.gui.provided.pastry.components.PastryBasicTooltip
 import com.teamwizardry.librarianlib.gui.value.IMValue
 import com.teamwizardry.librarianlib.gui.value.IMValueInt
 import com.teamwizardry.librarianlib.gui.value.RMValue
@@ -46,7 +46,7 @@ interface IComponentTooltip {
 class ComponentTooltipHandler: IComponentTooltip {
     lateinit var component: GuiComponent
 
-    private val _tooltipTextLayer = PastryBasicTooltip()
+//    private val _tooltipTextLayer = PastryBasicTooltip()
 
     override val tooltipText_im: IMValue<String?> = IMValue()
     override var tooltipText: String? by tooltipText_im
@@ -59,8 +59,8 @@ class ComponentTooltipHandler: IComponentTooltip {
         get() {
             tooltip?.also { return it }
             tooltipText?.also {
-                _tooltipTextLayer.text = it
-                return _tooltipTextLayer
+//                _tooltipTextLayer.text = it
+//                return _tooltipTextLayer
             }
             return null
         }

@@ -1,11 +1,11 @@
 package com.teamwizardry.librarianlib.gui.input
 
 
-import com.mojang.blaze3d.platform.TextureUtil
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.ISimpleReloadListener
 import com.teamwizardry.librarianlib.core.util.kotlin.toRl
 import net.minecraft.client.renderer.texture.NativeImage
+import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.IFutureReloadListener
 import net.minecraft.resources.IResourceManager
@@ -52,7 +52,7 @@ class Cursor(
         val stream = Client.resourceManager.getResource(resourceLocation).inputStream
         var bytebuffer: ByteBuffer? = null
         try {
-            bytebuffer = TextureUtil.readResource(stream)
+            bytebuffer = TextureUtil.readToBuffer(stream)
             bytebuffer.rewind()
 
             MemoryStack.stackPush().use { stack ->

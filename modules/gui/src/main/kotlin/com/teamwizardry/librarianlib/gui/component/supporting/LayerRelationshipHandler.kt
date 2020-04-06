@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.gui.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.gui.component.LayerHierarchyException
-import com.teamwizardry.librarianlib.gui.layers.MaskLayer
+//import com.teamwizardry.librarianlib.gui.layers.MaskLayer
 import com.teamwizardry.librarianlib.gui.logger
 import com.teamwizardry.librarianlib.gui.value.RMValueDouble
 import java.lang.Exception
@@ -134,12 +134,12 @@ class LayerRelationshipHandler: ILayerRelationships {
 
     override val isInMask: Boolean
         get() {
-            if(layer is MaskLayer)
-                return true
+//            if(layer is MaskLayer)
+//                return true
             var head = parent
             while(head != null) {
-                if(head is MaskLayer)
-                    return true
+//                if(head is MaskLayer)
+//                    return true
                 head = head.parent
             }
             return false

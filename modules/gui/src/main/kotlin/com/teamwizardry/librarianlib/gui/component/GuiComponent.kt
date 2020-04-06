@@ -75,7 +75,7 @@ open class GuiComponent private constructor(
 
     override fun shouldDrawSkeleton(): Boolean = this.isPointInBounds(this.mousePos)
 
-    override fun drawDebugBoundingBox() {
+    override fun drawDebugBoundingBox(context: GuiDrawContext) {
 
         GlStateManager.disableTexture()
 
@@ -103,7 +103,7 @@ open class GuiComponent private constructor(
         if (this.mouseHit != null) GlStateManager.color4f(0.25f, 0.25f, 0.25f, 1f)
         if (mouseOver) GlStateManager.color4f(1f, 1f, 1f, 1f)
 
-        super.drawDebugBoundingBox()
+        super.drawDebugBoundingBox(context)
     }
 
     override fun canAddToParent(parent: GuiLayer): Boolean {

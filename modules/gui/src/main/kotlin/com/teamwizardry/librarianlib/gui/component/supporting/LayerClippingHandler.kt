@@ -234,7 +234,6 @@ class LayerClippingHandler: ILayerClipping {
 
     override fun isPointClipped(point: Vec2d): Boolean {
         if(clippingSprite != null || customClipping != null) return false // we can't clip these
-        val point = point + layer.contentsOffset
 
         if(clipToBounds) {
             val size = layer.size

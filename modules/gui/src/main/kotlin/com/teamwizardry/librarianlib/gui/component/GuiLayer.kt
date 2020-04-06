@@ -201,7 +201,6 @@ open class GuiLayer private constructor(
             if(scale2d == Vec2d.ZERO) null else "scale = $scale2d",
             if(rotation == 0.0) null else "rotation = $rotation",
             if(translateZ == 0.0) null else "translateZ = $translateZ",
-            if(contentsOffset == Vec2d.ZERO) null else "contentsOffset = $contentsOffset",
             if(clipToBounds) "clip" else null
         ).also {
             if(it.isNotEmpty())
