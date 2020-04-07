@@ -10,6 +10,8 @@ class SpritesheetDefinition internal constructor(val location: ResourceLocation)
      * True if this definition was generated for a texture that had no spritesheet mcmeta.
      */
     var singleSprite: Boolean = false
+    var blur: Boolean = false
+    var mipmap: Boolean = false
     /**
      * The size of the texture specified in the mcmeta file, used for computing 0-1 UV coordinates
      */

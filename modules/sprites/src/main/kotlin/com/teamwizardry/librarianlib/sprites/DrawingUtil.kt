@@ -1,64 +1,40 @@
 package com.teamwizardry.librarianlib.sprites
 
-import com.teamwizardry.librarianlib.core.util.kotlin.pos
+import com.mojang.blaze3d.vertex.IVertexBuilder
+import com.teamwizardry.librarianlib.core.util.kotlin.color
+import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
 import com.teamwizardry.librarianlib.core.util.kotlin.tex
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import org.lwjgl.opengl.GL11
+import com.teamwizardry.librarianlib.math.Matrix3d
+import java.awt.Color
 
 internal object DrawingUtil {
-    var isDrawing = false
-
-    /**
-     * Start drawing multiple quads to be pushed to the GPU at once
-     */
-    fun startDrawingSession() {
-        Tessellator.getInstance().buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
-        isDrawing = true
-    }
-
-    /**
-     * Finish drawing multiple quads and push them to the GPU
-     */
-    fun endDrawingSession() {
-        Tessellator.getInstance().draw()
-        isDrawing = false
-    }
-
-    fun draw(sprite: ISprite, animFrames: Int, x: Float, y: Float, width: Float, height: Float) {
-        sprite.bind()
-        val tessellator = Tessellator.getInstance()
-        val vb = tessellator.buffer
-
-        if (!isDrawing)
-            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
-
+    fun draw(sprite: ISprite, vb: IVertexBuilder, matrix: Matrix3d, x: Float, y: Float, width: Float, height: Float, animFrames: Int, tint: Color) {
         if(sprite.pinTop && sprite.pinBottom && sprite.pinLeft && sprite.pinRight &&
             sprite.minUCap == 0f && sprite.minVCap == 0f && sprite.maxUCap == 0f && sprite.maxVCap == 0f) {
-            drawSimple(sprite, animFrames, x, y, width, height)
+            drawSimple(sprite, vb, matrix, x, y, width, height, animFrames, tint)
         } else {
-            drawComplex(sprite, animFrames, x, y, width, height)
+            drawComplex(sprite, vb, matrix, x, y, width, height, animFrames, tint)
         }
-
-        if (!isDrawing)
-            tessellator.draw()
     }
 
-    private fun drawSimple(sprite: ISprite, animFrames: Int, x: Float, y: Float, width: Float, height: Float) {
+    private fun drawSimple(sprite: ISprite, vb: IVertexBuilder, matrix: Matrix3d, x: Float, y: Float, width: Float, height: Float, animFrames: Int, tint: Color) {
         val minX = x
         val minY = y
         val maxX = x + width
         val maxY = y + height
 
-        val tessellator = Tessellator.getInstance()
-        val vb = tessellator.buffer
-        vb.pos(minX, maxY, 0).tex(sprite.minU(animFrames), sprite.maxV(animFrames)).endVertex()
-        vb.pos(maxX, maxY, 0).tex(sprite.maxU(animFrames), sprite.maxV(animFrames)).endVertex()
-        vb.pos(maxX, minY, 0).tex(sprite.maxU(animFrames), sprite.minV(animFrames)).endVertex()
-        vb.pos(minX, minY, 0).tex(sprite.minU(animFrames), sprite.minV(animFrames)).endVertex()
+        val minU = sprite.minU(animFrames)
+        val maxU = sprite.maxU(animFrames)
+        val minV = sprite.minV(animFrames)
+        val maxV = sprite.maxV(animFrames)
+
+        vb.pos2d(matrix, minX, maxY).color(tint).tex(minU, maxV).endVertex()
+        vb.pos2d(matrix, maxX, maxY).color(tint).tex(maxU, maxV).endVertex()
+        vb.pos2d(matrix, maxX, minY).color(tint).tex(maxU, minV).endVertex()
+        vb.pos2d(matrix, minX, minY).color(tint).tex(minU, minV).endVertex()
     }
 
-    private fun drawComplex(sprite: ISprite, animFrames: Int, x: Float, y: Float, width: Float, height: Float) {
+    private fun drawComplex(sprite: ISprite, vb: IVertexBuilder, matrix: Matrix3d, x: Float, y: Float, width: Float, height: Float, animFrames: Int, tint: Color) {
 
         val xSections = getSections(
             logicalSize = sprite.width.toFloat(),
@@ -80,9 +56,6 @@ internal object DrawingUtil {
 
         val rotation = sprite.rotation
 
-        val tessellator = Tessellator.getInstance()
-        val vb = tessellator.buffer
-
         val spriteMinU = sprite.minU(animFrames)
         val spriteMinV = sprite.minV(animFrames)
         val spriteUSpan = sprite.maxU(animFrames) - spriteMinU
@@ -101,10 +74,10 @@ internal object DrawingUtil {
                     xSection.minTex, ySection.minTex
                 )
 
-                vb.pos(minX, maxY, 0).tex(u0, v0).endVertex()
-                vb.pos(maxX, maxY, 0).tex(u1, v1).endVertex()
-                vb.pos(maxX, minY, 0).tex(u2, v2).endVertex()
-                vb.pos(minX, minY, 0).tex(u3, v3).endVertex()
+                vb.pos2d(matrix, minX, maxY).color(tint).tex(u0, v0).endVertex()
+                vb.pos2d(matrix, maxX, maxY).color(tint).tex(u1, v1).endVertex()
+                vb.pos2d(matrix, maxX, minY).color(tint).tex(u2, v2).endVertex()
+                vb.pos2d(matrix, minX, minY).color(tint).tex(u3, v3).endVertex()
             }
         }
     }

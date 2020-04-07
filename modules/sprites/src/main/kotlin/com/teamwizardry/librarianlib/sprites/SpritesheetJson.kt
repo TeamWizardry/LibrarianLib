@@ -2,7 +2,11 @@ package com.teamwizardry.librarianlib.sprites
 
 import java.util.Arrays
 
-internal class SpritesheetJson(var width: Int, var height: Int, var sprites: List<SpriteJson>, var colors: List<ColorJson>) {
+internal class SpritesheetJson(
+    var width: Int, var height: Int,
+    var blur: Boolean, var mipmap: Boolean,
+    var sprites: List<SpriteJson>, var colors: List<ColorJson>
+) {
     companion object {
         val SERIALIZER = SpritesMetadataSectionSerializer()
     }

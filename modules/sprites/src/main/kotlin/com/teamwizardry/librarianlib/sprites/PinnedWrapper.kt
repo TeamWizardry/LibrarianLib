@@ -1,5 +1,9 @@
 package com.teamwizardry.librarianlib.sprites
 
+import com.teamwizardry.librarianlib.math.Matrix3d
+import net.minecraft.client.renderer.RenderType
+import java.awt.Color
+
 class PinnedWrapper(
     val wrapped: ISprite,
     override val pinTop: Boolean,
@@ -7,10 +11,6 @@ class PinnedWrapper(
     override val pinLeft: Boolean,
     override val pinRight: Boolean
 ): ISprite {
-
-    override fun bind() {
-        wrapped.bind()
-    }
 
     override fun minU(animFrames: Int): Float = wrapped.minU(animFrames)
     override fun minU(): Float = wrapped.minU()
@@ -21,18 +21,18 @@ class PinnedWrapper(
     override fun maxV(animFrames: Int): Float = wrapped.maxV(animFrames)
     override fun maxV(): Float = wrapped.maxV()
 
-    override fun draw(animTicks: Int, x: Float, y: Float) {
-        wrapped.draw(animTicks, x, y)
+    override fun draw(matrix: Matrix3d, x: Float, y: Float, animTicks: Int, tint: Color) {
+        wrapped.draw(matrix, x, y, animTicks, tint)
     }
-
-    override fun draw(animTicks: Int, x: Float, y: Float, width: Float, height: Float) {
-        wrapped.draw(animTicks, x, y, width, height)
+    override fun draw(matrix: Matrix3d, x: Float, y: Float, width: Float, height: Float, animTicks: Int, tint: Color) {
+        wrapped.draw(matrix, x, y, width, height, animTicks, tint)
     }
 
     override fun pinnedWrapper(top: Boolean, bottom: Boolean, left: Boolean, right: Boolean): ISprite {
         return wrapped.pinnedWrapper(top, bottom, left, right)
     }
 
+    override val renderType: RenderType get() = wrapped.renderType
     override val width: Int get() = wrapped.width
     override val height: Int get() = wrapped.height
     override val uSize: Float get() = wrapped.uSize

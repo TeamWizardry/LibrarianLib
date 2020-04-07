@@ -24,11 +24,7 @@ class SpriteLayer(var sprite: ISprite?, x: Int, y: Int, width: Int, height: Int)
     override fun draw(context: GuiDrawContext) {
         val sp = sprite ?: return
 
-        val tint = tint
-        GlStateManager.color4f(tint.red/255f, tint.green/255f, tint.blue/255f, tint.alpha/255f)
-
-        sp.bind()
-        sp.draw(animationFrame % sp.frameCount, 0f, 0f, size.xi.toFloat(), size.yi.toFloat())
+        sp.draw(context.matrix, 0f, 0f, size.xi.toFloat(), size.yi.toFloat(), animationFrame, tint)
     }
 
     override fun debugInfo(): MutableList<String> {

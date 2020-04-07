@@ -23,9 +23,17 @@ object LibrarianLibSpritesTestMod: TestMod("gui", "Gui", logger) {
 
         }
 
-        +FacadeScreenConfig("dirt", "Single Dirt Sprite") { screen ->
+        +FacadeScreenConfig("sprite", "Simple Sprite") { screen ->
             val dirt = Texture("minecraft:textures/block/dirt.png".toRl(), 16, 16)
             val layer = SpriteLayer(dirt.getSprite(""))
+            screen.facade.root.add(layer)
+        }
+
+        +FacadeScreenConfig("layer_transform", "Layer Transform") { screen ->
+            val dirt = Texture("minecraft:textures/block/dirt.png".toRl(), 16, 16)
+            val layer = SpriteLayer(dirt.getSprite(""))
+            layer.pos = vec(32, 32)
+            layer.rotation = Math.toRadians(15.0)
             screen.facade.root.add(layer)
         }
     }

@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.SidedConsumer
 import com.teamwizardry.librarianlib.core.util.SidedRunnable
 import com.teamwizardry.librarianlib.core.util.SidedSupplier
+import com.teamwizardry.librarianlib.math.Matrix3dStack
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.Minecraft

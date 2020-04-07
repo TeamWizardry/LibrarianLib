@@ -22,7 +22,14 @@ internal class SpritesMetadataSectionSerializer : IMetadataSectionSerializer<Spr
                 parseColor(name, value)
             }?.toList() ?: emptyList()
 
-            SpritesheetJson(width, height, sprites, colors)
+            var blur = false
+            var mipmap = false
+            optional("display") {
+                blur = getOrNull("blur")?.asBoolean() ?: blur
+                mipmap = getOrNull("mipmap")?.asBoolean() ?: mipmap
+            }
+
+            SpritesheetJson(width, height, blur, mipmap, sprites, colors)
         }
     }
 

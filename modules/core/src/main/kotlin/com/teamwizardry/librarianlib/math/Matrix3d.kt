@@ -213,6 +213,10 @@ open class Matrix3d(
         return createRotation(axis, angle).mul(this).toImmutable()
     }
 
+    open fun rotate2d(angle: Double): Matrix3d {
+        return createRotation2d(angle).mul(this).toImmutable()
+    }
+
     /**
      * Transforms the passed vector using this [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix).
      */
@@ -227,6 +231,24 @@ open class Matrix3d(
         return vec(
             m00 * x + m01 * y + m02 * 1,
             m10 * x + m11 * y + m12 * 1)
+    }
+
+    /**
+     * Transforms the passed vector using this [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix),
+     * returning the X axis of the result. This method, along with [transformY], allow applying transforms without
+     * creating new [Vec3d] objects.
+     */
+    fun transformX(x: Double, y: Double): Double {
+        return m00 * x + m01 * y + m02 * 1
+    }
+
+    /**
+     * Transforms the passed vector using this [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix),
+     * returning the Y axis of the result. This method, along with [transformX], allow applying transforms without
+     * creating new [Vec3d] objects.
+     */
+    fun transformY(x: Double, y: Double): Double {
+        return m10 * x + m11 * y + m12 * 1
     }
 
     /**
@@ -432,6 +454,18 @@ open class Matrix3d(
                 cos + x*x*(1-cos), x*y*(1-cos) - z*sin, x*z*(1-cos) + y*sin,
                 y*x*(1-cos) + z*sin, cos + y*y*(1-cos), y*z*(1-cos) - x*sin,
                 z*x*(1-cos) - y*sin, z*y*(1-cos) + x*sin, cos + z*z*(1-cos)
+            )
+        }
+
+        internal fun createRotation2d(angle: Double): MutableMatrix3d {
+            // https://en.wikipedia.org/wiki/Rotation_matrix
+            val cos = cos(angle)
+            val sin = sin(angle)
+
+            return temporaryMatrix.set(
+                cos, -sin, 0.0,
+                sin, cos, 0.0,
+                0.0, 0.0, 1.0
             )
         }
     }

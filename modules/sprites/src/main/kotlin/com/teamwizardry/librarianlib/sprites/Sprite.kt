@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.sprites
 
 import com.teamwizardry.librarianlib.math.ceilInt
+import net.minecraft.client.renderer.RenderType
 import java.awt.image.BufferedImage
 import java.awt.image.RasterFormatException
 import kotlin.math.max
@@ -12,6 +13,8 @@ class Sprite internal constructor(private val texture: Texture, val name: String
 
     lateinit var definition: SpriteDefinition
         internal set
+    override val renderType: RenderType
+        get() = texture.renderType
 
     override var width: Int = 0
         private set
@@ -102,10 +105,6 @@ class Sprite internal constructor(private val texture: Texture, val name: String
      */
     override fun maxV(animFrames: Int): Float {
         return definition.texV(definition.frameUVs[animFrames % frameCount].y + definition.size.y)
-    }
-
-    override fun bind() {
-        texture.bind()
     }
 
     override fun toString(): String {

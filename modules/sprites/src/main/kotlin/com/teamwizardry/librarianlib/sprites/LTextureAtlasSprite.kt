@@ -7,6 +7,8 @@ package com.teamwizardry.librarianlib.sprites
  */
 
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
+import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.texture.AtlasTexture
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 
@@ -18,7 +20,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite
  */
 class LTextureAtlasSprite(private val tas: TextureAtlasSprite) : ISprite {
 
-    override fun bind() = Client.textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE)
+    override val renderType: RenderType = SimpleRenderTypes.flat(tas.atlasTexture.textureLocation)
 
     override fun minU(animFrames: Int) = tas.minU
 

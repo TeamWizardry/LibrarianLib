@@ -78,6 +78,14 @@
           "additionalProperties": {
             "$ref": "#/definitions/vec2i"
           }
+        },
+
+        "display": {
+          "type": "object",
+          "properties": {
+            "blur": { "type":  "boolean" },
+            "mipmap": { "type":  "boolean" }
+          }
         }
 
       },

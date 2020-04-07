@@ -4,6 +4,8 @@ package com.teamwizardry.librarianlib.sprites.testmod
 
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.toRl
+import com.teamwizardry.librarianlib.math.Matrix3d
+import com.teamwizardry.librarianlib.math.MutableMatrix3d
 import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.sprites.ISprite
 import com.teamwizardry.librarianlib.sprites.Sprite
@@ -11,6 +13,7 @@ import com.teamwizardry.librarianlib.sprites.Texture
 import com.teamwizardry.librarianlib.testbase.TestMod
 import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
+import java.awt.Color
 
 @Mod("librarianlib-sprites-test")
 object LibrarianLibSpritesTestMod: TestMod("sprites", "Sprites", logger) {
@@ -25,7 +28,8 @@ object LibrarianLibSpritesTestMod: TestMod("sprites", "Sprites", logger) {
                     val sprite = tex.getSprite("")
 
                     draw {
-                        sprite.draw(0, 0f, 0f)
+                        val m = Matrix3d.IDENTITY
+                        sprite.draw(m, 0f, 0f, 0, Color.WHITE)
                     }
                 }
             }
@@ -44,8 +48,9 @@ object LibrarianLibSpritesTestMod: TestMod("sprites", "Sprites", logger) {
                     val bottomRightSprite = tex.getSprite("bottom_right")
 
                     draw {
-                        bottomRightSprite.draw(0, 4f, 4f)
-                        topLeftSprite.draw(0, 34f, 34f)
+                        val m = Matrix3d.IDENTITY
+                        bottomRightSprite.draw(m, 4f, 4f)
+                        topLeftSprite.draw(m, 34f, 34f)
                     }
                 }
             }
@@ -75,19 +80,21 @@ object LibrarianLibSpritesTestMod: TestMod("sprites", "Sprites", logger) {
                     val L_x_x_B = tex.getSprite("L_x_x_B")
 
                     draw {
-                        background.draw(0, 0f, 0f)
-                        none.draw(0, 3f, 3f)
+                        val m = Matrix3d.IDENTITY
 
-                        L_T_R_B.draw(0, 14f, 4f, 12f, 12f)
-                        x_T_R_B.draw(0, 14f, 20f, 12f, 12f)
-                        L_x_R_B.draw(0, 30f, 20f, 12f, 12f)
-                        L_T_x_B.draw(0, 46f, 20f, 12f, 12f)
-                        L_T_R_x.draw(0, 62f, 20f, 12f, 12f)
+                        background.draw(m, 0f, 0f)
+                        none.draw(m, 3f, 3f)
 
-                        L_T_x_x.draw(0, 14f, 36f, 12f, 12f)
-                        x_T_R_x.draw(0, 30f, 36f, 12f, 12f)
-                        x_x_R_B.draw(0, 46f, 36f, 12f, 12f)
-                        L_x_x_B.draw(0, 62f, 36f, 12f, 12f)
+                        L_T_R_B.draw(m, 14f, 4f, 12f, 12f)
+                        x_T_R_B.draw(m, 14f, 20f, 12f, 12f)
+                        L_x_R_B.draw(m, 30f, 20f, 12f, 12f)
+                        L_T_x_B.draw(m, 46f, 20f, 12f, 12f)
+                        L_T_R_x.draw(m, 62f, 20f, 12f, 12f)
+
+                        L_T_x_x.draw(m, 14f, 36f, 12f, 12f)
+                        x_T_R_x.draw(m, 30f, 36f, 12f, 12f)
+                        x_x_R_B.draw(m, 46f, 36f, 12f, 12f)
+                        L_x_x_B.draw(m, 62f, 36f, 12f, 12f)
                     }
                 }
             }
@@ -124,29 +131,30 @@ object LibrarianLibSpritesTestMod: TestMod("sprites", "Sprites", logger) {
                     val y_bottom = tex.getSprite("y_bottom")
 
                     draw {
-                        background.draw(0, 0f, 0f)
-                        xy_plain.draw(0, 16f, 8f)
-                        x_plain.draw(0, 81, 9)
-                        y_plain.draw(0, 50, 58)
+                        val m = Matrix3d.IDENTITY
+                        background.draw(m, 0f, 0f)
+                        xy_plain.draw(m, 16f, 8f)
+                        x_plain.draw(m, 81, 9)
+                        y_plain.draw(m, 50, 58)
 
-                        xy_all.draw(0, 13, 22, 18, 18)
-                        xy_topleft.draw(0, 13, 42, 18, 18)
-                        xy_bottomright.draw(0, 13, 62, 18, 18)
+                        xy_all.draw(m, 13, 22, 18, 18)
+                        xy_topleft.draw(m, 13, 42, 18, 18)
+                        xy_bottomright.draw(m, 13, 62, 18, 18)
 
-                        xy_pinned.draw(0, 38, 8, 20, 20)
-                        xy_not_pinned.draw(0, 38, 30, 20, 20)
+                        xy_pinned.draw(m, 38, 8, 20, 20)
+                        xy_not_pinned.draw(m, 38, 30, 20, 20)
 
-                        x_all.draw(0, 78, 17, 18, 6)
-                        x_left.draw(0, 78, 25, 18, 6)
-                        x_right.draw(0, 78, 33, 18, 6)
-                        x_all.draw(0, 83, 41, 8, 6)
-                        x_all.draw(0, 85, 49, 4, 6)
+                        x_all.draw(m, 78, 17, 18, 6)
+                        x_left.draw(m, 78, 25, 18, 6)
+                        x_right.draw(m, 78, 33, 18, 6)
+                        x_all.draw(m, 83, 41, 8, 6)
+                        x_all.draw(m, 85, 49, 4, 6)
 
-                        y_all.draw(0, 58, 55, 6, 18)
-                        y_bottom.draw(0, 66, 55, 6, 18)
-                        y_top.draw(0, 74, 55, 6, 18)
-                        y_all.draw(0, 82, 60, 6, 8)
-                        y_all.draw(0, 90, 62, 6, 4)
+                        y_all.draw(m, 58, 55, 6, 18)
+                        y_bottom.draw(m, 66, 55, 6, 18)
+                        y_top.draw(m, 74, 55, 6, 18)
+                        y_all.draw(m, 82, 60, 6, 8)
+                        y_all.draw(m, 90, 62, 6, 4)
                     }
                 }
             }
@@ -169,23 +177,36 @@ object LibrarianLibSpritesTestMod: TestMod("sprites", "Sprites", logger) {
                     val bounce = tex.getSprite("bounce")
 
                     draw {
-                        background.draw(0, 0f, 0f)
-                        simple.draw(Client.time.ticks, 5f, 17f)
-                        marquee.draw(Client.time.ticks, 13f, 22f)
-                        arrow.draw(Client.time.ticks, 24f, 5f)
-                        bounce.draw(Client.time.ticks, 5f, 5f)
+                        val m = Matrix3d.IDENTITY
+                        background.draw(m, 0f, 0f, Client.time.ticks, Color.WHITE)
+                        simple.draw(m, 5f, 17f, Client.time.ticks, Color.WHITE)
+                        marquee.draw(m, 13f, 22f, Client.time.ticks, Color.WHITE)
+                        arrow.draw(m, 24f, 5f, Client.time.ticks, Color.WHITE)
+                        bounce.draw(m, 5f, 5f, Client.time.ticks, Color.WHITE)
                     }
                 }
             }
         }
     }
 
-    private inline fun ISprite.draw(animTicks: Int, x: Number, y: Number, width: Number, height: Number) {
-        this.draw(animTicks, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
+    @Suppress("NOTHING_TO_INLINE")
+    inline fun ISprite.draw(matrix: Matrix3d, x: Number, y: Number, width: Number, height: Number, animTicks: Int, tint: Color) {
+        this.draw(matrix, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), animTicks, tint)
     }
 
-    private inline fun ISprite.draw(animTicks: Int, x: Number, y: Number) {
-        this.draw(animTicks, x.toFloat(), y.toFloat())
+    @Suppress("NOTHING_TO_INLINE")
+    inline fun ISprite.draw(matrix: Matrix3d, x: Number, y: Number, width: Number, height: Number) {
+        this.draw(matrix, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
+    }
+
+    @Suppress("NOTHING_TO_INLINE")
+    inline fun ISprite.draw(matrix: Matrix3d, x: Number, y: Number, animTicks: Int, tint: Color) {
+        this.draw(matrix, x.toFloat(), y.toFloat(), animTicks, tint)
+    }
+
+    @Suppress("NOTHING_TO_INLINE")
+    inline fun ISprite.draw(matrix: Matrix3d, x: Number, y: Number) {
+        this.draw(matrix, x.toFloat(), y.toFloat())
     }
 }
 

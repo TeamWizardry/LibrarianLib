@@ -15,6 +15,7 @@ import com.teamwizardry.librarianlib.sprites.ISprite
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11
+import java.awt.Color
 
 interface ILayerClipping {
     /**
@@ -117,8 +118,7 @@ class LayerClippingHandler: ILayerClipping {
         val sp = clippingSprite
         if(sp != null) {
             GlStateManager.enableTexture()
-            sp.bind()
-            sp.draw(Client.time.ticks, 0f, 0f, layer.size.xi.toFloat(), layer.size.yi.toFloat())
+            sp.draw(context.matrix, 0f, 0f, layer.size.xi.toFloat(), layer.size.yi.toFloat(), Client.time.ticks, Color.WHITE)
             return
         }
 

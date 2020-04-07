@@ -1,12 +1,10 @@
 package com.teamwizardry.librarianlib.particles.modules
 
 import com.mojang.blaze3d.matrix.MatrixStack
-import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
 import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.kotlin.DefaultRenderStates
+import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
 import com.teamwizardry.librarianlib.particles.BlendMode
 import com.teamwizardry.librarianlib.particles.ParticleRenderModule
 import com.teamwizardry.librarianlib.particles.ParticleUpdateModule

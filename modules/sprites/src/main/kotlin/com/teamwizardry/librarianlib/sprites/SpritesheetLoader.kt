@@ -91,6 +91,8 @@ internal object SpritesheetLoader : ReloadListener<Map<ResourceLocation, Sprites
 
         val sheet = SpritesheetDefinition(location)
 
+        sheet.blur = json.blur
+        sheet.mipmap = json.mipmap
         sheet.uvSize = ivec(json.width, json.height)
         sheet.image = image
 

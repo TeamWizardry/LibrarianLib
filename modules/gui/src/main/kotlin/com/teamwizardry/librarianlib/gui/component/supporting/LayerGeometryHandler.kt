@@ -469,19 +469,31 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
             if(layer.scale2d.y == 0.0) Double.POSITIVE_INFINITY else 1.0/layer.scale2d.y
         )
 
-        val matrix = MutableMatrix3d()
-        matrix.translate(layer.pos)
-        matrix.rotate(vec(0, 0, 1), layer.rotation)
-        matrix.scale(layer.scale2d.x, layer.scale2d.y, 1.0)
-        matrix.translate(-layer.anchor * layer.size)
-        this.matrix = Matrix3d(matrix)
+        _matrix.set(Matrix3d.IDENTITY)
+        _matrix.translate(-layer.anchor * layer.size)
+        _matrix.scale(layer.scale2d.x, layer.scale2d.y, 1.0)
+        _matrix.rotate2d(layer.rotation)
+        _matrix.translate(layer.pos)
 
-        val inverseMatrix = MutableMatrix3d()
-        inverseMatrix.translate(layer.anchor * layer.size)
-        inverseMatrix.scale(inverseScale.x, inverseScale.y, 1.0)
-        inverseMatrix.rotate(vec(0, 0, 1), -layer.rotation)
-        inverseMatrix.translate(-layer.pos)
-        this.inverseMatrix = Matrix3d(inverseMatrix)
+        _inverseMatrix.set(Matrix3d.IDENTITY)
+        _inverseMatrix.translate(-layer.pos)
+        _inverseMatrix.rotate2d(-layer.rotation)
+        _inverseMatrix.scale(inverseScale.x, inverseScale.y, 1.0)
+        _inverseMatrix.translate(layer.anchor * layer.size)
+
+//        _matrix.set(Matrix3d.IDENTITY)
+//        _matrix.translate(layer.pos)
+//        _matrix.rotate2d(layer.rotation)
+//        _matrix.scale(layer.scale2d.x, layer.scale2d.y, 1.0)
+//        _matrix.translate(-layer.anchor * layer.size)
+//
+//        _inverseMatrix.set(Matrix3d.IDENTITY)
+//        _inverseMatrix.translate(layer.anchor * layer.size)
+//        _inverseMatrix.scale(inverseScale.x, inverseScale.y, 1.0)
+//        _inverseMatrix.rotate2d(-layer.rotation)
+//        _inverseMatrix.translate(-layer.pos)
+
+        matrixDirty = false
     }
 
     private fun boundsChange() {

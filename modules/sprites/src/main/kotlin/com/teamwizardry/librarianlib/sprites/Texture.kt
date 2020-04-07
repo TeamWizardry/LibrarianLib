@@ -1,8 +1,13 @@
 package com.teamwizardry.librarianlib.sprites
 
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
 import com.teamwizardry.librarianlib.core.util.kotlin.synchronized
+import net.minecraft.client.renderer.RenderState
+import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.lang.ref.WeakReference
@@ -82,6 +87,9 @@ class Texture(
     lateinit var image: BufferedImage
         private set
 
+    lateinit var renderType: RenderType
+        private set
+
     private var sprites: MutableMap<String, Sprite> = mutableMapOf()
     private var colors: MutableMap<String, TextureColor> = mutableMapOf()
 
@@ -94,12 +102,28 @@ class Texture(
 
     internal fun loadDefinition() {
         definition = SpritesheetLoader.getDefinition(location)
+        image = definition.image
+        renderType = createRenderType()
+
         sprites.forEach { (_, sprite) ->
             sprite.loadDefinition()
         }
         colors.forEach { (_, color) ->
             color.loadDefinition()
         }
+    }
+
+    private fun createRenderType(): RenderType {
+        val renderState = RenderType.State.getBuilder()
+            .texture(RenderState.TextureState(location, definition.blur, definition.mipmap))
+            .alpha(DefaultRenderStates.DEFAULT_ALPHA)
+            .depthTest(DefaultRenderStates.DEPTH_LEQUAL)
+            .transparency(DefaultRenderStates.TRANSLUCENT_TRANSPARENCY)
+
+        @Suppress("INACCESSIBLE_TYPE")
+        return RenderType.makeType("sprite_type",
+            DefaultVertexFormats.POSITION_COLOR_TEX, GL11.GL_QUADS, 256, false, false, renderState.build(true)
+        )
     }
 
     internal fun getSpriteDefinition(name: String): SpriteDefinition {
@@ -136,51 +160,6 @@ class Texture(
      */
     fun getColor(name: String): Color {
         return colors.getOrPut(name) { TextureColor(this, name) }.color
-    }
-
-    private var blending = false
-    private var textureLoaded = false
-
-    /**
-     * Enables linear blending
-     */
-    fun enableBlending() {
-        blending = true
-        if(!textureLoaded) {
-            return
-        }
-        Client.textureManager.getTexture(location)?.also { tex ->
-            tex.bindTexture()
-            tex.setBlurMipmap(true, false)
-        }
-    }
-
-    /**
-     * Disables linear blending
-     */
-    fun disableBlending() {
-        blending = false
-        if(!textureLoaded) {
-            return
-        }
-        Client.textureManager.getTexture(location)?.also { tex ->
-            tex.bindTexture()
-            tex.setBlurMipmap(false, false)
-        }
-    }
-
-    /**
-     * Bind this texture
-     */
-    fun bind() {
-        Client.textureManager.bindTexture(location)
-        if(!textureLoaded) {
-            textureLoaded = true
-            if (blending)
-                enableBlending()
-            else
-                disableBlending()
-        }
     }
 
     companion object {

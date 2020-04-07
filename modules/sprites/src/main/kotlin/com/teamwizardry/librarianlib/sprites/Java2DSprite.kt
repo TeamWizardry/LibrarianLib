@@ -2,8 +2,14 @@ package com.teamwizardry.librarianlib.sprites
 
 import com.mojang.blaze3d.platform.GlStateManager
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
+import com.teamwizardry.librarianlib.core.util.kotlin.toRl
+import net.minecraft.client.renderer.RenderState
+import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.texture.NativeImage
 import net.minecraft.client.renderer.texture.TextureUtil
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.RenderingHints
@@ -19,10 +25,23 @@ class Java2DSprite(width: Int, height: Int) : ISprite {
     private val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
     private val native = NativeImage(NativeImage.PixelFormat.RGBA, width, height, true)
     private val texID = TextureUtil.generateTextureId()
+    override val renderType: RenderType
 
     init {
         TextureUtil.prepareImage(texID, width, height)
         native.uploadTextureSub(0, 0, 0, false)
+
+        val renderState = RenderType.State.getBuilder()
+            .texture(RenderState.TextureState("minecraft:missingno".toRl(), false, false))
+            .alpha(DefaultRenderStates.DEFAULT_ALPHA)
+            .depthTest(DefaultRenderStates.DEPTH_LEQUAL)
+            .transparency(DefaultRenderStates.TRANSLUCENT_TRANSPARENCY)
+//        if(deleted) throw IllegalStateException("Texture has been deleted")
+
+        @Suppress("INACCESSIBLE_TYPE")
+        renderType = RenderType.makeType("sprite_type",
+            DefaultVertexFormats.POSITION_COLOR_TEX, GL11.GL_QUADS, 256, false, false, renderState.build(true)
+        )
     }
 
     @JvmOverloads
@@ -41,11 +60,6 @@ class Java2DSprite(width: Int, height: Int) : ISprite {
     fun end() {
         //todo This does nothing
         native.uploadTextureSub(0, 0, 0, false)
-    }
-
-    override fun bind() {
-        if(deleted) throw IllegalStateException("Texture has been deleted")
-        GlStateManager.bindTexture(texID)
     }
 
     fun delete() {

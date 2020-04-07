@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.MainWindow
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screen.Screen
+import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.texture.TextureManager
 import net.minecraft.resources.IFutureReloadListener
 import net.minecraft.resources.IReloadableResourceManager
@@ -34,6 +35,8 @@ object Client {
     val resourceManager: IResourceManager get() = minecraft.resourceManager
     @JvmStatic
     val textureManager: TextureManager get() = minecraft.textureManager
+    @JvmStatic
+    val tessellator: Tessellator get() = Tessellator.getInstance()
 
     /**
      * The game time, as measured from the game launch

@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.core.util.kotlin
+package com.teamwizardry.librarianlib.core.util
 
 import net.minecraft.client.renderer.RenderState
 
