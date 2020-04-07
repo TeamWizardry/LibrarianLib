@@ -20,7 +20,9 @@ import net.minecraft.util.text.ITextComponent
  * it is impossible to wrap subclass constructors in try-catch statements so those may still crash.
  */
 open class FacadeScreen(title: ITextComponent): Screen(title /* todo behavior #2 */) {
-    val facade = FacadeWidget()
+    val facade = FacadeWidget {
+        this.onClose()
+    }
 
     init {
         children.add(facade)

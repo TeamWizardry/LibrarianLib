@@ -1,9 +1,13 @@
 package com.teamwizardry.librarianlib.gui
 
+import com.teamwizardry.librarianlib.gui.components.StandaloneRootComponent
+import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.gui.IGuiEventListener
 import net.minecraft.client.gui.IRenderable
 
-open class FacadeWidget: IRenderable, IGuiEventListener {
+open class FacadeWidget(closeGui: (Exception) -> Unit): IRenderable, IGuiEventListener {
+    val root = StandaloneRootComponent(closeGui)
+
     override fun mouseMoved(xPos: Double, yPos: Double) {
         super.mouseMoved(xPos, yPos)
     }
@@ -45,5 +49,6 @@ open class FacadeWidget: IRenderable, IGuiEventListener {
     }
 
     override fun render(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        root.renderRoot(partialTicks, vec(mouseX, mouseY))
     }
 }

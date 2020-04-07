@@ -187,7 +187,7 @@ class TestScreenConfig(val id: String, val name: String, activatorItemGroup: Ite
     fun activate() {
         lazies.forEach { it() }
         lazies.clear()
-        Client.displayGuiScreen(TestScreen(this))
+        Client.displayGuiScreen(customScreen?.get() ?: TestScreen(this))
     }
 
     var activatorItem = TestItem(TestItemConfig(this.id + "_screen", this.name + " Screen", activatorItemGroup) {

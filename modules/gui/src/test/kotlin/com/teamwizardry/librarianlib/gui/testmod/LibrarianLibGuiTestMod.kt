@@ -5,6 +5,7 @@ package com.teamwizardry.librarianlib.gui.testmod
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.toRl
 import com.teamwizardry.librarianlib.gui.FacadeScreen
+import com.teamwizardry.librarianlib.gui.layers.SpriteLayer
 import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.sprites.ISprite
 import com.teamwizardry.librarianlib.sprites.Sprite
@@ -20,6 +21,12 @@ object LibrarianLibSpritesTestMod: TestMod("gui", "Gui", logger) {
     init {
         +FacadeScreenConfig("empty", "Empty") {
 
+        }
+
+        +FacadeScreenConfig("dirt", "Single Dirt Sprite") { screen ->
+            val dirt = Texture("minecraft:textures/block/dirt.png".toRl(), 16, 16)
+            val layer = SpriteLayer(dirt.getSprite(""))
+            screen.facade.root.add(layer)
         }
     }
 

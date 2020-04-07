@@ -49,6 +49,7 @@ minecraft {
         // it doesn't take into account the fact that this project may not be the root project.
         // https://github.com/MinecraftForge/ForgeGradle/blob/bd92a0d384b987be361ed3f7df28b1980f7fae1e/src/common/java/net/minecraftforge/gradle/common/util/RunConfig.java#L240
         ideaModule 'librarianlib.runtime.main'
+        singleInstance true
         taskName name
 
         property 'forge.logging.markers', 'REGISTRIES'
