@@ -34,6 +34,11 @@ object LibrarianLibSpritesTestMod: TestMod("gui", "Gui", logger) {
             val layer = SpriteLayer(dirt.getSprite(""))
             layer.pos = vec(32, 32)
             layer.rotation = Math.toRadians(15.0)
+
+            val layer2 = SpriteLayer(dirt.getSprite(""))
+            layer2.pos = vec(32, 32)
+            layer2.rotation = Math.toRadians(-15.0)
+            layer.add(layer2)
             screen.facade.root.add(layer)
         }
     }

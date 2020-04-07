@@ -347,6 +347,7 @@ open class MutableMatrix3d: Matrix3d {
     }
 
     override fun div(m: Matrix3d): MutableMatrix3d {
+        temporaryMatrix.set(m)
         return mul(temporaryMatrix.invert())
     }
 
@@ -368,7 +369,7 @@ open class MutableMatrix3d: Matrix3d {
     }
 
     override fun translate(x: Double, y: Double): MutableMatrix3d {
-        return this.set(createTranslation(x, y).mul(this))
+        return this.mul(createTranslation(x, y))
     }
 
     override fun scale(scale: Float): MutableMatrix3d {
@@ -388,19 +389,19 @@ open class MutableMatrix3d: Matrix3d {
     }
 
     override fun scale(x: Double, y: Double, z: Double): MutableMatrix3d {
-        return this.set(createScaling(x, y, z).mul(this))
+        return this.mul(createScaling(x, y, z))
     }
 
     override fun rotate(rot: Quaternion): MutableMatrix3d {
-        return this.set(createRotation(rot).mul(this))
+        return this.mul(createRotation(rot))
     }
 
     override fun rotate(axis: Vec3d, angle: Double): Matrix3d {
-        return this.set(createRotation(axis, angle).mul(this))
+        return this.mul(createRotation(axis, angle))
     }
 
     override fun rotate2d(angle: Double): Matrix3d {
-        return this.set(createRotation2d(angle).mul(this))
+        return this.mul(createRotation2d(angle))
     }
 
     override fun unaryMinus(): MutableMatrix3d {
@@ -411,7 +412,7 @@ open class MutableMatrix3d: Matrix3d {
         return MutableMatrix3d(this)
     }
 
-    fun toImmutable(): Matrix3d {
+    override fun toImmutable(): Matrix3d {
         return Matrix3d(this)
     }
 

@@ -247,7 +247,7 @@ open class Matrix4d: Cloneable {
     }
 
     open fun translate(x: Double, y: Double, z: Double): Matrix4d {
-        return createTranslation(x, y, z).mul(this).toImmutable()
+        return this.mul(createTranslation(x, y, z))
     }
 
     open fun scale(scale: Float): Matrix4d {
@@ -263,15 +263,15 @@ open class Matrix4d: Cloneable {
     }
 
     open fun scale(x: Double, y: Double, z: Double, w: Double): Matrix4d {
-        return createScaling(x, y, z, w).mul(this).toImmutable()
+        return this.mul(createScaling(x, y, z, w))
     }
 
     open fun rotate(rot: Quaternion): Matrix4d {
-        return createRotation(rot).mul(this).toImmutable()
+        return this.mul(createRotation(rot))
     }
 
     open fun rotate(axis: Vec3d, angle: Double): Matrix4d {
-        return createRotation(axis, angle).mul(this).toImmutable()
+        return this.mul(createRotation(axis, angle))
     }
 
     /**
@@ -457,6 +457,7 @@ open class Matrix4d: Cloneable {
     }
 
     fun toMutable(): MutableMatrix4d = MutableMatrix4d(this)
+    open fun toImmutable(): Matrix4d = this
 
     companion object {
         private val DBL_EPSILON = Double.fromBits(0x3cb0000000000000L)

@@ -470,28 +470,16 @@ class LayerGeometryHandler(initialFrame: Rect2d): ILayerGeometry {
         )
 
         _matrix.set(Matrix3d.IDENTITY)
-        _matrix.translate(-layer.anchor * layer.size)
-        _matrix.scale(layer.scale2d.x, layer.scale2d.y, 1.0)
-        _matrix.rotate2d(layer.rotation)
         _matrix.translate(layer.pos)
+        _matrix.rotate2d(layer.rotation)
+        _matrix.scale(layer.scale2d.x, layer.scale2d.y, 1.0)
+        _matrix.translate(-layer.anchor * layer.size)
 
         _inverseMatrix.set(Matrix3d.IDENTITY)
-        _inverseMatrix.translate(-layer.pos)
-        _inverseMatrix.rotate2d(-layer.rotation)
-        _inverseMatrix.scale(inverseScale.x, inverseScale.y, 1.0)
         _inverseMatrix.translate(layer.anchor * layer.size)
-
-//        _matrix.set(Matrix3d.IDENTITY)
-//        _matrix.translate(layer.pos)
-//        _matrix.rotate2d(layer.rotation)
-//        _matrix.scale(layer.scale2d.x, layer.scale2d.y, 1.0)
-//        _matrix.translate(-layer.anchor * layer.size)
-//
-//        _inverseMatrix.set(Matrix3d.IDENTITY)
-//        _inverseMatrix.translate(layer.anchor * layer.size)
-//        _inverseMatrix.scale(inverseScale.x, inverseScale.y, 1.0)
-//        _inverseMatrix.rotate2d(-layer.rotation)
-//        _inverseMatrix.translate(-layer.pos)
+        _inverseMatrix.scale(inverseScale.x, inverseScale.y, 1.0)
+        _inverseMatrix.rotate2d(-layer.rotation)
+        _inverseMatrix.translate(-layer.pos)
 
         matrixDirty = false
     }

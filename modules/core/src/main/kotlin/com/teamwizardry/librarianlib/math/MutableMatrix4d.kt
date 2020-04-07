@@ -330,7 +330,7 @@ open class MutableMatrix4d: Matrix4d {
     }
 
     override fun translate(x: Double, y: Double, z: Double): MutableMatrix4d {
-        return this.set(createTranslation(x, y, z).mul(this))
+        return this.mul(createTranslation(x, y, z))
     }
 
     override fun scale(scale: Float): MutableMatrix4d {
@@ -346,15 +346,15 @@ open class MutableMatrix4d: Matrix4d {
     }
 
     override fun scale(x: Double, y: Double, z: Double, w: Double): MutableMatrix4d {
-        return this.set(createScaling(x, y, z, w).mul(this))
+        return this.mul(createScaling(x, y, z, w))
     }
 
     override fun rotate(rot: Quaternion): MutableMatrix4d {
-        return this.set(createRotation(rot).mul(this))
+        return this.mul(createRotation(rot))
     }
 
     override fun rotate(axis: Vec3d, angle: Double): Matrix4d {
-        return this.set(createRotation(axis, angle).mul(this))
+        return this.mul(createRotation(axis, angle))
     }
 
     override fun floor(): MutableMatrix4d {
@@ -519,7 +519,7 @@ open class MutableMatrix4d: Matrix4d {
         return MutableMatrix4d(this)
     }
 
-    fun toImmutable(): Matrix4d = Matrix4d(this)
+    override fun toImmutable(): Matrix4d = Matrix4d(this)
 
     companion object {
         private val DBL_EPSILON = Double.fromBits(0x3cb0000000000000L)

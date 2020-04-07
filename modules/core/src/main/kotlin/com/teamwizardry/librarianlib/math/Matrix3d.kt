@@ -182,7 +182,7 @@ open class Matrix3d(
     }
 
     open fun translate(x: Double, y: Double): Matrix3d {
-        return createTranslation(x, y).mul(this).toImmutable()
+        return this.mul(createTranslation(x, y))
     }
 
     open fun scale(scale: Float): Matrix3d {
@@ -202,19 +202,19 @@ open class Matrix3d(
     }
 
     open fun scale(x: Double, y: Double, z: Double): Matrix3d {
-        return createScaling(x, y, z).mul(this).toImmutable()
+        return this.mul(createScaling(x, y, z))
     }
 
     open fun rotate(rot: Quaternion): Matrix3d {
-        return createRotation(rot).mul(this).toImmutable()
+        return this.mul(createRotation(rot))
     }
 
     open fun rotate(axis: Vec3d, angle: Double): Matrix3d {
-        return createRotation(axis, angle).mul(this).toImmutable()
+        return this.mul(createRotation(axis, angle))
     }
 
     open fun rotate2d(angle: Double): Matrix3d {
-        return createRotation2d(angle).mul(this).toImmutable()
+        return this.mul(createRotation2d(angle))
     }
 
     /**
@@ -397,8 +397,11 @@ open class Matrix3d(
         return Matrix3d(this)
     }
 
-    open fun toMutable(): MutableMatrix3d {
+    fun toMutable(): MutableMatrix3d {
         return MutableMatrix3d(this)
+    }
+    open fun toImmutable(): Matrix3d {
+        return this
     }
 
     companion object {

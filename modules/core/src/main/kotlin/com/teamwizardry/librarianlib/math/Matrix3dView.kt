@@ -31,4 +31,8 @@ class Matrix3dView(var target: Matrix3d): Matrix3d() {
     override var m22: Double
         get() = target.m22
         set(value) {}
+
+    override fun toImmutable(): Matrix3d {
+        return Matrix3d(this)
+    }
 }
