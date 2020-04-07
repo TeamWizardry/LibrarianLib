@@ -130,6 +130,4 @@ object Client {
             globalTicks += timer.elapsedTicks
         }
     }
-
-    init { MinecraftForge.EVENT_BUS.register(this) }
 }

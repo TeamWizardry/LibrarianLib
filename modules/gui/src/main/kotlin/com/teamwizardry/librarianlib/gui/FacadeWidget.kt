@@ -1,12 +1,25 @@
 package com.teamwizardry.librarianlib.gui
 
+import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.gui.component.GuiDrawContext
+import com.teamwizardry.librarianlib.gui.component.GuiLayer
+import com.teamwizardry.librarianlib.gui.component.supporting.StencilUtil
 import com.teamwizardry.librarianlib.gui.components.StandaloneRootComponent
+import com.teamwizardry.librarianlib.gui.provided.SafetyNetErrorScreen
+import com.teamwizardry.librarianlib.math.Matrix3dStack
 import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.gui.IGuiEventListener
+import net.minecraft.client.gui.INestedGuiEventHandler
 import net.minecraft.client.gui.IRenderable
+import net.minecraft.client.gui.screen.Screen
+import net.minecraft.client.renderer.Tessellator
+import org.lwjgl.opengl.GL11
 
-open class FacadeWidget(closeGui: (Exception) -> Unit): IRenderable, IGuiEventListener {
-    val root = StandaloneRootComponent(closeGui)
+open class FacadeWidget(
+    private val screen: Screen
+): IRenderable, IGuiEventListener {
+    val root = GuiComponent()
 
     override fun mouseMoved(xPos: Double, yPos: Double) {
         super.mouseMoved(xPos, yPos)
@@ -49,6 +62,68 @@ open class FacadeWidget(closeGui: (Exception) -> Unit): IRenderable, IGuiEventLi
     }
 
     override fun render(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        root.renderRoot(partialTicks, vec(mouseX, mouseY))
+        try {
+            root.pos = vec(0, 0)
+            root.scale = Client.guiScaleFactor
+            root.size = vec(Client.window.scaledWidth, Client.window.scaledHeight)
+
+//            sendInputs()
+//            updateComponents()
+//            updateLayout()
+//            drawComponents()
+
+            val context = GuiDrawContext(Matrix3dStack())
+            root.renderLayer(context)
+        } catch (e: Exception) {
+            logger.error("Error in GUI:", e)
+            Client.displayGuiScreen(SafetyNetErrorScreen(e))
+        }
+//        StencilUtil.clear()
+//
+//        try {
+//            sortChildren()
+//
+//            runLayoutIfNeeded()
+//            callPreFrame()
+//
+//            topMouseHit = null
+//            updateMouse(mousePos)
+//            updateHits(this, 0.0)
+//            mouseOverComponents.clear()
+//            propagateHits()
+//
+//            val tooltip: GuiLayer? = mouseOverComponents
+//                .mapNotNull { component ->
+//                    component.tooltipLayer?.let { tt -> component to tt }
+//                }
+//                .maxBy { it.first.mouseHit?.zIndex ?: Double.NEGATIVE_INFINITY }
+//                ?.second
+//            if(tooltip != currentTooltip) {
+//                currentTooltip?.removeFromParent()
+//                currentTooltip = tooltip
+//                tooltip?.also { this.add(it) }
+//            }
+//
+//            if(enableNativeCursor) {
+////                Mouse.setNativeCursor(topMouseHit?.cursor?.lwjglCursor)
+//            }
+//            val context = GuiDrawContext(Matrix3dStack())
+//            renderLayer(context)
+//        } catch(e: Exception) {
+//            if(!safetyNet) throw e
+//
+////            Mouse.setNativeCursor(null)
+//            val tess = Tessellator.getInstance()
+//            try {
+//                tess.buffer.finishDrawing()
+//            } catch(e2: IllegalStateException) {
+//                // the buffer wasn't mid-draw
+//            }
+//
+//            closeGui(e)
+//        }
+//
+//        GL11.glDisable(GL11.GL_STENCIL_TEST)
     }
+
 }

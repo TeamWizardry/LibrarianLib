@@ -66,52 +66,6 @@ open class StandaloneRootComponent(val closeGui: (Exception) -> Unit): RootCompo
     private var currentTooltip: GuiLayer? = null
 
     fun renderRoot(partialTicks: Float, mousePos: Vec2d) {
-        StencilUtil.clear()
-
-        try {
-            sortChildren()
-
-            runLayoutIfNeeded()
-            callPreFrame()
-
-            topMouseHit = null
-            updateMouse(mousePos)
-            updateHits(this, 0.0)
-            mouseOverComponents.clear()
-            propagateHits()
-
-            val tooltip: GuiLayer? = mouseOverComponents
-                .mapNotNull { component ->
-                    component.tooltipLayer?.let { tt -> component to tt }
-                }
-                .maxBy { it.first.mouseHit?.zIndex ?: Double.NEGATIVE_INFINITY }
-                ?.second
-            if(tooltip != currentTooltip) {
-                currentTooltip?.removeFromParent()
-                currentTooltip = tooltip
-                tooltip?.also { this.add(it) }
-            }
-
-            if(enableNativeCursor) {
-//                Mouse.setNativeCursor(topMouseHit?.cursor?.lwjglCursor)
-            }
-            val context = GuiDrawContext(Matrix3dStack())
-            renderLayer(context)
-        } catch(e: Exception) {
-            if(!safetyNet) throw e
-
-//            Mouse.setNativeCursor(null)
-            val tess = Tessellator.getInstance()
-            try {
-                tess.buffer.finishDrawing()
-            } catch(e2: IllegalStateException) {
-                // the buffer wasn't mid-draw
-            }
-
-            closeGui(e)
-        }
-
-        GL11.glDisable(GL11.GL_STENCIL_TEST)
     }
 
     override fun setNeedsLayout() = net { super.setNeedsLayout() }
