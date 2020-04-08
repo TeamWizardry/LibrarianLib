@@ -2,7 +2,6 @@ package com.teamwizardry.librarianlib.gui.component
 
 import com.mojang.blaze3d.platform.GlStateManager
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.gui.component.supporting.StencilUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -12,12 +11,13 @@ import java.util.LinkedList
 
 abstract class GuiLayerFilter {
 
-    abstract fun filter(layer: GuiLayer, layerFBO: Framebuffer, maskFBO: Framebuffer?)
+    /*
+    abstract fun filter(component: GuiComponent, layerFBO: Framebuffer, maskFBO: Framebuffer?)
 
-    fun drawLayerQuad(layer: GuiLayer) {
-        val size = layer.size
-        val maxU = (size.x * layer.rasterizationScale) / Client.window.framebufferWidth
-        val maxV = (size.y * layer.rasterizationScale) / Client.window.framebufferHeight
+    fun drawLayerQuad(component: GuiComponent) {
+        val size = component.size
+        val maxU = (size.x * component.rasterizationScale) / Client.window.framebufferWidth
+        val maxV = (size.y * component.rasterizationScale) / Client.window.framebufferHeight
 
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
@@ -117,4 +117,5 @@ abstract class GuiLayerFilter {
             return fbo
         }
     }
+     */
 }

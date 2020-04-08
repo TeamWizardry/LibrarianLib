@@ -2,13 +2,10 @@
 
 package com.teamwizardry.librarianlib.gui.testmod
 
-import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.toRl
 import com.teamwizardry.librarianlib.gui.FacadeScreen
-import com.teamwizardry.librarianlib.gui.layers.SpriteLayer
+import com.teamwizardry.librarianlib.gui.layers.SpriteComponent
 import com.teamwizardry.librarianlib.math.vec
-import com.teamwizardry.librarianlib.sprites.ISprite
-import com.teamwizardry.librarianlib.sprites.Sprite
 import com.teamwizardry.librarianlib.sprites.Texture
 import com.teamwizardry.librarianlib.testbase.TestMod
 import com.teamwizardry.librarianlib.testbase.objects.TestScreenConfig
@@ -25,17 +22,17 @@ object LibrarianLibSpritesTestMod: TestMod("gui", "Gui", logger) {
 
         +FacadeScreenConfig("sprite", "Simple Sprite") { screen ->
             val dirt = Texture("minecraft:textures/block/dirt.png".toRl(), 16, 16)
-            val layer = SpriteLayer(dirt.getSprite(""))
+            val layer = SpriteComponent(dirt.getSprite(""))
             screen.facade.root.add(layer)
         }
 
         +FacadeScreenConfig("layer_transform", "Layer Transform") { screen ->
             val dirt = Texture("minecraft:textures/block/dirt.png".toRl(), 16, 16)
-            val layer = SpriteLayer(dirt.getSprite(""))
+            val layer = SpriteComponent(dirt.getSprite(""))
             layer.pos = vec(32, 32)
             layer.rotation = Math.toRadians(15.0)
 
-            val layer2 = SpriteLayer(dirt.getSprite(""))
+            val layer2 = SpriteComponent(dirt.getSprite(""))
             layer2.pos = vec(32, 32)
             layer2.rotation = Math.toRadians(-15.0)
             layer.add(layer2)
