@@ -10,7 +10,6 @@ enum class EnumMouseButton {
         get() = if (this == UNKNOWN) -1 else ordinal
 
     companion object {
-
         fun getFromCode(code: Int): EnumMouseButton {
             if (code < 0 || code >= values().size) {
                 return UNKNOWN

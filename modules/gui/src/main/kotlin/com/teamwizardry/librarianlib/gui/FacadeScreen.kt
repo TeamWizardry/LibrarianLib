@@ -25,15 +25,10 @@ open class FacadeScreen(title: ITextComponent): Screen(title /* todo behavior #2
     @Suppress("LeakingThis")
     val facade = FacadeWidget(this)
 
-    init {
-        children.add(facade)
-    }
-
     override fun render(mouseX: Int, mouseY: Int, partialTicks: Float) {
         this.renderBackground()
         super.render(mouseX, mouseY, partialTicks)
-        RenderSystem.disableBlend()
-        this.facade.render(mouseX, mouseY, partialTicks)
+        this.facade.render()
     }
 
     override fun mouseMoved(xPos: Double, p_212927_3_: Double) {
@@ -41,31 +36,40 @@ open class FacadeScreen(title: ITextComponent): Screen(title /* todo behavior #2
     }
 
     override fun charTyped(p_charTyped_1_: Char, p_charTyped_2_: Int): Boolean {
-        return facade.charTyped(p_charTyped_1_, p_charTyped_2_)
+        facade.charTyped(p_charTyped_1_, p_charTyped_2_)
+        return super.charTyped(p_charTyped_1_, p_charTyped_2_)
     }
 
 //    override fun func_212932_b(eventListener: IGuiEventListener?) {
 //        facade.func_212932_b(eventListener)
 //    }
 
-//    override fun getEventListenerForPos(mouseX: Double, mouseY: Double): Optional<IGuiEventListener> {
+    //    override fun getEventListenerForPos(mouseX: Double, mouseY: Double): Optional<IGuiEventListener> {
 //        return facade.getEventListenerForPos(mouseX, mouseY)
 //    }
+    override fun keyPressed(p_keyPressed_1_: Int, p_keyPressed_2_: Int, p_keyPressed_3_: Int): Boolean {
+        facade.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_)
+        return true
+    }
 
     override fun keyReleased(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
-        return facade.keyReleased(keyCode, scanCode, modifiers)
+        facade.keyReleased(keyCode, scanCode, modifiers)
+        return true
     }
 
     override fun mouseClicked(p_mouseClicked_1_: Double, p_mouseClicked_3_: Double, p_mouseClicked_5_: Int): Boolean {
-        return facade.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_)
+        facade.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_)
+        return true
     }
 
     override fun mouseReleased(p_mouseReleased_1_: Double, p_mouseReleased_3_: Double, p_mouseReleased_5_: Int): Boolean {
-        return facade.mouseReleased(p_mouseReleased_1_, p_mouseReleased_3_, p_mouseReleased_5_)
+        facade.mouseReleased(p_mouseReleased_1_, p_mouseReleased_3_, p_mouseReleased_5_)
+        return true
     }
 
     override fun mouseScrolled(p_mouseScrolled_1_: Double, p_mouseScrolled_3_: Double, p_mouseScrolled_5_: Double): Boolean {
-        return facade.mouseScrolled(p_mouseScrolled_1_, p_mouseScrolled_3_, p_mouseScrolled_5_)
+        facade.mouseScrolled(p_mouseScrolled_1_, p_mouseScrolled_3_, p_mouseScrolled_5_)
+        return true
     }
 
 //    override fun setFocusedDefault(eventListener: IGuiEventListener?) {
@@ -73,10 +77,12 @@ open class FacadeScreen(title: ITextComponent): Screen(title /* todo behavior #2
 //    }
 
     override fun mouseDragged(p_mouseDragged_1_: Double, p_mouseDragged_3_: Double, p_mouseDragged_5_: Int, p_mouseDragged_6_: Double, p_mouseDragged_8_: Double): Boolean {
-        return facade.mouseDragged(p_mouseDragged_1_, p_mouseDragged_3_, p_mouseDragged_5_, p_mouseDragged_6_, p_mouseDragged_8_)
+        facade.mouseDragged(p_mouseDragged_1_, p_mouseDragged_3_, p_mouseDragged_5_, p_mouseDragged_6_, p_mouseDragged_8_)
+        return true
     }
 
     override fun changeFocus(p_changeFocus_1_: Boolean): Boolean {
-        return facade.changeFocus(p_changeFocus_1_)
+        facade.changeFocus(p_changeFocus_1_)
+        return true
     }
 }

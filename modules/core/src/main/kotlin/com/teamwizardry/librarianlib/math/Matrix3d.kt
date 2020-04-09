@@ -236,7 +236,7 @@ open class Matrix3d(
     /**
      * Transforms the passed vector using this [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix),
      * returning the X axis of the result. This method, along with [transformY], allow applying transforms without
-     * creating new [Vec3d] objects.
+     * creating new [Vec2d] objects.
      */
     fun transformX(x: Double, y: Double): Double {
         return m00 * x + m01 * y + m02 * 1
@@ -245,10 +245,48 @@ open class Matrix3d(
     /**
      * Transforms the passed vector using this [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix),
      * returning the Y axis of the result. This method, along with [transformX], allow applying transforms without
-     * creating new [Vec3d] objects.
+     * creating new [Vec2d] objects.
      */
     fun transformY(x: Double, y: Double): Double {
         return m10 * x + m11 * y + m12 * 1
+    }
+
+    /**
+     * Transforms the passed delta vector, ignoring the translation component of this
+     * [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix).
+     */
+    fun transformDelta(v: Vec2d): Vec2d {
+        return transformDelta(v.x, v.y)
+    }
+
+    /**
+     * Transforms the passed delta vector, ignoring the translation component of this
+     * [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix).
+     */
+    fun transformDelta(x: Double, y: Double): Vec2d {
+        return vec(
+            m00 * x + m01 * y + m02 * 0,
+            m10 * x + m11 * y + m12 * 0)
+    }
+
+    /**
+     * Transforms the passed delta vector, ignoring the translation component of this
+     * [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix), returning the X axis
+     * of the result. This method, along with [transformDeltaY], allow applying transforms without creating new [Vec2d]
+     * objects.
+     */
+    fun transformDeltaX(x: Double, y: Double): Double {
+        return m00 * x + m01 * y + m02 * 0
+    }
+
+    /**
+     * Transforms the passed delta vector, ignoring the translation component of this
+     * [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix), returning the Y axis
+     * of the result. This method, along with [transformDeltaX], allow applying transforms without creating new [Vec2d]
+     * objects.
+     */
+    fun transformDeltaY(x: Double, y: Double): Double {
+        return m10 * x + m11 * y + m12 * 0
     }
 
     /**

@@ -318,6 +318,55 @@ open class Matrix4d: Cloneable {
         return m20 * x + m21 * y + m22 * z + m23 * 1
     }
 
+    /**
+     * Transforms the passed delta vector, ignoring the translation component of this
+     * [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix).
+     */
+    fun transformDelta(v: Vec3d): Vec3d {
+        return transformDelta(v.x, v.y, v.z)
+    }
+
+    /**
+     * Transforms the passed delta vector, ignoring the translation component of this
+     * [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix).
+     */
+    fun transformDelta(x: Double, y: Double, z: Double): Vec3d {
+        return vec(
+            m00 * x + m01 * y + m02 * z + m03 * 0,
+            m10 * x + m11 * y + m12 * z + m13 * 0,
+            m20 * x + m21 * y + m22 * z + m23 * 0)
+    }
+
+    /**
+     * Transforms the passed delta vector, ignoring the translation component of this
+     * [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix), returning the X axis
+     * of the result. This method, along with [transformDeltaY] and [transformDeltaZ], allow applying transforms
+     * without creating new [Vec3d] objects.
+     */
+    fun transformDeltaX(x: Double, y: Double, z: Double): Double {
+        return m00 * x + m01 * y + m02 * z + m03 * 0
+    }
+
+    /**
+     * Transforms the passed delta vector, ignoring the translation component of this
+     * [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix), returning the Y axis
+     * of the result. This method, along with [transformDeltaX] and [transformDeltaZ], allow applying transforms
+     * without creating new [Vec3d] objects.
+     */
+    fun transformDeltaY(x: Double, y: Double, z: Double): Double {
+        return m10 * x + m11 * y + m12 * z + m13 * 0
+    }
+
+    /**
+     * Transforms the passed delta vector, ignoring the translation component of this
+     * [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix), returning the Z axis
+     * of the result. This method, along with [transformDeltaX] and [transformDeltaY], allow applying transforms
+     * without creating new [Vec3d] objects.
+     */
+    fun transformDeltaZ(x: Double, y: Double, z: Double): Double {
+        return m20 * x + m21 * y + m22 * z + m23 * 0
+    }
+
     open fun floor(): Matrix4d {
         return Matrix4d(
             floor(m00), floor(m01), floor(m02), floor(m03),

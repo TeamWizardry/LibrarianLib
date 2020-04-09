@@ -2,22 +2,42 @@ package com.teamwizardry.librarianlib.gui.component
 
 import com.teamwizardry.librarianlib.utilities.eventbus.Event
 import com.teamwizardry.librarianlib.gui.EnumMouseButton
+import com.teamwizardry.librarianlib.math.Matrix3dStack
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.clamp
+import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.utilities.eventbus.CancelableEvent
 
 /**
  * Order of events:
- * * **Input phase:**
- * * Computes mouse position
- * * todo: mouse events
- * * todo: key events
+ *
+ * * **Input phase†:**
+ * * Input events are fired (in the order they are received)
+ * * **Game phase:**
+ * * Minecraft ticks and renders the frame
  * * **Update phase:**
  * * Fires [Update]
+ * * **Layout phase:**
  * * Updates yoga layout
  * * Fires [LayoutChildren]
  * * **Draw phase:**
  * *
+ *
+ * ## †Input notes:
+ * [GLFW input guide](https://www.glfw.org/docs/latest/input_guide.html)
+ *
+ * Do note that there may be multiple events of a single type fired during the same frame, since events continue to be
+ * queued between frames. For example, this is a possible sequence of events to receive in a single frame:
+ * * `MouseMoved(pos=(100, 100))`
+ * * `MouseDown(pos=(100, 100), button=0)`
+ * * `MouseUp(pos=(100, 100), button=0)`
+ * * `MouseMoved(pos=(120, 120))`
+ * * `MouseDown(pos=(120, 120), button=0)`
+ * * `MouseUp(pos=(120, 120), button=0)`
+ *
+ * Interestingly, the input phase is actually fired at the _end_ of the frame. I've placed it at the start in this list
+ * because to an extent the end of one frame is the start of the next, and thinking of it as the start of the frame is
+ * easier to reason about. However, in a few situations this distinction may be an important thing to keep in mind.
  */
 object GuiComponentEvents {
     /**
@@ -25,13 +45,59 @@ object GuiComponentEvents {
      */
     class Update : Event()
 
-    class AddChildEvent(val child: GuiComponent) : CancelableEvent()
-    class RemoveChildEvent(val child: GuiComponent) : CancelableEvent()
-    class AddToParentEvent(val parent: GuiComponent) : CancelableEvent()
-    class RemoveFromParentEvent(val parent: GuiComponent) : CancelableEvent()
+    abstract class GuiInputEvent: Event()
+
+    abstract class MouseEvent(val rootPos: Vec2d): GuiInputEvent() {
+        val pos: Vec2d
+            get() = stack.transform(rootPos)
+
+        internal val stack = Matrix3dStack()
+    }
+    class MouseMove(rootPos: Vec2d, val lastRootPos: Vec2d): MouseEvent(rootPos) {
+        val lastPos: Vec2d
+            get() = stack.transform(lastRootPos)
+    }
+    class MouseDown(rootPos: Vec2d, val button: Int): MouseEvent(rootPos)
+    class MouseUp(rootPos: Vec2d, val button: Int): MouseEvent(rootPos)
+    class MouseDrag(rootPos: Vec2d, val lastRootPos: Vec2d, val button: Int): MouseEvent(rootPos) {
+        val lastPos: Vec2d
+            get() = stack.transform(lastRootPos)
+    }
+    class MouseScroll(rootPos: Vec2d, val delta: Vec2d): MouseEvent(rootPos) {
+        /**
+         * The delta vector transformed into the current layer's coordinate space
+         */
+        val localDelta: Vec2d
+            get() = stack.transformDelta(delta)
+    }
+
+    abstract class KeyEvent: GuiInputEvent()
+    class KeyDown(val keyCode: Int, val scanCode: Int, val modifiers: Int): KeyEvent()
+    class KeyUp(val keyCode: Int, val scanCode: Int, val modifiers: Int): KeyEvent()
+    class CharTyped(val codepoint: Char, val modifiers: Int): KeyEvent()
 
     /**
-     *
+     * Fired before adding a child component
+     */
+    class AddChildEvent(val child: GuiComponent) : CancelableEvent()
+
+    /**
+     * Fired before removing a child component
+     */
+    class RemoveChildEvent(val child: GuiComponent) : CancelableEvent()
+
+    /**
+     * Fired before adding the component to a new parent
+     */
+    class AddToParentEvent(val parent: GuiComponent) : Event()
+
+    /**
+     * Fired before removing the component from its parent.
+     */
+    class RemoveFromParentEvent(val parent: GuiComponent) : Event()
+
+    /**
+     * Called to automatically lay out children
      */
     class LayoutChildren : Event()
 }

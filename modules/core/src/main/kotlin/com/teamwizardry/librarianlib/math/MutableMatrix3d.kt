@@ -153,6 +153,22 @@ open class MutableMatrix3d: Matrix3d {
         return this
     }
 
+    fun reverseMul(m: Matrix3d): MutableMatrix3d {
+        val _m00 = m00; val _m01 = m01; val _m02 = m02
+        val _m10 = m10; val _m11 = m11; val _m12 = m12
+        val _m20 = m20; val _m21 = m21; val _m22 = m22
+        m00 = m.m00 * _m00 + m.m01 * _m10 + m.m02 * _m20
+        m01 = m.m00 * _m01 + m.m01 * _m11 + m.m02 * _m21
+        m02 = m.m00 * _m02 + m.m01 * _m12 + m.m02 * _m22
+        m10 = m.m10 * _m00 + m.m11 * _m10 + m.m12 * _m20
+        m11 = m.m10 * _m01 + m.m11 * _m11 + m.m12 * _m21
+        m12 = m.m10 * _m02 + m.m11 * _m12 + m.m12 * _m22
+        m20 = m.m20 * _m00 + m.m21 * _m10 + m.m22 * _m20
+        m21 = m.m20 * _m01 + m.m21 * _m11 + m.m22 * _m21
+        m22 = m.m20 * _m02 + m.m21 * _m12 + m.m22 * _m22
+        return this
+    }
+
     override fun div(a: Double): MutableMatrix3d {
         m00 /= a
         m01 /= a

@@ -2,66 +2,95 @@ package com.teamwizardry.librarianlib.gui
 
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.gui.component.GuiComponentEvents
 import com.teamwizardry.librarianlib.gui.component.GuiDrawContext
 import com.teamwizardry.librarianlib.gui.provided.SafetyNetErrorScreen
 import com.teamwizardry.librarianlib.math.Matrix3dStack
 import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.gui.IGuiEventListener
+import net.minecraft.client.gui.INestedGuiEventHandler
 import net.minecraft.client.gui.IRenderable
 import net.minecraft.client.gui.screen.Screen
+import org.lwjgl.glfw.GLFW
+import java.util.ArrayDeque
 
+/**
+ *
+ */
 open class FacadeWidget(
     private val screen: Screen
-): IRenderable, IGuiEventListener {
+) {
     val root = GuiComponent()
 
-    override fun mouseMoved(xPos: Double, yPos: Double) {
-        super.mouseMoved(xPos, yPos)
+    /**
+     * We keep track of the mouse position ourselves both so we can provide deltas for move events and so we can provide
+     * subpixel mouse positions in [render]
+     */
+    private var mouseX = 0.0
+    private var mouseY = 0.0
+
+    fun mouseMoved(xPos: Double, yPos: Double) {
+        computeMouseOver(xPos, yPos)
+        root.triggerEvent(GuiComponentEvents.MouseMove(vec(xPos, yPos), vec(mouseX, mouseY)))
+        mouseX = xPos
+        mouseY = yPos
     }
 
-    override fun mouseClicked(xPos: Double, yPos: Double, button: Int): Boolean {
-        return super.mouseClicked(xPos, yPos, button)
+    fun mouseClicked(xPos: Double, yPos: Double, button: Int) {
+        computeMouseOver(xPos, yPos)
+        root.triggerEvent(GuiComponentEvents.MouseDown(vec(xPos, yPos), button))
     }
 
-    override fun isMouseOver(xPos: Double, yPos: Double): Boolean {
-        return super.isMouseOver(xPos, yPos)
+    fun isMouseOver(xPos: Double, yPos: Double) {
     }
 
-    override fun mouseReleased(xPos: Double, yPos: Double, button: Int): Boolean {
-        return super.mouseReleased(xPos, yPos, button)
+    fun mouseReleased(xPos: Double, yPos: Double, button: Int) {
+        computeMouseOver(xPos, yPos)
+        root.triggerEvent(GuiComponentEvents.MouseUp(vec(xPos, yPos), button))
     }
 
-    override fun mouseScrolled(mouseX: Double, mouseY: Double, delta: Double): Boolean {
-        return super.mouseScrolled(mouseX, mouseY, delta)
+    fun mouseScrolled(xPos: Double, yPos: Double, delta: Double) {
+        computeMouseOver(xPos, yPos)
+        root.triggerEvent(GuiComponentEvents.MouseScroll(vec(xPos, yPos), vec(0.0, delta)))
     }
 
-    override fun mouseDragged(xPos: Double, yPos: Double, button: Int, deltaX: Double, deltaY: Double): Boolean {
-        return super.mouseDragged(xPos, yPos, button, deltaX, deltaY)
+    fun mouseDragged(xPos: Double, yPos: Double, button: Int, deltaX: Double, deltaY: Double) {
+        computeMouseOver(xPos, yPos)
+        root.triggerEvent(GuiComponentEvents.MouseDrag(vec(xPos, yPos), vec(xPos - deltaX, yPos - deltaY), button))
     }
 
-    override fun changeFocus(reverse: Boolean): Boolean {
-        return super.changeFocus(reverse)
+    private fun computeMouseOver(xPos: Double, yPos: Double) {
+        val mouseOver = root.computeMouseInfo(vec(xPos, yPos), Matrix3dStack())
+        generateSequence(mouseOver) { it.parent }.forEach {
+            it.mouseOver = true
+        }
     }
 
-    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
-        return super.keyPressed(keyCode, scanCode, modifiers)
+    fun changeFocus(reverse: Boolean) {
+        // todo
     }
 
-    override fun keyReleased(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
-        return super.keyReleased(keyCode, scanCode, modifiers)
+    fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int) {
+        if(keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            screen.onClose()
+        }
+        root.triggerEvent(GuiComponentEvents.KeyDown(keyCode, scanCode, modifiers))
     }
 
-    override fun charTyped(codepoint: Char, modifiers: Int): Boolean {
-        return super.charTyped(codepoint, modifiers)
+    fun keyReleased(keyCode: Int, scanCode: Int, modifiers: Int) {
+        root.triggerEvent(GuiComponentEvents.KeyUp(keyCode, scanCode, modifiers))
     }
 
-    override fun render(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    fun charTyped(codepoint: Char, modifiers: Int) {
+        root.triggerEvent(GuiComponentEvents.CharTyped(codepoint, modifiers))
+    }
+
+    fun render() {
         try {
             root.pos = vec(0, 0)
             root.scale = Client.guiScaleFactor
             root.size = vec(Client.window.scaledWidth, Client.window.scaledHeight)
 
-//            sendInputs()
 //            updateComponents()
 //            updateLayout()
 //            drawComponents()
@@ -72,52 +101,5 @@ open class FacadeWidget(
             logger.error("Error in GUI:", e)
             Client.displayGuiScreen(SafetyNetErrorScreen(e))
         }
-//        StencilUtil.clear()
-//
-//        try {
-//            sortChildren()
-//
-//            runLayoutIfNeeded()
-//            callPreFrame()
-//
-//            topMouseHit = null
-//            updateMouse(mousePos)
-//            updateHits(this, 0.0)
-//            mouseOverComponents.clear()
-//            propagateHits()
-//
-//            val tooltip: GuiLayer? = mouseOverComponents
-//                .mapNotNull { component ->
-//                    component.tooltipLayer?.let { tt -> component to tt }
-//                }
-//                .maxBy { it.first.mouseHit?.zIndex ?: Double.NEGATIVE_INFINITY }
-//                ?.second
-//            if(tooltip != currentTooltip) {
-//                currentTooltip?.removeFromParent()
-//                currentTooltip = tooltip
-//                tooltip?.also { this.add(it) }
-//            }
-//
-//            if(enableNativeCursor) {
-////                Mouse.setNativeCursor(topMouseHit?.cursor?.lwjglCursor)
-//            }
-//            val context = GuiDrawContext(Matrix3dStack())
-//            renderLayer(context)
-//        } catch(e: Exception) {
-//            if(!safetyNet) throw e
-//
-////            Mouse.setNativeCursor(null)
-//            val tess = Tessellator.getInstance()
-//            try {
-//                tess.buffer.finishDrawing()
-//            } catch(e2: IllegalStateException) {
-//                // the buffer wasn't mid-draw
-//            }
-//
-//            closeGui(e)
-//        }
-//
-//        GL11.glDisable(GL11.GL_STENCIL_TEST)
     }
-
 }

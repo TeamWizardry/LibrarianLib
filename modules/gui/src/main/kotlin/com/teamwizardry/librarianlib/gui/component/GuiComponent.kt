@@ -10,6 +10,7 @@ import com.teamwizardry.librarianlib.gui.value.RMValue
 import com.teamwizardry.librarianlib.gui.value.RMValueDouble
 import com.teamwizardry.librarianlib.math.CoordinateSpace2D
 import com.teamwizardry.librarianlib.math.Matrix3d
+import com.teamwizardry.librarianlib.math.Matrix3dStack
 import com.teamwizardry.librarianlib.math.Matrix3dView
 import com.teamwizardry.librarianlib.math.MutableMatrix3d
 import com.teamwizardry.librarianlib.math.Rect2d
@@ -184,8 +185,7 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
 
             if (this.BUS.fire(GuiComponentEvents.AddChildEvent(component)).isCanceled())
                 return
-            if (component.BUS.fire(GuiComponentEvents.AddToParentEvent(this)).isCanceled())
-                return
+            component.BUS.fire(GuiComponentEvents.AddToParentEvent(this))
             _children.add(component)
             component.parent = this
         }
@@ -213,8 +213,7 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
 
         if (this.BUS.fire(GuiComponentEvents.RemoveChildEvent(component)).isCanceled())
             return
-        if (component.BUS.fire(GuiComponentEvents.RemoveFromParentEvent(this)).isCanceled())
-            return
+        component.BUS.fire(GuiComponentEvents.RemoveFromParentEvent(this))
         component.parent = null
         _children.remove(component)
     }
@@ -255,7 +254,6 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
 
 
     //endregion
-
 
     //region LayerGeometryHandler
     /**
@@ -873,7 +871,7 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
     }
     //endregion
 
-    //region API
+    //region Events
 
     /**
      * The event bus on which all events for this layer are fired.
@@ -892,6 +890,96 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
 
     init {
         BUS.register(this)
+    }
+
+    //endregion
+
+    //region Input
+
+    /**
+     * If [interactive] is false, this component and its descendents won't be considered for mouseover calculations
+     * and won't receive input events
+     */
+    var interactive: Boolean = true
+
+    /**
+     * If [ignoreMouseOverBounds] is true, this component's bounding box won't be taken into consideration for mouseover
+     * calculations, however its children will be considered as usual.
+     */
+    var ignoreMouseOverBounds: Boolean = false
+
+    /**
+     * True if the current [mousePos] is inside the bounds of component. This ignores components that may be covering
+     * this component.
+     */
+    var mouseInside: Boolean = false
+        private set
+
+    /**
+     * True if this component is [interactive] and the mouse is hovering over it or one of its children.
+     */
+    var mouseOver: Boolean = false
+        internal set
+
+    /**
+     * The mouse position within this component
+     */
+    var mousePos: Vec2d = vec(0, 0)
+        private set
+
+    /**
+     * Computes the mouse position, resets the `mouseOver` flag, and returns the component with the mouse over it, if
+     * any.
+     */
+    internal fun computeMouseInfo(rootPos: Vec2d, stack: Matrix3dStack): GuiComponent? {
+        stack.push()
+        stack.reverseMul(inverseMatrix)
+        mousePos = stack.transform(rootPos)
+        mouseInside = isPointInBounds(mousePos)
+        mouseOver = false
+        var mouseOverChild: GuiComponent? = null
+        forEachChild { child ->
+            val childMouseOver = child.computeMouseInfo(rootPos, stack)
+            mouseOverChild = mouseOverChild ?: childMouseOver
+        }
+        stack.pop()
+        if(!interactive)
+            return null
+        return when {
+            mouseOverChild != null -> mouseOverChild
+            mouseInside && !ignoreMouseOverBounds -> this
+            else -> null
+        }
+    }
+
+    internal fun triggerEvent(event: Event) {
+        when(event) {
+            is GuiComponentEvents.MouseEvent -> {
+                if(!interactive)
+                    return
+                event.stack.push()
+                event.stack.reverseMul(inverseMatrix)
+                BUS.fire(event)
+                this.forEachChild {
+                    it.triggerEvent(event)
+                }
+                event.stack.pop()
+            }
+            is GuiComponentEvents.KeyEvent -> {
+                if(!interactive)
+                    return
+                BUS.fire(event)
+                this.forEachChild {
+                    it.triggerEvent(event)
+                }
+            }
+            else -> {
+                BUS.fire(event)
+                this.forEachChild {
+                    it.triggerEvent(event)
+                }
+            }
+        }
     }
 
     //endregion

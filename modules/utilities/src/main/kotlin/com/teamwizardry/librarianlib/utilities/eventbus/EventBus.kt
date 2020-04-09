@@ -5,17 +5,6 @@ import java.util.function.Consumer
 class EventBus {
     private var hooks = mutableMapOf<Class<*>, MutableList<EventHook>>()
 
-    /**
-     * Causes this event bus to delegate all its event handling to the given bus. This effectively makes the two busses
-     * identical views of each other
-     */
-    fun delegateTo(other: EventBus) {
-        hooks.forEach { clazz, hooks ->
-            other.hooks.getOrPut(clazz) { mutableListOf() }.addAll(hooks)
-        }
-        hooks = other.hooks
-    }
-
     fun hasHooks(clazz: Class<*>): Boolean {
         return hooks[clazz]?.size ?: 0 > 0
     }
