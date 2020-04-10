@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.gui.component
 
 import com.mojang.blaze3d.platform.GlStateManager
+import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.gui.component.supporting.*
 import com.teamwizardry.librarianlib.gui.logger
@@ -36,7 +37,7 @@ import kotlin.math.PI
  * Vanilla GUIs very basic, where each frame you personally draw each texture and have to manually handle positioning
  * as the layout changes (though most likely it won't, because the math quickly becomes a pain). Vanilla does have the
  * [GuiButton][net.minecraft.client.gui.GuiButton], which isn't drawn or processed by you, however LibrarianLib's
- * layers and [components][GuiComponent] blow GuiButton clean out of the water with their versatility and ability to
+ * layers and [components][GuiLayer] blow GuiButton clean out of the water with their versatility and ability to
  * easily create highly complex and dynamic interfaces.
  *
  * Over its evolution the GUI framework has been influenced largely by two things. It started out mostly inspired by
@@ -67,7 +68,7 @@ import kotlin.math.PI
  * @see ILayerClipping
  * @See ILayerBase
  */
-open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): CoordinateSpace2D {
+open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSpace2D {
     constructor(posX: Int, posY: Int): this(posX, posY, 0, 0)
     constructor(): this(0, 0, 0, 0)
 
@@ -97,11 +98,13 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
     open fun layoutChildren() {}
 
     /**
-     * Draws the layer's contents. This is the method to override when creating custom layer rendering
+     * Draws the layer's contents. This is the method to override when creating custom layer rendering.
      *
-     * The guaranteed GL states for this method are defined in the listed "sample" method
+     * Unless necessary, layers shouldn't change any global GL state. However, as a precaution, there are a number of
+     * state guarantees made before every call to [draw]. The authoritative list is provided as a "sample" in these
+     * docs.
      *
-     * @sample ILayerRendering.glStateGuarantees
+     * @sample glStateGuarantees
      */
     open fun draw(context: GuiDrawContext) {
 
@@ -120,40 +123,34 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
      * Driven by [isVisible_im]
      */
     var isVisible by isVisible_im
-
-    internal fun callUpdate() {
-        update()
-        BUS.fire(GuiComponentEvents.Update())
-        forEachChild { it.callUpdate() }
-    }
     //endregion
 
     //region LayerRelationshipHandler
-    private val _children = mutableListOf<GuiComponent>()
+    private val _children = mutableListOf<GuiLayer>()
     /**
      * A read-only list containing all the children of this layer. For safely iterating over this list use
      * [forEachChild] as it will prevent [ConcurrentModificationException]s and prevent crashes caused by removing
      * children while iterating.
      */
-    val children: List<GuiComponent> = _children.unmodifiableView()
+    val children: List<GuiLayer> = _children.unmodifiableView()
 
     /**
      * The immediate parent of this layer, or null if this layer has no parent.
      */
-    var parent: GuiComponent? = null
+    var parent: GuiLayer? = null
         private set
 
-    private val _parents = mutableSetOf<GuiComponent>()
+    private val _parents = mutableSetOf<GuiLayer>()
     /**
      * A read-only set containing all the parents of this layer, recursively.
      */
-    val parents: Set<GuiComponent> = _parents.unmodifiableView()
+    val parents: Set<GuiLayer> = _parents.unmodifiableView()
 
     /**
      * The root of this component's hierarchy. i.e. the last layer found when iterating back through the parents. If this
      * component has no parent, returns this component.
      */
-    val root: GuiComponent
+    val root: GuiLayer
         get() = this.parent?.root ?: this
 
     /**
@@ -165,8 +162,8 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
      * @throws LayerHierarchyException if one of the passed layers returns false when this layer is passed to its
      * [canAddToParent] method.
      */
-    fun add(vararg components: GuiComponent) {
-        for(component in components) {
+    fun add(vararg layers: GuiLayer) {
+        for(component in layers) {
             if (component === this)
                 throw LayerHierarchyException("Tried to add a layer to itself")
 
@@ -183,9 +180,9 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
                 throw LayerHierarchyException("Recursive layer hierarchy, the passed layer is an ancestor of this layer")
             }
 
-            if (this.BUS.fire(GuiComponentEvents.AddChildEvent(component)).isCanceled())
+            if (this.BUS.fire(GuiLayerEvents.AddChildEvent(component)).isCanceled())
                 return
-            component.BUS.fire(GuiComponentEvents.AddToParentEvent(this))
+            component.BUS.fire(GuiLayerEvents.AddToParentEvent(this))
             _children.add(component)
             component.parent = this
         }
@@ -194,8 +191,8 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
     /**
      * Checks whether this layer has the passed layer as a descendent
      */
-    operator fun contains(component: GuiComponent): Boolean =
-        component in children || children.any { component in it }
+    operator fun contains(layer: GuiLayer): Boolean =
+        layer in children || children.any { layer in it }
 
     /**
      * Removes the passed layer from this layer's children. If the passed layer has no parent this will log an error
@@ -203,19 +200,19 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
      *
      * @throws LayerHierarchyException if the passed layer has a parent that isn't this layer
      */
-    fun remove(component: GuiComponent) {
-        if(component.parent == null) {
+    fun remove(layer: GuiLayer) {
+        if(layer.parent == null) {
             logger.warn("The passed layer has no parent", Exception())
             return
-        } else if (component.parent != this) {
+        } else if (layer.parent != this) {
             throw LayerHierarchyException("This isn't the layer's parent")
         }
 
-        if (this.BUS.fire(GuiComponentEvents.RemoveChildEvent(component)).isCanceled())
+        if (this.BUS.fire(GuiLayerEvents.RemoveChildEvent(layer)).isCanceled())
             return
-        component.BUS.fire(GuiComponentEvents.RemoveFromParentEvent(this))
-        component.parent = null
-        _children.remove(component)
+        layer.BUS.fire(GuiLayerEvents.RemoveFromParentEvent(this))
+        layer.parent = null
+        _children.remove(layer)
     }
 
     /**
@@ -226,7 +223,7 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
     }
 
     /**
-     * The sort index and render order for the layer. Use [GuiComponent.OVERLAY_Z] and [GuiComponent.UNDERLAY_Z] to create
+     * The sort index and render order for the layer. Use [GuiLayer.OVERLAY_Z] and [GuiLayer.UNDERLAY_Z] to create
      * layers that appear on top or below _literally everything else._ In order to maintain this property, please
      * limit your z index offsets to ±1,000,000. That should be more than enough.
      *
@@ -234,7 +231,7 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
      */
     val zIndex_rm = RMValueDouble(1.0)
     /**
-     * The sort index and render order for the layer. Use [GuiComponent.OVERLAY_Z] and [GuiComponent.UNDERLAY_Z] to create
+     * The sort index and render order for the layer. Use [GuiLayer.OVERLAY_Z] and [GuiLayer.UNDERLAY_Z] to create
      * layers that appear on top or below _literally everything else._ In order to maintain this property, please
      * limit your z index offsets to ±1,000,000. That should be more than enough.
      *
@@ -246,7 +243,7 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
      * Iterates over children while allowing children to be added or removed. Any added children will not be iterated,
      * and any children removed while iterating will be excluded.
      */
-    fun forEachChild(l: (GuiComponent) -> Unit) {
+    fun forEachChild(l: (GuiLayer) -> Unit) {
         children.toList().asSequence().filter {
             it.parent != null // a component may have been removed, in which case it won't be expecting any interaction
         }.forEach(l)
@@ -533,13 +530,15 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
         }
 
     /**
-     * Returns true if the passed point is inside the bounds of this component. Testing for [GuiComponent.isPointClipped] in
-     * this method's implementation is recommended in order to maintain normal clipping behavior.
+     * Returns true if the passed point is inside this component, ignoring any clipping.
      */
-    fun isPointInBounds(point: Vec2d): Boolean {
-        return point in bounds && !isPointClipped(point)
+    open fun isPointInBounds(point: Vec2d): Boolean {
+        return point in bounds
     }
 
+    /**
+     * Returns true if the passed point is outside this component's clipping mask.
+     */
     fun isPointClipped(point: Vec2d): Boolean {
         return false //TODO
     }
@@ -572,8 +571,8 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
      * layer nor any of its children were included
      */
     fun getContentsBounds(
-        includeOwnBounds: (component: GuiComponent) -> Boolean,
-        includeChildren: (component: GuiComponent) -> Boolean
+        includeOwnBounds: (layer: GuiLayer) -> Boolean,
+        includeChildren: (layer: GuiLayer) -> Boolean
     ): Rect2d? {
         var bounds: Rect2d? = null
         if (includeOwnBounds(this)) {
@@ -594,7 +593,7 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
 
     private var matrixDirty = true
     private var _matrix = MutableMatrix3d()
-    override val matrix: Matrix3d = Matrix3dView(_matrix)
+    override val transform: Matrix3d = Matrix3dView(_matrix)
         get() {
             if(matrixDirty) {
                 updateMatrix()
@@ -603,7 +602,7 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
         }
 
     private var _inverseMatrix = MutableMatrix3d()
-    override val inverseMatrix: Matrix3d = Matrix3dView(_inverseMatrix)
+    override val inverseTransform: Matrix3d = Matrix3dView(_inverseMatrix)
         get() {
             if(matrixDirty) {
                 updateMatrix()
@@ -675,11 +674,11 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
 
     /**
      * Renders this layer and its sublayers. This method handles the internals of rendering a layer, to simply render
-     * content in a layer use [GuiComponent.draw]
+     * content in a layer use [GuiLayer.draw]
      */
     fun renderLayer(context: GuiDrawContext) {
         context.matrix.push()
-        context.matrix *= matrix
+        context.matrix *= transform
 
         if(!isVisible) {
             renderSkeleton(context)
@@ -746,7 +745,13 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
             */
         } else {
             context.matrix.assertEvenDepth {
-                draw(context)
+                glStateGuarantees()
+                context.matrix.push()
+                context.matrix.assertEvenDepth {
+                    draw(context)
+                }
+                context.popGlMatrix()
+                context.matrix.pop()
             }
             forEachChild {
 //                if(it !is MaskLayer) // TODO: masking
@@ -757,7 +762,7 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
 //        popClipping(context)
 
         if (context.showDebugBoundingBox) {
-            GlStateManager.lineWidth(GuiComponent.overrideDebugLineWidth ?: 1f)
+            GlStateManager.lineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
             GlStateManager.color4f(.75f, 0f, .75f, 1f)
             drawDebugBoundingBox(context)
         }
@@ -776,8 +781,8 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
         forEachChild { it.renderSkeleton(context) }
 
         if (context.showDebugBoundingBox && //!isInMask &&
-            GuiComponent.showDebugTilt && shouldDrawSkeleton()) {
-            GlStateManager.lineWidth(GuiComponent.overrideDebugLineWidth ?: 1f)
+            GuiLayer.showDebugTilt && shouldDrawSkeleton()) {
+            GlStateManager.lineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
             GlStateManager.color4f(.75f, 0f, .75f, 1f)
             GL11.glEnable(GL11.GL_LINE_STIPPLE)
             GL11.glLineStipple(2, 0b0011_0011_0011_0011.toShort())
@@ -812,7 +817,7 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
         points.forEach { vb.pos(it.x, it.y, 0.0).endVertex() }
         tessellator.draw()
         GlStateManager.color4f(0f, 0f, 0f, 0.15f)
-        if(GuiComponent.showDebugTilt) {
+        if(GuiLayer.showDebugTilt) {
             vb.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION)
             points.forEach {
                 vb.pos(it.x, it.y, -100.0).endVertex()
@@ -876,7 +881,7 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
     /**
      * The event bus on which all events for this layer are fired.
      *
-     * The built-in base events are located in [GuiComponentEvents]
+     * The built-in base events are located in [GuiLayerEvents]
      */
     @JvmField
     val BUS = EventBus()
@@ -931,13 +936,13 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
      * Computes the mouse position, resets the `mouseOver` flag, and returns the component with the mouse over it, if
      * any.
      */
-    internal fun computeMouseInfo(rootPos: Vec2d, stack: Matrix3dStack): GuiComponent? {
+    internal fun computeMouseInfo(rootPos: Vec2d, stack: Matrix3dStack): GuiLayer? {
         stack.push()
-        stack.reverseMul(inverseMatrix)
+        stack.reverseMul(inverseTransform)
         mousePos = stack.transform(rootPos)
-        mouseInside = isPointInBounds(mousePos)
+        mouseInside = isPointInBounds(mousePos) && !isPointClipped(mousePos)
         mouseOver = false
-        var mouseOverChild: GuiComponent? = null
+        var mouseOverChild: GuiLayer? = null
         forEachChild { child ->
             val childMouseOver = child.computeMouseInfo(rootPos, stack)
             mouseOverChild = mouseOverChild ?: childMouseOver
@@ -954,20 +959,27 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
 
     internal fun triggerEvent(event: Event) {
         when(event) {
-            is GuiComponentEvents.MouseEvent -> {
+            is GuiLayerEvents.MouseEvent -> {
                 if(!interactive)
                     return
                 event.stack.push()
-                event.stack.reverseMul(inverseMatrix)
+                event.stack.reverseMul(inverseTransform)
                 BUS.fire(event)
                 this.forEachChild {
                     it.triggerEvent(event)
                 }
                 event.stack.pop()
             }
-            is GuiComponentEvents.KeyEvent -> {
+            is GuiLayerEvents.KeyEvent -> {
                 if(!interactive)
                     return
+                BUS.fire(event)
+                this.forEachChild {
+                    it.triggerEvent(event)
+                }
+            }
+            is GuiLayerEvents.Update -> {
+                this.update()
                 BUS.fire(event)
                 this.forEachChild {
                     it.triggerEvent(event)
@@ -1026,5 +1038,15 @@ open class GuiComponent(posX: Int, posY: Int, width: Int, height: Int): Coordina
 
         @JvmStatic
         var overrideDebugLineWidth: Float? = null
+
+        internal fun glStateGuarantees() {
+            RenderSystem.enableTexture()
+            RenderSystem.color4f(1f, 1f, 1f, 1f)
+            RenderSystem.enableBlend()
+            RenderSystem.shadeModel(GL11.GL_SMOOTH)
+            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+            RenderSystem.alphaFunc(GL11.GL_GREATER, 1/255f)
+            RenderSystem.disableLighting()
+        }
     }
 }

@@ -12,14 +12,14 @@ class SimpleCoordinateSpace2D: CoordinateSpace2D {
         set(value) { scale2d = vec(value, value) }
     var rotation: Double = 0.0
 
-    override var matrix: Matrix3d = Matrix3d.IDENTITY
+    override var transform: Matrix3d = Matrix3d.IDENTITY
         get() {
             updateMatrixIfNeeded()
             return field
         }
         private set
 
-    override var inverseMatrix: Matrix3d = Matrix3d.IDENTITY
+    override var inverseTransform: Matrix3d = Matrix3d.IDENTITY
         get() {
             updateMatrixIfNeeded()
             return field
@@ -37,13 +37,13 @@ class SimpleCoordinateSpace2D: CoordinateSpace2D {
         matrix.translate(matrixParams.pos)
         matrix.rotate(matrixParams.rotation)
         matrix.scale(matrixParams.scale)
-        this.matrix = matrix.toImmutable()
+        this.transform = matrix.toImmutable()
 
         matrix.set(Matrix3d.IDENTITY)
         matrix.scale(matrixParams.inverseScale)
         matrix.rotate(matrixParams.rotation)
         matrix.translate(-matrixParams.pos)
-        this.inverseMatrix = matrix.toImmutable()
+        this.inverseTransform = matrix.toImmutable()
     }
 
     private fun updateMatrixIfNeeded() {

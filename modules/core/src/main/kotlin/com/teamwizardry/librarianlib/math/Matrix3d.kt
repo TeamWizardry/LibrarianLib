@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.member.FieldMirror
 import net.minecraft.client.renderer.Matrix3f
+import net.minecraft.client.renderer.Matrix4f
 import net.minecraft.util.math.Vec3d
 import kotlin.math.cos
 import kotlin.math.floor
@@ -440,6 +441,21 @@ open class Matrix3d(
     }
     open fun toImmutable(): Matrix3d {
         return this
+    }
+
+    fun toMatrix3f(): Matrix3f {
+        val matrix = Matrix3f()
+        @Suppress("CAST_NEVER_SUCCEEDS") val m = matrix as IMatrix3f
+        m.m00 = m00.toFloat()
+        m.m01 = m01.toFloat()
+        m.m02 = m02.toFloat()
+        m.m10 = m10.toFloat()
+        m.m11 = m11.toFloat()
+        m.m12 = m12.toFloat()
+        m.m20 = m20.toFloat()
+        m.m21 = m21.toFloat()
+        m.m22 = m22.toFloat()
+        return matrix
     }
 
     companion object {

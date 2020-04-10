@@ -16,13 +16,13 @@ interface CoordinateSpace2D {
      * e.g. if the child space is embedded with an offset (x,y) within its parent, this will be
      * `Matrix3d().transform(x,y)`
      */
-    val matrix: Matrix3d
+    val transform: Matrix3d
     /**
-     * The inverse of [matrix]. Often the best way to get this is to apply inverse transforms instead of directly
+     * The inverse of [transform]. Often the best way to get this is to apply inverse transforms instead of directly
      * inverting the matrix. This allows elegant failure state when scaling by zero. Inverting a matrix with zero
      * scale is impossible, but when applying inverse transforms this can be accounted for by ignoring inverse scales.
      */
-    val inverseMatrix: Matrix3d
+    val inverseTransform: Matrix3d
 
     /**
      * Create a matrix that, when applied to a point in this coordinate space, returns the corresponding point in the
@@ -31,8 +31,8 @@ interface CoordinateSpace2D {
     @JvmDefault
     fun conversionMatrixTo(other: CoordinateSpace2D): Matrix3d {
         if(other === this) return Matrix3d.IDENTITY
-        if(other === this.parentSpace) return this.matrix
-        if(other.parentSpace === this) return other.inverseMatrix
+        if(other === this.parentSpace) return this.transform
+        if(other.parentSpace === this) return other.inverseTransform
 
         val lca = lowestCommonAncestor(other) ?: throw UnrelatedCoordinateSpaceException(this, other)
 
@@ -188,7 +188,7 @@ interface CoordinateSpace2D {
 
         val matrix = MutableMatrix3d()
         ancestors.reversed().forEach {
-            matrix *= it.matrix
+            matrix *= it.transform
         }
         return matrix
     }
@@ -206,7 +206,7 @@ interface CoordinateSpace2D {
 
         val matrix = MutableMatrix3d()
         ancestors.forEach {
-            matrix *= it.inverseMatrix
+            matrix *= it.inverseTransform
         }
         return matrix
     }

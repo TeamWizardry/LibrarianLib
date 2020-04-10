@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.gui.layers
 
 import com.teamwizardry.librarianlib.gui.component.GuiDrawContext
-import com.teamwizardry.librarianlib.gui.component.GuiComponent
+import com.teamwizardry.librarianlib.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.gui.value.IMValue
 import com.teamwizardry.librarianlib.gui.value.IMValueInt
 import com.teamwizardry.librarianlib.sprites.ISprite
@@ -10,7 +10,7 @@ import java.awt.Color
 /**
  * Displays a sprite
  */
-class SpriteComponent(var sprite: ISprite?, x: Int, y: Int, width: Int, height: Int) : GuiComponent(x, y, width, height) {
+class SpriteLayer(var sprite: ISprite?, x: Int, y: Int, width: Int, height: Int) : GuiLayer(x, y, width, height) {
     constructor(sprite: ISprite?, x: Int, y: Int): this(sprite, x, y, sprite?.width ?: 16, sprite?.height ?: 16)
     constructor(sprite: ISprite?): this(sprite, 0, 0)
     constructor(): this(null, 0, 0)

@@ -460,6 +460,15 @@ open class Matrix4d: Cloneable {
         }
     }
 
+    fun toMatrix4f(): Matrix4f {
+        return Matrix4f(floatArrayOf(
+            m00.toFloat(), m01.toFloat(), m02.toFloat(), m03.toFloat(),
+            m10.toFloat(), m11.toFloat(), m12.toFloat(), m13.toFloat(),
+            m20.toFloat(), m21.toFloat(), m22.toFloat(), m23.toFloat(),
+            m30.toFloat(), m31.toFloat(), m32.toFloat(), m33.toFloat()
+        ))
+    }
+
     override fun toString(): String {
         return (m00.toString() + " " + m01 + " " + m02 + " " + m03 + "\n"
             + m10 + " " + m11 + " " + m12 + " " + m13 + "\n"

@@ -1,11 +1,8 @@
 package com.teamwizardry.librarianlib.gui.component
 
 import com.teamwizardry.librarianlib.utilities.eventbus.Event
-import com.teamwizardry.librarianlib.gui.EnumMouseButton
 import com.teamwizardry.librarianlib.math.Matrix3dStack
 import com.teamwizardry.librarianlib.math.Vec2d
-import com.teamwizardry.librarianlib.math.clamp
-import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.utilities.eventbus.CancelableEvent
 
 /**
@@ -39,7 +36,7 @@ import com.teamwizardry.librarianlib.utilities.eventbus.CancelableEvent
  * because to an extent the end of one frame is the start of the next, and thinking of it as the start of the frame is
  * easier to reason about. However, in a few situations this distinction may be an important thing to keep in mind.
  */
-object GuiComponentEvents {
+object GuiLayerEvents {
     /**
      * Called after input events and before layout is calculated, this is the best place for general-purpose updates
      */
@@ -79,22 +76,22 @@ object GuiComponentEvents {
     /**
      * Fired before adding a child component
      */
-    class AddChildEvent(val child: GuiComponent) : CancelableEvent()
+    class AddChildEvent(val child: GuiLayer) : CancelableEvent()
 
     /**
      * Fired before removing a child component
      */
-    class RemoveChildEvent(val child: GuiComponent) : CancelableEvent()
+    class RemoveChildEvent(val child: GuiLayer) : CancelableEvent()
 
     /**
      * Fired before adding the component to a new parent
      */
-    class AddToParentEvent(val parent: GuiComponent) : Event()
+    class AddToParentEvent(val parent: GuiLayer) : Event()
 
     /**
      * Fired before removing the component from its parent.
      */
-    class RemoveFromParentEvent(val parent: GuiComponent) : Event()
+    class RemoveFromParentEvent(val parent: GuiLayer) : Event()
 
     /**
      * Called to automatically lay out children

@@ -6,12 +6,16 @@ import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.MainWindow
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.texture.AtlasTexture
+import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.client.renderer.texture.TextureManager
 import net.minecraft.resources.IFutureReloadListener
 import net.minecraft.resources.IReloadableResourceManager
 import net.minecraft.resources.IResourceManager
+import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Timer
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.api.distmarker.Dist
@@ -35,6 +39,8 @@ object Client {
     val resourceManager: IResourceManager get() = minecraft.resourceManager
     @JvmStatic
     val textureManager: TextureManager get() = minecraft.textureManager
+    @JvmStatic
+    val fontRenderer: FontRenderer get() = minecraft.fontRenderer
     @JvmStatic
     val tessellator: Tessellator get() = Tessellator.getInstance()
 
@@ -82,6 +88,16 @@ object Client {
      */
     inline fun runAsync(crossinline task: () -> Unit): CompletableFuture<Void> {
         return minecraft.runAsync { task() }
+    }
+
+    @JvmStatic
+    fun getBlockAtlasSprite(sprite: ResourceLocation): TextureAtlasSprite {
+        return getAtlasSprite(AtlasTexture.LOCATION_BLOCKS_TEXTURE, sprite)
+    }
+
+    @JvmStatic
+    fun getAtlasSprite(atlas: ResourceLocation, texture: ResourceLocation): TextureAtlasSprite {
+        return minecraft.getAtlasSpriteGetter(atlas).apply(texture)
     }
 
     abstract class Time {

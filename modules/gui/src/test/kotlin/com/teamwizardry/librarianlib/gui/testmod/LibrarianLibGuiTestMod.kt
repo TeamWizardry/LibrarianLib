@@ -4,8 +4,8 @@ package com.teamwizardry.librarianlib.gui.testmod
 
 import com.teamwizardry.librarianlib.core.util.kotlin.toRl
 import com.teamwizardry.librarianlib.gui.FacadeScreen
-import com.teamwizardry.librarianlib.gui.component.GuiComponentEvents
-import com.teamwizardry.librarianlib.gui.layers.SpriteComponent
+import com.teamwizardry.librarianlib.gui.component.GuiLayerEvents
+import com.teamwizardry.librarianlib.gui.layers.SpriteLayer
 import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.sprites.Texture
 import com.teamwizardry.librarianlib.testbase.TestMod
@@ -23,26 +23,26 @@ object LibrarianLibSpritesTestMod: TestMod("gui", "Gui", logger) {
 
         +FacadeScreenConfig("sprite", "Simple Sprite") { screen ->
             val dirt = Texture("minecraft:textures/block/dirt.png".toRl(), 16, 16)
-            val layer = SpriteComponent(dirt.getSprite(""))
+            val layer = SpriteLayer(dirt.getSprite(""))
             screen.facade.root.add(layer)
         }
 
         +FacadeScreenConfig("layer_transform", "Layer Transform") { screen ->
             val dirt = Texture("minecraft:textures/block/dirt.png".toRl(), 16, 16).getSprite("")
             val stone = Texture("minecraft:textures/block/stone.png".toRl(), 16, 16).getSprite("")
-            val layer = SpriteComponent(dirt)
+            val layer = SpriteLayer(dirt)
             layer.pos = vec(32, 32)
             layer.rotation = Math.toRadians(15.0)
 
-            val layer2 = SpriteComponent(dirt)
+            val layer2 = SpriteLayer(dirt)
             layer2.pos = vec(32, 32)
             layer2.rotation = Math.toRadians(-15.0)
             layer.add(layer2)
 
-            layer.BUS.hook<GuiComponentEvents.MouseMove> { e ->
+            layer.BUS.hook<GuiLayerEvents.MouseMove> { e ->
                 layer.sprite = if(layer.mouseOver) stone else dirt
             }
-            layer2.BUS.hook<GuiComponentEvents.MouseMove> { e ->
+            layer2.BUS.hook<GuiLayerEvents.MouseMove> { e ->
                 layer2.sprite = if(layer2.mouseOver) stone else dirt
             }
             screen.facade.root.add(layer)

@@ -24,6 +24,7 @@ import java.util.Optional
 open class FacadeScreen(title: ITextComponent): Screen(title /* todo behavior #2 */) {
     @Suppress("LeakingThis")
     val facade = FacadeWidget(this)
+    val main = facade.main
 
     override fun render(mouseX: Int, mouseY: Int, partialTicks: Float) {
         this.renderBackground()

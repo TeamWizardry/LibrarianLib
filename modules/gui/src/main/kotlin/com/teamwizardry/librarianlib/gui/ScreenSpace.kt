@@ -6,8 +6,8 @@ package com.teamwizardry.librarianlib.math
  */
 object ScreenSpace: CoordinateSpace2D {
     override val parentSpace: CoordinateSpace2D? = null
-    override val matrix: Matrix3d
+    override val transform: Matrix3d
         get() = Matrix3d.IDENTITY
-    override val inverseMatrix: Matrix3d
+    override val inverseTransform: Matrix3d
         get() = Matrix3d.IDENTITY
 }
