@@ -32,6 +32,7 @@ class VelocityUpdateModule(
         position.load(particle)
         if(previousPosition != null) {
             position.contents.copyInto(previousPosition.contents)
+            previousPosition.store(particle)
         }
         velocity.load(particle)
         for(i in 0 until 3) {

@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.features.particlesystem.modules
 
 import com.teamwizardry.librarianlib.core.client.ClientTickHandler
-import com.teamwizardry.librarianlib.features.kotlin.Minecraft
 import com.teamwizardry.librarianlib.features.particlesystem.*
 import com.teamwizardry.librarianlib.features.particlesystem.bindings.ConstantBinding
 import net.minecraft.client.Minecraft
@@ -11,6 +10,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.MathHelper
 import org.lwjgl.opengl.GL11
+import java.lang.IllegalArgumentException
 
 /**
  * The bread-and-butter render module, a simple billboarded sprite.
@@ -64,7 +64,15 @@ class SpriteRenderModule @JvmOverloads constructor(
         /**
          * Whether to enable OpenGL blending
          */
-        @JvmField val enableBlend: Boolean = true
+        @JvmField val enableBlend: Boolean = true,
+        /**
+         * The size of the sprite sheet (must be a power of 2)
+         */
+        @JvmField val spriteSheetSize: Int = 1,
+        /**
+         * The sprite index (indexed left-to-right, top-to-bottom)
+         */
+        @JvmField val spriteIndex: ReadParticleBinding = ConstantBinding(0.0)
 ) : ParticleRenderModule {
     init {
         previousPosition?.require(3)
@@ -73,6 +81,11 @@ class SpriteRenderModule @JvmOverloads constructor(
         size.require(1)
         facingVector?.require(3)
         alphaMultiplier.require(1)
+        spriteIndex.require(1)
+
+        if(spriteSheetSize and (spriteSheetSize - 1) != 0) {
+            throw IllegalArgumentException("Sprite sheet size $spriteSheetSize is not a power of 2")
+        }
     }
 
     override fun render(particles: List<DoubleArray>, prepModules: List<ParticleUpdateModule>) {
@@ -114,6 +127,10 @@ class SpriteRenderModule @JvmOverloads constructor(
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
         vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR)
+
+        var spriteSize = 1.0 / spriteSheetSize
+        var spriteIndexMask = spriteSheetSize - 1
+        var spriteSheetBits = MathHelper.log2(spriteSheetSize)
 
         particles.forEach { particle ->
             for (i in 0 until prepModules.size) {
@@ -180,10 +197,26 @@ class SpriteRenderModule @JvmOverloads constructor(
             val b = color.contents[2].toFloat()
             val a = color.contents[3].toFloat() * alphaMultiplier.contents[0].toFloat()
 
-            vb.pos(x - localRightX + localUpX, y - localRightY + localUpY, z - localRightZ + localUpZ).tex(0.0, 0.0).color(r, g, b, a).endVertex()
-            vb.pos(x + localRightX + localUpX, y + localRightY + localUpY, z + localRightZ + localUpZ).tex(1.0, 0.0).color(r, g, b, a).endVertex()
-            vb.pos(x + localRightX - localUpX, y + localRightY - localUpY, z + localRightZ - localUpZ).tex(1.0, 1.0).color(r, g, b, a).endVertex()
-            vb.pos(x - localRightX - localUpX, y - localRightY - localUpY, z - localRightZ - localUpZ).tex(0.0, 1.0).color(r, g, b, a).endVertex()
+            var minU = 0.0
+            var minV = 0.0
+            var maxU = 1.0
+            var maxV = 1.0
+
+            if(spriteSheetSize > 1) {
+                spriteIndex.load(particle)
+                val index = spriteIndex.contents[0].toInt()
+                val uIndex = index and spriteIndexMask
+                val vIndex = index ushr spriteSheetBits
+                minU = spriteSize * uIndex
+                minV = spriteSize * vIndex
+                maxU = spriteSize * (uIndex + 1)
+                maxV = spriteSize * (vIndex + 1)
+            }
+
+            vb.pos(x - localRightX + localUpX, y - localRightY + localUpY, z - localRightZ + localUpZ).tex(minU, minV).color(r, g, b, a).endVertex()
+            vb.pos(x + localRightX + localUpX, y + localRightY + localUpY, z + localRightZ + localUpZ).tex(maxU, minV).color(r, g, b, a).endVertex()
+            vb.pos(x + localRightX - localUpX, y + localRightY - localUpY, z + localRightZ - localUpZ).tex(maxU, maxV).color(r, g, b, a).endVertex()
+            vb.pos(x - localRightX - localUpX, y - localRightY - localUpY, z - localRightZ - localUpZ).tex(minU, maxV).color(r, g, b, a).endVertex()
         }
 
         tessellator.draw()

@@ -8,6 +8,7 @@ import com.teamwizardry.librarianlib.features.kotlin.plus
 import com.teamwizardry.librarianlib.features.saving.Save
 import com.teamwizardry.librarianlib.features.utilities.client.ClientRunnable
 import com.teamwizardry.librarianlib.test.particlesystem.examples.AccelerateAway
+import com.teamwizardry.librarianlib.test.particlesystem.examples.AnimatedParticles
 import com.teamwizardry.librarianlib.test.particlesystem.examples.BeamLightning
 import com.teamwizardry.librarianlib.test.particlesystem.examples.ItemFacing
 import com.teamwizardry.librarianlib.test.particlesystem.examples.PhysicsCurtain
@@ -59,5 +60,6 @@ val particleExamples = listOf(
     AccelerateAway,
     BeamLightning,
     PhysicsCurtain,
+    AnimatedParticles,
     ItemFacing
 )
