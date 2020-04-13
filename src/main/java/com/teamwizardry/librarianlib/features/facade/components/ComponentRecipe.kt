@@ -148,7 +148,7 @@ class ComponentRecipe(posX: Int, posY: Int, width: Int, height: Int, mainColor: 
         for (column in 0 until 3) for (row in 0 until actualWidth) {
             if (!iterator.hasNext()) return table
 
-            table[row * 3 + column + 3 - actualWidth] = iterator.next()
+            table[row * 3 + column] = iterator.next()
         }
 
         return table
