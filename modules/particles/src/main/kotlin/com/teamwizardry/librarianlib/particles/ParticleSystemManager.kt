@@ -1,11 +1,14 @@
 package com.teamwizardry.librarianlib.particles
 
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.ISimpleReloadListener
 import com.teamwizardry.librarianlib.math.Matrix4d
 import com.teamwizardry.librarianlib.math.MutableMatrix4d
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.Vector3f
 import net.minecraft.client.renderer.Vector4f
+import net.minecraft.profiler.IProfiler
+import net.minecraft.resources.IResourceManager
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -16,22 +19,16 @@ import net.minecraftforge.fml.common.Mod
 import java.util.ConcurrentModificationException
 
 /**
- * The soon-to-be-renamed central hub for particle systems.
- *
  * This object is responsible for the rendering and updating of particle systems, and is where new particle systems
  * are sent to be rendered and ticked.
  */
 @Mod.EventBusSubscriber(value = [Dist.CLIENT])
-internal object ParticleSystemManager {
-
-    var needsReload: Boolean = false
+internal object ParticleSystemManager: ISimpleReloadListener<Unit> {
 
     val systems: MutableList<ParticleSystem> = mutableListOf()
 
     init {
-//        ClientRunnable.registerReloadHandler() {
-//            systems.forEach { it.reload() }
-//        }
+        Client.resourceReloadHandler.register(this)
     }
 
     fun add(system: ParticleSystem) {
@@ -54,14 +51,8 @@ internal object ParticleSystemManager {
             return
 
         val profiler = Minecraft.getInstance().profiler
-        profiler.startSection("liblib_new_particles")
+        profiler.startSection("liblib_particles")
         try {
-            if(needsReload) {
-                needsReload = false
-                systems.forEach {
-                    it.reload()
-                }
-            }
             systems.forEach {
                 it.update()
             }
@@ -93,16 +84,6 @@ internal object ParticleSystemManager {
     fun render(event: RenderWorldLastEvent) {
         val profiler = Minecraft.getInstance().profiler
 
-//        GlStateManager.pushMatrix()
-
-//        val renderInfo = Minecraft.getInstance().gameRenderer.activeRenderInfo
-//        val pos = renderInfo.projectedView
-//        GlStateManager.translated(-pos.x, -pos.y, -pos.z)
-
-//        GlStateManager.enableBlend()
-//        GlStateManager.alphaFunc(GL11.GL_GREATER, 1 / 256f)
-//        GlStateManager.disableLighting()
-
         profiler.startSection("liblib_particles")
 
         event.matrixStack.push()
@@ -122,15 +103,21 @@ internal object ParticleSystemManager {
         event.matrixStack.pop()
 
         profiler.endSection()
-
-//        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
-//        GlStateManager.disableBlend()
-//        GlStateManager.popMatrix()
     }
 
     //TODO forge event fires every frame
     @SubscribeEvent
     fun unloadWorld(event: WorldEvent.Unload) {
 //        systems.forEach { it.particles.clear() }
+    }
+
+    override fun prepare(resourceManager: IResourceManager, profiler: IProfiler) {
+        // nop
+    }
+
+    override fun apply(result: Unit, resourceManager: IResourceManager, profiler: IProfiler) {
+        systems.forEach {
+            it.reload()
+        }
     }
 }
