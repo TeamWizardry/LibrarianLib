@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.MathHelper
 import org.lwjgl.opengl.GL11
+import java.lang.IllegalArgumentException
 
 /**
  * The bread-and-butter render module, a simple billboarded sprite.
@@ -58,7 +59,15 @@ class SpriteRenderModule @JvmOverloads constructor(
     /**
      * The alpha multiplier for the color. Defaults to 1 if not present.
      */
-    @JvmField val alphaMultiplier: ReadParticleBinding = ConstantBinding(1.0)
+    @JvmField val alphaMultiplier: ReadParticleBinding = ConstantBinding(1.0),
+    /**
+     * The size of the sprite sheet (must be a power of 2)
+     */
+    @JvmField val spriteSheetSize: Int = 1,
+    /**
+     * The sprite index (indexed left-to-right, top-to-bottom)
+     */
+    @JvmField val spriteIndex: ReadParticleBinding = ConstantBinding(0.0)
 ) : ParticleRenderModule {
     init {
         previousPosition?.require(3)
@@ -67,6 +76,11 @@ class SpriteRenderModule @JvmOverloads constructor(
         size.require(1)
         facingVector?.require(3)
         alphaMultiplier.require(1)
+        spriteIndex.require(1)
+
+        if(spriteSheetSize and (spriteSheetSize - 1) != 0) {
+            throw IllegalArgumentException("Sprite sheet size $spriteSheetSize is not a power of 2")
+        }
     }
 
     @Suppress("CAST_NEVER_SUCCEEDS", "LocalVariableName")
@@ -109,6 +123,10 @@ class SpriteRenderModule @JvmOverloads constructor(
         val lookUpX = lookUpVec.x.toDouble()
         val lookUpY = lookUpVec.y.toDouble()
         val lookUpZ = lookUpVec.z.toDouble()
+
+        val spriteSize = 1f / spriteSheetSize
+        val spriteIndexMask = spriteSheetSize - 1
+        val spriteSheetBits = MathHelper.log2(spriteSheetSize)
 
         particles.forEach { particle ->
             for (i in 0 until prepModules.size) {
@@ -206,10 +224,26 @@ class SpriteRenderModule @JvmOverloads constructor(
             val b = color.contents[2].toFloat()
             val a = color.contents[3].toFloat() * alphaMultiplier.contents[0].toFloat()
 
-            builder.pos(x - localRightX - localUpX, y - localRightY - localUpY, z - localRightZ - localUpZ).color(r, g, b, a).tex(0f, 1f).endVertex()
-            builder.pos(x + localRightX - localUpX, y + localRightY - localUpY, z + localRightZ - localUpZ).color(r, g, b, a).tex(1f, 1f).endVertex()
-            builder.pos(x + localRightX + localUpX, y + localRightY + localUpY, z + localRightZ + localUpZ).color(r, g, b, a).tex(1f, 0f).endVertex()
-            builder.pos(x - localRightX + localUpX, y - localRightY + localUpY, z - localRightZ + localUpZ).color(r, g, b, a).tex(0f, 0f).endVertex()
+            var minU = 0f
+            var minV = 0f
+            var maxU = 1f
+            var maxV = 1f
+
+            if(spriteSheetSize > 1) {
+                spriteIndex.load(particle)
+                val index = spriteIndex.contents[0].toInt()
+                val uIndex = index and spriteIndexMask
+                val vIndex = index ushr spriteSheetBits
+                minU = spriteSize * uIndex
+                minV = spriteSize * vIndex
+                maxU = spriteSize * (uIndex + 1)
+                maxV = spriteSize * (vIndex + 1)
+            }
+
+            builder.pos(x - localRightX - localUpX, y - localRightY - localUpY, z - localRightZ - localUpZ).color(r, g, b, a).tex(minU, maxV).endVertex()
+            builder.pos(x + localRightX - localUpX, y + localRightY - localUpY, z + localRightZ - localUpZ).color(r, g, b, a).tex(maxU, maxV).endVertex()
+            builder.pos(x + localRightX + localUpX, y + localRightY + localUpY, z + localRightZ + localUpZ).color(r, g, b, a).tex(maxU, minV).endVertex()
+            builder.pos(x - localRightX + localUpX, y - localRightY + localUpY, z - localRightZ + localUpZ).color(r, g, b, a).tex(minU, minV).endVertex()
         }
 
         buffer.finish()

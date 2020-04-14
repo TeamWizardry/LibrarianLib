@@ -33,6 +33,12 @@ object SystemNames {
             """
                 Spawns randomly colored particles that face forward along their velocity vector
             """.trimIndent()
+        ),
+        System("spritesheet",
+            "Spawn Sprite Sheet Particle",
+            """
+                Spawns randomly colored particles, motionless particles with one of four sprites
+            """.trimIndent()
         )
     )
 
