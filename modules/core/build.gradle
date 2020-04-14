@@ -11,7 +11,7 @@ processResources {
     }
 }
 
-task generateModuleIndex << {
+task(generateModuleIndex).doLast {
     def resourceRoots = files([])
     allmodules.each { [it.sourceSets.main, it.sourceSets.test].each {
         resourceRoots.from(it.resources.sourceDirectories)

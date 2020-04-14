@@ -17,14 +17,14 @@ def generatedDir = "$buildDir/generated"
 // compile task inputs. The `$buildDir/generated/*` directories are deleted before each build so files don't hold over
 // from one build to the next
 
-task cleanGenerated << {
+task(cleanGenerated).doLast {
     file("$generatedDir/main").deleteDir()
 }
-task cleanTestGenerated << {
+task(cleanTestGenerated).doLast {
     file("$generatedDir/test").deleteDir()
 }
-task generateClasses << {}
-task generateTestClasses << {}
+task(generateClasses).doLast {}
+task(generateTestClasses).doLast {}
 task generateResources(type: Copy) {
     from("$generatedDir/main/resources")
     into(sourceSets.main.output.resourcesDir)
@@ -116,7 +116,7 @@ def skeletonModInfo(String output, FileCollection resourceRoots, String modid, S
 
 // The core module's mod info files already exist. They're the ones that are included in the final jar.
 if(path != ":core") {
-    task generateSkeletonModInfo << {
+    task(generateSkeletonModInfo).doLast {
         skeletonModInfo("$generatedDir/main/resources", mainResourceRoots,
                 project.modid, project.human_name, project.module_description,
                 ""
@@ -125,7 +125,7 @@ if(path != ":core") {
     generateResources.dependsOn(generateSkeletonModInfo)
 }
 
-task generateTestModInfo << {
+task(generateTestModInfo).doLast {
     // The test mods depend on their parent module
     def additionalDependencies = tomlDependency(project.modid_test, project.modid, "[${rootProject.mod_version}]")
 
@@ -175,14 +175,14 @@ def generateMixinConnector(String classesDir, String resourcesDir, FileCollectio
 
 }
 
-task generateSkeletonMixinConnector << {
+task(generateSkeletonMixinConnector).doLast {
     generateMixinConnector("$generatedDir/main/java", "$generatedDir/main/resources", mainResourceRoots)
 }
 generateSkeletonMixinConnector.dependsOn(processResources)
 generateResources.dependsOn(generateSkeletonMixinConnector)
 generateClasses.dependsOn(generateSkeletonMixinConnector)
 
-task generateTestMixinConnector << {
+task(generateTestMixinConnector).doLast {
     generateMixinConnector("$generatedDir/test/java", "$generatedDir/test/resources", testResourceRoots)
 }
 generateTestMixinConnector.dependsOn(processTestResources)
@@ -196,7 +196,7 @@ if(project.path == ":core") {
     def productionResources = files([])
     productionModules.each { productionResources.from(it.sourceSets.main.resources.sourceDirectories) }
 
-    task generateFullMixinConnector << {
+    task(generateFullMixinConnector).doLast {
         def classesDir = "$generatedDir/main/java"
 
         def configs = []

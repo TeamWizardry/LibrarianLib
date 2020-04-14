@@ -4,6 +4,7 @@ buildscript {
         maven { url = 'http://repo.spongepowered.org/maven' }
         jcenter()
         mavenCentral()
+        gradlePluginPortal()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
@@ -18,6 +19,7 @@ allprojects {
     apply plugin: 'eclipse'
     apply plugin: 'idea'
     apply plugin: 'kotlin'
+    apply plugin: 'java-library'
 
     ext.allmodules = rootProject.subprojects.findAll { it.path != ":runtime" }
     ext.modid = (project == rootProject || project.name == "core") ? "librarianlib" : "librarianlib-${project.name}"
@@ -60,14 +62,7 @@ allprojects {
 
     dependencies {
         minecraft "net.minecraftforge:forge:$mc_version-$forge_version"
-        implementation("org.spongepowered:mixin:0.8-SNAPSHOT") {
-            // Mixin includes a lot of dependencies that are too up-to-date
-//        exclude module: 'launchwrapper'
-//        exclude module: 'guava'
-//        exclude module: 'gson'
-//        exclude module: 'commons-io'
-//        exclude module: 'log4j-core'
-        }
+        implementation("org.spongepowered:mixin:0.8-SNAPSHOT")
     }
 
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
@@ -123,12 +118,12 @@ configure(allmodules) {
     // Add kotlin dependencies manually to the modules, but don't include them at runtime, since Kottle doesn't include
     // kotlin sources
     dependencies {
-        implementation "org.jetbrains.kotlin:kotlin-stdlib:1.3.61"
-        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.61"
-        implementation "org.jetbrains.kotlin:kotlin-reflect:1.3.61"
-        implementation "org.jetbrains:annotations:18.0.0"
-        implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2"
-        implementation "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.2"
+        compileOnly "org.jetbrains.kotlin:kotlin-stdlib:1.3.61"
+        compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.61"
+        compileOnly "org.jetbrains.kotlin:kotlin-reflect:1.3.61"
+        compileOnly "org.jetbrains:annotations:18.0.0"
+        compileOnly "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2"
+        compileOnly "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.2"
     }
 }
 
@@ -240,77 +235,69 @@ jar {
     }
 }
 
-jar {
-    manifest {
-        attributes([
-                "Implementation-Title": "LibrarianLib",
-                "Implementation-Version": "$mod_version",
-                "Implementation-Vendor" :"Team Wizardry",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                // Specify the IMixinConnector. This class is present at runtime, but the runtime manifest
-                // specifies a different mixin container with only the mixin files from that specific module.
-                // https://github.com/SpongePowered/Mixin/wiki/Release-Notes---Mixin-0.8#toolchain-and-environment-changes
-                "MixinConnector": "com.teamwizardry.librarianlib.MixinConnector"
-        ])
-    }
-}
-
 // set up the output jar for each of the production modules
-configure(productionModules) {
-    jar {
-        manifest {
-            attributes([
-                    "Implementation-Title"    : "LibrarianLib $human_name Module",
+configure(productionModules + [project]) {
+    def manifestAttributes = project == rootProject ?
+            [
+                    "Implementation-Title": "LibrarianLib",
+                    "Implementation-Version": "$mod_version",
+                    "Implementation-Vendor" :"Team Wizardry",
+                    "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                    // Specify the IMixinConnector. This class is present at runtime, but the runtime manifest
+                    // specifies a different mixin container with only the mixin files from that specific module.
+                    // https://github.com/SpongePowered/Mixin/wiki/Release-Notes---Mixin-0.8#toolchain-and-environment-changes
+                    "MixinConnector": "com.teamwizardry.librarianlib.MixinConnector"
+            ]
+            :
+            [
+                    "Implementation-Title"    : "LibrarianLib $human_name",
                     "Implementation-Version"  : "$mod_version",
                     "Implementation-Vendor"   : "Team Wizardry",
                     "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
                     // Specify the IMixinConnector. This contains only the mixin files from this specific module.
                     // https://github.com/SpongePowered/Mixin/wiki/Release-Notes---Mixin-0.8#toolchain-and-environment-changes
                     "MixinConnector": "MixinConnector"
-            ])
-        }
-    }
+            ]
     components.java
 
-    // Example configuration to allow publishing using the maven-publish task
-    // we define a custom artifact that is sourced from the reobfJar output task
-    // and then declare that to be published
-    // Note you'll need to add a repository here
     def reobfArtifact = artifacts.add('archives', file("$buildDir/reobfJar/output.jar")) {
         type 'jar'
         builtBy 'reobfJar'
     }
 
+    jar {
+        manifest.attributes(manifestAttributes)
+    }
     task sourceJar(type: Jar) {
         from sourceSets.main.allSource
         from sourceSets.main.output.resourcesDir
         dependsOn processResources
+        manifest.attributes(manifestAttributes)
     }
     task deobfJar(type: Jar) {
         from sourceSets.main.output
         dependsOn classes
         dependsOn processResources
+        manifest.attributes(manifestAttributes)
     }
 
+    // For some reason we need to apply the publish plugin at the last moment, otherwise there are odd issues with it
+    // already being configured
     apply plugin: 'maven-publish'
     publishing {
         publications {
             mod(MavenPublication) {
                 from components.java
-                artifact(reobfArtifact) {
-                    classifier "reobf"
-                }
-                artifact deobfJar {
-                    classifier "deobf"
-                }
+                if(project != rootProject)
+                    artifacts = [deobfJar]
                 artifact sourceJar {
                     classifier "sources"
                 }
                 pom {
                     // `.toString()` immediately evaluates the `GString` to a `String`, which is apparently necessary
                     // for the maven-publish plugin
-                    name = "Librarianlib $human_name".toString()
-                    description = "$module_description".toString()
+                    name = project == rootProject ? "LibrarianLib" : "LibrarianLib $human_name".toString()
+                    description = project == rootProject ? "The final packaged LibrarianLib jar" : "$module_description".toString()
                     url = 'http://github.com/LibrarianLib/LibrarianLib'
                     licenses {
                         license {
@@ -318,29 +305,19 @@ configure(productionModules) {
                             url = 'https://www.gnu.org/licenses/lgpl-3.0.txt'
                         }
                     }
-                    developers {
-                        // set up the maven developer list. This is really just here because I can.
-                        if(project.hasProperty("maven_developers")) {
-                            "$maven_developers".split(',').each {
-                                def fields = it.split(':').collect { it.trim() }
-                                developer {
-                                    if(fields.size() > 0 && fields.get(0)) {
-                                        id = fields.get(0)
-                                    }
-                                    if(fields.size() > 1 && fields.get(1)) {
-                                        name = fields.get(1)
-                                    }
-                                    if(fields.size() > 2 && fields.get(2)) {
-                                        email = fields.get(2)
-                                    }
-                                }
-                            }
-                        }
-                    }
                     scm {
                         connection = 'scm:git:https://github.com/LibrarianLib/LibrarianLib.git'
                         developerConnection = 'scm:git:ssh://github.com/LibrarianLib/LibrarianLib.git'
                         url = 'https://github.com/LibrarianLib/LibrarianLib'
+                    }
+                    // Remove the forge dependencies from the POM
+                    withXml {
+                        def node = asNode()
+                        node.dependencies.'*'.findAll {
+                            it.groupId.text() == 'net.minecraftforge'
+                        }.each {
+                            it.parent().remove(it)
+                        }
                     }
                 }
             }

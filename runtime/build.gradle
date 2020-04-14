@@ -22,7 +22,7 @@ allmodules.each {
 //   [18:17:04] [pool-2-thread-1/ERROR] [ne.mi.fm.lo.mo.ExplodedDirectoryLocator/SCAN]: Exception scanning <<project dir>>/modules/utilities/build/classes/java/test
 //   java.nio.file.NoSuchFileException: <<project dir>>/modules/utilities/build/classes/java/test
 //       at sun.nio.fs.UnixException.translateToIOException(UnixException.java:86) ~[?:1.8.0_181] {}
-task createEmptyMainOutputDirs << {
+task(createEmptyMainOutputDirs).doLast {
     allmodules.each { module ->
         module.sourceSets.main.output.classesDirs.each {
             it.mkdirs()
@@ -30,7 +30,7 @@ task createEmptyMainOutputDirs << {
         module.sourceSets.main.output.resourcesDir.mkdirs()
     }
 }
-task createEmptyTestOutputDirs << {
+task(createEmptyTestOutputDirs).doLast {
     allmodules.each { module ->
         module.sourceSets.test.output.classesDirs.each {
             it.mkdirs()
