@@ -217,6 +217,7 @@ class SpriteRenderModule @JvmOverloads constructor(
 
     companion object {
         @JvmStatic
+        @JvmOverloads
         fun simpleRenderType(
             /**
              * The sprite texture to use
@@ -259,7 +260,7 @@ class SpriteRenderModule @JvmOverloads constructor(
 
 
             return RenderType.makeType(
-                "particle_type", DefaultVertexFormats.POSITION_COLOR_TEX, GL11.GL_QUADS, 256, false, false, renderState.build(true)
+                "particle_type", DefaultVertexFormats.POSITION_COLOR_TEX, GL11.GL_QUADS, 256, false, depthSort, renderState.build(false)
             )
         }
     }
