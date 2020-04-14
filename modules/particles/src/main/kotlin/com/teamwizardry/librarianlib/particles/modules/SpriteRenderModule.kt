@@ -264,19 +264,13 @@ class SpriteRenderModule @JvmOverloads constructor(
             /**
              * Whether to write to the depth buffer
              */
-            writeDepth: Boolean = true,
-            /**
-             * Whether to automatically sort particles by depth. It hasn't yet been determined whether this or the
-             * [DepthSortModule] are faster.
-             */
-            depthSort: Boolean = false
+            writeDepth: Boolean = true
         ): RenderType {
 
             val renderState = RenderType.State.getBuilder()
                 .texture(RenderState.TextureState(sprite, false, false))
                 .cull(DefaultRenderStates.CULL_DISABLED)
                 .alpha(DefaultRenderStates.DEFAULT_ALPHA)
-                .depthTest(DefaultRenderStates.DEPTH_LEQUAL)
 
             if(blendMode != null) {
                 renderState.transparency(RenderState.TransparencyState("particle_transparency", Runnable {
@@ -292,9 +286,9 @@ class SpriteRenderModule @JvmOverloads constructor(
                 renderState.writeMask(DefaultRenderStates.COLOR_WRITE)
             }
 
-
+            @Suppress("INACCESSIBLE_TYPE")
             return RenderType.makeType(
-                "particle_type", DefaultVertexFormats.POSITION_COLOR_TEX, GL11.GL_QUADS, 256, false, depthSort, renderState.build(false)
+                "particle_type", DefaultVertexFormats.POSITION_COLOR_TEX, GL11.GL_QUADS, 256, false, false, renderState.build(false)
             )
         }
     }

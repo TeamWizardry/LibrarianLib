@@ -18,8 +18,7 @@ class DepthSortModule(
          */
         @JvmField val position: ReadParticleBinding,
         /**
-         * The binding used to cache the distance from the player before sorting. The value is in blocks from the player
-         * along their look vector.
+         * A temporary binding used to cache the distance from the player before sorting.
          */
         @JvmField val depth: StoredBinding
 ): ParticleGlobalUpdateModule {

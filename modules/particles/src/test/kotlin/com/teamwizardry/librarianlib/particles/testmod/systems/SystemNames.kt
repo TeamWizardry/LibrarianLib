@@ -37,7 +37,13 @@ object SystemNames {
         System("spritesheet",
             "Spawn Sprite Sheet Particle",
             """
-                Spawns randomly colored particles, motionless particles with one of four sprites
+                Spawns randomly colored, motionless particles with one of four sprites
+            """.trimIndent()
+        ),
+        System("depthsort",
+            "Spawn Depth Sorted Particle",
+            """
+                Spawns randomly colored, motionless particles with depth sorting enabled
             """.trimIndent()
         )
     )

@@ -11,7 +11,8 @@ object ParticleSystems {
         FloodSystem,
         PerfectBouncySystem,
         ForwardFacingSystem,
-        SpriteSheetSystem
+        SpriteSheetSystem,
+        DepthSortSystem
     )
     private val systemMap = systems.associateBy { it.id }
 
