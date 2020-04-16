@@ -45,19 +45,23 @@ allprojects {
         mappings channel: mc_mappings_channel, version: mc_mappings_version
     }
 
-    mixin {
-        add sourceSets.main, "${project.name}.refmap.json"
-        add sourceSets.test, "${project.name}-test.refmap.json"
+    sourceSets {
+        main {
+            ext.refMap = "${project.name}.refmap.json"
+        }
+        test {
+            ext.refMap = "${project.name}-test.refmap.json"
+        }
     }
 
-    // Create `lib___` configurations so those dependencies can be cherry-picked for inclusion in the runtime project
-    // Also create a `shade` configuration to specify dependencies that should be shaded into the final jar
+    mixin {
+    }
+
     configurations {
-        shade
-        api.extendsFrom(libApi)
-        implementation.extendsFrom(libImplementation)
-        testImplementation.extendsFrom(libTestImplementation)
-        libRuntime.extendsFrom(libApi, libImplementation, libTestImplementation)
+        api.extendsFrom(shade)
+        mod
+        if(project.name != "runtime")
+            api.extendsFrom(mod)
     }
 
     dependencies {
@@ -95,16 +99,32 @@ allprojects {
             exclude it
         }
     }
+
+    def shadeOutput = file("$buildDir/shade/main")
+    // Gross, but ForgeGradle forces my hand by directly using `getResourcesDir()` and `getClassesDirs()` instead of
+    // using `getOutput()`, meaning I can't just do `output.dir(shadeOutput, builtBy: 'copyShadeClasses')`. I could
+    // use a separate sourceSet, however that comes with the baggage of a bunch of tasks, configurations, and source
+    // directories (which an IDE may conveniently create for you automatically)
+    // https://github.com/MinecraftForge/ForgeGradle/blob/ccf3035ba1f435f0f1a685a70d85df5481ee8b73/src/common/java/net/minecraftforge/gradle/common/util/runs/RunConfigGenerator.java#L128
+    // https://github.com/MinecraftForge/ForgeGradle/blob/ccf3035ba1f435f0f1a685a70d85df5481ee8b73/src/common/java/net/minecraftforge/gradle/common/util/runs/RunConfigGenerator.java#L138
+    ((ConfigurableFileCollection)sourceSets.main.output.classesDirs).from(shadeOutput)
+
+    afterEvaluate {
+        task copyShadeClasses(type: Sync) {
+            into shadeOutput
+            from configurations.shade.collect { zipTree(it) }
+            exclude 'META-INF', 'META-INF/**'
+        }
+        compileJava.finalizedBy(copyShadeClasses)
+    }
 }
 
 // Properties defined in the `gradle.properties` file are accessible even before the project is evaluated.
 ext.productionModules = allmodules.findAll { it.findProperty("development_only") != "true" }
 
-// include the projects and shade their shade configurations
 dependencies {
     productionModules.each {
         implementation(it)
-        shade(project(path: it.path, configuration: "shade"))
     }
 }
 
@@ -130,7 +150,7 @@ configure(allmodules) {
 // include Kottle _after_ all of the kotlin libraries, so IntelliJ IDEA uses the direct dependencies first
 allprojects {
     dependencies {
-        implementation "kottle:Kottle:$kottle_version"
+        mod "kottle:Kottle:$kottle_version"
     }
 }
 
@@ -231,7 +251,7 @@ jar {
     from(mergeResources)
 
     productionModules.each { module ->
-        from(file("$module.compileJava.refMapFile.parent/$module.compileJava.refMap"))
+        from(file("${module.compileJava.temporaryDir}/${module.sourceSets.main.refMap}"))
     }
 }
 
@@ -330,20 +350,5 @@ configure(productionModules + [project]) {
                 url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
             }
         }
-    }
-}
-
-
-task publishAllToMavenLocal {
-    group = 'Publishing'
-    productionModules.each {
-        dependsOn it.publishToMavenLocal
-    }
-}
-
-task publishAll {
-    group = 'Publishing'
-    productionModules.each {
-        dependsOn it.publish
     }
 }

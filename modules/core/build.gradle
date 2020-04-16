@@ -1,8 +1,9 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 dependencies {
-    libApi "com.github.thecodewarrior:Mirror:cdd1ec3034"
-    shade "com.github.thecodewarrior:Mirror:cdd1ec3034"
+    shade("com.github.thecodewarrior:Mirror:cdd1ec3034") {
+        exclude group: 'org.jetbrains.kotlin'
+    }
 }
 
 processResources {

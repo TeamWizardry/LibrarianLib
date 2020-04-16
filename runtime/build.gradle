@@ -1,10 +1,6 @@
-// We can't include libraries from other projects with forge's system, so we have to pull them all in using the
-// libRuntime configuration. Pulling in all dependencies just ended in a nightmare of duplicate dependencies because one
-// is a normal forge dep and the other is a direct jar reference and two copies of mods being loaded because they were
-// in the root classpath and included by forge's classloader.
 dependencies {
     allmodules.each {
-        implementation(project(path: it.path, configuration: "libRuntime"))
+        mod project(path: it.path, configuration: "mod")
     }
 }
 
@@ -24,26 +20,29 @@ allmodules.each {
 //       at sun.nio.fs.UnixException.translateToIOException(UnixException.java:86) ~[?:1.8.0_181] {}
 task(createEmptyMainOutputDirs).doLast {
     allmodules.each { module ->
-        module.sourceSets.main.output.classesDirs.each {
-            it.mkdirs()
-        }
+        module.sourceSets.main.output.classesDirs.each { it.mkdirs() }
         module.sourceSets.main.output.resourcesDir.mkdirs()
     }
 }
 task(createEmptyTestOutputDirs).doLast {
     allmodules.each { module ->
-        module.sourceSets.test.output.classesDirs.each {
-            it.mkdirs()
-        }
+        module.sourceSets.test.output.classesDirs.each { it.mkdirs() }
         module.sourceSets.test.output.resourcesDir.mkdirs()
     }
 }
 processResources.finalizedBy(createEmptyMainOutputDirs)
 processTestResources.finalizedBy(createEmptyTestOutputDirs)
 
+task copyLibModJars(type: Sync) {
+    into project.file('run/mods')
+    from project.file('mods')
+    from configurations.mod
+}
+compileJava.finalizedBy(copyLibModJars)
+
 minecraft {
     Closure runDefaults = {
-        workingDirectory rootProject.file('run')
+        workingDirectory project.file('run')
         // ForgeGradle would generate `runtime_main`, which is wrong on two counts. Firstly it needs to be `.main` and
         // not `_main` (which is a _known issue_ https://github.com/MinecraftForge/ForgeGradle/issues/425), and secondly
         // it doesn't take into account the fact that this project may not be the root project.
@@ -58,7 +57,7 @@ minecraft {
         mods {
             allmodules.each { mod ->
                 create(mod.modid) {
-                    source mod.sourceSets.main
+                    sources mod.sourceSets.main
                 }
                 create(mod.modid_test) {
                     source mod.sourceSets.test

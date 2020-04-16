@@ -38,13 +38,22 @@ into the final mod.
 At the moment maven repositories must be added to the `allprojects` block in the root `build.gradle`, since the 
 `:runtime` project needs to be able to resolve them. This restriction may be lifted in the future however.
 
-## Maven dependencies
-Any external dependencies that are required in the runtime classpath should be added to the 
-`libApi`/`libImplementation`/`libRuntime` configurations instead of the `api`/`implementation`/`runtime` configurations.
-Adding a dependency to the `shade` configuration will shade it into the final jar, however it must still be added to one
-of the other configurations to be usable.
+## Library dependencies
+Any external non-mod dependencies that are required in the runtime classpath should be added to the `shade` 
+configuration, since anything that isn't a mod dependency (e.g. Kottle) we have to package ourselves. Adding to this
+configuration also shades for runtime and for maven publishing, which resolves the fact that libraries in the classpath 
+can't access loaded mods, and if the mods are in the classpath the libraries will reference the wrong copy of the mod.
+(They reference the wrong copy since forge lifts a copy of any classpath mods into its own classloader, which is where 
+our mod lives. Our mod then references Kottle from the forge classloader, while the library in the classpath references 
+Kottle from the main classloader). `shade` is implicitly also `api` to reflect the fact that in the end the code is 
+going to be freely available as part of the maven jar.
 
-## External dependencies
+## Mod dependencies
+Mod dependencies retrieved from Maven should be added to the `mod` configuration, which at build time will be copied 
+into Minecraft's mods directory. Any plain mod jars should be placed in `runtime/mods`, which will also be copied into 
+Minecraft's mods directory. Any mod files added directly to Minecraft's mods directory will be deleted during the next 
+build.
+
 External mod dependencies should be added to the module's `META-INF/dependencies.toml` file, which will be directly
 appended to the generated `mods.toml` file. However, the `dependencies.toml` file should use `MOD_ID` instead of the 
 actual mod ID, since the dependencies may be appended to either the module or the merged `mods.toml`, which means its
