@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.sprites
 
 import com.mojang.blaze3d.platform.GlStateManager
+import com.teamwizardry.librarianlib.core.util.AWTTextureUtil
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
 import com.teamwizardry.librarianlib.core.util.kotlin.toRl
@@ -15,12 +16,8 @@ import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 
-class Java2DSprite(width: Int, height: Int) : ISprite {
+class Java2DSprite(override val width: Int, override val height: Int) : ISprite {
     private var deleted = false
-    override var width = width
-        private set
-    override var height = height
-        private set
 
     private val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
     private val native = NativeImage(NativeImage.PixelFormat.RGBA, width, height, true)
@@ -58,13 +55,14 @@ class Java2DSprite(width: Int, height: Int) : ISprite {
     }
 
     fun end() {
-        //todo This does nothing
+        AWTTextureUtil.fillNativeImage(image, native)
         native.uploadTextureSub(0, 0, 0, false)
     }
 
     fun delete() {
         deleted = true
         TextureUtil.releaseTextureId(texID)
+        native.close()
     }
 
     override fun minU(animFrames: Int) = 0f
@@ -78,7 +76,8 @@ class Java2DSprite(width: Int, height: Int) : ISprite {
     fun finalize() {
         if(deleted) return
         val id = texID
-        Client.minecraft.deferTask {
+        native.close()
+        Client.runAsync {
             logger.debug("Deleting Java2DSprite $id")
             TextureUtil.releaseTextureId(id)
         }

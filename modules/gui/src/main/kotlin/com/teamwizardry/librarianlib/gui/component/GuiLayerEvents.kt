@@ -60,12 +60,12 @@ object GuiLayerEvents {
         val lastPos: Vec2d
             get() = stack.transform(lastRootPos)
     }
-    class MouseScroll(rootPos: Vec2d, val delta: Vec2d): MouseEvent(rootPos) {
+    class MouseScroll(rootPos: Vec2d, val rootDelta: Vec2d): MouseEvent(rootPos) {
         /**
          * The delta vector transformed into the current layer's coordinate space
          */
-        val localDelta: Vec2d
-            get() = stack.transformDelta(delta)
+        val delta: Vec2d
+            get() = stack.transformDelta(rootDelta)
     }
 
     abstract class KeyEvent: GuiInputEvent()

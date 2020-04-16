@@ -3,4 +3,6 @@ dependencies {
     api project(":sprites")
     api project(":utilities")
     testImplementation project(":testbase")
+    libApi("com.github.thecodewarrior:bitfont:proper-typesetter-SNAPSHOT")
+    shade("com.github.thecodewarrior:bitfont:proper-typesetter-SNAPSHOT")
 }

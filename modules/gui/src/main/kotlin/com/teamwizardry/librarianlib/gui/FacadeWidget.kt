@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.gui
 
+import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.gui.component.GuiLayer
 import com.teamwizardry.librarianlib.gui.component.GuiLayerEvents
@@ -26,14 +27,20 @@ open class FacadeWidget(
     private var mouseX = 0.0
     private var mouseY = 0.0
 
-    fun mouseMoved(xPos: Double, yPos: Double) {
+    fun mouseMoved(_xPos: Double, _yPos: Double) {
+        val s = Client.guiScaleFactor // rescale to absolute screen coordinates
+        val xPos = _xPos * s
+        val yPos = _yPos * s
         computeMouseOver(xPos, yPos)
         root.triggerEvent(GuiLayerEvents.MouseMove(vec(xPos, yPos), vec(mouseX, mouseY)))
         mouseX = xPos
         mouseY = yPos
     }
 
-    fun mouseClicked(xPos: Double, yPos: Double, button: Int) {
+    fun mouseClicked(_xPos: Double, _yPos: Double, button: Int) {
+        val s = Client.guiScaleFactor // rescale to absolute screen coordinates
+        val xPos = _xPos * s
+        val yPos = _yPos * s
         computeMouseOver(xPos, yPos)
         root.triggerEvent(GuiLayerEvents.MouseDown(vec(xPos, yPos), button))
     }
@@ -41,17 +48,29 @@ open class FacadeWidget(
     fun isMouseOver(xPos: Double, yPos: Double) {
     }
 
-    fun mouseReleased(xPos: Double, yPos: Double, button: Int) {
+    fun mouseReleased(_xPos: Double, _yPos: Double, button: Int) {
+        val s = Client.guiScaleFactor // rescale to absolute screen coordinates
+        val xPos = _xPos * s
+        val yPos = _yPos * s
         computeMouseOver(xPos, yPos)
         root.triggerEvent(GuiLayerEvents.MouseUp(vec(xPos, yPos), button))
     }
 
-    fun mouseScrolled(xPos: Double, yPos: Double, delta: Double) {
+    fun mouseScrolled(_xPos: Double, _yPos: Double, _delta: Double) {
+        val s = Client.guiScaleFactor // rescale to absolute screen coordinates
+        val xPos = _xPos * s
+        val yPos = _yPos * s
+        val delta = _delta * s
         computeMouseOver(xPos, yPos)
         root.triggerEvent(GuiLayerEvents.MouseScroll(vec(xPos, yPos), vec(0.0, delta)))
     }
 
-    fun mouseDragged(xPos: Double, yPos: Double, button: Int, deltaX: Double, deltaY: Double) {
+    fun mouseDragged(_xPos: Double, _yPos: Double, button: Int, _deltaX: Double, _deltaY: Double) {
+        val s = Client.guiScaleFactor // rescale to absolute screen coordinates
+        val xPos = _xPos * s
+        val yPos = _yPos * s
+        val deltaX = _deltaX * s
+        val deltaY = _deltaY * s
         computeMouseOver(xPos, yPos)
         root.triggerEvent(GuiLayerEvents.MouseDrag(vec(xPos, yPos), vec(xPos - deltaX, yPos - deltaY), button))
     }
@@ -84,17 +103,20 @@ open class FacadeWidget(
 
     fun render() {
         try {
+            val s = Client.guiScaleFactor // rescale to absolute screen coordinates
             root.pos = vec(0, 0)
-            root.scale = Client.guiScaleFactor
+            root.scale = s
             root.size = vec(Client.window.scaledWidth, Client.window.scaledHeight)
             main.pos = ((root.size - main.size) / 2).round()
 
             root.triggerEvent(GuiLayerEvents.Update())
 //            updateLayout()
-//            drawComponents()
 
+            RenderSystem.pushMatrix()
+            RenderSystem.scaled(1/s, 1/s, 1.0)
             val context = GuiDrawContext(Matrix3dStack(), false)
             root.renderLayer(context)
+            RenderSystem.popMatrix()
         } catch (e: Exception) {
             logger.error("Error in GUI:", e)
             Client.displayGuiScreen(SafetyNetErrorScreen(e))

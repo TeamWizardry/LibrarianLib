@@ -5,7 +5,11 @@ package com.teamwizardry.librarianlib.gui.testmod
 import com.teamwizardry.librarianlib.core.util.kotlin.toRl
 import com.teamwizardry.librarianlib.gui.FacadeScreen
 import com.teamwizardry.librarianlib.gui.component.GuiLayerEvents
+import com.teamwizardry.librarianlib.gui.components.RectLayer
 import com.teamwizardry.librarianlib.gui.layers.SpriteLayer
+import com.teamwizardry.librarianlib.gui.layers.TextLayer
+import com.teamwizardry.librarianlib.gui.text.BitfontAtlas
+import com.teamwizardry.librarianlib.gui.text.attributedStringFromMC
 import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.sprites.Texture
 import com.teamwizardry.librarianlib.testbase.TestMod
@@ -13,6 +17,7 @@ import com.teamwizardry.librarianlib.testbase.objects.TestScreenConfig
 import net.minecraft.util.text.StringTextComponent
 import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
+import java.awt.Color
 
 @Mod("librarianlib-gui-test")
 object LibrarianLibSpritesTestMod: TestMod("gui", "Gui", logger) {
@@ -46,6 +51,13 @@ object LibrarianLibSpritesTestMod: TestMod("gui", "Gui", logger) {
                 layer2.sprite = if(layer2.mouseOver) stone else dirt
             }
             screen.facade.root.add(layer)
+        }
+
+        +FacadeScreenConfig("simple_text", "Simple Text") { screen ->
+            // https://minecraft.gamepedia.com/File:Minecraft_Formatting.gif
+            val text = TextLayer(0, 0, 200, 800, "Lorem ipsum delor sit amet")
+            text.updateText()
+            screen.facade.root.add(text)
         }
     }
 
