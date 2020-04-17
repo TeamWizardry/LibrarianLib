@@ -80,8 +80,8 @@ def skeletonModInfo(String output, FileCollection resourceRoots, String modid, S
             version="${rootProject.mod_version}"
             displayName="LibrarianLib $human_name"
             description="$description"
-            ${tomlDependency(modid, "librarianlib", "[${rootProject.mod_version}]")}
         """.stripIndent()
+    tomlString += tomlDependency(modid, "librarianlib", "[${rootProject.mod_version}]")
     tomlString += additionalDependencies
 
     def projectDependencies = project.compileJava.taskDependencies.getDependencies().collect { it.project }.unique()

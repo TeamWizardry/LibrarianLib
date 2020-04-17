@@ -49,14 +49,15 @@ Kottle from the main classloader.) `shade` is implicitly also `api` to reflect t
 going to be freely available as part of the maven jar.
 
 Because `shade` includes transitive dependencies, it is vitally important after adding or updating a `shade` dependency 
-to check for and exclude any superfluous transitive dependencies (e.g. the Kotlin stdlib). The `shadowJar` task should
-also be configured to [relocate](https://imperceptiblethoughts.com/shadow/configuration/relocation/) the dependency's
-packages under the `ll` package (e.g. `relocate 'org.msgpack', 'll.org.msgpack'`).
+to check for and exclude any superfluous transitive dependencies (e.g. the Kotlin stdlib). The packages to be 
+[relocated](https://imperceptiblethoughts.com/shadow/configuration/relocation/) should be configured by passing them to 
+`shadePackages`. These packages will then automatically be moved under the `ll` package (e.g. `org.msgpack` -> 
+`ll.org.msgpack`).
 
 The [shadow](https://github.com/johnrengelman/shadow) plugin's relocator is applied to both the maven and final jars. 
-Note however that _only_ the relocator is applied, any dependencies added to the `shadow` configuration or `shadowJar`
-task will not be added to the maven or final jars. The system operates this way because the `shade` dependencies are 
-already present in the build output due to the runtime shading process.
+Note however that _only_ the relocator is applied, do any dependencies added to the `shadow` configuration or 
+`shadowJar` task will not be added to the maven or final jars. The system operates this way because the `shade` 
+dependencies are already present in the build output due to the runtime shading process. 
 
 ## Mod dependencies
 Mod dependencies retrieved from Maven should be added to the `mod` configuration, which at build time will be copied 
