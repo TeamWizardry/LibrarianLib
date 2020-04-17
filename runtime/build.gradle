@@ -1,4 +1,14 @@
+apply plugin: 'net.minecraftforge.gradle'
+
+configurations {
+    mod
+}
+
+minecraft {
+    mappings channel: mc_mappings_channel, version: mc_mappings_version
+}
 dependencies {
+    minecraft "net.minecraftforge:forge:$mc_version-$forge_version"
     allmodules.each {
         mod project(path: it.path, configuration: "mod")
     }
@@ -30,15 +40,15 @@ task(createEmptyTestOutputDirs).doLast {
         module.sourceSets.test.output.resourcesDir.mkdirs()
     }
 }
-processResources.finalizedBy(createEmptyMainOutputDirs)
-processTestResources.finalizedBy(createEmptyTestOutputDirs)
+processResources.dependsOn(createEmptyMainOutputDirs)
+processTestResources.dependsOn(createEmptyTestOutputDirs)
 
 task copyLibModJars(type: Sync) {
     into project.file('run/mods')
     from project.file('mods')
     from configurations.mod
 }
-compileJava.finalizedBy(copyLibModJars)
+compileJava.dependsOn(copyLibModJars)
 
 minecraft {
     Closure runDefaults = {

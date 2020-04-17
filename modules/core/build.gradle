@@ -14,19 +14,15 @@ processResources {
     }
 }
 
-task(generateModuleIndex).doLast {
-    def resourceRoots = files([])
-    allmodules.each { [it.sourceSets.main, it.sourceSets.test].each {
-        resourceRoots.from(it.resources.sourceDirectories)
-    } }
+def moduleNames = allmodules.collect { it.name }
 
-    def output = sourceSets.main.output.resourcesDir
+generateFiles {
+    inputs.property("moduleNames", moduleNames)
+    ext.moduleIndexOut = file("$genDir/META-INF/modules/index.txt")
+    outputs.file(moduleIndexOut)
 
-    // assemble module names
-    file(output.path + '/META-INF/modules').mkdirs()
-    file(output.path + '/META-INF/modules/index.txt').text = allmodules.collect {
-        it.name
-    }.join("\n")
+    doLast {
+        moduleIndexOut.parentFile.mkdirs()
+        moduleIndexOut.text = moduleNames
+    }
 }
-
-processResources.finalizedBy(generateModuleIndex)

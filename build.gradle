@@ -15,33 +15,13 @@ buildscript {
     }
 }
 
-import com.github.jengelman.gradle.plugins.shadow.relocation.Relocator
-import com.github.jengelman.gradle.plugins.shadow.relocation.RelocatePathContext
-import com.github.jengelman.gradle.plugins.shadow.relocation.RelocateClassContext
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import com.github.jengelman.gradle.plugins.shadow.ShadowStats
-
-import java.nio.file.Files
-import java.nio.file.StandardCopyOption
-
 allprojects {
-    apply plugin: 'net.minecraftforge.gradle'
-    apply plugin: 'org.spongepowered.mixin'
-    apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: 'eclipse'
     apply plugin: 'idea'
     apply plugin: 'kotlin'
     apply plugin: 'java-library'
 
     ext.allmodules = rootProject.subprojects.findAll { it.path != ":runtime" }
-    ext.modid = (project == rootProject || project.name == "core") ? "librarianlib" : "librarianlib-${project.name}"
-    ext.modid_test = "librarianlib-${project.name}-test"
-
-    version = rootProject.mod_version
-    group = "com.teamwizardry.librarianlib"
-    archivesBaseName = modid
-
-    sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
     // unfortunately, due to the interdependence of the modules, all the repositories used must be specified here. Any
     // repositories defined in the module `build.gradle` files won't be seen by any of the other modules
@@ -52,195 +32,97 @@ allprojects {
         maven { url = "https://minecraft.curseforge.com/api/maven/" }
         maven { url = 'http://repo.spongepowered.org/maven' }
     }
-
-    minecraft {
-        mappings channel: mc_mappings_channel, version: mc_mappings_version
-    }
-
-    sourceSets {
-        main {
-            ext.refMap = "${project.name}.refmap.json"
-        }
-        test {
-            ext.refMap = "${project.name}-test.refmap.json"
-        }
-    }
-
-    mixin {
-    }
-
-    configurations {
-        api.extendsFrom(shade)
-        testApi.extendsFrom(shade)
-        mod
-        if(project.name != "runtime") {
-            api.extendsFrom(mod)
-            testApi.extendsFrom(mod)
-        }
-    }
-
-    dependencies {
-        minecraft "net.minecraftforge:forge:$mc_version-$forge_version"
-        implementation("org.spongepowered:mixin:0.8-SNAPSHOT")
-    }
-
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-        kotlinOptions {
-            jvmTarget = "1.8"
-            freeCompilerArgs += [
-                "-Xjvm-default=enable",
-                "-Xuse-experimental=kotlin.Experimental",
-                "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes"
-            ]
-        }
-    }
-
-    // exclude "master" files from output
-    def masterPatterns = [
-            "**/*.psd",
-            "**/*.xcf",
-            "**/*.kra",
-            "**/*.blend",
-            "**/_master/**"
-    ]
-
-    processResources {
-        masterPatterns.each {
-            exclude it
-        }
-    }
-    processTestResources {
-        masterPatterns.each {
-            exclude it
-        }
-    }
-
-    def shadeOutput = file("$buildDir/shade/main")
-    // Gross, but ForgeGradle forces my hand by directly using `getResourcesDir()` and `getClassesDirs()` instead of
-    // using `getOutput()`, meaning I can't just do `output.dir(shadeOutput, builtBy: 'copyShadeClasses')`. I could
-    // use a separate sourceSet, however that comes with the baggage of a bunch of tasks, configurations, and source
-    // directories (which an IDE may conveniently create for you automatically)
-    // https://github.com/MinecraftForge/ForgeGradle/blob/ccf3035ba1f435f0f1a685a70d85df5481ee8b73/src/common/java/net/minecraftforge/gradle/common/util/runs/RunConfigGenerator.java#L128
-    // https://github.com/MinecraftForge/ForgeGradle/blob/ccf3035ba1f435f0f1a685a70d85df5481ee8b73/src/common/java/net/minecraftforge/gradle/common/util/runs/RunConfigGenerator.java#L138
-    ((ConfigurableFileCollection)sourceSets.main.output.classesDirs).from(shadeOutput)
-
-    afterEvaluate {
-        task copyShadeClasses(type: Sync) {
-            into shadeOutput
-            from configurations.shade.collect { zipTree(it) }
-            exclude 'META-INF', 'META-INF/**'
-        }
-        compileJava.finalizedBy(copyShadeClasses)
-    }
 }
 
+version = mod_version
+group = "com.teamwizardry.librarianlib"
+archivesBaseName = "librarianlib"
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+
+configure(allmodules) {
+    apply from: "$rootDir/gradle/module.gradle"
+}
+
+// =====================================================================================================================
+// Build setup
+// =====================================================================================================================
+
+// this is populated by the modules, since the modules need to know about each other's relocation packages
 ext.shadePackages = new HashSet<String>()
-subprojects {
-    ext.shadePackages = { String... packages ->
-        rootProject.shadePackages.addAll(packages)
-    }
-}
 
-// Properties defined in the `gradle.properties` file are accessible even before the project is evaluated.
-ext.productionModules = allmodules.findAll { it.findProperty("development_only") != "true" }
-
-dependencies {
-    productionModules.each {
-
-    }
-}
-
-productionModules.each {
-    classes.dependsOn(it.classes)
-    processResources.dependsOn(it.processResources)
-    jar.dependsOn(it.jar)
-}
-
-configure(allmodules) {
-    // Add kotlin dependencies manually to the modules, but don't include them at runtime, since Kottle doesn't include
-    // kotlin sources
-    dependencies {
-        compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.61"
-        compileOnly "org.jetbrains.kotlin:kotlin-reflect:1.3.61"
-        compileOnly "org.jetbrains:annotations:18.0.0"
-        compileOnly "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.2"
-
-        testCompileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.61"
-        testCompileOnly "org.jetbrains.kotlin:kotlin-reflect:1.3.61"
-        testCompileOnly "org.jetbrains:annotations:18.0.0"
-        testCompileOnly "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.2"
-    }
-}
-
-// include Kottle _after_ all of the kotlin libraries, so IntelliJ IDEA uses the direct dependencies first
-allprojects {
-    dependencies {
-        mod files("/Users/code/Documents/mods/kottle/build/libs/Kottle-1.5.0.jar")//"kottle:Kottle:$kottle_version"
-    }
-}
-
-// liblib generates a few of the base files for the modules. The generators are a lot of code, so they get their on file
-configure(allmodules) {
-    apply from: "$rootDir/generators.gradle"
-}
-
-minecraft { }
+ext.productionModules = allmodules.findAll { it.name != "testbase" }
 
 // find a file in all the passed roots
 def findFiles(FileCollection roots, String path) {
     return roots.collect { file(it.path + path) }.findAll { it.exists() }
 }
 
-def mergedDir = file("$buildDir/merged")
-((ConfigurableFileCollection)sourceSets.main.output.classesDirs).from(mergedDir)
+//region Merged file generation
 
-// merge the contents of all the modules' `build/classes` directories into root project's `build/merged/classes` directory
-task merge(type: Sync) {
-    duplicatesStrategy = 'WARN'
-    productionModules.each { mod ->
-        from(mod.sourceSets.main.output) {
-            // exclude some of the generated files
-            exclude '**/LibModuleSkeleton.class'
-            exclude 'MixinConnector.class'
-            exclude 'META-INF/coremods.json'
-            exclude 'META-INF/dependencies.toml'
-            if (mod.path == ":core") {
-                // the core module generates an `index.txt` that stores a list of modules to load at runtime. This list
-                // includes development_only mods, so we have to strip those out first
-                filesMatching('META-INF/modules/index.txt') {
-                    filter { line ->
-                        if (project(":$line").findProperty("development_only") == "true")
-                            return null
-                        return line
-                    }
-                }
-            } else {
-                // The core module contains the master versions of several files, so we only exclude these files in the
-                // other modules.
-                exclude 'META-INF/mods.toml'
-                exclude 'pack.mcmeta'
-                // these are all either generated for the dev environment or data files that are used to generate files
-                // in the post-processing step
-//                exclude 'META-INF/mixins.txt'
-            }
-        }
-        from(file("${mod.compileJava.temporaryDir}/${mod.sourceSets.main.refMap}"))
-    }
 
-    into(mergedDir)
 
-    doLast { // do final post-processing to merge the mods
-        def resources = files([])
-        productionModules.each { resources.from(it.sourceSets.main.output) }
+// Generated files:
+// - MixinConnector.java
+//   - generated by merging all the `META-INF/mixins.txt` files
+// - META-INF/coremods.json
+//   - generated by merging from all the `META-INF/coremods.json` files
+// - META-INF/mods.toml
+//   - generated by appending all the `META-INF/dependencies.toml` files to the core `META-INF/mods.toml` file
+// - pack.mcmeta
+//   - copied from the core module (I copy it here so I can do a blanket exclude later)
+task generateFiles(type: Sync) {
+    ext.genDir = "$buildDir/generated"
+    def coreResources = project(":core").rootDir.path + '/src/main/resources'
+    ext.coreModsToml = file("$coreResources/META-INF/mods.toml")
+    ext.corePackMcmeta = file("$coreResources/pack.mcmeta")
 
-        file("$mergedDir/META-INF").mkdirs()
+    ext.allCoremods = productionModules.collect { file("${it.rootDir}/src/main/resources/META-INF/coremods.json") }
+    ext.allDependencies = productionModules.collect { file("${it.rootDir}/src/main/resources/META-INF/dependencies.toml") }
+    ext.allMixins = productionModules.collect { file("${it.rootDir}/src/main/resources/META-INF/mixins.txt") }
+
+    inputs.files(
+            coreModsToml,
+            corePackMcmeta,
+            allCoremods,
+            allDependencies,
+            allMixins
+    )
+
+    ext.mixinConnectorOut = file("$genDir/com/teamwizardry/librarianlib/MixinConnector.java")
+    ext.coremodsOut = file("$genDir/META-INF/coremods.json")
+    ext.modsTomlOut = file("$genDir/META-INF/mods.toml")
+    ext.packMcmetaOut = file("$genDir/pack.mcmeta")
+    outputs.files(
+            mixinConnectorOut,
+            coremodsOut,
+            packMcmetaOut
+    )
+    if(project.name != "core")
+        outputs.files(modsTomlOut)
+
+    doLast {
+        mixinConnectorOut.parentFile.mkdirs()
+        coremodsOut.parentFile.mkdirs()
+
+        def allMixinConfigs = allMixins.filter { it.exists() }.collect { it.readLines() }.flatten()
+        mixinConnectorOut.text = """\
+               |package com.teamwizardry.librarianlib;
+
+               |import org.spongepowered.asm.mixin.Mixins;
+               |import org.spongepowered.asm.mixin.connect.IMixinConnector;
+
+               |public class MixinConnector implements IMixinConnector {
+               |    @Override
+               |    public void connect() {
+               |        ${allMixinConfigs.collect { "Mixins.addConfiguration(\"$it\");" }.join("\n|        ")}
+               |    }
+               |}
+            """.stripMargin()
 
         // merge the coremods.json files
-        def coremodsJson = file("$mergedDir/META-INF/coremods.json")
-        def allCoremods = findFiles(resources, "/META-INF/coremods.json")
-
-        coremodsJson.text =
-                "{\n" + allCoremods.collect {
+        coremodsOut.text =
+                "{\n" + allCoremods.filter { it.exists() }.collect {
                     it.text
                             .replaceAll("[{}]", "") // replace enclosing brackets with blank lines
                             .replaceAll("\\s+\$", "") // remove trailing whitespace
@@ -248,19 +130,52 @@ task merge(type: Sync) {
                             .join("\n") // re-join lines
                 }.join(",\n") + "\n}"
 
-        // add additional external dependencies to main mods.toml
-        def additionalDependencies = resources
-                .collect { file(it.path + "/META-INF/dependencies.toml") }.findAll { it.exists() }
-                .collect {
-                    it.text
-                            .replaceAll("MOD_ID", "librarianlib")
-                            .replaceAll("\\s+\$", "")
-                }.join("\n")
-        def modsToml = file("$mergedDir/META-INF/mods.toml")
-        modsToml.text = modsToml.text + additionalDependencies
+        // copy the pack.mcmeta file
+        packMcmetaOut.text = corePackMcmeta.text
+
+        if(project.name != "core")
+            // add additional external dependencies to main mods.toml
+            modsTomlOut.text = coreModsToml.text + allDependencies
+                    .filter { it.exists() }
+                    .collect {
+                        it.text
+                                .replaceAll("MOD_ID", "librarianlib")
+                                .replaceAll("\\s+\$", "")
+                    }.join("\n")
     }
 }
-compileJava.finalizedBy(merge)
+// todo: does this cause another source directory in IDEA or is it able to tell that it's in the build output?
+sourceSets.main.allSource.srcDir(generateFiles.genDir)
+// Add directly to the task so we don't add the bloat of another
+//compileJava.source = files(compileJava.source) { from(generatedSourcesDir) }
+compileJava.dependsOn(generateFiles)
+
+CopySpec createMergeSpec(String jarTaskName) {
+    return copySpec {
+        duplicatesStrategy = 'INCLUDE'
+        productionModules.each {
+//        from(file("${mod.compileJava.temporaryDir}/${mod.sourceSets.main.refMap}"))
+            from(zipTree(it.tasks.getByName(jarTaskName).outputs.files.singleFile)) {
+                exclude '**/ModuleDevSkeleton.*'
+                exclude '**/MixinConnector.*'
+                exclude 'META-INF/coremods.json'
+                exclude 'META-INF/mods.toml'
+                exclude 'META-INF/dependencies.toml'
+                exclude 'META-INF/mixins.txt'
+                exclude 'META-INF/mods.toml'
+                exclude 'pack.mcmeta'
+                // the core module generates an `index.txt` that stores a list of modules to load at runtime. This list
+                // includes the dev-only testbase module, so we have to strip that out first
+                filesMatching('META-INF/modules/index.txt') {
+                    filter { it == "testbase" ? null : it }
+                }
+            }
+        }
+    }
+}
+//endregion
+
+//region Merged jar configurations
 
 jar {
     manifest.attributes(
@@ -273,131 +188,59 @@ jar {
             // https://github.com/SpongePowered/Mixin/wiki/Release-Notes---Mixin-0.8#toolchain-and-environment-changes
             "MixinConnector"          : "com.teamwizardry.librarianlib.MixinConnector"
     )
-}
+    includeEmptyDirs = false
+    duplicatesStrategy = 'WARN'
 
-// set up the output jar for each of the production modules
-configure(productionModules) {
-    jar {
-        manifest.attributes(
-                "Implementation-Title": "LibrarianLib $human_name",
-                "Implementation-Version": "$mod_version",
-                "Implementation-Vendor": "Team Wizardry",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                // Specify the IMixinConnector. This contains only the mixin files from this specific module.
-                // https://github.com/SpongePowered/Mixin/wiki/Release-Notes---Mixin-0.8#toolchain-and-environment-changes
-                "MixinConnector": "MixinConnector"
-        )
-    }
-}
-
-configure(productionModules + [project]) {
-    jar {
-        classifier = 'obf'
-    }
-
-    task sourcesJar(type: Jar) {
-        classifier = 'sources'
-        includeEmptyDirs = false
-        from sourceSets.main.allSource
-        from sourceSets.main.output.resourcesDir
-        dependsOn processResources
-        exclude '**/*.class'
-    }
-
-    task deobfJar(type: ShadowJar) {
-        configurations = []
-        classifier = ''
-        includeEmptyDirs = false
-
-        from sourceSets.main.output
-        dependsOn classes
-        dependsOn processResources
-
-        afterEvaluate {
-            // add relocation rules after all the projects have added their packages to the list
-            rootProject.shadePackages.each {
-                relocate it, "ll.$it"
-            }
-        }
-    }
-}
-
-// configure sourcesJar for modules
-configure(productionModules) {
+    from sourceSets.main.output
     afterEvaluate {
-        sourcesJar {
-            // Based largely on the gradle-preshadow-plugin: https://github.com/Abnaxos/gradle-preshadow-plugin/blob/07580f93f38818b15c411f6c47abea8cdfd0b2f9/src/main/groovy/ch/raffael/gradlePlugins/preshadow/Preshadow.groovy
-            // collect the sources for all the shade dependencies
-            from configurations.detachedConfiguration(
-                    configurations.shade.allDependencies.collect({ dep ->
-                        def sourceDep = dependencies.create(group: dep.group,
-                                name: dep.name,
-                                classifier: 'sources',
-                                version: dep.version)
-                        // apply any exclusions from the main dependency to the sources dependency
-                        if (dep instanceof ModuleDependency && sourceDep instanceof ModuleDependency) {
-                            def originalModule = (ModuleDependency) dep
-                            def sourceModule = (ModuleDependency) sourceDep
-
-                            originalModule.excludeRules.each {
-                                sourceModule.exclude group: it.group, module: it.module
-                            }
-                        }
-                        return sourceDep
-                    }) as Dependency[]).collect { f ->
-                f.directory ? fileTree(f) : zipTree(f)
-            }
-            def stats = new ShadowStats()
-            // remap sources
-            eachFile { FileCopyDetails copyDetails ->
-                deobfJar.relocators.each { Relocator reloc ->
-                    def pathContext = new RelocatePathContext(copyDetails.sourcePath, stats)
-                    if (reloc.canRelocatePath(pathContext)) {
-                        copyDetails.path = reloc.relocatePath(pathContext)
-                    }
-                    if (!copyDetails.directory)
-                        copyDetails.filter { String line ->
-                            reloc.applyToSourceContent(line)
-                        }
-                }
-            }
+        productionModules.each {
+            dependsOn it.jar
         }
+        with createMergeSpec('jar')
     }
 }
 
-// the root project doesn't do any relocating or anything, it just aggregates from the modules
-sourcesJar {
+task deobfJar(type: Jar) {
+    classifier = 'deobf'
+    includeEmptyDirs = false
+    duplicatesStrategy = 'WARN'
+    manifest.from(jar.manifest)
 
-    productionModules.each {
-        dependsOn it.sourcesJar
-        from(zipTree(it.sourcesJar.outputs.files.singleFile)) {
-            exclude 'META-INF/coremods.json'
-            exclude 'META-INF/mods.toml'
-            exclude 'META-INF/dependencies.toml'
-            exclude 'META-INF/mixins.txt'
+    from sourceSets.main.output
+    afterEvaluate {
+        productionModules.each {
+            dependsOn it.deobfJar
         }
+        with createMergeSpec('deobfJar')
     }
 }
 
-jar.classifier = ''
-deobfJar.classifier = 'deobf'
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    includeEmptyDirs = false
+    duplicatesStrategy = 'WARN'
+    manifest.from(jar.manifest)
+
+    from sourceSets.main.allSource
+    afterEvaluate {
+        productionModules.each {
+            dependsOn it.sourcesJar
+        }
+        with createMergeSpec('sourcesJar')
+    }
+
+    exclude '**/*.class'
+}
+
+//endregion
+
+//region Shared publish configuration
 
 configure(productionModules + [project]) {
     components.java
 
     artifacts {
         archives jar, deobfJar, sourcesJar
-    }
-
-    jar {
-        dependsOn deobfJar
-        from zipTree(deobfJar.outputs.files.singleFile)
-    }
-    deobfJar {
-        manifest.from(jar.manifest)
-    }
-    sourcesJar {
-        manifest.from(jar.manifest)
     }
 
     // For some reason we need to apply the publish plugin at the last moment, otherwise there are odd issues with it
@@ -447,3 +290,4 @@ configure(productionModules + [project]) {
         }
     }
 }
+//endregion
