@@ -45,8 +45,18 @@ configuration also shades for runtime and for maven publishing, which resolves t
 can't access loaded mods, and if the mods are in the classpath the libraries will reference the wrong copy of the mod.
 (They reference the wrong copy since forge lifts a copy of any classpath mods into its own classloader, which is where 
 our mod lives. Our mod then references Kottle from the forge classloader, while the library in the classpath references 
-Kottle from the main classloader). `shade` is implicitly also `api` to reflect the fact that in the end the code is 
+Kottle from the main classloader.) `shade` is implicitly also `api` to reflect the fact that in the end the code is 
 going to be freely available as part of the maven jar.
+
+Because `shade` includes transitive dependencies, it is vitally important after adding or updating a `shade` dependency 
+to check for and exclude any superfluous transitive dependencies (e.g. the Kotlin stdlib). The `shadowJar` task should
+also be configured to [relocate](https://imperceptiblethoughts.com/shadow/configuration/relocation/) the dependency's
+packages under the `ll` package (e.g. `relocate 'org.msgpack', 'll.org.msgpack'`).
+
+The [shadow](https://github.com/johnrengelman/shadow) plugin's relocator is applied to both the maven and final jars. 
+Note however that _only_ the relocator is applied, any dependencies added to the `shadow` configuration or `shadowJar`
+task will not be added to the maven or final jars. The system operates this way because the `shade` dependencies are 
+already present in the build output due to the runtime shading process.
 
 ## Mod dependencies
 Mod dependencies retrieved from Maven should be added to the `mod` configuration, which at build time will be copied 

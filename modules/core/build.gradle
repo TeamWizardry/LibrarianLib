@@ -6,6 +6,8 @@ dependencies {
     }
 }
 
+shadePackages('dev.thecodewarrior.mirror')
+
 processResources {
     filesMatching("**/mods.toml") {
         filter(ReplaceTokens, tokens: ['version': rootProject.mod_version])

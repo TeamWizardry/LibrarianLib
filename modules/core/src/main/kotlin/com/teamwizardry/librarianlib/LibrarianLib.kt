@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.teamwizardry.librarianlib.core.util.kotlin.synchronized
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
+import dev.thecodewarrior.mirror.Mirror
 import net.minecraftforge.fml.ModLoader
 import net.minecraftforge.fml.ModLoadingContext
 import net.minecraftforge.fml.common.Mod
@@ -19,6 +20,7 @@ object LibrarianLib {
     val modules: Map<String, LibrarianLibModule?> = _modules.unmodifiableView()
 
     init {
+//        Mirror.reflectClass<String>().kClass // classloader test thing
         val names = resource("/META-INF/modules/index.txt")?.lines()
             ?: throw RuntimeException("Unable to find LibrarianLib modules list")
         names.forEach {
