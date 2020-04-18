@@ -21,14 +21,6 @@ class PinnedWrapper(
     override fun maxV(animFrames: Int): Float = wrapped.maxV(animFrames)
     override fun maxV(): Float = wrapped.maxV()
 
-    override fun draw(animTicks: Int, x: Float, y: Float) {
-        wrapped.draw(animTicks, x, y)
-    }
-
-    override fun draw(animTicks: Int, x: Float, y: Float, width: Float, height: Float) {
-        wrapped.draw(animTicks, x, y, width, height)
-    }
-
     override fun pinnedWrapper(top: Boolean, bottom: Boolean, left: Boolean, right: Boolean): ISprite {
         return wrapped.pinnedWrapper(top, bottom, left, right)
     }
