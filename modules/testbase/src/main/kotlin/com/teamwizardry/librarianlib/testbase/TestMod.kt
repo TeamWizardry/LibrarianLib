@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.testbase
 
-import com.teamwizardry.librarianlib.LibrarianLibModule
 import com.teamwizardry.librarianlib.core.util.DistinctColors
 import com.teamwizardry.librarianlib.core.util.kotlin.translationKey
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
@@ -13,6 +12,7 @@ import com.teamwizardry.librarianlib.testbase.objects.TestItem
 import com.teamwizardry.librarianlib.testbase.objects.TestItemConfig
 import com.teamwizardry.librarianlib.testbase.objects.TestScreenConfig
 import com.teamwizardry.librarianlib.virtualresources.VirtualResources
+import net.alexwells.kottle.FMLKotlinModLoadingContext
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.color.IBlockColor
 import net.minecraft.client.renderer.color.IItemColor
@@ -23,7 +23,10 @@ import net.minecraft.item.ItemGroup
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Util
+import net.minecraftforge.api.distmarker.Dist
+import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.event.ColorHandlerEvent
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.ModLoadingContext
@@ -34,7 +37,8 @@ import net.minecraftforge.registries.ForgeRegistries
 import org.apache.logging.log4j.Logger
 import java.awt.Color
 
-abstract class TestMod(targetName: String, val humanName: String, logger: Logger): LibrarianLibModule("$targetName-test", logger) {
+abstract class TestMod(targetName: String, val humanName: String, logger: Logger) {
+    val name = "$targetName-test"
     val itemGroup = object : ItemGroup("librarianlib-$name") {
         private val stack: ItemStack by lazy {
             val stack = ItemStack(LibTestBaseModule.testTool)
@@ -108,10 +112,24 @@ abstract class TestMod(targetName: String, val humanName: String, logger: Logger
         LibTestBaseModule.add(this)
     }
 
-    override fun setup(event: FMLCommonSetupEvent) {
+    init {
+        FMLKotlinModLoadingContext.get().modEventBus.addListener<FMLCommonSetupEvent> {
+            this.setup(it)
+        }
+        FMLKotlinModLoadingContext.get().modEventBus.addListener<FMLClientSetupEvent> {
+            this.clientSetup(it)
+        }
+
+        // Register ourselves for server and other game events we are interested in
+        MinecraftForge.EVENT_BUS.register(this)
+        FMLKotlinModLoadingContext.get().modEventBus.register(this)
     }
 
-    override fun clientSetup(event: FMLClientSetupEvent) {
+    fun setup(event: FMLCommonSetupEvent) {
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    fun clientSetup(event: FMLClientSetupEvent) {
         _testEntities.forEach { entity ->
             RenderingRegistry.registerEntityRenderingHandler(entity) { TestEntityRenderer(it) }
         }
@@ -227,19 +245,22 @@ abstract class TestMod(targetName: String, val humanName: String, logger: Logger
         }, *blocks.toTypedArray())
     }
 
-    override fun registerBlocks(blockRegistryEvent: RegistryEvent.Register<Block>) {
+    @SubscribeEvent
+    open fun registerBlocks(blockRegistryEvent: RegistryEvent.Register<Block>) {
         blocks.forEach {
             ForgeRegistries.BLOCKS.register(it)
         }
     }
 
-    override fun registerItems(itemRegistryEvent: RegistryEvent.Register<Item>) {
+    @SubscribeEvent
+    open fun registerItems(itemRegistryEvent: RegistryEvent.Register<Item>) {
         items.forEach {
             ForgeRegistries.ITEMS.register(it)
         }
     }
 
-    override fun registerEntities(entityRegistryEvent: RegistryEvent.Register<EntityType<*>>) {
+    @SubscribeEvent
+    open fun registerEntities(entityRegistryEvent: RegistryEvent.Register<EntityType<*>>) {
         entities.forEach {
             ForgeRegistries.ENTITIES.register(it)
         }

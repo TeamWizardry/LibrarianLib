@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger
 import java.util.concurrent.CopyOnWriteArrayList
 
 abstract class LibrarianLibModule(val name: String, val logger: Logger) {
-    val info: ModuleInfo = LibrarianLib.currentInfo!!
+    val info: ModuleInfo = ModuleInfo.loadModuleInfo(name)!!
 
     init {
         FMLKotlinModLoadingContext.get().modEventBus.addListener<FMLCommonSetupEvent> {

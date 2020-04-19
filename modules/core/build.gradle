@@ -18,11 +18,11 @@ def moduleNames = allmodules.collect { it.name }
 
 generateFiles {
     inputs.property("moduleNames", moduleNames)
-    ext.moduleIndexOut = file("$genDir/META-INF/modules/index.txt")
+    ext.moduleIndexOut = file("$genResources/META-INF/modules/index.txt")
     outputs.file(moduleIndexOut)
 
     doLast {
         moduleIndexOut.parentFile.mkdirs()
-        moduleIndexOut.text = moduleNames
+        moduleIndexOut.text = moduleNames.join("\n")
     }
 }

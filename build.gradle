@@ -144,10 +144,7 @@ task generateFiles(type: Sync) {
                     }.join("\n")
     }
 }
-// todo: does this cause another source directory in IDEA or is it able to tell that it's in the build output?
 sourceSets.main.allSource.srcDir(generateFiles.genDir)
-// Add directly to the task so we don't add the bloat of another
-//compileJava.source = files(compileJava.source) { from(generatedSourcesDir) }
 compileJava.dependsOn(generateFiles)
 
 CopySpec createMergeSpec(String jarTaskName) {

@@ -30,18 +30,20 @@ allmodules.each {
 //       at sun.nio.fs.UnixException.translateToIOException(UnixException.java:86) ~[?:1.8.0_181] {}
 task(createEmptyMainOutputDirs).doLast {
     allmodules.each { module ->
-        module.sourceSets.main.output.classesDirs.each { it.mkdirs() }
-        module.sourceSets.main.output.resourcesDir.mkdirs()
+        module.sourceSets.main.output.each {
+            it.mkdirs()
+        }
     }
 }
 task(createEmptyTestOutputDirs).doLast {
     allmodules.each { module ->
-        module.sourceSets.test.output.classesDirs.each { it.mkdirs() }
-        module.sourceSets.test.output.resourcesDir.mkdirs()
+        module.sourceSets.test.output.each {
+            it.mkdirs()
+        }
     }
 }
-processResources.dependsOn(createEmptyMainOutputDirs)
-processTestResources.dependsOn(createEmptyTestOutputDirs)
+processResources.finalizedBy(createEmptyMainOutputDirs)
+processTestResources.finalizedBy(createEmptyTestOutputDirs)
 
 task copyLibModJars(type: Sync) {
     into project.file('run/mods')

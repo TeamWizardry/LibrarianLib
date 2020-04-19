@@ -20,8 +20,8 @@ import org.apache.logging.log4j.Logger
 import java.util.stream.Collectors
 import kotlin.streams.asSequence
 
-@Mod("librarianlib-core-test")
-class LibrarianLibCoreTestMod: LibrarianLibModule("core-test", logger) {
+@Mod("librarianlib-test")
+class LibrarianLibCoreTestMod {
     init {
         FMLKotlinModLoadingContext.get().modEventBus.addListener<FMLCommonSetupEvent> {
             this.setup(it)
@@ -36,10 +36,10 @@ class LibrarianLibCoreTestMod: LibrarianLibModule("core-test", logger) {
 
     }
 
-    override fun setup(event: FMLCommonSetupEvent) {
+    fun setup(event: FMLCommonSetupEvent) {
     }
 
-    override fun clientSetup(event: FMLClientSetupEvent) {
+    fun clientSetup(event: FMLClientSetupEvent) {
     }
 
     @SubscribeEvent
