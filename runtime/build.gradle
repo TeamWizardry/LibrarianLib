@@ -1,4 +1,5 @@
 apply plugin: 'net.minecraftforge.gradle'
+//apply plugin: 'org.spongepowered.mixin'
 
 configurations {
     mod
@@ -7,8 +8,23 @@ configurations {
 minecraft {
     mappings channel: mc_mappings_channel, version: mc_mappings_version
 }
+
+//sourceSets {
+//    main {
+//        ext.refMap = "${project.name}.refmap.json"
+//    }
+//    test {
+//        ext.refMap = "${project.name}-test.refmap.json"
+//    }
+//}
+//
+//mixin {
+//}
+
 dependencies {
     minecraft "net.minecraftforge:forge:$mc_version-$forge_version"
+//    implementation "org.spongepowered:mixin:0.8-SNAPSHOT"
+    mod "mixinbootstrap:MixinBootstrap:1.0.2"
     allmodules.each {
         mod project(path: it.path, configuration: "mod")
     }

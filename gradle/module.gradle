@@ -106,8 +106,12 @@ processTestResources {
 //region // Build setup
 
 sourceSets {
-    main.ext.refMap = "${project.name}.refmap.json"
-    test.ext.refMap = "${project.name}-test.refmap.json"
+    main {
+        ext.refMap = "${project.name}.refmap.json"
+    }
+    test {
+        ext.refMap = "${project.name}-test.refmap.json"
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -134,7 +138,7 @@ static String tomlDependency(String modid, String dependencyid, String version, 
 task generateFiles {
     ext.genJava = "$buildDir/generated/main/java"
     ext.genResources = "$buildDir/generated/main/resources"
-    ext.resourcesDir = "$rootDir/src/main/resources"
+    ext.resourcesDir = "$projectDir/src/main/resources"
 
     ext.mixinsTxt = file("$resourcesDir/META-INF/mixins.txt")
     ext.dependenciesToml = file("$resourcesDir/META-INF/dependencies.toml")
@@ -145,9 +149,8 @@ task generateFiles {
             dependenciesToml,
             manifest
     )
-
-    ext.mixinConnectorOut = file("$genJava/MixinConnector.java")
-    ext.skeletonModOut = file("$genJava/SkeletonMod.java")
+    ext.mixinConnectorOut = file("$genJava/${project.name}/main/MixinConnector.java")
+    ext.skeletonModOut = file("$genJava/${project.name}/main/SkeletonMod.java")
     ext.modsTomlOut = file("$genResources/META-INF/mods.toml")
     ext.manifestOut = file("$genResources/META-INF/MANIFEST.MF")
     ext.packMcmetaOut = file("$genResources/pack.mcmeta")
@@ -164,17 +167,21 @@ task generateFiles {
         modsTomlOut.parentFile.mkdirs()
 
         skeletonModOut.text = """\
+               |package ${project.name}.main;
+               |
                |import net.minecraftforge.fml.common.Mod;
-
+               |
                |@Mod("$modid")
                |public class SkeletonMod {}
             |""".stripMargin()
 
         def mixinConfigs = mixinsTxt.exists() ? mixinsTxt.readLines() : []
         mixinConnectorOut.text = """\
+               |package ${project.name}.main;
+               |
                |import org.spongepowered.asm.mixin.Mixins;
                |import org.spongepowered.asm.mixin.connect.IMixinConnector;
-
+               |
                |public class MixinConnector implements IMixinConnector {
                |    @Override
                |    public void connect() {
@@ -183,7 +190,7 @@ task generateFiles {
                |}
             |""".stripMargin()
 
-        manifestOut.text = (manifest.exists() ? manifest.text : "") + "MixinConnector: MixinConnector\n"
+        manifestOut.text = (manifest.exists() ? manifest.text : "") + "MixinConnector: ${project.name}.main.MixinConnector\n"
 
         if(project.name != "core")
             packMcmetaOut.text = """\
@@ -227,7 +234,7 @@ compileKotlin.dependsOn(generateFiles)
 task generateTestFiles {
     ext.genJava = "$buildDir/generated/test/java"
     ext.genResources = "$buildDir/generated/test/resources"
-    ext.resourcesDir = "$rootDir/src/test/resources"
+    ext.resourcesDir = "$projectDir/src/test/resources"
 
     ext.mixinsTxt = file("$resourcesDir/META-INF/mixins.txt")
     ext.dependenciesToml = file("$resourcesDir/META-INF/dependencies.toml")
@@ -239,7 +246,7 @@ task generateTestFiles {
             manifest
     )
 
-    ext.mixinConnectorOut = file("$genJava/MixinConnector.java")
+    ext.mixinConnectorOut = file("$genJava/${project.name}/test/MixinConnector.java")
 //    ext.skeletonModOut = file("$genJava/SkeletonMod.java")
     ext.modsTomlOut = file("$genResources/META-INF/mods.toml")
     ext.manifestOut = file("$genResources/META-INF/MANIFEST.MF")
@@ -264,9 +271,11 @@ task generateTestFiles {
 
         def mixinConfigs = mixinsTxt.exists() ? mixinsTxt.readLines() : []
         mixinConnectorOut.text = """\
+               |package ${project.name}.test;
+               |
                |import org.spongepowered.asm.mixin.Mixins;
                |import org.spongepowered.asm.mixin.connect.IMixinConnector;
-
+               |
                |public class MixinConnector implements IMixinConnector {
                |    @Override
                |    public void connect() {
@@ -275,7 +284,7 @@ task generateTestFiles {
                |}
             |""".stripMargin()
 
-        manifestOut.text = (manifest.exists() ? manifest.text : "") + "MixinConnector: MixinConnector\n"
+        manifestOut.text = (manifest.exists() ? manifest.text : "") + "MixinConnector: ${project.name}.test.MixinConnector\n"
 
         packMcmetaOut.text = """\
                |{

@@ -26,6 +26,7 @@ allprojects {
     // unfortunately, due to the interdependence of the modules, all the repositories used must be specified here. Any
     // repositories defined in the module `build.gradle` files won't be seen by any of the other modules
     repositories {
+        mavenLocal()
         jcenter()
         maven { url = "http://maven.shadowfacts.net/" }
         maven { url = "https://jitpack.io" }

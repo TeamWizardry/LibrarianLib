@@ -94,7 +94,7 @@ class VirtualResources internal constructor(val type: ResourcePackType) {
     fun addLanguageKey(name: String, value: String) {
         lock.write {
             languageKeys[name] = value
-            logger.debug("Added language key")
+            logger.debug("Added language key $name")
         }
     }
 

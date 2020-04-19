@@ -6,6 +6,7 @@
   "mixins": [
   ],
   "client": [
+    "MixinEnvCheck",
     "Matrix4fMixin",
     "Matrix3fMixin"
   ],
