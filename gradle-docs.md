@@ -1,3 +1,47 @@
+## Module metadata
+Module metadata, such as the main module class, is contained in the `META-INF/modules/<module id>.json` file:
+```json
+{
+  "mainClass": "com.teamwizardry.librarianlib.<module id>.Lib<Module Name>Module"
+}
+```
+
+## Temporary skeleton mod
+Each module includes a skeleton mod. This mod exists largely to allow core mods to be loaded when the modules are 
+separate. The modules themselves are actually loaded by the core module's bootstrapper, not by the skeleton mod, so 
+modules should assume their mod ID is `librarianlib`. For every module except the `core` module, the gradle script 
+automatically generates each module's skeleton class, mixin connector, `mods.toml` file, and `pack.mcmeta` file during 
+the build process. 
+
+## Dependencies
+### Mods
+Dependencies on other mods should be added to the `META-INF/dependencies.toml` file in each module. The contents of this 
+file will be appended to the core bootstrapper's `mods.toml` file. The actual mod jars should be added to the `mod` 
+dependency configuration. Any artifacts in this configuration will be copied into the runtime `mods` directory.
+
+### Libraries
+Non-mod libraries should be added to the `shade` dependency configuration, which also adds them to the `api` 
+configuration. Anything not provided by another mod _must_ be shaded in order to function. These libraries will be 
+shaded into the module build output at runtime since loading libraries from the root classloader can lead to 
+[classloading issues](#shading-at-runtime). Every shaded package must also be added to the list of packages to 
+relocate by passing them to the `shadePackages` function. When adding or updating a shaded library, make sure to check
+what transitive dependencies it has and [exclude](https://docs.gradle.org/current/userguide/dependency_downgrade_and_exclude.html#sec:excluding-transitive-deps)
+any that aren't needed. For example, a library that depends on the Kotlin stdlib will try to shade the entire stdlib,
+which is already being provided by Kottle. 
+
+#### <a name="shading-at-runtime"></a>Why shade at runtime?
+For example, if a mod such as Kottle is placed on the classpath, it'll get lifted into the mod classloader. Then, when 
+mods use Kotlin types they'll reference the Kottle classes in the mod classloader, but when non-mod libraries in the 
+root classloader use Kotlin types they'll reference the Kottle classes that are still in the root classloader. Moving 
+Kottle out of the root classloader avoids the duplicates, but now the libraries that are still stuck down there can't
+access Kotlin types. Thus, we shade all the dependencies into the runtime environment.
+
+## Building
+
+more to come…
+
+# OLD:
+
 # Modules
 When creating the final jar, each module's classes and resources are merged. This means that to prevent conflicts 
 modules should reside entirely in their own package, `com.teamwizardry.librarianlib.<module id>`. When merging resources
