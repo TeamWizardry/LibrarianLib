@@ -23,6 +23,7 @@ import com.github.jengelman.gradle.plugins.shadow.ShadowStats
 import com.github.jengelman.gradle.plugins.shadow.relocation.RelocatePathContext
 import com.github.jengelman.gradle.plugins.shadow.relocation.Relocator
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import net.minecraftforge.gradle.userdev.tasks.RenameJar
 
 ext.modid = project.name == "core" ? "librarianlib" : "librarianlib-${project.name}".toString()
 ext.modid_test = "$modid-test".toString()
@@ -351,23 +352,20 @@ afterEvaluate {
 // ---------------------------------------------------------------------------------------------------------------------
 //region // Jars
 
-jar {
-    classifier = 'obf'
-    manifest.attributes(
-            "Implementation-Title": "LibrarianLib $human_name",
-            "Implementation-Version": "$mod_version",
-            "Implementation-Vendor": "Team Wizardry",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            // Specify the IMixinConnector. This contains only the mixin files from this specific module.
-            // https://github.com/SpongePowered/Mixin/wiki/Release-Notes---Mixin-0.8#toolchain-and-environment-changes
-            "MixinConnector": "MixinConnector"
-    )
-}
+def attributes = [
+        "Implementation-Title": "LibrarianLib $human_name",
+        "Implementation-Version": "$mod_version",
+        "Implementation-Vendor": "Team Wizardry",
+        "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+        // Specify the IMixinConnector. This contains only the mixin files from this specific module.
+        // https://github.com/SpongePowered/Mixin/wiki/Release-Notes---Mixin-0.8#toolchain-and-environment-changes
+        "MixinConnector": "${project.name}.main.MixinConnector"
+]
 
 task sourcesJar(type: Jar) {
     classifier = 'sources'
     includeEmptyDirs = false
-    manifest.from(jar.manifest)
+    manifest.attributes(attributes)
     from sourceSets.main.allSource
     from sourceSets.main.output.resourcesDir
     dependsOn processResources
@@ -378,7 +376,7 @@ task deobfJar(type: ShadowJar) {
     configurations = []
     classifier = ''
     includeEmptyDirs = false
-    manifest.from(jar.manifest)
+    manifest.attributes(attributes)
 
     from sourceSets.main.output
     dependsOn classes
@@ -391,6 +389,23 @@ task deobfJar(type: ShadowJar) {
         }
     }
 }
+
+task obfJar(type: Jar) {
+    dependsOn deobfJar
+    classifier = 'obf'
+    manifest.attributes(attributes)
+    from zipTree(deobfJar.archivePath)
+}
+
+jar {
+    enabled = false
+}
+
+reobf {
+    obfJar
+}
+
+assemble.dependsOn obfJar, deobfJar, sourcesJar
 
 // create a sources jar that includes this module and the shaded dependencies
 // Based largely on the gradle-preshadow-plugin: https://github.com/Abnaxos/gradle-preshadow-plugin/blob/07580f93f38818b15c411f6c47abea8cdfd0b2f9/src/main/groovy/ch/raffael/gradlePlugins/preshadow/Preshadow.groovy

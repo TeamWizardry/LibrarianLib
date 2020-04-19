@@ -238,7 +238,7 @@ class VirtualResources internal constructor(val type: ResourcePackType) {
         override fun getResourceNamespaces(type: ResourcePackType): Set<String> = setOf()
 
         override fun getRootResourceStream(fileName: String): InputStream {
-            return javaClass.getResourceAsStream("/assets/librarianlib-virtualresources/root_resources/$fileName")
+            return javaClass.getResourceAsStream("/assets/librarianlib/virtualresources/root_resources/$fileName")
         }
 
         override fun <T: Any?> getMetadata(deserializer: IMetadataSectionSerializer<T>): T? {

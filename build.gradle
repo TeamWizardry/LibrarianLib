@@ -154,7 +154,7 @@ CopySpec createMergeSpec(String jarTaskName) {
         productionModules.each {
 //        from(file("${mod.compileJava.temporaryDir}/${mod.sourceSets.main.refMap}"))
             from(zipTree(it.tasks.getByName(jarTaskName).outputs.files.singleFile)) {
-                exclude '**/ModuleDevSkeleton.*'
+                exclude '**/SkeletonMod.*'
                 exclude '**/MixinConnector.*'
                 exclude 'META-INF/coremods.json'
                 exclude 'META-INF/mods.toml'
@@ -175,34 +175,41 @@ CopySpec createMergeSpec(String jarTaskName) {
 
 //region Merged jar configurations
 
+def attributes = [
+        "Implementation-Title"    : "LibrarianLib",
+        "Implementation-Version"  : "$mod_version",
+        "Implementation-Vendor"   : "Team Wizardry",
+        "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+        // Specify the IMixinConnector. This class is present at runtime, but the runtime manifest
+        // specifies a different mixin container with only the mixin files from that specific module.
+        // https://github.com/SpongePowered/Mixin/wiki/Release-Notes---Mixin-0.8#toolchain-and-environment-changes
+        "MixinConnector"          : "com.teamwizardry.librarianlib.MixinConnector"
+]
+
 jar {
-    manifest.attributes(
-            "Implementation-Title"    : "LibrarianLib",
-            "Implementation-Version"  : "$mod_version",
-            "Implementation-Vendor"   : "Team Wizardry",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            // Specify the IMixinConnector. This class is present at runtime, but the runtime manifest
-            // specifies a different mixin container with only the mixin files from that specific module.
-            // https://github.com/SpongePowered/Mixin/wiki/Release-Notes---Mixin-0.8#toolchain-and-environment-changes
-            "MixinConnector"          : "com.teamwizardry.librarianlib.MixinConnector"
-    )
+    enabled = false
+}
+
+task obfJar(type: Jar) {
+    classifier = ''
+    manifest.attributes(attributes)
     includeEmptyDirs = false
     duplicatesStrategy = 'WARN'
 
     from sourceSets.main.output
     afterEvaluate {
         productionModules.each {
-            dependsOn it.jar
+            dependsOn it.obfJar
         }
-        with createMergeSpec('jar')
+        with createMergeSpec('obfJar')
     }
 }
 
 task deobfJar(type: Jar) {
     classifier = 'deobf'
+    manifest.attributes(attributes)
     includeEmptyDirs = false
     duplicatesStrategy = 'WARN'
-    manifest.from(jar.manifest)
 
     from sourceSets.main.output
     afterEvaluate {
@@ -215,9 +222,9 @@ task deobfJar(type: Jar) {
 
 task sourcesJar(type: Jar) {
     classifier = 'sources'
+    manifest.attributes(attributes)
     includeEmptyDirs = false
     duplicatesStrategy = 'WARN'
-    manifest.from(jar.manifest)
 
     from sourceSets.main.allSource
     afterEvaluate {
@@ -229,6 +236,7 @@ task sourcesJar(type: Jar) {
 
     exclude '**/*.class'
 }
+assemble.dependsOn obfJar, deobfJar, sourcesJar
 
 //endregion
 
@@ -238,7 +246,7 @@ configure(productionModules + [project]) {
     components.java
 
     artifacts {
-        archives jar, deobfJar, sourcesJar
+        archives obfJar, deobfJar, sourcesJar
     }
 
     // For some reason we need to apply the publish plugin at the last moment, otherwise there are odd issues with it
@@ -248,7 +256,7 @@ configure(productionModules + [project]) {
         publications {
             mod(MavenPublication) {
                 from components.java
-                artifacts = [jar, deobfJar, sourcesJar]
+                artifacts = [obfJar, deobfJar, sourcesJar]
                 pom {
                     // `.toString()` immediately evaluates the `GString` to a `String`, which is apparently necessary
                     // for the maven-publish plugin
