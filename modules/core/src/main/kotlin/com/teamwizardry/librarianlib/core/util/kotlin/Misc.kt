@@ -2,6 +2,8 @@ package com.teamwizardry.librarianlib.core.util.kotlin
 
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.math.Vec3i
+import kotlin.reflect.jvm.javaMethod
 
 fun String.toRl(): ResourceLocation = ResourceLocation(this)
 
@@ -11,10 +13,11 @@ fun String.toRl(): ResourceLocation = ResourceLocation(this)
 fun ResourceLocation.translationKey(type: String, suffix: String? = null): String
     = "$type.$namespace.$path${suffix?.let { ".$it" } ?: ""}"
 
+private val obfTest = Vec3i::getX.javaMethod!! // has to be a separate field, otherwise it gets optimized away
 /**
  * True if the current environment is obfuscated
  */
-val IS_DEOBFUSCATED: Boolean = Minecraft::currentScreen.name == "currentScreen"
+val IS_DEOBFUSCATED: Boolean = obfTest.name == "getX"
 
 fun obf(deobfuscated: String, obfuscated: String): String = if(IS_DEOBFUSCATED) deobfuscated else obfuscated
 
