@@ -5,7 +5,7 @@ var Opcodes = org.objectweb.asm.Opcodes;
 
 function initializeCoreMod() {
     return {
-        "fallbackresourcemanager": {
+        "ll.virtualresources.fallbackresourcemanager": {
             "target": {
                 "type": "CLASS",
                 "name": "net/minecraft/resources/FallbackResourceManager"

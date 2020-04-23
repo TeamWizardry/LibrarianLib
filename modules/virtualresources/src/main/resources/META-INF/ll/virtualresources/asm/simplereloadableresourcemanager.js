@@ -16,7 +16,7 @@ var methodNames = [
 
 function initializeCoreMod() {
     return {
-        "simplereloadableresourcemanager": {
+        "ll.virtualresources.simplereloadableresourcemanager": {
             "target": {
                 "type": "CLASS",
                 "name": "net/minecraft/resources/SimpleReloadableResourceManager"

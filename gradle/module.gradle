@@ -47,26 +47,12 @@ minecraft {
 
 dependencies {
     minecraft "net.minecraftforge:forge:$mc_version-$forge_version"
-    implementation("org.spongepowered:mixin:0.8-SNAPSHOT")
-
-    // Add kotlin dependencies manually to the modules, but don't include them at runtime, since Kottle doesn't include
-    // kotlin sources
-    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.61"
-    compileOnly "org.jetbrains.kotlin:kotlin-reflect:1.3.61"
-    compileOnly "org.jetbrains:annotations:18.0.0"
-    compileOnly "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.2"
-
-    testCompileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.61"
-    testCompileOnly "org.jetbrains.kotlin:kotlin-reflect:1.3.61"
-    testCompileOnly "org.jetbrains:annotations:18.0.0"
-    testCompileOnly "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.2"
-
-    // include Kottle _after_ all of the kotlin libraries, so IntelliJ IDEA uses the direct dependencies first
-    mod files("/Users/code/Documents/mods/kottle/build/libs/Kottle-1.5.0.jar")
-//    mod "kottle:Kottle:$kottle_version"
-
-    compileOnly "kottle:Kottle:$kottle_version"
-    testCompileOnly "kottle:Kottle:$kottle_version"
+    api "org.spongepowered:mixin:0.8-SNAPSHOT"
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    api "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    api "org.jetbrains:annotations:$jetbrains_annotations_version"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$kotlin_coroutines_version"
+    api "kottle:Kottle:$kottle_version:slim"
 }
 
 mixin {
@@ -117,6 +103,7 @@ sourceSets {
 
 // ---------------------------------------------------------------------------------------------------------------------
 //region // File generation
+apply from: "$rootDir/gradle/generatorUtils.gradle"
 
 static String tomlDependency(String modid, String dependencyid, String version, String ordering) {
     return """\
@@ -143,24 +130,29 @@ task generateFiles {
     ext.genResources = "$buildDir/generated/main/resources"
     ext.resourcesDir = "$projectDir/src/main/resources"
 
-    ext.mixinsTxt = file("$resourcesDir/META-INF/mixins.txt")
+    ext.mixinFiles = fileTree(dir: "$resourcesDir/META-INF/ll/$project.name/mixins", includes: ['*.json'])
+    ext.coremodFiles = fileTree(dir: "$resourcesDir/META-INF/ll/$project.name/asm", includes: ['*.js'])
     ext.manifest = file("$resourcesDir/META-INF/MANIFEST.MF")
 
     inputs.files(
-            mixinsTxt,
+            mixinFiles,
+            coremodFiles,
             manifest
     )
-    ext.mixinConnectorOut = file("$genJava/${project.name}/main/MixinConnector.java")
-    ext.skeletonModOut = file("$genJava/${project.name}/main/SkeletonMod.java")
+
+    ext.mixinConnectorOut = file("$genJava/gen/${project.name}/MixinConnector.java")
+    ext.skeletonModOut = file("$genJava/gen/${project.name}/SkeletonMod.java")
     ext.modsTomlOut = file("$genResources/META-INF/mods.toml")
+    ext.coremodsOut = file("$genResources/META-INF/coremods.json")
     ext.manifestOut = file("$genResources/META-INF/MANIFEST.MF")
-    ext.packMcmetaOut = file("$genResources/pack.mcmeta")
     outputs.files(
             mixinConnectorOut,
             skeletonModOut,
             modsTomlOut,
+            coremodsOut,
             manifestOut
     )
+    ext.packMcmetaOut = file("$genResources/pack.mcmeta")
     if(project.name != "core")
         outputs.files(packMcmetaOut)
 
@@ -168,7 +160,7 @@ task generateFiles {
         modsTomlOut.parentFile.mkdirs()
 
         skeletonModOut.text = """\
-               |package ${project.name}.main;
+               |package gen.${project.name};
                |
                |import net.minecraftforge.fml.common.Mod;
                |
@@ -176,22 +168,10 @@ task generateFiles {
                |public class SkeletonMod {}
             |""".stripMargin()
 
-        def mixinConfigs = mixinsTxt.exists() ? mixinsTxt.readLines() : []
-        mixinConnectorOut.text = """\
-               |package ${project.name}.main;
-               |
-               |import org.spongepowered.asm.mixin.Mixins;
-               |import org.spongepowered.asm.mixin.connect.IMixinConnector;
-               |
-               |public class MixinConnector implements IMixinConnector {
-               |    @Override
-               |    public void connect() {
-               |        ${mixinConfigs.collect { "Mixins.addConfiguration(\"$it\");" }.join("\n|        ")}
-               |    }
-               |}
-            |""".stripMargin()
+        mixinConnectorOut.text = GeneratorUtils.generateMixinConnector("gen.$project.name", "MixinConnector", mixinFiles)
+        coremodsOut.text = GeneratorUtils.generateCoremodsJson(coremodFiles)
 
-        manifestOut.text = (manifest.exists() ? manifest.text : "") + "MixinConnector: ${project.name}.main.MixinConnector\n"
+        manifestOut.text = (manifest.exists() ? manifest.text : "") + "MixinConnector: gen.${project.name}.MixinConnector\n"
 
         if(project.name != "core")
             packMcmetaOut.text = """\
@@ -243,23 +223,27 @@ task generateTestFiles {
     ext.genResources = "$buildDir/generated/test/resources"
     ext.resourcesDir = "$projectDir/src/test/resources"
 
-    ext.mixinsTxt = file("$resourcesDir/META-INF/mixins.txt")
+    ext.mixinFiles = fileTree(dir: "$resourcesDir/META-INF/ll/$project.name/mixin", includes: ['*.mixin.json'])
+    ext.coremodFiles = fileTree(dir: "$resourcesDir/META-INF/ll/$project.name/asm", includes: ['*.js'])
     ext.dependenciesToml = file("$resourcesDir/META-INF/dependencies.toml")
     ext.manifest = file("$resourcesDir/META-INF/MANIFEST.MF")
 
     inputs.files(
-            mixinsTxt,
+            mixinFiles,
+            coremodFiles,
             dependenciesToml,
             manifest
     )
 
-    ext.mixinConnectorOut = file("$genJava/${project.name}/test/MixinConnector.java")
+    ext.mixinConnectorOut = file("$genJava/gen/${project.name}/TestMixinConnector.java")
     ext.modsTomlOut = file("$genResources/META-INF/mods.toml")
+    ext.coremodsOut = file("$genResources/META-INF/coremods.json")
     ext.manifestOut = file("$genResources/META-INF/MANIFEST.MF")
     ext.packMcmetaOut = file("$genResources/pack.mcmeta")
     outputs.files(
             mixinConnectorOut,
             modsTomlOut,
+            coremodsOut,
             manifestOut,
             packMcmetaOut
     )
@@ -267,22 +251,10 @@ task generateTestFiles {
     doLast {
         modsTomlOut.parentFile.mkdirs()
 
-        def mixinConfigs = mixinsTxt.exists() ? mixinsTxt.readLines() : []
-        mixinConnectorOut.text = """\
-               |package ${project.name}.test;
-               |
-               |import org.spongepowered.asm.mixin.Mixins;
-               |import org.spongepowered.asm.mixin.connect.IMixinConnector;
-               |
-               |public class MixinConnector implements IMixinConnector {
-               |    @Override
-               |    public void connect() {
-               |        ${mixinConfigs.collect { "Mixins.addConfiguration(\"$it\");" }.join("\n|        ")}
-               |    }
-               |}
-            |""".stripMargin()
+        mixinConnectorOut.text = GeneratorUtils.generateMixinConnector("gen.$project.name", "TestMixinConnector", mixinFiles)
+        coremodsOut.text = GeneratorUtils.generateCoremodsJson(coremodFiles)
 
-        manifestOut.text = (manifest.exists() ? manifest.text : "") + "MixinConnector: ${project.name}.test.MixinConnector\n"
+        manifestOut.text = (manifest.exists() ? manifest.text : "") + "MixinConnector: gen.${project.name}.TestMixinConnector\n"
 
         packMcmetaOut.text = """\
                |{

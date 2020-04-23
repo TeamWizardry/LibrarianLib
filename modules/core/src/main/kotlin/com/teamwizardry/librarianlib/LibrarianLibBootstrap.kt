@@ -12,7 +12,7 @@ internal object LibrarianLibBootstrap {
     init {
         checkEnvironment()
 
-        val names = resource("/META-INF/modules/index.txt")?.lines()
+        val names = resource("/META-INF/ll/core/modules.txt")?.lines()
             ?: throw RuntimeException("Unable to find LibrarianLib modules list")
         names.forEach {
             LibrarianLib._modules[it] = null

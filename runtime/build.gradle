@@ -11,7 +11,9 @@ minecraft {
 
 dependencies {
     minecraft "net.minecraftforge:forge:$mc_version-$forge_version"
-    mod "mixinbootstrap:MixinBootstrap:1.0.2"
+    mod "kottle:Kottle:$kottle_version"
+    mod "mixinbootstrap:MixinBootstrap:$mixinbootstrap_version"
+
     allmodules.each {
         mod project(path: it.path, configuration: "mod")
     }

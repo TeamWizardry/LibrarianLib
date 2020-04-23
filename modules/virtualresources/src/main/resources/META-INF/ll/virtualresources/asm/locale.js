@@ -6,7 +6,7 @@ var ASMAPI = Java.type('net.minecraftforge.coremod.api.ASMAPI');
 
 function initializeCoreMod() {
     return {
-        "locale": {
+        "ll.virtualresources.locale": {
             "target": {
                 "type": "CLASS",
                 "name": "net/minecraft/client/resources/Locale"

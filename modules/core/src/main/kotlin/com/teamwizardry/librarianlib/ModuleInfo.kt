@@ -8,7 +8,7 @@ data class ModuleInfo(
     companion object {
         private val gson = Gson()
         fun loadModuleInfo(name: String): ModuleInfo? {
-            return ModuleInfo::class.java.getResourceAsStream("/META-INF/modules/$name.json")?.readBytes()?.let {
+            return ModuleInfo::class.java.getResourceAsStream("/META-INF/ll/$name/module.json")?.readBytes()?.let {
                 gson.fromJson(String(it), ModuleInfo::class.java)
             }
         }

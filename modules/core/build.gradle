@@ -18,7 +18,7 @@ def moduleNames = allmodules.collect { it.name }
 
 generateFiles {
     inputs.property("moduleNames", moduleNames)
-    ext.moduleIndexOut = file("$genResources/META-INF/modules/index.txt")
+    ext.moduleIndexOut = file("$genResources/META-INF/ll/core/modules.txt")
     outputs.file(moduleIndexOut)
     ext.dependenciesTomls = allmodules.collect {
         file("$projectDir/src/main/resources/META-INF/dependencies.toml")

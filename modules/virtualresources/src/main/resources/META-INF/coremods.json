@@ -1,6 +1,0 @@
-{
-  "fallbackresourcemanager": "META-INF/transformers/virtualresources/fallbackresourcemanager.js",
-  "simplereloadableresourcemanager": "META-INF/transformers/virtualresources/simplereloadableresourcemanager.js",
-  "languagemap": "META-INF/transformers/virtualresources/languagemap.js",
-  "locale": "META-INF/transformers/virtualresources/locale.js"
-}

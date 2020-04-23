@@ -1,4 +1,4 @@
-## Core
+# Core
 #### com.teamwizardry.librarianlib.math
 - Nested 2D coordinate space point conversion
 - Animation easing functions

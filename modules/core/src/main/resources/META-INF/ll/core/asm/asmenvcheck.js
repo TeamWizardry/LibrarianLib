@@ -1,6 +1,6 @@
 function initializeCoreMod() {
     return {
-        "asmenvcheck": {
+        "ll.core.asmenvcheck": {
             "target": {
                 "type": "METHOD",
                 "class": "com.teamwizardry.librarianlib.core.bridge.ASMEnvCheckTarget",

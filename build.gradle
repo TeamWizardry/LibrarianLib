@@ -54,14 +54,9 @@ ext.shadePackages = new HashSet<String>()
 
 ext.productionModules = allmodules.findAll { it.name != "testbase" }
 
-// find a file in all the passed roots
-def findFiles(FileCollection roots, String path) {
-    return roots.collect { file(it.path + path) }.findAll { it.exists() }
-}
-
 //region Merged file generation
 
-
+apply from: "$rootDir/gradle/generatorUtils.gradle"
 
 // Generated files:
 // - MixinConnector.java
@@ -78,16 +73,20 @@ task generateFiles(type: Sync) {
     ext.coreModsToml = file("$coreResources/META-INF/mods.toml")
     ext.corePackMcmeta = file("$coreResources/pack.mcmeta")
 
-    ext.allCoremods = productionModules.collect { file("${it.rootDir}/src/main/resources/META-INF/coremods.json") }
-    ext.allDependencies = productionModules.collect { file("${it.rootDir}/src/main/resources/META-INF/dependencies.toml") }
-    ext.allMixins = productionModules.collect { file("${it.rootDir}/src/main/resources/META-INF/mixins.txt") }
+    ext.allDependencies = productionModules.collect { file("$it.projectDir/src/main/resources/META-INF/dependencies.toml") }
+    ext.coremodFiles = files(productionModules.collect {
+        fileTree(dir: "$it.projectDir/src/main/resources/META-INF/ll/$project.name/asm", includes: ['*.js'])
+    })
+    ext.mixinFiles = files(productionModules.collect {
+        fileTree(dir: "$it.projectDir/src/main/resources/META-INF/ll/$project.name/mixin", includes: ['*.json'])
+    })
 
     inputs.files(
             coreModsToml,
             corePackMcmeta,
-            allCoremods,
             allDependencies,
-            allMixins
+            coremodFiles,
+            mixinFiles
     )
 
     ext.mixinConnectorOut = file("$genDir/com/teamwizardry/librarianlib/MixinConnector.java")
@@ -106,30 +105,8 @@ task generateFiles(type: Sync) {
         mixinConnectorOut.parentFile.mkdirs()
         coremodsOut.parentFile.mkdirs()
 
-        def allMixinConfigs = allMixins.filter { it.exists() }.collect { it.readLines() }.flatten()
-        mixinConnectorOut.text = """\
-               |package com.teamwizardry.librarianlib;
-
-               |import org.spongepowered.asm.mixin.Mixins;
-               |import org.spongepowered.asm.mixin.connect.IMixinConnector;
-
-               |public class MixinConnector implements IMixinConnector {
-               |    @Override
-               |    public void connect() {
-               |        ${allMixinConfigs.collect { "Mixins.addConfiguration(\"$it\");" }.join("\n|        ")}
-               |    }
-               |}
-            """.stripMargin()
-
-        // merge the coremods.json files
-        coremodsOut.text =
-                "{\n" + allCoremods.filter { it.exists() }.collect {
-                    it.text
-                            .replaceAll("[{}]", "") // replace enclosing brackets with blank lines
-                            .replaceAll("\\s+\$", "") // remove trailing whitespace
-                            .split("\n").findAll { !it.matches("^\\s*\$") } // remove blank lines
-                            .join("\n") // re-join lines
-                }.join(",\n") + "\n}"
+        mixinConnectorOut.text = GeneratorUtils.generateMixinConnector("com.teamwizardry.librarianlib", "MixinConnector", mixinFiles)
+        coremodsOut.text = GeneratorUtils.generateCoremodsJson(coremodFiles)
 
         // copy the pack.mcmeta file
         packMcmetaOut.text = corePackMcmeta.text
@@ -138,11 +115,7 @@ task generateFiles(type: Sync) {
             // add additional external dependencies to main mods.toml
             modsTomlOut.text = coreModsToml.text + allDependencies
                     .filter { it.exists() }
-                    .collect {
-                        it.text
-                                .replaceAll("MOD_ID", "librarianlib")
-                                .replaceAll("\\s+\$", "")
-                    }.join("\n")
+                    .collect { it.text }.join("\n")
     }
 }
 sourceSets.main.allSource.srcDir(generateFiles.genDir)
@@ -164,7 +137,7 @@ CopySpec createMergeSpec(String jarTaskName) {
                 exclude 'pack.mcmeta'
                 // the core module generates an `index.txt` that stores a list of modules to load at runtime. This list
                 // includes the dev-only testbase module, so we have to strip that out first
-                filesMatching('META-INF/modules/index.txt') {
+                filesMatching('META-INF/ll/core/modules.txt') {
                     filter { it == "testbase" ? null : it }
                 }
             }

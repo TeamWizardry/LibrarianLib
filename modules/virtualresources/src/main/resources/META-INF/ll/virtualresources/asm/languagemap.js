@@ -6,7 +6,7 @@ var ASMAPI = Java.type('net.minecraftforge.coremod.api.ASMAPI');
 
 function initializeCoreMod() {
     return {
-        "languagemap": {
+        "ll.virtualresources.languagemap": {
             "target": {
                 "type": "CLASS",
                 "name": "net/minecraft/util/text/LanguageMap"
