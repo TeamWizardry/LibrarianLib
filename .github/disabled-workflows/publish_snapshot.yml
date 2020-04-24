@@ -26,9 +26,10 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
-      - name: Publish to GitHub Packages
-        run: ./gradlew publish
+      - name: Publish to oss.jfrog.org
+        run: ./gradlew artifactoryPublish
         env:
           SNAPSHOT_BRANCH: ${{ github.ref }}
-          USERNAME: ${{ github.actor }}
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
+          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
+          ARTIFACTORY_BUILD_NUMBER: ${{ github.run_number }}

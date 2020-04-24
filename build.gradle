@@ -12,6 +12,8 @@ buildscript {
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
         // rolled back from 4.0.4 to 4.0.1 due to #425: https://github.com/johnrengelman/shadow/issues/425
         classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.1'
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:latest.release"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
     }
 }
 
@@ -246,6 +248,8 @@ configure(productionModules + [project]) {
                     name = project == rootProject ? "LibrarianLib" : "LibrarianLib $human_name".toString()
                     description = project == rootProject ? "The final packaged LibrarianLib jar" : "$module_description".toString()
                     url = 'http://github.com/LibrarianLib/LibrarianLib'
+                    if(project != rootProject)
+                        artifactId = "librarianlib-" + project.name
                     licenses {
                         license {
                             name = 'GNU Lesser General Public License v3'
@@ -270,15 +274,46 @@ configure(productionModules + [project]) {
             }
         }
         repositories {
-            maven {
-                name = "GitHub Packages"
-                url = uri("https://maven.pkg.github.com/TeamWizardry/LibrarianLib")
-                credentials {
-                    username = System.getenv("USERNAME")
-                    password = System.getenv("TOKEN")
-                }
-            }
         }
     }
+
+    apply plugin: 'com.jfrog.bintray'
+
+    bintray {
+        user = System.getenv("BINTRAY_USER")
+        key = System.getenv("BINTRAY_API_KEY")
+        publications = ['mod']
+        pkg {
+            repo = "teamwizardry"
+            name = project.name
+            userOrg = "teamwizardry"
+            websiteUrl = "https://github.com/TeamWizardry/LibrarianLib"
+            githubRepo = "TeamWizardry/LibrarianLib"
+            vcsUrl = "https://github.com/TeamWizardry/LibrarianLib.git"
+            issueTrackerUrl = "https://github.com/TeamWizardry/LibrarianLib/issues"
+            desc = project.description
+            labels = ["minecraft", "mc", "modding", "forge", "library", "wizardry"]
+            licenses = ["LGPL-3.0"]
+        }
+    }
+
+    apply plugin: 'com.jfrog.artifactory'
+
+    artifactory {
+        setContextUrl 'https://oss.jfrog.org'
+        publish {
+            repository {
+                repoKey = project.version.endsWith("-SNAPSHOT") ? "oss-snapshot-local" : "oss-release-local"
+                username = System.getenv("BINTRAY_USER")
+                password = System.getenv("BINTRAY_API_KEY")
+                maven = true
+            }
+            defaults {
+                publications 'mod'
+            }
+        }
+        clientConfig.info.setBuildNumber(System.getenv('ARTIFACTORY_BUILD_NUMBER')) // no env = null -> default value
+    }
+    
 }
 //endregion

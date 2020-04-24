@@ -12,6 +12,11 @@ buildscript {
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
         // rolled back from 4.0.4 to 4.0.1 due to #425: https://github.com/johnrengelman/shadow/issues/425
         classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.1'
+        // for some reason, unless I add these here, `tasks.withType(KotlinCompile)` doesn't detect the compileKotlin
+        // task. Maybe these mess with the classpath, leading to the build.gradle (which applies the kotlin plugin) and
+        // this file using different copies of `KotlinCompile`?
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:latest.release"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
     }
 }
 
@@ -23,7 +28,7 @@ import com.github.jengelman.gradle.plugins.shadow.ShadowStats
 import com.github.jengelman.gradle.plugins.shadow.relocation.RelocatePathContext
 import com.github.jengelman.gradle.plugins.shadow.relocation.Relocator
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import net.minecraftforge.gradle.userdev.tasks.RenameJar
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 ext.modid = project.name == "core" ? "librarianlib" : "librarianlib-${project.name}".toString()
 ext.modid_test = "$modid-test".toString()
@@ -69,7 +74,7 @@ afterEvaluate {
     }
 }
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+tasks.withType(KotlinCompile).all {
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs += [
