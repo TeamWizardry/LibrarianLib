@@ -24,10 +24,10 @@ jobs:
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
       - name: Build with Gradle
-        run: gradle build
+        run: ./gradlew build
 
       - name: Publish to GitHub Packages
-        run: gradle publish
+        run: ./gradlew publish
         env:
           SNAPSHOT_BRANCH: ${{ github.ref }}
           USERNAME: ${{ github.actor }}
