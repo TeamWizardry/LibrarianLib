@@ -30,13 +30,14 @@ ext.modid_test = "$modid-test".toString()
 
 // Need this here so eclipse task generates correctly.
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
-version = rootProject.mod_version
-group = "com.teamwizardry.librarianlib"
 archivesBaseName = modid
 
 configurations {
-    api.extendsFrom(shade)
-    testApi.extendsFrom(shade)
+    compileOnly.extendsFrom(shade)
+    testCompileOnly.extendsFrom(shade)
+    // `internalApi` is automatically added to all project dependencies, allowing us to easily expose
+    // some libraries as APIs internally without them appearing in the maven POM files.
+    internalApi.extendsFrom(shade)
     api.extendsFrom(mod)
     testApi.extendsFrom(mod)
 }
@@ -48,14 +49,24 @@ minecraft {
 dependencies {
     minecraft "net.minecraftforge:forge:$mc_version-$forge_version"
     api "org.spongepowered:mixin:0.8-SNAPSHOT"
+    testApi "org.spongepowered:mixin:0.8-SNAPSHOT"
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     api "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    api "org.jetbrains:annotations:$jetbrains_annotations_version"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$kotlin_coroutines_version"
+    api "org.jetbrains:annotations:$jetbrains_annotations_version"
     api "kottle:Kottle:$kottle_version:slim"
 }
 
-mixin {
+// go through each configuration and add an `internalApi` dependency alongside each project dependency
+afterEvaluate {
+    dependencies {
+        configurations.api.dependencies.findAll { it instanceof ProjectDependency }.collect { ProjectDependency dep ->
+            compileOnly project(path: dep.getDependencyProject().path, configuration: "internalApi")
+        }
+        configurations.testApi.dependencies.findAll { it instanceof ProjectDependency }.collect { ProjectDependency dep ->
+            testCompileOnly project(path: dep.getDependencyProject().path, configuration: "internalApi")
+        }
+    }
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
@@ -331,7 +342,7 @@ def attributes = [
         "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
         // Specify the IMixinConnector. This contains only the mixin files from this specific module.
         // https://github.com/SpongePowered/Mixin/wiki/Release-Notes---Mixin-0.8#toolchain-and-environment-changes
-        "MixinConnector": "${project.name}.main.MixinConnector"
+        "MixinConnector": "gen.${project.name}.MixinConnector"
 ]
 
 task sourcesJar(type: Jar) {

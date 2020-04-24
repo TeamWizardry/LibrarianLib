@@ -5,12 +5,12 @@ dependencies {
     testApi project(":testbase")
     shade("com.github.thecodewarrior:bitfont:proper-typesetter-SNAPSHOT") {
         exclude group: 'org.jetbrains.kotlin'
+        exclude group: 'it.unimi.dsi.fastutil' // already included in MC
     }
 }
 
 shadePackages(
         'com.ibm.icu',
         'dev.thecodewarrior.bitfont',
-        'it.unimi.dsi.fastutil',
         'org.msgpack'
 )

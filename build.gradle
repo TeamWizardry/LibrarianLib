@@ -15,6 +15,15 @@ buildscript {
     }
 }
 
+def maven_version = mod_version
+def snapshotBranch = System.getenv('SNAPSHOT_BRANCH')
+if(snapshotBranch != null) {
+    if(snapshotBranch.startsWith('refs/heads/'))
+        snapshotBranch = snapshotBranch.substring('refs/heads/'.length())
+    maven_version = snapshotBranch.replaceAll('[^.\\w-]', '-') + '-SNAPSHOT'
+    logger.lifecycle("Using SNAPSHOT version `{}`", version)
+}
+
 allprojects {
     apply plugin: 'eclipse'
     apply plugin: 'idea'
@@ -33,10 +42,11 @@ allprojects {
         maven { url = "https://minecraft.curseforge.com/api/maven/" }
         maven { url = 'http://repo.spongepowered.org/maven' }
     }
+
+    version = maven_version
+    group = "com.teamwizardry.librarianlib"
 }
 
-version = mod_version
-group = "com.teamwizardry.librarianlib"
 archivesBaseName = "librarianlib"
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
@@ -261,10 +271,12 @@ configure(productionModules + [project]) {
         }
         repositories {
             maven {
-                // change URLs to point to your repos, e.g. http://my.org/repo
-                def releasesRepoUrl = "file://$buildDir/repos/releases"
-                def snapshotsRepoUrl = "file://$buildDir/repos/snapshots"
-                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                name = "GitHub Packages"
+                url = uri("https://maven.pkg.github.com/TeamWizardry/LibrarianLib")
+                credentials {
+                    username = System.getenv("USERNAME")
+                    password = System.getenv("TOKEN")
+                }
             }
         }
     }

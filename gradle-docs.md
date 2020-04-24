@@ -35,6 +35,11 @@ what transitive dependencies it has and [exclude](https://docs.gradle.org/curren
 any that aren't needed. For example, a library that depends on the Kotlin stdlib will try to shade the entire stdlib,
 which is already being provided by Kottle. 
 
+Relocation rules are applied globally, so it's important to verify that the relocated packages aren't used from 
+Minecraft elsewhere. For example, if Minecraft includes library `X` and module `A` shades its own copy of `X`, then 
+when an unrelated module `B` refers to _Minecraft's_ copy of library `X`, the references wind up pointing to `ll.X`, 
+which is missing at runtime when module `A` isn't present.
+
 #### <a name="shading-at-runtime"></a>Why shade at runtime?
 The rationale behind shading at runtime was an issue that occurred when using the fat Kottle jar (as opposed to the slim
 jar, which doesn't include the kotlin runtime):
