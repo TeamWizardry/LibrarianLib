@@ -6,6 +6,7 @@
 - Render-to-texture (far future)
   - LibLib shader module?
 - Cursors
+- Horizontal scrolling (Minecraft doesn't send that data to the GUI, it'll need a mixin or asm)
 - Component focus and accessibility
 - Animation
 - Tooltips (requires pastry tooltips)
@@ -24,6 +25,10 @@
 - Pastry
 - Guide book
 - Bitfont (new typesetter)
+  - Strikethrough
+  - Bold (+1px character spacing and either rendering twice shifted, or a second, auto-generated, font)
+  - Italic (just shear characters)
+  - Load fonts up front to avoid stalling when first using them
 - Containers
   - Slot component
   - JEI/etc. compatibility

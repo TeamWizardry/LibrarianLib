@@ -7,6 +7,12 @@
   <br>
 </h1>
 
+## Using LibrarianLib
+
+Due to the fact that (as of April 24th 2020) ForgeGradle's `fg.deobf` is broken (it doesn't properly link sources, and 
+doesn't support any kind of transitive dependencies), LibrarianLib is distributed in its deobfuscated form. This may 
+necessitate matching your project's MCP mappings to LibrarianLib's MCP mappings (which can be found in the 
+`gradle.properties` file under the `mc_mappings_channel` and `mc_mappings_version` keys).
 
 ## Contributing
 
