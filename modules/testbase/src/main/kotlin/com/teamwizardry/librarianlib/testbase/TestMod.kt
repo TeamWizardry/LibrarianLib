@@ -11,7 +11,7 @@ import com.teamwizardry.librarianlib.testbase.objects.TestEntityRenderer
 import com.teamwizardry.librarianlib.testbase.objects.TestItem
 import com.teamwizardry.librarianlib.testbase.objects.TestItemConfig
 import com.teamwizardry.librarianlib.testbase.objects.TestScreenConfig
-import com.teamwizardry.librarianlib.virtualresources.VirtualResources
+import com.teamwizardry.librarianlib.mirage.Mirage
 import net.alexwells.kottle.FMLKotlinModLoadingContext
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.color.IBlockColor
@@ -22,14 +22,12 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemGroup
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.Util
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.event.ColorHandlerEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.ModLoadingContext
 import net.minecraftforge.fml.client.registry.RenderingRegistry
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
@@ -142,7 +140,7 @@ abstract class TestMod(targetName: String, val humanName: String, logger: Logger
         items.forEach { item ->
             if(item is TestBlockItem) {
                 val name = item.registryName!!
-                VirtualResources.client.add(
+                Mirage.client.add(
                     ResourceLocation(name.namespace, "models/item/${name.path}.json"),
                     """
                         {
@@ -152,7 +150,7 @@ abstract class TestMod(targetName: String, val humanName: String, logger: Logger
                 )
             } else if(item is TestItem) {
                 val name = item.registryName!!
-                VirtualResources.client.add(
+                Mirage.client.add(
                     ResourceLocation(name.namespace, "models/item/${name.path}.json"),
                     """
                         {
@@ -168,7 +166,7 @@ abstract class TestMod(targetName: String, val humanName: String, logger: Logger
         blocks.filterIsInstance<TestBlock>().forEach { block ->
             val name = block.registryName!!
             val model = "block/test_block/${block.modelName}"
-            VirtualResources.client.add(
+            Mirage.client.add(
                 ResourceLocation(name.namespace, "blockstates/${name.path}.json"),
                 if(block.config.directional) {
                     """
@@ -198,7 +196,7 @@ abstract class TestMod(targetName: String, val humanName: String, logger: Logger
 
     private fun generateLanguageAssets() {
         languageKeys().forEach { (key, value) ->
-            VirtualResources.client.addLanguageKey(key, value)
+            Mirage.client.addLanguageKey(key, value)
         }
     }
 

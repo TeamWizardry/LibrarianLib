@@ -1,4 +1,4 @@
 dependencies {
     api project(":core")
-    api project(":virtualresources")
+    api project(":mirage")
 }
