@@ -5,8 +5,8 @@ import com.teamwizardry.librarianlib.facade.components.LinearGaugeLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.math.Axis2d
 import com.teamwizardry.librarianlib.math.Cardinal2d
-import com.teamwizardry.librarianlib.sprites.ISprite
-import com.teamwizardry.librarianlib.sprites.WrappedSprite
+import com.teamwizardry.librarianlib.mosaic.ISprite
+import com.teamwizardry.librarianlib.mosaic.WrappedSprite
 import net.minecraft.fluid.Fluid
 
 /**

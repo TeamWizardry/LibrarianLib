@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/TeamWizardry/LibrarianLib/1.15/modules/mosaic/mosaic-mcmeta.schema.json",
+  "title": "Mosaic MCMeta",
+  "description": "The LibrarianLib Mosaic schema",
+  "type": "object",
+  "properties": {
+    "mosaic": {
+      "type": "object",
+      "properties": {
+
+        "size": {
+          "$ref": "#/definitions/vec2i"
+        },
+
+        "sprites": {
+          "type": "object",
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/vec4i"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "pos": {
+                    "$ref": "#/definitions/vec4i"
+                  },
+                  "frames": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  "frameTime": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "offset": {
+                    "$ref": "#/definitions/vec2i"
+                  },
+                  "caps": {
+                    "$ref": "#/definitions/vec4i"
+                  },
+                  "pinEdges": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": { "type": "boolean" }
+                      },
+                      {
+                        "type": "array",
+                        "minItems": 4,
+                        "maxItems": 4,
+                        "items": { "type": "boolean" }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+
+        "colors": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/vec2i"
+          }
+        },
+
+        "display": {
+          "type": "object",
+          "properties": {
+            "blur": { "type":  "boolean" },
+            "mipmap": { "type":  "boolean" }
+          }
+        }
+
+      },
+      "required": ["size"]
+    }
+  },
+  "additionalProperties": true,
+
+  "definitions": {
+
+    "vec2i": {
+      "type": "array",
+      "maxItems": 2,
+      "minItems": 2,
+      "items": { "type": "integer" }
+    },
+
+    "vec4i": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": { "type": "integer" }
+    }
+
+  }
+}

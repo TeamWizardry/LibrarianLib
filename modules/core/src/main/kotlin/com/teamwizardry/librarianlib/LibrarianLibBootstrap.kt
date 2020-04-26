@@ -65,8 +65,7 @@ internal object LibrarianLibBootstrap {
         val info = ModuleInfo.loadModuleInfo(name)
         if(info == null) {
             failedLoading.add(name)
-            LibrarianLib.logger.error("Unable to find module info file for $name, skipping")
-            LibrarianLib._modules.remove(name)
+            LibrarianLib.logger.error("Unable to find module info file for $name")
             return
         }
         try {

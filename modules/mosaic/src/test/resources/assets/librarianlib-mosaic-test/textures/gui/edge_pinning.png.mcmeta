@@ -1,0 +1,50 @@
+{
+  "mosaic": {
+    "size": [128, 128],
+
+    "sprites": {
+      "bg": [0, 7, 78, 52],
+
+      "none": [0, 0, 7, 7],
+
+      "L_T_R_B": {
+        "pos": [0, 0, 7, 7],
+        "pinEdges": [true, true, true, true]
+      },
+
+      "x_T_R_B": {
+        "pos": [0, 0, 7, 7],
+        "pinEdges": [false, true, true, true]
+      },
+      "L_x_R_B": {
+        "pos": [0, 0, 7, 7],
+        "pinEdges": [true, false, true, true]
+      },
+      "L_T_x_B": {
+        "pos": [0, 0, 7, 7],
+        "pinEdges": [true, true, false, true]
+      },
+      "L_T_R_x": {
+        "pos": [0, 0, 7, 7],
+        "pinEdges": [true, true, true, false]
+      },
+
+      "L_T_x_x": {
+        "pos": [0, 0, 7, 7],
+        "pinEdges": [true, true, false, false]
+      },
+      "x_T_R_x": {
+        "pos": [0, 0, 7, 7],
+        "pinEdges": [false, true, true, false]
+      },
+      "x_x_R_B": {
+        "pos": [0, 0, 7, 7],
+        "pinEdges": [false, false, true, true]
+      },
+      "L_x_x_B": {
+        "pos": [0, 0, 7, 7],
+        "pinEdges": [true, false, false, true]
+      }
+    }
+  }
+}

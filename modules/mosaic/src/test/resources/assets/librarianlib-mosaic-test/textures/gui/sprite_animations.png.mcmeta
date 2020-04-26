@@ -1,0 +1,29 @@
+{
+  "mosaic": {
+    "size": [128, 256],
+    "sprites": {
+      "background": [0, 218, 63, 38],
+      "simple": {
+        "pos": [0, 0, 4, 4],
+        "frames": 12
+      },
+      "marquee": {
+        "pos": [4, 0, 45, 11],
+        "frames": 45,
+        "offset": [1, 0]
+      },
+      "arrow": {
+        "pos": [94, 0, 14, 10],
+        "frames": 20,
+        "frameTime": 15
+      },
+      "bounce": {
+        "pos": [4, 11, 15, 8],
+        "frames": [
+          0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1
+        ],
+        "offset": [0, 7]
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "mosaic": {
+    "size": [64, 64],
+    "sprites": {
+      "top_left": [4, 4, 26, 26],
+      "bottom_right": [34, 34, 26, 26]
+    }
+  }
+}

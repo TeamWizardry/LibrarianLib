@@ -2,9 +2,9 @@ package com.teamwizardry.librarianlib.facade.components
 
 import com.teamwizardry.librarianlib.math.Cardinal2d
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
-import com.teamwizardry.librarianlib.sprites.ISprite
-import com.teamwizardry.librarianlib.sprites.Sprite
-import com.teamwizardry.librarianlib.sprites.WrappedSprite
+import com.teamwizardry.librarianlib.mosaic.ISprite
+import com.teamwizardry.librarianlib.mosaic.Sprite
+import com.teamwizardry.librarianlib.mosaic.WrappedSprite
 
 class SpriteGaugeLayer: LinearGaugeLayer {
     var sprite: Sprite? = null

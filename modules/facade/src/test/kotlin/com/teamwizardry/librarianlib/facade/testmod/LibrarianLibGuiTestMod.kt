@@ -8,10 +8,9 @@ import com.teamwizardry.librarianlib.facade.component.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.components.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
-import com.teamwizardry.librarianlib.facade.text.BitfontAtlas
 import com.teamwizardry.librarianlib.facade.text.attributedStringFromMC
 import com.teamwizardry.librarianlib.math.vec
-import com.teamwizardry.librarianlib.sprites.Texture
+import com.teamwizardry.librarianlib.mosaic.Mosaic
 import com.teamwizardry.librarianlib.testbase.TestMod
 import com.teamwizardry.librarianlib.testbase.objects.TestScreenConfig
 import net.minecraft.util.text.StringTextComponent
@@ -27,14 +26,14 @@ object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
         }
 
         +FacadeScreenConfig("sprite", "Simple Sprite") { screen ->
-            val dirt = Texture("minecraft:textures/block/dirt.png".toRl(), 16, 16)
+            val dirt = Mosaic("minecraft:textures/block/dirt.png".toRl(), 16, 16)
             val layer = SpriteLayer(dirt.getSprite(""))
             screen.facade.root.add(layer)
         }
 
         +FacadeScreenConfig("layer_transform", "Layer Transform") { screen ->
-            val dirt = Texture("minecraft:textures/block/dirt.png".toRl(), 16, 16).getSprite("")
-            val stone = Texture("minecraft:textures/block/stone.png".toRl(), 16, 16).getSprite("")
+            val dirt = Mosaic("minecraft:textures/block/dirt.png".toRl(), 16, 16).getSprite("")
+            val stone = Mosaic("minecraft:textures/block/stone.png".toRl(), 16, 16).getSprite("")
             val layer = SpriteLayer(dirt)
             layer.pos = vec(32, 32)
             layer.rotation = Math.toRadians(15.0)

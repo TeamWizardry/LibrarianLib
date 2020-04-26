@@ -3,9 +3,9 @@ package com.teamwizardry.librarianlib.facade.components.minecraft
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.math.Cardinal2d
-import com.teamwizardry.librarianlib.sprites.ISprite
-import com.teamwizardry.librarianlib.sprites.LTextureAtlasSprite
-import com.teamwizardry.librarianlib.sprites.WrappedSprite
+import com.teamwizardry.librarianlib.mosaic.ISprite
+import com.teamwizardry.librarianlib.mosaic.LTextureAtlasSprite
+import com.teamwizardry.librarianlib.mosaic.WrappedSprite
 import net.minecraft.fluid.Fluid
 
 /**

@@ -1,6 +1,6 @@
 dependencies {
     api project(":core")
-    api project(":sprites")
+    api project(":mosaic")
     api project(":utilities")
     testApi project(":testbase")
     shade("com.github.thecodewarrior:bitfont:proper-typesetter-SNAPSHOT") {
