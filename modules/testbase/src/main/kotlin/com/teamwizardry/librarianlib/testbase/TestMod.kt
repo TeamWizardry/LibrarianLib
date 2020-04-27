@@ -35,7 +35,7 @@ import net.minecraftforge.registries.ForgeRegistries
 import org.apache.logging.log4j.Logger
 import java.awt.Color
 
-abstract class TestMod(targetName: String, val humanName: String, logger: Logger) {
+abstract class TestMod(targetName: String, val humanName: String, val logger: Logger) {
     val name = "$targetName-test"
     val itemGroup = object : ItemGroup("librarianlib-$name") {
         private val stack: ItemStack by lazy {
@@ -123,9 +123,11 @@ abstract class TestMod(targetName: String, val humanName: String, logger: Logger
         FMLKotlinModLoadingContext.get().modEventBus.register(this)
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun setup(event: FMLCommonSetupEvent) {
     }
 
+    @Suppress("UNUSED_PARAMETER")
     @OnlyIn(Dist.CLIENT)
     fun clientSetup(event: FMLClientSetupEvent) {
         _testEntities.forEach { entity ->

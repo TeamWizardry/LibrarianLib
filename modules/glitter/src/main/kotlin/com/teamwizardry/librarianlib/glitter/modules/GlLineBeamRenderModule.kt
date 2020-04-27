@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.glitter.modules
 
 import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.platform.GlStateManager
+import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.glitter.ParticleRenderModule
 import com.teamwizardry.librarianlib.glitter.ParticleUpdateModule
@@ -66,21 +67,21 @@ class GlLineBeamRenderModule(
         alpha?.require(1)
     }
     override fun render(matrixStack: MatrixStack, projectionMatrix: Matrix4f, particles: List<DoubleArray>, prepModules: List<ParticleUpdateModule>) {
-        GlStateManager.disableTexture()
+        RenderSystem.disableTexture()
         if(blend) {
-            GlStateManager.enableBlend()
+            RenderSystem.enableBlend()
         } else {
-            GlStateManager.disableBlend()
+            RenderSystem.disableBlend()
         }
         if(blendFactors != null) {
-            GlStateManager.blendFunc(blendFactors.first.param, blendFactors.second.param)
+            RenderSystem.blendFunc(blendFactors.first.param, blendFactors.second.param)
         }
-        GlStateManager.depthMask(depthMask)
-        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.003921569F)
-        GlStateManager.disableLighting()
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f)
-        GlStateManager.disableCull()
-        GlStateManager.lineWidth(size)
+        RenderSystem.depthMask(depthMask)
+        RenderSystem.alphaFunc(GL11.GL_GREATER, 0.003921569F)
+        RenderSystem.disableLighting()
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f)
+        RenderSystem.disableCull()
+        RenderSystem.lineWidth(size)
 
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
@@ -139,12 +140,12 @@ class GlLineBeamRenderModule(
 
         tessellator.draw()
 
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA.param, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA.param)
-        GlStateManager.enableCull()
-        GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
-        GlStateManager.depthMask(true)
-        GlStateManager.disableBlend()
-        GlStateManager.enableLighting()
-        GlStateManager.enableTexture()
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA.param, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA.param)
+        RenderSystem.enableCull()
+        RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1F)
+        RenderSystem.depthMask(true)
+        RenderSystem.disableBlend()
+        RenderSystem.enableLighting()
+        RenderSystem.enableTexture()
     }
 }

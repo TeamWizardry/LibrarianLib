@@ -83,7 +83,7 @@ class Matrix4dStack: MutableMatrix4d() {
     inline fun <R> assertEvenDepth(message: String? = null, block: () -> R): R {
         val expected = this.depth
         val returnValue = block()
-        assertDepth(expected)
+        assertDepth(expected, message)
         return returnValue
     }
 }

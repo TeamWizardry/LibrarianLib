@@ -547,6 +547,7 @@ open class Matrix4d: Cloneable {
                 0.0, 0.0, 0.0, 1.0)
         }
 
+        @Suppress("NAME_SHADOWING")
         internal fun createRotation(rot: Quaternion): MutableMatrix4d {
             var rot = rot
             rot = rot.normalize()

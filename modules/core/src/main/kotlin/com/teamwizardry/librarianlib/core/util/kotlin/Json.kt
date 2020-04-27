@@ -354,7 +354,7 @@ class JsonParsingDSL @PublishedApi internal constructor(val jsonElement: JsonEle
         throw jsonError("Expected this element to be $expectedType, but it was $typeDescription.")
     }
 
-    fun jsonError(message: String): JsonSyntaxException = JsonSyntaxException("$path: message")
+    fun jsonError(message: String): JsonSyntaxException = JsonSyntaxException("$path: $message")
 
     class JsonPath(val rootName: String, val elements: List<JsonPathElement>) {
 

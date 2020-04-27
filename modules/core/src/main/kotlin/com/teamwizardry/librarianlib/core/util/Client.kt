@@ -92,6 +92,7 @@ object Client {
 
     @JvmStatic
     fun getBlockAtlasSprite(sprite: ResourceLocation): TextureAtlasSprite {
+        @Suppress("DEPRECATION")
         return getAtlasSprite(AtlasTexture.LOCATION_BLOCKS_TEXTURE, sprite)
     }
 

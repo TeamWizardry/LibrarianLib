@@ -86,7 +86,7 @@ internal object MosaicLoader : ReloadListener<Map<ResourceLocation, MosaicDefini
         }
 
         if(json == null) {
-            return loadRaw(manager, location, resource, image)
+            return loadRaw(location, resource, image)
         }
 
         val sheet = MosaicDefinition(location)
@@ -96,8 +96,8 @@ internal object MosaicLoader : ReloadListener<Map<ResourceLocation, MosaicDefini
         sheet.uvSize = ivec(json.width, json.height)
         sheet.image = image
 
-        sheet.sprites = json.sprites.map { load(it, sheet, manager, location) }.unmodifiableView()
-        sheet.colors = json.colors.map { load(it, sheet, manager, location) }.unmodifiableView()
+        sheet.sprites = json.sprites.map { load(it, sheet) }.unmodifiableView()
+        sheet.colors = json.colors.map { load(it, sheet) }.unmodifiableView()
 
         sheet.missingSprite = SpriteDefinition("missingno").also {
             it.sheet = sheet
@@ -111,7 +111,7 @@ internal object MosaicLoader : ReloadListener<Map<ResourceLocation, MosaicDefini
         return sheet
     }
 
-    private fun load(json: SpriteJson, sheet: MosaicDefinition, manager: IResourceManager, location: ResourceLocation): SpriteDefinition {
+    private fun load(json: SpriteJson, sheet: MosaicDefinition): SpriteDefinition {
         val sprite = SpriteDefinition(json.name)
         sprite.sheet = sheet
 
@@ -151,7 +151,7 @@ internal object MosaicLoader : ReloadListener<Map<ResourceLocation, MosaicDefini
         return sprite
     }
 
-    private fun load(json: ColorJson, sheet: MosaicDefinition, manager: IResourceManager, location: ResourceLocation): ColorDefinition {
+    private fun load(json: ColorJson, sheet: MosaicDefinition): ColorDefinition {
         val color = ColorDefinition(json.name)
         color.sheet = sheet
 
@@ -166,7 +166,7 @@ internal object MosaicLoader : ReloadListener<Map<ResourceLocation, MosaicDefini
         return color
     }
 
-    private fun loadRaw(manager: IResourceManager, location: ResourceLocation, resource: IResource, image: BufferedImage): MosaicDefinition {
+    private fun loadRaw(location: ResourceLocation, resource: IResource, image: BufferedImage): MosaicDefinition {
         val sheet = MosaicDefinition(location)
         sheet.singleSprite = true
 

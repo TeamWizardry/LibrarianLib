@@ -215,6 +215,7 @@ class RayWorldCollider private constructor(world: World) {
         blockCache[toLong]?.let { return it }
 
         val boundingBoxes: List<AxisAlignedBB>
+        @Suppress("DEPRECATION")
         if (!world.isBlockLoaded(mutablePos) || mutablePos.y < 0 || mutablePos.y > world.actualHeight) {
             boundingBoxes = emptyList()
         } else {
@@ -239,6 +240,7 @@ class RayWorldCollider private constructor(world: World) {
         @JvmStatic
         private val worldMap = WeakHashMap<World, RayWorldCollider>()
 
+        @Suppress("UNUSED_PARAMETER")
         @SubscribeEvent
         @JvmStatic
         fun tick(e: TickEvent.ClientTickEvent) {
@@ -346,6 +348,7 @@ class RayHitResult {
 private object ClientRayWorldCollider {
     var cache: RayWorldCollider? = null
 
+    @Suppress("UNUSED_PARAMETER")
     @SubscribeEvent
     fun unloadWorld(e: WorldEvent.Unload) {
         cache = null

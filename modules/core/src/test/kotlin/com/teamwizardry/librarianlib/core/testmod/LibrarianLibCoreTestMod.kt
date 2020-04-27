@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger
 import java.util.stream.Collectors
 import kotlin.streams.asSequence
 
+@Suppress("UNUSED_PARAMETER")
 @Mod("librarianlib-test")
 class LibrarianLibCoreTestMod {
     init {

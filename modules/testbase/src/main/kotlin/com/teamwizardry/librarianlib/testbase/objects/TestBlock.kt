@@ -80,18 +80,22 @@ open class TestBlock(val config: TestBlockConfig): Block(config.also { configHol
         super.animateTick(stateIn, worldIn, pos, rand)
     }
 
+    @Suppress("DEPRECATION")
     override fun tick(state: BlockState, worldIn: ServerWorld, pos: BlockPos, rand: Random) {
         super.tick(state, worldIn, pos, rand)
     }
 
+    @Suppress("DEPRECATION")
     override fun randomTick(state: BlockState, worldIn: ServerWorld, pos: BlockPos, random: Random) {
         super.randomTick(state, worldIn, pos, random)
     }
 
     // placed/broken ===================================================================================================
+    @Suppress("DEPRECATION")
     override fun onBlockAdded(p_220082_1_: BlockState, worldIn: World, pos: BlockPos, p_220082_4_: BlockState, p_220082_5_: Boolean) {
         super.onBlockAdded(p_220082_1_, worldIn, pos, p_220082_4_, p_220082_5_)
     }
+    @Suppress("DEPRECATION")
     override fun updatePostPlacement(stateIn: BlockState, facing: Direction, facingState: BlockState, worldIn: IWorld, currentPos: BlockPos, facingPos: BlockPos): BlockState {
         return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos)
     }
@@ -116,6 +120,7 @@ open class TestBlock(val config: TestBlockConfig): Block(config.also { configHol
 
 
     // interaction =====================================================================================================
+    @Suppress("DEPRECATION")
     override fun onBlockActivated(state: BlockState, worldIn: World, pos: BlockPos, player: PlayerEntity, handIn: Hand, hit: BlockRayTraceResult): ActionResultType {
         config.rightClick.run(worldIn.isRemote(), TestBlockConfig.RightClickContext(state, worldIn, pos, player, handIn, hit))
         if(config.rightClick.exists)
@@ -123,6 +128,7 @@ open class TestBlock(val config: TestBlockConfig): Block(config.also { configHol
         else
             return super.onBlockActivated(state, worldIn, pos, player, handIn, hit)
     }
+    @Suppress("DEPRECATION")
     override fun onBlockClicked(state: BlockState, worldIn: World, pos: BlockPos, player: PlayerEntity) {
         if(config.leftClick.exists)
             config.leftClick.run(worldIn.isRemote(), TestBlockConfig.LeftClickContext(state, worldIn, pos, player))
@@ -132,6 +138,7 @@ open class TestBlock(val config: TestBlockConfig): Block(config.also { configHol
 
 
     // entity interaction ==============================================================================================
+    @Suppress("DEPRECATION")
     override fun onEntityCollision(state: BlockState, worldIn: World, pos: BlockPos, entityIn: Entity) {
         super.onEntityCollision(state, worldIn, pos, entityIn)
     }

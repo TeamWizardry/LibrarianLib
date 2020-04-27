@@ -53,7 +53,7 @@ class Cursor(
         var bytebuffer: ByteBuffer? = null
         try {
             bytebuffer = TextureUtil.readToBuffer(stream)
-            bytebuffer.rewind()
+            bytebuffer!!.rewind()
 
             MemoryStack.stackPush().use { stack ->
                 val w = stack.mallocInt(1)

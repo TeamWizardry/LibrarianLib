@@ -11,7 +11,7 @@ import org.lwjgl.opengl.GL11
 internal object SpriteRenderType: RenderState("", Runnable {}, Runnable {}) {
 
     @Suppress("INACCESSIBLE_TYPE")
-    fun spriteRenderType(sprite: ResourceLocation, blendMode: BlendMode?, writeDepth: Boolean, depthSort: Boolean): RenderType {
+    fun spriteRenderType(sprite: ResourceLocation, blendMode: BlendMode?, writeDepth: Boolean): RenderType {
         val renderState = RenderType.State.getBuilder()
             .texture(TextureState(sprite, false, false))
             .cull(CULL_DISABLED)

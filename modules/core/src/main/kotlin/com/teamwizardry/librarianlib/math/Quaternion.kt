@@ -503,14 +503,14 @@ class Quaternion
         return Quaternion(x / length, y / length, z / length, w / length)
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
             return true
         }
-        if (o !is Quaternion) {
+        if (other !is Quaternion) {
             return false
         }
-        val quaternion = o as Quaternion?
+        val quaternion = other as Quaternion?
         if (quaternion!!.w.compareTo(w) != 0) {
             return false
         }
@@ -536,8 +536,8 @@ class Quaternion
         return hashCode
     }
 
-    override fun compareTo(q: Quaternion): Int {
-        return sign(lengthSquared() - q.lengthSquared()).toInt()
+    override fun compareTo(other: Quaternion): Int {
+        return sign(lengthSquared() - other.lengthSquared()).toInt()
     }
 
     public override fun clone(): Quaternion {

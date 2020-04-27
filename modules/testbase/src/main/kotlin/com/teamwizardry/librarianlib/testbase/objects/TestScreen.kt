@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
 import com.mojang.blaze3d.platform.GlStateManager
+import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.math.MutableMatrix3d
 import com.teamwizardry.librarianlib.math.SimpleCoordinateSpace2D
 import com.teamwizardry.librarianlib.math.vec
@@ -42,13 +43,13 @@ class TestScreen(val config: TestScreenConfig): Screen(StringTextComponent(confi
     }
 
     override fun render(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        GlStateManager.translated(left, top, 0.0)
-        GlStateManager.scaled(config.scale.toDouble(), config.scale.toDouble(), 1.0)
+        RenderSystem.translated(left, top, 0.0)
+        RenderSystem.scaled(config.scale.toDouble(), config.scale.toDouble(), 1.0)
 
         config.draw.run(TestScreenConfig.DrawContext(this, vec(mouseX - left, mouseY - top) / config.scale, partialTicks))
 
-        GlStateManager.scaled(1/config.scale.toDouble(), 1/config.scale.toDouble(), 1.0)
-        GlStateManager.translated(-left, -top, 0.0)
+        RenderSystem.scaled(1/config.scale.toDouble(), 1/config.scale.toDouble(), 1.0)
+        RenderSystem.translated(-left, -top, 0.0)
         super.render(mouseX, mouseY, partialTicks)
     }
 

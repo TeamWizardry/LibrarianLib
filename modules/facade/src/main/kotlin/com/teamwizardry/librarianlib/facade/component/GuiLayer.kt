@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.facade.component
 
-import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.facade.component.supporting.*
@@ -539,6 +538,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * Returns true if the passed point is outside this component's clipping mask.
      */
+    @Suppress("UNUSED_PARAMETER")
     fun isPointClipped(point: Vec2d): Boolean {
         return false //TODO
     }
@@ -762,12 +762,12 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
 //        popClipping(context)
 
         if (context.showDebugBoundingBox) {
-            GlStateManager.lineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
-            GlStateManager.color4f(.75f, 0f, .75f, 1f)
+            RenderSystem.lineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
+            RenderSystem.color4f(.75f, 0f, .75f, 1f)
             drawDebugBoundingBox(context)
         }
 //        if (GuiComponent.showLayoutOverlay && didLayout && !isInMask) {
-//            GlStateManager.color4f(1f, 0f, 0f, 0.1f)
+//            RenderSystem.color4f(1f, 0f, 0f, 0.1f)
 //            drawLayerOverlay(context)
 //        }
 //        didLayout = false
@@ -782,8 +782,8 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
 
         if (context.showDebugBoundingBox && //!isInMask &&
             GuiLayer.showDebugTilt && shouldDrawSkeleton()) {
-            GlStateManager.lineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
-            GlStateManager.color4f(.75f, 0f, .75f, 1f)
+            RenderSystem.lineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
+            RenderSystem.color4f(.75f, 0f, .75f, 1f)
             GL11.glEnable(GL11.GL_LINE_STIPPLE)
             GL11.glLineStipple(2, 0b0011_0011_0011_0011.toShort())
             drawDebugBoundingBox(context)
@@ -794,9 +794,10 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * Draws a flat colored box over this layer, rounding corners as necessary
      */
+    @Suppress("UNUSED_PARAMETER") // TODO: update to use matrices
     fun drawLayerOverlay(context: GuiDrawContext) {
-        GlStateManager.disableTexture()
-        val points = createDebugBoundingBoxPoints(context)
+        RenderSystem.disableTexture()
+        val points = createDebugBoundingBoxPoints()
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
         vb.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION)
@@ -808,15 +809,16 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * Draws a bounding box around the edge of this component
      */
+    @Suppress("UNUSED_PARAMETER") // TODO: update to use matrices
     fun drawDebugBoundingBox(context: GuiDrawContext) {
-        GlStateManager.disableTexture()
-        val points = createDebugBoundingBoxPoints(context)
+        RenderSystem.disableTexture()
+        val points = createDebugBoundingBoxPoints()
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
         vb.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
         points.forEach { vb.pos(it.x, it.y, 0.0).endVertex() }
         tessellator.draw()
-        GlStateManager.color4f(0f, 0f, 0f, 0.15f)
+        RenderSystem.color4f(0f, 0f, 0f, 0.15f)
         if(GuiLayer.showDebugTilt) {
             vb.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION)
             points.forEach {
@@ -833,7 +835,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * Creates a series of points defining the path the debug bounding box follows. For culling reasons this list
      * must be in clockwise order
      */
-    fun createDebugBoundingBoxPoints(context: GuiDrawContext): List<Vec2d> {
+    fun createDebugBoundingBoxPoints(): List<Vec2d> {
         val list = mutableListOf<Vec2d>()
         if(/*clipToBounds &&*/ cornerRadius != 0.0) {
             val rad = cornerRadius

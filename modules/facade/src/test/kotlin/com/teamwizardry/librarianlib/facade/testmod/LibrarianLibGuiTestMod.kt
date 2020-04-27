@@ -43,10 +43,10 @@ object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
             layer2.rotation = Math.toRadians(-15.0)
             layer.add(layer2)
 
-            layer.BUS.hook<GuiLayerEvents.MouseMove> { e ->
+            layer.BUS.hook<GuiLayerEvents.MouseMove> {
                 layer.sprite = if(layer.mouseOver) stone else dirt
             }
-            layer2.BUS.hook<GuiLayerEvents.MouseMove> { e ->
+            layer2.BUS.hook<GuiLayerEvents.MouseMove> {
                 layer2.sprite = if(layer2.mouseOver) stone else dirt
             }
             screen.facade.root.add(layer)

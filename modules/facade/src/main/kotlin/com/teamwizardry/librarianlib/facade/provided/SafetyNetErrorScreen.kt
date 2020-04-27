@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.facade.provided
 
 import com.mojang.blaze3d.platform.GlStateManager
+import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.Minecraft
@@ -61,8 +62,8 @@ class SafetyNetErrorScreen(e: Exception): Screen(StringTextComponent("§4§nSafe
             Color.lightGray.rgb
         )
 
-        GlStateManager.pushMatrix()
-        GlStateManager.translatef(width/2f, (height-guiHeight)/2f, 0f)
+        RenderSystem.pushMatrix()
+        RenderSystem.translatef(width/2f, (height-guiHeight)/2f, 0f)
 
         var y = 0
         fun drawCenteredStringNoShadow(fontRenderer: FontRenderer, text: String , x: Int, y: Int, color: Int) {
@@ -88,6 +89,6 @@ class SafetyNetErrorScreen(e: Exception): Screen(StringTextComponent("§4§nSafe
             }
         }
 
-        GlStateManager.popMatrix()
+        RenderSystem.popMatrix()
     }
 }

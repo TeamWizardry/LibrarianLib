@@ -106,6 +106,7 @@ internal object ParticleSystemManager: ISimpleReloadListener<Unit> {
     }
 
     //TODO forge event fires every frame
+    @Suppress("UNUSED_PARAMETER")
     @SubscribeEvent
     fun unloadWorld(event: WorldEvent.Unload) {
 //        systems.forEach { it.particles.clear() }

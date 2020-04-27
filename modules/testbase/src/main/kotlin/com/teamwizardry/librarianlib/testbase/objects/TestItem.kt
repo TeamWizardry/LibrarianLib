@@ -113,8 +113,6 @@ class TestItem(val config: TestItemConfig): Item(config.properties) {
     }
 
     override fun itemInteractionForEntity(stack: ItemStack, playerIn: PlayerEntity, target: LivingEntity, hand: Hand): Boolean {
-        var result = false
-
         val context = TestItemConfig.RightClickEntityContext(stack, playerIn, target, hand)
         val clickContext = TestItemConfig.RightClickContext(playerIn.world, playerIn, hand)
 

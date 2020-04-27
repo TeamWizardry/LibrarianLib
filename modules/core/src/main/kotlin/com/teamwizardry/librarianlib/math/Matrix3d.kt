@@ -482,6 +482,7 @@ open class Matrix3d(
                 0.0, 0.0, 1.0)
         }
 
+        @Suppress("NAME_SHADOWING")
         internal fun createRotation(rot: Quaternion): MutableMatrix3d {
             var rot = rot
             rot = rot.normalize()

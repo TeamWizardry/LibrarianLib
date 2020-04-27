@@ -45,6 +45,7 @@ open class FacadeWidget(
         root.triggerEvent(GuiLayerEvents.MouseDown(vec(xPos, yPos), button))
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun isMouseOver(xPos: Double, yPos: Double) {
     }
 
@@ -82,6 +83,7 @@ open class FacadeWidget(
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun changeFocus(reverse: Boolean) {
         // todo
     }
