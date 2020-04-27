@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.facade.component.GuiLayer
 import com.teamwizardry.librarianlib.facade.component.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.value.IMValue
-import com.teamwizardry.librarianlib.utilities.eventbus.Event
+import com.teamwizardry.librarianlib.etcetera.eventbus.Event
 import net.minecraft.item.ItemStack
 
 class ItemStackLayer(stack: ItemStack, x: Int, y: Int): GuiLayer(x, y, 16, 16) {

@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.glitter.modules
 
 import com.teamwizardry.librarianlib.glitter.*
-import com.teamwizardry.librarianlib.utilities.RayHitResult
-import com.teamwizardry.librarianlib.utilities.RayWorldCollider
+import com.teamwizardry.librarianlib.etcetera.RayHitResult
+import com.teamwizardry.librarianlib.etcetera.RayWorldCollider
 import java.lang.Math.abs
 
 /**

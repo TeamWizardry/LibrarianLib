@@ -1,10 +1,9 @@
-package com.teamwizardry.librarianlib.utilities.eventbus
+package com.teamwizardry.librarianlib.etcetera.eventbus
 
 import com.teamwizardry.librarianlib.core.util.kotlin.IS_DEOBFUSCATED
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.member.MethodMirror
 import dev.thecodewarrior.mirror.type.TypeMirror
-import java.lang.reflect.Method
 
 /**
  * Annotate methods with this, giving them a single parameter that inherits from [Event]. Passing this class to

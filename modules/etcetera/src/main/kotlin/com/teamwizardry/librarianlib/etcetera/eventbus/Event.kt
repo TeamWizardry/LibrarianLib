@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.utilities.eventbus
+package com.teamwizardry.librarianlib.etcetera.eventbus
 
 abstract class Event @JvmOverloads constructor(val reversed: Boolean = false) {
     /**

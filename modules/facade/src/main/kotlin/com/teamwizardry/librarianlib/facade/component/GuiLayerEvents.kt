@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.facade.component
 
-import com.teamwizardry.librarianlib.utilities.eventbus.Event
+import com.teamwizardry.librarianlib.etcetera.eventbus.Event
 import com.teamwizardry.librarianlib.math.Matrix3dStack
 import com.teamwizardry.librarianlib.math.Vec2d
-import com.teamwizardry.librarianlib.utilities.eventbus.CancelableEvent
+import com.teamwizardry.librarianlib.etcetera.eventbus.CancelableEvent
 
 /**
  * Order of events:

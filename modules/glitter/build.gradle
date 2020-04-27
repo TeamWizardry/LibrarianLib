@@ -1,6 +1,6 @@
 dependencies {
     api project(":core")
-    api project(":utilities")
+    api project(":etcetera")
     testApi project(":testbase")
     shade "org.magicwerk:brownies-collections:0.9.13"
 }

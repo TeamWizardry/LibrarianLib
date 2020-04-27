@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.utilities.eventbus
+package com.teamwizardry.librarianlib.etcetera.eventbus
 
 import java.util.function.Consumer
 

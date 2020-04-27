@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.utilities
+package com.teamwizardry.librarianlib.etcetera
 
 import com.teamwizardry.librarianlib.core.util.SidedRunnable
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
@@ -353,13 +353,13 @@ private object ClientRayWorldCollider {
 
     fun get(): RayWorldCollider? {
         val world = Minecraft.getInstance().world
-        var cache = this.cache
+        var cache = cache
         if (world == null) {
             cache = null
         } else if(cache == null) {
             cache = RayWorldCollider[world]
         }
-        this.cache = cache
+        ClientRayWorldCollider.cache = cache
         return cache
     }
 }
