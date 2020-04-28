@@ -9,7 +9,7 @@
 implemented using Mixins or hooks for Mixins/ASM.
 
 ### Classes
-- `com.teamwizardry.librarianlib.<module id>.Lib<ModuleName>Module` - Main module class
+- `com.teamwizardry.librarianlib.<module id>.LibrarianLib<ModuleName>Module` - Main module class
 
 ### Resources
 - `META-INF/dependencies.toml` - Additional mod dependencies to be added to the output `mods.toml` file (this file gets 

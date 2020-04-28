@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib
 
-import com.google.gson.Gson
 import com.teamwizardry.librarianlib.core.bridge.ASMEnvCheckTarget
 import com.teamwizardry.librarianlib.core.bridge.MixinEnvCheckTarget
 import net.minecraftforge.fml.common.Mod
@@ -14,10 +13,6 @@ internal object LibrarianLibBootstrap {
 
         val names = resource("/META-INF/ll/core/modules.txt")?.lines()
             ?: throw RuntimeException("Unable to find LibrarianLib modules list")
-        names.forEach {
-            LibrarianLib._modules[it] = null
-        }
-
         LibrarianLib.logger.debug("Module index had ${names.size} modules")
         names.forEach {
             try {
@@ -70,14 +65,13 @@ internal object LibrarianLibBootstrap {
         }
         try {
             Class.forName(info.mainClass, false, this.javaClass.classLoader)
-        } catch(e: ClassNotFoundException) {
+        } catch (e: ClassNotFoundException) {
             failedLoading.add(name)
-            LibrarianLib.logger.error("Unable to find module class ${info.mainClass}, skipping.")
+            LibrarianLib.logger.error("Unable to find module class ${info.mainClass}.")
             return
         }
         val clazz = Class.forName(info.mainClass)
         val instance = (clazz.kotlin.objectInstance ?: clazz.newInstance()) as LibrarianLibModule
-        LibrarianLib._modules[name] = instance
         LibrarianLib.logger.info("Finished loading $name module")
     }
 

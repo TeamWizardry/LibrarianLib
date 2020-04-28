@@ -17,7 +17,7 @@ import net.minecraftforge.registries.ForgeRegistries
 import org.apache.logging.log4j.LogManager
 import java.awt.Color
 
-object LibTestBaseModule : LibrarianLibModule("testbase", logger) {
+object LibrarianLibTestBaseModule : LibrarianLibModule("testbase", logger) {
     val testTool: Item = Item(Item.Properties().maxStackSize(1)).also {
         it.registryName = ResourceLocation("librarianlib-testbase", "test_tool")
     }

@@ -39,7 +39,7 @@ abstract class TestMod(targetName: String, val humanName: String, val logger: Lo
     val name = "$targetName-test"
     val itemGroup = object : ItemGroup("librarianlib-$name") {
         private val stack: ItemStack by lazy {
-            val stack = ItemStack(LibTestBaseModule.testTool)
+            val stack = ItemStack(LibrarianLibTestBaseModule.testTool)
             stack.orCreateTag.putString("mod", name)
             return@lazy stack
         }
@@ -107,7 +107,7 @@ abstract class TestMod(targetName: String, val humanName: String, val logger: Lo
     }
 
     init {
-        LibTestBaseModule.add(this)
+        LibrarianLibTestBaseModule.add(this)
     }
 
     init {

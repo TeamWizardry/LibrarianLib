@@ -1,8 +1,5 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
-import com.teamwizardry.librarianlib.LibrarianLibModule
-import com.teamwizardry.librarianlib.testbase.LibTestBaseModule
-import com.teamwizardry.librarianlib.testbase.TestMod
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
