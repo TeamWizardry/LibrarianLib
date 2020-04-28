@@ -20,10 +20,10 @@ object GuiComponentEvents {
     class PreDrawEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val partialTicks: Float) : Event()
 
     /** Fired each frame after the component has been drawn but before children have been drawn */
-    class PostDrawEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val partialTicks: Float) : Event(true)
+    class PreChildrenDrawEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val partialTicks: Float) : Event()
 
     /** Fired each frame after the component and its children have been drawn */
-    class PreChildrenDrawEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val partialTicks: Float) : Event()
+    class PostDrawEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val partialTicks: Float) : Event(true)
 
     /** Fired whenever the mouse is pressed */
     class MouseDownEvent(@JvmField val component: GuiComponent, val mousePos: Vec2d, val button: EnumMouseButton) : EventCancelable()
