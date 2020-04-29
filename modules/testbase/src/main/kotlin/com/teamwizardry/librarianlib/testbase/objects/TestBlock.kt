@@ -2,7 +2,6 @@ package com.teamwizardry.librarianlib.testbase.objects
 
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import net.minecraft.block.Block
-import net.minecraft.block.BlockRenderType
 import net.minecraft.block.BlockState
 import net.minecraft.block.DirectionalBlock
 import net.minecraft.entity.Entity
@@ -159,6 +158,9 @@ open class TestBlock(val config: TestBlockConfig): Block(config.also { configHol
         super.onNeighborChange(state, world, pos, neighbor)
     }
 
+    override fun isSideInvisible(state: BlockState, adjacentBlockState: BlockState, side: Direction): Boolean {
+        return if (adjacentBlockState.block === this) true else super.isSideInvisible(state, adjacentBlockState, side)
+    }
 
     companion object {
         val FACING = BlockStateProperties.FACING

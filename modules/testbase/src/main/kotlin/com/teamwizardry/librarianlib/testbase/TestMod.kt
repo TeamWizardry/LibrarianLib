@@ -14,6 +14,8 @@ import com.teamwizardry.librarianlib.testbase.objects.TestScreenConfig
 import com.teamwizardry.librarianlib.mirage.Mirage
 import net.alexwells.kottle.FMLKotlinModLoadingContext
 import net.minecraft.block.Block
+import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.RenderTypeLookup
 import net.minecraft.client.renderer.color.IBlockColor
 import net.minecraft.client.renderer.color.IItemColor
 import net.minecraft.entity.EntityType
@@ -136,6 +138,11 @@ abstract class TestMod(targetName: String, val humanName: String, val logger: Lo
         generateItemAssets()
         generateBlockAssets()
         generateLanguageAssets()
+        blocks.forEach { block ->
+            if(block is TestBlock) {
+                RenderTypeLookup.setRenderLayer(block, RenderType.getCutout());
+            }
+        }
     }
 
     private fun generateItemAssets() {

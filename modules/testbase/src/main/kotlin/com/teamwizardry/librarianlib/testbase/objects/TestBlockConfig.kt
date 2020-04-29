@@ -20,6 +20,10 @@ class TestBlockConfig(val id: String, val name: String): TestConfig() {
 
     val properties: Block.Properties = Block.Properties.create(testMaterial)
 
+    init {
+        properties.notSolid()
+    }
+
     /**
      * Whether the model should be transparent
      */
@@ -68,7 +72,7 @@ class TestBlockConfig(val id: String, val name: String): TestConfig() {
         val testMaterial: Material = Material(
             MaterialColor.PINK, // materialMapColorIn
             false, // liquid
-            true, // solid
+            false, // solid
             true, // doesBlockMovement
             false, // opaque
             true, // requiresNoToolIn
