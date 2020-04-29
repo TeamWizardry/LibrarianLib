@@ -8,6 +8,7 @@ def includeModule(String name) {
 include("runtime")
 includeModule("core")
 includeModule("facade")
+includeModule("foundation")
 includeModule("glitter")
 includeModule("mirage")
 includeModule("mosaic")
