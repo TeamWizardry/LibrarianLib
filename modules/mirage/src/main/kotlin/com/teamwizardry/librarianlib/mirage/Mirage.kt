@@ -101,7 +101,6 @@ class Mirage internal constructor(val type: ResourcePackType) {
     internal inline fun <T> write(callback: (Mirage) -> T): T = lock.write { callback(this) }
 
     companion object {
-        @OnlyIn(Dist.CLIENT)
         @JvmField
         val client = Mirage(ResourcePackType.CLIENT_RESOURCES)
         @JvmField

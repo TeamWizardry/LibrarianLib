@@ -227,6 +227,7 @@ abstract class TestMod(targetName: String, val humanName: String, val logger: Lo
     }
 
     @SubscribeEvent
+    @OnlyIn(Dist.CLIENT)
     internal fun registerColors(colorHandlerEvent: ColorHandlerEvent.Item) {
         colorHandlerEvent.itemColors.register(IItemColor { stack, tintIndex ->
             val item = stack.item

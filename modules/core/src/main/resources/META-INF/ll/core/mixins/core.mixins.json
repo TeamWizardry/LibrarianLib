@@ -2,11 +2,11 @@
   "required": true,
   "package": "com.teamwizardry.librarianlib.core.mixin",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "core.refmap.json",
+  "refmap": "META-INF/ll/core.refmap.json",
   "mixins": [
+    "MixinEnvCheck"
   ],
   "client": [
-    "MixinEnvCheck",
     "Matrix4fMixin",
     "Matrix3fMixin"
   ],

@@ -8,6 +8,8 @@ import com.teamwizardry.librarianlib.testbase.objects.TestItem
 import net.minecraft.client.renderer.color.IItemColor
 import net.minecraft.item.Item
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.api.distmarker.Dist
+import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.event.ColorHandlerEvent
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.event.world.BlockEvent
@@ -33,6 +35,7 @@ object LibrarianLibTestBaseModule : LibrarianLibModule("testbase", logger) {
     }
 
     @SubscribeEvent
+    @OnlyIn(Dist.CLIENT)
     internal fun registerColors(colorHandlerEvent: ColorHandlerEvent.Item) {
         colorHandlerEvent.itemColors.register(IItemColor { stack, tintIndex ->
             if(tintIndex == 1)
