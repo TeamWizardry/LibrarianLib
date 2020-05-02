@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.foundation
 
+import com.teamwizardry.librarianlib.foundation.registration.RegistrationManager
+import dev.thecodewarrior.mirror.Mirror
 import net.alexwells.kottle.FMLKotlinModLoadingContext
 import net.minecraft.block.Block
 import net.minecraft.enchantment.Enchantment
@@ -15,6 +17,7 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent
@@ -24,6 +27,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
 import net.minecraftforge.fml.loading.FMLEnvironment
 import net.minecraftforge.registries.ForgeRegistries
 import net.minecraftforge.registries.IForgeRegistry
+import java.lang.IllegalStateException
 
 /**
  *
@@ -42,8 +46,16 @@ import net.minecraftforge.registries.IForgeRegistry
  */
 @Suppress("LeakingThis")
 abstract class BaseMod @JvmOverloads constructor(private val kottleContext: Boolean = false){
+    val modid: String
+    val registrationManager: RegistrationManager
+
     init {
+        val modAnnotation = this.javaClass.declaredAnnotations.filterIsInstance<Mod>().firstOrNull()
+            ?: throw IllegalStateException("Could not find mod annotation on ${this.javaClass.canonicalName}")
+        modid = modAnnotation.value
+
         val eventBus = modLoadingContextEventBus()
+        registrationManager = RegistrationManager(modid, eventBus)
         eventBus.addListener<FMLCommonSetupEvent> { this.baseCommonSetup(it) }
         eventBus.addListener<FMLClientSetupEvent> { this.baseClientSetup(it) }
         eventBus.addListener<FMLDedicatedServerSetupEvent> { this.baseDedicatedServerSetup(it) }
