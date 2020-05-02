@@ -109,10 +109,10 @@ processTestResources {
 
 sourceSets {
     main {
-        ext.refMap = "META-INF/ll/${project.name}.refmap.json"
+        ext.refMap = "ll-${project.name}.refmap.json"
     }
     test {
-        ext.refMap = "META-INF/ll/${project.name}-test.refmap.json"
+        ext.refMap = "ll-${project.name}-test.refmap.json"
     }
 }
 
