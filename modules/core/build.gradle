@@ -18,18 +18,21 @@ def moduleNames = allmodules.collect { it.name }
 
 generateFiles {
     inputs.property("moduleNames", moduleNames)
-    ext.moduleIndexOut = file("$genResources/META-INF/ll/core/modules.txt")
-    outputs.file(moduleIndexOut)
+
+    ext.modsTomlSource = file("$resourcesDir/META-INF/mods.toml")
     ext.dependenciesTomls = allmodules.collect {
         file("$projectDir/src/main/resources/META-INF/dependencies.toml")
     }
-    inputs.files(dependenciesTomls)
+    inputs.files(modsTomlSource, dependenciesTomls)
+
+    ext.moduleIndexOut = file("$genResources/META-INF/ll/core/modules.txt")
+    outputs.file(moduleIndexOut)
 
     doLast {
         moduleIndexOut.parentFile.mkdirs()
         moduleIndexOut.text = moduleNames.join("\n")
 
-        def tomlString = modsTomlOut.text
+        def tomlString = modsTomlSource.text
 
         dependenciesTomls.each {
             if(!tomlString.endsWith("\n")) tomlString += "\n"

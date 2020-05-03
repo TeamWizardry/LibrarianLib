@@ -156,25 +156,33 @@ task generateFiles {
     )
 
     ext.mixinConnectorOut = file("$genJava/gen/${project.name}/MixinConnector.java")
-    ext.skeletonModOut = file("$genJava/gen/${project.name}/SkeletonMod.java")
-    ext.modsTomlOut = file("$genResources/META-INF/mods.toml")
     ext.coremodsOut = file("$genResources/META-INF/coremods.json")
     ext.manifestOut = file("$genResources/META-INF/MANIFEST.MF")
     outputs.files(
             mixinConnectorOut,
-            skeletonModOut,
-            modsTomlOut,
             coremodsOut,
             manifestOut
     )
+    ext.skeletonModOut = file("$genJava/gen/${project.name}/SkeletonMod.java")
+    ext.modsTomlOut = file("$genResources/META-INF/mods.toml")
     ext.packMcmetaOut = file("$genResources/pack.mcmeta")
     if(project.name != "core")
-        outputs.files(packMcmetaOut)
+        outputs.files(
+                skeletonModOut,
+                modsTomlOut,
+                packMcmetaOut
+        )
 
     doLast {
         modsTomlOut.parentFile.mkdirs()
 
-        skeletonModOut.text = """\
+        mixinConnectorOut.text = GeneratorUtils.generateMixinConnector("gen.$project.name", "MixinConnector", mixinFiles)
+        coremodsOut.text = GeneratorUtils.generateCoremodsJson(coremodFiles)
+
+        manifestOut.text = (manifest.exists() ? manifest.text : "") + "MixinConnector: gen.${project.name}.MixinConnector\n"
+
+        if(project.name != "core") {
+            skeletonModOut.text = """\
                |package gen.${project.name};
                |
                |import net.minecraftforge.fml.common.Mod;
@@ -183,12 +191,22 @@ task generateFiles {
                |public class SkeletonMod {}
             |""".stripMargin()
 
-        mixinConnectorOut.text = GeneratorUtils.generateMixinConnector("gen.$project.name", "MixinConnector", mixinFiles)
-        coremodsOut.text = GeneratorUtils.generateCoremodsJson(coremodFiles)
+            def tomlString = """\
+                   |modLoader="kotlinfml"
+                   |loaderVersion="[1,)"
+                   |[[mods]]
+                   |modId="$modid"
+                   |version="$mod_version"
+                   |displayName="LibrarianLib $human_name"
+                   |description="$description"
+                   |[[dependencies.$modid]]
+                   |    modId="librarianlib"
+                   |    versionRange="[$mod_version]"
+                   |    mandatory=true
+                   |    ordering="BEFORE"
+            |""".stripMargin()
+            modsTomlOut.text = tomlString
 
-        manifestOut.text = (manifest.exists() ? manifest.text : "") + "MixinConnector: gen.${project.name}.MixinConnector\n"
-
-        if(project.name != "core")
             packMcmetaOut.text = """\
                    |{
                    |    "pack": {
@@ -197,25 +215,7 @@ task generateFiles {
                    |    }
                    |}
                 |""".stripMargin()
-
-        def tomlString = """\
-               |modLoader="kotlinfml"
-               |loaderVersion="[1,)"
-               |[[mods]]
-               |modId="$modid"
-               |version="$mod_version"
-               |displayName="LibrarianLib $human_name"
-               |description="$description"
-        |""".stripMargin()
-        if(project.name != "core")
-            tomlString += """\
-                   |[[dependencies.$modid]]
-                   |    modId="librarianlib"
-                   |    versionRange="[$mod_version]"
-                   |    mandatory=true
-                   |    ordering="BEFORE"
-            |""".stripMargin()
-        modsTomlOut.text = tomlString
+        }
     }
 }
 sourceSets.main.java.srcDirs(generateFiles.genJava)
