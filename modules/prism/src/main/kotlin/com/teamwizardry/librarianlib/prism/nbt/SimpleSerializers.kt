@@ -11,6 +11,7 @@ import net.minecraft.nbt.IntNBT
 import net.minecraft.nbt.NumberNBT
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.util.BitSet
 
 open class PairSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<Pair<*, *>>()) {
     override fun create(mirror: TypeMirror): NBTSerializer<*> {
@@ -93,3 +94,19 @@ object BigDecimalSerializer: NBTSerializer<BigDecimal>() {
         }
     }
 }
+
+object BitSetSerializer: NBTSerializer<BitSet>() {
+    override fun deserialize(tag: INBT, existing: BitSet?): BitSet {
+        @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
+        val bitset = BitSet.valueOf(tag.expectType<ByteArrayNBT>("tag").byteArray)
+        return existing?.also {
+            it.clear()
+            it.or(bitset)
+        } ?: bitset
+    }
+
+    override fun serialize(value: BitSet): INBT {
+        return ByteArrayNBT(value.toByteArray())
+    }
+}
+

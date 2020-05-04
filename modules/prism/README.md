@@ -7,7 +7,7 @@
 - Any `@RefractClass` object
 - `Double`, `Float`, `Long`, `Integer`, `Short`, `Character`, `Byte`, `Boolean`, `Number`, `BigInteger`, `BigDecimal`
 - `double`, `float`, `long`, `int`, `short`, `char`, `byte`, `boolean`
-- `double[]`, `float[]`, `long[]`, `int[]`, `short[]`, `char[]`, `byte[]`, `boolean[]`
+- `double[]`, `float[]`, `long[]`, `int[]`, `short[]`, `char[]`, `byte[]`, `boolean[]`, `BitSet`
 - `String`, `UUID`
 ## Kotlin types:
 - `Pair`, `Triple`
