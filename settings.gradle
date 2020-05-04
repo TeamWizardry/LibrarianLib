@@ -7,10 +7,11 @@ def includeModule(String name) {
 
 include("runtime")
 includeModule("core")
+includeModule("etcetera")
 includeModule("facade")
 includeModule("foundation")
 includeModule("glitter")
 includeModule("mirage")
 includeModule("mosaic")
+includeModule("prism")
 includeModule("testbase")
-includeModule("etcetera")
