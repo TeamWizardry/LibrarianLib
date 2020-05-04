@@ -1,3 +1,0 @@
-{
-  "mainClass": "com.teamwizardry.librarianlib.{{cookiecutter.module_name}}.Lib{{cookiecutter.camel_name}}Module"
-}
