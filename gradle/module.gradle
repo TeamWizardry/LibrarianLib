@@ -66,6 +66,7 @@ dependencies {
 afterEvaluate {
     dependencies {
         configurations.api.dependencies.findAll { it instanceof ProjectDependency }.collect { ProjectDependency dep ->
+            internalApi project(path: dep.getDependencyProject().path, configuration: "internalApi")
             compileOnly project(path: dep.getDependencyProject().path, configuration: "internalApi")
         }
         configurations.testApi.dependencies.findAll { it instanceof ProjectDependency }.collect { ProjectDependency dep ->
