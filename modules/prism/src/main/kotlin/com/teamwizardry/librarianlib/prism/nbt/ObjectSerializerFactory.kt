@@ -11,7 +11,7 @@ import net.minecraft.nbt.CompoundNBT
 import net.minecraft.nbt.INBT
 
 open class ObjectSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<Any>(), { type ->
-    (type as ClassMirror).annotations.any { it is RefractClass }
+    (type as? ClassMirror)?.annotations?.any { it is RefractClass } == true
 }) {
     override fun create(mirror: TypeMirror): NBTSerializer<*> {
         return ObjectSerializer(prism, mirror)

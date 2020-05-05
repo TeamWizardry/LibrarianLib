@@ -38,10 +38,10 @@ val instance: NBTPrism = Prism<NBTSerializer<*>>().also { prism ->
 
         // boxed
         LongSerializer,
-        IntSerializer,
+        IntegerSerializer,
         ShortSerializer,
         ByteSerializer,
-        CharSerializer,
+        CharacterSerializer,
         DoubleSerializer,
         FloatSerializer,
         BooleanSerializer,

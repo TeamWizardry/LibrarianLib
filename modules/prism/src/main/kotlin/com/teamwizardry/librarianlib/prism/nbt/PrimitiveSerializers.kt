@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.prism.nbt
 
+import com.teamwizardry.librarianlib.math.clamp
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.nbt.ByteNBT
 import net.minecraft.nbt.DoubleNBT

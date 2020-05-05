@@ -59,11 +59,16 @@ object UnitTestRunner {
             exception.printStackTrace(PrintWriter(sw))
 
             // remove everything after the `runUnitTests` line
-            var atEnd = false
-            val trace = sw.toString().lineSequence().takeWhile { line ->
-                !atEnd.also {
-                    atEnd = line.startsWith("\tat com.teamwizardry.librarianlib.testbase.junit.UnitTestRunner.runUnitTests")
+            var skipping = false
+            val trace = sw.toString().lineSequence().filter { line ->
+                var shouldSkip = skipping
+                if(line.startsWith("\tat com.teamwizardry.librarianlib.testbase.junit.UnitTestRunner.runUnitTests"))
+                    skipping = true
+                if(!line.startsWith("\t")) {
+                    shouldSkip = false
+                    skipping = false
                 }
+                !shouldSkip
             }.joinToString("\n")
 
             text += "\n" + trace.prependIndent("││ ") + "\n╘╧════════════════════"
