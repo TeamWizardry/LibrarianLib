@@ -10,15 +10,15 @@ import dev.thecodewarrior.prism.base.analysis.auto.ObjectAnalyzer
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.nbt.INBT
 
-open class ObjectSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<Any>(), {
-    (it as ClassMirror).annotations.any { it is RefractClass }
+open class ObjectSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<Any>(), { type ->
+    (type as ClassMirror).annotations.any { it is RefractClass }
 }) {
     override fun create(mirror: TypeMirror): NBTSerializer<*> {
         return ObjectSerializer(prism, mirror)
     }
 
     class ObjectSerializer(prism: NBTPrism, type: TypeMirror): NBTSerializer<Any>(type) {
-        val analyzer = ObjectAnalyzer<Any?, NBTSerializer<*>>(prism, type.asClassMirror())
+        private val analyzer = ObjectAnalyzer<Any?, NBTSerializer<*>>(prism, type.asClassMirror())
 
         @Suppress("UNCHECKED_CAST")
         override fun deserialize(tag: INBT, existing: Any?): Any {

@@ -3,15 +3,16 @@ package com.teamwizardry.librarianlib.prism.nbt
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.type.ClassMirror
 import dev.thecodewarrior.mirror.type.TypeMirror
-import dev.thecodewarrior.prism.base.analysis.ArrayAnalyzer
 import net.minecraft.nbt.ByteArrayNBT
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.nbt.INBT
 import net.minecraft.nbt.IntNBT
+import net.minecraft.nbt.NBTUtil
 import net.minecraft.nbt.NumberNBT
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.BitSet
+import java.util.UUID
 
 open class PairSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<Pair<*, *>>()) {
     override fun create(mirror: TypeMirror): NBTSerializer<*> {
@@ -19,8 +20,8 @@ open class PairSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, M
     }
 
     class PairSerializer(prism: NBTPrism, type: ClassMirror): NBTSerializer<Pair<Any?, Any?>>(type) {
-        val firstSerializer by prism[type.typeParameters[0]]
-        val secondSerializer by prism[type.typeParameters[1]]
+        private val firstSerializer by prism[type.typeParameters[0]]
+        private val secondSerializer by prism[type.typeParameters[1]]
 
         override fun deserialize(tag: INBT, existing: Pair<Any?, Any?>?): Pair<Any?, Any?> {
             @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
@@ -45,9 +46,9 @@ open class TripleSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism,
     }
 
     class TripleSerializer(prism: NBTPrism, type: ClassMirror): NBTSerializer<Triple<Any?, Any?, Any?>>(type) {
-        val firstSerializer by prism[type.typeParameters[0]]
-        val secondSerializer by prism[type.typeParameters[1]]
-        val thirdSerializer by prism[type.typeParameters[2]]
+        private val firstSerializer by prism[type.typeParameters[0]]
+        private val secondSerializer by prism[type.typeParameters[1]]
+        private val thirdSerializer by prism[type.typeParameters[2]]
 
         override fun deserialize(tag: INBT, existing: Triple<Any?, Any?, Any?>?): Triple<Any?, Any?, Any?> {
             @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
@@ -107,6 +108,16 @@ object BitSetSerializer: NBTSerializer<BitSet>() {
 
     override fun serialize(value: BitSet): INBT {
         return ByteArrayNBT(value.toByteArray())
+    }
+}
+
+object UUIDSerializer: NBTSerializer<UUID>() {
+    override fun deserialize(tag: INBT, existing: UUID?): UUID {
+        return NBTUtil.readUniqueId(tag.expectType("tag"))
+    }
+
+    override fun serialize(value: UUID): INBT {
+        return NBTUtil.writeUniqueId(value)
     }
 }
 

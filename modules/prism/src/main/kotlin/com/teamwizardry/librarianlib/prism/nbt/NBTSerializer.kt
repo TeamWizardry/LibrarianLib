@@ -7,7 +7,6 @@ import dev.thecodewarrior.prism.SerializationException
 import dev.thecodewarrior.prism.Serializer
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.nbt.INBT
-import net.minecraft.nbt.NumberNBT
 
 typealias NBTPrism = Prism<NBTSerializer<*>>
 
@@ -62,7 +61,7 @@ abstract class NBTSerializer<T: Any>: Serializer<T> {
     }
 
     /**
-     * Throws an exception if [key] is missing from [tag] or it isn't the passed type.
+     * Throws an exception if [key] is missing from [compound] or it isn't the passed type.
      */
     fun<T: INBT> expect(compound: CompoundNBT, key: String, type: Class<T>): T {
         val tag = compound[key] ?: throw DeserializationException("Missing `$key`")

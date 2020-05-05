@@ -1,13 +1,5 @@
 package com.teamwizardry.librarianlib.prism.nbt
 
-import com.teamwizardry.librarianlib.prism.nbt.PrimitiveByteArraySerializer.expectType
-import com.teamwizardry.librarianlib.prism.nbt.PrimitiveCharArraySerializer.expectType
-import com.teamwizardry.librarianlib.prism.nbt.PrimitiveDoubleArraySerializer.expectType
-import com.teamwizardry.librarianlib.prism.nbt.PrimitiveFloatArraySerializer.expectType
-import com.teamwizardry.librarianlib.prism.nbt.PrimitiveIntArraySerializer.expectType
-import com.teamwizardry.librarianlib.prism.nbt.PrimitiveLongArraySerializer.expectType
-import com.teamwizardry.librarianlib.prism.nbt.PrimitiveShortArraySerializer.expectType
-import dev.thecodewarrior.prism.DeserializationException
 import net.minecraft.nbt.ByteArrayNBT
 import net.minecraft.nbt.DoubleNBT
 import net.minecraft.nbt.FloatNBT

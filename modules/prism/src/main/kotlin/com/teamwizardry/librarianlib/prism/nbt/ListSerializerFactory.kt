@@ -8,7 +8,6 @@ import dev.thecodewarrior.prism.base.analysis.ListAnalyzer
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.nbt.INBT
 import net.minecraft.nbt.ListNBT
-import net.minecraft.nbt.NumberNBT
 
 open class ListSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<List<*>>()) {
     override fun create(mirror: TypeMirror): NBTSerializer<*> {
@@ -16,7 +15,7 @@ open class ListSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, M
     }
 
     class ListSerializer(prism: NBTPrism, type: ClassMirror): NBTSerializer<MutableList<Any?>>(type) {
-        val analyzer = ListAnalyzer<Any?, NBTSerializer<*>>(prism, type)
+        private val analyzer = ListAnalyzer<Any?, NBTSerializer<*>>(prism, type)
 
         @Suppress("UNCHECKED_CAST")
         override fun deserialize(tag: INBT, existing: MutableList<Any?>?): MutableList<Any?> {

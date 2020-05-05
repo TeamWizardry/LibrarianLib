@@ -13,9 +13,9 @@
 - `Pair`, `Triple`
 ## Minecraft types:
 - Any `IForgeRegistryEntry`
-- `BlockPos`, `Vec3d`, `Vec2f`, `ChunkPos`, `ColumnPos`, `SectionPos`, `GlobalPos`, `Rotations`, `AxisAlignedBB`, `MutableBoundingBox`, 
+- `BlockPos`, `Vec3d`, `Vec2f`, `ChunkPos`, `ColumnPos`, `SectionPos`, `GlobalPos`, `Rotations`, `AxisAlignedBB`, `MutableBoundingBox`
 - `ResourceLocation`, `BlockState`, `GameProfile`, `ITextComponent`, `INBTSerializable`, `Tuple`
-- `ItemStack`, `FluidStack`, `EffectInstance`
+- `ItemStack`, `FluidStack`, `EffectInstance`, `EnchantmentData`
 ## LibLib types:
 - `Vec2d`, `Vec2i`, `Ray2d`, `Rect2d`, `Matrix3d`, `MutableMatrix3d`, `Matrix4d`, `MutableMatrix4d`, `Quaternion`
 

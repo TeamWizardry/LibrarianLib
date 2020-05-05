@@ -1,11 +1,13 @@
 package com.teamwizardry.librarianlib.prism.nbt
 
+import com.mojang.authlib.GameProfile
 import com.teamwizardry.librarianlib.core.util.kotlin.inconceivable
 import com.teamwizardry.librarianlib.math.block
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.type.ClassMirror
 import dev.thecodewarrior.mirror.type.TypeMirror
 import dev.thecodewarrior.prism.DeserializationException
+import net.minecraft.block.BlockState
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.enchantment.EnchantmentData
 import net.minecraft.item.ItemStack
@@ -14,12 +16,14 @@ import net.minecraft.nbt.DoubleNBT
 import net.minecraft.nbt.FloatNBT
 import net.minecraft.nbt.INBT
 import net.minecraft.nbt.IntNBT
+import net.minecraft.nbt.NBTUtil
 import net.minecraft.nbt.NumberNBT
 import net.minecraft.nbt.StringNBT
 import net.minecraft.potion.EffectInstance
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Tuple
 import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.math.ColumnPos
 import net.minecraft.util.math.GlobalPos
@@ -44,25 +48,6 @@ object ResourceLocationSerializer: NBTSerializer<ResourceLocation>() {
 }
 
 //region Math stuff
-
-object RotationsSerializer: NBTSerializer<Rotations>() {
-    override fun deserialize(tag: INBT, existing: Rotations?): Rotations {
-        @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
-        return Rotations(
-            tag.expect<NumberNBT>("X").float,
-            tag.expect<NumberNBT>("Y").float,
-            tag.expect<NumberNBT>("Z").float
-        )
-    }
-
-    override fun serialize(value: Rotations): INBT {
-        val tag = CompoundNBT()
-        tag.put("X", FloatNBT.valueOf(value.x))
-        tag.put("Y", FloatNBT.valueOf(value.y))
-        tag.put("Z", FloatNBT.valueOf(value.z))
-        return tag
-    }
-}
 
 object Vec3dSerializer: NBTSerializer<Vec3d>() {
     override fun deserialize(tag: INBT, existing: Vec3d?): Vec3d {
@@ -99,6 +84,17 @@ object Vec2fSerializer: NBTSerializer<Vec2f>() {
         return tag
     }
 }
+
+object BlockPosSerializer: NBTSerializer<BlockPos>() {
+    override fun deserialize(tag: INBT, existing: BlockPos?): BlockPos {
+        return NBTUtil.readBlockPos(tag.expectType("tag"))
+    }
+
+    override fun serialize(value: BlockPos): INBT {
+        return NBTUtil.writeBlockPos(value)
+    }
+}
+
 
 object ChunkPosSerializer: NBTSerializer<ChunkPos>() {
     override fun deserialize(tag: INBT, existing: ChunkPos?): ChunkPos {
@@ -185,6 +181,25 @@ object GlobalPosSerializer: NBTSerializer<GlobalPos>() {
     }
 }
 
+object RotationsSerializer: NBTSerializer<Rotations>() {
+    override fun deserialize(tag: INBT, existing: Rotations?): Rotations {
+        @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
+        return Rotations(
+            tag.expect<NumberNBT>("X").float,
+            tag.expect<NumberNBT>("Y").float,
+            tag.expect<NumberNBT>("Z").float
+        )
+    }
+
+    override fun serialize(value: Rotations): INBT {
+        val tag = CompoundNBT()
+        tag.put("X", FloatNBT.valueOf(value.x))
+        tag.put("Y", FloatNBT.valueOf(value.y))
+        tag.put("Z", FloatNBT.valueOf(value.z))
+        return tag
+    }
+}
+
 object AxisAlignedBBSerializer: NBTSerializer<AxisAlignedBB>() {
     override fun deserialize(tag: INBT, existing: AxisAlignedBB?): AxisAlignedBB {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
@@ -243,8 +258,8 @@ open class TupleSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, 
     }
 
     class TupleSerializer(prism: NBTPrism, type: ClassMirror): NBTSerializer<Tuple<Any?, Any?>>(type) {
-        val firstSerializer by prism[type.typeParameters[0]]
-        val secondSerializer by prism[type.typeParameters[1]]
+        private val firstSerializer by prism[type.typeParameters[0]]
+        private val secondSerializer by prism[type.typeParameters[1]]
 
         override fun deserialize(tag: INBT, existing: Tuple<Any?, Any?>?): Tuple<Any?, Any?> {
             @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
@@ -275,6 +290,29 @@ object ITextComponentSerializer: NBTSerializer<ITextComponent>() {
 
     override fun serialize(value: ITextComponent): INBT {
         return StringNBT.valueOf(ITextComponent.Serializer.toJson(value))
+    }
+}
+
+object GameProfileSerializer: NBTSerializer<GameProfile>() {
+    override fun deserialize(tag: INBT, existing: GameProfile?): GameProfile {
+        return NBTUtil.readGameProfile(tag.expectType("tag"))
+            ?: throw DeserializationException("Reading GameProfile") // it only returns null if an error occurs
+    }
+
+    override fun serialize(value: GameProfile): INBT {
+        val tag = CompoundNBT()
+        NBTUtil.writeGameProfile(tag, value)
+        return tag
+    }
+}
+
+object BlockStateSerializer: NBTSerializer<BlockState>() {
+    override fun deserialize(tag: INBT, existing: BlockState?): BlockState {
+        return NBTUtil.readBlockState(tag.expectType("tag"))
+    }
+
+    override fun serialize(value: BlockState): INBT {
+        return NBTUtil.writeBlockState(value)
     }
 }
 

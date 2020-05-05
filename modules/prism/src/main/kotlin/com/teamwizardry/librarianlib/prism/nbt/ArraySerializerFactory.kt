@@ -2,15 +2,12 @@ package com.teamwizardry.librarianlib.prism.nbt
 
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.type.ArrayMirror
-import dev.thecodewarrior.mirror.type.ClassMirror
 import dev.thecodewarrior.mirror.type.TypeMirror
 import dev.thecodewarrior.prism.DeserializationException
 import dev.thecodewarrior.prism.base.analysis.ArrayAnalyzer
-import dev.thecodewarrior.prism.base.analysis.ListAnalyzer
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.nbt.INBT
 import net.minecraft.nbt.ListNBT
-import net.minecraft.nbt.NumberNBT
 
 open class ArraySerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<Array<*>>()) {
     override fun create(mirror: TypeMirror): NBTSerializer<*> {
@@ -18,7 +15,7 @@ open class ArraySerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, 
     }
 
     class ArraySerializer(prism: NBTPrism, type: ArrayMirror): NBTSerializer<Array<Any?>>(type) {
-        val analyzer = ArrayAnalyzer<Any?, NBTSerializer<*>>(prism, type)
+        private val analyzer = ArrayAnalyzer<Any?, NBTSerializer<*>>(prism, type)
 
         @Suppress("UNCHECKED_CAST")
         override fun deserialize(tag: INBT, existing: Array<Any?>?): Array<Any?> {

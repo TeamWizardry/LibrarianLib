@@ -9,15 +9,12 @@ import com.teamwizardry.librarianlib.math.Rect2d
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.Vec2i
 import com.teamwizardry.librarianlib.math.bounds.Ray2d
-import com.teamwizardry.librarianlib.prism.nbt.Rect2dSerializer.expect
-import com.teamwizardry.librarianlib.prism.nbt.Rect2dSerializer.expectType
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.nbt.DoubleNBT
 import net.minecraft.nbt.INBT
 import net.minecraft.nbt.IntNBT
 import net.minecraft.nbt.ListNBT
 import net.minecraft.nbt.NumberNBT
-import net.minecraft.nbt.StringNBT
 
 object Vec2dSerializer: NBTSerializer<Vec2d>() {
     override fun deserialize(tag: INBT, existing: Vec2d?): Vec2d {

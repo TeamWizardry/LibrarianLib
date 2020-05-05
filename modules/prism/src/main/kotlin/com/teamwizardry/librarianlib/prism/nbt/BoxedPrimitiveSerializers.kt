@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.prism.nbt
 
-import dev.thecodewarrior.prism.DeserializationException
 import net.minecraft.nbt.ByteNBT
 import net.minecraft.nbt.DoubleNBT
 import net.minecraft.nbt.FloatNBT
