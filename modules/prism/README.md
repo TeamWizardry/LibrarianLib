@@ -1,25 +1,79 @@
 # Prism serialization
 
 # Supported types
-## Java types:
-- Any array
-- Any `List`
-- Any `@RefractClass` object
-- `Double`, `Float`, `Long`, `Integer`, `Short`, `Character`, `Byte`, `Boolean`, `Number`, `BigInteger`, `BigDecimal`
-- `double`, `float`, `long`, `int`, `short`, `char`, `byte`, `boolean`
-- `double[]`, `float[]`, `long[]`, `int[]`, `short[]`, `char[]`, `byte[]`, `boolean[]`, `BitSet`
-- `String`, `UUID`
-## Kotlin types:
-- `Pair`, `Triple`
-## Minecraft types:
-- Any `IForgeRegistryEntry`
-- Any NBT type
-- `BlockPos`, `Vec3d`, `Vec2f`, `ChunkPos`, `ColumnPos`, `SectionPos`, `GlobalPos`, `Rotations`, `AxisAlignedBB`, `MutableBoundingBox`
-- `ResourceLocation`, `BlockState`, `GameProfile`, `ITextComponent`, `INBTSerializable`, `Tuple`
-- `ItemStack`, `FluidStack`, `EffectInstance`, `EnchantmentData`
-## LibLib types:
-- `Vec2d`, `Vec2i`, `Ray2d`, `Rect2d`, `Matrix3d`, `MutableMatrix3d`, `Matrix4d`, `MutableMatrix4d`, `Quaternion`
+
+### Factories:
+- arrays
+- `java.util.List<T>`
+- `@RefractClass` annotated classes
+- `net.minecraftforge.registries.IForgeRegistryEntry<?>`
+- `net.minecraftforge.common.util.INBTSerializable<?>`
+- `net.minecraft.nbt.INBT`
+- `kotlin.Pair<A, B>`
+- `kotlin.Triple<A, B, C>`
+- `net.minecraft.util.Tuple<A, B>`
+
+### Concrete types:
+#### Java stdlib types
+- `double`
+- `float`
+- `long`
+- `int`
+- `short`
+- `byte`
+- `char`
+- `boolean`
+- `java.lang.Double`
+- `java.lang.Float`
+- `java.lang.Long`
+- `java.lang.Integer`
+- `java.lang.Short`
+- `java.lang.Byte`
+- `java.lang.Character`
+- `java.lang.Boolean`
+- `java.lang.Number`
+- `double[]`
+- `float[]`
+- `long[]`
+- `int[]`
+- `short[]`
+- `byte[]`
+- `char[]`
+- `boolean[]`
+- `java.lang.String`
+- `java.math.BigInteger`
+- `java.math.BigDecimal`
+- `java.util.BitSet`
+- `java.util.UUID`
+#### Minecraft types
+- `com.mojang.authlib.GameProfile`
+- `net.minecraft.block.BlockState`
+- `net.minecraft.enchantment.EnchantmentData`
+- `net.minecraft.item.ItemStack`
+- `net.minecraft.potion.EffectInstance`
+- `net.minecraft.text.ITextComponent`
+- `net.minecraft.util.math.AxisAlignedBB`
+- `net.minecraft.util.math.BlockPos`
+- `net.minecraft.util.math.ChunkPos`
+- `net.minecraft.util.math.ColumnPos`
+- `net.minecraft.util.math.GlobalPos`
+- `net.minecraft.util.math.MutableBoundingBox`
+- `net.minecraft.util.math.Rotations`
+- `net.minecraft.util.math.SectionPos`
+- `net.minecraft.util.math.Vec2f`
+- `net.minecraft.util.math.Vec3d`
+- `net.minecraft.util.ResourceLocation`
+- `net.minecraftforge.fluids.FluidStack`
+#### LibLib types
+- `com.teamwizardry.librarianlib.math.Matrix3d`
+- `com.teamwizardry.librarianlib.math.Matrix4d`
+- `com.teamwizardry.librarianlib.math.MutableMatrix3d`
+- `com.teamwizardry.librarianlib.math.MutableMatrix4d`
+- `com.teamwizardry.librarianlib.math.Quaternion`
+- `com.teamwizardry.librarianlib.math.Ray2d`
+- `com.teamwizardry.librarianlib.math.Rect2d`
+- `com.teamwizardry.librarianlib.math.Vec2d`
+- `com.teamwizardry.librarianlib.math.Vec2i`
 
 There are a few notable absences at the moment, including maps, sets, and enums. As well as that, the list serializer 
 doesn't recognize immutable lists yet and requires a no-arg constructor.
-
