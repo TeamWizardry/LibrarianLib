@@ -4,10 +4,7 @@ import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.testbase.TestMod
 import com.teamwizardry.librarianlib.testbase.objects.TestBlock
 import com.teamwizardry.librarianlib.testbase.objects.TestBlockConfig
-import com.teamwizardry.librarianlib.testbase.objects.TestEntityConfig
 import com.teamwizardry.librarianlib.testbase.objects.TestItem
-import com.teamwizardry.librarianlib.testbase.objects.TestItemConfig
-import com.teamwizardry.librarianlib.testbase.objects.UnitTestItem
 import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
 
@@ -118,9 +115,9 @@ object LibTestBaseTestModule: TestMod("testbase", "Test Base", logger) {
             }
         }
 
-        +UnitTestItem(UnitTestConfig("unit_tests", "Run unit tests") {
+        +UnitTestSuite("unit_tests") {
             add<UnitTestTests>()
-        })
+        }
     }
 }
 

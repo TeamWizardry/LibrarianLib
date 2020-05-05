@@ -12,8 +12,7 @@ import com.teamwizardry.librarianlib.testbase.objects.TestItem
 import com.teamwizardry.librarianlib.testbase.objects.TestItemConfig
 import com.teamwizardry.librarianlib.testbase.objects.TestScreenConfig
 import com.teamwizardry.librarianlib.mirage.Mirage
-import com.teamwizardry.librarianlib.testbase.objects.UnitTestConfig
-import com.teamwizardry.librarianlib.testbase.objects.UnitTestItem
+import com.teamwizardry.librarianlib.testbase.objects.UnitTestSuite
 import net.alexwells.kottle.FMLKotlinModLoadingContext
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.RenderType
@@ -39,7 +38,7 @@ import net.minecraftforge.registries.ForgeRegistries
 import org.apache.logging.log4j.Logger
 import java.awt.Color
 
-abstract class TestMod(targetName: String, val humanName: String, val logger: Logger) {
+abstract class TestMod(val targetName: String, val humanName: String, val logger: Logger) {
     val name = "$targetName-test"
     val itemGroup = object : ItemGroup("librarianlib-$name") {
         private val stack: ItemStack by lazy {
@@ -56,16 +55,14 @@ abstract class TestMod(targetName: String, val humanName: String, val logger: Lo
     val _blocks: MutableList<Block> = mutableListOf()
     val _entities: MutableList<EntityType<*>> = mutableListOf()
     val _testEntities: MutableList<EntityType<TestEntity>> = mutableListOf()
+    val _unitTests: MutableList<UnitTestSuite> = mutableListOf()
 
     val items: List<Item> = _items.unmodifiableView()
     val blocks: List<Block> = _blocks.unmodifiableView()
     val entities: List<EntityType<*>> = _entities.unmodifiableView()
+    val unitTests: List<UnitTestSuite> = _unitTests.unmodifiableView()
 
     // auto-fill the item group
-    fun UnitTestConfig(id: String, name: String, block: UnitTestConfig.() -> Unit): UnitTestConfig
-        = UnitTestConfig(id, name, itemGroup, logger, block)
-    fun UnitTestConfig(id: String, name: String): UnitTestConfig
-        = UnitTestConfig(id, name, itemGroup, logger)
     fun TestItemConfig(id: String, name: String, block: TestItemConfig.() -> Unit): TestItemConfig
         = TestItemConfig(id, name, itemGroup, block)
     fun TestItemConfig(id: String, name: String): TestItemConfig
@@ -78,6 +75,10 @@ abstract class TestMod(targetName: String, val humanName: String, val logger: Lo
         = TestScreenConfig(id, name, itemGroup, block)
     fun TestScreenConfig(id: String, name: String): TestScreenConfig
         = TestScreenConfig(id, name, itemGroup)
+    fun UnitTestSuite(id: String, block: UnitTestSuite.() -> Unit): UnitTestSuite
+        = UnitTestSuite(id).also { it.block() }
+    fun UnitTestSuite(id: String): UnitTestSuite
+        = UnitTestSuite().also { it.registryName = ResourceLocation(targetName, id) }
 
     operator fun <T: Item> T.unaryPlus(): T {
         _items.add(this)
@@ -111,6 +112,11 @@ abstract class TestMod(targetName: String, val humanName: String, val logger: Lo
 
     operator fun TestScreenConfig.unaryPlus(): TestScreenConfig {
         +this.activatorItem
+        return this
+    }
+
+    operator fun UnitTestSuite.unaryPlus(): UnitTestSuite {
+        _unitTests.add(this)
         return this
     }
 
@@ -173,16 +179,6 @@ abstract class TestMod(targetName: String, val humanName: String, val logger: Lo
                         }
                     """.trimIndent()
                 )
-            } else if(item is UnitTestItem) {
-                val name = item.registryName!!
-                Mirage.client.add(
-                    ResourceLocation(name.namespace, "models/item/${name.path}.json"),
-                    """
-                        {
-                            "parent": "librarianlib-testbase:item/test_tool"
-                        }
-                    """.trimIndent()
-                )
             }
         }
     }
@@ -235,12 +231,6 @@ abstract class TestMod(targetName: String, val humanName: String, val logger: Lo
                 item.config.description?.also {
                     keys[registryName.translationKey("item", "tooltip")] = it
                 }
-            } else if(item is UnitTestItem) {
-                val registryName = item.registryName!!
-                keys[registryName.translationKey("item")] = item.config.name
-                item.config.description?.also {
-                    keys[registryName.translationKey("item", "tooltip")] = it
-                }
             }
         }
         blocks.forEach { block ->
@@ -262,7 +252,7 @@ abstract class TestMod(targetName: String, val humanName: String, val logger: Lo
             val item = stack.item
             if(tintIndex == 1 && item is TestBlockItem)
                 DistinctColors.forObject(item.block.registryName).rgb
-            else if(tintIndex == 1 && (item is TestItem || item is UnitTestItem))
+            else if(tintIndex == 1 && item is TestItem)
                 DistinctColors.forObject(item.registryName).rgb
             else
                 Color.WHITE.rgb
@@ -276,23 +266,30 @@ abstract class TestMod(targetName: String, val humanName: String, val logger: Lo
     }
 
     @SubscribeEvent
-    open fun registerBlocks(blockRegistryEvent: RegistryEvent.Register<Block>) {
+    open fun registerUnitTests(e: RegistryEvent.Register<UnitTestSuite>) {
+        unitTests.forEach {
+            e.registry.register(it)
+        }
+    }
+
+    @SubscribeEvent
+    open fun registerBlocks(e: RegistryEvent.Register<Block>) {
         blocks.forEach {
-            ForgeRegistries.BLOCKS.register(it)
+            e.registry.register(it)
         }
     }
 
     @SubscribeEvent
-    open fun registerItems(itemRegistryEvent: RegistryEvent.Register<Item>) {
+    open fun registerItems(e: RegistryEvent.Register<Item>) {
         items.forEach {
-            ForgeRegistries.ITEMS.register(it)
+            e.registry.register(it)
         }
     }
 
     @SubscribeEvent
-    open fun registerEntities(entityRegistryEvent: RegistryEvent.Register<EntityType<*>>) {
+    open fun registerEntities(e: RegistryEvent.Register<EntityType<*>>) {
         entities.forEach {
-            ForgeRegistries.ENTITIES.register(it)
+            e.registry.register(it)
         }
     }
 }

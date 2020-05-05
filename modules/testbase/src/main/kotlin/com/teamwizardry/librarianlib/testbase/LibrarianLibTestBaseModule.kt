@@ -5,6 +5,8 @@ import com.teamwizardry.librarianlib.core.util.DistinctColors
 import com.teamwizardry.librarianlib.core.util.kotlin.synchronized
 //import com.teamwizardry.librarianlib.testbase.objects.TestEntityRenderer
 import com.teamwizardry.librarianlib.testbase.objects.TestItem
+import com.teamwizardry.librarianlib.testbase.objects.UnitTestCommand
+import com.teamwizardry.librarianlib.testbase.objects.UnitTestSuite
 import net.minecraft.client.renderer.color.IItemColor
 import net.minecraft.item.Item
 import net.minecraft.util.ResourceLocation
@@ -15,7 +17,9 @@ import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.event.world.BlockEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent
 import net.minecraftforge.registries.ForgeRegistries
+import net.minecraftforge.registries.RegistryBuilder
 import org.apache.logging.log4j.LogManager
 import java.awt.Color
 
@@ -32,6 +36,14 @@ object LibrarianLibTestBaseModule : LibrarianLibModule("testbase", logger) {
 
     override fun clientSetup(event: FMLClientSetupEvent) {
 //        RenderingRegistry.registerEntityRenderingHandler(TestEntity::class.java) { TestEntityRenderer(it) }
+    }
+
+    @SubscribeEvent
+    internal fun createRegistries(e: RegistryEvent.NewRegistry) {
+        RegistryBuilder<UnitTestSuite>()
+            .setName(ResourceLocation("librarianlib-testbase:unit_tests"))
+            .setType(UnitTestSuite::class.java)
+            .create()
     }
 
     @SubscribeEvent
@@ -59,6 +71,11 @@ object LibrarianLibTestBaseModule : LibrarianLibModule("testbase", logger) {
     internal fun add(mod: TestMod) {
         logger.debug("Adding test mod $mod")
         mods.add(mod)
+    }
+
+    @SubscribeEvent
+    internal fun serverStarting(e: FMLServerStartingEvent) {
+        UnitTestCommand.register(e.commandDispatcher)
     }
 }
 
