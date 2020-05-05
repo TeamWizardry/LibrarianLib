@@ -12,6 +12,8 @@ import com.teamwizardry.librarianlib.testbase.objects.TestItem
 import com.teamwizardry.librarianlib.testbase.objects.TestItemConfig
 import com.teamwizardry.librarianlib.testbase.objects.TestScreenConfig
 import com.teamwizardry.librarianlib.mirage.Mirage
+import com.teamwizardry.librarianlib.testbase.objects.UnitTestConfig
+import com.teamwizardry.librarianlib.testbase.objects.UnitTestItem
 import net.alexwells.kottle.FMLKotlinModLoadingContext
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.RenderType
@@ -60,6 +62,10 @@ abstract class TestMod(targetName: String, val humanName: String, val logger: Lo
     val entities: List<EntityType<*>> = _entities.unmodifiableView()
 
     // auto-fill the item group
+    fun UnitTestConfig(id: String, name: String, block: UnitTestConfig.() -> Unit): UnitTestConfig
+        = UnitTestConfig(id, name, itemGroup, logger, block)
+    fun UnitTestConfig(id: String, name: String): UnitTestConfig
+        = UnitTestConfig(id, name, itemGroup, logger)
     fun TestItemConfig(id: String, name: String, block: TestItemConfig.() -> Unit): TestItemConfig
         = TestItemConfig(id, name, itemGroup, block)
     fun TestItemConfig(id: String, name: String): TestItemConfig
@@ -140,7 +146,7 @@ abstract class TestMod(targetName: String, val humanName: String, val logger: Lo
         generateLanguageAssets()
         blocks.forEach { block ->
             if(block is TestBlock) {
-                RenderTypeLookup.setRenderLayer(block, RenderType.getCutout());
+                RenderTypeLookup.setRenderLayer(block, RenderType.getCutout())
             }
         }
     }
@@ -158,6 +164,16 @@ abstract class TestMod(targetName: String, val humanName: String, val logger: Lo
                     """.trimIndent()
                 )
             } else if(item is TestItem) {
+                val name = item.registryName!!
+                Mirage.client.add(
+                    ResourceLocation(name.namespace, "models/item/${name.path}.json"),
+                    """
+                        {
+                            "parent": "librarianlib-testbase:item/test_tool"
+                        }
+                    """.trimIndent()
+                )
+            } else if(item is UnitTestItem) {
                 val name = item.registryName!!
                 Mirage.client.add(
                     ResourceLocation(name.namespace, "models/item/${name.path}.json"),
@@ -219,6 +235,12 @@ abstract class TestMod(targetName: String, val humanName: String, val logger: Lo
                 item.config.description?.also {
                     keys[registryName.translationKey("item", "tooltip")] = it
                 }
+            } else if(item is UnitTestItem) {
+                val registryName = item.registryName!!
+                keys[registryName.translationKey("item")] = item.config.name
+                item.config.description?.also {
+                    keys[registryName.translationKey("item", "tooltip")] = it
+                }
             }
         }
         blocks.forEach { block ->
@@ -240,7 +262,7 @@ abstract class TestMod(targetName: String, val humanName: String, val logger: Lo
             val item = stack.item
             if(tintIndex == 1 && item is TestBlockItem)
                 DistinctColors.forObject(item.block.registryName).rgb
-            else if(tintIndex == 1 && item is TestItem)
+            else if(tintIndex == 1 && (item is TestItem || item is UnitTestItem))
                 DistinctColors.forObject(item.registryName).rgb
             else
                 Color.WHITE.rgb

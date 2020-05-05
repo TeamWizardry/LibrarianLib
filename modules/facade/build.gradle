@@ -7,6 +7,8 @@ dependencies {
         exclude group: 'org.jetbrains.kotlin'
         exclude group: 'it.unimi.dsi.fastutil' // already included in MC
     }
+    // we have to include ICU in the classpath so it overrides Mojang's stripped down copy
+    devClasspath 'com.ibm.icu:icu4j:63.1'
 }
 
 shadePackages(

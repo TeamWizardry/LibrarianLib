@@ -16,10 +16,8 @@ dependencies {
 
     allmodules.each {
         mod project(path: it.path, configuration: "mod")
+        implementation project(path: it.path, configuration: 'devClasspath')
     }
-
-    // we have to include ICU in the classpath so it overrides Mojang's stripped down copy
-    implementation 'com.ibm.icu:icu4j:63.1' // for the gui module
 }
 
 // we need all the modules to compile first

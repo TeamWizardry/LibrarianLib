@@ -44,6 +44,7 @@ configurations {
     internalApi.extendsFrom(shade)
     api.extendsFrom(mod)
     testApi.extendsFrom(mod)
+    devClasspath // included in the run configuration classpath
 }
 
 minecraft {
