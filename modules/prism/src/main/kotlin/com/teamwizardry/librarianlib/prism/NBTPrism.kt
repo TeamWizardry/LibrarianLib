@@ -21,6 +21,7 @@ val instance: NBTPrism = Prism<NBTSerializer<*>>().also { prism ->
         // minecraft types
         IForgeRegistryEntrySerializerFactory(prism),
         INBTSerializableSerializerFactory(prism),
+        INBTPassthroughSerializerFactory(prism),
         TupleSerializerFactory(prism)
     )
 

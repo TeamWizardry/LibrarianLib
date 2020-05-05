@@ -13,12 +13,13 @@
 - `Pair`, `Triple`
 ## Minecraft types:
 - Any `IForgeRegistryEntry`
+- Any NBT type
 - `BlockPos`, `Vec3d`, `Vec2f`, `ChunkPos`, `ColumnPos`, `SectionPos`, `GlobalPos`, `Rotations`, `AxisAlignedBB`, `MutableBoundingBox`
 - `ResourceLocation`, `BlockState`, `GameProfile`, `ITextComponent`, `INBTSerializable`, `Tuple`
 - `ItemStack`, `FluidStack`, `EffectInstance`, `EnchantmentData`
 ## LibLib types:
 - `Vec2d`, `Vec2i`, `Ray2d`, `Rect2d`, `Matrix3d`, `MutableMatrix3d`, `Matrix4d`, `MutableMatrix4d`, `Quaternion`
 
-There are a few notable absences at the moment, including maps and sets. As well as that, the list serializer doesn't 
-recognize immutable lists yet and requires a no-arg constructor.
+There are a few notable absences at the moment, including maps, sets, and enums. As well as that, the list serializer 
+doesn't recognize immutable lists yet and requires a no-arg constructor.
 
