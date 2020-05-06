@@ -11,54 +11,54 @@ import com.teamwizardry.librarianlib.prism.nbt.LongSerializer
 import com.teamwizardry.librarianlib.prism.nbt.ShortSerializer
 import org.junit.jupiter.api.Test
 
-class BoxedPrimitiveTests: NBTPrismTest() {
+internal class BoxedPrimitiveTests: NBTPrismTest() {
     @Test
-    fun readWrite_withDouble_shouldBeSymmetrical()
+    fun `read+write with Double should be symmetrical`()
         = simple<Double, DoubleSerializer>(1.0, NBTBuilder.double(1))
     @Test
-    fun readWrite_withFloat_shouldBeSymmetrical()
+    fun `read+write with Float should be symmetrical`()
         = simple<Float, FloatSerializer>(1f, NBTBuilder.float(1))
     @Test
-    fun readWrite_withLong_shouldBeSymmetrical()
+    fun `read+write with Long should be symmetrical`()
         = simple<Long, LongSerializer>(1L, NBTBuilder.long(1))
     @Test
-    fun readWrite_withInt_shouldBeSymmetrical()
+    fun `read+write with Integer should be symmetrical`()
         = simple<Int, IntegerSerializer>(1, NBTBuilder.int(1))
     @Test
-    fun readWrite_withShort_shouldBeSymmetrical()
+    fun `read+write with Short should be symmetrical`()
         = simple<Short, ShortSerializer>(1.toShort(), NBTBuilder.short(1))
     @Test
-    fun readWrite_withByte_shouldBeSymmetrical()
+    fun `read+write with Byte should be symmetrical`()
         = simple<Byte, ByteSerializer>(1.toByte(), NBTBuilder.byte(1))
     @Test
-    fun readWrite_withChar_shouldBeSymmetrical()
+    fun `read+write with Character should be symmetrical`()
         = simple<Char, CharacterSerializer>(1.toChar(), NBTBuilder.int(1))
     @Test
-    fun readWrite_withBooleanTrue_shouldBeSymmetrical()
+    fun `read+write with Boolean true should be symmetrical`()
         = simple<Boolean, BooleanSerializer>(true, NBTBuilder.byte(1))
     @Test
-    fun readWrite_withBooleanFalse_shouldBeSymmetrical()
+    fun `read+write with Boolean false should be symmetrical`()
         = simple<Boolean, BooleanSerializer>(false, NBTBuilder.byte(0))
 
     @Test
-    fun read_withDouble_andIntNBT_shouldCast()
+    fun `read with Double and IntNBT should cast`()
         = simpleRead<Double, DoubleSerializer>(1.0, NBTBuilder.int(1))
     @Test
-    fun read_withFloat_andIntNBT_shouldCast()
+    fun `read with Float and IntNBT should cast`()
         = simpleRead<Float, FloatSerializer>(1f, NBTBuilder.int(1))
     @Test
-    fun read_withLong_andDoubleNBT_shouldCastAndClamp()
+    fun `read with Long and DoubleNBT should cast and clamp`()
         = simpleRead<Long, LongSerializer>(Long.MAX_VALUE, NBTBuilder.double(1e20))
     @Test
-    fun read_withInt_andDoubleNBT_shouldCastAndClamp()
+    fun `read with Int and DoubleNBT should cast and clamp`()
         = simpleRead<Int, IntegerSerializer>(Int.MAX_VALUE, NBTBuilder.double(1e10))
     @Test
-    fun read_withShort_andDoubleNBT_shouldCastAndTruncate()
+    fun `read with Short and DoubleNBT should cast and truncate`()
         = simpleRead<Short, ShortSerializer>(100000.toShort(), NBTBuilder.double(1e5))
     @Test
-    fun read_withByte_andDoubleNBT_shouldCastAndTruncate()
+    fun `read with Byte and DoubleNBT should cast and truncate`()
         = simpleRead<Byte, ByteSerializer>(1000.toByte(), NBTBuilder.double(1e3))
     @Test
-    fun read_withChar_andDoubleNBT_shouldCastAndTruncate()
+    fun `read with Char and DoubleNBT should cast and truncate`()
         = simpleRead<Char, CharacterSerializer>(100000.toChar(), NBTBuilder.double(1e5))
 }

@@ -64,14 +64,14 @@ object UnitTestCommand {
             color = TextFormatting.GREEN
             hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
                 StringTextComponent("${passed.size} tests passed\n").applyTextStyle(TextFormatting.GREEN)
-                    .appendSibling(StringTextComponent(passed.values.joinToString("\n") { it.displayPath }))
+                    .appendSibling(StringTextComponent(passed.values.joinToString("\n") { it.displayPath.joinToString(" > ") }))
             )
         }
         val failedStyle = Style().apply {
             color = TextFormatting.RED
             hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
                 StringTextComponent("${failed.size} tests failed\n").applyTextStyle(TextFormatting.RED)
-                    .appendSibling(StringTextComponent(failed.values.joinToString("\n") { it.displayPath }))
+                    .appendSibling(StringTextComponent(failed.values.joinToString("\n") { it.displayPath.joinToString(" > ") }))
             )
         }
         val rerunStyle = Style().apply {

@@ -79,39 +79,4 @@ object UnitTestRunner {
             }.prependIndent("    ")
         return text
     }
-
-    fun makeTextComponent(report: TestSuiteResult): ITextComponent {
-        // [ $ tests found | $ tests passed | $ tests failed ]
-        val fullCount = report.reports.asSequence().filter { it.key.isTest }.count()
-        val passed = report.reports.filter { (key, value) ->
-            key.isTest && (value.result as? TestResult.Finished)?.result?.status == TestExecutionResult.Status.SUCCESSFUL
-        }
-        val failed = report.reports.filter { (key, value) ->
-            key.isTest && (value.result as? TestResult.Finished)?.result?.status == TestExecutionResult.Status.FAILED
-        }
-
-        val passedStyle = Style().apply {
-            color = TextFormatting.GREEN
-            hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                StringTextComponent("${passed.size} tests passed\n").applyTextStyle(TextFormatting.GREEN)
-                    .appendSibling(StringTextComponent(passed.values.joinToString("\n") { it.displayPath }))
-            )
-        }
-        val failedStyle = Style().apply {
-            color = TextFormatting.RED
-            hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                StringTextComponent("${failed.size} tests failed\n").applyTextStyle(TextFormatting.RED)
-                    .appendSibling(StringTextComponent(failed.values.joinToString("\n") { it.displayPath }))
-            )
-        }
-
-
-        return StringTextComponent("[ $fullCount tests found | ").appendSibling(
-            StringTextComponent("${passed.size} tests passed").setStyle(passedStyle)
-        ).appendText(" | ")
-            .appendSibling(
-            StringTextComponent("${failed.size} tests failed").setStyle(failedStyle)
-        ).appendText(" ]")
-    }
-
 }

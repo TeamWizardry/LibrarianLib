@@ -45,7 +45,8 @@ internal class TestBaseListener: TestExecutionListener {
     }
 
     fun createReport(): TestSuiteResult {
-        val suite = TestSuiteResult(roots, reports)
+        reports.values.forEach { it.children.sort() }
+        val suite = TestSuiteResult(roots.sorted(), reports.toList().sortedBy { it.second }.toMap())
 
         return suite
     }

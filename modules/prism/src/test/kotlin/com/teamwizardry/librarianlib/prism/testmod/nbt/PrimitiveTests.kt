@@ -14,52 +14,52 @@ import org.junit.jupiter.api.Test
 
 internal class PrimitiveTests: NBTPrismTest() {
     @Test
-    fun readWrite_withDouble_shouldBeSymmetrical()
+    fun `read+write with a double should be symmetrical`()
         = simple<PrimitiveDoubleSerializer>(Mirror.types.double, 1.0, NBTBuilder.double(1))
     @Test
-    fun readWrite_withFloat_shouldBeSymmetrical()
+    fun `read+write with a float should be symmetrical`()
         = simple<PrimitiveFloatSerializer>(Mirror.types.float, 1f, NBTBuilder.float(1))
     @Test
-    fun readWrite_withLong_shouldBeSymmetrical()
+    fun `read+write with a long should be symmetrical`()
         = simple<PrimitiveLongSerializer>(Mirror.types.long, 1L, NBTBuilder.long(1))
     @Test
-    fun readWrite_withInt_shouldBeSymmetrical()
+    fun `read+write with an int should be symmetrical`()
         = simple<PrimitiveIntSerializer>(Mirror.types.int, 1, NBTBuilder.int(1))
     @Test
-    fun readWrite_withShort_shouldBeSymmetrical()
+    fun `read+write with a short should be symmetrical`()
         = simple<PrimitiveShortSerializer>(Mirror.types.short, 1.toShort(), NBTBuilder.short(1))
     @Test
-    fun readWrite_withByte_shouldBeSymmetrical()
+    fun `read+write with a byte should be symmetrical`()
         = simple<PrimitiveByteSerializer>(Mirror.types.byte, 1.toByte(), NBTBuilder.byte(1))
     @Test
-    fun readWrite_withChar_shouldBeSymmetrical()
+    fun `read+write with a char should be symmetrical`()
         = simple<PrimitiveCharSerializer>(Mirror.types.char, 1.toChar(), NBTBuilder.int(1))
     @Test
-    fun readWrite_withBooleanTrue_shouldBeSymmetrical()
+    fun `read+write with true should be symmetrical`()
         = simple<PrimitiveBooleanSerializer>(Mirror.types.boolean, true, NBTBuilder.byte(1))
     @Test
-    fun readWrite_withBooleanFalse_shouldBeSymmetrical()
+    fun `read+write with false should be symmetrical`()
         = simple<PrimitiveBooleanSerializer>(Mirror.types.boolean, false, NBTBuilder.byte(0))
 
     @Test
-    fun read_withDouble_andIntNBT_shouldCast()
+    fun `read with double and IntNBT should cast`()
         = simpleRead<PrimitiveDoubleSerializer>(Mirror.types.double, 1.0, NBTBuilder.int(1))
     @Test
-    fun read_withFloat_andIntNBT_shouldCast()
+    fun `read with float and IntNBT should cast`()
         = simpleRead<PrimitiveFloatSerializer>(Mirror.types.float, 1f, NBTBuilder.int(1))
     @Test
-    fun read_withLong_andDoubleNBT_shouldCastAndClamp()
+    fun `read with long and DoubleNBT should cast and clamp`()
         = simpleRead<PrimitiveLongSerializer>(Mirror.types.long, Long.MAX_VALUE, NBTBuilder.double(1e20))
     @Test
-    fun read_withInt_andDoubleNBT_shouldCastAndClamp()
+    fun `read with int and DoubleNBT should cast and clamp`()
         = simpleRead<PrimitiveIntSerializer>(Mirror.types.int, Int.MAX_VALUE, NBTBuilder.double(1e10))
     @Test
-    fun read_withShort_andDoubleNBT_shouldCastAndTruncate()
+    fun `read with short and DoubleNBT should cast and truncate`()
         = simpleRead<PrimitiveShortSerializer>(Mirror.types.short, 100000.toShort(), NBTBuilder.double(1e5))
     @Test
-    fun read_withByte_andDoubleNBT_shouldCastAndTruncate()
+    fun `read with byte and DoubleNBT should cast and truncate`()
         = simpleRead<PrimitiveByteSerializer>(Mirror.types.byte, 1000.toByte(), NBTBuilder.double(1e3))
     @Test
-    fun read_withChar_andDoubleNBT_shouldCastAndTruncate()
+    fun `read with char and DoubleNBT should cast and truncate`()
         = simpleRead<PrimitiveCharSerializer>(Mirror.types.char, 100000.toChar(), NBTBuilder.double(1e5))
 }
