@@ -13,7 +13,7 @@ object LibrarianLibPrismTestMod: TestMod("prism", "Prism", logger) {
             add<BoxedPrimitiveTests>()
             add<PrimitiveArrayTests>()
         }
-        +UnitTestSuite("nbt_lists") { // todo
+        +UnitTestSuite("nbt_lists") {
             add<ArrayFactoryTests>()
             add<ListFactoryTests>()
         }
