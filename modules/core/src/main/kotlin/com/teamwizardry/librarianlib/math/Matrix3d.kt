@@ -409,11 +409,11 @@ open class Matrix3d(
         if (this === other) {
             return true
         }
-        val matrix3 = other as? Matrix3d ?: return false
+        if (other !is Matrix3d) return false
 
-        return matrix3.m00 == 0.0 && matrix3.m01 == 0.0 && matrix3.m02 == 0.0 &&
-            matrix3.m10 == 0.0 && matrix3.m11 == 0.0 && matrix3.m12 == 0.0 &&
-            matrix3.m20 == 0.0 && matrix3.m21 == 0.0 && matrix3.m22 == 0.0
+        return this.m00 == other.m00 && this.m01 == other.m01 && this.m02 == other.m02 &&
+            this.m10 == other.m10 && this.m11 == other.m11 && this.m12 == other.m12 &&
+            this.m20 == other.m20 && this.m21 == other.m21 && this.m22 == other.m22
     }
 
     override fun hashCode(): Int {

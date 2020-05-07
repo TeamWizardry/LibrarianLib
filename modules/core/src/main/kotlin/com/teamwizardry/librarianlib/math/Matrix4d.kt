@@ -480,7 +480,7 @@ open class Matrix4d: Cloneable {
         if (this === other) {
             return true
         }
-        other as? Matrix4d ?: return false
+        if (other !is Matrix4d) return false
         return this.m00 == other.m00 && this.m01 == other.m01 && this.m02 == other.m02 && this.m03 == other.m03 &&
             this.m10 == other.m10 && this.m11 == other.m11 && this.m12 == other.m12 && this.m13 == other.m13 &&
             this.m20 == other.m20 && this.m21 == other.m21 && this.m22 == other.m22 && this.m23 == other.m23 &&

@@ -88,7 +88,6 @@ val instance: NBTPrism = Prism<NBTSerializer<*>>().also { prism ->
         // liblib types
         Vec2dSerializer,
         Vec2iSerializer,
-        Ray2dSerializer,
         Rect2dSerializer,
         Matrix3dSerializer,
         MutableMatrix3dSerializer,

@@ -27,10 +27,10 @@ object LibrarianLibPrismTestMod: TestMod("prism", "Prism", logger) {
             add<INBTSerializableTests>()
             add<MinecraftSimpleTests>()
         }
-        +UnitTestSuite("nbt_librarianlib") { // todo
+        +UnitTestSuite("nbt_librarianlib") {
             add<LibrarianLibSimpleTests>()
         }
-        +UnitTestSuite("nbt_simple") { // todo
+        +UnitTestSuite("nbt_simple") {
             add<SimpleTests>()
         }
         +UnitTestSuite("all") {

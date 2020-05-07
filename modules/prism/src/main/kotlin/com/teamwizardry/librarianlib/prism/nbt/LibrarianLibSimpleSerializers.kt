@@ -8,7 +8,6 @@ import com.teamwizardry.librarianlib.math.Quaternion
 import com.teamwizardry.librarianlib.math.Rect2d
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.Vec2i
-import com.teamwizardry.librarianlib.math.bounds.Ray2d
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.nbt.DoubleNBT
 import net.minecraft.nbt.INBT
@@ -50,44 +49,23 @@ object Vec2iSerializer: NBTSerializer<Vec2i>() {
     }
 }
 
-object Ray2dSerializer: NBTSerializer<Ray2d>() {
-    override fun deserialize(tag: INBT, existing: Ray2d?): Ray2d {
-        @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
-        return Ray2d(
-            tag.expect<NumberNBT>("OriginX").double,
-            tag.expect<NumberNBT>("OriginY").double,
-            tag.expect<NumberNBT>("DirectionX").double,
-            tag.expect<NumberNBT>("DirectionY").double
-        )
-    }
-
-    override fun serialize(value: Ray2d): INBT {
-        val tag = CompoundNBT()
-        tag.put("OriginX", DoubleNBT.valueOf(value.originX))
-        tag.put("OriginY", DoubleNBT.valueOf(value.originY))
-        tag.put("DirectionX", DoubleNBT.valueOf(value.directionX))
-        tag.put("DirectionY", DoubleNBT.valueOf(value.directionY))
-        return tag
-    }
-}
-
 object Rect2dSerializer: NBTSerializer<Rect2d>() {
     override fun deserialize(tag: INBT, existing: Rect2d?): Rect2d {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
         return Rect2d(
-            tag.expect<NumberNBT>("MinX").double,
-            tag.expect<NumberNBT>("MinY").double,
-            tag.expect<NumberNBT>("MaxX").double,
-            tag.expect<NumberNBT>("MaxY").double
+            tag.expect<NumberNBT>("X").double,
+            tag.expect<NumberNBT>("Y").double,
+            tag.expect<NumberNBT>("Width").double,
+            tag.expect<NumberNBT>("Height").double
         )
     }
 
     override fun serialize(value: Rect2d): INBT {
         val tag = CompoundNBT()
-        tag.put("MinX", DoubleNBT.valueOf(value.minX))
-        tag.put("MinY", DoubleNBT.valueOf(value.minY))
-        tag.put("MaxX", DoubleNBT.valueOf(value.maxX))
-        tag.put("MaxY", DoubleNBT.valueOf(value.maxY))
+        tag.put("X", DoubleNBT.valueOf(value.x))
+        tag.put("Y", DoubleNBT.valueOf(value.y))
+        tag.put("Width", DoubleNBT.valueOf(value.width))
+        tag.put("Height", DoubleNBT.valueOf(value.height))
         return tag
     }
 }
@@ -126,7 +104,7 @@ object Matrix3dSerializer: NBTSerializer<Matrix3d>() {
 object MutableMatrix3dSerializer: NBTSerializer<MutableMatrix3d>() {
     override fun deserialize(tag: INBT, existing: MutableMatrix3d?): MutableMatrix3d {
         val list = tag.expectType<ListNBT>("tag")
-        return MutableMatrix3d(
+        return (existing ?: MutableMatrix3d()).set(
             list[0].expectType<NumberNBT>("00").double,
             list[1].expectType<NumberNBT>("01").double,
             list[2].expectType<NumberNBT>("02").double,
@@ -161,19 +139,19 @@ object Matrix4dSerializer: NBTSerializer<Matrix4d>() {
             list[0].expectType<NumberNBT>("00").double,
             list[1].expectType<NumberNBT>("01").double,
             list[2].expectType<NumberNBT>("02").double,
-            list[2].expectType<NumberNBT>("03").double,
-            list[3].expectType<NumberNBT>("10").double,
-            list[4].expectType<NumberNBT>("11").double,
-            list[5].expectType<NumberNBT>("12").double,
-            list[5].expectType<NumberNBT>("13").double,
-            list[6].expectType<NumberNBT>("20").double,
-            list[7].expectType<NumberNBT>("21").double,
-            list[8].expectType<NumberNBT>("22").double,
-            list[8].expectType<NumberNBT>("23").double,
-            list[6].expectType<NumberNBT>("30").double,
-            list[7].expectType<NumberNBT>("31").double,
-            list[8].expectType<NumberNBT>("32").double,
-            list[8].expectType<NumberNBT>("33").double
+            list[3].expectType<NumberNBT>("03").double,
+            list[4].expectType<NumberNBT>("10").double,
+            list[5].expectType<NumberNBT>("11").double,
+            list[6].expectType<NumberNBT>("12").double,
+            list[7].expectType<NumberNBT>("13").double,
+            list[8].expectType<NumberNBT>("20").double,
+            list[9].expectType<NumberNBT>("21").double,
+            list[10].expectType<NumberNBT>("22").double,
+            list[11].expectType<NumberNBT>("23").double,
+            list[12].expectType<NumberNBT>("30").double,
+            list[13].expectType<NumberNBT>("31").double,
+            list[14].expectType<NumberNBT>("32").double,
+            list[15].expectType<NumberNBT>("33").double
         )
     }
 
@@ -202,23 +180,23 @@ object Matrix4dSerializer: NBTSerializer<Matrix4d>() {
 object MutableMatrix4dSerializer: NBTSerializer<MutableMatrix4d>() {
     override fun deserialize(tag: INBT, existing: MutableMatrix4d?): MutableMatrix4d {
         val list = tag.expectType<ListNBT>("tag")
-        return MutableMatrix4d(
+        return (existing ?: MutableMatrix4d()).set(
             list[0].expectType<NumberNBT>("00").double,
             list[1].expectType<NumberNBT>("01").double,
             list[2].expectType<NumberNBT>("02").double,
-            list[2].expectType<NumberNBT>("03").double,
-            list[3].expectType<NumberNBT>("10").double,
-            list[4].expectType<NumberNBT>("11").double,
-            list[5].expectType<NumberNBT>("12").double,
-            list[5].expectType<NumberNBT>("13").double,
-            list[6].expectType<NumberNBT>("20").double,
-            list[7].expectType<NumberNBT>("21").double,
-            list[8].expectType<NumberNBT>("22").double,
-            list[8].expectType<NumberNBT>("23").double,
-            list[6].expectType<NumberNBT>("30").double,
-            list[7].expectType<NumberNBT>("31").double,
-            list[8].expectType<NumberNBT>("32").double,
-            list[8].expectType<NumberNBT>("33").double
+            list[3].expectType<NumberNBT>("03").double,
+            list[4].expectType<NumberNBT>("10").double,
+            list[5].expectType<NumberNBT>("11").double,
+            list[6].expectType<NumberNBT>("12").double,
+            list[7].expectType<NumberNBT>("13").double,
+            list[8].expectType<NumberNBT>("20").double,
+            list[9].expectType<NumberNBT>("21").double,
+            list[10].expectType<NumberNBT>("22").double,
+            list[11].expectType<NumberNBT>("23").double,
+            list[12].expectType<NumberNBT>("30").double,
+            list[13].expectType<NumberNBT>("31").double,
+            list[14].expectType<NumberNBT>("32").double,
+            list[15].expectType<NumberNBT>("33").double
         )
     }
 
