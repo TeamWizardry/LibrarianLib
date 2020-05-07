@@ -98,7 +98,6 @@ object BigDecimalSerializer: NBTSerializer<BigDecimal>() {
 
 object BitSetSerializer: NBTSerializer<BitSet>() {
     override fun deserialize(tag: INBT, existing: BitSet?): BitSet {
-        @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
         val bitset = BitSet.valueOf(tag.expectType<ByteArrayNBT>("tag").byteArray)
         return existing?.also {
             it.clear()
