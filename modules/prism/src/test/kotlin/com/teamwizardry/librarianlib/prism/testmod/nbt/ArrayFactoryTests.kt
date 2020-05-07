@@ -20,7 +20,7 @@ internal class ArrayFactoryTests: NBTPrismTest() {
     }
 
     @Test
-    fun `read+write with an array with nulls should be symmetrical`() {
+    fun `read+write for an array with nulls should be symmetrical`() {
         simple<Array<String?>, ArraySerializerFactory.ArraySerializer>(
             arrayOf("first", "second", null, "fourth"),
             NBTBuilder.list {

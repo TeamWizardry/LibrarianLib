@@ -43,6 +43,7 @@ object LibrarianLibTestBaseModule : LibrarianLibModule("testbase", logger) {
         RegistryBuilder<UnitTestSuite>()
             .setName(ResourceLocation("librarianlib-testbase:unit_tests"))
             .setType(UnitTestSuite::class.java)
+            .disableSaving()
             .create()
     }
 

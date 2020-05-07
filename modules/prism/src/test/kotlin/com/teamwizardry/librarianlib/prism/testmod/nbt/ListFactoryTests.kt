@@ -18,7 +18,7 @@ internal class ListFactoryTests: NBTPrismTest() {
     }
 
     @Test
-    fun `read+write with list should be symmetrical`() {
+    fun `read+write for ArrayList should be symmetrical`() {
         simple<ArrayList<String?>, ListSerializerFactory.ListSerializer>(
             arrayListOf("first", "second", null, "fourth"),
             NBTBuilder.list {
@@ -31,7 +31,7 @@ internal class ListFactoryTests: NBTPrismTest() {
     }
 
     @Test
-    fun `reading a list with an existing value should clear and fill the existing list`() {
+    fun `reading an ArrayList with an existing value should clear and fill the existing list`() {
         val targetList = arrayListOf("value")
 
         val theList = arrayListOf<String?>("junk")
@@ -45,7 +45,7 @@ internal class ListFactoryTests: NBTPrismTest() {
     }
 
     @Test
-    fun `reading a list with no existing value should create a new list`() {
+    fun `reading an ArrayList with no existing value should create a new list`() {
         val targetList = arrayListOf("value")
 
         val theTag = NBTBuilder.list {
@@ -58,14 +58,14 @@ internal class ListFactoryTests: NBTPrismTest() {
     }
 
     @Test
-    fun `reading a list with the wrong NBT type should throw`() {
+    fun `reading an ArrayList with the wrong NBT type should throw`() {
         assertThrows<DeserializationException> {
             prism[Mirror.reflect<ArrayList<String?>>()].value.read(NBTBuilder.string("oops!"), null)
         }
     }
 
     @Test
-    fun `reading a list with the wrong ListNBT element type should throw`() {
+    fun `reading an ArrayList with the wrong ListNBT element type should throw`() {
         assertThrows<DeserializationException> {
             prism[Mirror.reflect<ArrayList<String?>>()].value.read(NBTBuilder.list { n+ string("oops!") }, null)
         }

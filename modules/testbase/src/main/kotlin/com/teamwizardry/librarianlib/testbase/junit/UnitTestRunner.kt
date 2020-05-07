@@ -71,7 +71,7 @@ object UnitTestRunner {
                 !shouldSkip
             }.joinToString("\n")
 
-            text += "\n" + trace.prependIndent("││ ") + "\n╘╧════════════════════"
+            text += "\n" + trace.trimEnd().prependIndent("││ ") + "\n╘╧════════════════════"
         }
         if(report.children.isNotEmpty())
             text += "\n" + report.children.joinToString("\n") {
