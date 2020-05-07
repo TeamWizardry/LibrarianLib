@@ -5,10 +5,8 @@ import com.teamwizardry.librarianlib.prism.NBTPrism
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.type.TypeMirror
 import net.minecraft.nbt.INBT
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
-import java.lang.RuntimeException
 
 abstract class NBTPrismTest {
     val prism: NBTPrism = NBTPrism
@@ -19,13 +17,16 @@ abstract class NBTPrismTest {
      * - [value], when serialized, results in [tag]
      * - [tag], when deserialized, results in [value]
      */
-    inline fun<reified S> simple(type: TypeMirror, value: Any, tag: INBT) {
+    inline fun<reified S> simple(type: TypeMirror, value: Any, tag: INBT, noinline equality: ((Any, Any) -> Boolean)? = null) {
         val serializer = prism[type].value
         assertEquals(S::class.java, serializer.javaClass)
         val serialized = serializer.write(value)
         assertEquals(serialized, tag)
         val deserialized = serializer.read(serialized, null)
-        assertEqualsOrArrayEquals(deserialized, value)
+        // if an equality callback isn't provided, use assertEquals for the equals check
+        // if an equality callback is provided, use assertEquals for the error message
+        if(equality == null || !equality(value, deserialized))
+            assertEqualsOrArrayEquals(value, deserialized)
     }
 
     /**
@@ -34,13 +35,16 @@ abstract class NBTPrismTest {
      * - [value], when serialized, results in [tag]
      * - [tag], when deserialized, results in [value]
      */
-    inline fun<reified T: Any, reified S> simple(value: T, tag: INBT) {
+    inline fun<reified T: Any, reified S> simple(value: T, tag: INBT, noinline equality: ((T, T) -> Boolean)? = null) {
         val serializer = prism[Mirror.reflect<T>()].value
         assertEquals(S::class.java, serializer.javaClass)
         val serialized = serializer.write(value)
         assertEquals(tag, serialized)
         val deserialized = serializer.read(serialized, null)
-        assertEqualsOrArrayEquals(value, deserialized)
+        // if an equality callback isn't provided, use assertEquals for the equals check
+        // if an equality callback is provided, use assertEquals for the error message
+        if(equality == null || !(deserialized is T && equality(value, deserialized)))
+            assertEqualsOrArrayEquals(value, deserialized)
     }
 
     /**
@@ -48,11 +52,14 @@ abstract class NBTPrismTest {
      * - the serializer's type is [S]
      * - [tag], when deserialized, results in [value]
      */
-    inline fun<reified S> simpleRead(type: TypeMirror, value: Any, tag: INBT) {
+    inline fun<reified S> simpleRead(type: TypeMirror, value: Any, tag: INBT, noinline equality: ((Any, Any) -> Boolean)? = null) {
         val serializer = prism[type].value
         assertEquals(S::class.java, serializer.javaClass)
         val deserialized = serializer.read(tag, null)
-        assertEqualsOrArrayEquals(value, deserialized)
+        // if an equality callback isn't provided, use assertEquals for the equals check
+        // if an equality callback is provided, use assertEquals for the error message
+        if(equality == null || !equality(value, deserialized))
+            assertEqualsOrArrayEquals(value, deserialized)
     }
 
     /**
@@ -60,11 +67,14 @@ abstract class NBTPrismTest {
      * - the serializer's type is [S]
      * - [tag], when deserialized, results in [value]
      */
-    inline fun<reified T: Any, reified S> simpleRead(value: T, tag: INBT) {
+    inline fun<reified T: Any, reified S> simpleRead(value: T, tag: INBT, noinline equality: ((T, T) -> Boolean)? = null) {
         val serializer = prism[Mirror.reflect<T>()].value
         assertEquals(S::class.java, serializer.javaClass)
         val deserialized = serializer.read(tag, null)
-        assertEqualsOrArrayEquals(value, deserialized)
+        // if an equality callback isn't provided, use assertEquals for the equals check
+        // if an equality callback is provided, use assertEquals for the error message
+        if(equality == null || !(deserialized is T && equality(value, deserialized)))
+            assertEqualsOrArrayEquals(value, deserialized)
     }
 
     fun assertEqualsOrArrayEquals(expected: Any?, actual: Any?) {

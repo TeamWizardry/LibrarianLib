@@ -1,8 +1,12 @@
+@file:JvmName("MiscUtils")
 package com.teamwizardry.librarianlib.core.util.kotlin
 
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.Vec3i
+import net.minecraftforge.common.util.LazyOptional
+import net.minecraftforge.common.util.NonNullConsumer
+import java.util.Optional
 import kotlin.reflect.jvm.javaMethod
 
 fun String.toRl(): ResourceLocation = ResourceLocation(this)
@@ -20,6 +24,10 @@ private val obfTest = Vec3i::getX.javaMethod!! // has to be a separate field, ot
 val IS_DEOBFUSCATED: Boolean = obfTest.name == "getX"
 
 fun obf(deobfuscated: String, obfuscated: String): String = if(IS_DEOBFUSCATED) deobfuscated else obfuscated
+
+fun<T> Optional<T>.getOrNull(): T? = this.orElse(null)
+@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+fun<T> LazyOptional<T>.getOrNull(): T? = this.orElse(null)
 
 /**
  * Used for cases where code is unreachable, but the language demands a value be returned. For the case where the

@@ -32,6 +32,7 @@ import net.minecraft.util.math.Rotations
 import net.minecraft.util.math.SectionPos
 import net.minecraft.util.math.Vec2f
 import net.minecraft.util.math.Vec3d
+import net.minecraft.util.registry.Registry
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.world.dimension.DimensionType
 import net.minecraftforge.fluids.FluidStack
@@ -118,14 +119,14 @@ object ColumnPosSerializer: NBTSerializer<ColumnPos>() {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
         return ColumnPos(
             tag.expect<NumberNBT>("X").int,
-            tag.expect<NumberNBT>("Y").int
+            tag.expect<NumberNBT>("Z").int
         )
     }
 
     override fun serialize(value: ColumnPos): INBT {
         val tag = CompoundNBT()
         tag.put("X", IntNBT.valueOf(value.x))
-        tag.put("Y", IntNBT.valueOf(value.z))
+        tag.put("Z", IntNBT.valueOf(value.z))
         return tag
     }
 }
@@ -152,17 +153,11 @@ object SectionPosSerializer: NBTSerializer<SectionPos>() {
 }
 
 object GlobalPosSerializer: NBTSerializer<GlobalPos>() {
-    private val registry by lazy {
-        GameRegistry.findRegistry(DimensionType::class.java)
-    }
-
     override fun deserialize(tag: INBT, existing: GlobalPos?): GlobalPos {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
         val dimensionName = ResourceLocation(tag.expect<StringNBT>("Dimension").string)
-        val dimension = registry.getValue(dimensionName)
-            ?: throw DeserializationException("Unknown dimension type $dimensionName")
         return GlobalPos.of(
-            dimension,
+            DimensionType.byName(dimensionName)!!, // `!!` because the dimension type registry has a default value
             block(
                 tag.expect<NumberNBT>("X").int,
                 tag.expect<NumberNBT>("Y").int,
@@ -300,14 +295,26 @@ open class INBTPassthroughSerializerFactory(prism: NBTPrism): NBTSerializerFacto
     }
 }
 
-object ITextComponentSerializer: NBTSerializer<ITextComponent>() {
-    override fun deserialize(tag: INBT, existing: ITextComponent?): ITextComponent {
-        return ITextComponent.Serializer.fromJson(tag.expectType<StringNBT>("tag").string)
-            ?: inconceivable("ITextComponent.Serializer.fromJson doesn't seem to ever return null")
+open class ITextComponentSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<ITextComponent>()) {
+    override fun create(mirror: TypeMirror): NBTSerializer<*> {
+        return ITextComponentSerializer(prism, mirror as ClassMirror)
     }
 
-    override fun serialize(value: ITextComponent): INBT {
-        return StringNBT.valueOf(ITextComponent.Serializer.toJson(value))
+    class ITextComponentSerializer(prism: NBTPrism, type: ClassMirror): NBTSerializer<ITextComponent>(type) {
+        private val componentClass = type.erasure
+
+        override fun deserialize(tag: INBT, existing: ITextComponent?): ITextComponent {
+            val component = ITextComponent.Serializer.fromJson(tag.expectType<StringNBT>("tag").string)
+                ?: inconceivable("ITextComponent.Serializer.fromJson doesn't seem to ever return null")
+            if(!componentClass.isAssignableFrom(component.javaClass))
+                throw DeserializationException("Wrong ITextComponent type. Expected ${componentClass.simpleName}, " +
+                    "found ${component.javaClass.simpleName}.")
+            return component
+        }
+
+        override fun serialize(value: ITextComponent): INBT {
+            return StringNBT.valueOf(ITextComponent.Serializer.toJson(value))
+        }
     }
 }
 

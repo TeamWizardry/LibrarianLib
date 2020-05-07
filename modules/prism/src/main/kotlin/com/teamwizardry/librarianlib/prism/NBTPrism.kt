@@ -22,7 +22,8 @@ val instance: NBTPrism = Prism<NBTSerializer<*>>().also { prism ->
         IForgeRegistryEntrySerializerFactory(prism),
         INBTSerializableSerializerFactory(prism),
         INBTPassthroughSerializerFactory(prism),
-        TupleSerializerFactory(prism)
+        TupleSerializerFactory(prism),
+        ITextComponentSerializerFactory(prism)
     )
 
     prism.register(
@@ -78,11 +79,11 @@ val instance: NBTPrism = Prism<NBTSerializer<*>>().also { prism ->
         ResourceLocationSerializer,
         BlockStateSerializer,
         GameProfileSerializer,
-        ITextComponentSerializer,
         ItemStackSerializer,
         FluidStackSerializer,
         EffectInstanceSerializer,
         EnchantmentDataSerializer,
+        DimensionTypeSerializer,
 
         // liblib types
         Vec2dSerializer,
