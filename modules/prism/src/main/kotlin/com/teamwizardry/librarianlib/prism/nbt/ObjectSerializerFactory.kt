@@ -34,6 +34,8 @@ open class ObjectSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism,
                         state.setValue(property, null)
                     }
                 } catch(e: Exception) {
+                    // TODO: if `setValue` fails it'll throw an exception with the property name already. Write a test
+                    //   to fail this
                     throw DeserializationException("Property ${property.name}")
                 }
             }

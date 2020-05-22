@@ -74,3 +74,9 @@ directory will automatically be scanned and added to the generated mixin connect
 ## Building
 
 ![Module build process flow chart](https://raw.github.com/TeamWizardry/LibrarianLib/1.15/gradle/module_build.png)
+
+## TODO
+https://github.com/Kotlin/binary-compatibility-validator
+Nail down publishing to jfrog and then applying for oss.jfrog.org
+Fix race condition in build script (downloadMcpConfig occasionally fails, saying `Cannot get property 'outputs' on null object`)
+
