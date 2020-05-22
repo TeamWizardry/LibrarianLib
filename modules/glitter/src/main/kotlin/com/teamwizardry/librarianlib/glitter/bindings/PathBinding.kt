@@ -53,7 +53,7 @@ class PathBinding @JvmOverloads constructor(
 
     override fun load(particle: DoubleArray) {
         super.load(particle)
-        path.computePosition(particle, time * easing(time.toFloat()))
+        path.computePosition(particle, time * easing.ease(time.toFloat()))
         for(i in 0 until contents.size) {
             contents[i] = origin.contents[i] + (target.contents[i] * path.value[i])
         }

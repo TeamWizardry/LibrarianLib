@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.core.testmod
 
+import com.teamwizardry.librarianlib.core.testmod.tests.EasingTests
+import com.teamwizardry.librarianlib.testbase.TestMod
 import net.alexwells.kottle.FMLKotlinModLoadingContext
 import net.minecraft.block.Block
 import net.minecraftforge.common.MinecraftForge
@@ -13,46 +15,11 @@ import org.apache.logging.log4j.LogManager
 
 @Suppress("UNUSED_PARAMETER")
 @Mod("librarianlib-test")
-class LibrarianLibCoreTestMod {
+class LibrarianLibCoreTestMod: TestMod("core", "Core", logger) {
     init {
-        FMLKotlinModLoadingContext.get().modEventBus.addListener<FMLCommonSetupEvent> {
-            this.setup(it)
+        +UnitTestSuite("easings") {
+            add<EasingTests>()
         }
-        FMLKotlinModLoadingContext.get().modEventBus.addListener<FMLClientSetupEvent> {
-            this.clientSetup(it)
-        }
-
-        // Register ourselves for server and other game events we are interested in
-        MinecraftForge.EVENT_BUS.register(this)
-
-
-    }
-
-    fun setup(event: FMLCommonSetupEvent) {
-    }
-
-    fun clientSetup(event: FMLClientSetupEvent) {
-    }
-
-    @SubscribeEvent
-    fun onServerStarting(event: FMLServerStartingEvent) {
-    }
-
-    // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
-    // Event bus for receiving Registry Events)
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
-    object RegistryEvents {
-        @SubscribeEvent
-        fun onBlocksRegistry(blockRegistryEvent: RegistryEvent.Register<Block>) {
-            // register a new block here
-//            LOGGER.info("HELLO from Register Block")
-        }
-    }
-
-    companion object {
-        // Directly reference a log4j logger.
-        @JvmStatic
-        private val LOGGER = LogManager.getLogger()
     }
 }
 

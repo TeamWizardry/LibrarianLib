@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
 
 @Mod("librarianlib-testbase-test")
-object LibTestBaseTestModule: TestMod("testbase", "Test Base", logger) {
+object LibrarianLibTestBaseTestMod: TestMod("testbase", "Test Base", logger) {
     init {
         +TestItem(TestItemConfig("right_click", "Right Click") {
             common {

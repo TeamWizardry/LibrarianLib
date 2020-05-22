@@ -35,7 +35,7 @@ abstract class AbstractTimeBinding(
         lifetime.load(particle)
         var t = age.contents[0] / lifetime.contents[0]
 
-        if (easing != Easing.linear) t = easing(t.toFloat()).toDouble()
+        if (easing != Easing.linear) t = easing.ease(t.toFloat()).toDouble()
         if (offset != null) t += offset!!.contents[0]
         if (timescale != null) t *= timescale!!.contents[0]
         if(t != 0.0) {

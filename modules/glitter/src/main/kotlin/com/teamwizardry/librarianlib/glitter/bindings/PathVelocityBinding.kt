@@ -61,7 +61,7 @@ class PathVelocityBinding(
 
     override fun load(particle: DoubleArray) {
         super.load(particle)
-        path.computeTangent(particle, time * easing(time.toFloat()))
+        path.computeTangent(particle, time * easing.ease(time.toFloat()))
         path.value.copyInto(contents)
     }
 }

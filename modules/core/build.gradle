@@ -4,6 +4,7 @@ dependencies {
     shade("com.github.thecodewarrior:Mirror:cdd1ec3034") {
         exclude group: 'org.jetbrains.kotlin'
     }
+    testApi project(':testbase')
 }
 
 shadePackages('dev.thecodewarrior.mirror')
