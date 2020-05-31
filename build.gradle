@@ -26,11 +26,13 @@ if(snapshotBranch != null) {
     logger.lifecycle("Using SNAPSHOT version `{}`", version)
 }
 
+ext.allmodules = rootProject.subprojects.findAll { it.findProperty("non_module") != "true" }
+
 allprojects {
     apply plugin: 'kotlin'
     apply plugin: 'java-library'
 
-    ext.allmodules = rootProject.subprojects.findAll { it.path != ":runtime" }
+    ext.allmodules = rootProject.allmodules
 
     // unfortunately, due to the interdependence of the modules, all the repositories used must be specified here. Any
     // repositories defined in the module `build.gradle` files won't be seen by any of the other modules
