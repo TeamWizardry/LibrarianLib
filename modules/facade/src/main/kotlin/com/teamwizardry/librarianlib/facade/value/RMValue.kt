@@ -10,8 +10,8 @@ import kotlin.reflect.KProperty
  */
 @Suppress("Duplicates")
 class RMValue<T> @JvmOverloads constructor(
-    private var value: T, private val lerper: Lerper<T>?, private val change: (oldValue: T, newValue: T) -> Unit = { _, _ -> }
-): ValueBase<T>() {
+    private var value: T, private val lerper: Lerper<T>?, private val change: ((oldValue: T, newValue: T) -> Unit)? = null
+): GuiValue<T>() {
     /**
      * Gets the current value
      */
@@ -27,7 +27,7 @@ class RMValue<T> @JvmOverloads constructor(
         val oldValue = this.value
         this.value = value
         if(oldValue != value) {
-            change(oldValue, value)
+            change?.invoke(oldValue, value)
         }
     }
 
@@ -60,7 +60,7 @@ class RMValue<T> @JvmOverloads constructor(
     }
 
     override fun animationChange(from: T, to: T) {
-        change(from, to)
+        change?.invoke(from, to)
     }
 
     override fun persistAnimation(value: T) {

@@ -12,7 +12,7 @@ class ItemStackLayer(stack: ItemStack, x: Int, y: Int): GuiLayer(x, y, 16, 16) {
     constructor(x: Int, y: Int): this(ItemStack.EMPTY, x, y)
     constructor(): this(ItemStack.EMPTY, 0, 0)
 
-    val stack_im: IMValue<ItemStack> = IMValue(stack)
+    val stack_im: IMValue<ItemStack> = imValue(stack)
     var stack: ItemStack by stack_im
 
     class QuantityTextEvent(var text: String?): Event()

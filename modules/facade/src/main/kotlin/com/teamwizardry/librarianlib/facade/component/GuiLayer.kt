@@ -23,6 +23,13 @@ import com.teamwizardry.librarianlib.math.fastSin
 import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.etcetera.eventbus.Event
 import com.teamwizardry.librarianlib.etcetera.eventbus.EventBus
+import com.teamwizardry.librarianlib.facade.value.ChangeListener
+import com.teamwizardry.librarianlib.facade.value.IMValueDouble
+import com.teamwizardry.librarianlib.facade.value.IMValueInt
+import com.teamwizardry.librarianlib.facade.value.IMValueLong
+import com.teamwizardry.librarianlib.facade.value.RMValueBoolean
+import com.teamwizardry.librarianlib.facade.value.RMValueInt
+import com.teamwizardry.librarianlib.facade.value.RMValueLong
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -30,7 +37,11 @@ import org.lwjgl.opengl.GL11
 import java.lang.Exception
 import java.util.ConcurrentModificationException
 import java.util.PriorityQueue
+import java.util.function.BooleanSupplier
 import java.util.function.Consumer
+import java.util.function.DoubleSupplier
+import java.util.function.IntSupplier
+import java.util.function.LongSupplier
 import kotlin.math.PI
 import kotlin.math.floor
 
@@ -137,13 +148,6 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         children.forEach { it.updateAnimations(time) }
     }
 
-    inline fun <reified T> rmValue(initialValue: T, noinline change: (T, T) -> Unit = { _, _ -> }): RMValue<T> {
-        @Suppress("UNCHECKED_CAST") val lerper = Lerpers.getOrNull(Mirror.reflect<T>())?.value as Lerper<T>?
-        val value = RMValue(initialValue, lerper, change)
-        addAnimationTimeListener(value)
-        return value
-    }
-
     private val scheduledEvents = PriorityQueue<ScheduledEvent>()
 
     /**
@@ -183,13 +187,217 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     }
     //endregion
 
+    //region GuiValue
+    //region RMValue
+    /**
+     * Creates an RMValue, automatically detecting lerpers if they exist and registering it for animation updates.
+     */
+    inline fun <reified T> rmValue(initialValue: T, noinline change: ((T, T) -> Unit)? = null): RMValue<T> {
+        @Suppress("UNCHECKED_CAST")
+        return rmValue(initialValue, Lerpers.getOrNull(Mirror.reflect<T>())?.value as Lerper<T>?, change)
+    }
+
+    /**
+     * Creates an RMValue and registers it for animation updates.
+     */
+    @JvmOverloads
+    fun <T> rmValue(initialValue: T, lerper: Lerper<T>? = null, change: ((T, T) -> Unit)? = null): RMValue<T> {
+        val value = RMValue(initialValue, lerper, change)
+        addAnimationTimeListener(value)
+        return value
+    }
+
+    /**
+     * Creates an RMValueBoolean and registers it for animation updates.
+     */
+    inline fun rmBoolean(initialValue: Boolean, crossinline change: (Boolean, Boolean) -> Unit): RMValueBoolean {
+        val value = RMValueBoolean(initialValue, ChangeListener.Boolean { old, new -> change(old, new) })
+        addAnimationTimeListener(value)
+        return value
+    }
+
+    /**
+     * Creates an RMValueBoolean and registers it for animation updates.
+     */
+    @JvmOverloads
+    fun rmBoolean(initialValue: Boolean, change: ChangeListener.Boolean? = null): RMValueBoolean {
+        val value = RMValueBoolean(initialValue, change)
+        addAnimationTimeListener(value)
+        return value
+    }
+
+    /**
+     * Creates an RMValueDouble and registers it for animation updates.
+     */
+    inline fun rmDouble(initialValue: Double, crossinline change: (Double, Double) -> Unit): RMValueDouble {
+        val value = RMValueDouble(initialValue, ChangeListener.Double { old, new -> change(old, new) })
+        addAnimationTimeListener(value)
+        return value
+    }
+
+    /**
+     * Creates an RMValueDouble and registers it for animation updates.
+     */
+    @JvmOverloads
+    fun rmDouble(initialValue: Double, change: ChangeListener.Double? = null): RMValueDouble {
+        val value = RMValueDouble(initialValue, change)
+        addAnimationTimeListener(value)
+        return value
+    }
+
+    /**
+     * Creates an RMValueInt and registers it for animation updates.
+     */
+    inline fun rmInt(initialValue: Int, crossinline change: (Int, Int) -> Unit): RMValueInt {
+        val value = RMValueInt(initialValue, ChangeListener.Int { old, new -> change(old, new) })
+        addAnimationTimeListener(value)
+        return value
+    }
+
+    /**
+     * Creates an RMValueInt and registers it for animation updates.
+     */
+    @JvmOverloads
+    fun rmInt(initialValue: Int, change: ChangeListener.Int? = null): RMValueInt {
+        val value = RMValueInt(initialValue, change)
+        addAnimationTimeListener(value)
+        return value
+    }
+
+    /**
+     * Creates an RMValueLong and registers it for animation updates.
+     */
+    inline fun rmLong(initialValue: Long, crossinline change: (Long, Long) -> Unit): RMValueLong {
+        val value = RMValueLong(initialValue, ChangeListener.Long { old, new -> change(old, new) })
+        addAnimationTimeListener(value)
+        return value
+    }
+
+    /**
+     * Creates an RMValueLong and registers it for animation updates.
+     */
+    @JvmOverloads
+    fun rmLong(initialValue: Long, change: ChangeListener.Long? = null): RMValueLong {
+        val value = RMValueLong(initialValue, change)
+        addAnimationTimeListener(value)
+        return value
+    }
+    //endregion
+
+    //region IMValue
+    /**
+     * Create an IMValue, automatically detecting lerpers if they exist and registering it for animation updates.
+     */
+    inline fun <reified T> imValue(noinline callback: () -> T): IMValue<T> {
+        @Suppress("UNCHECKED_CAST") val lerper = Lerpers.getOrNull(Mirror.reflect<T>())?.value as Lerper<T>?
+        val value = IMValue(callback, lerper)
+        addAnimationTimeListener(value)
+        return value
+    }
+
+    /**
+     * Create an IMValue, automatically detecting lerpers if they exist and registering it for animation updates.
+     */
+    inline fun <reified T> imValue(initialValue: T): IMValue<T> {
+        @Suppress("UNCHECKED_CAST") val lerper = Lerpers.getOrNull(Mirror.reflect<T>())?.value as Lerper<T>?
+        val value = IMValue(initialValue, lerper)
+        addAnimationTimeListener(value)
+        return value
+    }
+
+    /**
+     * Create an IMValue with a null initial value, automatically detecting lerpers if they exist and registering it for
+     * animation updates. This is needed because otherwise there are [resolution errors](https://youtrack.jetbrains.com/issue/KT-13683).
+     * Despite that issue being marked as fixed, as of 6/1/20 it actually isn't.
+     */
+    inline fun <reified T> imValue(): IMValue<T?> {
+        @Suppress("UNCHECKED_CAST") val lerper = Lerpers.getOrNull(Mirror.reflect<T>())?.value as Lerper<T?>?
+        val value = IMValue<T?>(null, lerper)
+        addAnimationTimeListener(value)
+        return value
+    }
+
+    /**
+     * Creates an IMValueBoolean and registers it for animation updates.
+     */
+    fun imBoolean(initialValue: Boolean): IMValueBoolean {
+        val value = IMValueBoolean(initialValue)
+        addAnimationTimeListener(value)
+        return value
+    }
+
+    /**
+     * Creates an RMValueBoolean and registers it for animation updates.
+     */
+    inline fun imBoolean(crossinline callback: () -> Boolean): IMValueBoolean {
+        val value = IMValueBoolean(BooleanSupplier { callback() })
+        addAnimationTimeListener(value)
+        return value
+    }
+
+    /**
+     * Creates an IMValueDouble and registers it for animation updates.
+     */
+    fun imDouble(initialValue: Double): IMValueDouble {
+        val value = IMValueDouble(initialValue)
+        addAnimationTimeListener(value)
+        return value
+    }
+
+    /**
+     * Creates an RMValueDouble and registers it for animation updates.
+     */
+    inline fun imDouble(crossinline callback: () -> Double): IMValueDouble {
+        val value = IMValueDouble(DoubleSupplier { callback() })
+        addAnimationTimeListener(value)
+        return value
+    }
+
+    /**
+     * Creates an IMValueInt and registers it for animation updates.
+     */
+    fun imInt(initialValue: Int): IMValueInt {
+        val value = IMValueInt(initialValue)
+        addAnimationTimeListener(value)
+        return value
+    }
+
+    /**
+     * Creates an RMValueInt and registers it for animation updates.
+     */
+    inline fun imInt(crossinline callback: () -> Int): IMValueInt {
+        val value = IMValueInt(IntSupplier { callback() })
+        addAnimationTimeListener(value)
+        return value
+    }
+
+    /**
+     * Creates an IMValueLong and registers it for animation updates.
+     */
+    fun imLong(initialValue: Long): IMValueLong {
+        val value = IMValueLong(initialValue)
+        addAnimationTimeListener(value)
+        return value
+    }
+
+    /**
+     * Creates an RMValueLong and registers it for animation updates.
+     */
+    inline fun imLong(crossinline callback: () -> Long): IMValueLong {
+        val value = IMValueLong(LongSupplier { callback() })
+        addAnimationTimeListener(value)
+        return value
+    }
+    //endregion
+    //endregion
+
     //region LayerBaseHandler
     /**
      * Whether this component should be drawn. If this value is false, this component won't respond to input events.
      *
      * Drives [isVisible]
      */
-    val isVisible_im: IMValueBoolean = IMValueBoolean(true)
+    val isVisible_im: IMValueBoolean = imBoolean(true)
     /**
      * Whether this component should be drawn. If this value is false, this component won't respond to input events.
      *
@@ -302,7 +510,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      *
      * Drives [zIndex]
      */
-    val zIndex_rm = RMValueDouble(1.0)
+    val zIndex_rm: RMValueDouble = rmDouble(1.0)
     /**
      * The sort index and render order for the layer. Use [GuiLayer.OVERLAY_Z] and [GuiLayer.UNDERLAY_Z] to create
      * layers that appear on top or below _literally everything else._ In order to maintain this property, please
@@ -401,7 +609,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * The clockwise rotation in radians about the anchor.
      */
-    val rotation_rm: RMValueDouble = RMValueDouble(0.0) { old, new ->
+    val rotation_rm: RMValueDouble = rmDouble(0.0) { old, new ->
         if(old != new) {
             matrixDirty = true
         }
@@ -707,13 +915,13 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
 
     //region LayerRenderHandler
 
-    val tooltip_im: IMValue<List<String>?> = IMValue()
+    val tooltip_im: IMValue<List<String>?> = imValue()
 
     /**
      * An opacity value in the range [0, 1]. If this is not equal to 1 the layer will be rendered to an FBO and drawn
      * to a texture. This process clips the layer to its bounds.
      */
-    val opacity_rm: RMValueDouble = RMValueDouble(1.0)
+    val opacity_rm: RMValueDouble = rmDouble(1.0)
     /**
      * An opacity value in the range [0, 1]. If this is not equal to 1 the layer will be rendered to an FBO and drawn
      * to a texture. This process clips the layer to its bounds.

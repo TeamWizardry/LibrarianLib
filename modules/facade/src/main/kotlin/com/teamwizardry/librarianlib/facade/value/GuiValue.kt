@@ -8,9 +8,9 @@ import com.teamwizardry.librarianlib.math.Easing
 import java.util.PriorityQueue
 
 /**
- * The common functionality for both primitive and generic RMValues.
+ * The common functionality for both primitive and generic GuiValues
  */
-abstract class ValueBase<T>: AnimationTimeListener {
+abstract class GuiValue<T>: AnimationTimeListener {
     private var _animationValue: T? = null
     private var currentTime: Float = 0f
     private val animations = PriorityQueue<ScheduledAnimation<T>>()
@@ -20,7 +20,7 @@ abstract class ValueBase<T>: AnimationTimeListener {
     @JvmOverloads
     fun animate(from: T, to: T, duration: Float, easing: Easing = Easing.linear, delay: Float = 0f): BasicAnimation<T> {
         if(!hasLerper)
-            throw IllegalStateException("Can not animate an RMValue that has no lerper")
+            throw IllegalStateException("Can not animate a GuiValue that has no lerper")
         val animation = SimpleAnimation(from, to, duration, easing, false)
         scheduleAnimation(delay, animation)
         return animation
@@ -29,7 +29,7 @@ abstract class ValueBase<T>: AnimationTimeListener {
     @JvmOverloads
     fun animate(to: T, duration: Float, easing: Easing = Easing.linear, delay: Float = 0f): BasicAnimation<T> {
         if(!hasLerper)
-            throw IllegalStateException("Can not animate an RMValue that has no lerper")
+            throw IllegalStateException("Can not animate a GuiValue that has no lerper")
         val animation = SimpleAnimation(currentValue, to, duration, easing, true)
         scheduleAnimation(delay, animation)
         return animation
@@ -45,7 +45,7 @@ abstract class ValueBase<T>: AnimationTimeListener {
 
     //region Subclass API
     /**
-     * Whether this RMValue has a lerper, and thus can be animated
+     * Whether this GuiValue has a lerper, and thus can be animated
      */
     protected abstract val hasLerper: Boolean
 
@@ -65,7 +65,8 @@ abstract class ValueBase<T>: AnimationTimeListener {
     protected abstract fun animationChange(from: T, to: T)
 
     /**
-     * Called to persist the final value of an animation when it completes
+     * Called to persist the final value of an animation when it completes. This is called _before_ the animation is
+     * removed.
      */
     protected abstract fun persistAnimation(value: T)
 
@@ -103,6 +104,7 @@ abstract class ValueBase<T>: AnimationTimeListener {
         fun startAnimation(newAnimation: ScheduledAnimation<T>) {
             animation = newAnimation
             newAnimation.start()
+
         }
 
         while(animations.isNotEmpty() && animations.peek().start <= time) {
@@ -136,7 +138,7 @@ abstract class ValueBase<T>: AnimationTimeListener {
 
     val innerLerper = object: Lerper<T>() {
         override fun lerp(from: T, to: T, fraction: Float): T {
-            return this@ValueBase.lerp(from, to, fraction)
+            return this@GuiValue.lerp(from, to, fraction)
         }
     }
 

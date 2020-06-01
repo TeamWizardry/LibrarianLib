@@ -21,7 +21,7 @@ class FluidGaugeLayer(x: Int, y: Int, width: Int, height: Int) : LinearGaugeLaye
     /**
      * @see fluid
      */
-    val fluid_im: IMValue<Fluid?> = IMValue()
+    val fluid_im: IMValue<Fluid?> = imValue()
     /**
      * The fluid to render. No fluid is rendered if this is null
      */
@@ -30,13 +30,13 @@ class FluidGaugeLayer(x: Int, y: Int, width: Int, height: Int) : LinearGaugeLaye
     /**
      * @see flow
      */
-    val flow_im: IMValue<Cardinal2d?> = IMValue()
+    val flow_im: IMValue<Cardinal2d?> = imValue()
     /**
      * The direction the fluid should appear to flow, if at all.
      */
     var flow: Cardinal2d? by flow_im
 
-    private val fluidSprite = FluidSprite()
+    private val fluidSprite = FluidSprite(this)
     private val pinnedFluidSprite = object : WrappedSprite() {
         override val wrapped: ISprite? get() = fluidSprite
         override val pinTop: Boolean

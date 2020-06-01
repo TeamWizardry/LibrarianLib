@@ -15,9 +15,9 @@ class SpriteLayer(var sprite: ISprite?, x: Int, y: Int, width: Int, height: Int)
     constructor(sprite: ISprite?): this(sprite, 0, 0)
     constructor(): this(null, 0, 0)
 
-    var tint_im: IMValue<Color> = IMValue(Color.WHITE)
+    var tint_im: IMValue<Color> = imValue(Color.WHITE)
     var tint: Color by tint_im
-    var animationFrame_im: IMValueInt = IMValueInt(0)
+    var animationFrame_im: IMValueInt = imInt(0)
     var animationFrame: Int by animationFrame_im
 
     override fun draw(context: GuiDrawContext) {

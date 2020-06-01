@@ -17,7 +17,7 @@ class RectLayer(color: Color, x: Int, y: Int, width: Int, height: Int): GuiLayer
     constructor(color: Color): this(color, 0, 0)
     constructor(): this(Color.white)
 
-    val color_im: IMValue<Color> = IMValue(color)
+    val color_im: IMValue<Color> = imValue(color)
     var color: Color by color_im
 
     override fun draw(context: GuiDrawContext) {

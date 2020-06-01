@@ -25,15 +25,15 @@ class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): GuiLayer(
     init {
         anchor = vec(0.5, 0.5)
     }
-    val color_im: IMValue<Color> = IMValue(color)
+    val color_im: IMValue<Color> = imValue(color)
     var color: Color by color_im
 
-    val startAngle_im: IMValueDouble = IMValueDouble(0.0)
+    val startAngle_im: IMValueDouble = imDouble(0.0)
     var startAngle: Double by startAngle_im
-    val endAngle_im: IMValueDouble = IMValueDouble(2*PI)
+    val endAngle_im: IMValueDouble = imDouble(2*PI)
     var endAngle: Double by endAngle_im
 
-    val segmentSize_im: IMValueDouble = IMValueDouble(Math.toRadians(5.0))
+    val segmentSize_im: IMValueDouble = imDouble(Math.toRadians(5.0))
     var segmentSize: Double by segmentSize_im
 
     override fun isPointInBounds(point: Vec2d): Boolean {

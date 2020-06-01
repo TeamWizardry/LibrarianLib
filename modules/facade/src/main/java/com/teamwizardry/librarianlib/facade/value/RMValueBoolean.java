@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("Duplicates")
-public class RMValueBoolean {
+public class RMValueBoolean extends GuiValue<Boolean> {
     private boolean value;
     @Nullable
     private final ChangeListener.Boolean change;
@@ -15,7 +15,7 @@ public class RMValueBoolean {
         this.change = null;
     }
 
-    public RMValueBoolean(boolean initialValue, @NotNull ChangeListener.Boolean change) {
+    public RMValueBoolean(boolean initialValue, @Nullable ChangeListener.Boolean change) {
         this.value = initialValue;
         this.change = change;
     }
@@ -46,6 +46,32 @@ public class RMValueBoolean {
      * A kotlin delegate method, used to allow properties to delegate to this IMValue (`var property by property_rm`)
      */
     public void setValue(Object thisRef, KProperty property, boolean value) {
+        set(value);
+    }
+
+    @Override
+    protected boolean getHasLerper() {
+        return true;
+    }
+
+    @Override
+    protected Boolean getCurrentValue() {
+        return get();
+    }
+
+    @Override
+    protected Boolean lerp(Boolean from, Boolean to, float fraction) {
+        return fraction < 0.5f ? from : to;
+    }
+
+    @Override
+    protected void animationChange(Boolean from, Boolean to) {
+        if(change != null)
+            change.report(from, to);
+    }
+
+    @Override
+    protected void persistAnimation(Boolean value) {
         set(value);
     }
 }

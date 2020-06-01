@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("Duplicates")
-public class RMValueInt {
+public class RMValueInt extends GuiValue<Integer> {
     private int value;
     @Nullable
     private final ChangeListener.Int change;
@@ -19,7 +19,7 @@ public class RMValueInt {
         this.change = null;
     }
 
-    public RMValueInt(int initialValue, @NotNull ChangeListener.Int change) {
+    public RMValueInt(int initialValue, @Nullable ChangeListener.Int change) {
         this.value = initialValue;
         this.change = change;
     }
@@ -50,6 +50,32 @@ public class RMValueInt {
      * A kotlin delegate method, used to allow properties to delegate to this IMValue (`var property by property_rm`)
      */
     public void setValue(Object thisRef, KProperty property, int value) {
+        set(value);
+    }
+
+    @Override
+    protected boolean getHasLerper() {
+        return true;
+    }
+
+    @Override
+    protected Integer getCurrentValue() {
+        return get();
+    }
+
+    @Override
+    protected Integer lerp(Integer from, Integer to, float fraction) {
+        return (int)(from + (to - from) * fraction);
+    }
+
+    @Override
+    protected void animationChange(Integer from, Integer to) {
+        if(change != null)
+            change.report(from, to);
+    }
+
+    @Override
+    protected void persistAnimation(Integer value) {
         set(value);
     }
 }

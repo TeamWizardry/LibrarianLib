@@ -1,16 +1,12 @@
 package com.teamwizardry.librarianlib.facade.value;
 
-import com.teamwizardry.librarianlib.math.Easing;
 import kotlin.reflect.KProperty;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.DoubleSupplier;
 
 @SuppressWarnings("Duplicates")
-public class IMValueDouble {
+public class IMValueDouble extends GuiValue<Double> {
     private Storage storage;
 
     private IMValueDouble(Storage initialStorage) {
@@ -77,6 +73,31 @@ public class IMValueDouble {
         } else {
             return null;
         }
+    }
+
+    @Override
+    protected boolean getHasLerper() {
+        return true;
+    }
+
+    @Override
+    protected Double getCurrentValue() {
+        return get();
+    }
+
+    @Override
+    protected Double lerp(Double from, Double to, float fraction) {
+        return from + (to - from) * fraction;
+    }
+
+    @Override
+    protected void animationChange(Double from, Double to) {
+        // nop
+    }
+
+    @Override
+    protected void persistAnimation(Double value) {
+        setValue(value);
     }
 
     private static abstract class Storage {

@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.facade.components.minecraft
 
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.facade.component.GuiLayer
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.math.Cardinal2d
 import com.teamwizardry.librarianlib.mosaic.ISprite
@@ -11,11 +12,11 @@ import net.minecraft.fluid.Fluid
 /**
  * Easy way to render an optionally flowing fluid.
  */
-class FluidSprite : WrappedSprite() {
+class FluidSprite(layer: GuiLayer) : WrappedSprite() {
     /**
      * @see fluid
      */
-    val fluid_im: IMValue<Fluid?> = IMValue()
+    val fluid_im: IMValue<Fluid?> = layer.imValue()
     /**
      * The fluid to be drawn
      */
@@ -24,7 +25,7 @@ class FluidSprite : WrappedSprite() {
     /**
      * @see flow
      */
-    val flow_im: IMValue<Cardinal2d?> = IMValue()
+    val flow_im: IMValue<Cardinal2d?> = layer.imValue()
     /*
      * The direction the fluid should appear to flow, if at all.
      */

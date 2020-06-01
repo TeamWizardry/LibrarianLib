@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.function.IntSupplier;
 
 @SuppressWarnings("Duplicates")
-public class IMValueInt {
+public class IMValueInt extends GuiValue<Integer> {
     private Storage storage;
 
     private IMValueInt(Storage initialStorage) {
@@ -77,6 +77,31 @@ public class IMValueInt {
         } else {
             return null;
         }
+    }
+
+    @Override
+    protected boolean getHasLerper() {
+        return true;
+    }
+
+    @Override
+    protected Integer getCurrentValue() {
+        return get();
+    }
+
+    @Override
+    protected Integer lerp(Integer from, Integer to, float fraction) {
+        return (int) (from + (to - from) * fraction);
+    }
+
+    @Override
+    protected void animationChange(Integer from, Integer to) {
+        // nop
+    }
+
+    @Override
+    protected void persistAnimation(Integer value) {
+        setValue(value);
     }
 
     private static abstract class Storage {

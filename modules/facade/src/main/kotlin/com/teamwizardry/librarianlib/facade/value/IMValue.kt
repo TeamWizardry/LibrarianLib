@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.facade.value
 
+import com.teamwizardry.librarianlib.core.util.lerp.Lerper
 import com.teamwizardry.librarianlib.facade.component.GuiLayer
 import java.util.function.Supplier
 import kotlin.reflect.KProperty
@@ -7,6 +8,8 @@ import kotlin.reflect.KProperty
 /**
  * A kotlin delegate that can be set to fixed values or be told to generate values using a callback
  * (a la immediate mode GUIs, the namesake of this Immediate Mode Value class).
+ *
+ * **Note!** Animating an IMValue will remove its callback once it completes.
  *
  * The naming convention is as follows:
  * ```kotlin
@@ -17,16 +20,16 @@ import kotlin.reflect.KProperty
  * For [GuiLayers][GuiLayer], use the [GuiLayer.imValue] method, since that will
  */
 @Suppress("Duplicates")
-class IMValue<T> private constructor(private var storage: Storage<T>) {
-    constructor(initialValue: T): this(Storage.Fixed(initialValue))
-    constructor(initialCallback: Supplier<T>): this(Storage.Callback(initialCallback))
-    constructor(initialCallback: () -> T): this(Storage.Callback(Supplier(initialCallback)))
+class IMValue<T> private constructor(private var storage: Storage<T>, private val lerper: Lerper<T>?): GuiValue<T>() {
+    constructor(initialValue: T, lerper: Lerper<T>?): this(Storage.Fixed(initialValue), lerper)
+    constructor(initialCallback: Supplier<T>, lerper: Lerper<T>?): this(Storage.Callback(initialCallback), lerper)
+    constructor(initialCallback: () -> T, lerper: Lerper<T>?): this(Storage.Callback(Supplier(initialCallback)), lerper)
 
     /**
      * Gets the current value
      */
     fun get(): T {
-        return storage.get()
+        return if(useAnimationValue) animationValue else storage.get()
     }
 
     /**
@@ -56,7 +59,7 @@ class IMValue<T> private constructor(private var storage: Storage<T>) {
      */
     @JvmSynthetic
     operator fun getValue(thisRef: Any, property: KProperty<*>): T {
-        return storage.get()
+        return get()
     }
 
     /**
@@ -75,6 +78,25 @@ class IMValue<T> private constructor(private var storage: Storage<T>) {
         set(Supplier { f() })
     }
 
+    override val hasLerper: Boolean
+        get() = lerper != null
+    override val currentValue: T
+        get() = get()
+
+    override fun lerp(from: T, to: T, fraction: Float): T {
+        if(lerper == null)
+            throw IllegalStateException("Can not lerp an IMValue that has no lerper")
+        return lerper.lerp(from, to, fraction)
+    }
+
+    override fun animationChange(from: T, to: T) {
+        // nop
+    }
+
+    override fun persistAnimation(value: T) {
+        setValue(value)
+    }
+
     private sealed class Storage<T> {
         abstract fun get(): T
 
@@ -86,18 +108,5 @@ class IMValue<T> private constructor(private var storage: Storage<T>) {
             override fun get() = callback.get()
         }
     }
-
-    companion object {
-        /**
-         * Initializes an instance of IMValue that initially contains `null`. This is not a constructor because of the
-         * requirement that the type be nullable in kotlin, and is required because passing `null` to the constructor
-         * causes ambiguity unless one explicitly specifies the type arguments for the constructor. (Nobody wants to
-         * double up on type arguments, so just do `IMValue()`)
-         */
-        operator fun <T> invoke(): IMValue<T?> {
-            return IMValue<T?>(null)
-        }
-    }
-
 }
 

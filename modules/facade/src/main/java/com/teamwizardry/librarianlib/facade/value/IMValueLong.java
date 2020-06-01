@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.function.LongSupplier;
 
 @SuppressWarnings("Duplicates")
-public class IMValueLong {
+public class IMValueLong extends GuiValue<Long> {
     private Storage storage;
 
     private IMValueLong(Storage initialStorage) {
@@ -77,6 +77,31 @@ public class IMValueLong {
         } else {
             return null;
         }
+    }
+
+    @Override
+    protected boolean getHasLerper() {
+        return true;
+    }
+
+    @Override
+    protected Long getCurrentValue() {
+        return get();
+    }
+
+    @Override
+    protected Long lerp(Long from, Long to, float fraction) {
+        return (long)(from + (to - from) * (double)fraction);
+    }
+
+    @Override
+    protected void animationChange(Long from, Long to) {
+        // nop
+    }
+
+    @Override
+    protected void persistAnimation(Long value) {
+        setValue(value);
     }
 
     private static abstract class Storage {

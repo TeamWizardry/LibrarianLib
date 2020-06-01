@@ -80,7 +80,7 @@ class GradientLayer(val axis: Axis2d, posX: Int, posY: Int, width: Int, height: 
     }
 
     inner class ColorStop(location: Double, color: Color) {
-        val location_rm: RMValueDouble = RMValueDouble(location)
+        val location_rm: RMValueDouble = rmDouble(location)
         val location: Double by location_rm
         val color_rm: RMValue<Color> = rmValue(color)
         var color: Color by color_rm

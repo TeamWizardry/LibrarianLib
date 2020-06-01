@@ -27,7 +27,7 @@ open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String
     /**
      * The colorPrimary of the text
      */
-    val color_im: IMValue<Color> = IMValue(Color.BLACK)
+    val color_im: IMValue<Color> = imValue(Color.BLACK)
     var color: Color by color_im
 
     private val container: TextContainer = TextContainer()

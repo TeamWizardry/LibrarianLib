@@ -1,14 +1,12 @@
 package com.teamwizardry.librarianlib.facade.value;
 
-import com.teamwizardry.librarianlib.math.Easing;
 import kotlin.reflect.KProperty;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BooleanSupplier;
 
 @SuppressWarnings("Duplicates")
-public class IMValueBoolean {
+public class IMValueBoolean extends GuiValue<Boolean> {
     private Storage storage;
 
     private IMValueBoolean(Storage initialStorage) {
@@ -75,6 +73,31 @@ public class IMValueBoolean {
         } else {
             return null;
         }
+    }
+
+    @Override
+    protected boolean getHasLerper() {
+        return true;
+    }
+
+    @Override
+    protected Boolean getCurrentValue() {
+        return get();
+    }
+
+    @Override
+    protected Boolean lerp(Boolean from, Boolean to, float fraction) {
+        return fraction < 0.5f ? from : to;
+    }
+
+    @Override
+    protected void animationChange(Boolean from, Boolean to) {
+        // nop
+    }
+
+    @Override
+    protected void persistAnimation(Boolean value) {
+        setValue(value);
     }
 
     private static abstract class Storage {

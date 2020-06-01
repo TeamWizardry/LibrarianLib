@@ -15,7 +15,7 @@ open class LinearGaugeLayer: GuiLayer {
     /**
      * @see fillFraction
      */
-    val fillFraction_im: IMValueDouble = IMValueDouble(1.0)
+    val fillFraction_im: IMValueDouble = imDouble(1.0)
     /**
      * How full the gauge is. Ranges from 0–1
      */
@@ -24,7 +24,7 @@ open class LinearGaugeLayer: GuiLayer {
     /**
      * @see direction
      */
-    val direction_im: IMValue<Cardinal2d> = IMValue(Cardinal2d.UP)
+    val direction_im: IMValue<Cardinal2d> = imValue(Cardinal2d.UP)
     /**
      * The direction to expand (e.g. [UP][Cardinal2d.UP] means the gauge will sit at the bottom and rise up)
      */
