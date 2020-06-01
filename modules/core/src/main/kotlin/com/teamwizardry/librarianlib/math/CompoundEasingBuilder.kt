@@ -23,7 +23,7 @@ class CompoundEasingBuilder(private val initialValue: Float) {
      * Hold the current value for the passed duration.
      */
     fun hold(duration: Float): CompoundEasingBuilder {
-        val value = keyframes.lastOrNull()?.value ?: 0f
+        val value = keyframes.lastOrNull()?.value ?: initialValue
         keyframes.add(BuildingKeyframe(duration, value, Easing.linear))
         return this
     }
@@ -61,7 +61,7 @@ class CompoundEasingBuilder(private val initialValue: Float) {
         }
 
         override fun ease(progress: Float): Float {
-            if(previous == null)
+            if(previous == null || duration == 0f)
                 return value
             val adjustedProgress = (progress - previous.time) / duration
             return previous.value + (value - previous.value) * easingBefore.ease(adjustedProgress)

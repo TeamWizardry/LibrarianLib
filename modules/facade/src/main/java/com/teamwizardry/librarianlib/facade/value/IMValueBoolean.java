@@ -66,13 +66,6 @@ public class IMValueBoolean {
     }
 
     /**
-     * A kotlin helper to allow cleanly specifying the callback (`something.theValue_im { return someValue }`)
-     */
-    public void invoke(BooleanSupplier callback) {
-        set(callback);
-    }
-
-    /**
      * Gets the current callback, or null if this IMValueBoolean has a fixed value
      */
     @Nullable

@@ -79,10 +79,10 @@ class GradientLayer(val axis: Axis2d, posX: Int, posY: Int, width: Int, height: 
 
     }
 
-    class ColorStop(location: Double, color: Color) {
+    inner class ColorStop(location: Double, color: Color) {
         val location_rm: RMValueDouble = RMValueDouble(location)
         val location: Double by location_rm
-        val color_rm: RMValue<Color> = RMValue(color)
+        val color_rm: RMValue<Color> = rmValue(color)
         var color: Color by color_rm
 
         override fun equals(other: Any?): Boolean {

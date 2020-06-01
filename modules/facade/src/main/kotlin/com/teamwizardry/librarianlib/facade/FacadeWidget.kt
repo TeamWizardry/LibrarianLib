@@ -112,6 +112,7 @@ open class FacadeWidget(
             main.pos = ((root.size - main.size) / 2).round()
 
             root.triggerEvent(GuiLayerEvents.Update())
+            root.updateAnimations(Client.time.time)
 //            updateLayout()
 
             RenderSystem.pushMatrix()

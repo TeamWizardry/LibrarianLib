@@ -11,6 +11,7 @@ import java.util.SortedMap
 import java.util.SortedSet
 import java.util.TreeMap
 import java.util.TreeSet
+import java.util.WeakHashMap
 
 // Unmodifiable/synchronized wrappers ==================================================================================
 
@@ -59,6 +60,14 @@ fun <T> Set<T>.toIdentitySet(): MutableSet<T> = identitySetOf<T>().also { it.add
 
 fun <K, V> Map<K, V>.unmodifiableIdentityCopy(): Map<K, V> = Collections.unmodifiableMap(this.toIdentityMap())
 fun <T> Set<T>.unmodifiableIdentityCopy(): Set<T> = Collections.unmodifiableSet(this.toIdentitySet())
+
+// Weak set ============================================================================================================
+
+fun <T> weakSetOf(): MutableSet<T> = Collections.newSetFromMap(WeakHashMap())
+fun <T> weakSetOf(vararg elements: T): MutableSet<T> {
+    val map = WeakHashMap<T, Boolean>(mapCapacity(elements.size))
+    return elements.toCollection(Collections.newSetFromMap(map))
+}
 
 // Private utils =======================================================================================================
 

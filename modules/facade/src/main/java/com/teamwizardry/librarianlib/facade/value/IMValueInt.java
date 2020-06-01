@@ -68,13 +68,6 @@ public class IMValueInt {
     }
 
     /**
-     * A kotlin helper to allow cleanly specifying the callback (`something.theValue_im { return someValue }`)
-     */
-    public void invoke(IntSupplier callback) {
-        set(callback);
-    }
-
-    /**
      * Gets the current callback, or null if this IMValueInt has a fixed value
      */
     @Nullable

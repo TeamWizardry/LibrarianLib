@@ -68,13 +68,6 @@ public class IMValueLong {
     }
 
     /**
-     * A kotlin helper to allow cleanly specifying the callback (`something.theValue_im { return someValue }`)
-     */
-    public void invoke(LongSupplier callback) {
-        set(callback);
-    }
-
-    /**
      * Gets the current callback, or null if this IMValueLong has a fixed value
      */
     @Nullable

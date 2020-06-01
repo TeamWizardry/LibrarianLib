@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.facade.value
 
+import com.teamwizardry.librarianlib.facade.component.GuiLayer
 import java.util.function.Supplier
 import kotlin.reflect.KProperty
 
@@ -7,12 +8,13 @@ import kotlin.reflect.KProperty
  * A kotlin delegate that can be set to fixed values or be told to generate values using a callback
  * (a la immediate mode GUIs, the namesake of this Immediate Mode Value class).
  *
- * The convention until Bluexin yells at me or approves is as follows:
- *
+ * The naming convention is as follows:
  * ```kotlin
  * val yourProperty_im = IMValue<SomeType>(initialValue)
  * var yourProperty by yourProperty_im
  * ```
+ *
+ * For [GuiLayers][GuiLayer], use the [GuiLayer.imValue] method, since that will
  */
 @Suppress("Duplicates")
 class IMValue<T> private constructor(private var storage: Storage<T>) {
@@ -52,6 +54,7 @@ class IMValue<T> private constructor(private var storage: Storage<T>) {
     /**
      * A kotlin delegate method, used to allow properties to delegate to this IMValue (`var property by property_im`)
      */
+    @JvmSynthetic
     operator fun getValue(thisRef: Any, property: KProperty<*>): T {
         return storage.get()
     }
@@ -59,15 +62,17 @@ class IMValue<T> private constructor(private var storage: Storage<T>) {
     /**
      * A kotlin delegate method, used to allow properties to delegate to this IMValue (`var property by property_im`)
      */
+    @JvmSynthetic
     operator fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
         setValue(value)
     }
 
     /**
-     * A kotlin helper to allow cleanly specifying the callback (`something.theValue_im { return someValue }`)
+     * (SAM interfaces in kotlin are a pain)
      */
-    operator fun invoke(f: () -> T) {
-        set(Supplier(f))
+    @JvmSynthetic
+    inline fun set(crossinline f: () -> T) {
+        set(Supplier { f() })
     }
 
     private sealed class Storage<T> {

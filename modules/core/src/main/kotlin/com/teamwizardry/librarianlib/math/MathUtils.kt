@@ -31,11 +31,6 @@ fun ceilInt(value: Float): Int = ceil(value).toInt()
 @JvmSynthetic
 fun ceilInt(value: Double): Int = ceil(value).toInt()
 
-@JvmSynthetic
-fun roundInt(value: Float): Int = round(value).toInt()
-@JvmSynthetic
-fun roundInt(value: Double): Int = round(value).toInt()
-
 /**
  * Get [Vec2d] instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
  * number of Vec2d allocations when they are used as intermediates, e.g. when adding one Vec2d to another to offset it,

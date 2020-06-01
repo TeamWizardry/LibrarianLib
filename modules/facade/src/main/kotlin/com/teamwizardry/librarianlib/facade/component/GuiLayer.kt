@@ -2,6 +2,9 @@ package com.teamwizardry.librarianlib.facade.component
 
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
+import com.teamwizardry.librarianlib.core.util.kotlin.weakSetOf
+import com.teamwizardry.librarianlib.core.util.lerp.Lerper
+import com.teamwizardry.librarianlib.core.util.lerp.Lerpers
 import com.teamwizardry.librarianlib.facade.component.supporting.*
 import com.teamwizardry.librarianlib.facade.logger
 import com.teamwizardry.librarianlib.facade.value.IMValue
@@ -20,13 +23,16 @@ import com.teamwizardry.librarianlib.math.fastSin
 import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.etcetera.eventbus.Event
 import com.teamwizardry.librarianlib.etcetera.eventbus.EventBus
+import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11
 import java.lang.Exception
 import java.util.ConcurrentModificationException
+import java.util.PriorityQueue
 import java.util.function.Consumer
 import kotlin.math.PI
+import kotlin.math.floor
 
 /**
  * The fundamental building block of a LibrarianLib GUI. Generally a single unit of visual or organizational design.
@@ -35,14 +41,13 @@ import kotlin.math.PI
  *
  * Vanilla GUIs very basic, where each frame you personally draw each texture and have to manually handle positioning
  * as the layout changes (though most likely it won't, because the math quickly becomes a pain). Vanilla does have the
- * [GuiButton][net.minecraft.client.gui.GuiButton], which isn't drawn or processed by you, however LibrarianLib's
- * layers and [components][GuiLayer] blow GuiButton clean out of the water with their versatility and ability to
- * easily create highly complex and dynamic interfaces.
+ * [Button][net.minecraft.client.gui.widget.button.Button], which isn't processed by you, however LibrarianLib's
+ * layers blow GuiButton clean out of the water with their versatility and ability to easily create highly complex and
+ * dynamic interfaces.
  *
  * Over its evolution the GUI framework has been influenced largely by two things. It started out mostly inspired by
  * HTML's hierarchical nature, then later in its life it started to acquire many of the traits and structures from
- * Cocoa Touch. If you are familiar Cocoa Touch, many these concepts will be familiar to you, with layers and
- * components being CGLayer and UIView respectively.
+ * Cocoa Touch. If you are familiar Cocoa Touch, many these concepts will be familiar to you.
  *
  * **Usage:**
  *
@@ -56,16 +61,6 @@ import kotlin.math.PI
  *
  * Layers that have custom rendering (as opposed to consisting solely of other layers) can override the [draw] method
  * to draw their content.
- *
- * Note: The implementations of various responsibilities are in separate classes and implemented by GuiLayer via delegation.
- * This allows a large API to be accessible and overridable directly on the layer, while also allowing the various
- * responsibilities to stay separate.
- *
- * @see ILayerGeometry
- * @see ILayerRelationships
- * @see ILayerRendering
- * @see ILayerClipping
- * @See ILayerBase
  */
 open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSpace2D {
     constructor(posX: Int, posY: Int): this(posX, posY, 0, 0)
@@ -108,6 +103,84 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     open fun draw(context: GuiDrawContext) {
 
     }
+
+    //region Animation
+    private val animationTimeListeners = weakSetOf<AnimationTimeListener>()
+
+    fun addAnimationTimeListener(listener: AnimationTimeListener) {
+        animationTimeListeners.add(listener)
+    }
+    fun removeAnimationTimeListener(listener: AnimationTimeListener) {
+        animationTimeListeners.remove(listener)
+    }
+
+    /**
+     * The current time for animations, expressed in ticks since this layer was first added to the layer hierarchy.
+     */
+    var animationTime: Float = 0f
+        private set
+    private var baseTime: Float = Float.NaN
+
+    internal fun updateAnimations(time: Float) {
+        if(baseTime.isNaN())
+            baseTime = floor(time)
+        animationTime = time - baseTime
+
+        while(scheduledEvents.isNotEmpty() && scheduledEvents.peek().time <= animationTime) {
+            scheduledEvents.poll().event.run()
+        }
+
+        animationTimeListeners.forEach {
+            it.updateTime(animationTime)
+        }
+        children.forEach { it.updateAnimations(time) }
+    }
+
+    inline fun <reified T> rmValue(initialValue: T, noinline change: (T, T) -> Unit = { _, _ -> }): RMValue<T> {
+        @Suppress("UNCHECKED_CAST") val lerper = Lerpers.getOrNull(Mirror.reflect<T>())?.value as Lerper<T>?
+        val value = RMValue(initialValue, lerper, change)
+        addAnimationTimeListener(value)
+        return value
+    }
+
+    private val scheduledEvents = PriorityQueue<ScheduledEvent>()
+
+    /**
+     * Run the specified callback once [animationTime] is >= [time]
+     */
+    fun schedule(time: Float, callback: Runnable) {
+        scheduledEvents.add(ScheduledEvent(time, callback))
+    }
+
+    /**
+     * Run the specified callback once [animationTime] is >= [time]
+     */
+    @JvmSynthetic
+    inline fun schedule(time: Float, crossinline callback: () -> Unit) {
+        schedule(time, Runnable { callback() })
+    }
+
+    /**
+     * Run the specified callback after [time] ticks.
+     */
+    fun delay(time: Float, callback: Runnable) {
+        schedule(animationTime + time, callback)
+    }
+
+    /**
+     * Run the specified callback after [time] ticks.
+     */
+    @JvmSynthetic
+    inline fun delay(time: Float, crossinline callback: () -> Unit) {
+        schedule(animationTime + time, Runnable { callback() })
+    }
+
+    private data class ScheduledEvent(val time: Float, val event: Runnable): Comparable<ScheduledEvent> {
+        override fun compareTo(other: ScheduledEvent): Int {
+            return other.time.compareTo(this.time)
+        }
+    }
+    //endregion
 
     //region LayerBaseHandler
     /**
@@ -272,8 +345,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
             }
         }
     /**
-     * The bounding rectangle of this layer in its own coordinate space. The "inner" edge. Takes into account
-     * [contentsOffset], so the rectangle's position may not be the origin
+     * The bounding rectangle of this layer in its own coordinate space. The "inner" edge.
      */
     val bounds: Rect2d
         get() = Rect2d(vec(0, 0), size)
@@ -281,7 +353,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * The size of the layer in its own coordinate space
      */
-    val size_rm: RMValue<Vec2d> = RMValue(vec(width, height)) { old, new ->
+    val size_rm: RMValue<Vec2d> = rmValue(vec(width, height)) { old, new ->
         if(old != new) {
             matrixDirty = true
         }
@@ -294,7 +366,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * The position of the layer's anchor point in its parent's coordinate space.
      */
-    val pos_rm: RMValue<Vec2d> = RMValue(vec(posX, posY)) { old, new ->
+    val pos_rm: RMValue<Vec2d> = rmValue(vec(posX, posY)) { old, new ->
         if(old != new) {
             matrixDirty = true
         }
@@ -308,7 +380,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * The layer's scaling factor about the anchor.
      * A scale of 0 on either axis will make the inverse scale on that axis +Infinity.
      */
-    val scale_rm: RMValue<Vec2d> = RMValue(vec(1, 1)) { old, new ->
+    val scale_rm: RMValue<Vec2d> = rmValue(vec(1, 1)) { old, new ->
         if(old != new) {
             matrixDirty = true
         }
@@ -349,7 +421,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      *
      * Setting [scale] scales around the anchor, not the layer origin.
      */
-    val anchor_rm: RMValue<Vec2d> = RMValue(Vec2d.ZERO) { old, new ->
+    val anchor_rm: RMValue<Vec2d> = rmValue(Vec2d.ZERO) { old, new ->
         if(old != new) {
             matrixDirty = true
         }
@@ -576,7 +648,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     ): Rect2d? {
         var bounds: Rect2d? = null
         if (includeOwnBounds(this)) {
-            bounds = bounds
+            bounds = this.bounds
         }
         if (includeChildren(this)) {
             for (child in children) {

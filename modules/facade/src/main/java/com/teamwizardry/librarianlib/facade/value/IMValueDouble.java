@@ -68,13 +68,6 @@ public class IMValueDouble {
     }
 
     /**
-     * A kotlin helper to allow cleanly specifying the callback (`something.theValue_im { return someValue }`)
-     */
-    public void invoke(DoubleSupplier callback) {
-        set(callback);
-    }
-
-    /**
      * Gets the current callback, or null if this IMValueDouble has a fixed value
      */
     @Nullable

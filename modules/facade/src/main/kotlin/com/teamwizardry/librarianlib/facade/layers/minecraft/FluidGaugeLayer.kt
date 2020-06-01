@@ -58,8 +58,8 @@ class FluidGaugeLayer(x: Int, y: Int, width: Int, height: Int) : LinearGaugeLaye
 
     init {
         contents.add(fluidComponent)
-        fluidSprite.fluid_im { fluid }
-        fluidSprite.flow_im { flow }
+        fluidSprite.fluid_im.set { fluid }
+        fluidSprite.flow_im.set { flow }
     }
 
     override fun update() { // todo yoga

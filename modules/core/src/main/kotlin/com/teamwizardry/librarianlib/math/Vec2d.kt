@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.math
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.round
+import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 class Vec2d(val x: Double, val y: Double) {
@@ -41,7 +42,7 @@ class Vec2d(val x: Double, val y: Double) {
     }
 
     fun roundInt(): Vec2i {
-        return Vec2i.getPooled(roundInt(x), roundInt(y))
+        return Vec2i.getPooled(x.roundToInt(), y.roundToInt())
     }
 
     @JvmSynthetic
