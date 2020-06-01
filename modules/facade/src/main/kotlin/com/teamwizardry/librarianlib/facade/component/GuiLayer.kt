@@ -109,6 +109,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
 
     fun addAnimationTimeListener(listener: AnimationTimeListener) {
         animationTimeListeners.add(listener)
+        listener.updateTime(animationTime)
     }
     fun removeAnimationTimeListener(listener: AnimationTimeListener) {
         animationTimeListeners.remove(listener)
