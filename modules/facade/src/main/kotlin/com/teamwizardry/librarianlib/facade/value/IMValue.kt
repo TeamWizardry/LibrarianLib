@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.facade.value
 
 import com.teamwizardry.librarianlib.core.util.lerp.Lerper
-import com.teamwizardry.librarianlib.facade.component.GuiLayer
+import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import java.util.function.Supplier
 import kotlin.reflect.KProperty
 

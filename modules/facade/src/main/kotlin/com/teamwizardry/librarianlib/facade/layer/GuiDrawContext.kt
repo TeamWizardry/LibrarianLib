@@ -1,12 +1,10 @@
-package com.teamwizardry.librarianlib.facade.component
+package com.teamwizardry.librarianlib.facade.layer
 
 import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix3dStack
 import com.teamwizardry.librarianlib.math.Matrix4d
 import com.teamwizardry.librarianlib.math.MutableMatrix4d
-import net.minecraft.client.renderer.Matrix4f
 
 class GuiDrawContext(
     val matrix: Matrix3dStack,

@@ -1,8 +1,4 @@
-package com.teamwizardry.librarianlib.facade.component.supporting
-
-import net.minecraft.util.ResourceLocation
-import org.lwjgl.opengl.GL13
-import org.lwjgl.opengl.GL20
+package com.teamwizardry.librarianlib.facade.layer.supporting
 
 //TODO: Waiting on shaders
 /*

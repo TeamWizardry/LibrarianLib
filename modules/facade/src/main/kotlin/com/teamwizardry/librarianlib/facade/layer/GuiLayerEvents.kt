@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.facade.component
+package com.teamwizardry.librarianlib.facade.layer
 
 import com.teamwizardry.librarianlib.etcetera.eventbus.Event
 import com.teamwizardry.librarianlib.math.Matrix3dStack

@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.facade.value
 
 import com.teamwizardry.librarianlib.core.util.lerp.Lerper
-import com.teamwizardry.librarianlib.facade.component.AnimationTimeListener
+import com.teamwizardry.librarianlib.facade.layer.AnimationTimeListener
 import com.teamwizardry.librarianlib.math.Animation
 import com.teamwizardry.librarianlib.math.BasicAnimation
 import com.teamwizardry.librarianlib.math.Easing

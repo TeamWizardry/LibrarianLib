@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.facade.components
+package com.teamwizardry.librarianlib.facade.layers
 
 import com.teamwizardry.librarianlib.math.Cardinal2d
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer

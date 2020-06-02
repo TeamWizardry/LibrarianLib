@@ -1,7 +1,7 @@
-package com.teamwizardry.librarianlib.facade.components.minecraft
+package com.teamwizardry.librarianlib.facade.layers.minecraft
 
 import com.teamwizardry.librarianlib.facade.value.IMValue
-import com.teamwizardry.librarianlib.facade.components.LinearGaugeLayer
+import com.teamwizardry.librarianlib.facade.layers.LinearGaugeLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.math.Axis2d
 import com.teamwizardry.librarianlib.math.Cardinal2d

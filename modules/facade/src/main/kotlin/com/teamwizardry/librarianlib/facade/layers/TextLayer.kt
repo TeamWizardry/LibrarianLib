@@ -1,18 +1,14 @@
 package com.teamwizardry.librarianlib.facade.layers
 
-import com.teamwizardry.librarianlib.facade.component.GuiDrawContext
-import com.teamwizardry.librarianlib.facade.component.GuiLayer
+import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
+import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.text.BitfontRenderer
 import com.teamwizardry.librarianlib.facade.text.Fonts
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
-import dev.thecodewarrior.bitfont.typesetting.MutableAttributedString
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
 import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager
-import dev.thecodewarrior.bitfont.utils.Attribute
 import dev.thecodewarrior.bitfont.utils.Vec2i
-import dev.thecodewarrior.mirror.Mirror
-import net.minecraft.client.Minecraft
 import java.awt.Color
 
 open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String): GuiLayer(posX, posY, width, height) {

@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.facade.component
+package com.teamwizardry.librarianlib.facade.layer
 
 class LayerHierarchyException: RuntimeException {
     constructor(): super()

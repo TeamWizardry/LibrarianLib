@@ -1,7 +1,5 @@
-package com.teamwizardry.librarianlib.math.bounds
+package com.teamwizardry.librarianlib.math
 
-import com.teamwizardry.librarianlib.math.Vec2d
-import com.teamwizardry.librarianlib.math.vec
 import kotlin.math.max
 import kotlin.math.min
 

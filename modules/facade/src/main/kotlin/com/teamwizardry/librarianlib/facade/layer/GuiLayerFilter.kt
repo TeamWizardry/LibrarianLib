@@ -1,13 +1,4 @@
-package com.teamwizardry.librarianlib.facade.component
-
-import com.mojang.blaze3d.platform.GlStateManager
-import com.teamwizardry.librarianlib.core.util.Client
-import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.client.shader.Framebuffer
-import org.lwjgl.opengl.GL11
-import java.util.LinkedList
+package com.teamwizardry.librarianlib.facade.layer
 
 abstract class GuiLayerFilter {
 

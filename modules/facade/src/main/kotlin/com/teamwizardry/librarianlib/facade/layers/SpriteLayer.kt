@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.facade.layers
 
-import com.teamwizardry.librarianlib.facade.component.GuiDrawContext
-import com.teamwizardry.librarianlib.facade.component.GuiLayer
+import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
+import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.facade.value.IMValueInt
 import com.teamwizardry.librarianlib.mosaic.ISprite

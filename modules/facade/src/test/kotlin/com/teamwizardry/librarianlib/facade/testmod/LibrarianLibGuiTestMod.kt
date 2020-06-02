@@ -4,7 +4,7 @@ package com.teamwizardry.librarianlib.facade.testmod
 
 import com.teamwizardry.librarianlib.core.util.kotlin.toRl
 import com.teamwizardry.librarianlib.facade.FacadeScreen
-import com.teamwizardry.librarianlib.facade.component.GuiLayerEvents
+import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.components.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.layers.TextLayer

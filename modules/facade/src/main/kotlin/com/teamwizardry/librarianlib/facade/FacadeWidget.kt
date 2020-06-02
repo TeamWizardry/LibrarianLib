@@ -2,9 +2,9 @@ package com.teamwizardry.librarianlib.facade
 
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.facade.component.GuiLayer
-import com.teamwizardry.librarianlib.facade.component.GuiLayerEvents
-import com.teamwizardry.librarianlib.facade.component.GuiDrawContext
+import com.teamwizardry.librarianlib.facade.layer.GuiLayer
+import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
+import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.provided.SafetyNetErrorScreen
 import com.teamwizardry.librarianlib.math.Matrix3dStack
 import com.teamwizardry.librarianlib.math.vec

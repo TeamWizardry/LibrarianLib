@@ -1,11 +1,11 @@
-package com.teamwizardry.librarianlib.facade.component
+package com.teamwizardry.librarianlib.facade.layer
 
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.core.util.kotlin.weakSetOf
 import com.teamwizardry.librarianlib.core.util.lerp.Lerper
 import com.teamwizardry.librarianlib.core.util.lerp.Lerpers
-import com.teamwizardry.librarianlib.facade.component.supporting.*
+import com.teamwizardry.librarianlib.facade.layer.supporting.*
 import com.teamwizardry.librarianlib.facade.logger
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.facade.value.IMValueBoolean
