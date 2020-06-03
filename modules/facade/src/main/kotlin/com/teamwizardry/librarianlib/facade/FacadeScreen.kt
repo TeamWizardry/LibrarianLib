@@ -24,6 +24,10 @@ import java.util.Optional
 open class FacadeScreen(title: ITextComponent): Screen(title /* todo behavior #2 */) {
     @Suppress("LeakingThis")
     val facade = FacadeWidget(this)
+
+    /**
+     * The most commonly-used root layer, positioned at the center of the screen, accounting for the layer size
+     */
     val main = facade.main
 
     override fun render(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -85,5 +89,10 @@ open class FacadeScreen(title: ITextComponent): Screen(title /* todo behavior #2
     override fun changeFocus(p_changeFocus_1_: Boolean): Boolean {
         facade.changeFocus(p_changeFocus_1_)
         return true
+    }
+
+    override fun removed() {
+        super.removed()
+        facade.removed()
     }
 }

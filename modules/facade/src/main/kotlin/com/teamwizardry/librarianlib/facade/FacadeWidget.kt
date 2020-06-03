@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.facade
 
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.facade.input.Cursor
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
@@ -26,6 +27,7 @@ open class FacadeWidget(
      */
     private var mouseX = 0.0
     private var mouseY = 0.0
+    private var mouseOver: GuiLayer? = null
 
     fun mouseMoved(_xPos: Double, _yPos: Double) {
         val s = Client.guiScaleFactor // rescale to absolute screen coordinates
@@ -77,7 +79,7 @@ open class FacadeWidget(
     }
 
     private fun computeMouseOver(xPos: Double, yPos: Double) {
-        val mouseOver = root.computeMouseInfo(vec(xPos, yPos), Matrix3dStack())
+        mouseOver = root.computeMouseInfo(vec(xPos, yPos), Matrix3dStack())
         generateSequence(mouseOver) { it.parent }.forEach {
             it.mouseOver = true
         }
@@ -111,9 +113,11 @@ open class FacadeWidget(
             root.size = vec(Client.window.scaledWidth, Client.window.scaledHeight)
             main.pos = ((root.size - main.size) / 2).round()
 
-            root.triggerEvent(GuiLayerEvents.Update())
+            Cursor.setCursor(mouseOver?.cursor)
             root.updateAnimations(Client.time.time)
-//            updateLayout()
+            root.triggerEvent(GuiLayerEvents.Update())
+            root.runLayout()
+            root.clearAllDirtyLayout()
 
             RenderSystem.pushMatrix()
             RenderSystem.scaled(1/s, 1/s, 1.0)
@@ -124,5 +128,9 @@ open class FacadeWidget(
             logger.error("Error in GUI:", e)
             Client.displayGuiScreen(SafetyNetErrorScreen(e))
         }
+    }
+
+    fun removed() {
+        Cursor.setCursor(null)
     }
 }

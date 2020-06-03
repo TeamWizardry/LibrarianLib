@@ -23,6 +23,8 @@ import com.teamwizardry.librarianlib.math.fastSin
 import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.etcetera.eventbus.Event
 import com.teamwizardry.librarianlib.etcetera.eventbus.EventBus
+import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
+import com.teamwizardry.librarianlib.facade.input.Cursor
 import com.teamwizardry.librarianlib.facade.value.ChangeListener
 import com.teamwizardry.librarianlib.facade.value.IMValueDouble
 import com.teamwizardry.librarianlib.facade.value.IMValueInt
@@ -564,6 +566,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      */
     val size_rm: RMValue<Vec2d> = rmValue(vec(width, height)) { old, new ->
         if(old != new) {
+            markLayoutDirty()
             matrixDirty = true
         }
     }
@@ -1185,6 +1188,11 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     //region Input
 
     /**
+     * The cursor for when the mouse is over this layer, or `null` for the default cursor.
+     */
+    var cursor: Cursor? = null
+
+    /**
      * If [interactive] is false, this component and its descendents won't be considered for mouseover calculations
      * and won't receive input events
      */
@@ -1240,6 +1248,11 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         }
     }
 
+    /**
+     * The set of buttons with a potential click in progress (when the button is pressed down while inside this layer)
+     */
+    private var clickingButtons = mutableSetOf<Int>()
+
     internal fun triggerEvent(event: Event) {
         when(event) {
             is GuiLayerEvents.MouseEvent -> {
@@ -1248,6 +1261,21 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
                 event.stack.push()
                 event.stack.reverseMul(inverseTransform)
                 BUS.fire(event)
+
+                if(event is GuiLayerEvents.MouseDown && mouseOver) {
+                    clickingButtons.add(event.button)
+                }
+                if(event is GuiLayerEvents.MouseUp && event.button in clickingButtons) {
+                    clickingButtons.remove(event.button)
+                    if(mouseOver) {
+                        BUS.fire(when(event.button) {
+                            0 -> GuiLayerEvents.MouseClick(event.rootPos)
+                            1 -> GuiLayerEvents.MouseRightClick(event.rootPos)
+                            else -> GuiLayerEvents.MouseOtherClick(event.rootPos, event.button)
+                        })
+                    }
+                }
+
                 this.forEachChild {
                     it.triggerEvent(event)
                 }
@@ -1275,6 +1303,80 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
                 }
             }
         }
+    }
+
+    //endregion
+
+    //region Layout
+    /**
+     * Whether this layer's layout needs to be updated this frame. This is set to true when this layer's size changes or
+     * it is manually set using [markLayoutDirty]
+     */
+    var isLayoutDirty: Boolean = false
+        private set
+
+    /**
+     * Whether this layer's layout depends on the layout of its children, and thus should be marked dirty when they are.
+     */
+    var dependsOnChildLayout: Boolean = false
+
+    /**
+     * Set to true when layout is run
+     */
+    private var didLayout: Boolean = false
+
+    /**
+     * Mark this layer's layout dirty flag.
+     */
+    fun markLayoutDirty() {
+        isLayoutDirty = true
+        parent?.also {
+            if(it.dependsOnChildLayout)
+                it.markLayoutDirty()
+        }
+    }
+
+    /**
+     * Clears this layer's layout dirty flag.
+     */
+    fun clearLayoutDirty() {
+        isLayoutDirty = false
+    }
+
+    /**
+     * Run a layout pass for this layer and its children.
+     */
+    fun runLayout() {
+        this.updateDirtyLayout(GuiLayerEvents.LayoutChildren())
+    }
+
+    private fun updateDirtyLayout(event: GuiLayerEvents.LayoutChildren) {
+        if(isLayoutDirty) {
+            layoutChildren()
+            BUS.fire(event)
+        }
+        forEachChild { it.updateDirtyLayout(event) }
+        isLayoutDirty = false
+    }
+
+    internal fun clearAllDirtyLayout() {
+        clearLayoutDirty()
+        forEachChild { it.clearAllDirtyLayout() }
+    }
+
+    private val layoutHooks = mutableListOf<Runnable>()
+
+    fun onLayout(hook: () -> Unit) {
+        layoutHooks.add(Runnable(hook))
+    }
+
+    fun onLayout(hook: Runnable) {
+        layoutHooks.add(hook)
+    }
+
+    @Hook
+    private fun runLayoutHooks(e: GuiLayerEvents.LayoutChildren) {
+        layoutHooks.forEach(Runnable::run)
     }
 
     //endregion

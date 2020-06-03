@@ -5,9 +5,10 @@ package com.teamwizardry.librarianlib.facade.testmod
 import com.teamwizardry.librarianlib.core.util.kotlin.toRl
 import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
-import com.teamwizardry.librarianlib.facade.components.RectLayer
+import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
+import com.teamwizardry.librarianlib.facade.testmod.value.RMValueTests
 import com.teamwizardry.librarianlib.facade.text.attributedStringFromMC
 import com.teamwizardry.librarianlib.math.Easing
 import com.teamwizardry.librarianlib.math.vec
@@ -92,7 +93,7 @@ object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
             val bg = RectLayer(Color.WHITE, 0, 0, 200, 800)
             // https://minecraft.gamepedia.com/File:Minecraft_Formatting.gif
             val text = TextLayer(25, 25, 200, 800, "")
-            text.text = attributedStringFromMC("""
+            text.attributedText = attributedStringFromMC("""
                 §nMinecraft Formatting
 
                 §r§00 §11 §22 §33
@@ -112,6 +113,10 @@ object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
             """.trimIndent())
             text.updateText()
             screen.facade.root.add(bg, text)
+        }
+
+        +UnitTestSuite("rmvalue") {
+            add<RMValueTests>()
         }
     }
 

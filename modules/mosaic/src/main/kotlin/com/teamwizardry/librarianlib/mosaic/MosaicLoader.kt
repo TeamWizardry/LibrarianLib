@@ -49,10 +49,8 @@ internal object MosaicLoader : ReloadListener<Map<ResourceLocation, MosaicDefini
     internal fun updateDefinitions(result: Map<ResourceLocation, MosaicDefinition?>) {
         definitions = result.toMutableMap()
         synchronized(Mosaic.textures) {
-            Mosaic.textures.removeIf {
-                it.get()?.also {
-                    it.loadDefinition()
-                } == null
+            Mosaic.textures.forEach {
+                it.loadDefinition()
             }
         }
     }
@@ -60,8 +58,8 @@ internal object MosaicLoader : ReloadListener<Map<ResourceLocation, MosaicDefini
     internal fun loadDefinitions(manager: IResourceManager): Map<ResourceLocation, MosaicDefinition?> {
         val locations = mutableSetOf<ResourceLocation>()
         synchronized(Mosaic.textures) {
-            Mosaic.textures.removeIf {
-                it.get()?.also { locations.add(it.location) } == null
+            Mosaic.textures.forEach {
+                locations.add(it.location)
             }
         }
         return locations.associateWith {

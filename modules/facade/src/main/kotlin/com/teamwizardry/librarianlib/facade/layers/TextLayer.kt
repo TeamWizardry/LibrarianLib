@@ -4,12 +4,18 @@ import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.text.BitfontRenderer
 import com.teamwizardry.librarianlib.facade.text.Fonts
+import com.teamwizardry.librarianlib.facade.text.fromMC
 import com.teamwizardry.librarianlib.facade.value.IMValue
+import com.teamwizardry.librarianlib.math.Rect2d
+import com.teamwizardry.librarianlib.math.rect
+import com.teamwizardry.librarianlib.math.vec
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
 import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager
 import dev.thecodewarrior.bitfont.utils.Vec2i
 import java.awt.Color
+import kotlin.math.max
+import kotlin.math.min
 
 open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String): GuiLayer(posX, posY, width, height) {
     constructor(posX: Int, posY: Int, text: String): this(posX, posY, 0, 0, text) {
@@ -18,33 +24,105 @@ open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String
     constructor(posX: Int, posY: Int): this(posX, posY, "")
     constructor(): this(0, 0, "")
 
-    var text: AttributedString = AttributedString(text)
+    /**
+     * The text to be drawn using MC formatting codes. If this is set to any non-null value it will overwrite
+     * [attributedText], but if [attributedText] is manually set to a new value, this property will be reset to null.
+     */
+    var text_im: IMValue<String?> = imValue()
 
     /**
-     * The colorPrimary of the text
+     * The text to be drawn using MC formatting codes. If this is set to any non-null value it will overwrite
+     * [attributedText], but if [attributedText] is manually set to a new value, this property will be reset to null.
+     */
+    var text by text_im
+
+    var _attributedText: AttributedString = AttributedString.fromMC(text)
+    /**
+     * The string to be drawn. if [text]
+     * If this is set to a mutable attributed string, the user is responsible for calling
+     * [updateText] when it changes. If this is set to an immutable attributed string, it will automatically be called.
+     */
+    var attributedText: AttributedString
+        get() = _attributedText
+        set(value) {
+            if(_attributedText !== value)
+                text = null
+            _attributedText = value
+        }
+
+    /**
+     * The color of the text. (can be overridden by color attributes in the string)
      */
     val color_im: IMValue<Color> = imValue(Color.BLACK)
+
+    /**
+     * The color of the text. (can be overridden by color attributes in the string)
+     */
     var color: Color by color_im
+
+    /**
+     * Whether to wrap the text
+     */
+    var wrap: Boolean = true
+
+    /**
+     * The logical bounds of the text
+     */
+    var textBounds: Rect2d = rect(0, 0, 0, 0)
+        private set
 
     private val container: TextContainer = TextContainer()
     private val layoutManager: TextLayoutManager = TextLayoutManager(listOf(Fonts.classic))
 
     init {
         layoutManager.textContainers.add(container)
-        layoutManager.attributedString = this.text
+        layoutManager.attributedString = this.attributedText
+        updateText()
     }
 
+    fun fitToText() {
+        var minX = 0
+        var minY = 0
+        var maxX = 0
+        var maxY = 0
+        container.lines.forEach { fragment ->
+            if(fragment.glyphs.isEmpty())
+                return@forEach
+            fragment.glyphs.forEach { glyph ->
+                minX = min(minX, glyph.posX)
+                maxX = max(maxX, glyph.posX + glyph.glyph.calcAdvance())
+            }
+            minY = min(minY, fragment.posY)
+            maxY = max(maxY, fragment.maxY)
+        }
+        size = vec(maxX, maxY)
+    }
+
+    /**
+     * Updates the text layout.
+     */
     fun updateText() {
-        layoutManager.attributedString = this.text
-        container.size = Vec2i(this.widthi, this.heighti)
+        layoutManager.attributedString = this.attributedText
+        if(wrap)
+            container.size = Vec2i(this.widthi, Int.MAX_VALUE)
+        else
+            container.size = Vec2i(Int.MAX_VALUE, Int.MAX_VALUE)
         layoutManager.layoutText()
+    }
+
+    override fun layoutChildren() {
+        super.layoutChildren()
+//        if(fitToText)
+//            fitToText()
+//        else // fitToText updates the layout already
+        updateText()
     }
 
     override fun draw(context: GuiDrawContext) {
         BitfontRenderer.draw(context.matrix, container, color)
     }
 
-    //    /**
+//    /**
 //     * The text to draw
 //     */
 //    val text_im: IMValue<String> = IMValue("")
