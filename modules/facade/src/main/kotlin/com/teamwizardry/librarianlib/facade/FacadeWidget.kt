@@ -21,6 +21,10 @@ open class FacadeWidget(
     val root = GuiLayer()
     val main = GuiLayer()
 
+    init {
+        root.add(main)
+    }
+
     /**
      * We keep track of the mouse position ourselves both so we can provide deltas for move events and so we can provide
      * subpixel mouse positions in [render]

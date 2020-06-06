@@ -1,3 +1,16 @@
+import org.gradle.internal.os.OperatingSystem
+switch (OperatingSystem.current()) {
+    case OperatingSystem.LINUX:
+        ext.lwjglNatives = "natives-linux"
+        break
+    case OperatingSystem.MAC_OS:
+        ext.lwjglNatives = "natives-macos"
+        break
+    case OperatingSystem.WINDOWS:
+        ext.lwjglNatives = "natives-windows"
+        break
+}
+
 dependencies {
     api project(":core")
     api project(":mosaic")
@@ -7,8 +20,15 @@ dependencies {
         exclude group: 'org.jetbrains.kotlin'
         exclude group: 'it.unimi.dsi.fastutil' // already included in MC
     }
+    shade "org.lwjgl:lwjgl-yoga:3.2.1:$lwjglNatives"
+    shade 'org.lwjgl:lwjgl-yoga:3.2.1'
+
     // we have to include ICU in the classpath so it overrides Mojang's stripped down copy
     devClasspath 'com.ibm.icu:icu4j:63.1'
+    // we have to include yoga in the classpath because forge bypasses mod classloaders when getting anything under the
+    // `org.lwjgl` package
+    devClasspath "org.lwjgl:lwjgl-yoga:3.2.1:$lwjglNatives"
+    devClasspath 'org.lwjgl:lwjgl-yoga:3.2.1'
 }
 
 shadePackages(

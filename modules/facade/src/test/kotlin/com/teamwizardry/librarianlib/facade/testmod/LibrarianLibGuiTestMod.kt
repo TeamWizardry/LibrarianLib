@@ -8,6 +8,7 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
+import com.teamwizardry.librarianlib.facade.testmod.screens.*
 import com.teamwizardry.librarianlib.facade.testmod.value.RMValueTests
 import com.teamwizardry.librarianlib.facade.text.attributedStringFromMC
 import com.teamwizardry.librarianlib.math.Easing
@@ -23,9 +24,7 @@ import java.awt.Color
 @Mod("librarianlib-facade-test")
 object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
     init {
-        +FacadeScreenConfig("empty", "Empty") {
-
-        }
+        +FacadeScreenConfig("empty", "Empty") { _ -> }
 
         +FacadeScreenConfig("sprite", "Simple Sprite") { screen ->
             val dirt = Mosaic("minecraft:textures/block/dirt.png".toRl(), 16, 16)
@@ -89,30 +88,12 @@ object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
             screen.facade.root.add(layer)
         }
 
-        +FacadeScreenConfig("simple_text", "Simple Text") { screen ->
-            val bg = RectLayer(Color.WHITE, 0, 0, 200, 800)
-            // https://minecraft.gamepedia.com/File:Minecraft_Formatting.gif
-            val text = TextLayer(25, 25, 200, 800, "")
-            text.attributedText = attributedStringFromMC("""
-                §nMinecraft Formatting
+        +FacadeScreenConfig("simple_text", "Simple Text", ::SimpleTextTestScreen)
+        +FacadeScreenConfig("simple_yoga", "Yoga Simple Flex", ::SimpleYogaScreen)
+        +FacadeScreenConfig("yoga_list", "Yoga List", ::YogaListScreen)
 
-                §r§00 §11 §22 §33
-                §44 §55 §66 §77
-                §88 §99 §aa §bb
-                §cc §dd §ee §ff
-
-                §r§0k §kMinecraft
-                
-                §rl §lé ü ñ î
-                §rl §lé ü ñ î
-                
-                §rm §mMinecraft
-                §rn §nMinecraft
-                §ro §oMinecraft
-                §rr §rMinecraft
-            """.trimIndent())
-            text.updateText()
-            screen.facade.root.add(bg, text)
+        +UnitTestSuite("rmvalue") {
+            add<RMValueTests>()
         }
 
         +UnitTestSuite("rmvalue") {
@@ -127,6 +108,12 @@ object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
                 block(screen)
                 screen
             }
+        }
+    }
+
+    fun FacadeScreenConfig(id: String, name: String, block: () -> FacadeTestScreen): TestScreenConfig {
+        return TestScreenConfig(id, name, itemGroup) {
+            customScreen(block)
         }
     }
 }

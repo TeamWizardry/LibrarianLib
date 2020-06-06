@@ -35,7 +35,10 @@ import com.teamwizardry.librarianlib.facade.value.RMValueLong
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import org.lwjgl.BufferUtils
+import org.lwjgl.PointerBuffer
 import org.lwjgl.opengl.GL11
+import org.lwjgl.util.yoga.Yoga.*
 import java.lang.Exception
 import java.util.ConcurrentModificationException
 import java.util.PriorityQueue
@@ -309,8 +312,8 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
 
     /**
      * Create an IMValue with a null initial value, automatically detecting lerpers if they exist and registering it for
-     * animation updates. This is needed because otherwise there are [resolution errors](https://youtrack.jetbrains.com/issue/KT-13683).
-     * Despite that issue being marked as fixed, as of 6/1/20 it actually isn't.
+     * animation updates. This is needed because otherwise there are [resolution errors](https://youtrack.jetbrains.com/issue/KT-13683)
+     * when not using the experimental type inference.
      */
     inline fun <reified T> imValue(): IMValue<T?> {
         @Suppress("UNCHECKED_CAST") val lerper = Lerpers.getOrNull(Mirror.reflect<T>())?.value as Lerper<T?>?
@@ -526,10 +529,13 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * Iterates over children while allowing children to be added or removed. Any added children will not be iterated,
      * and any children removed while iterating will be excluded.
      */
-    fun forEachChild(l: (GuiLayer) -> Unit) {
-        children.toList().asSequence().filter {
-            it.parent != null // a component may have been removed, in which case it won't be expecting any interaction
-        }.forEach(l)
+    inline fun forEachChild(block: (GuiLayer) -> Unit) {
+        // calling `toList` just creates an array and then an ArrayList, so we just use the array
+        for(child in children.toTypedArray()) {
+            // a component may have been removed, in which case it won't be expecting any interaction
+            if(child.parent != null)
+                block(child)
+        }
     }
 
 
@@ -1235,8 +1241,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         mouseOver = false
         var mouseOverChild: GuiLayer? = null
         forEachChild { child ->
-            val childMouseOver = child.computeMouseInfo(rootPos, stack)
-            mouseOverChild = mouseOverChild ?: childMouseOver
+            mouseOverChild = child.computeMouseInfo(rootPos, stack) ?: mouseOverChild
         }
         stack.pop()
         if(!interactive)
@@ -1347,6 +1352,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * Run a layout pass for this layer and its children.
      */
     fun runLayout() {
+        this.updateYogaLayout()
         this.updateDirtyLayout(GuiLayerEvents.LayoutChildren())
     }
 
@@ -1378,10 +1384,99 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     private fun runLayoutHooks(e: GuiLayerEvents.LayoutChildren) {
         layoutHooks.forEach(Runnable::run)
     }
+    //endregion
+
+    //region Yoga
+
+    var useYoga: Boolean = false
+    private val yogaNode: Long = YGNodeNewWithConfig(config)
+    val yogaStyle: YogaStyle = YogaStyle(yogaNode)
+    private val _yogaStyler: YogaStyler by lazy { YogaStyler(this) }
+
+    /**
+     * Enables Yoga layout on this layer and returns the yoga styler. If yoga was previously disabled, this method also
+     * copies the current layer size into the width/height yoga styles.
+     */
+    fun yoga(): YogaStyler {
+        if(!useYoga) {
+            useYoga = true
+            _yogaStyler.sizeFromCurrent()
+        }
+        return _yogaStyler
+    }
+
+    private var yogaChildren = listOf<GuiLayer>()
+    private fun updateYogaChildren() {
+        if(!useYoga) {
+            YGNodeRemoveAllChildren(yogaNode)
+            return
+        }
+        val newYogaChildren = _children.filter { it.useYoga }
+        if(yogaChildren != newYogaChildren) {
+            val childrenBuffer = BufferUtils.createPointerBuffer(newYogaChildren.size)
+            newYogaChildren.forEach {
+                childrenBuffer.put(it.yogaNode)
+            }
+            childrenBuffer.rewind()
+            YGNodeSetChildren(yogaNode, childrenBuffer)
+            yogaChildren = newYogaChildren
+        }
+    }
+
+    private fun updateYogaLayout() {
+        this.prepareYogaLayout()
+        this.computeYogaLayout()
+        this.applyYogaLayout()
+    }
+
+    private fun prepareYogaLayout() {
+        updateYogaChildren()
+        if(useYoga) {
+            if (yogaStyle.lockWidth) {
+                yogaStyle.minWidth.px = widthf
+                yogaStyle.width.px = widthf
+                yogaStyle.maxWidth.px = widthf
+            }
+            if (yogaStyle.lockHeight) {
+                yogaStyle.minHeight.px = heightf
+                yogaStyle.height.px = heightf
+                yogaStyle.maxHeight.px = heightf
+            }
+        }
+        forEachChild { it.prepareYogaLayout() }
+    }
+
+    private fun computeYogaLayout() {
+        if(useYoga && parent?.useYoga != true) {
+            YGNodeCalculateLayout(yogaNode, YGUndefined, YGUndefined, YGDirectionLTR)
+        }
+        forEachChild { it.computeYogaLayout() }
+    }
+
+    private fun applyYogaLayout() {
+        // only set the pos/size of layers that use yoga and aren't roots
+        if(useYoga && parent?.useYoga == true && YGNodeGetHasNewLayout(yogaNode)) {
+            this.pos = vec(YGNodeLayoutGetLeft(yogaNode), YGNodeLayoutGetTop(yogaNode))
+            this.size = vec(YGNodeLayoutGetWidth(yogaNode), YGNodeLayoutGetHeight(yogaNode))
+        }
+        YGNodeSetHasNewLayout(yogaNode, false)
+
+        forEachChild { it.applyYogaLayout() }
+    }
 
     //endregion
 
+    fun finalize() {
+        YGNodeFree(yogaNode)
+    }
+
     companion object {
+        private val config = YGConfigNew()
+
+        init {
+            YGConfigSetUseWebDefaults(config, true)
+        }
+
         @JvmStatic
         var showDebugTilt = false
 
