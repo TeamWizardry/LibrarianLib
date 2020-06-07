@@ -178,6 +178,9 @@ class YogaStyler(private val layer: GuiLayer) {
         flexShrink = 1f
         flexBasis.px = 0f
     }
+    @Suppress("NOTHING_TO_INLINE")
+    @JvmSynthetic
+    inline fun flex(grow: Number) = flex(grow.toFloat())
 
     /** [`flex`](https://developer.mozilla.org/en-US/docs/Web/CSS/flex) */
     fun flex(grow: Float, shrink: Float) = build {
@@ -185,16 +188,25 @@ class YogaStyler(private val layer: GuiLayer) {
         flexShrink = shrink
         flexBasis.px = 0f
     }
+    @Suppress("NOTHING_TO_INLINE")
+    @JvmSynthetic
+    inline fun flex(grow: Number, shrink: Number) = flex(grow.toFloat(), shrink.toFloat())
 
     /** [`flex-grow`](https://developer.mozilla.org/en-US/docs/Web/CSS/flex-grow) */
     fun flexGrow(grow: Float) = build {
         flexGrow = grow
     }
+    @Suppress("NOTHING_TO_INLINE")
+    @JvmSynthetic
+    inline fun flexGrow(grow: Number) = flexGrow(grow.toFloat())
 
     /** [`flex-shrink`](https://developer.mozilla.org/en-US/docs/Web/CSS/flex-shrink) */
     fun flexShrink(shrink: Float) = build {
         flexShrink = shrink
     }
+    @Suppress("NOTHING_TO_INLINE")
+    @JvmSynthetic
+    inline fun flexShrink(shrink: Number) = flexShrink(shrink.toFloat())
 
     /** [`flex-basis`](https://developer.mozilla.org/en-US/docs/Web/CSS/flex-basis) */
     @get:JvmName("flexBasis")
@@ -263,22 +275,46 @@ class YogaStyler(private val layer: GuiLayer) {
 
     /** [`border-left`](https://yogalayout.com/docs/margins-paddings-borders) */
     fun borderLeft(border: Float) = build { borderLeft = border }
+    @Suppress("NOTHING_TO_INLINE")
+    @JvmSynthetic
+    inline fun borderLeft(border: Number) = borderLeft(border.toFloat())
+
     /** [`border-top`](https://yogalayout.com/docs/margins-paddings-borders) */
     fun borderTop(border: Float) = build { borderTop = border }
+    @Suppress("NOTHING_TO_INLINE")
+    @JvmSynthetic
+    inline fun borderTop(border: Number) = borderTop(border.toFloat())
+
     /** [`border-right`](https://yogalayout.com/docs/margins-paddings-borders) */
     fun borderRight(border: Float) = build { borderRight = border }
+    @Suppress("NOTHING_TO_INLINE")
+    @JvmSynthetic
+    inline fun borderRight(border: Number) = borderRight(border.toFloat())
+
     /** [`border-bottom`](https://yogalayout.com/docs/margins-paddings-borders) */
     fun borderBottom(border: Float) = build { borderBottom = border }
+    @Suppress("NOTHING_TO_INLINE")
+    @JvmSynthetic
+    inline fun borderBottom(border: Number) = borderBottom(border.toFloat())
+
     /** [`border-left`/`border-right`](https://yogalayout.com/docs/margins-paddings-borders) */
     fun borderHorizontal(border: Float) = build {
         borderLeft = border
         borderRight = border
     }
+    @Suppress("NOTHING_TO_INLINE")
+    @JvmSynthetic
+    inline fun borderHorizontal(border: Number) = borderHorizontal(border.toFloat())
+
     /** [`border-top`/`border-bottom`](https://yogalayout.com/docs/margins-paddings-borders) */
     fun borderVertical(border: Float) = build {
         borderTop = border
         borderBottom = border
     }
+    @Suppress("NOTHING_TO_INLINE")
+    @JvmSynthetic
+    inline fun borderVertical(border: Number) = borderVertical(border.toFloat())
+
     /** [`border`](https://yogalayout.com/docs/margins-paddings-borders) */
     fun border(border: Float) = build {
         borderLeft = border
@@ -286,6 +322,9 @@ class YogaStyler(private val layer: GuiLayer) {
         borderRight = border
         borderBottom = border
     }
+    @Suppress("NOTHING_TO_INLINE")
+    @JvmSynthetic
+    inline fun border(border: Number) = border(border.toFloat())
 
     /** [`width`](https://developer.mozilla.org/en-US/docs/Web/CSS/width) */
     @get:JvmName("width")
@@ -341,6 +380,9 @@ class YogaStyler(private val layer: GuiLayer) {
     fun aspectRatio(ratio: Float) = build {
         aspectRatio = ratio
     }
+    @Suppress("NOTHING_TO_INLINE")
+    @JvmSynthetic
+    inline fun aspectRatio(ratio: Number) = aspectRatio(ratio.toFloat())
 
     inner class AutoPropertyStyler internal constructor(private vararg val properties: YogaAutoProperty) {
         fun px(pixels: Float) = build {
@@ -358,6 +400,13 @@ class YogaStyler(private val layer: GuiLayer) {
                 it.auto()
             }
         }
+
+        @Suppress("NOTHING_TO_INLINE")
+        @JvmSynthetic
+        inline fun px(pixels: Number) = px(pixels.toFloat())
+        @Suppress("NOTHING_TO_INLINE")
+        @JvmSynthetic
+        inline fun percent(percent: Number) = percent(percent.toFloat())
     }
 
     inner class PercentagePropertyStyler internal constructor(private vararg val properties: YogaPercentageProperty) {
@@ -371,6 +420,13 @@ class YogaStyler(private val layer: GuiLayer) {
                 it.percent = percent
             }
         }
+
+        @Suppress("NOTHING_TO_INLINE")
+        @JvmSynthetic
+        inline fun px(pixels: Number) = px(pixels.toFloat())
+        @Suppress("NOTHING_TO_INLINE")
+        @JvmSynthetic
+        inline fun percent(percent: Number) = percent(percent.toFloat())
     }
 
     private inline fun build(block: YogaStyle.() -> Unit): YogaStyler {

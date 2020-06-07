@@ -9,10 +9,11 @@ import java.awt.Color
 object PastryTexture {
 
     var theme: Theme = Theme.NORMAL
-        set(value) {
-            field = value
-            texture.switchTexture(value.location)
-        }
+    // TODO: theme switching
+//        set(value) {
+//            field = value
+//            texture.switchTexture(value.location)
+//        }
 
     val texture = Mosaic(Theme.NORMAL.location, 256, 256)
     val shadowTexture = Mosaic("librarianlib:facade/textures/pastry/shadow.png".toRl(), 256, 256)

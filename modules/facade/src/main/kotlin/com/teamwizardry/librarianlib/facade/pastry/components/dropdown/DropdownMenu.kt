@@ -20,7 +20,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
     private val creationTime = Client.time.time
 
     val background = SpriteLayer(PastryTexture.dropdownBackground)
-//    val stack = StackLayout.build(0, 0).spacing(1).component()
+    val stack = GuiLayer()
     val items = identityMapOf<PastryDropdownItem<T>, DropdownStackItem>()
     val contents = GuiLayer(-2, 0)
     val contentsClip = GuiLayer(0, 0)
@@ -35,15 +35,17 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
         this.add(background, contents)
         contents.add(contentsClip)
         contentsClip.add(stack)
-//        contentsClip.clipToBounds = true TODO
+        contentsClip.clipToBounds = true
+        stack.yoga()
+            .paddingTop.px(-1)
 
         button.items.forEach { item ->
             val stackItem = DropdownStackItem(item)
             items[item] = stackItem
-            stack.componentWrapper().add(stackItem)
+            stack.add(stackItem)
         }
 
-        stack.fitToLength()
+//        stack.fitToLength() TODO
     }
 
     override fun layoutChildren() {
@@ -81,12 +83,13 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
         contents.yi -= itemPos.toInt() - 2
     }
 
+    // TODO - use ticks to prevent framerate-dependent motion
     @Hook
-    fun preFrame(e: GuiLayerEvents.PreFrameEvent) {
+    fun preFrame(e: GuiLayerEvents.Update) {
         val parent = this.parent ?: return
         val min = button.convertPointTo(vec(0, 0), parent)
         this.pos = min
-        if(stack.frame.minY < contentsClip.bounds.minY && this.mouseHit != null && !disableLayout) {
+        if(stack.frame.minY < contentsClip.bounds.minY && this.mouseOver && !disableLayout) {
             val y = contentsClip.mousePos.y - contentsClip.bounds.minY
             when {
                 y <= 4.0 -> contents.yi += 5
@@ -94,7 +97,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
                 y <= 16.0 -> contents.yi += 1
             }
         }
-        if(stack.frame.maxY > contentsClip.bounds.maxY && this.mouseHit != null && !disableLayout) {
+        if(stack.frame.maxY > contentsClip.bounds.maxY && this.mouseOver && !disableLayout) {
             val y = contentsClip.bounds.maxY - contentsClip.mousePos.y
             when {
                 y <= 4.0 -> contents.yi -= 5

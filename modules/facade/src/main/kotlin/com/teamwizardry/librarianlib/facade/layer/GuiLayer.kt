@@ -90,6 +90,12 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     }
 
     /**
+     * Called after updates and before layouts are updated. This is where layouts should be modified based on changes to
+     * data that may have occurred during the update phase
+     */
+    open fun prepareLayout() {}
+
+    /**
      * Called to lay out the children of this layer.
      *
      * This method is called before each frame if this layer's bounds have changed, children have been added/removed,
@@ -924,6 +930,12 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
 
     //region LayerRenderHandler
 
+    /**
+     * Clip the contents of this layer to its bounding box
+     */
+    @Deprecated("NOT IMPLEMENTED YET")
+    var clipToBounds: Boolean = false
+
     val tooltip_im: IMValue<List<String>?> = imValue()
 
     /**
@@ -1296,6 +1308,13 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
             }
             is GuiLayerEvents.Update -> {
                 this.update()
+                BUS.fire(event)
+                this.forEachChild {
+                    it.triggerEvent(event)
+                }
+            }
+            is GuiLayerEvents.PrepareLayout -> {
+                this.prepareLayout()
                 BUS.fire(event)
                 this.forEachChild {
                     it.triggerEvent(event)

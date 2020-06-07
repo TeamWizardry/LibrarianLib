@@ -1,14 +1,14 @@
 package com.teamwizardry.librarianlib.facade.pastry.components
 
 import com.teamwizardry.librarianlib.etcetera.eventbus.EventBus
-import com.teamwizardry.librarianlib.etcetera.eventbus.EventCancelable
+import com.teamwizardry.librarianlib.etcetera.eventbus.CancelableEvent
 import com.teamwizardry.librarianlib.facade.pastry.ExperimentalPastryAPI
 
 @ExperimentalPastryAPI
 class PastryRadioButtonSet<T> {
     @JvmField val BUS = EventBus()
 
-    inner class OptionSelected(val option: T?): EventCancelable()
+    inner class OptionSelected(val option: T?): CancelableEvent()
 
     private val components = mutableMapOf<T, PastryCheckbox>()
 

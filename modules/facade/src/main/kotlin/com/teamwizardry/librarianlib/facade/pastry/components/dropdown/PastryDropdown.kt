@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.facade.pastry.components.dropdown
 
-import com.teamwizardry.librarianlib.etcetera.eventbus.EventCancelable
+import com.teamwizardry.librarianlib.etcetera.eventbus.CancelableEvent
 import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
-import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
+import com.teamwizardry.librarianlib.facade.input.Cursor
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layer.LayerHierarchyException
@@ -10,10 +10,9 @@ import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.pastry.Pastry
 import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
 import com.teamwizardry.librarianlib.facade.pastry.components.PastryActivatedControl
-import com.teamwizardry.librarianlib.helpers.rect
-import com.teamwizardry.librarianlib.helpers.vec
-import com.teamwizardry.librarianlib.math.coordinatespaces.ScreenSpace
-import com.teamwizardry.librarianlib.utilities.client.LibCursor
+import com.teamwizardry.librarianlib.math.ScreenSpace
+import com.teamwizardry.librarianlib.math.rect
+import com.teamwizardry.librarianlib.math.vec
 
 class PastryDropdown<T> constructor(
     posX: Int, posY: Int,
@@ -34,7 +33,7 @@ class PastryDropdown<T> constructor(
             this.BUS.hook<SelectEvent<T>> {
                 callback(it.value)
             }
-        this.cursor = LibCursor.POINT
+        this.cursor = Cursor.POINT
         this.add(sprite)
     }
 
@@ -104,5 +103,5 @@ class PastryDropdown<T> constructor(
         this.width = items.map { it.createLayer().width + 15 }.max() ?: this.width
     }
 
-    class SelectEvent<T>(val value: T): EventCancelable()
+    class SelectEvent<T>(val value: T): CancelableEvent()
 }

@@ -1,20 +1,33 @@
 package com.teamwizardry.librarianlib.facade.pastry.components
 
+import com.mojang.blaze3d.systems.RenderSystem
+import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
+import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
+import com.teamwizardry.librarianlib.core.util.kotlin.color
+import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
+import com.teamwizardry.librarianlib.core.util.kotlin.toRl
 import com.teamwizardry.librarianlib.etcetera.eventbus.Event
 import com.teamwizardry.librarianlib.facade.EnumMouseButton
+import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.pastry.BackgroundTexture
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
+import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.mosaic.Mosaic
+import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.renderer.RenderState
+import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 class PastryColorPicker: GuiLayer() {
-    private val flexbox = Flexbox(0, 0, 0, 0)
     private val gradient = GradientComponent()
     private val hueComponent = HueComponent()
     private val colorWell = ColorWellComponent()
@@ -57,37 +70,47 @@ class PastryColorPicker: GuiLayer() {
             _brightness = hsb[2]
         }
 
-    init {
-        this.add(flexbox)
-        flexbox.add(gradient, hueComponent, colorWell)
-        flexbox.spacing = 2
-        gradient.flex.config(
-            flexGrow = 3, minSize = 4
-        )
-        hueComponent.flex.config(
-            flexBasis = 10, flexGrow = 0, flexShrink = 0
-        )
-        colorWell.flex.config(
-            flexBasis = 32, flexGrow = 0, flexShrink = 0, alignSelf = Flexbox.Align.START
-        )
-    }
+    class ColorChangeEvent(): Event()
 
-    override fun layoutChildren() {
-        super.layoutChildren()
-        flexbox.frame = this.bounds
+    init {
+        this.yoga()
+        gradient.yoga()
+            .flexGrow(3)
+            .minWidth.px(4)
+            .marginRight.px(2)
+        hueComponent.yoga()
+            .flex(0, 0)
+            .flexBasis.px(10)
+            .marginRight.px(2)
+        colorWell.yoga()
+            .flex(0, 0)
+            .flexBasis.px(32)
+            .alignSelf.start()
+        this.add(gradient, hueComponent, colorWell)
     }
 
     private inner class GradientComponent: GuiLayer(0, 0, 0, 0) {
         val background = PastryBackground(BackgroundTexture.SLIGHT_INSET, 0, 0, 0, 0)
         val square = ColorSquare()
+        var draggingFromInside = false
 
         init {
             add(background, square)
             square.BUS.hook<GuiLayerEvents.MouseDown> {
-                if(it.button == EnumMouseButton.LEFT) updateSB()
+                if(square.mouseOver && it.button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+                    draggingFromInside = true
+                    updateSB()
+                }
+            }
+            square.BUS.hook<GuiLayerEvents.MouseDown> {
+                if(it.button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+                    draggingFromInside = false
+                }
             }
             square.BUS.hook<GuiLayerEvents.MouseDrag> {
-                if(EnumMouseButton.LEFT in square.pressedButtons) updateSB()
+                if(draggingFromInside && it.button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+                    updateSB()
+                }
             }
         }
 
@@ -107,36 +130,35 @@ class PastryColorPicker: GuiLayer() {
         }
 
         inner class ColorSquare: GuiLayer(0, 0, 0, 0) {
-            override fun draw(partialTicks: Float) {
-                super.draw(partialTicks)
+            override fun draw(context: GuiDrawContext) {
+                super.draw(context)
 
                 val color = Color(Color.HSBtoRGB(hue, 1f, 1f))
 
-                val tessellator = Tessellator.getInstance()
-                val vb = tessellator.buffer
+                val minX = 0.0
+                val minY = 0.0
+                val maxX = size.xi.toDouble()
+                val maxY = size.yi.toDouble()
 
-                GlStateManager.disableTexture2D()
+                val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+                val vb = buffer.getBuffer(flatRenderType)
 
-                vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR)
-                vb.pos(0, 0).color(Color.WHITE).endVertex()
-                vb.pos(0, height).color(Color.WHITE).endVertex()
-                vb.pos(width, height).color(color).endVertex()
-                vb.pos(width, 0).color(color).endVertex()
-                tessellator.draw()
+                vb.pos2d(context.matrix, minX, minY).color(Color.WHITE).endVertex()
+                vb.pos2d(context.matrix, minX, maxY).color(Color.WHITE).endVertex()
+                vb.pos2d(context.matrix, maxX, maxY).color(color).endVertex()
+                vb.pos2d(context.matrix, maxX, minY).color(color).endVertex()
+                buffer.finish()
 
-                GlStateManager.blendFunc(GL11.GL_DST_COLOR, GL11.GL_ZERO)
+                RenderSystem.blendFunc(GL11.GL_DST_COLOR, GL11.GL_ZERO)
+                vb.pos2d(context.matrix, minX, minY).color(Color.WHITE).endVertex()
+                vb.pos2d(context.matrix, minX, maxY).color(Color.BLACK).endVertex()
+                vb.pos2d(context.matrix, maxX, maxY).color(Color.BLACK).endVertex()
+                vb.pos2d(context.matrix, maxX, minY).color(Color.WHITE).endVertex()
+                buffer.finish()
 
-                vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR)
-                vb.pos(0, 0).color(Color.WHITE).endVertex()
-                vb.pos(0, height).color(Color.BLACK).endVertex()
-                vb.pos(width, height).color(Color.BLACK).endVertex()
-                vb.pos(width, 0).color(Color.WHITE).endVertex()
-                tessellator.draw()
-
-                GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-
-                GlStateManager.enableTexture2D()
+                RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
             }
+
         }
     }
 
@@ -146,17 +168,17 @@ class PastryColorPicker: GuiLayer() {
 
         init {
             Client.minecraft.textureManager.bindTexture(hueLoc)
-            Client.minecraft.textureManager.getTexture(hueLoc).setBlurMipmap(false, false)
+            Client.minecraft.textureManager.getTexture(hueLoc)?.setBlurMipmap(false, false)
 
-            add(background, sprite.componentWrapper())
+            add(background, sprite)
 
             sprite.BUS.hook<GuiLayerEvents.MouseDown> { updateH() }
             sprite.BUS.hook<GuiLayerEvents.MouseDrag> { updateH() }
         }
 
         fun updateH() {
-            if(sprite.height == 0.0 || !sprite.componentWrapper().mouseOver) return
-            val fraction = sprite.componentWrapper().mousePos.y / sprite.height
+            if(sprite.height == 0.0 || !sprite.mouseOver) return
+            val fraction = sprite.mousePos.y / sprite.height
             if(fraction in 0.0 .. 1.0) hue = 1-fraction.toFloat()
         }
 
@@ -175,7 +197,7 @@ class PastryColorPicker: GuiLayer() {
 
         init {
             add(background, colorRect)
-            colorRect.color_im { color }
+            colorRect.color_im.set { color }
         }
 
         override fun layoutChildren() {
@@ -186,9 +208,8 @@ class PastryColorPicker: GuiLayer() {
     }
 
     companion object {
-        val hueLoc = "librarianlib:textures/gui/pastry/colorpicker_hue.png".toRl()
-        val hueSprite = Sprite(hueLoc)
+        val hueLoc = "librarianlib:facade/textures/pastry/colorpicker_hue.png".toRl()
+        val hueSprite = Mosaic(hueLoc, 16, 16).getSprite("")
+        private val flatRenderType = SimpleRenderTypes.flat(GL11.GL_QUADS)
     }
-
-    class ColorChangeEvent(): Event()
 }

@@ -39,7 +39,7 @@ open class PastryControl: GuiLayer {
                 target = this
             } else {
                 var head = previous ?: run {
-                    this.requestBlur()
+//                    this.requestBlur() TODO
                     return true
                 }
                 val encountered = mutableListOf(this, head)
@@ -53,7 +53,7 @@ open class PastryControl: GuiLayer {
                 target = head
             }
         }
-        return target.requestFocus()
+        return true // target.requestFocus() TODO
     }
 
     /**
@@ -72,7 +72,7 @@ open class PastryControl: GuiLayer {
                 target = this
             } else {
                 var head = next ?: run {
-                    this.requestBlur()
+//                    this.requestBlur() TODO
                     return true
                 }
                 val encountered = mutableListOf(this, head)
@@ -86,16 +86,16 @@ open class PastryControl: GuiLayer {
                 target = head
             }
         }
-        return target.requestFocus()
+        return true // target.requestFocus() TODO
     }
 
-    @Hook
-    private fun requestFocus(e: GuiLayerEvents.RequestFocus) {
-        e.allow = true
-    }
-
-    @Hook
-    private fun mouseDown(e: GuiLayerEvents.MouseDown) {
-        requestFocusedState(mouseOver)
-    }
+//    @Hook
+//    private fun requestFocus(e: GuiLayerEvents.RequestFocus) {
+//        e.allow = true
+//    }
+//
+//    @Hook
+//    private fun mouseDown(e: GuiLayerEvents.MouseDown) {
+//        requestFocusedState(mouseOver)
+//    }
 }

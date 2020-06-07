@@ -20,6 +20,13 @@ enum class Axis2d(val direction: Vec2d) {
             Y -> v.y
         }
     }
+
+    fun set(v: Vec2d, value: Double): Vec2d {
+        return when(this) {
+            X -> vec(value, v.y)
+            Y -> vec(v.x, value)
+        }
+    }
 }
 
 /**

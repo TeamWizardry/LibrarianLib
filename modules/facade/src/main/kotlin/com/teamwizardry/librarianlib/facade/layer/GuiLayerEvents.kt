@@ -16,6 +16,7 @@ import com.teamwizardry.librarianlib.etcetera.eventbus.CancelableEvent
  * * Updates animations
  * * Fires [Update]
  * * **Layout phase:**
+ * * Fires [PrepareLayout]
  * * Updates yoga layout‡
  * * Calls [GuiLayer.layoutChildren][GuiLayer.layoutChildren] and fires [LayoutChildren] for all dirty layers
  * * **Draw phase:**
@@ -41,9 +42,15 @@ import com.teamwizardry.librarianlib.etcetera.eventbus.CancelableEvent
  */
 object GuiLayerEvents {
     /**
-     * Called after input events and before layout is calculated, this is the best place for general-purpose updates
+     * Called after input events and before layout is calculated, this is where most state mutation should occur
      */
     class Update : Event()
+
+    /**
+     * Called after [Update] and before layout is calculated, this is the best place to change the layout based on state
+     * changes that may have occurred during the [Update] event.
+     */
+    class PrepareLayout : Event()
 
     abstract class GuiInputEvent: Event()
 

@@ -15,14 +15,14 @@ abstract class PastryActivatedControl: PastryControl {
     protected abstract fun activate()
     protected open fun activationEnd() {}
 
-    @Hook
-    private fun focused(e: GuiLayerEvents.FocusEvent) {
-        justFocused = true
-    }
+//    @Hook
+//    private fun focused(e: GuiLayerEvents.FocusEvent) {
+//        justFocused = true
+//    }
 
     @Hook
     private fun keyDown(e: GuiLayerEvents.KeyDown) {
-        if(!isFocused) return
+//        if(!isFocused) return
         if(e.keyCode == GLFW_KEY_ENTER || e.keyCode == GLFW_KEY_KP_ENTER) {
             activatingKey = e.keyCode
             activate()
