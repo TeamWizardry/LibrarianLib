@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.facade.input.Cursor
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
+import com.teamwizardry.librarianlib.facade.layers.StackLayout
 import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
 import com.teamwizardry.librarianlib.math.Easing
 import com.teamwizardry.librarianlib.math.ScreenSpace
@@ -20,7 +21,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
     private val creationTime = Client.time.time
 
     val background = SpriteLayer(PastryTexture.dropdownBackground)
-    val stack = GuiLayer()
+    val stack = StackLayout.build(0, 0).spacing(1).build()
     val items = identityMapOf<PastryDropdownItem<T>, DropdownStackItem>()
     val contents = GuiLayer(-2, 0)
     val contentsClip = GuiLayer(0, 0)
@@ -36,8 +37,6 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
         contents.add(contentsClip)
         contentsClip.add(stack)
         contentsClip.clipToBounds = true
-        stack.yoga()
-            .paddingTop.px(-1)
 
         button.items.forEach { item ->
             val stackItem = DropdownStackItem(item)
@@ -45,7 +44,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
             stack.add(stackItem)
         }
 
-//        stack.fitToLength() TODO
+        stack.fitToLength()
     }
 
     override fun layoutChildren() {

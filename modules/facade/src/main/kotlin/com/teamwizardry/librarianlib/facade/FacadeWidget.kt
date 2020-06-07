@@ -20,6 +20,7 @@ open class FacadeWidget(
 ) {
     val root = GuiLayer()
     val main = GuiLayer()
+    private var currentTooltip: GuiLayer? = null
 
     init {
         root.add(main)
@@ -120,8 +121,17 @@ open class FacadeWidget(
             Cursor.setCursor(mouseOver?.cursor)
             root.updateAnimations(Client.time.time)
             root.triggerEvent(GuiLayerEvents.Update())
+            root.triggerEvent(GuiLayerEvents.PrepareLayout())
             root.runLayout()
             root.clearAllDirtyLayout()
+
+            val tooltip = generateSequence(mouseOver) { it.parent }.mapNotNull { it.tooltipLayer }.firstOrNull()
+
+            if(tooltip != currentTooltip) {
+                currentTooltip?.removeFromParent()
+                currentTooltip = tooltip
+                tooltip?.also { root.add(it) }
+            }
 
             RenderSystem.pushMatrix()
             RenderSystem.scaled(1/s, 1/s, 1.0)

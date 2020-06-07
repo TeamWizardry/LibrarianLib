@@ -25,6 +25,7 @@ import com.teamwizardry.librarianlib.etcetera.eventbus.Event
 import com.teamwizardry.librarianlib.etcetera.eventbus.EventBus
 import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
 import com.teamwizardry.librarianlib.facade.input.Cursor
+import com.teamwizardry.librarianlib.facade.pastry.components.PastryBasicTooltip
 import com.teamwizardry.librarianlib.facade.value.ChangeListener
 import com.teamwizardry.librarianlib.facade.value.IMValueDouble
 import com.teamwizardry.librarianlib.facade.value.IMValueInt
@@ -936,8 +937,6 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     @Deprecated("NOT IMPLEMENTED YET")
     var clipToBounds: Boolean = false
 
-    val tooltip_im: IMValue<List<String>?> = imValue()
-
     /**
      * An opacity value in the range [0, 1]. If this is not equal to 1 the layer will be rendered to an FBO and drawn
      * to a texture. This process clips the layer to its bounds.
@@ -1329,6 +1328,54 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         }
     }
 
+    //endregion
+
+    //region Tooltips
+    private val _tooltipTextLayer = PastryBasicTooltip()
+
+    /**
+     * @see tooltipText
+     */
+    val tooltipText_im: IMValue<String?> = imValue()
+
+    /**
+     * The text to display as a tooltip when the mouse is over this component. If [tooltip] is nonnull this value will
+     * be ignored.
+     */
+    var tooltipText: String? by tooltipText_im
+
+    /**
+     * @see tooltip
+     */
+    val tooltip_rm: RMValue<GuiLayer?> = rmValue(null)
+
+    /**
+     * The layer to display as a tooltip when the mouse is over this component. If this value is null it will fall back
+     * to [tooltipText].
+     */
+    var tooltip: GuiLayer? by tooltip_rm
+
+    /**
+     * @see tooltipDelay
+     */
+    @Deprecated("UNIMPLEMENTED")
+    val tooltipDelay_im: IMValueInt = imInt(0)
+
+    /**
+     * How many ticks should the mouse have to hover over this component before the tooltip appears.
+     */
+    @Deprecated("UNIMPLEMENTED")
+    var tooltipDelay: Int by tooltipDelay_im
+
+    val tooltipLayer: GuiLayer?
+        get() {
+            tooltip?.also { return it }
+            tooltipText?.also {
+                _tooltipTextLayer.text = it
+                return _tooltipTextLayer
+            }
+            return null
+        }
     //endregion
 
     //region Layout

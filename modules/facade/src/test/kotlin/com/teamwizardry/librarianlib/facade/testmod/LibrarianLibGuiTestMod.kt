@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.facade.testmod.screens.*
+import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.PastryTestScreen
 import com.teamwizardry.librarianlib.facade.testmod.value.RMValueTests
 import com.teamwizardry.librarianlib.facade.text.attributedStringFromMC
 import com.teamwizardry.librarianlib.math.Easing
@@ -91,6 +92,7 @@ object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
         +FacadeScreenConfig("simple_text", "Simple Text", ::SimpleTextTestScreen)
         +FacadeScreenConfig("simple_yoga", "Yoga Simple Flex", ::SimpleYogaScreen)
         +FacadeScreenConfig("yoga_list", "Yoga List", ::YogaListScreen)
+        +FacadeScreenConfig("pastry", "Pastry", ::PastryTestScreen)
 
         +UnitTestSuite("rmvalue") {
             add<RMValueTests>()

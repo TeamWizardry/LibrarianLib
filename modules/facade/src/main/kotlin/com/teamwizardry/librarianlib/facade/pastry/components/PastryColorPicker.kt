@@ -209,7 +209,7 @@ class PastryColorPicker: GuiLayer() {
 
     companion object {
         val hueLoc = "librarianlib:facade/textures/pastry/colorpicker_hue.png".toRl()
-        val hueSprite = Mosaic(hueLoc, 16, 16).getSprite("")
+        val hueSprite = Mosaic(hueLoc, 8, 256).getSprite("")
         private val flatRenderType = SimpleRenderTypes.flat(GL11.GL_QUADS)
     }
 }
