@@ -1,6 +1,10 @@
 package com.teamwizardry.librarianlib.facade.layer
 
 import com.mojang.blaze3d.systems.RenderSystem
+import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
+import com.teamwizardry.librarianlib.core.util.kotlin.color
+import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.core.util.kotlin.weakSetOf
 import com.teamwizardry.librarianlib.core.util.lerp.Lerper
@@ -34,12 +38,15 @@ import com.teamwizardry.librarianlib.facade.value.RMValueBoolean
 import com.teamwizardry.librarianlib.facade.value.RMValueInt
 import com.teamwizardry.librarianlib.facade.value.RMValueLong
 import dev.thecodewarrior.mirror.Mirror
+import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.BufferUtils
 import org.lwjgl.PointerBuffer
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.yoga.Yoga.*
+import java.awt.Color
 import java.lang.Exception
 import java.util.ConcurrentModificationException
 import java.util.PriorityQueue
@@ -477,6 +484,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
                 return
             component.BUS.fire(GuiLayerEvents.AddToParentEvent(this))
             _children.add(component)
+            markLayoutDirty()
             component.parent = this
         }
     }
@@ -506,6 +514,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         layer.BUS.fire(GuiLayerEvents.RemoveFromParentEvent(this))
         layer.parent = null
         _children.remove(layer)
+        markLayoutDirty()
     }
 
     /**
@@ -545,6 +554,10 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         }
     }
 
+    /**
+     * Creates an object designed to allow easily inspecting the layer hierarchy in the debugger
+     */
+    fun debuggerTree(): DebuggerTree = DebuggerTree(this, children.map { it.debuggerTree() })
 
     //endregion
 
@@ -580,6 +593,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     val size_rm: RMValue<Vec2d> = rmValue(vec(width, height)) { old, new ->
         if(old != new) {
             markLayoutDirty()
+            parent?.markLayoutDirty()
             matrixDirty = true
         }
     }
@@ -593,6 +607,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      */
     val pos_rm: RMValue<Vec2d> = rmValue(vec(posX, posY)) { old, new ->
         if(old != new) {
+            parent?.markLayoutDirty()
             matrixDirty = true
         }
     }
@@ -607,6 +622,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      */
     val scale_rm: RMValue<Vec2d> = rmValue(vec(1, 1)) { old, new ->
         if(old != new) {
+            parent?.markLayoutDirty()
             matrixDirty = true
         }
     }
@@ -627,6 +643,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      */
     val rotation_rm: RMValueDouble = rmDouble(0.0) { old, new ->
         if(old != new) {
+            parent?.markLayoutDirty()
             matrixDirty = true
         }
     }
@@ -648,6 +665,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      */
     val anchor_rm: RMValue<Vec2d> = rmValue(Vec2d.ZERO) { old, new ->
         if(old != new) {
+            parent?.markLayoutDirty()
             matrixDirty = true
         }
     }
@@ -1063,9 +1081,8 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
 //        popClipping(context)
 
         if (context.showDebugBoundingBox) {
-            RenderSystem.lineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
-            RenderSystem.color4f(.75f, 0f, .75f, 1f)
-            drawDebugBoundingBox(context)
+            RenderSystem.lineWidth(1f)
+            drawDebugBoundingBox(context, if(mouseOver) Color.WHITE else Color(.75f, 0f, .75f, 1f))
         }
 //        if (GuiComponent.showLayoutOverlay && didLayout && !isInMask) {
 //            RenderSystem.color4f(1f, 0f, 0f, 0.1f)
@@ -1083,11 +1100,10 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
 
         if (context.showDebugBoundingBox && //!isInMask &&
             GuiLayer.showDebugTilt && shouldDrawSkeleton()) {
-            RenderSystem.lineWidth(GuiLayer.overrideDebugLineWidth ?: 1f)
-            RenderSystem.color4f(.75f, 0f, .75f, 1f)
+            RenderSystem.lineWidth(1f)
             GL11.glEnable(GL11.GL_LINE_STIPPLE)
             GL11.glLineStipple(2, 0b0011_0011_0011_0011.toShort())
-            drawDebugBoundingBox(context)
+            drawDebugBoundingBox(context, Color(.75f, 0f, .75f, 1f))
             GL11.glDisable(GL11.GL_LINE_STIPPLE)
         }
     }
@@ -1111,23 +1127,26 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * Draws a bounding box around the edge of this component
      */
     @Suppress("UNUSED_PARAMETER") // TODO: update to use matrices
-    fun drawDebugBoundingBox(context: GuiDrawContext) {
-        RenderSystem.disableTexture()
+    fun drawDebugBoundingBox(context: GuiDrawContext, color: Color) {
         val points = createDebugBoundingBoxPoints()
-        val tessellator = Tessellator.getInstance()
-        val vb = tessellator.buffer
-        vb.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
-        points.forEach { vb.pos(it.x, it.y, 0.0).endVertex() }
-        tessellator.draw()
-        RenderSystem.color4f(0f, 0f, 0f, 0.15f)
-        if(GuiLayer.showDebugTilt) {
-            vb.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION)
-            points.forEach {
-                vb.pos(it.x, it.y, -100.0).endVertex()
-                vb.pos(it.x, it.y, 0.0).endVertex()
-            }
-            tessellator.draw()
+
+        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val vb = buffer.getBuffer(debugBoundingBoxRenderType)
+
+        points.forEach {
+            vb.pos2d(context.matrix, it.x, it.y).color(color).endVertex()
         }
+
+        buffer.finish()
+//        RenderSystem.color4f(0f, 0f, 0f, 0.15f)
+//        if(GuiLayer.showDebugTilt) {
+//            vb.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION)
+//            points.forEach {
+//                vb.pos(it.x, it.y, -100.0).endVertex()
+//                vb.pos(it.x, it.y, 0.0).endVertex()
+//            }
+//            tessellator.draw()
+//        }
     }
 
     val cornerRadius = 0.0
@@ -1543,14 +1562,10 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
             YGConfigSetUseWebDefaults(config, true)
         }
 
+        private val debugBoundingBoxRenderType: RenderType = SimpleRenderTypes.flat(GL11.GL_LINE_STRIP)
+
         @JvmStatic
         var showDebugTilt = false
-
-        @JvmStatic
-        var showDebugBoundingBox = false
-
-        @JvmStatic
-        var showLayoutOverlay = false
 
         /**
          * The z index of tooltips. Overlays should not go above this level.
@@ -1582,9 +1597,6 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         @JvmStatic
         val UNDERLAY_Z: Double = -1e10
 
-        @JvmStatic
-        var overrideDebugLineWidth: Float? = null
-
         internal fun glStateGuarantees() {
             RenderSystem.enableTexture()
             RenderSystem.color4f(1f, 1f, 1f, 1f)
@@ -1593,6 +1605,12 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
             RenderSystem.alphaFunc(GL11.GL_GREATER, 1/255f)
             RenderSystem.disableLighting()
+        }
+    }
+
+    class DebuggerTree(val layer: GuiLayer, val children: List<DebuggerTree>) {
+        override fun toString(): String {
+            return "(${layer.x}, ${layer.y}, ${layer.width}, ${layer.height}) $layer"
         }
     }
 }

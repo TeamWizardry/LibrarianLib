@@ -11,11 +11,11 @@ import dev.thecodewarrior.bitfont.utils.ExperimentalBitfont
 
 @ExperimentalBitfont
 class PastryLabel: TextLayer {
-    constructor(posX: Int, posY: Int, width: Int, height: Int): super(posX, posY, width, height, "")
+    constructor(posX: Int, posY: Int, width: Int, height: Int): super(posX, posY, width, height, "") {
+        textMargins = Margins(2.0, 2.0, 2.0, 2.0)
+    }
     constructor(posX: Int, posY: Int, text: String): this(posX, posY, 0, 0) {
         this.text = text
-        this.wrap = false
-        updateText()
         this.fitToText()
     }
     constructor(text: String): this(0, 0, text)

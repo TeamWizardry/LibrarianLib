@@ -34,7 +34,6 @@ class ScrollPane(x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y, width,
 
     init {
         this.add(content)
-        this.dependsOnChildLayout = true
         this.clipToBounds = true
     }
 

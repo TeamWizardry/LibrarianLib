@@ -81,6 +81,6 @@ class ComplexTooltip(val stack: ItemStack, val text: String): PastryTooltip() {
         textLayer.width = maxWidth - 20
         textLayer.fitToText()
 
-//        contents.size = vec(textLayer.textFrame.maxX + 2, textLayer.height + 2)
+        contents.size = vec(textLayer.frame.maxX + 2, textLayer.height + 2)
     }
 }

@@ -64,7 +64,12 @@ open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String
     /**
      * Whether to wrap the text
      */
-    var wrap: Boolean = true
+    var wrap: Boolean = false
+
+    /**
+     * Margins to offset the text by
+     */
+    var textMargins: Margins = Margins(0.0, 0.0, 0.0, 0.0)
 
     /**
      * The logical bounds of the text
@@ -82,6 +87,7 @@ open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String
     }
 
     fun fitToText() {
+        updateText()
         var minX = 0
         var minY = 0
         var maxX = 0
@@ -96,7 +102,8 @@ open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String
             minY = min(minY, fragment.posY)
             maxY = max(maxY, fragment.maxY)
         }
-        size = vec(maxX, maxY)
+        textBounds = rect(minX, minY, maxX, maxY)
+        size = vec(maxX + textMargins.horizontalSum, maxY + textMargins.verticalSum)
     }
 
     /**
@@ -111,7 +118,7 @@ open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String
 
         layoutManager.attributedString = this.attributedText
         if(wrap)
-            container.size = Vec2i(this.widthi, Int.MAX_VALUE)
+            container.size = Vec2i((this.width - textMargins.horizontalSum).toInt(), Int.MAX_VALUE)
         else
             container.size = Vec2i(Int.MAX_VALUE, Int.MAX_VALUE)
         layoutManager.layoutText()
@@ -122,16 +129,14 @@ open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String
         updateText()
     }
 
-    override fun layoutChildren() {
-        super.layoutChildren()
-//        if(fitToText)
-//            fitToText()
-//        else // fitToText updates the layout already
-        updateText()
+    override fun draw(context: GuiDrawContext) {
+        context.matrix.translate(textMargins.left, textMargins.top)
+        BitfontRenderer.draw(context.matrix, container, color)
     }
 
-    override fun draw(context: GuiDrawContext) {
-        BitfontRenderer.draw(context.matrix, container, color)
+    data class Margins(val left: Double, val top: Double, val right: Double, val bottom: Double) {
+        val horizontalSum: Double = left + right
+        val verticalSum: Double = top + bottom
     }
 
 //    /**

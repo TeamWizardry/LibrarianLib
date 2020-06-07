@@ -37,10 +37,6 @@ class StackLayout(
     var collapseInvisible: Boolean,
     var preserveCrosswise: Boolean
 ): GuiLayer(posX, posY, width, height) {
-    init {
-        this.dependsOnChildLayout = true
-    }
-
     fun fitToLength() {
         if(children.isEmpty()) {
             if(horizontal)

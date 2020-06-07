@@ -19,7 +19,6 @@ class PastryTabPane : GuiLayer {
 
     init {
         this.add(background)
-        this.dependsOnChildLayout = true
     }
 
     override fun layoutChildren() {

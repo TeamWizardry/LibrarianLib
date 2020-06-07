@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.facade.pastry.components
 
+import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
@@ -11,8 +12,6 @@ import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.math.vec
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
-import dev.thecodewarrior.bitfont.utils.ExperimentalBitfont
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.item.ItemStack
@@ -26,8 +25,7 @@ abstract class PastryTooltip: GuiLayer() {
 
     init {
         this.zIndex = GuiLayer.TOOLTIP_Z
-        this.add(contents)
-        contents.add(background)
+        this.add(background, contents)
         background.zIndex = -1.0
     }
 
@@ -44,27 +42,27 @@ abstract class PastryTooltip: GuiLayer() {
     override fun layoutChildren() {
         super.layoutChildren()
 
-        val leftGap = 4
-        val rightGap = 6
-        val margin = 5
+        val leftCursorOffset = 4
+        val rightCursorOffset = 6
+        val screenMargin = 5
         this.pos = parent?.mousePos ?: this.pos
 
-        val rootBounds = root.convertRectTo(root.bounds.offset(margin, margin, -margin, -margin), this)
-        val maxSpace = max(-rootBounds.minX - leftGap, rootBounds.maxX - rightGap)
+        val screenBounds = root.convertRectTo(root.bounds.offset(screenMargin, screenMargin, -screenMargin, -screenMargin), this)
+        val maxSpace = max(-screenBounds.minX - leftCursorOffset, screenBounds.maxX - rightCursorOffset)
 
         layoutContents(maxSpace)
 
-        contents.pos = vec(rightGap, 0)
-        if(contents.frame.maxX > rootBounds.maxX) {
-            contents.x = -(contents.width + leftGap)
+        contents.pos = vec(rightCursorOffset, 0)
+        if(contents.frame.maxX > screenBounds.maxX) {
+            contents.x = -(contents.width + leftCursorOffset)
         }
 
-        background.frame = contents.bounds.offset(-2, -2, 2, 2)
+        background.frame = contents.frame.offset(-2, -2, 2, 2)
     }
 }
 
 class PastryBasicTooltip: PastryTooltip() {
-    private val textLayer = TextLayer(2, 1)
+    private val textLayer = TextLayer(1, 1)
 
     val text_im: IMValue<String?> = textLayer.text_im
     var text: String? by text_im
@@ -82,7 +80,7 @@ class PastryBasicTooltip: PastryTooltip() {
         textLayer.width = maxWidth - 4
         textLayer.fitToText()
 
-        contents.size = vec(textLayer.textBounds.maxX + 2, textLayer.frame.maxY + 1)
+        contents.size = vec(textLayer.width + 2, textLayer.height + 2)
     }
 }
 
@@ -113,14 +111,50 @@ class VanillaTooltip: GuiLayer() {
         val rootMousePos = root.mousePos
 
         (lines ?: text?.let { listOf(it) })?.also { lines ->
-            TooltipProvider.renderTooltip(lines.toMutableList(), rootMousePos.xi, rootMousePos.yi, font)
-
+            TooltipProvider.renderTooltip(lines, rootMousePos.xi, rootMousePos.yi, font)
         }
     }
 }
 
 private object TooltipProvider: Screen(StringTextComponent("")) {
+    init {
+        this.init(Client.minecraft, Client.window.scaledWidth, Client.window.scaledHeight)
+    }
+
+    private fun initIfNeeded() {
+        if(width != Client.window.scaledWidth || height != Client.window.scaledHeight)
+            this.init(Client.minecraft, Client.window.scaledWidth, Client.window.scaledHeight)
+    }
+    private fun prepareTooltip() {
+        initIfNeeded()
+        val s = Client.guiScaleFactor
+        RenderSystem.scaled(s, s, 1.0)
+    }
+    private fun cleanupTooltip() {
+        val s = Client.guiScaleFactor
+        RenderSystem.scaled(1 / s, 1 / s, 1.0)
+    }
+
+    override fun renderTooltip(p_renderTooltip_1_: String, p_renderTooltip_2_: Int, p_renderTooltip_3_: Int) {
+        prepareTooltip()
+        super.renderTooltip(p_renderTooltip_1_, p_renderTooltip_2_, p_renderTooltip_3_)
+        cleanupTooltip()
+    }
+
+    override fun renderTooltip(p_renderTooltip_1_: List<String>, p_renderTooltip_2_: Int, p_renderTooltip_3_: Int) {
+        prepareTooltip()
+        super.renderTooltip(p_renderTooltip_1_, p_renderTooltip_2_, p_renderTooltip_3_)
+        cleanupTooltip()
+    }
+
+    override fun renderTooltip(p_renderTooltip_1_: List<String>, p_renderTooltip_2_: Int, p_renderTooltip_3_: Int, font: FontRenderer) {
+        prepareTooltip()
+        super.renderTooltip(p_renderTooltip_1_, p_renderTooltip_2_, p_renderTooltip_3_, font)
+        cleanupTooltip()
+    }
+
     public override fun renderTooltip(p_renderTooltip_1_: ItemStack, p_renderTooltip_2_: Int, p_renderTooltip_3_: Int) {
+        initIfNeeded() // for some reason itemstack tooltips don't need to be scaled
         super.renderTooltip(p_renderTooltip_1_, p_renderTooltip_2_, p_renderTooltip_3_)
     }
 }

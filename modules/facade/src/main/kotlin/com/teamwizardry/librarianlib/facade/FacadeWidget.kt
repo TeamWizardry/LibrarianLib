@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.provided.SafetyNetErrorScreen
 import com.teamwizardry.librarianlib.math.Matrix3dStack
 import com.teamwizardry.librarianlib.math.vec
+import net.minecraft.client.GameSettings
 import net.minecraft.client.gui.screen.Screen
 import org.lwjgl.glfw.GLFW
 
@@ -20,10 +21,12 @@ open class FacadeWidget(
 ) {
     val root = GuiLayer()
     val main = GuiLayer()
+    private val tooltipContainer = GuiLayer()
     private var currentTooltip: GuiLayer? = null
 
     init {
-        root.add(main)
+        root.add(main, tooltipContainer)
+        tooltipContainer.interactive = false
     }
 
     /**
@@ -135,25 +138,26 @@ open class FacadeWidget(
             root.scale = s
             root.size = vec(Client.window.scaledWidth, Client.window.scaledHeight)
             main.pos = ((root.size - main.size) / 2).round()
+            tooltipContainer.frame = root.bounds
 
             Cursor.setCursor(mouseOver?.cursor)
+            val tooltip = generateSequence(mouseOver) { it.parent }.mapNotNull { it.tooltipLayer }.firstOrNull()
+
+            if (tooltip != currentTooltip) {
+                currentTooltip?.removeFromParent()
+                currentTooltip = tooltip
+                tooltip?.also { tooltipContainer.add(it) }
+            }
+
             root.updateAnimations(Client.time.time)
             root.triggerEvent(GuiLayerEvents.Update())
             root.triggerEvent(GuiLayerEvents.PrepareLayout())
             root.runLayout()
             root.clearAllDirtyLayout()
 
-            val tooltip = generateSequence(mouseOver) { it.parent }.mapNotNull { it.tooltipLayer }.firstOrNull()
-
-            if (tooltip != currentTooltip) {
-                currentTooltip?.removeFromParent()
-                currentTooltip = tooltip
-                tooltip?.also { root.add(it) }
-            }
-
             RenderSystem.pushMatrix()
             RenderSystem.scaled(1 / s, 1 / s, 1.0)
-            val context = GuiDrawContext(Matrix3dStack(), false)
+            val context = GuiDrawContext(Matrix3dStack(), Client.minecraft.renderManager.isDebugBoundingBox)
             root.renderLayer(context)
             RenderSystem.popMatrix()
         }
