@@ -35,6 +35,7 @@ open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String
      * [attributedText], but if [attributedText] is manually set to a new value, this property will be reset to null.
      */
     var text by text_im
+    private var lastText: String? = null
 
     var _attributedText: AttributedString = AttributedString.fromMC(text)
     /**
@@ -102,12 +103,23 @@ open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String
      * Updates the text layout.
      */
     fun updateText() {
+        val plainText = text
+        if(plainText != null && plainText != lastText) {
+            lastText = plainText
+            _attributedText = AttributedString.fromMC(plainText)
+        }
+
         layoutManager.attributedString = this.attributedText
         if(wrap)
             container.size = Vec2i(this.widthi, Int.MAX_VALUE)
         else
             container.size = Vec2i(Int.MAX_VALUE, Int.MAX_VALUE)
         layoutManager.layoutText()
+    }
+
+    override fun prepareLayout() {
+        super.prepareLayout()
+        updateText()
     }
 
     override fun layoutChildren() {

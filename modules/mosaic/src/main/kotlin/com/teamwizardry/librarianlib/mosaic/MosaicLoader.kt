@@ -23,7 +23,7 @@ import javax.imageio.ImageIO
 
 internal object MosaicLoader : ReloadListener<Map<ResourceLocation, MosaicDefinition?>>() {
     private var definitions: MutableMap<ResourceLocation, MosaicDefinition?> = mutableMapOf()
-    private var missingno = "librarianlib:sprites/textures/missingno.png".toRl()
+    private var missingno = "librarianlib:mosaic/textures/missingno.png".toRl()
 
     val missingnoSheet: MosaicDefinition get() = getDefinition(missingno)
     val missingnoSprite: SpriteDefinition get() = getDefinition(missingno).sprites[0]

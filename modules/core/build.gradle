@@ -1,7 +1,7 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 dependencies {
-    shade("com.github.thecodewarrior:Mirror:cdd1ec3034") {
+    shade("com.github.thecodewarrior:Mirror:de04db9d7f") {
         exclude group: 'org.jetbrains.kotlin'
     }
     testApi project(':testbase')

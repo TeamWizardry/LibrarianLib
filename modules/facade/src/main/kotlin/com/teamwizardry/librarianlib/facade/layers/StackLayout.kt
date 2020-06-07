@@ -37,18 +37,8 @@ class StackLayout(
     var collapseInvisible: Boolean,
     var preserveCrosswise: Boolean
 ): GuiLayer(posX, posY, width, height) {
-    companion object {
-        fun build(): StackLayoutBuilder {
-            return StackLayoutBuilder(0.0, 0.0)
-        }
-
-        fun build(posX: Int, posY: Int): StackLayoutBuilder {
-            return StackLayoutBuilder(posX.toDouble(), posY.toDouble())
-        }
-
-        fun build(pos: Vec2d): StackLayoutBuilder {
-            return StackLayoutBuilder(pos.x, pos.y)
-        }
+    init {
+        this.dependsOnChildLayout = true
     }
 
     fun fitToLength() {
@@ -151,6 +141,20 @@ class StackLayout(
 
                 child.frame = rect(x, if(reverse) y-frame.height else y, frame.width, frame.height)
             }
+        }
+    }
+
+    companion object {
+        fun build(): StackLayoutBuilder {
+            return StackLayoutBuilder(0.0, 0.0)
+        }
+
+        fun build(posX: Int, posY: Int): StackLayoutBuilder {
+            return StackLayoutBuilder(posX.toDouble(), posY.toDouble())
+        }
+
+        fun build(pos: Vec2d): StackLayoutBuilder {
+            return StackLayoutBuilder(pos.x, pos.y)
         }
     }
 }

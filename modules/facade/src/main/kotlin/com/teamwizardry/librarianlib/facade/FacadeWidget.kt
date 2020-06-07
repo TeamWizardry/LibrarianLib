@@ -39,7 +39,9 @@ open class FacadeWidget(
         val xPos = _xPos * s
         val yPos = _yPos * s
         computeMouseOver(xPos, yPos)
-        root.triggerEvent(GuiLayerEvents.MouseMove(vec(xPos, yPos), vec(mouseX, mouseY)))
+        safetyNet {
+            root.triggerEvent(GuiLayerEvents.MouseMove(vec(xPos, yPos), vec(mouseX, mouseY)))
+        }
         mouseX = xPos
         mouseY = yPos
     }
@@ -49,7 +51,9 @@ open class FacadeWidget(
         val xPos = _xPos * s
         val yPos = _yPos * s
         computeMouseOver(xPos, yPos)
-        root.triggerEvent(GuiLayerEvents.MouseDown(vec(xPos, yPos), button))
+        safetyNet {
+            root.triggerEvent(GuiLayerEvents.MouseDown(vec(xPos, yPos), button))
+        }
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -61,7 +65,9 @@ open class FacadeWidget(
         val xPos = _xPos * s
         val yPos = _yPos * s
         computeMouseOver(xPos, yPos)
-        root.triggerEvent(GuiLayerEvents.MouseUp(vec(xPos, yPos), button))
+        safetyNet {
+            root.triggerEvent(GuiLayerEvents.MouseUp(vec(xPos, yPos), button))
+        }
     }
 
     fun mouseScrolled(_xPos: Double, _yPos: Double, _delta: Double) {
@@ -70,7 +76,9 @@ open class FacadeWidget(
         val yPos = _yPos * s
         val delta = _delta * s
         computeMouseOver(xPos, yPos)
-        root.triggerEvent(GuiLayerEvents.MouseScroll(vec(xPos, yPos), vec(0.0, delta)))
+        safetyNet {
+            root.triggerEvent(GuiLayerEvents.MouseScroll(vec(xPos, yPos), vec(0.0, delta)))
+        }
     }
 
     fun mouseDragged(_xPos: Double, _yPos: Double, button: Int, _deltaX: Double, _deltaY: Double) {
@@ -80,13 +88,17 @@ open class FacadeWidget(
         val deltaX = _deltaX * s
         val deltaY = _deltaY * s
         computeMouseOver(xPos, yPos)
-        root.triggerEvent(GuiLayerEvents.MouseDrag(vec(xPos, yPos), vec(xPos - deltaX, yPos - deltaY), button))
+        safetyNet {
+            root.triggerEvent(GuiLayerEvents.MouseDrag(vec(xPos, yPos), vec(xPos - deltaX, yPos - deltaY), button))
+        }
     }
 
     private fun computeMouseOver(xPos: Double, yPos: Double) {
-        mouseOver = root.computeMouseInfo(vec(xPos, yPos), Matrix3dStack())
-        generateSequence(mouseOver) { it.parent }.forEach {
-            it.mouseOver = true
+        safetyNet {
+            mouseOver = root.computeMouseInfo(vec(xPos, yPos), Matrix3dStack())
+            generateSequence(mouseOver) { it.parent }.forEach {
+                it.mouseOver = true
+            }
         }
     }
 
@@ -99,19 +111,25 @@ open class FacadeWidget(
         if(keyCode == GLFW.GLFW_KEY_ESCAPE) {
             screen.onClose()
         }
-        root.triggerEvent(GuiLayerEvents.KeyDown(keyCode, scanCode, modifiers))
+        safetyNet {
+            root.triggerEvent(GuiLayerEvents.KeyDown(keyCode, scanCode, modifiers))
+        }
     }
 
     fun keyReleased(keyCode: Int, scanCode: Int, modifiers: Int) {
-        root.triggerEvent(GuiLayerEvents.KeyUp(keyCode, scanCode, modifiers))
+        safetyNet {
+            root.triggerEvent(GuiLayerEvents.KeyUp(keyCode, scanCode, modifiers))
+        }
     }
 
     fun charTyped(codepoint: Char, modifiers: Int) {
-        root.triggerEvent(GuiLayerEvents.CharTyped(codepoint, modifiers))
+        safetyNet {
+            root.triggerEvent(GuiLayerEvents.CharTyped(codepoint, modifiers))
+        }
     }
 
     fun render() {
-        try {
+        safetyNet {
             val s = Client.guiScaleFactor // rescale to absolute screen coordinates
             root.pos = vec(0, 0)
             root.scale = s
@@ -127,24 +145,30 @@ open class FacadeWidget(
 
             val tooltip = generateSequence(mouseOver) { it.parent }.mapNotNull { it.tooltipLayer }.firstOrNull()
 
-            if(tooltip != currentTooltip) {
+            if (tooltip != currentTooltip) {
                 currentTooltip?.removeFromParent()
                 currentTooltip = tooltip
                 tooltip?.also { root.add(it) }
             }
 
             RenderSystem.pushMatrix()
-            RenderSystem.scaled(1/s, 1/s, 1.0)
+            RenderSystem.scaled(1 / s, 1 / s, 1.0)
             val context = GuiDrawContext(Matrix3dStack(), false)
             root.renderLayer(context)
             RenderSystem.popMatrix()
-        } catch (e: Exception) {
-            logger.error("Error in GUI:", e)
-            Client.displayGuiScreen(SafetyNetErrorScreen(e))
         }
     }
 
     fun removed() {
         Cursor.setCursor(null)
+    }
+
+    private inline fun safetyNet(block: () -> Unit) {
+        try {
+            block()
+        } catch (e: Exception) {
+            logger.error("Error in GUI:", e)
+            Client.displayGuiScreen(SafetyNetErrorScreen(e))
+        }
     }
 }

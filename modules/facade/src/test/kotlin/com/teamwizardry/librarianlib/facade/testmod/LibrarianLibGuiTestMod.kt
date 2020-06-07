@@ -8,6 +8,7 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
+import com.teamwizardry.librarianlib.facade.provided.SafetyNetErrorScreen
 import com.teamwizardry.librarianlib.facade.testmod.screens.*
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.PastryTestScreen
 import com.teamwizardry.librarianlib.facade.testmod.value.RMValueTests
@@ -97,25 +98,33 @@ object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
         +UnitTestSuite("rmvalue") {
             add<RMValueTests>()
         }
-
-        +UnitTestSuite("rmvalue") {
-            add<RMValueTests>()
-        }
     }
 
     fun FacadeScreenConfig(id: String, name: String, block: (FacadeScreen) -> Unit): TestScreenConfig {
         return TestScreenConfig(id, name, itemGroup) {
             customScreen {
-                val screen = FacadeScreen(StringTextComponent(name))
-                block(screen)
-                screen
+                try {
+                    val screen = FacadeScreen(StringTextComponent(name))
+                    block(screen)
+                    screen
+                } catch (e: Exception) {
+                    logger.error("Error in GUI:", e)
+                    SafetyNetErrorScreen(e)
+                }
             }
         }
     }
 
     fun FacadeScreenConfig(id: String, name: String, block: () -> FacadeTestScreen): TestScreenConfig {
         return TestScreenConfig(id, name, itemGroup) {
-            customScreen(block)
+            customScreen {
+                try {
+                    block()
+                } catch (e: Exception) {
+                    logger.error("Error in GUI:", e)
+                    SafetyNetErrorScreen(e)
+                }
+            }
         }
     }
 }

@@ -1,82 +1,81 @@
- {
-     "": {
-         "textureWidth": 256,
-         "textureHeight": 256,
-         "sprites": {
-            "background": { "pos": [0,0,8,8], "caps": [3,3,3,3] },
-            "backgroundInnerCorners": { "pos": [8,0,8,8], "caps": [3,3,3,3] },
-            "backgroundSlightRound": { "pos": [16,8,8,8], "caps": [3,3,3,3] },
-            "backgroundSlightRoundInnerCorners": { "pos": [40,8,8,8], "caps": [3,3,3,3] },
-            "backgroundSlight": { "pos": [24,8,8,8], "caps": [2,2,2,2] },
-            "backgroundSlightInnerCorners": { "pos": [48,8,8,8], "caps": [3,3,3,3] },
-            "backgroundSlightInset": { "pos": [32,8,8,8], "caps": [2,2,2,2] },
-            "backgroundSlightInsetInnerCorners": { "pos": [56,8,8,8], "caps": [3,3,3,3] },
-            "backgroundBlack": { "pos": [16,16,8,8], "caps": [2,2,2,2] },
-            "backgroundBlackInnerCorners": { "pos": [24,16,8,8], "caps": [3,3,3,3] },
+{
+  "mosaic": {
+    "size": [256, 256],
+    "sprites": {
+      "background": { "pos": [0,0,8,8], "caps": [3,3,3,3] },
+      "backgroundInnerCorners": { "pos": [8,0,8,8], "caps": [3,3,3,3] },
+      "backgroundSlightRound": { "pos": [16,8,8,8], "caps": [3,3,3,3] },
+      "backgroundSlightRoundInnerCorners": { "pos": [40,8,8,8], "caps": [3,3,3,3] },
+      "backgroundSlight": { "pos": [24,8,8,8], "caps": [2,2,2,2] },
+      "backgroundSlightInnerCorners": { "pos": [48,8,8,8], "caps": [3,3,3,3] },
+      "backgroundSlightInset": { "pos": [32,8,8,8], "caps": [2,2,2,2] },
+      "backgroundSlightInsetInnerCorners": { "pos": [56,8,8,8], "caps": [3,3,3,3] },
+      "backgroundBlack": { "pos": [16,16,8,8], "caps": [2,2,2,2] },
+      "backgroundBlackInnerCorners": { "pos": [24,16,8,8], "caps": [3,3,3,3] },
 
-            "windowBackgroundTitlebar": { "pos": [48,80,8,8], "caps": [3,3,3,3] },
-            "windowBackgroundBody": { "pos": [48,88,8,8], "caps": [3,3,3,3] },
-            "windowDialogBackgroundTitlebar": { "pos": [56,80,8,8], "caps": [2,2,2,2] },
-            "windowDialogBackgroundBody": { "pos": [56,88,8,8], "caps": [2,2,2,2] },
-            "windowSlightBackgroundTitlebar": { "pos": [64,80,8,8], "caps": [2,2,2,2] },
-            "windowSlightBackgroundBody": { "pos": [64,88,8,8], "caps": [2,2,2,2] },
+      "windowBackgroundTitlebar": { "pos": [48,80,8,8], "caps": [3,3,3,3] },
+      "windowBackgroundBody": { "pos": [48,88,8,8], "caps": [3,3,3,3] },
+      "windowDialogBackgroundTitlebar": { "pos": [56,80,8,8], "caps": [2,2,2,2] },
+      "windowDialogBackgroundBody": { "pos": [56,88,8,8], "caps": [2,2,2,2] },
+      "windowSlightBackgroundTitlebar": { "pos": [64,80,8,8], "caps": [2,2,2,2] },
+      "windowSlightBackgroundBody": { "pos": [64,88,8,8], "caps": [2,2,2,2] },
 
-            "windowIconsCloseMacosSmall": [48,104,5,5],
-            "windowIconsMinimizeMacosSmall": [56,104,5,5],
-            "windowIconsMaximizeMacosSmall": [64,104,5,5],
-            "windowIconsCloseMacos": [48,112,7,7],
-            "windowIconsMinimizeMacos": [56,112,7,7],
-            "windowIconsMaximizeMacos": [64,112,7,7],
-            "windowIconsMinimize": [48,123,6,5],
-            "windowIconsMaximize": [56,123,6,5],
-            "windowIconsClose": [64,123,5,5],
+      "windowIconsCloseMacosSmall": [48,104,5,5],
+      "windowIconsMinimizeMacosSmall": [56,104,5,5],
+      "windowIconsMaximizeMacosSmall": [64,104,5,5],
+      "windowIconsCloseMacos": [48,112,7,7],
+      "windowIconsMinimizeMacos": [56,112,7,7],
+      "windowIconsMaximizeMacos": [64,112,7,7],
+      "windowIconsMinimize": [48,123,6,5],
+      "windowIconsMaximize": [56,123,6,5],
+      "windowIconsClose": [64,123,5,5],
 
-            "tabsButton": { "pos": [80,80,8,8], "caps": [2,2,2,2] },
-            "tabsBody": { "pos": [80,88,8,8], "caps": [2,2,2,2] },
-            "tabsButtonPressed": { "pos": [88,80,8,8], "caps": [2,2,2,2] },
-            "splitpaneRegion": { "pos": [104,80,8,8], "caps": [2,2,2,2] },
-            "splitpaneHsplit": { "pos": [112,85,8,3], "caps": [2,0,2,0] },
-            "splitpaneVsplit": { "pos": [109,88,3,8], "caps": [0,2,0,2] },
+      "tabsButton": { "pos": [80,80,8,8], "caps": [2,2,2,2] },
+      "tabsBody": { "pos": [80,88,8,8], "caps": [2,2,2,2] },
+      "tabsButtonPressed": { "pos": [88,80,8,8], "caps": [2,2,2,2] },
+      "splitpaneRegion": { "pos": [104,80,8,8], "caps": [2,2,2,2] },
+      "splitpaneHsplit": { "pos": [112,85,8,3], "caps": [2,0,2,0] },
+      "splitpaneVsplit": { "pos": [109,88,3,8], "caps": [0,2,0,2] },
 
-            "textfield": { "pos": [0,24,8,12], "caps": [2,0,2,0] },
-            "dropdown": { "pos": [16,24,16,12], "caps": [2,2,8,2] },
-            "dropdownBackground": { "pos": [16,40,16,8], "caps": [2,2,2,2] },
-            "dropdownHighlight": { "pos": [16,48,16,8], "caps": [2,2,2,2] },
-            "dropdownSeparator": { "pos": [16,56,16,5], "caps": [4,0,4,0] },
+      "textfield": { "pos": [0,24,8,12], "caps": [2,0,2,0] },
+      "dropdown": { "pos": [16,24,16,12], "caps": [2,2,8,2] },
+      "dropdownBackground": { "pos": [16,40,16,8], "caps": [2,2,2,2] },
+      "dropdownHighlight": { "pos": [16,48,16,8], "caps": [2,2,2,2] },
+      "dropdownSeparator": { "pos": [16,56,16,5], "caps": [4,0,4,0] },
 
-            "scrollbarHandleHorizontal": { "pos": [88,40,7,8], "caps": [1,1,1,1], "pinEdges": [true, true, false, true] },
-            "scrollbarHandleHorizontalDashes": { "pos": [96,41,3,6], "caps": [0,1,0,1], "pinEdges": [true, true, false, true] },
-            "scrollbarHandleVertical": { "pos": [88,48,8,7], "caps": [1,1,1,1], "pinEdges": [true, true, true, false] },
-            "scrollbarHandleVerticalDashes": { "pos": [97,50,6,3], "caps": [1,0,1,0], "pinEdges": [true, true, true, false] },
-            "scrollbarTrack": { "pos": [88,56,7,7], "caps": [2,2,2,2] },
+      "scrollbarHandleHorizontal": { "pos": [88,40,7,8], "caps": [1,1,1,1], "pinEdges": [true, true, false, true] },
+      "scrollbarHandleHorizontalDashes": { "pos": [96,41,3,6], "caps": [0,1,0,1], "pinEdges": [true, true, false, true] },
+      "scrollbarHandleVertical": { "pos": [88,48,8,7], "caps": [1,1,1,1], "pinEdges": [true, true, true, false] },
+      "scrollbarHandleVerticalDashes": { "pos": [97,50,6,3], "caps": [1,0,1,0], "pinEdges": [true, true, true, false] },
+      "scrollbarTrack": { "pos": [88,56,7,7], "caps": [2,2,2,2] },
 
-            "button": { "pos": [0,80,8,8], "caps": [2,2,2,2] },
-            "buttonPressed": { "pos": [8,80,8,8], "caps": [2,2,2,2] },
-            "switchOff": [48,24,11,7],
-            "switchOn": [48,31,11,7],
-            "switchHandle": [48,38,7,7],
-            "radioButton": {
-                "pos": [64,24,7,7],
-                "frames": 5,
-                "offset": [0, 8]
-            },
-            "checkbox": {
-                "pos": [72,24,7,7],
-                "frames": 5,
-                "offset": [0, 8]
-            },
-            "progressbar": { "pos": [88,24,10,6], "caps": [3,0,3,0] },
-            "progressbarFill": { "pos": [88,30,10,6], "caps": [3,0,3,0] },
-            "sliderHandle": [104,24,7,7],
-            "sliderHandleRight": [104,32,7,7],
-            "sliderHandleLeft": [113,24,7,7],
-            "sliderHandleDown": [104,40,7,7],
-            "sliderHandleUp": [104,49,7,7]
-         },
-         "colors": {
-            "windowShadowColor": [16, 0],
-            "sliderLinesColor": [112, 40],
-            "sliderLinesHighlightedColor": [116, 40]
-         }
-     }
- }
+      "button": { "pos": [0,80,8,8], "caps": [2,2,2,2] },
+      "buttonPressed": { "pos": [8,80,8,8], "caps": [2,2,2,2] },
+      "switchOff": [48,24,11,7],
+      "switchOn": [48,31,11,7],
+      "switchHandle": [48,38,7,7],
+      "radioButton": {
+        "pos": [64,24,7,7],
+        "frames": 5,
+        "offset": [0, 8]
+      },
+      "checkbox": {
+        "pos": [72,24,7,7],
+        "frames": 5,
+        "offset": [0, 8]
+      },
+      "progressbar": { "pos": [88,24,10,6], "caps": [3,0,3,0] },
+      "progressbarFill": { "pos": [88,30,10,6], "caps": [3,0,3,0] },
+      "sliderHandle": [104,24,7,7],
+      "sliderHandleRight": [104,32,7,7],
+      "sliderHandleLeft": [113,24,7,7],
+      "sliderHandleDown": [104,40,7,7],
+      "sliderHandleUp": [104,49,7,7]
+    },
+    "colors": {
+      "windowShadowColor": [16, 0],
+      "sliderLinesColor": [112, 40],
+      "sliderLinesHighlightedColor": [116, 40]
+    }
+  }
+}

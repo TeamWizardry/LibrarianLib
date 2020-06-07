@@ -1255,7 +1255,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
             mouseOverChild = child.computeMouseInfo(rootPos, stack) ?: mouseOverChild
         }
         stack.pop()
-        if(!interactive)
+        if(!interactive || !isVisible)
             return null
         return when {
             mouseOverChild != null -> mouseOverChild
@@ -1331,7 +1331,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     //endregion
 
     //region Tooltips
-    private val _tooltipTextLayer = PastryBasicTooltip()
+    private val _tooltipTextLayer by lazy { PastryBasicTooltip() }
 
     /**
      * @see tooltipText
