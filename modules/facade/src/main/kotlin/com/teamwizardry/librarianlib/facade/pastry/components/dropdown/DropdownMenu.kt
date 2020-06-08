@@ -72,11 +72,11 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
         background.frame = rect(contentsFrame.minX, top, contentsFrame.width, bottom-top)
         val clipY = top-contentsFrame.minY
         contentsClip.frame = rect(0, clipY+2, contentsFrame.width, bottom-top-4)
-//        contentsClip.contentsOffset = vec(0, -clipY) TODO
+        stack.pos = vec(0, -clipY)
     }
 
     fun scrollTo(item: PastryDropdownItem<T>) {
-        layoutChildren()
+        runLayout()
         val stackItem = items[item] ?: return
         val itemPos = stackItem.itemLayer.convertPointTo(vec(0, 0), this).y
         contents.yi -= itemPos.toInt() - 2
