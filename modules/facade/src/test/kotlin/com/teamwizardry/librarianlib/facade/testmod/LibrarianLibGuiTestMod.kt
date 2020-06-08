@@ -91,6 +91,7 @@ object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
         }
 
         +FacadeScreenConfig("simple_text", "Simple Text", ::SimpleTextTestScreen)
+        +FacadeScreenConfig("clip_to_bounds", "Clip to Bounds", ::ClipToBoundsTestScreen)
         +FacadeScreenConfig("simple_yoga", "Yoga Simple Flex", ::SimpleYogaScreen)
         +FacadeScreenConfig("yoga_list", "Yoga List", ::YogaListScreen)
         +FacadeScreenConfig("pastry", "Pastry", ::PastryTestScreen)

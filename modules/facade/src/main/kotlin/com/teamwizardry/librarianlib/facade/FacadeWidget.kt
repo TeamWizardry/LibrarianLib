@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.facade
 
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.etcetera.StencilUtil
 import com.teamwizardry.librarianlib.facade.input.Cursor
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
@@ -161,11 +162,14 @@ open class FacadeWidget(
             root.runLayout()
             root.clearAllDirtyLayout()
 
+            StencilUtil.clear()
+            StencilUtil.enable()
             RenderSystem.pushMatrix()
             RenderSystem.scaled(1 / s, 1 / s, 1.0)
             val context = GuiDrawContext(Matrix3dStack(), Client.minecraft.renderManager.isDebugBoundingBox)
             root.renderLayer(context)
             RenderSystem.popMatrix()
+            StencilUtil.disable()
         }
     }
 

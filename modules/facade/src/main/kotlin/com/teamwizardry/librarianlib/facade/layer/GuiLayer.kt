@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.core.util.kotlin.weakSetOf
 import com.teamwizardry.librarianlib.core.util.lerp.Lerper
 import com.teamwizardry.librarianlib.core.util.lerp.Lerpers
+import com.teamwizardry.librarianlib.etcetera.StencilUtil
 import com.teamwizardry.librarianlib.facade.layer.supporting.*
 import com.teamwizardry.librarianlib.facade.logger
 import com.teamwizardry.librarianlib.facade.value.IMValue
@@ -38,13 +39,13 @@ import com.teamwizardry.librarianlib.facade.value.RMValueBoolean
 import com.teamwizardry.librarianlib.facade.value.RMValueInt
 import com.teamwizardry.librarianlib.facade.value.RMValueLong
 import com.teamwizardry.librarianlib.math.ScreenSpace
+import com.teamwizardry.librarianlib.mosaic.ISprite
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.BufferUtils
-import org.lwjgl.PointerBuffer
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.yoga.Yoga.*
 import java.awt.Color
@@ -856,7 +857,29 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      */
     @Suppress("UNUSED_PARAMETER")
     fun isPointClipped(point: Vec2d): Boolean {
-        return false //TODO
+        if(clippingSprite != null) return false // we can't clip these
+        if(clipToBounds) {
+            if (point.x < 0 || point.x > size.x ||
+                point.y < 0 || point.y > size.y) {
+                return true
+            }
+
+            if (cornerRadius != 0.0) {
+                if (point.x < cornerRadius && point.y < cornerRadius &&
+                    point.squareDist(vec(cornerRadius, cornerRadius)) > cornerRadius * cornerRadius)
+                    return true
+                if (point.x < cornerRadius && point.y > size.y - cornerRadius &&
+                    point.squareDist(vec(cornerRadius, size.y - cornerRadius)) > cornerRadius * cornerRadius)
+                    return true
+                if (point.x > size.x - cornerRadius && point.y > size.y - cornerRadius &&
+                    point.squareDist(vec(size.x - cornerRadius, size.y - cornerRadius)) > cornerRadius * cornerRadius)
+                    return true
+                if (point.x > size.x - cornerRadius && point.y < cornerRadius &&
+                    point.squareDist(vec(size.x - cornerRadius, cornerRadius)) > cornerRadius * cornerRadius)
+                    return true
+            }
+        }
+        return false
     }
 
     /**
@@ -953,8 +976,15 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * Clip the contents of this layer to its bounding box
      */
-    @Deprecated("NOT IMPLEMENTED YET")
     var clipToBounds: Boolean = false
+
+    /**
+     * If nonnull, this sprite is used for clipping. Any pixels that are completely transparent will be masked out.
+     * This method of clipping does not support clipping mouseover checks.
+     *
+     * If [clippingSprite] is nonnull, it will override this sprite.
+     */
+    var clippingSprite: ISprite? = null
 
     /**
      * An opacity value in the range [0, 1]. If this is not equal to 1 the layer will be rendered to an FBO and drawn
@@ -1006,7 +1036,9 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
             return
         }
 
-//        pushClipping(context)
+        val enableClipping = clipToBounds
+        if(enableClipping)
+            StencilUtil.push { stencil(context) }
 
         val renderMode = actualRenderMode()
         if(renderMode != RenderMode.DIRECT) {
@@ -1079,19 +1111,41 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
             }
         }
 
-//        popClipping(context)
+        if(enableClipping)
+            StencilUtil.pop { stencil(context) }
+//            stencil(context)
 
         if (context.showDebugBoundingBox) {
             RenderSystem.lineWidth(1f)
             drawDebugBoundingBox(context, if(mouseOver) Color.WHITE else Color(.75f, 0f, .75f, 1f))
         }
-//        if (GuiComponent.showLayoutOverlay && didLayout && !isInMask) {
-//            RenderSystem.color4f(1f, 0f, 0f, 0.1f)
-//            drawLayerOverlay(context)
-//        }
-//        didLayout = false
+        if (didLayout /*&& !isInMask*/) {
+            drawLayerOverlay(context)
+        }
+        didLayout = false
 
         context.matrix.pop()
+    }
+
+    private fun stencil(context: GuiDrawContext) {
+        val sp = clippingSprite
+        if(sp != null) {
+            sp.draw(context.matrix, 0f, 0f, widthf, heightf, animationTime.toInt(), Color.WHITE)
+            return
+        }
+
+        val color = Color(1f, 0f, 1f, 0.5f)
+
+        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val vb = buffer.getBuffer(flatColorFanRenderType)
+
+        val points = getBoundingBoxPoints()
+        vb.pos2d(context.matrix, size.x/2, size.y/2).color(color).endVertex()
+        points.reversed().forEach {
+            vb.pos2d(context.matrix, it.x, it.y).color(color).endVertex()
+        }
+
+        buffer.finish()
     }
 
     fun shouldDrawSkeleton(): Boolean = false
@@ -1099,7 +1153,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     fun renderSkeleton(context: GuiDrawContext) {
         forEachChild { it.renderSkeleton(context) }
 
-        if (context.showDebugBoundingBox && //!isInMask &&
+        if (context.showDebugBoundingBox && //!isInMask && TODO: isInMask (or a better system?)
             GuiLayer.showDebugTilt && shouldDrawSkeleton()) {
             RenderSystem.lineWidth(1f)
             GL11.glEnable(GL11.GL_LINE_STIPPLE)
@@ -1114,14 +1168,18 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      */
     @Suppress("UNUSED_PARAMETER") // TODO: update to use matrices
     fun drawLayerOverlay(context: GuiDrawContext) {
-        RenderSystem.disableTexture()
-        val points = createDebugBoundingBoxPoints()
-        val tessellator = Tessellator.getInstance()
-        val vb = tessellator.buffer
-        vb.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION)
-        vb.pos(size.x/2, size.y/2, 0.0).endVertex()
-        points.reversed().forEach { vb.pos(it.x, it.y, 0.0).endVertex() }
-        tessellator.draw()
+        val color = Color(1f, 0f, 0f, 0.1f)
+
+        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val vb = buffer.getBuffer(flatColorFanRenderType)
+
+        val points = getBoundingBoxPoints()
+        vb.pos2d(context.matrix, size.x/2, size.y/2).color(color).endVertex()
+        points.reversed().forEach {
+            vb.pos2d(context.matrix, it.x, it.y).color(color).endVertex()
+        }
+
+        buffer.finish()
     }
 
     /**
@@ -1129,7 +1187,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      */
     @Suppress("UNUSED_PARAMETER") // TODO: update to use matrices
     fun drawDebugBoundingBox(context: GuiDrawContext, color: Color) {
-        val points = createDebugBoundingBoxPoints()
+        val points = getBoundingBoxPoints()
 
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(debugBoundingBoxRenderType)
@@ -1139,26 +1197,17 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         }
 
         buffer.finish()
-//        RenderSystem.color4f(0f, 0f, 0f, 0.15f)
-//        if(GuiLayer.showDebugTilt) {
-//            vb.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION)
-//            points.forEach {
-//                vb.pos(it.x, it.y, -100.0).endVertex()
-//                vb.pos(it.x, it.y, 0.0).endVertex()
-//            }
-//            tessellator.draw()
-//        }
     }
 
-    val cornerRadius = 0.0
+    var cornerRadius = 0.0
 
     /**
      * Creates a series of points defining the path the debug bounding box follows. For culling reasons this list
      * must be in clockwise order
      */
-    fun createDebugBoundingBoxPoints(): List<Vec2d> {
+    private fun getBoundingBoxPoints(): List<Vec2d> {
         val list = mutableListOf<Vec2d>()
-        if(/*clipToBounds &&*/ cornerRadius != 0.0) {
+        if(cornerRadius != 0.0) {
             val rad = cornerRadius
             val d = (PI / 2) / 16
 
@@ -1268,14 +1317,15 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         stack.push()
         stack.reverseMul(inverseTransform)
         mousePos = stack.transform(rootPos)
-        mouseInside = isPointInBounds(mousePos) && !isPointClipped(mousePos)
+        val clipped = isPointClipped(mousePos)
+        mouseInside = isPointInBounds(mousePos) && !clipped
         mouseOver = false
         var mouseOverChild: GuiLayer? = null
         forEachChild { child ->
             mouseOverChild = child.computeMouseInfo(rootPos, stack) ?: mouseOverChild
         }
         stack.pop()
-        if(!interactive || !isVisible)
+        if(!interactive || !isVisible || clipped)
             return null
         return when {
             mouseOverChild != null -> mouseOverChild
@@ -1564,6 +1614,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         }
 
         private val debugBoundingBoxRenderType: RenderType = SimpleRenderTypes.flat(GL11.GL_LINE_STRIP)
+        private val flatColorFanRenderType: RenderType = SimpleRenderTypes.flat(GL11.GL_TRIANGLE_FAN)
 
         @JvmStatic
         var showDebugTilt = false
