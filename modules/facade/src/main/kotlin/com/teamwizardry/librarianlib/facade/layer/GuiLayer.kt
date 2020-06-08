@@ -37,6 +37,7 @@ import com.teamwizardry.librarianlib.facade.value.IMValueLong
 import com.teamwizardry.librarianlib.facade.value.RMValueBoolean
 import com.teamwizardry.librarianlib.facade.value.RMValueInt
 import com.teamwizardry.librarianlib.facade.value.RMValueLong
+import com.teamwizardry.librarianlib.math.ScreenSpace
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import net.minecraft.client.renderer.RenderType
@@ -164,7 +165,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         animationTimeListeners.forEach {
             it.updateTime(animationTime)
         }
-        children.forEach { it.updateAnimations(time) }
+        forEachChild { it.updateAnimations(time) }
     }
 
     private val scheduledEvents = PriorityQueue<ScheduledEvent>()
@@ -904,7 +905,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     }
 
     override val parentSpace: CoordinateSpace2D?
-        get() = parent
+        get() = parent ?: ScreenSpace
 
     private var matrixDirty = true
     private var _matrix = MutableMatrix3d()

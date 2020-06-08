@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.math.plus
 import com.teamwizardry.librarianlib.math.times
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.util.math.Vec3d
+import java.awt.Color
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
@@ -64,5 +65,18 @@ object Rect2dLerper: Lerper<Rect2d>() {
             from.size + (to.size - from.size) * fraction
         )
     }
+}
+//endregion =====================================================================================================================
+
+//region others =================================================================================================================
+object ColorLerper: Lerper<Color>() {
+    override fun lerp(from: Color, to: Color, fraction: Float): Color = Color(
+        lerp(from.red, to.red, fraction),
+        lerp(from.green, to.green, fraction),
+        lerp(from.blue, to.blue, fraction),
+        lerp(from.alpha, to.alpha, fraction)
+    )
+
+    private fun lerp(from: Int, to: Int, fraction: Float): Int = (from + (to - from) * fraction).toInt()
 }
 //endregion =====================================================================================================================

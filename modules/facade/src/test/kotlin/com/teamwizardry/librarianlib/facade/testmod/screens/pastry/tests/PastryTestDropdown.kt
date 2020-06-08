@@ -33,7 +33,7 @@ class PastryTestDropdown: PastryTestBase() {
         val stackComponent = ItemStackLayer(0, 0)
 
         val dropdownWidth = stacks.map { stack ->
-            64 // stack?.let { PastryLabel.stringSize(it.displayName).widthi } ?: 0 TODO
+            stack?.let { PastryLabel(0, 0, it.displayName.string).widthi } ?: 0
         }.max() ?: 50
         dropdown = PastryDropdown(0, 0, dropdownWidth + 15) {
             stackComponent.stack = it
@@ -58,7 +58,7 @@ class PastryTestDropdown: PastryTestBase() {
         val valueLabel = PastryLabel(0, 0)
 //        valueLabel.fitToText = true TODO
 
-        val dropdownWidth = 30 // PastryLabel.stringSize("FizzBuzz").widthi TODO
+        val dropdownWidth = PastryLabel(0, 0, "FizzBuzz").widthi
         dropdown = PastryDropdown(0, 0, dropdownWidth + 15) {
             valueLabel.text = "$it"
         }
