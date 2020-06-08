@@ -140,14 +140,20 @@ open class FacadeWidget(
             main.pos = ((root.size - main.size) / 2).round()
             tooltipContainer.frame = root.bounds
 
-            Cursor.setCursor(mouseOver?.cursor)
-            val tooltip = generateSequence(mouseOver) { it.parent }.mapNotNull { it.tooltipLayer }.firstOrNull()
+            computeMouseOver(mouseX, mouseY)
+            var tooltip: GuiLayer? = null
+            var cursor: Cursor? = null
+            generateSequence(mouseOver) { it.parent }.forEach {
+                tooltip = tooltip ?: it.tooltipLayer
+                cursor = cursor ?: it.cursor
+            }
 
             if (tooltip != currentTooltip) {
                 currentTooltip?.removeFromParent()
                 currentTooltip = tooltip
                 tooltip?.also { tooltipContainer.add(it) }
             }
+            Cursor.setCursor(cursor)
 
             root.updateAnimations(Client.time.time)
             root.triggerEvent(GuiLayerEvents.Update())
