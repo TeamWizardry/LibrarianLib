@@ -3,6 +3,10 @@ package com.teamwizardry.librarianlib.albedo
 import com.mojang.blaze3d.platform.GlStateManager
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.GlResourceGc
+import com.teamwizardry.librarianlib.core.util.ISimpleReloadListener
+import com.teamwizardry.librarianlib.core.util.kotlin.weakSetOf
+import net.minecraft.profiler.IProfiler
+import net.minecraft.resources.IResourceManager
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL20.*
@@ -17,19 +21,19 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
 
     /**
      * True if this shader is currently bound. This only tracks calls to [bind] and [unbind], so modifications of the
-     * bound shader outside of that will not be reflected.
+     * bound shader outside of that will not be reflected. Binding another LibrarianLib shader will unbind this one.
      */
-    var isBound: Boolean = false
-        private set
+    val isBound: Boolean
+        get() = currentlyBound === this
 
     fun bind() {
         GlStateManager.useProgram(glProgram)
-        isBound = true
+        currentlyBound = this
     }
 
     fun unbind() {
         GlStateManager.useProgram(0)
-        isBound = false
+        currentlyBound = null
     }
 
     fun delete() {
@@ -44,15 +48,23 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
         }
     }
 
-    private fun compile() {
+    init {
+        @Suppress("LeakingThis")
+        allShaders.add(this)
+        compile(Client.resourceManager)
+    }
+
+    private fun compile(resourceManager: IResourceManager) {
         var vertexHandle = 0
         var fragmentHandle = 0
         try {
             if(vertexName != null) {
-                vertexHandle = compileShader(GL_VERTEX_SHADER, "vertex shader", Client.getResourceText(vertexName))
+                logger.info("Compiling vertex shader $vertexName")
+                vertexHandle = compileShader(GL_VERTEX_SHADER, "vertex", Client.getResourceText(resourceManager, vertexName))
             }
             if(fragmentName != null) {
-                fragmentHandle = compileShader(GL_FRAGMENT_SHADER, "fragment shader", Client.getResourceText(fragmentName))
+                logger.info("Compiling fragment shader $fragmentName")
+                fragmentHandle = compileShader(GL_FRAGMENT_SHADER, "fragment", Client.getResourceText(resourceManager, fragmentName))
             }
             GlStateManager.deleteProgram(glProgram)
             glProgram = linkProgram(vertexHandle, fragmentHandle)
@@ -79,7 +91,7 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
             val logLength = GlStateManager.getShader(shader, GL_INFO_LOG_LENGTH)
             val log = GlStateManager.getShaderInfoLog(shader, logLength)
             GlStateManager.deleteShader(shader)
-            fail("Could not compile $typeName: $log")
+            fail("Could not compile $typeName shader: $log")
         }
 
         return shader
@@ -91,7 +103,7 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
     private fun checkVersion(source: String) {
         val match = """#version\s+(\d+)""".toRegex().find(source) ?: return
         val version = match.groupValues[1].toInt()
-        if(version > 120)
+        if(version > 120) // Apple's OpenGL drivers shit themselves with anything > 120
             throw RuntimeException("Maximum GLSL version supported by LibrarianLib is 1.20, found `${match.value}`")
     }
 
@@ -107,6 +119,8 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
         if(fragmentHandle != 0)
             GlStateManager.attachShader(program, fragmentHandle)
 
+        GlStateManager.linkProgram(program)
+
         val status = GlStateManager.getProgram(program, GL_LINK_STATUS)
         if(status == GL_FALSE) {
             val logLength = GlStateManager.getProgram(program, GL_INFO_LOG_LENGTH)
@@ -120,5 +134,21 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
 
     private fun fail(message: String): Nothing {
         throw RuntimeException("Error compiling '$shaderName': $message")
+    }
+
+    companion object {
+        private var currentlyBound: Shader? = null
+        private val allShaders = weakSetOf<Shader>()
+        init {
+            Client.resourceReloadHandler.register(object: ISimpleReloadListener<Any?> {
+                override fun prepare(resourceManager: IResourceManager, profiler: IProfiler): Any? = null
+
+                override fun apply(result: Any?, resourceManager: IResourceManager, profiler: IProfiler) {
+                    allShaders.forEach { shader ->
+                        shader.compile(resourceManager)
+                    }
+                }
+            })
+        }
     }
 }

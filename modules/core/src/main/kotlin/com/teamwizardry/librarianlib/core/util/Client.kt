@@ -110,7 +110,7 @@ object Client {
      */
     @JvmStatic
     @Throws(IOException::class)
-    fun getResourceInputStream(location: ResourceLocation): InputStream {
+    fun getResourceInputStream(resourceManager: IResourceManager, location: ResourceLocation): InputStream {
         return resourceManager.getResource(location).inputStream
     }
 
@@ -120,9 +120,9 @@ object Client {
      * @see getResourceInputStream
      */
     @JvmStatic
-    fun getResourceInputStreamOrNull(location: ResourceLocation): InputStream? {
+    fun getResourceInputStreamOrNull(resourceManager: IResourceManager, location: ResourceLocation): InputStream? {
         return try {
-            getResourceInputStream(location)
+            getResourceInputStream(resourceManager, location)
         } catch(e: IOException) {
             null
         }
@@ -135,7 +135,7 @@ object Client {
      */
     @JvmStatic
     @Throws(IOException::class)
-    fun getResourceBytes(location: ResourceLocation): ByteArray {
+    fun getResourceBytes(resourceManager: IResourceManager, location: ResourceLocation): ByteArray {
         return resourceManager.getResource(location).inputStream.use { it.readBytes() }
     }
 
@@ -145,9 +145,9 @@ object Client {
      * @see getResourceBytes
      */
     @JvmStatic
-    fun getResourceBytesOrNull(location: ResourceLocation): ByteArray? {
+    fun getResourceBytesOrNull(resourceManager: IResourceManager, location: ResourceLocation): ByteArray? {
         return try {
-            getResourceBytes(location)
+            getResourceBytes(resourceManager, location)
         } catch(e: IOException) {
             null
         }
@@ -160,7 +160,7 @@ object Client {
      */
     @JvmStatic
     @Throws(IOException::class)
-    fun getResourceText(location: ResourceLocation): String {
+    fun getResourceText(resourceManager: IResourceManager, location: ResourceLocation): String {
         return resourceManager.getResource(location).inputStream.bufferedReader().use { it.readText() }
     }
 
@@ -170,12 +170,75 @@ object Client {
      * @see getResourceText
      */
     @JvmStatic
-    fun getResourceTextOrNull(location: ResourceLocation): String? {
+    fun getResourceTextOrNull(resourceManager: IResourceManager, location: ResourceLocation): String? {
         return try {
-            getResourceText(location)
+            getResourceText(resourceManager, location)
         } catch(e: IOException) {
             null
         }
+    }
+
+    /**
+     * Gets the [InputStream] for a given resource, or throws an IOException if it isn't found
+     *
+     * @see getResourceInputStreamOrNull
+     */
+    @JvmStatic
+    @Throws(IOException::class)
+    fun getResourceInputStream(location: ResourceLocation): InputStream {
+        return getResourceInputStream(resourceManager, location)
+    }
+
+    /**
+     * Gets the [InputStream] for a given resource, or returns null if it isn't found
+     *
+     * @see getResourceInputStream
+     */
+    @JvmStatic
+    fun getResourceInputStreamOrNull(location: ResourceLocation): InputStream? {
+        return getResourceInputStreamOrNull(resourceManager, location)
+    }
+
+    /**
+     * Gets the contents of the given resource as a byte array, or throws an IOException if the resource isn't found
+     *
+     * @see getResourceBytesOrNull
+     */
+    @JvmStatic
+    @Throws(IOException::class)
+    fun getResourceBytes(location: ResourceLocation): ByteArray {
+        return getResourceBytes(resourceManager, location)
+    }
+
+    /**
+     * Gets the contents of the given resource as a byte array, or returns null if the resource isn't found
+     *
+     * @see getResourceBytes
+     */
+    @JvmStatic
+    fun getResourceBytesOrNull(location: ResourceLocation): ByteArray? {
+        return getResourceBytesOrNull(resourceManager, location)
+    }
+
+    /**
+     * Gets the contents of the given resource as a string, or throws an IOException if the resource isn't found
+     *
+     * @see getResourceTextOrNull
+     */
+    @JvmStatic
+    @Throws(IOException::class)
+    fun getResourceText(location: ResourceLocation): String {
+        return getResourceText(resourceManager, location)
+    }
+
+    /**
+     * Gets the contents of the given resource as a string, or returns null if the resource isn't found
+     *
+     * @see getResourceText
+     */
+    @JvmStatic
+    fun getResourceTextOrNull(location: ResourceLocation): String? {
+        return getResourceTextOrNull(resourceManager, location)
     }
 
     abstract class Time {

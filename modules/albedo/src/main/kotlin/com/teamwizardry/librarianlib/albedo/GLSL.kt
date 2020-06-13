@@ -3,9 +3,13 @@ package com.teamwizardry.librarianlib.albedo
 import org.lwjgl.opengl.GL20
 import org.lwjgl.opengl.GL21
 import org.lwjgl.opengl.GL30
+import org.lwjgl.system.MemoryStack
 
 @Suppress("ClassName", "unused")
 sealed class GLSL(val glConstant: Int) {
+    internal var location: Int = -1
+    protected abstract fun push()
+
     /*
     GLSL 1.10 - OpenGL 2.0
         + bool, bvec2, bvec3, bvec4
@@ -42,103 +46,119 @@ sealed class GLSL(val glConstant: Int) {
      */
     // bool, int, uint, and float are special-cased
 
-    data class vec2(val x: Float, val y: Float): GLSL(GL20.GL_FLOAT_VEC2)
-    data class vec3(val x: Float, val y: Float, val z: Float): GLSL(GL20.GL_FLOAT_VEC3)
-    data class vec4(val x: Float, val y: Float, val z: Float, val w: Float): GLSL(GL20.GL_FLOAT_VEC4)
+    class vec2: GLSL(GL20.GL_FLOAT_VEC2) {
+        var x: Float = 0f
+            private set
+        var y: Float = 0f
+            private set
 
-    data class bvec2(val x: Boolean, val y: Boolean): GLSL(GL20.GL_BOOL_VEC2)
-    data class bvec3(val x: Boolean, val y: Boolean, val z: Boolean): GLSL(GL20.GL_BOOL_VEC3)
-    data class bvec4(val x: Boolean, val y: Boolean, val z: Boolean, val w: Boolean): GLSL(GL20.GL_BOOL_VEC4)
+        fun set(x: Float, y: Float) {
+            this.x = x
+            this.y = y
+            this.push()
+        }
 
-    data class ivec2(val x: Int, val y: Int): GLSL(GL20.GL_INT_VEC2)
-    data class ivec3(val x: Int, val y: Int, val z: Int): GLSL(GL20.GL_INT_VEC3)
-    data class ivec4(val x: Int, val y: Int, val z: Int, val w: Int): GLSL(GL20.GL_INT_VEC4)
+        override fun push() {
+            GL20.glUniform2f(location, x, y)
+        }
+    }
+    /*
+    class vec3(var x: Float, var y: Float, var z: Float): GLSL(GL20.GL_FLOAT_VEC3)
+    class vec4(var x: Float, var y: Float, var z: Float, var w: Float): GLSL(GL20.GL_FLOAT_VEC4)
 
-    data class uint(val v: Long): GLSL(GL30.GL_UNSIGNED_INT_VEC2)
-    data class uvec2(val x: Long, val y: Long): GLSL(GL30.GL_UNSIGNED_INT_VEC2)
-    data class uvec3(val x: Long, val y: Long, val z: Long): GLSL(GL30.GL_UNSIGNED_INT_VEC3)
-    data class uvec4(val x: Long, val y: Long, val z: Long, val w: Long): GLSL(GL30.GL_UNSIGNED_INT_VEC4)
+    class bvec2(var x: Boolean, var y: Boolean): GLSL(GL20.GL_BOOL_VEC2)
+    class bvec3(var x: Boolean, var y: Boolean, var z: Boolean): GLSL(GL20.GL_BOOL_VEC3)
+    class bvec4(var x: Boolean, var y: Boolean, var z: Boolean, var w: Boolean): GLSL(GL20.GL_BOOL_VEC4)
+
+    class ivec2(var x: Int, var y: Int): GLSL(GL20.GL_INT_VEC2)
+    class ivec3(var x: Int, var y: Int, var z: Int): GLSL(GL20.GL_INT_VEC3)
+    class ivec4(var x: Int, var y: Int, var z: Int, var w: Int): GLSL(GL20.GL_INT_VEC4)
+
+    class uint(var v: Long): GLSL(GL30.GL_UNSIGNED_INT_VEC2)
+    class uvec2(var x: Long, var y: Long): GLSL(GL30.GL_UNSIGNED_INT_VEC2)
+    class uvec3(var x: Long, var y: Long, var z: Long): GLSL(GL30.GL_UNSIGNED_INT_VEC3)
+    class uvec4(var x: Long, var y: Long, var z: Long, var w: Long): GLSL(GL30.GL_UNSIGNED_INT_VEC4)
 
     // mat2x2 = mat2
-    data class mat2(
-        val m00: Float, val m10: Float,
-        val m01: Float, val m11: Float
+    class mat2(
+        var m00: Float, var m10: Float,
+        var m01: Float, var m11: Float
     ): GLSL(GL20.GL_FLOAT_MAT2)
     // mat3x3 = mat3
-    data class mat3(
-        val m00: Float, val m10: Float, val m20: Float,
-        val m01: Float, val m11: Float, val m21: Float,
-        val m02: Float, val m12: Float, val m22: Float
+    class mat3(
+        var m00: Float, var m10: Float, var m20: Float,
+        var m01: Float, var m11: Float, var m21: Float,
+        var m02: Float, var m12: Float, var m22: Float
     ): GLSL(GL20.GL_FLOAT_MAT3)
     // mat4x4 = mat4
-    data class mat4(
-        val m00: Float, val m10: Float, val m20: Float, val m30: Float,
-        val m01: Float, val m11: Float, val m21: Float, val m31: Float,
-        val m02: Float, val m12: Float, val m22: Float, val m32: Float,
-        val m03: Float, val m13: Float, val m23: Float, val m33: Float
+    class mat4(
+        var m00: Float, var m10: Float, var m20: Float, var m30: Float,
+        var m01: Float, var m11: Float, var m21: Float, var m31: Float,
+        var m02: Float, var m12: Float, var m22: Float, var m32: Float,
+        var m03: Float, var m13: Float, var m23: Float, var m33: Float
     ): GLSL(GL20.GL_FLOAT_MAT4)
 
-    data class mat2x3(
-        val m00: Float, val m10: Float,
-        val m01: Float, val m11: Float,
-        val m02: Float, val m12: Float
+    class mat2x3(
+        var m00: Float, var m10: Float,
+        var m01: Float, var m11: Float,
+        var m02: Float, var m12: Float
     ): GLSL(GL21.GL_FLOAT_MAT2x3)
-    data class mat2x4(
-        val m00: Float, val m10: Float,
-        val m01: Float, val m11: Float,
-        val m02: Float, val m12: Float,
-        val m03: Float, val m13: Float
+    class mat2x4(
+        var m00: Float, var m10: Float,
+        var m01: Float, var m11: Float,
+        var m02: Float, var m12: Float,
+        var m03: Float, var m13: Float
     ): GLSL(GL21.GL_FLOAT_MAT2x4)
 
-    data class mat3x2(
-        val m00: Float, val m10: Float, val m20: Float,
-        val m01: Float, val m11: Float, val m21: Float
+    class mat3x2(
+        var m00: Float, var m10: Float, var m20: Float,
+        var m01: Float, var m11: Float, var m21: Float
     ): GLSL(GL21.GL_FLOAT_MAT3x2)
-    data class mat3x4(
-        val m00: Float, val m10: Float, val m20: Float,
-        val m01: Float, val m11: Float, val m21: Float,
-        val m02: Float, val m12: Float, val m22: Float,
-        val m03: Float, val m13: Float, val m23: Float
+    class mat3x4(
+        var m00: Float, var m10: Float, var m20: Float,
+        var m01: Float, var m11: Float, var m21: Float,
+        var m02: Float, var m12: Float, var m22: Float,
+        var m03: Float, var m13: Float, var m23: Float
     ): GLSL(GL21.GL_FLOAT_MAT3x4)
 
-    data class mat4x2(
-        val m00: Float, val m10: Float, val m20: Float, val m30: Float,
-        val m01: Float, val m11: Float, val m21: Float, val m31: Float
+    class mat4x2(
+        var m00: Float, var m10: Float, var m20: Float, var m30: Float,
+        var m01: Float, var m11: Float, var m21: Float, var m31: Float
     ): GLSL(GL21.GL_FLOAT_MAT4x2)
-    data class mat4x3(
-        val m00: Float, val m10: Float, val m20: Float, val m30: Float,
-        val m01: Float, val m11: Float, val m21: Float, val m31: Float,
-        val m02: Float, val m12: Float, val m22: Float, val m32: Float
+    class mat4x3(
+        var m00: Float, var m10: Float, var m20: Float, var m30: Float,
+        var m01: Float, var m11: Float, var m21: Float, var m31: Float,
+        var m02: Float, var m12: Float, var m22: Float, var m32: Float
     ): GLSL(GL21.GL_FLOAT_MAT4x3)
 
     abstract class Opaque internal constructor(glConstant: Int): GLSL(glConstant) {
-        abstract val glHandle: Int
+        abstract var glHandle: Int
     }
-    data class sampler1D(override val glHandle: Int): Opaque(GL20.GL_SAMPLER_1D)
-    data class sampler2D(override val glHandle: Int): Opaque(GL20.GL_SAMPLER_2D)
-    data class sampler3D(override val glHandle: Int): Opaque(GL20.GL_SAMPLER_3D)
-    data class samplerCube(override val glHandle: Int): Opaque(GL20.GL_SAMPLER_CUBE)
-    data class sampler1DShadow(override val glHandle: Int): Opaque(GL20.GL_SAMPLER_1D_SHADOW)
-    data class sampler2DShadow(override val glHandle: Int): Opaque(GL20.GL_SAMPLER_2D_SHADOW)
-    data class sampler1DArray(override val glHandle: Int): Opaque(GL30.GL_SAMPLER_1D_ARRAY)
-    data class sampler2DArray(override val glHandle: Int): Opaque(GL30.GL_SAMPLER_2D_ARRAY)
-    data class sampler1DArrayShadow(override val glHandle: Int): Opaque(GL30.GL_SAMPLER_1D_ARRAY_SHADOW)
-    data class sampler2DArrayShadow(override val glHandle: Int): Opaque(GL30.GL_SAMPLER_2D_ARRAY_SHADOW)
+    class sampler1D(override var glHandle: Int): Opaque(GL20.GL_SAMPLER_1D)
+    class sampler2D(override var glHandle: Int): Opaque(GL20.GL_SAMPLER_2D)
+    class sampler3D(override var glHandle: Int): Opaque(GL20.GL_SAMPLER_3D)
+    class samplerCube(override var glHandle: Int): Opaque(GL20.GL_SAMPLER_CUBE)
+    class sampler1DShadow(override var glHandle: Int): Opaque(GL20.GL_SAMPLER_1D_SHADOW)
+    class sampler2DShadow(override var glHandle: Int): Opaque(GL20.GL_SAMPLER_2D_SHADOW)
+    class sampler1DArray(override var glHandle: Int): Opaque(GL30.GL_SAMPLER_1D_ARRAY)
+    class sampler2DArray(override var glHandle: Int): Opaque(GL30.GL_SAMPLER_2D_ARRAY)
+    class sampler1DArrayShadow(override var glHandle: Int): Opaque(GL30.GL_SAMPLER_1D_ARRAY_SHADOW)
+    class sampler2DArrayShadow(override var glHandle: Int): Opaque(GL30.GL_SAMPLER_2D_ARRAY_SHADOW)
 
-    data class isampler1D(override val glHandle: Int): Opaque(GL30.GL_INT_SAMPLER_1D)
-    data class isampler2D(override val glHandle: Int): Opaque(GL30.GL_INT_SAMPLER_2D)
-    data class isampler3D(override val glHandle: Int): Opaque(GL30.GL_INT_SAMPLER_3D)
-    data class isamplerCube(override val glHandle: Int): Opaque(GL30.GL_INT_SAMPLER_CUBE)
-    data class isampler1DArray(override val glHandle: Int): Opaque(GL30.GL_INT_SAMPLER_1D_ARRAY)
-    data class isampler2DArray(override val glHandle: Int): Opaque(GL30.GL_INT_SAMPLER_2D_ARRAY)
+    class isampler1D(override var glHandle: Int): Opaque(GL30.GL_INT_SAMPLER_1D)
+    class isampler2D(override var glHandle: Int): Opaque(GL30.GL_INT_SAMPLER_2D)
+    class isampler3D(override var glHandle: Int): Opaque(GL30.GL_INT_SAMPLER_3D)
+    class isamplerCube(override var glHandle: Int): Opaque(GL30.GL_INT_SAMPLER_CUBE)
+    class isampler1DArray(override var glHandle: Int): Opaque(GL30.GL_INT_SAMPLER_1D_ARRAY)
+    class isampler2DArray(override var glHandle: Int): Opaque(GL30.GL_INT_SAMPLER_2D_ARRAY)
 
-    data class usampler1D(override val glHandle: Int): Opaque(GL30.GL_UNSIGNED_INT_SAMPLER_1D)
-    data class usampler2D(override val glHandle: Int): Opaque(GL30.GL_UNSIGNED_INT_SAMPLER_2D)
-    data class usampler3D(override val glHandle: Int): Opaque(GL30.GL_UNSIGNED_INT_SAMPLER_3D)
-    data class usamplerCube(override val glHandle: Int): Opaque(GL30.GL_UNSIGNED_INT_SAMPLER_CUBE)
-    data class usampler1DArray(override val glHandle: Int): Opaque(GL30.GL_UNSIGNED_INT_SAMPLER_1D_ARRAY)
-    data class usampler2DArray(override val glHandle: Int): Opaque(GL30.GL_UNSIGNED_INT_SAMPLER_2D_ARRAY)
-
+    class usampler1D(override var glHandle: Int): Opaque(GL30.GL_UNSIGNED_INT_SAMPLER_1D)
+    class usampler2D(override var glHandle: Int): Opaque(GL30.GL_UNSIGNED_INT_SAMPLER_2D)
+    class usampler3D(override var glHandle: Int): Opaque(GL30.GL_UNSIGNED_INT_SAMPLER_3D)
+    class usamplerCube(override var glHandle: Int): Opaque(GL30.GL_UNSIGNED_INT_SAMPLER_CUBE)
+    class usampler1DArray(override var glHandle: Int): Opaque(GL30.GL_UNSIGNED_INT_SAMPLER_1D_ARRAY)
+    class usampler2DArray(override var glHandle: Int): Opaque(GL30.GL_UNSIGNED_INT_SAMPLER_2D_ARRAY)
+     */
     /*
 GL20.GL_BOOL, it is 35670 (0x8b56)
 GL20.GL_BOOL_VEC2, it is 35671 (0x8b57)
