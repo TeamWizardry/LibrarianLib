@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL20.*
 import java.io.IOException
 
-class Shader(val shaderName: String, val vertexName: ResourceLocation?, val fragmentName: ResourceLocation?) {
+abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?, val fragmentName: ResourceLocation?) {
     /**
      * The OpenGL handle for the shader program
      */
@@ -67,6 +67,7 @@ class Shader(val shaderName: String, val vertexName: ResourceLocation?, val frag
     }
 
     private fun compileShader(type: Int, typeName: String, source: String): Int {
+        checkVersion(source)
         val shader = GlStateManager.createShader(type)
         if(shader == 0)
             fail("could not create shader object")
@@ -82,6 +83,16 @@ class Shader(val shaderName: String, val vertexName: ResourceLocation?, val frag
         }
 
         return shader
+    }
+
+    /**
+     * Check the GLSL version directive
+     */
+    private fun checkVersion(source: String) {
+        val match = """#version\s+(\d+)""".toRegex().find(source) ?: return
+        val version = match.groupValues[1].toInt()
+        if(version > 120)
+            throw RuntimeException("Maximum GLSL version supported by LibrarianLib is 1.20, found `${match.value}`")
     }
 
     private fun linkProgram(vertexHandle: Int, fragmentHandle: Int): Int {
@@ -108,6 +119,6 @@ class Shader(val shaderName: String, val vertexName: ResourceLocation?, val frag
     }
 
     private fun fail(message: String): Nothing {
-        throw IllegalStateException("Error compiling '$shaderName': $message")
+        throw RuntimeException("Error compiling '$shaderName': $message")
     }
 }
