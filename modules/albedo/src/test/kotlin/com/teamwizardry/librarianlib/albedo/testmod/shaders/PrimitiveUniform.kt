@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.albedo.testmod.shaders
 
+import com.teamwizardry.librarianlib.albedo.GLSL
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.testmod.ShaderTest
 import com.teamwizardry.librarianlib.core.util.Client
@@ -11,7 +12,7 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-object SimpleFrag: ShaderTest() {
+object PrimitiveUniform: ShaderTest() {
 
     override fun doDraw() {
         val minX = 0.0
@@ -22,6 +23,9 @@ object SimpleFrag: ShaderTest() {
         val c = Color.WHITE
 
         TestShader.bind()
+        TestShader.time.set(Client.time.seconds)
+        TestShader.pushUniforms()
+
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
 
@@ -39,7 +43,7 @@ object SimpleFrag: ShaderTest() {
 
     private val renderType = SimpleRenderTypes.flat(GL11.GL_QUADS)
 
-    private object TestShader: Shader("simple_frag", null, ResourceLocation("librarianlib-albedo-test:shaders/simple_frag.frag")) {
-
+    private object TestShader: Shader("primitive_uniform", null, ResourceLocation("librarianlib-albedo-test:shaders/primitive_uniform.frag")) {
+        val time = GLSL.glFloat()
     }
 }

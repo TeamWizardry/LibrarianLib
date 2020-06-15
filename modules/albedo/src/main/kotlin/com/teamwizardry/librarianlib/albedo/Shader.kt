@@ -26,14 +26,27 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
     val isBound: Boolean
         get() = currentlyBound === this
 
+    /**
+     * Whether the uniform objects have been bound internally to their respective locations
+     */
+    private var areUniformsBound: Boolean = false
+    private var uniforms: List<GLSL>? = null
+
     fun bind() {
         GlStateManager.useProgram(glProgram)
         currentlyBound = this
+        if(uniforms == null && glProgram != 0) {
+            uniforms = UniformBinder.bindAllUniforms(this, glProgram)
+        }
     }
 
     fun unbind() {
         GlStateManager.useProgram(0)
         currentlyBound = null
+    }
+
+    fun pushUniforms() {
+        uniforms?.forEach { it.push() }
     }
 
     fun delete() {
@@ -51,10 +64,19 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
     init {
         @Suppress("LeakingThis")
         allShaders.add(this)
+        compile()
+    }
+
+    @JvmSynthetic
+    internal fun compile() {
         compile(Client.resourceManager)
     }
 
     private fun compile(resourceManager: IResourceManager) {
+        if(areUniformsBound) {
+            UniformBinder.unbindAllUniforms(this)
+            uniforms = null
+        }
         var vertexHandle = 0
         var fragmentHandle = 0
         try {
@@ -103,7 +125,7 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
     private fun checkVersion(source: String) {
         val match = """#version\s+(\d+)""".toRegex().find(source) ?: return
         val version = match.groupValues[1].toInt()
-        if(version > 120) // Apple's OpenGL drivers shit themselves with anything > 120
+        if(version > 120) // Apple doesn't support OpenGL 3.0+ properly, so we're stuck with OpenGL 2.1 shaders
             throw RuntimeException("Maximum GLSL version supported by LibrarianLib is 1.20, found `${match.value}`")
     }
 
@@ -112,7 +134,7 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
         if(program == 0)
             fail("could not create program object")
 
-        // set up linking: https://www.khronos.org/opengl/wiki/Shader_Compilation#Before_linking
+        // todo set up linking: https://www.khronos.org/opengl/wiki/Shader_Compilation#Before_linking
 
         if(vertexHandle != 0)
             GlStateManager.attachShader(program, vertexHandle)
