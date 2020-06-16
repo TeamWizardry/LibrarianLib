@@ -1,32 +1,31 @@
 package com.teamwizardry.librarianlib.albedo.testmod
 
 import com.teamwizardry.librarianlib.albedo.Shader
+import dev.thecodewarrior.mirror.Mirror
+import dev.thecodewarrior.mirror.member.ConstructorMirror
 
-abstract class ShaderTest {
-    protected abstract val shader: Shader
+abstract class ShaderTest<T: Shader> {
     protected abstract fun doDraw()
 
-    private var compiled = false
-    private var crashed = false
+    private var _shader: Shader? = null
+    @Suppress("UNCHECKED_CAST")
+    protected val shader: T
+        get() = _shader!! as T
+
+    private val shaderConstructor: ConstructorMirror = Mirror.reflectClass(this.javaClass)
+        .findSuperclass(ShaderTest::class.java)!!
+        .typeParameters[0].asClassMirror()
+        .getDeclaredConstructor()
 
     fun draw() {
-        if(!compiled) {
-            compiled = true
-            try {
-                shader.delete()
-                shader.compile()
-                crashed = false
-            } catch(e: Exception) {
-                logger.error("", e)
-                crashed = true
-            }
+        if(_shader == null) {
+            _shader = shaderConstructor()
         }
-        if(crashed) return
         doDraw()
     }
 
     fun delete() {
-        shader.delete()
-        compiled = false
+        _shader?.delete()
+        _shader = null
     }
 }

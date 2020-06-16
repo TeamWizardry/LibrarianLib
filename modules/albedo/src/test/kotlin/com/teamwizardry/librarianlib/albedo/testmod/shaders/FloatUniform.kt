@@ -12,7 +12,7 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-object FloatUniform: ShaderTest() {
+object FloatUniform: ShaderTest<FloatUniform.Test>() {
 
     override fun doDraw() {
         val minX = 0.0
@@ -22,31 +22,28 @@ object FloatUniform: ShaderTest() {
 
         val c = Color.WHITE
 
-        TestUniform.bind()
-        TestUniform.primitive.set(10f)
-        TestUniform.vector2.set(10f, 20f)
-        TestUniform.vector3.set(10f, 20f, 30f)
-        TestUniform.vector4.set(10f, 20f, 30f, 40f)
-        TestUniform.pushUniforms()
+        shader.bind()
+        shader.primitive.set(10f)
+        shader.vector2.set(10f, 20f)
+        shader.vector3.set(10f, 20f, 30f)
+        shader.vector4.set(10f, 20f, 30f, 40f)
+        shader.pushUniforms()
 
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
 
-        vb.pos2d(minX, maxY).color(c).tex(0f, 4f).endVertex()
-        vb.pos2d(maxX, maxY).color(c).tex(1f, 4f).endVertex()
+        vb.pos2d(minX, maxY).color(c).tex(0f, 1f).endVertex()
+        vb.pos2d(maxX, maxY).color(c).tex(1f, 1f).endVertex()
         vb.pos2d(maxX, minY).color(c).tex(1f, 0f).endVertex()
         vb.pos2d(minX, minY).color(c).tex(0f, 0f).endVertex()
 
         buffer.finish()
-        TestUniform.unbind()
+        shader.unbind()
     }
-
-    override val shader: Shader
-        get() = TestUniform
 
     private val renderType = SimpleRenderTypes.flat(ResourceLocation("minecraft:missingno"), GL11.GL_QUADS)
 
-    private object TestUniform: Shader("float_tests", null, ResourceLocation("librarianlib-albedo-test:shaders/float_tests.frag")) {
+    class Test: Shader("float_tests", null, ResourceLocation("librarianlib-albedo-test:shaders/float_tests.frag")) {
         val primitive = GLSL.glFloat()
         val vector2 = GLSL.vec2()
         val vector3 = GLSL.vec3()

@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-object SimpleFrag: ShaderTest() {
+object SimpleFrag: ShaderTest<SimpleFrag.Test>() {
 
     override fun doDraw() {
         val minX = 0.0
@@ -21,7 +21,7 @@ object SimpleFrag: ShaderTest() {
 
         val c = Color.WHITE
 
-        TestShader.bind()
+        shader.bind()
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
 
@@ -31,15 +31,13 @@ object SimpleFrag: ShaderTest() {
         vb.pos2d(minX, minY).color(c).endVertex()
 
         buffer.finish()
-        TestShader.unbind()
+        shader.unbind()
     }
-
-    override val shader: Shader
-        get() = TestShader
 
     private val renderType = SimpleRenderTypes.flat(GL11.GL_QUADS)
 
-    private object TestShader: Shader("simple_frag", null, ResourceLocation("librarianlib-albedo-test:shaders/simple_frag.frag")) {
+    class Test: Shader("simple_frag", null, ResourceLocation("librarianlib-albedo-test:shaders/simple_frag.frag")) {
 
     }
 }
+

@@ -12,7 +12,7 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-object PrimitiveUniform: ShaderTest() {
+object PrimitiveUniform: ShaderTest<PrimitiveUniform.Test>() {
 
     override fun doDraw() {
         val minX = 0.0
@@ -22,9 +22,9 @@ object PrimitiveUniform: ShaderTest() {
 
         val c = Color.WHITE
 
-        TestShader.bind()
-        TestShader.time.set(Client.time.seconds)
-        TestShader.pushUniforms()
+        shader.bind()
+        shader.time.set(Client.time.seconds)
+        shader.pushUniforms()
 
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
@@ -35,15 +35,13 @@ object PrimitiveUniform: ShaderTest() {
         vb.pos2d(minX, minY).color(c).endVertex()
 
         buffer.finish()
-        TestShader.unbind()
+        shader.unbind()
     }
-
-    override val shader: Shader
-        get() = TestShader
 
     private val renderType = SimpleRenderTypes.flat(GL11.GL_QUADS)
 
-    private object TestShader: Shader("primitive_uniform", null, ResourceLocation("librarianlib-albedo-test:shaders/primitive_uniform.frag")) {
+    class Test: Shader("primitive_uniform", null, ResourceLocation("librarianlib-albedo-test:shaders/primitive_uniform.frag")) {
         val time = GLSL.glFloat()
     }
 }
+

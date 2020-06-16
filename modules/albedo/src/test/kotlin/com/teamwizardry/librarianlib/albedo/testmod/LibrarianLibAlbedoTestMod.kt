@@ -25,7 +25,7 @@ object LibrarianLibAlbedoTestMod: TestMod("albedo", "Albedo", logger) {
         }
     }
 
-    inline fun test(id: String, name: String, description: String, crossinline shader: () -> ShaderTest): TestScreenConfig {
+    inline fun test(id: String, name: String, description: String, crossinline shader: () -> ShaderTest<*>): TestScreenConfig {
         var crashed = false
         return TestScreenConfig(id, name) {
             this.description = description
@@ -38,6 +38,9 @@ object LibrarianLibAlbedoTestMod: TestMod("albedo", "Albedo", logger) {
                         try {
                             shader().draw()
                         } catch(e: Exception) {
+                            logger.error("", e)
+                            crashed = true
+                        } catch(e: ExceptionInInitializerError) {
                             logger.error("", e)
                             crashed = true
                         }
