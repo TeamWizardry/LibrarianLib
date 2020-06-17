@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.albedo.testmod.shaders
 
+import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.GLSL
 import com.teamwizardry.librarianlib.albedo.Shader
@@ -22,7 +23,7 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL13
 import java.awt.Color
 
-internal object SamplerUniform: ShaderTest<SamplerUniform.Test>() {
+internal object SamplerArrayUniform: ShaderTest<SamplerArrayUniform.Test>() {
     private val failureLocation = ResourceLocation("librarianlib-albedo-test:textures/sampler_failure.png")
     private val successLocation1 = ResourceLocation("librarianlib-albedo-test:textures/sampler_success1.png")
     private val successLocation2 = ResourceLocation("librarianlib-albedo-test:textures/sampler_success2.png")
@@ -50,9 +51,13 @@ internal object SamplerUniform: ShaderTest<SamplerUniform.Test>() {
 
         buffer.finish()
 
+        val index = (Client.time.seconds % 2).toInt()
         shader.bind()
-        shader.sampler1.set(tex1)
-        shader.sampler2.set(tex2)
+        shader.index.set(index)
+        shader.sampler1[0] = tex2
+        shader.sampler1[1] = tex1
+        shader.sampler2[0] = tex1
+        shader.sampler2[1] = tex2
         shader.pushUniforms()
 
         vb = buffer.getBuffer(renderType)
@@ -83,10 +88,11 @@ internal object SamplerUniform: ShaderTest<SamplerUniform.Test>() {
         )
     }
 
-    class Test: Shader("sampler_tests", null, ResourceLocation("librarianlib-albedo-test:shaders/sampler_tests.frag")) {
+    class Test: Shader("sampler_array_tests", null, ResourceLocation("librarianlib-albedo-test:shaders/sampler_array_tests.frag")) {
+        val index = GLSL.glInt()
         // we only test sampler2D because all the sampler implementations are identical, and the others will be complex
         // to set up
-        val sampler1 = GLSL.sampler2D()
-        val sampler2 = GLSL.sampler2D()
+        val sampler1 = GLSL.sampler2D[2]
+        val sampler2 = GLSL.sampler2D[2]
     }
 }

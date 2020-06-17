@@ -21,6 +21,7 @@ import kotlin.math.min
 @Suppress("ClassName", "unused")
 abstract class GLSL(val glConstant: Int) {
     internal var location: Int = -1
+    open val isArray: Boolean = false
     @JvmSynthetic
     internal abstract fun push()
 
@@ -60,6 +61,7 @@ abstract class GLSL(val glConstant: Int) {
      */
     abstract class GLSLArray(glConstant: Int, val length: Int): GLSL(glConstant) {
         internal var trueLength: Int = length
+        override val isArray: Boolean = true
     }
 
     /**
@@ -750,7 +752,15 @@ abstract class GLSL(val glConstant: Int) {
         }
     }
 
-    class mat3: GLSLMatrix(GL20.GL_FLOAT_MAT3, 3, 3) {
+    class mat3 @JvmOverloads constructor(
+        /**
+         * Whether to transpose this matrix when sending it to the shader. This is generally used when sending
+         * transform matrices to the shader, since OpenGL's transform matrices are column-based as opposed to
+         * row-based.
+         */
+        val transpose: Boolean = false
+    ): GLSLMatrix(GL20.GL_FLOAT_MAT3, 3, 3) {
+
         /** Column 0, Row 0 */
         var m00: Float
             get() = this[0, 0]
@@ -844,10 +854,19 @@ abstract class GLSL(val glConstant: Int) {
         }
 
         override fun push() {
-            GL20.glUniformMatrix3fv(location, false, values)
+            GL20.glUniformMatrix3fv(location, transpose, values)
         }
 
-        class array(length: Int): GLSLMatrixArray(GL20.GL_FLOAT_MAT3, length, 3, 3) {
+        class array @JvmOverloads constructor(
+            length: Int,
+            /**
+             * Whether to transpose this matrix when sending it to the shader. This is generally used when sending
+             * transform matrices to the shader, since OpenGL's transform matrices are column-based as opposed to
+             * row-based.
+             */
+            val transpose: Boolean = false
+        ): GLSLMatrixArray(GL20.GL_FLOAT_MAT3, length, 3, 3) {
+
             /** Column 0, Row 0 */
             fun getM00(index: Int): Float = this[index, 0, 0]
             fun setM00(index: Int, value: Float) { this[index, 0, 0] = value }
@@ -934,7 +953,7 @@ abstract class GLSL(val glConstant: Int) {
             }
 
             override fun push() {
-                GL20.glUniformMatrix3fv(location, false, values)
+                GL20.glUniformMatrix3fv(location, transpose, values)
             }
         }
 
@@ -944,10 +963,23 @@ abstract class GLSL(val glConstant: Int) {
              */
             @JvmSynthetic
             operator fun get(length: Int): array = array(length)
+
+            /**
+             * Easily create an array
+             */
+            @JvmSynthetic
+            operator fun get(length: Int, transpose: Boolean): array = array(length, transpose)
         }
     }
 
-    class mat4: GLSLMatrix(GL20.GL_FLOAT_MAT4, 4, 4) {
+    class mat4 @JvmOverloads constructor(
+        /**
+         * Whether to transpose this matrix when sending it to the shader. This is generally used when sending
+         * transform matrices to the shader, since OpenGL's transform matrices are column-based as opposed to
+         * row-based.
+         */
+        val transpose: Boolean = false
+    ): GLSLMatrix(GL20.GL_FLOAT_MAT4, 4, 4) {
         /** Column 0, Row 0 */
         var m00: Float
             get() = this[0, 0]
@@ -1065,10 +1097,19 @@ abstract class GLSL(val glConstant: Int) {
         }
 
         override fun push() {
-            GL20.glUniformMatrix4fv(location, false, values)
+            GL20.glUniformMatrix4fv(location, transpose, values)
         }
 
-        class array(length: Int): GLSLMatrixArray(GL20.GL_FLOAT_MAT4, length, 4, 4) {
+        class array @JvmOverloads constructor(
+            length: Int,
+            /**
+             * Whether to transpose this matrix when sending it to the shader. This is generally used when sending
+             * transform matrices to the shader, since OpenGL's transform matrices are column-based as opposed to
+             * row-based.
+             */
+            val transpose: Boolean = false
+        ): GLSLMatrixArray(GL20.GL_FLOAT_MAT4, length, 4, 4) {
+
             /** Column 0, Row 0 */
             fun getM00(index: Int): Float = this[index, 0, 0]
             fun setM00(index: Int, value: Float) { this[index, 0, 0] = value }
@@ -1186,7 +1227,7 @@ abstract class GLSL(val glConstant: Int) {
             }
 
             override fun push() {
-                GL20.glUniformMatrix4fv(location, false, values)
+                GL20.glUniformMatrix4fv(location, transpose, values)
             }
         }
 
@@ -1196,6 +1237,11 @@ abstract class GLSL(val glConstant: Int) {
              */
             @JvmSynthetic
             operator fun get(length: Int): array = array(length)
+            /**
+             * Easily create an array
+             */
+            @JvmSynthetic
+            operator fun get(length: Int, transpose: Boolean): array = array(length, transpose)
         }
     }
     //endregion
@@ -2087,14 +2133,12 @@ abstract class GLSL(val glConstant: Int) {
         fun set(value: Int) { this.value = value }
 
         override fun push() {
-            GlStateManager.activeTexture(GL13.GL_TEXTURE0 + textureUnit)
-            GlStateManager.bindTexture(value)
             GL20.glUniform1i(location, textureUnit)
-            GlStateManager.activeTexture(GL13.GL_TEXTURE0)
         }
 
+        /** NOTE!!! Sampler arrays can *only* be indexed using compile-time literal values. */
         abstract class GLSLSamplerArray(glConstant: Int, length: Int): GLSLArray(glConstant, length) {
-            internal var textureUnit: Int = 0
+            internal var textureUnits: IntArray = IntArray(length)
 
             private val values: IntArray = IntArray(length)
 
@@ -2102,14 +2146,10 @@ abstract class GLSL(val glConstant: Int) {
             operator fun set(index: Int, value: Int) { values[index] = value }
 
             override fun push() {
-                for(i in 0 until min(length, trueLength)) {
-                    GlStateManager.activeTexture(GL13.GL_TEXTURE0 + textureUnit + i)
-                    GlStateManager.bindTexture(values[i])
-                }
                 MemoryStack.stackPush().use { stack ->
                     val units = stack.mallocInt(trueLength)
                     for(i in 0 until trueLength) {
-                        units.put(GL13.GL_TEXTURE0 + textureUnit + i)
+                        units.put(textureUnits[i])
                     }
                     units.rewind()
                     GL20.glUniform1iv(location, units)
@@ -2119,6 +2159,7 @@ abstract class GLSL(val glConstant: Int) {
     }
 
     class sampler1D: GLSLSampler(GL20.GL_SAMPLER_1D) {
+        /** NOTE!!! Sampler arrays can *only* be indexed using compile-time literal values. */
         class array(length: Int): GLSLSamplerArray(GL20.GL_SAMPLER_1D, length)
 
         companion object {
@@ -2131,6 +2172,7 @@ abstract class GLSL(val glConstant: Int) {
     }
 
     class sampler2D: GLSLSampler(GL20.GL_SAMPLER_2D) {
+        /** NOTE!!! Sampler arrays can *only* be indexed using compile-time literal values. */
         class array(length: Int): GLSLSamplerArray(GL20.GL_SAMPLER_2D, length)
 
         companion object {
@@ -2143,6 +2185,7 @@ abstract class GLSL(val glConstant: Int) {
     }
 
     class sampler3D: GLSLSampler(GL20.GL_SAMPLER_3D) {
+        /** NOTE!!! Sampler arrays can *only* be indexed using compile-time literal values. */
         class array(length: Int): GLSLSamplerArray(GL20.GL_SAMPLER_3D, length)
 
         companion object {
@@ -2155,6 +2198,7 @@ abstract class GLSL(val glConstant: Int) {
     }
 
     class samplerCube: GLSLSampler(GL20.GL_SAMPLER_CUBE) {
+        /** NOTE!!! Sampler arrays can *only* be indexed using compile-time literal values. */
         class array(length: Int): GLSLSamplerArray(GL20.GL_SAMPLER_CUBE, length)
 
         companion object {
@@ -2167,6 +2211,7 @@ abstract class GLSL(val glConstant: Int) {
     }
 
     class sampler1DShadow: GLSLSampler(GL20.GL_SAMPLER_1D_SHADOW) {
+        /** NOTE!!! Sampler arrays can *only* be indexed using compile-time literal values. */
         class array(length: Int): GLSLSamplerArray(GL20.GL_SAMPLER_1D_SHADOW, length)
 
         companion object {
@@ -2179,6 +2224,7 @@ abstract class GLSL(val glConstant: Int) {
     }
 
     class sampler2DShadow: GLSLSampler(GL20.GL_SAMPLER_2D_SHADOW) {
+        /** NOTE!!! Sampler arrays can *only* be indexed using compile-time literal values. */
         class array(length: Int): GLSLSamplerArray(GL20.GL_SAMPLER_2D_SHADOW, length)
 
         companion object {

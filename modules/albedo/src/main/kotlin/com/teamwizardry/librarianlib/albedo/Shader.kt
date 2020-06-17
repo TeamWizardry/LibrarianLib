@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.albedo
 
 import com.mojang.blaze3d.platform.GlStateManager
+import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.GlResourceGc
 import com.teamwizardry.librarianlib.core.util.ISimpleReloadListener
@@ -9,16 +10,25 @@ import com.teamwizardry.librarianlib.core.util.resolveSibling
 import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.IResourceManager
 import net.minecraft.util.ResourceLocation
-import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL13
 import org.lwjgl.opengl.GL20.*
-import java.io.File
-import java.io.IOException
-import java.net.URI
-import java.nio.file.Path
-import java.nio.file.Paths
 import java.util.LinkedList
+import kotlin.math.min
 
-abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?, val fragmentName: ResourceLocation?) {
+abstract class Shader(
+    /**
+     * An arbitrary name used for logging
+     */
+    val shaderName: String,
+    /**
+     * The location of the vertex shader, if any
+     */
+    val vertexName: ResourceLocation?,
+    /**
+     * The location of the fragment shader, if any
+     */
+    val fragmentName: ResourceLocation?
+) {
     /**
      * The OpenGL handle for the shader program
      */
@@ -52,8 +62,25 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
     }
 
     fun pushUniforms() {
-        uniforms?.forEach { it.push() }
-
+        var currentUnit = 0
+        val units = mutableMapOf<Int, Int>()
+        uniforms?.forEach {
+            if (it is GLSL.GLSLSampler) {
+                it.textureUnit = units.getOrPut(it.get()) { currentUnit++ }
+            } else if (it is GLSL.GLSLSampler.GLSLSamplerArray) {
+                for(i in 0 until min(it.length, it.trueLength)) {
+                    it.textureUnits[i] = units.getOrPut(it[i]) { currentUnit++ }
+                }
+            }
+        }
+        units.forEach { (tex, unit) ->
+            RenderSystem.activeTexture(GL13.GL_TEXTURE0 + unit)
+            RenderSystem.bindTexture(tex)
+        }
+        uniforms?.forEach {
+            it.push()
+        }
+        RenderSystem.activeTexture(GL13.GL_TEXTURE0)
     }
 
     fun delete() {
@@ -95,13 +122,11 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
         var fragmentHandle = 0
         try {
             if(vertexName != null) {
-                logger.info("Compiling vertex shader $vertexName")
                 val files = mutableMapOf<ResourceLocation, Int>()
                 vertexHandle = compileShader(GL_VERTEX_SHADER, "vertex",
                     readShader(resourceManager, vertexName, files), vertexName, files)
             }
             if(fragmentName != null) {
-                logger.info("Compiling fragment shader $fragmentName")
                 val files = mutableMapOf<ResourceLocation, Int>()
                 fragmentHandle = compileShader(GL_FRAGMENT_SHADER, "fragment",
                     readShader(resourceManager, fragmentName, files), fragmentName, files)
@@ -165,6 +190,7 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
     }
 
     private fun compileShader(type: Int, typeName: String, source: String, location: ResourceLocation, files: Map<ResourceLocation, Int>): Int {
+        logger.info("Compiling $typeName shader $location")
         checkVersion(source)
         val shader = GlStateManager.createShader(type)
         if(shader == 0)
@@ -173,9 +199,9 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
         GlStateManager.compileShader(shader)
 
         val status = GlStateManager.getShader(shader, GL_COMPILE_STATUS)
+        val logLength = GlStateManager.getShader(shader, GL_INFO_LOG_LENGTH)
+        var log = GlStateManager.getShaderInfoLog(shader, logLength)
         if(status == GL_FALSE) {
-            val logLength = GlStateManager.getShader(shader, GL_INFO_LOG_LENGTH)
-            var log = GlStateManager.getShaderInfoLog(shader, logLength)
             GlStateManager.deleteShader(shader)
 
             files.forEach { (key, value) ->
@@ -199,9 +225,11 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
                 lineOut
             } + "\n### END SOURCE"
 
+            logger.error("Error compiling $typeName shader $location")
             throw ShaderCompilationException("Error compiling $typeName shader `$location`:\n$log")
         }
 
+        logger.info("Finished compiling $typeName shader $location")
         return shader
     }
 
@@ -216,6 +244,7 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
     }
 
     private fun linkProgram(vertexHandle: Int, fragmentHandle: Int): Int {
+        logger.info("Linking shader $shaderName")
         val program = GlStateManager.createProgram()
         if(program == 0)
             throw ShaderCompilationException("could not create program object")
@@ -234,9 +263,11 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
             val logLength = GlStateManager.getProgram(program, GL_INFO_LOG_LENGTH)
             val log = GlStateManager.getProgramInfoLog(program, logLength)
             GlStateManager.deleteProgram(program)
+            logger.error("Error linking shader $shaderName")
             throw ShaderCompilationException("Could not link program: $log")
         }
 
+        logger.info("Finished linking shader $shaderName")
         return program
     }
 

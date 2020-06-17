@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.facade.text
 
+import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.math.Rect2d
@@ -26,7 +27,7 @@ object BitfontAtlas: Texture() {
     var height: Int = 128
         private set
 
-    private val gpuMaxTexSize = GL11.glGetInteger(GL11.GL_MAX_TEXTURE_SIZE)
+    private val gpuMaxTexSize = GlStateManager.getInteger(GL11.GL_MAX_TEXTURE_SIZE)
 
     private var packer = RectanglePacker<BitGrid>(width, height, 1)
     private val rects = mutableMapOf<BitGrid, RectanglePacker.Rectangle>()

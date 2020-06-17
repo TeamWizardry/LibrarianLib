@@ -22,20 +22,40 @@ object LibrarianLibAlbedoTestMod: TestMod("albedo", "Albedo", logger) {
             FloatUniform
         }
 
+        +test("float_array_uniform", "Float Array Uniform", "Simple float array uniform tests") {
+            FloatArrayUniform
+        }
+
         +test("int_uniform", "Int Uniform", "Simple int uniform tests") {
             IntUniform
+        }
+
+        +test("int_array_uniform", "Int Array Uniform", "Simple int array uniform tests") {
+            IntArrayUniform
         }
 
         +test("bool_uniform", "Bool Uniform", "Simple bool uniform tests") {
             BoolUniform
         }
 
+        +test("bool_array_uniform", "Bool Array Uniform", "Simple bool array uniform tests") {
+            BoolArrayUniform
+        }
+
         +test("matrix_uniform", "Matrix Uniform", "Simple matrix uniform tests") {
             MatrixUniform
         }
 
+        +test("matrix_array_uniform", "Matrix Array Uniform", "Simple matrix array uniform tests") {
+            MatrixArrayUniform
+        }
+
         +test("sampler_uniform", "Sampler Uniform", "Simple sampler uniform tests") {
             SamplerUniform
+        }
+
+        +test("sampler_array_uniform", "Sampler Array Uniform", "Simple sampler array uniform tests") {
+            SamplerArrayUniform
         }
     }
 

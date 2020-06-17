@@ -21,6 +21,7 @@
  */
 package com.teamwizardry.librarianlib.core.util
 
+import com.teamwizardry.librarianlib.core.logger
 import org.apache.logging.log4j.LogManager
 import java.lang.ref.PhantomReference
 import java.lang.ref.ReferenceQueue
@@ -153,7 +154,6 @@ object GlResourceGc {
 
     // implementation ==================================================================================================
 
-    private val logger = LogManager.getLogger(GlResourceGc::class.java)
     private val referenceQueue: ReferenceQueue<Any> = ReferenceQueue()
 
 
@@ -227,9 +227,7 @@ object GlResourceGc {
             this.releaseFunction = null
 
             if (releaseFunction != null && !disable) {
-//                if (logger.isDebugEnabled) {
-                    logger.info("Collecting $releaseFunction")
-//                }
+                logger.debug("Collecting $releaseFunction")
                 releaseFunction.run()
             }
         }
@@ -239,9 +237,7 @@ object GlResourceGc {
             this.releaseFunction = null
 
             if (releaseFunction != null) {
-                if (logger.isDebugEnabled) {
-                    logger.debug("Releasing $this")
-                }
+                logger.debug("Releasing $this")
                 releaseFunction.run()
                 return true
             }

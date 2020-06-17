@@ -18,6 +18,7 @@ class BlendMode(
 
     fun glApply() {
         RenderSystem.blendFuncSeparate(srcRGB.glConst, dstRGB.glConst, srcAlpha.glConst, dstAlpha.glConst)
+        // GlStateManager doesn't track changes to the blend equation, so it's safe to manually set it
         GL20.glBlendEquationSeparate(modeRGB.glConst, modeAlpha.glConst)
     }
 

@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.facade.layer
 
+import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes

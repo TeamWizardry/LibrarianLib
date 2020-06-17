@@ -152,7 +152,7 @@ internal object MatrixUniform: ShaderTest<MatrixUniform.Test>() {
 
     private val renderType = SimpleRenderTypes.flat(ResourceLocation("minecraft:missingno"), GL11.GL_QUADS)
 
-    class Test: Shader("float_tests", null, ResourceLocation("librarianlib-albedo-test:shaders/matrix_tests.frag")) {
+    class Test: Shader("matrix_tests", null, ResourceLocation("librarianlib-albedo-test:shaders/matrix_tests.frag")) {
         val matrix4x4 = GLSL.mat4()
         val matrix4x3 = GLSL.mat4x3()
         val matrix4x2 = GLSL.mat4x2()
