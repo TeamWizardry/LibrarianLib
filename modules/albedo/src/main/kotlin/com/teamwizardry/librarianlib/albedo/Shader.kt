@@ -53,6 +53,7 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
 
     fun pushUniforms() {
         uniforms?.forEach { it.push() }
+
     }
 
     fun delete() {
@@ -128,7 +129,7 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
         }
         stack.push(name)
         val sourceNumber = files.getOrPut(name) { sourceNumberBase + files.size }
-        val importRegex = """^\s*#pragma\s*import\s*<\s*(\S*)\s*>\s*$""".toRegex()
+        val importRegex = """^\s*#pragma\s+import\s*<\s*(\S*)\s*>\s*$""".toRegex()
 
         val text = Client.getResourceText(resourceManager, name)
         var out = ""
@@ -136,7 +137,7 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
             val lineNumber = i+1
             val importMatch = importRegex.matchEntire(line)
             if(lineNumber == 1 && "#version" !in text) {
-                out += "#line 0 $sourceNumber\n"
+                out += "#line 0 $sourceNumber // $name\n"
             }
 
             if(importMatch != null) {
@@ -148,13 +149,13 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
                 }
 
                 out += readShader(resourceManager, importLocation, files, stack)
-                out += "\n#line $lineNumber $sourceNumber\n"
+                out += "\n#line $lineNumber $sourceNumber // $name\n"
             } else {
                 out += "$line\n"
             }
 
             if("#version" in line) {
-                out += "#line ${lineNumber-1} $sourceNumber\n"
+                out += "#line $lineNumber $sourceNumber // $name\n"
             }
         }
 
@@ -176,9 +177,28 @@ abstract class Shader(val shaderName: String, val vertexName: ResourceLocation?,
             val logLength = GlStateManager.getShader(shader, GL_INFO_LOG_LENGTH)
             var log = GlStateManager.getShaderInfoLog(shader, logLength)
             GlStateManager.deleteShader(shader)
+
             files.forEach { (key, value) ->
-                log = log.replace(Regex("\\b$value\\b"), "${key.path}")
+                log = log.replace(Regex("\\b$value\\b"), if(key.namespace != location.namespace) "$key" else key.path)
             }
+
+            val lineRegex = """^\s*#line\s+(\d+)(?: \d+ // (.*))?\s*$""".toRegex()
+            var lineNumber = 0
+
+            // not used atm, since I'm not sure it's necessary or useful. Line numbers should be correct, and if we have
+            // to use this because they aren't... that's a problem.
+            val sourceLog = "\n### BEGIN SOURCE\n" + source.lineSequence().joinToString("\n") { line ->
+                lineNumber++
+                var lineOut = ""
+                lineRegex.matchEntire(line)?.also { match ->
+                    lineNumber = match.groupValues[1].toInt()
+                    if(match.groupValues[2] != "")
+                        lineOut += "FILE: ${match.groupValues[2]}\n"
+                }
+                lineOut += "%4d: %s".format(lineNumber, line)
+                lineOut
+            } + "\n### END SOURCE"
+
             throw ShaderCompilationException("Error compiling $typeName shader `$location`:\n$log")
         }
 

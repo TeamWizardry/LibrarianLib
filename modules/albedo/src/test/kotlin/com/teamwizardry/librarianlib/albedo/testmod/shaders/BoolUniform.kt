@@ -12,7 +12,7 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-internal object FloatUniform: ShaderTest<FloatUniform.Test>() {
+internal object BoolUniform: ShaderTest<BoolUniform.Test>() {
 
     override fun doDraw() {
         val minX = 0.0
@@ -23,10 +23,10 @@ internal object FloatUniform: ShaderTest<FloatUniform.Test>() {
         val c = Color.WHITE
 
         shader.bind()
-        shader.primitive.set(10f)
-        shader.vector2.set(10f, 20f)
-        shader.vector3.set(10f, 20f, 30f)
-        shader.vector4.set(10f, 20f, 30f, 40f)
+        shader.primitive.set(true)
+        shader.vector2.set(true, false)
+        shader.vector3.set(true, false, true)
+        shader.vector4.set(true, false, true, false)
         shader.pushUniforms()
 
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
@@ -43,10 +43,10 @@ internal object FloatUniform: ShaderTest<FloatUniform.Test>() {
 
     private val renderType = SimpleRenderTypes.flat(ResourceLocation("minecraft:missingno"), GL11.GL_QUADS)
 
-    class Test: Shader("float_tests", null, ResourceLocation("librarianlib-albedo-test:shaders/float_tests.frag")) {
-        val primitive = GLSL.glFloat()
-        val vector2 = GLSL.vec2()
-        val vector3 = GLSL.vec3()
-        val vector4 = GLSL.vec4()
+    class Test: Shader("bool_tests", null, ResourceLocation("librarianlib-albedo-test:shaders/bool_tests.frag")) {
+        val primitive = GLSL.glBool()
+        val vector2 = GLSL.bvec2()
+        val vector3 = GLSL.bvec3()
+        val vector4 = GLSL.bvec4()
     }
 }

@@ -25,22 +25,34 @@ internal object UniformBinder {
             val size = stack.mallocInt(1)
             val nameLength = stack.mallocInt(1)
             val nameBuffer = stack.malloc(maxNameLength)
-            for(location in 0 until uniformCount) {
+            for(index in 0 until uniformCount) {
                 glType.rewind()
                 size.rewind()
                 nameLength.rewind()
                 nameBuffer.rewind()
-                GL20.glGetActiveUniform(program, location, nameLength, size, glType, nameBuffer)
+                GL20.glGetActiveUniform(program, index, nameLength, size, glType, nameBuffer)
+                val location = GL20.glGetUniformLocation(program, nameBuffer)
                 val name = MemoryUtil.memASCII(nameBuffer, nameLength.get())
                 uniformInfos[name] = UniformInfo(name, glType.get(), size.get(), location)
             }
         }
+        var textureUnit = 0
         val glslObjects = mutableListOf<GLSL>()
         Mirror.reflectClass(target.javaClass).fields.forEach { field ->
             if(Mirror.reflect<GLSL>().isAssignableFrom(field.type)) {
                 val uniform = field.get<GLSL>(if(field.isStatic) null else target)
                 glslObjects.add(uniform)
-                uniform.location = uniformInfos[field.name]?.location ?: -1
+                val uniformInfo = uniformInfos[field.name]
+                uniform.location = uniformInfo?.location ?: -1
+                when(uniform) {
+                    is GLSL.GLSLSampler -> uniform.textureUnit = textureUnit++
+                    is GLSL.GLSLArray -> uniform.trueLength = uniformInfo?.size ?: uniform.length
+                    is GLSL.GLSLMatrix.GLSLMatrixArray -> uniform.trueLength = uniformInfo?.size ?: uniform.length
+                    is GLSL.GLSLSampler.GLSLSamplerArray -> {
+                        uniform.textureUnit = textureUnit
+                        textureUnit += uniform.trueLength
+                    }
+                }
             }
             // TODO: struct recursion
         }

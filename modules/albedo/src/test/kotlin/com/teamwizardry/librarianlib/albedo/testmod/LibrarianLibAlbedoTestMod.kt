@@ -1,8 +1,6 @@
 package com.teamwizardry.librarianlib.albedo.testmod
 
-import com.teamwizardry.librarianlib.albedo.testmod.shaders.FloatUniform
-import com.teamwizardry.librarianlib.albedo.testmod.shaders.PrimitiveUniform
-import com.teamwizardry.librarianlib.albedo.testmod.shaders.SimpleFrag
+import com.teamwizardry.librarianlib.albedo.testmod.shaders.*
 import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.testbase.TestMod
 import com.teamwizardry.librarianlib.testbase.objects.TestScreenConfig
@@ -22,6 +20,22 @@ object LibrarianLibAlbedoTestMod: TestMod("albedo", "Albedo", logger) {
 
         +test("float_uniform", "Float Uniform", "Simple float uniform tests") {
             FloatUniform
+        }
+
+        +test("int_uniform", "Int Uniform", "Simple int uniform tests") {
+            IntUniform
+        }
+
+        +test("bool_uniform", "Bool Uniform", "Simple bool uniform tests") {
+            BoolUniform
+        }
+
+        +test("matrix_uniform", "Matrix Uniform", "Simple matrix uniform tests") {
+            MatrixUniform
+        }
+
+        +test("sampler_uniform", "Sampler Uniform", "Simple sampler uniform tests") {
+            SamplerUniform
         }
     }
 

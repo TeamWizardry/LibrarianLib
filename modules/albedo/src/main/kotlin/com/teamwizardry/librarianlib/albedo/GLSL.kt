@@ -1,8 +1,14 @@
 package com.teamwizardry.librarianlib.albedo
 
 import com.mojang.blaze3d.platform.GlStateManager
+import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
+import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
+import com.teamwizardry.librarianlib.math.Matrix3d
+import com.teamwizardry.librarianlib.math.Matrix4d
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.vec
+import net.minecraft.client.renderer.Matrix3f
+import net.minecraft.client.renderer.Matrix4f
 import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL13
@@ -661,6 +667,9 @@ abstract class GLSL(val glConstant: Int) {
             get() = this[1, 1]
             set(value) { this[1, 1] = value }
 
+        /**
+         * Column-wise (m01 is column 0, row 1), so parameters are ordered top to bottom then left to right.
+         */
         fun set(m00: Float, m01: Float, m10: Float, m11: Float) {
             this.m00 = m00
             this.m01 = m01
@@ -702,6 +711,9 @@ abstract class GLSL(val glConstant: Int) {
             fun getM11(index: Int): Float = this[index, 1, 1]
             fun setM11(index: Int, value: Float) { this[index, 1, 1] = value }
 
+            /**
+             * Column-wise (m01 is column 0, row 1), so parameters are ordered top to bottom then left to right.
+             */
             fun set(index: Int, m00: Float, m01: Float, m10: Float, m11: Float) {
                 this[index, 0, 0] = m00
                 this[index, 0, 1] = m01
@@ -778,6 +790,9 @@ abstract class GLSL(val glConstant: Int) {
             get() = this[2, 2]
             set(value) { this[2, 2] = value }
 
+        /**
+         * Column-wise (m01 is column 0, row 1), so parameters are ordered top to bottom then left to right.
+         */
         fun set(
             m00: Float, m01: Float, m02: Float, m10: Float, m11: Float, m12: Float, m20: Float, m21: Float, m22: Float
         ) {
@@ -808,6 +823,24 @@ abstract class GLSL(val glConstant: Int) {
             this[column, 0] = value.x.toFloat()
             this[column, 1] = value.y.toFloat()
             this[column, 2] = value.z.toFloat()
+        }
+
+        fun set(matrix: Matrix3d) {
+            this.set(
+                matrix[0, 0].toFloat(), matrix[1, 0].toFloat(), matrix[2, 0].toFloat(),
+                matrix[0, 1].toFloat(), matrix[1, 1].toFloat(), matrix[2, 1].toFloat(),
+                matrix[0, 2].toFloat(), matrix[1, 2].toFloat(), matrix[2, 2].toFloat()
+            )
+        }
+
+        fun set(matrix: Matrix3f) {
+            @Suppress("CAST_NEVER_SUCCEEDS")
+            val imatrix = matrix as IMatrix3f
+            this.set(
+                imatrix.m00, imatrix.m10, imatrix.m20,
+                imatrix.m01, imatrix.m11, imatrix.m21,
+                imatrix.m02, imatrix.m12, imatrix.m22
+            )
         }
 
         override fun push() {
@@ -846,6 +879,9 @@ abstract class GLSL(val glConstant: Int) {
             fun setM22(index: Int, value: Float) { this[index, 2, 2] = value }
 
 
+            /**
+             * Column-wise (m01 is column 0, row 1), so parameters are ordered top to bottom then left to right.
+             */
             fun set(index: Int,
                 m00: Float, m01: Float, m02: Float, m10: Float, m11: Float, m12: Float, m20: Float, m21: Float,
                 m22: Float
@@ -861,6 +897,24 @@ abstract class GLSL(val glConstant: Int) {
                 this[index, 2, 0] = m20
                 this[index, 2, 1] = m21
                 this[index, 2, 2] = m22
+            }
+
+            fun set(index: Int, matrix: Matrix3d) {
+                this.set(index,
+                    matrix[0, 0].toFloat(), matrix[1, 0].toFloat(), matrix[2, 0].toFloat(),
+                    matrix[0, 1].toFloat(), matrix[1, 1].toFloat(), matrix[2, 1].toFloat(),
+                    matrix[0, 2].toFloat(), matrix[1, 2].toFloat(), matrix[2, 2].toFloat()
+                )
+            }
+
+            fun set(index: Int, matrix: Matrix3f) {
+                @Suppress("CAST_NEVER_SUCCEEDS")
+                val imatrix = matrix as IMatrix3f
+                this.set(index,
+                    imatrix.m00, imatrix.m10, imatrix.m20,
+                    imatrix.m01, imatrix.m11, imatrix.m21,
+                    imatrix.m02, imatrix.m12, imatrix.m22
+                )
             }
 
             /**
@@ -953,7 +1007,7 @@ abstract class GLSL(val glConstant: Int) {
         var m31: Float
             get() = this[3, 1]
             set(value) { this[3, 1] = value }
-        /** Column 2, Row 2 */
+        /** Column 3, Row 2 */
         var m32: Float
             get() = this[3, 2]
             set(value) { this[3, 2] = value }
@@ -962,6 +1016,9 @@ abstract class GLSL(val glConstant: Int) {
             get() = this[3, 3]
             set(value) { this[3, 3] = value }
 
+        /**
+         * Column-wise (m01 is column 0, row 1), so parameters are ordered top to bottom then left to right.
+         */
         fun set(
             m00: Float, m01: Float, m02: Float, m03: Float, m10: Float, m11: Float, m12: Float, m13: Float, m20: Float,
             m21: Float, m22: Float, m23: Float, m30: Float, m31: Float, m32: Float, m33: Float
@@ -985,6 +1042,26 @@ abstract class GLSL(val glConstant: Int) {
             this.m31 = m31
             this.m32 = m32
             this.m33 = m33
+        }
+
+        fun set(matrix: Matrix4d) {
+            this.set(
+                matrix[0, 0].toFloat(), matrix[1, 0].toFloat(), matrix[2, 0].toFloat(), matrix[3, 0].toFloat(),
+                matrix[0, 1].toFloat(), matrix[1, 1].toFloat(), matrix[2, 1].toFloat(), matrix[3, 1].toFloat(),
+                matrix[0, 2].toFloat(), matrix[1, 2].toFloat(), matrix[2, 2].toFloat(), matrix[3, 2].toFloat(),
+                matrix[0, 3].toFloat(), matrix[1, 3].toFloat(), matrix[2, 3].toFloat(), matrix[3, 3].toFloat()
+            )
+        }
+
+        fun set(matrix: Matrix4f) {
+            @Suppress("CAST_NEVER_SUCCEEDS")
+            val imatrix = matrix as IMatrix4f
+            this.set(
+                imatrix.m00, imatrix.m10, imatrix.m20, imatrix.m30,
+                imatrix.m01, imatrix.m11, imatrix.m21, imatrix.m31,
+                imatrix.m02, imatrix.m12, imatrix.m22, imatrix.m32,
+                imatrix.m03, imatrix.m13, imatrix.m23, imatrix.m33
+            )
         }
 
         override fun push() {
@@ -1060,6 +1137,9 @@ abstract class GLSL(val glConstant: Int) {
                 this[index, column, 2] = value.z.toFloat()
             }
 
+            /**
+             * Column-wise (m01 is column 0, row 1), so parameters are ordered top to bottom then left to right.
+             */
             fun set(index: Int,
                 m00: Float, m01: Float, m02: Float, m03: Float, m10: Float, m11: Float, m12: Float, m13: Float,
                 m20: Float, m21: Float, m22: Float, m23: Float, m30: Float, m31: Float, m32: Float, m33: Float
@@ -1083,6 +1163,26 @@ abstract class GLSL(val glConstant: Int) {
                 this[index, 3, 1] = m31
                 this[index, 3, 2] = m32
                 this[index, 3, 3] = m33
+            }
+
+            fun set(index: Int, matrix: Matrix4d) {
+                this.set(index,
+                    matrix[0, 0].toFloat(), matrix[1, 0].toFloat(), matrix[2, 0].toFloat(), matrix[3, 0].toFloat(),
+                    matrix[0, 1].toFloat(), matrix[1, 1].toFloat(), matrix[2, 1].toFloat(), matrix[3, 1].toFloat(),
+                    matrix[0, 2].toFloat(), matrix[1, 2].toFloat(), matrix[2, 2].toFloat(), matrix[3, 2].toFloat(),
+                    matrix[0, 3].toFloat(), matrix[1, 3].toFloat(), matrix[2, 3].toFloat(), matrix[3, 3].toFloat()
+                )
+            }
+
+            fun set(index: Int, matrix: Matrix4f) {
+                @Suppress("CAST_NEVER_SUCCEEDS")
+                val imatrix = matrix as IMatrix4f
+                this.set(index,
+                    imatrix.m00, imatrix.m10, imatrix.m20, imatrix.m30,
+                    imatrix.m01, imatrix.m11, imatrix.m21, imatrix.m31,
+                    imatrix.m02, imatrix.m12, imatrix.m22, imatrix.m32,
+                    imatrix.m03, imatrix.m13, imatrix.m23, imatrix.m33
+                )
             }
 
             override fun push() {
@@ -1144,6 +1244,9 @@ abstract class GLSL(val glConstant: Int) {
             this[column, 2] = value.z.toFloat()
         }
 
+        /**
+         * Column-wise (m01 is column 0, row 1), so parameters are ordered top to bottom then left to right.
+         */
         fun set(
             m00: Float, m01: Float, m02: Float, m10: Float, m11: Float, m12: Float
         ) {
@@ -1197,6 +1300,9 @@ abstract class GLSL(val glConstant: Int) {
                 this[index, column, 2] = value.z.toFloat()
             }
 
+            /**
+             * Column-wise (m01 is column 0, row 1), so parameters are ordered top to bottom then left to right.
+             */
             fun set(index: Int,
                 m00: Float, m01: Float, m02: Float, m10: Float, m11: Float, m12: Float
             ) {
@@ -1258,6 +1364,9 @@ abstract class GLSL(val glConstant: Int) {
             get() = this[1, 3]
             set(value) { this[1, 3] = value }
 
+        /**
+         * Column-wise (m01 is column 0, row 1), so parameters are ordered top to bottom then left to right.
+         */
         fun set(
             m00: Float, m01: Float, m02: Float, m03: Float, m10: Float, m11: Float, m12: Float, m13: Float
         ) {
@@ -1303,6 +1412,9 @@ abstract class GLSL(val glConstant: Int) {
             fun getM13(index: Int): Float = this[index, 1, 3]
             fun setM13(index: Int, value: Float) { this[index, 1, 3] = value }
 
+            /**
+             * Column-wise (m01 is column 0, row 1), so parameters are ordered top to bottom then left to right.
+             */
             fun set(index: Int,
                 m00: Float, m01: Float, m02: Float, m03: Float, m10: Float, m11: Float, m12: Float, m13: Float
             ) {
@@ -1374,6 +1486,9 @@ abstract class GLSL(val glConstant: Int) {
             this[column, 1] = value.yf
         }
 
+        /**
+         * Column-wise (m01 is column 0, row 1), so parameters are ordered top to bottom then left to right.
+         */
         fun set(
             m00: Float, m01: Float, m10: Float, m11: Float, m20: Float, m21: Float
         ) {
@@ -1428,6 +1543,9 @@ abstract class GLSL(val glConstant: Int) {
                 this[index, column, 1] = value.yf
             }
 
+            /**
+             * Column-wise (m01 is column 0, row 1), so parameters are ordered top to bottom then left to right.
+             */
             fun set(index: Int,
                 m00: Float, m01: Float, m10: Float, m11: Float, m20: Float, m21: Float
             ) {
@@ -1507,6 +1625,9 @@ abstract class GLSL(val glConstant: Int) {
             get() = this[2, 3]
             set(value) { this[2, 3] = value }
 
+        /**
+         * Column-wise (m01 is column 0, row 1), so parameters are ordered top to bottom then left to right.
+         */
         fun set(
             m00: Float, m01: Float, m02: Float, m03: Float, m10: Float, m11: Float, m12: Float, m13: Float, m20: Float,
             m21: Float, m22: Float, m23: Float
@@ -1571,6 +1692,9 @@ abstract class GLSL(val glConstant: Int) {
             fun getM23(index: Int): Float = this[index, 2, 3]
             fun setM23(index: Int, value: Float) { this[index, 2, 3] = value }
 
+            /**
+             * Column-wise (m01 is column 0, row 1), so parameters are ordered top to bottom then left to right.
+             */
             fun set(index: Int,
                 m00: Float, m01: Float, m02: Float, m03: Float, m10: Float, m11: Float, m12: Float, m13: Float,
                 m20: Float, m21: Float, m22: Float, m23: Float
@@ -1657,6 +1781,9 @@ abstract class GLSL(val glConstant: Int) {
             this[column, 1] = value.yf
         }
 
+        /**
+         * Column-wise (m01 is column 0, row 1), so parameters are ordered top to bottom then left to right.
+         */
         fun set(
             m00: Float, m01: Float, m10: Float, m11: Float, m20: Float, m21: Float, m30: Float, m31: Float
         ) {
@@ -1721,6 +1848,9 @@ abstract class GLSL(val glConstant: Int) {
                 this[index, column, 1] = value.yf
             }
 
+            /**
+             * Column-wise (m01 is column 0, row 1), so parameters are ordered top to bottom then left to right.
+             */
             fun set(index: Int,
                 m00: Float, m01: Float, m10: Float, m11: Float, m20: Float, m21: Float, m30: Float, m31: Float
             ) {
@@ -1820,6 +1950,9 @@ abstract class GLSL(val glConstant: Int) {
             this[column, 2] = value.z.toFloat()
         }
 
+        /**
+         * Column-wise (m01 is column 0, row 1), so parameters are ordered top to bottom then left to right.
+         */
         fun set(
             m00: Float, m01: Float, m02: Float, m10: Float, m11: Float, m12: Float, m20: Float, m21: Float, m22: Float,
             m30: Float, m31: Float, m32: Float
@@ -1902,6 +2035,9 @@ abstract class GLSL(val glConstant: Int) {
                 this[index, column, 2] = value.z.toFloat()
             }
 
+            /**
+             * Column-wise (m01 is column 0, row 1), so parameters are ordered top to bottom then left to right.
+             */
             fun set(index: Int,
                 m00: Float, m01: Float, m02: Float, m10: Float, m11: Float, m12: Float, m20: Float, m21: Float,
                 m22: Float, m30: Float, m31: Float, m32: Float
@@ -1953,7 +2089,8 @@ abstract class GLSL(val glConstant: Int) {
         override fun push() {
             GlStateManager.activeTexture(GL13.GL_TEXTURE0 + textureUnit)
             GlStateManager.bindTexture(value)
-            GL20.glUniform1i(location, GL13.GL_TEXTURE0 + textureUnit)
+            GL20.glUniform1i(location, textureUnit)
+            GlStateManager.activeTexture(GL13.GL_TEXTURE0)
         }
 
         abstract class GLSLSamplerArray(glConstant: Int, length: Int): GLSLArray(glConstant, length) {

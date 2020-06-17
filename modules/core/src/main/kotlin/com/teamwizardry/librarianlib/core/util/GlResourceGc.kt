@@ -156,8 +156,13 @@ object GlResourceGc {
     private val logger = LogManager.getLogger(GlResourceGc::class.java)
     private val referenceQueue: ReferenceQueue<Any> = ReferenceQueue()
 
-    /** Releases all GC'd resources */
-    internal fun releaseCollectedResources() {
+
+    /**
+     * Releases all GC'd resources.
+     *
+     * **INTERNAL USE ONLY**
+     */
+    fun releaseCollectedResources() {
         generateSequence { referenceQueue.poll() as ResourceReference? }.forEach {
             it.clear()
             it.remove()

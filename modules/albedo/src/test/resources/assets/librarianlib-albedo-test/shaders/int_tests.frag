@@ -1,13 +1,13 @@
 #version 120
 
-uniform float primitive;
-float primitive_expected = 10;
-uniform vec2 vector2;
-vec2 vector2_expected = vec2(10, 20);
-uniform vec3 vector3;
-vec3 vector3_expected = vec3(10, 20, 30);
-uniform vec4 vector4;
-vec4 vector4_expected = vec4(10, 20, 30, 40);
+uniform int primitive;
+int primitive_expected = 10;
+uniform ivec2 vector2;
+ivec2 vector2_expected = ivec2(10, 20);
+uniform ivec3 vector3;
+ivec3 vector3_expected = ivec3(10, 20, 30);
+uniform ivec4 vector4;
+ivec4 vector4_expected = ivec4(10, 20, 30, 40);
 
 #pragma import <gridutil.glsl>
 
