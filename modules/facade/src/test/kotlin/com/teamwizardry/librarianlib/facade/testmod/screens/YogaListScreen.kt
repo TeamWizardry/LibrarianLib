@@ -12,21 +12,21 @@ import java.awt.Color
  */
 class YogaListScreen: FacadeTestScreen("Yoga List") {
     init {
-        val bg = RectLayer(Color(255, 255, 255, 127), 0, 0, 100, 500)
+        val bg = RectLayer(Color(255, 255, 255, 127), 0, 0, 50, 200)
         main.add(bg)
-        main.size = vec(100, 500)
+        main.size = vec(50, 200)
         main.yoga()
-            .padding.px(10f)
+            .padding.px(5f)
             .flexDirection.column()
 
         val button = RectLayer(Color.GREEN, -20, 0, 20, 20)
         main.add(button)
         var i = 0
         button.hook<GuiLayerEvents.MouseClick> {
-            val box = RectLayer(DistinctColors.colors[i++ % DistinctColors.colors.size], 0, 0, 80, 80)
+            val box = RectLayer(DistinctColors.colors[i++ % DistinctColors.colors.size], 0, 0, 40, 40)
             box.yoga()
-                .marginBottom.px(5f)
-                .flexBasis.px(80f)
+                .marginBottom.px(2f)
+                .flexBasis.px(40f)
             box.hook<GuiLayerEvents.MouseClick> {
                 box.removeFromParent()
             }

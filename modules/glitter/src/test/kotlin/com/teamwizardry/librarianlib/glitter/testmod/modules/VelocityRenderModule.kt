@@ -73,7 +73,6 @@ class VelocityRenderModule(
         }
         RenderSystem.depthMask(depthMask)
         RenderSystem.alphaFunc(GL11.GL_GREATER, 0.003921569F)
-        RenderSystem.disableLighting()
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f)
         RenderSystem.disableCull()
         RenderSystem.lineWidth(size)
@@ -115,7 +114,6 @@ class VelocityRenderModule(
         RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1F)
         RenderSystem.depthMask(true)
         RenderSystem.disableBlend()
-        RenderSystem.enableLighting()
         RenderSystem.enableTexture()
     }
 }

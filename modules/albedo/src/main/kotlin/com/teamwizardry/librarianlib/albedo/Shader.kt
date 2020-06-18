@@ -136,6 +136,7 @@ abstract class Shader(
             RenderSystem.activeTexture(GL13.GL_TEXTURE0 + unit)
             RenderSystem.enableTexture()
             RenderSystem.bindTexture(texture)
+            RenderSystem.activeTexture(GL13.GL_TEXTURE0)
         } else {
             if(unit < 8) {
                 // GlStateManager tracks the first 8 texture units, and it only changes the texture when the value
@@ -157,13 +158,27 @@ abstract class Shader(
     private fun unbindTexture(target: Int, unit: Int) {
         if(unit < 8 && target == GL11.GL_TEXTURE_2D) { // GlStateManager only tracks the first 8 GL_TEXTURE_2D units
             RenderSystem.activeTexture(GL13.GL_TEXTURE0 + unit)
-            RenderSystem.enableTexture()
             RenderSystem.bindTexture(0)
+            RenderSystem.disableTexture()
+            RenderSystem.activeTexture(GL13.GL_TEXTURE0)
         } else {
+            if(unit < 8) {
+                // GlStateManager tracks the first 8 texture units, and it only changes the texture when the value
+                // changes from its perspective. This becomes an issue if we change the texture without it knowing,
+                // since it may think that a texture doesn't need to be re-bound. To alleviate this we set it to a
+                // dummy value, making sure it will always try to re-bind next time someone binds a texture.
+                RenderSystem.activeTexture(GL13.GL_TEXTURE0 + unit)
+                Client.textureManager.bindTexture(ResourceLocation("librarianlib:albedo/textures/dummy.png"))
+                RenderSystem.bindTexture(0)
+                RenderSystem.disableTexture()
+            }
             RenderSystem.activeTexture(GL13.GL_TEXTURE0) // get GlStateManager into a known state
             GL13.glActiveTexture(GL13.GL_TEXTURE0 + unit)
+
             GL11.glEnable(target)
             GL11.glBindTexture(target, 0)
+            GL11.glBindTexture(GL13.GL_TEXTURE_2D, 0)
+            GL11.glDisable(target)
             GL13.glActiveTexture(GL13.GL_TEXTURE0) // make sure we return to that state
         }
     }

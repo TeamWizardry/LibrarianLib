@@ -60,10 +60,7 @@ internal object SamplerUniform: ShaderTest<SamplerUniform.Test>() {
         vb.pos2d(maxX, minY).color(c).tex(1f, 0f).endVertex()
         vb.pos2d(minX, minY).color(c).tex(0f, 0f).endVertex()
 
-        shader.bind()
         buffer.finish()
-        shader.unbind()
-
     }
 
     private val renderType: RenderType
@@ -75,7 +72,7 @@ internal object SamplerUniform: ShaderTest<SamplerUniform.Test>() {
             .transparency(DefaultRenderStates.TRANSLUCENT_TRANSPARENCY)
             .build(true)
 
-        mixinCast<IRenderTypeState>(renderState).addState("albedo", { RenderSystem.enableTexture() }, {})
+        mixinCast<IRenderTypeState>(renderState).addState("albedo", { shader.bind() }, { shader.unbind() })
 
         renderType = SimpleRenderTypes.makeType("flat_texture",
             DefaultVertexFormats.POSITION_COLOR_TEX, GL11.GL_QUADS, 256, false, false, renderState

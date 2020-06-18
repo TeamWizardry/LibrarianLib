@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.glitter
 
+import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.ISimpleReloadListener
 import com.teamwizardry.librarianlib.math.Matrix4d
@@ -91,6 +92,7 @@ internal object ParticleSystemManager: ISimpleReloadListener<Unit> {
         event.matrixStack.translate(-viewPos.x, -viewPos.y, -viewPos.z)
 
         val entity = Minecraft.getInstance().renderViewEntity
+        RenderSystem.disableLighting()
         if (entity != null) {
             try {
                 systems.forEach {

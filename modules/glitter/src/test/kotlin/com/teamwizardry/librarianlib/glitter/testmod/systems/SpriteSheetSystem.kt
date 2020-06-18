@@ -14,7 +14,7 @@ object SpriteSheetSystem: TestSystem("spritesheet") {
 
         renderModules.add(SpriteRenderModule(
             renderType = SpriteRenderModule.simpleRenderType(
-                sprite = ResourceLocation("librarianlib-particles-test:textures/particles/spritesheet.png")
+                sprite = ResourceLocation("librarianlib-glitter-test:textures/glitter/spritesheet.png")
             ),
             previousPosition = pos,
             position = pos,
