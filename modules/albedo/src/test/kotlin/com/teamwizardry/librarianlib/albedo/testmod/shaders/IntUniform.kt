@@ -22,12 +22,10 @@ internal object IntUniform: ShaderTest<IntUniform.Test>() {
 
         val c = Color.WHITE
 
-        shader.bind()
         shader.primitive.set(10)
         shader.vector2.set(10, 20)
         shader.vector3.set(10, 20, 30)
         shader.vector4.set(10, 20, 30, 40)
-        shader.pushUniforms()
 
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
@@ -37,6 +35,7 @@ internal object IntUniform: ShaderTest<IntUniform.Test>() {
         vb.pos2d(maxX, minY).color(c).tex(1f, 0f).endVertex()
         vb.pos2d(minX, minY).color(c).tex(0f, 0f).endVertex()
 
+        shader.bind()
         buffer.finish()
         shader.unbind()
     }

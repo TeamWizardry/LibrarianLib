@@ -2,9 +2,12 @@ package com.teamwizardry.librarianlib.facade.layer
 
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
+import com.teamwizardry.librarianlib.core.bridge.IRenderTypeState
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
 import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
 import com.teamwizardry.librarianlib.core.util.kotlin.color
+import com.teamwizardry.librarianlib.core.util.kotlin.mixinCast
 import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.core.util.kotlin.weakSetOf
@@ -43,11 +46,14 @@ import com.teamwizardry.librarianlib.math.ScreenSpace
 import com.teamwizardry.librarianlib.mosaic.ISprite
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.renderer.RenderState
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.shader.Framebuffer
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL13
 import org.lwjgl.util.yoga.Yoga.*
 import java.awt.Color
 import java.lang.Exception
@@ -60,6 +66,7 @@ import java.util.function.IntSupplier
 import java.util.function.LongSupplier
 import kotlin.math.PI
 import kotlin.math.floor
+import kotlin.math.max
 
 /**
  * The fundamental building block of a LibrarianLib GUI. Generally a single unit of visual or organizational design.
@@ -462,8 +469,6 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      *
      * @throws LayerHierarchyException if adding one of the passed layers creates loops in the layer hierarchy
      * @throws LayerHierarchyException if one of the passed layers already had a parent that wasn't this layer
-     * @throws LayerHierarchyException if one of the passed layers returns false when this layer is passed to its
-     * [canAddToParent] method.
      */
     fun add(vararg layers: GuiLayer) {
         for(component in layers) {
@@ -998,9 +1003,13 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      */
     var opacity: Double by opacity_rm
     /**
-     * How to apply [MaskLayer] masks (docs todo)
+     * How to apply the [maskLayer]
      */
     var maskMode: MaskMode = MaskMode.NONE
+    /**
+     * The layer to use when masking
+     */
+    var maskLayer: GuiLayer? = null
     /**
      * What technique to use to render this layer
      */
@@ -1015,7 +1024,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      */
     var layerFilter: GuiLayerFilter? = null
 
-    fun actualRenderMode(): RenderMode {
+    private fun actualRenderMode(): RenderMode {
         if(renderMode != RenderMode.DIRECT)
             return renderMode
         if(opacity < 1.0 || maskMode != MaskMode.NONE || layerFilter != null)
@@ -1042,79 +1051,64 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
             StencilUtil.push { stencil(context) }
 
         val renderMode = actualRenderMode()
-        if(renderMode != RenderMode.DIRECT) {
-            TODO("Waiting on shaders")
-            /*
+        if(renderMode == RenderMode.DIRECT) {
+            renderDirect(context)
+        } else {
+            val flatContext = if(renderMode == RenderMode.RENDER_TO_QUAD) {
+                GuiDrawContext(Matrix3dStack(), context.showDebugBoundingBox, context.isInMask).also {
+                    it.matrix.scale(max(1, rasterizationScale).toDouble())
+                }
+            } else {
+                context
+            }
             var maskFBO: Framebuffer? = null
             var layerFBO: Framebuffer? = null
             try {
-                 layerFBO = GuiLayerFilter.useFramebuffer(renderMode == RenderMode.RENDER_TO_QUAD, max(1, rasterizationScale)) {
-                    drawContent(partialTicks) {
-                        // draw all the non-mask children to the current FBO (layerFBO)
-                        layer.forEachChild {
-                            if (it !is MaskLayer)
-                                it.renderLayer(partialTicks)
-                        }
 
-                        // draw all the mask children to an FBO, if needed
-                        if (maskMode != MaskMode.NONE)
-                            maskFBO = GuiLayerFilter.useFramebuffer(false, 1) {
-                                layer.forEachChild {
-                                    if (it is MaskLayer)
-                                        it.renderLayer(partialTicks)
-                                }
-                            }
+                layerFBO = FramebufferPool.renderToFramebuffer {
+                    clearBounds(flatContext)
+                    renderDirect(flatContext)
+                }
+                val maskLayer = maskLayer
+                if(maskMode != MaskMode.NONE && maskLayer != null) {
+                    flatContext.isInMask = true
+                    maskFBO = FramebufferPool.renderToFramebuffer {
+                        clearBounds(flatContext)
+                        maskLayer.renderLayer(flatContext)
                     }
                 }
 
-                layerFilter?.filter(this.layer, layerFBO, maskFBO)
+//                layerFilter?.filter(this.layer, layerFBO, maskFBO) TODO: add back filters?
 
-                // load the shader
-                LayerToTextureShader.alphaMultiply = opacity.toFloat()
-                LayerToTextureShader.maskMode = maskMode
-                LayerToTextureShader.renderMode = renderMode
-                ShaderHelper.useShader(LayerToTextureShader)
+                FlatLayerShader.layerImage.set(layerFBO.framebufferTexture)
+                FlatLayerShader.maskImage.set(maskFBO?.framebufferTexture ?: 0)
+                FlatLayerShader.alphaMultiply.set(opacity.toFloat())
+                FlatLayerShader.maskMode.set(maskMode.ordinal)
+                FlatLayerShader.renderMode.set(renderMode.ordinal)
 
-                LayerToTextureShader.bindTextures(layerFBO.framebufferTexture, maskFBO?.framebufferTexture)
+                val maxU = (size.xf * rasterizationScale) / Client.window.framebufferWidth
+                val maxV = (size.yf * rasterizationScale) / Client.window.framebufferHeight
 
-                val size = layer.size
-                val maxU = (size.x * rasterizationScale) / Client.minecraft.displayWidth
-                val maxV = (size.y * rasterizationScale) / Client.minecraft.displayHeight
+                val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+                val vb = buffer.getBuffer(flatLayerRenderType)
+                // why 1-maxV?
+                vb.pos2d(context.matrix, 0, size.y).tex(0f, 1-maxV).endVertex()
+                vb.pos2d(context.matrix, size.x, size.y).tex(maxU, 1-maxV).endVertex()
+                vb.pos2d(context.matrix, size.x, 0).tex(maxU, 1f).endVertex()
+                vb.pos2d(context.matrix, 0, 0).tex(0f, 1f).endVertex()
+                buffer.finish()
+                GlStateManager.activeTexture(GL13.GL_TEXTURE0)
+                GlStateManager.disableTexture()
+                GlStateManager.enableTexture()
 
-                val tessellator = Tessellator.getInstance()
-                val vb = tessellator.buffer
-                vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
-                vb.pos(0.0, size.y, 0.0).tex(0.0, 1.0 - maxV).endVertex()
-                vb.pos(size.x, size.y, 0.0).tex(maxU, 1.0 - maxV).endVertex()
-                vb.pos(size.x, 0.0, 0.0).tex(maxU, 1.0).endVertex()
-                vb.pos(0.0, 0.0, 0.0).tex(0.0, 1.0).endVertex()
-                tessellator.draw()
-
-                ShaderHelper.releaseShader()
             } finally {
-                layerFBO?.also { GuiLayerFilter.releaseFramebuffer(it) }
-                maskFBO?.also { GuiLayerFilter.releaseFramebuffer(it) }
-            }
-            */
-        } else {
-            context.matrix.assertEvenDepth {
-                glStateGuarantees()
-                context.matrix.push()
-                context.matrix.assertEvenDepth {
-                    draw(context)
-                }
-                context.popGlMatrix()
-                context.matrix.pop()
-            }
-            forEachChild {
-//                if(it !is MaskLayer) // TODO: masking
-                it.renderLayer(context)
+                layerFBO?.also { FramebufferPool.releaseFramebuffer(it) }
+                maskFBO?.also { FramebufferPool.releaseFramebuffer(it) }
             }
         }
 
         if(enableClipping)
             StencilUtil.pop { stencil(context) }
-//            stencil(context)
 
         if (context.showDebugBoundingBox) {
             RenderSystem.lineWidth(1f)
@@ -1126,6 +1120,38 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         didLayout = false
 
         context.matrix.pop()
+    }
+
+    /**
+     * Draw just this layer and its children
+     */
+    private fun renderDirect(context: GuiDrawContext) {
+        context.matrix.assertEvenDepth {
+            glStateGuarantees()
+            context.matrix.push()
+            context.matrix.assertEvenDepth {
+                draw(context)
+            }
+            context.popGlMatrix()
+            context.matrix.pop()
+        }
+        forEachChild {
+            it.renderLayer(context)
+        }
+    }
+
+    /**
+     * Clear this layer's bounding box in the current Framebuffer. This is used to avoid having to clear the entire
+     * buffer when rendering to a texture
+     */
+    private fun clearBounds(context: GuiDrawContext) {
+        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val vb = buffer.getBuffer(clearBufferRenderType)
+        vb.pos2d(context.matrix, 0, size.y).endVertex()
+        vb.pos2d(context.matrix, size.x, size.y).endVertex()
+        vb.pos2d(context.matrix, size.x, 0).endVertex()
+        vb.pos2d(context.matrix, 0, 0).endVertex()
+        buffer.finish()
     }
 
     private fun stencil(context: GuiDrawContext) {
@@ -1608,14 +1634,6 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     }
 
     companion object {
-        private val config = YGConfigNew()
-
-        init {
-            YGConfigSetUseWebDefaults(config, true)
-        }
-
-        private val debugBoundingBoxRenderType: RenderType = SimpleRenderTypes.flat(GL11.GL_LINE_STRIP)
-        private val flatColorFanRenderType: RenderType = SimpleRenderTypes.flat(GL11.GL_TRIANGLE_FAN)
 
         @JvmStatic
         var showDebugTilt = false
@@ -1650,7 +1668,38 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         @JvmStatic
         val UNDERLAY_Z: Double = -1e10
 
-        internal fun glStateGuarantees() {
+        private val config = YGConfigNew()
+
+        init {
+            YGConfigSetUseWebDefaults(config, true)
+        }
+
+        private val debugBoundingBoxRenderType: RenderType = SimpleRenderTypes.flat(GL11.GL_LINE_STRIP)
+        private val flatColorFanRenderType: RenderType = SimpleRenderTypes.flat(GL11.GL_TRIANGLE_FAN)
+        private val flatLayerRenderType: RenderType = run {
+            val renderState = RenderType.State.getBuilder()
+                .transparency(DefaultRenderStates.TRANSLUCENT_TRANSPARENCY)
+                .build(false)
+            mixinCast<IRenderTypeState>(renderState).addState(FlatLayerShader.renderState)
+
+            SimpleRenderTypes.makeType("librarianlib.facade.flat_layer",
+                DefaultVertexFormats.POSITION_TEX, GL11.GL_QUADS, 256, false, false, renderState
+            )
+        }
+
+        private val clearBufferRenderType: RenderType = run {
+            val renderState = RenderType.State.getBuilder()
+                .depthTest(DefaultRenderStates.DEPTH_ALWAYS)
+                .build(false)
+
+            mixinCast<IRenderTypeState>(renderState).addState(FramebufferClearShader.renderState)
+
+            SimpleRenderTypes.makeType("librarianlib.facade.clear_buffer",
+                DefaultVertexFormats.POSITION, GL11.GL_QUADS, 256, false, false, renderState
+            )
+        }
+
+        private fun glStateGuarantees() {
             RenderSystem.enableTexture()
             RenderSystem.color4f(1f, 1f, 1f, 1f)
             RenderSystem.enableBlend()

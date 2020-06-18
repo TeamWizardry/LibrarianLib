@@ -21,7 +21,6 @@ object SimpleFrag: ShaderTest<SimpleFrag.Test>() {
 
         val c = Color.WHITE
 
-        shader.bind()
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
 
@@ -30,6 +29,7 @@ object SimpleFrag: ShaderTest<SimpleFrag.Test>() {
         vb.pos2d(maxX, minY).color(c).endVertex()
         vb.pos2d(minX, minY).color(c).endVertex()
 
+        shader.bind()
         buffer.finish()
         shader.unbind()
     }

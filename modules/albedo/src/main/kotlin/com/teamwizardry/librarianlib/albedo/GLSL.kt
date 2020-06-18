@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.Matrix3f
 import net.minecraft.client.renderer.Matrix4f
 import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL12
 import org.lwjgl.opengl.GL13
 import org.lwjgl.opengl.GL20
 import org.lwjgl.opengl.GL21
@@ -2147,7 +2148,7 @@ abstract class GLSL(val glConstant: Int) {
 
     //region Samplers ===========================================================================================================
 
-    abstract class GLSLSampler(glConstant: Int): GLSL(glConstant) {
+    abstract class GLSLSampler(glConstant: Int, val textureTarget: Int): GLSL(glConstant) {
         internal var textureUnit: Int = 0
 
         private var value: Int = 0
@@ -2160,7 +2161,7 @@ abstract class GLSL(val glConstant: Int) {
         }
 
         /** NOTE!!! Sampler arrays can *only* be indexed using compile-time literal values. */
-        abstract class GLSLSamplerArray(glConstant: Int, length: Int): GLSLArray(glConstant, length) {
+        abstract class GLSLSamplerArray(glConstant: Int, val textureTarget: Int, length: Int): GLSLArray(glConstant, length) {
             internal var textureUnits: IntArray = IntArray(length)
 
             private val values: IntArray = IntArray(length)
@@ -2181,9 +2182,9 @@ abstract class GLSL(val glConstant: Int) {
         }
     }
 
-    class sampler1D: GLSLSampler(GL20.GL_SAMPLER_1D) {
+    class sampler1D: GLSLSampler(GL20.GL_SAMPLER_1D, GL11.GL_TEXTURE_1D) {
         /** NOTE!!! Sampler arrays can *only* be indexed using compile-time literal values. */
-        class array(length: Int): GLSLSamplerArray(GL20.GL_SAMPLER_1D, length)
+        class array(length: Int): GLSLSamplerArray(GL20.GL_SAMPLER_1D, GL11.GL_TEXTURE_1D, length)
 
         companion object {
             /**
@@ -2194,9 +2195,9 @@ abstract class GLSL(val glConstant: Int) {
         }
     }
 
-    class sampler2D: GLSLSampler(GL20.GL_SAMPLER_2D) {
+    class sampler2D: GLSLSampler(GL20.GL_SAMPLER_2D, GL11.GL_TEXTURE_2D) {
         /** NOTE!!! Sampler arrays can *only* be indexed using compile-time literal values. */
-        class array(length: Int): GLSLSamplerArray(GL20.GL_SAMPLER_2D, length)
+        class array(length: Int): GLSLSamplerArray(GL20.GL_SAMPLER_2D, GL11.GL_TEXTURE_2D, length)
 
         companion object {
             /**
@@ -2207,9 +2208,9 @@ abstract class GLSL(val glConstant: Int) {
         }
     }
 
-    class sampler3D: GLSLSampler(GL20.GL_SAMPLER_3D) {
+    class sampler3D: GLSLSampler(GL20.GL_SAMPLER_3D, GL12.GL_TEXTURE_3D) {
         /** NOTE!!! Sampler arrays can *only* be indexed using compile-time literal values. */
-        class array(length: Int): GLSLSamplerArray(GL20.GL_SAMPLER_3D, length)
+        class array(length: Int): GLSLSamplerArray(GL20.GL_SAMPLER_3D, GL12.GL_TEXTURE_3D, length)
 
         companion object {
             /**
@@ -2220,9 +2221,9 @@ abstract class GLSL(val glConstant: Int) {
         }
     }
 
-    class samplerCube: GLSLSampler(GL20.GL_SAMPLER_CUBE) {
+    class samplerCube: GLSLSampler(GL20.GL_SAMPLER_CUBE, GL13.GL_TEXTURE_CUBE_MAP) {
         /** NOTE!!! Sampler arrays can *only* be indexed using compile-time literal values. */
-        class array(length: Int): GLSLSamplerArray(GL20.GL_SAMPLER_CUBE, length)
+        class array(length: Int): GLSLSamplerArray(GL20.GL_SAMPLER_CUBE, GL13.GL_TEXTURE_CUBE_MAP, length)
 
         companion object {
             /**
@@ -2233,9 +2234,9 @@ abstract class GLSL(val glConstant: Int) {
         }
     }
 
-    class sampler1DShadow: GLSLSampler(GL20.GL_SAMPLER_1D_SHADOW) {
+    class sampler1DShadow: GLSLSampler(GL20.GL_SAMPLER_1D_SHADOW, GL11.GL_TEXTURE_1D) {
         /** NOTE!!! Sampler arrays can *only* be indexed using compile-time literal values. */
-        class array(length: Int): GLSLSamplerArray(GL20.GL_SAMPLER_1D_SHADOW, length)
+        class array(length: Int): GLSLSamplerArray(GL20.GL_SAMPLER_1D_SHADOW, GL11.GL_TEXTURE_1D, length)
 
         companion object {
             /**
@@ -2246,9 +2247,9 @@ abstract class GLSL(val glConstant: Int) {
         }
     }
 
-    class sampler2DShadow: GLSLSampler(GL20.GL_SAMPLER_2D_SHADOW) {
+    class sampler2DShadow: GLSLSampler(GL20.GL_SAMPLER_2D_SHADOW, GL11.GL_TEXTURE_2D) {
         /** NOTE!!! Sampler arrays can *only* be indexed using compile-time literal values. */
-        class array(length: Int): GLSLSamplerArray(GL20.GL_SAMPLER_2D_SHADOW, length)
+        class array(length: Int): GLSLSamplerArray(GL20.GL_SAMPLER_2D_SHADOW, GL11.GL_TEXTURE_2D, length)
 
         companion object {
             /**

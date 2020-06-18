@@ -14,6 +14,7 @@ switch (OperatingSystem.current()) {
 dependencies {
     api project(":core")
     api project(":mosaic")
+    api project(":albedo")
     api project(":etcetera")
     testApi project(":testbase")
     shade("com.github.thecodewarrior:bitfont:proper-typesetter-SNAPSHOT") {

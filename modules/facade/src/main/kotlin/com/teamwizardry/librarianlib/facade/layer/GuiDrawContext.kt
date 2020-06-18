@@ -8,9 +8,17 @@ import com.teamwizardry.librarianlib.math.MutableMatrix4d
 
 class GuiDrawContext(
     val matrix: Matrix3dStack,
-    var showDebugBoundingBox: Boolean
+    showDebugBoundingBox: Boolean,
+    isInMask: Boolean
 ) {
-    internal var glMatrix = false
+    var showDebugBoundingBox: Boolean = showDebugBoundingBox
+        @JvmSynthetic
+        internal set
+    var isInMask: Boolean = isInMask
+        @JvmSynthetic
+        internal set
+
+    private var glMatrix = false
 
     /**
      * Pushes the current matrix to the GL transform. This matrix can be popped using [popGlMatrix] or, if it isn't, it

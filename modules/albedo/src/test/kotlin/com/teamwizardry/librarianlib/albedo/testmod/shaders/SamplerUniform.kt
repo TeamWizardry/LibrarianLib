@@ -50,10 +50,8 @@ internal object SamplerUniform: ShaderTest<SamplerUniform.Test>() {
 
         buffer.finish()
 
-        shader.bind()
         shader.sampler1.set(tex1)
         shader.sampler2.set(tex2)
-        shader.pushUniforms()
 
         vb = buffer.getBuffer(renderType)
 
@@ -62,6 +60,7 @@ internal object SamplerUniform: ShaderTest<SamplerUniform.Test>() {
         vb.pos2d(maxX, minY).color(c).tex(1f, 0f).endVertex()
         vb.pos2d(minX, minY).color(c).tex(0f, 0f).endVertex()
 
+        shader.bind()
         buffer.finish()
         shader.unbind()
 

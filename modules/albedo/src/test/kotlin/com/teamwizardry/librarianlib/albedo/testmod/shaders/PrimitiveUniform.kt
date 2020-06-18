@@ -22,9 +22,7 @@ object PrimitiveUniform: ShaderTest<PrimitiveUniform.Test>() {
 
         val c = Color.WHITE
 
-        shader.bind()
         shader.time.set(Client.time.seconds)
-        shader.pushUniforms()
 
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
@@ -34,6 +32,7 @@ object PrimitiveUniform: ShaderTest<PrimitiveUniform.Test>() {
         vb.pos2d(maxX, minY).color(c).endVertex()
         vb.pos2d(minX, minY).color(c).endVertex()
 
+        shader.bind()
         buffer.finish()
         shader.unbind()
     }

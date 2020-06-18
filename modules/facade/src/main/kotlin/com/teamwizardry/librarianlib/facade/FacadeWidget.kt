@@ -134,9 +134,11 @@ open class FacadeWidget(
 
     fun render() {
         safetyNet {
-            val s = Client.guiScaleFactor // rescale to absolute screen coordinates
+            val guiScale = Client.guiScaleFactor
+
             root.pos = vec(0, 0)
-            root.scale = s
+            // we use OpenGL to undo the GUI scale transform and then reapply it ourself
+            root.scale = guiScale
             root.size = vec(Client.window.scaledWidth, Client.window.scaledHeight)
             main.pos = ((root.size - main.size) / 2).round()
             tooltipContainer.frame = root.bounds
@@ -165,8 +167,8 @@ open class FacadeWidget(
             StencilUtil.clear()
             StencilUtil.enable()
             RenderSystem.pushMatrix()
-            RenderSystem.scaled(1 / s, 1 / s, 1.0)
-            val context = GuiDrawContext(Matrix3dStack(), Client.minecraft.renderManager.isDebugBoundingBox)
+            RenderSystem.scaled(1 / guiScale, 1 / guiScale, 1.0)
+            val context = GuiDrawContext(Matrix3dStack(), Client.minecraft.renderManager.isDebugBoundingBox, false)
             root.renderLayer(context)
             RenderSystem.popMatrix()
             StencilUtil.disable()

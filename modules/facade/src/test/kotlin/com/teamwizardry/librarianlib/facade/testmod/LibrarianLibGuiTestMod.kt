@@ -5,14 +5,11 @@ package com.teamwizardry.librarianlib.facade.testmod
 import com.teamwizardry.librarianlib.core.util.kotlin.toRl
 import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
-import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
-import com.teamwizardry.librarianlib.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.facade.provided.SafetyNetErrorScreen
 import com.teamwizardry.librarianlib.facade.testmod.screens.*
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.PastryTestScreen
 import com.teamwizardry.librarianlib.facade.testmod.value.RMValueTests
-import com.teamwizardry.librarianlib.facade.text.attributedStringFromMC
 import com.teamwizardry.librarianlib.math.Easing
 import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.mosaic.Mosaic
@@ -21,7 +18,6 @@ import com.teamwizardry.librarianlib.testbase.objects.TestScreenConfig
 import net.minecraft.util.text.StringTextComponent
 import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
-import java.awt.Color
 
 @Mod("librarianlib-facade-test")
 object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
@@ -92,6 +88,9 @@ object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
 
         +FacadeScreenConfig("simple_text", "Simple Text", ::SimpleTextTestScreen)
         +FacadeScreenConfig("clip_to_bounds", "Clip to Bounds", ::ClipToBoundsTestScreen)
+        +FacadeScreenConfig("opacity", "Opacity", ::OpacityTestScreen)
+        +FacadeScreenConfig("render_fbo_scale", "Render to FBO Scale", ::RenderFBOScaleTest)
+        +FacadeScreenConfig("render_quad_scale", "Render to Quad Scale", ::RenderQuadScaleTest)
         +FacadeScreenConfig("simple_yoga", "Yoga Simple Flex", ::SimpleYogaScreen)
         +FacadeScreenConfig("yoga_list", "Yoga List", ::YogaListScreen)
         +FacadeScreenConfig("pastry", "Pastry", ::PastryTestScreen)

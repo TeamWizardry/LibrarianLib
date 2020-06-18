@@ -2,14 +2,18 @@ package com.teamwizardry.librarianlib.albedo
 
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
+import com.teamwizardry.librarianlib.core.bridge.IRenderTypeState
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.GlResourceGc
 import com.teamwizardry.librarianlib.core.util.ISimpleReloadListener
 import com.teamwizardry.librarianlib.core.util.kotlin.weakSetOf
 import com.teamwizardry.librarianlib.core.util.resolveSibling
+import net.minecraft.client.renderer.RenderState
+import net.minecraft.client.renderer.RenderType
 import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.IResourceManager
 import net.minecraft.util.ResourceLocation
+import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL13
 import org.lwjgl.opengl.GL20.*
 import java.util.LinkedList
@@ -43,44 +47,125 @@ abstract class Shader(
         get() = currentlyBound === this
 
     /**
-     * Whether the uniform objects have been bound internally to their respective locations
+     * A [RenderState] object that can be added to a [RenderType.State] to bind, push uniforms, and unbind this shader
+     * program when drawing. Doing so requires the [IRenderTypeState] mixin, so cast to that and call
+     * [IRenderTypeState.addState].
+     *
+     * **NOTE!!** If your shader uses samplers (textures), your texture state *must not be set*, or else it may
+     * inadvertently overwrite one of the textures the shader is using.
+     *
+     * ```java
+     * RenderType.State renderState = RenderType.State.getBuilder()
+     *     .alpha(...) // set up your state normally
+     *     .build(...);
+     *
+     * ((IRenderTypeState)renderState).addState(someShader.getRenderState());
+     *
+     * RenderType type = RenderType.makeState(..., renderState);
+     * ```
      */
-    private var areUniformsBound: Boolean = false
+    val renderState: RenderState = object : RenderState("enable_$shaderName", {
+        bind()
+    }, {
+        unbind()
+    }) {}
+
+    /**
+     * Called after the shader is bound and before uniforms are pushed
+     */
+    protected open fun setupState() {}
+
+    /**
+     * Called before the shader is unbound
+     */
+    protected open fun teardownState() {}
+
     private var uniforms: List<GLSL>? = null
 
+    private val boundTextureUnits = mutableMapOf<Pair<Int, Int>, Int>()
+
+    /**
+     * Binds this as the current program and pushes the current uniform states. If possible, [renderState] is the
+     * preferred method of binding shaders.
+     */
     fun bind() {
+        currentlyBound?.unbind()
         GlStateManager.useProgram(glProgram)
         currentlyBound = this
         if(uniforms == null && glProgram != 0) {
             uniforms = UniformBinder.bindAllUniforms(this, glProgram)
         }
-    }
 
-    fun unbind() {
-        GlStateManager.useProgram(0)
-        currentlyBound = null
-    }
-
-    fun pushUniforms() {
-        var currentUnit = 0
-        val units = mutableMapOf<Int, Int>()
+        var currentUnit = FIRST_TEXTURE_UNIT
+        boundTextureUnits.clear()
         uniforms?.forEach {
             if (it is GLSL.GLSLSampler) {
-                it.textureUnit = units.getOrPut(it.get()) { currentUnit++ }
+                it.textureUnit = boundTextureUnits.getOrPut(it.get() to it.textureTarget) { currentUnit++ }
             } else if (it is GLSL.GLSLSampler.GLSLSamplerArray) {
                 for(i in 0 until min(it.length, it.trueLength)) {
-                    it.textureUnits[i] = units.getOrPut(it[i]) { currentUnit++ }
+                    it.textureUnits[i] = boundTextureUnits.getOrPut(it[i] to it.textureTarget) { currentUnit++ }
                 }
             }
         }
-        units.forEach { (tex, unit) ->
-            RenderSystem.activeTexture(GL13.GL_TEXTURE0 + unit)
-            RenderSystem.bindTexture(tex)
+        boundTextureUnits.forEach { (tex, unit) ->
+            bindTexture(tex.first, tex.second, unit)
         }
+        RenderSystem.activeTexture(GL13.GL_TEXTURE0)
+
+        setupState()
         uniforms?.forEach {
             it.push()
         }
-        RenderSystem.activeTexture(GL13.GL_TEXTURE0)
+    }
+
+    /**
+     * Unbinds this shader program and cleans up some GL texture state.
+     */
+    fun unbind() {
+        teardownState()
+        GlStateManager.useProgram(0)
+        boundTextureUnits.forEach { (tex, unit) ->
+            unbindTexture(tex.second, unit)
+        }
+        currentlyBound = null
+    }
+
+
+    private fun bindTexture(texture: Int, target: Int, unit: Int) {
+        if(unit < 8 && target == GL11.GL_TEXTURE_2D) { // GlStateManager only tracks the first 8 GL_TEXTURE_2D units
+            RenderSystem.activeTexture(GL13.GL_TEXTURE0 + unit)
+            RenderSystem.enableTexture()
+            RenderSystem.bindTexture(texture)
+        } else {
+            if(unit < 8) {
+                // GlStateManager tracks the first 8 texture units, and it only changes the texture when the value
+                // changes from its perspective. This becomes an issue if we change the texture without it knowing,
+                // since it may think that a texture doesn't need to be re-bound. To alleviate this we set it to a
+                // dummy value, making sure it will always try to re-bind next time someone binds a texture.
+                RenderSystem.activeTexture(GL13.GL_TEXTURE0 + unit)
+                RenderSystem.enableTexture()
+                Client.textureManager.bindTexture(ResourceLocation("librarianlib:albedo/textures/dummy.png"))
+            }
+            RenderSystem.activeTexture(GL13.GL_TEXTURE0) // get GlStateManager into a known state
+            GL13.glActiveTexture(GL13.GL_TEXTURE0 + unit)
+            GL11.glEnable(target)
+            GL11.glBindTexture(target, texture)
+            GL13.glActiveTexture(GL13.GL_TEXTURE0) // make sure we return to that state
+        }
+    }
+
+    private fun unbindTexture(target: Int, unit: Int) {
+        if(unit < 8 && target == GL11.GL_TEXTURE_2D) { // GlStateManager only tracks the first 8 GL_TEXTURE_2D units
+            RenderSystem.activeTexture(GL13.GL_TEXTURE0 + unit)
+            RenderSystem.enableTexture()
+            RenderSystem.bindTexture(0)
+        } else {
+            RenderSystem.activeTexture(GL13.GL_TEXTURE0) // get GlStateManager into a known state
+            GL13.glActiveTexture(GL13.GL_TEXTURE0 + unit)
+            GL11.glEnable(target)
+            GL11.glBindTexture(target, 0)
+            GL13.glActiveTexture(GL13.GL_TEXTURE0) // make sure we return to that state
+        }
     }
 
     fun delete() {
@@ -115,7 +200,7 @@ abstract class Shader(
 
     private fun compile(resourceManager: IResourceManager) {
         logger.info("Compiling shader program $shaderName")
-        if(areUniformsBound) {
+        if(uniforms != null) {
             UniformBinder.unbindAllUniforms(this)
             uniforms = null
         }
@@ -273,6 +358,11 @@ abstract class Shader(
     }
 
     companion object {
+        /**
+         * So far as I can tell, vanilla doesn't use anything past GL_TEXTURE3, and we don't want to clobber them.
+         */
+        private const val FIRST_TEXTURE_UNIT = 3
+
         private var currentlyBound: Shader? = null
         private val allShaders = weakSetOf<Shader>()
         init {

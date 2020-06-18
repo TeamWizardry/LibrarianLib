@@ -52,13 +52,11 @@ internal object SamplerArrayUniform: ShaderTest<SamplerArrayUniform.Test>() {
         buffer.finish()
 
         val index = (Client.time.seconds % 2).toInt()
-        shader.bind()
         shader.index.set(index)
         shader.sampler1[0] = tex2
         shader.sampler1[1] = tex1
         shader.sampler2[0] = tex1
         shader.sampler2[1] = tex2
-        shader.pushUniforms()
 
         vb = buffer.getBuffer(renderType)
 
@@ -67,6 +65,7 @@ internal object SamplerArrayUniform: ShaderTest<SamplerArrayUniform.Test>() {
         vb.pos2d(maxX, minY).color(c).tex(1f, 0f).endVertex()
         vb.pos2d(minX, minY).color(c).tex(0f, 0f).endVertex()
 
+        shader.bind()
         buffer.finish()
         shader.unbind()
 

@@ -39,7 +39,6 @@ internal object MatrixArrayUniform: ShaderTest<MatrixArrayUniform.Test>() {
             1 -> "Matrix3d"
             else -> "Matrix3f"
         }
-        shader.bind()
         shader.index.set(index)
 
         (0..1).forEach { i ->
@@ -131,7 +130,6 @@ internal object MatrixArrayUniform: ShaderTest<MatrixArrayUniform.Test>() {
                 d+01f, d+11f  // column 1
             )
         }
-        shader.pushUniforms()
 
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
@@ -141,6 +139,7 @@ internal object MatrixArrayUniform: ShaderTest<MatrixArrayUniform.Test>() {
         vb.pos2d(maxX, minY).color(c).tex(1f, 0f).endVertex()
         vb.pos2d(minX, minY).color(c).tex(0f, 0f).endVertex()
 
+        shader.bind()
         buffer.finish()
         shader.unbind()
 

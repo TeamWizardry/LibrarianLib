@@ -26,7 +26,6 @@ internal object MatrixUniform: ShaderTest<MatrixUniform.Test>() {
         val c = Color.WHITE
 
 
-        shader.bind()
 
         val matrixType = (Client.time.seconds % 3).toInt()
 
@@ -122,7 +121,6 @@ internal object MatrixUniform: ShaderTest<MatrixUniform.Test>() {
             00f, 10f, // column 0
             01f, 11f  // column 1
         )
-        shader.pushUniforms()
 
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
@@ -132,6 +130,7 @@ internal object MatrixUniform: ShaderTest<MatrixUniform.Test>() {
         vb.pos2d(maxX, minY).color(c).tex(1f, 0f).endVertex()
         vb.pos2d(minX, minY).color(c).tex(0f, 0f).endVertex()
 
+        shader.bind()
         buffer.finish()
         shader.unbind()
 

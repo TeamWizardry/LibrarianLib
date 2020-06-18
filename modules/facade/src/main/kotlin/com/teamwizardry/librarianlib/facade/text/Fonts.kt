@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.facade.text
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.ISimpleReloadListener
 import com.teamwizardry.librarianlib.core.util.kotlin.toRl
+import com.teamwizardry.librarianlib.facade.logger
 import dev.thecodewarrior.bitfont.data.Bitfont
 import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.IResourceManager
@@ -34,8 +35,11 @@ object Fonts {
 
     private fun load(fontLocation: ResourceLocation): Bitfont {
         try {
+            logger.debug("Loading Bitfont font $fontLocation")
             val bytes = Client.minecraft.resourceManager.getResource(fontLocation).inputStream.readBytes()
-            return Bitfont.unpack(bytes)
+            val font = Bitfont.unpack(bytes)
+            logger.debug("Finished loading font")
+            return font
         } catch(e: Exception) {
             RuntimeException("Error loading $fontLocation", e).printStackTrace()
             return Bitfont("<err>", 10, 4, 9, 6, 2)
