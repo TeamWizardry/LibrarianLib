@@ -28,7 +28,7 @@ public class RMValueLong extends GuiValue<Long> {
      * Gets the current value
      */
     public long get() {
-        return value;
+        return getUseAnimationValue() ? getAnimationValue() : value;
     }
 
     /**
@@ -36,21 +36,25 @@ public class RMValueLong extends GuiValue<Long> {
      * access this value (`someProperty` will call into `somePropery_rm` for its value)
      */
     public void set(long value) {
+        long oldValue = this.value;
         this.value = value;
+        if(oldValue != value && change != null && !getUseAnimationValue()) {
+            change.report(oldValue, value);
+        }
     }
 
     /**
      * A kotlin delegate method, used to allow properties to delegate to this IMValue (`var property by property_rm`)
      */
-    public long getValue(Object thisRef, KProperty property) {
-        return value;
+    public long getValue(Object thisRef, KProperty<?> property) {
+        return this.get();
     }
 
     /**
      * A kotlin delegate method, used to allow properties to delegate to this IMValue (`var property by property_rm`)
      */
-    public void setValue(Object thisRef, KProperty property, long value) {
-        set(value);
+    public void setValue(Object thisRef, KProperty<?> property, long value) {
+        this.set(value);
     }
 
     @Override
@@ -76,6 +80,6 @@ public class RMValueLong extends GuiValue<Long> {
 
     @Override
     protected void persistAnimation(Long value) {
-        set(value);
+        this.value = value;
     }
 }

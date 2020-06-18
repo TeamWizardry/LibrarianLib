@@ -27,7 +27,7 @@ public class IMValueLong extends GuiValue<Long> {
      * Gets the current value
      */
     public long get() {
-        return storage.get();
+        return getUseAnimationValue() ? getAnimationValue() : storage.get();
     }
 
     /**
@@ -56,14 +56,14 @@ public class IMValueLong extends GuiValue<Long> {
     /**
      * A kotlin delegate method, used to allow properties to delegate to this IMValue (`var property by property_im`)
      */
-    public long getValue(Object thisRef, KProperty property) {
-        return storage.get();
+    public long getValue(Object thisRef, KProperty<?> property) {
+        return this.get();
     }
 
     /**
      * A kotlin delegate method, used to allow properties to delegate to this IMValue (`var property by property_im`)
      */
-    public void setValue(Object thisRef, KProperty property, long value) {
+    public void setValue(Object thisRef, KProperty<?> property, long value) {
         setValue(value);
     }
 
