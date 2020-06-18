@@ -14,8 +14,10 @@ vec4 naColor = vec4(64, 64, 64, 255) / 255.0;
 #define AREA(minX, minY, width, height) ( ((rel = abs - ivec2(minX, minY)) == vec2(0, 0) || true) && \
     rel.x >= 0 && rel.x < width && rel.y >= 0 && rel.y < height )
 
+#define TEST_EQUAL(name, name_expected) TEST_BOOL(name == name_expected)
 #define TEST_MATRIX(name, name_expected) TEST_BOOL(name[rel.x][rel.y] == name_expected[rel.x][rel.y])
 #define TEST_VECTOR(name, name_expected) TEST_BOOL(name[rel.x] == name_expected[rel.x])
+#define TEST_ARRAY(name, name_expected) TEST_BOOL(name[rel.x] == name_expected[rel.x])
 
 vec2 absolute(ivec2 dimensions) {
     return gl_TexCoord[0].xy * vec2(dimensions);
@@ -33,6 +35,6 @@ bool isBorder(ivec2 dimensions, float realCellSize) {
 
 bvec2 isInThickLine(ivec2 dimensions, float realCellSize, int index) {
     vec2 a = absolute(dimensions) - vec2(index, index);
-    float edge = 1.0/realCellSize; // half a line on each side
+    float edge = 1.0/realCellSize;
     return bvec2(a.x < edge && a.x > -edge, a.y < edge && a.y > -edge);
 }

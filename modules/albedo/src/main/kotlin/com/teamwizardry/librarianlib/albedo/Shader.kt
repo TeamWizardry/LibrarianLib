@@ -114,6 +114,7 @@ abstract class Shader(
     }
 
     private fun compile(resourceManager: IResourceManager) {
+        logger.info("Compiling shader program $shaderName")
         if(areUniformsBound) {
             UniformBinder.unbindAllUniforms(this)
             uniforms = null
@@ -141,6 +142,7 @@ abstract class Shader(
             GlStateManager.deleteShader(vertexHandle)
             GlStateManager.deleteShader(fragmentHandle)
         }
+        logger.debug("Finished compiling shader program $shaderName")
     }
 
     private fun readShader(
@@ -190,11 +192,11 @@ abstract class Shader(
     }
 
     private fun compileShader(type: Int, typeName: String, source: String, location: ResourceLocation, files: Map<ResourceLocation, Int>): Int {
-        logger.info("Compiling $typeName shader $location")
+        logger.debug("Compiling $typeName shader $location")
         checkVersion(source)
         val shader = GlStateManager.createShader(type)
         if(shader == 0)
-            throw ShaderCompilationException("could not create shader object")
+            throw ShaderCompilationException("Could not create shader object")
         GlStateManager.shaderSource(shader, source)
         GlStateManager.compileShader(shader)
 
@@ -229,7 +231,7 @@ abstract class Shader(
             throw ShaderCompilationException("Error compiling $typeName shader `$location`:\n$log")
         }
 
-        logger.info("Finished compiling $typeName shader $location")
+        logger.debug("Finished compiling $typeName shader $location")
         return shader
     }
 
@@ -244,7 +246,7 @@ abstract class Shader(
     }
 
     private fun linkProgram(vertexHandle: Int, fragmentHandle: Int): Int {
-        logger.info("Linking shader $shaderName")
+        logger.debug("Linking shader")
         val program = GlStateManager.createProgram()
         if(program == 0)
             throw ShaderCompilationException("could not create program object")
@@ -263,16 +265,11 @@ abstract class Shader(
             val logLength = GlStateManager.getProgram(program, GL_INFO_LOG_LENGTH)
             val log = GlStateManager.getProgramInfoLog(program, logLength)
             GlStateManager.deleteProgram(program)
-            logger.error("Error linking shader $shaderName")
+            logger.error("Error linking shader")
             throw ShaderCompilationException("Could not link program: $log")
         }
 
-        logger.info("Finished linking shader $shaderName")
         return program
-    }
-
-    private fun fail(message: String): Nothing {
-        throw ShaderCompilationException("Error compiling '$shaderName': $message")
     }
 
     companion object {

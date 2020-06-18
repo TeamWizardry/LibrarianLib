@@ -18,44 +18,48 @@ object LibrarianLibAlbedoTestMod: TestMod("albedo", "Albedo", logger) {
             PrimitiveUniform
         }
 
-        +test("float_uniform", "Float Uniform", "Simple float uniform tests") {
+        +test("float_uniform", "Float Uniform", "float uniform tests") {
             FloatUniform
         }
 
-        +test("float_array_uniform", "Float Array Uniform", "Simple float array uniform tests") {
+        +test("float_array_uniform", "Float Array Uniform", "float array uniform tests") {
             FloatArrayUniform
         }
 
-        +test("int_uniform", "Int Uniform", "Simple int uniform tests") {
+        +test("int_uniform", "Int Uniform", "int uniform tests") {
             IntUniform
         }
 
-        +test("int_array_uniform", "Int Array Uniform", "Simple int array uniform tests") {
+        +test("int_array_uniform", "Int Array Uniform", "int array uniform tests") {
             IntArrayUniform
         }
 
-        +test("bool_uniform", "Bool Uniform", "Simple bool uniform tests") {
+        +test("bool_uniform", "Bool Uniform", "bool uniform tests") {
             BoolUniform
         }
 
-        +test("bool_array_uniform", "Bool Array Uniform", "Simple bool array uniform tests") {
+        +test("bool_array_uniform", "Bool Array Uniform", "bool array uniform tests") {
             BoolArrayUniform
         }
 
-        +test("matrix_uniform", "Matrix Uniform", "Simple matrix uniform tests") {
+        +test("matrix_uniform", "Matrix Uniform", "Matrix uniform tests") {
             MatrixUniform
         }
 
-        +test("matrix_array_uniform", "Matrix Array Uniform", "Simple matrix array uniform tests") {
+        +test("matrix_array_uniform", "Matrix Array Uniform", "Matrix array uniform tests") {
             MatrixArrayUniform
         }
 
-        +test("sampler_uniform", "Sampler Uniform", "Simple sampler uniform tests") {
+        +test("sampler_uniform", "Sampler Uniform", "Sampler uniform tests") {
             SamplerUniform
         }
 
-        +test("sampler_array_uniform", "Sampler Array Uniform", "Simple sampler array uniform tests") {
+        +test("sampler_array_uniform", "Sampler Array Uniform", "Sampler array uniform tests") {
             SamplerArrayUniform
+        }
+
+        +test("struct_uniform", "Struct Uniform", "Struct uniform tests") {
+            StructUniform
         }
     }
 

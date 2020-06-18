@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix4d
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.vec
+import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.client.renderer.Matrix3f
 import net.minecraft.client.renderer.Matrix4f
 import net.minecraft.util.math.Vec3d
@@ -24,6 +25,27 @@ abstract class GLSL(val glConstant: Int) {
     open val isArray: Boolean = false
     @JvmSynthetic
     internal abstract fun push()
+
+
+    companion object {
+        /**
+         * Creates a new struct
+         */
+        @JvmStatic
+        inline fun <reified T: GLSLStruct> struct(): T {
+            val constructor = Mirror.reflectClass<T>().getDeclaredConstructor()
+            return constructor<T>()
+        }
+
+        /**
+         * Creates a new struct array with the given length
+         */
+        @JvmStatic
+        inline fun <reified T: GLSLStruct> struct(length: Int): GLSLStructArray<T> {
+            return GLSLStructArray(T::class.java, length)
+        }
+    }
+
 
     /*
     GLSL 1.10 - OpenGL 2.0
@@ -59,6 +81,7 @@ abstract class GLSL(val glConstant: Int) {
         + iimage1D, iimage2D, iimage3D, iimageCube, iimage2DRect, iimage1DArray, iimage2DArray, iimageBuffer, iimage2DMS, iimage2DMSArray
         + uimage1D, uimage2D, uimage3D, uimageCube, uimage2DRect, uimage1DArray, uimage2DArray, uimageBuffer, uimage2DMS, uimage2DMSArray
      */
+
     abstract class GLSLArray(glConstant: Int, val length: Int): GLSL(glConstant) {
         internal var trueLength: Int = length
         override val isArray: Boolean = true
