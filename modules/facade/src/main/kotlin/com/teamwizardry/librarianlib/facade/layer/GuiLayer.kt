@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.facade.layer
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.bridge.IRenderTypeState
+import com.teamwizardry.librarianlib.core.rendering.BlendMode
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
 import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
@@ -1027,6 +1028,12 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
                 }
             }
         }
+
+    /**
+     * The blend mode to use for this layer. Any value other than [BlendMode.NORMAL] will cause the layer to be rendered
+     * to a texture using [RenderMode.RENDER_TO_FBO]
+     */
+    var blendMode: BlendMode = BlendMode.NORMAL
     /**
      * What technique to use to render this layer
      */
@@ -1049,14 +1056,14 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     private fun actualRenderMode(): RenderMode {
         if(renderMode != RenderMode.DIRECT)
             return renderMode
-        if(opacity < 1.0 || maskMode != MaskMode.NONE || layerFilter != null)
+        if(opacity < 1.0 || maskMode != MaskMode.NONE || layerFilter != null || blendMode != BlendMode.NORMAL)
             return RenderMode.RENDER_TO_FBO
         return RenderMode.DIRECT
     }
 
     /**
-     * Renders this layer and its sublayers. This method handles the internals of rendering a layer, to simply render
-     * content in a layer use [GuiLayer.draw]
+     * Renders this layer and its sublayers. This method handles the internals of rendering a layer. Override [draw] for
+     * custom rendering.
      */
     fun renderLayer(context: GuiDrawContext) {
         context.matrix.push()
@@ -1107,6 +1114,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
                 FlatLayerShader.alphaMultiply.set(opacity.toFloat())
                 FlatLayerShader.maskMode.set(maskMode.ordinal)
                 FlatLayerShader.renderMode.set(renderMode.ordinal)
+                FlatLayerShader.blendMode = blendMode
 
                 val maxU = (size.xf * rasterizationScale) / Client.window.framebufferWidth
                 val maxV = (size.yf * rasterizationScale) / Client.window.framebufferHeight
@@ -1122,7 +1130,6 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
                 GlStateManager.activeTexture(GL13.GL_TEXTURE0)
                 GlStateManager.disableTexture()
                 GlStateManager.enableTexture()
-
             } finally {
                 layerFBO?.also { FramebufferPool.releaseFramebuffer(it) }
                 maskFBO?.also { FramebufferPool.releaseFramebuffer(it) }
@@ -1700,7 +1707,6 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         private val flatColorFanRenderType: RenderType = SimpleRenderTypes.flat(GL11.GL_TRIANGLE_FAN)
         private val flatLayerRenderType: RenderType = run {
             val renderState = RenderType.State.getBuilder()
-                .transparency(DefaultRenderStates.TRANSLUCENT_TRANSPARENCY)
                 .build(false)
             mixinCast<IRenderTypeState>(renderState).addState(FlatLayerShader.renderState)
 

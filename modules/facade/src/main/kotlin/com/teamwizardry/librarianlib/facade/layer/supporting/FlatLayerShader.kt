@@ -1,7 +1,9 @@
 package com.teamwizardry.librarianlib.facade.layer.supporting
 
+import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.GLSL
 import com.teamwizardry.librarianlib.albedo.Shader
+import com.teamwizardry.librarianlib.core.rendering.BlendMode
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.etcetera.StencilUtil
 import net.minecraft.client.Minecraft
@@ -17,8 +19,20 @@ internal object FlatLayerShader : Shader("flat_layer", null, ResourceLocation("l
     val maskMode = GLSL.glInt()
     val renderMode = GLSL.glInt()
 
+    /**
+     * This has to be applied here, because MC's state will overwrite it
+     */
+    var blendMode: BlendMode = BlendMode.NORMAL
+
     override fun setupState() {
         displaySize.set(Client.window.framebufferWidth.toFloat(), Client.window.framebufferHeight.toFloat())
+        RenderSystem.enableBlend()
+        blendMode.glApply()
+    }
+
+    override fun teardownState() {
+        blendMode.reset()
+        RenderSystem.disableBlend()
     }
 }
 
@@ -59,18 +73,17 @@ enum class MaskMode {
 
 enum class RenderMode {
     /**
-     * The default, this renders onto the current FBO
+     * The default, this renders directly to the current FBO
      */
     DIRECT,
     /**
      * The default when rendering to a texture, this renders onto an FBO which is then rendered onto the screen. This
-     * mode uses a technique that renders to an FBO the same resolution as the window and avoids issues of lost
-     * resolution due to scale.
+     * mode uses a technique that avoids issues of lost resolution due to scale.
      */
     RENDER_TO_FBO,
     /**
      * Draws the layer to a texture at a native resolution multiple (one unit = N texture pixels) and draws that to a
-     * quad. This mode can lead to lost resolution, however it is also the only one that supports antialiasing.
+     * quad. This mode can lead to lost resolution, however sometimes this is the desired effect.
      */
     RENDER_TO_QUAD
 }

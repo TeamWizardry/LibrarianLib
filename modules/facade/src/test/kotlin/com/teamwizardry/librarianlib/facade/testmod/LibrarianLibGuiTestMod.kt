@@ -90,6 +90,7 @@ object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
         +FacadeScreenConfig("clip_to_bounds", "Clip to Bounds", ::ClipToBoundsTestScreen)
         +FacadeScreenConfig("masking", "Masking", ::MaskingTestScreen)
         +FacadeScreenConfig("opacity", "Opacity", ::OpacityTestScreen)
+        +FacadeScreenConfig("blend", "Blending", ::BlendingTestScreen)
         +FacadeScreenConfig("render_fbo_scale", "Render to FBO Scale", ::RenderFBOScaleTest)
         +FacadeScreenConfig("render_quad_scale", "Render to Quad Scale", ::RenderQuadScaleTest)
         +FacadeScreenConfig("simple_yoga", "Yoga Simple Flex", ::SimpleYogaScreen)
