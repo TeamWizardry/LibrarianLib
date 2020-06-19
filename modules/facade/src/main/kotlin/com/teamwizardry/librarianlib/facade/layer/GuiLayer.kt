@@ -46,9 +46,7 @@ import com.teamwizardry.librarianlib.math.ScreenSpace
 import com.teamwizardry.librarianlib.mosaic.ISprite
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.client.renderer.IRenderTypeBuffer
-import net.minecraft.client.renderer.RenderState
 import net.minecraft.client.renderer.RenderType
-import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.shader.Framebuffer
 import org.lwjgl.BufferUtils
@@ -521,6 +519,8 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
             return
         layer.BUS.fire(GuiLayerEvents.RemoveFromParentEvent(this))
         layer.parent = null
+        if(layer === _maskLayer)
+            _maskLayer = null
         _children.remove(layer)
         markLayoutDirty()
     }
@@ -553,11 +553,12 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * Iterates over children while allowing children to be added or removed. Any added children will not be iterated,
      * and any children removed while iterating will be excluded.
      */
-    inline fun forEachChild(block: (GuiLayer) -> Unit) {
+    @JvmOverloads
+    inline fun forEachChild(includeMask: Boolean = true, block: (GuiLayer) -> Unit) {
         // calling `toList` just creates an array and then an ArrayList, so we just use the array
         for(child in children.toTypedArray()) {
             // a component may have been removed, in which case it won't be expecting any interaction
-            if(child.parent != null)
+            if(child.parent != null && (includeMask || child !== maskLayer))
                 block(child)
         }
     }
@@ -565,7 +566,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * Creates an object designed to allow easily inspecting the layer hierarchy in the debugger
      */
-    fun debuggerTree(): DebuggerTree = DebuggerTree(this, children.map { it.debuggerTree() })
+    val debuggerTree: DebuggerTree get() = DebuggerTree(this, children.map { it.debuggerTree })
 
     //endregion
 
@@ -1003,13 +1004,29 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      */
     var opacity: Double by opacity_rm
     /**
-     * How to apply the [maskLayer]
+     * How to apply the [maskLayer]. If [maskLayer] is null, this property has no effect.
      */
     var maskMode: MaskMode = MaskMode.NONE
+
+    private var _maskLayer: GuiLayer? = null
     /**
-     * The layer to use when masking
+     * The layer to use when masking. Setting this property will automatically add or remove the layer as a child of
+     * this layer. Note that removing this layer using the [remove] or [removeFromParent] method will reset this
+     * property to null.
      */
-    var maskLayer: GuiLayer? = null
+    var maskLayer: GuiLayer?
+        get() = _maskLayer
+        set(value) {
+            if(value !== _maskLayer) {
+                _maskLayer?.also {
+                    this.remove(it)
+                }
+                _maskLayer = value
+                value?.also {
+                    this.add(it)
+                }
+            }
+        }
     /**
      * What technique to use to render this layer
      */
@@ -1023,6 +1040,11 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * filter.
      */
     var layerFilter: GuiLayerFilter? = null
+    /**
+     * Whether this layer is being used as a mask by its parent.
+     */
+    val isMask: Boolean
+        get() = parent?.maskLayer === this
 
     private fun actualRenderMode(): RenderMode {
         if(renderMode != RenderMode.DIRECT)
@@ -1135,7 +1157,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
             context.popGlMatrix()
             context.matrix.pop()
         }
-        forEachChild {
+        forEachChild(false) {
             it.renderLayer(context)
         }
     }

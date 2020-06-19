@@ -10,7 +10,7 @@ import com.teamwizardry.librarianlib.math.vec
 import java.awt.Color
 import kotlin.math.PI
 
-class RenderFBOScaleTest: FacadeTestScreen("Render to Texture Scale") {
+class RenderFBOScaleTest: FacadeTestScreen("Render to FBO Scale") {
     init {
         val bg = RectLayer(Color.WHITE, 0, 0, 200, 100)
         main.size = bg.size

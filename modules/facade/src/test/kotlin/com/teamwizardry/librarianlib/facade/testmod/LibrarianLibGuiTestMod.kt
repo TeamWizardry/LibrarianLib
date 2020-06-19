@@ -88,6 +88,7 @@ object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
 
         +FacadeScreenConfig("simple_text", "Simple Text", ::SimpleTextTestScreen)
         +FacadeScreenConfig("clip_to_bounds", "Clip to Bounds", ::ClipToBoundsTestScreen)
+        +FacadeScreenConfig("masking", "Masking", ::MaskingTestScreen)
         +FacadeScreenConfig("opacity", "Opacity", ::OpacityTestScreen)
         +FacadeScreenConfig("render_fbo_scale", "Render to FBO Scale", ::RenderFBOScaleTest)
         +FacadeScreenConfig("render_quad_scale", "Render to Quad Scale", ::RenderQuadScaleTest)
