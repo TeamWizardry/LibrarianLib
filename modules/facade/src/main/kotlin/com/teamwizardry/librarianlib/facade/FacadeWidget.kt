@@ -160,6 +160,7 @@ open class FacadeWidget(
 
             root.updateAnimations(Client.time.time)
             root.triggerEvent(GuiLayerEvents.Update())
+            root.zSort()
             root.triggerEvent(GuiLayerEvents.PrepareLayout())
             root.runLayout()
             root.clearAllDirtyLayout()

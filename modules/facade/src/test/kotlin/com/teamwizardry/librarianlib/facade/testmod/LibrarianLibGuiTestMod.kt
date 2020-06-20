@@ -68,6 +68,21 @@ object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
             screen.facade.root.add(layer)
         }
 
+        +FacadeScreenConfig("scheduled_repeated_callbacks", "Scheduled Repeated Callbacks") { screen ->
+            val dirt = Mosaic("minecraft:textures/block/dirt.png".toRl(), 16, 16).getSprite("")
+            val stone = Mosaic("minecraft:textures/block/stone.png".toRl(), 16, 16).getSprite("")
+            val layer = SpriteLayer(dirt, 0, 0, 64, 64)
+
+            layer.delay(0f, 40f) {
+                layer.sprite = dirt
+            }
+            layer.delay(20f, 40f) {
+                layer.sprite = stone
+            }
+            screen.facade.main.size = layer.size
+            screen.facade.main.add(layer)
+        }
+
         +FacadeScreenConfig("animations", "Animations") { screen ->
             val dirt = Mosaic("minecraft:textures/block/dirt.png".toRl(), 16, 16).getSprite("")
             val layer = SpriteLayer(dirt)
@@ -86,6 +101,7 @@ object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
             screen.facade.root.add(layer)
         }
 
+        +FacadeScreenConfig("zindex", "zIndex", ::ZIndexTestScreen)
         +FacadeScreenConfig("simple_text", "Simple Text", ::SimpleTextTestScreen)
         +FacadeScreenConfig("clip_to_bounds", "Clip to Bounds", ::ClipToBoundsTestScreen)
         +FacadeScreenConfig("masking", "Masking", ::MaskingTestScreen)

@@ -167,7 +167,12 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         animationTime = time - baseTime
 
         while(scheduledEvents.isNotEmpty() && scheduledEvents.peek().time <= animationTime) {
-            scheduledEvents.poll().event.run()
+            val event = scheduledEvents.poll()
+            event.callback.run()
+            if(event.interval > 0) {
+                event.time += event.interval
+                scheduledEvents.add(event)
+            }
         }
 
         animationTimeListeners.forEach {
@@ -179,10 +184,25 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     private val scheduledEvents = PriorityQueue<ScheduledEvent>()
 
     /**
+     * Run the specified callback once [animationTime] is >= [time], repeating with the passed [interval].
+     */
+    fun schedule(time: Float, interval: Float, callback: Runnable) {
+        scheduledEvents.add(ScheduledEvent(time, interval, callback))
+    }
+
+    /**
      * Run the specified callback once [animationTime] is >= [time]
      */
     fun schedule(time: Float, callback: Runnable) {
-        scheduledEvents.add(ScheduledEvent(time, callback))
+        scheduledEvents.add(ScheduledEvent(time, 0f, callback))
+    }
+
+    /**
+     * Run the specified callback once [animationTime] is >= [time], repeating with the passed [interval].
+     */
+    @JvmSynthetic
+    inline fun schedule(time: Float, interval: Float, crossinline callback: () -> Unit) {
+        schedule(time, interval, Runnable { callback() })
     }
 
     /**
@@ -194,10 +214,25 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     }
 
     /**
+     * Run the specified callback after [time] ticks, repeating with the passed [interval].
+     */
+    fun delay(time: Float, interval: Float, callback: Runnable) {
+        schedule(animationTime + time, interval, callback)
+    }
+
+    /**
      * Run the specified callback after [time] ticks.
      */
     fun delay(time: Float, callback: Runnable) {
         schedule(animationTime + time, callback)
+    }
+
+    /**
+     * Run the specified callback after [time] ticks, repeating with the passed [interval].
+     */
+    @JvmSynthetic
+    inline fun delay(time: Float, interval: Float, crossinline callback: () -> Unit) {
+        schedule(animationTime + time, interval, Runnable { callback() })
     }
 
     /**
@@ -208,9 +243,9 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         schedule(animationTime + time, Runnable { callback() })
     }
 
-    private data class ScheduledEvent(val time: Float, val event: Runnable): Comparable<ScheduledEvent> {
+    private data class ScheduledEvent(var time: Float, val interval: Float, val callback: Runnable): Comparable<ScheduledEvent> {
         override fun compareTo(other: ScheduledEvent): Int {
-            return other.time.compareTo(this.time)
+            return this.time.compareTo(other.time)
         }
     }
     //endregion
@@ -534,21 +569,31 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     }
 
     /**
-     * The sort index and render order for the layer. Use [GuiLayer.OVERLAY_Z] and [GuiLayer.UNDERLAY_Z] to create
-     * layers that appear on top or below _literally everything else._ In order to maintain this property, please
-     * limit your z index offsets to ±1,000,000. That should be more than enough.
+     * The sort index and render order for the layer. Lower indices appear below higher indices.
+     * Note that this does not affect the literal Z axis when rendering, this is purely a sort index.
      *
-     * Drives [zIndex]
+     * Use [GuiLayer.OVERLAY_Z] and [GuiLayer.UNDERLAY_Z] to create layers that appear on top or below _literally
+     * everything else._
      */
-    val zIndex_rm: RMValueDouble = rmDouble(1.0)
-    /**
-     * The sort index and render order for the layer. Use [GuiLayer.OVERLAY_Z] and [GuiLayer.UNDERLAY_Z] to create
-     * layers that appear on top or below _literally everything else._ In order to maintain this property, please
-     * limit your z index offsets to ±1,000,000. That should be more than enough.
-     *
-     * Driven by [zIndex_rm]
-     */
-    var zIndex by zIndex_rm
+    var zIndex: Double = 0.0
+
+    internal fun zSort() {
+        var outOfOrder = false
+        var previousZ = Double.NaN
+        for(layer in _children) {
+            // comparison with initial NaN is always false
+            if(layer.zIndex < previousZ) {
+                outOfOrder = true
+                break
+            }
+            previousZ = layer.zIndex
+        }
+        if(outOfOrder) {
+            _children.sortBy { it.zIndex }
+            markLayoutDirty()
+        }
+        forEachChild { it.zSort() }
+    }
 
     /**
      * Iterates over children while allowing children to be added or removed. Any added children will not be iterated,
@@ -1043,11 +1088,6 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      */
     var rasterizationScale: Int = 1
     /**
-     * A filter to apply to this layer. If this is not null this layer will be drawn to a texture and passed to the
-     * filter.
-     */
-    var layerFilter: GuiLayerFilter? = null
-    /**
      * Whether this layer is being used as a mask by its parent.
      */
     val isMask: Boolean
@@ -1056,7 +1096,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     private fun actualRenderMode(): RenderMode {
         if(renderMode != RenderMode.DIRECT)
             return renderMode
-        if(opacity < 1.0 || maskMode != MaskMode.NONE || layerFilter != null || blendMode != BlendMode.NORMAL)
+        if(opacity < 1.0 || maskMode != MaskMode.NONE || blendMode != BlendMode.NORMAL)
             return RenderMode.RENDER_TO_FBO
         return RenderMode.DIRECT
     }
