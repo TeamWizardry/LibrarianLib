@@ -62,6 +62,8 @@ private class Formatting<T: Any>(val attributedString: MutableAttributedString, 
 }
 
 fun attributedStringFromMC(mcString: String): AttributedString {
+    if("§" !in mcString)
+        return AttributedString(mcString)
     val split = mcString.splitWithDelimiters("§.")
     val attributed = MutableAttributedString(mcString.replace("§[^§]".toRegex(), "").replace("§§", "§"))
 

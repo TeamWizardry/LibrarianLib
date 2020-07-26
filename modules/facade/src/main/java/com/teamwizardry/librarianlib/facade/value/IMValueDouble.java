@@ -23,7 +23,7 @@ public class IMValueDouble extends GuiValue<Double> {
      * Gets the current value
      */
     public double get() {
-        return storage.get();
+        return getUseAnimationValue() ? getAnimationValue() : storage.get();
     }
 
     /**
@@ -52,14 +52,14 @@ public class IMValueDouble extends GuiValue<Double> {
     /**
      * A kotlin delegate method, used to allow properties to delegate to this IMValue (`var property by property_im`)
      */
-    public double getValue(Object thisRef, KProperty property) {
-        return storage.get();
+    public double getValue(Object thisRef, KProperty<?> property) {
+        return this.get();
     }
 
     /**
      * A kotlin delegate method, used to allow properties to delegate to this IMValue (`var property by property_im`)
      */
-    public void setValue(Object thisRef, KProperty property, double value) {
+    public void setValue(Object thisRef, KProperty<?> property, double value) {
         setValue(value);
     }
 

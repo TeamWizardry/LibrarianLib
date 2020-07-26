@@ -42,7 +42,7 @@ internal object EventHookAnnotationReflector {
             events = generateSequence(mirror) { it.superclass }
                 .flatMap { it.declaredMethods.asSequence() }
                 .filter { it.annotations.any { it is Hook } }
-                .filter { it.parameters.size == 1 && it.parameterTypes[0].isAssignableFrom(Mirror.reflectClass<Event>()) }
+                .filter { it.parameters.size == 1 && Mirror.reflectClass<Event>().isAssignableFrom(it.parameterTypes[0]) }
                 .map { it.parameterTypes[0] to it }
                 .toList()
         }

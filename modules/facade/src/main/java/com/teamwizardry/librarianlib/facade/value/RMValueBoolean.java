@@ -24,7 +24,7 @@ public class RMValueBoolean extends GuiValue<Boolean> {
      * Gets the current value
      */
     public boolean get() {
-        return value;
+        return getUseAnimationValue() ? getAnimationValue() : value;
     }
 
     /**
@@ -32,21 +32,25 @@ public class RMValueBoolean extends GuiValue<Boolean> {
      * access this value (`someProperty` will call into `somePropery_rm` for its value)
      */
     public void set(boolean value) {
+        boolean oldValue = this.value;
         this.value = value;
+        if(oldValue != value && change != null && !getUseAnimationValue()) {
+            change.report(oldValue, value);
+        }
     }
 
     /**
      * A kotlin delegate method, used to allow properties to delegate to this IMValue (`var property by property_rm`)
      */
-    public boolean getValue(Object thisRef, KProperty property) {
-        return value;
+    public boolean getValue(Object thisRef, KProperty<?> property) {
+        return this.get();
     }
 
     /**
      * A kotlin delegate method, used to allow properties to delegate to this IMValue (`var property by property_rm`)
      */
-    public void setValue(Object thisRef, KProperty property, boolean value) {
-        set(value);
+    public void setValue(Object thisRef, KProperty<?> property, boolean value) {
+        this.set(value);
     }
 
     @Override
@@ -72,6 +76,6 @@ public class RMValueBoolean extends GuiValue<Boolean> {
 
     @Override
     protected void persistAnimation(Boolean value) {
-        set(value);
+        this.value = value;
     }
 }

@@ -23,7 +23,7 @@ public class IMValueBoolean extends GuiValue<Boolean> {
      * Gets the current value
      */
     public boolean get() {
-        return storage.get();
+        return getUseAnimationValue() ? getAnimationValue() : storage.get();
     }
 
     /**
@@ -52,14 +52,14 @@ public class IMValueBoolean extends GuiValue<Boolean> {
     /**
      * A kotlin delegate method, used to allow properties to delegate to this IMValue (`var property by property_im`)
      */
-    public boolean getValue(Object thisRef, KProperty property) {
-        return storage.get();
+    public boolean getValue(Object thisRef, KProperty<?> property) {
+        return this.get();
     }
 
     /**
      * A kotlin delegate method, used to allow properties to delegate to this IMValue (`var property by property_im`)
      */
-    public void setValue(Object thisRef, KProperty property, boolean value) {
+    public void setValue(Object thisRef, KProperty<?> property, boolean value) {
         setValue(value);
     }
 

@@ -28,7 +28,7 @@ public class RMValueDouble extends GuiValue<Double> {
      * Gets the current value
      */
     public double get() {
-        return value;
+        return getUseAnimationValue() ? getAnimationValue() : value;
     }
 
     /**
@@ -36,21 +36,25 @@ public class RMValueDouble extends GuiValue<Double> {
      * access this value (`someProperty` will call into `somePropery_rm` for its value)
      */
     public void set(double value) {
+        double oldValue = this.value;
         this.value = value;
+        if(oldValue != value && change != null && !getUseAnimationValue()) {
+            change.report(oldValue, value);
+        }
     }
 
     /**
      * A kotlin delegate method, used to allow properties to delegate to this IMValue (`var property by property_rm`)
      */
-    public double getValue(Object thisRef, KProperty property) {
-        return value;
+    public double getValue(Object thisRef, KProperty<?> property) {
+        return this.get();
     }
 
     /**
      * A kotlin delegate method, used to allow properties to delegate to this IMValue (`var property by property_rm`)
      */
-    public void setValue(Object thisRef, KProperty property, double value) {
-        set(value);
+    public void setValue(Object thisRef, KProperty<?> property, double value) {
+        this.set(value);
     }
 
     @Override
@@ -76,6 +80,6 @@ public class RMValueDouble extends GuiValue<Double> {
 
     @Override
     protected void persistAnimation(Double value) {
-        set(value);
+        this.value = value;
     }
 }

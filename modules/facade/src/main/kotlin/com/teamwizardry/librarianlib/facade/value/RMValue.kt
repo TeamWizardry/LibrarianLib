@@ -26,7 +26,7 @@ class RMValue<T> @JvmOverloads constructor(
     fun set(value: T) {
         val oldValue = this.value
         this.value = value
-        if(oldValue != value) {
+        if(oldValue != value && !useAnimationValue) {
             change?.invoke(oldValue, value)
         }
     }

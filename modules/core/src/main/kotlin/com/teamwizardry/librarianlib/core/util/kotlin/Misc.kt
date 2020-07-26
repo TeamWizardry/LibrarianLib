@@ -25,6 +25,12 @@ val IS_DEOBFUSCATED: Boolean = obfTest.name == "getX"
 
 fun obf(deobfuscated: String, obfuscated: String): String = if(IS_DEOBFUSCATED) deobfuscated else obfuscated
 
+/**
+ * A method for casting objects without the IDE complaining about casts always failing
+ */
+@Suppress("UNCHECKED_CAST")
+fun<T> mixinCast(obj: Any): T = obj as T
+
 fun<T> Optional<T>.getOrNull(): T? = this.orElse(null)
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 fun<T> LazyOptional<T>.getOrNull(): T? = this.orElse(null)

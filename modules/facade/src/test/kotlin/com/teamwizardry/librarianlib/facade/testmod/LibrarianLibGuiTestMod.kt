@@ -5,10 +5,11 @@ package com.teamwizardry.librarianlib.facade.testmod
 import com.teamwizardry.librarianlib.core.util.kotlin.toRl
 import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
-import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
-import com.teamwizardry.librarianlib.facade.layers.TextLayer
-import com.teamwizardry.librarianlib.facade.text.attributedStringFromMC
+import com.teamwizardry.librarianlib.facade.provided.SafetyNetErrorScreen
+import com.teamwizardry.librarianlib.facade.testmod.screens.*
+import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.PastryTestScreen
+import com.teamwizardry.librarianlib.facade.testmod.value.RMValueTests
 import com.teamwizardry.librarianlib.math.Easing
 import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.mosaic.Mosaic
@@ -17,14 +18,11 @@ import com.teamwizardry.librarianlib.testbase.objects.TestScreenConfig
 import net.minecraft.util.text.StringTextComponent
 import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
-import java.awt.Color
 
 @Mod("librarianlib-facade-test")
 object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
     init {
-        +FacadeScreenConfig("empty", "Empty") {
-
-        }
+        +FacadeScreenConfig("empty", "Empty") { _ -> }
 
         +FacadeScreenConfig("sprite", "Simple Sprite") { screen ->
             val dirt = Mosaic("minecraft:textures/block/dirt.png".toRl(), 16, 16)
@@ -70,6 +68,21 @@ object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
             screen.facade.root.add(layer)
         }
 
+        +FacadeScreenConfig("scheduled_repeated_callbacks", "Scheduled Repeated Callbacks") { screen ->
+            val dirt = Mosaic("minecraft:textures/block/dirt.png".toRl(), 16, 16).getSprite("")
+            val stone = Mosaic("minecraft:textures/block/stone.png".toRl(), 16, 16).getSprite("")
+            val layer = SpriteLayer(dirt, 0, 0, 64, 64)
+
+            layer.delay(0f, 40f) {
+                layer.sprite = dirt
+            }
+            layer.delay(20f, 40f) {
+                layer.sprite = stone
+            }
+            screen.facade.main.size = layer.size
+            screen.facade.main.add(layer)
+        }
+
         +FacadeScreenConfig("animations", "Animations") { screen ->
             val dirt = Mosaic("minecraft:textures/block/dirt.png".toRl(), 16, 16).getSprite("")
             val layer = SpriteLayer(dirt)
@@ -88,39 +101,47 @@ object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
             screen.facade.root.add(layer)
         }
 
-        +FacadeScreenConfig("simple_text", "Simple Text") { screen ->
-            val bg = RectLayer(Color.WHITE, 0, 0, 200, 800)
-            // https://minecraft.gamepedia.com/File:Minecraft_Formatting.gif
-            val text = TextLayer(25, 25, 200, 800, "")
-            text.text = attributedStringFromMC("""
-                §nMinecraft Formatting
+        +FacadeScreenConfig("zindex", "zIndex", ::ZIndexTestScreen)
+        +FacadeScreenConfig("simple_text", "Simple Text", ::SimpleTextTestScreen)
+        +FacadeScreenConfig("clip_to_bounds", "Clip to Bounds", ::ClipToBoundsTestScreen)
+        +FacadeScreenConfig("masking", "Masking", ::MaskingTestScreen)
+        +FacadeScreenConfig("opacity", "Opacity", ::OpacityTestScreen)
+        +FacadeScreenConfig("blend", "Blending", ::BlendingTestScreen)
+        +FacadeScreenConfig("render_fbo_scale", "Render to FBO Scale", ::RenderFBOScaleTest)
+        +FacadeScreenConfig("render_quad_scale", "Render to Quad Scale", ::RenderQuadScaleTest)
+        +FacadeScreenConfig("simple_yoga", "Yoga Simple Flex", ::SimpleYogaScreen)
+        +FacadeScreenConfig("yoga_list", "Yoga List", ::YogaListScreen)
+        +FacadeScreenConfig("pastry", "Pastry", ::PastryTestScreen)
 
-                §r§00 §11 §22 §33
-                §44 §55 §66 §77
-                §88 §99 §aa §bb
-                §cc §dd §ee §ff
-
-                §r§0k §kMinecraft
-                
-                §rl §lé ü ñ î
-                §rl §lé ü ñ î
-                
-                §rm §mMinecraft
-                §rn §nMinecraft
-                §ro §oMinecraft
-                §rr §rMinecraft
-            """.trimIndent())
-            text.updateText()
-            screen.facade.root.add(bg, text)
+        +UnitTestSuite("rmvalue") {
+            add<RMValueTests>()
         }
     }
 
     fun FacadeScreenConfig(id: String, name: String, block: (FacadeScreen) -> Unit): TestScreenConfig {
         return TestScreenConfig(id, name, itemGroup) {
             customScreen {
-                val screen = FacadeScreen(StringTextComponent(name))
-                block(screen)
-                screen
+                try {
+                    val screen = FacadeScreen(StringTextComponent(name))
+                    block(screen)
+                    screen
+                } catch (e: Exception) {
+                    logger.error("Error in GUI:", e)
+                    SafetyNetErrorScreen(e)
+                }
+            }
+        }
+    }
+
+    fun FacadeScreenConfig(id: String, name: String, block: () -> FacadeTestScreen): TestScreenConfig {
+        return TestScreenConfig(id, name, itemGroup) {
+            customScreen {
+                try {
+                    block()
+                } catch (e: Exception) {
+                    logger.error("Error in GUI:", e)
+                    SafetyNetErrorScreen(e)
+                }
             }
         }
     }

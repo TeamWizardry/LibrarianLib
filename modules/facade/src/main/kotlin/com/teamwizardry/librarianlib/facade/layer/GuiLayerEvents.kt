@@ -6,19 +6,20 @@ import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.etcetera.eventbus.CancelableEvent
 
 /**
- * Order of events:
+ * ## Order of events:
  *
  * * **Input phase†:**
  * * Input events are fired (in the order they are received)
  * * **Game phase:**
  * * Minecraft ticks and renders the frame
  * * **Update phase:**
+ * * Updates animations
  * * Fires [Update]
  * * **Layout phase:**
- * * Updates yoga layout
- * * Fires [LayoutChildren]
+ * * Fires [PrepareLayout]
+ * * Updates yoga layout‡
+ * * Calls [GuiLayer.layoutChildren][GuiLayer.layoutChildren] and fires [LayoutChildren] for all dirty layers
  * * **Draw phase:**
- * *
  *
  * ## †Input notes:
  * [GLFW input guide](https://www.glfw.org/docs/latest/input_guide.html)
@@ -35,12 +36,21 @@ import com.teamwizardry.librarianlib.etcetera.eventbus.CancelableEvent
  * Interestingly, the input phase is actually fired at the _end_ of the frame. I've placed it at the start in this list
  * because to an extent the end of one frame is the start of the next, and thinking of it as the start of the frame is
  * easier to reason about. However, in a few situations this distinction may be an important thing to keep in mind.
+ *
+ * ## ‡Yoga notes:
+ * [Yoga layout](https://yogalayout.com/) support isn't currently implemented, but it is a strong possibility.
  */
 object GuiLayerEvents {
     /**
-     * Called after input events and before layout is calculated, this is the best place for general-purpose updates
+     * Called after input events and before layout is calculated, this is where most state mutation should occur
      */
     class Update : Event()
+
+    /**
+     * Called after [Update] and before layout is calculated, this is the best place to change the layout based on state
+     * changes that may have occurred during the [Update] event.
+     */
+    class PrepareLayout : Event()
 
     abstract class GuiInputEvent: Event()
 
@@ -50,16 +60,68 @@ object GuiLayerEvents {
 
         internal val stack = Matrix3dStack()
     }
-    class MouseMove(rootPos: Vec2d, val lastRootPos: Vec2d): MouseEvent(rootPos) {
+    abstract class MovingMouseEvent(rootPos: Vec2d, val lastRootPos: Vec2d): MouseEvent(rootPos) {
         val lastPos: Vec2d
             get() = stack.transform(lastRootPos)
     }
+    /**
+     * Triggers when the mouse moves
+     */
+    class MouseMove(rootPos: Vec2d, lastRootPos: Vec2d): MovingMouseEvent(rootPos, lastRootPos)
+
+    /**
+     * Triggers when the mouse moves from off of this component to over this component
+     */
+    class MouseMoveOver(rootPos: Vec2d, lastRootPos: Vec2d): MovingMouseEvent(rootPos, lastRootPos)
+
+    /**
+     * Triggers when the mouse moves from over this component to off this component
+     */
+    class MouseMoveOff(rootPos: Vec2d, lastRootPos: Vec2d): MovingMouseEvent(rootPos, lastRootPos)
+
+    /**
+     * Triggers when the mouse button is pressed
+     */
     class MouseDown(rootPos: Vec2d, val button: Int): MouseEvent(rootPos)
+
+    /**
+     * Triggers when the mouse button is released
+     */
     class MouseUp(rootPos: Vec2d, val button: Int): MouseEvent(rootPos)
-    class MouseDrag(rootPos: Vec2d, val lastRootPos: Vec2d, val button: Int): MouseEvent(rootPos) {
-        val lastPos: Vec2d
-            get() = stack.transform(lastRootPos)
-    }
+
+    /**
+     * Triggers when the mouse button is pressed then released while over this component
+     *
+     * @see MouseRightClick
+     * @see MouseOtherClick
+     */
+    class MouseClick(rootPos: Vec2d): MouseEvent(rootPos)
+
+    /**
+     * Triggers when the right mouse button is pressed then released while over this component
+     *
+     * @see MouseClick
+     * @see MouseOtherClick
+     */
+    class MouseRightClick(rootPos: Vec2d): MouseEvent(rootPos)
+
+    /**
+     * Triggers when a button other than the right or left mouse button is pressed then released while over this component
+     *
+     * @see MouseClick
+     * @see MouseRightClick
+     */
+    class MouseOtherClick(rootPos: Vec2d, val button: Int): MouseEvent(rootPos)
+
+    /**
+     * Triggers if the mouse is moved while a button is held
+     */
+    class MouseDrag(rootPos: Vec2d, lastRootPos: Vec2d, val button: Int): MovingMouseEvent(rootPos, lastRootPos)
+
+    /**
+     * Triggers when the mouse is scrolled. The [rootDelta] is a [Vec2d] because of 2d scroll wheels and because
+     * [delta] may be off-axis if the layer itself is rotated.
+     */
     class MouseScroll(rootPos: Vec2d, val rootDelta: Vec2d): MouseEvent(rootPos) {
         /**
          * The delta vector transformed into the current layer's coordinate space

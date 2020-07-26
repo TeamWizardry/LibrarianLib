@@ -16,21 +16,35 @@ import java.awt.Color
 import java.lang.Math.PI
 import kotlin.math.atan2
 import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.sin
 
 class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y, width, height) {
     constructor(color: Color, x: Int, y: Int): this(color, x, y, 0, 0)
     constructor(color: Color): this(color, 0, 0, 0, 0)
 
-    init {
-        anchor = vec(0.5, 0.5)
-    }
     val color_im: IMValue<Color> = imValue(color)
     var color: Color by color_im
 
+    /**
+     * The clockwise start angle in radians
+     */
     val startAngle_im: IMValueDouble = imDouble(0.0)
+
+    /**
+     * The clockwise start angle in radians
+     */
     var startAngle: Double by startAngle_im
+
+    /**
+     * The clockwise end angle in radians
+     */
     val endAngle_im: IMValueDouble = imDouble(2*PI)
+
+    /**
+     * The clockwise end angle in radians
+     */
     var endAngle: Double by endAngle_im
 
     val segmentSize_im: IMValueDouble = imDouble(Math.toRadians(5.0))
@@ -54,9 +68,10 @@ class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): GuiLayer(
     }
 
     override fun draw(context: GuiDrawContext) {
-        val start = startAngle
-        var end = endAngle
+        val start = min(startAngle, endAngle)
+        var end = max(startAngle, endAngle)
         if(end > start + PI*2) end = start + PI*2
+        if(start == end) return
         val rX = size.x/2
         val rY = size.y/2
 
@@ -72,20 +87,21 @@ class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): GuiLayer(
 
         vb.pos2d(context.matrix, 0, 0).color(c).endVertex()
 
-        var a = start
-        while(if(start < end) a < end else a > end) {
+        // we go from end to start because while the angles are measured clockwise, we need the vertices to be in
+        // counterclockwise order
+        var a = end
+        while(a > start) {
             val cos = cos(a)
             val sin = sin(a)
-            vb.pos2d(context.matrix, rX*sin, rY*-cos).color(c).endVertex()
-            if(start < end)
-                a += segmentSize
-            else
-                a -= segmentSize
+            vb.pos2d(context.matrix, rX * sin, rY * -cos).color(c).endVertex()
+            a -= segmentSize
         }
 
-        val cos = cos(end)
-        val sin = sin(end)
-        vb.pos2d(context.matrix, rX*sin, rY*-cos).color(c).endVertex()
+        if(a != start) {
+            val cos = cos(start)
+            val sin = sin(start)
+            vb.pos2d(context.matrix, rX * sin, rY * -cos).color(c).endVertex()
+        }
 
         buffer.finish()
 

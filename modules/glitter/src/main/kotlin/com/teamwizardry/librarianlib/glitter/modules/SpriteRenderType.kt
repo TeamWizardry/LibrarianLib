@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.glitter.modules
 
 import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.glitter.BlendMode
+import com.teamwizardry.librarianlib.core.rendering.BlendMode
 import net.minecraft.client.renderer.RenderState
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -23,6 +23,7 @@ internal object SpriteRenderType: RenderState("", Runnable {}, Runnable {}) {
                 RenderSystem.enableBlend()
                 blendMode.glApply()
             }, Runnable {
+                blendMode.reset()
                 RenderSystem.disableBlend()
                 RenderSystem.defaultBlendFunc()
             }))

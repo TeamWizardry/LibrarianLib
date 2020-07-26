@@ -22,7 +22,7 @@ import java.nio.IntBuffer
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 
-class Cursor(
+class Cursor @JvmOverloads constructor(
     /**
      * The location of the cursor texture
      */
@@ -36,7 +36,11 @@ class Cursor(
      * The position of the cursor point within the image (e.g. the tip of an arrow cursor). The origin is in the
      * top-left of the image, with the Y axis extending downward.
      */
-    val originY: Int
+    val originY: Int,
+    /**
+     * The GLFW standard cursor ID, if any, otherwise a negative value
+     */
+    private val standardCursor: Int = -1
 ): ISimpleReloadListener<Unit> {
     private var glfwCursor: Long = -1
 
@@ -46,8 +50,13 @@ class Cursor(
     }
 
     private fun loadCursor() {
-        if(glfwCursor >= 0) {
+        if(glfwCursor > 0) {
             GLFW.glfwDestroyCursor(glfwCursor)
+        }
+        if(standardCursor >= 0) {
+            glfwCursor = GLFW.glfwCreateStandardCursor(standardCursor)
+            if(glfwCursor != 0L)
+                return
         }
         val stream = Client.resourceManager.getResource(resourceLocation).inputStream
         var bytebuffer: ByteBuffer? = null
@@ -87,10 +96,16 @@ class Cursor(
 
     @Suppress("unused")
     companion object {
-        private fun _c(name: String, originX: Int, originY: Int) = Cursor("librarianlib:facade/textures/cursors/$name.png".toRl(), originX, originY)
+        private fun _c(name: String, originX: Int, originY: Int, standardCursor: Int = -1)
+            = Cursor("librarianlib:facade/textures/cursors/$name.png".toRl(), originX, originY, standardCursor)
 
+        /**
+         * The default arrow cursor.
+         *
+         * Uses the standard system character if available.
+         */
         @JvmField
-        val DEFAULT: Cursor? = null
+        val DEFAULT: Cursor = _c("arrow", 1, 1, GLFW.GLFW_ARROW_CURSOR)
 
         //region resize up/down/left/right
         /**
@@ -207,10 +222,12 @@ class Cursor(
         val NO = _c("no", 7, 8)
 
         /**
-         * A text insertion cursor. Indicates selectable or editable text
+         * A text insertion cursor. Indicates selectable or editable text.
+         *
+         * Uses the standard system character if available.
          */
         @JvmField
-        val TEXT = _c("text", 3, 8)
+        val TEXT = _c("text", 3, 8, GLFW.GLFW_IBEAM_CURSOR)
 
         /**
          * Four arrows pointing in the cardinal directions. Indicates that whatever the cursor is over can be dragged
@@ -233,9 +250,11 @@ class Cursor(
 
         /**
          * A thin cross, useful for fine mouse position control
+         *
+         * Uses the standard system character if available.
          */
         @JvmField
-        val CROSS = _c("cross", 11, 12)
+        val CROSS = _c("cross", 11, 12, GLFW.GLFW_CROSSHAIR_CURSOR)
 
         /**
          * A question mark icon. Indicates that when clicked, documentation will appear
@@ -271,9 +290,15 @@ class Cursor(
 
         /**
          * A hand pointing with one finger. Indicates a clickable element
+         *
+         * Uses the standard system character if available.
          */
         @JvmField
-        val POINT = _c("point", 6, 1)
+        val POINT = _c("point", 6, 1, GLFW.GLFW_HAND_CURSOR)
 
+        @JvmStatic
+        fun setCursor(cursor: Cursor?) {
+            GLFW.glfwSetCursor(Client.window.handle, cursor?.glfwCursor ?: 0L)
+        }
     }
 }

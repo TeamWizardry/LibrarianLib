@@ -20,7 +20,7 @@ abstract class BasicAnimation<T>(
     /**
      * A callback to run when the animation completes or is interrupted
      */
-    var completionCallback: (() -> Unit)? = null
+    private var completionCallback: (() -> Unit)? = null
 ): Animation<T> {
 
     /**

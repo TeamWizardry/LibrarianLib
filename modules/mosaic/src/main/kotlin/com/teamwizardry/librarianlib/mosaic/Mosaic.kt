@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.mosaic
 
 import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
 import com.teamwizardry.librarianlib.core.util.kotlin.synchronized
+import com.teamwizardry.librarianlib.core.util.kotlin.weakSetOf
 import net.minecraft.client.renderer.RenderState
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -10,6 +11,8 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.lang.ref.WeakReference
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
 
 /**
  * This class represents a texture and it's size. It is mostly used to create [Sprite]
@@ -24,6 +27,8 @@ import java.lang.ref.WeakReference
  *         // required:
  *         // texture size in pixels (used for UV calculations)
  *         "size": [<w>, <h>],
+ *         "blur": true, // enable texture interpolation
+ *         "mipmap": true, // enable mipmapping
  *
  *         "sprites": {
  *             // static sprite shorthand
@@ -94,7 +99,7 @@ class Mosaic(
 
     init {
         synchronized(textures) {
-            textures.add(WeakReference(this))
+            textures.add(this)
         }
         loadDefinition()
     }
@@ -161,8 +166,16 @@ class Mosaic(
         return colors.getOrPut(name) { TextureColor(this, name) }.color
     }
 
+    /**
+     * Gets a delegate that allows access to a sprite based on the property's name. The sprite is cached after the first
+     * access, so a separate delegate must be used for each property.
+     */
+    @get:JvmSynthetic
+    val delegate: ReadOnlyProperty<Any?, Sprite>
+        get() = SpriteDelegate()
+
     companion object {
-        internal var textures = mutableListOf<WeakReference<Mosaic>>().synchronized()
+        internal var textures = weakSetOf<Mosaic>().synchronized()
     }
 
     private class TextureColor(private val mosaic: Mosaic, val name: String) {
@@ -185,6 +198,14 @@ class Mosaic(
             u = definition.uv.x
             v = definition.uv.y
             color = definition.color
+        }
+    }
+
+    private inner class SpriteDelegate: ReadOnlyProperty<Any?, Sprite> {
+        private var instance: Sprite? = null
+
+        override fun getValue(thisRef: Any?, property: KProperty<*>): Sprite {
+            return instance ?: this@Mosaic.getSprite(property.name).also { instance = it }
         }
     }
 }

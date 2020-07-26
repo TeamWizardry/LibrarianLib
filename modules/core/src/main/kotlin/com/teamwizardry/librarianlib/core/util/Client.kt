@@ -26,6 +26,8 @@ import net.minecraftforge.event.TickEvent
 import net.minecraftforge.resource.IResourceType
 import net.minecraftforge.resource.ISelectiveResourceReloadListener
 import net.minecraftforge.resource.SelectiveReloadStateHandler
+import java.io.IOException
+import java.io.InputStream
 import java.util.concurrent.CompletableFuture
 
 object Client {
@@ -99,6 +101,144 @@ object Client {
     @JvmStatic
     fun getAtlasSprite(atlas: ResourceLocation, texture: ResourceLocation): TextureAtlasSprite {
         return minecraft.getAtlasSpriteGetter(atlas).apply(texture)
+    }
+
+    /**
+     * Gets the [InputStream] for a given resource, or throws an IOException if it isn't found
+     *
+     * @see getResourceInputStreamOrNull
+     */
+    @JvmStatic
+    @Throws(IOException::class)
+    fun getResourceInputStream(resourceManager: IResourceManager, location: ResourceLocation): InputStream {
+        return resourceManager.getResource(location).inputStream
+    }
+
+    /**
+     * Gets the [InputStream] for a given resource, or returns null if it isn't found
+     *
+     * @see getResourceInputStream
+     */
+    @JvmStatic
+    fun getResourceInputStreamOrNull(resourceManager: IResourceManager, location: ResourceLocation): InputStream? {
+        return try {
+            getResourceInputStream(resourceManager, location)
+        } catch(e: IOException) {
+            null
+        }
+    }
+
+    /**
+     * Gets the contents of the given resource as a byte array, or throws an IOException if the resource isn't found
+     *
+     * @see getResourceBytesOrNull
+     */
+    @JvmStatic
+    @Throws(IOException::class)
+    fun getResourceBytes(resourceManager: IResourceManager, location: ResourceLocation): ByteArray {
+        return resourceManager.getResource(location).inputStream.use { it.readBytes() }
+    }
+
+    /**
+     * Gets the contents of the given resource as a byte array, or returns null if the resource isn't found
+     *
+     * @see getResourceBytes
+     */
+    @JvmStatic
+    fun getResourceBytesOrNull(resourceManager: IResourceManager, location: ResourceLocation): ByteArray? {
+        return try {
+            getResourceBytes(resourceManager, location)
+        } catch(e: IOException) {
+            null
+        }
+    }
+
+    /**
+     * Gets the contents of the given resource as a string, or throws an IOException if the resource isn't found
+     *
+     * @see getResourceTextOrNull
+     */
+    @JvmStatic
+    @Throws(IOException::class)
+    fun getResourceText(resourceManager: IResourceManager, location: ResourceLocation): String {
+        return resourceManager.getResource(location).inputStream.bufferedReader().use { it.readText() }
+    }
+
+    /**
+     * Gets the contents of the given resource as a string, or returns null if the resource isn't found
+     *
+     * @see getResourceText
+     */
+    @JvmStatic
+    fun getResourceTextOrNull(resourceManager: IResourceManager, location: ResourceLocation): String? {
+        return try {
+            getResourceText(resourceManager, location)
+        } catch(e: IOException) {
+            null
+        }
+    }
+
+    /**
+     * Gets the [InputStream] for a given resource, or throws an IOException if it isn't found
+     *
+     * @see getResourceInputStreamOrNull
+     */
+    @JvmStatic
+    @Throws(IOException::class)
+    fun getResourceInputStream(location: ResourceLocation): InputStream {
+        return getResourceInputStream(resourceManager, location)
+    }
+
+    /**
+     * Gets the [InputStream] for a given resource, or returns null if it isn't found
+     *
+     * @see getResourceInputStream
+     */
+    @JvmStatic
+    fun getResourceInputStreamOrNull(location: ResourceLocation): InputStream? {
+        return getResourceInputStreamOrNull(resourceManager, location)
+    }
+
+    /**
+     * Gets the contents of the given resource as a byte array, or throws an IOException if the resource isn't found
+     *
+     * @see getResourceBytesOrNull
+     */
+    @JvmStatic
+    @Throws(IOException::class)
+    fun getResourceBytes(location: ResourceLocation): ByteArray {
+        return getResourceBytes(resourceManager, location)
+    }
+
+    /**
+     * Gets the contents of the given resource as a byte array, or returns null if the resource isn't found
+     *
+     * @see getResourceBytes
+     */
+    @JvmStatic
+    fun getResourceBytesOrNull(location: ResourceLocation): ByteArray? {
+        return getResourceBytesOrNull(resourceManager, location)
+    }
+
+    /**
+     * Gets the contents of the given resource as a string, or throws an IOException if the resource isn't found
+     *
+     * @see getResourceTextOrNull
+     */
+    @JvmStatic
+    @Throws(IOException::class)
+    fun getResourceText(location: ResourceLocation): String {
+        return getResourceText(resourceManager, location)
+    }
+
+    /**
+     * Gets the contents of the given resource as a string, or returns null if the resource isn't found
+     *
+     * @see getResourceText
+     */
+    @JvmStatic
+    fun getResourceTextOrNull(location: ResourceLocation): String? {
+        return getResourceTextOrNull(resourceManager, location)
     }
 
     abstract class Time {

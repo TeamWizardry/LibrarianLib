@@ -30,7 +30,9 @@ abstract class GuiValue<T>: AnimationTimeListener {
     fun animate(to: T, duration: Float, easing: Easing = Easing.linear, delay: Float = 0f): BasicAnimation<T> {
         if(!hasLerper)
             throw IllegalStateException("Can not animate a GuiValue that has no lerper")
-        val animation = SimpleAnimation(currentValue, to, duration, easing, true)
+        // `delay == 0f` should be interpreted as *immediately* reading the starting value, not reading it when the
+        // animation actually starts.
+        val animation = SimpleAnimation(currentValue, to, duration, easing, delay != 0f)
         scheduleAnimation(delay, animation)
         return animation
     }

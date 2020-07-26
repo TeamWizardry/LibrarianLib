@@ -4,12 +4,18 @@ import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.text.BitfontRenderer
 import com.teamwizardry.librarianlib.facade.text.Fonts
+import com.teamwizardry.librarianlib.facade.text.fromMC
 import com.teamwizardry.librarianlib.facade.value.IMValue
+import com.teamwizardry.librarianlib.math.Rect2d
+import com.teamwizardry.librarianlib.math.rect
+import com.teamwizardry.librarianlib.math.vec
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
 import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager
 import dev.thecodewarrior.bitfont.utils.Vec2i
 import java.awt.Color
+import kotlin.math.max
+import kotlin.math.min
 
 open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String): GuiLayer(posX, posY, width, height) {
     constructor(posX: Int, posY: Int, text: String): this(posX, posY, 0, 0, text) {
@@ -18,33 +24,122 @@ open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String
     constructor(posX: Int, posY: Int): this(posX, posY, "")
     constructor(): this(0, 0, "")
 
-    var text: AttributedString = AttributedString(text)
+    /**
+     * The text to be drawn using MC formatting codes. If this is set to any non-null value it will overwrite
+     * [attributedText], but if [attributedText] is manually set to a new value, this property will be reset to null.
+     */
+    var text_im: IMValue<String?> = imValue()
 
     /**
-     * The colorPrimary of the text
+     * The text to be drawn using MC formatting codes. If this is set to any non-null value it will overwrite
+     * [attributedText], but if [attributedText] is manually set to a new value, this property will be reset to null.
+     */
+    var text by text_im
+    private var lastText: String? = null
+
+    var _attributedText: AttributedString = AttributedString.fromMC(text)
+    /**
+     * The string to be drawn. if [text]
+     * If this is set to a mutable attributed string, the user is responsible for calling
+     * [updateText] when it changes. If this is set to an immutable attributed string, it will automatically be called.
+     */
+    var attributedText: AttributedString
+        get() = _attributedText
+        set(value) {
+            if(_attributedText !== value)
+                text = null
+            _attributedText = value
+        }
+
+    /**
+     * The color of the text. (can be overridden by color attributes in the string)
      */
     val color_im: IMValue<Color> = imValue(Color.BLACK)
+
+    /**
+     * The color of the text. (can be overridden by color attributes in the string)
+     */
     var color: Color by color_im
+
+    /**
+     * Whether to wrap the text
+     */
+    var wrap: Boolean = false
+
+    /**
+     * Margins to offset the text by
+     */
+    var textMargins: Margins = Margins(0.0, 0.0, 0.0, 0.0)
+
+    /**
+     * The logical bounds of the text
+     */
+    var textBounds: Rect2d = rect(0, 0, 0, 0)
+        private set
 
     private val container: TextContainer = TextContainer()
     private val layoutManager: TextLayoutManager = TextLayoutManager(listOf(Fonts.classic))
 
     init {
         layoutManager.textContainers.add(container)
-        layoutManager.attributedString = this.text
+        layoutManager.attributedString = this.attributedText
+        updateText()
     }
 
+    fun fitToText() {
+        updateText()
+        var minX = 0
+        var minY = 0
+        var maxX = 0
+        var maxY = 0
+        container.lines.forEach { fragment ->
+            if(fragment.glyphs.isEmpty())
+                return@forEach
+            fragment.glyphs.forEach { glyph ->
+                minX = min(minX, glyph.posX)
+                maxX = max(maxX, glyph.posX + glyph.glyph.calcAdvance())
+            }
+            minY = min(minY, fragment.posY)
+            maxY = max(maxY, fragment.maxY)
+        }
+        textBounds = rect(minX, minY, maxX, maxY)
+        size = vec(maxX + textMargins.horizontalSum, maxY + textMargins.verticalSum)
+    }
+
+    /**
+     * Updates the text layout.
+     */
     fun updateText() {
-        layoutManager.attributedString = this.text
-        container.size = Vec2i(this.widthi, this.heighti)
+        val plainText = text
+        if(plainText != null && plainText != lastText) {
+            lastText = plainText
+            _attributedText = AttributedString.fromMC(plainText)
+        }
+
+        layoutManager.attributedString = this.attributedText
+        if(wrap)
+            container.size = Vec2i((this.width - textMargins.horizontalSum).toInt(), Int.MAX_VALUE)
+        else
+            container.size = Vec2i(Int.MAX_VALUE, Int.MAX_VALUE)
         layoutManager.layoutText()
     }
 
+    override fun prepareLayout() {
+        super.prepareLayout()
+        updateText()
+    }
+
     override fun draw(context: GuiDrawContext) {
+        context.matrix.translate(textMargins.left, textMargins.top)
         BitfontRenderer.draw(context.matrix, container, color)
     }
 
-    //    /**
+    data class Margins(val left: Double, val top: Double, val right: Double, val bottom: Double) {
+        val horizontalSum: Double = left + right
+        val verticalSum: Double = top + bottom
+    }
+
+//    /**
 //     * The text to draw
 //     */
 //    val text_im: IMValue<String> = IMValue("")

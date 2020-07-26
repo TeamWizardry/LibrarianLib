@@ -7,8 +7,10 @@
     "MixinEnvCheck"
   ],
   "client": [
+    "MinecraftMixin",
+    "Matrix3fMixin",
     "Matrix4fMixin",
-    "Matrix3fMixin"
+    "RenderTypeStateMixin"
   ],
   "injectors": {
     "defaultRequire": 1

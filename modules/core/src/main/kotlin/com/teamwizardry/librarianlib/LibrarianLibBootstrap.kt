@@ -3,9 +3,11 @@ package com.teamwizardry.librarianlib
 import com.teamwizardry.librarianlib.core.bridge.ASMEnvCheckTarget
 import com.teamwizardry.librarianlib.core.bridge.MixinEnvCheckTarget
 import net.minecraftforge.fml.common.Mod
+import org.apache.logging.log4j.LogManager
 
 @Mod("librarianlib")
 internal object LibrarianLibBootstrap {
+    private val logger = LogManager.getLogger("LibrarianLib Bootstrap")
     private val failedLoading = mutableListOf<String>()
 
     init {
@@ -13,7 +15,7 @@ internal object LibrarianLibBootstrap {
 
         val names = resource("/META-INF/ll/core/modules.txt")?.lines()
             ?: throw RuntimeException("Unable to find LibrarianLib modules list")
-        LibrarianLib.logger.debug("Module index had ${names.size} modules")
+        logger.debug("Module index had ${names.size} modules")
         names.forEach {
             try {
                 loadModule(it)
@@ -24,7 +26,7 @@ internal object LibrarianLibBootstrap {
         if(failedLoading.isNotEmpty()) {
             throw RuntimeException("Failed to load LibrarianLib modules [${failedLoading.joinToString(", ")}]")
         }
-        LibrarianLib.logger.debug("Finished loading modules")
+        logger.debug("Finished loading modules")
     }
 
     /**
@@ -34,21 +36,21 @@ internal object LibrarianLibBootstrap {
      * fail immediately instead of crashing when we try to use the result of one of them.
      */
     private fun checkEnvironment() {
-        LibrarianLib.logger.debug("Checking environment")
+        logger.debug("Checking environment")
 
-        LibrarianLib.logger.debug("Checking if Mixins are being applied")
+        logger.debug("Checking if Mixins are being applied")
         val mixinPatched = MixinEnvCheckTarget().isPatched
         if(mixinPatched)
-            LibrarianLib.logger.debug("Environment check passed: Mixins are being applied")
+            logger.debug("Environment check passed: Mixins are being applied")
         else
-            LibrarianLib.logger.error("Environment check failed: Mixins are not being applied")
+            logger.error("Environment check failed: Mixins are not being applied")
 
-        LibrarianLib.logger.debug("Checking if ASM transformers are being applied")
+        logger.debug("Checking if ASM transformers are being applied")
         val asmPatched = ASMEnvCheckTarget().isPatched
         if(asmPatched)
-            LibrarianLib.logger.debug("Environment check passed: ASM transformers are being applied")
+            logger.debug("Environment check passed: ASM transformers are being applied")
         else
-            LibrarianLib.logger.error("Environment check failed: ASM transformers are not being applied")
+            logger.error("Environment check failed: ASM transformers are not being applied")
 
         if(!mixinPatched || !asmPatched) {
             throw RuntimeException("LibrarianLib environment checks failed")
@@ -56,23 +58,23 @@ internal object LibrarianLibBootstrap {
     }
 
     private fun loadModule(name: String) {
-        LibrarianLib.logger.info("Loading $name module")
+        logger.info("Loading $name module")
         val info = ModuleInfo.loadModuleInfo(name)
         if(info == null) {
             failedLoading.add(name)
-            LibrarianLib.logger.error("Unable to find module info file for $name")
+            logger.error("Unable to find module info file for $name")
             return
         }
         try {
             Class.forName(info.mainClass, false, this.javaClass.classLoader)
         } catch (e: ClassNotFoundException) {
             failedLoading.add(name)
-            LibrarianLib.logger.error("Unable to find module class ${info.mainClass}.")
+            logger.error("Unable to find module class ${info.mainClass}.")
             return
         }
         val clazz = Class.forName(info.mainClass)
-        val instance = (clazz.kotlin.objectInstance ?: clazz.newInstance()) as LibrarianLibModule
-        LibrarianLib.logger.info("Finished loading $name module")
+        clazz.kotlin.objectInstance ?: clazz.newInstance()
+        logger.info("Finished loading $name module")
     }
 
     private fun resource(path: String): String? {

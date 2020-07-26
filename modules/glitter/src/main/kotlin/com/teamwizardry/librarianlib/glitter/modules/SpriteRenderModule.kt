@@ -5,7 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
-import com.teamwizardry.librarianlib.glitter.BlendMode
+import com.teamwizardry.librarianlib.core.rendering.BlendMode
 import com.teamwizardry.librarianlib.glitter.ParticleRenderModule
 import com.teamwizardry.librarianlib.glitter.ParticleUpdateModule
 import com.teamwizardry.librarianlib.glitter.ReadParticleBinding
