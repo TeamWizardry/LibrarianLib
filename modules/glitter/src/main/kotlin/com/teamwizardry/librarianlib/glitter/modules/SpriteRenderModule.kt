@@ -264,11 +264,15 @@ class SpriteRenderModule @JvmOverloads constructor(
             /**
              * Whether to write to the depth buffer
              */
-            writeDepth: Boolean = true
+            writeDepth: Boolean = true,
+            /**
+             * Whether to blur the texture
+             */
+            blur: Boolean = false
         ): RenderType {
 
             val renderState = RenderType.State.getBuilder()
-                .texture(RenderState.TextureState(sprite, false, false))
+                .texture(RenderState.TextureState(sprite, blur, false))
                 .cull(DefaultRenderStates.CULL_DISABLED)
                 .alpha(DefaultRenderStates.DEFAULT_ALPHA)
 

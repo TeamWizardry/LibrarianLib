@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.glitter.testmod.systems
 
+import com.teamwizardry.librarianlib.core.rendering.BlendMode
 import com.teamwizardry.librarianlib.glitter.ParticleSystem
 import com.teamwizardry.librarianlib.glitter.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.glitter.modules.BasicPhysicsUpdateModule
@@ -32,12 +33,15 @@ object FloodSystem: TestSystem("flood") {
 
         renderModules.add(SpriteRenderModule(
             renderType = SpriteRenderModule.simpleRenderType(
-                sprite = ResourceLocation("minecraft", "textures/item/clay_ball.png")
+                sprite = ResourceLocation("librarianlib-glitter-test:textures/glitter/glow.png"),
+                blendMode = BlendMode.ADDITIVE,
+                writeDepth = false,
+                blur = true
             ),
             previousPosition = previousPosition,
             position = position,
             color = color,
-            size = ConstantBinding(0.2)
+            size = ConstantBinding(2.0)
         ))
     }
 
@@ -48,8 +52,8 @@ object FloodSystem: TestSystem("flood") {
         repeat(20) {
             doSpawn(
                 eyePos,
-                player.rotationPitch + (Math.random() - 0.5).toFloat() * spread,
-                player.rotationYaw + (Math.random() - 0.5).toFloat() * spread
+                player.rotationPitch + (Math.random() - 0.5).toFloat() * 40,
+                player.rotationYaw + (Math.random() - 0.5).toFloat() * 180
             )
         }
     }
@@ -74,9 +78,9 @@ object FloodSystem: TestSystem("flood") {
             look.y * spawnVelocity,
             look.z * spawnVelocity,
             // color
-            Math.random(),
-            Math.random(),
-            Math.random(),
+            Math.random() * 0.1,
+            Math.random() * 0.1,
+            Math.random() * 0.1,
             1.0
         )
     }

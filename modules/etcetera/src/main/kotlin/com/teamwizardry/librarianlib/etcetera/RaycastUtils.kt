@@ -181,25 +181,21 @@ class DirectRaycaster {
      * The distance along the raycast that the hit occurred, expressed as a multiple of the ray's direction
      * vector, or positive infinity if no impact occurred. This value may be greater than 1.0.
      */
-    @JvmField
     var distance: Double = 0.0
 
     /**
      * The X component of the impacted face's normal, or 0.0 if no impact occurred
      */
-    @JvmField
     var normalX: Double = 0.0
 
     /**
      * The Y component of the impacted face's normal, or 0.0 if no impact occurred
      */
-    @JvmField
     var normalY: Double = 0.0
 
     /**
      * The Z component of the impacted face's normal, or 0.0 if no impact occurred
      */
-    @JvmField
     var normalZ: Double = 0.0
 
     fun reset() {
