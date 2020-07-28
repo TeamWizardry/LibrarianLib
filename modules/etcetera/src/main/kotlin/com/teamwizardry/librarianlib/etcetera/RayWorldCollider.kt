@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.etcetera
 
 import com.teamwizardry.librarianlib.core.util.SidedRunnable
+import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.minecraft.block.material.Material
@@ -42,6 +43,8 @@ class RayWorldCollider private constructor(world: World) {
 
     private val blockCache = Long2ObjectOpenHashMap<List<AxisAlignedBB>>()
     private val shapeCache = Object2ObjectOpenHashMap<VoxelShape, List<AxisAlignedBB>>()
+    private val intersectingIterator: IntersectingBlocksIterator by threadLocal { IntersectingBlocksIterator() }
+    private val raycaster: DirectRaycaster by threadLocal { DirectRaycaster() }
 
     private var blockCacheAge = 0
     private var shapeCacheAge = 0
@@ -143,67 +146,50 @@ class RayWorldCollider private constructor(world: World) {
 
         val tiny = 0.000_000_000_1
 
-        for (x in minTestX..maxTestX) {
-            for (y in minTestY..maxTestY) {
-                for (z in minTestZ..maxTestZ) {
-                    getBoundingBoxes(x, y, z).forEach { bb ->
-                        collide(result,
+        val raycaster = this.raycaster
+        raycaster.reset()
+
+        if(minTestX == maxTestX && minTestY == maxTestY && minTestZ == maxTestZ) {
+            getBoundingBoxes(minTestX, minTestY, minTestZ).forEach { bb ->
+                if (raycaster.cast(
+                        true,
+                        bb.minX - tiny, bb.minY - tiny, bb.minZ - tiny,
+                        bb.maxX + tiny, bb.maxY + tiny, bb.maxZ + tiny,
+                        posX - minTestX, posY - minTestY, posZ - minTestZ,
+                        invVelX, invVelY, invVelZ
+                    )) {
+                    result.collisionFraction = raycaster.distance
+                    result.collisionNormalX = raycaster.normalX
+                    result.collisionNormalY = raycaster.normalY
+                    result.collisionNormalZ = raycaster.normalZ
+                    result.collisionBlockX = minTestX
+                    result.collisionBlockY = minTestY
+                    result.collisionBlockZ = minTestZ
+                }
+            }
+        } else {
+            val intersectingBlocksIterator = this.intersectingIterator
+            intersectingBlocksIterator.reset(posX, posY, posZ, posX + velX, posY + velY, posZ + velZ)
+
+            for (block in intersectingBlocksIterator) {
+                getBoundingBoxes(block.x, block.y, block.z).forEach { bb ->
+                    if (raycaster.cast(
+                            true,
                             bb.minX - tiny, bb.minY - tiny, bb.minZ - tiny,
                             bb.maxX + tiny, bb.maxY + tiny, bb.maxZ + tiny,
-                            x, y, z,
-                            posX - x, posY - y, posZ - z,
+                            posX - block.x, posY - block.y, posZ - block.z,
                             invVelX, invVelY, invVelZ
-                        )
+                        )) {
+                        result.collisionFraction = raycaster.distance
+                        result.collisionNormalX = raycaster.normalX
+                        result.collisionNormalY = raycaster.normalY
+                        result.collisionNormalZ = raycaster.normalZ
+                        result.collisionBlockX = block.x
+                        result.collisionBlockY = block.y
+                        result.collisionBlockZ = block.z
                     }
                 }
             }
-        }
-    }
-
-    /**
-     * Algorithm used is from this page: https://tavianator.com/fast-branchless-raybounding-box-intersections/
-     */
-    private fun collide(
-        result: RayHitResult,
-        minX: Double, minY: Double, minZ: Double,
-        maxX: Double, maxY: Double, maxZ: Double,
-        blockX: Int,
-        blockY: Int,
-        blockZ: Int,
-        posX: Double,
-        posY: Double,
-        posZ: Double,
-        invVelX: Double,
-        invVelY: Double,
-        invVelZ: Double
-    ) {
-        val tx1 = (minX - posX) * invVelX
-        val tx2 = (maxX - posX) * invVelX
-
-        var tmin = min(tx1, tx2)
-        var tmax = max(tx1, tx2)
-
-        val ty1 = (minY - posY) * invVelY
-        val ty2 = (maxY - posY) * invVelY
-
-        tmin = max(tmin, min(ty1, ty2))
-        tmax = min(tmax, max(ty1, ty2))
-
-        val tz1 = (minZ - posZ) * invVelZ
-        val tz2 = (maxZ - posZ) * invVelZ
-
-        tmin = max(tmin, min(tz1, tz2))
-        tmax = min(tmax, max(tz1, tz2))
-
-        if (tmax >= tmin && tmax >= 0 && tmin >= 0 && tmin < result.collisionFraction) {
-            result.collisionNormalX = if (tmin == tx1) -1.0 else if (tmin == tx2) 1.0 else 0.0
-            result.collisionNormalY = if (tmin == ty1) -1.0 else if (tmin == ty2) 1.0 else 0.0
-            result.collisionNormalZ = if (tmin == tz1) -1.0 else if (tmin == tz2) 1.0 else 0.0
-            result.collisionBlockX = blockX
-            result.collisionBlockY = blockY
-            result.collisionBlockZ = blockZ
-            result.collisionFraction = tmin
-            return
         }
     }
 
