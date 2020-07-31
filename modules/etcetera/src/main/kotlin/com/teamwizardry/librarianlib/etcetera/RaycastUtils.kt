@@ -25,6 +25,8 @@ class IntersectingBlocksIterator: Iterator<IntersectingBlocksIterator> {
 
     private var complete: Boolean = true
 
+    // the current position in the algorithm. This is actually one step ahead of what's returned to the user, just
+    // because of how the algorithm works out
     private var _x: Int = 0
     private var _y: Int = 0
     private var _z: Int = 0
@@ -69,80 +71,76 @@ class IntersectingBlocksIterator: Iterator<IntersectingBlocksIterator> {
         t = 0.0
         n = 1
 
-        when {
-            dx == 0.0 -> {
-                x_inc = 0
-                dt_dx = 0.0
-                t_next_x = Double.POSITIVE_INFINITY
-            }
-            x1 > x0 -> {
-                x_inc = 1
-                dt_dx = 1.0 / dx
-                n += floorInt(x1) - _x
-                t_next_x = (floor(x0) + 1 - x0) * dt_dx
-            }
-            else -> {
-                x_inc = -1
-                dt_dx = 1.0 / dx
-                n += _x - floorInt(x1)
-                t_next_x = (x0 - floor(x0)) * dt_dx
-            }
+        if (dx == 0.0) {
+            x_inc = 0
+            dt_dx = 0.0
+            t_next_x = Double.POSITIVE_INFINITY
+        }
+        else if (x1 > x0) {
+            x_inc = 1
+            dt_dx = 1.0 / dx
+            n += floorInt(x1) - _x
+            t_next_x = (floor(x0) + 1 - x0) * dt_dx
+        }
+        else {
+            x_inc = -1
+            dt_dx = 1.0 / dx
+            n += _x - floorInt(x1)
+            t_next_x = (x0 - floor(x0)) * dt_dx
         }
 
-        when {
-            dy == 0.0 -> {
-                y_inc = 0
-                dt_dy = 0.0
-                t_next_y = Double.POSITIVE_INFINITY
-            }
-            y1 > y0 -> {
-                y_inc = 1
-                dt_dy = 1.0 / dy
-                n += floorInt(y1) - _y
-                t_next_y = (floor(y0) + 1 - y0) * dt_dy
-            }
-            else -> {
-                y_inc = -1
-                dt_dy = 1.0 / dy
-                n += _y - floorInt(y1)
-                t_next_y = (y0 - floor(y0)) * dt_dy
-            }
+        if (dy == 0.0) {
+            y_inc = 0
+            dt_dy = 0.0
+            t_next_y = Double.POSITIVE_INFINITY
+        }
+        else if (y1 > y0) {
+            y_inc = 1
+            dt_dy = 1.0 / dy
+            n += floorInt(y1) - _y
+            t_next_y = (floor(y0) + 1 - y0) * dt_dy
+        }
+        else {
+            y_inc = -1
+            dt_dy = 1.0 / dy
+            n += _y - floorInt(y1)
+            t_next_y = (y0 - floor(y0)) * dt_dy
         }
 
-        when {
-            dz == 0.0 -> {
-                z_inc = 0
-                dt_dz = 0.0
-                t_next_z = Double.POSITIVE_INFINITY
-            }
-            z1 > z0 -> {
-                z_inc = 1
-                dt_dz = 1.0 / dz
-                n += floorInt(z1) - _z
-                t_next_z = (floor(z0) + 1 - z0) * dt_dz
-            }
-            else -> {
-                z_inc = -1
-                dt_dz = 1.0 / dz
-                n += _z - floorInt(z1)
-                t_next_z = (z0 - floor(z0)) * dt_dz
-            }
+        if (dz == 0.0) {
+            z_inc = 0
+            dt_dz = 0.0
+            t_next_z = Double.POSITIVE_INFINITY
+        }
+        else if (z1 > z0) {
+            z_inc = 1
+            dt_dz = 1.0 / dz
+            n += floorInt(z1) - _z
+            t_next_z = (floor(z0) + 1 - z0) * dt_dz
+        }
+        else {
+            z_inc = -1
+            dt_dz = 1.0 / dz
+            n += _z - floorInt(z1)
+            t_next_z = (z0 - floor(z0)) * dt_dz
         }
     }
-
 
     override fun hasNext(): Boolean {
         return !complete
     }
 
+    // the while loop from the source
     override fun next(): IntersectingBlocksIterator {
         if (complete)
             throw NoSuchElementException()
         visit(_x, _y, _z)
 
+        // the break is replaced with `complete = true`, halting before the next iteration.
         if (--n == 0)
             complete = true
 
+        // move forward one step
         if (t_next_x <= t_next_y && t_next_x <= t_next_z) // t_next_x is smallest
         {
             _x += x_inc
@@ -165,6 +163,7 @@ class IntersectingBlocksIterator: Iterator<IntersectingBlocksIterator> {
         return this
     }
 
+    // the "visitor" function described in the article takes the values and exposes them to the user
     private fun visit(x: Int, y: Int, z: Int) {
         _xOut = x
         _yOut = y
@@ -184,6 +183,12 @@ class DirectRaycaster {
     var distance: Double = 0.0
 
     /**
+     * The depth of the hit. This is the distance from the entrance to the exit point, expressed as a multiple of the
+     * ray's direction vector, or zero if no impact occurred.
+     */
+    var depth: Double = 0.0
+
+    /**
      * The X component of the impacted face's normal, or 0.0 if no impact occurred
      */
     var normalX: Double = 0.0
@@ -200,6 +205,7 @@ class DirectRaycaster {
 
     fun reset() {
         distance = Double.POSITIVE_INFINITY
+        depth = 0.0
         normalX = 0.0
         normalY = 0.0
         normalZ = 0.0
@@ -246,6 +252,7 @@ class DirectRaycaster {
                 normalY = if (tmin == ty1) -1.0 else if (tmin == ty2) 1.0 else 0.0
                 normalZ = if (tmin == tz1) -1.0 else if (tmin == tz2) 1.0 else 0.0
                 distance = tmin
+                depth = tmax - tmin
                 return true
             }
         } else if (!cumulative) {

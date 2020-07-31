@@ -129,7 +129,7 @@ class SpriteRenderModule @JvmOverloads constructor(
         val spriteSheetBits = MathHelper.log2(spriteSheetSize)
 
         particles.forEach { particle ->
-            for (i in 0 until prepModules.size) {
+            for (i in prepModules.indices) {
                 prepModules[i].update(particle)
             }
             var rightX = lookRightX

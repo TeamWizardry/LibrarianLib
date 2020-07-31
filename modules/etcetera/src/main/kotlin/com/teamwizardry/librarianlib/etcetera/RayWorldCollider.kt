@@ -88,17 +88,6 @@ class RayWorldCollider private constructor(world: World) {
      * The collision uses raytracing to find the impact point on the current world's collision box. The ray begins at
      * the passed `pos` and extends in the direction and for the length of the passed `vel`. Each component of `vel`
      * is clamped to ±[maxBounds] in order to avoid accidental infinite loops or other such nastiness.
-     *
-     * The results of the collision are stored in the fields of this class in order to avoid allocating a new object to
-     * contain them.
-     *
-     * @see collisionFraction
-     * @see collisionNormalX
-     * @see collisionNormalY
-     * @see collisionNormalZ
-     * @see collisionBlockX
-     * @see collisionBlockY
-     * @see collisionBlockZ
      */
     @JvmOverloads
     fun collide(
@@ -145,6 +134,7 @@ class RayWorldCollider private constructor(world: World) {
         raycaster.reset()
 
         if (minTestX == maxTestX && minTestY == maxTestY && minTestZ == maxTestZ) {
+            // the entire ray is within a single block. No need to go through the iterator
             val boxes = getBoundingBoxes(minTestX, minTestY, minTestZ)
             for (i in boxes.indices) {
                 val bb = boxes[i]
@@ -155,6 +145,7 @@ class RayWorldCollider private constructor(world: World) {
                         posX - minTestX, posY - minTestY, posZ - minTestZ,
                         invVelX, invVelY, invVelZ
                     )) {
+                    // if there was a hit, copy the data, including the block position, to the result
                     result.collisionFraction = raycaster.distance
                     result.collisionNormalX = raycaster.normalX
                     result.collisionNormalY = raycaster.normalY
@@ -165,6 +156,7 @@ class RayWorldCollider private constructor(world: World) {
                 }
             }
         } else {
+            // Go through all the blocks the ray intersects with and test them
             val intersectingBlocksIterator = this.intersectingIterator
             intersectingBlocksIterator.reset(posX, posY, posZ, posX + velX, posY + velY, posZ + velZ)
 
@@ -179,6 +171,7 @@ class RayWorldCollider private constructor(world: World) {
                             posX - block.x, posY - block.y, posZ - block.z,
                             invVelX, invVelY, invVelZ
                         )) {
+                        // if there was a hit, copy the data, including the block position, to the result
                         result.collisionFraction = raycaster.distance
                         result.collisionNormalX = raycaster.normalX
                         result.collisionNormalY = raycaster.normalY
@@ -197,18 +190,24 @@ class RayWorldCollider private constructor(world: World) {
 
     @Suppress("ReplacePutWithAssignment")
     private fun getBoundingBoxes(x: Int, y: Int, z: Int): List<AxisAlignedBB> {
+        // blocks outside the world never have collision
         if (y < 0 || y > world.actualHeight)
             return emptyList()
+
+        // check if the sub-chunk is known to be empty
         sectionPos.setPos(x shr 4, y shr 4, z shr 4)
         if (airCache.contains(sectionPos.toLong()))
             return emptyList()
 
         mutablePos.setPos(x, y, z)
         val toLong = mutablePos.toLong()
+        // we can't use getOrPut because it uses the boxed Long
         blockCache.get(toLong)?.let { return it }
 
+        // get the chunk without trying to load or generate it
         val chunk = world.getChunk(x shr 4, z shr 4, ChunkStatus.EMPTY, false)
         if(chunk == null) {
+            // the entire chunk is unloaded. Mark all its sub-chunks as empty
             for(i in 0 until 16) {
                 sectionPos.setPos(x shr 4, i, z shr 4)
                 airCache.add(sectionPos.toLong())
@@ -218,6 +217,7 @@ class RayWorldCollider private constructor(world: World) {
 
         val section = chunk.sections[y shr 4]
         if (ChunkSection.isEmpty(section)) {
+            // if the section is empty, make note of that for future calls
             airCache.add(sectionPos.toLong())
             return emptyList()
         }
@@ -226,17 +226,16 @@ class RayWorldCollider private constructor(world: World) {
 
         val boxes = if (state == Blocks.AIR.defaultState || state.isAir(world, mutablePos)
             || state.material.let { !it.blocksMovement() || it.isLiquid }) {
+            // ignore air, non-solid, and liquid blocks
             emptyList()
         } else {
-            getBoundingBoxes(state.getCollisionShape(world, mutablePos))
+            val shape = state.getCollisionShape(world, mutablePos)
+            shapeCache.getOrPut(shape) { shape.toBoundingBoxList() }
         }
 
+        // we survived the gauntlet, now cache the resulting list for next time
         blockCache.put(toLong, boxes)
         return boxes
-    }
-
-    private fun getBoundingBoxes(shape: VoxelShape): List<AxisAlignedBB> {
-        return shapeCache.getOrPut(shape) { shape.toBoundingBoxList() }
     }
 
     companion object {
