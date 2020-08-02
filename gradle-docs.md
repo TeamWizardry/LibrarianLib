@@ -80,9 +80,14 @@ https://github.com/bintray/gradle-bintray-plugin
 
 ### New Release
 - Bump the version in `gradle.properties`
+- Run `./gradlew clean build` to verify the project builds correctly
 - Create a new commit with *only* that change, with the message `Publish v<version>`
 - Create a new tag named `v<version>` on that commit
 - Push to GitHub
+- Create a new release with the specified tag
+- Upload the deobf, source, and obf jars from the root `build/libs` directory
+- Publish the release
+- TODO: CurseForge
 
 ### New Module
 New packages must first have a release build published to Bintray, which only allows release builds. Once the package is

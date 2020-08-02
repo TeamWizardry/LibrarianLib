@@ -290,7 +290,10 @@ configure(productionModules + [project]) {
             repo = "teamwizardry"
             userOrg = "teamwizardry"
 
-            name = project.name
+            if(project != rootProject)
+                name = "librarianlib-" + project.name
+            else
+                name = project.name
             desc = project.description
             labels = ["minecraft", "mc", "mod", "modding", "forge", "library", "wizardry"]
             licenses = ["LGPL-3.0"]
