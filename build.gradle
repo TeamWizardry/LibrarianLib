@@ -288,15 +288,17 @@ configure(productionModules + [project]) {
         publications = ['mod']
         pkg {
             repo = "teamwizardry"
-            name = project.name
             userOrg = "teamwizardry"
+
+            name = project.name
+            desc = project.description
+            labels = ["minecraft", "mc", "mod", "modding", "forge", "library", "wizardry"]
+            licenses = ["LGPL-3.0"]
+
             websiteUrl = "https://github.com/TeamWizardry/LibrarianLib"
             githubRepo = "TeamWizardry/LibrarianLib"
             vcsUrl = "https://github.com/TeamWizardry/LibrarianLib.git"
             issueTrackerUrl = "https://github.com/TeamWizardry/LibrarianLib/issues"
-            desc = project.description
-            labels = ["minecraft", "mc", "modding", "forge", "library", "wizardry"]
-            licenses = ["LGPL-3.0"]
         }
     }
 

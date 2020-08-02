@@ -6,8 +6,7 @@ name: Publish Snapshots
 on:
   push:
     branches:
-      - '1.15'
-      - '1.15/**'
+      - '1.15**'
 
 jobs:
   build:

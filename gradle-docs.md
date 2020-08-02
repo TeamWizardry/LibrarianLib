@@ -75,6 +75,22 @@ directory will automatically be scanned and added to the generated mixin connect
 
 ![Module build process flow chart](https://raw.github.com/TeamWizardry/LibrarianLib/1.15/gradle/module_build.png)
 
+## Publishing
+https://github.com/bintray/gradle-bintray-plugin
+
+### New Release
+- Bump the version in `gradle.properties`
+- Create a new commit with *only* that change, with the message `Publish v<version>`
+- Create a new tag named `v<version>` on that commit
+- Push to GitHub
+
+### New Module
+New packages must first have a release build published to Bintray, which only allows release builds. Once the package is
+on Bintray, it must be approved for snapshots on oss.jfrog.org. 
+
+### Snapshots
+Snapshots are automatically created when pushing to any branch that starts with `1.15`.
+
 ## TODO
 https://github.com/Kotlin/binary-compatibility-validator
 Nail down publishing to jfrog and then applying for oss.jfrog.org
