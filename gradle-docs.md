@@ -99,8 +99,9 @@ https://github.com/bintray/gradle-bintray-plugin
 - TODO: CurseForge
 
 ### New Module
-New packages must first have a release build published to Bintray, which only allows release builds. Once the package is
-on Bintray, it must be approved for snapshots on oss.jfrog.org. 
+In order for new modules to be put on JCenter, log into bintray and navigate to the newly created project. Select the
+`Actions` dropdown in the top-right and click `Add to JCenter`. Select `Is pom project`, but don't select to add it to
+OJO, since the snapshots will likely have already been uploaded and this will result in an error.
 
 ### Snapshots
 Snapshots are automatically created when pushing to any branch that starts with `1.15`.
