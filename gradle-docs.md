@@ -79,14 +79,23 @@ directory will automatically be scanned and added to the generated mixin connect
 https://github.com/bintray/gradle-bintray-plugin
 
 ### New Release
-- Bump the version in `gradle.properties`
-- Run `./gradlew clean build` to verify the project builds correctly
-- Create a new commit with *only* that change, with the message `Publish v<version>`
-- Create a new tag named `v<version>` on that commit
-- Push to GitHub
-- Create a new release with the specified tag
-- Upload the deobf, source, and obf jars from the root `build/libs` directory
-- Publish the release
+- Set up the release:
+    - Bump the version in `gradle.properties`
+    - Run `./gradlew clean build` to verify the project builds correctly
+    - Create a new commit with *only* that change, with the message `Publish v<version>`
+    - Create a new tag named `v<version>` on that commit
+    - Push to GitHub
+- Create the GitHub release:
+    - Go to the [tag list](https://github.com/TeamWizardry/LibrarianLib/tags)
+    - Click the tag you just created
+    - Click `Edit tag`
+    - Add the deobf, source, and obf jars from the root `build/libs` directory (you *did* just run the build, right?)
+    - Click on `Publish release`
+- Publishing to Bintray:
+    - Wait for the release action on GitHub to finish
+    - Sign in on [Bintray](https://bintray.com)
+    - Select the `teamwizardry` repository
+    - It will say there are unpublished files. Click `Publish all`
 - TODO: CurseForge
 
 ### New Module
