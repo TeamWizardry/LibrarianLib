@@ -30,7 +30,8 @@ object TextureMapExporter {
     @JvmStatic
     @SubscribeEvent
     fun postTextureStitch(e: TextureStitchEvent.Post) {
-        saveGlTexture(e.map.mh_basePath, e.map.glTextureId, e.map.mh_mipMapLevel)
+        if(LibrarianLib.DEV_ENVIRONMENT)
+            saveGlTexture(e.map.mh_basePath, e.map.glTextureId, e.map.mh_mipMapLevel)
     }
 
     fun saveGlTexture(name: String, textureId: Int, mipmapLevels: Int) {
