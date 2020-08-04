@@ -98,7 +98,6 @@ internal object GameParticleSystems {
         GlStateManager.pushMatrix()
         GlStateManager.enableBlend()
         GlStateManager.alphaFunc(GL11.GL_GREATER, 1 / 256f)
-        GlStateManager.disableLighting()
 
         profiler.startSection("liblib_particles")
 
@@ -118,6 +117,7 @@ internal object GameParticleSystems {
 
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
         GlStateManager.disableBlend()
+        GlStateManager.disableLighting()
         GlStateManager.popMatrix()
     }
 

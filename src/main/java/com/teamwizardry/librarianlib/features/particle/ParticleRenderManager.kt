@@ -171,7 +171,6 @@ object ParticleRenderManager {
         GlStateManager.depthMask(false)
         GlStateManager.enableBlend()
         GlStateManager.alphaFunc(GL11.GL_GREATER, 1 / 256f)
-        GlStateManager.disableLighting()
 
         profiler.startSection("liblib_particles")
 
@@ -213,7 +212,7 @@ object ParticleRenderManager {
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F)
         GlStateManager.disableBlend()
         GlStateManager.depthMask(true)
-        GlStateManager.enableLighting()
+        GlStateManager.disableLighting()
     }
 
     internal fun projectToRay(a: Vec3d, b: Vec3d, p: Vec3d): Vec3d {
