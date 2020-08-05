@@ -11,7 +11,6 @@ import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
 import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
 import com.teamwizardry.librarianlib.core.util.kotlin.color
 import com.teamwizardry.librarianlib.core.util.kotlin.mixinCast
-import com.teamwizardry.librarianlib.core.util.kotlin.obf
 import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.client.renderer.IRenderTypeBuffer

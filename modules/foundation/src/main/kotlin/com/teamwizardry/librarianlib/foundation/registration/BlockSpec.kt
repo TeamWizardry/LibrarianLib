@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
 import com.teamwizardry.librarianlib.core.util.IncompleteBuilderException
-import com.teamwizardry.librarianlib.core.util.kotlin.obf
+import com.teamwizardry.librarianlib.core.util.mapSrgName
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.block.Block
 import net.minecraft.block.SoundType
@@ -165,9 +165,9 @@ class BlockSpec(
 
     companion object {
         private val blockPropertiesMaterialMirror = Mirror.reflectClass<Block.Properties>()
-            .getDeclaredField(obf("material", "field_200953_a"))
+            .getDeclaredField(mapSrgName("field_200953_a")) // materials
         private val blockPropertiesMapColorMirror = Mirror.reflectClass<Block.Properties>()
-            .getDeclaredField(obf("mapColor", "field_200954_b"))
+            .getDeclaredField(mapSrgName("field_200954_b")) // mapColor
         private val GENERIC_MATERIAL = Material(
             MaterialColor.AIR, // materialMapColor
             false, // liquid

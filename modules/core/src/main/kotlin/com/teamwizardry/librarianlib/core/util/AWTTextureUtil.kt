@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.core.util
 
-import com.teamwizardry.librarianlib.core.util.kotlin.obf
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.client.renderer.texture.NativeImage
 import org.lwjgl.system.MemoryUtil
@@ -30,5 +29,5 @@ object AWTTextureUtil {
         }
     }
 
-    private val imagePointer = Mirror.reflectClass<NativeImage>().getDeclaredField(obf("imagePointer", "field_195722_d"))
+    private val imagePointer = Mirror.reflectClass<NativeImage>().getDeclaredField(mapSrgName("field_195722_d")) // imagePointer
 }

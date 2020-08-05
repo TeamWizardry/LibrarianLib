@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.etcetera.eventbus
 
-import com.teamwizardry.librarianlib.core.util.kotlin.IS_DEOBFUSCATED
+import com.teamwizardry.librarianlib.core.util.IS_DEV_ENV
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.member.MethodMirror
 import dev.thecodewarrior.mirror.type.TypeMirror
@@ -21,7 +21,7 @@ internal object EventHookAnnotationReflector {
     fun apply(bus: EventBus, obj: Any) {
 
         // clear cache periodically to support hotswapped classes
-        if(IS_DEOBFUSCATED && System.currentTimeMillis() > nextClear) {
+        if(IS_DEV_ENV && System.currentTimeMillis() > nextClear) {
             nextClear = System.currentTimeMillis() + clearInterval
             cache.clear()
         }

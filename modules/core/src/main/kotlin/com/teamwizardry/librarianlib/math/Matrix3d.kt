@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.math
 
 import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
-import com.teamwizardry.librarianlib.core.util.kotlin.obf
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.member.FieldMirror

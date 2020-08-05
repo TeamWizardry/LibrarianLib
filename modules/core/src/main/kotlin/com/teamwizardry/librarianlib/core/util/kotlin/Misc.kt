@@ -6,6 +6,8 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.Vec3i
 import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.common.util.NonNullConsumer
+import net.minecraftforge.coremod.api.ASMAPI
+import java.lang.IllegalArgumentException
 import java.util.Optional
 import kotlin.reflect.jvm.javaMethod
 
@@ -16,14 +18,6 @@ fun String.toRl(): ResourceLocation = ResourceLocation(this)
  */
 fun ResourceLocation.translationKey(type: String, suffix: String? = null): String
     = "$type.$namespace.$path${suffix?.let { ".$it" } ?: ""}"
-
-private val obfTest = Vec3i::getX.javaMethod!! // has to be a separate field, otherwise it gets optimized away
-/**
- * True if the current environment is obfuscated
- */
-val IS_DEOBFUSCATED: Boolean = obfTest.name == "getX"
-
-fun obf(deobfuscated: String, obfuscated: String): String = if(IS_DEOBFUSCATED) deobfuscated else obfuscated
 
 /**
  * A method for casting objects without the IDE complaining about casts always failing
