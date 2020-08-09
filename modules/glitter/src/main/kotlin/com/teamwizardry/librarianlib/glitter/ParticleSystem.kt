@@ -156,7 +156,7 @@ abstract class ParticleSystem {
             systemInitialized = true
         }
 
-        val particle = DoubleArray(fieldCount)
+        val particle = particlePool.pollFirst() ?: DoubleArray(fieldCount)
         particle[0] = lifetime.toDouble()
         particle[1] = 0.0
         (2 until particle.size).forEach { i ->
