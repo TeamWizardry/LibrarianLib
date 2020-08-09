@@ -1,7 +1,10 @@
-package com.teamwizardry.librarianlib.etcetera
+package com.teamwizardry.librarianlib.glitter
 
+import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.SidedRunnable
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
+import com.teamwizardry.librarianlib.etcetera.DirectRaycaster
+import com.teamwizardry.librarianlib.etcetera.IntersectingBlocksIterator
 import it.unimi.dsi.fastutil.longs.Long2BooleanOpenHashMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
@@ -10,6 +13,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.minecraft.block.Blocks
 import net.minecraft.block.material.Material
 import net.minecraft.client.Minecraft
+import net.minecraft.client.world.ClientWorld
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
@@ -40,13 +44,9 @@ import kotlin.math.min
  * 2. It doesn't properly handle collision boxes that extend outside the bounds of their block. This is because, unlike
  * Minecraft's collision handling it doesn't check any blocks outside of those the velocity vector moves through.
  */
-@Mod.EventBusSubscriber
-class RayWorldCollider private constructor(world: World) {
-
-    private val worldRef = WeakReference(world)
-
-    private val world: World
-        get() = worldRef.get()!!
+@OnlyIn(Dist.CLIENT)
+@Mod.EventBusSubscriber(Dist.CLIENT)
+object GlitterWorldCollider {
 
     private val blockCache = Long2ObjectOpenHashMap<List<AxisAlignedBB>>()
     private val shapeCache = Object2ObjectOpenHashMap<VoxelShape, List<AxisAlignedBB>>()
@@ -76,7 +76,7 @@ class RayWorldCollider private constructor(world: World) {
      * This method _immediately_ clears all the caches, meaning calling it repeatedly between [collide] calls can
      * severely impact performance.
      */
-    fun requestRefresh() {
+    fun clearCache() {
         blockCache.clear()
         shapeCache.clear()
         airCache.clear()
@@ -181,6 +181,8 @@ class RayWorldCollider private constructor(world: World) {
                         result.collisionBlockZ = block.z
                     }
                 }
+                if(result.collisionFraction != 1.0)
+                    break // stop on the first hit
             }
         }
     }
@@ -190,6 +192,8 @@ class RayWorldCollider private constructor(world: World) {
 
     @Suppress("ReplacePutWithAssignment")
     private fun getBoundingBoxes(x: Int, y: Int, z: Int): List<AxisAlignedBB> {
+        val world = Client.minecraft.world ?: return emptyList()
+
         // blocks outside the world never have collision
         if (y < 0 || y > world.actualHeight)
             return emptyList()
@@ -238,42 +242,19 @@ class RayWorldCollider private constructor(world: World) {
         return boxes
     }
 
-    companion object {
-        @JvmStatic
-        private val worldMap = WeakHashMap<World, RayWorldCollider>()
+    @Suppress("UNUSED_PARAMETER")
+    @SubscribeEvent
+    @JvmStatic
+    fun tick(e: TickEvent.ClientTickEvent) {
+        blockCacheManager.tick()
+        shapeCacheManager.tick()
+        airCacheManager.tick()
+    }
 
-        @Suppress("UNUSED_PARAMETER")
-        @SubscribeEvent
-        @JvmStatic
-        fun tick(e: TickEvent.ClientTickEvent) {
-            for (value in worldMap.values) {
-                value.blockCacheManager.tick()
-                value.shapeCacheManager.tick()
-                value.airCacheManager.tick()
-            }
-        }
-
-        /**
-         * Gets the [RayWorldCollider] for the passed world
-         */
-        @JvmStatic
-        operator fun get(world: World): RayWorldCollider {
-            return worldMap.getOrPut(world) { RayWorldCollider(world) }
-        }
-
-        /**
-         * Gets the [RayWorldCollider] for the client world.
-         * Returns null if called server-side.
-         */
-        @JvmStatic
-        val client: RayWorldCollider?
-            get() {
-                var handler: RayWorldCollider? = null
-                SidedRunnable.client {
-                    handler = ClientRayWorldCollider.get()
-                }
-                return handler
-            }
+    @Suppress("UNUSED_PARAMETER")
+    @SubscribeEvent
+    fun unloadWorld(e: WorldEvent.Unload) {
+        clearCache()
     }
 
     class CacheManager(var interval: Int, private val clearFunction: () -> Unit) {
@@ -336,28 +317,4 @@ class RayHitResult {
      * less than 1.0 to tell between a collision at (0,0,0) and no collision.
      */
     var collisionBlockZ: Int = 0
-}
-
-@OnlyIn(Dist.CLIENT)
-@Mod.EventBusSubscriber(Dist.CLIENT)
-private object ClientRayWorldCollider {
-    var cache: RayWorldCollider? = null
-
-    @Suppress("UNUSED_PARAMETER")
-    @SubscribeEvent
-    fun unloadWorld(e: WorldEvent.Unload) {
-        cache = null
-    }
-
-    fun get(): RayWorldCollider? {
-        val world = Minecraft.getInstance().world
-        var cache = cache
-        if (world == null) {
-            cache = null
-        } else if (cache == null) {
-            cache = RayWorldCollider[world]
-        }
-        ClientRayWorldCollider.cache = cache
-        return cache
-    }
 }

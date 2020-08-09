@@ -173,7 +173,7 @@ class TestEntityConfig(val id: String, val name: String, spawnerItemGroup: ItemG
         player.world.addEntity(entity)
     }
 
-    var spawnerItem = TestItem(TestItemConfig(this.id + "_entity", this.name + " Entity", spawnerItemGroup) {
+    var spawnerItem = TestItem(TestItemConfig(this.id + "_entity", this.name, spawnerItemGroup) {
         server {
             rightClick {
                 spawn(player)

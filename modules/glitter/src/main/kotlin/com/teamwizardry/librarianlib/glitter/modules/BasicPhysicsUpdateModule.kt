@@ -1,8 +1,6 @@
 package com.teamwizardry.librarianlib.glitter.modules
 
 import com.teamwizardry.librarianlib.glitter.*
-import com.teamwizardry.librarianlib.etcetera.RayHitResult
-import com.teamwizardry.librarianlib.etcetera.RayWorldCollider
 import java.lang.Math.abs
 
 /**
@@ -13,7 +11,7 @@ import java.lang.Math.abs
  * velocity changes.
  *
  * The collision boxes are not updated every tick, as retrieving them is among the most costly operations the collider
- * does. A refresh may be manually requested by calling [RayWorldCollider.requestRefresh]
+ * does. A refresh may be manually requested by calling [GlitterWorldCollider.clearCache]
  *
  * The process of updating each tick proceeds as follows:
  *
@@ -110,7 +108,6 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
     private var velY: Double = 0.0
     private var velZ: Double = 0.0
     private val rayHit = RayHitResult()
-    private lateinit var collider: RayWorldCollider
 
     override fun update(particle: DoubleArray) {
         position.load(particle)
@@ -135,7 +132,7 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
         // (3. in class docs)
         accelerate()
 
-        if(enableCollision && RayWorldCollider.client?.also { collider = it } != null) {
+        if(enableCollision) {
             // (4. in class docs)
             collide()
 
@@ -174,7 +171,7 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
 
     private fun collide(velocityMultiplier: Double = 1.0) {
         // (4.1 in class docs)
-        collider.collide(rayHit,
+        GlitterWorldCollider.collide(rayHit,
                 posX, posY, posZ,
                 velX * velocityMultiplier, velY * velocityMultiplier, velZ * velocityMultiplier
         )

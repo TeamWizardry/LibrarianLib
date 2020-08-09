@@ -126,9 +126,11 @@ abstract class TestMod(val targetName: String, val humanName: String, val logger
 
     init {
         FMLKotlinModLoadingContext.get().modEventBus.addListener<FMLCommonSetupEvent> {
+            this.testSetup(it)
             this.setup(it)
         }
         FMLKotlinModLoadingContext.get().modEventBus.addListener<FMLClientSetupEvent> {
+            this.clientTestSetup(it)
             this.clientSetup(it)
         }
 
@@ -138,12 +140,12 @@ abstract class TestMod(val targetName: String, val humanName: String, val logger
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun setup(event: FMLCommonSetupEvent) {
+    private fun testSetup(event: FMLCommonSetupEvent) {
     }
 
     @Suppress("UNUSED_PARAMETER")
     @OnlyIn(Dist.CLIENT)
-    fun clientSetup(event: FMLClientSetupEvent) {
+    private fun clientTestSetup(event: FMLClientSetupEvent) {
         _testEntities.forEach { entity ->
             RenderingRegistry.registerEntityRenderingHandler(entity) { TestEntityRenderer(it) }
         }
@@ -155,6 +157,15 @@ abstract class TestMod(val targetName: String, val humanName: String, val logger
                 RenderTypeLookup.setRenderLayer(block, RenderType.getCutout())
             }
         }
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    open fun setup(event: FMLCommonSetupEvent) {
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    @OnlyIn(Dist.CLIENT)
+    open fun clientSetup(event: FMLClientSetupEvent) {
     }
 
     private fun generateItemAssets() {

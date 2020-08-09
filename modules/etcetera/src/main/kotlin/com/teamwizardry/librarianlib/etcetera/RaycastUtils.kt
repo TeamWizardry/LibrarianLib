@@ -19,9 +19,15 @@ class IntersectingBlocksIterator: Iterator<IntersectingBlocksIterator> {
     val y: Int get() = _yOut
     val z: Int get() = _zOut
 
+    /**
+     * The point where the line entered this block, expressed as a fraction of the line length
+     */
+    val entryFraction: Double get() = _tOut
+
     private var _xOut: Int = 0
     private var _yOut: Int = 0
     private var _zOut: Int = 0
+    private var _tOut: Double = 0.0
 
     private var complete: Boolean = true
 
@@ -58,6 +64,11 @@ class IntersectingBlocksIterator: Iterator<IntersectingBlocksIterator> {
         x0: Double, y0: Double, z0: Double,
         x1: Double, y1: Double, z1: Double
     ) {
+        _xOut = 0
+        _yOut = 0
+        _zOut = 0
+        _tOut = 0.0
+
         complete = false
 
         dx = abs(x1 - x0)
@@ -75,14 +86,12 @@ class IntersectingBlocksIterator: Iterator<IntersectingBlocksIterator> {
             x_inc = 0
             dt_dx = 0.0
             t_next_x = Double.POSITIVE_INFINITY
-        }
-        else if (x1 > x0) {
+        } else if (x1 > x0) {
             x_inc = 1
             dt_dx = 1.0 / dx
             n += floorInt(x1) - _x
             t_next_x = (floor(x0) + 1 - x0) * dt_dx
-        }
-        else {
+        } else {
             x_inc = -1
             dt_dx = 1.0 / dx
             n += _x - floorInt(x1)
@@ -93,14 +102,12 @@ class IntersectingBlocksIterator: Iterator<IntersectingBlocksIterator> {
             y_inc = 0
             dt_dy = 0.0
             t_next_y = Double.POSITIVE_INFINITY
-        }
-        else if (y1 > y0) {
+        } else if (y1 > y0) {
             y_inc = 1
             dt_dy = 1.0 / dy
             n += floorInt(y1) - _y
             t_next_y = (floor(y0) + 1 - y0) * dt_dy
-        }
-        else {
+        } else {
             y_inc = -1
             dt_dy = 1.0 / dy
             n += _y - floorInt(y1)
@@ -111,14 +118,12 @@ class IntersectingBlocksIterator: Iterator<IntersectingBlocksIterator> {
             z_inc = 0
             dt_dz = 0.0
             t_next_z = Double.POSITIVE_INFINITY
-        }
-        else if (z1 > z0) {
+        } else if (z1 > z0) {
             z_inc = 1
             dt_dz = 1.0 / dz
             n += floorInt(z1) - _z
             t_next_z = (floor(z0) + 1 - z0) * dt_dz
-        }
-        else {
+        } else {
             z_inc = -1
             dt_dz = 1.0 / dz
             n += _z - floorInt(z1)
@@ -134,7 +139,7 @@ class IntersectingBlocksIterator: Iterator<IntersectingBlocksIterator> {
     override fun next(): IntersectingBlocksIterator {
         if (complete)
             throw NoSuchElementException()
-        visit(_x, _y, _z)
+        visit(_x, _y, _z, t)
 
         // the break is replaced with `complete = true`, halting before the next iteration.
         if (--n == 0)
@@ -146,14 +151,12 @@ class IntersectingBlocksIterator: Iterator<IntersectingBlocksIterator> {
             _x += x_inc
             t = t_next_x
             t_next_x += dt_dx
-        }
-        else if (t_next_y <= t_next_x && t_next_y <= t_next_z) // t_next_y is smallest
+        } else if (t_next_y <= t_next_x && t_next_y <= t_next_z) // t_next_y is smallest
         {
             _y += y_inc
             t = t_next_y
             t_next_y += dt_dy
-        }
-        else // t_next_z is smallest
+        } else // t_next_z is smallest
         {
             _z += z_inc
             t = t_next_z
@@ -164,10 +167,11 @@ class IntersectingBlocksIterator: Iterator<IntersectingBlocksIterator> {
     }
 
     // the "visitor" function described in the article takes the values and exposes them to the user
-    private fun visit(x: Int, y: Int, z: Int) {
+    private fun visit(x: Int, y: Int, z: Int, t: Double) {
         _xOut = x
         _yOut = y
         _zOut = z
+        _tOut = t
     }
 }
 
