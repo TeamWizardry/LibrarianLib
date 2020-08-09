@@ -12,7 +12,10 @@ object ParticleSystems {
         PerfectBouncySystem,
         ForwardFacingSystem,
         SpriteSheetSystem,
-        DepthSortSystem
+        DepthSortSystem,
+        IgnoreParticleSettingSystem,
+        ShowOnMinimalSystem,
+        SpawnCountAdjustmentSystem
     )
     private val systemMap = systems.associateBy { it.id }
 

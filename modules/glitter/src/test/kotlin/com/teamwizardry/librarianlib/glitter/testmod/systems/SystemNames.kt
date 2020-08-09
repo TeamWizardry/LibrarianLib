@@ -45,6 +45,24 @@ object SystemNames {
             """
                 Spawns randomly colored, motionless particles with depth sorting enabled
             """.trimIndent()
+        ),
+        System("ignore_particle_setting",
+            "Spawn Ignore Particle Setting Particle",
+            """
+                Spawns particles that ignore the particle setting
+            """.trimIndent()
+        ),
+        System("show_on_minimal",
+            "Spawn Show On Minimal Particle",
+            """
+                Spawns particles that appear at a reduced rate on the minimal particle setting
+            """.trimIndent()
+        ),
+        System("spawn_count_adjustment",
+            "Spawn Spawn Count Adjusted Particle",
+            """
+                Spawns particles that have their spawn count adjusted by the current particle setting
+            """.trimIndent()
         )
     )
 

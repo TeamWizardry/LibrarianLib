@@ -1,10 +1,12 @@
 package com.teamwizardry.librarianlib.glitter
 
 import com.mojang.blaze3d.matrix.MatrixStack
+import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.glitter.bindings.StoredBinding
 import com.teamwizardry.librarianlib.glitter.bindings.VariableBinding
 import com.teamwizardry.librarianlib.glitter.modules.DepthSortModule
 import net.minecraft.client.renderer.Matrix4f
+import net.minecraft.client.settings.ParticleStatus
 import org.magicwerk.brownies.collections.GapList
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -73,7 +75,28 @@ abstract class ParticleSystem {
      * churn by retaining dead particle arrays and reusing them in [addParticle] as opposed to creating new ones each
      * time.
      */
-    var poolSize = 1000
+    var poolSize: Int = 1000
+
+    /**
+     * Whether to ignore the client's particle density setting when spawning particles. If this is true, spawns will be
+     * randomly ignored based on [decreasedSpawnChance] and [minimalSpawnChance]. If a particle is ignored,
+     * [addParticle] will return a placeholder array.
+     */
+    var ignoreParticleSetting: Boolean = false
+
+    /**
+     * The particle spawn chance when the client has the particles option set to "Decreased". Defaults to `1/3`.
+     */
+    var decreasedSpawnChance: Double = 1/3.0
+
+    /**
+     * The particle spawn chance when the client has the particles option set to "Decreased". Defaults to `0` (in
+     * vanilla some particles always spawn, and these use a chance of `1/30`).
+     */
+    var minimalSpawnChance: Double = 0.0
+
+    private val rand = Random()
+    private var currentSpawnChance: Double = 1.0
 
     private var systemInitialized: Boolean = false
 
@@ -81,6 +104,7 @@ abstract class ParticleSystem {
     internal val shouldQueue = AtomicBoolean(false)
     internal val particles: MutableList<DoubleArray> = GapList<DoubleArray>()
     private val particlePool = ArrayDeque<DoubleArray>(poolSize)
+    private var placeholderParticle = doubleArrayOf()
 
     /**
      * The built-in binding for particle lifetime. If the value in [age] is >= the value in [lifetime] the particle will
@@ -129,6 +153,21 @@ abstract class ParticleSystem {
     }
 
     /**
+     * Adjusts the passed particle count based on the current particle spawn settings. This method should be used in
+     * conjunction with [ignoreParticleSetting] to ensure [addParticle] doesn't ignore particles in addition to the
+     * adjustment this method makes. This method should be called each time a new "batch" of particles is being spawned,
+     * since it uses a random number generator to reflect the fractional component of the adjusted spawn count.
+     */
+    fun adjustParticleCount(count: Int): Int {
+        if(currentSpawnChance == 1.0)
+            return count
+        // adding a random value from [0, 1) means that when truncating to an int, the fractional component gets
+        // transformed into a random +1
+        val adjusted = count * currentSpawnChance + rand.nextDouble()
+        return adjusted.toInt()
+    }
+
+    /**
      * Creates a particle and initializes it with the passed values. Any missing values will be set to 0.
      *
      * [params] should be populated with the values for each binding the order they were bound. For example, if
@@ -156,7 +195,13 @@ abstract class ParticleSystem {
             systemInitialized = true
         }
 
-        val particle = particlePool.pollFirst() ?: DoubleArray(fieldCount)
+        val realSpawn = ignoreParticleSetting || currentSpawnChance == 1.0 || rand.nextDouble() < currentSpawnChance
+
+        val particle = if(realSpawn)
+            particlePool.pollFirst() ?: DoubleArray(fieldCount)
+        else
+            placeholderParticle
+
         particle[0] = lifetime.toDouble()
         particle[1] = 0.0
         (2 until particle.size).forEach { i ->
@@ -165,6 +210,10 @@ abstract class ParticleSystem {
             else
                 particle[i] = 0.0
         }
+
+        if(!realSpawn)
+            return placeholderParticle
+
         if (shouldQueue.get()) {
             queuedAdditions.add(particle)
         } else {
@@ -209,6 +258,7 @@ abstract class ParticleSystem {
         this.lifetime = bind(1)
         this.age = bind(1)
         this.configure()
+        this.placeholderParticle = DoubleArray(this.fieldCount)
 
         this.canBind = false
     }
@@ -230,7 +280,7 @@ abstract class ParticleSystem {
             if (age >= lifetime) {
                 iter.remove()
                 if (particlePool.size < poolSize)
-                    particlePool.push(particle)
+                    particlePool.addLast(particle)
                 continue
             }
 
@@ -243,6 +293,12 @@ abstract class ParticleSystem {
             globalUpdateModules[i].update(particles)
         }
         shouldQueue.set(false)
+        @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
+        currentSpawnChance = when(Client.minecraft.gameSettings.particles) {
+            ParticleStatus.ALL -> 1.0
+            ParticleStatus.DECREASED -> decreasedSpawnChance
+            ParticleStatus.MINIMAL -> minimalSpawnChance
+        }
     }
 
     private fun update(particle: DoubleArray) {
