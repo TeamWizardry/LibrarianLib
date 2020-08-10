@@ -23,7 +23,6 @@ import java.util.ConcurrentModificationException
  * This object is responsible for the rendering and updating of particle systems, and is where new particle systems
  * are sent to be rendered and ticked.
  */
-@Mod.EventBusSubscriber(value = [Dist.CLIENT])
 internal object ParticleSystemManager: ISimpleReloadListener<Unit> {
 
     val systems: MutableList<ParticleSystem> = mutableListOf()

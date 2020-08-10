@@ -34,22 +34,17 @@ allmodules.each {
 //   [18:17:04] [pool-2-thread-1/ERROR] [ne.mi.fm.lo.mo.ExplodedDirectoryLocator/SCAN]: Exception scanning <<project dir>>/modules/utilities/build/classes/java/test
 //   java.nio.file.NoSuchFileException: <<project dir>>/modules/utilities/build/classes/java/test
 //       at sun.nio.fs.UnixException.translateToIOException(UnixException.java:86) ~[?:1.8.0_181] {}
-task(createEmptyMainOutputDirs).doLast {
+task(createEmptyOutputDirs).doLast {
     allmodules.each { module ->
         module.sourceSets.main.output.each {
             it.mkdirs()
         }
-    }
-}
-task(createEmptyTestOutputDirs).doLast {
-    allmodules.each { module ->
+        file("$module.buildDir/shade/main").mkdirs()
         module.sourceSets.test.output.each {
             it.mkdirs()
         }
     }
 }
-processResources.finalizedBy(createEmptyMainOutputDirs)
-processTestResources.finalizedBy(createEmptyTestOutputDirs)
 
 task copyLibModJars(type: Sync) {
     into project.file('run/mods')
@@ -93,5 +88,16 @@ minecraft {
         server {
             configure(delegate, runDefaults)
         }
+
+        data {
+            configure(delegate, runDefaults)
+            jvmArg('-XstartOnFirstThread')
+            args(['--mod', allmodules.each { mod -> "$mod.modid,$mod.modid_test" }.join(','),
+                  '--all', '--output', project.file('run/datagen')])
+        }
     }
+}
+
+afterEvaluate {
+    prepareRuns.finalizedBy(createEmptyOutputDirs)
 }

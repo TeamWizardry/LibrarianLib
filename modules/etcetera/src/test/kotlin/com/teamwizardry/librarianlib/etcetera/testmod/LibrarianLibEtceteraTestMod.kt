@@ -14,6 +14,9 @@ import net.minecraft.particles.ParticleType
 import net.minecraft.particles.ParticleTypes
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.server.ServerWorld
+import net.minecraftforge.api.distmarker.Dist
+import net.minecraftforge.api.distmarker.OnlyIn
+import net.minecraftforge.client.event.ParticleFactoryRegisterEvent
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
@@ -194,8 +197,9 @@ object LibrarianLibEtceteraTestMod: TestMod("etcetera", "Etcetera", logger) {
         e.registry.register(Particles.TARGET_BLUE)
     }
 
-    override fun clientSetup(event: FMLClientSetupEvent) {
-        super.clientSetup(event)
+    @SubscribeEvent
+    @OnlyIn(Dist.CLIENT)
+    fun registerParticleFactories(e: ParticleFactoryRegisterEvent) {
         Client.minecraft.particles.registerFactory(Particles.TARGET_RED, HitParticle::Factory)
         Client.minecraft.particles.registerFactory(Particles.TARGET_BLUE, HitParticle::Factory)
     }

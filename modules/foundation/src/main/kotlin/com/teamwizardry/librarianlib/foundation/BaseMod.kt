@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.foundation
 
+import com.teamwizardry.librarianlib.core.util.MiscUtil
 import com.teamwizardry.librarianlib.foundation.registration.RegistrationManager
 import dev.thecodewarrior.mirror.Mirror
 import net.alexwells.kottle.FMLKotlinModLoadingContext
@@ -46,13 +47,10 @@ import java.lang.IllegalStateException
  */
 @Suppress("LeakingThis")
 abstract class BaseMod @JvmOverloads constructor(private val kottleContext: Boolean = false){
-    val modid: String
+    val modid: String = MiscUtil.getModId(this.javaClass)
     val registrationManager: RegistrationManager
 
     init {
-        val modAnnotation = this.javaClass.declaredAnnotations.filterIsInstance<Mod>().firstOrNull()
-            ?: throw IllegalStateException("Could not find mod annotation on ${this.javaClass.canonicalName}")
-        modid = modAnnotation.value
 
         val eventBus = modLoadingContextEventBus()
         registrationManager = RegistrationManager(modid, eventBus)

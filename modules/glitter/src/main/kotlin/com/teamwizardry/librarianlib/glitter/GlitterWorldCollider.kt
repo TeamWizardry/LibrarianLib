@@ -45,7 +45,6 @@ import kotlin.math.min
  * Minecraft's collision handling it doesn't check any blocks outside of those the velocity vector moves through.
  */
 @OnlyIn(Dist.CLIENT)
-@Mod.EventBusSubscriber(Dist.CLIENT)
 object GlitterWorldCollider {
 
     private val blockCache = Long2ObjectOpenHashMap<List<AxisAlignedBB>>()

@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.testbase
 
 import com.teamwizardry.librarianlib.core.util.DistinctColors
+import com.teamwizardry.librarianlib.core.util.MiscUtil
 import com.teamwizardry.librarianlib.core.util.kotlin.translationKey
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.testbase.objects.TestBlock
@@ -39,6 +40,7 @@ import org.apache.logging.log4j.Logger
 import java.awt.Color
 
 abstract class TestMod(val targetName: String, val humanName: String, val logger: Logger) {
+    val modid = MiscUtil.getModId(this.javaClass)
     val name = "$targetName-test"
     val itemGroup = object : ItemGroup("librarianlib-$name") {
         private val stack: ItemStack by lazy {
@@ -78,7 +80,7 @@ abstract class TestMod(val targetName: String, val humanName: String, val logger
     fun UnitTestSuite(id: String, block: UnitTestSuite.() -> Unit): UnitTestSuite
         = UnitTestSuite(id).also { it.block() }
     fun UnitTestSuite(id: String): UnitTestSuite
-        = UnitTestSuite().also { it.registryName = ResourceLocation(targetName, id) }
+        = UnitTestSuite().also { it.registryName = ResourceLocation(modid, id) }
 
     operator fun <T: Item> T.unaryPlus(): T {
         _items.add(this)
