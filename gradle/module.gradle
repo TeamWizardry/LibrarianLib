@@ -112,9 +112,11 @@ processTestResources {
 sourceSets {
     main {
         ext.refMap = "ll-${project.name}.refmap.json"
+        java.srcDir("src/main/datagen")
     }
     test {
         ext.refMap = "ll-${project.name}-test.refmap.json"
+        java.srcDir("src/test/datagen")
     }
 }
 

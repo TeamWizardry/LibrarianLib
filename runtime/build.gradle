@@ -1,3 +1,6 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+
 apply plugin: 'net.minecraftforge.gradle'
 
 configurations {
@@ -39,10 +42,25 @@ task(createEmptyOutputDirs).doLast {
         module.sourceSets.main.output.each {
             it.mkdirs()
         }
-        file("$module.buildDir/shade/main").mkdirs()
         module.sourceSets.test.output.each {
             it.mkdirs()
         }
+    }
+}
+
+def link(File link, File target) {
+    link.parentFile.mkdirs()
+    target.mkdirs()
+    Files.createSymbolicLink(
+            Paths.get(link.absolutePath),
+            Paths.get(target.absolutePath)
+    )
+}
+
+task(createDataGenSymlinks).doLast {
+    allmodules.each { mod ->
+        link(file("run/datagen/$mod.modid/assets"), mod.file('src/main/datagen/assets'))
+        link(file("run/datagen/$mod.modid_test/assets"), mod.file('src/test/datagen/assets'))
     }
 }
 
@@ -92,12 +110,23 @@ minecraft {
         data {
             configure(delegate, runDefaults)
             jvmArg('-XstartOnFirstThread')
-            args(['--mod', allmodules.each { mod -> "$mod.modid,$mod.modid_test" }.join(','),
-                  '--all', '--output', project.file('run/datagen')])
+            def existing = allmodules.collect { mod ->
+                [
+                        '--existing', '"' + mod.sourceSets.main.output.resourcesDir.absolutePath + '"',
+                        '--existing', '"' + mod.sourceSets.test.output.resourcesDir.absolutePath + '"'
+                ]
+            }.flatten()
+            args(['--all', '--output', project.file('run/datagen')] + [
+                    '--mod', allmodules.collect { mod -> "$mod.modid,$mod.modid_test" }.join(',')
+            ] + existing)
         }
     }
 }
 
-afterEvaluate {
-    prepareRuns.finalizedBy(createEmptyOutputDirs)
+// I have to create the directories at the last moment, otherwise for some reason something else ends up deleting them
+tasks.whenTaskAdded { task ->
+    if(["prepareClient", "prepareServer", "prepareData"].contains(task.name))
+        task.finalizedBy(createEmptyOutputDirs)
+    if(task.name == "prepareData")
+        task.finalizedBy(createDataGenSymlinks)
 }

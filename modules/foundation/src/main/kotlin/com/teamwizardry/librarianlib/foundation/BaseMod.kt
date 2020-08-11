@@ -2,33 +2,25 @@ package com.teamwizardry.librarianlib.foundation
 
 import com.teamwizardry.librarianlib.core.util.MiscUtil
 import com.teamwizardry.librarianlib.foundation.registration.RegistrationManager
-import dev.thecodewarrior.mirror.Mirror
 import net.alexwells.kottle.FMLKotlinModLoadingContext
 import net.minecraft.block.Block
-import net.minecraft.enchantment.Enchantment
 import net.minecraft.entity.EntityType
 import net.minecraft.fluid.Fluid
 import net.minecraft.inventory.container.ContainerType
 import net.minecraft.item.Item
-import net.minecraft.potion.Potion
 import net.minecraft.tileentity.TileEntityType
 import net.minecraft.util.SoundEvent
-import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
-import net.minecraftforge.fml.loading.FMLEnvironment
-import net.minecraftforge.registries.ForgeRegistries
 import net.minecraftforge.registries.IForgeRegistry
-import java.lang.IllegalStateException
 
 /**
  *
@@ -51,14 +43,9 @@ abstract class BaseMod @JvmOverloads constructor(private val kottleContext: Bool
     val registrationManager: RegistrationManager
 
     init {
-
         val eventBus = modLoadingContextEventBus()
         registrationManager = RegistrationManager(modid, eventBus)
-        eventBus.addListener<FMLCommonSetupEvent> { this.baseCommonSetup(it) }
-        eventBus.addListener<FMLClientSetupEvent> { this.baseClientSetup(it) }
-        eventBus.addListener<FMLDedicatedServerSetupEvent> { this.baseDedicatedServerSetup(it) }
-        eventBus.addListener<InterModEnqueueEvent> { this.baseInterModCommsEnqueue(it) }
-        eventBus.addListener<InterModProcessEvent> { this.baseInterModCommsProcess(it) }
+        eventBus.register(this)
         MinecraftForge.EVENT_BUS.register(this)
     }
 
@@ -153,22 +140,27 @@ abstract class BaseMod @JvmOverloads constructor(private val kottleContext: Bool
         registerSounds(e.registry)
     }
 
+    @SubscribeEvent
     internal fun baseCommonSetup(e: FMLCommonSetupEvent) {
         commonSetup(e)
     }
 
+    @SubscribeEvent
     internal fun baseClientSetup(e: FMLClientSetupEvent) {
         clientSetup(e)
     }
 
+    @SubscribeEvent
     internal fun baseDedicatedServerSetup(e: FMLDedicatedServerSetupEvent) {
         dedicatedServerSetup(e)
     }
 
+    @SubscribeEvent
     internal fun baseInterModCommsEnqueue(e: InterModEnqueueEvent) {
         interModCommsEnqueue(e)
     }
 
+    @SubscribeEvent
     internal fun baseInterModCommsProcess(e: InterModProcessEvent) {
         interModCommsProcess(e)
     }
