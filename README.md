@@ -13,6 +13,8 @@ Release builds:
 ```goovy
 repositories {
     jcenter()
+    maven { url = 'https://jitpack.io' }
+    maven { url = 'https://minecraft.curseforge.com/api/maven/' }
 }
 
 dependencies {
@@ -23,6 +25,8 @@ Snapshot builds:
 ```goovy
 repositories {
     maven { url = 'https://oss.jfrog.org/artifactory/oss-snapshot-local' }
+    maven { url = 'https://jitpack.io' }
+    maven { url = 'https://minecraft.curseforge.com/api/maven/' }
 }
 
 dependencies {

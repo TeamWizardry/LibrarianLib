@@ -39,7 +39,6 @@ allprojects {
     repositories {
         mavenLocal()
         jcenter()
-        maven { url = "http://maven.shadowfacts.net/" }
         maven { url = "https://jitpack.io" }
         maven { url = "https://minecraft.curseforge.com/api/maven/" }
         maven { url = 'http://repo.spongepowered.org/maven' }

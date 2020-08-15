@@ -19,10 +19,12 @@ dependencies {
     testApi project(":testbase")
     shade("com.github.thecodewarrior:bitfont:proper-typesetter-SNAPSHOT") {
         exclude group: 'org.jetbrains.kotlin'
-        exclude group: 'it.unimi.dsi.fastutil' // already included in MC
+        exclude group: 'it.unimi.dsi' // already included in MC
     }
     shade "org.lwjgl:lwjgl-yoga:3.2.1:$lwjglNatives"
-    shade 'org.lwjgl:lwjgl-yoga:3.2.1'
+    shade('org.lwjgl:lwjgl-yoga:3.2.1') {
+        exclude group: 'org.lwjgl', module: 'lwjgl'
+    }
 
     // we have to include ICU in the classpath so it overrides Mojang's stripped down copy
     devClasspath 'com.ibm.icu:icu4j:63.1'
@@ -35,5 +37,6 @@ dependencies {
 shadePackages(
         'com.ibm.icu',
         'dev.thecodewarrior.bitfont',
-        'org.msgpack'
+        'org.msgpack',
+        'org.lwjgl.util.yoga'
 )
