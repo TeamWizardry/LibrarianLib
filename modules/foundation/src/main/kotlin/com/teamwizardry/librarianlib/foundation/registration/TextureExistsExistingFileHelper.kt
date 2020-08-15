@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.foundation.datagen
+package com.teamwizardry.librarianlib.foundation.registration
 
 import net.minecraft.resources.IResource
 import net.minecraft.resources.ResourcePackType

@@ -49,6 +49,8 @@ task(createEmptyOutputDirs).doLast {
 }
 
 def link(File link, File target) {
+    if(link.exists())
+        return
     link.parentFile.mkdirs()
     target.mkdirs()
     Files.createSymbolicLink(

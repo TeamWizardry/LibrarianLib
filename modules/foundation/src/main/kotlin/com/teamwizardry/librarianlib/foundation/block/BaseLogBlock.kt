@@ -17,7 +17,6 @@ import net.minecraftforge.client.model.generators.BlockStateProvider
 class BaseLogBlock(verticalColorIn: MaterialColor, properties: Properties): LogBlock(verticalColorIn, properties), IFoundationBlock {
     override fun generateBlockState(gen: BlockStateProvider) {
         gen.logBlock(this)
-        this.asItem()
     }
 
     companion object {

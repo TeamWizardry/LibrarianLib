@@ -250,15 +250,20 @@ class BlockSpec(
      * Information used when generating data
      */
     class DataGen {
-        var name: String? = null
-            private set
-        val tags: MutableList<Tag<Block>> = mutableListOf()
+        val names: MutableMap<String, String> = mutableMapOf()
+        val tags: MutableSet<Tag<Block>> = mutableSetOf()
+        val itemTags: MutableSet<Tag<Item>> = mutableSetOf()
 
         /**
-         * Sets the name of this block in generated lang files
+         * Sets the name of this block in the generated en_us lang file
          */
-        fun name(name: String): DataGen {
-            this.name = name
+        fun name(name: String): DataGen = name("en_us", name)
+
+        /**
+         * Sets the name of this block in the generated lang file
+         */
+        fun name(locale: String, name: String): DataGen {
+            this.names[locale] = name
             return this
         }
 
@@ -267,6 +272,14 @@ class BlockSpec(
          */
         fun tags(vararg tags: Tag<Block>): DataGen {
             this.tags.addAll(tags)
+            return this
+        }
+
+        /**
+         * Adds the passed tags to this block's item
+         */
+        fun itemTags(vararg tags: Tag<Item>): DataGen {
+            this.itemTags.addAll(tags)
             return this
         }
     }

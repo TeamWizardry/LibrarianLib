@@ -6,10 +6,13 @@ import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer
 import net.minecraft.item.Food
 import net.minecraft.item.Item
 import net.minecraft.item.Rarity
+import net.minecraft.tags.Tag
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.ToolType
 import java.util.concurrent.Callable
+import java.util.function.Consumer
 import java.util.function.Supplier
+import java.util.function.Function
 
 /**
  * The specs for creating and registering an item.
@@ -40,7 +43,12 @@ class ItemSpec(
     var itemGroup: ItemGroupSpec = ItemGroupSpec.DEFAULT
         private set
 
-    private var itemConstructor: ((ItemSpec) -> Item)? = null
+    /**
+     * The information used during data generation
+     */
+    val datagen: DataGen = DataGen()
+
+    private var itemConstructor: Function<ItemSpec, Item>? = null
 
     /**
      * Sets the item group this item should be in
@@ -50,11 +58,30 @@ class ItemSpec(
     }
 
     /**
-     * Sets the item constructor for deferred evaluation
+     * Sets the custom [BlockItem] constructor for deferred evaluation
      */
-    fun item(constructor: (ItemSpec) -> Item): ItemSpec = build {
+    fun item(constructor: Function<ItemSpec, Item>): ItemSpec = build {
         this.itemConstructor = constructor
     }
+
+    /**
+     * Sets the item constructor for deferred evaluation
+     */
+    @JvmSynthetic
+    inline fun item(crossinline constructor: (ItemSpec) -> Item): ItemSpec = item(Function { constructor(it) })
+
+    /**
+     * Configures the information used for data generation
+     */
+    fun datagen(data: Consumer<DataGen>): ItemSpec = build {
+        data.accept(this.datagen)
+    }
+
+    /**
+     * Configures the information used for data generation
+     */
+    @JvmSynthetic
+    inline fun datagen(crossinline data: DataGen.() -> Unit): ItemSpec = datagen(Consumer { it.data() })
 
     /**
      * Sets this item's food type
@@ -100,13 +127,42 @@ class ItemSpec(
 
     val itemInstance: Item by lazy {
         val constructor = itemConstructor ?: throw IncompleteBuilderException(listOf("constructor"))
-        constructor.invoke(this).setRegistryName(registryName)
+        constructor.apply(this).setRegistryName(registryName)
     }
 
     internal fun verifyComplete() {
         val missing = mapOf("constructor" to itemConstructor).filter { it.value == null }.keys
         if (missing.isNotEmpty()) {
             throw IncompleteBuilderException(missing.toList())
+        }
+    }
+
+    /**
+     * Information used when generating data
+     */
+    class DataGen {
+        val names: MutableMap<String, String> = mutableMapOf()
+        val tags: MutableList<Tag<Item>> = mutableListOf()
+
+        /**
+         * Sets the name of this block in the generated en_us lang file
+         */
+        fun name(name: String): DataGen = name("en_us", name)
+
+        /**
+         * Sets the name of this block in the generated lang file
+         */
+        fun name(locale: String, name: String): DataGen {
+            this.names[locale] = name
+            return this
+        }
+
+        /**
+         * Adds the passed tags to this block
+         */
+        fun tags(vararg tags: Tag<Item>): DataGen {
+            this.tags.addAll(tags)
+            return this
         }
     }
 
