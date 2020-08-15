@@ -57,6 +57,7 @@ task copyLibModJars(type: Sync) {
     from configurations.mod
 }
 compileJava.dependsOn(copyLibModJars)
+compileJava.dependsOn(rootProject.updateReadmeVersions)
 
 minecraft {
     Closure runDefaults = {

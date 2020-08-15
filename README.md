@@ -1,10 +1,14 @@
 <h1 align="center">
   <br>
-    <img src="https://raw.github.com/TeamWizardry/LibrarianLib/1.15/logo/logo_500x500.png" title="LibrarianLib logo by 
-    Tris Astral" width="200" height="200" alt="LibrarianLib Logo by Tris Astral">
+    <img src="https://raw.github.com/TeamWizardry/LibrarianLib/1.15/logo/logo_500x500.png" title="LibrarianLib" 
+    width="200" height="200" alt="LibrarianLib">
   <br>
   LibrarianLib
   <br>
+  <img id="mc-version-shield" src="https://img.shields.io/badge/Minecraft-1.15.2-blue" alt="Minecraft 1.15.2"/>
+  <img id="forge-version-shield" src="https://img.shields.io/badge/Forge-31.2.36-blue" alt="Minecraft Forge 31.2.36"/>
+  <img id="mcp-mappings-shield" src="https://img.shields.io/badge/MCP-snapshot__20200803--1.15.1-blue" alt="MCP snapshot_20200803-1.15.1"/>
+  <img src="https://github.com/TeamWizardry/LibrarianLib/workflows/Publish%20Snapshots/badge.svg?branch=1.15" alt="Publish Snapshots"/>
 </h1>
 
 ## Using LibrarianLib
@@ -36,8 +40,8 @@ dependencies {
 
 Due to the fact that (as of April 24th 2020) ForgeGradle's `fg.deobf` is broken (it doesn't properly link sources, and 
 doesn't support any kind of transitive dependencies), LibrarianLib is distributed in its deobfuscated form. This may 
-necessitate matching your project's MCP mappings to LibrarianLib's MCP mappings (which can be found in the 
-`gradle.properties` file under the `mc_mappings_channel` and `mc_mappings_version` keys).
+necessitate matching your project's MCP mappings to LibrarianLib's MCP mappings, which are listed at the top of this
+README.
 
 ## Contributing
 

@@ -26,6 +26,11 @@ if(snapshotBranch != null) {
     logger.lifecycle("Using SNAPSHOT version `{}`", version)
 }
 
+// pass `-PliblibVersion=foo` to set the liblib version directly. Useful for publishing to the local maven repository
+if(hasProperty('liblibVersion')) {
+    maven_version = liblibVersion
+}
+
 ext.allmodules = rootProject.subprojects.findAll { it.findProperty("non_module") != "true" }
 
 allprojects {
@@ -324,3 +329,33 @@ configure(productionModules + [project]) {
     
 }
 //endregion
+
+// =====================================================================================================================
+// Utilities
+// =====================================================================================================================
+
+/**
+ * Update the MC/Forge/MCP version shields in the README. I know those won't get updated, you know those won't get
+ * updated, so I'm making it automatic.
+ */
+task(updateReadmeVersions).doLast {
+    def readmeText = file('README.md').text
+    def readme = readmeText
+    readme = shield(readme, 'mc-version-shield', 'Minecraft', mc_version, 'blue', "Minecraft $mc_version")
+    readme = shield(readme, 'forge-version-shield', 'Forge', forge_version, 'blue', "Minecraft Forge $forge_version")
+    def mcp = "${mc_mappings_channel}_${mc_mappings_version}"
+    readme = shield(readme, 'mcp-mappings-shield', 'MCP', mcp, 'blue', "MCP $mcp")
+    if(readme != readmeText) {
+        file('README.md').text = readme
+    }
+}
+assemble.dependsOn(updateReadmeVersions)
+
+private static String shield(String readme, String id, String label, String message, String color, String alt) {
+    def cleanLabel = label.replaceAll('_', '__').replaceAll('-', '--').replaceAll(' ', '_')
+    def cleanMessage = message.replaceAll('_', '__').replaceAll('-', '--').replaceAll(' ', '_')
+    return readme.replaceFirst(
+            ~/<img id="$id"[^>]+\/>/,
+            "<img id=\"$id\" src=\"https://img.shields.io/badge/$cleanLabel-$cleanMessage-$color\" alt=\"$alt\"/>"
+    )
+}
