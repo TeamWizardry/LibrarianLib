@@ -21,7 +21,9 @@ dependencies {
         exclude group: 'org.jetbrains.kotlin'
         exclude group: 'it.unimi.dsi' // already included in MC
     }
-    shade "org.lwjgl:lwjgl-yoga:3.2.1:$lwjglNatives"
+    shade("org.lwjgl:lwjgl-yoga:3.2.1:$lwjglNatives") {
+        exclude group: 'org.lwjgl', module: 'lwjgl'
+    }
     shade('org.lwjgl:lwjgl-yoga:3.2.1') {
         exclude group: 'org.lwjgl', module: 'lwjgl'
     }
