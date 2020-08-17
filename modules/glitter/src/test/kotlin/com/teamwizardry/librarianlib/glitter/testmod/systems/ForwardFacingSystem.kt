@@ -20,10 +20,10 @@ object ForwardFacingSystem: TestSystem("forward_facing") {
             previousPosition = previousPosition,
             velocity = velocity,
             enableCollision = true,
-            gravity = 0.02,
-            bounciness = 0.8f,
-            friction = 0.02f,
-            damping = 0.01f
+            gravity = ConstantBinding(0.02),
+            bounciness = ConstantBinding(0.8),
+            friction = ConstantBinding(0.02),
+            damping = ConstantBinding(0.01)
         ))
 
         renderModules.add(SpriteRenderModule(

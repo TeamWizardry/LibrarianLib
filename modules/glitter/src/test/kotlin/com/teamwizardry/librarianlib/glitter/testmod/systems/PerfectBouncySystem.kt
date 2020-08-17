@@ -21,10 +21,10 @@ object PerfectBouncySystem: TestSystem("perfect_bouncy") {
             previousPosition = previousPosition,
             velocity = velocity,
             enableCollision = true,
-            gravity = 0.02,
-            bounciness = 1.0f,
-            friction = 0.00f,
-            damping = 0.0f
+            gravity = ConstantBinding(0.02),
+            bounciness = ConstantBinding(1.0),
+            friction = ConstantBinding(0.00),
+            damping = ConstantBinding(0.0)
         ))
 
         renderModules.add(SpriteRenderModule(

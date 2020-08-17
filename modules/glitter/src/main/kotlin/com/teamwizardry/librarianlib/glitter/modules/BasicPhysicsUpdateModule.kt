@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.glitter.modules
 
 import com.teamwizardry.librarianlib.glitter.*
+import com.teamwizardry.librarianlib.glitter.bindings.ConstantBinding
 import java.lang.Math.abs
 
 /**
@@ -60,7 +61,7 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
          *
          * 0.04 is a good number to start with.
          */
-        @JvmField var gravity: Double = 0.0,
+        @JvmField val gravity: ReadParticleBinding = ConstantBinding(0.04),
         /**
          * The fraction of velocity conserved upon impact. A bounciness of 0 means the particle will completely stop
          * when impacting a surface. 1.0 means the particle will bounce back with all of the velocity it had impacting,
@@ -71,7 +72,7 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
          *
          * 0.2 is a good number to start with.
          */
-        @JvmField var bounciness: Float = 0.0f,
+        @JvmField val bounciness: ReadParticleBinding = ConstantBinding(0.2),
         /**
          * The friction of the particle upon impact. Every time the particle impacts (or rests upon) a block, the two
          * axes perpendicular to the side being hit will be reduced by this fraction. Friction of 0 would mean perfectly
@@ -82,7 +83,7 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
          *
          * 0.2 is a good number to start with.
          */
-        @JvmField var friction: Float = 0.0f,
+        @JvmField val friction: ReadParticleBinding = ConstantBinding(0.2),
         /**
          * The damping, or "drag" of the particle. Every tick the velocity will be reduced by this fraction. Setting
          * the damping to 0.01 means that the particle will reach 10% velocity in just over 10 seconds
@@ -93,12 +94,16 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
          *
          * 0.01 is a good number to start with.
          */
-        @JvmField var damping: Float = 0.0f
+        @JvmField val damping: ReadParticleBinding = ConstantBinding(0.01)
 ) : ParticleUpdateModule {
     init {
         position.require(3)
         previousPosition.require(3)
         velocity.require(3)
+        gravity.require(1)
+        bounciness.require(1)
+        friction.require(1)
+        damping.require(1)
     }
 
     private var posX: Double = 0.0
@@ -125,6 +130,11 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
         previousPosition.contents[1] = posY
         previousPosition.contents[2] = posZ
         previousPosition.store(particle)
+
+        gravity.load(particle)
+        bounciness.load(particle)
+        friction.load(particle)
+        damping.load(particle)
 
         // (2. in class docs)
         dampen()
@@ -160,12 +170,14 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
     }
 
     private fun dampen() {
+        val damping = this.damping.contents[0]
         velX *= 1 - damping
         velY *= 1 - damping
         velZ *= 1 - damping
     }
 
     private fun accelerate() {
+        val gravity = this.gravity.contents[0]
         velY -= gravity
     }
 
@@ -189,6 +201,9 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
         val axisX = abs(rayHit.collisionNormalX)
         val axisY = abs(rayHit.collisionNormalY)
         val axisZ = abs(rayHit.collisionNormalZ)
+
+        val bounciness = this.bounciness.contents[0]
+        val friction = this.friction.contents[0]
 
         // (4.4 in class docs)
         velX *= 1 - axisX * (1.0 + bounciness)
