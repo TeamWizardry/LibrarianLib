@@ -15,7 +15,8 @@ object ParticleSystems {
         DepthSortSystem,
         IgnoreParticleSettingSystem,
         ShowOnMinimalSystem,
-        SpawnCountAdjustmentSystem
+        SpawnCountAdjustmentSystem,
+        PartialTickLerpSystem
     )
     private val systemMap = systems.associateBy { it.id }
 

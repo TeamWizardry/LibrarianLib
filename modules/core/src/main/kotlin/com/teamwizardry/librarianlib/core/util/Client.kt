@@ -4,6 +4,7 @@ import com.google.common.collect.Lists
 import com.teamwizardry.librarianlib.core.logger
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.vec
+import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.client.MainWindow
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
@@ -64,7 +65,10 @@ object Client {
         override val ticks: Int
             get() = worldTicks
         override val partialTicks: Float
-            get() = renderPartialTicksPaused.getFloat(minecraft)
+            get() = if(minecraft.isGamePaused)
+                renderPartialTicksPaused.get(minecraft) as Float
+            else
+                timer.renderPartialTicks
     }
 
     @JvmStatic
@@ -263,13 +267,9 @@ object Client {
         }
     }
 
-    private val timer: Timer = Minecraft::class.java.let {
-        it.getDeclaredField("timer") ?: it.getDeclaredField("field_71428_T")
-    }.also { it.isAccessible = true }.get(minecraft) as Timer
+    private val timer: Timer = Mirror.reflectClass<Minecraft>().getField(mapSrgName("field_71428_T")).get(minecraft)
 
-    private val renderPartialTicksPaused = Minecraft::class.java.let {
-        it.getDeclaredField("renderPartialTicksPaused") ?: it.getDeclaredField("field_193996_ah")
-    }.also { it.isAccessible = true }
+    private val renderPartialTicksPaused = Mirror.reflectClass<Minecraft>().getField(mapSrgName("field_193996_ah"))
 
     private var worldTicks: Int = 0
     private var globalTicks: Int = 0

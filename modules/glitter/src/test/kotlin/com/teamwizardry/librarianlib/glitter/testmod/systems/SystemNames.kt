@@ -63,6 +63,12 @@ object SystemNames {
             """
                 Spawns particles that have their spawn count adjusted by the current particle setting
             """.trimIndent()
+        ),
+        System("partial_tick_lerp",
+            "Spawn Partial Tick Lerp Test Particle",
+            """
+                Spawns particles at a high, static velocity in order to test lerping
+            """.trimIndent()
         )
     )
 
