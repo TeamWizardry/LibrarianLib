@@ -35,29 +35,42 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
         modEventBus.register(this)
     }
 
-    val defaultItemGroup: ItemGroup = object: ItemGroup(modid) {
+    /**
+     * The default item group for items registered with this registration manager.
+     */
+    val itemGroup: ItemGroup = object: ItemGroup(modid) {
         @OnlyIn(Dist.CLIENT)
         override fun createIcon(): ItemStack {
-            return ItemStack(defaultItemGroupIcon ?: Items.AIR)
+            return ItemStack(itemGroupIcon?.get() ?: Items.AIR)
         }
     }
-    var defaultItemGroupIcon: Item? = null
+
+    /**
+     * The default item group icon for items registered with this registration manager.
+     */
+    var itemGroupIcon: LazyItem? = null
 
     private val blocks = mutableListOf<BlockSpec>()
     private val items = mutableListOf<ItemSpec>()
 
     val datagen: DataGen = DataGen()
 
-    fun add(spec: BlockSpec): BlockSpec {
+    /**
+     * Adds a block to this registration manager and returns a lazy reference to it
+     */
+    fun add(spec: BlockSpec): LazyBlock {
         spec.modid = modid
         blocks.add(spec)
-        return spec
+        return LazyBlock(spec)
     }
 
-    fun add(spec: ItemSpec): ItemSpec {
+    /**
+     * Adds an item to this registration manager and returns a lazy reference to it
+     */
+    fun add(spec: ItemSpec): LazyItem {
         spec.modid = modid
         items.add(spec)
-        return spec
+        return LazyItem(spec)
     }
 
     @SubscribeEvent

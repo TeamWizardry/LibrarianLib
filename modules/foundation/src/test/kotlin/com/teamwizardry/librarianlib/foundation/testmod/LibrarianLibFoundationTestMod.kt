@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.foundation.BaseTagFactory
 import com.teamwizardry.librarianlib.foundation.block.BaseLogBlock
 import com.teamwizardry.librarianlib.foundation.registration.BlockSpec
 import com.teamwizardry.librarianlib.foundation.registration.ItemSpec
+import com.teamwizardry.librarianlib.foundation.registration.LazyItem
 import com.teamwizardry.librarianlib.foundation.registration.RenderLayerSpec
 import net.minecraft.block.Block
 import net.minecraft.block.material.MaterialColor
@@ -16,6 +17,8 @@ import org.apache.logging.log4j.LogManager
 
 @Mod("librarianlib-foundation-test")
 object LibrarianLibFoundationTestMod: BaseMod(true) {
+    val testItem: LazyItem = LazyItem()
+
     init {
         registrationManager.add(
             BlockSpec("test_log")
@@ -27,11 +30,13 @@ object LibrarianLibFoundationTestMod: BaseMod(true) {
         )
         registrationManager.datagen.blockTags.meta(BlockTags.LOGS, ModTags.TEST_LOGS)
 
-        registrationManager.add(
+        testItem.from(registrationManager.add(
             ItemSpec("test_item")
                 .maxStackSize(16)
                 .item { Item(it.itemProperties) }
-        )
+        ))
+
+        registrationManager.itemGroupIcon = testItem
     }
 }
 

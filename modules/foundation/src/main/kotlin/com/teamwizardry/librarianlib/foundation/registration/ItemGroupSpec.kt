@@ -15,6 +15,6 @@ class ItemGroupSpec(private val getter: (RegistrationManager) -> ItemGroup?) {
         @JvmStatic
         val NONE: ItemGroupSpec = ItemGroupSpec { null }
         @JvmStatic
-        val DEFAULT: ItemGroupSpec = ItemGroupSpec { it.defaultItemGroup }
+        val DEFAULT: ItemGroupSpec = ItemGroupSpec { it.itemGroup }
     }
 }
