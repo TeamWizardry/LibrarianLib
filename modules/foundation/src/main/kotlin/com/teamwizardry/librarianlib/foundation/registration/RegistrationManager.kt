@@ -49,14 +49,12 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     val datagen: DataGen = DataGen()
 
     fun add(spec: BlockSpec): BlockSpec {
-        spec.verifyComplete()
         spec.modid = modid
         blocks.add(spec)
         return spec
     }
 
     fun add(spec: ItemSpec): ItemSpec {
-        spec.verifyComplete()
         spec.modid = modid
         items.add(spec)
         return spec

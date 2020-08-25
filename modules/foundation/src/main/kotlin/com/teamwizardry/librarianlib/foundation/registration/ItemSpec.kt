@@ -48,7 +48,7 @@ class ItemSpec(
      */
     val datagen: DataGen = DataGen()
 
-    private var itemConstructor: Function<ItemSpec, Item>? = null
+    private var itemConstructor: Function<ItemSpec, Item> = Function { Item(it.itemProperties) }
 
     /**
      * Sets the item group this item should be in
@@ -126,15 +126,7 @@ class ItemSpec(
     fun setISTER(ister: Supplier<Callable<ItemStackTileEntityRenderer>>): ItemSpec = build { itemProperties.setISTER(ister) }
 
     val itemInstance: Item by lazy {
-        val constructor = itemConstructor ?: throw IncompleteBuilderException(listOf("constructor"))
-        constructor.apply(this).setRegistryName(registryName)
-    }
-
-    internal fun verifyComplete() {
-        val missing = mapOf("constructor" to itemConstructor).filter { it.value == null }.keys
-        if (missing.isNotEmpty()) {
-            throw IncompleteBuilderException(missing.toList())
-        }
+        itemConstructor.apply(this).setRegistryName(registryName)
     }
 
     /**

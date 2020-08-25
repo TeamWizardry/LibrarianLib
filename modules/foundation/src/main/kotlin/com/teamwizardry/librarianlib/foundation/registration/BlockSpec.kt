@@ -68,8 +68,8 @@ class BlockSpec(
      */
     val datagen: DataGen = DataGen()
 
-    private var blockConstructor: Function<BlockSpec, Block>? = null
-    private var itemConstructor: Function<BlockSpec, BlockItem>? = null
+    private var blockConstructor: Function<BlockSpec, Block> = Function { Block(it.blockProperties) }
+    private var itemConstructor: Function<BlockSpec, BlockItem> = Function { BlockItem(it.blockInstance, it.itemProperties) }
 
     /** Disables the registration of a [BlockItem] for this block */
     fun noItem(): BlockSpec = build {
@@ -227,8 +227,7 @@ class BlockSpec(
      * The lazily-evaluated [Block] instance
      */
     val blockInstance: Block by lazy {
-        val constructor = blockConstructor ?: throw IncompleteBuilderException(listOf("constructor"))
-        constructor.apply(this).setRegistryName(registryName)
+        blockConstructor.apply(this).setRegistryName(registryName)
     }
 
     /**
@@ -236,14 +235,7 @@ class BlockSpec(
      */
     val itemInstance: Item? by lazy {
         if (!hasItem) return@lazy null
-        (itemConstructor?.apply(this) ?: BlockItem(blockInstance, itemProperties)).setRegistryName(registryName)
-    }
-
-    internal fun verifyComplete() {
-        val missing = mapOf("constructor" to blockConstructor).filter { it.value == null }.keys
-        if (missing.isNotEmpty()) {
-            throw IncompleteBuilderException(missing.toList())
-        }
+        itemConstructor.apply(this).setRegistryName(registryName)
     }
 
     /**
