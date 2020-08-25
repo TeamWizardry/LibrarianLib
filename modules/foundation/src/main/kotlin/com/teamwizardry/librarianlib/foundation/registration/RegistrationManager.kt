@@ -60,6 +60,8 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
      */
     fun add(spec: BlockSpec): LazyBlock {
         spec.modid = modid
+        @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+        spec.itemProperties.group(spec.itemGroup.get(this))
         blocks.add(spec)
         return LazyBlock(spec)
     }
@@ -69,6 +71,8 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
      */
     fun add(spec: ItemSpec): LazyItem {
         spec.modid = modid
+        @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+        spec.itemProperties.group(spec.itemGroup.get(this))
         items.add(spec)
         return LazyItem(spec)
     }
@@ -85,9 +89,11 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     internal fun registerItems(e: RegistryEvent.Register<Item>) {
         blocks.forEach { block ->
             if (block.hasItem) {
-                block.itemProperties.group(block.itemGroup.get(this))
                 e.registry.register(block.itemInstance)
             }
+        }
+        items.forEach { item ->
+            e.registry.register(item.itemInstance)
         }
     }
 
@@ -151,10 +157,20 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
         BlockStateProvider(gen, modid, TextureExistsExistingFileHelper(exFileHelper)) {
         override fun registerStatesAndModels() {
             blocks.forEach {
-                (it.blockInstance as? IFoundationBlock)?.generateBlockState(this)
+                val manualGen = it.datagen.model
+                if(manualGen != null) {
+                    manualGen.accept(this)
+                } else {
+                    (it.blockInstance as? IFoundationBlock)?.generateBlockState(this)
+                }
             }
             items.forEach {
-                (it.itemInstance as? IFoundationItem)?.generateItemModel(this.itemModels())
+                val manualGen = it.datagen.model
+                if(manualGen != null) {
+                    manualGen.accept(this.itemModels())
+                } else {
+                    (it.itemInstance as? IFoundationItem)?.generateItemModel(this.itemModels())
+                }
             }
         }
     }
@@ -189,6 +205,9 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
             datagen.blockTags.valueTags.forEach { (tag, values) ->
                 getBuilder(tag).add(*values.toTypedArray())
             }
+            datagen.blockTags.metaTags.forEach { (tag, values) ->
+                getBuilder(tag).add(*values.toTypedArray())
+            }
         }
     }
 
@@ -206,6 +225,9 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
                 }
             }
             datagen.itemTags.valueTags.forEach { (tag, values) ->
+                getBuilder(tag).add(*values.toTypedArray())
+            }
+            datagen.itemTags.metaTags.forEach { (tag, values) ->
                 getBuilder(tag).add(*values.toTypedArray())
             }
         }

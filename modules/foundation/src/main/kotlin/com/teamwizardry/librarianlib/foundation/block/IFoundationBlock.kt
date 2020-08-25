@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.foundation.block
 
-import com.teamwizardry.librarianlib.foundation.registration.RegistrationManager
 import net.minecraftforge.client.model.generators.BlockStateProvider
 
 /**

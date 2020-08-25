@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.foundation.registration
 
 import com.teamwizardry.librarianlib.core.util.IncompleteBuilderException
 import com.teamwizardry.librarianlib.core.util.mapSrgName
+import com.teamwizardry.librarianlib.foundation.block.IFoundationBlock
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.block.Block
 import net.minecraft.block.SoundType
@@ -241,10 +242,31 @@ class BlockSpec(
     /**
      * Information used when generating data
      */
-    class DataGen {
+    inner class DataGen {
+        var model: Consumer<BlockStateProvider>? = null
         val names: MutableMap<String, String> = mutableMapOf()
         val tags: MutableSet<Tag<Block>> = mutableSetOf()
         val itemTags: MutableSet<Tag<Item>> = mutableSetOf()
+
+        /**
+         * Sets the model generation function. Note: this will override [IFoundationBlock.generateBlockState].
+         */
+        fun model(model: Consumer<BlockStateProvider>): DataGen {
+            this.model = model
+            return this
+        }
+
+        /**
+         * Sets the model generation function. Note: this will override [IFoundationBlock.generateBlockState].
+         */
+        @JvmSynthetic
+        inline fun model(crossinline model: BlockStateProvider.() -> Unit): DataGen = model(Consumer { it.model() })
+
+        /**
+         * Sets the model generation function to create a simple cube block using the texture at
+         * `yourmodid:block/blockid.png`.
+         */
+        fun simpleModel(): DataGen = model { simpleBlock(blockInstance) }
 
         /**
          * Sets the name of this block in the generated en_us lang file

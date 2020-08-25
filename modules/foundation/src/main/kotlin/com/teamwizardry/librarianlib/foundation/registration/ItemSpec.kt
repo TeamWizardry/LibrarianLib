@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
 import com.teamwizardry.librarianlib.core.util.IncompleteBuilderException
+import com.teamwizardry.librarianlib.foundation.item.IFoundationItem
 import net.minecraft.client.renderer.model.IBakedModel
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer
 import net.minecraft.item.Food
@@ -8,6 +9,10 @@ import net.minecraft.item.Item
 import net.minecraft.item.Rarity
 import net.minecraft.tags.Tag
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.client.model.generators.ItemModelBuilder
+import net.minecraftforge.client.model.generators.ItemModelProvider
+import net.minecraftforge.client.model.generators.ModelFile
+import net.minecraftforge.client.model.generators.ModelProvider
 import net.minecraftforge.common.ToolType
 import java.util.concurrent.Callable
 import java.util.function.Consumer
@@ -132,9 +137,34 @@ class ItemSpec(
     /**
      * Information used when generating data
      */
-    class DataGen {
+    inner class DataGen {
+        var model: Consumer<ItemModelProvider>? = null
         val names: MutableMap<String, String> = mutableMapOf()
         val tags: MutableList<Tag<Item>> = mutableListOf()
+
+        /**
+         * Sets the model generation function. Note: this will override [IFoundationItem.generateItemModel].
+         */
+        fun model(model: Consumer<ItemModelProvider>): DataGen {
+            this.model = model
+            return this
+        }
+
+        /**
+         * Sets the model generation function. Note: this will override [IFoundationItem.generateItemModel].
+         */
+        @JvmSynthetic
+        inline fun model(crossinline model: ItemModelProvider.() -> Unit): DataGen = model(Consumer { it.model() })
+
+        /**
+         * Sets the model generation function to create a simple model using the texture located at
+         * `yourmodid:item/item_id.png`.
+         */
+        fun simpleModel(): DataGen = model {
+            getBuilder(this@ItemSpec.name)
+                .parent(ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", modLoc("${ModelProvider.ITEM_FOLDER}/${this@ItemSpec.name}"))
+        }
 
         /**
          * Sets the name of this block in the generated en_us lang file

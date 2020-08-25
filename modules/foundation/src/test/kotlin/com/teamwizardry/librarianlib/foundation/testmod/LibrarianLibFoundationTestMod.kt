@@ -24,9 +24,9 @@ object LibrarianLibFoundationTestMod: BaseMod(true) {
             BlockSpec("test_log")
                 .renderLayer(RenderLayerSpec.SOLID)
                 .withProperties(BaseLogBlock.DEFAULT_PROPERTIES)
-                .datagen { tags(ModTags.TEST_LOGS).name("Test Log") }
                 .mapColor(MaterialColor.ADOBE)
                 .block { BaseLogBlock(MaterialColor.PINK, it.blockProperties) }
+                .datagen { tags(ModTags.TEST_LOGS).name("Test Log") }
         )
         registrationManager.datagen.blockTags.meta(BlockTags.LOGS, ModTags.TEST_LOGS)
 
@@ -34,6 +34,7 @@ object LibrarianLibFoundationTestMod: BaseMod(true) {
             ItemSpec("test_item")
                 .maxStackSize(16)
                 .item { Item(it.itemProperties) }
+                .datagen { simpleModel() }
         ))
 
         registrationManager.itemGroupIcon = testItem
