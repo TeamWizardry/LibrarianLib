@@ -78,6 +78,7 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     }
 
     @SubscribeEvent
+    @JvmSynthetic
     internal fun registerBlocks(e: RegistryEvent.Register<Block>) {
         blocks.forEach { block ->
             e.registry.register(block.blockInstance)
@@ -85,7 +86,7 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     }
 
     @SubscribeEvent
-    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+    @JvmSynthetic
     internal fun registerItems(e: RegistryEvent.Register<Item>) {
         blocks.forEach { block ->
             if (block.hasItem) {
@@ -98,10 +99,12 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     }
 
     @SubscribeEvent
+    @JvmSynthetic
     internal fun commonSetup(e: FMLCommonSetupEvent) {
     }
 
     @SubscribeEvent
+    @JvmSynthetic
     internal fun clientSetup(e: FMLClientSetupEvent) {
         blocks.forEach { block ->
             RenderTypeLookup.setRenderLayer(block.blockInstance, block.renderLayer.getRenderType())
@@ -109,6 +112,7 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     }
 
     @SubscribeEvent
+    @JvmSynthetic
     internal fun dedicatedServerSetup(e: FMLDedicatedServerSetupEvent) {
     }
 
@@ -132,7 +136,9 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
         val itemTags: TagGen<Item> = TagGen()
 
         inner class TagGen<T> {
+            @get:JvmSynthetic
             internal val metaTags = mutableMapOf<Tag<T>, MutableList<Tag<T>>>()
+            @get:JvmSynthetic
             internal val valueTags = mutableMapOf<Tag<T>, MutableList<T>>()
 
             /**

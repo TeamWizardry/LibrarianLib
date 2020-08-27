@@ -101,66 +101,79 @@ abstract class BaseMod @JvmOverloads constructor(private val kottleContext: Bool
 
     //region Internal implementation
     @SubscribeEvent
+    @JvmSynthetic
     internal fun baseCreateRegistries(e: RegistryEvent.NewRegistry) {
         createRegistries()
     }
 
     @SubscribeEvent
+    @JvmSynthetic
     internal fun baseRegisterBlocks(e: RegistryEvent.Register<Block>) {
         registerBlocks(e.registry)
     }
 
     @SubscribeEvent
+    @JvmSynthetic
     internal fun baseRegisterItems(e: RegistryEvent.Register<Item>) {
         registerItems(e.registry)
     }
 
     @SubscribeEvent
+    @JvmSynthetic
     internal fun baseRegisterTileEntities(e: RegistryEvent.Register<TileEntityType<*>>) {
         registerTileEntities(e.registry)
     }
 
     @SubscribeEvent
+    @JvmSynthetic
     internal fun baseRegisterEntities(e: RegistryEvent.Register<EntityType<*>>) {
         registerEntities(e.registry)
     }
 
     @SubscribeEvent
+    @JvmSynthetic
     internal fun baseRegisterFluids(e: RegistryEvent.Register<Fluid>) {
         registerFluids(e.registry)
     }
 
     @SubscribeEvent
+    @JvmSynthetic
     internal fun baseRegisterContainers(e: RegistryEvent.Register<ContainerType<*>>) {
         registerContainers(e.registry)
     }
 
     @SubscribeEvent
+    @JvmSynthetic
     internal fun baseRegisterSounds(e: RegistryEvent.Register<SoundEvent>) {
         registerSounds(e.registry)
     }
 
     @SubscribeEvent
+    @JvmSynthetic
     internal fun baseCommonSetup(e: FMLCommonSetupEvent) {
         commonSetup(e)
     }
 
     @SubscribeEvent
+    @JvmSynthetic
     internal fun baseClientSetup(e: FMLClientSetupEvent) {
         clientSetup(e)
     }
 
     @SubscribeEvent
+    @JvmSynthetic
     internal fun baseDedicatedServerSetup(e: FMLDedicatedServerSetupEvent) {
         dedicatedServerSetup(e)
     }
 
     @SubscribeEvent
+    @JvmSynthetic
     internal fun baseInterModCommsEnqueue(e: InterModEnqueueEvent) {
         interModCommsEnqueue(e)
     }
 
     @SubscribeEvent
+    @JvmSynthetic
     internal fun baseInterModCommsProcess(e: InterModProcessEvent) {
         interModCommsProcess(e)
     }

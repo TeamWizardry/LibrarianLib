@@ -15,13 +15,13 @@ class RenderLayerSpec private constructor(private val getter: () -> Any) {
     }
 
     companion object {
-        @JvmStatic
+        @JvmField
         val SOLID: RenderLayerSpec = RenderLayerSpec { RenderType.getSolid() }
-        @JvmStatic
+        @JvmField
         val CUTOUT: RenderLayerSpec = RenderLayerSpec { RenderType.getCutout() }
-        @JvmStatic
+        @JvmField
         val CUTOUT_MIPPED: RenderLayerSpec = RenderLayerSpec { RenderType.getCutoutMipped() }
-        @JvmStatic
+        @JvmField
         val TRANSLUCENT: RenderLayerSpec = RenderLayerSpec { RenderType.getTranslucent() }
     }
 }

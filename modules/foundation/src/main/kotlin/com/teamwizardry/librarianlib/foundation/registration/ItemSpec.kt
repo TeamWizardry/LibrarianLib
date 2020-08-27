@@ -34,6 +34,7 @@ class ItemSpec(
      * The mod ID to register this block under. This is populated by the [RegistrationManager].
      */
     var modid: String = ""
+        @JvmSynthetic
         internal set
 
     /**
