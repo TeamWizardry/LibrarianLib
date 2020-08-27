@@ -10,7 +10,6 @@ import java.util.function.Function
  * A function that will run different blocks of code on the client and server.
  */
 interface SidedFunction<T, R>: Function<T, R> {
-    @JvmDefault
     override fun apply(t: T): R {
         return when (FMLEnvironment.dist) {
             Dist.CLIENT -> applyClient(t)
@@ -59,7 +58,6 @@ interface SidedFunction<T, R>: Function<T, R> {
  * A function that will run only on the client.
  */
 fun interface ClientFunction<T, R>: Function<T, R?> {
-    @JvmDefault
     override fun apply(t: T): R? {
         return if (FMLEnvironment.dist.isClient) {
             applyClient(t)
@@ -76,7 +74,6 @@ fun interface ClientFunction<T, R>: Function<T, R?> {
  * A function that will run only on the server.
  */
 fun interface ServerFunction<T, R>: Function<T, R?> {
-    @JvmDefault
     override fun apply(t: T): R? {
         return if (FMLEnvironment.dist.isDedicatedServer) {
             applyServer(t)

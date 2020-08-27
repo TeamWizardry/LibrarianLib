@@ -13,7 +13,6 @@ interface Easing {
      */
     fun ease(progress: Float): Float
 
-    @JvmDefault
     val reversed: Easing
         get() = object : Easing {
             override fun ease(progress: Float): Float {

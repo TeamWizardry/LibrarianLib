@@ -11,7 +11,6 @@ import java.util.function.Supplier
  * A supplier that will get different blocks of code on the client and server.
  */
 interface SidedSupplier<T>: Supplier<T> {
-    @JvmDefault
     override fun get(): T {
         return when (FMLEnvironment.dist) {
             Dist.CLIENT -> getClient()
@@ -65,7 +64,6 @@ interface SidedSupplier<T>: Supplier<T> {
  * A supplier that will get only on the client.
  */
 fun interface ClientSupplier<T>: Supplier<T?> {
-    @JvmDefault
     override fun get(): T? {
         return if (FMLEnvironment.dist.isClient) {
             getClient()
@@ -82,7 +80,6 @@ fun interface ClientSupplier<T>: Supplier<T?> {
  * A supplier that will get only on the server.
  */
 fun interface ServerSupplier<T>: Supplier<T?> {
-    @JvmDefault
     override fun get(): T? {
         return if (FMLEnvironment.dist.isDedicatedServer) {
             getServer()

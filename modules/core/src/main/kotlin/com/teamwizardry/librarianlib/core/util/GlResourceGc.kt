@@ -108,13 +108,11 @@ object GlResourceGc {
          */
         fun untrack()
 
-        @JvmDefault
         @JvmSynthetic
         operator fun getValue(thisRef: Any?, property: KProperty<*>): S {
             return this.state
         }
 
-        @JvmDefault
         @JvmSynthetic
         operator fun setValue(thisRef: Any?, property: KProperty<*>, value: S) {
             this.state = value

@@ -49,25 +49,21 @@ interface ISprite {
     /**
      * The fraction of the sprite along the minimum U edge that should not be distorted when stretching the sprite.
      */
-    @JvmDefault
     val minUCap: Float get() = 0f
 
     /**
      * The fraction of the sprite along the minimum V edge that should not be distorted when stretching the sprite.
      */
-    @JvmDefault
     val minVCap: Float get() = 0f
 
     /**
      * The fraction of the sprite along the maximum U edge that should not be distorted when stretching the sprite.
      */
-    @JvmDefault
     val maxUCap: Float get() = 0f
 
     /**
      * The fraction of the sprite along the maximum V edge that should not be distorted when stretching the sprite.
      */
-    @JvmDefault
     val maxVCap: Float get() = 0f
 
     /**
@@ -76,7 +72,6 @@ interface ISprite {
      *
      * If both this and [pinBottom] are false, this sprite will render as if both were true
      */
-    @JvmDefault
     val pinTop: Boolean get() = true
 
     /**
@@ -85,7 +80,6 @@ interface ISprite {
      *
      * If both this and [pinTop] are false, this sprite will render as if both were true
      */
-    @JvmDefault
     val pinBottom: Boolean get() = true
 
     /**
@@ -94,7 +88,6 @@ interface ISprite {
      *
      * If both this and [pinRight] are false, this sprite will render as if both were true
      */
-    @JvmDefault
     val pinLeft: Boolean get() = true
 
     /**
@@ -103,41 +96,35 @@ interface ISprite {
      *
      * If both this and [pinLeft] are false, this sprite will render as if both were true
      */
-    @JvmDefault
     val pinRight: Boolean get() = true
 
     /**
      * The number of clockwise 90° rotations should be made when drawing this sprite.
      */
-    @JvmDefault
     val rotation: Int get() = 0
 
     /**
      * The minimum U coordinate (0-1)
      */
     fun minU(animFrames: Int): Float
-    @JvmDefault
     fun minU() = minU(0) // JVM overload
 
     /**
      * The minimum V coordinate (0-1)
      */
     fun minV(animFrames: Int): Float
-    @JvmDefault
     fun minV() = minU(0) // JVM overload
 
     /**
      * The maximum U coordinate (0-1)
      */
     fun maxU(animFrames: Int): Float
-    @JvmDefault
     fun maxU() = minU(0) // JVM overload
 
     /**
      * The maximum V coordinate (0-1)
      */
     fun maxV(animFrames: Int): Float
-    @JvmDefault
     fun maxV() = minU(0) // JVM overload
 
     /**
@@ -145,7 +132,6 @@ interface ISprite {
      * @param x The x position to draw at
      * @param y The y position to draw at
      */
-    @JvmDefault
     fun draw(matrix: Matrix3d, x: Float, y: Float) {
         draw(matrix, x, y, width.toFloat(), height.toFloat(), 0, Color.WHITE)
     }
@@ -155,7 +141,6 @@ interface ISprite {
      * @param x The x position to draw at
      * @param y The y position to draw at
      */
-    @JvmDefault
     fun draw(matrix: Matrix3d, x: Float, y: Float, animTicks: Int, tint: Color) {
         draw(matrix, x, y, width.toFloat(), height.toFloat(), animTicks, tint)
     }
@@ -165,7 +150,6 @@ interface ISprite {
      * @param x The x position to draw at
      * @param y The y position to draw at
      */
-    @JvmDefault
     fun draw(matrix: Matrix3d, x: Float, y: Float, width: Float, height: Float) {
         draw(matrix, x, y, width, height, 0, Color.WHITE)
     }
@@ -177,7 +161,6 @@ interface ISprite {
      * @param width The width to draw the sprite
      * @param height The height to draw the sprite
      */
-    @JvmDefault
     fun draw(matrix: Matrix3d, x: Float, y: Float, width: Float, height: Float, animTicks: Int, tint: Color) {
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val builder = buffer.getBuffer(renderType)
@@ -185,7 +168,6 @@ interface ISprite {
         buffer.finish()
     }
 
-    @JvmDefault
     fun pinnedWrapper(top: Boolean, bottom: Boolean, left: Boolean, right: Boolean): ISprite {
         return PinnedWrapper(this, top, bottom, left, right)
     }

@@ -10,7 +10,6 @@ import java.util.function.Consumer
  * A consumer that will run different blocks of code on the client and server.
  */
 interface SidedConsumer<T>: Consumer<T> {
-    @JvmDefault
     override fun accept(t: T) {
         when (FMLEnvironment.dist) {
             Dist.CLIENT -> acceptClient(t)
@@ -64,7 +63,6 @@ interface SidedConsumer<T>: Consumer<T> {
  * A consumer that will run only on the client.
  */
 fun interface ClientConsumer<T>: Consumer<T> {
-    @JvmDefault
     override fun accept(t: T) {
         if (FMLEnvironment.dist.isClient) {
             acceptClient(t)
@@ -79,7 +77,6 @@ fun interface ClientConsumer<T>: Consumer<T> {
  * A consumer that will run only on the server.
  */
 fun interface ServerConsumer<T>: Consumer<T> {
-    @JvmDefault
     override fun accept(t: T) {
         if (FMLEnvironment.dist.isDedicatedServer) {
             acceptServer(t)

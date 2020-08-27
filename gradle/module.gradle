@@ -83,7 +83,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         jvmTarget = "1.8"
         freeCompilerArgs += [
                 "-java-parameters",
-                "-Xjvm-default=enable",
+                "-Xjvm-default=all",
                 "-Xuse-experimental=kotlin.Experimental",
                 "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes"
         ]

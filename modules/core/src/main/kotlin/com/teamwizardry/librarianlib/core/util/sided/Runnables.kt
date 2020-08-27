@@ -10,7 +10,6 @@ import java.util.function.Consumer
  * A runnable that will run different blocks of code on the client and server.
  */
 interface SidedRunnable: Runnable {
-    @JvmDefault
     override fun run() {
         when (FMLEnvironment.dist) {
             Dist.CLIENT -> runClient()
@@ -64,7 +63,6 @@ interface SidedRunnable: Runnable {
  * A runnable that will run only on the client.
  */
 fun interface ClientRunnable: Runnable {
-    @JvmDefault
     override fun run() {
         if (FMLEnvironment.dist.isClient) {
             runClient()
@@ -79,7 +77,6 @@ fun interface ClientRunnable: Runnable {
  * A runnable that will run only on the server.
  */
 fun interface ServerRunnable: Runnable {
-    @JvmDefault
     override fun run() {
         if (FMLEnvironment.dist.isDedicatedServer) {
             runServer()
