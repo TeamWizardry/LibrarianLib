@@ -1,13 +1,11 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.SidedSupplier
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
+import com.teamwizardry.librarianlib.core.util.sided.ClientSupplier
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntitySize
-import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.Pose
-import net.minecraft.entity.effect.LightningBoltEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundNBT
@@ -18,7 +16,6 @@ import net.minecraft.util.Hand
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
-import net.minecraft.util.text.ITextComponent
 import net.minecraft.world.World
 import net.minecraftforge.fml.network.NetworkHooks
 
@@ -56,7 +53,7 @@ class TestEntity(val config: TestEntityConfig, world: World): Entity(config.also
     }
 
     override fun isGlowing(): Boolean {
-        val heldGlow = SidedSupplier.Client {
+        val heldGlow = ClientSupplier {
             Client.minecraft.player?.getHeldItem(Hand.MAIN_HAND)?.item == config.spawnerItem ||
             Client.minecraft.player?.getHeldItem(Hand.OFF_HAND)?.item == config.spawnerItem
         }.get() ?: false

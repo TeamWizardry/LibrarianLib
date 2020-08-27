@@ -23,7 +23,6 @@ import kotlin.reflect.KProperty
 class IMValue<T> private constructor(private var storage: Storage<T>, private val lerper: Lerper<T>?): GuiValue<T>() {
     constructor(initialValue: T, lerper: Lerper<T>?): this(Storage.Fixed(initialValue), lerper)
     constructor(initialCallback: Supplier<T>, lerper: Lerper<T>?): this(Storage.Callback(initialCallback), lerper)
-    constructor(initialCallback: () -> T, lerper: Lerper<T>?): this(Storage.Callback(Supplier(initialCallback)), lerper)
 
     /**
      * Gets the current value

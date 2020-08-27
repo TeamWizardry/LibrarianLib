@@ -22,7 +22,6 @@ import java.util.UUID
 // - `hashCode()` is based on: `name` and `renderState`
 // - `equals()` is based on: `renderState`
 //
-@Suppress("INACCESSIBLE_TYPE")
 object SimpleRenderTypes {
     /**
      * Simple flat polygons using the [POSITION_COLOR_TEX][DefaultVertexFormats.POSITION_COLOR_TEX] format.
@@ -74,6 +73,7 @@ object SimpleRenderTypes {
         bufferSizeIn: Int, p_228633_4_: Boolean, p_228633_5_: Boolean,
         p_228633_6_: RenderType.State
     ): RenderType {
+        @Suppress("INACCESSIBLE_TYPE")
         return RenderType.makeType("${name}_${UUID.randomUUID()}", vertexFormatIn, glMode, bufferSizeIn, p_228633_4_, p_228633_5_, p_228633_6_)
     }
 }

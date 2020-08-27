@@ -143,9 +143,9 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
         tileEntities.forEach { spec ->
             val renderer = spec.renderer ?: return@forEach
             logger.debug("Manager for $modid: Registering TER for ${spec.registryName}")
-            ClientRegistry.bindTileEntityRenderer(spec.typeInstance) {
-                @Suppress("UNCHECKED_CAST")
-                renderer.applyClient(it) as TileEntityRenderer<in TileEntity>
+            @Suppress("UNCHECKED_CAST")
+            ClientRegistry.bindTileEntityRenderer(spec.typeInstance as TileEntityType<TileEntity>) {
+                renderer.applyClient(it) as TileEntityRenderer<TileEntity>
             }
         }
     }

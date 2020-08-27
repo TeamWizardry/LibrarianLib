@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
 import com.teamwizardry.librarianlib.core.util.IncompleteBuilderException
-import com.teamwizardry.librarianlib.core.util.SidedFunction
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
+import com.teamwizardry.librarianlib.core.util.sided.ClientFunction
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher
 import net.minecraft.tileentity.TileEntity
@@ -46,13 +46,13 @@ class TileEntitySpec(
     val validBlocks: Set<LazyBlock> = _validBlocks.unmodifiableView()
 
     @get:JvmSynthetic
-    internal var renderer: SidedFunction.Client<in TileEntityRendererDispatcher, out TileEntityRenderer<*>>? = null
+    internal var renderer: ClientFunction<in TileEntityRendererDispatcher, out TileEntityRenderer<*>>? = null
         private set
 
     /**
      * Sets the renderer factory for this tile type
      */
-    fun renderer(renderer: SidedFunction.Client<in TileEntityRendererDispatcher, out TileEntityRenderer<*>>): TileEntitySpec {
+    fun renderer(renderer: ClientFunction<in TileEntityRendererDispatcher, out TileEntityRenderer<*>>): TileEntitySpec {
         this.renderer = renderer
         return this
     }

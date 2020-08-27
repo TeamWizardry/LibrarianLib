@@ -1,10 +1,7 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.SidedConsumer
-import com.teamwizardry.librarianlib.core.util.SidedRunnable
-import com.teamwizardry.librarianlib.core.util.SidedSupplier
-import com.teamwizardry.librarianlib.math.Matrix3dStack
+import com.teamwizardry.librarianlib.core.util.sided.ClientSupplier
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.Minecraft
@@ -28,13 +25,13 @@ class TestScreenConfig(val id: String, val name: String, activatorItemGroup: Ite
             activatorItem.config.description = value
         }
 
-    var customScreen: SidedSupplier.Client<Screen>? = null
+    var customScreen: ClientSupplier<Screen>? = null
 
     /**
      * Use an entirely custom screen
      */
     inline fun customScreen(crossinline client: () -> Screen) {
-        customScreen = SidedSupplier.Client { client() }
+        customScreen = ClientSupplier { client() }
     }
 
     /**

@@ -1,13 +1,8 @@
 package com.teamwizardry.librarianlib.etcetera
 
-import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.SidedRunnable
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.shader.Framebuffer
-import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
 
 /**
@@ -112,7 +107,4 @@ object StencilUtil {
         RenderSystem.stencilMask(0x00)
         RenderSystem.stencilFunc(GL_EQUAL, currentStencil, 0xFF)
     }
-
-    fun push(kotlin: () -> Unit) = push(Runnable(kotlin))
-    fun pop(kotlin: () -> Unit) = pop(Runnable(kotlin))
 }

@@ -36,7 +36,7 @@ abstract class Shader(
     /**
      * The OpenGL handle for the shader program
      */
-    var glProgram: Int by GlResourceGc.Value(0).also { track(it) }
+    var glProgram: Int by GlResourceGc.track(this, 0) { GlStateManager.deleteProgram(it) }
         private set
 
     /**
@@ -64,7 +64,7 @@ abstract class Shader(
      * RenderType type = RenderType.makeState(..., renderState);
      * ```
      */
-    val renderState: RenderState = object : RenderState("enable_$shaderName", {
+    val renderState: RenderState = object: RenderState("enable_$shaderName", {
         bind()
     }, {
         unbind()
@@ -92,7 +92,7 @@ abstract class Shader(
         currentlyBound?.unbind()
         GlStateManager.useProgram(glProgram)
         currentlyBound = this
-        if(uniforms == null && glProgram != 0) {
+        if (uniforms == null && glProgram != 0) {
             uniforms = UniformBinder.bindAllUniforms(this, glProgram)
         }
 
@@ -102,7 +102,7 @@ abstract class Shader(
             if (it is GLSL.GLSLSampler) {
                 it.textureUnit = boundTextureUnits.getOrPut(it.get() to it.textureTarget) { currentUnit++ }
             } else if (it is GLSL.GLSLSampler.GLSLSamplerArray) {
-                for(i in 0 until min(it.length, it.trueLength)) {
+                for (i in 0 until min(it.length, it.trueLength)) {
                     it.textureUnits[i] = boundTextureUnits.getOrPut(it[i] to it.textureTarget) { currentUnit++ }
                 }
             }
@@ -130,15 +130,14 @@ abstract class Shader(
         currentlyBound = null
     }
 
-
     private fun bindTexture(texture: Int, target: Int, unit: Int) {
-        if(unit < 8 && target == GL11.GL_TEXTURE_2D) { // GlStateManager only tracks the first 8 GL_TEXTURE_2D units
+        if (unit < 8 && target == GL11.GL_TEXTURE_2D) { // GlStateManager only tracks the first 8 GL_TEXTURE_2D units
             RenderSystem.activeTexture(GL13.GL_TEXTURE0 + unit)
             RenderSystem.enableTexture()
             RenderSystem.bindTexture(texture)
             RenderSystem.activeTexture(GL13.GL_TEXTURE0)
         } else {
-            if(unit < 8) {
+            if (unit < 8) {
                 // GlStateManager tracks the first 8 texture units, and it only changes the texture when the value
                 // changes from its perspective. This becomes an issue if we change the texture without it knowing,
                 // since it may think that a texture doesn't need to be re-bound. To alleviate this we set it to a
@@ -156,13 +155,13 @@ abstract class Shader(
     }
 
     private fun unbindTexture(target: Int, unit: Int) {
-        if(unit < 8 && target == GL11.GL_TEXTURE_2D) { // GlStateManager only tracks the first 8 GL_TEXTURE_2D units
+        if (unit < 8 && target == GL11.GL_TEXTURE_2D) { // GlStateManager only tracks the first 8 GL_TEXTURE_2D units
             RenderSystem.activeTexture(GL13.GL_TEXTURE0 + unit)
             RenderSystem.bindTexture(0)
             RenderSystem.disableTexture()
             RenderSystem.activeTexture(GL13.GL_TEXTURE0)
         } else {
-            if(unit < 8) {
+            if (unit < 8) {
                 // GlStateManager tracks the first 8 texture units, and it only changes the texture when the value
                 // changes from its perspective. This becomes an issue if we change the texture without it knowing,
                 // since it may think that a texture doesn't need to be re-bound. To alleviate this we set it to a
@@ -188,13 +187,6 @@ abstract class Shader(
         glProgram = 0
     }
 
-    private fun track(glHandle: GlResourceGc.Value<Int>) {
-        GlResourceGc.track(this) {
-            GlStateManager.deleteProgram(glHandle.value)
-            glHandle.value = 0
-        }
-    }
-
     /**
      * The base source string number. Sufficiently high that _hopefully_ a substitution in the error log will be
      * correct, sufficiently low so even a signed short won't overflow, and sufficiently different from the max signed
@@ -215,19 +207,19 @@ abstract class Shader(
 
     private fun compile(resourceManager: IResourceManager) {
         logger.info("Compiling shader program $shaderName")
-        if(uniforms != null) {
+        if (uniforms != null) {
             UniformBinder.unbindAllUniforms(this)
             uniforms = null
         }
         var vertexHandle = 0
         var fragmentHandle = 0
         try {
-            if(vertexName != null) {
+            if (vertexName != null) {
                 val files = mutableMapOf<ResourceLocation, Int>()
                 vertexHandle = compileShader(GL_VERTEX_SHADER, "vertex",
                     readShader(resourceManager, vertexName, files), vertexName, files)
             }
-            if(fragmentName != null) {
+            if (fragmentName != null) {
                 val files = mutableMapOf<ResourceLocation, Int>()
                 fragmentHandle = compileShader(GL_FRAGMENT_SHADER, "fragment",
                     readShader(resourceManager, fragmentName, files), fragmentName, files)
@@ -235,7 +227,7 @@ abstract class Shader(
             GlStateManager.deleteProgram(glProgram)
             glProgram = linkProgram(vertexHandle, fragmentHandle)
         } finally {
-            if(glProgram != 0) {
+            if (glProgram != 0) {
                 glDetachShader(glProgram, vertexHandle)
                 glDetachShader(glProgram, fragmentHandle)
             }
@@ -250,8 +242,8 @@ abstract class Shader(
         files: MutableMap<ResourceLocation, Int>,
         stack: LinkedList<ResourceLocation> = LinkedList()
     ): String {
-        if(name in stack) {
-            val cycleString = stack.reversed().joinToString(" -> ") { if(it == name) "[$it" else "$it" } + " -> $name]"
+        if (name in stack) {
+            val cycleString = stack.reversed().joinToString(" -> ") { if (it == name) "[$it" else "$it" } + " -> $name]"
             throw ShaderCompilationException("#import cycle: $cycleString")
         }
         stack.push(name)
@@ -261,15 +253,15 @@ abstract class Shader(
         val text = Client.getResourceText(resourceManager, name)
         var out = ""
         text.lineSequence().forEachIndexed { i, line ->
-            val lineNumber = i+1
+            val lineNumber = i + 1
             val importMatch = importRegex.matchEntire(line)
-            if(lineNumber == 1 && "#version" !in text) {
+            if (lineNumber == 1 && "#version" !in text) {
                 out += "#line 0 $sourceNumber // $name\n"
             }
 
-            if(importMatch != null) {
+            if (importMatch != null) {
                 val importName = importMatch.groupValues[1]
-                val importLocation = if(':' !in importName) {
+                val importLocation = if (':' !in importName) {
                     name.resolveSibling(importName)
                 } else {
                     ResourceLocation(importName)
@@ -281,7 +273,7 @@ abstract class Shader(
                 out += "$line\n"
             }
 
-            if("#version" in line) {
+            if ("#version" in line) {
                 out += "#line $lineNumber $sourceNumber // $name\n"
             }
         }
@@ -295,7 +287,7 @@ abstract class Shader(
         logger.debug("Compiling $typeName shader $location")
         checkVersion(source)
         val shader = GlStateManager.createShader(type)
-        if(shader == 0)
+        if (shader == 0)
             throw ShaderCompilationException("Could not create shader object")
         GlStateManager.shaderSource(shader, source)
         GlStateManager.compileShader(shader)
@@ -303,11 +295,11 @@ abstract class Shader(
         val status = GlStateManager.getShader(shader, GL_COMPILE_STATUS)
         val logLength = GlStateManager.getShader(shader, GL_INFO_LOG_LENGTH)
         var log = GlStateManager.getShaderInfoLog(shader, logLength)
-        if(status == GL_FALSE) {
+        if (status == GL_FALSE) {
             GlStateManager.deleteShader(shader)
 
             files.forEach { (key, value) ->
-                log = log.replace(Regex("\\b$value\\b"), if(key.namespace != location.namespace) "$key" else key.path)
+                log = log.replace(Regex("\\b$value\\b"), if (key.namespace != location.namespace) "$key" else key.path)
             }
 
             val lineRegex = """^\s*#line\s+(\d+)(?: \d+ // (.*))?\s*$""".toRegex()
@@ -320,7 +312,7 @@ abstract class Shader(
                 var lineOut = ""
                 lineRegex.matchEntire(line)?.also { match ->
                     lineNumber = match.groupValues[1].toInt()
-                    if(match.groupValues[2] != "")
+                    if (match.groupValues[2] != "")
                         lineOut += "FILE: ${match.groupValues[2]}\n"
                 }
                 lineOut += "%4d: %s".format(lineNumber, line)
@@ -341,27 +333,27 @@ abstract class Shader(
     private fun checkVersion(source: String) {
         val match = """#version\s+(\d+)""".toRegex().find(source) ?: return
         val version = match.groupValues[1].toInt()
-        if(version > 120) // Apple doesn't support OpenGL 3.0+ properly, so we're stuck with OpenGL 2.1 shaders
+        if (version > 120) // Apple doesn't support OpenGL 3.0+ properly, so we're stuck with OpenGL 2.1 shaders
             throw ShaderCompilationException("Maximum GLSL version supported by LibrarianLib is 1.20, found `${match.value}`")
     }
 
     private fun linkProgram(vertexHandle: Int, fragmentHandle: Int): Int {
         logger.debug("Linking shader")
         val program = GlStateManager.createProgram()
-        if(program == 0)
+        if (program == 0)
             throw ShaderCompilationException("could not create program object")
 
         // todo set up linking: https://www.khronos.org/opengl/wiki/Shader_Compilation#Before_linking
 
-        if(vertexHandle != 0)
+        if (vertexHandle != 0)
             GlStateManager.attachShader(program, vertexHandle)
-        if(fragmentHandle != 0)
+        if (fragmentHandle != 0)
             GlStateManager.attachShader(program, fragmentHandle)
 
         GlStateManager.linkProgram(program)
 
         val status = GlStateManager.getProgram(program, GL_LINK_STATUS)
-        if(status == GL_FALSE) {
+        if (status == GL_FALSE) {
             val logLength = GlStateManager.getProgram(program, GL_INFO_LOG_LENGTH)
             val log = GlStateManager.getProgramInfoLog(program, logLength)
             GlStateManager.deleteProgram(program)

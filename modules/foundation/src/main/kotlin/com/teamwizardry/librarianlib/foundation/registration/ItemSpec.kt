@@ -71,12 +71,6 @@ class ItemSpec(
     }
 
     /**
-     * Sets the item constructor for deferred evaluation
-     */
-    @JvmSynthetic
-    inline fun item(crossinline constructor: (ItemSpec) -> Item): ItemSpec = item(Function { constructor(it) })
-
-    /**
      * Configures the information used for data generation
      */
     fun datagen(data: Consumer<DataGen>): ItemSpec = build {

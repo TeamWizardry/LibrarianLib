@@ -17,13 +17,14 @@ import java.io.FileNotFoundException
 import java.io.InputStream
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import java.util.function.Predicate
+import java.util.function.Supplier
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 
 class Mirage internal constructor(val type: ResourcePackType) {
     internal val fallback = FallbackResourceManager(type, "librarianlib")
     internal val files = mutableMapOf<ResourceLocation, ByteArray>().synchronized()
-    internal val generators = mutableMapOf<ResourceLocation, () -> ByteArray>().synchronized()
+    internal val generators = mutableMapOf<ResourceLocation, Supplier<ByteArray>>().synchronized()
     internal val packs = mutableListOf<VirtualResourcePack>().synchronized()
     internal val languageKeys = mutableMapOf<String, String>().synchronized()
     internal val lock = ReentrantReadWriteLock()
@@ -71,16 +72,16 @@ class Mirage internal constructor(val type: ResourcePackType) {
     /**
      * Note: the passed generator may be run on another thread
      */
-    fun add(location: ResourceLocation, generator: () -> String) {
+    fun add(location: ResourceLocation, generator: Supplier<String>) {
         addRaw(location) {
-            generator().toByteArray()
+            generator.get().toByteArray()
         }
     }
 
     /**
      * Note: the passed generator may be run on another thread
      */
-    fun addRaw(location: ResourceLocation, generator: () -> ByteArray) {
+    fun addRaw(location: ResourceLocation, generator: Supplier<ByteArray>) {
         lock.write {
             generators[location] = generator
             logger.debug("Added resource generator $location")
@@ -192,7 +193,7 @@ class Mirage internal constructor(val type: ResourcePackType) {
                     return ByteArrayInputStream(it)
                 }
                 resources.generators[location]?.also {
-                    return ByteArrayInputStream(it())
+                    return ByteArrayInputStream(it.get())
                 }
                 resources.packs.forEach { pack ->
                     pack.getStream(location)?.also {

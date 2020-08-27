@@ -25,6 +25,7 @@ import com.teamwizardry.librarianlib.core.logger
 import org.apache.logging.log4j.LogManager
 import java.lang.ref.PhantomReference
 import java.lang.ref.ReferenceQueue
+import java.util.function.Consumer
 import kotlin.reflect.KProperty
 
 // based on code from javacpp:
@@ -37,17 +38,21 @@ import kotlin.reflect.KProperty
  */
 object GlResourceGc {
     /**
-     * Starts tracking the given object, calling the [releaseFunction] on the main thread after [obj] is GC'd.
+     * Starts tracking the given object, calling the [releaseFunction] on the main thread at some point after [obj] is
+     * garbage collected.
      *
      * The passed function _MUST NOT_ capture the tracked object. Doing so would lead to a circular reference and the
      * resource will leak. If you need any fields from the tracked object, put the values in variables outside the
      * function and use those.
      *
+     * To help with this, the returned resource object can hold some mutable state which will be passed to the release
+     * function.
+     *
      * Bad:
      * ```java
      * public class MyGlThing {
      *     private int glHandle;
-     *     public void foo() {
+     *     public MyGlThing() {
      *         GlResourceGc.track(this, () -> {
      *             GlXX.glDeleteXX(this.glHandle); // `this` is captured here so we can access the `glHandle` field,
      *                                             // so this resource will never be released.
@@ -58,83 +63,35 @@ object GlResourceGc {
      * Good:
      * ```java
      * public class MyGlThing {
-     *     private int glHandle;
-     *     public void foo() {
-     *         final int _glHandle = this.glHandle;
-     *         GlResourceGc.track(this, () -> {
-     *             GlXX.glDeleteXX(_glHandle); // only the `_glHandle` variable is captured here, not `this`
+     *     private GlResourceGc.Resource<Integer> glHandle;
+     *     public MyGlThing() {
+     *         this.glHandle = GlResourceGc.track(this, 10, (Integer state) -> {
+     *             GlXX.glDeleteXX(state);
      *         });
+     *
+     *         // later in the code...
+     *         this.glHandle.setState(100);
      *     }
      * }
      * ```
      */
     @JvmStatic
-    fun track(obj: Any, releaseFunction: Runnable): ResourceTracker {
-        val ref = ResourceReference(obj, releaseFunction)
+    fun <T> track(obj: Any, state: T, releaseFunction: Consumer<T>): Resource<T> {
+        val ref = ResourceReference(obj, state, releaseFunction)
         ref.add()
         return ref
     }
 
     /**
-     * Starts tracking the given object, calling the [releaseFunction] on the main thread when [obj] is GC'd.
-     *
-     * The passed function _MUST NOT_ capture the tracked object. Doing so would lead to a circular reference and the
-     * resource will leak. If you need any fields from the tracked object, put the values in variables outside the
-     * function and use those. If you want mutable state between the tracked object and the release function, store that
-     * state inside a [Value] object and use references to that.
-     *
-     * Bad:
-     * ```java
-     * public class MyGlThing {
-     *     private int glHandle;
-     *     public void foo() {
-     *         GlResourceGc.track(this, () -> {
-     *             GlXX.glDeleteXX(this.glHandle); // `this` is captured here so we can access the `glHandle` field,
-     *                                             // so this resource will never be released.
-     *         });
-     *     }
-     * }
-     * ```
-     * Good:
-     * ```java
-     * public class MyGlThing {
-     *     private int glHandle;
-     *     public void foo() {
-     *         final int _glHandle = this.glHandle;
-     *         GlResourceGc.track(this, () -> {
-     *             GlXX.glDeleteXX(_glHandle); // only the `_glHandle` variable is captured here, not `this`
-     *         });
-     *     }
-     * }
-     * ```
-     */
-    @JvmSynthetic
-    inline fun track(obj: Any, crossinline releaseFunction: () -> Unit): ResourceTracker {
-        return track(obj, Runnable { releaseFunction() })
-    }
-
-    /**
-     * A simple cell for holding mutable state between objects and their release functions
-     */
-    class Value<T>(initialValue: T) {
-        @get:JvmName("get")
-        @set:JvmName("set")
-        var value: T = initialValue
-
-        @JvmSynthetic
-        operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
-            return this.value
-        }
-        @JvmSynthetic
-        operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-            this.value = value
-        }
-    }
-
-    /**
      * A tracked resource. This supports both manual reference counting and tracking using object GC
      */
-    interface ResourceTracker {
+    interface Resource<S> {
+        /**
+         * Some shared state accessible within the release function. This value will not be cleared when the tracked
+         * resource is released.
+         */
+        var state: S
+
         /**
          * Returns true if this resource has already been released.
          */
@@ -150,12 +107,23 @@ object GlResourceGc {
          * Stops tracking this resource for garbage collection.
          */
         fun untrack()
+
+        @JvmDefault
+        @JvmSynthetic
+        operator fun getValue(thisRef: Any?, property: KProperty<*>): S {
+            return this.state
+        }
+
+        @JvmDefault
+        @JvmSynthetic
+        operator fun setValue(thisRef: Any?, property: KProperty<*>, value: S) {
+            this.state = value
+        }
     }
 
     // implementation ==================================================================================================
 
     private val referenceQueue: ReferenceQueue<Any> = ReferenceQueue()
-
 
     /**
      * Releases all GC'd resources.
@@ -163,7 +131,7 @@ object GlResourceGc {
      * **INTERNAL USE ONLY**
      */
     fun releaseCollectedResources() {
-        generateSequence { referenceQueue.poll() as ResourceReference? }.forEach {
+        generateSequence { referenceQueue.poll() as ResourceReference<*>? }.forEach {
             it.clear()
             it.remove()
         }
@@ -173,11 +141,12 @@ object GlResourceGc {
      * A subclass of [PhantomReference] that also acts as a linked list to keep their references alive until they get
      * garbage collected.
      */
-    private class ResourceReference(p: Any, var releaseFunction: Runnable?): PhantomReference<Any>(p, referenceQueue), ResourceTracker {
+    private class ResourceReference<T>(p: Any, override var state: T, var releaseFunction: Consumer<T>?): PhantomReference<Any>(p, referenceQueue), Resource<T> {
         @Volatile
-        var prev: ResourceReference? = null
+        var prev: ResourceReference<*>? = null
+
         @Volatile
-        var next: ResourceReference? = null
+        var next: ResourceReference<*>? = null
 
         override val isReleased: Boolean get() = releaseFunction == null
 
@@ -228,7 +197,7 @@ object GlResourceGc {
 
             if (releaseFunction != null && !disable) {
                 logger.debug("Collecting $releaseFunction")
-                releaseFunction.run()
+                releaseFunction.accept(state)
             }
         }
 
@@ -238,7 +207,7 @@ object GlResourceGc {
 
             if (releaseFunction != null) {
                 logger.debug("Releasing $this")
-                releaseFunction.run()
+                releaseFunction.accept(state)
                 return true
             }
             return false
@@ -246,7 +215,7 @@ object GlResourceGc {
 
         companion object {
             @Volatile
-            var head: ResourceReference? = null
+            var head: ResourceReference<*>? = null
         }
     }
 }

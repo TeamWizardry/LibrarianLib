@@ -33,19 +33,32 @@ import java.util.concurrent.CompletableFuture
 
 object Client {
     @JvmStatic
-    val minecraft: Minecraft get() = Minecraft.getInstance()
+    val minecraft: Minecraft
+        get() = Minecraft.getInstance()
+
     @JvmStatic
-    val window: MainWindow get() = minecraft.mainWindow
+    val window: MainWindow
+        get() = minecraft.mainWindow
+
     @JvmStatic
-    val guiScaleFactor: Double get() = window.guiScaleFactor
+    val guiScaleFactor: Double
+        get() = window.guiScaleFactor
+
     @JvmStatic
-    val resourceManager: IResourceManager get() = minecraft.resourceManager
+    val resourceManager: IResourceManager
+        get() = minecraft.resourceManager
+
     @JvmStatic
-    val textureManager: TextureManager get() = minecraft.textureManager
+    val textureManager: TextureManager
+        get() = minecraft.textureManager
+
     @JvmStatic
-    val fontRenderer: FontRenderer get() = minecraft.fontRenderer
+    val fontRenderer: FontRenderer
+        get() = minecraft.fontRenderer
+
     @JvmStatic
-    val tessellator: Tessellator get() = Tessellator.getInstance()
+    val tessellator: Tessellator
+        get() = Tessellator.getInstance()
 
     /**
      * The game time, as measured from the game launch
@@ -57,6 +70,7 @@ object Client {
         override val partialTicks: Float
             get() = timer.renderPartialTicks
     }
+
     /**
      * The world time, as measured from the game launch
      */
@@ -65,7 +79,7 @@ object Client {
         override val ticks: Int
             get() = worldTicks
         override val partialTicks: Float
-            get() = if(minecraft.isGamePaused)
+            get() = if (minecraft.isGamePaused)
                 renderPartialTicksPaused.get(minecraft) as Float
             else
                 timer.renderPartialTicks
@@ -86,14 +100,6 @@ object Client {
     @JvmStatic
     fun runAsync(task: Runnable): CompletableFuture<Void> {
         return minecraft.runAsync(task)
-    }
-
-    /**
-     * Queue a block to run on the client thread. The block is executed immediately if this is called from the client
-     * thread.
-     */
-    inline fun runAsync(crossinline task: () -> Unit): CompletableFuture<Void> {
-        return minecraft.runAsync { task() }
     }
 
     @JvmStatic
@@ -127,7 +133,7 @@ object Client {
     fun getResourceInputStreamOrNull(resourceManager: IResourceManager, location: ResourceLocation): InputStream? {
         return try {
             getResourceInputStream(resourceManager, location)
-        } catch(e: IOException) {
+        } catch (e: IOException) {
             null
         }
     }
@@ -152,7 +158,7 @@ object Client {
     fun getResourceBytesOrNull(resourceManager: IResourceManager, location: ResourceLocation): ByteArray? {
         return try {
             getResourceBytes(resourceManager, location)
-        } catch(e: IOException) {
+        } catch (e: IOException) {
             null
         }
     }
@@ -177,7 +183,7 @@ object Client {
     fun getResourceTextOrNull(resourceManager: IResourceManager, location: ResourceLocation): String? {
         return try {
             getResourceText(resourceManager, location)
-        } catch(e: IOException) {
+        } catch (e: IOException) {
             null
         }
     }
@@ -282,7 +288,7 @@ object Client {
     internal fun clientTickEnd(event: TickEvent.ClientTickEvent) {
         if (event.phase == TickEvent.Phase.END) {
             val mc = Minecraft.getInstance()
-            if(!mc.isGamePaused)
+            if (!mc.isGamePaused)
                 worldTicks += timer.elapsedTicks
             globalTicks += timer.elapsedTicks
         }

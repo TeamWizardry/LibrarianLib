@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.core.util;
 
 import com.google.common.collect.Lists;
+import com.teamwizardry.librarianlib.core.util.sided.ClientRunnable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.ReloadListener;
 import net.minecraft.profiler.IProfiler;
@@ -29,20 +30,20 @@ public class ResourceReload {
         this.register(new SimpleReloadListener<T>(listener));
     }
 
-    public void register(List<IResourceType> types, SidedRunnable.Client runnable) {
+    public void register(List<IResourceType> types, ClientRunnable runnable) {
         ISelectiveResourceReloadListener listener = (resourceManager, resourcePredicate) -> {
             boolean hasMatch = false;
             for (IResourceType type : types) {
                 hasMatch = hasMatch || resourcePredicate.test(type);
             }
-            if(hasMatch)
+            if (hasMatch)
                 runnable.run();
         };
 
         ((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).addReloadListener(listener);
     }
 
-    public void register(IResourceType type, SidedRunnable.Client runnable) {
+    public void register(IResourceType type, ClientRunnable runnable) {
         register(Lists.newArrayList(type), runnable);
     }
 

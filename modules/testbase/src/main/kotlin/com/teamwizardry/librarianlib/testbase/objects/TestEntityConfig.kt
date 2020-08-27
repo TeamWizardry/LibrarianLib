@@ -1,13 +1,11 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
-import com.teamwizardry.librarianlib.core.util.SidedFunction
-import com.teamwizardry.librarianlib.core.util.SidedSupplier
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
+import com.teamwizardry.librarianlib.core.util.sided.ClientFunction
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityClassification
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.item.Item
 import net.minecraft.item.ItemGroup
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundNBT
@@ -40,7 +38,7 @@ class TestEntityConfig(val id: String, val name: String, spawnerItemGroup: ItemG
     var serverFactory: (World) -> TestEntity = { world ->
         TestEntity(this, world)
     }
-    var clientFactory: SidedFunction.Client<World, TestEntity> = SidedFunction.Client { world ->
+    var clientFactory: ClientFunction<World, TestEntity> = ClientFunction { world ->
         TestEntity(this, world)
     }
 

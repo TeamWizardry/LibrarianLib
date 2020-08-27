@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
-import com.teamwizardry.librarianlib.core.util.SidedRunnable
+import com.teamwizardry.librarianlib.core.util.sided.SidedRunnable
 import net.minecraftforge.fml.ModLoadingContext
 
 abstract class TestConfig {

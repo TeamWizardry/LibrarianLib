@@ -15,7 +15,7 @@ import dev.thecodewarrior.bitfont.utils.ExperimentalBitfont
 class PastryButton @JvmOverloads constructor(
         buttonText: String = "",
         posX: Int, posY: Int, width: Int? = null, height: Int = Pastry.lineHeight,
-        callback: (() -> Unit)? = null
+        callback: Runnable? = null
 ) : PastryActivatedControl(posX, posY, width ?: 0, height) {
 
     class ClickEvent(): Event()
@@ -48,7 +48,7 @@ class PastryButton @JvmOverloads constructor(
         label.text = buttonText
         if(callback != null)
             this.BUS.hook<ClickEvent> {
-                callback()
+                callback.run()
             }
         this.add(sprite, label)
 

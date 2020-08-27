@@ -2,7 +2,6 @@
 
 package com.teamwizardry.librarianlib.core.util.kotlin
 
-
 import java.util.Collections
 import java.util.IdentityHashMap
 import java.util.NavigableMap
@@ -65,8 +64,8 @@ fun <T> Set<T>.unmodifiableIdentityCopy(): Set<T> = Collections.unmodifiableSet(
 
 fun <T> weakSetOf(): MutableSet<T> = Collections.newSetFromMap(WeakHashMap())
 fun <T> weakSetOf(vararg elements: T): MutableSet<T> {
-    val map = WeakHashMap<T, Boolean>(mapCapacity(elements.size))
-    return elements.toCollection(Collections.newSetFromMap(map))
+    val set: MutableSet<T> = Collections.newSetFromMap(WeakHashMap<T, Boolean>(mapCapacity(elements.size)))
+    return elements.toCollection(set)
 }
 
 // Private utils =======================================================================================================

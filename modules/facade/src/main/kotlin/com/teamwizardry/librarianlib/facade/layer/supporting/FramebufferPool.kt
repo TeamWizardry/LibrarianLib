@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.etcetera.StencilUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.client.shader.Framebuffer
 import java.util.LinkedList
+import java.util.function.Consumer
 
 internal object FramebufferPool {
     private val maxFramebufferCount = 16
@@ -21,7 +22,7 @@ internal object FramebufferPool {
      */
     fun getFramebuffer(): Framebuffer {
         val fbo = bufferPool.pollFirst() ?: createFramebuffer()
-        if(
+        if (
             fbo.framebufferWidth != Client.window.framebufferWidth ||
             fbo.framebufferHeight != Client.window.framebufferHeight
         ) {
@@ -41,16 +42,14 @@ internal object FramebufferPool {
      *
      * Note: there is a hard limit of 16 framebuffers currently in use.
      */
-    fun renderToFramebuffer(callback: (Framebuffer) -> Unit): Framebuffer {
+    fun renderToFramebuffer(callback: Consumer<Framebuffer>): Framebuffer {
         val stencilLevel = StencilUtil.currentStencil
         val existing = current // store the current framebuffer so we can reset it later
 
         val framebuffer = getFramebuffer()
         useFramebuffer(framebuffer)
         try {
-
-            callback(framebuffer)
-
+            callback.accept(framebuffer)
         } finally {
             useFramebuffer(existing)
             StencilUtil.resetTest(stencilLevel)
@@ -60,7 +59,7 @@ internal object FramebufferPool {
     }
 
     private fun useFramebuffer(framebuffer: Framebuffer?) {
-        if(framebuffer == null) {
+        if (framebuffer == null) {
             Client.minecraft.framebuffer.bindFramebuffer(true)
         } else {
             framebuffer.bindFramebuffer(true)
@@ -69,7 +68,7 @@ internal object FramebufferPool {
     }
 
     private fun createFramebuffer(): Framebuffer {
-        if(createdBuffers == maxFramebufferCount)
+        if (createdBuffers == maxFramebufferCount)
             throw IllegalStateException("Exceeded maximum of $maxFramebufferCount nested framebuffers")
         val fbo = Framebuffer(Client.window.framebufferWidth, Client.window.framebufferHeight, true, Minecraft.IS_RUNNING_ON_MAC)
         fbo.enableStencil()

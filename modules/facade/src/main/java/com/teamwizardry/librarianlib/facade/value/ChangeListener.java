@@ -1,24 +1,26 @@
 package com.teamwizardry.librarianlib.facade.value;
 
-public final class ChangeListener {
+@FunctionalInterface
+public interface ChangeListener<T> {
+    void report(T oldValue, T newValue);
 
     @FunctionalInterface
-    public interface Boolean {
+    interface Boolean {
         void report(boolean oldValue, boolean newValue);
     }
 
     @FunctionalInterface
-    public interface Double {
+    interface Double {
         void report(double oldValue, double newValue);
     }
 
     @FunctionalInterface
-    public interface Int {
+    interface Int {
         void report(int oldValue, int newValue);
     }
 
     @FunctionalInterface
-    public interface Long {
+    interface Long {
         void report(long oldValue, long newValue);
     }
 

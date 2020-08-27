@@ -105,7 +105,7 @@ class YogaAutoProperty(
     }
 }
 
-@UseExperimental(ExperimentalContracts::class)
+@OptIn(ExperimentalContracts::class)
 private inline fun <T> ygValue(block: (YGValue) -> T): T {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)

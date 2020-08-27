@@ -9,7 +9,7 @@ class EventBus {
         return hooks[clazz]?.size ?: 0 > 0
     }
 
-    fun <E : Event> fire(event: E): E {
+    fun <E: Event> fire(event: E): E {
         getEventClassList(event.javaClass).forEach { clazz ->
             fire(event, clazz)
         }
@@ -29,16 +29,12 @@ class EventBus {
         }
     }
 
-    inline fun <reified  E : Event> hook(noinline hook: (E) -> Unit) {
+    inline fun <reified E: Event> hook(hook: Consumer<E>) {
         hook(E::class.java, hook)
     }
 
-    fun <E : Event> hook(clazz: Class<E>, hook: (E) -> Unit) {
-        hook(clazz, Consumer(hook))
-    }
-
     @Suppress("UNCHECKED_CAST")
-    fun <E : Event> hook(clazz: Class<E>, hook: Consumer<E>) {
+    fun <E: Event> hook(clazz: Class<E>, hook: Consumer<E>) {
         if (!hooks.containsKey(clazz))
             hooks.put(clazz, mutableListOf())
         hooks[clazz]?.add(EventHook(hook as Consumer<Event>))
@@ -69,7 +65,7 @@ class EventBus {
                 val list = mutableListOf<Class<*>>()
 
                 var c = clazz
-                while(Event::class.java.isAssignableFrom(c)) {
+                while (Event::class.java.isAssignableFrom(c)) {
                     list.add(c)
                     c = c.superclass ?: break
                 }

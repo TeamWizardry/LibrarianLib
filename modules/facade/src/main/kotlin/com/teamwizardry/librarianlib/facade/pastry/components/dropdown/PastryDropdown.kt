@@ -13,11 +13,12 @@ import com.teamwizardry.librarianlib.facade.pastry.components.PastryActivatedCon
 import com.teamwizardry.librarianlib.math.ScreenSpace
 import com.teamwizardry.librarianlib.math.rect
 import com.teamwizardry.librarianlib.math.vec
+import java.util.function.Consumer
 
 class PastryDropdown<T> constructor(
     posX: Int, posY: Int,
     width: Int,
-    callback: ((T) -> Unit)?
+    callback: Consumer<T>?
 ) : PastryActivatedControl(posX, posY, width, Pastry.lineHeight) {
 
     val items = mutableListOf<PastryDropdownItem<T>>()
@@ -31,7 +32,7 @@ class PastryDropdown<T> constructor(
     init {
         if(callback != null)
             this.BUS.hook<SelectEvent<T>> {
-                callback(it.value)
+                callback.accept(it.value)
             }
         this.add(sprite)
     }

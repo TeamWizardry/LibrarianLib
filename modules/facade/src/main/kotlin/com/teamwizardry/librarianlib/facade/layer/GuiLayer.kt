@@ -63,6 +63,7 @@ import java.util.function.Consumer
 import java.util.function.DoubleSupplier
 import java.util.function.IntSupplier
 import java.util.function.LongSupplier
+import java.util.function.Predicate
 import kotlin.math.PI
 import kotlin.math.floor
 import kotlin.math.max
@@ -199,22 +200,6 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     }
 
     /**
-     * Run the specified callback once [animationTime] is >= [time], repeating with the passed [interval].
-     */
-    @JvmSynthetic
-    inline fun schedule(time: Float, interval: Float, crossinline callback: () -> Unit) {
-        schedule(time, interval, Runnable { callback() })
-    }
-
-    /**
-     * Run the specified callback once [animationTime] is >= [time]
-     */
-    @JvmSynthetic
-    inline fun schedule(time: Float, crossinline callback: () -> Unit) {
-        schedule(time, Runnable { callback() })
-    }
-
-    /**
      * Run the specified callback after [time] ticks, repeating with the passed [interval].
      */
     fun delay(time: Float, interval: Float, callback: Runnable) {
@@ -226,22 +211,6 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      */
     fun delay(time: Float, callback: Runnable) {
         schedule(animationTime + time, callback)
-    }
-
-    /**
-     * Run the specified callback after [time] ticks, repeating with the passed [interval].
-     */
-    @JvmSynthetic
-    inline fun delay(time: Float, interval: Float, crossinline callback: () -> Unit) {
-        schedule(animationTime + time, interval, Runnable { callback() })
-    }
-
-    /**
-     * Run the specified callback after [time] ticks.
-     */
-    @JvmSynthetic
-    inline fun delay(time: Float, crossinline callback: () -> Unit) {
-        schedule(animationTime + time, Runnable { callback() })
     }
 
     private data class ScheduledEvent(var time: Float, val interval: Float, val callback: Runnable): Comparable<ScheduledEvent> {
@@ -265,17 +234,8 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * Creates an RMValue and registers it for animation updates.
      */
     @JvmOverloads
-    fun <T> rmValue(initialValue: T, lerper: Lerper<T>? = null, change: ((T, T) -> Unit)? = null): RMValue<T> {
+    fun <T> rmValue(initialValue: T, lerper: Lerper<T>? = null, change: ChangeListener<T>? = null): RMValue<T> {
         val value = RMValue(initialValue, lerper, change)
-        addAnimationTimeListener(value)
-        return value
-    }
-
-    /**
-     * Creates an RMValueBoolean and registers it for animation updates.
-     */
-    inline fun rmBoolean(initialValue: Boolean, crossinline change: (Boolean, Boolean) -> Unit): RMValueBoolean {
-        val value = RMValueBoolean(initialValue, ChangeListener.Boolean { old, new -> change(old, new) })
         addAnimationTimeListener(value)
         return value
     }
@@ -293,15 +253,6 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * Creates an RMValueDouble and registers it for animation updates.
      */
-    inline fun rmDouble(initialValue: Double, crossinline change: (Double, Double) -> Unit): RMValueDouble {
-        val value = RMValueDouble(initialValue, ChangeListener.Double { old, new -> change(old, new) })
-        addAnimationTimeListener(value)
-        return value
-    }
-
-    /**
-     * Creates an RMValueDouble and registers it for animation updates.
-     */
     @JvmOverloads
     fun rmDouble(initialValue: Double, change: ChangeListener.Double? = null): RMValueDouble {
         val value = RMValueDouble(initialValue, change)
@@ -312,27 +263,9 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * Creates an RMValueInt and registers it for animation updates.
      */
-    inline fun rmInt(initialValue: Int, crossinline change: (Int, Int) -> Unit): RMValueInt {
-        val value = RMValueInt(initialValue, ChangeListener.Int { old, new -> change(old, new) })
-        addAnimationTimeListener(value)
-        return value
-    }
-
-    /**
-     * Creates an RMValueInt and registers it for animation updates.
-     */
     @JvmOverloads
     fun rmInt(initialValue: Int, change: ChangeListener.Int? = null): RMValueInt {
         val value = RMValueInt(initialValue, change)
-        addAnimationTimeListener(value)
-        return value
-    }
-
-    /**
-     * Creates an RMValueLong and registers it for animation updates.
-     */
-    inline fun rmLong(initialValue: Long, crossinline change: (Long, Long) -> Unit): RMValueLong {
-        val value = RMValueLong(initialValue, ChangeListener.Long { old, new -> change(old, new) })
         addAnimationTimeListener(value)
         return value
     }
@@ -393,8 +326,8 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * Creates an RMValueBoolean and registers it for animation updates.
      */
-    inline fun imBoolean(crossinline callback: () -> Boolean): IMValueBoolean {
-        val value = IMValueBoolean(BooleanSupplier { callback() })
+    fun imBoolean(callback: BooleanSupplier): IMValueBoolean {
+        val value = IMValueBoolean(callback)
         addAnimationTimeListener(value)
         return value
     }
@@ -411,8 +344,8 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * Creates an RMValueDouble and registers it for animation updates.
      */
-    inline fun imDouble(crossinline callback: () -> Double): IMValueDouble {
-        val value = IMValueDouble(DoubleSupplier { callback() })
+    fun imDouble(callback: DoubleSupplier): IMValueDouble {
+        val value = IMValueDouble(callback)
         addAnimationTimeListener(value)
         return value
     }
@@ -429,8 +362,8 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * Creates an RMValueInt and registers it for animation updates.
      */
-    inline fun imInt(crossinline callback: () -> Int): IMValueInt {
-        val value = IMValueInt(IntSupplier { callback() })
+    fun imInt(callback: IntSupplier): IMValueInt {
+        val value = IMValueInt(callback)
         addAnimationTimeListener(value)
         return value
     }
@@ -447,8 +380,8 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * Creates an RMValueLong and registers it for animation updates.
      */
-    inline fun imLong(crossinline callback: () -> Long): IMValueLong {
-        val value = IMValueLong(LongSupplier { callback() })
+    fun imLong(callback: LongSupplier): IMValueLong {
+        val value = IMValueLong(callback)
         addAnimationTimeListener(value)
         return value
     }
@@ -600,8 +533,11 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * Iterates over children while allowing children to be added or removed. Any added children will not be iterated,
      * and any children removed while iterating will be excluded.
+     *
+     * @param includeMask Whether to include the mask layer
+     * @param block The block to apply to each layer
      */
-    @JvmOverloads
+    @JvmSynthetic
     inline fun forEachChild(includeMask: Boolean = true, block: (GuiLayer) -> Unit) {
         // calling `toList` just creates an array and then an ArrayList, so we just use the array
         for(child in children.toTypedArray()) {
@@ -609,6 +545,34 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
             if(child.parent != null && (includeMask || child !== maskLayer))
                 block(child)
         }
+    }
+
+    /**
+     * Iterates over children while allowing children to be added or removed. Any added children will not be iterated,
+     * and any children removed while iterating will be excluded.
+     *
+     * @param includeMask Whether to include the mask layer
+     * @param block The block to apply to each layer
+     */
+    fun forEachChild(includeMask: Boolean, block: Consumer<GuiLayer>) {
+        // calling `toList` just creates an array and then an ArrayList, so we just use the array
+        for(child in children.toTypedArray()) {
+            // a component may have been removed, in which case it won't be expecting any interaction
+            if(child.parent != null && (includeMask || child !== maskLayer))
+                block.accept(child)
+        }
+    }
+
+    /**
+     * Iterates over children while allowing children to be added or removed. Any added children will not be iterated,
+     * and any children removed while iterating will be excluded.
+     *
+     * This method includes the mask layer.
+     *
+     * @param block The block to apply to each layer
+     */
+    fun forEachChild(block: Consumer<GuiLayer>) {
+        forEachChild(true, block)
     }
 
     /**
@@ -965,14 +929,14 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * layer nor any of its children were included
      */
     fun getContentsBounds(
-        includeOwnBounds: (layer: GuiLayer) -> Boolean,
-        includeChildren: (layer: GuiLayer) -> Boolean
+        includeOwnBounds: Predicate<GuiLayer>,
+        includeChildren: Predicate<GuiLayer>
     ): Rect2d? {
         var bounds: Rect2d? = null
-        if (includeOwnBounds(this)) {
+        if (includeOwnBounds.test(this)) {
             bounds = this.bounds
         }
-        if (includeChildren(this)) {
+        if (includeChildren.test(this)) {
             for (child in children) {
                 val subBounds = child.getContentsBounds(includeOwnBounds, includeChildren) ?: continue
                 val subFrame = child.convertRectToParent(subBounds)
@@ -1354,14 +1318,12 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * The built-in base events are located in [GuiLayerEvents]
      */
     @JvmField
-    val BUS = EventBus()
+    val BUS: EventBus = EventBus()
 
-    inline fun <reified  E : Event> hook(noinline hook: (E) -> Unit) = BUS.hook(hook)
-
-    fun <E : Event> hook(clazz: Class<E>, hook: (E) -> Unit) = BUS.hook(clazz, hook)
+    inline fun <reified  E : Event> hook(hook: Consumer<E>): Unit = BUS.hook(hook)
 
     @Suppress("UNCHECKED_CAST")
-    fun <E : Event> hook(clazz: Class<E>, hook: Consumer<E>) = BUS.hook(clazz, hook)
+    fun <E : Event> hook(clazz: Class<E>, hook: Consumer<E>): Unit = BUS.hook(clazz, hook)
 
     init {
         BUS.register(this)

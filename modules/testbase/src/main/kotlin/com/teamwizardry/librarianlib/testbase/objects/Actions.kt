@@ -1,10 +1,9 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
-import com.teamwizardry.librarianlib.core.util.SidedConsumer
-
+import com.teamwizardry.librarianlib.core.util.sided.ClientConsumer
 
 class ClientAction<T> {
-    private var client: SidedConsumer.Client<T>? = null
+    private var client: ClientConsumer<T>? = null
     val exists: Boolean
         get() = client != null
 
@@ -20,15 +19,15 @@ class ClientAction<T> {
     }
 
     @PublishedApi
-    internal fun addClientRaw(client: SidedConsumer.Client<T>) {
+    internal fun addClientRaw(client: ClientConsumer<T>) {
         this.client = client
     }
 
     /**
-     * Sets the client callback. This is only called on the logical client. This inlines to a [SidedConsumer.Client]
+     * Sets the client callback. This is only called on the logical client. This inlines to a [ClientConsumer]
      * SAM object, so client-only code is safe to call inside it.
      */
-    inline operator fun invoke(crossinline client: T.() -> Unit) = addClientRaw(SidedConsumer.Client { it.client() })
+    inline operator fun invoke(crossinline client: T.() -> Unit) = addClientRaw(ClientConsumer { it.client() })
 }
 
 class ServerAction<T> {
@@ -57,7 +56,7 @@ class ServerAction<T> {
 }
 
 class SidedAction<T> {
-    private var client: SidedConsumer.Client<T>? = null
+    private var client: ClientConsumer<T>? = null
     private var server: (T.() -> Unit)? = null
     private var common: (T.() -> Unit)? = null
 
@@ -81,16 +80,19 @@ class SidedAction<T> {
         server = null
     }
 
-    @PublishedApi
-    internal fun addClientRaw(client: SidedConsumer.Client<T>) {
+    /**
+     * Sets the client callback. This is only called on the logical client.
+     */
+    fun client(client: ClientConsumer<T>) {
         this.client = client
     }
 
     /**
-     * Sets the client callback. This is only called on the logical client. This inlines to a [SidedConsumer.Client]
-     * SAM object, so client-only code is safe to call inside it.
+     * Sets the client callback. This is only called on the logical client.
      */
-    inline fun client(crossinline client: T.() -> Unit) = addClientRaw(SidedConsumer.Client { it.client() })
+    inline fun client(crossinline client: T.() -> Unit) {
+        this.client(ClientConsumer { it.client() })
+    }
 
     /**
      * Sets the common callback, which is called before both the server and client callbacks.

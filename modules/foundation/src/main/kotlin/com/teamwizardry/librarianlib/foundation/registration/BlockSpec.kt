@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
-import com.teamwizardry.librarianlib.core.util.IncompleteBuilderException
 import com.teamwizardry.librarianlib.core.util.mapSrgName
 import com.teamwizardry.librarianlib.foundation.block.IFoundationBlock
 import dev.thecodewarrior.mirror.Mirror
