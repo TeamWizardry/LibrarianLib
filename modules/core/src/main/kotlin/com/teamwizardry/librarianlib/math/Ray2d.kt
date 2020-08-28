@@ -3,48 +3,50 @@ package com.teamwizardry.librarianlib.math
 import kotlin.math.max
 import kotlin.math.min
 
-class Ray2d(originX: Double, originY: Double, directionX: Double, directionY: Double) {
+public class Ray2d(originX: Double, originY: Double, directionX: Double, directionY: Double) {
 
-    constructor(origin: Vec2d, direction: Vec2d) : this(origin.x, origin.y, direction.x, direction.y)
+    public constructor(origin: Vec2d, direction: Vec2d): this(origin.x, origin.y, direction.x, direction.y)
 
     /** The distance, measured in the multiple of the direction vector used for this trace (hit point = origin + distance * direction) */
-    var hitDistance: Double = Double.NaN
+    public var hitDistance: Double = Double.NaN
         private set
 
-    var hitX: Double = Double.NaN
+    public var hitX: Double = Double.NaN
         private set
-    var hitY: Double = Double.NaN
+    public var hitY: Double = Double.NaN
         private set
-    val hit: Vec2d?
-        get() = if(hitX.isNaN() || hitY.isNaN()) null else vec(hitX, hitY)
+    public val hit: Vec2d?
+        get() = if (hitX.isNaN() || hitY.isNaN()) null else vec(hitX, hitY)
 
-    var hitNormalX: Double = Double.NaN
+    public var hitNormalX: Double = Double.NaN
         private set
-    var hitNormalY: Double = Double.NaN
+    public var hitNormalY: Double = Double.NaN
         private set
-    val hitNormal: Vec2d?
-        get() = if(hitNormalX.isNaN() || hitNormalY.isNaN()) null else vec(hitNormalX, hitNormalY)
+    public val hitNormal: Vec2d?
+        get() = if (hitNormalX.isNaN() || hitNormalY.isNaN()) null else vec(hitNormalX, hitNormalY)
 
-    var originX: Double = originX
+    public var originX: Double = originX
         private set
-    var originY: Double = originY
+    public var originY: Double = originY
         private set
-    val origin: Vec2d
+    public val origin: Vec2d
         get() = vec(originX, originY)
 
-    var directionX: Double = directionX
+    public var directionX: Double = directionX
         private set
-    var directionY: Double = directionY
+    public var directionY: Double = directionY
         private set
-    val direction: Vec2d
+    public val direction: Vec2d
         get() = vec(directionX, directionY)
 
     private var invX: Double = 1 / directionX
     private var invY: Double = 1 / directionY
 
-    fun reset(origin: Vec2d, direction: Vec2d) = reset(origin.x, origin.y, direction.x, direction.y)
+    public fun reset(origin: Vec2d, direction: Vec2d) {
+        reset(origin.x, origin.y, direction.x, direction.y)
+    }
 
-    fun reset(originX: Double, originY: Double, directionX: Double, directionY: Double) {
+    public fun reset(originX: Double, originY: Double, directionX: Double, directionY: Double) {
         this.hitDistance = Double.NaN
         this.hitX = Double.NaN
         this.hitY = Double.NaN
@@ -61,7 +63,7 @@ class Ray2d(originX: Double, originY: Double, directionX: Double, directionY: Do
     }
 
     // https://tavianator.com/fast-branchless-raybounding-box-intersections-part-2-nans/
-    fun raytrace(minX: Double, minY: Double, maxX: Double, maxY: Double): Boolean {
+    public fun raytrace(minX: Double, minY: Double, maxX: Double, maxY: Double): Boolean {
         val tx1 = (minX - originX) * invX
         val tx2 = (maxX - originX) * invX
 
@@ -85,5 +87,4 @@ class Ray2d(originX: Double, originY: Double, directionX: Double, directionY: Do
         }
         return false
     }
-
 }

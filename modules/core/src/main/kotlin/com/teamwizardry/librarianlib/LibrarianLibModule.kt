@@ -17,13 +17,13 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.core.config.Configurator
 
-abstract class LibrarianLibModule(val name: String, val humanName: String) {
-    val modEventBus: IEventBus = FMLKotlinModLoadingContext.get().modEventBus
+public abstract class LibrarianLibModule(public val name: String, public val humanName: String) {
+    protected val modEventBus: IEventBus = FMLKotlinModLoadingContext.get().modEventBus
 
     /**
      * Whether debugging is enabled for this module.
      */
-    var debugEnabled: Boolean = false
+    public var debugEnabled: Boolean = false
         private set
 
     /**
@@ -37,7 +37,7 @@ abstract class LibrarianLibModule(val name: String, val humanName: String) {
         modEventBus.register(this)
     }
 
-    fun enableDebugging() {
+    public fun enableDebugging() {
         debugEnabled = true
 
         debugLoggers.forEach { (_, logger) ->
@@ -48,21 +48,21 @@ abstract class LibrarianLibModule(val name: String, val humanName: String) {
     /**
      * Create a logger for this module.
      */
-    fun makeLogger(clazz: Class<*>): Logger {
+    public fun makeLogger(clazz: Class<*>): Logger {
         return makeLogger(clazz.simpleName)
     }
 
     /**
      * Create a logger for this module.
      */
-    inline fun <reified T> makeLogger(): Logger {
+    public inline fun <reified T> makeLogger(): Logger {
         return makeLogger(T::class.java)
     }
 
     /**
      * Create a logger for this module.
      */
-    fun makeLogger(label: String?): Logger {
+    public fun makeLogger(label: String?): Logger {
         return debugLoggers.getOrPut(label) {
             val labelSuffix = label?.let { " ($it)" } ?: ""
             val logger = LogManager.getLogger("LibrarianLib: $humanName$labelSuffix")
@@ -94,16 +94,19 @@ abstract class LibrarianLibModule(val name: String, val humanName: String) {
     }
 
     @SubscribeEvent
+    @JvmSynthetic
     internal fun onBlocksRegistry(blockRegistryEvent: RegistryEvent.Register<Block>) {
         registerBlocks(blockRegistryEvent)
     }
 
     @SubscribeEvent
+    @JvmSynthetic
     internal fun onItemRegister(itemRegistryEvent: RegistryEvent.Register<Item>) {
         registerItems(itemRegistryEvent)
     }
 
     @SubscribeEvent
+    @JvmSynthetic
     internal fun onEntityRegister(entityRegistryEvent: RegistryEvent.Register<@JvmSuppressWildcards EntityType<*>>) {
         registerEntities(entityRegistryEvent)
     }

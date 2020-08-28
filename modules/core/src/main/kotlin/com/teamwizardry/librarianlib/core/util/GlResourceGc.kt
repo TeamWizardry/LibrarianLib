@@ -22,7 +22,6 @@
 package com.teamwizardry.librarianlib.core.util
 
 import com.teamwizardry.librarianlib.core.logger
-import org.apache.logging.log4j.LogManager
 import java.lang.ref.PhantomReference
 import java.lang.ref.ReferenceQueue
 import java.util.function.Consumer
@@ -36,7 +35,7 @@ import kotlin.reflect.KProperty
  * The amount of time between the object being garbage collected and the release function is indeterminate, possibly
  * requiring multiple GC cycles.
  */
-object GlResourceGc {
+public object GlResourceGc {
     /**
      * Starts tracking the given object, calling the [releaseFunction] on the main thread at some point after [obj] is
      * garbage collected.
@@ -76,7 +75,7 @@ object GlResourceGc {
      * ```
      */
     @JvmStatic
-    fun <T> track(obj: Any, state: T, releaseFunction: Consumer<T>): Resource<T> {
+    public fun <T> track(obj: Any, state: T, releaseFunction: Consumer<T>): Resource<T> {
         val ref = ResourceReference(obj, state, releaseFunction)
         ref.add()
         return ref
@@ -85,36 +84,36 @@ object GlResourceGc {
     /**
      * A tracked resource. This supports both manual reference counting and tracking using object GC
      */
-    interface Resource<S> {
+    public interface Resource<S> {
         /**
          * Some shared state accessible within the release function. This value will not be cleared when the tracked
          * resource is released.
          */
-        var state: S
+        public var state: S
 
         /**
          * Returns true if this resource has already been released.
          */
-        val isReleased: Boolean
+        public val isReleased: Boolean
 
         /**
          * Explicitly releases this resource. Returns true if the resource was released, or false if the resource was
          * already released. This will still function after [untrack] has been called.
          */
-        fun release(): Boolean
+        public fun release(): Boolean
 
         /**
          * Stops tracking this resource for garbage collection.
          */
-        fun untrack()
+        public fun untrack()
 
         @JvmSynthetic
-        operator fun getValue(thisRef: Any?, property: KProperty<*>): S {
+        public operator fun getValue(thisRef: Any?, property: KProperty<*>): S {
             return this.state
         }
 
         @JvmSynthetic
-        operator fun setValue(thisRef: Any?, property: KProperty<*>, value: S) {
+        public operator fun setValue(thisRef: Any?, property: KProperty<*>, value: S) {
             this.state = value
         }
     }
@@ -128,7 +127,7 @@ object GlResourceGc {
      *
      * **INTERNAL USE ONLY**
      */
-    fun releaseCollectedResources() {
+    internal fun releaseCollectedResources() {
         generateSequence { referenceQueue.poll() as ResourceReference<*>? }.forEach {
             it.clear()
             it.remove()

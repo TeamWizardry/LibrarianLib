@@ -1,4 +1,4 @@
 package com.teamwizardry.librarianlib
 
-object LibrarianLib {
+public object LibrarianLib {
 }

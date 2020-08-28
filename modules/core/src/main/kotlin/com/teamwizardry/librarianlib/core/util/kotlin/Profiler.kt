@@ -7,8 +7,8 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 
-@UseExperimental(ExperimentalContracts::class)
-inline fun <T> IProfiler.tick(block: () -> T): T {
+@OptIn(ExperimentalContracts::class)
+public inline fun <T> IProfiler.tick(block: () -> T): T {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }
@@ -20,8 +20,8 @@ inline fun <T> IProfiler.tick(block: () -> T): T {
     }
 }
 
-@UseExperimental(ExperimentalContracts::class)
-inline fun <T> IProfiler.section(name: String, block: () -> T): T {
+@OptIn(ExperimentalContracts::class)
+public inline fun <T> IProfiler.section(name: String, block: () -> T): T {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }
@@ -33,8 +33,8 @@ inline fun <T> IProfiler.section(name: String, block: () -> T): T {
     }
 }
 
-@UseExperimental(ExperimentalContracts::class)
-inline fun <T> IProfiler.section(noinline name: () -> String, block: () -> T): T {
+@OptIn(ExperimentalContracts::class)
+public inline fun <T> IProfiler.section(noinline name: () -> String, block: () -> T): T {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }

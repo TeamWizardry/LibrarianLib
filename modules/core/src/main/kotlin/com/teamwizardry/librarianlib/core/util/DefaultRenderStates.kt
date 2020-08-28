@@ -2,49 +2,48 @@ package com.teamwizardry.librarianlib.core.util
 
 import net.minecraft.client.renderer.RenderState
 
-object DefaultRenderStates {
-    val NO_TRANSPARENCY: RenderState.TransparencyState = RenderStateAccess._NO_TRANSPARENCY
-    val ADDITIVE_TRANSPARENCY: RenderState.TransparencyState = RenderStateAccess._ADDITIVE_TRANSPARENCY
-    val LIGHTNING_TRANSPARENCY: RenderState.TransparencyState = RenderStateAccess._LIGHTNING_TRANSPARENCY
-    val GLINT_TRANSPARENCY: RenderState.TransparencyState = RenderStateAccess._GLINT_TRANSPARENCY
-    val CRUMBLING_TRANSPARENCY: RenderState.TransparencyState = RenderStateAccess._CRUMBLING_TRANSPARENCY
-    val TRANSLUCENT_TRANSPARENCY: RenderState.TransparencyState = RenderStateAccess._TRANSLUCENT_TRANSPARENCY
-    val ZERO_ALPHA: RenderState.AlphaState = RenderStateAccess._ZERO_ALPHA
-    val DEFAULT_ALPHA: RenderState.AlphaState = RenderStateAccess._DEFAULT_ALPHA
-    val HALF_ALPHA: RenderState.AlphaState = RenderStateAccess._HALF_ALPHA
-    val SHADE_DISABLED: RenderState.ShadeModelState = RenderStateAccess._SHADE_DISABLED
-    val SHADE_ENABLED: RenderState.ShadeModelState = RenderStateAccess._SHADE_ENABLED
-    val BLOCK_SHEET_MIPPED: RenderState.TextureState = RenderStateAccess._BLOCK_SHEET_MIPPED
-    val BLOCK_SHEET: RenderState.TextureState = RenderStateAccess._BLOCK_SHEET
-    val NO_TEXTURE: RenderState.TextureState = RenderStateAccess._NO_TEXTURE
-    val DEFAULT_TEXTURING: RenderState.TexturingState = RenderStateAccess._DEFAULT_TEXTURING
-    val OUTLINE_TEXTURING: RenderState.TexturingState = RenderStateAccess._OUTLINE_TEXTURING
-    val GLINT_TEXTURING: RenderState.TexturingState = RenderStateAccess._GLINT_TEXTURING
-    val ENTITY_GLINT_TEXTURING: RenderState.TexturingState = RenderStateAccess._ENTITY_GLINT_TEXTURING
-    val LIGHTMAP_ENABLED: RenderState.LightmapState = RenderStateAccess._LIGHTMAP_ENABLED
-    val LIGHTMAP_DISABLED: RenderState.LightmapState = RenderStateAccess._LIGHTMAP_DISABLED
-    val OVERLAY_ENABLED: RenderState.OverlayState = RenderStateAccess._OVERLAY_ENABLED
-    val OVERLAY_DISABLED: RenderState.OverlayState = RenderStateAccess._OVERLAY_DISABLED
-    val DIFFUSE_LIGHTING_ENABLED: RenderState.DiffuseLightingState = RenderStateAccess._DIFFUSE_LIGHTING_ENABLED
-    val DIFFUSE_LIGHTING_DISABLED: RenderState.DiffuseLightingState = RenderStateAccess._DIFFUSE_LIGHTING_DISABLED
-    val CULL_ENABLED: RenderState.CullState = RenderStateAccess._CULL_ENABLED
-    val CULL_DISABLED: RenderState.CullState = RenderStateAccess._CULL_DISABLED
-    val DEPTH_ALWAYS: RenderState.DepthTestState = RenderStateAccess._DEPTH_ALWAYS
-    val DEPTH_EQUAL: RenderState.DepthTestState = RenderStateAccess._DEPTH_EQUAL
-    val DEPTH_LEQUAL: RenderState.DepthTestState = RenderStateAccess._DEPTH_LEQUAL
-    val COLOR_DEPTH_WRITE: RenderState.WriteMaskState = RenderStateAccess._COLOR_DEPTH_WRITE
-    val COLOR_WRITE: RenderState.WriteMaskState = RenderStateAccess._COLOR_WRITE
-    val DEPTH_WRITE: RenderState.WriteMaskState = RenderStateAccess._DEPTH_WRITE
-    val NO_LAYERING: RenderState.LayerState = RenderStateAccess._NO_LAYERING
-    val POLYGON_OFFSET_LAYERING: RenderState.LayerState = RenderStateAccess._POLYGON_OFFSET_LAYERING
-    val PROJECTION_LAYERING: RenderState.LayerState = RenderStateAccess._PROJECTION_LAYERING
-    val NO_FOG: RenderState.FogState = RenderStateAccess._NO_FOG
-    val FOG: RenderState.FogState = RenderStateAccess._FOG
-    val BLACK_FOG: RenderState.FogState = RenderStateAccess._BLACK_FOG
-    val MAIN_TARGET: RenderState.TargetState = RenderStateAccess._MAIN_TARGET
-    val OUTLINE_TARGET: RenderState.TargetState = RenderStateAccess._OUTLINE_TARGET
-    val DEFAULT_LINE: RenderState.LineState = RenderStateAccess._DEFAULT_LINE
-
+public object DefaultRenderStates {
+    public val NO_TRANSPARENCY: RenderState.TransparencyState = RenderStateAccess._NO_TRANSPARENCY
+    public val ADDITIVE_TRANSPARENCY: RenderState.TransparencyState = RenderStateAccess._ADDITIVE_TRANSPARENCY
+    public val LIGHTNING_TRANSPARENCY: RenderState.TransparencyState = RenderStateAccess._LIGHTNING_TRANSPARENCY
+    public val GLINT_TRANSPARENCY: RenderState.TransparencyState = RenderStateAccess._GLINT_TRANSPARENCY
+    public val CRUMBLING_TRANSPARENCY: RenderState.TransparencyState = RenderStateAccess._CRUMBLING_TRANSPARENCY
+    public val TRANSLUCENT_TRANSPARENCY: RenderState.TransparencyState = RenderStateAccess._TRANSLUCENT_TRANSPARENCY
+    public val ZERO_ALPHA: RenderState.AlphaState = RenderStateAccess._ZERO_ALPHA
+    public val DEFAULT_ALPHA: RenderState.AlphaState = RenderStateAccess._DEFAULT_ALPHA
+    public val HALF_ALPHA: RenderState.AlphaState = RenderStateAccess._HALF_ALPHA
+    public val SHADE_DISABLED: RenderState.ShadeModelState = RenderStateAccess._SHADE_DISABLED
+    public val SHADE_ENABLED: RenderState.ShadeModelState = RenderStateAccess._SHADE_ENABLED
+    public val BLOCK_SHEET_MIPPED: RenderState.TextureState = RenderStateAccess._BLOCK_SHEET_MIPPED
+    public val BLOCK_SHEET: RenderState.TextureState = RenderStateAccess._BLOCK_SHEET
+    public val NO_TEXTURE: RenderState.TextureState = RenderStateAccess._NO_TEXTURE
+    public val DEFAULT_TEXTURING: RenderState.TexturingState = RenderStateAccess._DEFAULT_TEXTURING
+    public val OUTLINE_TEXTURING: RenderState.TexturingState = RenderStateAccess._OUTLINE_TEXTURING
+    public val GLINT_TEXTURING: RenderState.TexturingState = RenderStateAccess._GLINT_TEXTURING
+    public val ENTITY_GLINT_TEXTURING: RenderState.TexturingState = RenderStateAccess._ENTITY_GLINT_TEXTURING
+    public val LIGHTMAP_ENABLED: RenderState.LightmapState = RenderStateAccess._LIGHTMAP_ENABLED
+    public val LIGHTMAP_DISABLED: RenderState.LightmapState = RenderStateAccess._LIGHTMAP_DISABLED
+    public val OVERLAY_ENABLED: RenderState.OverlayState = RenderStateAccess._OVERLAY_ENABLED
+    public val OVERLAY_DISABLED: RenderState.OverlayState = RenderStateAccess._OVERLAY_DISABLED
+    public val DIFFUSE_LIGHTING_ENABLED: RenderState.DiffuseLightingState = RenderStateAccess._DIFFUSE_LIGHTING_ENABLED
+    public val DIFFUSE_LIGHTING_DISABLED: RenderState.DiffuseLightingState = RenderStateAccess._DIFFUSE_LIGHTING_DISABLED
+    public val CULL_ENABLED: RenderState.CullState = RenderStateAccess._CULL_ENABLED
+    public val CULL_DISABLED: RenderState.CullState = RenderStateAccess._CULL_DISABLED
+    public val DEPTH_ALWAYS: RenderState.DepthTestState = RenderStateAccess._DEPTH_ALWAYS
+    public val DEPTH_EQUAL: RenderState.DepthTestState = RenderStateAccess._DEPTH_EQUAL
+    public val DEPTH_LEQUAL: RenderState.DepthTestState = RenderStateAccess._DEPTH_LEQUAL
+    public val COLOR_DEPTH_WRITE: RenderState.WriteMaskState = RenderStateAccess._COLOR_DEPTH_WRITE
+    public val COLOR_WRITE: RenderState.WriteMaskState = RenderStateAccess._COLOR_WRITE
+    public val DEPTH_WRITE: RenderState.WriteMaskState = RenderStateAccess._DEPTH_WRITE
+    public val NO_LAYERING: RenderState.LayerState = RenderStateAccess._NO_LAYERING
+    public val POLYGON_OFFSET_LAYERING: RenderState.LayerState = RenderStateAccess._POLYGON_OFFSET_LAYERING
+    public val PROJECTION_LAYERING: RenderState.LayerState = RenderStateAccess._PROJECTION_LAYERING
+    public val NO_FOG: RenderState.FogState = RenderStateAccess._NO_FOG
+    public val FOG: RenderState.FogState = RenderStateAccess._FOG
+    public val BLACK_FOG: RenderState.FogState = RenderStateAccess._BLACK_FOG
+    public val MAIN_TARGET: RenderState.TargetState = RenderStateAccess._MAIN_TARGET
+    public val OUTLINE_TARGET: RenderState.TargetState = RenderStateAccess._OUTLINE_TARGET
+    public val DEFAULT_LINE: RenderState.LineState = RenderStateAccess._DEFAULT_LINE
 }
 
 @Suppress("ObjectPropertyName")

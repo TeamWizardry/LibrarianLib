@@ -18,7 +18,7 @@ import kotlin.math.sin
 import kotlin.math.tan
 
 // adapted from flow/math: https://github.com/flow/math
-open class Matrix4d: Cloneable {
+public open class Matrix4d: Cloneable {
     internal open var m00: Double
     internal open var m01: Double
     internal open var m02: Double
@@ -35,24 +35,25 @@ open class Matrix4d: Cloneable {
     internal open var m31: Double
     internal open var m32: Double
     internal open var m33: Double
+
     @Volatile
     @Transient
     private var hashCode = 0
 
-    constructor(m: Matrix4d): this(
+    public constructor(m: Matrix4d): this(
         m.m00, m.m01, m.m02, m.m03,
         m.m10, m.m11, m.m12, m.m13,
         m.m20, m.m21, m.m22, m.m23,
         m.m30, m.m31, m.m32, m.m33)
 
-    constructor(): this(
+    public constructor(): this(
         1f, 0f, 0f, 0f,
         0f, 1f, 0f, 0f,
         0f, 0f, 1f, 0f,
         0f, 0f, 0f, 1f
     )
 
-    constructor(
+    public constructor(
         m00: Float, m01: Float, m02: Float, m03: Float,
         m10: Float, m11: Float, m12: Float, m13: Float,
         m20: Float, m21: Float, m22: Float, m23: Float,
@@ -62,7 +63,7 @@ open class Matrix4d: Cloneable {
         m20.toDouble(), m21.toDouble(), m22.toDouble(), m23.toDouble(),
         m30.toDouble(), m31.toDouble(), m32.toDouble(), m33.toDouble())
 
-    constructor(
+    public constructor(
         m00: Double, m01: Double, m02: Double, m03: Double,
         m10: Double, m11: Double, m12: Double, m13: Double,
         m20: Double, m21: Double, m22: Double, m23: Double,
@@ -85,7 +86,7 @@ open class Matrix4d: Cloneable {
         this.m33 = m33
     }
 
-    constructor(m: Matrix4f) {
+    public constructor(m: Matrix4f) {
         @Suppress("CAST_NEVER_SUCCEEDS") val imatrix = m as IMatrix4f
         this.m00 = imatrix.m00.toDouble()
         this.m01 = imatrix.m01.toDouble()
@@ -105,7 +106,7 @@ open class Matrix4d: Cloneable {
         this.m33 = imatrix.m33.toDouble()
     }
 
-    operator fun get(row: Int, col: Int): Double {
+    public operator fun get(row: Int, col: Int): Double {
         when (row) {
             0 -> when (col) {
                 0 -> return m00
@@ -136,7 +137,7 @@ open class Matrix4d: Cloneable {
             (if (row < 0 || row > 3) "row must be greater than zero and smaller than 3. " else "") + if (col < 0 || col > 3) "col must be greater than zero and smaller than 3." else "")
     }
 
-    open fun add(m: Matrix4d): Matrix4d {
+    public open fun add(m: Matrix4d): Matrix4d {
         return Matrix4d(
             m00 + m.m00, m01 + m.m01, m02 + m.m02, m03 + m.m03,
             m10 + m.m10, m11 + m.m11, m12 + m.m12, m13 + m.m13,
@@ -145,11 +146,11 @@ open class Matrix4d: Cloneable {
     }
 
     /** Operator function for Kotlin  */
-    open operator fun plus(m: Matrix4d): Matrix4d {
+    public open operator fun plus(m: Matrix4d): Matrix4d {
         return add(m)
     }
 
-    open fun sub(m: Matrix4d): Matrix4d {
+    public open fun sub(m: Matrix4d): Matrix4d {
         return Matrix4d(
             m00 - m.m00, m01 - m.m01, m02 - m.m02, m03 - m.m03,
             m10 - m.m10, m11 - m.m11, m12 - m.m12, m13 - m.m13,
@@ -158,20 +159,20 @@ open class Matrix4d: Cloneable {
     }
 
     /** Operator function for Kotlin  */
-    open operator fun minus(m: Matrix4d): Matrix4d {
+    public open operator fun minus(m: Matrix4d): Matrix4d {
         return sub(m)
     }
 
-    open fun mul(a: Float): Matrix4d {
+    public open fun mul(a: Float): Matrix4d {
         return mul(a.toDouble())
     }
 
     /** Operator function for Kotlin  */
-    open operator fun times(a: Float): Matrix4d {
+    public open operator fun times(a: Float): Matrix4d {
         return mul(a)
     }
 
-    open fun mul(a: Double): Matrix4d {
+    public open fun mul(a: Double): Matrix4d {
         return Matrix4d(
             m00 * a, m01 * a, m02 * a, m03 * a,
             m10 * a, m11 * a, m12 * a, m13 * a,
@@ -180,11 +181,11 @@ open class Matrix4d: Cloneable {
     }
 
     /** Operator function for Kotlin  */
-    open operator fun times(a: Double): Matrix4d {
+    public open operator fun times(a: Double): Matrix4d {
         return mul(a)
     }
 
-    open fun mul(m: Matrix4d): Matrix4d {
+    public open fun mul(m: Matrix4d): Matrix4d {
         return Matrix4d(
             m00 * m.m00 + m01 * m.m10 + m02 * m.m20 + m03 * m.m30,
             m00 * m.m01 + m01 * m.m11 + m02 * m.m21 + m03 * m.m31,
@@ -205,15 +206,15 @@ open class Matrix4d: Cloneable {
     }
 
     /** Operator function for Kotlin  */
-    open operator fun times(m: Matrix4d): Matrix4d {
+    public open operator fun times(m: Matrix4d): Matrix4d {
         return mul(m)
     }
 
-    open operator fun div(a: Float): Matrix4d {
+    public open operator fun div(a: Float): Matrix4d {
         return div(a.toDouble())
     }
 
-    open operator fun div(a: Double): Matrix4d {
+    public open operator fun div(a: Double): Matrix4d {
         return Matrix4d(
             m00 / a, m01 / a, m02 / a, m03 / a,
             m10 / a, m11 / a, m12 / a, m13 / a,
@@ -221,15 +222,15 @@ open class Matrix4d: Cloneable {
             m30 / a, m31 / a, m32 / a, m33 / a)
     }
 
-    open operator fun div(m: Matrix4d): Matrix4d {
+    public open operator fun div(m: Matrix4d): Matrix4d {
         return mul(m.invert())
     }
 
-    open fun pow(pow: Float): Matrix4d {
+    public open fun pow(pow: Float): Matrix4d {
         return pow(pow.toDouble())
     }
 
-    open fun pow(pow: Double): Matrix4d {
+    public open fun pow(pow: Double): Matrix4d {
         return Matrix4d(
             m00.pow(pow), m01.pow(pow), m02.pow(pow), m03.pow(pow),
             m10.pow(pow), m11.pow(pow), m12.pow(pow), m13.pow(pow),
@@ -237,53 +238,53 @@ open class Matrix4d: Cloneable {
             m30.pow(pow), m31.pow(pow), m32.pow(pow), m33.pow(pow))
     }
 
-    open fun translate(v: Vec3d): Matrix4d {
+    public open fun translate(v: Vec3d): Matrix4d {
         return translate(v.x, v.y, v.z)
     }
 
-    open fun translate(x: Float, y: Float, z: Float): Matrix4d {
+    public open fun translate(x: Float, y: Float, z: Float): Matrix4d {
         return translate(x.toDouble(), y.toDouble(), z.toDouble())
     }
 
-    open fun translate(x: Double, y: Double, z: Double): Matrix4d {
+    public open fun translate(x: Double, y: Double, z: Double): Matrix4d {
         return this.mul(createTranslation(x, y, z))
     }
 
-    open fun scale(scale: Float): Matrix4d {
+    public open fun scale(scale: Float): Matrix4d {
         return scale(scale.toDouble())
     }
 
-    open fun scale(scale: Double): Matrix4d {
+    public open fun scale(scale: Double): Matrix4d {
         return scale(scale, scale, scale, scale)
     }
 
-    open fun scale(x: Float, y: Float, z: Float, w: Float): Matrix4d {
+    public open fun scale(x: Float, y: Float, z: Float, w: Float): Matrix4d {
         return scale(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
     }
 
-    open fun scale(x: Double, y: Double, z: Double, w: Double): Matrix4d {
+    public open fun scale(x: Double, y: Double, z: Double, w: Double): Matrix4d {
         return this.mul(createScaling(x, y, z, w))
     }
 
-    open fun rotate(rot: Quaternion): Matrix4d {
+    public open fun rotate(rot: Quaternion): Matrix4d {
         return this.mul(createRotation(rot))
     }
 
-    open fun rotate(axis: Vec3d, angle: Double): Matrix4d {
+    public open fun rotate(axis: Vec3d, angle: Double): Matrix4d {
         return this.mul(createRotation(axis, angle))
     }
 
     /**
      * Transforms the passed vector using this [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix).
      */
-    fun transform(v: Vec3d): Vec3d {
+    public fun transform(v: Vec3d): Vec3d {
         return transform(v.x, v.y, v.z)
     }
 
     /**
      * Transforms the passed vector using this [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix).
      */
-    fun transform(x: Double, y: Double, z: Double): Vec3d {
+    public fun transform(x: Double, y: Double, z: Double): Vec3d {
         return vec(
             m00 * x + m01 * y + m02 * z + m03 * 1,
             m10 * x + m11 * y + m12 * z + m13 * 1,
@@ -295,7 +296,7 @@ open class Matrix4d: Cloneable {
      * returning the X axis of the result. This method, along with [transformY] and [transformZ], allow applying
      * transforms without creating new [Vec3d] objects.
      */
-    fun transformX(x: Double, y: Double, z: Double): Double {
+    public fun transformX(x: Double, y: Double, z: Double): Double {
         return m00 * x + m01 * y + m02 * z + m03 * 1
     }
 
@@ -304,7 +305,7 @@ open class Matrix4d: Cloneable {
      * returning the Y axis of the result. This method, along with [transformX] and [transformZ], allow applying
      * transforms without creating new [Vec3d] objects.
      */
-    fun transformY(x: Double, y: Double, z: Double): Double {
+    public fun transformY(x: Double, y: Double, z: Double): Double {
         return m10 * x + m11 * y + m12 * z + m13 * 1
     }
 
@@ -313,7 +314,7 @@ open class Matrix4d: Cloneable {
      * returning the Z axis of the result. This method, along with [transformX] and [transformY], allow applying
      * transforms without creating new [Vec3d] objects.
      */
-    fun transformZ(x: Double, y: Double, z: Double): Double {
+    public fun transformZ(x: Double, y: Double, z: Double): Double {
         return m20 * x + m21 * y + m22 * z + m23 * 1
     }
 
@@ -321,7 +322,7 @@ open class Matrix4d: Cloneable {
      * Transforms the passed delta vector, ignoring the translation component of this
      * [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix).
      */
-    fun transformDelta(v: Vec3d): Vec3d {
+    public fun transformDelta(v: Vec3d): Vec3d {
         return transformDelta(v.x, v.y, v.z)
     }
 
@@ -329,7 +330,7 @@ open class Matrix4d: Cloneable {
      * Transforms the passed delta vector, ignoring the translation component of this
      * [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix).
      */
-    fun transformDelta(x: Double, y: Double, z: Double): Vec3d {
+    public fun transformDelta(x: Double, y: Double, z: Double): Vec3d {
         return vec(
             m00 * x + m01 * y + m02 * z + m03 * 0,
             m10 * x + m11 * y + m12 * z + m13 * 0,
@@ -342,7 +343,7 @@ open class Matrix4d: Cloneable {
      * of the result. This method, along with [transformDeltaY] and [transformDeltaZ], allow applying transforms
      * without creating new [Vec3d] objects.
      */
-    fun transformDeltaX(x: Double, y: Double, z: Double): Double {
+    public fun transformDeltaX(x: Double, y: Double, z: Double): Double {
         return m00 * x + m01 * y + m02 * z + m03 * 0
     }
 
@@ -352,7 +353,7 @@ open class Matrix4d: Cloneable {
      * of the result. This method, along with [transformDeltaX] and [transformDeltaZ], allow applying transforms
      * without creating new [Vec3d] objects.
      */
-    fun transformDeltaY(x: Double, y: Double, z: Double): Double {
+    public fun transformDeltaY(x: Double, y: Double, z: Double): Double {
         return m10 * x + m11 * y + m12 * z + m13 * 0
     }
 
@@ -362,11 +363,11 @@ open class Matrix4d: Cloneable {
      * of the result. This method, along with [transformDeltaX] and [transformDeltaY], allow applying transforms
      * without creating new [Vec3d] objects.
      */
-    fun transformDeltaZ(x: Double, y: Double, z: Double): Double {
+    public fun transformDeltaZ(x: Double, y: Double, z: Double): Double {
         return m20 * x + m21 * y + m22 * z + m23 * 0
     }
 
-    open fun floor(): Matrix4d {
+    public open fun floor(): Matrix4d {
         return Matrix4d(
             floor(m00), floor(m01), floor(m02), floor(m03),
             floor(m10), floor(m11), floor(m12), floor(m13),
@@ -374,7 +375,7 @@ open class Matrix4d: Cloneable {
             floor(m30), floor(m31), floor(m32), floor(m33))
     }
 
-    open fun ceil(): Matrix4d {
+    public open fun ceil(): Matrix4d {
         return Matrix4d(
             ceil(m00), ceil(m01), ceil(m02), ceil(m03),
             ceil(m10), ceil(m11), ceil(m12), ceil(m13),
@@ -382,7 +383,7 @@ open class Matrix4d: Cloneable {
             ceil(m30), ceil(m31), ceil(m32), ceil(m33))
     }
 
-    open fun round(): Matrix4d {
+    public open fun round(): Matrix4d {
         return Matrix4d(
             m00.roundToLong().toFloat(), m01.roundToLong().toFloat(), m02.roundToLong().toFloat(), m03.roundToLong().toFloat(),
             m10.roundToLong().toFloat(), m11.roundToLong().toFloat(), m12.roundToLong().toFloat(), m13.roundToLong().toFloat(),
@@ -390,7 +391,7 @@ open class Matrix4d: Cloneable {
             m30.roundToLong().toFloat(), m31.roundToLong().toFloat(), m32.roundToLong().toFloat(), m33.roundToLong().toFloat())
     }
 
-    open fun abs(): Matrix4d {
+    public open fun abs(): Matrix4d {
         return Matrix4d(
             abs(m00), abs(m01), abs(m02), abs(m03),
             abs(m10), abs(m11), abs(m12), abs(m13),
@@ -398,7 +399,7 @@ open class Matrix4d: Cloneable {
             abs(m30), abs(m31), abs(m32), abs(m33))
     }
 
-    open fun negate(): Matrix4d {
+    public open fun negate(): Matrix4d {
         return Matrix4d(
             -m00, -m01, -m02, -m03,
             -m10, -m11, -m12, -m13,
@@ -407,15 +408,15 @@ open class Matrix4d: Cloneable {
     }
 
     /** Operator function for Kotlin  */
-    open operator fun unaryMinus(): Matrix4d {
+    public open operator fun unaryMinus(): Matrix4d {
         return negate()
     }
 
     /** Transforms the vector using this matrix */
     @JvmSynthetic
-    operator fun times(v: Vec3d): Vec3d = transform(v)
+    public operator fun times(v: Vec3d): Vec3d = transform(v)
 
-    open fun transpose(): Matrix4d {
+    public open fun transpose(): Matrix4d {
         return Matrix4d(
             m00, m10, m20, m30,
             m01, m11, m21, m31,
@@ -423,15 +424,15 @@ open class Matrix4d: Cloneable {
             m03, m13, m23, m33)
     }
 
-    fun trace(): Double {
+    public fun trace(): Double {
         return m00 + m11 + m22 + m33
     }
 
-    fun determinant(): Double {
+    public fun determinant(): Double {
         return m00 * (m11 * m22 * m33 + m21 * m32 * m13 + m31 * m12 * m23 - m31 * m22 * m13 - m11 * m32 * m23 - m21 * m12 * m33) - m10 * (m01 * m22 * m33 + m21 * m32 * m03 + m31 * m02 * m23 - m31 * m22 * m03 - m01 * m32 * m23 - m21 * m02 * m33) + m20 * (m01 * m12 * m33 + m11 * m32 * m03 + m31 * m02 * m13 - m31 * m12 * m03 - m01 * m32 * m13 - m11 * m02 * m33) - m30 * (m01 * m12 * m23 + m11 * m22 * m03 + m21 * m02 * m13 - m21 * m12 * m03 - m01 * m22 * m13 - m11 * m02 * m23)
     }
 
-    open fun invert(): Matrix4d {
+    public open fun invert(): Matrix4d {
         val det = determinant()
         if (abs(det) < DBL_EPSILON) {
             throw ArithmeticException("Cannot inverse a matrix with a zero determinant")
@@ -447,11 +448,11 @@ open class Matrix4d: Cloneable {
             -det3(m00, m10, m30, m01, m11, m31, m02, m12, m32) / det, det3(m00, m10, m20, m01, m11, m21, m02, m12, m22) / det)
     }
 
-    fun toArray(): DoubleArray {
+    public fun toArray(): DoubleArray {
         return toArray(false)
     }
 
-    fun toArray(columnMajor: Boolean): DoubleArray {
+    public fun toArray(columnMajor: Boolean): DoubleArray {
         return if (columnMajor) {
             doubleArrayOf(m00, m10, m20, m30, m01, m11, m21, m31, m02, m12, m22, m32, m03, m13, m23, m33)
         } else {
@@ -459,7 +460,7 @@ open class Matrix4d: Cloneable {
         }
     }
 
-    fun toMatrix4f(): Matrix4f {
+    public fun toMatrix4f(): Matrix4f {
         return Matrix4f(floatArrayOf(
             m00.toFloat(), m01.toFloat(), m02.toFloat(), m03.toFloat(),
             m10.toFloat(), m11.toFloat(), m12.toFloat(), m13.toFloat(),
@@ -504,7 +505,7 @@ open class Matrix4d: Cloneable {
             result = 31 * result + if (m31 != +0.0) m31.hashCode() else 0
             result = 31 * result + if (m32 != +0.0) m32.hashCode() else 0
             result = 31 * result + if (m33 != +0.0) m33.hashCode() else 0
-            hashCode = if(result == 0) 1 else result
+            hashCode = if (result == 0) 1 else result
         }
         return hashCode
     }
@@ -513,22 +514,22 @@ open class Matrix4d: Cloneable {
         return Matrix4d(this)
     }
 
-    fun toMutable(): MutableMatrix4d = MutableMatrix4d(this)
-    open fun toImmutable(): Matrix4d = this
+    public fun toMutable(): MutableMatrix4d = MutableMatrix4d(this)
+    public open fun toImmutable(): Matrix4d = this
 
-    companion object {
+    public companion object {
         private val DBL_EPSILON = Double.fromBits(0x3cb0000000000000L)
-        val ZERO = Matrix4d(
+        public val ZERO: Matrix4d = Matrix4d(
             0f, 0f, 0f, 0f,
             0f, 0f, 0f, 0f,
             0f, 0f, 0f, 0f,
             0f, 0f, 0f, 0f)
-        val IDENTITY = Matrix4d()
+        public val IDENTITY: Matrix4d = Matrix4d()
 
         /**
          * A thread local mutable matrix, useful for an no allocation intermediate for various operations
          */
-        val temporaryMatrix: MutableMatrix4d by threadLocal { MutableMatrix4d() }
+        public val temporaryMatrix: MutableMatrix4d by threadLocal { MutableMatrix4d() }
 
         internal fun createScaling(x: Double, y: Double, z: Double, w: Double): MutableMatrix4d {
             return temporaryMatrix.set(
@@ -573,9 +574,9 @@ open class Matrix4d: Cloneable {
             val sin = sin(angle)
 
             return temporaryMatrix.set(
-                cos + x*x*(1-cos), x*y*(1-cos) - z*sin, x*z*(1-cos) + y*sin, 0.0,
-                y*x*(1-cos) + z*sin, cos + y*y*(1-cos), y*z*(1-cos) - x*sin, 0.0,
-                z*x*(1-cos) - y*sin, z*y*(1-cos) + x*sin, cos + z*z*(1-cos), 0.0,
+                cos + x * x * (1 - cos), x * y * (1 - cos) - z * sin, x * z * (1 - cos) + y * sin, 0.0,
+                y * x * (1 - cos) + z * sin, cos + y * y * (1 - cos), y * z * (1 - cos) - x * sin, 0.0,
+                z * x * (1 - cos) - y * sin, z * y * (1 - cos) + x * sin, cos + z * z * (1 - cos), 0.0,
                 0.0, 0.0, 0.0, 1.0
             )
         }
@@ -588,7 +589,7 @@ open class Matrix4d: Cloneable {
          * @param up The "up" vector
          * @return A rotational transform that corresponds to a camera looking at the given point
          */
-        fun createLookAt(eye: Vec3d, at: Vec3d, up: Vec3d): Matrix4d {
+        public fun createLookAt(eye: Vec3d, at: Vec3d, up: Vec3d): Matrix4d {
             val f = (at - eye).normalize()
             val s = (f cross up).normalize()
             val u = s cross f
@@ -609,7 +610,7 @@ open class Matrix4d: Cloneable {
          * @param far the far plane, far cannot equal near
          * @return A perspective projection matrix built from the given values
          */
-        fun createPerspective(fov: Float, aspect: Float, near: Float, far: Float): Matrix4d {
+        public fun createPerspective(fov: Float, aspect: Float, near: Float, far: Float): Matrix4d {
             return createPerspective(fov.toDouble(), aspect.toDouble(), near.toDouble(), far.toDouble())
         }
 
@@ -622,7 +623,7 @@ open class Matrix4d: Cloneable {
          * @param far the far plane, far cannot equal near
          * @return A perspective projection matrix built from the given values
          */
-        fun createPerspective(fov: Double, aspect: Double, near: Double, far: Double): Matrix4d {
+        public fun createPerspective(fov: Double, aspect: Double, near: Double, far: Double): Matrix4d {
             val scale = 1 / tan(fov * (PI / 360))
             return Matrix4d(
                 scale / aspect, 0.0, 0.0, 0.0,
@@ -642,7 +643,7 @@ open class Matrix4d: Cloneable {
          * @param far the far plane of the viewing frustum
          * @return A viewing frustum built from the provided values
          */
-        fun createOrthographic(right: Float, left: Float, top: Float, bottom: Float,
+        public fun createOrthographic(right: Float, left: Float, top: Float, bottom: Float,
             near: Float, far: Float): Matrix4d {
             return createOrthographic(right.toDouble(), left.toDouble(), top.toDouble(), bottom.toDouble(), near.toDouble(), far.toDouble())
         }
@@ -658,7 +659,7 @@ open class Matrix4d: Cloneable {
          * @param far the far plane of the viewing frustum
          * @return A viewing frustum built from the provided values
          */
-        fun createOrthographic(right: Double, left: Double, top: Double, bottom: Double,
+        public fun createOrthographic(right: Double, left: Double, top: Double, bottom: Double,
             near: Double, far: Double): Matrix4d {
             return Matrix4d(
                 2 / (right - left), 0.0, 0.0, -(right + left) / (right - left),

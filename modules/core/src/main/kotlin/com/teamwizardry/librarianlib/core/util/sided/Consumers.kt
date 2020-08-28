@@ -9,7 +9,7 @@ import java.util.function.Consumer
 /**
  * A consumer that will run different blocks of code on the client and server.
  */
-interface SidedConsumer<T>: Consumer<T> {
+public interface SidedConsumer<T>: Consumer<T> {
     override fun accept(t: T) {
         when (FMLEnvironment.dist) {
             Dist.CLIENT -> acceptClient(t)
@@ -19,17 +19,17 @@ interface SidedConsumer<T>: Consumer<T> {
     }
 
     @OnlyIn(Dist.CLIENT)
-    fun acceptClient(t: T)
+    public fun acceptClient(t: T)
 
     @OnlyIn(Dist.DEDICATED_SERVER)
-    fun acceptServer(t: T)
+    public fun acceptServer(t: T)
 
-    companion object {
+    public companion object {
         /**
          * Runs a block of code only on the client.
          */
         @JvmStatic
-        fun <T> client(argument: T, consumer: ClientConsumer<T>) {
+        public fun <T> client(argument: T, consumer: ClientConsumer<T>) {
             consumer.accept(argument)
         }
 
@@ -37,7 +37,7 @@ interface SidedConsumer<T>: Consumer<T> {
          * Runs a block of code only on the server.
          */
         @JvmStatic
-        fun <T> server(argument: T, consumer: ServerConsumer<T>) {
+        public fun <T> server(argument: T, consumer: ServerConsumer<T>) {
             consumer.accept(argument)
         }
 
@@ -45,7 +45,7 @@ interface SidedConsumer<T>: Consumer<T> {
          * Runs different blocks of code on the client and the server.
          */
         @JvmStatic
-        fun <T> sided(argument: T, clientConsumer: ClientConsumer<T>, serverConsumer: ServerConsumer<T>) {
+        public fun <T> sided(argument: T, clientConsumer: ClientConsumer<T>, serverConsumer: ServerConsumer<T>) {
             object: SidedConsumer<T> {
                 override fun acceptClient(t: T) {
                     clientConsumer.acceptClient(t)
@@ -62,7 +62,7 @@ interface SidedConsumer<T>: Consumer<T> {
 /**
  * A consumer that will run only on the client.
  */
-fun interface ClientConsumer<T>: Consumer<T> {
+public fun interface ClientConsumer<T>: Consumer<T> {
     override fun accept(t: T) {
         if (FMLEnvironment.dist.isClient) {
             acceptClient(t)
@@ -70,13 +70,13 @@ fun interface ClientConsumer<T>: Consumer<T> {
     }
 
     @OnlyIn(Dist.CLIENT)
-    fun acceptClient(t: T)
+    public fun acceptClient(t: T)
 }
 
 /**
  * A consumer that will run only on the server.
  */
-fun interface ServerConsumer<T>: Consumer<T> {
+public fun interface ServerConsumer<T>: Consumer<T> {
     override fun accept(t: T) {
         if (FMLEnvironment.dist.isDedicatedServer) {
             acceptServer(t)
@@ -84,5 +84,5 @@ fun interface ServerConsumer<T>: Consumer<T> {
     }
 
     @OnlyIn(Dist.DEDICATED_SERVER)
-    fun acceptServer(t: T)
+    public fun acceptServer(t: T)
 }

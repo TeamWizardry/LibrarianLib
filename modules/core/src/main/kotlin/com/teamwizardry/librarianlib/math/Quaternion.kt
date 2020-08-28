@@ -17,50 +17,43 @@ import kotlin.math.sqrt
 /**
  * Represent a quaternion of the form `xi + yj + zk + w`. The x, y, z and w components are stored as doubles. This class is immutable.
  */
-class Quaternion
-/**
- * Constructs a new quaternion from the double components.
- *
- * @param x The x (imaginary) component
- * @param y The y (imaginary) component
- * @param z The z (imaginary) component
- * @param w The w (real) component
- */
-(
+public class Quaternion(
     /**
      * Gets the x (imaginary) component of this quaternion.
      *
      * @return The x (imaginary) component
      */
-    val x: Double,
+    public val x: Double,
     /**
      * Gets the y (imaginary) component of this quaternion.
      *
      * @return The y (imaginary) component
      */
-    val y: Double,
+    public val y: Double,
     /**
      * Gets the z (imaginary) component of this quaternion.
      *
      * @return The z (imaginary) component
      */
-    val z: Double,
+    public val z: Double,
     /**
      * Gets the w (real) component of this quaternion.
      *
      * @return The w (real) component
      */
-    val w: Double): Comparable<Quaternion>, Serializable, Cloneable {
+    public val w: Double
+): Comparable<Quaternion>, Serializable, Cloneable {
     @Volatile
     @Transient
     private var hashCode = 0
 
     /**
-     * Returns a unit vector representing the direction of this quaternion, which is [Vec3d.FORWARD] rotated by this quaternion.
+     * Returns a unit vector representing the direction of this quaternion, which is the +Z unit vector rotated by this
+     * quaternion.
      *
      * @return The vector representing the direction this quaternion is pointing to
      */
-    val direction: Vec3d
+    public val direction: Vec3d
         get() = rotate(vec(0, 0, 1))
 
     /**
@@ -68,7 +61,7 @@ class Quaternion
      *
      * @return The axis of rotation
      */
-    val axis: Vec3d
+    public val axis: Vec3d
         get() {
             val q = fastInvSqrt(1 - w * w)
             return vec(x * q, y * q, z * q)
@@ -79,15 +72,15 @@ class Quaternion
      *
      * @return The angle in degrees for each axis, stored in a vector, in the corresponding component
      */
-    val axesAnglesDeg: Vec3d
-        get() = axesAnglesRad * (180/PI)
+    public val axesAnglesDeg: Vec3d
+        get() = axesAnglesRad * (180 / PI)
 
     /**
      * Returns the angles in radians around the x, y and z axes that correspond to the rotation represented by this quaternion.
      *
      * @return The angle in radians for each axis, stored in a vector, in the corresponding component
      */
-    val axesAnglesRad: Vec3d
+    public val axesAnglesRad: Vec3d
         get() {
             val roll: Double
             val pitch: Double
@@ -114,34 +107,32 @@ class Quaternion
      * @param z The z (imaginary) component
      * @param w The w (real) component
      */
-    @JvmOverloads
-    constructor(x: Float = 0f, y: Float = 0f, z: Float = 0f, w: Float = 1f): this(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble()) {
-    }
+    public constructor(x: Float, y: Float, z: Float, w: Float): this(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
 
     /**
      * Copy constructor.
      *
      * @param q The quaternion to copy
      */
-    constructor(q: Quaternion): this(q.x, q.y, q.z, q.w) {}
+    public constructor(q: Quaternion): this(q.x, q.y, q.z, q.w) {}
 
     /** Operator function for Kotlin  */
-    operator fun component1(): Double {
+    public operator fun component1(): Double {
         return x
     }
 
     /** Operator function for Kotlin  */
-    operator fun component2(): Double {
+    public operator fun component2(): Double {
         return y
     }
 
     /** Operator function for Kotlin  */
-    operator fun component3(): Double {
+    public operator fun component3(): Double {
         return z
     }
 
     /** Operator function for Kotlin  */
-    operator fun component4(): Double {
+    public operator fun component4(): Double {
         return w
     }
 
@@ -151,13 +142,9 @@ class Quaternion
      * @param q The quaternion to add
      * @return A new quaternion, which is the sum of both
      */
-    fun add(q: Quaternion): Quaternion {
+    @JvmName("add")
+    public operator fun plus(q: Quaternion): Quaternion {
         return add(q.x, q.y, q.z, q.w)
-    }
-
-    /** Operator function for Kotlin  */
-    operator fun plus(q: Quaternion): Quaternion {
-        return add(q)
     }
 
     /**
@@ -169,7 +156,7 @@ class Quaternion
      * @param w The w (real) component of the quaternion to add
      * @return A new quaternion, which is the sum of both
      */
-    fun add(x: Float, y: Float, z: Float, w: Float): Quaternion {
+    public fun add(x: Float, y: Float, z: Float, w: Float): Quaternion {
         return add(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
     }
 
@@ -182,7 +169,7 @@ class Quaternion
      * @param w The w (real) component of the quaternion to add
      * @return A new quaternion, which is the sum of both
      */
-    fun add(x: Double, y: Double, z: Double, w: Double): Quaternion {
+    public fun add(x: Double, y: Double, z: Double, w: Double): Quaternion {
         return Quaternion(this.x + x, this.y + y, this.z + z, this.w + w)
     }
 
@@ -192,13 +179,9 @@ class Quaternion
      * @param q The quaternion to subtract
      * @return A new quaternion, which is the difference of both
      */
-    fun sub(q: Quaternion): Quaternion {
+    @JvmName("sub")
+    public operator fun minus(q: Quaternion): Quaternion {
         return sub(q.x, q.y, q.z, q.w)
-    }
-
-    /** Operator function for Kotlin  */
-    operator fun minus(q: Quaternion): Quaternion {
-        return sub(q)
     }
 
     /**
@@ -210,7 +193,7 @@ class Quaternion
      * @param w The w (real) component of the quaternion to subtract
      * @return A new quaternion, which is the difference of both
      */
-    fun sub(x: Float, y: Float, z: Float, w: Float): Quaternion {
+    public fun sub(x: Float, y: Float, z: Float, w: Float): Quaternion {
         return sub(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
     }
 
@@ -223,7 +206,7 @@ class Quaternion
      * @param w The w (real) component of the quaternion to subtract
      * @return A new quaternion, which is the difference of both
      */
-    fun sub(x: Double, y: Double, z: Double, w: Double): Quaternion {
+    public fun sub(x: Double, y: Double, z: Double, w: Double): Quaternion {
         return Quaternion(this.x - x, this.y - y, this.z - z, this.w - w)
     }
 
@@ -233,12 +216,12 @@ class Quaternion
      * @param a The multiplication scalar
      * @return A new quaternion, which has each component multiplied by the scalar
      */
-    fun mul(a: Float): Quaternion {
+    public fun mul(a: Float): Quaternion {
         return mul(a.toDouble())
     }
 
     /** Operator function for Kotlin  */
-    operator fun times(a: Float): Quaternion {
+    public operator fun times(a: Float): Quaternion {
         return mul(a)
     }
 
@@ -248,12 +231,12 @@ class Quaternion
      * @param a The multiplication scalar
      * @return A new quaternion, which has each component multiplied by the scalar
      */
-    fun mul(a: Double): Quaternion {
+    public fun mul(a: Double): Quaternion {
         return Quaternion(x * a, y * a, z * a, w * a)
     }
 
     /** Operator function for Kotlin  */
-    operator fun times(a: Double): Quaternion {
+    public operator fun times(a: Double): Quaternion {
         return mul(a)
     }
 
@@ -263,13 +246,9 @@ class Quaternion
      * @param q The quaternion to multiply with
      * @return A new quaternion, which is the product of both
      */
-    fun mul(q: Quaternion): Quaternion {
+    @JvmName("mul")
+    public operator fun times(q: Quaternion): Quaternion {
         return mul(q.x, q.y, q.z, q.w)
-    }
-
-    /** Operator function for Kotlin  */
-    operator fun times(q: Quaternion): Quaternion {
-        return add(q)
     }
 
     /**
@@ -281,7 +260,7 @@ class Quaternion
      * @param w The w (real) component of the quaternion to multiply with
      * @return A new quaternion, which is the product of both
      */
-    fun mul(x: Float, y: Float, z: Float, w: Float): Quaternion {
+    public fun mul(x: Float, y: Float, z: Float, w: Float): Quaternion {
         return mul(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
     }
 
@@ -294,7 +273,7 @@ class Quaternion
      * @param w The w (real) component of the quaternion to multiply with
      * @return A new quaternion, which is the product of both
      */
-    fun mul(x: Double, y: Double, z: Double, w: Double): Quaternion {
+    public fun mul(x: Double, y: Double, z: Double, w: Double): Quaternion {
         return Quaternion(
             this.w * x + this.x * w + this.y * z - this.z * y,
             this.w * y + this.y * w + this.z * x - this.x * z,
@@ -308,7 +287,7 @@ class Quaternion
      * @param a The division scalar
      * @return A new quaternion, which has each component divided by the scalar
      */
-    operator fun div(a: Float): Quaternion {
+    public operator fun div(a: Float): Quaternion {
         return div(a.toDouble())
     }
 
@@ -318,7 +297,7 @@ class Quaternion
      * @param a The division scalar
      * @return A new quaternion, which has each component divided by the scalar
      */
-    operator fun div(a: Double): Quaternion {
+    public operator fun div(a: Double): Quaternion {
         return Quaternion(x / a, y / a, z / a, w / a)
     }
 
@@ -328,7 +307,7 @@ class Quaternion
      * @param q The quaternion to divide with
      * @return The quotient of the two quaternions
      */
-    operator fun div(q: Quaternion): Quaternion {
+    public operator fun div(q: Quaternion): Quaternion {
         return div(q.x, q.y, q.z, q.w)
     }
 
@@ -341,7 +320,7 @@ class Quaternion
      * @param w The w (real) component of the quaternion to divide with
      * @return The quotient of the two quaternions
      */
-    fun div(x: Float, y: Float, z: Float, w: Float): Quaternion {
+    public fun div(x: Float, y: Float, z: Float, w: Float): Quaternion {
         return div(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
     }
 
@@ -354,7 +333,7 @@ class Quaternion
      * @param w The w (real) component of the quaternion to divide with
      * @return The quotient of the two quaternions
      */
-    fun div(x: Double, y: Double, z: Double, w: Double): Quaternion {
+    public fun div(x: Double, y: Double, z: Double, w: Double): Quaternion {
         val d = x * x + y * y + z * z + w * w
         return Quaternion(
             (this.x * w - this.w * x - this.z * y + this.y * z) / d,
@@ -369,7 +348,7 @@ class Quaternion
      * @param q The quaternion to calculate the dot product with
      * @return The dot product of the two quaternions
      */
-    fun dot(q: Quaternion): Double {
+    public fun dot(q: Quaternion): Double {
         return dot(q.x, q.y, q.z, q.w)
     }
 
@@ -382,7 +361,7 @@ class Quaternion
      * @param w The w (real) component of the quaternion to calculate the dot product with
      * @return The dot product of the two quaternions
      */
-    fun dot(x: Float, y: Float, z: Float, w: Float): Double {
+    public fun dot(x: Float, y: Float, z: Float, w: Float): Double {
         return dot(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
     }
 
@@ -395,7 +374,7 @@ class Quaternion
      * @param w The w (real) component of the quaternion to calculate the dot product with
      * @return The dot product of the two quaternions
      */
-    fun dot(x: Double, y: Double, z: Double, w: Double): Double {
+    public fun dot(x: Double, y: Double, z: Double, w: Double): Double {
         return this.x * x + this.y * y + this.z * z + this.w * w
     }
 
@@ -405,7 +384,7 @@ class Quaternion
      * @param v The vector to rotate
      * @return The rotated vector
      */
-    fun rotate(v: Vec3d): Vec3d {
+    public fun rotate(v: Vec3d): Vec3d {
         return rotate(v.getX(), v.getY(), v.getZ())
     }
 
@@ -417,7 +396,7 @@ class Quaternion
      * @param z The z component of the vector
      * @return The rotated vector
      */
-    fun rotate(x: Float, y: Float, z: Float): Vec3d {
+    public fun rotate(x: Float, y: Float, z: Float): Vec3d {
         return rotate(x.toDouble(), y.toDouble(), z.toDouble())
     }
 
@@ -429,7 +408,7 @@ class Quaternion
      * @param z The z component of the vector
      * @return The rotated vector
      */
-    fun rotate(x: Double, y: Double, z: Double): Vec3d {
+    public fun rotate(x: Double, y: Double, z: Double): Vec3d {
         val length = length()
         if (abs(length) < DBL_EPSILON) {
             throw ArithmeticException("Cannot rotate by the zero quaternion")
@@ -454,7 +433,7 @@ class Quaternion
      *
      * @return the conjugated quaternion
      */
-    fun conjugate(): Quaternion {
+    public fun conjugate(): Quaternion {
         return Quaternion(-x, -y, -z, w)
     }
 
@@ -464,7 +443,7 @@ class Quaternion
      *
      * @return the inverted quaternion
      */
-    fun invert(): Quaternion {
+    public fun invert(): Quaternion {
         val lengthSquared = lengthSquared()
         if (abs(lengthSquared) < DBL_EPSILON) {
             throw ArithmeticException("Cannot invert a quaternion of length zero")
@@ -477,7 +456,7 @@ class Quaternion
      *
      * @return The square of the length
      */
-    fun lengthSquared(): Double {
+    public fun lengthSquared(): Double {
         return x * x + y * y + z * z + w * w
     }
 
@@ -486,7 +465,7 @@ class Quaternion
      *
      * @return The length
      */
-    fun length(): Double {
+    public fun length(): Double {
         return sqrt(lengthSquared())
     }
 
@@ -495,7 +474,7 @@ class Quaternion
      *
      * @return A new quaternion of unit length
      */
-    fun normalize(): Quaternion {
+    public fun normalize(): Quaternion {
         val length = length()
         if (abs(length) < DBL_EPSILON) {
             throw ArithmeticException("Cannot normalize the zero quaternion")
@@ -510,19 +489,17 @@ class Quaternion
         if (other !is Quaternion) {
             return false
         }
-        val quaternion = other as Quaternion?
-        if (quaternion!!.w.compareTo(w) != 0) {
+        if (other.w.compareTo(w) != 0) {
+            return false
+        } else if (other.x.compareTo(x) != 0) {
+            return false
+        } else if (other.y.compareTo(y) != 0) {
+            return false
+        } else if (other.z.compareTo(z) != 0) {
             return false
         }
-        if (quaternion.x.compareTo(x) != 0) {
-            return false
-        }
-        if (quaternion.y.compareTo(y) != 0) {
-            return false
-        }
-        return if (quaternion.z.compareTo(z) != 0) {
-            false
-        } else true
+
+        return true
     }
 
     override fun hashCode(): Int {
@@ -531,7 +508,7 @@ class Quaternion
             result = 31 * result + if (y != +0.0) y.hashCode() else 0
             result = 31 * result + if (z != +0.0) z.hashCode() else 0
             result = 31 * result + if (w != +0.0) w.hashCode() else 0
-            hashCode = if(result == 0) 1 else result
+            hashCode = if (result == 0) 1 else result
         }
         return hashCode
     }
@@ -548,17 +525,18 @@ class Quaternion
         return "($x, $y, $z, $w)"
     }
 
-    companion object {
+    public companion object {
         private val DBL_EPSILON = Double.fromBits(0x3cb0000000000000L)
 
         /**
          * An immutable identity (0, 0, 0, 0) quaternion.
          */
-        val ZERO = Quaternion(0f, 0f, 0f, 0f)
+        public val ZERO: Quaternion = Quaternion(0f, 0f, 0f, 0f)
+
         /**
          * An immutable identity (0, 0, 0, 1) quaternion.
          */
-        val IDENTITY = Quaternion(0f, 0f, 0f, 1f)
+        public val IDENTITY: Quaternion = Quaternion(0f, 0f, 0f, 1f)
 
         /**
          * Creates a new quaternion from the double real component.
@@ -569,7 +547,7 @@ class Quaternion
          * @param w The w (real) component
          * @return The quaternion created from the double real component
          */
-        fun fromReal(w: Double): Quaternion {
+        public fun fromReal(w: Double): Quaternion {
             return if (w == 0.0) ZERO else Quaternion(0.0, 0.0, 0.0, w)
         }
 
@@ -584,7 +562,7 @@ class Quaternion
          * @param z The z (imaginary) component
          * @return The quaternion created from the double imaginary components
          */
-        fun fromImaginary(x: Double, y: Double, z: Double): Quaternion {
+        public fun fromImaginary(x: Double, y: Double, z: Double): Quaternion {
             return if (x == 0.0 && y == 0.0 && z == 0.0) ZERO else Quaternion(x, y, z, 0.0)
         }
 
@@ -600,7 +578,7 @@ class Quaternion
          * @param w The w (real) component
          * @return The quaternion created from the double components
          */
-        fun from(x: Double, y: Double, z: Double, w: Double): Quaternion {
+        public fun from(x: Double, y: Double, z: Double, w: Double): Quaternion {
             return if (x == 0.0 && y == 0.0 && z == 0.0 && w == 0.0) ZERO else Quaternion(x, y, z, w)
         }
 
@@ -612,7 +590,7 @@ class Quaternion
          * @param roll The rotation around z
          * @return The quaternion defined by the rotations around the axes
          */
-        fun fromAxesAnglesDeg(pitch: Float, yaw: Float, roll: Float): Quaternion {
+        public fun fromAxesAnglesDeg(pitch: Float, yaw: Float, roll: Float): Quaternion {
             return fromAxesAnglesDeg(pitch.toDouble(), yaw.toDouble(), roll.toDouble())
         }
 
@@ -624,7 +602,7 @@ class Quaternion
          * @param roll The rotation around z
          * @return The quaternion defined by the rotations around the axes
          */
-        fun fromAxesAnglesRad(pitch: Float, yaw: Float, roll: Float): Quaternion {
+        public fun fromAxesAnglesRad(pitch: Float, yaw: Float, roll: Float): Quaternion {
             return fromAxesAnglesRad(pitch.toDouble(), yaw.toDouble(), roll.toDouble())
         }
 
@@ -636,8 +614,8 @@ class Quaternion
          * @param roll The rotation around z
          * @return The quaternion defined by the rotations around the axes
          */
-        fun fromAxesAnglesDeg(pitch: Double, yaw: Double, roll: Double): Quaternion {
-            return fromAngleDegAxis(yaw, vec(0, 1, 0)).mul(fromAngleDegAxis(pitch, vec(1, 0, 0))).mul(fromAngleDegAxis(roll, vec(0, 0, 1)))
+        public fun fromAxesAnglesDeg(pitch: Double, yaw: Double, roll: Double): Quaternion {
+            return fromAngleDegAxis(yaw, vec(0, 1, 0)) * fromAngleDegAxis(pitch, vec(1, 0, 0)) * fromAngleDegAxis(roll, vec(0, 0, 1))
         }
 
         /**
@@ -648,8 +626,8 @@ class Quaternion
          * @param roll The rotation around z
          * @return The quaternion defined by the rotations around the axes
          */
-        fun fromAxesAnglesRad(pitch: Double, yaw: Double, roll: Double): Quaternion {
-            return fromAngleRadAxis(yaw, vec(0, 1, 0)).mul(fromAngleRadAxis(pitch, vec(1, 0, 0))).mul(fromAngleRadAxis(roll, vec(0, 0, 1)))
+        public fun fromAxesAnglesRad(pitch: Double, yaw: Double, roll: Double): Quaternion {
+            return fromAngleRadAxis(yaw, vec(0, 1, 0)) * fromAngleRadAxis(pitch, vec(1, 0, 0)) * fromAngleRadAxis(roll, vec(0, 0, 1))
         }
 
         /**
@@ -659,7 +637,7 @@ class Quaternion
          * @param to The second vector
          * @return The quaternion defined by the angle-axis rotation between the vectors
          */
-        fun fromRotationTo(from: Vec3d, to: Vec3d): Quaternion {
+        public fun fromRotationTo(from: Vec3d, to: Vec3d): Quaternion {
             return fromAngleRadAxis(acos((from dot to) / (from.length() * to.length())), from cross to)
         }
 
@@ -670,7 +648,7 @@ class Quaternion
          * @param axis The axis of rotation
          * @return The quaternion defined by the rotation around the axis
          */
-        fun fromAngleDegAxis(angle: Float, axis: Vec3d): Quaternion {
+        public fun fromAngleDegAxis(angle: Float, axis: Vec3d): Quaternion {
             return fromAngleRadAxis(Math.toRadians(angle.toDouble()), axis)
         }
 
@@ -681,7 +659,7 @@ class Quaternion
          * @param axis The axis of rotation
          * @return The quaternion defined by the rotation around the axis
          */
-        fun fromAngleRadAxis(angle: Float, axis: Vec3d): Quaternion {
+        public fun fromAngleRadAxis(angle: Float, axis: Vec3d): Quaternion {
             return fromAngleRadAxis(angle.toDouble(), axis)
         }
 
@@ -692,7 +670,7 @@ class Quaternion
          * @param axis The axis of rotation
          * @return The quaternion defined by the rotation around the axis
          */
-        fun fromAngleDegAxis(angle: Double, axis: Vec3d): Quaternion {
+        public fun fromAngleDegAxis(angle: Double, axis: Vec3d): Quaternion {
             return fromAngleRadAxis(Math.toRadians(angle), axis)
         }
 
@@ -703,7 +681,7 @@ class Quaternion
          * @param axis The axis of rotation
          * @return The quaternion defined by the rotation around the axis
          */
-        fun fromAngleRadAxis(angle: Double, axis: Vec3d): Quaternion {
+        public fun fromAngleRadAxis(angle: Double, axis: Vec3d): Quaternion {
             return fromAngleRadAxis(angle, axis.getX(), axis.getY(), axis.getZ())
         }
 
@@ -716,7 +694,7 @@ class Quaternion
          * @param z The z component of the axis vector
          * @return The quaternion defined by the rotation around the axis
          */
-        fun fromAngleDegAxis(angle: Float, x: Float, y: Float, z: Float): Quaternion {
+        public fun fromAngleDegAxis(angle: Float, x: Float, y: Float, z: Float): Quaternion {
             return fromAngleRadAxis(Math.toRadians(angle.toDouble()), x.toDouble(), y.toDouble(), z.toDouble())
         }
 
@@ -729,7 +707,7 @@ class Quaternion
          * @param z The z component of the axis vector
          * @return The quaternion defined by the rotation around the axis
          */
-        fun fromAngleRadAxis(angle: Float, x: Float, y: Float, z: Float): Quaternion {
+        public fun fromAngleRadAxis(angle: Float, x: Float, y: Float, z: Float): Quaternion {
             return fromAngleRadAxis(angle.toDouble(), x.toDouble(), y.toDouble(), z.toDouble())
         }
 
@@ -742,7 +720,7 @@ class Quaternion
          * @param z The z component of the axis vector
          * @return The quaternion defined by the rotation around the axis
          */
-        fun fromAngleDegAxis(angle: Double, x: Double, y: Double, z: Double): Quaternion {
+        public fun fromAngleDegAxis(angle: Double, x: Double, y: Double, z: Double): Quaternion {
             return fromAngleRadAxis(Math.toRadians(angle), x, y, z)
         }
 
@@ -755,7 +733,7 @@ class Quaternion
          * @param z The z component of the axis vector
          * @return The quaternion defined by the rotation around the axis
          */
-        fun fromAngleRadAxis(angle: Double, x: Double, y: Double, z: Double): Quaternion {
+        public fun fromAngleRadAxis(angle: Double, x: Double, y: Double, z: Double): Quaternion {
             val halfAngle = angle / 2
             val q = sin(halfAngle) / sqrt(x * x + y * y + z * z)
             return Quaternion(x * q, y * q, z * q, cos(halfAngle))
@@ -767,7 +745,7 @@ class Quaternion
          * @param matrix The rotation matrix
          * @return The quaternion defined by the rotation matrix
          */
-        fun fromRotationMatrix(matrix: Matrix3d): Quaternion {
+        public fun fromRotationMatrix(matrix: Matrix3d): Quaternion {
             val trace = matrix.trace()
             if (trace < 0) {
                 if (matrix[1, 1] > matrix[0, 0]) {

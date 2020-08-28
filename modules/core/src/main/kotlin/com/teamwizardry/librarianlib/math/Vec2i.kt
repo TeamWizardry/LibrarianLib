@@ -2,158 +2,141 @@ package com.teamwizardry.librarianlib.math
 
 import kotlin.math.sqrt
 
-class Vec2i(val x: Int, val y: Int) {
-    val xd: Double get() = x.toDouble()
-    val yd: Double get() = y.toDouble()
-    val xf: Float get() = x.toFloat()
-    val yf: Float get() = y.toFloat()
+public class Vec2i(public val x: Int, public val y: Int) {
+    public val xd: Double get() = x.toDouble()
+    public val yd: Double get() = y.toDouble()
+    public val xf: Float get() = x.toFloat()
+    public val yf: Float get() = y.toFloat()
 
-    init {
-//        AllocationTracker.vec2dAllocations++
-//        AllocationTracker.vec2dAllocationStats?.also { stats ->
-//            stats[this] = stats.getInt(this) + 1
-//        }
+    @JvmName("add")
+    public operator fun plus(other: Vec2i): Vec2i {
+        return getPooled(x + other.x, y + other.y)
     }
 
-    @JvmSynthetic
-    operator fun plus(other: Vec2i): Vec2i = add(other)
-    fun add(other: Vec2i): Vec2i {
-        return Vec2i.getPooled(x + other.x, y + other.y)
+    public fun add(otherX: Int, otherY: Int): Vec2i {
+        return getPooled(x + otherX, y + otherY)
     }
 
-    fun add(otherX: Int, otherY: Int): Vec2i {
-        return Vec2i.getPooled(x + otherX, y + otherY)
+    @JvmName("sub")
+    public operator fun minus(other: Vec2i): Vec2i {
+        return getPooled(x - other.x, y - other.y)
     }
 
-    @JvmSynthetic
-    operator fun minus(other: Vec2i): Vec2i = sub(other)
-    fun sub(other: Vec2i): Vec2i {
-        return Vec2i.getPooled(x - other.x, y - other.y)
+    public fun sub(otherX: Int, otherY: Int): Vec2i {
+        return getPooled(x - otherX, y - otherY)
     }
 
-    fun sub(otherX: Int, otherY: Int): Vec2i {
-        return Vec2i.getPooled(x - otherX, y - otherY)
+    @JvmName("mul")
+    public operator fun times(other: Vec2i): Vec2i {
+        return getPooled(x * other.x, y * other.y)
     }
 
-    @JvmSynthetic
-    operator fun times(other: Vec2i): Vec2i = mul(other)
-    fun mul(other: Vec2i): Vec2i {
-        return Vec2i.getPooled(x * other.x, y * other.y)
+    public fun mul(otherX: Int, otherY: Int): Vec2i {
+        return getPooled(x * otherX, y * otherY)
     }
 
-    fun mul(otherX: Int, otherY: Int): Vec2i {
-        return Vec2i.getPooled(x * otherX, y * otherY)
+    @JvmName("mul")
+    public operator fun times(amount: Int): Vec2i {
+        return getPooled(x * amount, y * amount)
     }
 
-    @JvmSynthetic
-    operator fun times(other: Int): Vec2i = mul(other)
-    fun mul(amount: Int): Vec2i {
-        return Vec2i.getPooled(x * amount, y * amount)
+    @JvmName("divide")
+    public operator fun div(other: Vec2i): Vec2i {
+        return getPooled(x / other.x, y / other.y)
     }
 
-    @JvmSynthetic
-    operator fun div(other: Vec2i): Vec2i = divide(other)
-    fun divide(other: Vec2i): Vec2i {
-        return Vec2i.getPooled(x / other.x, y / other.y)
+    public fun divide(otherX: Int, otherY: Int): Vec2i {
+        return getPooled(x / otherX, y / otherY)
     }
 
-    fun divide(otherX: Int, otherY: Int): Vec2i {
-        return Vec2i.getPooled(x / otherX, y / otherY)
+    public fun divide(amount: Int): Vec2i {
+        return getPooled(x / amount, y / amount)
     }
 
-    fun divide(amount: Int): Vec2i {
-        return Vec2i.getPooled(x / amount, y / amount)
-    }
-
-    infix fun dot(point: Vec2i): Int {
+    public infix fun dot(point: Vec2i): Int {
         return x * point.x + y * point.y
     }
 
     // ===========================================================================
 
-    @JvmSynthetic
-    operator fun plus(other: Vec2d): Vec2d = add(other)
-    fun add(other: Vec2d): Vec2d {
+    @JvmName("add")
+    public operator fun plus(other: Vec2d): Vec2d {
         return Vec2d.getPooled(x + other.x, y + other.y)
     }
 
-    fun add(otherX: Double, otherY: Double): Vec2d {
+    public fun add(otherX: Double, otherY: Double): Vec2d {
         return Vec2d.getPooled(x + otherX, y + otherY)
     }
 
-    @JvmSynthetic
-    operator fun minus(other: Vec2d): Vec2d = sub(other)
-    fun sub(other: Vec2d): Vec2d {
+    @JvmName("sub")
+    public operator fun minus(other: Vec2d): Vec2d {
         return Vec2d.getPooled(x - other.x, y - other.y)
     }
 
-    fun sub(otherX: Double, otherY: Double): Vec2d {
+    public fun sub(otherX: Double, otherY: Double): Vec2d {
         return Vec2d.getPooled(x - otherX, y - otherY)
     }
 
-    @JvmSynthetic
-    operator fun times(other: Vec2d): Vec2d = mul(other)
-    fun mul(other: Vec2d): Vec2d {
+    @JvmName("mul")
+    public operator fun times(other: Vec2d): Vec2d {
         return Vec2d.getPooled(x * other.x, y * other.y)
     }
 
-    fun mul(otherX: Double, otherY: Double): Vec2d {
+    public fun mul(otherX: Double, otherY: Double): Vec2d {
         return Vec2d.getPooled(x * otherX, y * otherY)
     }
 
-    @JvmSynthetic
-    operator fun times(other: Double): Vec2d = mul(other)
-    fun mul(amount: Double): Vec2d {
+    @JvmName("mul")
+    public operator fun times(amount: Double): Vec2d {
         return Vec2d.getPooled(x * amount, y * amount)
     }
 
-    @JvmSynthetic
-    operator fun div(other: Vec2d): Vec2d = divide(other)
-    fun divide(other: Vec2d): Vec2d {
+    @JvmName("divide")
+    public operator fun div(other: Vec2d): Vec2d {
         return Vec2d.getPooled(x / other.x, y / other.y)
     }
 
-    fun divide(otherX: Double, otherY: Double): Vec2d {
+    public fun divide(otherX: Double, otherY: Double): Vec2d {
         return Vec2d.getPooled(x / otherX, y / otherY)
     }
 
-    fun divide(amount: Double): Vec2d {
+    public fun divide(amount: Double): Vec2d {
         return Vec2d.getPooled(x / amount, y / amount)
     }
 
-    infix fun dot(point: Vec2d): Double {
+    public infix fun dot(point: Vec2d): Double {
         return x * point.x + y * point.y
     }
 
     @JvmSynthetic
-    operator fun unaryMinus(): Vec2d = this * -1.0
+    public operator fun unaryMinus(): Vec2d = this * -1.0
 
     // ===========================================================================
 
     @get:JvmName("lengthSquared")
-    val lengthSquared: Int get() = x * x + y * y
+    public val lengthSquared: Int get() = x * x + y * y
 
-    fun length(): Double {
+    public fun length(): Double {
         return sqrt(lengthSquared.toDouble())
     }
 
-    fun fastInvLength(): Double {
+    public fun fastInvLength(): Double {
         return fastInvSqrt(lengthSquared.toDouble())
     }
 
-    fun distanceSquared(vec: Vec2i): Int {
+    public fun distanceSquared(vec: Vec2i): Int {
         val d0 = vec.x - x
         val d1 = vec.y - y
         return d0 * d0 + d1 * d1
     }
 
-    fun distance(vec: Vec2i): Double {
+    public fun distance(vec: Vec2i): Double {
         val d0 = vec.x - x
         val d1 = vec.y - y
         return sqrt((d0 * d0 + d1 * d1).toDouble())
     }
 
-    fun fastInvDistance(vec: Vec2i): Double {
+    public fun fastInvDistance(vec: Vec2i): Double {
         val d0 = vec.x - x
         val d1 = vec.y - y
         return fastInvSqrt((d0 * d0 + d1 * d1).toDouble())
@@ -162,28 +145,31 @@ class Vec2i(val x: Int, val y: Int) {
     /**
      * Run the passed function on the axes of this vector, then return a vector of the results.
      */
-    inline fun map(fn: (Int) -> Int): Vec2i {
-        return Vec2i.getPooled(fn(this.x), fn(this.y))
+    @JvmSynthetic
+    public inline fun map(fn: (Int) -> Int): Vec2i {
+        return getPooled(fn(this.x), fn(this.y))
     }
 
     /**
      * Run the passed function on the axes of this vector and the [other] vector, then return a vector of the results.
      */
-    inline fun zip(other: Vec2i, fn: (Int, Int) -> Int): Vec2i {
-        return Vec2i.getPooled(fn(this.x, other.x), fn(this.y, other.y))
+    @JvmSynthetic
+    public inline fun zip(other: Vec2i, fn: (Int, Int) -> Int): Vec2i {
+        return getPooled(fn(this.x, other.x), fn(this.y, other.y))
     }
 
     /**
      * Run the passed function on the axes of this vector and the other vectors, then return a vector of the results.
      */
-    inline fun zip(a: Vec2i, b: Vec2i, fn: (Int, Int, Int) -> Int): Vec2i {
-        return Vec2i.getPooled(fn(this.x, a.x, b.x), fn(this.y, a.y, b.y))
+    @JvmSynthetic
+    public inline fun zip(a: Vec2i, b: Vec2i, fn: (Int, Int, Int) -> Int): Vec2i {
+        return getPooled(fn(this.x, a.x, b.x), fn(this.y, a.y, b.y))
     }
 
     @JvmSynthetic
-    operator fun component1(): Int = this.x
+    public operator fun component1(): Int = this.x
     @JvmSynthetic
-    operator fun component2(): Int = this.y
+    public operator fun component2(): Int = this.y
 
     //=============================================================================
 
@@ -207,10 +193,10 @@ class Vec2i(val x: Int, val y: Int) {
         return result
     }
 
-    companion object {
+    public companion object {
 
         @JvmField
-        val ZERO = Vec2i(0, 0)
+        public val ZERO: Vec2i = Vec2i(0, 0)
 
         private val poolBits = 7
         private val poolMask = (1 shl poolBits)-1
@@ -224,10 +210,9 @@ class Vec2i(val x: Int, val y: Int) {
         }
 
         @JvmStatic
-        fun getPooled(x: Int, y: Int): Vec2i {
+        public fun getPooled(x: Int, y: Int): Vec2i {
             if (x in poolMin..poolMax &&
                 y in poolMin..poolMax) {
-//                AllocationTracker.vec2dPooledAllocations++
                 return pool[
                     (x-poolMin) shl poolBits or (y-poolMin)
                 ]

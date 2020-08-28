@@ -1,23 +1,21 @@
 package com.teamwizardry.librarianlib.math
 
-import com.teamwizardry.librarianlib.core.util.lerp.Lerper
-
-abstract class BasicAnimation<T>(
+public abstract class BasicAnimation<T>(
     /**
      * The duration of a single loop of the animation. The actual animation may last longer, depending on the value of
      * [repeatCount].
      */
-    open val duration: Float
+    public open val duration: Float
 ): Animation<T> {
     /**
      * The number of times this animation should loop. [Int.MAX_VALUE] is interpreted as infinity, and non-positive
      * values will be interpreted as 1.
      */
-    var repeatCount: Int = 1
+    public var repeatCount: Int = 1
     /**
      * If true, the animation will "bounce", reversing direction on every loop
      */
-    var reverseOnRepeat: Boolean = false
+    public var reverseOnRepeat: Boolean = false
     /**
      * A callback to run when the animation completes or is interrupted
      */
@@ -66,23 +64,23 @@ abstract class BasicAnimation<T>(
     }
 
     //region Builders
-    fun repeat(repeatCount: Int): BasicAnimation<T> = build {
+    public fun repeat(repeatCount: Int): BasicAnimation<T> = build {
         this.repeatCount = repeatCount
     }
 
-    fun repeatForever(): BasicAnimation<T> = build {
+    public fun repeatForever(): BasicAnimation<T> = build {
         this.repeatCount = Int.MAX_VALUE
     }
 
-    fun reverseOnRepeat(): BasicAnimation<T> = build {
+    public fun reverseOnRepeat(): BasicAnimation<T> = build {
         this.reverseOnRepeat = true
     }
 
-    fun reverseOnRepeat(reverseOnRepeat: Boolean): BasicAnimation<T> = build {
+    public fun reverseOnRepeat(reverseOnRepeat: Boolean): BasicAnimation<T> = build {
         this.reverseOnRepeat = reverseOnRepeat
     }
 
-    fun onComplete(completionCallback: Runnable?): BasicAnimation<T> = build {
+    public fun onComplete(completionCallback: Runnable?): BasicAnimation<T> = build {
         this.completionCallback = completionCallback
     }
 

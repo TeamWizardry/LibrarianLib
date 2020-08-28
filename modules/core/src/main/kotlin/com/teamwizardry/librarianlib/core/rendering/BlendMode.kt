@@ -12,7 +12,7 @@ import java.awt.Color
  * Note: It is vitally important to call [reset]. GlStateManager doesn't track all the states required, so not calling
  * `reset` will lead to `GlStateManager` having out of date information, which causes very bad state leaks.
  */
-data class BlendMode @JvmOverloads constructor(
+public data class BlendMode @JvmOverloads constructor(
     val sourceRGB: Factor,
     val destRGB: Factor,
     val sourceAlpha: Factor,
@@ -21,16 +21,16 @@ data class BlendMode @JvmOverloads constructor(
     val alphaEquation: Equation = Equation.ADD,
     val constantColor: Color = Color(0, 0, 0, 0)
 ) {
-    constructor(src: Factor, dst: Factor) : this(src, dst, src, dst)
+    public constructor(src: Factor, dst: Factor) : this(src, dst, src, dst)
 
-    fun glApply() {
+    public fun glApply() {
         RenderSystem.blendFuncSeparate(sourceRGB.glConst, destRGB.glConst, sourceAlpha.glConst, destAlpha.glConst)
         GL20.glBlendEquationSeparate(rgbEquation.glConst, alphaEquation.glConst)
         RenderSystem.blendColor(constantColor.red/255f, constantColor.green/255f, constantColor.blue/255f,
             constantColor.alpha/255f)
     }
 
-    fun reset() {
+    public fun reset() {
         RenderSystem.blendFuncSeparate(Factor.SRC_ALPHA.glConst, Factor.ONE_MINUS_SRC_ALPHA.glConst, Factor.ONE.glConst, Factor.ZERO.glConst)
         // GlStateManager doesn't track with glBlendEquationSeparate, so we switch back and forth to make sure its
         // internal state is reflected in the GL state
@@ -39,7 +39,7 @@ data class BlendMode @JvmOverloads constructor(
         RenderSystem.blendColor(0f, 0f, 0f, 0f)
     }
 
-    enum class Equation(val glConst: Int) {
+    public enum class Equation(public val glConst: Int) {
         ADD(GL14.GL_FUNC_ADD),
         SUBTRACT(GL14.GL_FUNC_SUBTRACT),
         REVERSE_SUBTRACT(GL14.GL_FUNC_REVERSE_SUBTRACT),
@@ -47,7 +47,7 @@ data class BlendMode @JvmOverloads constructor(
         MAX(GL14.GL_MAX)
     }
 
-    enum class Factor(val glConst: Int) {
+    public enum class Factor(public val glConst: Int) {
         ZERO(GL11.GL_ZERO),
         ONE(GL11.GL_ONE),
         SRC_COLOR(GL11.GL_SRC_COLOR),
@@ -65,12 +65,12 @@ data class BlendMode @JvmOverloads constructor(
         SRC_ALPHA_SATURATE(GL11.GL_SRC_ALPHA_SATURATE)
     }
 
-    companion object {
+    public companion object {
         @JvmStatic
-        val NORMAL: BlendMode = BlendMode(Factor.SRC_ALPHA, Factor.ONE_MINUS_SRC_ALPHA, Factor.ONE, Factor.ZERO)
+        public val NORMAL: BlendMode = BlendMode(Factor.SRC_ALPHA, Factor.ONE_MINUS_SRC_ALPHA, Factor.ONE, Factor.ZERO)
         @JvmStatic
-        val ADDITIVE: BlendMode = BlendMode(Factor.SRC_ALPHA, Factor.ONE, Factor.ONE, Factor.ZERO)
+        public val ADDITIVE: BlendMode = BlendMode(Factor.SRC_ALPHA, Factor.ONE, Factor.ONE, Factor.ZERO)
         @JvmStatic
-        val SUBTRACTIVE: BlendMode = BlendMode(Factor.SRC_ALPHA, Factor.ONE, Factor.ONE, Factor.ZERO, Equation.SUBTRACT, Equation.ADD)
+        public val SUBTRACTIVE: BlendMode = BlendMode(Factor.SRC_ALPHA, Factor.ONE, Factor.ONE, Factor.ZERO, Equation.SUBTRACT, Equation.ADD)
     }
 }

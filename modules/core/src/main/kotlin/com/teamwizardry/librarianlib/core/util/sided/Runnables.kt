@@ -9,7 +9,7 @@ import java.util.function.Consumer
 /**
  * A runnable that will run different blocks of code on the client and server.
  */
-interface SidedRunnable: Runnable {
+public interface SidedRunnable: Runnable {
     override fun run() {
         when (FMLEnvironment.dist) {
             Dist.CLIENT -> runClient()
@@ -19,17 +19,17 @@ interface SidedRunnable: Runnable {
     }
 
     @OnlyIn(Dist.CLIENT)
-    fun runClient()
+    public fun runClient()
 
     @OnlyIn(Dist.DEDICATED_SERVER)
-    fun runServer()
+    public fun runServer()
 
-    companion object {
+    public companion object {
         /**
          * Runs a block of code only on the client.
          */
         @JvmStatic
-        fun client(runnable: ClientRunnable) {
+        public fun client(runnable: ClientRunnable) {
             runnable.run()
         }
 
@@ -37,7 +37,7 @@ interface SidedRunnable: Runnable {
          * Runs a block of code only on the server.
          */
         @JvmStatic
-        fun server(runnable: ServerRunnable) {
+        public fun server(runnable: ServerRunnable) {
             runnable.run()
         }
 
@@ -45,7 +45,7 @@ interface SidedRunnable: Runnable {
          * Runs different blocks of code on the client and the server.
          */
         @JvmStatic
-        fun sided(clientRunnable: ClientRunnable, serverRunnable: ServerRunnable) {
+        public fun sided(clientRunnable: ClientRunnable, serverRunnable: ServerRunnable) {
             object: SidedRunnable {
                 override fun runClient() {
                     clientRunnable.runClient()
@@ -62,7 +62,7 @@ interface SidedRunnable: Runnable {
 /**
  * A runnable that will run only on the client.
  */
-fun interface ClientRunnable: Runnable {
+public fun interface ClientRunnable: Runnable {
     override fun run() {
         if (FMLEnvironment.dist.isClient) {
             runClient()
@@ -70,13 +70,13 @@ fun interface ClientRunnable: Runnable {
     }
 
     @OnlyIn(Dist.CLIENT)
-    fun runClient()
+    public fun runClient()
 }
 
 /**
  * A runnable that will run only on the server.
  */
-fun interface ServerRunnable: Runnable {
+public fun interface ServerRunnable: Runnable {
     override fun run() {
         if (FMLEnvironment.dist.isDedicatedServer) {
             runServer()
@@ -84,5 +84,5 @@ fun interface ServerRunnable: Runnable {
     }
 
     @OnlyIn(Dist.DEDICATED_SERVER)
-    fun runServer()
+    public fun runServer()
 }

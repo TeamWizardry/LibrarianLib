@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib
 
+import com.google.gson.Gson
 import com.teamwizardry.librarianlib.core.bridge.ASMEnvCheckTarget
 import com.teamwizardry.librarianlib.core.bridge.MixinEnvCheckTarget
 import net.minecraftforge.fml.common.Mod
@@ -92,6 +93,19 @@ internal object LibrarianLibBootstrap {
 
     private fun resource(path: String): String? {
         return javaClass.getResourceAsStream(path)?.readBytes()?.let { String(it) }
+    }
+
+    private data class ModuleInfo(
+        val mainClass: String
+    ) {
+        companion object {
+            private val gson = Gson()
+            fun loadModuleInfo(name: String): ModuleInfo? {
+                return ModuleInfo::class.java.getResourceAsStream("/META-INF/ll/$name/module.json")?.readBytes()?.let {
+                    gson.fromJson(String(it), ModuleInfo::class.java)
+                }
+            }
+        }
     }
 
     private fun changeLogLevel(logger: Logger, level: Level) {

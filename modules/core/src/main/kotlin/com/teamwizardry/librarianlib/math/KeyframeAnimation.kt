@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.core.LibrarianLibCoreModule
 import com.teamwizardry.librarianlib.core.util.lerp.Lerper
 import java.lang.IllegalStateException
 
-class KeyframeAnimation<T>(initialValue: T, private val lerper: Lerper<T>): BasicAnimation<T>(0f) {
+public class KeyframeAnimation<T>(initialValue: T, private val lerper: Lerper<T>): BasicAnimation<T>(0f) {
     override var duration: Float = 0f
         private set
     private val keyframes = mutableListOf<Keyframe>()
@@ -22,7 +22,7 @@ class KeyframeAnimation<T>(initialValue: T, private val lerper: Lerper<T>): Basi
     /**
      * Add a keyframe. The given duration and easing are for the span between this keyframe and the previous keyframe.
      */
-    fun add(duration: Float, easing: Easing, value: T): KeyframeAnimation<T> {
+    public fun add(duration: Float, easing: Easing, value: T): KeyframeAnimation<T> {
         this.duration += duration
         keyframes.add(Keyframe(keyframes.last(), this.duration, value, easing, null))
         return this
@@ -31,7 +31,7 @@ class KeyframeAnimation<T>(initialValue: T, private val lerper: Lerper<T>): Basi
     /**
      * Instantly jump to the passed value.
      */
-    fun jump(value: T): KeyframeAnimation<T> {
+    public fun jump(value: T): KeyframeAnimation<T> {
         add(0f, Easing.linear, value)
         return this
     }
@@ -39,7 +39,7 @@ class KeyframeAnimation<T>(initialValue: T, private val lerper: Lerper<T>): Basi
     /**
      * Hold the current value for the passed duration.
      */
-    fun hold(duration: Float): KeyframeAnimation<T> {
+    public fun hold(duration: Float): KeyframeAnimation<T> {
         add(duration, Easing.linear, keyframes.last().value)
         return this
     }
@@ -48,7 +48,7 @@ class KeyframeAnimation<T>(initialValue: T, private val lerper: Lerper<T>): Basi
      * Specifies a function to run when a keyframe is reached. NOTE: this will behave erratically if this animation is
      * used multiple times at once or is called non-sequentially.
      */
-    fun onKeyframe(callback: Runnable?): KeyframeAnimation<T> {
+    public fun onKeyframe(callback: Runnable?): KeyframeAnimation<T> {
         keyframes.last().onKeyframe = callback
         return this
     }

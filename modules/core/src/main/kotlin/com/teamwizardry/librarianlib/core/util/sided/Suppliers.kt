@@ -10,7 +10,7 @@ import java.util.function.Supplier
 /**
  * A supplier that will get different blocks of code on the client and server.
  */
-interface SidedSupplier<T>: Supplier<T> {
+public interface SidedSupplier<T>: Supplier<T> {
     override fun get(): T {
         return when (FMLEnvironment.dist) {
             Dist.CLIENT -> getClient()
@@ -20,17 +20,17 @@ interface SidedSupplier<T>: Supplier<T> {
     }
 
     @OnlyIn(Dist.CLIENT)
-    fun getClient(): T
+    public fun getClient(): T
 
     @OnlyIn(Dist.DEDICATED_SERVER)
-    fun getServer(): T
+    public fun getServer(): T
 
-    companion object {
+    public companion object {
         /**
          * Runs a block of code only on the client.
          */
         @JvmStatic
-        fun <T> client(supplier: ClientSupplier<T>): T? {
+        public fun <T> client(supplier: ClientSupplier<T>): T? {
             return supplier.get()
         }
 
@@ -38,7 +38,7 @@ interface SidedSupplier<T>: Supplier<T> {
          * Runs a block of code only on the server.
          */
         @JvmStatic
-        fun <T> server(supplier: ServerSupplier<T>): T? {
+        public fun <T> server(supplier: ServerSupplier<T>): T? {
             return supplier.get()
         }
 
@@ -46,7 +46,7 @@ interface SidedSupplier<T>: Supplier<T> {
          * Runs different blocks of code on the client and the server.
          */
         @JvmStatic
-        fun <T> sided(clientSupplier: ClientSupplier<T>, serverSupplier: ServerSupplier<T>): T {
+        public fun <T> sided(clientSupplier: ClientSupplier<T>, serverSupplier: ServerSupplier<T>): T {
             return object: SidedSupplier<T> {
                 override fun getClient(): T {
                     return clientSupplier.getClient()
@@ -63,7 +63,7 @@ interface SidedSupplier<T>: Supplier<T> {
 /**
  * A supplier that will get only on the client.
  */
-fun interface ClientSupplier<T>: Supplier<T?> {
+public fun interface ClientSupplier<T>: Supplier<T?> {
     override fun get(): T? {
         return if (FMLEnvironment.dist.isClient) {
             getClient()
@@ -73,13 +73,13 @@ fun interface ClientSupplier<T>: Supplier<T?> {
     }
 
     @OnlyIn(Dist.CLIENT)
-    fun getClient(): T
+    public fun getClient(): T
 }
 
 /**
  * A supplier that will get only on the server.
  */
-fun interface ServerSupplier<T>: Supplier<T?> {
+public fun interface ServerSupplier<T>: Supplier<T?> {
     override fun get(): T? {
         return if (FMLEnvironment.dist.isDedicatedServer) {
             getServer()
@@ -89,5 +89,5 @@ fun interface ServerSupplier<T>: Supplier<T?> {
     }
 
     @OnlyIn(Dist.DEDICATED_SERVER)
-    fun getServer(): T
+    public fun getServer(): T
 }

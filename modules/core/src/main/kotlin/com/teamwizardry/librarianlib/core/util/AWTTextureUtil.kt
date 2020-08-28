@@ -6,16 +6,16 @@ import org.lwjgl.system.MemoryUtil
 import java.awt.image.BufferedImage
 import java.lang.IllegalArgumentException
 
-object AWTTextureUtil {
+public object AWTTextureUtil {
     @JvmStatic
-    fun createNativeImage(image: BufferedImage): NativeImage {
+    public fun createNativeImage(image: BufferedImage): NativeImage {
         val native = NativeImage(image.width, image.height, false)
         fillNativeImage(image, native)
         return native
     }
 
     @JvmStatic
-    fun fillNativeImage(image: BufferedImage, nativeImage: NativeImage) {
+    public fun fillNativeImage(image: BufferedImage, nativeImage: NativeImage) {
         val imagePointer: Long = imagePointer.get(nativeImage)
 
         if(nativeImage.format != NativeImage.PixelFormat.RGBA)

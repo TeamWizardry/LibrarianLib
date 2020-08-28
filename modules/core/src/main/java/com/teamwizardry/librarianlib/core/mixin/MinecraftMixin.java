@@ -11,6 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MinecraftMixin {
     @Inject(method = "runGameLoop", at = @At("HEAD"))
     public void runGlResourceGc(boolean renderWorldIn, CallbackInfo ci) {
-        GlResourceGc.INSTANCE.releaseCollectedResources();
+        GlResourceGc.INSTANCE.releaseCollectedResources$librarianlib();
     }
 }
