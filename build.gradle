@@ -246,7 +246,7 @@ configure(productionModules + [project]) {
     apply plugin: 'maven-publish'
     publishing {
         publications {
-            mod(MavenPublication) {
+            create("mod", MavenPublication) {
                 from components.java
                 artifacts = [obfJar, deobfJar, sourcesJar]
                 pom {
@@ -255,8 +255,11 @@ configure(productionModules + [project]) {
                     name = project == rootProject ? "LibrarianLib" : "LibrarianLib $human_name".toString()
                     description = project == rootProject ? "The final packaged LibrarianLib jar" : "$module_description".toString()
                     url = 'http://github.com/LibrarianLib/LibrarianLib'
-                    if(project != rootProject)
+                    if(project == rootProject) {
+                        artifactId = "librarianlib"
+                    } else {
                         artifactId = "librarianlib-" + project.name
+                    }
                     licenses {
                         license {
                             name = 'GNU Lesser General Public License v3'
@@ -289,7 +292,7 @@ configure(productionModules + [project]) {
     bintray {
         user = System.getenv("BINTRAY_USER")
         key = System.getenv("BINTRAY_API_KEY")
-        publications = ['mod']
+        publications = ["mod"]
         pkg {
             repo = "teamwizardry"
             userOrg = "teamwizardry"
@@ -306,27 +309,27 @@ configure(productionModules + [project]) {
             githubRepo = "TeamWizardry/LibrarianLib"
             vcsUrl = "https://github.com/TeamWizardry/LibrarianLib.git"
             issueTrackerUrl = "https://github.com/TeamWizardry/LibrarianLib/issues"
+
         }
     }
 
     apply plugin: 'com.jfrog.artifactory'
+}
 
-    artifactory {
-        setContextUrl 'https://oss.jfrog.org'
-        publish {
-            repository {
-                repoKey = project.version.endsWith("-SNAPSHOT") ? "oss-snapshot-local" : "oss-release-local"
-                username = System.getenv("BINTRAY_USER")
-                password = System.getenv("BINTRAY_API_KEY")
-                maven = true
-            }
-            defaults {
-                publications 'mod'
-            }
+artifactory {
+    setContextUrl 'https://oss.jfrog.org'
+    publish {
+        repository {
+            repoKey = project.version.endsWith("-SNAPSHOT") ? "oss-snapshot-local" : "oss-release-local"
+            username = System.getenv("BINTRAY_USER")
+            password = System.getenv("BINTRAY_API_KEY")
+            maven = true
         }
-        clientConfig.info.setBuildNumber(System.getenv('ARTIFACTORY_BUILD_NUMBER')) // no env = null -> default value
+        defaults {
+            publications "mod"
+        }
     }
-    
+    clientConfig.info.setBuildNumber(System.getenv('ARTIFACTORY_BUILD_NUMBER')) // no env = null -> default value
 }
 //endregion
 
