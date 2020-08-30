@@ -21,6 +21,9 @@ dependencies {
         exclude group: 'org.jetbrains.kotlin'
         exclude group: 'it.unimi.dsi' // already included in MC
     }
+    shade 'com.ibm.icu:icu4j:63.1'
+    shade 'org.msgpack:msgpack-core:0.8.16'
+
     // LibLib won't work in production until https://github.com/cpw/modlauncher/issues/27 is resolved, but by
     // including yoga as a normal maven dependency at least it'll work in dev until that issue is fixed
     api('org.lwjgl:lwjgl-yoga:3.2.1:natives-linux') {
