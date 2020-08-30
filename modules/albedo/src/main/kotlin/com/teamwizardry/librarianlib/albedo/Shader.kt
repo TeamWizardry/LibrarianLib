@@ -19,31 +19,31 @@ import org.lwjgl.opengl.GL20.*
 import java.util.LinkedList
 import kotlin.math.min
 
-abstract class Shader(
+public abstract class Shader(
     /**
      * An arbitrary name used for logging
      */
-    val shaderName: String,
+    public val shaderName: String,
     /**
      * The location of the vertex shader, if any
      */
-    val vertexName: ResourceLocation?,
+    public val vertexName: ResourceLocation?,
     /**
      * The location of the fragment shader, if any
      */
-    val fragmentName: ResourceLocation?
+    public val fragmentName: ResourceLocation?
 ) {
     /**
      * The OpenGL handle for the shader program
      */
-    var glProgram: Int by GlResourceGc.track(this, 0) { GlStateManager.deleteProgram(it) }
+    public var glProgram: Int by GlResourceGc.track(this, 0) { GlStateManager.deleteProgram(it) }
         private set
 
     /**
      * True if this shader is currently bound. This only tracks calls to [bind] and [unbind], so modifications of the
      * bound shader outside of that will not be reflected. Binding another LibrarianLib shader will unbind this one.
      */
-    val isBound: Boolean
+    public val isBound: Boolean
         get() = currentlyBound === this
 
     /**
@@ -64,7 +64,7 @@ abstract class Shader(
      * RenderType type = RenderType.makeState(..., renderState);
      * ```
      */
-    val renderState: RenderState = object: RenderState("enable_$shaderName", {
+    public val renderState: RenderState = object: RenderState("enable_$shaderName", {
         bind()
     }, {
         unbind()
@@ -88,7 +88,7 @@ abstract class Shader(
      * Binds this as the current program and pushes the current uniform states. If possible, [renderState] is the
      * preferred method of binding shaders.
      */
-    fun bind() {
+    public fun bind() {
         currentlyBound?.unbind()
         GlStateManager.useProgram(glProgram)
         currentlyBound = this
@@ -121,7 +121,7 @@ abstract class Shader(
     /**
      * Unbinds this shader program and cleans up some GL texture state.
      */
-    fun unbind() {
+    public fun unbind() {
         teardownState()
         GlStateManager.useProgram(0)
         boundTextureUnits.forEach { (tex, unit) ->
@@ -182,7 +182,7 @@ abstract class Shader(
         }
     }
 
-    fun delete() {
+    public fun delete() {
         GlStateManager.deleteProgram(glProgram)
         glProgram = 0
     }
@@ -364,7 +364,7 @@ abstract class Shader(
         return program
     }
 
-    companion object {
+    private companion object {
         /**
          * So far as I can tell, vanilla doesn't use anything past GL_TEXTURE3, and we don't want to clobber them.
          */

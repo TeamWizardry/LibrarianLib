@@ -2,16 +2,16 @@ package com.teamwizardry.librarianlib.albedo
 
 import java.lang.RuntimeException
 
-open class AlbedoException: RuntimeException {
-    constructor(): super()
-    constructor(message: String?): super(message)
-    constructor(message: String?, cause: Throwable?): super(message, cause)
-    constructor(cause: Throwable?): super(cause)
+public open class AlbedoException: RuntimeException {
+    public constructor(): super()
+    public constructor(message: String?): super(message)
+    public constructor(message: String?, cause: Throwable?): super(message, cause)
+    public constructor(cause: Throwable?): super(cause)
 }
 
-class ShaderCompilationException: AlbedoException {
-    constructor(): super()
-    constructor(message: String?): super(message)
-    constructor(message: String?, cause: Throwable?): super(message, cause)
-    constructor(cause: Throwable?): super(cause)
+public class ShaderCompilationException: AlbedoException {
+    public constructor(): super()
+    public constructor(message: String?): super(message)
+    public constructor(message: String?, cause: Throwable?): super(message, cause)
+    public constructor(cause: Throwable?): super(cause)
 }

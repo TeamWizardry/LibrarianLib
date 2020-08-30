@@ -15,113 +15,113 @@ import java.util.function.Predicate
  * A class designed to efficiently raytrace collisions with the world. This class uses custom raytracing code to
  * reduce the number short-lived objects created and to improve the performance of long rays.
  */
-class Raycaster {
+public class Raycaster {
     /**
      * The type of hit that occurred, if any.
      */
-    var hitType: HitType = HitType.NONE
+    public var hitType: HitType = HitType.NONE
         private set
 
     /**
      * The X component of the impacted block's position, or 0 if no impact occurred.
      */
-    var blockX: Int = 0
+    public var blockX: Int = 0
         private set
 
     /**
      * The Y component of the impacted block's position, or 0 if no impact occurred.
      */
-    var blockY: Int = 0
+    public var blockY: Int = 0
         private set
 
     /**
      * The Z component of the impacted block's position, or 0 if no impact occurred.
      */
-    var blockZ: Int = 0
+    public var blockZ: Int = 0
         private set
 
     /**
      * The entity that was hit
      */
-    var entity: Entity? = null
+    public var entity: Entity? = null
         private set
 
     /**
      * The fraction along the raycast that an impact occurred, or 1.0 if no impact occurred
      */
-    var fraction: Double = 0.0
+    public var fraction: Double = 0.0
         private set
 
     /**
      * The hit position, or the end position if no hit occurred. Computed as `start + (end - start) * fraction`
      */
-    val hitX: Double
+    public val hitX: Double
         get() = startX + (endX - startX) * fraction
 
     /**
      * The hit position, or the end position if no hit occurred. Computed as `start + (end - start) * fraction`
      */
-    val hitY: Double
+    public val hitY: Double
         get() = startY + (endY - startY) * fraction
 
     /**
      * The hit position, or the end position if no hit occurred. Computed as `start + (end - start) * fraction`
      */
-    val hitZ: Double
+    public val hitZ: Double
         get() = startZ + (endZ - startZ) * fraction
 
     /**
      * The X component of the impacted face's normal, or 0.0 if no impact occurred
      */
-    var normalX: Double = 0.0
+    public var normalX: Double = 0.0
         private set
 
     /**
      * The Y component of the impacted face's normal, or 0.0 if no impact occurred
      */
-    var normalY: Double = 0.0
+    public var normalY: Double = 0.0
         private set
 
     /**
      * The Z component of the impacted face's normal, or 0.0 if no impact occurred
      */
-    var normalZ: Double = 0.0
+    public var normalZ: Double = 0.0
         private set
 
     /**
      * The configured start position
      */
-    var startX: Double = 0.0
+    public var startX: Double = 0.0
         private set
 
     /**
      * The configured start position
      */
-    var startY: Double = 0.0
+    public var startY: Double = 0.0
         private set
 
     /**
      * The configured start position
      */
-    var startZ: Double = 0.0
+    public var startZ: Double = 0.0
         private set
 
     /**
      * The configured end position
      */
-    var endX: Double = 0.0
+    public var endX: Double = 0.0
         private set
 
     /**
      * The configured end position
      */
-    var endY: Double = 0.0
+    public var endY: Double = 0.0
         private set
 
     /**
      * The configured end position
      */
-    var endZ: Double = 0.0
+    public var endZ: Double = 0.0
         private set
 
     /**
@@ -144,7 +144,7 @@ class Raycaster {
      * @see normalY
      * @see normalZ
      */
-    fun cast(
+    public fun cast(
         world: World,
         blockMode: BlockMode,
         startX: Double, startY: Double, startZ: Double, endX: Double, endY: Double, endZ: Double
@@ -176,7 +176,7 @@ class Raycaster {
      * @see normalY
      * @see normalZ
      */
-    fun cast(
+    public fun cast(
         world: World,
         blockMode: BlockMode,
         fluidMode: FluidMode,
@@ -207,7 +207,7 @@ class Raycaster {
     /**
      * Resets the state
      */
-    fun reset() {
+    public fun reset() {
         hitType = HitType.NONE
         fraction = 1.0
         normalX = 0.0
@@ -230,7 +230,7 @@ class Raycaster {
         raycaster.reset()
     }
 
-    enum class BlockMode {
+    public enum class BlockMode {
         /**
          * Ignore blocks
          */
@@ -247,7 +247,7 @@ class Raycaster {
         VISUAL;
     }
 
-    enum class FluidMode {
+    public enum class FluidMode {
         /**
          * Ignore fluids
          */
@@ -264,7 +264,7 @@ class Raycaster {
         ANY;
     }
 
-    enum class HitType {
+    public enum class HitType {
         /**
          * No hit occurred
          */

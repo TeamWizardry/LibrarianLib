@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.etcetera.eventbus
 
-abstract class Event @JvmOverloads constructor(val reversed: Boolean = false) {
+public abstract class Event @JvmOverloads constructor(public val reversed: Boolean = false) {
     /**
      * Persistent data stored in the event hook. Before each hook is called this is set to the currently stored hook
      * data, and after the event fires the current value is stored as the new hook data.

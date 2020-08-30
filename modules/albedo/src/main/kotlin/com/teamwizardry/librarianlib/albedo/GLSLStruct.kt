@@ -2,10 +2,9 @@ package com.teamwizardry.librarianlib.albedo
 
 import dev.thecodewarrior.mirror.Mirror
 
-abstract class GLSLStruct {
-}
+public abstract class GLSLStruct
 
-class GLSLStructArray<T: GLSLStruct>(clazz: Class<T>, val length: Int) {
+public class GLSLStructArray<T: GLSLStruct>(clazz: Class<T>, public val length: Int) {
     private val values: Array<Any>
 
     init {
@@ -13,7 +12,7 @@ class GLSLStructArray<T: GLSLStruct>(clazz: Class<T>, val length: Int) {
         values = Array(length) { constructor<T>() }
     }
 
-    operator fun get(index: Int): T {
+    public operator fun get(index: Int): T {
         @Suppress("UNCHECKED_CAST")
         return values[index] as T
     }

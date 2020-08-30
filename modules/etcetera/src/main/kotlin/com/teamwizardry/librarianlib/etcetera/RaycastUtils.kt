@@ -14,15 +14,15 @@ import kotlin.math.min
  * fixes from this comment: https://playtechs.blogspot.com/2007/03/raytracing-on-grid.html#c8721763227361666805
  */
 @Suppress("PrivatePropertyName")
-class IntersectingBlocksIterator: Iterator<IntersectingBlocksIterator> {
-    val x: Int get() = _xOut
-    val y: Int get() = _yOut
-    val z: Int get() = _zOut
+public class IntersectingBlocksIterator: Iterator<IntersectingBlocksIterator> {
+    public val x: Int get() = _xOut
+    public val y: Int get() = _yOut
+    public val z: Int get() = _zOut
 
     /**
      * The point where the line entered this block, expressed as a fraction of the line length
      */
-    val entryFraction: Double get() = _tOut
+    public val entryFraction: Double get() = _tOut
 
     private var _xOut: Int = 0
     private var _yOut: Int = 0
@@ -60,7 +60,7 @@ class IntersectingBlocksIterator: Iterator<IntersectingBlocksIterator> {
     /**
      * Resets this iterator to iterate a new line segment
      */
-    fun reset(
+    public fun reset(
         x0: Double, y0: Double, z0: Double,
         x1: Double, y1: Double, z1: Double
     ) {
@@ -179,35 +179,35 @@ class IntersectingBlocksIterator: Iterator<IntersectingBlocksIterator> {
  * A zero-allocation AABB raycaster. Try to avoid creating a new raycaster for each request, as that negates the
  * "zero-allocation" aspect of it
  */
-class DirectRaycaster {
+public class DirectRaycaster {
     /**
      * The distance along the raycast that the hit occurred, expressed as a multiple of the ray's direction
      * vector, or positive infinity if no impact occurred. This value may be greater than 1.0.
      */
-    var distance: Double = 0.0
+    public var distance: Double = 0.0
 
     /**
      * The depth of the hit. This is the distance from the entrance to the exit point, expressed as a multiple of the
      * ray's direction vector, or zero if no impact occurred.
      */
-    var depth: Double = 0.0
+    public var depth: Double = 0.0
 
     /**
      * The X component of the impacted face's normal, or 0.0 if no impact occurred
      */
-    var normalX: Double = 0.0
+    public var normalX: Double = 0.0
 
     /**
      * The Y component of the impacted face's normal, or 0.0 if no impact occurred
      */
-    var normalY: Double = 0.0
+    public var normalY: Double = 0.0
 
     /**
      * The Z component of the impacted face's normal, or 0.0 if no impact occurred
      */
-    var normalZ: Double = 0.0
+    public var normalZ: Double = 0.0
 
-    fun reset() {
+    public fun reset() {
         distance = Double.POSITIVE_INFINITY
         depth = 0.0
         normalX = 0.0
@@ -224,7 +224,7 @@ class DirectRaycaster {
      *
      * @return true if this cast resulted in a new hit
      */
-    fun cast(
+    public fun cast(
         cumulative: Boolean,
         minX: Double, minY: Double, minZ: Double,
         maxX: Double, maxY: Double, maxZ: Double,
