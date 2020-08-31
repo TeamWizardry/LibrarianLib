@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
+import com.teamwizardry.librarianlib.foundation.LibrarianLibFoundationModule
 import com.teamwizardry.librarianlib.foundation.block.IFoundationBlock
 import com.teamwizardry.librarianlib.foundation.item.IFoundationItem
-import com.teamwizardry.librarianlib.foundation.logger
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.RenderTypeLookup
 import net.minecraft.data.BlockTagsProvider
@@ -94,7 +94,7 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     @JvmSynthetic
     internal fun registerBlocks(e: RegistryEvent.Register<Block>) {
         blocks.forEach { block ->
-            logger.debug("RegistryManager for $modid: Registering block ${block.registryName}")
+            logger.debug("$modid: Registering block ${block.registryName}")
             e.registry.register(block.blockInstance)
         }
     }
@@ -104,12 +104,12 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     internal fun registerItems(e: RegistryEvent.Register<Item>) {
         blocks.forEach { block ->
             if (block.hasItem) {
-                logger.debug("RegistryManager for $modid: Registering blockitem ${block.registryName}")
+                logger.debug("$modid: Registering blockitem ${block.registryName}")
                 e.registry.register(block.itemInstance)
             }
         }
         items.forEach { item ->
-            logger.debug("RegistryManager for $modid: Registering item ${item.registryName}")
+            logger.debug("$modid: Registering item ${item.registryName}")
             e.registry.register(item.itemInstance)
         }
     }
@@ -118,7 +118,7 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     @JvmSynthetic
     internal fun registerTileEntities(e: RegistryEvent.Register<TileEntityType<*>>) {
         tileEntities.forEach { te ->
-            logger.debug("RegistryManager for $modid: Registering TileEntityType ${te.registryName}")
+            logger.debug("$modid: Registering TileEntityType ${te.registryName}")
             e.registry.register(te.typeInstance)
         }
     }
@@ -188,20 +188,27 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     private inner class BlockStateGeneration(gen: DataGenerator, exFileHelper: ExistingFileHelper):
         BlockStateProvider(gen, modid, TextureExistsExistingFileHelper(exFileHelper)) {
         override fun registerStatesAndModels() {
+            logger.debug("$modid datagen: Generating blockstates/models")
             blocks.forEach {
                 val manualGen = it.datagen.model
+                val instance = it.blockInstance
                 if (manualGen != null) {
+                    logger.debug("$modid datagen: Calling manual blockstate generator for block ${it.registryName}")
                     manualGen.accept(this)
-                } else {
-                    (it.blockInstance as? IFoundationBlock)?.generateBlockState(this)
+                } else if(instance is IFoundationBlock) {
+                    logger.debug("$modid datagen: Calling IFoundationBlock blockstate generator for block ${it.registryName}")
+                    instance.generateBlockState(this)
                 }
             }
             items.forEach {
                 val manualGen = it.datagen.model
+                val instance = it.itemInstance
                 if (manualGen != null) {
+                    logger.debug("$modid datagen: Calling manual model generator for item ${it.registryName}")
                     manualGen.accept(this.itemModels())
-                } else {
-                    (it.itemInstance as? IFoundationItem)?.generateItemModel(this.itemModels())
+                } else if(instance is IFoundationItem) {
+                    logger.debug("$modid datagen: Calling IFoundationItem model generator for item ${it.registryName}")
+                    instance.generateItemModel(this.itemModels())
                 }
             }
         }
@@ -210,6 +217,7 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     private inner class LanguageGeneration(gen: DataGenerator, val locale: String):
         LanguageProvider(gen, modid, locale) {
         override fun addTranslations() {
+            logger.debug("$modid datagen: Generating $locale language")
             blocks.forEach { spec ->
                 spec.datagen.names[locale]?.also { name ->
                     this.add(spec.blockInstance, name)
@@ -229,6 +237,7 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
 
     private inner class BlockTagsGeneration(gen: DataGenerator): BlockTagsProvider(gen) {
         override fun registerTags() {
+            logger.debug("$modid datagen: Generating tags")
             blocks.forEach { spec ->
                 spec.datagen.tags.forEach { tag ->
                     getBuilder(tag).add(spec.blockInstance)
@@ -263,5 +272,9 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
                 getBuilder(tag).add(*values.toTypedArray())
             }
         }
+    }
+
+    private companion object {
+        val logger = LibrarianLibFoundationModule.makeLogger<RegistrationManager>()
     }
 }

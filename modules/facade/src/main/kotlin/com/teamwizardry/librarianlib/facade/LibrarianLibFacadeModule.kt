@@ -6,11 +6,11 @@ import com.teamwizardry.librarianlib.etcetera.StencilUtil
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import org.apache.logging.log4j.LogManager
 
-object LibrarianLibFacadeModule: LibrarianLibModule("facade", logger) {
+object LibrarianLibFacadeModule: LibrarianLibModule("facade", "Facade") {
     override fun clientSetup(event: FMLClientSetupEvent) {
         super.clientSetup(event)
         StencilUtil.enableStencilBuffer()
     }
 }
 
-internal val logger = LogManager.getLogger("LibrarianLib: Facade")
+internal val logger = LibrarianLibFacadeModule.makeLogger(null)

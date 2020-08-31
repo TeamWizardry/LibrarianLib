@@ -23,7 +23,7 @@ import net.minecraftforge.registries.RegistryBuilder
 import org.apache.logging.log4j.LogManager
 import java.awt.Color
 
-object LibrarianLibTestBaseModule : LibrarianLibModule("testbase", logger) {
+object LibrarianLibTestBaseModule : LibrarianLibModule("testbase", "Test Base") {
     val testTool: Item = Item(Item.Properties().maxStackSize(1)).also {
         it.registryName = ResourceLocation("librarianlib-testbase", "test_tool")
     }
@@ -80,4 +80,4 @@ object LibrarianLibTestBaseModule : LibrarianLibModule("testbase", logger) {
     }
 }
 
-internal val logger = LogManager.getLogger("LibrarianLib: Test Base")
+internal val logger = LibrarianLibTestBaseModule.makeLogger(null)

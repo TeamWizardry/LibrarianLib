@@ -11,6 +11,7 @@ import java.util.function.Predicate
 
 object FoundationSerialization {
     private val typeMap = mutableMapOf<Class<*>, FoundationSerializerImpl>()
+    private val logger = LibrarianLibFoundationModule.makeLogger<FoundationSerialization>()
 
     fun getSerializer(clazz: Class<*>): FoundationSerializer {
         return typeMap.getOrPut(clazz) { FoundationSerializerImpl(clazz) }
@@ -34,8 +35,8 @@ object FoundationSerialization {
                 val name = field.getAnnotation<PropertyName>()?.name ?: field.name
 
                 val markers = field.annotations.filter { it.annotationType().isAnnotationPresent(SerializationMarker::class.java) }
-                if(markers.isEmpty()) return@forEach
-                logger.debug("FoundationSerialization: Found marked field $field")
+                if (markers.isEmpty()) return@forEach
+                logger.debug("Found marked field $field")
 
                 nameMap.getOrPut(name) { mutableListOf() }.add(field)
                 if(field.isFinal)
@@ -51,10 +52,10 @@ object FoundationSerialization {
 
                 if(!field.isFinal && serializer != null) {
                     properties.add(Property(name, markers, markers.map { it.annotationType() }.toSet(), field, serializer.value))
-                    logger.debug("FoundationSerialization: Successfully added field $field")
+                    logger.debug("Successfully added field $field")
                 }
             }
-            logger.debug("FoundationSerialization: Found ${properties.size} fields")
+            logger.debug("Found ${properties.size} fields")
 
             val duplicateErrors = nameMap.filterValues { it.size > 1 }
 

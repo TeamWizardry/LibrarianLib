@@ -13,10 +13,11 @@ import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.core.config.Configurator
 
-abstract class LibrarianLibModule(val name: String, val logger: Logger) {
+abstract class LibrarianLibModule(val name: String, val humanName: String) {
     val modEventBus: IEventBus = FMLKotlinModLoadingContext.get().modEventBus
 
     /**
@@ -24,6 +25,11 @@ abstract class LibrarianLibModule(val name: String, val logger: Logger) {
      */
     var debugEnabled: Boolean = false
         private set
+
+    /**
+     * Loggers to update based on the debug flag.
+     */
+    private val debugLoggers = mutableMapOf<Class<*>?, Logger>()
 
     init {
         // Register ourselves for server and other game events we are interested in
@@ -33,7 +39,29 @@ abstract class LibrarianLibModule(val name: String, val logger: Logger) {
 
     fun enableDebugging() {
         debugEnabled = true
-        Configurator.setLevel(logger.name, Level.DEBUG)
+
+        debugLoggers.forEach { (_, logger) ->
+            Configurator.setLevel(logger.name, Level.DEBUG)
+        }
+    }
+
+    /**
+     * Register a logger to have its log level update based on the debug flag.
+     */
+    fun makeLogger(clazz: Class<*>?): Logger {
+        return debugLoggers.getOrPut(clazz) {
+            val classText = clazz?.let { " (${it.simpleName})" } ?: ""
+            val logger = LogManager.getLogger("LibrarianLib: $humanName$classText")
+            if(debugEnabled)
+                Configurator.setLevel(logger.name, Level.DEBUG)
+            else
+                Configurator.setLevel(logger.name, Level.INFO)
+            logger
+        }
+    }
+
+    inline fun <reified T> makeLogger(): Logger {
+        return makeLogger(T::class.java)
     }
 
     @SubscribeEvent
