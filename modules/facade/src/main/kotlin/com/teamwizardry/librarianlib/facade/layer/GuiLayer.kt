@@ -161,6 +161,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         private set
     private var baseTime: Float = Float.NaN
 
+    @JvmSynthetic
     internal fun updateAnimations(time: Float) {
         if(baseTime.isNaN())
             baseTime = floor(time)
@@ -577,6 +578,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      */
     var zIndex: Double = 0.0
 
+    @JvmSynthetic
     internal fun zSort() {
         var outOfOrder = false
         var previousZ = Double.NaN
@@ -1397,7 +1399,10 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * True if this component is [interactive] and the mouse is hovering over it or one of its children.
      */
     var mouseOver: Boolean = false
+        @JvmSynthetic
         internal set
+
+    private var wasMouseOver: Boolean = false
 
     /**
      * The mouse position within this component
@@ -1409,6 +1414,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * Computes the mouse position, resets the `mouseOver` flag, and returns the component with the mouse over it, if
      * any.
      */
+    @JvmSynthetic
     internal fun computeMouseInfo(rootPos: Vec2d, stack: Matrix3dStack): GuiLayer? {
         stack.push()
         stack.reverseMul(inverseTransform)
@@ -1435,6 +1441,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      */
     private var clickingButtons = mutableSetOf<Int>()
 
+    @JvmSynthetic
     internal fun triggerEvent(event: Event) {
         when(event) {
             is GuiLayerEvents.MouseEvent -> {
@@ -1456,6 +1463,13 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
                             else -> GuiLayerEvents.MouseOtherClick(event.rootPos, event.button)
                         })
                     }
+                }
+                if(event is GuiLayerEvents.MouseMove && wasMouseOver != mouseOver) {
+                    if(mouseOver)
+                        BUS.fire(GuiLayerEvents.MouseMoveOver(event.rootPos, event.lastRootPos))
+                    else
+                        BUS.fire(GuiLayerEvents.MouseMoveOff(event.rootPos, event.lastRootPos))
+                    wasMouseOver = mouseOver
                 }
 
                 this.forEachChild {
@@ -1597,6 +1611,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         isLayoutDirty = false
     }
 
+    @JvmSynthetic
     internal fun clearAllDirtyLayout() {
         clearLayoutDirty()
         forEachChild { it.clearAllDirtyLayout() }

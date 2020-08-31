@@ -51,6 +51,21 @@ object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
             screen.facade.root.add(layer)
         }
 
+        +FacadeScreenConfig("layer_mouseover_off", "Layer MouseOver/Off") { screen ->
+            val dirt = Mosaic("minecraft:textures/block/dirt.png".toRl(), 16, 16).getSprite("")
+            val stone = Mosaic("minecraft:textures/block/stone.png".toRl(), 16, 16).getSprite("")
+            val layer = SpriteLayer(dirt)
+            layer.pos = vec(32, 32)
+
+            layer.BUS.hook<GuiLayerEvents.MouseMoveOver> {
+                layer.sprite = stone
+            }
+            layer.BUS.hook<GuiLayerEvents.MouseMoveOff> {
+                layer.sprite = dirt
+            }
+            screen.facade.root.add(layer)
+        }
+
         +FacadeScreenConfig("scheduled_callbacks", "Scheduled Callbacks") { screen ->
             val dirt = Mosaic("minecraft:textures/block/dirt.png".toRl(), 16, 16).getSprite("")
             val stone = Mosaic("minecraft:textures/block/stone.png".toRl(), 16, 16).getSprite("")
