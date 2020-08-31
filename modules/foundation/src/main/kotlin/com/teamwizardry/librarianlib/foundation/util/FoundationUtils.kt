@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.foundation
+package com.teamwizardry.librarianlib.foundation.util
 
 import net.minecraft.item.DyeColor
 
