@@ -7,6 +7,9 @@ import com.teamwizardry.librarianlib.foundation.registration.BlockSpec
 import com.teamwizardry.librarianlib.foundation.registration.ItemSpec
 import com.teamwizardry.librarianlib.foundation.registration.LazyItem
 import com.teamwizardry.librarianlib.foundation.registration.RenderLayerSpec
+import com.teamwizardry.librarianlib.foundation.registration.TileEntitySpec
+import com.teamwizardry.librarianlib.foundation.testmod.customtypes.TestTileBlock
+import com.teamwizardry.librarianlib.foundation.testmod.customtypes.TestTileEntity
 import net.minecraft.block.Block
 import net.minecraft.block.material.MaterialColor
 import net.minecraft.item.Item
@@ -14,36 +17,17 @@ import net.minecraft.tags.BlockTags
 import net.minecraft.tags.Tag
 import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
+import java.util.function.Function
 
 @Mod("librarianlib-foundation-test")
 object LibrarianLibFoundationTestMod: BaseMod(true) {
-    val testItem: LazyItem = LazyItem()
-
     init {
-        registrationManager.add(
-            BlockSpec("test_log")
-                .renderLayer(RenderLayerSpec.SOLID)
-                .withProperties(BaseLogBlock.DEFAULT_PROPERTIES)
-                .mapColor(MaterialColor.ADOBE)
-                .block { BaseLogBlock(MaterialColor.PINK, it.blockProperties) }
-                .datagen { tags(ModTags.TEST_LOGS).name("Test Log") }
-        )
-        registrationManager.datagen.blockTags.meta(BlockTags.LOGS, ModTags.TEST_LOGS)
+        ModTiles.registerTileEntities(registrationManager)
+        ModBlocks.registerBlocks(registrationManager)
+        ModItems.registerItems(registrationManager)
 
-        testItem.from(registrationManager.add(
-            ItemSpec("test_item")
-                .maxStackSize(16)
-                .item { Item(it.itemProperties) }
-                .datagen { simpleModel() }
-        ))
-
-        registrationManager.itemGroupIcon = testItem
+        registrationManager.itemGroupIcon = ModItems.testItem
     }
-}
-
-object ModTags {
-    private val tags = BaseTagFactory(LibrarianLibFoundationTestMod.modid)
-    val TEST_LOGS: Tag<Block> = tags.block("test_logs")
 }
 
 internal val logger = LogManager.getLogger("LibrarianLib: Foundation Test")

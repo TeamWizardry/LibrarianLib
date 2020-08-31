@@ -7,7 +7,7 @@ import kotlin.reflect.KProperty
  * A lazy access to an item instance. The result of adding an [ItemSpec] to a registration manager. Instances can be
  * created with an item directly if needed.
  */
-class LazyItem(private var itemInstance: (() -> Item)?) {
+class LazyItem private constructor(private var itemInstance: (() -> Item)?) {
     constructor(spec: ItemSpec): this(spec::itemInstance)
     constructor(itemInstance: Item): this({ itemInstance })
 

@@ -132,8 +132,14 @@ class ItemSpec(
     fun setISTER(ister: Supplier<Callable<ItemStackTileEntityRenderer>>): ItemSpec = build { itemProperties.setISTER(ister) }
 
     val itemInstance: Item by lazy {
-        itemConstructor.apply(this).setRegistryName(registryName)
+        try {
+            itemConstructor.apply(this).setRegistryName(registryName)
+        } catch(e: Exception) {
+            throw RuntimeException("Error instantiating item $registryName", e)
+        }
     }
+
+    val lazy: LazyItem = LazyItem(this)
 
     /**
      * Information used when generating data

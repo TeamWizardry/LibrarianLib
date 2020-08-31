@@ -20,6 +20,7 @@ import net.minecraft.tags.Tag
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.model.generators.BlockStateProvider
 import net.minecraftforge.common.ToolType
+import java.lang.RuntimeException
 import java.util.concurrent.Callable
 import java.util.function.Consumer
 import java.util.function.Supplier
@@ -120,6 +121,15 @@ class BlockSpec(
      */
     @JvmSynthetic
     inline fun blockItem(crossinline constructor: (BlockSpec) -> BlockItem): BlockSpec = blockItem(Function { constructor(it) })
+
+    fun tileEntity(type: LazyTileEntityType): BlockSpec = build {
+        val tileSpec = type.spec
+            ?: if (type.typeInstance == null)
+                throw IllegalStateException("Can't add a block to a LazyTileEntityType that isn't initialized")
+            else
+                throw IllegalArgumentException("Can't add a block to a LazyTileEntityType that isn't backed by a Foundation TileEntitySpec")
+        tileSpec._validBlocks.add(this.lazy)
+    }
 
     /**
      * Configures the information used for data generation
@@ -229,7 +239,11 @@ class BlockSpec(
      * The lazily-evaluated [Block] instance
      */
     val blockInstance: Block by lazy {
-        blockConstructor.apply(this).setRegistryName(registryName)
+        try {
+            blockConstructor.apply(this).setRegistryName(registryName)
+        } catch(e: Exception) {
+            throw RuntimeException("Error instantiating block $registryName", e)
+        }
     }
 
     /**
@@ -237,8 +251,14 @@ class BlockSpec(
      */
     val itemInstance: Item? by lazy {
         if (!hasItem) return@lazy null
-        itemConstructor.apply(this).setRegistryName(registryName)
+        try {
+            itemConstructor.apply(this).setRegistryName(registryName)
+        } catch(e: Exception) {
+            throw RuntimeException("Error instantiating block item $registryName", e)
+        }
     }
+
+    val lazy: LazyBlock = LazyBlock(this)
 
     /**
      * Information used when generating data

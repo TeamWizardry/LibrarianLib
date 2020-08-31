@@ -69,6 +69,13 @@ inline fun vec(x: Number, y: Number, z: Number): Vec3d = vec(x.toDouble(), y.toD
 fun vec(x: Double, y: Double, z: Double): Vec3d = Vec3dPool.getPooled(x, y, z)
 
 /**
+ * Get [Vec3d] instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
+ * number of Vec3d allocations when they are used as intermediates, e.g. when adding one Vec3d to another to offset it,
+ * this allocates no objects: `MathUtils.vec(1, 0, 0)`
+ */
+fun vec(pos: BlockPos): Vec3d = vec(pos.x, pos.y, pos.z)
+
+/**
  * Get [Vec3i] instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
  * number of Vec3i allocations when they are used as intermediates, e.g. when adding one Vec3i to another to offset it,
  * this allocates no objects: `MathUtils.ivec(1, 0, 0)`
