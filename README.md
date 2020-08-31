@@ -50,3 +50,8 @@ Haven't gotten this procedure ironed out yet.
 ### Running LibrarianLib
 To set up the run configuration for LibrarianLib, run the `genIntellijRuns` or `genEclipseRuns` for the `runtime` 
 subproject. 
+
+### Enabling debug logging
+To enable debug logging for modules add their comma-separated names to the `librarianlib.debug.modules` system property.
+For example, to enable debug logging for the bootstrapper and the foundation module, you would add 
+`-Dlibrarianlib.debug.modules=bootstrap,foundation` to the VM options.

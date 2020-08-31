@@ -12,15 +12,28 @@ import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
+import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.Logger
+import org.apache.logging.log4j.core.config.Configurator
 
 abstract class LibrarianLibModule(val name: String, val logger: Logger) {
     val modEventBus: IEventBus = FMLKotlinModLoadingContext.get().modEventBus
+
+    /**
+     * Whether debugging is enabled for this module.
+     */
+    var debugEnabled: Boolean = false
+        private set
 
     init {
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this)
         modEventBus.register(this)
+    }
+
+    fun enableDebugging() {
+        debugEnabled = true
+        Configurator.setLevel(logger.name, Level.DEBUG)
     }
 
     @SubscribeEvent

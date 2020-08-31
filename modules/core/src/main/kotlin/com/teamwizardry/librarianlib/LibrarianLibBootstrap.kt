@@ -3,14 +3,26 @@ package com.teamwizardry.librarianlib
 import com.teamwizardry.librarianlib.core.bridge.ASMEnvCheckTarget
 import com.teamwizardry.librarianlib.core.bridge.MixinEnvCheckTarget
 import net.minecraftforge.fml.common.Mod
+import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
+import org.apache.logging.log4j.core.config.Configurator
 
 @Mod("librarianlib")
 internal object LibrarianLibBootstrap {
     private val logger = LogManager.getLogger("LibrarianLib Bootstrap")
     private val failedLoading = mutableListOf<String>()
 
+    /**
+     * The list of modules to enable debugging for.
+     */
+    private val debugModules = mutableSetOf<String>()
+
     init {
+        debugModules.addAll(System.getProperty("librarianlib.debug.modules", "").split(","))
+        if("bootstrap" in debugModules)
+            changeLogLevel(logger, Level.DEBUG)
+
         checkEnvironment()
 
         val names = resource("/META-INF/ll/core/modules.txt")?.lines()
@@ -72,11 +84,17 @@ internal object LibrarianLibBootstrap {
             return
         }
         val clazz = Class.forName(info.mainClass)
-        clazz.kotlin.objectInstance ?: clazz.newInstance()
+        val module = (clazz.kotlin.objectInstance ?: clazz.newInstance()) as? LibrarianLibModule
+        if(name in debugModules)
+            module?.enableDebugging()
         logger.info("Finished loading $name module")
     }
 
     private fun resource(path: String): String? {
         return javaClass.getResourceAsStream(path)?.readBytes()?.let { String(it) }
+    }
+
+    private fun changeLogLevel(logger: Logger, level: Level) {
+        Configurator.setLevel(logger.name, level)
     }
 }
