@@ -1389,6 +1389,12 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     var ignoreMouseOverBounds: Boolean = false
 
     /**
+     * If [propagatesMouseOver] is true (the default), the [mouseOver] state will be propagated to this layer's parent.
+     * i.e. when true, if the mouse is over this component it will also count as over this component's parent.
+     */
+    var propagatesMouseOver: Boolean = true
+
+    /**
      * True if the current [mousePos] is inside the bounds of component. This ignores components that may be covering
      * this component.
      */

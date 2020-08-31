@@ -100,7 +100,7 @@ open class FacadeWidget(
     private fun computeMouseOver(xPos: Double, yPos: Double) {
         safetyNet {
             mouseOver = root.computeMouseInfo(vec(xPos, yPos), Matrix3dStack())
-            generateSequence(mouseOver) { it.parent }.forEach {
+            generateSequence(mouseOver) { if(it.propagatesMouseOver) it.parent else null }.forEach {
                 it.mouseOver = true
             }
         }

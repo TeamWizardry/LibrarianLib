@@ -12,6 +12,10 @@ abstract class PastryActivatedControl: PastryControl {
     private var activatingKey: Int = 0
     private var justFocused = false
 
+    init {
+        propagatesMouseOver = false
+    }
+
     protected abstract fun activate()
     protected open fun activationEnd() {}
 

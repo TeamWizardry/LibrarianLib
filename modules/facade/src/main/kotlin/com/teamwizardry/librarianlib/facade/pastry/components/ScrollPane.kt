@@ -86,6 +86,7 @@ class ScrollBar internal constructor(private val scrollPane: ScrollPane, val axi
 
     init {
         this.add(handle)
+        propagatesMouseOver = false
 
         handle.BUS.hook<GuiLayerEvents.MouseDown> {
             if(handle.mouseOver)
