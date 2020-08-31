@@ -42,7 +42,6 @@ class PastryButton @JvmOverloads constructor(
         }
 
     init {
-        this.cursor = Cursor.POINT
         label.wrap = false
 //        label.maxLines = 1 TODO
 //        label.truncate = true TODO

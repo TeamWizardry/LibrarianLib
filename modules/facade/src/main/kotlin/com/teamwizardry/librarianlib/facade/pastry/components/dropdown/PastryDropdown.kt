@@ -33,7 +33,6 @@ class PastryDropdown<T> constructor(
             this.BUS.hook<SelectEvent<T>> {
                 callback(it.value)
             }
-        this.cursor = Cursor.POINT
         this.add(sprite)
     }
 

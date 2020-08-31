@@ -199,7 +199,6 @@ class DropdownStackItem(val item: PastryDropdownItem<*>): GuiLayer(0, 0) {
 
     init {
         if(!item.decoration) {
-            cursor = Cursor.POINT
             add(highlight)
         }
 

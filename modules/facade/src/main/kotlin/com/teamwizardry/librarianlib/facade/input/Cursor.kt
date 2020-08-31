@@ -94,6 +94,10 @@ class Cursor @JvmOverloads constructor(
         return "Cursor($resourceLocation)"
     }
 
+    /**
+     * Default cursors, based largely on those present in macOS. Guidelines on cursor usage largely sourced from the
+     * macOS [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/macos/user-interaction/mouse-and-trackpad/#pointers)
+     */
     @Suppress("unused")
     companion object {
         private fun _c(name: String, originX: Int, originY: Int, standardCursor: Int = -1)
@@ -102,7 +106,7 @@ class Cursor @JvmOverloads constructor(
         /**
          * The default arrow cursor.
          *
-         * Uses the standard system character if available.
+         * Uses the standard system cursor if available.
          */
         @JvmField
         val DEFAULT: Cursor = _c("arrow", 1, 1, GLFW.GLFW_ARROW_CURSOR)
@@ -224,7 +228,7 @@ class Cursor @JvmOverloads constructor(
         /**
          * A text insertion cursor. Indicates selectable or editable text.
          *
-         * Uses the standard system character if available.
+         * Uses the standard system cursor if available.
          */
         @JvmField
         val TEXT = _c("text", 3, 8, GLFW.GLFW_IBEAM_CURSOR)
@@ -251,7 +255,7 @@ class Cursor @JvmOverloads constructor(
         /**
          * A thin cross, useful for fine mouse position control
          *
-         * Uses the standard system character if available.
+         * Uses the standard system cursor if available.
          */
         @JvmField
         val CROSS = _c("cross", 11, 12, GLFW.GLFW_CROSSHAIR_CURSOR)
@@ -289,9 +293,9 @@ class Cursor @JvmOverloads constructor(
         val DROP_NO = _c("drop_no", 1, 1)
 
         /**
-         * A hand pointing with one finger. Indicates a clickable element
+         * A hand pointing with one finger. Indicates a link.
          *
-         * Uses the standard system character if available.
+         * Uses the standard system cursor if available.
          */
         @JvmField
         val POINT = _c("point", 6, 1, GLFW.GLFW_HAND_CURSOR)

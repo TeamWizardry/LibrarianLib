@@ -41,7 +41,6 @@ open class PastryTabPage() : GuiLayer() {
 
         init {
             add(background, contents)
-            cursor = Cursor.POINT
             propagatesMouseOver = false
         }
 

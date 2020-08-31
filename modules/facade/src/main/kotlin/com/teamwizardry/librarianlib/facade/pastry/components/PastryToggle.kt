@@ -32,10 +32,6 @@ abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int): Past
 
     abstract fun visualStateChanged(visualState: Boolean)
 
-    init {
-        this.cursor = Cursor.POINT
-    }
-
     override fun activate() {
         if(!BUS.fire(BeginToggleEvent()).isCanceled()) {
             pressed = true
