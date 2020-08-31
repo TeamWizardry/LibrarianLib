@@ -1,10 +1,13 @@
 package com.teamwizardry.librarianlib.foundation.util
 
+import com.teamwizardry.librarianlib.foundation.LibrarianLibFoundationModule
 import com.teamwizardry.librarianlib.foundation.logger
 import com.teamwizardry.librarianlib.prism.NBTPrism
 import com.teamwizardry.librarianlib.prism.nbt.NBTSerializer
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.member.FieldMirror
+import dev.thecodewarrior.mirror.type.ClassMirror
+import dev.thecodewarrior.mirror.type.TypeMirror
 import dev.thecodewarrior.prism.PrismException
 import net.minecraft.nbt.CompoundNBT
 import java.util.function.Predicate
@@ -39,7 +42,7 @@ object FoundationSerialization {
                 logger.debug("Found marked field $field")
 
                 nameMap.getOrPut(name) { mutableListOf() }.add(field)
-                if(field.isFinal)
+                if (field.isFinal)
                     finalErrors.add(field)
 
                 val serializer = try {
@@ -50,8 +53,9 @@ object FoundationSerialization {
                     null
                 }
 
-                if(!field.isFinal && serializer != null) {
-                    properties.add(Property(name, markers, markers.map { it.annotationType() }.toSet(), field, serializer.value))
+                if (!field.isFinal && serializer != null) {
+                    properties.add(Property(name, markers, markers.map { it.annotationType() }.toSet(), field,
+                        serializer.value))
                     logger.debug("Successfully added field $field")
                 }
             }
@@ -59,12 +63,12 @@ object FoundationSerialization {
 
             val duplicateErrors = nameMap.filterValues { it.size > 1 }
 
-            if(finalErrors.isNotEmpty() || duplicateErrors.isNotEmpty() || noSerializerErrors.isNotEmpty()) {
+            if (finalErrors.isNotEmpty() || duplicateErrors.isNotEmpty() || noSerializerErrors.isNotEmpty()) {
                 var message = "Problems serializing class $mirror:"
-                if(finalErrors.isNotEmpty()) {
+                if (finalErrors.isNotEmpty()) {
                     message += "\nFinal fields not supported:\n" + finalErrors.joinToString("\n") { "- $it" }
                 }
-                if(duplicateErrors.isNotEmpty()) {
+                if (duplicateErrors.isNotEmpty()) {
                     message += "\nDuplicate names:"
                     duplicateErrors.forEach { (name, fields) ->
                         message += "\n- \"$name\""
@@ -73,7 +77,7 @@ object FoundationSerialization {
                         }
                     }
                 }
-                if(noSerializerErrors.isNotEmpty()) {
+                if (noSerializerErrors.isNotEmpty()) {
                     message += "\nUnable to find serializers: (search logs for \"Error getting serializer for\" to see full traces)"
                     noSerializerErrors.forEach { (field, exception) ->
                         message += "\n- $field: $exception"
@@ -89,11 +93,15 @@ object FoundationSerialization {
         private inline fun createTagImpl(instance: Any, test: (Property) -> Boolean): CompoundNBT {
             val tag = CompoundNBT()
             properties.forEach { property ->
-                if(test(property)) {
-                    val value = property.field.get<Any?>(instance)
-                    if(value != null) {
-                        tag.put(property.name, property.nbtSerializer.write(value))
+                try {
+                    if (test(property)) {
+                        val value = property.field.get<Any?>(instance)
+                        if (value != null) {
+                            tag.put(property.name, property.nbtSerializer.write(value))
+                        }
                     }
+                } catch (e: Exception) {
+                    throw FoundationSerializationException("Error serializing property ${property.name} in ${mirror.simpleName}")
                 }
             }
             return tag
@@ -109,13 +117,31 @@ object FoundationSerialization {
 
         private inline fun applyTagImpl(tag: CompoundNBT, instance: Any, test: (Property) -> Boolean) {
             properties.forEach { property ->
-                if(test(property)) {
-                    val existingValue = property.field.get<Any?>(instance)
-                    val newValue = tag.get(property.name)?.let {
-                        property.nbtSerializer.read(it, existingValue)
+                try {
+                    if (test(property)) {
+                        val existingValue = property.field.get<Any?>(instance)
+                        val newValue = tag.get(property.name)?.let {
+                            property.nbtSerializer.read(it, existingValue)
+                        } ?: defaultValue(property.field.type)
+                        property.field.set(instance, newValue)
                     }
-                    property.field.set(instance, newValue)
+                } catch (e: Exception) {
+                    throw FoundationSerializationException("Error deserializing property ${property.name} in ${mirror.simpleName}")
                 }
+            }
+        }
+
+        private fun defaultValue(type: TypeMirror): Any? {
+            return when(type) {
+                Mirror.types.boolean -> false
+                Mirror.types.byte -> 0.toByte()
+                Mirror.types.short -> 0.toShort()
+                Mirror.types.int -> 0
+                Mirror.types.long -> 0L
+                Mirror.types.float -> 0f
+                Mirror.types.double -> 0.0
+                Mirror.types.char -> 0.toChar()
+                else -> null
             }
         }
 
