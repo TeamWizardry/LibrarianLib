@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.facade.layer.AnimationTimeListener
 import com.teamwizardry.librarianlib.math.Animation
 import com.teamwizardry.librarianlib.math.BasicAnimation
 import com.teamwizardry.librarianlib.math.Easing
+import com.teamwizardry.librarianlib.math.KeyframeAnimation
 import java.util.PriorityQueue
 
 /**
@@ -33,6 +34,15 @@ abstract class GuiValue<T>: AnimationTimeListener {
         // `delay == 0f` should be interpreted as *immediately* reading the starting value, not reading it when the
         // animation actually starts.
         val animation = SimpleAnimation(currentValue, to, duration, easing, delay != 0f)
+        scheduleAnimation(delay, animation)
+        return animation
+    }
+
+    @JvmOverloads
+    fun animateKeyframes(initialValue: T, delay: Float = 0f): KeyframeAnimation<T> {
+        if(!hasLerper)
+            throw IllegalStateException("Can not animate a GuiValue that has no lerper")
+        val animation = KeyframeAnimation(initialValue, lerperInstance)
         scheduleAnimation(delay, animation)
         return animation
     }
@@ -138,7 +148,7 @@ abstract class GuiValue<T>: AnimationTimeListener {
         }
     }
 
-    val innerLerper = object: Lerper<T>() {
+    val lerperInstance = object: Lerper<T>() {
         override fun lerp(from: T, to: T, fraction: Float): T {
             return this@GuiValue.lerp(from, to, fraction)
         }

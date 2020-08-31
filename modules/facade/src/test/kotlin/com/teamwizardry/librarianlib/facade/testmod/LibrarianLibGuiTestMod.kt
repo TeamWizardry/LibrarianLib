@@ -98,23 +98,7 @@ object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
             screen.facade.main.add(layer)
         }
 
-        +FacadeScreenConfig("animations", "Animations") { screen ->
-            val dirt = Mosaic("minecraft:textures/block/dirt.png".toRl(), 16, 16).getSprite("")
-            val layer = SpriteLayer(dirt)
-            val from = vec(32, 32)
-            val to = vec(64, 64)
-            layer.pos = from
-
-            layer.BUS.hook<GuiLayerEvents.MouseDown> {
-                if(layer.mouseOver) {
-                    layer.pos_rm.animate(from, to, 20f, Easing.easeOutQuad, 10f)
-                        .onComplete {
-                            layer.pos_rm.animate(to, from, 20f, Easing.easeInCubic)
-                        }
-                }
-            }
-            screen.facade.root.add(layer)
-        }
+        +FacadeScreenConfig("animations", "Animations", ::AnimationTestScreen)
 
         +FacadeScreenConfig("zindex", "zIndex", ::ZIndexTestScreen)
         +FacadeScreenConfig("simple_text", "Simple Text", ::SimpleTextTestScreen)

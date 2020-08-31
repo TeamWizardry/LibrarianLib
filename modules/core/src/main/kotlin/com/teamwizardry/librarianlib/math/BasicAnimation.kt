@@ -7,21 +7,21 @@ abstract class BasicAnimation<T>(
      * The duration of a single loop of the animation. The actual animation may last longer, depending on the value of
      * [repeatCount].
      */
-    val duration: Float,
+    open val duration: Float
+): Animation<T> {
     /**
      * The number of times this animation should loop. [Int.MAX_VALUE] is interpreted as infinity, and non-positive
      * values will be interpreted as 1.
      */
-    var repeatCount: Int = 1,
+    var repeatCount: Int = 1
     /**
      * If true, the animation will "bounce", reversing direction on every loop
      */
-    var reverseOnRepeat: Boolean = false,
+    var reverseOnRepeat: Boolean = false
     /**
      * A callback to run when the animation completes or is interrupted
      */
-    private var completionCallback: (() -> Unit)? = null
-): Animation<T> {
+    private var completionCallback: Runnable? = null
 
     /**
      * Get the value of the animation at the passed fractional time, which has been adjusted based on the duration and
@@ -61,7 +61,7 @@ abstract class BasicAnimation<T>(
 
     override fun onStopped(time: Float): T {
         val finalValue = getValueAt(1f)
-        completionCallback?.invoke()
+        completionCallback?.run()
         return finalValue
     }
 
@@ -82,7 +82,7 @@ abstract class BasicAnimation<T>(
         this.reverseOnRepeat = reverseOnRepeat
     }
 
-    fun onComplete(completionCallback: (() -> Unit)?): BasicAnimation<T> = build {
+    fun onComplete(completionCallback: Runnable?): BasicAnimation<T> = build {
         this.completionCallback = completionCallback
     }
 

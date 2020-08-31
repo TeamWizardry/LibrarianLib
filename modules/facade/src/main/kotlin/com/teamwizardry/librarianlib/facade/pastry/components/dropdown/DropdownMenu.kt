@@ -169,10 +169,10 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
         background.size_rm.animate(button.size, collapseTime, easing)
         val itemLayerPos = selected.itemLayer.convertPointTo(vec(0, 0), this)
         stack.pos_rm.animate(stack.pos + vec(2, 2) - itemLayerPos, collapseTime, easing)
-        background.tint_im.animate(Color(1f, 1f, 1f, 0f), fadeTime, easing, collapseTime).onComplete {
+        background.tint_im.animate(Color(1f, 1f, 1f, 0f), fadeTime, easing, collapseTime).onComplete(Runnable {
             button.buttonContents?.isVisible = true
             close()
-        }
+        })
         interactive = false
     }
 
