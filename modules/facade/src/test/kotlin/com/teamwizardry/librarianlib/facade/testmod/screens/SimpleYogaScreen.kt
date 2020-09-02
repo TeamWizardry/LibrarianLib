@@ -1,14 +1,16 @@
 package com.teamwizardry.librarianlib.facade.testmod.screens
 
+import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.testmod.FacadeTestScreen
 import com.teamwizardry.librarianlib.math.vec
+import net.minecraft.util.text.ITextComponent
 import java.awt.Color
 
 /**
  * A simple yoga screen, configured similarly to the https://yogalayout.com front page example
  */
-class SimpleYogaScreen: FacadeTestScreen("Yoga Simple Flex") {
+class SimpleYogaScreen(title: ITextComponent): FacadeScreen(title) {
     init {
         val bg = RectLayer(Color.WHITE, 0, 0, 125, 125)
         main.add(bg)
@@ -27,6 +29,5 @@ class SimpleYogaScreen: FacadeTestScreen("Yoga Simple Flex") {
         val box3 = RectLayer(Color.RED, 0, 0, 25, 25)
         box3.yoga()
         main.add(box1, box2, box3)
-
     }
 }

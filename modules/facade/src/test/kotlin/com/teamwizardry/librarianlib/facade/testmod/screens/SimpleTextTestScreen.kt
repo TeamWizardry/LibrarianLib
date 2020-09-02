@@ -1,12 +1,14 @@
 package com.teamwizardry.librarianlib.facade.testmod.screens
 
+import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.facade.testmod.FacadeTestScreen
 import com.teamwizardry.librarianlib.facade.text.attributedStringFromMC
+import net.minecraft.util.text.ITextComponent
 import java.awt.Color
 
-class SimpleTextTestScreen: FacadeTestScreen("Simple Text") {
+class SimpleTextTestScreen(title: ITextComponent): FacadeScreen(title) {
     init {
         val bg = RectLayer(Color.WHITE, 0, 0, 200, 300)
         // https://minecraft.gamepedia.com/File:Minecraft_Formatting.gif

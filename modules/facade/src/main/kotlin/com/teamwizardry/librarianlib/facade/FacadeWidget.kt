@@ -43,7 +43,7 @@ open class FacadeWidget(
         val xPos = _xPos * s
         val yPos = _yPos * s
         computeMouseOver(xPos, yPos)
-        safetyNet {
+        safetyNet("firing a MouseMove event") {
             root.triggerEvent(GuiLayerEvents.MouseMove(vec(xPos, yPos), vec(mouseX, mouseY)))
         }
         mouseX = xPos
@@ -55,7 +55,7 @@ open class FacadeWidget(
         val xPos = _xPos * s
         val yPos = _yPos * s
         computeMouseOver(xPos, yPos)
-        safetyNet {
+        safetyNet("firing a MouseDown event") {
             root.triggerEvent(GuiLayerEvents.MouseDown(vec(xPos, yPos), button))
         }
     }
@@ -69,7 +69,7 @@ open class FacadeWidget(
         val xPos = _xPos * s
         val yPos = _yPos * s
         computeMouseOver(xPos, yPos)
-        safetyNet {
+        safetyNet("firing a MouseUp event") {
             root.triggerEvent(GuiLayerEvents.MouseUp(vec(xPos, yPos), button))
         }
     }
@@ -80,7 +80,7 @@ open class FacadeWidget(
         val yPos = _yPos * s
         val delta = _delta * s
         computeMouseOver(xPos, yPos)
-        safetyNet {
+        safetyNet("firing a MouseScroll event") {
             root.triggerEvent(GuiLayerEvents.MouseScroll(vec(xPos, yPos), vec(0.0, delta)))
         }
     }
@@ -92,13 +92,13 @@ open class FacadeWidget(
         val deltaX = _deltaX * s
         val deltaY = _deltaY * s
         computeMouseOver(xPos, yPos)
-        safetyNet {
+        safetyNet("firing a MouseDrag event") {
             root.triggerEvent(GuiLayerEvents.MouseDrag(vec(xPos, yPos), vec(xPos - deltaX, yPos - deltaY), button))
         }
     }
 
     private fun computeMouseOver(xPos: Double, yPos: Double) {
-        safetyNet {
+        safetyNet("computing the mouse position") {
             mouseOver = root.computeMouseInfo(vec(xPos, yPos), Matrix3dStack())
             generateSequence(mouseOver) { if(it.propagatesMouseOver) it.parent else null }.forEach {
                 it.mouseOver = true
@@ -115,25 +115,25 @@ open class FacadeWidget(
         if(keyCode == GLFW.GLFW_KEY_ESCAPE) {
             screen.onClose()
         }
-        safetyNet {
+        safetyNet("firing a KeyDown event") {
             root.triggerEvent(GuiLayerEvents.KeyDown(keyCode, scanCode, modifiers))
         }
     }
 
     fun keyReleased(keyCode: Int, scanCode: Int, modifiers: Int) {
-        safetyNet {
+        safetyNet("firing a KeyUp event") {
             root.triggerEvent(GuiLayerEvents.KeyUp(keyCode, scanCode, modifiers))
         }
     }
 
     fun charTyped(codepoint: Char, modifiers: Int) {
-        safetyNet {
+        safetyNet("firing a CharTyped event") {
             root.triggerEvent(GuiLayerEvents.CharTyped(codepoint, modifiers))
         }
     }
 
     fun render() {
-        safetyNet {
+        safetyNet("rendering") {
             val guiScale = Client.guiScaleFactor
 
             root.pos = vec(0, 0)
@@ -178,14 +178,5 @@ open class FacadeWidget(
 
     fun removed() {
         Cursor.setCursor(null)
-    }
-
-    private inline fun safetyNet(block: () -> Unit) {
-        try {
-            block()
-        } catch (e: Exception) {
-            logger.error("Error in GUI:", e)
-            Client.displayGuiScreen(SafetyNetErrorScreen(e))
-        }
     }
 }

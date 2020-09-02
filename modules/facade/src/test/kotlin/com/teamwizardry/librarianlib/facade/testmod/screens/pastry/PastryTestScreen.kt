@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.facade.testmod.screens.pastry
 
+import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
@@ -19,8 +20,9 @@ import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.PastryT
 import com.teamwizardry.librarianlib.math.rect
 import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.*
+import net.minecraft.util.text.ITextComponent
 
-class PastryTestScreen : FacadeTestScreen("Pastry") {
+class PastryTestScreen(title: ITextComponent): FacadeScreen(title) {
     val tests: Map<Class<*>, String> = mutableMapOf(
         PastryTestButton::class.java to "Button",
         PastryTestDropdown::class.java to "Dropdown",
@@ -92,7 +94,6 @@ class PastryTestScreen : FacadeTestScreen("Pastry") {
         selectorArea.BUS.hook<GuiLayerEvents.LayoutChildren> {
             selector.frame = selectorArea.bounds
         }
-
     }
 
     fun selectTest(testClass: Class<*>, testName: String) {

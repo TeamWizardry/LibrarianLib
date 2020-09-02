@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.facade.testmod.screens
 
 import com.teamwizardry.librarianlib.core.util.kotlin.toRl
+import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
@@ -8,9 +9,10 @@ import com.teamwizardry.librarianlib.facade.testmod.FacadeTestScreen
 import com.teamwizardry.librarianlib.math.Easing
 import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.mosaic.Mosaic
+import net.minecraft.util.text.ITextComponent
 import java.awt.Color
 
-class AnimationTestScreen: FacadeTestScreen("Clip to Bounds") {
+class AnimationTestScreen(title: ITextComponent): FacadeScreen(title) {
     init {
         val bg = RectLayer(Color.WHITE, 0, 0, 200, 100)
         main.size = bg.size
@@ -31,8 +33,8 @@ class AnimationTestScreen: FacadeTestScreen("Clip to Bounds") {
         // - right click to animate from the current value to (64,64), waiting 0.5s. This should use the "current value"
         // 0.5s from now, not the current value at the time the layer was clicked
         simpleAnimation.BUS.hook<GuiLayerEvents.MouseDown> {
-            if(simpleAnimation.mouseOver) {
-                when(it.button) {
+            if (simpleAnimation.mouseOver) {
+                when (it.button) {
                     0 -> simpleAnimation.pos_rm.animate(from, to, 40f, Easing.linear)
                     1 -> simpleAnimation.pos_rm.animate(toFromCurrent, 40f, Easing.easeOutQuad, 10f)
                 }
@@ -41,13 +43,12 @@ class AnimationTestScreen: FacadeTestScreen("Clip to Bounds") {
 
         main.add(simpleAnimation)
 
-
         val keyframeAnimation = SpriteLayer(dirt)
 
         keyframeAnimation.pos = vec(96, 32)
 
         keyframeAnimation.BUS.hook<GuiLayerEvents.MouseDown> {
-            if(keyframeAnimation.mouseOver) {
+            if (keyframeAnimation.mouseOver) {
                 keyframeAnimation.pos_rm.animateKeyframes(vec(96, 32))
                     .add(10f, Easing.easeOutBounce, vec(128, 32)).onKeyframe(Runnable { keyframeAnimation.sprite = stone })
                     .hold(20f)

@@ -29,7 +29,7 @@ abstract class LibrarianLibModule(val name: String, val humanName: String) {
     /**
      * Loggers to update based on the debug flag.
      */
-    private val debugLoggers = mutableMapOf<Class<*>?, Logger>()
+    private val debugLoggers = mutableMapOf<String?, Logger>()
 
     init {
         // Register ourselves for server and other game events we are interested in
@@ -46,22 +46,33 @@ abstract class LibrarianLibModule(val name: String, val humanName: String) {
     }
 
     /**
-     * Register a logger to have its log level update based on the debug flag.
+     * Create a logger for this module.
      */
-    fun makeLogger(clazz: Class<*>?): Logger {
-        return debugLoggers.getOrPut(clazz) {
-            val classText = clazz?.let { " (${it.simpleName})" } ?: ""
-            val logger = LogManager.getLogger("LibrarianLib: $humanName$classText")
+    fun makeLogger(clazz: Class<*>): Logger {
+        return makeLogger(clazz.simpleName)
+    }
+
+    /**
+     * Create a logger for this module.
+     */
+    inline fun <reified T> makeLogger(): Logger {
+        return makeLogger(T::class.java)
+    }
+
+    /**
+     * Create a logger for this module.
+     */
+    fun makeLogger(label: String?): Logger {
+        return debugLoggers.getOrPut(label) {
+            val labelSuffix = label?.let { " ($it)" } ?: ""
+            val logger = LogManager.getLogger("LibrarianLib: $humanName$labelSuffix")
             if(debugEnabled)
                 Configurator.setLevel(logger.name, Level.DEBUG)
             else
                 Configurator.setLevel(logger.name, Level.INFO)
             logger
         }
-    }
 
-    inline fun <reified T> makeLogger(): Logger {
-        return makeLogger(T::class.java)
     }
 
     @SubscribeEvent

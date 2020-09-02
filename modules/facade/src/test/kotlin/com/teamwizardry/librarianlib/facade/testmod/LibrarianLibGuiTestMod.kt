@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.provided.SafetyNetErrorScreen
+import com.teamwizardry.librarianlib.facade.safetyNet
 import com.teamwizardry.librarianlib.facade.testmod.screens.*
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.PastryTestScreen
 import com.teamwizardry.librarianlib.facade.testmod.value.RMValueTests
@@ -21,127 +22,49 @@ import org.apache.logging.log4j.LogManager
 
 @Mod("librarianlib-facade-test")
 object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
+    val groups: List<FacadeTestGroup> = listOf(
+        FacadeTestGroup("basics", "Basics", listOf(
+            FacadeTest("Empty", ::EmptyTestScreen),
+            FacadeTest("zIndex", ::ZIndexTestScreen),
+            FacadeTest("Layer Transform", ::LayerTransformTestScreen),
+            FacadeTest("Layer MouseOver/MouseOff", ::LayerMouseOverOffTestScreen)
+        )),
+        FacadeTestGroup("layers", "Layers", listOf(
+            FacadeTest("Simple Sprite", ::SimpleSpriteTestScreen),
+            FacadeTest("Simple Text", ::SimpleTextTestScreen),
+            FacadeTest("DragLayer", ::DragLayerTestScreen)
+        )),
+        FacadeTestGroup("animations", "Animations/Time", listOf(
+            FacadeTest("Animations", ::AnimationTestScreen),
+            FacadeTest("Scheduled Callbacks", ::ScheduledCallbacksTestScreen),
+            FacadeTest("Scheduled Repeated Callbacks", ::ScheduledRepeatedCallbacksTestScreen)
+        )),
+        FacadeTestGroup("clipping_compositing", "Clipping/Compositing", listOf(
+            FacadeTest("Clip to Bounds", ::ClipToBoundsTestScreen),
+            FacadeTest("Masking", ::MaskingTestScreen),
+            FacadeTest("Opacity", ::OpacityTestScreen),
+            FacadeTest("Blending", ::BlendingTestScreen),
+            FacadeTest("Render to FBO Scale", ::RenderFBOScaleTest),
+            FacadeTest("Render to Quad Scale", ::RenderQuadScaleTest)
+        )),
+        FacadeTestGroup("advanced", "Advanced", listOf(
+            FacadeTest("Yoga Simple Flex", ::SimpleYogaScreen),
+            FacadeTest("Yoga List", ::YogaListScreen),
+            FacadeTest("Pastry", ::PastryTestScreen)
+        ))
+    )
+
     init {
-        +FacadeScreenConfig("empty", "Empty") { _ -> }
-
-        +FacadeScreenConfig("sprite", "Simple Sprite") { screen ->
-            val dirt = Mosaic("minecraft:textures/block/dirt.png".toRl(), 16, 16)
-            val layer = SpriteLayer(dirt.getSprite(""))
-            screen.facade.root.add(layer)
-        }
-
-        +FacadeScreenConfig("layer_transform", "Layer Transform") { screen ->
-            val dirt = Mosaic("minecraft:textures/block/dirt.png".toRl(), 16, 16).getSprite("")
-            val stone = Mosaic("minecraft:textures/block/stone.png".toRl(), 16, 16).getSprite("")
-            val layer = SpriteLayer(dirt)
-            layer.pos = vec(32, 32)
-            layer.rotation = Math.toRadians(15.0)
-
-            val layer2 = SpriteLayer(dirt)
-            layer2.pos = vec(32, 32)
-            layer2.rotation = Math.toRadians(-15.0)
-            layer.add(layer2)
-
-            layer.BUS.hook<GuiLayerEvents.MouseMove> {
-                layer.sprite = if(layer.mouseOver) stone else dirt
-            }
-            layer2.BUS.hook<GuiLayerEvents.MouseMove> {
-                layer2.sprite = if(layer2.mouseOver) stone else dirt
-            }
-            screen.facade.root.add(layer)
-        }
-
-        +FacadeScreenConfig("layer_mouseover_off", "Layer MouseOver/Off") { screen ->
-            val dirt = Mosaic("minecraft:textures/block/dirt.png".toRl(), 16, 16).getSprite("")
-            val stone = Mosaic("minecraft:textures/block/stone.png".toRl(), 16, 16).getSprite("")
-            val layer = SpriteLayer(dirt)
-            layer.pos = vec(32, 32)
-
-            layer.BUS.hook<GuiLayerEvents.MouseMoveOver> {
-                layer.sprite = stone
-            }
-            layer.BUS.hook<GuiLayerEvents.MouseMoveOff> {
-                layer.sprite = dirt
-            }
-            screen.facade.root.add(layer)
-        }
-
-        +FacadeScreenConfig("scheduled_callbacks", "Scheduled Callbacks") { screen ->
-            val dirt = Mosaic("minecraft:textures/block/dirt.png".toRl(), 16, 16).getSprite("")
-            val stone = Mosaic("minecraft:textures/block/stone.png".toRl(), 16, 16).getSprite("")
-            val layer = SpriteLayer(dirt)
-            layer.pos = vec(32, 32)
-
-            layer.BUS.hook<GuiLayerEvents.MouseDown> {
-                if(layer.mouseOver && layer.sprite == dirt) {
-                    layer.sprite = stone
-                    layer.delay(20f) {
-                        layer.sprite = dirt
-                    }
+        groups.forEach { group ->
+            +TestScreenConfig(group.id, group.name, itemGroup) {
+                customScreen {
+                    TestListScreen(group.name, group.tests)
                 }
             }
-            screen.facade.root.add(layer)
         }
-
-        +FacadeScreenConfig("scheduled_repeated_callbacks", "Scheduled Repeated Callbacks") { screen ->
-            val dirt = Mosaic("minecraft:textures/block/dirt.png".toRl(), 16, 16).getSprite("")
-            val stone = Mosaic("minecraft:textures/block/stone.png".toRl(), 16, 16).getSprite("")
-            val layer = SpriteLayer(dirt, 0, 0, 64, 64)
-
-            layer.delay(0f, 40f) {
-                layer.sprite = dirt
-            }
-            layer.delay(20f, 40f) {
-                layer.sprite = stone
-            }
-            screen.facade.main.size = layer.size
-            screen.facade.main.add(layer)
-        }
-
-        +FacadeScreenConfig("animations", "Animations", ::AnimationTestScreen)
-
-        +FacadeScreenConfig("zindex", "zIndex", ::ZIndexTestScreen)
-        +FacadeScreenConfig("simple_text", "Simple Text", ::SimpleTextTestScreen)
-        +FacadeScreenConfig("clip_to_bounds", "Clip to Bounds", ::ClipToBoundsTestScreen)
-        +FacadeScreenConfig("masking", "Masking", ::MaskingTestScreen)
-        +FacadeScreenConfig("opacity", "Opacity", ::OpacityTestScreen)
-        +FacadeScreenConfig("blend", "Blending", ::BlendingTestScreen)
-        +FacadeScreenConfig("render_fbo_scale", "Render to FBO Scale", ::RenderFBOScaleTest)
-        +FacadeScreenConfig("render_quad_scale", "Render to Quad Scale", ::RenderQuadScaleTest)
-        +FacadeScreenConfig("simple_yoga", "Yoga Simple Flex", ::SimpleYogaScreen)
-        +FacadeScreenConfig("yoga_list", "Yoga List", ::YogaListScreen)
-        +FacadeScreenConfig("pastry", "Pastry", ::PastryTestScreen)
 
         +UnitTestSuite("rmvalue") {
             add<RMValueTests>()
-        }
-    }
-
-    fun FacadeScreenConfig(id: String, name: String, block: (FacadeScreen) -> Unit): TestScreenConfig {
-        return TestScreenConfig(id, name, itemGroup) {
-            customScreen {
-                try {
-                    val screen = FacadeScreen(StringTextComponent(name))
-                    block(screen)
-                    screen
-                } catch (e: Exception) {
-                    logger.error("Error in GUI:", e)
-                    SafetyNetErrorScreen(e)
-                }
-            }
-        }
-    }
-
-    fun FacadeScreenConfig(id: String, name: String, block: () -> FacadeTestScreen): TestScreenConfig {
-        return TestScreenConfig(id, name, itemGroup) {
-            customScreen {
-                try {
-                    block()
-                } catch (e: Exception) {
-                    logger.error("Error in GUI:", e)
-                    SafetyNetErrorScreen(e)
-                }
-            }
         }
     }
 }

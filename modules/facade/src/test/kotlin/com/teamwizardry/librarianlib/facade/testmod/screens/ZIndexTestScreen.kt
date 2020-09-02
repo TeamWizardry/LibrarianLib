@@ -1,15 +1,17 @@
 package com.teamwizardry.librarianlib.facade.testmod.screens
 
 import com.teamwizardry.librarianlib.core.util.kotlin.toRl
+import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.testmod.FacadeTestScreen
 import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.mosaic.Mosaic
+import net.minecraft.util.text.ITextComponent
 import java.awt.Color
 
-class ZIndexTestScreen: FacadeTestScreen("Render to Quad Scale") {
+class ZIndexTestScreen(title: ITextComponent): FacadeScreen(title) {
     init {
         val bg = RectLayer(Color.WHITE, 0, 0, 100, 100)
         main.size = bg.size

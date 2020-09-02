@@ -1,16 +1,18 @@
 package com.teamwizardry.librarianlib.facade.testmod.screens
 
 import com.teamwizardry.librarianlib.core.util.DistinctColors
+import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.testmod.FacadeTestScreen
 import com.teamwizardry.librarianlib.math.vec
+import net.minecraft.util.text.ITextComponent
 import java.awt.Color
 
 /**
  * A simple yoga list, with a button to add elements and clicking elements deletes them
  */
-class YogaListScreen: FacadeTestScreen("Yoga List") {
+class YogaListScreen(title: ITextComponent): FacadeScreen(title) {
     init {
         val bg = RectLayer(Color(255, 255, 255, 127), 0, 0, 50, 200)
         main.add(bg)

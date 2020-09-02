@@ -1,13 +1,15 @@
 package com.teamwizardry.librarianlib.facade.testmod.screens
 
+import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.testmod.FacadeTestScreen
 import com.teamwizardry.librarianlib.math.Easing
 import com.teamwizardry.librarianlib.math.vec
+import net.minecraft.util.text.ITextComponent
 import java.awt.Color
 
-class OpacityTestScreen: FacadeTestScreen("Opacity") {
+class OpacityTestScreen(title: ITextComponent): FacadeScreen(title) {
     init {
         val bg = RectLayer(Color.WHITE, 0, 0, 200, 100)
         main.size = bg.size

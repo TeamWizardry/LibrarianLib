@@ -65,6 +65,18 @@ interface CoordinateSpace2D {
     fun convertPointFrom(point: Vec2d, other: CoordinateSpace2D): Vec2d = other.convertPointTo(point, this)
 
     /**
+     * Converts an offset in this coordinate space into the equivalent offset in the [other] coordinate space
+     */
+    @JvmDefault
+    fun convertOffsetTo(offset: Vec2d, other: CoordinateSpace2D): Vec2d = conversionMatrixTo(other).transformDelta(offset)
+
+    /**
+     * Converts an offset in the [other] coordinate space into the equivalent offset in this coordinate space
+     */
+    @JvmDefault
+    fun convertOffsetFrom(offset: Vec2d, other: CoordinateSpace2D): Vec2d = other.convertOffsetTo(offset, this)
+
+    /**
      * Converts a rect in this coordinate space to the _**smallest bounding rectangle**_ around it in the [other]
      * coordinate space
      *
