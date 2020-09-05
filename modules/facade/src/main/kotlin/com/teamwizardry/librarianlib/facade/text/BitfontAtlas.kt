@@ -34,18 +34,18 @@ public object BitfontAtlas: Texture() {
     public fun solidTex(): Rect2d {
         val width = width.toDouble()
         val height = height.toDouble()
-        return rect(solidRect.x/width, solidRect.y/height, solidRect.width/width, solidRect.height/height)
+        return rect(solidRect.x / width, solidRect.y / height, solidRect.width / width, solidRect.height / height)
     }
 
     public fun rectFor(image: BitGrid): Rect2d {
         var rect = rects[image]
-        if(rect == null) {
+        if (rect == null) {
             insert(image)
             rect = rects[image] ?: throw IllegalStateException()
         }
         val width = width.toDouble()
         val height = height.toDouble()
-        return rect(rect.x/width, rect.y/height, rect.width/width, rect.height/height)
+        return rect(rect.x / width, rect.y / height, rect.width / width, rect.height / height)
     }
 
     public fun load(images: List<BitGrid>) {
@@ -53,10 +53,10 @@ public object BitfontAtlas: Texture() {
     }
 
     public fun insert(image: BitGrid) {
-        if(image in rects)
+        if (image in rects)
             return
         var newRect: RectanglePacker.Rectangle? = packer.insert(image.width, image.height, image)
-        if(newRect == null) {
+        if (newRect == null) {
             expand()
             newRect = packer.insert(image.width, image.height, image) ?: return
         }
@@ -66,9 +66,9 @@ public object BitfontAtlas: Texture() {
 
     private fun draw(image: BitGrid, xOrigin: Int, yOrigin: Int) {
         val native = NativeImage(image.width, image.height, true)
-        for(x in 0 until image.width) {
-            for(y in 0 until image.height) {
-                if(image[x, y]) {
+        for (x in 0 until image.width) {
+            for (y in 0 until image.height) {
+                if (image[x, y]) {
                     native.setPixelRGBA(x, y, 0.inv())
                 }
             }
@@ -82,7 +82,7 @@ public object BitfontAtlas: Texture() {
     private fun expand() {
         width *= 2
         height *= 2
-        if(width > gpuMaxTexSize || height > gpuMaxTexSize)
+        if (width > gpuMaxTexSize || height > gpuMaxTexSize)
             throw IllegalStateException("Ran out of atlas space! OpenGL max texture size: " +
                 "$gpuMaxTexSize x $gpuMaxTexSize and managed to fit ${rects.size} glyphs.")
         packer.expand(width, height)
@@ -102,8 +102,8 @@ public object BitfontAtlas: Texture() {
         native.close()
 
         val solidGrid = BitGrid(3, 3)
-        for(y in 0 until 3)
-            for(x in 0 until 3)
+        for (y in 0 until 3)
+            for (x in 0 until 3)
                 solidGrid[x, y] = true
         val realSolidRect = rectFor(solidGrid)
         // Of the 3x3 solid rectangle, we only actually use the center pixel

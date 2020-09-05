@@ -16,9 +16,11 @@ public class IMValueLong extends GuiValue<Long> {
     private IMValueLong(Storage initialStorage) {
         this.storage = initialStorage;
     }
+
     public IMValueLong(long initialValue) {
         this.storage = new Storage.Fixed(initialValue);
     }
+
     public IMValueLong(LongSupplier initialCallback) {
         this.storage = new Storage.Callback(initialCallback);
     }
@@ -34,7 +36,7 @@ public class IMValueLong extends GuiValue<Long> {
      * Sets the callback, unsetting the fixed value in the process
      */
     public void set(LongSupplier callback) {
-        if(storage instanceof Storage.Callback) {
+        if (storage instanceof Storage.Callback) {
             ((Storage.Callback) storage).callback = callback;
         } else {
             storage = new Storage.Callback(callback);
@@ -46,7 +48,7 @@ public class IMValueLong extends GuiValue<Long> {
      * access this value (`someProperty` will call longo `somePropery_im` for its value)
      */
     public void setValue(long value) {
-        if(storage instanceof Storage.Fixed) {
+        if (storage instanceof Storage.Fixed) {
             ((Storage.Fixed) storage).value = value;
         } else {
             storage = new Storage.Fixed(value);
@@ -72,7 +74,7 @@ public class IMValueLong extends GuiValue<Long> {
      */
     @Nullable
     public LongSupplier getCallback() {
-        if(storage instanceof Storage.Callback) {
+        if (storage instanceof Storage.Callback) {
             return ((Storage.Callback) storage).callback;
         } else {
             return null;
@@ -91,7 +93,7 @@ public class IMValueLong extends GuiValue<Long> {
 
     @Override
     protected Long lerp(Long from, Long to, float fraction) {
-        return (long)(from + (to - from) * (double)fraction);
+        return (long) (from + (to - from) * (double) fraction);
     }
 
     @Override
@@ -109,6 +111,7 @@ public class IMValueLong extends GuiValue<Long> {
 
         static class Fixed extends IMValueLong.Storage {
             long value;
+
             public Fixed(long value) {
                 this.value = value;
             }
@@ -121,6 +124,7 @@ public class IMValueLong extends GuiValue<Long> {
 
         static class Callback extends IMValueLong.Storage {
             LongSupplier callback;
+
             public Callback(LongSupplier callback) {
                 this.callback = callback;
             }

@@ -18,15 +18,15 @@ public object BitfontRenderer {
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
 
-        for(line in container.lines) {
-            for(glyph in line.glyphs) {
+        for (line in container.lines) {
+            for (glyph in line.glyphs) {
                 BitfontAtlas.insert(glyph.glyph.image)
                 glyph.attachments?.forEach { BitfontAtlas.insert(it.glyph.image) }
             }
         }
 
         for (line in container.lines) {
-            for(glyph in line.glyphs) {
+            for (glyph in line.glyphs) {
                 draw(matrix, vb, glyph, line.posX + glyph.posX, line.posY + glyph.posY, defaultColor)
                 glyph.attachments?.forEach { attachment ->
                     draw(matrix, vb, attachment, line.posX + glyph.posX + attachment.posX, line.posY + glyph.posY + attachment.posY, defaultColor)
@@ -41,8 +41,8 @@ public object BitfontRenderer {
         val solid = BitfontAtlas.solidTex()
         val font = typesetGlyph.glyph.font
         val obf = typesetGlyph[Attribute.obfuscated] == true
-        val codepoint = if(obf && font != null) font.obfTransform(typesetGlyph.codepoint) else typesetGlyph.codepoint
-        val glyph = if(obf && font != null) font.glyphs[codepoint] else typesetGlyph.glyph
+        val codepoint = if (obf && font != null) font.obfTransform(typesetGlyph.codepoint) else typesetGlyph.codepoint
+        val glyph = if (obf && font != null) font.glyphs[codepoint] else typesetGlyph.glyph
 
         val tex = BitfontAtlas.rectFor(glyph.image)
         var minX = posX + glyph.bearingX
@@ -61,13 +61,13 @@ public object BitfontRenderer {
         vb.pos2d(matrix, minX, minY).color(color).tex(minU, minV).endVertex()
 
         var underline = typesetGlyph[Attribute.underline]
-        if(underline != null && typesetGlyph.codepoint !in newlines) {
-            if(underline == Color(0, 0, 0, 0))
+        if (underline != null && typesetGlyph.codepoint !in newlines) {
+            if (underline == Color(0, 0, 0, 0))
                 underline = color
-            minX = posX-1
-            minY = posY+1
+            minX = posX - 1
+            minY = posY + 1
             maxX = posX + typesetGlyph.glyph.calcAdvance() + 1
-            maxY = posY+2
+            maxY = posY + 2
             minU = solid.x
             minV = solid.y
             maxU = solid.x + solid.width

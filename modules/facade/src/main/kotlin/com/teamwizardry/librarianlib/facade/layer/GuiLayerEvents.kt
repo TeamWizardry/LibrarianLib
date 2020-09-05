@@ -41,13 +41,13 @@ public object GuiLayerEvents {
     /**
      * Called after input events and before layout is calculated, this is where most state mutation should occur
      */
-    public class Update : Event()
+    public class Update: Event()
 
     /**
      * Called after [Update] and before layout is calculated, this is the best place to change the layout based on state
      * changes that may have occurred during the [Update] event.
      */
-    public class PrepareLayout : Event()
+    public class PrepareLayout: Event()
 
     public abstract class GuiInputEvent: Event()
 
@@ -57,10 +57,12 @@ public object GuiLayerEvents {
 
         internal val stack = Matrix3dStack()
     }
+
     public abstract class MovingMouseEvent(rootPos: Vec2d, public val lastRootPos: Vec2d): MouseEvent(rootPos) {
         public val lastPos: Vec2d
             get() = stack.transform(lastRootPos)
     }
+
     /**
      * Triggers when the mouse moves
      */
@@ -135,25 +137,25 @@ public object GuiLayerEvents {
     /**
      * Fired before adding a child component
      */
-    public class AddChildEvent(public val child: GuiLayer) : CancelableEvent()
+    public class AddChildEvent(public val child: GuiLayer): CancelableEvent()
 
     /**
      * Fired before removing a child component
      */
-    public class RemoveChildEvent(public val child: GuiLayer) : CancelableEvent()
+    public class RemoveChildEvent(public val child: GuiLayer): CancelableEvent()
 
     /**
      * Fired before adding the component to a new parent
      */
-    public class AddToParentEvent(public val parent: GuiLayer) : Event()
+    public class AddToParentEvent(public val parent: GuiLayer): Event()
 
     /**
      * Fired before removing the component from its parent.
      */
-    public class RemoveFromParentEvent(public val parent: GuiLayer) : Event()
+    public class RemoveFromParentEvent(public val parent: GuiLayer): Event()
 
     /**
      * Called to automatically lay out children
      */
-    public class LayoutChildren : Event()
+    public class LayoutChildren: Event()
 }

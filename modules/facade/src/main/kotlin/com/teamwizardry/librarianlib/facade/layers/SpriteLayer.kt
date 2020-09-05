@@ -10,7 +10,7 @@ import java.awt.Color
 /**
  * Displays a sprite
  */
-public class SpriteLayer(public var sprite: ISprite?, x: Int, y: Int, width: Int, height: Int) : GuiLayer(x, y, width, height) {
+public class SpriteLayer(public var sprite: ISprite?, x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y, width, height) {
     public constructor(sprite: ISprite?, x: Int, y: Int): this(sprite, x, y, sprite?.width ?: 16, sprite?.height ?: 16)
     public constructor(sprite: ISprite?): this(sprite, 0, 0)
     public constructor(): this(null, 0, 0)

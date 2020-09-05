@@ -60,7 +60,7 @@ public class PastryScrollPane(x: Int, y: Int, width: Int, height: Int): GuiLayer
         val handle = scrollPane.verticalScrollBar.handle
         verticalHandleBackground.frame = handle.bounds
 
-        val dashHeight = ((handle.heighti-4)/3).clamp(0, 5) * 3
+        val dashHeight = ((handle.heighti - 4) / 3).clamp(0, 5) * 3
         verticalHandleDashes.frame = rect(1, (handle.height - dashHeight) / 2, handle.width - 2, dashHeight)
     }
 
@@ -68,7 +68,7 @@ public class PastryScrollPane(x: Int, y: Int, width: Int, height: Int): GuiLayer
         val handle = scrollPane.horizontalScrollBar.handle
         horizontalHandleBackground.frame = handle.bounds
 
-        val dashWidth = ((handle.widthi-4)/3).clamp(0, 5) * 3
+        val dashWidth = ((handle.widthi - 4) / 3).clamp(0, 5) * 3
         horizontalHandleDashes.frame = rect((handle.width - dashWidth) / 2, 1, dashWidth, handle.height - 2)
     }
 
@@ -80,14 +80,14 @@ public class PastryScrollPane(x: Int, y: Int, width: Int, height: Int): GuiLayer
         var needsVertical = showVerticalScrollbar ?: (contentSize.y > this.height - 2)
         var needsHorizontal = showHorizontalScrollbar ?: (contentSize.x > this.width - 2)
 
-        if(needsHorizontal)
+        if (needsHorizontal)
             needsVertical = contentSize.y > this.height - 2 - scrollBarWidth
-        else if(needsVertical)
+        else if (needsVertical)
             needsHorizontal = contentSize.x > this.width - 2 - scrollBarWidth
 
         val contentAreaSize = vec(
-            this.width - if(needsVertical) scrollBarWidth else 0,
-            this.height - if(needsHorizontal) scrollBarWidth else 0
+            this.width - if (needsVertical) scrollBarWidth else 0,
+            this.height - if (needsHorizontal) scrollBarWidth else 0
         )
 
         background.frame = rect(0, 0, contentAreaSize.x, contentAreaSize.y)

@@ -26,7 +26,7 @@ public class GuiDrawContext(
      */
     @Suppress("CAST_NEVER_SUCCEEDS")
     public fun pushGlMatrix() {
-        if(glMatrix) return
+        if (glMatrix) return
         glMatrix = true
         RenderSystem.pushMatrix()
         RenderSystem.multMatrix(create3dTransform(matrix).toMatrix4f())
@@ -36,7 +36,7 @@ public class GuiDrawContext(
      * Pops the matrix pushed by [pushGlMatrix], if it has been pushed.
      */
     public fun popGlMatrix() {
-        if(!glMatrix) return
+        if (!glMatrix) return
         glMatrix = false
         RenderSystem.popMatrix()
     }

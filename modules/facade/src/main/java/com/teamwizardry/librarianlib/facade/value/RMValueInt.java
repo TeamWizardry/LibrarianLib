@@ -38,7 +38,7 @@ public class RMValueInt extends GuiValue<Integer> {
     public void set(int value) {
         int oldValue = this.value;
         this.value = value;
-        if(oldValue != value && change != null && !getUseAnimationValue()) {
+        if (oldValue != value && change != null && !getUseAnimationValue()) {
             change.report(oldValue, value);
         }
     }
@@ -69,12 +69,12 @@ public class RMValueInt extends GuiValue<Integer> {
 
     @Override
     protected Integer lerp(Integer from, Integer to, float fraction) {
-        return (int)(from + (to - from) * fraction);
+        return (int) (from + (to - from) * fraction);
     }
 
     @Override
     protected void animationChange(Integer from, Integer to) {
-        if(change != null)
+        if (change != null)
             change.report(from, to);
     }
 

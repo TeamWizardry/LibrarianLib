@@ -18,6 +18,7 @@ import kotlin.math.roundToInt
 public class ScrollPane(x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y, width, height) {
     public constructor(x: Int, y: Int): this(x, y, 0, 0)
     public constructor(): this(0, 0, 0, 0)
+
     /**
      * The contents of the scroll pane. If the this component is larger than the pane the pane it will be able to
      * scroll.
@@ -25,8 +26,10 @@ public class ScrollPane(x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y,
     public val content: GuiLayer = GuiLayer()
 
     public var useScrollWheel: Boolean = true
+
     @Suppress("LeakingThis")
     public val verticalScrollBar: ScrollBar = ScrollBar(this, Axis2d.Y)
+
     @Suppress("LeakingThis")
     public val horizontalScrollBar: ScrollBar = ScrollBar(this, Axis2d.X)
 
@@ -39,7 +42,7 @@ public class ScrollPane(x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y,
 
     @Hook
     private fun scroll(e: GuiLayerEvents.MouseScroll) {
-        if(useScrollWheel) {
+        if (useScrollWheel) {
             verticalScrollBar.scrollPosition += e.delta.y
             horizontalScrollBar.scrollPosition += e.delta.x
         }
@@ -89,8 +92,8 @@ public class ScrollBar internal constructor(private val scrollPane: ScrollPane, 
         propagatesMouseOver = false
 
         handle.BUS.hook<GuiLayerEvents.MouseDown> {
-            if(handle.mouseOver)
-                dragPosition = if(axis.get(handle.size) == 0.0) 0.0 else axis.get(handle.mousePos) / axis.get(handle.size)
+            if (handle.mouseOver)
+                dragPosition = if (axis.get(handle.size) == 0.0) 0.0 else axis.get(handle.mousePos) / axis.get(handle.size)
         }
 
         handle.BUS.hook<GuiLayerEvents.MouseMove> {
@@ -106,7 +109,7 @@ public class ScrollBar internal constructor(private val scrollPane: ScrollPane, 
     override fun layoutChildren() {
         val viewportSize = axis.get(scrollPane.size)
         val contentSize = axis.get(scrollPane.content.size)
-        val viewportFraction = if(contentSize == .0) 1.0 else min(1.0, viewportSize / contentSize)
+        val viewportFraction = if (contentSize == .0) 1.0 else min(1.0, viewportSize / contentSize)
         var handleSize = (viewportFraction * axis.get(this.size)).roundToInt().toDouble()
         handleSize = this.BUS.fire(ResizeHandleEvent(handleSize)).size
         handle.size = axis.set(this.size, handleSize.clamp(0.0, axis.get(this.size)))
@@ -120,22 +123,22 @@ public class ScrollBar internal constructor(private val scrollPane: ScrollPane, 
 
         val handleGap = axis.get(this.size) - axis.get(handle.size)
 
-        if(neededScroll == 0.0) {
+        if (neededScroll == 0.0) {
             handle.pos = vec(0, 0)
             _scrollPosition = 0.0
         }
 
         val dragPosition = dragPosition
-        if(dragPosition != null) {
+        if (dragPosition != null) {
             var handlePos = axis.get(mousePos) - axis.get(handle.size) * dragPosition
             handlePos = this.BUS.fire(HandlePosEvent(handlePos)).pos
             handlePos = handlePos.clamp(0.0, handleGap)
 
             handle.pos = axis.set(vec(0, 0), handlePos)
-            _scrollPosition = neededScroll * if(handleGap == 0.0) 0.0 else handlePos / handleGap
+            _scrollPosition = neededScroll * if (handleGap == 0.0) 0.0 else handlePos / handleGap
         } else {
-            var scrollFraction = if(neededScroll == 0.0) 0.0 else _scrollPosition / neededScroll
-            if(scrollFraction !in 0.0 .. 1.0) {
+            var scrollFraction = if (neededScroll == 0.0) 0.0 else _scrollPosition / neededScroll
+            if (scrollFraction !in 0.0..1.0) {
                 scrollFraction = scrollFraction.clamp(0.0, 1.0)
                 _scrollPosition = neededScroll * scrollFraction
             }

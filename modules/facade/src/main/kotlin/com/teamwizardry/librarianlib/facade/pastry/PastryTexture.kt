@@ -53,7 +53,6 @@ internal object PastryTexture {
     val splitpaneHsplit: Sprite by texture.delegate
     val splitpaneVsplit: Sprite by texture.delegate
 
-
     val textfield: Sprite by texture.delegate
     val dropdown: Sprite by texture.delegate
     val dropdownBackground: Sprite by texture.delegate

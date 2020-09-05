@@ -28,7 +28,7 @@ public class IMValue<T> private constructor(private var storage: Storage<T>, pri
      * Gets the current value
      */
     public fun get(): T {
-        return if(useAnimationValue) animationValue else storage.get()
+        return if (useAnimationValue) animationValue else storage.get()
     }
 
     /**
@@ -83,7 +83,7 @@ public class IMValue<T> private constructor(private var storage: Storage<T>, pri
         get() = get()
 
     override fun lerp(from: T, to: T, fraction: Float): T {
-        if(lerper == null)
+        if (lerper == null)
             throw IllegalStateException("Can not lerp an IMValue that has no lerper")
         return lerper.lerp(from, to, fraction)
     }

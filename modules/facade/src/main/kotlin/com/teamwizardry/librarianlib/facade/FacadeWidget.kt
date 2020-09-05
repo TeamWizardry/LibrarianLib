@@ -112,7 +112,7 @@ public open class FacadeWidget(
     }
 
     public fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int) {
-        if(keyCode == GLFW.GLFW_KEY_ESCAPE) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             screen.onClose()
         }
         safetyNet("firing a KeyDown event") {

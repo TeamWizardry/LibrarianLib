@@ -8,8 +8,8 @@ import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
 import com.teamwizardry.librarianlib.math.vec
 
-public open class PastryTabPage() : GuiLayer() {
-    public constructor(labelText: String) : this() {
+public open class PastryTabPage(): GuiLayer() {
+    public constructor(labelText: String): this() {
         val label = PastryLabel(labelText)
         tab.contents.add(label)
         tab.contents.size = label.size
@@ -19,8 +19,8 @@ public open class PastryTabPage() : GuiLayer() {
         set(value) {
             field = value
             contents.isVisible = value
-            tab.background.sprite = if(value) PastryTexture.tabsButtonPressed else PastryTexture.tabsButton
-            if(value)
+            tab.background.sprite = if (value) PastryTexture.tabsButtonPressed else PastryTexture.tabsButton
+            if (value)
                 siblings.forEach {
                     it.selected = false
                 }
@@ -35,7 +35,7 @@ public open class PastryTabPage() : GuiLayer() {
         add(tab, contents)
     }
 
-    public inner class Tab : GuiLayer() {
+    public inner class Tab: GuiLayer() {
         internal val background = SpriteLayer(PastryTexture.tabsButton)
         public val contents: GuiLayer = GuiLayer(0, 0, 25, 12)
 

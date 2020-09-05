@@ -38,8 +38,8 @@ public class StackLayout(
     public var preserveCrosswise: Boolean
 ): GuiLayer(posX, posY, width, height) {
     public fun fitToLength() {
-        if(children.isEmpty()) {
-            if(horizontal)
+        if (children.isEmpty()) {
+            if (horizontal)
                 width = 0.0
             else
                 height = 0.0
@@ -47,17 +47,17 @@ public class StackLayout(
         }
         var length = 0.0
         children.forEach { child ->
-            if(collapseInvisible && !child.isVisible)
+            if (collapseInvisible && !child.isVisible)
                 return@forEach
             val frame = child.frame
-            if(horizontal) {
+            if (horizontal) {
                 length += frame.width + spacing
             } else {
                 length += frame.height + spacing
             }
         }
         length -= spacing
-        if(horizontal)
+        if (horizontal)
             width = length
         else
             height = length
@@ -66,27 +66,26 @@ public class StackLayout(
     public fun fitToBreadth() {
         var bredth = 0.0
         children.forEach { child ->
-            if(collapseInvisible && !child.isVisible)
+            if (collapseInvisible && !child.isVisible)
                 return@forEach
             val frame = child.frame
-            if(horizontal) {
+            if (horizontal) {
                 bredth = max(bredth, frame.height)
             } else {
                 bredth = max(bredth, frame.width)
             }
         }
-        if(horizontal)
+        if (horizontal)
             height = bredth
         else
             width = bredth
     }
 
-
     override fun layoutChildren() {
         var accumulator = 0.0
         val positions = children.map { child ->
             accumulator.also {
-                if(collapseInvisible && !child.isVisible)
+                if (collapseInvisible && !child.isVisible)
                     return@also
                 if (horizontal) {
                     accumulator += child.frame.width + spacing
@@ -96,46 +95,46 @@ public class StackLayout(
             }
         }
 
-        val reverseOffset = if(reverse) accumulator else 0.0
-        if(horizontal) {
+        val reverseOffset = if (reverse) accumulator else 0.0
+        if (horizontal) {
             val xOffset = when (align.x) {
                 Align2d.X.LEFT -> 0.0 + reverseOffset
-                Align2d.X.CENTER -> floor((width-accumulator)/2 + reverseOffset)
-                Align2d.X.RIGHT -> ceil(width-accumulator + reverseOffset)
+                Align2d.X.CENTER -> floor((width - accumulator) / 2 + reverseOffset)
+                Align2d.X.RIGHT -> ceil(width - accumulator + reverseOffset)
             }
 
             children.zip(positions).forEach { (child, position) ->
                 val frame = child.frame
-                val x = xOffset + if(reverse) -position else position
-                val y = if(preserveCrosswise)
+                val x = xOffset + if (reverse) -position else position
+                val y = if (preserveCrosswise)
                     child.frame.minY.toInt()
-                else when(align.y) {
+                else when (align.y) {
                     Align2d.Y.TOP -> 0
-                    Align2d.Y.CENTER -> floorInt((height - frame.height)/2)
+                    Align2d.Y.CENTER -> floorInt((height - frame.height) / 2)
                     Align2d.Y.BOTTOM -> ceilInt(height - frame.height)
                 }
 
-                child.frame = rect(if(reverse) x-frame.width else x, y, frame.width, frame.height)
+                child.frame = rect(if (reverse) x - frame.width else x, y, frame.width, frame.height)
             }
         } else {
             val yOffset = when (align.y) {
                 Align2d.Y.TOP -> 0.0 + reverseOffset
-                Align2d.Y.CENTER -> floor((height-accumulator)/2 + reverseOffset)
-                Align2d.Y.BOTTOM -> ceil(height-accumulator + reverseOffset)
+                Align2d.Y.CENTER -> floor((height - accumulator) / 2 + reverseOffset)
+                Align2d.Y.BOTTOM -> ceil(height - accumulator + reverseOffset)
             }
 
             children.zip(positions).forEach { (child, position) ->
                 val frame = child.frame
-                val y = yOffset + if(reverse) -position else position
-                val x = if(preserveCrosswise)
+                val y = yOffset + if (reverse) -position else position
+                val x = if (preserveCrosswise)
                     child.frame.minX.toInt()
-                else when(align.x) {
+                else when (align.x) {
                     Align2d.X.LEFT -> 0
-                    Align2d.X.CENTER -> floorInt((width - frame.width)/2)
+                    Align2d.X.CENTER -> floorInt((width - frame.width) / 2)
                     Align2d.X.RIGHT -> ceilInt(width - frame.width)
                 }
 
-                child.frame = rect(x, if(reverse) y-frame.height else y, frame.width, frame.height)
+                child.frame = rect(x, if (reverse) y - frame.height else y, frame.width, frame.height)
             }
         }
     }
@@ -336,10 +335,10 @@ public class StackLayoutBuilder(private var posX: Double, private var posY: Doub
         layer.size = vec(width, height) // ditto
 
         layer.add(*children.toTypedArray())
-        if(fitToLength) {
+        if (fitToLength) {
             layer.fitToLength()
         }
-        if(fitToBreadth) {
+        if (fitToBreadth) {
             layer.fitToBreadth()
         }
         return layer

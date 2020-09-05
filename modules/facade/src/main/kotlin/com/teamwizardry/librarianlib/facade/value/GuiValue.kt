@@ -20,7 +20,7 @@ public abstract class GuiValue<T>: AnimationTimeListener {
     //region API
     @JvmOverloads
     public fun animate(from: T, to: T, duration: Float, easing: Easing = Easing.linear, delay: Float = 0f): BasicAnimation<T> {
-        if(!hasLerper)
+        if (!hasLerper)
             throw IllegalStateException("Can not animate a GuiValue that has no lerper")
         val animation = SimpleAnimation(from, to, duration, easing, false)
         scheduleAnimation(delay, animation)
@@ -29,7 +29,7 @@ public abstract class GuiValue<T>: AnimationTimeListener {
 
     @JvmOverloads
     public fun animate(to: T, duration: Float, easing: Easing = Easing.linear, delay: Float = 0f): BasicAnimation<T> {
-        if(!hasLerper)
+        if (!hasLerper)
             throw IllegalStateException("Can not animate a GuiValue that has no lerper")
         // `delay == 0f` should be interpreted as *immediately* reading the starting value, not reading it when the
         // animation actually starts.
@@ -98,7 +98,7 @@ public abstract class GuiValue<T>: AnimationTimeListener {
 
     override fun updateTime(time: Float) {
         currentTime = time
-        if(animation == null && animations.isEmpty())
+        if (animation == null && animations.isEmpty())
             return
 
         val oldValue = currentValue
@@ -113,19 +113,19 @@ public abstract class GuiValue<T>: AnimationTimeListener {
                 animation = null
             }
         }
+
         fun startAnimation(newAnimation: ScheduledAnimation<T>) {
             animation = newAnimation
             newAnimation.start()
-
         }
 
-        while(animations.isNotEmpty() && animations.peek().start <= time) {
+        while (animations.isNotEmpty() && animations.peek().start <= time) {
             finishAnimations()
             startAnimation(animations.poll())
         }
 
         // if we're past the end of the animation, wrap it up
-        if(animation != null && time >= animation!!.end) {
+        if (animation != null && time >= animation!!.end) {
             finishAnimations()
         }
 
@@ -135,7 +135,7 @@ public abstract class GuiValue<T>: AnimationTimeListener {
             didAnimate = true
         }
 
-        if(didAnimate) {
+        if (didAnimate) {
             _animationValue = newValue
             if (oldValue != newValue) {
                 animationChange(oldValue, newValue)
@@ -187,7 +187,7 @@ public abstract class GuiValue<T>: AnimationTimeListener {
     ): BasicAnimation<T>(duration) {
         override fun onStarted() {
             super.onStarted()
-            if(fromCurrentValue)
+            if (fromCurrentValue)
                 from = currentValue
         }
 

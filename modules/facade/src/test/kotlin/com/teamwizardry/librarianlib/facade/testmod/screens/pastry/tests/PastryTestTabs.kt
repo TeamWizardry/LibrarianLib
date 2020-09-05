@@ -49,7 +49,7 @@ class PastryTestTabs: PastryTestBase() {
         toggle(4, "o no, too much power.")
     }
 
-    class NamedPage(name: String) : PastryTabPage(name) {
+    class NamedPage(name: String): PastryTabPage(name) {
         val stack = StackLayout.build().align(Align2d.CENTER).build()
         val nameLabel = PastryLabel("Page $name content")
 

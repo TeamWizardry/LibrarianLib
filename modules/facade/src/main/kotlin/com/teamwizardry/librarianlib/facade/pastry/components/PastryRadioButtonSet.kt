@@ -15,7 +15,7 @@ public class PastryRadioButtonSet<T> {
 
     public var selectedValue: T? = null
         private set(value) {
-            if(field != value) {
+            if (field != value) {
                 field = value
                 components.forEach { key, box ->
                     box.state = key == value
@@ -27,10 +27,10 @@ public class PastryRadioButtonSet<T> {
         val checkbox = PastryCheckbox(x, y, true)
         components[option] = checkbox
         checkbox.BUS.hook<PastryToggle.BeginToggleEvent> {
-            if(checkbox.state) it.cancel()
+            if (checkbox.state) it.cancel()
         }
         checkbox.BUS.hook<PastryToggle.StateWillChangeEvent> {
-            if(!BUS.fire(OptionSelected(option)).isCanceled()) {
+            if (!BUS.fire(OptionSelected(option)).isCanceled()) {
                 selectedValue = option
             }
             it.cancel()

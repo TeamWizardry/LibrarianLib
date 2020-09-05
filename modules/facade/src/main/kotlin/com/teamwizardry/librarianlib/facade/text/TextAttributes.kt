@@ -11,13 +11,17 @@ public object TextAttributes {
 }
 
 @get:JvmSynthetic
-public val Attribute.Companion.color: Attribute<Color> get() = TextAttributes.color
+public val Attribute.Companion.color: Attribute<Color>
+    get() = TextAttributes.color
 
 @get:JvmSynthetic
-public val Attribute.Companion.obfuscated: Attribute<Boolean> get() = TextAttributes.obfuscated
+public val Attribute.Companion.obfuscated: Attribute<Boolean>
+    get() = TextAttributes.obfuscated
 
 @get:JvmSynthetic
-public val Attribute.Companion.bold: Attribute<Boolean> get() = TextAttributes.bold
+public val Attribute.Companion.bold: Attribute<Boolean>
+    get() = TextAttributes.bold
 
 @get:JvmSynthetic
-public val Attribute.Companion.underline: Attribute<Color> get() = TextAttributes.underline
+public val Attribute.Companion.underline: Attribute<Color>
+    get() = TextAttributes.underline

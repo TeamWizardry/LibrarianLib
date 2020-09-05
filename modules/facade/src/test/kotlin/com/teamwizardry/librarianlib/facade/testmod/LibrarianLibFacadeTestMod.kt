@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
 
 @Mod("librarianlib-facade-test")
-object LibrarianLibSpritesTestMod: TestMod("facade", "Facade", logger) {
+object LibrarianLibFacadeTestMod: TestMod("facade", "Facade", logger) {
     val groups: List<FacadeTestGroup> = listOf(
         FacadeTestGroup("basics", "Basics", listOf(
             FacadeTest("Empty", ::EmptyTestScreen),

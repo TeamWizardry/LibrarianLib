@@ -20,7 +20,7 @@ public class SpriteGaugeLayer: LinearGaugeLayer {
         this.sprite = sprite
     }
 
-    private val pinnedSprite = object : WrappedSprite() {
+    private val pinnedSprite = object: WrappedSprite() {
         override val wrapped: ISprite?
             get() = sprite
         override val pinTop: Boolean

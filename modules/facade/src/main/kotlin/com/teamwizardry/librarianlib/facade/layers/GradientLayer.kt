@@ -19,6 +19,7 @@ public class GradientLayer(public val axis: Axis2d, posX: Int, posY: Int, width:
         this.addStop(0.0, min)
         this.addStop(1.0, max)
     }
+
     public constructor(axis: Axis2d, min: Color, max: Color, x: Int, y: Int): this(axis, min, max, x, y, 0, 0)
     public constructor(axis: Axis2d, min: Color, max: Color): this(axis, min, max, 0, 0, 0, 0)
 
@@ -38,7 +39,7 @@ public class GradientLayer(public val axis: Axis2d, posX: Int, posY: Int, width:
         val maxY = size.yi.toDouble()
 
 
-        if(stops.isNotEmpty()) {
+        if (stops.isNotEmpty()) {
             val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
             val vb = buffer.getBuffer(renderType)
 
@@ -49,8 +50,8 @@ public class GradientLayer(public val axis: Axis2d, posX: Int, posY: Int, width:
                 }
 
                 stops.forEach { stop ->
-                    vb.pos2d(context.matrix, minX + (maxX-minX)*stop.location, minY).color(stop.color).endVertex()
-                    vb.pos2d(context.matrix, minX + (maxX-minX)*stop.location, maxY).color(stop.color).endVertex()
+                    vb.pos2d(context.matrix, minX + (maxX - minX) * stop.location, minY).color(stop.color).endVertex()
+                    vb.pos2d(context.matrix, minX + (maxX - minX) * stop.location, maxY).color(stop.color).endVertex()
                 }
 
                 if (stops.last().location != 1.0) {
@@ -64,8 +65,8 @@ public class GradientLayer(public val axis: Axis2d, posX: Int, posY: Int, width:
                 }
 
                 stops.forEach { stop ->
-                    vb.pos2d(context.matrix, minX, minY + (maxY-minY)*stop.location).color(stop.color).endVertex()
-                    vb.pos2d(context.matrix, maxX, minY + (maxY-minY)*stop.location).color(stop.color).endVertex()
+                    vb.pos2d(context.matrix, minX, minY + (maxY - minY) * stop.location).color(stop.color).endVertex()
+                    vb.pos2d(context.matrix, maxX, minY + (maxY - minY) * stop.location).color(stop.color).endVertex()
                 }
 
                 if (stops.last().location != 1.0) {
@@ -76,7 +77,6 @@ public class GradientLayer(public val axis: Axis2d, posX: Int, posY: Int, width:
 
             buffer.finish()
         }
-
     }
 
     public inner class ColorStop(location: Double, color: Color) {

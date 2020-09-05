@@ -12,6 +12,7 @@ public open class PastryControl: GuiLayer {
      * The next control in the sequence
      */
     public var next: PastryControl? = null
+
     /**
      * The previous control in the sequence
      */
@@ -35,8 +36,8 @@ public open class PastryControl: GuiLayer {
      */
     public fun focusNext(): Boolean {
         var target = next
-        if(target == null) {
-            if(previous === this) {
+        if (target == null) {
+            if (previous === this) {
                 target = this
             } else {
                 var head = previous ?: run {
@@ -68,8 +69,8 @@ public open class PastryControl: GuiLayer {
      */
     public fun focusPrevious(): Boolean {
         var target = previous
-        if(target == null) {
-            if(next === this) {
+        if (target == null) {
+            if (next === this) {
                 target = this
             } else {
                 var head = next ?: run {

@@ -18,7 +18,7 @@ public object Fonts {
     init {
         val classicLoc = loc("librarianlib:facade/fonts/mcclassicplus.bitfont")
         val unifontLoc = loc("librarianlib:facade/fonts/unifont.bitfont")
-        Client.resourceReloadHandler.register(object : ISimpleReloadListener<Pair<Bitfont, Bitfont>> {
+        Client.resourceReloadHandler.register(object: ISimpleReloadListener<Pair<Bitfont, Bitfont>> {
             override fun prepare(resourceManager: IResourceManager, profiler: IProfiler): Pair<Bitfont, Bitfont> {
                 return load(classicLoc) to load(unifontLoc)
             }
@@ -40,7 +40,7 @@ public object Fonts {
             val font = Bitfont.unpack(bytes)
             logger.debug("Finished loading font")
             return font
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             RuntimeException("Error loading $fontLocation", e).printStackTrace()
             return Bitfont("<err>", 10, 4, 9, 6, 2)
         }

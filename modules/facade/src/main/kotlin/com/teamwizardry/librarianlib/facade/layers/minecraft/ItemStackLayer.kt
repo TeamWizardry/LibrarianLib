@@ -21,7 +21,7 @@ public class ItemStackLayer(stack: ItemStack, x: Int, y: Int): GuiLayer(x, y, 16
         val stack = this.stack
         if (!stack.isEmpty) {
             val str: String? =
-                if(stack.count == 1)
+                if (stack.count == 1)
                     null
                 else
                     BUS.fire(QuantityTextEvent(stack.count.toString())).text

@@ -11,7 +11,7 @@ private class ObfTransforms(val font: Bitfont) {
     val cache = Int2ObjectOpenHashMap<IntSet>()
 
     init {
-        for(i in ' '.toInt() .. '~'.toInt()) {
+        for (i in ' '.toInt()..'~'.toInt()) {
             get(i)
         }
     }

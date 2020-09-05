@@ -91,28 +91,28 @@ public class PastryColorPicker: GuiLayer() {
         init {
             add(background, square)
             square.BUS.hook<GuiLayerEvents.MouseDown> {
-                if(square.mouseOver && it.button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+                if (square.mouseOver && it.button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
                     draggingFromInside = true
                     updateSB()
                 }
             }
             square.BUS.hook<GuiLayerEvents.MouseDown> {
-                if(it.button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+                if (it.button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
                     draggingFromInside = false
                 }
             }
             square.BUS.hook<GuiLayerEvents.MouseDrag> {
-                if(draggingFromInside && it.button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+                if (draggingFromInside && it.button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
                     updateSB()
                 }
             }
         }
 
         private fun updateSB() {
-            if(square.width == 0.0 || square.height == 0.0 || !square.mouseOver) return
+            if (square.width == 0.0 || square.height == 0.0 || !square.mouseOver) return
             val fraction = square.mousePos / square.size
-            if(fraction.x in 0.0 .. 1.0) saturation = fraction.x.toFloat()
-            if(fraction.y in 0.0 .. 1.0) brightness = 1-fraction.y.toFloat()
+            if (fraction.x in 0.0..1.0) saturation = fraction.x.toFloat()
+            if (fraction.y in 0.0..1.0) brightness = 1 - fraction.y.toFloat()
         }
 
         override fun layoutChildren() {
@@ -152,7 +152,6 @@ public class PastryColorPicker: GuiLayer() {
 
                 RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
             }
-
         }
     }
 
@@ -171,9 +170,9 @@ public class PastryColorPicker: GuiLayer() {
         }
 
         fun updateH() {
-            if(sprite.height == 0.0 || !sprite.mouseOver) return
+            if (sprite.height == 0.0 || !sprite.mouseOver) return
             val fraction = sprite.mousePos.y / sprite.height
-            if(fraction in 0.0 .. 1.0) hue = 1-fraction.toFloat()
+            if (fraction in 0.0..1.0) hue = 1 - fraction.toFloat()
         }
 
         override fun layoutChildren() {

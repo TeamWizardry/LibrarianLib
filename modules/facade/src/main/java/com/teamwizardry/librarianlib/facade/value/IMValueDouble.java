@@ -12,9 +12,11 @@ public class IMValueDouble extends GuiValue<Double> {
     private IMValueDouble(Storage initialStorage) {
         this.storage = initialStorage;
     }
+
     public IMValueDouble(double initialValue) {
         this.storage = new Storage.Fixed(initialValue);
     }
+
     public IMValueDouble(DoubleSupplier initialCallback) {
         this.storage = new Storage.Callback(initialCallback);
     }
@@ -30,7 +32,7 @@ public class IMValueDouble extends GuiValue<Double> {
      * Sets the callback, unsetting the fixed value in the process
      */
     public void set(DoubleSupplier callback) {
-        if(storage instanceof Storage.Callback) {
+        if (storage instanceof Storage.Callback) {
             ((Storage.Callback) storage).callback = callback;
         } else {
             storage = new Storage.Callback(callback);
@@ -42,7 +44,7 @@ public class IMValueDouble extends GuiValue<Double> {
      * access this value (`someProperty` will call doubleo `somePropery_im` for its value)
      */
     public void setValue(double value) {
-        if(storage instanceof Storage.Fixed) {
+        if (storage instanceof Storage.Fixed) {
             ((Storage.Fixed) storage).value = value;
         } else {
             storage = new Storage.Fixed(value);
@@ -68,7 +70,7 @@ public class IMValueDouble extends GuiValue<Double> {
      */
     @Nullable
     public DoubleSupplier getCallback() {
-        if(storage instanceof Storage.Callback) {
+        if (storage instanceof Storage.Callback) {
             return ((Storage.Callback) storage).callback;
         } else {
             return null;
@@ -105,6 +107,7 @@ public class IMValueDouble extends GuiValue<Double> {
 
         static class Fixed extends IMValueDouble.Storage {
             double value;
+
             public Fixed(double value) {
                 this.value = value;
             }
@@ -117,6 +120,7 @@ public class IMValueDouble extends GuiValue<Double> {
 
         static class Callback extends IMValueDouble.Storage {
             DoubleSupplier callback;
+
             public Callback(DoubleSupplier callback) {
                 this.callback = callback;
             }

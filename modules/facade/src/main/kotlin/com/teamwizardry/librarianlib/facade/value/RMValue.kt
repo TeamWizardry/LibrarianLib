@@ -17,7 +17,7 @@ public class RMValue<T> @JvmOverloads constructor(
      */
     public fun get(): T {
         @Suppress("UNCHECKED_CAST")
-        return if(useAnimationValue) animationValue else value
+        return if (useAnimationValue) animationValue else value
     }
 
     /**
@@ -26,7 +26,7 @@ public class RMValue<T> @JvmOverloads constructor(
     public fun set(value: T) {
         val oldValue = this.value
         this.value = value
-        if(oldValue != value && !useAnimationValue) {
+        if (oldValue != value && !useAnimationValue) {
             change?.report(oldValue, value)
         }
     }
@@ -54,7 +54,7 @@ public class RMValue<T> @JvmOverloads constructor(
         get() = get()
 
     override fun lerp(from: T, to: T, fraction: Float): T {
-        if(lerper == null)
+        if (lerper == null)
             throw IllegalStateException("Can not lerp an RMValue that has no lerper")
         return lerper.lerp(from, to, fraction)
     }

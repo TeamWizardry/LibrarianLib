@@ -53,7 +53,7 @@ public abstract class PastryTooltip: GuiLayer() {
         layoutContents(maxSpace)
 
         contents.pos = vec(rightCursorOffset, 0)
-        if(contents.frame.maxX > screenBounds.maxX) {
+        if (contents.frame.maxX > screenBounds.maxX) {
             contents.x = -(contents.width + leftCursorOffset)
         }
 
@@ -68,7 +68,9 @@ public class PastryBasicTooltip: PastryTooltip() {
     public var text: String? by text_im
     public var attributedText: AttributedString
         get() = textLayer.attributedText
-        set(value) { textLayer.attributedText = value }
+        set(value) {
+            textLayer.attributedText = value
+        }
 
     init {
         contents.add(textLayer)
@@ -122,14 +124,16 @@ private object TooltipProvider: Screen(StringTextComponent("")) {
     }
 
     private fun initIfNeeded() {
-        if(width != Client.window.scaledWidth || height != Client.window.scaledHeight)
+        if (width != Client.window.scaledWidth || height != Client.window.scaledHeight)
             this.init(Client.minecraft, Client.window.scaledWidth, Client.window.scaledHeight)
     }
+
     private fun prepareTooltip() {
         initIfNeeded()
         val s = Client.guiScaleFactor
         RenderSystem.scaled(s, s, 1.0)
     }
+
     private fun cleanupTooltip() {
         val s = Client.guiScaleFactor
         RenderSystem.scaled(1 / s, 1 / s, 1.0)

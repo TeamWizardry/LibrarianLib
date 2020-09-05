@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.facade.input
 
-
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.ISimpleReloadListener
 import com.teamwizardry.librarianlib.core.util.kotlin.loc
@@ -45,12 +44,12 @@ public class Cursor @JvmOverloads constructor(
     }
 
     private fun loadCursor() {
-        if(glfwCursor > 0) {
+        if (glfwCursor > 0) {
             GLFW.glfwDestroyCursor(glfwCursor)
         }
-        if(standardCursor >= 0) {
+        if (standardCursor >= 0) {
             glfwCursor = GLFW.glfwCreateStandardCursor(standardCursor)
-            if(glfwCursor != 0L)
+            if (glfwCursor != 0L)
                 return
         }
         val stream = Client.resourceManager.getResource(resourceLocation).inputStream
@@ -95,8 +94,7 @@ public class Cursor @JvmOverloads constructor(
      */
     @Suppress("unused")
     public companion object {
-        private fun cursor(name: String, originX: Int, originY: Int, standardCursor: Int = -1)
-            = Cursor(loc("librarianlib:facade/textures/cursors/$name.png"), originX, originY, standardCursor)
+        private fun cursor(name: String, originX: Int, originY: Int, standardCursor: Int = -1) = Cursor(loc("librarianlib:facade/textures/cursors/$name.png"), originX, originY, standardCursor)
 
         /**
          * The default arrow cursor.
@@ -112,26 +110,31 @@ public class Cursor @JvmOverloads constructor(
          */
         @JvmField
         public val RESIZE_UP: Cursor = cursor("resize_up", 12, 12)
+
         /**
          * Arrow pointing down from a horizontal bar. Used to indicate downward limited movement of a divider
          */
         @JvmField
         public val RESIZE_DOWN: Cursor = cursor("resize_down", 12, 12)
+
         /**
          * Arrow pointing left from a vertical bar. Used to indicate leftward limited movement of a divider
          */
         @JvmField
         public val RESIZE_LEFT: Cursor = cursor("resize_left", 12, 12)
+
         /**
          * Arrow pointing right from a vertical bar. Used to indicate rightward limited movement of a divider
          */
         @JvmField
         public val RESIZE_RIGHT: Cursor = cursor("resize_right", 12, 12)
+
         /**
          * Arrows pointing left and right from a vertical bar. Used to indicate horizontal movement of a divider
          */
         @JvmField
         public val RESIZE_LEFTRIGHT: Cursor = cursor("resize_leftright", 12, 12)
+
         /**
          * Arrows pointing up and down from a horizontal bar. Used to indicate vertical movement of a divider
          */
@@ -145,16 +148,19 @@ public class Cursor @JvmOverloads constructor(
          */
         @JvmField
         public val RESIZE_NE: Cursor = cursor("resize_ne", 10, 10)
+
         /**
          * Arrow pointing up and to the left. Used to indicate resizing by dragging the top-left corner of an object
          */
         @JvmField
         public val RESIZE_NW: Cursor = cursor("resize_nw", 10, 10)
+
         /**
          * Arrow pointing down and to the right. Used to indicate resizing by dragging the bottom-right corner of an object
          */
         @JvmField
         public val RESIZE_SE: Cursor = cursor("resize_se", 10, 10)
+
         /**
          * Arrow pointing down and to the left. Used to indicate resizing by dragging the bottom-left corner of an object
          */
@@ -166,16 +172,19 @@ public class Cursor @JvmOverloads constructor(
          */
         @JvmField
         public val RESIZE_N: Cursor = cursor("resize_n", 10, 10)
+
         /**
          * Arrow pointing down. Used to indicate resizing by dragging the edge of an object downwards.
          */
         @JvmField
         public val RESIZE_S: Cursor = cursor("resize_s", 10, 10)
+
         /**
          * Arrow pointing right. Used to indicate resizing by dragging the edge of an object rightwards.
          */
         @JvmField
         public val RESIZE_E: Cursor = cursor("resize_e", 10, 10)
+
         /**
          * Arrow pointing left. Used to indicate resizing by dragging the edge of an object leftwards.
          */
@@ -187,6 +196,7 @@ public class Cursor @JvmOverloads constructor(
          */
         @JvmField
         public val RESIZE_NS: Cursor = cursor("resize_ns", 10, 10)
+
         /**
          * Arrow pointing left and right. Used to indicate resizing by dragging the edge of an object left or right.
          */
@@ -199,6 +209,7 @@ public class Cursor @JvmOverloads constructor(
          */
         @JvmField
         public val RESIZE_NESW: Cursor = cursor("resize_nesw", 10, 10)
+
         /**
          * Arrow pointing towards the top-left and bottom-right. Used to indicate resizing by dragging the corner of an
          * object up and to the left or down and to the right.

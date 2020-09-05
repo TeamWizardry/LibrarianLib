@@ -18,7 +18,7 @@ public class PastryDropdown<T> constructor(
     posX: Int, posY: Int,
     width: Int,
     callback: Consumer<T>?
-) : PastryActivatedControl(posX, posY, width, Pastry.lineHeight) {
+): PastryActivatedControl(posX, posY, width, Pastry.lineHeight) {
 
     public val items: MutableList<PastryDropdownItem<T>> = mutableListOf()
     public var selected: PastryDropdownItem<T>? = null
@@ -29,7 +29,7 @@ public class PastryDropdown<T> constructor(
     internal var buttonContents: GuiLayer? = null
 
     init {
-        if(callback != null)
+        if (callback != null)
             this.BUS.hook<SelectEvent<T>> {
                 callback.accept(it.value)
             }
@@ -38,8 +38,8 @@ public class PastryDropdown<T> constructor(
 
     public fun selectIndex(index: Int) {
         val newItem = items[index]
-        if(selected === newItem) return
-        if(newItem.decoration) {
+        if (selected === newItem) return
+        if (newItem.decoration) {
             selected = null
             buttonContents?.also { remove(it) }
             buttonContents = null
@@ -48,7 +48,7 @@ public class PastryDropdown<T> constructor(
             buttonContents?.also { remove(it) }
             buttonContents = newItem.createLayer().also { add(it) }
         }
-        if(!newItem.decoration)
+        if (!newItem.decoration)
             BUS.fire(SelectEvent(newItem.value))
     }
 
@@ -56,7 +56,7 @@ public class PastryDropdown<T> constructor(
         val index = items.indexOfFirst {
             !it.decoration && it.value == value
         }
-        if(index == -1)
+        if (index == -1)
             throw IllegalArgumentException("Could not find dropdown item with value of $value")
         selectIndex(index)
     }
@@ -72,7 +72,6 @@ public class PastryDropdown<T> constructor(
     }
 
     internal fun menuClosed() {
-
     }
 
     override fun activate() {
@@ -88,7 +87,7 @@ public class PastryDropdown<T> constructor(
 
     @Hook
     private fun mouseDown(e: GuiLayerEvents.MouseDown) {
-        if(this.mouseOver) {
+        if (this.mouseOver) {
             openMenu(true)
         }
     }

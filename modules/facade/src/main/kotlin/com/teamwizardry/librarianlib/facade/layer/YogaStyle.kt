@@ -50,7 +50,6 @@ public class YogaStyle(private val yogaNode: Long) {
         setWithEdge(YGEdgeBottom, ::YGNodeStyleSetPositionPercent)
     )
 
-
     public val marginLeft: YogaAutoProperty = YogaAutoProperty(yogaNode,
         getWithEdge(YGEdgeLeft, ::YGNodeStyleGetMargin),
         setWithEdge(YGEdgeLeft, ::YGNodeStyleSetMargin),
@@ -119,6 +118,7 @@ public class YogaStyle(private val yogaNode: Long) {
      * frame
      */
     public var lockWidth: Boolean = false
+
     /**
      * When true, this layer's height will be locked by setting `minHeight = height = maxHeight = layer.height` before
      * each frame

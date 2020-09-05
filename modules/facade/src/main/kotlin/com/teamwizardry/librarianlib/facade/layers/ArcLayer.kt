@@ -40,7 +40,7 @@ public class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): Gu
     /**
      * The clockwise end angle in radians
      */
-    public val endAngle_im: IMValueDouble = imDouble(2*PI)
+    public val endAngle_im: IMValueDouble = imDouble(2 * PI)
 
     /**
      * The clockwise end angle in radians
@@ -55,14 +55,14 @@ public class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): Gu
             return false
 
         val size = bounds.size
-        if(size.x == 0.0 || size.y == 0.0) return false
+        if (size.x == 0.0 || size.y == 0.0) return false
         // divide by size to adjust for non-square bounds. This puts values on the edges at ±1 on each axis
-        val delta = (point/size - vec(0.5, 0.5)) * 2
+        val delta = (point / size - vec(0.5, 0.5)) * 2
         val angle = atan2(-delta.x, delta.y) + PI
 
         val start = startAngle
         var end = endAngle
-        if(end > start + PI*2) end = start + PI*2
+        if (end > start + PI * 2) end = start + PI * 2
 
         return angle in start..end && delta.length() <= 1
     }
@@ -70,41 +70,39 @@ public class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): Gu
     override fun draw(context: GuiDrawContext) {
         val start = min(startAngle, endAngle)
         var end = max(startAngle, endAngle)
-        if(end > start + PI*2) end = start + PI*2
-        if(start == end) return
-        val rX = size.x/2
-        val rY = size.y/2
+        if (end > start + PI * 2) end = start + PI * 2
+        if (start == end) return
+        val rX = size.x / 2
+        val rY = size.y / 2
 
         val segmentSize = segmentSize
 
         val c = color
 
-
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
 
-        context.matrix.translate(size.x/2, size.y/2)
+        context.matrix.translate(size.x / 2, size.y / 2)
 
         vb.pos2d(context.matrix, 0, 0).color(c).endVertex()
 
         // we go from end to start because while the angles are measured clockwise, we need the vertices to be in
         // counterclockwise order
         var a = end
-        while(a > start) {
+        while (a > start) {
             val cos = cos(a)
             val sin = sin(a)
             vb.pos2d(context.matrix, rX * sin, rY * -cos).color(c).endVertex()
             a -= segmentSize
         }
 
-        if(a != start) {
+        if (a != start) {
             val cos = cos(start)
             val sin = sin(start)
             vb.pos2d(context.matrix, rX * sin, rY * -cos).color(c).endVertex()
         }
 
         buffer.finish()
-
     }
 
     private companion object {

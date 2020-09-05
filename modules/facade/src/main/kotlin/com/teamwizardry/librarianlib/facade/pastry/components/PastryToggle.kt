@@ -14,7 +14,7 @@ public abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int
     private var visualState = false
     public var state: Boolean = false
         set(value) {
-            if(field != value) {
+            if (field != value) {
                 field = value
                 updateVisualState()
             } else {
@@ -24,7 +24,7 @@ public abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int
 
     private fun updateVisualState() {
         val visualState = pressed != state
-        if(visualState != this.visualState) {
+        if (visualState != this.visualState) {
             this.visualState = visualState
             visualStateChanged(visualState)
         }
@@ -33,7 +33,7 @@ public abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int
     public abstract fun visualStateChanged(visualState: Boolean)
 
     override fun activate() {
-        if(!BUS.fire(BeginToggleEvent()).isCanceled()) {
+        if (!BUS.fire(BeginToggleEvent()).isCanceled()) {
             pressed = true
             updateVisualState()
         }
@@ -42,7 +42,7 @@ public abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int
     override fun activationEnd() {
         val state = state
         pressed = false
-        if(!BUS.fire(StateWillChangeEvent(!state)).isCanceled()) {
+        if (!BUS.fire(StateWillChangeEvent(!state)).isCanceled()) {
             this.state = !state
             BUS.fire(StateChangedEvent())
         }
@@ -51,7 +51,7 @@ public abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int
 
     @Hook
     private fun mouseDown(e: GuiLayerEvents.MouseDown) {
-        if(this.mouseOver && !BUS.fire(BeginToggleEvent()).isCanceled()) {
+        if (this.mouseOver && !BUS.fire(BeginToggleEvent()).isCanceled()) {
             pressed = true
             mouseDown = true
             updateVisualState()
@@ -60,14 +60,15 @@ public abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int
 
     @Hook
     private fun mouseLeave(e: GuiLayerEvents.MouseMoveOff) {
-        if(mouseDown) {
+        if (mouseDown) {
             pressed = false
             updateVisualState()
         }
     }
+
     @Hook
     private fun mouseEnter(e: GuiLayerEvents.MouseMoveOver) {
-        if(mouseDown) {
+        if (mouseDown) {
             pressed = true
             updateVisualState()
         }
@@ -77,7 +78,7 @@ public abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int
     private fun click(e: GuiLayerEvents.MouseClick) {
         val state = state
         pressed = false
-        if(mouseDown && !BUS.fire(StateWillChangeEvent(!state)).isCanceled()) {
+        if (mouseDown && !BUS.fire(StateWillChangeEvent(!state)).isCanceled()) {
             this.state = !state
             updateVisualState()
             BUS.fire(StateChangedEvent())
@@ -87,7 +88,7 @@ public abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int
 
     @Hook
     private fun mouseUp(e: GuiLayerEvents.MouseUp) {
-        if(mouseDown) {
+        if (mouseDown) {
             pressed = false
             if (mouseDown) {
                 updateVisualState()

@@ -105,7 +105,6 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * Called every frame after input events and before the layout pass
      */
     public open fun update() {
-
     }
 
     /**
@@ -153,6 +152,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         listener.updateTime(animationTime)
         return listener
     }
+
     public fun removeAnimationTimeListener(listener: AnimationTimeListener) {
         animationTimeListeners.remove(listener)
     }
@@ -166,14 +166,14 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
 
     @JvmSynthetic
     internal fun updateAnimations(time: Float) {
-        if(baseTime.isNaN())
+        if (baseTime.isNaN())
             baseTime = floor(time)
         animationTime = time - baseTime
 
-        while(scheduledEvents.isNotEmpty() && scheduledEvents.peek().time <= animationTime) {
+        while (scheduledEvents.isNotEmpty() && scheduledEvents.peek().time <= animationTime) {
             val event = scheduledEvents.poll()
             event.callback.run()
-            if(event.interval > 0) {
+            if (event.interval > 0) {
                 event.time += event.interval
                 scheduledEvents.add(event)
             }
@@ -373,6 +373,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * Drives [isVisible]
      */
     public val isVisible_im: IMValueBoolean = imBoolean(true)
+
     /**
      * Whether this component should be drawn. If this value is false, this component won't respond to input events.
      *
@@ -383,6 +384,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
 
     //region LayerRelationshipHandler
     private val _children = mutableListOf<GuiLayer>()
+
     /**
      * A read-only list containing all the children of this layer. For safely iterating over this list use
      * [forEachChild] as it will prevent [ConcurrentModificationException]s and prevent crashes caused by removing
@@ -397,6 +399,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         private set
 
     private val _parents = mutableSetOf<GuiLayer>()
+
     /**
      * A read-only set containing all the parents of this layer, recursively.
      */
@@ -417,7 +420,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * @throws LayerHierarchyException if one of the passed layers already had a parent that wasn't this layer
      */
     public fun add(vararg layers: GuiLayer) {
-        for(component in layers) {
+        for (component in layers) {
             if (component === this)
                 throw LayerHierarchyException("Tried to add a layer to itself")
 
@@ -456,7 +459,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * @throws LayerHierarchyException if the passed layer has a parent that isn't this layer
      */
     public fun remove(layer: GuiLayer) {
-        if(layer.parent == null) {
+        if (layer.parent == null) {
             logger.warn("The passed layer has no parent", Exception())
             return
         } else if (layer.parent != this) {
@@ -467,7 +470,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
             return
         layer.BUS.fire(GuiLayerEvents.RemoveFromParentEvent(this))
         layer.parent = null
-        if(layer === _maskLayer)
+        if (layer === _maskLayer)
             _maskLayer = null
         _children.remove(layer)
         markLayoutDirty()
@@ -493,15 +496,15 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     internal fun zSort() {
         var outOfOrder = false
         var previousZ = Double.NaN
-        for(layer in _children) {
+        for (layer in _children) {
             // comparison with initial NaN is always false
-            if(layer.zIndex < previousZ) {
+            if (layer.zIndex < previousZ) {
                 outOfOrder = true
                 break
             }
             previousZ = layer.zIndex
         }
-        if(outOfOrder) {
+        if (outOfOrder) {
             _children.sortBy { it.zIndex }
             markLayoutDirty()
         }
@@ -518,9 +521,9 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     @JvmSynthetic
     public inline fun forEachChild(includeMask: Boolean = true, block: (GuiLayer) -> Unit) {
         // calling `toList` just creates an array and then an ArrayList, so we just use the array
-        for(child in children.toTypedArray()) {
+        for (child in children.toTypedArray()) {
             // a component may have been removed, in which case it won't be expecting any interaction
-            if(child.parent != null && (includeMask || child !== maskLayer))
+            if (child.parent != null && (includeMask || child !== maskLayer))
                 block(child)
         }
     }
@@ -534,9 +537,9 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      */
     public fun forEachChild(includeMask: Boolean, block: Consumer<GuiLayer>) {
         // calling `toList` just creates an array and then an ArrayList, so we just use the array
-        for(child in children.toTypedArray()) {
+        for (child in children.toTypedArray()) {
             // a component may have been removed, in which case it won't be expecting any interaction
-            if(child.parent != null && (includeMask || child !== maskLayer))
+            if (child.parent != null && (includeMask || child !== maskLayer))
                 block.accept(child)
         }
     }
@@ -569,7 +572,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         get() = parentSpace?.let { this.convertRectTo(bounds, it) } ?: bounds
         set(value) {
             val current = this.frame
-            if(value.size == current.size) {
+            if (value.size == current.size) {
                 pos += value.pos - current.pos
             } else {
                 pos = value.pos + value.size * anchor
@@ -580,6 +583,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
                 )
             }
         }
+
     /**
      * The bounding rectangle of this layer in its own coordinate space. The "inner" edge.
      */
@@ -590,12 +594,13 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * The size of the layer in its own coordinate space
      */
     public val size_rm: RMValue<Vec2d> = rmValue(vec(width, height)) { old, new ->
-        if(old != new) {
+        if (old != new) {
             markLayoutDirty()
             parent?.markLayoutDirty()
             matrixDirty = true
         }
     }
+
     /**
      * The size of the layer in its own coordinate space
      */
@@ -605,11 +610,12 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * The position of the layer's anchor point in its parent's coordinate space.
      */
     public val pos_rm: RMValue<Vec2d> = rmValue(vec(posX, posY)) { old, new ->
-        if(old != new) {
+        if (old != new) {
             parent?.markLayoutDirty()
             matrixDirty = true
         }
     }
+
     /**
      * The position of the layer's anchor point in its parent's coordinate space.
      */
@@ -620,32 +626,37 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * A scale of 0 on either axis will make the inverse scale on that axis +Infinity.
      */
     public val scale_rm: RMValue<Vec2d> = rmValue(vec(1, 1)) { old, new ->
-        if(old != new) {
+        if (old != new) {
             parent?.markLayoutDirty()
             matrixDirty = true
         }
     }
+
     /**
      * The layer's scaling factor about the anchor.
      * A scale of 0 on either axis will make the inverse scale on that axis +Infinity.
      */
     public var scale2d: Vec2d by scale_rm
+
     /**
      * The average scale between the X and Y axes. Setting this value sets both the X and Y scales to this value.
      */
     public var scale: Double
         get() = (scale2d.x + scale2d.y) / 2
-        set(value) { scale2d = vec(value, value) }
+        set(value) {
+            scale2d = vec(value, value)
+        }
 
     /**
      * The clockwise rotation in radians about the anchor.
      */
     public val rotation_rm: RMValueDouble = rmDouble(0.0) { old, new ->
-        if(old != new) {
+        if (old != new) {
             parent?.markLayoutDirty()
             matrixDirty = true
         }
     }
+
     /**
      * The clockwise rotation in radians about the anchor.
      */
@@ -663,11 +674,12 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * Setting [scale] scales around the anchor, not the layer origin.
      */
     public val anchor_rm: RMValue<Vec2d> = rmValue(Vec2d.ZERO) { old, new ->
-        if(old != new) {
+        if (old != new) {
             parent?.markLayoutDirty()
             matrixDirty = true
         }
     }
+
     /**
      * The fractional anchor position in this layer's coordinate space.
      * (0, 0) is the top-left corner, (1, 1) is the bottom-right, and (0.5, 0.5) is the middle
@@ -680,7 +692,6 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * Setting [scale] scales around the anchor, not the layer origin.
      */
     public var anchor: Vec2d by anchor_rm
-
 
     /**
      * The width of this layer as a double.
@@ -695,6 +706,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         set(value) {
             size = vec(value, size.y)
         }
+
     /**
      * The width of this layer as a float.
      *
@@ -708,6 +720,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         set(value) {
             size = vec(value, size.y)
         }
+
     /**
      * The width of this layer as an int (truncating)
      *
@@ -735,6 +748,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         set(value) {
             size = vec(size.x, value)
         }
+
     /**
      * The height of this layer as a float.
      *
@@ -748,6 +762,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         set(value) {
             size = vec(size.x, value)
         }
+
     /**
      * The height of this layer as an int (truncating)
      *
@@ -775,6 +790,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         set(value) {
             pos = vec(value, pos.y)
         }
+
     /**
      * The X position of this layer as a float.
      *
@@ -788,6 +804,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         set(value) {
             pos = vec(value, pos.y)
         }
+
     /**
      * The X position of this layer as an int (truncating)
      *
@@ -815,6 +832,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         set(value) {
             pos = vec(pos.x, value)
         }
+
     /**
      * The Y position of this layer as a float.
      *
@@ -828,6 +846,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         set(value) {
             pos = vec(pos.x, value)
         }
+
     /**
      * The Y position of this layer as an int (truncating)
      *
@@ -854,8 +873,8 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      */
     @Suppress("UNUSED_PARAMETER")
     public fun isPointClipped(point: Vec2d): Boolean {
-        if(clippingSprite != null) return false // we can't clip these
-        if(clipToBounds) {
+        if (clippingSprite != null) return false // we can't clip these
+        if (clipToBounds) {
             if (point.x < 0 || point.x > size.x ||
                 point.y < 0 || point.y > size.y) {
                 return true
@@ -931,7 +950,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     private var _matrix = MutableMatrix3d()
     override val transform: Matrix3d = Matrix3dView(_matrix)
         get() {
-            if(matrixDirty) {
+            if (matrixDirty) {
                 updateMatrix()
             }
             return field
@@ -940,7 +959,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     private var _inverseMatrix = MutableMatrix3d()
     override val inverseTransform: Matrix3d = Matrix3dView(_inverseMatrix)
         get() {
-            if(matrixDirty) {
+            if (matrixDirty) {
                 updateMatrix()
             }
             return field
@@ -948,8 +967,8 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
 
     private fun updateMatrix() {
         val inverseScale = vec(
-            if(scale2d.x == 0.0) Double.POSITIVE_INFINITY else 1.0/scale2d.x,
-            if(scale2d.y == 0.0) Double.POSITIVE_INFINITY else 1.0/scale2d.y
+            if (scale2d.x == 0.0) Double.POSITIVE_INFINITY else 1.0 / scale2d.x,
+            if (scale2d.y == 0.0) Double.POSITIVE_INFINITY else 1.0 / scale2d.y
         )
 
         _matrix.set(Matrix3d.IDENTITY)
@@ -988,17 +1007,20 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * to a texture. This process clips the layer to its bounds.
      */
     public val opacity_rm: RMValueDouble = rmDouble(1.0)
+
     /**
      * An opacity value in the range [0, 1]. If this is not equal to 1 the layer will be rendered to an FBO and drawn
      * to a texture. This process clips the layer to its bounds.
      */
     public var opacity: Double by opacity_rm
+
     /**
      * How to apply the [maskLayer]. If [maskLayer] is null, this property has no effect.
      */
     public var maskMode: MaskMode = MaskMode.NONE
 
     private var _maskLayer: GuiLayer? = null
+
     /**
      * The layer to use when masking. Setting this property will automatically add or remove the layer as a child of
      * this layer. Note that removing this layer using the [remove] or [removeFromParent] method will reset this
@@ -1007,7 +1029,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     public var maskLayer: GuiLayer?
         get() = _maskLayer
         set(value) {
-            if(value !== _maskLayer) {
+            if (value !== _maskLayer) {
                 _maskLayer?.also {
                     this.remove(it)
                 }
@@ -1023,14 +1045,17 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * to a texture using [RenderMode.RENDER_TO_FBO]
      */
     public var blendMode: BlendMode = BlendMode.NORMAL
+
     /**
      * What technique to use to render this layer
      */
     public var renderMode: RenderMode = RenderMode.DIRECT
+
     /**
      * What scaling factor to use when rasterizing this layer using [RenderMode.RENDER_TO_QUAD]
      */
     public var rasterizationScale: Int = 1
+
     /**
      * Whether this layer is being used as a mask by its parent.
      */
@@ -1038,9 +1063,9 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         get() = parent?.maskLayer === this
 
     private fun actualRenderMode(): RenderMode {
-        if(renderMode != RenderMode.DIRECT)
+        if (renderMode != RenderMode.DIRECT)
             return renderMode
-        if(opacity < 1.0 || maskMode != MaskMode.NONE || blendMode != BlendMode.NORMAL)
+        if (opacity < 1.0 || maskMode != MaskMode.NONE || blendMode != BlendMode.NORMAL)
             return RenderMode.RENDER_TO_FBO
         return RenderMode.DIRECT
     }
@@ -1053,21 +1078,21 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         context.matrix.push()
         context.matrix *= transform
 
-        if(!isVisible) {
+        if (!isVisible) {
             renderSkeleton(context)
             context.matrix.pop()
             return
         }
 
         val enableClipping = clipToBounds
-        if(enableClipping)
+        if (enableClipping)
             StencilUtil.push { stencil(context) }
 
         val renderMode = actualRenderMode()
-        if(renderMode == RenderMode.DIRECT) {
+        if (renderMode == RenderMode.DIRECT) {
             renderDirect(context)
         } else {
-            val flatContext = if(renderMode == RenderMode.RENDER_TO_QUAD) {
+            val flatContext = if (renderMode == RenderMode.RENDER_TO_QUAD) {
                 GuiDrawContext(Matrix3dStack(), context.showDebugBoundingBox, context.isInMask).also {
                     it.matrix.scale(max(1, rasterizationScale).toDouble())
                 }
@@ -1083,7 +1108,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
                     renderDirect(flatContext)
                 }
                 val maskLayer = maskLayer
-                if(maskMode != MaskMode.NONE && maskLayer != null) {
+                if (maskMode != MaskMode.NONE && maskLayer != null) {
                     flatContext.isInMask = true
                     maskFBO = FramebufferPool.renderToFramebuffer {
                         clearBounds(flatContext)
@@ -1106,8 +1131,8 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
                 val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
                 val vb = buffer.getBuffer(flatLayerRenderType)
                 // why 1-maxV?
-                vb.pos2d(context.matrix, 0, size.y).tex(0f, 1-maxV).endVertex()
-                vb.pos2d(context.matrix, size.x, size.y).tex(maxU, 1-maxV).endVertex()
+                vb.pos2d(context.matrix, 0, size.y).tex(0f, 1 - maxV).endVertex()
+                vb.pos2d(context.matrix, size.x, size.y).tex(maxU, 1 - maxV).endVertex()
                 vb.pos2d(context.matrix, size.x, 0).tex(maxU, 1f).endVertex()
                 vb.pos2d(context.matrix, 0, 0).tex(0f, 1f).endVertex()
                 buffer.finish()
@@ -1120,12 +1145,12 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
             }
         }
 
-        if(enableClipping)
+        if (enableClipping)
             StencilUtil.pop { stencil(context) }
 
         if (context.showDebugBoundingBox) {
             RenderSystem.lineWidth(1f)
-            drawDebugBoundingBox(context, if(mouseOver) Color.WHITE else Color(.75f, 0f, .75f, 1f))
+            drawDebugBoundingBox(context, if (mouseOver) Color.WHITE else Color(.75f, 0f, .75f, 1f))
         }
         if (didLayout /*&& !isInMask*/) {
             drawLayerOverlay(context)
@@ -1169,7 +1194,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
 
     private fun stencil(context: GuiDrawContext) {
         val sp = clippingSprite
-        if(sp != null) {
+        if (sp != null) {
             sp.draw(context.matrix, 0f, 0f, widthf, heightf, animationTime.toInt(), Color.WHITE)
             return
         }
@@ -1180,7 +1205,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         val vb = buffer.getBuffer(flatColorFanRenderType)
 
         val points = getBoundingBoxPoints()
-        vb.pos2d(context.matrix, size.x/2, size.y/2).color(color).endVertex()
+        vb.pos2d(context.matrix, size.x / 2, size.y / 2).color(color).endVertex()
         points.reversed().forEach {
             vb.pos2d(context.matrix, it.x, it.y).color(color).endVertex()
         }
@@ -1214,7 +1239,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         val vb = buffer.getBuffer(flatColorFanRenderType)
 
         val points = getBoundingBoxPoints()
-        vb.pos2d(context.matrix, size.x/2, size.y/2).color(color).endVertex()
+        vb.pos2d(context.matrix, size.x / 2, size.y / 2).color(color).endVertex()
         points.reversed().forEach {
             vb.pos2d(context.matrix, it.x, it.y).color(color).endVertex()
         }
@@ -1247,7 +1272,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      */
     private fun getBoundingBoxPoints(): List<Vec2d> {
         val list = mutableListOf<Vec2d>()
-        if(cornerRadius != 0.0) {
+        if (cornerRadius != 0.0) {
             val rad = cornerRadius
             val d = (PI / 2) / 16
 
@@ -1298,10 +1323,10 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     @JvmField
     public val BUS: EventBus = EventBus()
 
-    public inline fun <reified  E : Event> hook(hook: Consumer<E>): Unit = BUS.hook(hook)
+    public inline fun <reified E: Event> hook(hook: Consumer<E>): Unit = BUS.hook(hook)
 
     @Suppress("UNCHECKED_CAST")
-    public fun <E : Event> hook(clazz: Class<E>, hook: Consumer<E>): Unit = BUS.hook(clazz, hook)
+    public fun <E: Event> hook(clazz: Class<E>, hook: Consumer<E>): Unit = BUS.hook(clazz, hook)
 
     init {
         BUS.register(this)
@@ -1332,7 +1357,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * If [propagatesMouseOver] is true (the default), the [mouseOver] state will be propagated to this layer's parent.
      * i.e. when true, if the mouse is over this component it will also count as over this component's parent.
      */
-    var propagatesMouseOver: Boolean = true
+    public var propagatesMouseOver: Boolean = true
 
     /**
      * True if the current [mousePos] is inside the bounds of component. This ignores components that may be covering
@@ -1373,7 +1398,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
             mouseOverChild = child.computeMouseInfo(rootPos, stack) ?: mouseOverChild
         }
         stack.pop()
-        if(!interactive || !isVisible || clipped)
+        if (!interactive || !isVisible || clipped)
             return null
         return when {
             mouseOverChild != null -> mouseOverChild
@@ -1389,21 +1414,21 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
 
     @JvmSynthetic
     internal fun triggerEvent(event: Event) {
-        when(event) {
+        when (event) {
             is GuiLayerEvents.MouseEvent -> {
-                if(!interactive)
+                if (!interactive)
                     return
                 event.stack.push()
                 event.stack.reverseMul(inverseTransform)
                 BUS.fire(event)
 
-                if(event is GuiLayerEvents.MouseDown && mouseOver) {
+                if (event is GuiLayerEvents.MouseDown && mouseOver) {
                     clickingButtons.add(event.button)
                 }
-                if(event is GuiLayerEvents.MouseUp && event.button in clickingButtons) {
+                if (event is GuiLayerEvents.MouseUp && event.button in clickingButtons) {
                     clickingButtons.remove(event.button)
-                    if(mouseOver) {
-                        BUS.fire(when(event.button) {
+                    if (mouseOver) {
+                        BUS.fire(when (event.button) {
                             0 -> GuiLayerEvents.MouseClick(event.rootPos)
                             1 -> GuiLayerEvents.MouseRightClick(event.rootPos)
                             else -> GuiLayerEvents.MouseOtherClick(event.rootPos, event.button)
@@ -1424,7 +1449,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
                 event.stack.pop()
             }
             is GuiLayerEvents.KeyEvent -> {
-                if(!interactive)
+                if (!interactive)
                     return
                 BUS.fire(event)
                 this.forEachChild {
@@ -1528,7 +1553,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     public fun markLayoutDirty() {
         isLayoutDirty = true
         parent?.also {
-            if(it.dependsOnChildLayout)
+            if (it.dependsOnChildLayout)
                 it.markLayoutDirty()
         }
     }
@@ -1549,7 +1574,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     }
 
     private fun updateDirtyLayout(event: GuiLayerEvents.LayoutChildren) {
-        if(isLayoutDirty) {
+        if (isLayoutDirty) {
             layoutChildren()
             BUS.fire(event)
         }
@@ -1591,7 +1616,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * copies the current layer size into the width/height yoga styles.
      */
     public fun yoga(): YogaStyler {
-        if(!useYoga) {
+        if (!useYoga) {
             useYoga = true
             _yogaStyler.sizeFromCurrent()
         }
@@ -1600,12 +1625,12 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
 
     private var yogaChildren = listOf<GuiLayer>()
     private fun updateYogaChildren() {
-        if(!useYoga) {
+        if (!useYoga) {
             YGNodeRemoveAllChildren(yogaNode)
             return
         }
         val newYogaChildren = _children.filter { it.useYoga }
-        if(yogaChildren != newYogaChildren) {
+        if (yogaChildren != newYogaChildren) {
             val childrenBuffer = BufferUtils.createPointerBuffer(newYogaChildren.size)
             newYogaChildren.forEach {
                 childrenBuffer.put(it.yogaNode)
@@ -1624,7 +1649,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
 
     private fun prepareYogaLayout() {
         updateYogaChildren()
-        if(useYoga) {
+        if (useYoga) {
             if (yogaStyle.lockWidth) {
                 yogaStyle.minWidth.px = widthf
                 yogaStyle.width.px = widthf
@@ -1640,7 +1665,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     }
 
     private fun computeYogaLayout() {
-        if(useYoga && parent?.useYoga != true) {
+        if (useYoga && parent?.useYoga != true) {
             YGNodeCalculateLayout(yogaNode, YGUndefined, YGUndefined, YGDirectionLTR)
         }
         forEachChild { it.computeYogaLayout() }
@@ -1648,7 +1673,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
 
     private fun applyYogaLayout() {
         // only set the pos/size of layers that use yoga and aren't roots
-        if(useYoga && parent?.useYoga == true && YGNodeGetHasNewLayout(yogaNode)) {
+        if (useYoga && parent?.useYoga == true && YGNodeGetHasNewLayout(yogaNode)) {
             this.pos = vec(YGNodeLayoutGetLeft(yogaNode), YGNodeLayoutGetTop(yogaNode))
             this.size = vec(YGNodeLayoutGetWidth(yogaNode), YGNodeLayoutGetHeight(yogaNode))
         }
@@ -1724,7 +1749,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
             RenderSystem.enableBlend()
             RenderSystem.shadeModel(GL11.GL_SMOOTH)
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-            RenderSystem.alphaFunc(GL11.GL_GREATER, 1/255f)
+            RenderSystem.alphaFunc(GL11.GL_GREATER, 1 / 255f)
             RenderSystem.disableLighting()
         }
     }

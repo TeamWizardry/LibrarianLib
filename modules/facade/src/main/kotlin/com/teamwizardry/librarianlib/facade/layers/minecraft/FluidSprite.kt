@@ -13,11 +13,12 @@ import net.minecraft.fluid.Fluid
 /**
  * Easy way to render an optionally flowing fluid.
  */
-public class FluidSprite(layer: GuiLayer) : WrappedSprite(), AnimationTimeListener {
+public class FluidSprite(layer: GuiLayer): WrappedSprite(), AnimationTimeListener {
     /**
      * The fluid to be drawn
      */
     public val fluid_im: IMValue<Fluid?> = layer.imValue()
+
     /**
      * The fluid to be drawn
      */
@@ -27,6 +28,7 @@ public class FluidSprite(layer: GuiLayer) : WrappedSprite(), AnimationTimeListen
      * The direction the fluid should appear to flow, if at all.
      */
     public val flow_im: IMValue<Cardinal2d?> = layer.imValue()
+
     /**
      * The direction the fluid should appear to flow, if at all.
      */
@@ -49,12 +51,12 @@ public class FluidSprite(layer: GuiLayer) : WrappedSprite(), AnimationTimeListen
     public fun update() {
         val fluid = fluid
         val flow = flow
-        if(fluid == lastFluid && flow == lastFlow) {
+        if (fluid == lastFluid && flow == lastFlow) {
             return
-        } else if(fluid == null) {
+        } else if (fluid == null) {
             lastFluidSprite = null
         } else {
-            val spriteName = if(flow == null) fluid.attributes.stillTexture else fluid.attributes.flowingTexture
+            val spriteName = if (flow == null) fluid.attributes.stillTexture else fluid.attributes.flowingTexture
             val atlasSprite = Client.getBlockAtlasSprite(spriteName)
             lastFluidSprite = LTextureAtlasSprite(atlasSprite)
         }

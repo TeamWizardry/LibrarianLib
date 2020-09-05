@@ -20,6 +20,7 @@ import kotlin.math.min
 public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String): GuiLayer(posX, posY, width, height) {
     public constructor(posX: Int, posY: Int, text: String): this(posX, posY, 0, 0, text) {
     }
+
     public constructor(text: String): this(0, 0, text)
     public constructor(posX: Int, posY: Int): this(posX, posY, "")
     public constructor(): this(0, 0, "")
@@ -38,6 +39,7 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     private var lastText: String? = null
 
     private var _attributedText: AttributedString = AttributedString.fromMC(text)
+
     /**
      * The string to be drawn. if [text]
      * If this is set to a mutable attributed string, the user is responsible for calling
@@ -46,7 +48,7 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     public var attributedText: AttributedString
         get() = _attributedText
         set(value) {
-            if(_attributedText !== value)
+            if (_attributedText !== value)
                 text = null
             _attributedText = value
         }
@@ -93,7 +95,7 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
         var maxX = 0
         var maxY = 0
         container.lines.forEach { fragment ->
-            if(fragment.glyphs.isEmpty())
+            if (fragment.glyphs.isEmpty())
                 return@forEach
             fragment.glyphs.forEach { glyph ->
                 minX = min(minX, glyph.posX)
@@ -111,13 +113,13 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
      */
     public fun updateText() {
         val plainText = text
-        if(plainText != null && plainText != lastText) {
+        if (plainText != null && plainText != lastText) {
             lastText = plainText
             _attributedText = AttributedString.fromMC(plainText)
         }
 
         layoutManager.attributedString = this.attributedText
-        if(wrap)
+        if (wrap)
             container.size = Vec2i((this.width - textMargins.horizontalSum).toInt(), Int.MAX_VALUE)
         else
             container.size = Vec2i(Int.MAX_VALUE, Int.MAX_VALUE)

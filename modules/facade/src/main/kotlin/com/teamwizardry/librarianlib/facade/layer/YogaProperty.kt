@@ -52,22 +52,26 @@ public open class YogaPercentageProperty(
     public var px: Float
         get() = ygValue {
             getter(yogaNode, it)
-            if(it.unit() == Yoga.YGUnitPoint)
+            if (it.unit() == Yoga.YGUnitPoint)
                 it.value()
             else
                 0f
         }
-        set(value) { pixelSetter(yogaNode, value) }
+        set(value) {
+            pixelSetter(yogaNode, value)
+        }
 
     public var percent: Float
         get() = ygValue {
             getter(yogaNode, it)
-            if(it.unit() == Yoga.YGUnitPercent)
+            if (it.unit() == Yoga.YGUnitPercent)
                 it.value()
             else
                 0f
         }
-        set(value) { percentSetter(yogaNode, value) }
+        set(value) {
+            percentSetter(yogaNode, value)
+        }
 
     /**
      * The units of the value contained in this property.
