@@ -39,4 +39,8 @@ class TestTileBlock(properties: Properties): Block(properties), IForgeBlock {
     override fun createTileEntity(state: BlockState?, world: IBlockReader?): TileEntity? {
         return TestTileEntity()
     }
+
+    override fun isTransparent(state: BlockState): Boolean {
+        return true
+    }
 }

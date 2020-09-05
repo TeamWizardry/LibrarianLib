@@ -15,6 +15,7 @@ object ModBlocks {
     internal fun registerBlocks(registrationManager: RegistrationManager) {
         testTile.from(registrationManager.add(
             BlockSpec("test_tile")
+                .notSolid()
                 .tileEntity(ModTiles.testTile)
                 .block { TestTileBlock(it.blockProperties) }
         ))

@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.foundation.block.IFoundationBlock
 import com.teamwizardry.librarianlib.foundation.item.IFoundationItem
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.RenderTypeLookup
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer
 import net.minecraft.data.BlockTagsProvider
 import net.minecraft.data.DataGenerator
 import net.minecraft.data.ItemTagsProvider
@@ -24,10 +25,12 @@ import net.minecraftforge.common.data.LanguageProvider
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.client.registry.ClientRegistry
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent
+import java.util.function.Function
 
 /**
  * The main class for registering objects in LibrarianLib Foundation. This class manages when to register them, along
@@ -57,6 +60,9 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     private val items = mutableListOf<ItemSpec>()
     private val tileEntities = mutableListOf<TileEntitySpec>()
 
+    /**
+     * Methods for performing data generation
+     */
     val datagen: DataGen = DataGen()
 
     /**
@@ -94,7 +100,7 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     @JvmSynthetic
     internal fun registerBlocks(e: RegistryEvent.Register<Block>) {
         blocks.forEach { block ->
-            logger.debug("$modid: Registering block ${block.registryName}")
+            logger.debug("Manager for $modid: Registering block ${block.registryName}")
             e.registry.register(block.blockInstance)
         }
     }
@@ -104,12 +110,12 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     internal fun registerItems(e: RegistryEvent.Register<Item>) {
         blocks.forEach { block ->
             if (block.hasItem) {
-                logger.debug("$modid: Registering blockitem ${block.registryName}")
+                logger.debug("Manager for $modid: Registering blockitem ${block.registryName}")
                 e.registry.register(block.itemInstance)
             }
         }
         items.forEach { item ->
-            logger.debug("$modid: Registering item ${item.registryName}")
+            logger.debug("Manager for $modid: Registering item ${item.registryName}")
             e.registry.register(item.itemInstance)
         }
     }
@@ -118,7 +124,7 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     @JvmSynthetic
     internal fun registerTileEntities(e: RegistryEvent.Register<TileEntityType<*>>) {
         tileEntities.forEach { te ->
-            logger.debug("$modid: Registering TileEntityType ${te.registryName}")
+            logger.debug("Manager for $modid: Registering TileEntityType ${te.registryName}")
             e.registry.register(te.typeInstance)
         }
     }
@@ -133,6 +139,14 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     internal fun clientSetup(e: FMLClientSetupEvent) {
         blocks.forEach { block ->
             RenderTypeLookup.setRenderLayer(block.blockInstance, block.renderLayer.getRenderType())
+        }
+        tileEntities.forEach { spec ->
+            val renderer = spec.renderer ?: return@forEach
+            logger.debug("Manager for $modid: Registering TER for ${spec.registryName}")
+            ClientRegistry.bindTileEntityRenderer(spec.typeInstance) {
+                @Suppress("UNCHECKED_CAST")
+                renderer.applyClient(it) as TileEntityRenderer<in TileEntity>
+            }
         }
     }
 
@@ -188,15 +202,15 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     private inner class BlockStateGeneration(gen: DataGenerator, exFileHelper: ExistingFileHelper):
         BlockStateProvider(gen, modid, TextureExistsExistingFileHelper(exFileHelper)) {
         override fun registerStatesAndModels() {
-            logger.debug("$modid datagen: Generating blockstates/models")
+            logger.debug("Manager for $modid: Generating blockstates/models")
             blocks.forEach {
                 val manualGen = it.datagen.model
                 val instance = it.blockInstance
                 if (manualGen != null) {
-                    logger.debug("$modid datagen: Calling manual blockstate generator for block ${it.registryName}")
+                    logger.debug("Manager for $modid: Calling manual blockstate generator for block ${it.registryName}")
                     manualGen.accept(this)
                 } else if(instance is IFoundationBlock) {
-                    logger.debug("$modid datagen: Calling IFoundationBlock blockstate generator for block ${it.registryName}")
+                    logger.debug("Manager for $modid: Calling IFoundationBlock blockstate generator for block ${it.registryName}")
                     instance.generateBlockState(this)
                 }
             }
@@ -204,10 +218,10 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
                 val manualGen = it.datagen.model
                 val instance = it.itemInstance
                 if (manualGen != null) {
-                    logger.debug("$modid datagen: Calling manual model generator for item ${it.registryName}")
+                    logger.debug("Manager for $modid: Calling manual model generator for item ${it.registryName}")
                     manualGen.accept(this.itemModels())
                 } else if(instance is IFoundationItem) {
-                    logger.debug("$modid datagen: Calling IFoundationItem model generator for item ${it.registryName}")
+                    logger.debug("Manager for $modid: Calling IFoundationItem model generator for item ${it.registryName}")
                     instance.generateItemModel(this.itemModels())
                 }
             }
@@ -217,7 +231,7 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     private inner class LanguageGeneration(gen: DataGenerator, val locale: String):
         LanguageProvider(gen, modid, locale) {
         override fun addTranslations() {
-            logger.debug("$modid datagen: Generating $locale language")
+            logger.debug("Manager for $modid: Generating $locale language")
             blocks.forEach { spec ->
                 spec.datagen.names[locale]?.also { name ->
                     this.add(spec.blockInstance, name)
@@ -237,7 +251,7 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
 
     private inner class BlockTagsGeneration(gen: DataGenerator): BlockTagsProvider(gen) {
         override fun registerTags() {
-            logger.debug("$modid datagen: Generating tags")
+            logger.debug("Manager for $modid: Generating tags")
             blocks.forEach { spec ->
                 spec.datagen.tags.forEach { tag ->
                     getBuilder(tag).add(spec.blockInstance)
