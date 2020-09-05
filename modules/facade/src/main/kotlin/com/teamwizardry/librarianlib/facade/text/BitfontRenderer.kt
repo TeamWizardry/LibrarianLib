@@ -7,18 +7,14 @@ import com.teamwizardry.librarianlib.core.util.kotlin.color
 import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
 import com.teamwizardry.librarianlib.core.util.kotlin.tex
 import com.teamwizardry.librarianlib.math.Matrix3d
-import dev.thecodewarrior.bitfont.typesetting.LineFragment
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
-import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager
 import dev.thecodewarrior.bitfont.typesetting.TypesetGlyph
-import dev.thecodewarrior.bitfont.typesetting.font
 import dev.thecodewarrior.bitfont.utils.Attribute
 import net.minecraft.client.renderer.IRenderTypeBuffer
-import net.minecraft.client.renderer.Tessellator
 import java.awt.Color
 
-object BitfontRenderer {
-    fun draw(matrix: Matrix3d, container: TextContainer, defaultColor: Color) {
+public object BitfontRenderer {
+    public fun draw(matrix: Matrix3d, container: TextContainer, defaultColor: Color) {
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
 
@@ -41,7 +37,7 @@ object BitfontRenderer {
         buffer.finish()
     }
 
-    fun draw(matrix: Matrix3d, vb: IVertexBuilder, typesetGlyph: TypesetGlyph, posX: Int, posY: Int, defaultColor: Color) {
+    public fun draw(matrix: Matrix3d, vb: IVertexBuilder, typesetGlyph: TypesetGlyph, posX: Int, posY: Int, defaultColor: Color) {
         val solid = BitfontAtlas.solidTex()
         val font = typesetGlyph.glyph.font
         val obf = typesetGlyph[Attribute.obfuscated] == true

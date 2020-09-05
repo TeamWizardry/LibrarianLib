@@ -5,7 +5,6 @@ import org.lwjgl.util.yoga.Yoga
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
-import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 //TODO: Yoga.YGUndefined
@@ -15,12 +14,12 @@ import kotlin.reflect.KProperty
  *
  * TODO: make this actually use enums
  */
-class YogaEnumProperty(private val yogaNode: Long, private val getter: (Long) -> Int, private val setter: (Long, Int) -> Unit) {
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): Int {
+public class YogaEnumProperty(private val yogaNode: Long, private val getter: (Long) -> Int, private val setter: (Long, Int) -> Unit) {
+    public operator fun getValue(thisRef: Any?, property: KProperty<*>): Int {
         return getter(yogaNode)
     }
 
-    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: Int) {
+    public operator fun setValue(thisRef: Any?, property: KProperty<*>, value: Int) {
         setter(yogaNode, value)
     }
 }
@@ -28,12 +27,12 @@ class YogaEnumProperty(private val yogaNode: Long, private val getter: (Long) ->
 /**
  * A yoga property that can contain a float
  */
-class YogaFloatProperty(private val yogaNode: Long, private val getter: (Long) -> Float, private val setter: (Long, Float) -> Unit) {
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): Float {
+public class YogaFloatProperty(private val yogaNode: Long, private val getter: (Long) -> Float, private val setter: (Long, Float) -> Unit) {
+    public operator fun getValue(thisRef: Any?, property: KProperty<*>): Float {
         return getter(yogaNode)
     }
 
-    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: Float) {
+    public operator fun setValue(thisRef: Any?, property: KProperty<*>, value: Float) {
         setter(yogaNode, value)
     }
 }
@@ -41,7 +40,7 @@ class YogaFloatProperty(private val yogaNode: Long, private val getter: (Long) -
 /**
  * A yoga property that can contain either a fixed pixel value or a percentage
  */
-open class YogaPercentageProperty(
+public open class YogaPercentageProperty(
     protected val yogaNode: Long,
     private val getter: (Long, YGValue) -> YGValue,
     private val pixelSetter: (Long, Float) -> Unit,
@@ -50,7 +49,7 @@ open class YogaPercentageProperty(
     /**
      * The pixel value of this property. Returns zero if the property contains a percentage value.
      */
-    var px: Float
+    public var px: Float
         get() = ygValue {
             getter(yogaNode, it)
             if(it.unit() == Yoga.YGUnitPoint)
@@ -60,7 +59,7 @@ open class YogaPercentageProperty(
         }
         set(value) { pixelSetter(yogaNode, value) }
 
-    var percent: Float
+    public var percent: Float
         get() = ygValue {
             getter(yogaNode, it)
             if(it.unit() == Yoga.YGUnitPercent)
@@ -77,14 +76,14 @@ open class YogaPercentageProperty(
      * @See Yoga.YGUnitPercent
      * @See Yoga.YGUnitPoint
      */
-    val unit: Int
+    public val unit: Int
         get() = ygValue {
             getter(yogaNode, it)
             it.unit()
         }
 }
 
-class YogaAutoProperty(
+public class YogaAutoProperty(
     yogaNode: Long,
     getter: (Long, YGValue) -> YGValue,
     pixelSetter: (Long, Float) -> Unit,
@@ -94,13 +93,13 @@ class YogaAutoProperty(
     /**
      * Whether the property's value is currently `auto`. Set this to true using [auto]
      */
-    val isAuto: Boolean
+    public val isAuto: Boolean
         get() = unit == Yoga.YGUnitAuto
 
     /**
      * Set the property's value to `auto`
      */
-    fun auto() {
+    public fun auto() {
         autoSetter(yogaNode)
     }
 }

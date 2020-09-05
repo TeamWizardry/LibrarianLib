@@ -17,11 +17,11 @@ import org.lwjgl.glfw.GLFW
 /**
  *
  */
-open class FacadeWidget(
+public open class FacadeWidget(
     private val screen: Screen
 ) {
-    val root = GuiLayer()
-    val main = GuiLayer()
+    public val root: GuiLayer = GuiLayer()
+    public val main: GuiLayer = GuiLayer()
     private val tooltipContainer = GuiLayer()
     private var currentTooltip: GuiLayer? = null
 
@@ -38,7 +38,7 @@ open class FacadeWidget(
     private var mouseY = 0.0
     private var mouseOver: GuiLayer? = null
 
-    fun mouseMoved(_xPos: Double, _yPos: Double) {
+    public fun mouseMoved(_xPos: Double, _yPos: Double) {
         val s = Client.guiScaleFactor // rescale to absolute screen coordinates
         val xPos = _xPos * s
         val yPos = _yPos * s
@@ -50,7 +50,7 @@ open class FacadeWidget(
         mouseY = yPos
     }
 
-    fun mouseClicked(_xPos: Double, _yPos: Double, button: Int) {
+    public fun mouseClicked(_xPos: Double, _yPos: Double, button: Int) {
         val s = Client.guiScaleFactor // rescale to absolute screen coordinates
         val xPos = _xPos * s
         val yPos = _yPos * s
@@ -61,10 +61,10 @@ open class FacadeWidget(
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun isMouseOver(xPos: Double, yPos: Double) {
+    public fun isMouseOver(xPos: Double, yPos: Double) {
     }
 
-    fun mouseReleased(_xPos: Double, _yPos: Double, button: Int) {
+    public fun mouseReleased(_xPos: Double, _yPos: Double, button: Int) {
         val s = Client.guiScaleFactor // rescale to absolute screen coordinates
         val xPos = _xPos * s
         val yPos = _yPos * s
@@ -74,7 +74,7 @@ open class FacadeWidget(
         }
     }
 
-    fun mouseScrolled(_xPos: Double, _yPos: Double, _delta: Double) {
+    public fun mouseScrolled(_xPos: Double, _yPos: Double, _delta: Double) {
         val s = Client.guiScaleFactor // rescale to absolute screen coordinates
         val xPos = _xPos * s
         val yPos = _yPos * s
@@ -85,7 +85,7 @@ open class FacadeWidget(
         }
     }
 
-    fun mouseDragged(_xPos: Double, _yPos: Double, button: Int, _deltaX: Double, _deltaY: Double) {
+    public fun mouseDragged(_xPos: Double, _yPos: Double, button: Int, _deltaX: Double, _deltaY: Double) {
         val s = Client.guiScaleFactor // rescale to absolute screen coordinates
         val xPos = _xPos * s
         val yPos = _yPos * s
@@ -107,11 +107,11 @@ open class FacadeWidget(
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun changeFocus(reverse: Boolean) {
+    public fun changeFocus(reverse: Boolean) {
         // todo
     }
 
-    fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int) {
+    public fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int) {
         if(keyCode == GLFW.GLFW_KEY_ESCAPE) {
             screen.onClose()
         }
@@ -120,19 +120,19 @@ open class FacadeWidget(
         }
     }
 
-    fun keyReleased(keyCode: Int, scanCode: Int, modifiers: Int) {
+    public fun keyReleased(keyCode: Int, scanCode: Int, modifiers: Int) {
         safetyNet("firing a KeyUp event") {
             root.triggerEvent(GuiLayerEvents.KeyUp(keyCode, scanCode, modifiers))
         }
     }
 
-    fun charTyped(codepoint: Char, modifiers: Int) {
+    public fun charTyped(codepoint: Char, modifiers: Int) {
         safetyNet("firing a CharTyped event") {
             root.triggerEvent(GuiLayerEvents.CharTyped(codepoint, modifiers))
         }
     }
 
-    fun render() {
+    public fun render() {
         safetyNet("rendering") {
             val guiScale = Client.guiScaleFactor
 
@@ -176,7 +176,7 @@ open class FacadeWidget(
         }
     }
 
-    fun removed() {
+    public fun removed() {
         Cursor.setCursor(null)
     }
 }

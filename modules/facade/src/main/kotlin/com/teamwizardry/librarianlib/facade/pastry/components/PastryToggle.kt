@@ -8,11 +8,11 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.vec
 
-abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int): PastryActivatedControl(posX, posY, width, height) {
+public abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int): PastryActivatedControl(posX, posY, width, height) {
     private var mouseDown = false
     private var pressed = false
     private var visualState = false
-    var state: Boolean = false
+    public var state: Boolean = false
         set(value) {
             if(field != value) {
                 field = value
@@ -30,7 +30,7 @@ abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int): Past
         }
     }
 
-    abstract fun visualStateChanged(visualState: Boolean)
+    public abstract fun visualStateChanged(visualState: Boolean)
 
     override fun activate() {
         if(!BUS.fire(BeginToggleEvent()).isCanceled()) {
@@ -99,15 +99,15 @@ abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int): Past
     /**
      * Called after a state change is committed.
      */
-    class StateChangedEvent(): Event()
+    public class StateChangedEvent(): Event()
 
     /**
      * Called before a state change is committed. Cancel this event to prevent the state change
      */
-    class StateWillChangeEvent(val newState: Boolean): CancelableEvent()
+    public class StateWillChangeEvent(public val newState: Boolean): CancelableEvent()
 
     /**
      * Called before a toggle interaction begins. Cancel this event to prevent the interaction from starting.
      */
-    class BeginToggleEvent: CancelableEvent()
+    public class BeginToggleEvent: CancelableEvent()
 }

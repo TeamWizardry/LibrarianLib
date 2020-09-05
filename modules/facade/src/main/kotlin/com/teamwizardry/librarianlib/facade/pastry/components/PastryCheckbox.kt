@@ -4,8 +4,8 @@ import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
 import kotlin.math.abs
 
-class PastryCheckbox(posX: Int, posY: Int, radioStyle: Boolean): PastryToggle(posX, posY, 7, 7) {
-    constructor(posX: Int, posY: Int): this(posX, posY, false)
+public class PastryCheckbox(posX: Int, posY: Int, radioStyle: Boolean): PastryToggle(posX, posY, 7, 7) {
+    public constructor(posX: Int, posY: Int): this(posX, posY, false)
 
     private val sprite = if(radioStyle) PastryTexture.radioButton else PastryTexture.checkbox
 

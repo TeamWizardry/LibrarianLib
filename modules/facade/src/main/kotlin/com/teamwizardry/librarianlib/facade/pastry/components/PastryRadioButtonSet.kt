@@ -5,14 +5,15 @@ import com.teamwizardry.librarianlib.etcetera.eventbus.CancelableEvent
 import com.teamwizardry.librarianlib.facade.pastry.ExperimentalPastryAPI
 
 @ExperimentalPastryAPI
-class PastryRadioButtonSet<T> {
-    @JvmField val BUS = EventBus()
+public class PastryRadioButtonSet<T> {
+    @JvmField
+    public val BUS: EventBus = EventBus()
 
-    inner class OptionSelected(val option: T?): CancelableEvent()
+    public inner class OptionSelected(public val option: T?): CancelableEvent()
 
     private val components = mutableMapOf<T, PastryCheckbox>()
 
-    var selectedValue: T? = null
+    public var selectedValue: T? = null
         private set(value) {
             if(field != value) {
                 field = value
@@ -22,7 +23,7 @@ class PastryRadioButtonSet<T> {
             }
         }
 
-    fun addOption(option: T, x: Int, y: Int): PastryCheckbox {
+    public fun addOption(option: T, x: Int, y: Int): PastryCheckbox {
         val checkbox = PastryCheckbox(x, y, true)
         components[option] = checkbox
         checkbox.BUS.hook<PastryToggle.BeginToggleEvent> {

@@ -1,23 +1,22 @@
 package com.teamwizardry.librarianlib.facade.layers
 
 import com.teamwizardry.librarianlib.math.Cardinal2d
-import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.mosaic.ISprite
 import com.teamwizardry.librarianlib.mosaic.Sprite
 import com.teamwizardry.librarianlib.mosaic.WrappedSprite
 
-class SpriteGaugeLayer: LinearGaugeLayer {
-    var sprite: Sprite? = null
+public class SpriteGaugeLayer: LinearGaugeLayer {
+    public var sprite: Sprite? = null
 
-    constructor(sprite: Sprite?): super() {
+    public constructor(sprite: Sprite?): super() {
         this.sprite = sprite
     }
 
-    constructor(posX: Int, posY: Int, sprite: Sprite?): super(posX, posY) {
+    public constructor(posX: Int, posY: Int, sprite: Sprite?): super(posX, posY) {
         this.sprite = sprite
     }
 
-    constructor(posX: Int, posY: Int, width: Int, height: Int, sprite: Sprite?): super(posX, posY, width, height) {
+    public constructor(posX: Int, posY: Int, width: Int, height: Int, sprite: Sprite?): super(posX, posY, width, height) {
         this.sprite = sprite
     }
 

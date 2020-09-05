@@ -7,15 +7,15 @@ import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.etcetera.eventbus.Event
 import net.minecraft.item.ItemStack
 
-class ItemStackLayer(stack: ItemStack, x: Int, y: Int): GuiLayer(x, y, 16, 16) {
-    constructor(stack: ItemStack): this(stack, 0, 0)
-    constructor(x: Int, y: Int): this(ItemStack.EMPTY, x, y)
-    constructor(): this(ItemStack.EMPTY, 0, 0)
+public class ItemStackLayer(stack: ItemStack, x: Int, y: Int): GuiLayer(x, y, 16, 16) {
+    public constructor(stack: ItemStack): this(stack, 0, 0)
+    public constructor(x: Int, y: Int): this(ItemStack.EMPTY, x, y)
+    public constructor(): this(ItemStack.EMPTY, 0, 0)
 
-    val stack_im: IMValue<ItemStack> = imValue(stack)
-    var stack: ItemStack by stack_im
+    public val stack_im: IMValue<ItemStack> = imValue(stack)
+    public var stack: ItemStack by stack_im
 
-    class QuantityTextEvent(var text: String?): Event()
+    public class QuantityTextEvent(public var text: String?): Event()
 
     override fun draw(context: GuiDrawContext) {
         val stack = this.stack

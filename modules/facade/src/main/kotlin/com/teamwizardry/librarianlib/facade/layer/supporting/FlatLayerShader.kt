@@ -5,11 +5,7 @@ import com.teamwizardry.librarianlib.albedo.GLSL
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.core.rendering.BlendMode
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.etcetera.StencilUtil
-import net.minecraft.client.Minecraft
-import net.minecraft.client.shader.Framebuffer
 import net.minecraft.util.ResourceLocation
-import java.util.LinkedList
 
 internal object FlatLayerShader : Shader("flat_layer", null, ResourceLocation("librarianlib:facade/shaders/flat_layer.frag")) {
     val layerImage = GLSL.sampler2D()
@@ -36,7 +32,7 @@ internal object FlatLayerShader : Shader("flat_layer", null, ResourceLocation("l
     }
 }
 
-enum class MaskMode {
+public enum class MaskMode {
     /**
      * No masking will occur
      */
@@ -71,7 +67,7 @@ enum class MaskMode {
     INV_LUMA_ON_BLACK;
 }
 
-enum class RenderMode {
+public enum class RenderMode {
     /**
      * The default, this renders directly to the current FBO
      */

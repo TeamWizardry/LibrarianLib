@@ -24,6 +24,6 @@ private class ObfTransforms(val font: Bitfont) {
     }
 }
 
-fun Bitfont.obfTransform(codepoint: Int): Int {
+internal fun Bitfont.obfTransform(codepoint: Int): Int {
     return obfTransforms.getOrPut(this) { ObfTransforms(this) }.get(codepoint)
 }

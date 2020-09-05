@@ -1,10 +1,9 @@
 package com.teamwizardry.librarianlib.facade
 
-import com.mojang.blaze3d.systems.RenderSystem
-import net.minecraft.client.gui.IGuiEventListener
+import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import net.minecraft.client.gui.screen.Screen
+import net.minecraft.client.gui.screen.inventory.ContainerScreen
 import net.minecraft.util.text.ITextComponent
-import java.util.Optional
 
 /**
  * The base class for all LibrarianLib GUIs.
@@ -13,7 +12,7 @@ import java.util.Optional
  * should be added.
  *
  * [main] is automatically repositioned to remain centered on the screen, so setting its size is the equivalent of
- * setting its size is equivalent to setting [xSize][GuiContainer.xSize] and [ySize][GuiContainer.ySize].
+ * setting its size is equivalent to setting [xSize][ContainerScreen.xSize] and [ySize][ContainerScreen.ySize].
  * If [main] is too tall or too wide to fit on the screen at the current GUI scale it will attempt to downscale to fit
  * (decreasing the effective GUI scale setting until either the GUI fits or the scale reaches "Small"). [root] doesn't
  * scale with [main] and so always reflects Minecraft's GUI scale.
@@ -21,14 +20,14 @@ import java.util.Optional
  * Any crashes from the GUI code will be caught and displayed as an error screen instead of crashing the game. However,
  * it is impossible to wrap subclass constructors in try-catch statements so those may still crash.
  */
-open class FacadeScreen(title: ITextComponent): Screen(title /* todo behavior #2 */) {
+public open class FacadeScreen(title: ITextComponent): Screen(title /* todo behavior #2 */) {
     @Suppress("LeakingThis")
-    val facade = FacadeWidget(this)
+    public val facade: FacadeWidget = FacadeWidget(this)
 
     /**
      * The most commonly-used root layer, positioned at the center of the screen, accounting for the layer size
      */
-    val main = facade.main
+    public val main: GuiLayer = facade.main
 
     override fun render(mouseX: Int, mouseY: Int, partialTicks: Float) {
         this.renderBackground()

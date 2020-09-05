@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.mosaic.Sprite
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
 
-object PastryTexture {
+internal object PastryTexture {
 
     var theme: Theme = Theme.NORMAL
     // TODO: theme switching
@@ -91,7 +91,7 @@ object PastryTexture {
     }
 }
 
-enum class BackgroundTexture(val background: Sprite, val innerCorners: Sprite) {
+public enum class BackgroundTexture(internal val background: Sprite, internal val innerCorners: Sprite) {
     DEFAULT(PastryTexture.background, PastryTexture.backgroundInnerCorners),
     SLIGHT(PastryTexture.backgroundSlight, PastryTexture.backgroundSlightInnerCorners),
     SLIGHT_INSET(PastryTexture.backgroundSlightInset, PastryTexture.backgroundSlightInsetInnerCorners),

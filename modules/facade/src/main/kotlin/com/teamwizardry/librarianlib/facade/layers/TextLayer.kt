@@ -17,33 +17,33 @@ import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
 
-open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String): GuiLayer(posX, posY, width, height) {
-    constructor(posX: Int, posY: Int, text: String): this(posX, posY, 0, 0, text) {
+public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String): GuiLayer(posX, posY, width, height) {
+    public constructor(posX: Int, posY: Int, text: String): this(posX, posY, 0, 0, text) {
     }
-    constructor(text: String): this(0, 0, text)
-    constructor(posX: Int, posY: Int): this(posX, posY, "")
-    constructor(): this(0, 0, "")
+    public constructor(text: String): this(0, 0, text)
+    public constructor(posX: Int, posY: Int): this(posX, posY, "")
+    public constructor(): this(0, 0, "")
 
     /**
      * The text to be drawn using MC formatting codes. If this is set to any non-null value it will overwrite
      * [attributedText], but if [attributedText] is manually set to a new value, this property will be reset to null.
      */
-    var text_im: IMValue<String?> = imValue()
+    public var text_im: IMValue<String?> = imValue()
 
     /**
      * The text to be drawn using MC formatting codes. If this is set to any non-null value it will overwrite
      * [attributedText], but if [attributedText] is manually set to a new value, this property will be reset to null.
      */
-    var text by text_im
+    public var text: String? by text_im
     private var lastText: String? = null
 
-    var _attributedText: AttributedString = AttributedString.fromMC(text)
+    private var _attributedText: AttributedString = AttributedString.fromMC(text)
     /**
      * The string to be drawn. if [text]
      * If this is set to a mutable attributed string, the user is responsible for calling
      * [updateText] when it changes. If this is set to an immutable attributed string, it will automatically be called.
      */
-    var attributedText: AttributedString
+    public var attributedText: AttributedString
         get() = _attributedText
         set(value) {
             if(_attributedText !== value)
@@ -54,27 +54,27 @@ open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String
     /**
      * The color of the text. (can be overridden by color attributes in the string)
      */
-    val color_im: IMValue<Color> = imValue(Color.BLACK)
+    public val color_im: IMValue<Color> = imValue(Color.BLACK)
 
     /**
      * The color of the text. (can be overridden by color attributes in the string)
      */
-    var color: Color by color_im
+    public var color: Color by color_im
 
     /**
      * Whether to wrap the text
      */
-    var wrap: Boolean = false
+    public var wrap: Boolean = false
 
     /**
      * Margins to offset the text by
      */
-    var textMargins: Margins = Margins(0.0, 0.0, 0.0, 0.0)
+    public var textMargins: Margins = Margins(0.0, 0.0, 0.0, 0.0)
 
     /**
      * The logical bounds of the text
      */
-    var textBounds: Rect2d = rect(0, 0, 0, 0)
+    public var textBounds: Rect2d = rect(0, 0, 0, 0)
         private set
 
     private val container: TextContainer = TextContainer()
@@ -86,7 +86,7 @@ open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String
         updateText()
     }
 
-    fun fitToText() {
+    public fun fitToText() {
         updateText()
         var minX = 0
         var minY = 0
@@ -109,7 +109,7 @@ open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String
     /**
      * Updates the text layout.
      */
-    fun updateText() {
+    public fun updateText() {
         val plainText = text
         if(plainText != null && plainText != lastText) {
             lastText = plainText
@@ -134,7 +134,7 @@ open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String
         BitfontRenderer.draw(context.matrix, container, color)
     }
 
-    data class Margins(val left: Double, val top: Double, val right: Double, val bottom: Double) {
+    public data class Margins(val left: Double, val top: Double, val right: Double, val bottom: Double) {
         val horizontalSum: Double = left + right
         val verticalSum: Double = top + bottom
     }

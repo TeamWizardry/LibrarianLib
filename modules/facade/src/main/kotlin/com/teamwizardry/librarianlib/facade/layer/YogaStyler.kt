@@ -7,316 +7,315 @@ import org.lwjgl.util.yoga.Yoga.*
  * primarily focused on read/write symmetry and data access, while YogaStyler is focused on write-only access and ease
  * of configurability.
  */
-@Suppress("PublicApiImplicitType")
-class YogaStyler(private val layer: GuiLayer) {
+public class YogaStyler(private val layer: GuiLayer) {
 
     /**
      * Sets the layout direction (used for RTL localization)
      */
     @get:JvmName("direction")
-    val direction: DirectionStyler = DirectionStyler()
-    inner class DirectionStyler internal constructor() {
+    public val direction: DirectionStyler = DirectionStyler()
+    public inner class DirectionStyler internal constructor() {
         /**
          * Left-to-right
          */
-        fun ltr() = build { direction = YGDirectionLTR }
+        public fun ltr(): YogaStyler = build { direction = YGDirectionLTR }
         /**
          * Right-to-left
          */
-        fun rtl() = build { direction = YGDirectionRTL }
+        public fun rtl(): YogaStyler = build { direction = YGDirectionRTL }
         /**
          * Right-to-left
          */
-        fun inherit() = build { direction = YGDirectionInherit }
+        public fun inherit(): YogaStyler = build { direction = YGDirectionInherit }
     }
 
     /** [`flex-direction`](https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction) */
     @get:JvmName("flexDirection")
-    val flexDirection: FlexDirectionStyler = FlexDirectionStyler()
-    inner class FlexDirectionStyler internal constructor() {
+    public val flexDirection: FlexDirectionStyler = FlexDirectionStyler()
+    public inner class FlexDirectionStyler internal constructor() {
         /** `flex-direction: row;` */
-        fun row() = build { flexDirection = YGFlexDirectionRow }
+        public fun row(): YogaStyler = build { flexDirection = YGFlexDirectionRow }
         /** `flex-direction: row-reverse;` */
-        fun rowReverse() = build { flexDirection = YGFlexDirectionRowReverse }
+        public fun rowReverse(): YogaStyler = build { flexDirection = YGFlexDirectionRowReverse }
         /** `flex-direction: column;` */
-        fun column() = build { flexDirection = YGFlexDirectionColumn }
+        public fun column(): YogaStyler = build { flexDirection = YGFlexDirectionColumn }
         /** `flex-direction: column-reverse;` */
-        fun columnReverse() = build { flexDirection = YGFlexDirectionColumnReverse }
+        public fun columnReverse(): YogaStyler = build { flexDirection = YGFlexDirectionColumnReverse }
     }
 
     /** [`justify-content`](https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content) */
     @get:JvmName("justifyContent")
-    val justifyContent: JustifyContentStyler = JustifyContentStyler()
-    inner class JustifyContentStyler internal constructor() {
+    public val justifyContent: JustifyContentStyler = JustifyContentStyler()
+    public inner class JustifyContentStyler internal constructor() {
         /** `justify-content: start;` */
-        fun start() = build { justifyContent = YGJustifyFlexStart }
+        public fun start(): YogaStyler = build { justifyContent = YGJustifyFlexStart }
         /** `justify-content: center;` */
-        fun center() = build { justifyContent = YGJustifyCenter }
+        public fun center(): YogaStyler = build { justifyContent = YGJustifyCenter }
         /** `justify-content: end;` */
-        fun end() = build { justifyContent = YGJustifyFlexEnd }
+        public fun end(): YogaStyler = build { justifyContent = YGJustifyFlexEnd }
         /** `justify-content: space-between;` */
-        fun spaceBetween() = build { justifyContent = YGJustifySpaceBetween }
+        public fun spaceBetween(): YogaStyler = build { justifyContent = YGJustifySpaceBetween }
         /** `justify-content: space-around;` */
-        fun spaceAround() = build { justifyContent = YGJustifySpaceAround }
+        public fun spaceAround(): YogaStyler = build { justifyContent = YGJustifySpaceAround }
         /** `justify-content: space-evenly;` */
-        fun spaceEvenly() = build { justifyContent = YGJustifySpaceEvenly }
+        public fun spaceEvenly(): YogaStyler = build { justifyContent = YGJustifySpaceEvenly }
     }
 
     /** [`align-content`](https://developer.mozilla.org/en-US/docs/Web/CSS/align-content) */
     @get:JvmName("alignContent")
-    val alignContent: AlignContentStyler = AlignContentStyler()
-    inner class AlignContentStyler internal constructor() {
+    public val alignContent: AlignContentStyler = AlignContentStyler()
+    public inner class AlignContentStyler internal constructor() {
         /** `align-content: auto;` */
-        fun auto() = build { alignContent = YGAlignAuto }
+        public fun auto(): YogaStyler = build { alignContent = YGAlignAuto }
         /** `align-content: start;` */
-        fun start() = build { alignContent = YGAlignFlexStart }
+        public fun start(): YogaStyler = build { alignContent = YGAlignFlexStart }
         /** `align-content: center;` */
-        fun center() = build { alignContent = YGAlignCenter }
+        public fun center(): YogaStyler = build { alignContent = YGAlignCenter }
         /** `align-content: end;` */
-        fun end() = build { alignContent = YGAlignFlexEnd }
+        public fun end(): YogaStyler = build { alignContent = YGAlignFlexEnd }
         /** `align-content: stretch;` */
-        fun stretch() = build { alignContent = YGAlignStretch }
+        public fun stretch(): YogaStyler = build { alignContent = YGAlignStretch }
         /** `align-content: baseline;` */
-        fun baseline() = build { alignContent = YGAlignBaseline }
+        public fun baseline(): YogaStyler = build { alignContent = YGAlignBaseline }
         /** `align-content: space-between;` */
-        fun spaceBetween() = build { alignContent = YGAlignSpaceBetween }
+        public fun spaceBetween(): YogaStyler = build { alignContent = YGAlignSpaceBetween }
         /** `align-content: space-around;` */
-        fun spaceAround() = build { alignContent = YGAlignSpaceAround }
+        public fun spaceAround(): YogaStyler = build { alignContent = YGAlignSpaceAround }
     }
 
     /** [`align-items`](https://developer.mozilla.org/en-US/docs/Web/CSS/align-items) */
     @get:JvmName("alignItems")
-    val alignItems: AlignItemsStyler = AlignItemsStyler()
-    inner class AlignItemsStyler internal constructor() {
+    public val alignItems: AlignItemsStyler = AlignItemsStyler()
+    public inner class AlignItemsStyler internal constructor() {
         /** `align-items: auto;` */
-        fun auto() = build { alignItems = YGAlignAuto }
+        public fun auto(): YogaStyler = build { alignItems = YGAlignAuto }
         /** `align-items: start;` */
-        fun start() = build { alignItems = YGAlignFlexStart }
+        public fun start(): YogaStyler = build { alignItems = YGAlignFlexStart }
         /** `align-items: center;` */
-        fun center() = build { alignItems = YGAlignCenter }
+        public fun center(): YogaStyler = build { alignItems = YGAlignCenter }
         /** `align-items: end;` */
-        fun end() = build { alignItems = YGAlignFlexEnd }
+        public fun end(): YogaStyler = build { alignItems = YGAlignFlexEnd }
         /** `align-items: stretch;` */
-        fun stretch() = build { alignItems = YGAlignStretch }
+        public fun stretch(): YogaStyler = build { alignItems = YGAlignStretch }
         /** `align-items: baseline;` */
-        fun baseline() = build { alignItems = YGAlignBaseline }
+        public fun baseline(): YogaStyler = build { alignItems = YGAlignBaseline }
         /** `align-items: space-between;` */
-        fun spaceBetween() = build { alignItems = YGAlignSpaceBetween }
+        public fun spaceBetween(): YogaStyler = build { alignItems = YGAlignSpaceBetween }
         /** `align-items: space-around;` */
-        fun spaceAround() = build { alignItems = YGAlignSpaceAround }
+        public fun spaceAround(): YogaStyler = build { alignItems = YGAlignSpaceAround }
     }
 
     /** [`align-self`](https://developer.mozilla.org/en-US/docs/Web/CSS/align-self) */
     @get:JvmName("alignSelf")
-    val alignSelf: AlignSelfStyler = AlignSelfStyler()
-    inner class AlignSelfStyler internal constructor() {
+    public val alignSelf: AlignSelfStyler = AlignSelfStyler()
+    public inner class AlignSelfStyler internal constructor() {
         /** `align-self: auto;` */
-        fun auto() = build { alignSelf = YGAlignAuto }
+        public fun auto(): YogaStyler = build { alignSelf = YGAlignAuto }
         /** `align-self: start;` */
-        fun start() = build { alignSelf = YGAlignFlexStart }
+        public fun start(): YogaStyler = build { alignSelf = YGAlignFlexStart }
         /** `align-self: center;` */
-        fun center() = build { alignSelf = YGAlignCenter }
+        public fun center(): YogaStyler = build { alignSelf = YGAlignCenter }
         /** `align-self: end;` */
-        fun end() = build { alignSelf = YGAlignFlexEnd }
+        public fun end(): YogaStyler = build { alignSelf = YGAlignFlexEnd }
         /** `align-self: stretch;` */
-        fun stretch() = build { alignSelf = YGAlignStretch }
+        public fun stretch(): YogaStyler = build { alignSelf = YGAlignStretch }
         /** `align-self: baseline;` */
-        fun baseline() = build { alignSelf = YGAlignBaseline }
+        public fun baseline(): YogaStyler = build { alignSelf = YGAlignBaseline }
         /** `align-self: space-between;` */
-        fun spaceBetween() = build { alignSelf = YGAlignSpaceBetween }
+        public fun spaceBetween(): YogaStyler = build { alignSelf = YGAlignSpaceBetween }
         /** `align-self: space-around;` */
-        fun spaceAround() = build { alignSelf = YGAlignSpaceAround }
+        public fun spaceAround(): YogaStyler = build { alignSelf = YGAlignSpaceAround }
     }
 
     /** [`position`](https://developer.mozilla.org/en-US/docs/Web/CSS/position) */
     @get:JvmName("positionType")
-    val positionType: PositionTypeStyler = PositionTypeStyler()
-    inner class PositionTypeStyler internal constructor() {
+    public val positionType: PositionTypeStyler = PositionTypeStyler()
+    public inner class PositionTypeStyler internal constructor() {
         /** `position: absolute;` */
-        fun absolute() = build { positionType = YGPositionTypeAbsolute }
+        public fun absolute(): YogaStyler = build { positionType = YGPositionTypeAbsolute }
         /** `position: relative;` */
-        fun relative() = build { positionType = YGPositionTypeRelative }
+        public fun relative(): YogaStyler = build { positionType = YGPositionTypeRelative }
     }
 
     /** [`flex-wrap`](https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap) */
     @get:JvmName("flexWrap")
-    val flexWrap: FlexWrapStyler = FlexWrapStyler()
-    inner class FlexWrapStyler internal constructor() {
+    public val flexWrap: FlexWrapStyler = FlexWrapStyler()
+    public inner class FlexWrapStyler internal constructor() {
         /** `flex-wrap: nowrap;` */
-        fun nowrap() = build { flexWrap = YGWrapNoWrap }
+        public fun nowrap(): YogaStyler = build { flexWrap = YGWrapNoWrap }
         /** `flex-wrap: wrap;` */
-        fun wrap() = build { flexWrap = YGWrapWrap }
+        public fun wrap(): YogaStyler = build { flexWrap = YGWrapWrap }
         /** `flex-wrap: wrap-reverse;` */
-        fun wrapReverse() = build { flexWrap = YGWrapReverse }
+        public fun wrapReverse(): YogaStyler = build { flexWrap = YGWrapReverse }
     }
 
     /** [`overflow`](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow) */
     @get:JvmName("overflow")
-    val overflow: OverflowStyler = OverflowStyler()
-    inner class OverflowStyler internal constructor() {
+    public val overflow: OverflowStyler = OverflowStyler()
+    public inner class OverflowStyler internal constructor() {
         /** `overflow: visible;` */
-        fun visible() = build { overflow = YGOverflowVisible }
+        public fun visible(): YogaStyler = build { overflow = YGOverflowVisible }
         /** `overflow: hidden;` */
-        fun hidden() = build { overflow = YGOverflowHidden }
+        public fun hidden(): YogaStyler = build { overflow = YGOverflowHidden }
         /** `overflow: scroll;` */
-        fun scroll() = build { overflow = YGOverflowScroll }
+        public fun scroll(): YogaStyler = build { overflow = YGOverflowScroll }
     }
 
     /** [`display`](https://developer.mozilla.org/en-US/docs/Web/CSS/display) */
     @get:JvmName("display")
-    val display: DisplayStyler = DisplayStyler()
-    inner class DisplayStyler internal constructor() {
+    public val display: DisplayStyler = DisplayStyler()
+    public inner class DisplayStyler internal constructor() {
         /** `display: flex;` */
-        fun flex() = build { display = YGDisplayFlex }
+        public fun flex(): YogaStyler = build { display = YGDisplayFlex }
         /** `display: none;` */
-        fun none() = build { display = YGDisplayNone }
+        public fun none(): YogaStyler = build { display = YGDisplayNone }
     }
 
     /** [`flex`](https://developer.mozilla.org/en-US/docs/Web/CSS/flex) */
-    fun flex(grow: Float) = build {
+    public fun flex(grow: Float): YogaStyler = build {
         flexGrow = grow
         flexShrink = 1f
         flexBasis.px = 0f
     }
     @Suppress("NOTHING_TO_INLINE")
     @JvmSynthetic
-    inline fun flex(grow: Number) = flex(grow.toFloat())
+    public inline fun flex(grow: Number): YogaStyler = flex(grow.toFloat())
 
     /** [`flex`](https://developer.mozilla.org/en-US/docs/Web/CSS/flex) */
-    fun flex(grow: Float, shrink: Float) = build {
+    public fun flex(grow: Float, shrink: Float): YogaStyler = build {
         flexGrow = grow
         flexShrink = shrink
         flexBasis.px = 0f
     }
     @Suppress("NOTHING_TO_INLINE")
     @JvmSynthetic
-    inline fun flex(grow: Number, shrink: Number) = flex(grow.toFloat(), shrink.toFloat())
+    public inline fun flex(grow: Number, shrink: Number): YogaStyler = flex(grow.toFloat(), shrink.toFloat())
 
     /** [`flex-grow`](https://developer.mozilla.org/en-US/docs/Web/CSS/flex-grow) */
-    fun flexGrow(grow: Float) = build {
+    public fun flexGrow(grow: Float): YogaStyler = build {
         flexGrow = grow
     }
     @Suppress("NOTHING_TO_INLINE")
     @JvmSynthetic
-    inline fun flexGrow(grow: Number) = flexGrow(grow.toFloat())
+    public inline fun flexGrow(grow: Number): YogaStyler = flexGrow(grow.toFloat())
 
     /** [`flex-shrink`](https://developer.mozilla.org/en-US/docs/Web/CSS/flex-shrink) */
-    fun flexShrink(shrink: Float) = build {
+    public fun flexShrink(shrink: Float): YogaStyler = build {
         flexShrink = shrink
     }
     @Suppress("NOTHING_TO_INLINE")
     @JvmSynthetic
-    inline fun flexShrink(shrink: Number) = flexShrink(shrink.toFloat())
+    public inline fun flexShrink(shrink: Number): YogaStyler = flexShrink(shrink.toFloat())
 
     /** [`flex-basis`](https://developer.mozilla.org/en-US/docs/Web/CSS/flex-basis) */
     @get:JvmName("flexBasis")
-    val flexBasis: AutoPropertyStyler = AutoPropertyStyler(layer.yogaStyle.flexBasis)
+    public val flexBasis: AutoPropertyStyler = AutoPropertyStyler(layer.yogaStyle.flexBasis)
 
     /** [`left`](https://developer.mozilla.org/en-US/docs/Web/CSS/left) */
     @get:JvmName("left")
-    val left: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.left)
+    public val left: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.left)
     /** [`top`](https://developer.mozilla.org/en-US/docs/Web/CSS/top) */
     @get:JvmName("top")
-    val top: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.top)
+    public val top: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.top)
     /** [`right`](https://developer.mozilla.org/en-US/docs/Web/CSS/right) */
     @get:JvmName("right")
-    val right: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.right)
+    public val right: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.right)
     /** [`bottom`](https://developer.mozilla.org/en-US/docs/Web/CSS/bottom) */
     @get:JvmName("bottom")
-    val bottom: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.bottom)
+    public val bottom: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.bottom)
 
     /** [`margin-left`](https://developer.mozilla.org/en-US/docs/Web/CSS/margin-left) */
     @get:JvmName("marginLeft")
-    val marginLeft: AutoPropertyStyler = AutoPropertyStyler(layer.yogaStyle.marginLeft)
+    public val marginLeft: AutoPropertyStyler = AutoPropertyStyler(layer.yogaStyle.marginLeft)
     /** [`margin-top`](https://developer.mozilla.org/en-US/docs/Web/CSS/margin-top) */
     @get:JvmName("marginTop")
-    val marginTop: AutoPropertyStyler = AutoPropertyStyler(layer.yogaStyle.marginTop)
+    public val marginTop: AutoPropertyStyler = AutoPropertyStyler(layer.yogaStyle.marginTop)
     /** [`margin-right`](https://developer.mozilla.org/en-US/docs/Web/CSS/margin-right) */
     @get:JvmName("marginRight")
-    val marginRight: AutoPropertyStyler = AutoPropertyStyler(layer.yogaStyle.marginRight)
+    public val marginRight: AutoPropertyStyler = AutoPropertyStyler(layer.yogaStyle.marginRight)
     /** [`margin-bottom`](https://developer.mozilla.org/en-US/docs/Web/CSS/margin-bottom) */
     @get:JvmName("marginBottom")
-    val marginBottom: AutoPropertyStyler = AutoPropertyStyler(layer.yogaStyle.marginBottom)
+    public val marginBottom: AutoPropertyStyler = AutoPropertyStyler(layer.yogaStyle.marginBottom)
 
     /** [`margin-left`/`margin-right`](https://developer.mozilla.org/en-US/docs/Web/CSS/margin) */
     @get:JvmName("marginHorizontal")
-    val marginHorizontal: AutoPropertyStyler = AutoPropertyStyler(layer.yogaStyle.marginLeft, layer.yogaStyle.marginRight)
+    public val marginHorizontal: AutoPropertyStyler = AutoPropertyStyler(layer.yogaStyle.marginLeft, layer.yogaStyle.marginRight)
     /** [`margin-top`/`margin-bottom`](https://developer.mozilla.org/en-US/docs/Web/CSS/margin) */
     @get:JvmName("marginVertical")
-    val marginVertical: AutoPropertyStyler = AutoPropertyStyler(layer.yogaStyle.marginTop, layer.yogaStyle.marginBottom)
+    public val marginVertical: AutoPropertyStyler = AutoPropertyStyler(layer.yogaStyle.marginTop, layer.yogaStyle.marginBottom)
     /** [`margin`](https://developer.mozilla.org/en-US/docs/Web/CSS/margin) */
     @get:JvmName("margin")
-    val margin: AutoPropertyStyler = AutoPropertyStyler(layer.yogaStyle.marginLeft, layer.yogaStyle.marginTop,
+    public val margin: AutoPropertyStyler = AutoPropertyStyler(layer.yogaStyle.marginLeft, layer.yogaStyle.marginTop,
         layer.yogaStyle.marginRight, layer.yogaStyle.marginBottom)
 
     /** [`padding-left`](https://developer.mozilla.org/en-US/docs/Web/CSS/padding-left) */
     @get:JvmName("paddingLeft")
-    val paddingLeft: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.paddingLeft)
+    public val paddingLeft: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.paddingLeft)
     /** [`padding-top`](https://developer.mozilla.org/en-US/docs/Web/CSS/padding-top) */
     @get:JvmName("paddingTop")
-    val paddingTop: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.paddingTop)
+    public val paddingTop: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.paddingTop)
     /** [`padding-right`](https://developer.mozilla.org/en-US/docs/Web/CSS/padding-right) */
     @get:JvmName("paddingRight")
-    val paddingRight: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.paddingRight)
+    public val paddingRight: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.paddingRight)
     /** [`padding-bottom`](https://developer.mozilla.org/en-US/docs/Web/CSS/padding-bottom) */
     @get:JvmName("paddingBottom")
-    val paddingBottom: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.paddingBottom)
+    public val paddingBottom: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.paddingBottom)
 
     /** [`padding-left`/`padding-right`](https://developer.mozilla.org/en-US/docs/Web/CSS/padding) */
     @get:JvmName("paddingHorizontal")
-    val paddingHorizontal: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.paddingLeft, layer.yogaStyle.paddingRight)
+    public val paddingHorizontal: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.paddingLeft, layer.yogaStyle.paddingRight)
     /** [`padding-top`/`padding-bottom`](https://developer.mozilla.org/en-US/docs/Web/CSS/padding) */
     @get:JvmName("paddingVertical")
-    val paddingVertical: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.paddingTop, layer.yogaStyle.paddingBottom)
+    public val paddingVertical: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.paddingTop, layer.yogaStyle.paddingBottom)
     /** [`padding`](https://developer.mozilla.org/en-US/docs/Web/CSS/padding) */
     @get:JvmName("padding")
-    val padding: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.paddingLeft, layer.yogaStyle.paddingTop,
+    public val padding: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.paddingLeft, layer.yogaStyle.paddingTop,
         layer.yogaStyle.paddingRight, layer.yogaStyle.paddingBottom)
 
     /** [`border-left`](https://yogalayout.com/docs/margins-paddings-borders) */
-    fun borderLeft(border: Float) = build { borderLeft = border }
+    public fun borderLeft(border: Float): YogaStyler = build { borderLeft = border }
     @Suppress("NOTHING_TO_INLINE")
     @JvmSynthetic
-    inline fun borderLeft(border: Number) = borderLeft(border.toFloat())
+    public inline fun borderLeft(border: Number): YogaStyler = borderLeft(border.toFloat())
 
     /** [`border-top`](https://yogalayout.com/docs/margins-paddings-borders) */
-    fun borderTop(border: Float) = build { borderTop = border }
+    public fun borderTop(border: Float): YogaStyler = build { borderTop = border }
     @Suppress("NOTHING_TO_INLINE")
     @JvmSynthetic
-    inline fun borderTop(border: Number) = borderTop(border.toFloat())
+    public inline fun borderTop(border: Number): YogaStyler = borderTop(border.toFloat())
 
     /** [`border-right`](https://yogalayout.com/docs/margins-paddings-borders) */
-    fun borderRight(border: Float) = build { borderRight = border }
+    public fun borderRight(border: Float): YogaStyler = build { borderRight = border }
     @Suppress("NOTHING_TO_INLINE")
     @JvmSynthetic
-    inline fun borderRight(border: Number) = borderRight(border.toFloat())
+    public inline fun borderRight(border: Number): YogaStyler = borderRight(border.toFloat())
 
     /** [`border-bottom`](https://yogalayout.com/docs/margins-paddings-borders) */
-    fun borderBottom(border: Float) = build { borderBottom = border }
+    public fun borderBottom(border: Float): YogaStyler = build { borderBottom = border }
     @Suppress("NOTHING_TO_INLINE")
     @JvmSynthetic
-    inline fun borderBottom(border: Number) = borderBottom(border.toFloat())
+    public inline fun borderBottom(border: Number): YogaStyler = borderBottom(border.toFloat())
 
     /** [`border-left`/`border-right`](https://yogalayout.com/docs/margins-paddings-borders) */
-    fun borderHorizontal(border: Float) = build {
+    public fun borderHorizontal(border: Float): YogaStyler = build {
         borderLeft = border
         borderRight = border
     }
     @Suppress("NOTHING_TO_INLINE")
     @JvmSynthetic
-    inline fun borderHorizontal(border: Number) = borderHorizontal(border.toFloat())
+    public inline fun borderHorizontal(border: Number): YogaStyler = borderHorizontal(border.toFloat())
 
     /** [`border-top`/`border-bottom`](https://yogalayout.com/docs/margins-paddings-borders) */
-    fun borderVertical(border: Float) = build {
+    public fun borderVertical(border: Float): YogaStyler = build {
         borderTop = border
         borderBottom = border
     }
     @Suppress("NOTHING_TO_INLINE")
     @JvmSynthetic
-    inline fun borderVertical(border: Number) = borderVertical(border.toFloat())
+    public inline fun borderVertical(border: Number): YogaStyler = borderVertical(border.toFloat())
 
     /** [`border`](https://yogalayout.com/docs/margins-paddings-borders) */
-    fun border(border: Float) = build {
+    public fun border(border: Float): YogaStyler = build {
         borderLeft = border
         borderTop = border
         borderRight = border
@@ -324,78 +323,78 @@ class YogaStyler(private val layer: GuiLayer) {
     }
     @Suppress("NOTHING_TO_INLINE")
     @JvmSynthetic
-    inline fun border(border: Number) = border(border.toFloat())
+    public inline fun border(border: Number): YogaStyler = border(border.toFloat())
 
     /** [`width`](https://developer.mozilla.org/en-US/docs/Web/CSS/width) */
     @get:JvmName("width")
-    val width: AutoPropertyStyler = AutoPropertyStyler(layer.yogaStyle.width)
+    public val width: AutoPropertyStyler = AutoPropertyStyler(layer.yogaStyle.width)
     /** [`height`](https://developer.mozilla.org/en-US/docs/Web/CSS/height) */
     @get:JvmName("height")
-    val height: AutoPropertyStyler = AutoPropertyStyler(layer.yogaStyle.height)
+    public val height: AutoPropertyStyler = AutoPropertyStyler(layer.yogaStyle.height)
     /** [`min-width`](https://developer.mozilla.org/en-US/docs/Web/CSS/min-width) */
     @get:JvmName("minWidth")
-    val minWidth: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.minWidth)
+    public val minWidth: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.minWidth)
     /** [`min-height`](https://developer.mozilla.org/en-US/docs/Web/CSS/min-height) */
     @get:JvmName("minHeight")
-    val minHeight: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.minHeight)
+    public val minHeight: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.minHeight)
     /** [`max-width`](https://developer.mozilla.org/en-US/docs/Web/CSS/max-width) */
     @get:JvmName("maxWidth")
-    val maxWidth: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.maxWidth)
+    public val maxWidth: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.maxWidth)
     /** [`max-height`](https://developer.mozilla.org/en-US/docs/Web/CSS/max-height) */
     @get:JvmName("maxHeight")
-    val maxHeight: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.maxHeight)
+    public val maxHeight: PercentagePropertyStyler = PercentagePropertyStyler(layer.yogaStyle.maxHeight)
 
-    fun widthFromCurrent() = build { width.px = layer.widthf }
-    fun heightFromCurrent() = build { height.px = layer.heightf }
-    fun minWidthFromCurrent() = build { minWidth.px = layer.widthf }
-    fun minHeightFromCurrent() = build { minHeight.px = layer.heightf }
-    fun maxWidthFromCurrent() = build { maxWidth.px = layer.widthf }
-    fun maxHeightFromCurrent() = build { maxHeight.px = layer.heightf }
+    public fun widthFromCurrent(): YogaStyler = build { width.px = layer.widthf }
+    public fun heightFromCurrent(): YogaStyler = build { height.px = layer.heightf }
+    public fun minWidthFromCurrent(): YogaStyler = build { minWidth.px = layer.widthf }
+    public fun minHeightFromCurrent(): YogaStyler = build { minHeight.px = layer.heightf }
+    public fun maxWidthFromCurrent(): YogaStyler = build { maxWidth.px = layer.widthf }
+    public fun maxHeightFromCurrent(): YogaStyler = build { maxHeight.px = layer.heightf }
 
-    fun sizeFromCurrent() = build {
+    public fun sizeFromCurrent(): YogaStyler = build {
         width.px = layer.widthf
         height.px = layer.heightf
     }
-    fun minSizeFromCurrent() = build {
+    public fun minSizeFromCurrent(): YogaStyler = build {
         minWidth.px = layer.widthf
         minHeight.px = layer.heightf
     }
-    fun maxSizeFromCurrent() = build {
+    public fun maxSizeFromCurrent(): YogaStyler = build {
         maxWidth.px = layer.widthf
         maxHeight.px = layer.heightf
     }
 
-    fun lockWidth() = build {
+    public fun lockWidth(): YogaStyler = build {
         lockWidth = true
     }
-    fun lockHeight() = build {
+    public fun lockHeight(): YogaStyler = build {
         lockHeight = true
     }
-    fun lockSize() = build {
+    public fun lockSize(): YogaStyler = build {
         lockWidth = true
         lockHeight = true
     }
 
     /** [Aspect Ratio](https://yogalayout.com/docs/aspect-ratio) */
-    fun aspectRatio(ratio: Float) = build {
+    public fun aspectRatio(ratio: Float): YogaStyler = build {
         aspectRatio = ratio
     }
     @Suppress("NOTHING_TO_INLINE")
     @JvmSynthetic
-    inline fun aspectRatio(ratio: Number) = aspectRatio(ratio.toFloat())
+    public inline fun aspectRatio(ratio: Number): YogaStyler = aspectRatio(ratio.toFloat())
 
-    inner class AutoPropertyStyler internal constructor(private vararg val properties: YogaAutoProperty) {
-        fun px(pixels: Float) = build {
+    public inner class AutoPropertyStyler internal constructor(private vararg val properties: YogaAutoProperty) {
+        public fun px(pixels: Float): YogaStyler = build {
             properties.forEach {
                 it.px = pixels
             }
         }
-        fun percent(percent: Float) = build {
+        public fun percent(percent: Float): YogaStyler = build {
             properties.forEach {
                 it.percent = percent
             }
         }
-        fun auto() = build {
+        public fun auto(): YogaStyler = build {
             properties.forEach {
                 it.auto()
             }
@@ -403,19 +402,19 @@ class YogaStyler(private val layer: GuiLayer) {
 
         @Suppress("NOTHING_TO_INLINE")
         @JvmSynthetic
-        inline fun px(pixels: Number) = px(pixels.toFloat())
+        public inline fun px(pixels: Number): YogaStyler = px(pixels.toFloat())
         @Suppress("NOTHING_TO_INLINE")
         @JvmSynthetic
-        inline fun percent(percent: Number) = percent(percent.toFloat())
+        public inline fun percent(percent: Number): YogaStyler = percent(percent.toFloat())
     }
 
-    inner class PercentagePropertyStyler internal constructor(private vararg val properties: YogaPercentageProperty) {
-        fun px(pixels: Float) = build {
+    public inner class PercentagePropertyStyler internal constructor(private vararg val properties: YogaPercentageProperty) {
+        public fun px(pixels: Float): YogaStyler = build {
             properties.forEach {
                 it.px = pixels
             }
         }
-        fun percent(percent: Float) = build {
+        public fun percent(percent: Float): YogaStyler = build {
             properties.forEach {
                 it.percent = percent
             }
@@ -423,10 +422,10 @@ class YogaStyler(private val layer: GuiLayer) {
 
         @Suppress("NOTHING_TO_INLINE")
         @JvmSynthetic
-        inline fun px(pixels: Number) = px(pixels.toFloat())
+        public inline fun px(pixels: Number): YogaStyler = px(pixels.toFloat())
         @Suppress("NOTHING_TO_INLINE")
         @JvmSynthetic
-        inline fun percent(percent: Number) = percent(percent.toFloat())
+        public inline fun percent(percent: Number): YogaStyler = percent(percent.toFloat())
     }
 
     private inline fun build(block: YogaStyle.() -> Unit): YogaStyler {

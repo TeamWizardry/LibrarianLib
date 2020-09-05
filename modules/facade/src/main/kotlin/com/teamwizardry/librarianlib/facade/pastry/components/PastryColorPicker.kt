@@ -2,13 +2,11 @@ package com.teamwizardry.librarianlib.facade.pastry.components
 
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
 import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
 import com.teamwizardry.librarianlib.core.util.kotlin.color
 import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
 import com.teamwizardry.librarianlib.etcetera.eventbus.Event
-import com.teamwizardry.librarianlib.facade.EnumMouseButton
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
@@ -19,21 +17,17 @@ import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.mosaic.Mosaic
 import net.minecraft.client.renderer.IRenderTypeBuffer
-import net.minecraft.client.renderer.RenderState
-import net.minecraft.client.renderer.RenderType
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class PastryColorPicker: GuiLayer() {
+public class PastryColorPicker: GuiLayer() {
     private val gradient = GradientComponent()
     private val hueComponent = HueComponent()
     private val colorWell = ColorWellComponent()
 
     private var _hue: Float = 0f
-    var hue: Float
+    public var hue: Float
         get() = _hue
         set(value) {
             _hue = value
@@ -42,7 +36,7 @@ class PastryColorPicker: GuiLayer() {
         }
 
     private var _saturation: Float = 0f
-    var saturation: Float
+    public var saturation: Float
         get() = _saturation
         set(value) {
             _saturation = value
@@ -51,7 +45,7 @@ class PastryColorPicker: GuiLayer() {
         }
 
     private var _brightness: Float = 0f
-    var brightness: Float
+    public var brightness: Float
         get() = _brightness
         set(value) {
             _brightness = value
@@ -60,7 +54,7 @@ class PastryColorPicker: GuiLayer() {
         }
 
     private var _color: Color = Color.white
-    var color: Color
+    public var color: Color
         get() = _color
         set(value) {
             _color = value
@@ -70,7 +64,7 @@ class PastryColorPicker: GuiLayer() {
             _brightness = hsb[2]
         }
 
-    class ColorChangeEvent(): Event()
+    public class ColorChangeEvent(): Event()
 
     init {
         this.yoga()
@@ -207,9 +201,9 @@ class PastryColorPicker: GuiLayer() {
         }
     }
 
-    companion object {
+    private companion object {
         val hueLoc = loc("librarianlib:facade/textures/pastry/colorpicker_hue.png")
         val hueSprite = Mosaic(hueLoc, 8, 256).getSprite("")
-        private val flatRenderType = SimpleRenderTypes.flat(GL11.GL_QUADS)
+        val flatRenderType = SimpleRenderTypes.flat(GL11.GL_QUADS)
     }
 }

@@ -61,7 +61,7 @@ private class Formatting<T: Any>(val attributedString: MutableAttributedString, 
     }
 }
 
-fun attributedStringFromMC(mcString: String): AttributedString {
+public fun attributedStringFromMC(mcString: String): AttributedString {
     if("§" !in mcString)
         return AttributedString(mcString)
     val split = mcString.splitWithDelimiters("§.")
@@ -121,6 +121,7 @@ fun attributedStringFromMC(mcString: String): AttributedString {
     return attributed
 }
 
-fun AttributedString.Companion.fromMC(mcString: String): AttributedString {
+@JvmSynthetic
+public fun AttributedString.Companion.fromMC(mcString: String): AttributedString {
     return attributedStringFromMC(mcString)
 }

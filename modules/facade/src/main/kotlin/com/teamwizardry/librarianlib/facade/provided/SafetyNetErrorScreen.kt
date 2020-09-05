@@ -10,7 +10,7 @@ import net.minecraft.util.text.StringTextComponent
 import java.awt.Color
 import kotlin.math.min
 
-class SafetyNetErrorScreen(val message: String, val e: Exception): Screen(StringTextComponent("§4§nSafety net caught an exception:")) {
+public class SafetyNetErrorScreen(private val message: String, private val e: Exception): Screen(StringTextComponent("§4§nSafety net caught an exception:")) {
     private val guiWidth: Int
     private val guiHeight: Int
 

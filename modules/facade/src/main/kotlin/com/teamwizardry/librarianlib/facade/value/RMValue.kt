@@ -9,13 +9,13 @@ import kotlin.reflect.KProperty
  * represents a Retained Mode Value, in contrast to [IMValue], which represents an Immediate Mode Value
  */
 @Suppress("Duplicates")
-class RMValue<T> @JvmOverloads constructor(
+public class RMValue<T> @JvmOverloads constructor(
     private var value: T, private val lerper: Lerper<T>?, private val change: ChangeListener<T>? = null
 ): GuiValue<T>() {
     /**
      * Gets the current value
      */
-    fun get(): T {
+    public fun get(): T {
         @Suppress("UNCHECKED_CAST")
         return if(useAnimationValue) animationValue else value
     }
@@ -23,7 +23,7 @@ class RMValue<T> @JvmOverloads constructor(
     /**
      * Sets a new value
      */
-    fun set(value: T) {
+    public fun set(value: T) {
         val oldValue = this.value
         this.value = value
         if(oldValue != value && !useAnimationValue) {
@@ -35,7 +35,7 @@ class RMValue<T> @JvmOverloads constructor(
      * A kotlin delegate method, used to allow properties to delegate to this RMValue
      * (`var property by RMValue()`)
      */
-    operator fun getValue(thisRef: Any, property: KProperty<*>): T {
+    public operator fun getValue(thisRef: Any, property: KProperty<*>): T {
         return this.get()
     }
 
@@ -43,7 +43,7 @@ class RMValue<T> @JvmOverloads constructor(
      * A kotlin delegate method, used to allow properties to delegate to this RMValue
      * (`var property by RMValue()`)
      */
-    operator fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
+    public operator fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
         this.set(value)
     }
 

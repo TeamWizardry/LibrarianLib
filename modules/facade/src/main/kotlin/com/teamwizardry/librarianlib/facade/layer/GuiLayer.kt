@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.core.bridge.IRenderTypeState
 import com.teamwizardry.librarianlib.core.rendering.BlendMode
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
+import com.teamwizardry.librarianlib.core.util.GlResourceGc
 import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
 import com.teamwizardry.librarianlib.core.util.kotlin.color
 import com.teamwizardry.librarianlib.core.util.kotlin.mixinCast
@@ -96,14 +97,14 @@ import kotlin.math.max
  * Layers that have custom rendering (as opposed to consisting solely of other layers) can override the [draw] method
  * to draw their content.
  */
-open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSpace2D {
-    constructor(posX: Int, posY: Int): this(posX, posY, 0, 0)
-    constructor(): this(0, 0, 0, 0)
+public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSpace2D {
+    public constructor(posX: Int, posY: Int): this(posX, posY, 0, 0)
+    public constructor(): this(0, 0, 0, 0)
 
     /**
      * Called every frame after input events and before the layout pass
      */
-    open fun update() {
+    public open fun update() {
 
     }
 
@@ -111,25 +112,27 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * Called after updates and before layouts are updated. This is where layouts should be modified based on changes to
      * data that may have occurred during the update phase
      */
-    open fun prepareLayout() {}
+    public open fun prepareLayout() {}
 
     /**
      * Called to lay out the children of this layer.
      *
      * This method is called before each frame if this layer's bounds have changed, children have been added/removed,
-     * a child's frame has changed, or [setNeedsLayout] has been called on this layer.
+     * a child's frame has changed, or [markLayoutDirty] has been called on this layer.
      *
      * After this method completes, the children of this component will be checked for layout. This means that changes
      * made in one layer can ripple downward, but also that children can override the layout of their parent.
-     * [needsLayout] is reset to false after this layer and its children are laid out, so any changes while laying out
+     * [isLayoutDirty] is reset to false after this layer and its children are laid out, so any changes while laying out
      * will not cause the layout to be recalculated on the next frame.
      *
      * The idea behind this method is that self-contained components/layers can lay out their children dynamically
      * themselves. Examples of such a component would be a self-contained list item, a component that spaces out its
      * children equally along its length, or simply a component that needs to resize its background layer
      * to fit its dimensions.
+     *
+     * This is called *after* Yoga layout has been applied.
      */
-    open fun layoutChildren() {}
+    public open fun layoutChildren() {}
 
     /**
      * Draws the layer's contents. This is the method to override when creating custom layer rendering.
@@ -140,25 +143,24 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      *
      * @sample glStateGuarantees
      */
-    open fun draw(context: GuiDrawContext) {
-
-    }
+    public open fun draw(context: GuiDrawContext) {}
 
     //region Animation
     private val animationTimeListeners = weakSetOf<AnimationTimeListener>()
 
-    fun addAnimationTimeListener(listener: AnimationTimeListener) {
+    public fun <T: AnimationTimeListener> addAnimationTimeListener(listener: T): T {
         animationTimeListeners.add(listener)
         listener.updateTime(animationTime)
+        return listener
     }
-    fun removeAnimationTimeListener(listener: AnimationTimeListener) {
+    public fun removeAnimationTimeListener(listener: AnimationTimeListener) {
         animationTimeListeners.remove(listener)
     }
 
     /**
      * The current time for animations, expressed in ticks since this layer was first added to the layer hierarchy.
      */
-    var animationTime: Float = 0f
+    public var animationTime: Float = 0f
         private set
     private var baseTime: Float = Float.NaN
 
@@ -188,28 +190,28 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * Run the specified callback once [animationTime] is >= [time], repeating with the passed [interval].
      */
-    fun schedule(time: Float, interval: Float, callback: Runnable) {
+    public fun schedule(time: Float, interval: Float, callback: Runnable) {
         scheduledEvents.add(ScheduledEvent(time, interval, callback))
     }
 
     /**
      * Run the specified callback once [animationTime] is >= [time]
      */
-    fun schedule(time: Float, callback: Runnable) {
+    public fun schedule(time: Float, callback: Runnable) {
         scheduledEvents.add(ScheduledEvent(time, 0f, callback))
     }
 
     /**
      * Run the specified callback after [time] ticks, repeating with the passed [interval].
      */
-    fun delay(time: Float, interval: Float, callback: Runnable) {
+    public fun delay(time: Float, interval: Float, callback: Runnable) {
         schedule(animationTime + time, interval, callback)
     }
 
     /**
      * Run the specified callback after [time] ticks.
      */
-    fun delay(time: Float, callback: Runnable) {
+    public fun delay(time: Float, callback: Runnable) {
         schedule(animationTime + time, callback)
     }
 
@@ -223,61 +225,57 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     //region GuiValue
     //region RMValue
     /**
-     * Creates an RMValue, automatically detecting lerpers if they exist and registering it for animation updates.
+     * Creates an RMValue and registers it for animation updates.
      */
-    inline fun <reified T> rmValue(initialValue: T, noinline change: ((T, T) -> Unit)? = null): RMValue<T> {
-        @Suppress("UNCHECKED_CAST")
-        return rmValue(initialValue, Lerpers.getOrNull(Mirror.reflect<T>())?.value as Lerper<T>?, change)
-    }
+    public fun <T> rmValue(initialValue: T): RMValue<T> = rmValue(initialValue, null, null)
 
     /**
      * Creates an RMValue and registers it for animation updates.
      */
-    @JvmOverloads
-    fun <T> rmValue(initialValue: T, lerper: Lerper<T>? = null, change: ChangeListener<T>? = null): RMValue<T> {
-        val value = RMValue(initialValue, lerper, change)
-        addAnimationTimeListener(value)
-        return value
+    public fun <T> rmValue(initialValue: T, lerper: Lerper<T>): RMValue<T> = rmValue(initialValue, lerper, null)
+
+    /**
+     * Creates an RMValue and registers it for animation updates.
+     */
+    public fun <T> rmValue(initialValue: T, change: ChangeListener<T>): RMValue<T> = rmValue(initialValue, null, change)
+
+    /**
+     * Creates an RMValue and registers it for animation updates.
+     */
+    public fun <T> rmValue(initialValue: T, lerper: Lerper<T>?, change: ChangeListener<T>?): RMValue<T> {
+        return addAnimationTimeListener(RMValue(initialValue, lerper, change))
     }
 
     /**
      * Creates an RMValueBoolean and registers it for animation updates.
      */
     @JvmOverloads
-    fun rmBoolean(initialValue: Boolean, change: ChangeListener.Boolean? = null): RMValueBoolean {
-        val value = RMValueBoolean(initialValue, change)
-        addAnimationTimeListener(value)
-        return value
+    public fun rmBoolean(initialValue: Boolean, change: ChangeListener.Boolean? = null): RMValueBoolean {
+        return addAnimationTimeListener(RMValueBoolean(initialValue, change))
     }
 
     /**
      * Creates an RMValueDouble and registers it for animation updates.
      */
     @JvmOverloads
-    fun rmDouble(initialValue: Double, change: ChangeListener.Double? = null): RMValueDouble {
-        val value = RMValueDouble(initialValue, change)
-        addAnimationTimeListener(value)
-        return value
+    public fun rmDouble(initialValue: Double, change: ChangeListener.Double? = null): RMValueDouble {
+        return addAnimationTimeListener(RMValueDouble(initialValue, change))
     }
 
     /**
      * Creates an RMValueInt and registers it for animation updates.
      */
     @JvmOverloads
-    fun rmInt(initialValue: Int, change: ChangeListener.Int? = null): RMValueInt {
-        val value = RMValueInt(initialValue, change)
-        addAnimationTimeListener(value)
-        return value
+    public fun rmInt(initialValue: Int, change: ChangeListener.Int? = null): RMValueInt {
+        return addAnimationTimeListener(RMValueInt(initialValue, change))
     }
 
     /**
      * Creates an RMValueLong and registers it for animation updates.
      */
     @JvmOverloads
-    fun rmLong(initialValue: Long, change: ChangeListener.Long? = null): RMValueLong {
-        val value = RMValueLong(initialValue, change)
-        addAnimationTimeListener(value)
-        return value
+    public fun rmLong(initialValue: Long, change: ChangeListener.Long? = null): RMValueLong {
+        return addAnimationTimeListener(RMValueLong(initialValue, change))
     }
     //endregion
 
@@ -285,21 +283,18 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * Create an IMValue, automatically detecting lerpers if they exist and registering it for animation updates.
      */
-    inline fun <reified T> imValue(noinline callback: () -> T): IMValue<T> {
+    public inline fun <reified T> imValue(noinline callback: () -> T): IMValue<T> {
         @Suppress("UNCHECKED_CAST") val lerper = Lerpers.getOrNull(Mirror.reflect<T>())?.value as Lerper<T>?
-        val value = IMValue(callback, lerper)
-        addAnimationTimeListener(value)
-        return value
+        return addAnimationTimeListener(IMValue(callback, lerper))
     }
 
     /**
      * Create an IMValue, automatically detecting lerpers if they exist and registering it for animation updates.
      */
-    inline fun <reified T> imValue(initialValue: T): IMValue<T> {
+    @JvmSynthetic
+    public inline fun <reified T> imValue(initialValue: T): IMValue<T> {
         @Suppress("UNCHECKED_CAST") val lerper = Lerpers.getOrNull(Mirror.reflect<T>())?.value as Lerper<T>?
-        val value = IMValue(initialValue, lerper)
-        addAnimationTimeListener(value)
-        return value
+        return addAnimationTimeListener(IMValue(initialValue, lerper))
     }
 
     /**
@@ -307,83 +302,66 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * animation updates. This is needed because otherwise there are [resolution errors](https://youtrack.jetbrains.com/issue/KT-13683)
      * when not using the experimental type inference.
      */
-    inline fun <reified T> imValue(): IMValue<T?> {
+    @JvmSynthetic
+    public inline fun <reified T> imValue(): IMValue<T?> {
         @Suppress("UNCHECKED_CAST") val lerper = Lerpers.getOrNull(Mirror.reflect<T>())?.value as Lerper<T?>?
-        val value = IMValue<T?>(null, lerper)
-        addAnimationTimeListener(value)
-        return value
+        return addAnimationTimeListener(IMValue(null, lerper))
     }
 
     /**
      * Creates an IMValueBoolean and registers it for animation updates.
      */
-    fun imBoolean(initialValue: Boolean): IMValueBoolean {
-        val value = IMValueBoolean(initialValue)
-        addAnimationTimeListener(value)
-        return value
+    public fun imBoolean(initialValue: Boolean): IMValueBoolean {
+        return addAnimationTimeListener(IMValueBoolean(initialValue))
     }
 
     /**
      * Creates an RMValueBoolean and registers it for animation updates.
      */
-    fun imBoolean(callback: BooleanSupplier): IMValueBoolean {
-        val value = IMValueBoolean(callback)
-        addAnimationTimeListener(value)
-        return value
+    public fun imBoolean(callback: BooleanSupplier): IMValueBoolean {
+        return addAnimationTimeListener(IMValueBoolean(callback))
     }
 
     /**
      * Creates an IMValueDouble and registers it for animation updates.
      */
-    fun imDouble(initialValue: Double): IMValueDouble {
-        val value = IMValueDouble(initialValue)
-        addAnimationTimeListener(value)
-        return value
+    public fun imDouble(initialValue: Double): IMValueDouble {
+        return addAnimationTimeListener(IMValueDouble(initialValue))
     }
 
     /**
      * Creates an RMValueDouble and registers it for animation updates.
      */
-    fun imDouble(callback: DoubleSupplier): IMValueDouble {
-        val value = IMValueDouble(callback)
-        addAnimationTimeListener(value)
-        return value
+    public fun imDouble(callback: DoubleSupplier): IMValueDouble {
+        return addAnimationTimeListener(IMValueDouble(callback))
     }
 
     /**
      * Creates an IMValueInt and registers it for animation updates.
      */
-    fun imInt(initialValue: Int): IMValueInt {
-        val value = IMValueInt(initialValue)
-        addAnimationTimeListener(value)
-        return value
+    public fun imInt(initialValue: Int): IMValueInt {
+        return addAnimationTimeListener(IMValueInt(initialValue))
     }
 
     /**
      * Creates an RMValueInt and registers it for animation updates.
      */
-    fun imInt(callback: IntSupplier): IMValueInt {
-        val value = IMValueInt(callback)
-        addAnimationTimeListener(value)
-        return value
+    public fun imInt(callback: IntSupplier): IMValueInt {
+        return addAnimationTimeListener(IMValueInt(callback))
     }
 
     /**
      * Creates an IMValueLong and registers it for animation updates.
      */
-    fun imLong(initialValue: Long): IMValueLong {
-        val value = IMValueLong(initialValue)
-        addAnimationTimeListener(value)
-        return value
+    public fun imLong(initialValue: Long): IMValueLong {
+        return addAnimationTimeListener(IMValueLong(initialValue))
     }
 
     /**
      * Creates an RMValueLong and registers it for animation updates.
      */
-    fun imLong(callback: LongSupplier): IMValueLong {
-        val value = IMValueLong(callback)
-        addAnimationTimeListener(value)
-        return value
+    public fun imLong(callback: LongSupplier): IMValueLong {
+        return addAnimationTimeListener(IMValueLong(callback))
     }
     //endregion
     //endregion
@@ -394,13 +372,13 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      *
      * Drives [isVisible]
      */
-    val isVisible_im: IMValueBoolean = imBoolean(true)
+    public val isVisible_im: IMValueBoolean = imBoolean(true)
     /**
      * Whether this component should be drawn. If this value is false, this component won't respond to input events.
      *
      * Driven by [isVisible_im]
      */
-    var isVisible by isVisible_im
+    public var isVisible: Boolean by isVisible_im
     //endregion
 
     //region LayerRelationshipHandler
@@ -410,25 +388,25 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * [forEachChild] as it will prevent [ConcurrentModificationException]s and prevent crashes caused by removing
      * children while iterating.
      */
-    val children: List<GuiLayer> = _children.unmodifiableView()
+    public val children: List<GuiLayer> = _children.unmodifiableView()
 
     /**
      * The immediate parent of this layer, or null if this layer has no parent.
      */
-    var parent: GuiLayer? = null
+    public var parent: GuiLayer? = null
         private set
 
     private val _parents = mutableSetOf<GuiLayer>()
     /**
      * A read-only set containing all the parents of this layer, recursively.
      */
-    val parents: Set<GuiLayer> = _parents.unmodifiableView()
+    public val parents: Set<GuiLayer> = _parents.unmodifiableView()
 
     /**
      * The root of this component's hierarchy. i.e. the last layer found when iterating back through the parents. If this
      * component has no parent, returns this component.
      */
-    val root: GuiLayer
+    public val root: GuiLayer
         get() = this.parent?.root ?: this
 
     /**
@@ -438,7 +416,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * @throws LayerHierarchyException if adding one of the passed layers creates loops in the layer hierarchy
      * @throws LayerHierarchyException if one of the passed layers already had a parent that wasn't this layer
      */
-    fun add(vararg layers: GuiLayer) {
+    public fun add(vararg layers: GuiLayer) {
         for(component in layers) {
             if (component === this)
                 throw LayerHierarchyException("Tried to add a layer to itself")
@@ -468,7 +446,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * Checks whether this layer has the passed layer as a descendent
      */
-    operator fun contains(layer: GuiLayer): Boolean =
+    public operator fun contains(layer: GuiLayer): Boolean =
         layer in children || children.any { layer in it }
 
     /**
@@ -477,7 +455,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      *
      * @throws LayerHierarchyException if the passed layer has a parent that isn't this layer
      */
-    fun remove(layer: GuiLayer) {
+    public fun remove(layer: GuiLayer) {
         if(layer.parent == null) {
             logger.warn("The passed layer has no parent", Exception())
             return
@@ -498,7 +476,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * Removes the layer from its parent if it has one. Shorthand for `this.parent?.remove(this)`
      */
-    fun removeFromParent() {
+    public fun removeFromParent() {
         this.parent?.remove(this)
     }
 
@@ -509,7 +487,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * Use [GuiLayer.OVERLAY_Z] and [GuiLayer.UNDERLAY_Z] to create layers that appear on top or below _literally
      * everything else._
      */
-    var zIndex: Double = 0.0
+    public var zIndex: Double = 0.0
 
     @JvmSynthetic
     internal fun zSort() {
@@ -538,7 +516,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * @param block The block to apply to each layer
      */
     @JvmSynthetic
-    inline fun forEachChild(includeMask: Boolean = true, block: (GuiLayer) -> Unit) {
+    public inline fun forEachChild(includeMask: Boolean = true, block: (GuiLayer) -> Unit) {
         // calling `toList` just creates an array and then an ArrayList, so we just use the array
         for(child in children.toTypedArray()) {
             // a component may have been removed, in which case it won't be expecting any interaction
@@ -554,7 +532,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * @param includeMask Whether to include the mask layer
      * @param block The block to apply to each layer
      */
-    fun forEachChild(includeMask: Boolean, block: Consumer<GuiLayer>) {
+    public fun forEachChild(includeMask: Boolean, block: Consumer<GuiLayer>) {
         // calling `toList` just creates an array and then an ArrayList, so we just use the array
         for(child in children.toTypedArray()) {
             // a component may have been removed, in which case it won't be expecting any interaction
@@ -571,14 +549,14 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      *
      * @param block The block to apply to each layer
      */
-    fun forEachChild(block: Consumer<GuiLayer>) {
+    public fun forEachChild(block: Consumer<GuiLayer>) {
         forEachChild(true, block)
     }
 
     /**
      * Creates an object designed to allow easily inspecting the layer hierarchy in the debugger
      */
-    val debuggerTree: DebuggerTree get() = DebuggerTree(this, children.map { it.debuggerTree })
+    public val debuggerTree: DebuggerTree get() = DebuggerTree(this, children.map { it.debuggerTree })
 
     //endregion
 
@@ -587,7 +565,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * The bounding rectangle of this layer in its parent's coordinate space. The "outer" edge. Setting this value will
      * not respect rotation.
      */
-    var frame: Rect2d
+    public var frame: Rect2d
         get() = parentSpace?.let { this.convertRectTo(bounds, it) } ?: bounds
         set(value) {
             val current = this.frame
@@ -605,13 +583,13 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * The bounding rectangle of this layer in its own coordinate space. The "inner" edge.
      */
-    val bounds: Rect2d
+    public val bounds: Rect2d
         get() = Rect2d(vec(0, 0), size)
 
     /**
      * The size of the layer in its own coordinate space
      */
-    val size_rm: RMValue<Vec2d> = rmValue(vec(width, height)) { old, new ->
+    public val size_rm: RMValue<Vec2d> = rmValue(vec(width, height)) { old, new ->
         if(old != new) {
             markLayoutDirty()
             parent?.markLayoutDirty()
@@ -621,12 +599,12 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * The size of the layer in its own coordinate space
      */
-    var size: Vec2d by size_rm
+    public var size: Vec2d by size_rm
 
     /**
      * The position of the layer's anchor point in its parent's coordinate space.
      */
-    val pos_rm: RMValue<Vec2d> = rmValue(vec(posX, posY)) { old, new ->
+    public val pos_rm: RMValue<Vec2d> = rmValue(vec(posX, posY)) { old, new ->
         if(old != new) {
             parent?.markLayoutDirty()
             matrixDirty = true
@@ -635,13 +613,13 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * The position of the layer's anchor point in its parent's coordinate space.
      */
-    var pos: Vec2d by pos_rm
+    public var pos: Vec2d by pos_rm
 
     /**
      * The layer's scaling factor about the anchor.
      * A scale of 0 on either axis will make the inverse scale on that axis +Infinity.
      */
-    val scale_rm: RMValue<Vec2d> = rmValue(vec(1, 1)) { old, new ->
+    public val scale_rm: RMValue<Vec2d> = rmValue(vec(1, 1)) { old, new ->
         if(old != new) {
             parent?.markLayoutDirty()
             matrixDirty = true
@@ -651,18 +629,18 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * The layer's scaling factor about the anchor.
      * A scale of 0 on either axis will make the inverse scale on that axis +Infinity.
      */
-    var scale2d: Vec2d by scale_rm
+    public var scale2d: Vec2d by scale_rm
     /**
      * The average scale between the X and Y axes. Setting this value sets both the X and Y scales to this value.
      */
-    var scale: Double
+    public var scale: Double
         get() = (scale2d.x + scale2d.y) / 2
         set(value) { scale2d = vec(value, value) }
 
     /**
      * The clockwise rotation in radians about the anchor.
      */
-    val rotation_rm: RMValueDouble = rmDouble(0.0) { old, new ->
+    public val rotation_rm: RMValueDouble = rmDouble(0.0) { old, new ->
         if(old != new) {
             parent?.markLayoutDirty()
             matrixDirty = true
@@ -671,7 +649,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * The clockwise rotation in radians about the anchor.
      */
-    var rotation: Double by rotation_rm
+    public var rotation: Double by rotation_rm
 
     /**
      * The fractional anchor position in this layer's coordinate space.
@@ -684,7 +662,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      *
      * Setting [scale] scales around the anchor, not the layer origin.
      */
-    val anchor_rm: RMValue<Vec2d> = rmValue(Vec2d.ZERO) { old, new ->
+    public val anchor_rm: RMValue<Vec2d> = rmValue(Vec2d.ZERO) { old, new ->
         if(old != new) {
             parent?.markLayoutDirty()
             matrixDirty = true
@@ -701,7 +679,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      *
      * Setting [scale] scales around the anchor, not the layer origin.
      */
-    var anchor: Vec2d by anchor_rm
+    public var anchor: Vec2d by anchor_rm
 
 
     /**
@@ -712,7 +690,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * @see widthf
      * @see widthi
      */
-    var width: Double
+    public var width: Double
         get() = size.x
         set(value) {
             size = vec(value, size.y)
@@ -725,7 +703,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * @see width
      * @see widthi
      */
-    var widthf: Float
+    public var widthf: Float
         get() = size.xf
         set(value) {
             size = vec(value, size.y)
@@ -738,7 +716,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * @see width
      * @see widthf
      */
-    var widthi: Int
+    public var widthi: Int
         get() = size.xi
         set(value) {
             size = vec(value, size.y)
@@ -752,7 +730,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * @see heightf
      * @see heighti
      */
-    var height: Double
+    public var height: Double
         get() = size.y
         set(value) {
             size = vec(size.x, value)
@@ -765,7 +743,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * @see height
      * @see heighti
      */
-    var heightf: Float
+    public var heightf: Float
         get() = size.yf
         set(value) {
             size = vec(size.x, value)
@@ -778,7 +756,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * @see height
      * @see heightf
      */
-    var heighti: Int
+    public var heighti: Int
         get() = size.yi
         set(value) {
             size = vec(size.x, value)
@@ -792,7 +770,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * @see xf
      * @see xi
      */
-    var x: Double
+    public var x: Double
         get() = pos.x
         set(value) {
             pos = vec(value, pos.y)
@@ -805,7 +783,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * @see x
      * @see xi
      */
-    var xf: Float
+    public var xf: Float
         get() = pos.xf
         set(value) {
             pos = vec(value, pos.y)
@@ -818,7 +796,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * @see x
      * @see xf
      */
-    var xi: Int
+    public var xi: Int
         get() = pos.xi
         set(value) {
             pos = vec(value, pos.y)
@@ -832,7 +810,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * @see yf
      * @see yi
      */
-    var y: Double
+    public var y: Double
         get() = pos.y
         set(value) {
             pos = vec(pos.x, value)
@@ -845,7 +823,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * @see y
      * @see yi
      */
-    var yf: Float
+    public var yf: Float
         get() = pos.yf
         set(value) {
             pos = vec(pos.x, value)
@@ -858,7 +836,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * @see y
      * @see yf
      */
-    var yi: Int
+    public var yi: Int
         get() = pos.yi
         set(value) {
             pos = vec(pos.x, value)
@@ -867,7 +845,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * Returns true if the passed point is inside this component, ignoring any clipping.
      */
-    open fun isPointInBounds(point: Vec2d): Boolean {
+    public open fun isPointInBounds(point: Vec2d): Boolean {
         return point in bounds
     }
 
@@ -875,7 +853,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * Returns true if the passed point is outside this component's clipping mask.
      */
     @Suppress("UNUSED_PARAMETER")
-    fun isPointClipped(point: Vec2d): Boolean {
+    public fun isPointClipped(point: Vec2d): Boolean {
         if(clippingSprite != null) return false // we can't clip these
         if(clipToBounds) {
             if (point.x < 0 || point.x > size.x ||
@@ -928,7 +906,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * @return The rect containing all the children that are included as per the above rules, or null if neither this
      * layer nor any of its children were included
      */
-    fun getContentsBounds(
+    public fun getContentsBounds(
         includeOwnBounds: Predicate<GuiLayer>,
         includeChildren: Predicate<GuiLayer>
     ): Rect2d? {
@@ -995,7 +973,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * Clip the contents of this layer to its bounding box
      */
-    var clipToBounds: Boolean = false
+    public var clipToBounds: Boolean = false
 
     /**
      * If nonnull, this sprite is used for clipping. Any pixels that are completely transparent will be masked out.
@@ -1003,22 +981,22 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      *
      * If [clippingSprite] is nonnull, it will override this sprite.
      */
-    var clippingSprite: ISprite? = null
+    public var clippingSprite: ISprite? = null
 
     /**
      * An opacity value in the range [0, 1]. If this is not equal to 1 the layer will be rendered to an FBO and drawn
      * to a texture. This process clips the layer to its bounds.
      */
-    val opacity_rm: RMValueDouble = rmDouble(1.0)
+    public val opacity_rm: RMValueDouble = rmDouble(1.0)
     /**
      * An opacity value in the range [0, 1]. If this is not equal to 1 the layer will be rendered to an FBO and drawn
      * to a texture. This process clips the layer to its bounds.
      */
-    var opacity: Double by opacity_rm
+    public var opacity: Double by opacity_rm
     /**
      * How to apply the [maskLayer]. If [maskLayer] is null, this property has no effect.
      */
-    var maskMode: MaskMode = MaskMode.NONE
+    public var maskMode: MaskMode = MaskMode.NONE
 
     private var _maskLayer: GuiLayer? = null
     /**
@@ -1026,7 +1004,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * this layer. Note that removing this layer using the [remove] or [removeFromParent] method will reset this
      * property to null.
      */
-    var maskLayer: GuiLayer?
+    public var maskLayer: GuiLayer?
         get() = _maskLayer
         set(value) {
             if(value !== _maskLayer) {
@@ -1044,19 +1022,19 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * The blend mode to use for this layer. Any value other than [BlendMode.NORMAL] will cause the layer to be rendered
      * to a texture using [RenderMode.RENDER_TO_FBO]
      */
-    var blendMode: BlendMode = BlendMode.NORMAL
+    public var blendMode: BlendMode = BlendMode.NORMAL
     /**
      * What technique to use to render this layer
      */
-    var renderMode: RenderMode = RenderMode.DIRECT
+    public var renderMode: RenderMode = RenderMode.DIRECT
     /**
      * What scaling factor to use when rasterizing this layer using [RenderMode.RENDER_TO_QUAD]
      */
-    var rasterizationScale: Int = 1
+    public var rasterizationScale: Int = 1
     /**
      * Whether this layer is being used as a mask by its parent.
      */
-    val isMask: Boolean
+    public val isMask: Boolean
         get() = parent?.maskLayer === this
 
     private fun actualRenderMode(): RenderMode {
@@ -1071,7 +1049,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * Renders this layer and its sublayers. This method handles the internals of rendering a layer. Override [draw] for
      * custom rendering.
      */
-    fun renderLayer(context: GuiDrawContext) {
+    public fun renderLayer(context: GuiDrawContext) {
         context.matrix.push()
         context.matrix *= transform
 
@@ -1210,9 +1188,9 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         buffer.finish()
     }
 
-    fun shouldDrawSkeleton(): Boolean = false
+    public fun shouldDrawSkeleton(): Boolean = false
 
-    fun renderSkeleton(context: GuiDrawContext) {
+    public fun renderSkeleton(context: GuiDrawContext) {
         forEachChild { it.renderSkeleton(context) }
 
         if (context.showDebugBoundingBox && //!isInMask && TODO: isInMask (or a better system?)
@@ -1229,7 +1207,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * Draws a flat colored box over this layer, rounding corners as necessary
      */
     @Suppress("UNUSED_PARAMETER") // TODO: update to use matrices
-    fun drawLayerOverlay(context: GuiDrawContext) {
+    public fun drawLayerOverlay(context: GuiDrawContext) {
         val color = Color(1f, 0f, 0f, 0.1f)
 
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
@@ -1248,7 +1226,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * Draws a bounding box around the edge of this component
      */
     @Suppress("UNUSED_PARAMETER") // TODO: update to use matrices
-    fun drawDebugBoundingBox(context: GuiDrawContext, color: Color) {
+    public fun drawDebugBoundingBox(context: GuiDrawContext, color: Color) {
         val points = getBoundingBoxPoints()
 
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
@@ -1261,7 +1239,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         buffer.finish()
     }
 
-    var cornerRadius = 0.0
+    public var cornerRadius: Double = 0.0
 
     /**
      * Creates a series of points defining the path the debug bounding box follows. For culling reasons this list
@@ -1318,12 +1296,12 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * The built-in base events are located in [GuiLayerEvents]
      */
     @JvmField
-    val BUS: EventBus = EventBus()
+    public val BUS: EventBus = EventBus()
 
-    inline fun <reified  E : Event> hook(hook: Consumer<E>): Unit = BUS.hook(hook)
+    public inline fun <reified  E : Event> hook(hook: Consumer<E>): Unit = BUS.hook(hook)
 
     @Suppress("UNCHECKED_CAST")
-    fun <E : Event> hook(clazz: Class<E>, hook: Consumer<E>): Unit = BUS.hook(clazz, hook)
+    public fun <E : Event> hook(clazz: Class<E>, hook: Consumer<E>): Unit = BUS.hook(clazz, hook)
 
     init {
         BUS.register(this)
@@ -1336,19 +1314,19 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * The cursor for when the mouse is over this layer, or `null` for the default cursor.
      */
-    var cursor: Cursor? = null
+    public var cursor: Cursor? = null
 
     /**
      * If [interactive] is false, this component and its descendents won't be considered for mouseover calculations
      * and won't receive input events
      */
-    var interactive: Boolean = true
+    public var interactive: Boolean = true
 
     /**
      * If [ignoreMouseOverBounds] is true, this component's bounding box won't be taken into consideration for mouseover
      * calculations, however its children will be considered as usual.
      */
-    var ignoreMouseOverBounds: Boolean = false
+    public var ignoreMouseOverBounds: Boolean = false
 
     /**
      * If [propagatesMouseOver] is true (the default), the [mouseOver] state will be propagated to this layer's parent.
@@ -1360,13 +1338,13 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * True if the current [mousePos] is inside the bounds of component. This ignores components that may be covering
      * this component.
      */
-    var mouseInside: Boolean = false
+    public var mouseInside: Boolean = false
         private set
 
     /**
      * True if this component is [interactive] and the mouse is hovering over it or one of its children.
      */
-    var mouseOver: Boolean = false
+    public var mouseOver: Boolean = false
         @JvmSynthetic
         internal set
 
@@ -1375,7 +1353,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * The mouse position within this component
      */
-    var mousePos: Vec2d = vec(0, 0)
+    public var mousePos: Vec2d = vec(0, 0)
         private set
 
     /**
@@ -1484,38 +1462,38 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * @see tooltipText
      */
-    val tooltipText_im: IMValue<String?> = imValue()
+    public val tooltipText_im: IMValue<String?> = imValue()
 
     /**
      * The text to display as a tooltip when the mouse is over this component. If [tooltip] is nonnull this value will
      * be ignored.
      */
-    var tooltipText: String? by tooltipText_im
+    public var tooltipText: String? by tooltipText_im
 
     /**
      * @see tooltip
      */
-    val tooltip_rm: RMValue<GuiLayer?> = rmValue(null)
+    public val tooltip_rm: RMValue<GuiLayer?> = rmValue(null)
 
     /**
      * The layer to display as a tooltip when the mouse is over this component. If this value is null it will fall back
      * to [tooltipText].
      */
-    var tooltip: GuiLayer? by tooltip_rm
+    public var tooltip: GuiLayer? by tooltip_rm
 
     /**
      * @see tooltipDelay
      */
     @Deprecated("UNIMPLEMENTED")
-    val tooltipDelay_im: IMValueInt = imInt(0)
+    public val tooltipDelay_im: IMValueInt = imInt(0)
 
     /**
      * How many ticks should the mouse have to hover over this component before the tooltip appears.
      */
     @Deprecated("UNIMPLEMENTED")
-    var tooltipDelay: Int by tooltipDelay_im
+    public var tooltipDelay: Int by tooltipDelay_im
 
-    val tooltipLayer: GuiLayer?
+    public val tooltipLayer: GuiLayer?
         get() {
             tooltip?.also { return it }
             tooltipText?.also {
@@ -1531,13 +1509,13 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
      * Whether this layer's layout needs to be updated this frame. This is set to true when this layer's size changes or
      * it is manually set using [markLayoutDirty]
      */
-    var isLayoutDirty: Boolean = false
+    public var isLayoutDirty: Boolean = false
         private set
 
     /**
      * Whether this layer's layout depends on the layout of its children, and thus should be marked dirty when they are.
      */
-    var dependsOnChildLayout: Boolean = false
+    public var dependsOnChildLayout: Boolean = false
 
     /**
      * Set to true when layout is run
@@ -1547,7 +1525,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * Mark this layer's layout dirty flag.
      */
-    fun markLayoutDirty() {
+    public fun markLayoutDirty() {
         isLayoutDirty = true
         parent?.also {
             if(it.dependsOnChildLayout)
@@ -1558,14 +1536,14 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
     /**
      * Clears this layer's layout dirty flag.
      */
-    fun clearLayoutDirty() {
+    public fun clearLayoutDirty() {
         isLayoutDirty = false
     }
 
     /**
      * Run a layout pass for this layer and its children.
      */
-    fun runLayout() {
+    public fun runLayout() {
         this.updateYogaLayout()
         this.updateDirtyLayout(GuiLayerEvents.LayoutChildren())
     }
@@ -1587,11 +1565,11 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
 
     private val layoutHooks = mutableListOf<Runnable>()
 
-    fun onLayout(hook: () -> Unit) {
+    public fun onLayout(hook: () -> Unit) {
         layoutHooks.add(Runnable(hook))
     }
 
-    fun onLayout(hook: Runnable) {
+    public fun onLayout(hook: Runnable) {
         layoutHooks.add(hook)
     }
 
@@ -1603,16 +1581,16 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
 
     //region Yoga
 
-    var useYoga: Boolean = false
-    private val yogaNode: Long = YGNodeNewWithConfig(config)
-    val yogaStyle: YogaStyle = YogaStyle(yogaNode)
+    public var useYoga: Boolean = false
+    private val yogaNode: Long by GlResourceGc.track(this, YGNodeNewWithConfig(config)) { YGNodeFree(it) }
+    public val yogaStyle: YogaStyle = YogaStyle(yogaNode)
     private val _yogaStyler: YogaStyler by lazy { YogaStyler(this) }
 
     /**
      * Enables Yoga layout on this layer and returns the yoga styler. If yoga was previously disabled, this method also
      * copies the current layer size into the width/height yoga styles.
      */
-    fun yoga(): YogaStyler {
+    public fun yoga(): YogaStyler {
         if(!useYoga) {
             useYoga = true
             _yogaStyler.sizeFromCurrent()
@@ -1681,44 +1659,34 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
 
     //endregion
 
-    fun finalize() {
-        YGNodeFree(yogaNode)
-    }
-
-    companion object {
+    public companion object {
 
         @JvmStatic
-        var showDebugTilt = false
+        public var showDebugTilt: Boolean = false
 
         /**
-         * The z index of tooltips. Overlays should not go above this level.
+         * Tooltips should be added to the [root] layer with this [zIndex]. Nothing else should go above this level.
          */
         @JvmStatic
-        val TOOLTIP_Z: Double = 1e11
+        public val TOOLTIP_Z: Double = 1e11
 
         /**
          * In order to make an overlay layer, add a layer to the [root] with this [zIndex].
          */
         @JvmStatic
-        val OVERLAY_Z: Double = 1e10
+        public val OVERLAY_Z: Double = 1e10
 
         /**
-         * In order to make a background layer, give the layer this [zIndex].
+         * In order to make a background layer, add a layer to the [root] with this [zIndex].
          */
         @JvmStatic
-        val DIALOG_Z: Double = 1e9
-
-        /**
-         * In order to make a background layer, give the layer this [zIndex].
-         */
-        @JvmStatic
-        val BACKGROUND_Z: Double = -1e9
+        public val BACKGROUND_Z: Double = -1e9
 
         /**
          * In order to make an underlay layer, add a layer to the [root] with this [zIndex].
          */
         @JvmStatic
-        val UNDERLAY_Z: Double = -1e10
+        public val UNDERLAY_Z: Double = -1e10
 
         private val config = YGConfigNew()
 
@@ -1761,7 +1729,7 @@ open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): CoordinateSp
         }
     }
 
-    class DebuggerTree(val layer: GuiLayer, val children: List<DebuggerTree>) {
+    public class DebuggerTree(public val layer: GuiLayer, public val children: List<DebuggerTree>) {
         override fun toString(): String {
             return "(${layer.x}, ${layer.y}, ${layer.width}, ${layer.height}) $layer"
         }

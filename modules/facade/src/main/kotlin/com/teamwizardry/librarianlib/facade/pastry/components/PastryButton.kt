@@ -12,15 +12,15 @@ import com.teamwizardry.librarianlib.math.vec
 import dev.thecodewarrior.bitfont.utils.ExperimentalBitfont
 
 @ExperimentalBitfont
-class PastryButton @JvmOverloads constructor(
+public class PastryButton @JvmOverloads constructor(
         buttonText: String = "",
         posX: Int, posY: Int, width: Int? = null, height: Int = Pastry.lineHeight,
         callback: Runnable? = null
 ) : PastryActivatedControl(posX, posY, width ?: 0, height) {
 
-    class ClickEvent(): Event()
+    public class ClickEvent(): Event()
 
-    val label = PastryLabel(4, 0, buttonText)
+    public val label: PastryLabel = PastryLabel(4, 0, buttonText)
 
     init {
         if(width == null) {
@@ -32,7 +32,7 @@ class PastryButton @JvmOverloads constructor(
     private val sprite = SpriteLayer(PastryTexture.button, 0, 0, this.widthi, height)
     private var mouseDown = false
 
-    var pressed = false
+    private var pressed = false
         set(value) {
             field = value
             if(value)

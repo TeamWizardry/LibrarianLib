@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.facade.pastry
 
-object Pastry {
+public object Pastry {
     /**
      * The basic line height for components such as buttons, dropdowns, and labels.
      */
     @JvmStatic
-    val lineHeight: Int = 12
+    public val lineHeight: Int = 12
 }

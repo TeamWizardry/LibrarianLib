@@ -20,35 +20,35 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
 
-class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y, width, height) {
-    constructor(color: Color, x: Int, y: Int): this(color, x, y, 0, 0)
-    constructor(color: Color): this(color, 0, 0, 0, 0)
+public class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y, width, height) {
+    public constructor(color: Color, x: Int, y: Int): this(color, x, y, 0, 0)
+    public constructor(color: Color): this(color, 0, 0, 0, 0)
 
-    val color_im: IMValue<Color> = imValue(color)
-    var color: Color by color_im
-
-    /**
-     * The clockwise start angle in radians
-     */
-    val startAngle_im: IMValueDouble = imDouble(0.0)
+    public val color_im: IMValue<Color> = imValue(color)
+    public var color: Color by color_im
 
     /**
      * The clockwise start angle in radians
      */
-    var startAngle: Double by startAngle_im
+    public val startAngle_im: IMValueDouble = imDouble(0.0)
+
+    /**
+     * The clockwise start angle in radians
+     */
+    public var startAngle: Double by startAngle_im
 
     /**
      * The clockwise end angle in radians
      */
-    val endAngle_im: IMValueDouble = imDouble(2*PI)
+    public val endAngle_im: IMValueDouble = imDouble(2*PI)
 
     /**
      * The clockwise end angle in radians
      */
-    var endAngle: Double by endAngle_im
+    public var endAngle: Double by endAngle_im
 
-    val segmentSize_im: IMValueDouble = imDouble(Math.toRadians(5.0))
-    var segmentSize: Double by segmentSize_im
+    public val segmentSize_im: IMValueDouble = imDouble(Math.toRadians(5.0))
+    public var segmentSize: Double by segmentSize_im
 
     override fun isPointInBounds(point: Vec2d): Boolean {
         if (point !in bounds)
@@ -107,7 +107,7 @@ class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): GuiLayer(
 
     }
 
-    companion object {
+    private companion object {
         private val renderType = SimpleRenderTypes.flat(GL11.GL_TRIANGLE_FAN)
     }
 }

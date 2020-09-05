@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.facade.text
 
 import com.mojang.blaze3d.platform.GlStateManager
-import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.math.Rect2d
 import com.teamwizardry.librarianlib.math.rect
@@ -9,22 +8,17 @@ import dev.thecodewarrior.bitfont.data.BitGrid
 import dev.thecodewarrior.bitfont.utils.RectanglePacker
 import net.minecraft.client.renderer.texture.NativeImage
 import net.minecraft.client.renderer.texture.Texture
-import net.minecraft.client.renderer.texture.TextureManager
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.resources.IResourceManager
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.common.MinecraftForge
 import org.lwjgl.opengl.GL11
-import java.awt.Color
-import java.awt.image.BufferedImage
-import java.util.concurrent.Executor
 
-object BitfontAtlas: Texture() {
-    val ATLAS_LOCATION: ResourceLocation = ResourceLocation("librarianlib:textures/atlas/bitfont.png")
+public object BitfontAtlas: Texture() {
+    public val ATLAS_LOCATION: ResourceLocation = ResourceLocation("librarianlib:textures/atlas/bitfont.png")
 
-    var width: Int = 128
+    public var width: Int = 128
         private set
-    var height: Int = 128
+    public var height: Int = 128
         private set
 
     private val gpuMaxTexSize = GlStateManager.getInteger(GL11.GL_MAX_TEXTURE_SIZE)
@@ -37,13 +31,13 @@ object BitfontAtlas: Texture() {
         Client.textureManager.loadTexture(ATLAS_LOCATION, this)
     }
 
-    fun solidTex(): Rect2d {
+    public fun solidTex(): Rect2d {
         val width = width.toDouble()
         val height = height.toDouble()
         return rect(solidRect.x/width, solidRect.y/height, solidRect.width/width, solidRect.height/height)
     }
 
-    fun rectFor(image: BitGrid): Rect2d {
+    public fun rectFor(image: BitGrid): Rect2d {
         var rect = rects[image]
         if(rect == null) {
             insert(image)
@@ -54,11 +48,11 @@ object BitfontAtlas: Texture() {
         return rect(rect.x/width, rect.y/height, rect.width/width, rect.height/height)
     }
 
-    fun load(images: List<BitGrid>) {
+    public fun load(images: List<BitGrid>) {
         images.forEach { insert(it) }
     }
 
-    fun insert(image: BitGrid) {
+    public fun insert(image: BitGrid) {
         if(image in rects)
             return
         var newRect: RectanglePacker.Rectangle? = packer.insert(image.width, image.height, image)

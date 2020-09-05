@@ -13,25 +13,25 @@ import com.teamwizardry.librarianlib.math.vec
 /**
  *
  */
-class PastryScrollPane(x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y, width, height) {
-    constructor(x: Int, y: Int): this(x, y, 0, 0)
-    constructor(): this(0, 0, 0, 0)
+public class PastryScrollPane(x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y, width, height) {
+    public constructor(x: Int, y: Int): this(x, y, 0, 0)
+    public constructor(): this(0, 0, 0, 0)
 
     /**
      * Whether to show the vertical scroll bar. If this value is null the scroll bar will automatically shown or
      * hidden when needed. Defaults to true
      */
-    var showVerticalScrollbar: Boolean? = true
+    public var showVerticalScrollbar: Boolean? = true
 
     /**
      * Whether to show the horizontal scroll bar. If this value is null the scroll bar will automatically shown or
      * hidden when needed. Defaults to false
      */
-    var showHorizontalScrollbar: Boolean? = false
+    public var showHorizontalScrollbar: Boolean? = false
 
     private val scrollPane = ScrollPane()
 
-    val content: GuiLayer = scrollPane.content
+    public val content: GuiLayer = scrollPane.content
 
     private val background = PastryBackground(BackgroundTexture.SLIGHT_INSET)
     private val verticalBackground = SpriteLayer(PastryTexture.scrollbarTrack)
@@ -104,8 +104,9 @@ class PastryScrollPane(x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y, 
         scrollPane.horizontalScrollBar.frame = horizontalBackground.frame.shrink(1.0)
     }
 
-    companion object {
+    private companion object {
+        //TODO: themes
         @JvmStatic
-        val scrollBarWidth = 12
+        private val scrollBarWidth = 12
     }
 }

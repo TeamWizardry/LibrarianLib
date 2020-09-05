@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.facade.layers.minecraft
 
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.facade.layer.AnimationTimeListener
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.math.Cardinal2d
@@ -12,24 +13,24 @@ import net.minecraft.fluid.Fluid
 /**
  * Easy way to render an optionally flowing fluid.
  */
-class FluidSprite(layer: GuiLayer) : WrappedSprite() {
-    /**
-     * @see fluid
-     */
-    val fluid_im: IMValue<Fluid?> = layer.imValue()
+public class FluidSprite(layer: GuiLayer) : WrappedSprite(), AnimationTimeListener {
     /**
      * The fluid to be drawn
      */
-    var fluid: Fluid? by fluid_im
+    public val fluid_im: IMValue<Fluid?> = layer.imValue()
+    /**
+     * The fluid to be drawn
+     */
+    public var fluid: Fluid? by fluid_im
 
     /**
-     * @see flow
-     */
-    val flow_im: IMValue<Cardinal2d?> = layer.imValue()
-    /*
      * The direction the fluid should appear to flow, if at all.
      */
-    var flow: Cardinal2d? by flow_im
+    public val flow_im: IMValue<Cardinal2d?> = layer.imValue()
+    /**
+     * The direction the fluid should appear to flow, if at all.
+     */
+    public var flow: Cardinal2d? by flow_im
 
     private var lastFluidSprite: ISprite? = null
     private var lastFluid: Fluid? = null
@@ -45,7 +46,7 @@ class FluidSprite(layer: GuiLayer) : WrappedSprite() {
             return (lastFlow ?: Cardinal2d.DOWN).rotation + 2
         }
 
-    fun update() {
+    public fun update() {
         val fluid = fluid
         val flow = flow
         if(fluid == lastFluid && flow == lastFlow) {
@@ -61,4 +62,8 @@ class FluidSprite(layer: GuiLayer) : WrappedSprite() {
         lastFlow = flow
     }
 
+    override fun updateTime(time: Float) {
+        fluid_im.updateTime(time)
+        flow_im.updateTime(time)
+    }
 }

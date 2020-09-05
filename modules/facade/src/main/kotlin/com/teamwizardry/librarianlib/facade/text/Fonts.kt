@@ -9,10 +9,10 @@ import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.IResourceManager
 import net.minecraft.util.ResourceLocation
 
-object Fonts {
-    var classic: Bitfont
+public object Fonts {
+    public var classic: Bitfont
         private set
-    var unifont: Bitfont
+    public var unifont: Bitfont
         private set
 
     init {

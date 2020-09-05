@@ -6,15 +6,15 @@ import com.teamwizardry.librarianlib.math.Matrix3dStack
 import com.teamwizardry.librarianlib.math.Matrix4d
 import com.teamwizardry.librarianlib.math.MutableMatrix4d
 
-class GuiDrawContext(
-    val matrix: Matrix3dStack,
+public class GuiDrawContext(
+    public val matrix: Matrix3dStack,
     showDebugBoundingBox: Boolean,
     isInMask: Boolean
 ) {
-    var showDebugBoundingBox: Boolean = showDebugBoundingBox
+    public var showDebugBoundingBox: Boolean = showDebugBoundingBox
         @JvmSynthetic
         internal set
-    var isInMask: Boolean = isInMask
+    public var isInMask: Boolean = isInMask
         @JvmSynthetic
         internal set
 
@@ -25,7 +25,7 @@ class GuiDrawContext(
      * will be popped after the component is drawn. Calling this multiple times will not push the matrix multiple times.
      */
     @Suppress("CAST_NEVER_SUCCEEDS")
-    fun pushGlMatrix() {
+    public fun pushGlMatrix() {
         if(glMatrix) return
         glMatrix = true
         RenderSystem.pushMatrix()
@@ -35,7 +35,7 @@ class GuiDrawContext(
     /**
      * Pops the matrix pushed by [pushGlMatrix], if it has been pushed.
      */
-    fun popGlMatrix() {
+    public fun popGlMatrix() {
         if(!glMatrix) return
         glMatrix = false
         RenderSystem.popMatrix()

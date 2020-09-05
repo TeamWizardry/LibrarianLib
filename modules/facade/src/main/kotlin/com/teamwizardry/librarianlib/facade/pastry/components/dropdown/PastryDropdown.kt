@@ -5,7 +5,6 @@ import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
 import com.teamwizardry.librarianlib.facade.input.Cursor
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
-import com.teamwizardry.librarianlib.facade.layer.LayerHierarchyException
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.pastry.Pastry
 import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
@@ -15,14 +14,14 @@ import com.teamwizardry.librarianlib.math.rect
 import com.teamwizardry.librarianlib.math.vec
 import java.util.function.Consumer
 
-class PastryDropdown<T> constructor(
+public class PastryDropdown<T> constructor(
     posX: Int, posY: Int,
     width: Int,
     callback: Consumer<T>?
 ) : PastryActivatedControl(posX, posY, width, Pastry.lineHeight) {
 
-    val items = mutableListOf<PastryDropdownItem<T>>()
-    var selected: PastryDropdownItem<T>? = null
+    public val items: MutableList<PastryDropdownItem<T>> = mutableListOf()
+    public var selected: PastryDropdownItem<T>? = null
         private set
 
     private val sprite = SpriteLayer(PastryTexture.dropdown, 0, 0, widthi, heighti)
@@ -37,7 +36,7 @@ class PastryDropdown<T> constructor(
         this.add(sprite)
     }
 
-    fun selectIndex(index: Int) {
+    public fun selectIndex(index: Int) {
         val newItem = items[index]
         if(selected === newItem) return
         if(newItem.decoration) {
@@ -53,7 +52,7 @@ class PastryDropdown<T> constructor(
             BUS.fire(SelectEvent(newItem.value))
     }
 
-    fun select(value: T) {
+    public fun select(value: T) {
         val index = items.indexOfFirst {
             !it.decoration && it.value == value
         }
@@ -99,9 +98,9 @@ class PastryDropdown<T> constructor(
         buttonContents?.frame = rect(2, 2, width - 10, height - 4)
     }
 
-    fun sizeToFit() {
-        this.width = items.map { it.createLayer().width + 15 }.max() ?: this.width
+    public fun sizeToFit() {
+        this.width = items.map { it.createLayer().width + 15 }.maxOrNull() ?: this.width
     }
 
-    class SelectEvent<T>(val value: T): CancelableEvent()
+    public class SelectEvent<T>(public val value: T): CancelableEvent()
 }

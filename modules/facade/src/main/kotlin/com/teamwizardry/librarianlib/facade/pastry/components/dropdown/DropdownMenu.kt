@@ -17,7 +17,7 @@ import com.teamwizardry.librarianlib.math.vec
 import java.awt.Color
 import kotlin.math.max
 
-class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean): GuiLayer(0, 0) {
+internal class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean): GuiLayer(0, 0) {
     private val creationTime = Client.time.time
 
     val background = SpriteLayer(PastryTexture.dropdownBackground)
@@ -32,7 +32,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
     var disableLayout = false
 
     init {
-        zIndex = GuiLayer.OVERLAY_Z
+        zIndex = OVERLAY_Z
         this.add(background, contents)
         contents.add(contentsClip)
         contentsClip.add(stack)
@@ -84,7 +84,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
 
     // TODO - use ticks to prevent framerate-dependent motion
     @Hook
-    fun preFrame(e: GuiLayerEvents.Update) {
+    private fun preFrame(e: GuiLayerEvents.Update) {
         val parent = this.parent ?: return
         val min = button.convertPointTo(vec(0, 0), parent)
         this.pos = min
@@ -107,7 +107,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
     }
 
     @Hook
-    fun mouseDown(e: GuiLayerEvents.MouseDown) {
+    private fun mouseDown(e: GuiLayerEvents.MouseDown) {
         if(!mouseOver) {
             close()
             return
@@ -116,7 +116,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
     }
 
     @Hook
-    fun mouseUp(e: GuiLayerEvents.MouseUp) {
+    private fun mouseUp(e: GuiLayerEvents.MouseUp) {
         if(!mouseOver) {
             close()
             return
@@ -129,7 +129,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
         if(mouseActivated) {
             val newMousePos = root.let { gui ->
                 gui.convertPointTo(gui.mousePos, ScreenSpace)
-            } ?: initialMousePos
+            }
             if(Client.time.time - creationTime > dragSelectTime ||
                 initialMousePos.squareDist(newMousePos) > dragSelectDist * dragSelectDist) {
                 select()
@@ -180,10 +180,9 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
         this.parent?.remove(this)
         button.menuClosed()
     }
-
 }
 
-class DropdownStackItem(val item: PastryDropdownItem<*>): GuiLayer(0, 0) {
+internal class DropdownStackItem(val item: PastryDropdownItem<*>): GuiLayer(0, 0) {
     val itemLayer = item.createLayer()
     val highlight = SpriteLayer(PastryTexture.dropdownHighlight)
     val inset: Vec2d =
