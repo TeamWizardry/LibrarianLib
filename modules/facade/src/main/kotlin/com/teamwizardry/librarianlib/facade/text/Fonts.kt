@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.facade.text
 
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.ISimpleReloadListener
-import com.teamwizardry.librarianlib.core.util.kotlin.toRl
+import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import com.teamwizardry.librarianlib.facade.logger
 import dev.thecodewarrior.bitfont.data.Bitfont
 import net.minecraft.profiler.IProfiler
@@ -16,8 +16,8 @@ object Fonts {
         private set
 
     init {
-        val classicLoc = "librarianlib:facade/fonts/mcclassicplus.bitfont".toRl()
-        val unifontLoc = "librarianlib:facade/fonts/unifont.bitfont".toRl()
+        val classicLoc = loc("librarianlib:facade/fonts/mcclassicplus.bitfont")
+        val unifontLoc = loc("librarianlib:facade/fonts/unifont.bitfont")
         Client.resourceReloadHandler.register(object : ISimpleReloadListener<Pair<Bitfont, Bitfont>> {
             override fun prepare(resourceManager: IResourceManager, profiler: IProfiler): Pair<Bitfont, Bitfont> {
                 return load(classicLoc) to load(unifontLoc)

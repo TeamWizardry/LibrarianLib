@@ -5,8 +5,8 @@ import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
 import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
 import com.teamwizardry.librarianlib.core.util.kotlin.color
+import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
-import com.teamwizardry.librarianlib.core.util.kotlin.toRl
 import com.teamwizardry.librarianlib.etcetera.eventbus.Event
 import com.teamwizardry.librarianlib.facade.EnumMouseButton
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
@@ -208,7 +208,7 @@ class PastryColorPicker: GuiLayer() {
     }
 
     companion object {
-        val hueLoc = "librarianlib:facade/textures/pastry/colorpicker_hue.png".toRl()
+        val hueLoc = loc("librarianlib:facade/textures/pastry/colorpicker_hue.png")
         val hueSprite = Mosaic(hueLoc, 8, 256).getSprite("")
         private val flatRenderType = SimpleRenderTypes.flat(GL11.GL_QUADS)
     }

@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.facade.input
 
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.ISimpleReloadListener
-import com.teamwizardry.librarianlib.core.util.kotlin.toRl
+import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import net.minecraft.client.renderer.texture.NativeImage
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.profiler.IProfiler
@@ -101,7 +101,7 @@ class Cursor @JvmOverloads constructor(
     @Suppress("unused")
     companion object {
         private fun _c(name: String, originX: Int, originY: Int, standardCursor: Int = -1)
-            = Cursor("librarianlib:facade/textures/cursors/$name.png".toRl(), originX, originY, standardCursor)
+            = Cursor(loc("librarianlib:facade/textures/cursors/$name.png"), originX, originY, standardCursor)
 
         /**
          * The default arrow cursor.

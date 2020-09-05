@@ -1,17 +1,12 @@
 @file:JvmName("MiscUtils")
 package com.teamwizardry.librarianlib.core.util.kotlin
 
-import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.math.Vec3i
 import net.minecraftforge.common.util.LazyOptional
-import net.minecraftforge.common.util.NonNullConsumer
-import net.minecraftforge.coremod.api.ASMAPI
-import java.lang.IllegalArgumentException
 import java.util.Optional
-import kotlin.reflect.jvm.javaMethod
 
-fun String.toRl(): ResourceLocation = ResourceLocation(this)
+@JvmSynthetic
+fun loc(location: String): ResourceLocation = ResourceLocation(location)
 
 /**
  * Creates a translation key in the format `type.namespace.path[.suffix]`, e.g. `item.minecraft.iron_ingot`

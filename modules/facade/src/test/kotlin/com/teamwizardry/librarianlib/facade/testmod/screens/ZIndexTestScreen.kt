@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.facade.testmod.screens
 
-import com.teamwizardry.librarianlib.core.util.kotlin.toRl
+import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
@@ -17,8 +17,8 @@ class ZIndexTestScreen(title: ITextComponent): FacadeScreen(title) {
         main.size = bg.size
         main.add(bg)
 
-        val dirt = Mosaic("minecraft:textures/block/dirt.png".toRl(), 16, 16).getSprite("")
-        val stone = Mosaic("minecraft:textures/block/stone.png".toRl(), 16, 16).getSprite("")
+        val dirt = Mosaic(loc("minecraft:textures/block/dirt.png"), 16, 16).getSprite("")
+        val stone = Mosaic(loc("minecraft:textures/block/stone.png"), 16, 16).getSprite("")
         val layer1 = SpriteLayer(dirt, 16, 16, 48, 48)
         val layer2 = SpriteLayer(stone, 36, 36, 48, 48)
         bg.zIndex = -10.0

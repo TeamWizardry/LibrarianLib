@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.testbase.objects
 
 import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.vertex.IVertexBuilder
-import com.teamwizardry.librarianlib.core.util.kotlin.toRl
+import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import net.minecraft.client.renderer.Matrix3f
 import net.minecraft.client.renderer.Matrix4f
@@ -19,7 +19,7 @@ import kotlin.math.sqrt
 
 @OnlyIn(Dist.CLIENT)
 class TestEntityRenderer(renderManagerIn: EntityRendererManager): EntityRenderer<TestEntity>(renderManagerIn) {
-    private val tex = "librarianlib-testbase:entity/testentity.png".toRl()
+    private val tex = loc("librarianlib-testbase:entity/testentity.png")
 
     override fun render(entity: TestEntity, entityYaw: Float, partialTicks: Float, matrixStack: MatrixStack, buffer: IRenderTypeBuffer, packedLight: Int) {
         matrixStack.push()
@@ -115,6 +115,6 @@ class TestEntityRenderer(renderManagerIn: EntityRendererManager): EntityRenderer
      */
     override fun getEntityTexture(entity: TestEntity): ResourceLocation {
 //        return ResourceLocation("textures/entity/projectiles/arrow.png")
-        return "librarianlib-testbase:textures/entity/testentity.png".toRl()
+        return loc("librarianlib-testbase:textures/entity/testentity.png")
     }
 }

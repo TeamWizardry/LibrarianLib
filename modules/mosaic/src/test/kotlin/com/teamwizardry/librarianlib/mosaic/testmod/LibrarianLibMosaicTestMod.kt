@@ -3,7 +3,7 @@
 package com.teamwizardry.librarianlib.mosaic.testmod
 
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.kotlin.toRl
+import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.mosaic.ISprite
@@ -22,7 +22,7 @@ object LibrarianLibSpritesTestMod: TestMod("mosaic", "Mosaic", logger) {
             scale = 4
             lazyConfig {
                 client {
-                    val tex = Mosaic("librarianlib-mosaic-test:textures/gui/no_mcmeta.png".toRl(), 32, 32)
+                    val tex = Mosaic(loc("librarianlib-mosaic-test:textures/gui/no_mcmeta.png"), 32, 32)
                     val sprite = tex.getSprite("")
 
                     draw {
@@ -41,7 +41,7 @@ object LibrarianLibSpritesTestMod: TestMod("mosaic", "Mosaic", logger) {
             scale = 2
             lazyConfig {
                 client {
-                    val tex = Mosaic("librarianlib-mosaic-test:textures/gui/two_sprites.png".toRl(), 64, 64)
+                    val tex = Mosaic(loc("librarianlib-mosaic-test:textures/gui/two_sprites.png"), 64, 64)
                     val topLeftSprite = tex.getSprite("top_left")
                     val bottomRightSprite = tex.getSprite("bottom_right")
 
@@ -61,7 +61,7 @@ object LibrarianLibSpritesTestMod: TestMod("mosaic", "Mosaic", logger) {
             scale = 2
             lazyConfig {
                 client {
-                    val tex = Mosaic("librarianlib-mosaic-test:textures/gui/edge_pinning.png".toRl(), 128, 128)
+                    val tex = Mosaic(loc("librarianlib-mosaic-test:textures/gui/edge_pinning.png"), 128, 128)
                     val background = tex.getSprite("bg")
                     size = vec(background.width, background.height)
 
@@ -105,7 +105,7 @@ object LibrarianLibSpritesTestMod: TestMod("mosaic", "Mosaic", logger) {
             scale = 2
             lazyConfig {
                 client {
-                    val tex = Mosaic("librarianlib-mosaic-test:textures/gui/sprite_caps.png".toRl(), 256, 128)
+                    val tex = Mosaic(loc("librarianlib-mosaic-test:textures/gui/sprite_caps.png"), 256, 128)
                     val background = tex.getSprite("background")
                     size = vec(background.width, background.height)
 
@@ -165,7 +165,7 @@ object LibrarianLibSpritesTestMod: TestMod("mosaic", "Mosaic", logger) {
             scale = 2
             lazyConfig {
                 client {
-                    val tex = Mosaic("librarianlib-mosaic-test:textures/gui/sprite_animations.png".toRl(), 128, 256)
+                    val tex = Mosaic(loc("librarianlib-mosaic-test:textures/gui/sprite_animations.png"), 128, 256)
                     val background = tex.getSprite("background")
                     size = vec(background.width, background.height)
 

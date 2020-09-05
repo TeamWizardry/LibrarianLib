@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager
 import com.teamwizardry.librarianlib.core.util.AWTTextureUtil
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
-import com.teamwizardry.librarianlib.core.util.kotlin.toRl
+import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import net.minecraft.client.renderer.RenderState
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.texture.NativeImage
@@ -29,7 +29,7 @@ class Java2DSprite(override val width: Int, override val height: Int) : ISprite 
         native.uploadTextureSub(0, 0, 0, false)
 
         val renderState = RenderType.State.getBuilder()
-            .texture(RenderState.TextureState("minecraft:missingno".toRl(), false, false))
+            .texture(RenderState.TextureState(loc("minecraft:missingno"), false, false))
             .alpha(DefaultRenderStates.DEFAULT_ALPHA)
             .depthTest(DefaultRenderStates.DEPTH_LEQUAL)
             .transparency(DefaultRenderStates.TRANSLUCENT_TRANSPARENCY)

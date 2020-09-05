@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.mosaic
 
 import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
-import com.teamwizardry.librarianlib.core.util.kotlin.toRl
+import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import com.teamwizardry.librarianlib.math.Matrix3d
 import net.minecraft.client.renderer.RenderState
 import net.minecraft.client.renderer.RenderType
@@ -44,7 +44,7 @@ abstract class WrappedSprite: ISprite {
         @Suppress("INACCESSIBLE_TYPE")
         val missingType: RenderType = run {
             val renderState = RenderType.State.getBuilder()
-                .texture(RenderState.TextureState("minecraft:missingno".toRl(), false, false))
+                .texture(RenderState.TextureState(loc("minecraft:missingno"), false, false))
                 .alpha(DefaultRenderStates.DEFAULT_ALPHA)
                 .depthTest(DefaultRenderStates.DEPTH_LEQUAL)
                 .transparency(DefaultRenderStates.TRANSLUCENT_TRANSPARENCY)

@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.facade.testmod.screens
 
-import com.teamwizardry.librarianlib.core.util.kotlin.toRl
+import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.supporting.MaskMode
@@ -43,6 +43,6 @@ class MaskingTestScreen(title: ITextComponent): FacadeScreen(title) {
     }
 
     companion object {
-        val spiral: Sprite = Mosaic("librarianlib-facade-test:textures/spiral_mask.png".toRl(), 128, 128).getSprite("")
+        val spiral: Sprite = Mosaic(loc("librarianlib-facade-test:textures/spiral_mask.png"), 128, 128).getSprite("")
     }
 }

@@ -2,9 +2,9 @@ package com.teamwizardry.librarianlib.foundation.testmod.customtypes.client
 
 import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import com.teamwizardry.librarianlib.core.util.kotlin.normal
 import com.teamwizardry.librarianlib.core.util.kotlin.pos
-import com.teamwizardry.librarianlib.core.util.kotlin.toRl
 import com.teamwizardry.librarianlib.foundation.testmod.customtypes.TestTileEntity
 import net.minecraft.client.renderer.Atlases
 import net.minecraft.client.renderer.IRenderTypeBuffer
@@ -19,7 +19,7 @@ class TestTileEntityRenderer(rendererDispatcherIn: TileEntityRendererDispatcher)
 
     override fun render(tileEntityIn: TestTileEntity, partialTicks: Float, matrixStackIn: MatrixStack,
         bufferIn: IRenderTypeBuffer, combinedLightIn: Int, combinedOverlayIn: Int) {
-        val texture = Client.getBlockAtlasSprite("block/dirt".toRl())
+        val texture = Client.getBlockAtlasSprite(loc("block/dirt"))
         val builder = texture.wrapBuffer(bufferIn.getBuffer(RenderType.getCutout()))
         builder
             .pos(matrixStackIn.last.matrix, 0, tileEntityIn.lastFallDistance + 1, 0).color(1f, 1f, 1f, 1f)

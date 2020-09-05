@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.facade.pastry
 
-import com.teamwizardry.librarianlib.core.util.kotlin.toRl
+import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import com.teamwizardry.librarianlib.mosaic.Mosaic
 import com.teamwizardry.librarianlib.mosaic.Sprite
 import net.minecraft.util.ResourceLocation
@@ -16,7 +16,7 @@ object PastryTexture {
 //        }
 
     val texture = Mosaic(Theme.NORMAL.location, 256, 256)
-    val shadowTexture = Mosaic("librarianlib:facade/textures/pastry/shadow.png".toRl(), 256, 256)
+    val shadowTexture = Mosaic(loc("librarianlib:facade/textures/pastry/shadow.png"), 256, 256)
 
     val background: Sprite by texture.delegate
     val backgroundInnerCorners: Sprite by texture.delegate
@@ -85,9 +85,9 @@ object PastryTexture {
     val shadowSprite = shadowTexture.getSprite("shadow")
 
     enum class Theme(val location: ResourceLocation) {
-        NORMAL("librarianlib:facade/textures/pastry/light.png".toRl()),
-        DARK("librarianlib:facade/textures/pastry/dark.png".toRl()),
-        HIGH_CONTRAST("librarianlib:facade/textures/pastry/contrast.png".toRl()),
+        NORMAL(loc("librarianlib:facade/textures/pastry/light.png")),
+        DARK(loc("librarianlib:facade/textures/pastry/dark.png")),
+        HIGH_CONTRAST(loc("librarianlib:facade/textures/pastry/contrast.png")),
     }
 }
 

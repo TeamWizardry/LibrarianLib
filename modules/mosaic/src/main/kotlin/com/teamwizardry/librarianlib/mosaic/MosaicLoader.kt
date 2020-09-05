@@ -2,8 +2,8 @@ package com.teamwizardry.librarianlib.mosaic
 
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.inconceivable
+import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import com.teamwizardry.librarianlib.core.util.kotlin.tick
-import com.teamwizardry.librarianlib.core.util.kotlin.toRl
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.math.Vec2i
 import com.teamwizardry.librarianlib.math.ceilInt
@@ -23,7 +23,7 @@ import javax.imageio.ImageIO
 
 internal object MosaicLoader : ReloadListener<Map<ResourceLocation, MosaicDefinition?>>() {
     private var definitions: MutableMap<ResourceLocation, MosaicDefinition?> = mutableMapOf()
-    private var missingno = "librarianlib:mosaic/textures/missingno.png".toRl()
+    private var missingno = loc("librarianlib:mosaic/textures/missingno.png")
 
     val missingnoSheet: MosaicDefinition get() = getDefinition(missingno)
     val missingnoSprite: SpriteDefinition get() = getDefinition(missingno).sprites[0]

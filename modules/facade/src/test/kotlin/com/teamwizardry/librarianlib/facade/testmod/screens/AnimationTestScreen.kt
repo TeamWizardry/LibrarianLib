@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.facade.testmod.screens
 
-import com.teamwizardry.librarianlib.core.util.kotlin.toRl
+import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
@@ -18,9 +18,9 @@ class AnimationTestScreen(title: ITextComponent): FacadeScreen(title) {
         main.size = bg.size
         main.add(bg)
 
-        val dirt = Mosaic("minecraft:textures/block/dirt.png".toRl(), 16, 16).getSprite("")
-        val stone = Mosaic("minecraft:textures/block/stone.png".toRl(), 16, 16).getSprite("")
-        val sandstone = Mosaic("minecraft:textures/block/sandstone.png".toRl(), 16, 16).getSprite("")
+        val dirt = Mosaic(loc("minecraft:textures/block/dirt.png"), 16, 16).getSprite("")
+        val stone = Mosaic(loc("minecraft:textures/block/stone.png"), 16, 16).getSprite("")
+        val sandstone = Mosaic(loc("minecraft:textures/block/sandstone.png"), 16, 16).getSprite("")
 
         val simpleAnimation = SpriteLayer(dirt)
 
