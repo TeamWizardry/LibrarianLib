@@ -14,7 +14,7 @@ import java.util.function.Supplier
 /**
  * The specs for creating and registering a tile entity.
  */
-public class TileEntitySpec(
+public class TileEntitySpec<T: TileEntity>(
     /**
      * The registry name, sans mod ID.
      */
@@ -22,7 +22,7 @@ public class TileEntitySpec(
     /**
      * The tile entity factory.
      */
-    public val factory: Supplier<out TileEntity>
+    public val factory: Supplier<T>
 ) {
     /**
      * The mod ID to register this tile entity under. This is populated by the [RegistrationManager].
@@ -52,7 +52,7 @@ public class TileEntitySpec(
     /**
      * Sets the renderer factory for this tile type
      */
-    public fun renderer(renderer: ClientFunction<in TileEntityRendererDispatcher, out TileEntityRenderer<*>>): TileEntitySpec {
+    public fun renderer(renderer: ClientFunction<in TileEntityRendererDispatcher, out TileEntityRenderer<*>>): TileEntitySpec<T> {
         this.renderer = renderer
         return this
     }
@@ -60,7 +60,7 @@ public class TileEntitySpec(
     /**
      * The lazily-evaluated [TileEntityType] instance.
      */
-    public val typeInstance: TileEntityType<*> by lazy {
+    public val typeInstance: TileEntityType<T> by lazy {
         if (this.validBlocks.isEmpty())
             throw IncompleteBuilderException("Tile entity $registryName was never added to any blocks")
         val resolvedBlocks = this.validBlocks.map { it.get() }.toTypedArray()
@@ -69,5 +69,5 @@ public class TileEntitySpec(
         type
     }
 
-    public val lazy: LazyTileEntityType = LazyTileEntityType(this)
+    public val lazy: LazyTileEntityType<T> = LazyTileEntityType(this)
 }

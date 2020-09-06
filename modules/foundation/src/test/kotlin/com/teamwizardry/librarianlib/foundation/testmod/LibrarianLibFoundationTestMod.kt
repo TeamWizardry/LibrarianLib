@@ -10,6 +10,7 @@ object LibrarianLibFoundationTestMod: BaseMod(true) {
         ModTiles.registerTileEntities(registrationManager)
         ModBlocks.registerBlocks(registrationManager)
         ModItems.registerItems(registrationManager)
+        ModEntities.registerEntities(registrationManager)
 
         registrationManager.itemGroupIcon = ModItems.testItem
     }

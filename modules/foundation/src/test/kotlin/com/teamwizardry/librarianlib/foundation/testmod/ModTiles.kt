@@ -8,7 +8,7 @@ import com.teamwizardry.librarianlib.foundation.testmod.customtypes.client.TestT
 import java.util.function.Supplier
 
 object ModTiles {
-    val testTile: LazyTileEntityType = LazyTileEntityType()
+    val testTile: LazyTileEntityType<TestTileEntity> = LazyTileEntityType()
 
     internal fun registerTileEntities(registrationManager: RegistrationManager) {
         testTile.from(registrationManager.add(

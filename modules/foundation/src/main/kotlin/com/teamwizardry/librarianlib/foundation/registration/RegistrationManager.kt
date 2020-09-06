@@ -5,10 +5,13 @@ import com.teamwizardry.librarianlib.foundation.block.IFoundationBlock
 import com.teamwizardry.librarianlib.foundation.item.IFoundationItem
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.RenderTypeLookup
+import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer
 import net.minecraft.data.BlockTagsProvider
 import net.minecraft.data.DataGenerator
 import net.minecraft.data.ItemTagsProvider
+import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityType
 import net.minecraft.item.BlockItem
 import net.minecraft.item.Item
 import net.minecraft.item.ItemGroup
@@ -26,6 +29,7 @@ import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.client.registry.ClientRegistry
+import net.minecraftforge.fml.client.registry.RenderingRegistry
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent
@@ -57,7 +61,8 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
 
     private val blocks = mutableListOf<BlockSpec>()
     private val items = mutableListOf<ItemSpec>()
-    private val tileEntities = mutableListOf<TileEntitySpec>()
+    private val tileEntities = mutableListOf<TileEntitySpec<*>>()
+    private val entities = mutableListOf<EntitySpec<*>>()
 
     /**
      * Methods for performing data generation
@@ -89,9 +94,18 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     /**
      * Adds a tile entity type to this registration manager and returns a lazy reference to it
      */
-    public fun add(spec: TileEntitySpec): LazyTileEntityType {
+    public fun <T: TileEntity> add(spec: TileEntitySpec<T>): LazyTileEntityType<T> {
         spec.modid = modid
         tileEntities.add(spec)
+        return spec.lazy
+    }
+
+    /**
+     * Adds an entity type to this registration manager and returns a lazy reference to it
+     */
+    public fun <T: Entity> add(spec: EntitySpec<T>): LazyEntityType<T> {
+        spec.modid = modid
+        entities.add(spec)
         return spec.lazy
     }
 
@@ -130,6 +144,15 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
 
     @SubscribeEvent
     @JvmSynthetic
+    internal fun registerEntities(e: RegistryEvent.Register<EntityType<*>>) {
+        entities.forEach { te ->
+            logger.debug("Manager for $modid: Registering EntityType ${te.registryName}")
+            e.registry.register(te.typeInstance)
+        }
+    }
+
+    @SubscribeEvent
+    @JvmSynthetic
     internal fun commonSetup(e: FMLCommonSetupEvent) {
     }
 
@@ -141,10 +164,19 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
         }
         tileEntities.forEach { spec ->
             val renderer = spec.renderer ?: return@forEach
-            logger.debug("Manager for $modid: Registering TER for ${spec.registryName}")
+            logger.debug("Manager for $modid: Registering TileEntityRenderer for ${spec.registryName}")
             @Suppress("UNCHECKED_CAST")
             ClientRegistry.bindTileEntityRenderer(spec.typeInstance as TileEntityType<TileEntity>) {
                 renderer.applyClient(it) as TileEntityRenderer<TileEntity>
+            }
+        }
+        entities.forEach { spec ->
+            spec.renderFactory?.also { factory ->
+                logger.debug("Manager for $modid: Registering EntityRenderer for ${spec.registryName}")
+                @Suppress("UNCHECKED_CAST")
+                RenderingRegistry.registerEntityRenderingHandler(spec.typeInstance as EntityType<Entity>) {
+                    factory.applyClient(it) as EntityRenderer<Entity>
+                }
             }
         }
     }

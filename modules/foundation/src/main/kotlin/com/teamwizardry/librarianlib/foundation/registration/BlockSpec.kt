@@ -109,7 +109,7 @@ public class BlockSpec(
         this.itemConstructor = constructor
     }
 
-    public fun tileEntity(type: LazyTileEntityType): BlockSpec = build {
+    public fun tileEntity(type: LazyTileEntityType<*>): BlockSpec = build {
         val tileSpec = type.spec
             ?: if (type.typeInstance == null)
                 throw IllegalStateException("Can't add a block to a LazyTileEntityType that isn't initialized")
