@@ -29,12 +29,13 @@ import kotlin.math.min
  *
  * This class makes two main sacrifices in the name of speed:
  *
- * 1. It doesn't clear its cache every tick. [requestRefresh] can be used cause the cache to be cleared immediately.
+ * 1. It doesn't clear its cache every tick. [blockCache] and [airCache] can be used to clear the cache immediately if
+ * needed.
  * 2. It doesn't properly handle collision boxes that extend outside the bounds of their block. This is because, unlike
  * Minecraft's collision handling it doesn't check any blocks outside of those the velocity vector moves through.
  */
 @OnlyIn(Dist.CLIENT)
-object GlitterWorldCollider {
+public object GlitterWorldCollider {
 
     private val blockCache = Long2ObjectOpenHashMap<List<AxisAlignedBB>>()
     private val shapeCache = Object2ObjectOpenHashMap<VoxelShape, List<AxisAlignedBB>>()
@@ -45,17 +46,17 @@ object GlitterWorldCollider {
     /**
      * The cache of block collision AABBs. Refreshes every 10 ticks (0.5 seconds) by default
      */
-    val blockCacheManager: CacheManager = CacheManager(10) { blockCache.clear() }
+    public val blockCacheManager: CacheManager = CacheManager(10) { blockCache.clear() }
 
     /**
      * The cache of [VoxelShapes][VoxelShape] to AABBs. Refreshes every 1200 ticks (60 seconds) by default
      */
-    val shapeCacheManager: CacheManager = CacheManager(1200) { shapeCache.clear() }
+    public val shapeCacheManager: CacheManager = CacheManager(1200) { shapeCache.clear() }
 
     /**
      * The cache of chunk sections' empty status. Refreshes every 40 ticks (2 seconds) by default
      */
-    val airCacheManager: CacheManager = CacheManager(40) { airCache.clear() }
+    public val airCacheManager: CacheManager = CacheManager(40) { airCache.clear() }
 
     /**
      * Request that the cache be cleared. Use this sparingly as it can negatively impact performance. Individual caches
@@ -64,7 +65,7 @@ object GlitterWorldCollider {
      * This method _immediately_ clears all the caches, meaning calling it repeatedly between [collide] calls can
      * severely impact performance.
      */
-    fun clearCache() {
+    public fun clearCache() {
         blockCache.clear()
         shapeCache.clear()
         airCache.clear()
@@ -78,7 +79,7 @@ object GlitterWorldCollider {
      * is clamped to ±[maxBounds] in order to avoid accidental infinite loops or other such nastiness.
      */
     @JvmOverloads
-    fun collide(
+    public fun collide(
         result: RayHitResult,
         posX: Double,
         posY: Double,
@@ -169,7 +170,7 @@ object GlitterWorldCollider {
                         result.collisionBlockZ = block.z
                     }
                 }
-                if(result.collisionFraction != 1.0)
+                if (result.collisionFraction != 1.0)
                     break // stop on the first hit
             }
         }
@@ -198,9 +199,9 @@ object GlitterWorldCollider {
 
         // get the chunk without trying to load or generate it
         val chunk = world.getChunk(x shr 4, z shr 4, ChunkStatus.EMPTY, false)
-        if(chunk == null) {
+        if (chunk == null) {
             // the entire chunk is unloaded. Mark all its sub-chunks as empty
-            for(i in 0 until 16) {
+            for (i in 0 until 16) {
                 sectionPos.setPos(x shr 4, i, z shr 4)
                 airCache.add(sectionPos.toLong())
             }
@@ -233,7 +234,7 @@ object GlitterWorldCollider {
     @Suppress("UNUSED_PARAMETER")
     @SubscribeEvent
     @JvmStatic
-    fun tick(e: TickEvent.ClientTickEvent) {
+    public fun tick(e: TickEvent.ClientTickEvent) {
         blockCacheManager.tick()
         shapeCacheManager.tick()
         airCacheManager.tick()
@@ -241,68 +242,68 @@ object GlitterWorldCollider {
 
     @Suppress("UNUSED_PARAMETER")
     @SubscribeEvent
-    fun unloadWorld(e: WorldEvent.Unload) {
+    public fun unloadWorld(e: WorldEvent.Unload) {
         clearCache()
     }
 
-    class CacheManager(var interval: Int, private val clearFunction: () -> Unit) {
+    public class CacheManager(public var interval: Int, private val clearFunction: () -> Unit) {
         private var age = 0
 
-        fun tick() {
-            if(interval < 0) {
+        public fun tick() {
+            if (interval < 0) {
                 age = 0
                 return
             }
             age++
 
-            if(age >= interval) {
+            if (age >= interval) {
                 clear()
             }
         }
 
-        fun clear() {
+        public fun clear() {
             clearFunction()
             age = 0
         }
     }
 }
 
-class RayHitResult {
+public class RayHitResult {
     /**
      * The fraction along the raytrace that an impact occurred, or 1.0 if no impact occurred
      */
-    var collisionFraction: Double = 0.0
+    public var collisionFraction: Double = 0.0
 
     /**
      * The X component of the impacted face's normal, or 0.0 if no impact occurred
      */
-    var collisionNormalX: Double = 0.0
+    public var collisionNormalX: Double = 0.0
 
     /**
      * The Y component of the impacted face's normal, or 0.0 if no impact occurred
      */
-    var collisionNormalY: Double = 0.0
+    public var collisionNormalY: Double = 0.0
 
     /**
      * The Z component of the impacted face's normal, or 0.0 if no impact occurred
      */
-    var collisionNormalZ: Double = 0.0
+    public var collisionNormalZ: Double = 0.0
 
     /**
      * The X component of the impacted block's position, or 0.0 if no impact occurred. Test if [collisionFraction] is
      * less than 1.0 to tell between a collision at (0,0,0) and no collision.
      */
-    var collisionBlockX: Int = 0
+    public var collisionBlockX: Int = 0
 
     /**
      * The Y component of the impacted block's position, or 0.0 if no impact occurred. Test if [collisionFraction] is
      * less than 1.0 to tell between a collision at (0,0,0) and no collision.
      */
-    var collisionBlockY: Int = 0
+    public var collisionBlockY: Int = 0
 
     /**
      * The Z component of the impacted block's position, or 0.0 if no impact occurred. Test if [collisionFraction] is
      * less than 1.0 to tell between a collision at (0,0,0) and no collision.
      */
-    var collisionBlockZ: Int = 0
+    public var collisionBlockZ: Int = 0
 }

@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * [removeFromGame] will, as the name implies, remove the particle system from the game, at which point it will no
  * longer render or receive updates
  */
-abstract class ParticleSystem {
+public abstract class ParticleSystem {
 
     init {
         addToGame()
@@ -48,19 +48,22 @@ abstract class ParticleSystem {
      * The modules that are called every tick for each particle. They are called in sequence for each particle, meaning
      * temporary state set in one module can be safely used in the subsequent modules.
      */
-    val updateModules: MutableList<ParticleUpdateModule> = mutableListOf()
+    public val updateModules: MutableList<ParticleUpdateModule> = mutableListOf()
+
     /**
      * The modules that are called once at the end of each tick and passed the entire list of particles. Often used for
      * depth sorting with the [DepthSortModule]
      */
-    val globalUpdateModules: MutableList<ParticleGlobalUpdateModule> = mutableListOf()
+    public val globalUpdateModules: MutableList<ParticleGlobalUpdateModule> = mutableListOf()
+
     /**
      * The modules that are called before each particle is rendered. They are similar to [updateModules] and are often
      * used to optimize computations that are reused in multiple places (say, calculating a normal vector) by storing
      * them in a local variable or [VariableBinding]. These will be called individually by each renderer, so they cannot
      * be used to optimize computations that are reused between renderers.
      */
-    val renderPrepModules: MutableList<ParticleUpdateModule> = mutableListOf()
+    public val renderPrepModules: MutableList<ParticleUpdateModule> = mutableListOf()
+
     /**
      * The modules that handle the rendering of the particles in this system. They are each passed the full list of
      * particles, and are free to use that information however they please. They are called in sequence, meaning any
@@ -68,32 +71,32 @@ abstract class ParticleSystem {
      * translucent renderer modules would result in the first module rendering, then the translucent particles in
      * the second module being occluded by any polygons the first renders.
      */
-    val renderModules: MutableList<ParticleRenderModule> = mutableListOf()
+    public val renderModules: MutableList<ParticleRenderModule> = mutableListOf()
 
     /**
      * The maximum number of particles in the particle reuse pool. The reuse pool is used to reduce the amount of memory
      * churn by retaining dead particle arrays and reusing them in [addParticle] as opposed to creating new ones each
      * time.
      */
-    var poolSize: Int = 1000
+    public var poolSize: Int = 1000
 
     /**
      * Whether to ignore the client's particle density setting when spawning particles. If this is true, spawns will be
      * randomly ignored based on [decreasedSpawnChance] and [minimalSpawnChance]. If a particle is ignored,
      * [addParticle] will return a placeholder array.
      */
-    var ignoreParticleSetting: Boolean = false
+    public var ignoreParticleSetting: Boolean = false
 
     /**
      * The particle spawn chance when the client has the particles option set to "Decreased". Defaults to `1/3`.
      */
-    var decreasedSpawnChance: Double = 1/3.0
+    public var decreasedSpawnChance: Double = 1 / 3.0
 
     /**
      * The particle spawn chance when the client has the particles option set to "Decreased". Defaults to `0` (in
      * vanilla some particles always spawn, and these use a chance of `1/30`).
      */
-    var minimalSpawnChance: Double = 0.0
+    public var minimalSpawnChance: Double = 0.0
 
     private val rand = Random()
     private var currentSpawnChance: Double = 1.0
@@ -110,20 +113,21 @@ abstract class ParticleSystem {
      * The built-in binding for particle lifetime. If the value in [age] is >= the value in [lifetime] the particle will
      * be removed during the next frame or update.
      */
-    lateinit var lifetime: StoredBinding
+    public lateinit var lifetime: StoredBinding
         private set
+
     /**
      * The built-in binding for particle age. Upon spawning the value in this binding is initialized to 0, and every
      * tick thereafter its value is incremented. If the value in [age] is >= the value in [lifetime] the particle will
      * be removed during the next frame or update.
      */
-    lateinit var age: StoredBinding
+    public lateinit var age: StoredBinding
         private set
 
     /**
      * The required length of the particle arrays.
      */
-    var fieldCount = 0
+    public var fieldCount: Int = 0
         private set
 
     private var canBind = false
@@ -135,7 +139,7 @@ abstract class ParticleSystem {
      *
      * This method is the only valid place for bindings to be created with [bind].
      */
-    abstract fun configure()
+    public abstract fun configure()
 
     /**
      * Creates a new [StoredBinding] of the specified size and allocates space for it at the end of the particle array,
@@ -143,10 +147,10 @@ abstract class ParticleSystem {
      *
      * @throws IllegalStateException if called outside of [configure]
      */
-    fun bind(size: Int): StoredBinding {
+    public fun bind(size: Int): StoredBinding {
         if (!canBind)
             throw IllegalStateException("It is no longer safe to create new bindings, particles have already been " +
-                    "created based on current field count.")
+                "created based on current field count.")
         val binding = StoredBinding(fieldCount, size)
         fieldCount += size
         return binding
@@ -158,8 +162,8 @@ abstract class ParticleSystem {
      * adjustment this method makes. This method should be called each time a new "batch" of particles is being spawned,
      * since it uses a random number generator to reflect the fractional component of the adjusted spawn count.
      */
-    fun adjustParticleCount(count: Int): Int {
-        if(currentSpawnChance == 1.0)
+    public fun adjustParticleCount(count: Int): Int {
+        if (currentSpawnChance == 1.0)
             return count
         // adding a random value from [0, 1) means that when truncating to an int, the fractional component gets
         // transformed into a random +1
@@ -189,7 +193,7 @@ abstract class ParticleSystem {
      * @param lifetime the lifetime of the particle in ticks
      * @param params an array of values to initialize the particle array with.
      */
-    fun addParticle(lifetime: Int, vararg params: Double): DoubleArray {
+    public fun addParticle(lifetime: Int, vararg params: Double): DoubleArray {
         if (!systemInitialized) {
             reload()
             systemInitialized = true
@@ -197,7 +201,7 @@ abstract class ParticleSystem {
 
         val realSpawn = ignoreParticleSetting || currentSpawnChance == 1.0 || rand.nextDouble() < currentSpawnChance
 
-        val particle = if(realSpawn)
+        val particle = if (realSpawn)
             particlePool.pollFirst() ?: DoubleArray(fieldCount)
         else
             placeholderParticle
@@ -211,7 +215,7 @@ abstract class ParticleSystem {
                 particle[i] = 0.0
         }
 
-        if(!realSpawn)
+        if (!realSpawn)
             return placeholderParticle
 
         if (shouldQueue.get()) {
@@ -229,14 +233,14 @@ abstract class ParticleSystem {
     /**
      * Adds the particle system to the game for rendering and updates.
      */
-    fun addToGame() {
+    public fun addToGame() {
         ParticleSystemManager.add(this)
     }
 
     /**
      * Removes the particle system from the game, meaning it will no longer render or receive updates.
      */
-    fun removeFromGame() {
+    public fun removeFromGame() {
         ParticleSystemManager.remove(this)
     }
 
@@ -244,9 +248,9 @@ abstract class ParticleSystem {
      * Reloads the particle system. This involves clearing the particle and module lists, then calling [configure] to
      * re-bind values and rebuild the module lists.
      */
-    fun reload() {
-       // this.particles.clear()
-       // this.particlePool.clear()
+    public fun reload() {
+        this.particles.clear()
+        this.particlePool.clear()
         this.updateModules.clear()
         this.globalUpdateModules.clear()
         this.renderPrepModules.clear()
@@ -265,7 +269,7 @@ abstract class ParticleSystem {
 
     internal fun update() {
         shouldQueue.set(true)
-        while(true) {
+        while (true) {
             particles.add(queuedAdditions.poll() ?: break)
         }
         val iter = particles.iterator()
@@ -294,7 +298,7 @@ abstract class ParticleSystem {
         }
         shouldQueue.set(false)
         @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
-        currentSpawnChance = when(Client.minecraft.gameSettings.particles) {
+        currentSpawnChance = when (Client.minecraft.gameSettings.particles) {
             ParticleStatus.ALL -> 1.0
             ParticleStatus.DECREASED -> decreasedSpawnChance
             ParticleStatus.MINIMAL -> minimalSpawnChance
@@ -309,7 +313,7 @@ abstract class ParticleSystem {
 
     internal fun render(stack: MatrixStack, projectionMatrix: Matrix4f) {
         shouldQueue.set(true)
-        while(true) {
+        while (true) {
             particles.add(queuedAdditions.poll() ?: break)
         }
         for (i in 0 until renderModules.size) {

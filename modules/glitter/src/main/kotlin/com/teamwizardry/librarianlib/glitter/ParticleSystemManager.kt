@@ -32,7 +32,7 @@ internal object ParticleSystemManager: ISimpleReloadListener<Unit> {
     }
 
     fun add(system: ParticleSystem) {
-        if(!systems.contains(system)) {
+        if (!systems.contains(system)) {
             systems.add(system)
         }
     }
@@ -67,7 +67,7 @@ internal object ParticleSystemManager: ISimpleReloadListener<Unit> {
         if (!Minecraft.getInstance().gameSettings.showDebugInfo)
             return
 
-        if(systems.isNotEmpty()) {
+        if (systems.isNotEmpty()) {
             event.left.add("LibrarianLib Glitter:")
             var total = 0
             systems.forEach { system ->

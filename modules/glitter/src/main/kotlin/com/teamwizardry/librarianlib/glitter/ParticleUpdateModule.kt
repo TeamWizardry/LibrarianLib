@@ -17,14 +17,14 @@ import com.teamwizardry.librarianlib.glitter.modules.VelocityUpdateModule
  * position/velocity caluclations ([VelocityUpdateModule], [AccelerationUpdateModule]) to providing an all-in-one and
  * performant physics module ([BasicPhysicsUpdateModule]).
  */
-interface ParticleUpdateModule {
+public interface ParticleUpdateModule {
     /**
      * Run on the passed particle. This module should do no further processing for the particle after this method
      * completes.
      */
-    fun update(particle: DoubleArray)
+    public fun update(particle: DoubleArray)
 
-    fun init(particle: DoubleArray) {}
+    public fun init(particle: DoubleArray) {}
 }
 
 /**
@@ -33,9 +33,9 @@ interface ParticleUpdateModule {
  * Particle batch update modules are called at the end of each tick and are passed the full particle list. They were
  * designed to do depth sorting but they are general enough to do much more.
  */
-interface ParticleGlobalUpdateModule {
+public interface ParticleGlobalUpdateModule {
     /**
      * Run on the passed particle list.
      */
-    fun update(particles: MutableList<DoubleArray>)
+    public fun update(particles: MutableList<DoubleArray>)
 }

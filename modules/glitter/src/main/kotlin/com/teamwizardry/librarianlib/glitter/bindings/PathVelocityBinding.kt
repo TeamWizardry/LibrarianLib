@@ -17,37 +17,37 @@ import com.teamwizardry.librarianlib.glitter.ReadParticleBinding
  *
  * @see ParticlePath
  */
-class PathVelocityBinding(
-        /**
-         * The lifetime binding for the particle. Generally [ParticleSystem.lifetime]
-         */
-        override val lifetime: ReadParticleBinding,
-        /**
-         * The age binding for the particle. Generally [ParticleSystem.age]
-         */
-        override val age: ReadParticleBinding,
-        /**
-         * The multiplier for the normalized age. If this value is > 1 the movement will loop, and if this value is < 1
-         * the movement will end before the end of the path.
-         */
-        override val timescale: ReadParticleBinding?,
-        /**
-         * The time offset for the normalized age. Applied before the [timescale], so regardless of [timescale]'s value,
-         * if the offset is 0.5, the animation will begin halfway along the path
-         */
-        override val offset: ReadParticleBinding?,
-        /**
-         * The speed multiplier for the returned velocity.
-         */
-        @JvmField val speed: ReadParticleBinding?,
-        /**
-         * The path object to use for the tangent vectors.
-         */
-        @JvmField val path: ParticlePath,
-        /**
-         * The easing to use when generating values for the binding.
-         */
-        override val easing: Easing = Easing.linear
+public class PathVelocityBinding(
+    /**
+     * The lifetime binding for the particle. Generally [ParticleSystem.lifetime]
+     */
+    override val lifetime: ReadParticleBinding,
+    /**
+     * The age binding for the particle. Generally [ParticleSystem.age]
+     */
+    override val age: ReadParticleBinding,
+    /**
+     * The multiplier for the normalized age. If this value is > 1 the movement will loop, and if this value is < 1
+     * the movement will end before the end of the path.
+     */
+    override val timescale: ReadParticleBinding?,
+    /**
+     * The time offset for the normalized age. Applied before the [timescale], so regardless of [timescale]'s value,
+     * if the offset is 0.5, the animation will begin halfway along the path
+     */
+    override val offset: ReadParticleBinding?,
+    /**
+     * The speed multiplier for the returned velocity.
+     */
+    @JvmField public val speed: ReadParticleBinding?,
+    /**
+     * The path object to use for the tangent vectors.
+     */
+    @JvmField public val path: ParticlePath,
+    /**
+     * The easing to use when generating values for the binding.
+     */
+    override val easing: Easing = Easing.linear
 ): AbstractTimeBinding(lifetime, age, timescale, offset, easing) {
 
     override var contents: DoubleArray = DoubleArray(path.value.size)

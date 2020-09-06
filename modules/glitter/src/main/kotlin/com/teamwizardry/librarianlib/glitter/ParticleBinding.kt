@@ -2,6 +2,7 @@
  * Miscellaneous ParticleBinding utilities
  */
 @file:JvmName("ParticleBindings")
+
 package com.teamwizardry.librarianlib.glitter
 
 import com.teamwizardry.librarianlib.glitter.bindings.*
@@ -15,18 +16,18 @@ import java.awt.Color
  * @see ReadParticleBinding
  * @see WriteParticleBinding
  */
-interface ReadWriteParticleBinding: ParticleBinding, ReadParticleBinding, WriteParticleBinding
+public interface ReadWriteParticleBinding: ParticleBinding, ReadParticleBinding, WriteParticleBinding
 
 /**
  * A readable ParticleBinding
  *
  * @see ParticleBinding
  */
-interface ReadParticleBinding: ParticleBinding {
+public interface ReadParticleBinding: ParticleBinding {
     /**
      * Loads the value into [contents].
      */
-    fun load(particle: DoubleArray)
+    public fun load(particle: DoubleArray)
 }
 
 /**
@@ -34,11 +35,11 @@ interface ReadParticleBinding: ParticleBinding {
  *
  * @see ParticleBinding
  */
-interface WriteParticleBinding: ParticleBinding {
+public interface WriteParticleBinding: ParticleBinding {
     /**
      * Commits the current [contents] into storage
      */
-    fun store(particle: DoubleArray)
+    public fun store(particle: DoubleArray)
 }
 
 /**
@@ -60,15 +61,14 @@ interface WriteParticleBinding: ParticleBinding {
  *
  * @see StoredBinding
  * @see ConstantBinding
- * @see InterpBinding
  * @see EaseBinding
  * @see PathVelocityBinding
  * @see VariableBinding
  */
-interface ParticleBinding {
-    val contents: DoubleArray
+public interface ParticleBinding {
+    public val contents: DoubleArray
 
-    fun require(size: Int) {
+    public fun require(size: Int) {
         if (this.contents.size != size)
             throw IllegalArgumentException("Binding size is incorrect, required: $size, actual: ${this.contents.size}")
     }

@@ -18,18 +18,18 @@ internal object SpriteRenderType: RenderState("", Runnable {}, Runnable {}) {
             .alpha(DEFAULT_ALPHA)
             .depthTest(DEPTH_LEQUAL)
 
-        if(blendMode != null) {
-            renderState.transparency(TransparencyState("particle_transparency", Runnable {
+        if (blendMode != null) {
+            renderState.transparency(TransparencyState("particle_transparency", {
                 RenderSystem.enableBlend()
                 blendMode.glApply()
-            }, Runnable {
+            }, {
                 blendMode.reset()
                 RenderSystem.disableBlend()
                 RenderSystem.defaultBlendFunc()
             }))
         }
 
-        if(!writeDepth) {
+        if (!writeDepth) {
             renderState.writeMask(COLOR_WRITE)
         }
 
