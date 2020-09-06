@@ -5,9 +5,9 @@ import net.minecraftforge.client.model.generators.ItemModelProvider
 /**
  * An interface for implementing Foundation's extended item functionality.
  */
-interface IFoundationItem {
+public interface IFoundationItem {
     /**
      * Generates the models for this item
      */
-    fun generateItemModel(gen: ItemModelProvider)
+    public fun generateItemModel(gen: ItemModelProvider)
 }

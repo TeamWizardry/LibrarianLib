@@ -5,7 +5,7 @@ import net.minecraft.resources.ResourcePackType
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.model.generators.ExistingFileHelper
 
-class TextureExistsExistingFileHelper(val wrapped: ExistingFileHelper): ExistingFileHelper(listOf(), false) {
+internal class TextureExistsExistingFileHelper(val wrapped: ExistingFileHelper): ExistingFileHelper(listOf(), false) {
 
     override fun exists(loc: ResourceLocation, type: ResourcePackType, pathSuffix: String, pathPrefix: String): Boolean {
         if(pathSuffix == ".png")

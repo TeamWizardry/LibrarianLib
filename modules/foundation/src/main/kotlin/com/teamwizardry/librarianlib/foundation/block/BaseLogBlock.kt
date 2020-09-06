@@ -14,14 +14,14 @@ import net.minecraftforge.client.model.generators.BlockStateProvider
  * - `<modid>:block/<block_id>.png`
  * - `<modid>:block/<block_id>_top.png`
  */
-class BaseLogBlock(verticalColorIn: MaterialColor, properties: Properties): LogBlock(verticalColorIn, properties), IFoundationBlock {
+public class BaseLogBlock(verticalColorIn: MaterialColor, properties: Properties): LogBlock(verticalColorIn, properties), IFoundationBlock {
     override fun generateBlockState(gen: BlockStateProvider) {
         gen.logBlock(this)
     }
 
-    companion object {
+    public companion object {
         @JvmField
-        val DEFAULT_PROPERTIES: DefaultProperties = DefaultProperties()
+        public val DEFAULT_PROPERTIES: DefaultProperties = DefaultProperties()
             .material(Material.WOOD)
             .hardnessAndResistance(2f)
             .sound(SoundType.WOOD)

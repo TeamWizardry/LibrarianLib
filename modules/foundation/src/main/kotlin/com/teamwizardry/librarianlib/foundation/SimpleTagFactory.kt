@@ -11,24 +11,27 @@ import net.minecraft.tags.ItemTags
 import net.minecraft.tags.Tag
 import net.minecraft.util.ResourceLocation
 
-class BaseTagFactory(val modid: String) {
+/**
+ * A utility class for easily creating tags.
+ */
+public class SimpleTagFactory(public val modid: String) {
     /**
      * create a new Block tag
      */
-    fun block(name: String): Tag<Block> = BlockTags.Wrapper(ResourceLocation(modid, name))
+    public fun block(name: String): Tag<Block> = BlockTags.Wrapper(ResourceLocation(modid, name))
 
     /**
      * Create a new EntityType tag
      */
-    fun entityType(name: String): Tag<EntityType<*>> = EntityTypeTags.Wrapper(ResourceLocation(modid, name))
+    public fun entityType(name: String): Tag<EntityType<*>> = EntityTypeTags.Wrapper(ResourceLocation(modid, name))
 
     /**
      * Create a new Fluid tag
      */
-    fun fluid(name: String): Tag<Fluid> = FluidTags.Wrapper(ResourceLocation(modid, name))
+    public fun fluid(name: String): Tag<Fluid> = FluidTags.Wrapper(ResourceLocation(modid, name))
 
     /**
      * Create a new Item tag
      */
-    fun item(name: String): Tag<Item> = ItemTags.Wrapper(ResourceLocation(modid, name))
+    public fun item(name: String): Tag<Item> = ItemTags.Wrapper(ResourceLocation(modid, name))
 }

@@ -2,12 +2,12 @@ package com.teamwizardry.librarianlib.foundation.util
 
 import net.minecraft.item.DyeColor
 
-object FoundationUtils {
+public object FoundationUtils {
     /**
      * Gets the english name of a dye
      */
     @JvmStatic
-    fun dyeName(color: DyeColor): String {
+    public fun dyeName(color: DyeColor): String {
         return when(color) {
             DyeColor.WHITE -> "White"
             DyeColor.ORANGE -> "Orange"
