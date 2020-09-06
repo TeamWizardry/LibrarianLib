@@ -11,7 +11,7 @@ import com.teamwizardry.librarianlib.math.Align2d
 import com.teamwizardry.librarianlib.math.rect
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.PastryTestBase
 
-@UseExperimental(ExperimentalPastryAPI::class)
+@OptIn(ExperimentalPastryAPI::class)
 class PastryTestTabs: PastryTestBase() {
     init {
         val tabPane = PastryTabPane()
@@ -35,7 +35,7 @@ class PastryTestTabs: PastryTestBase() {
                 .add(
                     PastrySwitch().also { switch ->
                         switch.state = pages[index].isVisible
-                        switch.hook<PastryToggle.StateChangedEvent> { e ->
+                        switch.hook<PastryToggle.StateChangedEvent> {
                             pages[index].isVisible = switch.state
                         }
                     },

@@ -103,25 +103,13 @@ public class BlockSpec(
     }
 
     /**
-     * Sets the block constructor for deferred evaluation
-     */
-    @JvmSynthetic
-    inline fun block(crossinline constructor: (BlockSpec) -> Block): BlockSpec = block(Function { constructor(it) })
-
-    /**
      * Sets the custom [BlockItem] constructor for deferred evaluation
      */
     public fun blockItem(constructor: Function<BlockSpec, BlockItem>): BlockSpec = build {
         this.itemConstructor = constructor
     }
 
-    /**
-     * Sets the block constructor for deferred evaluation
-     */
-    @JvmSynthetic
-    inline fun blockItem(crossinline constructor: (BlockSpec) -> BlockItem): BlockSpec = blockItem(Function { constructor(it) })
-
-    fun tileEntity(type: LazyTileEntityType): BlockSpec = build {
+    public fun tileEntity(type: LazyTileEntityType): BlockSpec = build {
         val tileSpec = type.spec
             ?: if (type.typeInstance == null)
                 throw IllegalStateException("Can't add a block to a LazyTileEntityType that isn't initialized")
@@ -257,7 +245,7 @@ public class BlockSpec(
         }
     }
 
-    val lazy: LazyBlock = LazyBlock(this)
+    public val lazy: LazyBlock = LazyBlock(this)
 
     /**
      * Information used when generating data

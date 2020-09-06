@@ -86,7 +86,7 @@ public object Client {
     }
 
     @JvmStatic
-    public val resourceReloadHandler = ResourceReload()
+    public val resourceReloadHandler: ResourceReload = ResourceReload()
 
     @JvmStatic
     public fun displayGuiScreen(screen: Screen?) {

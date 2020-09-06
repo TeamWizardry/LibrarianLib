@@ -278,10 +278,10 @@ internal class TupleSerializerFactory(prism: NBTPrism): NBTSerializerFactory(pri
 
 internal class INBTPassthroughSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<INBT>()) {
     override fun create(mirror: TypeMirror): NBTSerializer<*> {
-        return INBTPassthroughSerializer(prism, mirror as ClassMirror)
+        return INBTPassthroughSerializer(mirror as ClassMirror)
     }
 
-    class INBTPassthroughSerializer(prism: NBTPrism, type: ClassMirror): NBTSerializer<INBT>(type) {
+    class INBTPassthroughSerializer(type: ClassMirror): NBTSerializer<INBT>(type) {
         @Suppress("UNCHECKED_CAST")
         private val nbtClass = type.erasure as Class<INBT>
 
@@ -297,10 +297,10 @@ internal class INBTPassthroughSerializerFactory(prism: NBTPrism): NBTSerializerF
 
 internal class ITextComponentSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<ITextComponent>()) {
     override fun create(mirror: TypeMirror): NBTSerializer<*> {
-        return ITextComponentSerializer(prism, mirror as ClassMirror)
+        return ITextComponentSerializer(mirror as ClassMirror)
     }
 
-    class ITextComponentSerializer(prism: NBTPrism, type: ClassMirror): NBTSerializer<ITextComponent>(type) {
+    class ITextComponentSerializer(type: ClassMirror): NBTSerializer<ITextComponent>(type) {
         private val componentClass = type.erasure
 
         override fun deserialize(tag: INBT, existing: ITextComponent?): ITextComponent {

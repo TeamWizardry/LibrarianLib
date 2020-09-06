@@ -207,7 +207,7 @@ public class TestScreenConfig(public val id: String, public val name: String, ac
         Client.displayGuiScreen(customScreen?.get() ?: TestScreen(this))
     }
 
-    public var activatorItem = TestItem(TestItemConfig(this.id + "_screen", this.name + " Screen", activatorItemGroup) {
+    public var activatorItem: TestItem = TestItem(TestItemConfig(this.id + "_screen", this.name + " Screen", activatorItemGroup) {
         client {
             rightClick {
                 activate()

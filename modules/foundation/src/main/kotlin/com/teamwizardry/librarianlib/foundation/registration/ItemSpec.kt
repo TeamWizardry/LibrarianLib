@@ -133,7 +133,7 @@ public class ItemSpec(
         }
     }
 
-    val lazy: LazyItem = LazyItem(this)
+    public val lazy: LazyItem = LazyItem(this)
 
     /**
      * Information used when generating data

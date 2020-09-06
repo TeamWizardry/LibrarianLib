@@ -43,7 +43,7 @@ internal class ArraySerializerFactory(prism: NBTPrism): NBTSerializerFactory(pri
             val state = analyzer.getState()
             val tag = ListNBT()
             state.populate(value)
-            state.buffer.forEachIndexed { index, v ->
+            state.buffer.forEach { v ->
                 val entry = CompoundNBT()
                 if(v != null)
                     entry.put("V", analyzer.elementSerializer.write(v))

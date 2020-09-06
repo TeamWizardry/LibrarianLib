@@ -29,7 +29,7 @@ public class SafetyNetErrorScreen(private val message: String, private val e: Ex
             parts.add(TextScreenPart(exceptionMessage, maxWidth))
         }
 
-        guiWidth = min(maxWidth, parts.map { it.width }.max() ?: 0) / 2 * 2
+        guiWidth = min(maxWidth, parts.map { it.width }.maxOrNull() ?: 0) / 2 * 2
 
         guiHeight = parts.sumBy { it.height } + (parts.size - 1) * gap
     }
@@ -99,7 +99,7 @@ public class SafetyNetErrorScreen(private val message: String, private val e: Ex
             height = lines.size * fontRenderer.FONT_HEIGHT + // line height
                 (lines.size - 1) // 1px between lines
 
-            width = (lines.map { fontRenderer.getStringWidth(it) }.max() ?: 0) / 2 * 2
+            width = (lines.map { fontRenderer.getStringWidth(it) }.maxOrNull() ?: 0) / 2 * 2
         }
 
         override fun render(yPos: Int) {

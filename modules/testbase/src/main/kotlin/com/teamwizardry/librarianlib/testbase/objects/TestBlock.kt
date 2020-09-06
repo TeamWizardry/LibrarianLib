@@ -9,6 +9,7 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.BlockItemUseContext
 import net.minecraft.item.ItemStack
+import net.minecraft.state.DirectionProperty
 import net.minecraft.state.StateContainer
 import net.minecraft.state.properties.BlockStateProperties
 import net.minecraft.util.ActionResultType
@@ -165,7 +166,7 @@ public open class TestBlock(public val config: TestBlockConfig): Block(config.al
     }
 
     public companion object {
-        public val FACING = BlockStateProperties.FACING
+        public val FACING: DirectionProperty = BlockStateProperties.FACING
 
         // needed because fillStateContainer is called before we can set the config property
         private var configHolder: TestBlockConfig? by threadLocal()

@@ -283,6 +283,21 @@ public abstract class Shader(
         return out
     }
 
+    private fun prependLineNumbers(source: String): String {
+        val lineRegex = """^\s*#line\s+(\d+)""".toRegex()
+        var lineNumber = 0
+
+        return source.lineSequence().joinToString("\n") { line ->
+            lineNumber++
+            var lineOut = ""
+            lineRegex.matchEntire(line)?.also { match ->
+                lineNumber = match.groupValues[1].toInt()
+            }
+            lineOut += "%4d: %s".format(lineNumber, line)
+            lineOut
+        }
+    }
+
     private fun compileShader(type: Int, typeName: String, source: String, location: ResourceLocation, files: Map<ResourceLocation, Int>): Int {
         logger.debug("Compiling $typeName shader $location")
         checkVersion(source)
@@ -301,23 +316,6 @@ public abstract class Shader(
             files.forEach { (key, value) ->
                 log = log.replace(Regex("\\b$value\\b"), if (key.namespace != location.namespace) "$key" else key.path)
             }
-
-            val lineRegex = """^\s*#line\s+(\d+)(?: \d+ // (.*))?\s*$""".toRegex()
-            var lineNumber = 0
-
-            // not used atm, since I'm not sure it's necessary or useful. Line numbers should be correct, and if we have
-            // to use this because they aren't... that's a problem.
-            val sourceLog = "\n### BEGIN SOURCE\n" + source.lineSequence().joinToString("\n") { line ->
-                lineNumber++
-                var lineOut = ""
-                lineRegex.matchEntire(line)?.also { match ->
-                    lineNumber = match.groupValues[1].toInt()
-                    if (match.groupValues[2] != "")
-                        lineOut += "FILE: ${match.groupValues[2]}\n"
-                }
-                lineOut += "%4d: %s".format(lineNumber, line)
-                lineOut
-            } + "\n### END SOURCE"
 
             logger.error("Error compiling $typeName shader $location")
             throw ShaderCompilationException("Error compiling $typeName shader `$location`:\n$log")

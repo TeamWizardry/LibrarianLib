@@ -9,10 +9,10 @@ import net.minecraftforge.common.util.INBTSerializable
 
 internal class INBTSerializableSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<INBTSerializable<*>>()) {
     override fun create(mirror: TypeMirror): NBTSerializer<*> {
-        return INBTSerializableSerializer(prism, mirror as ClassMirror)
+        return INBTSerializableSerializer(mirror as ClassMirror)
     }
 
-    class INBTSerializableSerializer(prism: NBTPrism, type: ClassMirror): NBTSerializer<INBTSerializable<INBT>>(type) {
+    class INBTSerializableSerializer(type: ClassMirror): NBTSerializer<INBTSerializable<INBT>>(type) {
         override fun deserialize(tag: INBT, existing: INBTSerializable<INBT>?): INBTSerializable<INBT> {
             if(existing == null)
                 throw DeserializationException("INBTSerializable requires an existing value to deserialize")
