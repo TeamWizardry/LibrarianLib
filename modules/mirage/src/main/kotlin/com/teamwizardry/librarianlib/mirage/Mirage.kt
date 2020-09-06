@@ -119,7 +119,7 @@ public class Mirage private constructor(public val type: ResourcePackType) {
          * - [FallbackResourceManager.&lt;init&gt;][FallbackResourceManager]
          */
         @JvmStatic
-        internal fun `fallbackresourcemanager-init-asm`(pack: FallbackResourceManager) {
+        public fun `fallbackresourcemanager-init-asm`(pack: FallbackResourceManager) {
             pack.resourcePacks.add(Pack)
         }
 
@@ -136,7 +136,8 @@ public class Mirage private constructor(public val type: ResourcePackType) {
          * - [SimpleReloadableResourceManager.getAllResourceLocations]
          */
         @JvmStatic
-        internal fun `simplereloadableresourcemanager-namespace_fallback-asm`(manager: IResourceManager?, type: ResourcePackType): IResourceManager? {
+        @JvmName("simplereloadableresourcemanager-namespace_fallback-asm")
+        internal fun simpleReloadableResourceManagerNamespaceFallback(manager: IResourceManager?, type: ResourcePackType): IResourceManager? {
             return manager ?: resources(type).fallback
         }
 
@@ -145,7 +146,8 @@ public class Mirage private constructor(public val type: ResourcePackType) {
          * - [LanguageMap.tryTranslateKey]
          */
         @JvmStatic
-        internal fun `languagemap-trytranslatekey-asm`(result: String?, key: String?): String? {
+        @JvmName("languagemap-trytranslatekey-asm")
+        internal fun languageMapTryTranslateKey(result: String?, key: String?): String? {
             return result
                 ?: resources(ResourcePackType.SERVER_DATA).read { it.languageKeys[key] }
                 ?: resources(ResourcePackType.CLIENT_RESOURCES).read { it.languageKeys[key] }
@@ -156,7 +158,8 @@ public class Mirage private constructor(public val type: ResourcePackType) {
          * - [LanguageMap.exists]
          */
         @JvmStatic
-        internal fun `languagemap-exists-asm`(result: Boolean, key: String?): Boolean {
+        @JvmName("languagemap-exists-asm")
+        internal fun languageMapExists(result: Boolean, key: String?): Boolean {
             return result ||
                 resources(ResourcePackType.SERVER_DATA).read { key in it.languageKeys } ||
                 resources(ResourcePackType.CLIENT_RESOURCES).read { key in it.languageKeys }
@@ -166,7 +169,8 @@ public class Mirage private constructor(public val type: ResourcePackType) {
          *
          */
         @JvmStatic
-        internal fun `locale-translatekeyprivate-asm`(result: String?, key: String?): String? {
+        @JvmName("locale-translatekeyprivate-asm")
+        internal fun localeTranslateKeyPrivate(result: String?, key: String?): String? {
             return result
                 ?: resources(ResourcePackType.SERVER_DATA).read { it.languageKeys[key] }
                 ?: resources(ResourcePackType.CLIENT_RESOURCES).read { it.languageKeys[key] }
@@ -176,7 +180,8 @@ public class Mirage private constructor(public val type: ResourcePackType) {
          *
          */
         @JvmStatic
-        internal fun `locale-haskey-asm`(result: Boolean, key: String?): Boolean {
+        @JvmName("locale-haskey-asm")
+        internal fun localeHasKey(result: Boolean, key: String?): Boolean {
             return result ||
                 resources(ResourcePackType.SERVER_DATA).read { key in it.languageKeys } ||
                 resources(ResourcePackType.CLIENT_RESOURCES).read { key in it.languageKeys }
