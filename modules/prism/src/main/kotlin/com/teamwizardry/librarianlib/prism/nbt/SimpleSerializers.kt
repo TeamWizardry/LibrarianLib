@@ -14,7 +14,7 @@ import java.math.BigInteger
 import java.util.BitSet
 import java.util.UUID
 
-open class PairSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<Pair<*, *>>()) {
+internal class PairSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<Pair<*, *>>()) {
     override fun create(mirror: TypeMirror): NBTSerializer<*> {
         return PairSerializer(prism, mirror as ClassMirror)
     }
@@ -40,7 +40,7 @@ open class PairSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, M
     }
 }
 
-open class TripleSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<Triple<*, *, *>>()) {
+internal class TripleSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<Triple<*, *, *>>()) {
     override fun create(mirror: TypeMirror): NBTSerializer<*> {
         return TripleSerializer(prism, mirror as ClassMirror)
     }
@@ -69,7 +69,7 @@ open class TripleSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism,
     }
 }
 
-object BigIntegerSerializer: NBTSerializer<BigInteger>() {
+internal object BigIntegerSerializer: NBTSerializer<BigInteger>() {
     override fun deserialize(tag: INBT, existing: BigInteger?): BigInteger {
         return BigInteger(tag.expectType<ByteArrayNBT>("tag").byteArray)
     }
@@ -79,7 +79,7 @@ object BigIntegerSerializer: NBTSerializer<BigInteger>() {
     }
 }
 
-object BigDecimalSerializer: NBTSerializer<BigDecimal>() {
+internal object BigDecimalSerializer: NBTSerializer<BigDecimal>() {
     override fun deserialize(tag: INBT, existing: BigDecimal?): BigDecimal {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
         return BigDecimal(
@@ -96,7 +96,7 @@ object BigDecimalSerializer: NBTSerializer<BigDecimal>() {
     }
 }
 
-object BitSetSerializer: NBTSerializer<BitSet>() {
+internal object BitSetSerializer: NBTSerializer<BitSet>() {
     override fun deserialize(tag: INBT, existing: BitSet?): BitSet {
         val bitset = BitSet.valueOf(tag.expectType<ByteArrayNBT>("tag").byteArray)
         return existing?.also {
@@ -110,7 +110,7 @@ object BitSetSerializer: NBTSerializer<BitSet>() {
     }
 }
 
-object UUIDSerializer: NBTSerializer<UUID>() {
+internal object UUIDSerializer: NBTSerializer<UUID>() {
     override fun deserialize(tag: INBT, existing: UUID?): UUID {
         return NBTUtil.readUniqueId(tag.expectType("tag"))
     }

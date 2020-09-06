@@ -23,8 +23,8 @@ import net.minecraft.util.text.ITextComponent
 import net.minecraft.world.World
 import kotlin.reflect.KProperty
 
-class TestEntityConfig(val id: String, val name: String, spawnerItemGroup: ItemGroup): TestConfig() {
-    constructor(id: String, name: String, spawnerItemGroup: ItemGroup, block: TestEntityConfig.() -> Unit): this(id, name, spawnerItemGroup) {
+public class TestEntityConfig(public val id: String, public val name: String, spawnerItemGroup: ItemGroup): TestConfig() {
+    public constructor(id: String, name: String, spawnerItemGroup: ItemGroup, block: TestEntityConfig.() -> Unit): this(id, name, spawnerItemGroup) {
         this.block()
     }
 
@@ -35,91 +35,94 @@ class TestEntityConfig(val id: String, val name: String, spawnerItemGroup: ItemG
             spawnerItem.config.description = value
         }
 
-    var serverFactory: (World) -> TestEntity = { world ->
+    public var serverFactory: (World) -> TestEntity = { world ->
         TestEntity(this, world)
     }
-    var clientFactory: ClientFunction<World, TestEntity> = ClientFunction { world ->
+    public var clientFactory: ClientFunction<World, TestEntity> = ClientFunction { world ->
         TestEntity(this, world)
     }
 
-    val typeBuilder = EntityType.Builder.create<TestEntity>({ _, world ->
+    public val typeBuilder: EntityType.Builder<TestEntity> = EntityType.Builder.create<TestEntity>({ _, world ->
         serverFactory(world)
     }, EntityClassification.MISC)
         .setCustomClientFactory { _, world ->
             clientFactory.apply(world)
         }
         .size(0.5f, 0.5f)
-    val type by lazy {
+    public val type: EntityType<TestEntity> by lazy {
         @Suppress("UNCHECKED_CAST")
         typeBuilder.build(id).setRegistryName(modid, id) as EntityType<TestEntity>
     }
 
-    val lookLength: Double = 1.0
+    public val lookLength: Double = 1.0
+
     /**
      * Designed to be modified at runtime. When true, all entities using this config will have the "glowing" effect
      * applied.
      */
-    var enableGlow: Boolean = false
+    public var enableGlow: Boolean = false
 
     /**
      * Called when the player right-clicks this entity
      *
      * @see Entity.applyPlayerInteraction
      */
-    val rightClick = SidedAction<RightClickContext>()
+    public val rightClick: SidedAction<RightClickContext> = SidedAction()
 
     /**
      * Called every tick
      *
      * @see Entity.tick
      */
-    val tick = SidedAction<TickContext>()
+    public val tick: SidedAction<TickContext> = SidedAction()
 
     /**
      * Called when the entity is hit. Set [HitContext.kill] to false if the entity should not be killed.
      *
      * @see Entity.hitByEntity
      */
-    val hit = SidedAction<HitContext>()
+    public val hit: SidedAction<HitContext> = SidedAction()
 
     /**
      * Called when the entity is attacked.
      *
      * @see Entity.attackEntityFrom
      */
-    val attack = SidedAction<AttackContext>()
+    public val attack: SidedAction<AttackContext> = SidedAction()
 
-    data class RightClickContext(val target: TestEntity, val player: PlayerEntity, val hand: Hand, val hitPos: Vec3d): PlayerTestContext(player) {
+    public data class RightClickContext(val target: TestEntity, val player: PlayerEntity, val hand: Hand, val hitPos: Vec3d): PlayerTestContext(player) {
         val world: World = target.world
         val stack: ItemStack = player.getHeldItem(hand)
     }
-    data class TickContext(val target: TestEntity): TestContext() {
-        val world: World = target.world
-    }
-    data class HitContext(val target: TestEntity, val actor: Entity, var kill: Boolean): TestContext() {
-        val world: World = target.world
-    }
-    data class AttackContext(val target: TestEntity, val source: DamageSource, var amount: Float): TestContext() {
+
+    public data class TickContext(val target: TestEntity): TestContext() {
         val world: World = target.world
     }
 
+    public data class HitContext(val target: TestEntity, val actor: Entity, var kill: Boolean): TestContext() {
+        val world: World = target.world
+    }
+
+    public data class AttackContext(val target: TestEntity, val source: DamageSource, var amount: Float): TestContext() {
+        val world: World = target.world
+    }
 
     internal val entityProperties = mutableListOf<Property<*>>()
 
-    fun <T> parameter(serializer: IDataSerializer<T>): DataParameter<T> {
+    public fun <T> parameter(serializer: IDataSerializer<T>): DataParameter<T> {
         return EntityDataManager.createKey(TestEntity::class.java, serializer)
     }
 
-    operator fun <T: Property<*>> T.unaryPlus(): T {
+    public operator fun <T: Property<*>> T.unaryPlus(): T {
         return this.also { entityProperties.add(it) }
     }
 
-    fun <T: Any> property(serializer: IDataSerializer<T>, defaultValue: T): Property<T> {
+    public fun <T: Any> property(serializer: IDataSerializer<T>, defaultValue: T): Property<T> {
         return Property(parameter(serializer), defaultValue)
     }
 
-    inline fun <reified T: Any> property(defaultValue: T): Property<T> {
-        val serializer = when(T::class.java) {
+    public inline fun <reified T: Any> property(defaultValue: T): Property<T> {
+        val serializer = when (T::class.java) {
             Boolean::class.java, Boolean::class.javaPrimitiveType -> DataSerializers.BOOLEAN
             Byte::class.java, Byte::class.javaPrimitiveType -> DataSerializers.BYTE
             Int::class.java, Int::class.javaPrimitiveType -> DataSerializers.VARINT
@@ -144,15 +147,15 @@ class TestEntityConfig(val id: String, val name: String, spawnerItemGroup: ItemG
         return property(serializer as IDataSerializer<T>, defaultValue)
     }
 
-    class Property<T: Any>(val parameter: DataParameter<T>, val defaultValue: T) {
+    public class Property<T: Any>(public val parameter: DataParameter<T>, public val defaultValue: T) {
         internal var entity: Entity? by threadLocal()
 
-        operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
+        public operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
             val entity = entity!!
             return entity.dataManager[parameter]
         }
 
-        operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+        public operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
             val entity = entity!!
             entity.dataManager[parameter] = value
         }
@@ -162,7 +165,7 @@ class TestEntityConfig(val id: String, val name: String, spawnerItemGroup: ItemG
      * Spawns this entity with the same eye position and look vector as the passed player. Only call this on the logical
      * server.
      */
-    fun spawn(player: PlayerEntity) {
+    public fun spawn(player: PlayerEntity) {
         val eye = player.getEyePosition(0f)
         val entity = TestEntity(this@TestEntityConfig, player.world)
         entity.setPosition(eye.x, eye.y - entity.eyeHeight, eye.z)
@@ -171,7 +174,7 @@ class TestEntityConfig(val id: String, val name: String, spawnerItemGroup: ItemG
         player.world.addEntity(entity)
     }
 
-    var spawnerItem = TestItem(TestItemConfig(this.id + "_entity", this.name, spawnerItemGroup) {
+    public var spawnerItem: TestItem = TestItem(TestItemConfig(this.id + "_entity", this.name, spawnerItemGroup) {
         server {
             rightClick {
                 spawn(player)

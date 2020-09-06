@@ -10,7 +10,7 @@ import dev.thecodewarrior.prism.base.analysis.auto.ObjectAnalyzer
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.nbt.INBT
 
-open class ObjectSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<Any>(), { type ->
+internal class ObjectSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<Any>(), { type ->
     (type as? ClassMirror)?.annotations?.any { it is RefractClass } == true
 }) {
     override fun create(mirror: TypeMirror): NBTSerializer<*> {

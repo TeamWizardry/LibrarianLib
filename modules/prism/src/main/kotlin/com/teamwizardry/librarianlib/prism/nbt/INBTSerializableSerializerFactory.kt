@@ -7,7 +7,7 @@ import dev.thecodewarrior.prism.DeserializationException
 import net.minecraft.nbt.INBT
 import net.minecraftforge.common.util.INBTSerializable
 
-open class INBTSerializableSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<INBTSerializable<*>>()) {
+internal class INBTSerializableSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<INBTSerializable<*>>()) {
     override fun create(mirror: TypeMirror): NBTSerializer<*> {
         return INBTSerializableSerializer(prism, mirror as ClassMirror)
     }

@@ -5,7 +5,7 @@ import net.minecraft.util.ResourceLocation
 import java.awt.Color
 import java.awt.image.BufferedImage
 
-class MosaicDefinition internal constructor(val location: ResourceLocation) {
+internal class MosaicDefinition internal constructor(val location: ResourceLocation) {
     /**
      * True if this definition was generated for a texture that had no spritesheet mcmeta.
      */
@@ -28,7 +28,7 @@ class MosaicDefinition internal constructor(val location: ResourceLocation) {
         internal set
 }
 
-class SpriteDefinition internal constructor(val name: String) {
+internal class SpriteDefinition internal constructor(val name: String) {
     var missing: Boolean = false
         internal set
 
@@ -76,7 +76,7 @@ class SpriteDefinition internal constructor(val name: String) {
         internal set
 }
 
-class ColorDefinition(val name: String) {
+internal class ColorDefinition(val name: String) {
     lateinit var sheet: MosaicDefinition
         internal set
 

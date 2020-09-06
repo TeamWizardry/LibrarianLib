@@ -1,9 +1,8 @@
 package com.teamwizardry.librarianlib.mosaic
 
-import com.mojang.blaze3d.platform.GlStateManager
 import com.teamwizardry.librarianlib.core.util.AWTTextureUtil
-import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
+import com.teamwizardry.librarianlib.core.util.GlResourceGc
 import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import net.minecraft.client.renderer.RenderState
 import net.minecraft.client.renderer.RenderType
@@ -16,12 +15,26 @@ import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 
-class Java2DSprite(override val width: Int, override val height: Int) : ISprite {
-    private var deleted = false
-
+public class Java2DSprite(override val width: Int, override val height: Int) : ISprite {
     private val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-    private val native = NativeImage(NativeImage.PixelFormat.RGBA, width, height, true)
-    private val texID = TextureUtil.generateTextureId()
+    private var natives: Pair<Int, NativeImage> by GlResourceGc.track(this,
+        TextureUtil.generateTextureId() to NativeImage(NativeImage.PixelFormat.RGBA, width, height, true)
+    ) { (texID, native) ->
+        if(texID == -1) return@track
+        logger.debug("Deleting Java2DSprite $texID")
+        TextureUtil.releaseTextureId(texID)
+        native.close()
+    }
+    private val native: NativeImage
+        get() = natives.second
+    private var texID: Int
+        get() = natives.first
+        set(value) {
+            natives = value to natives.second
+        }
+    private val deleted: Boolean
+        get() = texID == -1
+
     override val renderType: RenderType
 
     init {
@@ -42,7 +55,7 @@ class Java2DSprite(override val width: Int, override val height: Int) : ISprite 
     }
 
     @JvmOverloads
-    fun begin(clear: Boolean = true, antialiasing: Boolean = false): Graphics2D {
+    public fun begin(clear: Boolean = true, antialiasing: Boolean = false): Graphics2D {
         val g2d = image.graphics as Graphics2D
         if(antialiasing) {
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
@@ -54,32 +67,24 @@ class Java2DSprite(override val width: Int, override val height: Int) : ISprite 
         return g2d
     }
 
-    fun end() {
+    public fun end() {
+        if(deleted) return
         AWTTextureUtil.fillNativeImage(image, native)
         native.uploadTextureSub(0, 0, 0, false)
     }
 
-    fun delete() {
-        deleted = true
+    public fun delete() {
+        if(deleted) return
         TextureUtil.releaseTextureId(texID)
         native.close()
+        texID = -1
     }
 
-    override fun minU(animFrames: Int) = 0f
-    override fun minV(animFrames: Int) = 0f
-    override fun maxU(animFrames: Int) = 1f
-    override fun maxV(animFrames: Int) = 1f
+    override fun minU(animFrames: Int): Float = 0f
+    override fun minV(animFrames: Int): Float = 0f
+    override fun maxU(animFrames: Int): Float = 1f
+    override fun maxV(animFrames: Int): Float = 1f
     override val uSize: Float = 1f
     override val vSize: Float = 1f
-    override val frameCount = 1
-
-    fun finalize() {
-        if(deleted) return
-        val id = texID
-        native.close()
-        Client.runAsync {
-            logger.debug("Deleting Java2DSprite $id")
-            TextureUtil.releaseTextureId(id)
-        }
-    }
+    override val frameCount: Int = 1
 }

@@ -18,14 +18,14 @@ import net.minecraftforge.api.distmarker.OnlyIn
 import kotlin.math.sqrt
 
 @OnlyIn(Dist.CLIENT)
-class TestEntityRenderer(renderManagerIn: EntityRendererManager): EntityRenderer<TestEntity>(renderManagerIn) {
+public class TestEntityRenderer(renderManagerIn: EntityRendererManager): EntityRenderer<TestEntity>(renderManagerIn) {
     private val tex = loc("librarianlib-testbase:entity/testentity.png")
 
     override fun render(entity: TestEntity, entityYaw: Float, partialTicks: Float, matrixStack: MatrixStack, buffer: IRenderTypeBuffer, packedLight: Int) {
         matrixStack.push()
         matrixStack.rotate(Vector3f.YN.rotationDegrees(MathHelper.lerp(partialTicks, entity.prevRotationYaw, entity.rotationYaw) + 90.0f))
         matrixStack.rotate(Vector3f.ZN.rotationDegrees(MathHelper.lerp(partialTicks, entity.prevRotationPitch, entity.rotationPitch)))
-        matrixStack.scale(1/5f, 1/5f, 1/5f)
+        matrixStack.scale(1 / 5f, 1 / 5f, 1 / 5f)
 
         fun draw(type: RenderType) {
             val builder = buffer.getBuffer(type)
@@ -33,58 +33,58 @@ class TestEntityRenderer(renderManagerIn: EntityRendererManager): EntityRenderer
             val transform = stackEntry.matrix
             val normalTransform = stackEntry.normal
 
-            var len = sqrt(1*1f + 3*3f)
-            var normalX = 1/len
-            var normalYZ = 3/len
+            var len = sqrt(1 * 1f + 3 * 3f)
+            var normalX = 1 / len
+            var normalYZ = 3 / len
 
             // mmm x y z u v nx ny nz light
-            builder.vertex(transform,  0, -1,  1, 0.5,   0, packedLight, normalTransform, normalX, -normalYZ, 0)
-            builder.vertex(transform,  0, -1, -1,   0, 0.5, packedLight, normalTransform, normalX, -normalYZ, 0)
-            builder.vertex(transform,  3,  0,  0,   0,   0, packedLight, normalTransform, normalX, -normalYZ, 0)
-            builder.vertex(transform,  3,  0,  0,   0,   0, packedLight, normalTransform, normalX, -normalYZ, 0)
+            builder.vertex(transform, 0, -1, 1, 0.5, 0, packedLight, normalTransform, normalX, -normalYZ, 0)
+            builder.vertex(transform, 0, -1, -1, 0, 0.5, packedLight, normalTransform, normalX, -normalYZ, 0)
+            builder.vertex(transform, 3, 0, 0, 0, 0, packedLight, normalTransform, normalX, -normalYZ, 0)
+            builder.vertex(transform, 3, 0, 0, 0, 0, packedLight, normalTransform, normalX, -normalYZ, 0)
 
-            builder.vertex(transform,  0,  1, -1, 0.5,   0, packedLight, normalTransform, normalX, normalYZ, 0)
-            builder.vertex(transform,  0,  1,  1,   0, 0.5, packedLight, normalTransform, normalX, normalYZ, 0)
-            builder.vertex(transform,  3,  0,  0,   0,   0, packedLight, normalTransform, normalX, normalYZ, 0)
-            builder.vertex(transform,  3,  0,  0,   0,   0, packedLight, normalTransform, normalX, normalYZ, 0)
+            builder.vertex(transform, 0, 1, -1, 0.5, 0, packedLight, normalTransform, normalX, normalYZ, 0)
+            builder.vertex(transform, 0, 1, 1, 0, 0.5, packedLight, normalTransform, normalX, normalYZ, 0)
+            builder.vertex(transform, 3, 0, 0, 0, 0, packedLight, normalTransform, normalX, normalYZ, 0)
+            builder.vertex(transform, 3, 0, 0, 0, 0, packedLight, normalTransform, normalX, normalYZ, 0)
 
-            builder.vertex(transform,  0, -1, -1, 0.5,   0, packedLight, normalTransform, normalX, 0, normalYZ)
-            builder.vertex(transform,  0,  1, -1,   0, 0.5, packedLight, normalTransform, normalX, 0, normalYZ)
-            builder.vertex(transform,  3,  0,  0,   0,   0, packedLight, normalTransform, normalX, 0, normalYZ)
-            builder.vertex(transform,  3,  0,  0,   0,   0, packedLight, normalTransform, normalX, 0, normalYZ)
+            builder.vertex(transform, 0, -1, -1, 0.5, 0, packedLight, normalTransform, normalX, 0, normalYZ)
+            builder.vertex(transform, 0, 1, -1, 0, 0.5, packedLight, normalTransform, normalX, 0, normalYZ)
+            builder.vertex(transform, 3, 0, 0, 0, 0, packedLight, normalTransform, normalX, 0, normalYZ)
+            builder.vertex(transform, 3, 0, 0, 0, 0, packedLight, normalTransform, normalX, 0, normalYZ)
 
-            builder.vertex(transform,  0,  1,  1, 0.5,   0, packedLight, normalTransform, normalX, 0, -normalYZ)
-            builder.vertex(transform,  0, -1,  1,   0, 0.5, packedLight, normalTransform, normalX, 0, -normalYZ)
-            builder.vertex(transform,  3,  0,  0,   0,   0, packedLight, normalTransform, normalX, 0, -normalYZ)
-            builder.vertex(transform,  3,  0,  0,   0,   0, packedLight, normalTransform, normalX, 0, -normalYZ)
+            builder.vertex(transform, 0, 1, 1, 0.5, 0, packedLight, normalTransform, normalX, 0, -normalYZ)
+            builder.vertex(transform, 0, -1, 1, 0, 0.5, packedLight, normalTransform, normalX, 0, -normalYZ)
+            builder.vertex(transform, 3, 0, 0, 0, 0, packedLight, normalTransform, normalX, 0, -normalYZ)
+            builder.vertex(transform, 3, 0, 0, 0, 0, packedLight, normalTransform, normalX, 0, -normalYZ)
 
-            len = sqrt(1*1f + 1*1f)
-            normalX = 1/len
-            normalYZ = 1/len
+            len = sqrt(1 * 1f + 1 * 1f)
+            normalX = 1 / len
+            normalYZ = 1 / len
 
-            builder.vertex(transform,  0, -1, -1, 0.5,   1, packedLight, normalTransform, -normalX, -normalYZ, 0)
-            builder.vertex(transform,  0, -1,  1,   1, 0.5, packedLight, normalTransform, -normalX, -normalYZ, 0)
-            builder.vertex(transform, -1,  0,  0,   1,   1, packedLight, normalTransform, -normalX, -normalYZ, 0)
-            builder.vertex(transform, -1,  0,  0,   1,   1, packedLight, normalTransform, -normalX, -normalYZ, 0)
+            builder.vertex(transform, 0, -1, -1, 0.5, 1, packedLight, normalTransform, -normalX, -normalYZ, 0)
+            builder.vertex(transform, 0, -1, 1, 1, 0.5, packedLight, normalTransform, -normalX, -normalYZ, 0)
+            builder.vertex(transform, -1, 0, 0, 1, 1, packedLight, normalTransform, -normalX, -normalYZ, 0)
+            builder.vertex(transform, -1, 0, 0, 1, 1, packedLight, normalTransform, -normalX, -normalYZ, 0)
 
-            builder.vertex(transform,  0,  1,  1, 0.5,   1, packedLight, normalTransform, -normalX, normalYZ, 0)
-            builder.vertex(transform,  0,  1, -1,   1, 0.5, packedLight, normalTransform, -normalX, normalYZ, 0)
-            builder.vertex(transform, -1,  0,  0,   1,   1, packedLight, normalTransform, -normalX, normalYZ, 0)
-            builder.vertex(transform, -1,  0,  0,   1,   1, packedLight, normalTransform, -normalX, normalYZ, 0)
+            builder.vertex(transform, 0, 1, 1, 0.5, 1, packedLight, normalTransform, -normalX, normalYZ, 0)
+            builder.vertex(transform, 0, 1, -1, 1, 0.5, packedLight, normalTransform, -normalX, normalYZ, 0)
+            builder.vertex(transform, -1, 0, 0, 1, 1, packedLight, normalTransform, -normalX, normalYZ, 0)
+            builder.vertex(transform, -1, 0, 0, 1, 1, packedLight, normalTransform, -normalX, normalYZ, 0)
 
-            builder.vertex(transform,  0,  1, -1, 0.5,   1, packedLight, normalTransform, -normalX, 0, normalYZ)
-            builder.vertex(transform,  0, -1, -1,   1, 0.5, packedLight, normalTransform, -normalX, 0, normalYZ)
-            builder.vertex(transform, -1,  0,  0,   1,   1, packedLight, normalTransform, -normalX, 0, normalYZ)
-            builder.vertex(transform, -1,  0,  0,   1,   1, packedLight, normalTransform, -normalX, 0, normalYZ)
+            builder.vertex(transform, 0, 1, -1, 0.5, 1, packedLight, normalTransform, -normalX, 0, normalYZ)
+            builder.vertex(transform, 0, -1, -1, 1, 0.5, packedLight, normalTransform, -normalX, 0, normalYZ)
+            builder.vertex(transform, -1, 0, 0, 1, 1, packedLight, normalTransform, -normalX, 0, normalYZ)
+            builder.vertex(transform, -1, 0, 0, 1, 1, packedLight, normalTransform, -normalX, 0, normalYZ)
 
-            builder.vertex(transform,  0, -1,  1, 0.5,   1, packedLight, normalTransform, -normalX, 0, -normalYZ)
-            builder.vertex(transform,  0,  1,  1,   1, 0.5, packedLight, normalTransform, -normalX, 0, -normalYZ)
-            builder.vertex(transform, -1,  0,  0,   1,   1, packedLight, normalTransform, -normalX, 0, -normalYZ)
-            builder.vertex(transform, -1,  0,  0,   1,   1, packedLight, normalTransform, -normalX, 0, -normalYZ)
+            builder.vertex(transform, 0, -1, 1, 0.5, 1, packedLight, normalTransform, -normalX, 0, -normalYZ)
+            builder.vertex(transform, 0, 1, 1, 1, 0.5, packedLight, normalTransform, -normalX, 0, -normalYZ)
+            builder.vertex(transform, -1, 0, 0, 1, 1, packedLight, normalTransform, -normalX, 0, -normalYZ)
+            builder.vertex(transform, -1, 0, 0, 1, 1, packedLight, normalTransform, -normalX, 0, -normalYZ)
         }
 
         draw(RenderType.getEntityCutout(getEntityTexture(entity)))
-        if(entity.isGlowing) {
+        if (entity.isGlowing) {
             draw(RenderType.getOutline(getEntityTexture(entity)))
         }
 
@@ -93,7 +93,7 @@ class TestEntityRenderer(renderManagerIn: EntityRendererManager): EntityRenderer
     }
 
     @Suppress("NOTHING_TO_INLINE")
-    inline fun IVertexBuilder.vertex(
+    public inline fun IVertexBuilder.vertex(
         transform: Matrix4f, x: Number, y: Number, z: Number,
         u: Number, v: Number,
         lightmap: Int,

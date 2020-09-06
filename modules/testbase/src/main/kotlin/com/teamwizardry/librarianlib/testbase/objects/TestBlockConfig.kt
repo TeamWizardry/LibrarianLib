@@ -13,12 +13,12 @@ import net.minecraft.util.math.BlockRayTraceResult
 import net.minecraft.world.World
 
 @TestObjectDslMarker
-class TestBlockConfig(val id: String, val name: String): TestConfig() {
-    constructor(id: String, name: String, config: TestBlockConfig.() -> Unit): this(id, name) {
+public class TestBlockConfig(public val id: String, public val name: String): TestConfig() {
+    public constructor(id: String, name: String, config: TestBlockConfig.() -> Unit): this(id, name) {
         this.config()
     }
 
-    val properties: Block.Properties = Block.Properties.create(testMaterial)
+    public val properties: Block.Properties = Block.Properties.create(testMaterial)
 
     init {
         properties.notSolid()
@@ -27,48 +27,49 @@ class TestBlockConfig(val id: String, val name: String): TestConfig() {
     /**
      * Whether the model should be transparent
      */
-    var transparent: Boolean = false
+    public var transparent: Boolean = false
+
     /**
      * Whether the block should have a facing property
      */
-    var directional: Boolean = false
+    public var directional: Boolean = false
 
     /**
      * @see Block.tickRate
      */
-    var tickRate: Int = 10
+    public var tickRate: Int = 10
 
-    val rightClick = SidedAction<RightClickContext>()
-    val leftClick = SidedAction<LeftClickContext>()
-    val destroy = SidedAction<DestroyContext>()
-    val place = SidedAction<PlaceContext>()
+    public val rightClick: SidedAction<RightClickContext> = SidedAction()
+    public val leftClick: SidedAction<LeftClickContext> = SidedAction()
+    public val destroy: SidedAction<DestroyContext> = SidedAction()
+    public val place: SidedAction<PlaceContext> = SidedAction()
 
-    data class RightClickContext(
+    public data class RightClickContext(
         val state: BlockState, val world: World, val pos: BlockPos,
         val player: PlayerEntity, val hand: Hand, val hit: BlockRayTraceResult
     ): PlayerTestContext(player) {
         val stack: ItemStack = player.getHeldItem(hand)
     }
 
-    data class LeftClickContext(
+    public data class LeftClickContext(
         val state: BlockState, val world: World, val pos: BlockPos,
         val player: PlayerEntity
     ): PlayerTestContext(player) {
     }
 
-    data class DestroyContext(
+    public data class DestroyContext(
         val state: BlockState, val world: World, val pos: BlockPos,
         val player: PlayerEntity
     ): PlayerTestContext(player) {
     }
 
-    data class PlaceContext(
+    public data class PlaceContext(
         val state: BlockState, val world: World, val pos: BlockPos,
         val player: PlayerEntity, val stack: ItemStack
     ): PlayerTestContext(player) {
     }
 
-    companion object {
+    private companion object {
         val testMaterial: Material = Material(
             MaterialColor.PINK, // materialMapColorIn
             false, // liquid

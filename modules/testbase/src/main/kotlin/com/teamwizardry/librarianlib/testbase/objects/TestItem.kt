@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
 import com.teamwizardry.librarianlib.core.util.kotlin.translationKey
-import net.minecraft.block.BlockState
 import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
@@ -14,7 +13,6 @@ import net.minecraft.util.ActionResult
 import net.minecraft.util.ActionResultType
 import net.minecraft.util.Hand
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.Util
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.TextFormatting
@@ -22,14 +20,14 @@ import net.minecraft.util.text.TranslationTextComponent
 import net.minecraft.world.World
 import net.minecraftforge.fml.ModLoadingContext
 
-class TestItem(val config: TestItemConfig): Item(config.properties) {
+public class TestItem(public val config: TestItemConfig): Item(config.properties) {
     init {
         this.registryName = ResourceLocation(ModLoadingContext.get().activeContainer.modId, config.id)
     }
 
     override fun addInformation(stack: ItemStack, worldIn: World?, tooltip: MutableList<ITextComponent>, flagIn: ITooltipFlag) {
         super.addInformation(stack, worldIn, tooltip, flagIn)
-        if(config.description != null) {
+        if (config.description != null) {
             val description = TranslationTextComponent(registryName!!.translationKey("item", "tooltip"))
             description.style.color = TextFormatting.GRAY
             tooltip.add(description)
@@ -38,7 +36,7 @@ class TestItem(val config: TestItemConfig): Item(config.properties) {
 
     override fun onItemRightClick(worldIn: World, playerIn: PlayerEntity, handIn: Hand): ActionResult<ItemStack> {
         var used = false
-        if(config.rightClickHoldDuration != 0) {
+        if (config.rightClickHoldDuration != 0) {
             playerIn.activeHand = handIn
             used = true
         }
@@ -47,10 +45,10 @@ class TestItem(val config: TestItemConfig): Item(config.properties) {
 
         config.rightClick.run(worldIn.isRemote, context)
         config.rightClickAir.run(worldIn.isRemote, context)
-        if(config.rightClick.exists || config.rightClickAir.exists)
+        if (config.rightClick.exists || config.rightClickAir.exists)
             used = true
 
-        return if(used) {
+        return if (used) {
             ActionResult(ActionResultType.SUCCESS, playerIn.getHeldItem(handIn))
         } else {
             ActionResult(ActionResultType.PASS, playerIn.getHeldItem(handIn))
@@ -60,14 +58,14 @@ class TestItem(val config: TestItemConfig): Item(config.properties) {
     override fun onItemUse(context: ItemUseContext): ActionResultType {
         var result = ActionResultType.PASS
 
-        if(context.player == null) return result
+        if (context.player == null) return result
 
         val clickContext = TestItemConfig.RightClickContext(context.world, context.player!!, context.hand)
         val clickBlockContext = TestItemConfig.RightClickBlockContext(context)
 
         config.rightClick.run(context.world.isRemote, clickContext)
         config.rightClickBlock.run(context.world.isRemote, clickBlockContext)
-        if(config.rightClick.exists || config.rightClickBlock.exists)
+        if (config.rightClick.exists || config.rightClickBlock.exists)
             result = ActionResultType.SUCCESS
         return result
     }
@@ -77,14 +75,14 @@ class TestItem(val config: TestItemConfig): Item(config.properties) {
     }
 
     override fun getUseAction(stack: ItemStack): UseAction {
-        if(config.rightClickHoldDuration != 0) {
+        if (config.rightClickHoldDuration != 0) {
             return UseAction.BOW
         }
         return UseAction.NONE
     }
 
     override fun onUsingTick(stack: ItemStack, player: LivingEntity, count: Int) {
-        if(player !is PlayerEntity) return
+        if (player !is PlayerEntity) return
 
         val context = TestItemConfig.RightClickHoldContext(stack, player, count)
 
@@ -92,7 +90,7 @@ class TestItem(val config: TestItemConfig): Item(config.properties) {
     }
 
     override fun onPlayerStoppedUsing(stack: ItemStack, worldIn: World, entityLiving: LivingEntity, timeLeft: Int) {
-        if(entityLiving !is PlayerEntity) return
+        if (entityLiving !is PlayerEntity) return
 
         val context = TestItemConfig.RightClickReleaseContext(stack, worldIn, entityLiving, timeLeft)
 
@@ -123,12 +121,12 @@ class TestItem(val config: TestItemConfig): Item(config.properties) {
     }
 
     override fun inventoryTick(stack: ItemStack, worldIn: World, entityIn: Entity, itemSlot: Int, isSelected: Boolean) {
-        if(entityIn !is PlayerEntity) return
+        if (entityIn !is PlayerEntity) return
 
         val context = TestItemConfig.InventoryTickContext(stack, worldIn, entityIn, itemSlot, isSelected)
         config.inventoryTick.run(worldIn.isRemote, context)
 
-        if(isSelected) {
+        if (isSelected) {
             config.tickInHand.run(worldIn.isRemote, context)
         }
     }

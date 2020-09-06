@@ -9,7 +9,7 @@ import net.minecraft.nbt.CompoundNBT
 import net.minecraft.nbt.INBT
 import net.minecraft.nbt.ListNBT
 
-open class ListSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<List<*>>()) {
+internal class ListSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<List<*>>()) {
     override fun create(mirror: TypeMirror): NBTSerializer<*> {
         return ListSerializer(prism, mirror as ClassMirror)
     }

@@ -19,7 +19,7 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import net.minecraftforge.fml.network.NetworkHooks
 
-class TestEntity(val config: TestEntityConfig, world: World): Entity(config.also { configHolder = it }.type, world) {
+public class TestEntity(public val config: TestEntityConfig, world: World): Entity(config.also { configHolder = it }.type, world) {
 
     init {
         canUpdate(true)
@@ -33,7 +33,7 @@ class TestEntity(val config: TestEntityConfig, world: World): Entity(config.also
         val context = TestEntityConfig.HitContext(this, entity, entity is PlayerEntity)
 
         config.hit.run(this.world.isRemote, context)
-        if(context.kill) {
+        if (context.kill) {
             this.remove()
             return true
         }
@@ -55,7 +55,7 @@ class TestEntity(val config: TestEntityConfig, world: World): Entity(config.also
     override fun isGlowing(): Boolean {
         val heldGlow = ClientSupplier {
             Client.minecraft.player?.getHeldItem(Hand.MAIN_HAND)?.item == config.spawnerItem ||
-            Client.minecraft.player?.getHeldItem(Hand.OFF_HAND)?.item == config.spawnerItem
+                Client.minecraft.player?.getHeldItem(Hand.OFF_HAND)?.item == config.spawnerItem
         }.get() ?: false
         return config.enableGlow || heldGlow || super.isGlowing()
     }
@@ -80,7 +80,7 @@ class TestEntity(val config: TestEntityConfig, world: World): Entity(config.also
 
     override fun applyPlayerInteraction(player: PlayerEntity, vec: Vec3d, hand: Hand): ActionResultType {
         config.rightClick.run(this.world.isRemote, TestEntityConfig.RightClickContext(this, player, hand, vec))
-        if(config.rightClick.exists)
+        if (config.rightClick.exists)
             return ActionResultType.SUCCESS
         return super.applyPlayerInteraction(player, vec, hand)
     }
@@ -121,7 +121,7 @@ class TestEntity(val config: TestEntityConfig, world: World): Entity(config.also
         return 0f
     }
 
-    val relativeBoundingBox: AxisAlignedBB = run {
+    public val relativeBoundingBox: AxisAlignedBB = run {
         val size = this.getSize(Pose.STANDING)
         val width = size.width.toDouble()
         val height = size.height.toDouble()
@@ -135,7 +135,7 @@ class TestEntity(val config: TestEntityConfig, world: World): Entity(config.also
         return relativeBoundingBox.offset(this.posX, this.posY, this.posZ)
     }
 
-    companion object {
+    private companion object {
         // needed because registerData is called before we can set the config property
         private var configHolder: TestEntityConfig? by threadLocal()
     }

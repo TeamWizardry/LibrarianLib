@@ -3,11 +3,11 @@ package com.teamwizardry.librarianlib.mirage
 import net.minecraft.util.ResourceLocation
 import java.io.InputStream
 
-interface VirtualResourcePack {
+public interface VirtualResourcePack {
     /**
      * Get the input stream for the passed location, if it exists
      */
-    fun getStream(location: ResourceLocation): InputStream?
+    public fun getStream(location: ResourceLocation): InputStream?
 
     /**
      * Recursively list the resources in this pack. These can optionally be limited by path prefix and recursion depth.
@@ -20,11 +20,11 @@ interface VirtualResourcePack {
      * @param maxDepth The returned locations can optionally be limited to those up to this many directories after the
      * passed path prefix. A value of zero means only the immediate children of the passed path.
      */
-    fun listResources(path: String, maxDepth: Int): Collection<ResourceLocation>
+    public fun listResources(path: String, maxDepth: Int): Collection<ResourceLocation>
 
     /**
      * Returns true if this pack contains the passed resource
      */
-    operator fun contains(location: ResourceLocation): Boolean
+    public operator fun contains(location: ResourceLocation): Boolean
 }
 

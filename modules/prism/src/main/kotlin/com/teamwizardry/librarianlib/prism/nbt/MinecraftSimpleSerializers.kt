@@ -38,7 +38,7 @@ import net.minecraft.world.dimension.DimensionType
 import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.fml.common.registry.GameRegistry
 
-object ResourceLocationSerializer: NBTSerializer<ResourceLocation>() {
+internal object ResourceLocationSerializer: NBTSerializer<ResourceLocation>() {
     override fun deserialize(tag: INBT, existing: ResourceLocation?): ResourceLocation {
         return ResourceLocation(tag.expectType<StringNBT>("tag").string)
     }
@@ -50,7 +50,7 @@ object ResourceLocationSerializer: NBTSerializer<ResourceLocation>() {
 
 //region Math stuff
 
-object Vec3dSerializer: NBTSerializer<Vec3d>() {
+internal object Vec3dSerializer: NBTSerializer<Vec3d>() {
     override fun deserialize(tag: INBT, existing: Vec3d?): Vec3d {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
         return Vec3d(
@@ -69,7 +69,7 @@ object Vec3dSerializer: NBTSerializer<Vec3d>() {
     }
 }
 
-object Vec2fSerializer: NBTSerializer<Vec2f>() {
+internal object Vec2fSerializer: NBTSerializer<Vec2f>() {
     override fun deserialize(tag: INBT, existing: Vec2f?): Vec2f {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
         return Vec2f(
@@ -86,7 +86,7 @@ object Vec2fSerializer: NBTSerializer<Vec2f>() {
     }
 }
 
-object BlockPosSerializer: NBTSerializer<BlockPos>() {
+internal object BlockPosSerializer: NBTSerializer<BlockPos>() {
     override fun deserialize(tag: INBT, existing: BlockPos?): BlockPos {
         return NBTUtil.readBlockPos(tag.expectType("tag"))
     }
@@ -97,7 +97,7 @@ object BlockPosSerializer: NBTSerializer<BlockPos>() {
 }
 
 
-object ChunkPosSerializer: NBTSerializer<ChunkPos>() {
+internal object ChunkPosSerializer: NBTSerializer<ChunkPos>() {
     override fun deserialize(tag: INBT, existing: ChunkPos?): ChunkPos {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
         return ChunkPos(
@@ -114,7 +114,7 @@ object ChunkPosSerializer: NBTSerializer<ChunkPos>() {
     }
 }
 
-object ColumnPosSerializer: NBTSerializer<ColumnPos>() {
+internal object ColumnPosSerializer: NBTSerializer<ColumnPos>() {
     override fun deserialize(tag: INBT, existing: ColumnPos?): ColumnPos {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
         return ColumnPos(
@@ -131,7 +131,7 @@ object ColumnPosSerializer: NBTSerializer<ColumnPos>() {
     }
 }
 
-object SectionPosSerializer: NBTSerializer<SectionPos>() {
+internal object SectionPosSerializer: NBTSerializer<SectionPos>() {
     override fun deserialize(tag: INBT, existing: SectionPos?): SectionPos {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
         return SectionPos.from(
@@ -152,7 +152,7 @@ object SectionPosSerializer: NBTSerializer<SectionPos>() {
     }
 }
 
-object GlobalPosSerializer: NBTSerializer<GlobalPos>() {
+internal object GlobalPosSerializer: NBTSerializer<GlobalPos>() {
     override fun deserialize(tag: INBT, existing: GlobalPos?): GlobalPos {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
         val dimensionName = ResourceLocation(tag.expect<StringNBT>("Dimension").string)
@@ -176,7 +176,7 @@ object GlobalPosSerializer: NBTSerializer<GlobalPos>() {
     }
 }
 
-object RotationsSerializer: NBTSerializer<Rotations>() {
+internal object RotationsSerializer: NBTSerializer<Rotations>() {
     override fun deserialize(tag: INBT, existing: Rotations?): Rotations {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
         return Rotations(
@@ -195,7 +195,7 @@ object RotationsSerializer: NBTSerializer<Rotations>() {
     }
 }
 
-object AxisAlignedBBSerializer: NBTSerializer<AxisAlignedBB>() {
+internal object AxisAlignedBBSerializer: NBTSerializer<AxisAlignedBB>() {
     override fun deserialize(tag: INBT, existing: AxisAlignedBB?): AxisAlignedBB {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
         return AxisAlignedBB(
@@ -220,7 +220,7 @@ object AxisAlignedBBSerializer: NBTSerializer<AxisAlignedBB>() {
     }
 }
 
-object MutableBoundingBoxSerializer: NBTSerializer<MutableBoundingBox>() {
+internal object MutableBoundingBoxSerializer: NBTSerializer<MutableBoundingBox>() {
     override fun deserialize(tag: INBT, existing: MutableBoundingBox?): MutableBoundingBox {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
         return MutableBoundingBox(
@@ -247,7 +247,7 @@ object MutableBoundingBoxSerializer: NBTSerializer<MutableBoundingBox>() {
 
 //endregion
 
-open class TupleSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<Tuple<*, *>>()) {
+internal class TupleSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<Tuple<*, *>>()) {
     override fun create(mirror: TypeMirror): NBTSerializer<*> {
         return TupleSerializer(prism, mirror as ClassMirror)
     }
@@ -276,7 +276,7 @@ open class TupleSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, 
     }
 }
 
-open class INBTPassthroughSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<INBT>()) {
+internal class INBTPassthroughSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<INBT>()) {
     override fun create(mirror: TypeMirror): NBTSerializer<*> {
         return INBTPassthroughSerializer(prism, mirror as ClassMirror)
     }
@@ -295,7 +295,7 @@ open class INBTPassthroughSerializerFactory(prism: NBTPrism): NBTSerializerFacto
     }
 }
 
-open class ITextComponentSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<ITextComponent>()) {
+internal class ITextComponentSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<ITextComponent>()) {
     override fun create(mirror: TypeMirror): NBTSerializer<*> {
         return ITextComponentSerializer(prism, mirror as ClassMirror)
     }
@@ -318,7 +318,7 @@ open class ITextComponentSerializerFactory(prism: NBTPrism): NBTSerializerFactor
     }
 }
 
-object GameProfileSerializer: NBTSerializer<GameProfile>() {
+internal object GameProfileSerializer: NBTSerializer<GameProfile>() {
     override fun deserialize(tag: INBT, existing: GameProfile?): GameProfile {
         return NBTUtil.readGameProfile(tag.expectType("tag"))
             ?: throw DeserializationException("Reading GameProfile") // it only returns null if an error occurs
@@ -331,7 +331,7 @@ object GameProfileSerializer: NBTSerializer<GameProfile>() {
     }
 }
 
-object BlockStateSerializer: NBTSerializer<BlockState>() {
+internal object BlockStateSerializer: NBTSerializer<BlockState>() {
     override fun deserialize(tag: INBT, existing: BlockState?): BlockState {
         return NBTUtil.readBlockState(tag.expectType("tag"))
     }
@@ -341,7 +341,7 @@ object BlockStateSerializer: NBTSerializer<BlockState>() {
     }
 }
 
-object ItemStackSerializer: NBTSerializer<ItemStack>() {
+internal object ItemStackSerializer: NBTSerializer<ItemStack>() {
     override fun deserialize(tag: INBT, existing: ItemStack?): ItemStack {
         return ItemStack.read(tag.expectType("tag"))
     }
@@ -351,7 +351,7 @@ object ItemStackSerializer: NBTSerializer<ItemStack>() {
     }
 }
 
-object FluidStackSerializer: NBTSerializer<FluidStack>() {
+internal object FluidStackSerializer: NBTSerializer<FluidStack>() {
     override fun deserialize(tag: INBT, existing: FluidStack?): FluidStack {
         return FluidStack.loadFluidStackFromNBT(tag.expectType("tag"))
     }
@@ -361,7 +361,7 @@ object FluidStackSerializer: NBTSerializer<FluidStack>() {
     }
 }
 
-object EffectInstanceSerializer: NBTSerializer<EffectInstance>() {
+internal object EffectInstanceSerializer: NBTSerializer<EffectInstance>() {
     override fun deserialize(tag: INBT, existing: EffectInstance?): EffectInstance {
         return EffectInstance.read(tag.expectType("tag"))
     }
@@ -371,7 +371,7 @@ object EffectInstanceSerializer: NBTSerializer<EffectInstance>() {
     }
 }
 
-object EnchantmentDataSerializer: NBTSerializer<EnchantmentData>() {
+internal object EnchantmentDataSerializer: NBTSerializer<EnchantmentData>() {
     private val registry by lazy {
         GameRegistry.findRegistry(Enchantment::class.java)
     }

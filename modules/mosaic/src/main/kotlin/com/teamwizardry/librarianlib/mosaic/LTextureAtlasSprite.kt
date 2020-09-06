@@ -1,15 +1,7 @@
 package com.teamwizardry.librarianlib.mosaic
 
-/*
- * Created by Bluexin.
- * Made for LibrarianLib, under GNU LGPL v3.0
- * (a copy of which can be found at the repo root)
- */
-
-import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
 import net.minecraft.client.renderer.RenderType
-import net.minecraft.client.renderer.texture.AtlasTexture
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 
 /**
@@ -18,17 +10,17 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite
  *
  * Nothing special needs to be done for animations to work ([TextureAtlasSprite] handles them out of the box).
  */
-class LTextureAtlasSprite(private val tas: TextureAtlasSprite) : ISprite {
+public class LTextureAtlasSprite(private val tas: TextureAtlasSprite) : ISprite {
 
     override val renderType: RenderType = SimpleRenderTypes.flat(tas.atlasTexture.textureLocation)
 
-    override fun minU(animFrames: Int) = tas.minU
+    override fun minU(animFrames: Int): Float = tas.minU
 
-    override fun minV(animFrames: Int) = tas.minV
+    override fun minV(animFrames: Int): Float = tas.minV
 
-    override fun maxU(animFrames: Int) = tas.maxU
+    override fun maxU(animFrames: Int): Float = tas.maxU
 
-    override fun maxV(animFrames: Int) = tas.maxV
+    override fun maxV(animFrames: Int): Float = tas.maxV
 
     override val width: Int
         get() = tas.width
