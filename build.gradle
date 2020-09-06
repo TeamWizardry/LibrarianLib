@@ -34,7 +34,6 @@ if(hasProperty('liblibVersion')) {
 ext.allmodules = rootProject.subprojects.findAll { it.findProperty("non_module") != "true" }
 
 allprojects {
-    apply plugin: 'kotlin'
     apply plugin: 'java-library'
 
     ext.allmodules = rootProject.allmodules
@@ -66,8 +65,9 @@ configure(allmodules) {
 }
 
 dependencies {
-    // we need this to exist so we can compile the combined mixin connector. Pulling in the entirety of mixin triggers
-    // the mixin plugin, which we don't need.
+    // We need to compile the mixin connector against Mixin, however, pulling in the actual library triggers the Mixin
+    // plugin, which leads to odd issues. To resolve this I created a skeleton jar to build against which contains only
+    // the `IMixinConnector` interface and an empty `Mixins.addConfiguration` method.
     compileOnly(files("$rootDir/libs/mixin-connector-api.jar"))
 }
 
