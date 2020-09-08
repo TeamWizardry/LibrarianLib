@@ -1,4 +1,6 @@
 # LibrarianLib Foundation
+(incomplete, will complete Later™)
+
 A set of base classes and functionality designed to reduce the number of menial and error-prone tasks in Minecraft 
 modding.
 
