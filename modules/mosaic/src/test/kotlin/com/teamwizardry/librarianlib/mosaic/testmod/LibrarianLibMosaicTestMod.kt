@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.mosaic.ISprite
+import com.teamwizardry.librarianlib.mosaic.LibrarianLibMosaicModule
 import com.teamwizardry.librarianlib.mosaic.Mosaic
 import com.teamwizardry.librarianlib.testbase.TestMod
 import net.minecraftforge.fml.common.Mod
@@ -14,7 +15,7 @@ import org.apache.logging.log4j.LogManager
 import java.awt.Color
 
 @Mod("librarianlib-mosaic-test")
-object LibrarianLibSpritesTestMod: TestMod("mosaic", "Mosaic", logger) {
+object LibrarianLibSpritesTestMod: TestMod(LibrarianLibMosaicModule) {
     init {
         +TestScreenConfig("no_mcmeta", "No .mcmeta") {
             description = "A 32x32 texture with no .mcmeta file"
@@ -208,4 +209,4 @@ object LibrarianLibSpritesTestMod: TestMod("mosaic", "Mosaic", logger) {
     }
 }
 
-internal val logger = LogManager.getLogger("LibrarianLib: Mosaic Test")
+internal val logger = LibrarianLibSpritesTestMod.makeLogger(null)

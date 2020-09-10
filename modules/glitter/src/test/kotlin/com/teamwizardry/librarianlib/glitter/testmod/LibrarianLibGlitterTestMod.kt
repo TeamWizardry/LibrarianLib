@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.glitter.testmod
 
+import com.teamwizardry.librarianlib.glitter.LibrarianLibGlitterModule
 import com.teamwizardry.librarianlib.glitter.testmod.init.TestEntities
 import com.teamwizardry.librarianlib.glitter.testmod.systems.ParticleSystems
 import com.teamwizardry.librarianlib.glitter.testmod.systems.SystemNames
@@ -12,7 +13,7 @@ import org.apache.logging.log4j.LogManager
 internal const val modid: String = "librarianlib-glitter-test"
 
 @Mod("librarianlib-glitter-test")
-object LibrarianLibGlitterTestMod: TestMod("glitter", "Glitter", logger) {
+object LibrarianLibGlitterTestMod: TestMod(LibrarianLibGlitterModule) {
     init {
         SystemNames.systems.forEach { system ->
             +TestEntityConfig(system.id, system.name) {
@@ -46,4 +47,4 @@ object LibrarianLibGlitterTestMod: TestMod("glitter", "Glitter", logger) {
     }
 }
 
-internal val logger = LogManager.getLogger("LibrarianLib: Particles Test")
+internal val logger = LibrarianLibGlitterTestMod.makeLogger(null)

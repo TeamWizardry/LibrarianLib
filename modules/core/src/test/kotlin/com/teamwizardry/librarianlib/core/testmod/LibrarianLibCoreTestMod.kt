@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.core.testmod
 
+import com.teamwizardry.librarianlib.core.LibrarianLibCoreModule
 import com.teamwizardry.librarianlib.core.testmod.tests.EasingTests
 import com.teamwizardry.librarianlib.testbase.TestMod
 import net.alexwells.kottle.FMLKotlinModLoadingContext
@@ -15,7 +16,7 @@ import org.apache.logging.log4j.LogManager
 
 @Suppress("UNUSED_PARAMETER")
 @Mod("librarianlib-test")
-class LibrarianLibCoreTestMod: TestMod("core", "Core", logger) {
+object LibrarianLibCoreTestMod: TestMod(LibrarianLibCoreModule) {
     init {
         +UnitTestSuite("easings") {
             add<EasingTests>()
@@ -23,4 +24,4 @@ class LibrarianLibCoreTestMod: TestMod("core", "Core", logger) {
     }
 }
 
-internal val logger = LogManager.getLogger("LibrarianLib: Core Test")
+internal val logger = LibrarianLibCoreTestMod.makeLogger(null)

@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.prism.testmod
 
+import com.teamwizardry.librarianlib.prism.LibrarianLibPrismModule
 import com.teamwizardry.librarianlib.prism.testmod.nbt.*
 import com.teamwizardry.librarianlib.testbase.TestMod
 import com.teamwizardry.librarianlib.testbase.objects.UnitTestSuite
@@ -7,7 +8,7 @@ import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
 
 @Mod("librarianlib-prism-test")
-object LibrarianLibPrismTestMod: TestMod("prism", "Prism", logger) {
+object LibrarianLibPrismTestMod: TestMod(LibrarianLibPrismModule) {
     val primitiveTests: UnitTestSuite = UnitTestSuite("nbt_primitives") {
         add<PrimitiveTests>()
         add<BoxedPrimitiveTests>()
@@ -49,4 +50,4 @@ object LibrarianLibPrismTestMod: TestMod("prism", "Prism", logger) {
     }
 }
 
-internal val logger = LogManager.getLogger("LibrarianLib: Prism Test")
+internal val logger = LibrarianLibPrismTestMod.makeLogger(null)

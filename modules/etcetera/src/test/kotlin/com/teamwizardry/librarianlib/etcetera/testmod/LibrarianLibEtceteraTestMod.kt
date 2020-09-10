@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.etcetera.testmod
 
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.etcetera.LibrarianLibEtceteraModule
 import com.teamwizardry.librarianlib.etcetera.Raycaster
 import com.teamwizardry.librarianlib.math.times
 import com.teamwizardry.librarianlib.testbase.TestMod
@@ -25,7 +26,7 @@ import org.apache.logging.log4j.LogManager
 import java.util.function.Predicate
 
 @Mod("librarianlib-etcetera-test")
-object LibrarianLibEtceteraTestMod: TestMod("etcetera", "Etcetera", logger) {
+object LibrarianLibEtceteraTestMod: TestMod(LibrarianLibEtceteraModule) {
 
     init {
         +raycaster("raycast_collision", "Collision",
@@ -205,4 +206,4 @@ object LibrarianLibEtceteraTestMod: TestMod("etcetera", "Etcetera", logger) {
     }
 }
 
-internal val logger = LogManager.getLogger("LibrarianLib: Etcetera Test")
+internal val logger = LibrarianLibEtceteraTestMod.makeLogger(null)

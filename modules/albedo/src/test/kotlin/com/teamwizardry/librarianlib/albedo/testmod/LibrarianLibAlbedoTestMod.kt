@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.albedo.testmod
 
+import com.teamwizardry.librarianlib.albedo.LibrarianLibAlbedoModule
 import com.teamwizardry.librarianlib.albedo.testmod.shaders.*
 import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.testbase.TestMod
@@ -8,7 +9,7 @@ import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
 
 @Mod("librarianlib-albedo-test")
-object LibrarianLibAlbedoTestMod: TestMod("albedo", "Albedo", logger) {
+object LibrarianLibAlbedoTestMod: TestMod(LibrarianLibAlbedoModule) {
     init {
         +test("simple_frag", "Simple Fragment Shader", "A simple fragment shader with no uniforms") {
             SimpleFrag
@@ -63,7 +64,7 @@ object LibrarianLibAlbedoTestMod: TestMod("albedo", "Albedo", logger) {
         }
     }
 
-    inline fun test(id: String, name: String, description: String, crossinline shader: () -> ShaderTest<*>): TestScreenConfig {
+    private inline fun test(id: String, name: String, description: String, crossinline shader: () -> ShaderTest<*>): TestScreenConfig {
         var crashed = false
         return TestScreenConfig(id, name) {
             this.description = description
@@ -94,4 +95,4 @@ object LibrarianLibAlbedoTestMod: TestMod("albedo", "Albedo", logger) {
     }
 }
 
-internal val logger = LogManager.getLogger("LibrarianLib: Albedo Test")
+internal val logger = LibrarianLibAlbedoTestMod.makeLogger(null)

@@ -29,7 +29,8 @@ public abstract class LibrarianLibModule(public val name: String, public val hum
     /**
      * Loggers to update based on the debug flag.
      */
-    private val debugLoggers = mutableMapOf<String?, Logger>()
+    private val registeredLoggers = mutableListOf<Logger>()
+    private val modLoggers = mutableMapOf<String?, Logger>()
 
     init {
         // Register ourselves for server and other game events we are interested in
@@ -40,7 +41,7 @@ public abstract class LibrarianLibModule(public val name: String, public val hum
     public fun enableDebugging() {
         debugEnabled = true
 
-        debugLoggers.forEach { (_, logger) ->
+        modLoggers.forEach { (_, logger) ->
             Configurator.setLevel(logger.name, Level.DEBUG)
         }
     }
@@ -63,16 +64,23 @@ public abstract class LibrarianLibModule(public val name: String, public val hum
      * Create a logger for this module.
      */
     public fun makeLogger(label: String?): Logger {
-        return debugLoggers.getOrPut(label) {
+        return modLoggers.getOrPut(label) {
             val labelSuffix = label?.let { " ($it)" } ?: ""
             val logger = LogManager.getLogger("LibrarianLib: $humanName$labelSuffix")
-            if(debugEnabled)
-                Configurator.setLevel(logger.name, Level.DEBUG)
-            else
-                Configurator.setLevel(logger.name, Level.INFO)
+            registerLogger(logger)
             logger
         }
+    }
 
+    /**
+     * Registers a logger which should be controlled by this module's debug flag
+     */
+    public fun registerLogger(logger: Logger) {
+        if(debugEnabled)
+            Configurator.setLevel(logger.name, Level.DEBUG)
+        else
+            Configurator.setLevel(logger.name, Level.INFO)
+        registeredLoggers.add(logger)
     }
 
     @SubscribeEvent

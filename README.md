@@ -65,6 +65,7 @@ ever-increasing amount of boilerplate Forge requires.
 
 #### Minor/niche features
 - `albedo` – Making GLSL shaders simple.
+- `courier` — Networking made easy(er).
 - `etcetera` – Minor utilities that don't warrant their own modules.
 - `mirage` – Create virtual resources (textures/etc.) at runtime. Use this sparingly.
 - `mosaic` – Data-driven spritesheets, designed for Facade.

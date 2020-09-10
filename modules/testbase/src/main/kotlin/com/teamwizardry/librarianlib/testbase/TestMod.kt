@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.testbase
 
+import com.teamwizardry.librarianlib.LibrarianLibModule
 import com.teamwizardry.librarianlib.core.util.DistinctColors
 import com.teamwizardry.librarianlib.core.util.MiscUtil
 import com.teamwizardry.librarianlib.core.util.kotlin.translationKey
@@ -33,12 +34,13 @@ import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.client.registry.RenderingRegistry
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
+import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.awt.Color
 
-public abstract class TestMod(public val targetName: String, public val humanName: String, public val logger: Logger) {
+public abstract class TestMod(public val module: LibrarianLibModule) {
     public val modid: String = MiscUtil.getModId(this.javaClass)
-    public val name: String = "$targetName-test"
+    public val name: String = "${module.name}-test"
     public val itemGroup: ItemGroup = object : ItemGroup("librarianlib-$name") {
         private val stack: ItemStack by lazy {
             val stack = ItemStack(LibrarianLibTestBaseModule.testTool)
@@ -50,6 +52,7 @@ public abstract class TestMod(public val targetName: String, public val humanNam
         }
     }
 
+    private val loggers = mutableMapOf<String?, Logger>()
     private val _items: MutableList<Item> = mutableListOf()
     private val _blocks: MutableList<Block> = mutableListOf()
     private val _entities: MutableList<EntityType<*>> = mutableListOf()
@@ -117,6 +120,33 @@ public abstract class TestMod(public val targetName: String, public val humanNam
     public operator fun UnitTestSuite.unaryPlus(): UnitTestSuite {
         _unitTests.add(this)
         return this
+    }
+
+
+    /**
+     * Create a logger for this module.
+     */
+    public fun makeLogger(clazz: Class<*>): Logger {
+        return makeLogger(clazz.simpleName)
+    }
+
+    /**
+     * Create a logger for this module.
+     */
+    public inline fun <reified T> makeLogger(): Logger {
+        return makeLogger(T::class.java)
+    }
+
+    /**
+     * Create a logger for this module.
+     */
+    public fun makeLogger(label: String?): Logger {
+        return loggers.getOrPut(label) {
+            val labelSuffix = label?.let { " ($it)" } ?: ""
+            val logger = LogManager.getLogger("LibrarianLib Test: ${module.humanName}$labelSuffix")
+            module.registerLogger(logger)
+            logger
+        }
     }
 
     init {
@@ -233,7 +263,7 @@ public abstract class TestMod(public val targetName: String, public val humanNam
 
     private fun languageKeys(): Map<String, String> {
         val keys = mutableMapOf<String, String>()
-        keys[itemGroup.translationKey] = "$humanName Test"
+        keys[itemGroup.translationKey] = "${module.humanName} Test"
         items.forEach { item ->
             if(item is TestItem) {
                 val registryName = item.registryName!!

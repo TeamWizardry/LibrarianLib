@@ -2,6 +2,7 @@
 
 package com.teamwizardry.librarianlib.facade.testmod
 
+import com.teamwizardry.librarianlib.facade.LibrarianLibFacadeModule
 import com.teamwizardry.librarianlib.facade.testmod.screens.*
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.PastryTestScreen
 import com.teamwizardry.librarianlib.facade.testmod.value.RMValueTests
@@ -11,7 +12,7 @@ import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
 
 @Mod("librarianlib-facade-test")
-object LibrarianLibFacadeTestMod: TestMod("facade", "Facade", logger) {
+object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
     val groups: List<FacadeTestGroup> = listOf(
         FacadeTestGroup("basics", "Basics", listOf(
             FacadeTest("Empty", ::EmptyTestScreen),
@@ -61,4 +62,4 @@ object LibrarianLibFacadeTestMod: TestMod("facade", "Facade", logger) {
 
 
 
-internal val logger = LogManager.getLogger("LibrarianLib: Facade Test")
+internal val logger = LibrarianLibFacadeTestMod.makeLogger(null)

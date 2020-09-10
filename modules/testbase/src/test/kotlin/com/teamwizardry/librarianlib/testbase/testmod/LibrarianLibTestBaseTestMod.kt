@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.testbase.testmod
 
 import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.testbase.LibrarianLibTestBaseModule
 import com.teamwizardry.librarianlib.testbase.TestMod
 import com.teamwizardry.librarianlib.testbase.objects.TestBlock
 import com.teamwizardry.librarianlib.testbase.objects.TestBlockConfig
@@ -9,7 +10,7 @@ import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
 
 @Mod("librarianlib-testbase-test")
-object LibrarianLibTestBaseTestMod: TestMod("testbase", "Test Base", logger) {
+object LibrarianLibTestBaseTestMod: TestMod(LibrarianLibTestBaseModule) {
     init {
         +TestItem(TestItemConfig("right_click", "Right Click") {
             common {
@@ -121,4 +122,4 @@ object LibrarianLibTestBaseTestMod: TestMod("testbase", "Test Base", logger) {
     }
 }
 
-internal val logger = LogManager.getLogger("LibrarianLib: Test Base Test")
+internal val logger = LibrarianLibTestBaseTestMod.makeLogger(null)

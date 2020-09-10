@@ -1,11 +1,12 @@
 package com.teamwizardry.librarianlib.{{cookiecutter.module_name}}.testmod
 
+import com.teamwizardry.librarianlib.{{cookiecutter.module_name}}.LibrarianLib{{cookiecutter.camel_name}}Module
 import com.teamwizardry.librarianlib.testbase.TestMod
 import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
 
 @Mod("librarianlib-{{cookiecutter.module_name}}-test")
-object LibrarianLib{{cookiecutter.camel_name}}TestMod: TestMod("{{cookiecutter.module_name}}", "{{cookiecutter.human_name}}", logger) {
+object LibrarianLib{{cookiecutter.camel_name}}TestMod: TestMod(LibrarianLib{{cookiecutter.camel_name}}Module) {
 }
 
-internal val logger = LogManager.getLogger("LibrarianLib: {{cookiecutter.human_name}} Test")
+internal val logger = LibrarianLib{{cookiecutter.camel_name}}TestMod.makeLogger(null)
