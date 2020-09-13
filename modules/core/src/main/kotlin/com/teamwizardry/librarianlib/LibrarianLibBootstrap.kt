@@ -3,6 +3,9 @@ package com.teamwizardry.librarianlib
 import com.google.gson.Gson
 import com.teamwizardry.librarianlib.core.bridge.ASMEnvCheckTarget
 import com.teamwizardry.librarianlib.core.bridge.MixinEnvCheckTarget
+import net.alexwells.kottle.FMLKotlinModLoadingContext
+import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
@@ -11,6 +14,7 @@ import org.apache.logging.log4j.core.config.Configurator
 
 @Mod("librarianlib")
 internal object LibrarianLibBootstrap {
+    private val modEventBus: IEventBus = FMLKotlinModLoadingContext.get().modEventBus
     private val logger = LogManager.getLogger("LibrarianLib Bootstrap")
     private val failedLoading = mutableListOf<String>()
 
@@ -85,9 +89,12 @@ internal object LibrarianLibBootstrap {
             return
         }
         val clazz = Class.forName(info.mainClass)
-        val module = (clazz.kotlin.objectInstance ?: clazz.newInstance()) as? LibrarianLibModule
-        if(name in debugModules)
-            module?.enableDebugging()
+        val module = clazz.kotlin.objectInstance ?: clazz.newInstance()
+        if(module is LibrarianLibModule && name in debugModules)
+            module.enableDebugging()
+        MinecraftForge.EVENT_BUS.register(module)
+        modEventBus.register(module)
+
         logger.info("Finished loading $name module")
     }
 

@@ -18,8 +18,6 @@ import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.core.config.Configurator
 
 public abstract class LibrarianLibModule(public val name: String, public val humanName: String) {
-    protected val modEventBus: IEventBus = FMLKotlinModLoadingContext.get().modEventBus
-
     /**
      * Whether debugging is enabled for this module.
      */
@@ -31,12 +29,6 @@ public abstract class LibrarianLibModule(public val name: String, public val hum
      */
     private val registeredLoggers = mutableListOf<Logger>()
     private val modLoggers = mutableMapOf<String?, Logger>()
-
-    init {
-        // Register ourselves for server and other game events we are interested in
-        MinecraftForge.EVENT_BUS.register(this)
-        modEventBus.register(this)
-    }
 
     public fun enableDebugging() {
         debugEnabled = true
@@ -81,41 +73,5 @@ public abstract class LibrarianLibModule(public val name: String, public val hum
         else
             Configurator.setLevel(logger.name, Level.INFO)
         registeredLoggers.add(logger)
-    }
-
-    @SubscribeEvent
-    protected open fun setup(event: FMLCommonSetupEvent) {
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @SubscribeEvent
-    protected open fun clientSetup(event: FMLClientSetupEvent) {
-    }
-
-    protected open fun registerBlocks(blockRegistryEvent: RegistryEvent.Register<Block>) {
-    }
-
-    protected open fun registerItems(itemRegistryEvent: RegistryEvent.Register<Item>) {
-    }
-
-    protected open fun registerEntities(entityRegistryEvent: RegistryEvent.Register<EntityType<*>>) {
-    }
-
-    @SubscribeEvent
-    @JvmSynthetic
-    internal fun onBlocksRegistry(blockRegistryEvent: RegistryEvent.Register<Block>) {
-        registerBlocks(blockRegistryEvent)
-    }
-
-    @SubscribeEvent
-    @JvmSynthetic
-    internal fun onItemRegister(itemRegistryEvent: RegistryEvent.Register<Item>) {
-        registerItems(itemRegistryEvent)
-    }
-
-    @SubscribeEvent
-    @JvmSynthetic
-    internal fun onEntityRegister(entityRegistryEvent: RegistryEvent.Register<@JvmSuppressWildcards EntityType<*>>) {
-        registerEntities(entityRegistryEvent)
     }
 }

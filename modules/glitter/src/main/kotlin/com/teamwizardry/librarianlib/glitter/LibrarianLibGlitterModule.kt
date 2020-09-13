@@ -2,12 +2,13 @@ package com.teamwizardry.librarianlib.glitter
 
 import com.teamwizardry.librarianlib.LibrarianLibModule
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import org.apache.logging.log4j.LogManager
 
 internal object LibrarianLibGlitterModule: LibrarianLibModule("glitter", "Glitter") {
-    override fun clientSetup(event: FMLClientSetupEvent) {
-        super.clientSetup(event)
+    @SubscribeEvent
+    fun clientSetup(event: FMLClientSetupEvent) {
         MinecraftForge.EVENT_BUS.register(ParticleSystemManager)
         MinecraftForge.EVENT_BUS.register(GlitterWorldCollider)
     }

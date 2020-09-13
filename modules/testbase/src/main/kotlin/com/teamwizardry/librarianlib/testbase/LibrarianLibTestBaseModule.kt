@@ -30,11 +30,16 @@ public object LibrarianLibTestBaseModule : LibrarianLibModule("testbase", "Test 
 
     private val mods = mutableListOf<TestMod>().synchronized()
 
-    override fun registerItems(itemRegistryEvent: RegistryEvent.Register<Item>) {
+    @SubscribeEvent
+    @JvmSynthetic
+    internal fun registerItems(itemRegistryEvent: RegistryEvent.Register<Item>) {
         ForgeRegistries.ITEMS.register(testTool)
     }
 
-    override fun clientSetup(event: FMLClientSetupEvent) {
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    @JvmSynthetic
+    internal fun clientSetup(event: FMLClientSetupEvent) {
 //        RenderingRegistry.registerEntityRenderingHandler(TestEntity::class.java) { TestEntityRenderer(it) }
     }
 
