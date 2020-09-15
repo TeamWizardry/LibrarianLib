@@ -9,24 +9,24 @@ import com.teamwizardry.librarianlib.glitter.ReadParticleBinding
  * ![Bézier curve image example](http://imgur.com/bkIoyyR) |
  * P0 is [start], P1 relative to P0 is [startControl], P2 relative to P3 is [endControl], and P3 is [end]
  */
-class BezierPath @JvmOverloads constructor(
-        /**
-         * The start value to interpolate from.
-         */
-        @JvmField val start: ReadParticleBinding,
-        /**
-         * The end value to interpolate to.
-         */
-        @JvmField val end: ReadParticleBinding,
-        /**
-         * Controls the bending of the start value.
-         */
-        @JvmField val startControl: ReadParticleBinding? = null,
-        /**
-         * Controls the bending of the end value.
-         */
-        @JvmField val endControl: ReadParticleBinding? = null
-) : ParticlePath {
+public class BezierPath @JvmOverloads constructor(
+    /**
+     * The start value to interpolate from.
+     */
+    @JvmField public val start: ReadParticleBinding,
+    /**
+     * The end value to interpolate to.
+     */
+    @JvmField public val end: ReadParticleBinding,
+    /**
+     * Controls the bending of the start value.
+     */
+    @JvmField public val startControl: ReadParticleBinding? = null,
+    /**
+     * Controls the bending of the end value.
+     */
+    @JvmField public val endControl: ReadParticleBinding? = null
+): ParticlePath {
 
     override val value: DoubleArray = DoubleArray(3)
 
@@ -43,7 +43,7 @@ class BezierPath @JvmOverloads constructor(
         startControl?.load(particle)
         endControl?.load(particle)
 
-        for(i in 0 until 3) {
+        for (i in 0 until 3) {
             val startControlValue =
                 if (startControl == null) {
                     if (i == 1) 0.0
@@ -71,7 +71,7 @@ class BezierPath @JvmOverloads constructor(
         startControl?.load(particle)
         endControl?.load(particle)
 
-        for(i in 0 until 3) {
+        for (i in 0 until 3) {
             val startControlValue =
                 if (startControl == null) {
                     if (i == 1) 0.0

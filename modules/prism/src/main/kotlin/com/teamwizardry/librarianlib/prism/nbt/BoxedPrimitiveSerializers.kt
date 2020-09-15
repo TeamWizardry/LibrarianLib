@@ -9,7 +9,7 @@ import net.minecraft.nbt.LongNBT
 import net.minecraft.nbt.NumberNBT
 import net.minecraft.nbt.ShortNBT
 
-object NumberSerializer: NBTSerializer<Number>() {
+internal object NumberSerializer: NBTSerializer<Number>() {
     override fun deserialize(tag: INBT, existing: Number?): Number {
         return tag.expectType<NumberNBT>("tag").asNumber
     }
@@ -26,7 +26,7 @@ object NumberSerializer: NBTSerializer<Number>() {
         }
     }
 }
-object DoubleSerializer: NBTSerializer<Double>() {
+internal object DoubleSerializer: NBTSerializer<Double>() {
     override fun deserialize(tag: INBT, existing: Double?): Double {
         return tag.expectType<NumberNBT>("tag").double
     }
@@ -35,7 +35,7 @@ object DoubleSerializer: NBTSerializer<Double>() {
         return DoubleNBT.valueOf(value)
     }
 }
-object FloatSerializer: NBTSerializer<Float>() {
+internal object FloatSerializer: NBTSerializer<Float>() {
     override fun deserialize(tag: INBT, existing: Float?): Float {
         return tag.expectType<NumberNBT>("tag").float
     }
@@ -44,7 +44,7 @@ object FloatSerializer: NBTSerializer<Float>() {
         return FloatNBT.valueOf(value)
     }
 }
-object LongSerializer: NBTSerializer<Long>() {
+internal object LongSerializer: NBTSerializer<Long>() {
     override fun deserialize(tag: INBT, existing: Long?): Long {
         return tag.expectType<NumberNBT>("tag").long
     }
@@ -53,7 +53,7 @@ object LongSerializer: NBTSerializer<Long>() {
         return LongNBT.valueOf(value)
     }
 }
-object IntegerSerializer: NBTSerializer<Int>() {
+internal object IntegerSerializer: NBTSerializer<Int>() {
     override fun deserialize(tag: INBT, existing: Int?): Int {
         return tag.expectType<NumberNBT>("tag").int
     }
@@ -62,7 +62,7 @@ object IntegerSerializer: NBTSerializer<Int>() {
         return IntNBT.valueOf(value)
     }
 }
-object ShortSerializer: NBTSerializer<Short>() {
+internal object ShortSerializer: NBTSerializer<Short>() {
     override fun deserialize(tag: INBT, existing: Short?): Short {
         return tag.expectType<NumberNBT>("tag").short
     }
@@ -71,7 +71,7 @@ object ShortSerializer: NBTSerializer<Short>() {
         return ShortNBT.valueOf(value)
     }
 }
-object CharacterSerializer: NBTSerializer<Char>() {
+internal object CharacterSerializer: NBTSerializer<Char>() {
     override fun deserialize(tag: INBT, existing: Char?): Char {
         return tag.expectType<NumberNBT>("tag").int.toChar()
     }
@@ -80,7 +80,7 @@ object CharacterSerializer: NBTSerializer<Char>() {
         return IntNBT.valueOf(value.toInt())
     }
 }
-object ByteSerializer: NBTSerializer<Byte>() {
+internal object ByteSerializer: NBTSerializer<Byte>() {
     override fun deserialize(tag: INBT, existing: Byte?): Byte {
         return tag.expectType<NumberNBT>("tag").byte
     }
@@ -89,7 +89,7 @@ object ByteSerializer: NBTSerializer<Byte>() {
         return ByteNBT.valueOf(value)
     }
 }
-object BooleanSerializer: NBTSerializer<Boolean>() {
+internal object BooleanSerializer: NBTSerializer<Boolean>() {
     override fun deserialize(tag: INBT, existing: Boolean?): Boolean {
         return tag.expectType<NumberNBT>("tag").byte != 0.toByte()
     }

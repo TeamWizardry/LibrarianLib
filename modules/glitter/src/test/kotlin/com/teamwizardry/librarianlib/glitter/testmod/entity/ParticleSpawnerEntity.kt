@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.glitter.testmod.entity
 
-import com.teamwizardry.librarianlib.core.util.SidedRunnable
+import com.teamwizardry.librarianlib.core.util.sided.SidedRunnable
 import com.teamwizardry.librarianlib.glitter.testmod.init.TestEntities
 import com.teamwizardry.librarianlib.glitter.testmod.systems.ParticleSystems
 import net.minecraft.entity.Entity

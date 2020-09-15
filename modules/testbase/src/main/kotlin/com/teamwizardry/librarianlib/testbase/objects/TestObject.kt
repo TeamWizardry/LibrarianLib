@@ -1,4 +1,4 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
 @DslMarker
-annotation class TestObjectDslMarker
+internal annotation class TestObjectDslMarker

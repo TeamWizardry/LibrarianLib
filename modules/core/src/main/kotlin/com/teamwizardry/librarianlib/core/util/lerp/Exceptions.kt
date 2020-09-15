@@ -1,15 +1,15 @@
 package com.teamwizardry.librarianlib.core.util.lerp
 
-class InvalidTypeException: RuntimeException {
-    constructor(): super()
-    constructor(message: String?): super(message)
-    constructor(message: String?, cause: Throwable?): super(message, cause)
-    constructor(cause: Throwable?): super(cause)
+public class InvalidTypeException: RuntimeException {
+    public constructor(): super()
+    public constructor(message: String?): super(message)
+    public constructor(message: String?, cause: Throwable?): super(message, cause)
+    public constructor(cause: Throwable?): super(cause)
 }
 
-class LerperNotFoundException: RuntimeException {
-    constructor(): super()
-    constructor(message: String?): super(message)
-    constructor(message: String?, cause: Throwable?): super(message, cause)
-    constructor(cause: Throwable?): super(cause)
+public class LerperNotFoundException: RuntimeException {
+    public constructor(): super()
+    public constructor(message: String?): super(message)
+    public constructor(message: String?, cause: Throwable?): super(message, cause)
+    public constructor(cause: Throwable?): super(cause)
 }

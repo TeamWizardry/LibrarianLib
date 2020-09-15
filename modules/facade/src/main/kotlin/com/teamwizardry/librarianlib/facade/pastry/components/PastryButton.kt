@@ -12,18 +12,18 @@ import com.teamwizardry.librarianlib.math.vec
 import dev.thecodewarrior.bitfont.utils.ExperimentalBitfont
 
 @ExperimentalBitfont
-class PastryButton @JvmOverloads constructor(
-        buttonText: String = "",
-        posX: Int, posY: Int, width: Int? = null, height: Int = Pastry.lineHeight,
-        callback: (() -> Unit)? = null
-) : PastryActivatedControl(posX, posY, width ?: 0, height) {
+public class PastryButton @JvmOverloads constructor(
+    buttonText: String = "",
+    posX: Int, posY: Int, width: Int? = null, height: Int = Pastry.lineHeight,
+    callback: Runnable? = null
+): PastryActivatedControl(posX, posY, width ?: 0, height) {
 
-    class ClickEvent(): Event()
+    public class ClickEvent(): Event()
 
-    val label = PastryLabel(4, 0, buttonText)
+    public val label: PastryLabel = PastryLabel(4, 0, buttonText)
 
     init {
-        if(width == null) {
+        if (width == null) {
             this.width = label.width + 8
         }
 //        label.align = Align2d.CENTER TODO
@@ -32,10 +32,10 @@ class PastryButton @JvmOverloads constructor(
     private val sprite = SpriteLayer(PastryTexture.button, 0, 0, this.widthi, height)
     private var mouseDown = false
 
-    var pressed = false
+    private var pressed = false
         set(value) {
             field = value
-            if(value)
+            if (value)
                 sprite.sprite = PastryTexture.buttonPressed
             else
                 sprite.sprite = PastryTexture.button
@@ -46,9 +46,9 @@ class PastryButton @JvmOverloads constructor(
 //        label.maxLines = 1 TODO
 //        label.truncate = true TODO
         label.text = buttonText
-        if(callback != null)
+        if (callback != null)
             this.BUS.hook<ClickEvent> {
-                callback()
+                callback.run()
             }
         this.add(sprite, label)
 
@@ -71,7 +71,7 @@ class PastryButton @JvmOverloads constructor(
 
     @Hook
     private fun mouseDown(e: GuiLayerEvents.MouseDown) {
-        if(this.mouseOver) {
+        if (this.mouseOver) {
             pressed = true
             mouseDown = true
         }
@@ -87,6 +87,7 @@ class PastryButton @JvmOverloads constructor(
     private fun mouseLeave(e: GuiLayerEvents.MouseMoveOff) {
         pressed = false
     }
+
     @Hook
     private fun mouseEnter(e: GuiLayerEvents.MouseMoveOver) {
         pressed = mouseDown

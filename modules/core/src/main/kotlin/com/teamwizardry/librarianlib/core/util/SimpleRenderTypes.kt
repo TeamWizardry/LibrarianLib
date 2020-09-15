@@ -22,8 +22,7 @@ import java.util.UUID
 // - `hashCode()` is based on: `name` and `renderState`
 // - `equals()` is based on: `renderState`
 //
-@Suppress("INACCESSIBLE_TYPE")
-object SimpleRenderTypes {
+public object SimpleRenderTypes {
     /**
      * Simple flat polygons using the [POSITION_COLOR_TEX][DefaultVertexFormats.POSITION_COLOR_TEX] format.
      *
@@ -33,7 +32,7 @@ object SimpleRenderTypes {
      * Defaults to [GL_QUADS][GL11.GL_QUADS]
      */
     @JvmOverloads
-    fun flat(texture: ResourceLocation, glMode: Int = GL11.GL_QUADS): RenderType {
+    public fun flat(texture: ResourceLocation, glMode: Int = GL11.GL_QUADS): RenderType {
         val renderState = RenderType.State.getBuilder()
             .texture(RenderState.TextureState(texture, false, false))
             .alpha(DefaultRenderStates.DEFAULT_ALPHA)
@@ -54,7 +53,7 @@ object SimpleRenderTypes {
      * Defaults to [GL_QUADS][GL11.GL_QUADS]
      */
     @JvmOverloads
-    fun flat(glMode: Int = GL11.GL_QUADS): RenderType {
+    public fun flat(glMode: Int = GL11.GL_QUADS): RenderType {
         val renderState = RenderType.State.getBuilder()
             .texture(RenderState.TextureState())
             .alpha(DefaultRenderStates.DEFAULT_ALPHA)
@@ -69,11 +68,12 @@ object SimpleRenderTypes {
     /**
      * [RenderType.makeType] returns a package-private class [RenderType.Type] because... Mojang?
      */
-    fun makeType(name: String,
+    public fun makeType(name: String,
         vertexFormatIn: VertexFormat, glMode: Int,
         bufferSizeIn: Int, p_228633_4_: Boolean, p_228633_5_: Boolean,
         p_228633_6_: RenderType.State
     ): RenderType {
+        @Suppress("INACCESSIBLE_TYPE")
         return RenderType.makeType("${name}_${UUID.randomUUID()}", vertexFormatIn, glMode, bufferSizeIn, p_228633_4_, p_228633_5_, p_228633_6_)
     }
 }

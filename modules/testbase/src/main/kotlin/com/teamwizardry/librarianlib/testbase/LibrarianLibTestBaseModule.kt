@@ -23,8 +23,8 @@ import net.minecraftforge.registries.RegistryBuilder
 import org.apache.logging.log4j.LogManager
 import java.awt.Color
 
-object LibrarianLibTestBaseModule : LibrarianLibModule("testbase", "Test Base") {
-    val testTool: Item = Item(Item.Properties().maxStackSize(1)).also {
+public object LibrarianLibTestBaseModule : LibrarianLibModule("testbase", "Test Base") {
+    public val testTool: Item = Item(Item.Properties().maxStackSize(1)).also {
         it.registryName = ResourceLocation("librarianlib-testbase", "test_tool")
     }
 
@@ -50,7 +50,7 @@ object LibrarianLibTestBaseModule : LibrarianLibModule("testbase", "Test Base") 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     internal fun registerColors(colorHandlerEvent: ColorHandlerEvent.Item) {
-        colorHandlerEvent.itemColors.register(IItemColor { stack, tintIndex ->
+        colorHandlerEvent.itemColors.register({ stack, tintIndex ->
             if(tintIndex == 1)
                 DistinctColors.forObject(stack.tag?.getString("mod")).rgb
             else

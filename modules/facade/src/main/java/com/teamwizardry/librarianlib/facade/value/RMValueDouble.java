@@ -38,7 +38,7 @@ public class RMValueDouble extends GuiValue<Double> {
     public void set(double value) {
         double oldValue = this.value;
         this.value = value;
-        if(oldValue != value && change != null && !getUseAnimationValue()) {
+        if (oldValue != value && change != null && !getUseAnimationValue()) {
             change.report(oldValue, value);
         }
     }
@@ -74,7 +74,7 @@ public class RMValueDouble extends GuiValue<Double> {
 
     @Override
     protected void animationChange(Double from, Double to) {
-        if(change != null)
+        if (change != null)
             change.report(from, to);
     }
 

@@ -11,14 +11,14 @@ import net.minecraft.client.renderer.IRenderTypeBuffer
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class RectLayer(color: Color, x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y, width, height) {
-    constructor(color: Color, x: Int, y: Int): this(color, x, y, 0, 0)
-    constructor(x: Int, y: Int): this(Color.white, x, y)
-    constructor(color: Color): this(color, 0, 0)
-    constructor(): this(Color.white)
+public class RectLayer(color: Color, x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y, width, height) {
+    public constructor(color: Color, x: Int, y: Int): this(color, x, y, 0, 0)
+    public constructor(x: Int, y: Int): this(Color.white, x, y)
+    public constructor(color: Color): this(color, 0, 0)
+    public constructor(): this(Color.white)
 
-    val color_im: IMValue<Color> = imValue(color)
-    var color: Color by color_im
+    public val color_im: IMValue<Color> = imValue(color)
+    public var color: Color by color_im
 
     override fun draw(context: GuiDrawContext) {
         val minX = 0.0
@@ -39,7 +39,7 @@ class RectLayer(color: Color, x: Int, y: Int, width: Int, height: Int): GuiLayer
         buffer.finish()
     }
 
-    companion object {
+    private companion object {
         private val renderType = SimpleRenderTypes.flat(GL11.GL_QUADS)
     }
 }

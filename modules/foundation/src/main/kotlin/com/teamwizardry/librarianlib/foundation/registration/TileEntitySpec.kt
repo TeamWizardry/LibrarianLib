@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
 import com.teamwizardry.librarianlib.core.util.IncompleteBuilderException
-import com.teamwizardry.librarianlib.core.util.SidedFunction
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
+import com.teamwizardry.librarianlib.core.util.sided.ClientFunction
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher
 import net.minecraft.tileentity.TileEntity
@@ -14,27 +14,27 @@ import java.util.function.Supplier
 /**
  * The specs for creating and registering a tile entity.
  */
-class TileEntitySpec(
+public class TileEntitySpec(
     /**
      * The registry name, sans mod ID.
      */
-    val name: String,
+    public val name: String,
     /**
      * The tile entity factory.
      */
-    val factory: Supplier<out TileEntity>
+    public val factory: Supplier<out TileEntity>
 ) {
     /**
      * The mod ID to register this tile entity under. This is populated by the [RegistrationManager].
      */
-    var modid: String = ""
+    public var modid: String = ""
         @JvmSynthetic
         internal set
 
     /**
      * The registry name of the tile entity type. The [mod ID][modid] is populated by the [RegistrationManager].
      */
-    val registryName: ResourceLocation
+    public val registryName: ResourceLocation
         get() = ResourceLocation(modid, name)
 
 
@@ -43,16 +43,16 @@ class TileEntitySpec(
     /**
      * The list of blocks that this tile entity can exist for.
      */
-    val validBlocks: Set<LazyBlock> = _validBlocks.unmodifiableView()
+    public val validBlocks: Set<LazyBlock> = _validBlocks.unmodifiableView()
 
     @get:JvmSynthetic
-    internal var renderer: SidedFunction.Client<in TileEntityRendererDispatcher, out TileEntityRenderer<*>>? = null
+    internal var renderer: ClientFunction<in TileEntityRendererDispatcher, out TileEntityRenderer<*>>? = null
         private set
 
     /**
      * Sets the renderer factory for this tile type
      */
-    fun renderer(renderer: SidedFunction.Client<in TileEntityRendererDispatcher, out TileEntityRenderer<*>>): TileEntitySpec {
+    public fun renderer(renderer: ClientFunction<in TileEntityRendererDispatcher, out TileEntityRenderer<*>>): TileEntitySpec {
         this.renderer = renderer
         return this
     }
@@ -60,7 +60,7 @@ class TileEntitySpec(
     /**
      * The lazily-evaluated [TileEntityType] instance.
      */
-    val typeInstance: TileEntityType<*> by lazy {
+    public val typeInstance: TileEntityType<*> by lazy {
         if (this.validBlocks.isEmpty())
             throw IncompleteBuilderException("Tile entity $registryName was never added to any blocks")
         val resolvedBlocks = this.validBlocks.map { it.get() }.toTypedArray()
@@ -69,5 +69,5 @@ class TileEntitySpec(
         type
     }
 
-    val lazy: LazyTileEntityType = LazyTileEntityType(this)
+    public val lazy: LazyTileEntityType = LazyTileEntityType(this)
 }

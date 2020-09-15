@@ -6,8 +6,8 @@ package com.teamwizardry.librarianlib.math
  * To create your own, visit http://cubic-bezier.com/
  */
 @Suppress("FunctionName")
-class BezierEasing(private val mX1: Float, private val mY1: Float, private val mX2: Float, private val mY2: Float) : Easing {
-    constructor(mX1: Number, mY1: Number, mX2: Number, mY2: Number) : this(mX1.toFloat(), mY1.toFloat(), mX2.toFloat(), mY2.toFloat())
+public class BezierEasing(private val mX1: Float, private val mY1: Float, private val mX2: Float, private val mY2: Float): Easing {
+    public constructor(mX1: Number, mY1: Number, mX2: Number, mY2: Number): this(mX1.toFloat(), mY1.toFloat(), mX2.toFloat(), mY2.toFloat())
 
     override fun ease(progress: Float): Float {
         if (mX1 == mY1 && mX2 == mY2) return progress // linear

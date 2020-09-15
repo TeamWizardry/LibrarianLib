@@ -5,11 +5,11 @@ import com.teamwizardry.librarianlib.glitter.ReadWriteParticleBinding
 /**
  * A binding backed by an internal array, designed as temporary storage for passing values between update modules.
  */
-class VariableBinding(
-        /**
-         * The number of virtual elements this variable should have. Cannot be indefinite (-1)
-         */
-        val size: Int
+public class VariableBinding(
+    /**
+     * The number of virtual elements this variable should have. Cannot be indefinite (-1)
+     */
+    public val size: Int
 ): ReadWriteParticleBinding {
     override val contents: DoubleArray = DoubleArray(size)
 

@@ -16,9 +16,11 @@ public class IMValueInt extends GuiValue<Integer> {
     private IMValueInt(Storage initialStorage) {
         this.storage = initialStorage;
     }
+
     public IMValueInt(int initialValue) {
         this.storage = new Storage.Fixed(initialValue);
     }
+
     public IMValueInt(IntSupplier initialCallback) {
         this.storage = new Storage.Callback(initialCallback);
     }
@@ -34,7 +36,7 @@ public class IMValueInt extends GuiValue<Integer> {
      * Sets the callback, unsetting the fixed value in the process
      */
     public void set(IntSupplier callback) {
-        if(storage instanceof Storage.Callback) {
+        if (storage instanceof Storage.Callback) {
             ((Storage.Callback) storage).callback = callback;
         } else {
             storage = new Storage.Callback(callback);
@@ -46,7 +48,7 @@ public class IMValueInt extends GuiValue<Integer> {
      * access this value (`someProperty` will call into `somePropery_im` for its value)
      */
     public void setValue(int value) {
-        if(storage instanceof Storage.Fixed) {
+        if (storage instanceof Storage.Fixed) {
             ((Storage.Fixed) storage).value = value;
         } else {
             storage = new Storage.Fixed(value);
@@ -72,7 +74,7 @@ public class IMValueInt extends GuiValue<Integer> {
      */
     @Nullable
     public IntSupplier getCallback() {
-        if(storage instanceof Storage.Callback) {
+        if (storage instanceof Storage.Callback) {
             return ((Storage.Callback) storage).callback;
         } else {
             return null;
@@ -109,6 +111,7 @@ public class IMValueInt extends GuiValue<Integer> {
 
         static class Fixed extends Storage {
             int value;
+
             public Fixed(int value) {
                 this.value = value;
             }
@@ -121,6 +124,7 @@ public class IMValueInt extends GuiValue<Integer> {
 
         static class Callback extends Storage {
             IntSupplier callback;
+
             public Callback(IntSupplier callback) {
                 this.callback = callback;
             }

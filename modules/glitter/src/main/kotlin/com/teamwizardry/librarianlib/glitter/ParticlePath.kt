@@ -3,11 +3,11 @@ package com.teamwizardry.librarianlib.glitter
 /**
  * Defines a path a particle can follow, or a series of tangents for use as velocity vectors
  */
-interface ParticlePath {
+public interface ParticlePath {
     /**
      * The position or tangent that was just computed
      */
-    val value: DoubleArray
+    public val value: DoubleArray
 
     /**
      * Computes the position at the passed fraction [t] along the path.
@@ -15,7 +15,7 @@ interface ParticlePath {
      * @param particle The particle array
      * @param t (0–1) The fraction along the path the returned point should be at.
      */
-    fun computePosition(particle: DoubleArray, t: Double)
+    public fun computePosition(particle: DoubleArray, t: Double)
 
     /**
      * Computes the tangent direction at the passed fraction [t] along the path. The tangent may or may not have a length of 1,
@@ -25,5 +25,5 @@ interface ParticlePath {
      * @param particle The particle array
      * @param t (0–1) The fraction along the path the returned tangent should be at.
      */
-    fun computeTangent(particle: DoubleArray, t: Double)
+    public fun computeTangent(particle: DoubleArray, t: Double)
 }

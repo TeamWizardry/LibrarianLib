@@ -6,11 +6,9 @@ import net.minecraftforge.common.extensions.IForgeBlock
 /**
  * An interface for implementing Foundation's extended block functionality.
  */
-interface IFoundationBlock: IForgeBlock {
+public interface IFoundationBlock: IForgeBlock {
     /**
      * Generates the models for this block
      */
-    @JvmDefault
-    fun generateBlockState(gen: BlockStateProvider) {
-    }
+    public fun generateBlockState(gen: BlockStateProvider) { }
 }

@@ -15,7 +15,7 @@ import net.minecraft.nbt.IntNBT
 import net.minecraft.nbt.ListNBT
 import net.minecraft.nbt.NumberNBT
 
-object Vec2dSerializer: NBTSerializer<Vec2d>() {
+internal object Vec2dSerializer: NBTSerializer<Vec2d>() {
     override fun deserialize(tag: INBT, existing: Vec2d?): Vec2d {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
         return Vec2d(
@@ -32,7 +32,7 @@ object Vec2dSerializer: NBTSerializer<Vec2d>() {
     }
 }
 
-object Vec2iSerializer: NBTSerializer<Vec2i>() {
+internal object Vec2iSerializer: NBTSerializer<Vec2i>() {
     override fun deserialize(tag: INBT, existing: Vec2i?): Vec2i {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
         return Vec2i(
@@ -49,7 +49,7 @@ object Vec2iSerializer: NBTSerializer<Vec2i>() {
     }
 }
 
-object Rect2dSerializer: NBTSerializer<Rect2d>() {
+internal object Rect2dSerializer: NBTSerializer<Rect2d>() {
     override fun deserialize(tag: INBT, existing: Rect2d?): Rect2d {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
         return Rect2d(
@@ -70,7 +70,7 @@ object Rect2dSerializer: NBTSerializer<Rect2d>() {
     }
 }
 
-object Matrix3dSerializer: NBTSerializer<Matrix3d>() {
+internal object Matrix3dSerializer: NBTSerializer<Matrix3d>() {
     override fun deserialize(tag: INBT, existing: Matrix3d?): Matrix3d {
         val list = tag.expectType<ListNBT>("tag")
         return Matrix3d(
@@ -101,7 +101,7 @@ object Matrix3dSerializer: NBTSerializer<Matrix3d>() {
     }
 }
 
-object MutableMatrix3dSerializer: NBTSerializer<MutableMatrix3d>() {
+internal object MutableMatrix3dSerializer: NBTSerializer<MutableMatrix3d>() {
     override fun deserialize(tag: INBT, existing: MutableMatrix3d?): MutableMatrix3d {
         val list = tag.expectType<ListNBT>("tag")
         return (existing ?: MutableMatrix3d()).set(
@@ -132,7 +132,7 @@ object MutableMatrix3dSerializer: NBTSerializer<MutableMatrix3d>() {
     }
 }
 
-object Matrix4dSerializer: NBTSerializer<Matrix4d>() {
+internal object Matrix4dSerializer: NBTSerializer<Matrix4d>() {
     override fun deserialize(tag: INBT, existing: Matrix4d?): Matrix4d {
         val list = tag.expectType<ListNBT>("tag")
         return Matrix4d(
@@ -177,7 +177,7 @@ object Matrix4dSerializer: NBTSerializer<Matrix4d>() {
     }
 }
 
-object MutableMatrix4dSerializer: NBTSerializer<MutableMatrix4d>() {
+internal object MutableMatrix4dSerializer: NBTSerializer<MutableMatrix4d>() {
     override fun deserialize(tag: INBT, existing: MutableMatrix4d?): MutableMatrix4d {
         val list = tag.expectType<ListNBT>("tag")
         return (existing ?: MutableMatrix4d()).set(
@@ -222,7 +222,7 @@ object MutableMatrix4dSerializer: NBTSerializer<MutableMatrix4d>() {
     }
 }
 
-object QuaternionSerializer: NBTSerializer<Quaternion>() {
+internal object QuaternionSerializer: NBTSerializer<Quaternion>() {
     override fun deserialize(tag: INBT, existing: Quaternion?): Quaternion {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
         return Quaternion(

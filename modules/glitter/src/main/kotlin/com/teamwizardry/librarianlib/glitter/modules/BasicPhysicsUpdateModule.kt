@@ -34,68 +34,68 @@ import java.lang.Math.abs
  * Perfect bounciness is, as far as I am aware, infeasible. Discrete time steps don't mix well with linear motion:
  * http://jsfiddle.net/thecodewarrior/7a8snb49
  */
-class BasicPhysicsUpdateModule @JvmOverloads constructor(
-        /**
-         * The position of the particle.
-         */
-        @JvmField val position: ReadWriteParticleBinding,
-        /**
-         * The previous position of the particle. Populated so renderers can properly position the particle between ticks.
-         */
-        @JvmField val previousPosition: WriteParticleBinding,
-        /**
-         * The velocity of the particle. If the binding is a [ReadWriteParticleBinding] the final velocity will be
-         * stored in this binding.
-         *
-         * Velocity is set, not added.
-         */
-        @JvmField val velocity: ReadParticleBinding,
-        /**
-         * If enabled, will allow the particle to collide with blocks in the world
-         */
-        @JvmField val enableCollision: Boolean = false,
-        /**
-         * The acceleration of gravity. Positive gravity imparts a downward acceleration on the particle.
-         *
-         * Subtracted from particle's speed every tick.
-         *
-         * 0.04 is a good number to start with.
-         */
-        @JvmField val gravity: ReadParticleBinding = ConstantBinding(0.04),
-        /**
-         * The fraction of velocity conserved upon impact. A bounciness of 0 means the particle will completely stop
-         * when impacting a surface. 1.0 means the particle will bounce back with all of the velocity it had impacting,
-         * essentially negating the collision axis. However, due to inaccuracies as yet unidentified, a bounciness of
-         * 1.0 doesn't result in 100% velocity preservation.
-         *
-         * Only useful if enableCollision is set to true.
-         *
-         * 0.2 is a good number to start with.
-         */
-        @JvmField val bounciness: ReadParticleBinding = ConstantBinding(0.2),
-        /**
-         * The friction of the particle upon impact. Every time the particle impacts (or rests upon) a block, the two
-         * axes perpendicular to the side being hit will be reduced by this fraction. Friction of 0 would mean perfectly
-         * slippery, no velocity lost when rubbing against an object
-         * Multiplies particle speed.
-         *
-         * Friction sliding against blocks. Only useful if enableCollision is set to true.
-         *
-         * 0.2 is a good number to start with.
-         */
-        @JvmField val friction: ReadParticleBinding = ConstantBinding(0.2),
-        /**
-         * The damping, or "drag" of the particle. Every tick the velocity will be reduced by this fraction. Setting
-         * the damping to 0.01 means that the particle will reach 10% velocity in just over 10 seconds
-         * (0.99^229 ≈ 0.1, log.99(0.1) ≈ 229).
-         * Multiplies particle speed.
-         *
-         * Friction in the air basically.
-         *
-         * 0.01 is a good number to start with.
-         */
-        @JvmField val damping: ReadParticleBinding = ConstantBinding(0.01)
-) : ParticleUpdateModule {
+public class BasicPhysicsUpdateModule @JvmOverloads constructor(
+    /**
+     * The position of the particle.
+     */
+    @JvmField public val position: ReadWriteParticleBinding,
+    /**
+     * The previous position of the particle. Populated so renderers can properly position the particle between ticks.
+     */
+    @JvmField public val previousPosition: WriteParticleBinding,
+    /**
+     * The velocity of the particle. If the binding is a [ReadWriteParticleBinding] the final velocity will be
+     * stored in this binding.
+     *
+     * Velocity is set, not added.
+     */
+    @JvmField public val velocity: ReadParticleBinding,
+    /**
+     * If enabled, will allow the particle to collide with blocks in the world
+     */
+    @JvmField public val enableCollision: Boolean = false,
+    /**
+     * The acceleration of gravity. Positive gravity imparts a downward acceleration on the particle.
+     *
+     * Subtracted from particle's speed every tick.
+     *
+     * 0.04 is a good number to start with.
+     */
+    @JvmField public val gravity: ReadParticleBinding = ConstantBinding(0.04),
+    /**
+     * The fraction of velocity conserved upon impact. A bounciness of 0 means the particle will completely stop
+     * when impacting a surface. 1.0 means the particle will bounce back with all of the velocity it had impacting,
+     * essentially negating the collision axis. However, due to inaccuracies as yet unidentified, a bounciness of
+     * 1.0 doesn't result in 100% velocity preservation.
+     *
+     * Only useful if enableCollision is set to true.
+     *
+     * 0.2 is a good number to start with.
+     */
+    @JvmField public val bounciness: ReadParticleBinding = ConstantBinding(0.2),
+    /**
+     * The friction of the particle upon impact. Every time the particle impacts (or rests upon) a block, the two
+     * axes perpendicular to the side being hit will be reduced by this fraction. Friction of 0 would mean perfectly
+     * slippery, no velocity lost when rubbing against an object
+     * Multiplies particle speed.
+     *
+     * Friction sliding against blocks. Only useful if enableCollision is set to true.
+     *
+     * 0.2 is a good number to start with.
+     */
+    @JvmField public val friction: ReadParticleBinding = ConstantBinding(0.2),
+    /**
+     * The damping, or "drag" of the particle. Every tick the velocity will be reduced by this fraction. Setting
+     * the damping to 0.01 means that the particle will reach 10% velocity in just over 10 seconds
+     * (0.99^229 ≈ 0.1, log.99(0.1) ≈ 229).
+     * Multiplies particle speed.
+     *
+     * Friction in the air basically.
+     *
+     * 0.01 is a good number to start with.
+     */
+    @JvmField public val damping: ReadParticleBinding = ConstantBinding(0.01)
+): ParticleUpdateModule {
     init {
         position.require(3)
         previousPosition.require(3)
@@ -142,7 +142,7 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
         // (3. in class docs)
         accelerate()
 
-        if(enableCollision) {
+        if (enableCollision) {
             // (4. in class docs)
             collide()
 
@@ -184,8 +184,8 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
     private fun collide(velocityMultiplier: Double = 1.0) {
         // (4.1 in class docs)
         GlitterWorldCollider.collide(rayHit,
-                posX, posY, posZ,
-                velX * velocityMultiplier, velY * velocityMultiplier, velZ * velocityMultiplier
+            posX, posY, posZ,
+            velX * velocityMultiplier, velY * velocityMultiplier, velZ * velocityMultiplier
         )
 
         // (4.2 in class docs)
@@ -215,5 +215,4 @@ class BasicPhysicsUpdateModule @JvmOverloads constructor(
         velY *= 1 - (1 - axisY) * friction
         velZ *= 1 - (1 - axisZ) * friction
     }
-
 }

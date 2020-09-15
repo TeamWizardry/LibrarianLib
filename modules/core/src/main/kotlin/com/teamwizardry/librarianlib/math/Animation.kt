@@ -3,18 +3,18 @@ package com.teamwizardry.librarianlib.math
 /**
  * The base interface for animations.
  */
-interface Animation<T> {
+public interface Animation<T> {
     /**
      * The end time of the animation. May be [Float.POSITIVE_INFINITY] for animations that loop indefinitely or use some
      * other function that never ends.
      */
-    val end: Float
+    public val end: Float
 
     /**
      * Get the value of the animation at the specified time. The time should be expressed in ticks, with the animation
      * starting at 0.
      */
-    fun animate(time: Float): T
+    public fun animate(time: Float): T
 
     /**
      * Can be called when the animation is started.
@@ -22,7 +22,7 @@ interface Animation<T> {
      * While calling this method is recommended, as it can facilitate richer animation functionality, it is not strictly
      * required, so animation implementations should not rely on this method being called.
      */
-    fun onStarted()
+    public fun onStarted()
 
     /**
      * Can be called when the animation is completed or interrupted, returning the final value of the animation. This is
@@ -32,5 +32,5 @@ interface Animation<T> {
      * While calling this method is recommended, as it facilitates richer animation functionality, it is not strictly
      * required, so animation implementations should not rely on this method being called.
      */
-    fun onStopped(time: Float): T
+    public fun onStopped(time: Float): T
 }

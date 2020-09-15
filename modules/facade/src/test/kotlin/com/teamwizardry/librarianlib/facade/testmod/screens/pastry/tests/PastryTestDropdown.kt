@@ -34,7 +34,7 @@ class PastryTestDropdown: PastryTestBase() {
 
         val dropdownWidth = stacks.map { stack ->
             stack?.let { PastryLabel(0, 0, it.displayName.string).widthi } ?: 0
-        }.max() ?: 50
+        }.maxOrNull() ?: 50
         dropdown = PastryDropdown(0, 0, dropdownWidth + 15) {
             stackComponent.stack = it
         }

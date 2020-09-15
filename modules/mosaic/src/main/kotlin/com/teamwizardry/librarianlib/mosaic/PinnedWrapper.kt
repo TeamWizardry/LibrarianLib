@@ -4,8 +4,8 @@ import com.teamwizardry.librarianlib.math.Matrix3d
 import net.minecraft.client.renderer.RenderType
 import java.awt.Color
 
-class PinnedWrapper(
-    val wrapped: ISprite,
+public class PinnedWrapper(
+    public val wrapped: ISprite,
     override val pinTop: Boolean,
     override val pinBottom: Boolean,
     override val pinLeft: Boolean,

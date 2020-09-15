@@ -10,26 +10,26 @@ import kotlin.math.pow
 import kotlin.math.roundToLong
 
 // adapted from flow/math: https://github.com/flow/math
-open class MutableMatrix4d: Matrix4d {
-    constructor(m: Matrix4d): super(m)
+public open class MutableMatrix4d: Matrix4d {
+    public constructor(m: Matrix4d): super(m)
 
-    constructor(): super()
+    public constructor(): super()
 
-    constructor(
+    public constructor(
         m00: Float, m01: Float, m02: Float, m03: Float,
         m10: Float, m11: Float, m12: Float, m13: Float,
         m20: Float, m21: Float, m22: Float, m23: Float,
         m30: Float, m31: Float, m32: Float, m33: Float
     ): super(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33)
 
-    constructor(
+    public constructor(
         m00: Double, m01: Double, m02: Double, m03: Double,
         m10: Double, m11: Double, m12: Double, m13: Double,
         m20: Double, m21: Double, m22: Double, m23: Double,
         m30: Double, m31: Double, m32: Double, m33: Double
     ): super(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33)
 
-    constructor(m: Matrix4f) {
+    public constructor(m: Matrix4f) {
         @Suppress("CAST_NEVER_SUCCEEDS") val imatrix = m as IMatrix4f
         this.m00 = imatrix.m00.toDouble()
         this.m01 = imatrix.m01.toDouble()
@@ -49,8 +49,8 @@ open class MutableMatrix4d: Matrix4d {
         this.m33 = imatrix.m33.toDouble()
     }
 
-    operator fun set(row: Int, col: Int, value: Double) {
-        if(row !in 0 .. 3 || col !in 0 .. 3) {
+    public operator fun set(row: Int, col: Int, value: Double) {
+        if (row !in 0..3 || col !in 0..3) {
             throw IllegalArgumentException(
                 (if (row < 0 || row > 3) "row must be greater than zero and smaller than 3. " else "") + if (col < 0 || col > 3) "col must be greater than zero and smaller than 3." else "")
         }
@@ -82,7 +82,7 @@ open class MutableMatrix4d: Matrix4d {
         }
     }
 
-    fun set(
+    public fun set(
         m00: Float, m01: Float, m02: Float, m03: Float,
         m10: Float, m11: Float, m12: Float, m13: Float,
         m20: Float, m21: Float, m22: Float, m23: Float,
@@ -94,7 +94,7 @@ open class MutableMatrix4d: Matrix4d {
         m30.toDouble(), m31.toDouble(), m32.toDouble(), m33.toDouble()
     )
 
-    fun set(
+    public fun set(
         m00: Double, m01: Double, m02: Double, m03: Double,
         m10: Double, m11: Double, m12: Double, m13: Double,
         m20: Double, m21: Double, m22: Double, m23: Double,
@@ -119,7 +119,7 @@ open class MutableMatrix4d: Matrix4d {
         return this
     }
 
-    fun set(other: Matrix4d): MutableMatrix4d {
+    public fun set(other: Matrix4d): MutableMatrix4d {
         this.m00 = other.m00
         this.m01 = other.m01
         this.m02 = other.m02
@@ -139,7 +139,7 @@ open class MutableMatrix4d: Matrix4d {
         return this
     }
 
-    fun set(m: Matrix4f): MutableMatrix4d {
+    public fun set(m: Matrix4f): MutableMatrix4d {
         @Suppress("CAST_NEVER_SUCCEEDS") val imatrix = m as IMatrix4f
         this.m00 = imatrix.m00.toDouble()
         this.m01 = imatrix.m01.toDouble()
@@ -241,10 +241,22 @@ open class MutableMatrix4d: Matrix4d {
     }
 
     override fun mul(m: Matrix4d): MutableMatrix4d {
-        val _m00 = m00; val _m01 = m01; val _m02 = m02; val _m03 = m03
-        val _m10 = m10; val _m11 = m11; val _m12 = m12; val _m13 = m13
-        val _m20 = m20; val _m21 = m21; val _m22 = m22; val _m23 = m23
-        val _m30 = m30; val _m31 = m31; val _m32 = m32; val _m33 = m33
+        val _m00 = m00;
+        val _m01 = m01;
+        val _m02 = m02;
+        val _m03 = m03
+        val _m10 = m10;
+        val _m11 = m11;
+        val _m12 = m12;
+        val _m13 = m13
+        val _m20 = m20;
+        val _m21 = m21;
+        val _m22 = m22;
+        val _m23 = m23
+        val _m30 = m30;
+        val _m31 = m31;
+        val _m32 = m32;
+        val _m33 = m33
 
         m00 = _m00 * m.m00 + _m01 * m.m10 + _m02 * m.m20 + _m03 * m.m30
         m01 = _m00 * m.m01 + _m01 * m.m11 + _m02 * m.m21 + _m03 * m.m31
@@ -462,10 +474,22 @@ open class MutableMatrix4d: Matrix4d {
     }
 
     override fun transpose(): MutableMatrix4d {
-        val _m00 = m00; val _m01 = m01; val _m02 = m02; val _m03 = m03
-        val _m10 = m10; val _m11 = m11; val _m12 = m12; val _m13 = m13
-        val _m20 = m20; val _m21 = m21; val _m22 = m22; val _m23 = m23
-        val _m30 = m30; val _m31 = m31; val _m32 = m32; val _m33 = m33
+        val _m00 = m00;
+        val _m01 = m01;
+        val _m02 = m02;
+        val _m03 = m03
+        val _m10 = m10;
+        val _m11 = m11;
+        val _m12 = m12;
+        val _m13 = m13
+        val _m20 = m20;
+        val _m21 = m21;
+        val _m22 = m22;
+        val _m23 = m23
+        val _m30 = m30;
+        val _m31 = m31;
+        val _m32 = m32;
+        val _m33 = m33
 
         m00 = _m00
         m01 = _m10
@@ -491,10 +515,22 @@ open class MutableMatrix4d: Matrix4d {
         if (abs(det) < DBL_EPSILON) {
             throw ArithmeticException("Cannot inverse a matrix with a zero determinant")
         }
-        val _m00 = m00; val _m01 = m01; val _m02 = m02; val _m03 = m03
-        val _m10 = m10; val _m11 = m11; val _m12 = m12; val _m13 = m13
-        val _m20 = m20; val _m21 = m21; val _m22 = m22; val _m23 = m23
-        val _m30 = m30; val _m31 = m31; val _m32 = m32; val _m33 = m33
+        val _m00 = m00;
+        val _m01 = m01;
+        val _m02 = m02;
+        val _m03 = m03
+        val _m10 = m10;
+        val _m11 = m11;
+        val _m12 = m12;
+        val _m13 = m13
+        val _m20 = m20;
+        val _m21 = m21;
+        val _m22 = m22;
+        val _m23 = m23
+        val _m30 = m30;
+        val _m31 = m31;
+        val _m32 = m32;
+        val _m33 = m33
 
         m00 = det3(_m11, _m21, _m31, _m12, _m22, _m32, _m13, _m23, _m33) / det
         m01 = -det3(_m01, _m21, _m31, _m02, _m22, _m32, _m03, _m23, _m33) / det
@@ -521,7 +557,7 @@ open class MutableMatrix4d: Matrix4d {
 
     override fun toImmutable(): Matrix4d = Matrix4d(this)
 
-    companion object {
+    private companion object {
         private val DBL_EPSILON = Double.fromBits(0x3cb0000000000000L)
     }
 }

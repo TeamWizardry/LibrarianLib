@@ -2,14 +2,14 @@ package com.teamwizardry.librarianlib.etcetera.eventbus
 
 import java.util.function.Consumer
 
-class EventBus {
+public class EventBus {
     private var hooks = mutableMapOf<Class<*>, MutableList<EventHook>>()
 
-    fun hasHooks(clazz: Class<*>): Boolean {
+    public fun hasHooks(clazz: Class<*>): Boolean {
         return hooks[clazz]?.size ?: 0 > 0
     }
 
-    fun <E : Event> fire(event: E): E {
+    public fun <E: Event> fire(event: E): E {
         getEventClassList(event.javaClass).forEach { clazz ->
             fire(event, clazz)
         }
@@ -29,22 +29,18 @@ class EventBus {
         }
     }
 
-    inline fun <reified  E : Event> hook(noinline hook: (E) -> Unit) {
+    public inline fun <reified E: Event> hook(hook: Consumer<E>) {
         hook(E::class.java, hook)
     }
 
-    fun <E : Event> hook(clazz: Class<E>, hook: (E) -> Unit) {
-        hook(clazz, Consumer(hook))
-    }
-
     @Suppress("UNCHECKED_CAST")
-    fun <E : Event> hook(clazz: Class<E>, hook: Consumer<E>) {
+    public fun <E: Event> hook(clazz: Class<E>, hook: Consumer<E>) {
         if (!hooks.containsKey(clazz))
             hooks.put(clazz, mutableListOf())
         hooks[clazz]?.add(EventHook(hook as Consumer<Event>))
     }
 
-    fun register(obj: Any) {
+    public fun register(obj: Any) {
         EventHookAnnotationReflector.apply(this, obj)
     }
 
@@ -61,7 +57,7 @@ class EventBus {
         }
     }
 
-    companion object {
+    public companion object {
         private val classLists = mutableMapOf<Class<*>, List<Class<*>>>()
 
         private fun getEventClassList(clazz: Class<*>): Iterable<Class<*>> {
@@ -69,7 +65,7 @@ class EventBus {
                 val list = mutableListOf<Class<*>>()
 
                 var c = clazz
-                while(Event::class.java.isAssignableFrom(c)) {
+                while (Event::class.java.isAssignableFrom(c)) {
                     list.add(c)
                     c = c.superclass ?: break
                 }

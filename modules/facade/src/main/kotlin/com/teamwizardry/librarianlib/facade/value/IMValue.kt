@@ -20,29 +20,28 @@ import kotlin.reflect.KProperty
  * For [GuiLayers][GuiLayer], use the [GuiLayer.imValue] method, since that will
  */
 @Suppress("Duplicates")
-class IMValue<T> private constructor(private var storage: Storage<T>, private val lerper: Lerper<T>?): GuiValue<T>() {
-    constructor(initialValue: T, lerper: Lerper<T>?): this(Storage.Fixed(initialValue), lerper)
-    constructor(initialCallback: Supplier<T>, lerper: Lerper<T>?): this(Storage.Callback(initialCallback), lerper)
-    constructor(initialCallback: () -> T, lerper: Lerper<T>?): this(Storage.Callback(Supplier(initialCallback)), lerper)
+public class IMValue<T> private constructor(private var storage: Storage<T>, private val lerper: Lerper<T>?): GuiValue<T>() {
+    public constructor(initialValue: T, lerper: Lerper<T>?): this(Storage.Fixed(initialValue), lerper)
+    public constructor(initialCallback: Supplier<T>, lerper: Lerper<T>?): this(Storage.Callback(initialCallback), lerper)
 
     /**
      * Gets the current value
      */
-    fun get(): T {
-        return if(useAnimationValue) animationValue else storage.get()
+    public fun get(): T {
+        return if (useAnimationValue) animationValue else storage.get()
     }
 
     /**
      * Sets the callback, unsetting the fixed value in the process
      */
-    fun set(f: Supplier<T>) {
+    public fun set(f: Supplier<T>) {
         storage = (this.storage as? Storage.Callback<T>)?.also { it.callback = f } ?: Storage.Callback(f)
     }
 
     /**
      * Gets the callback or null if this IMValue is storing a fixed value
      */
-    fun getCallback(): Supplier<T>? {
+    public fun getCallback(): Supplier<T>? {
         return (this.storage as? Storage.Callback<T>)?.callback
     }
 
@@ -50,7 +49,7 @@ class IMValue<T> private constructor(private var storage: Storage<T>, private va
      * Sets the fixed callback. This isn't often called as most classes will provide a delegated property to directly
      * access this value (`someProperty` will call into `somePropery_im` for its value)
      */
-    fun setValue(value: T) {
+    public fun setValue(value: T) {
         storage = (this.storage as? Storage.Fixed<T>)?.also { it.value = value } ?: Storage.Fixed(value)
     }
 
@@ -58,7 +57,7 @@ class IMValue<T> private constructor(private var storage: Storage<T>, private va
      * A kotlin delegate method, used to allow properties to delegate to this IMValue (`var property by property_im`)
      */
     @JvmSynthetic
-    operator fun getValue(thisRef: Any, property: KProperty<*>): T {
+    public operator fun getValue(thisRef: Any, property: KProperty<*>): T {
         return get()
     }
 
@@ -66,7 +65,7 @@ class IMValue<T> private constructor(private var storage: Storage<T>, private va
      * A kotlin delegate method, used to allow properties to delegate to this IMValue (`var property by property_im`)
      */
     @JvmSynthetic
-    operator fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
+    public operator fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
         setValue(value)
     }
 
@@ -74,7 +73,7 @@ class IMValue<T> private constructor(private var storage: Storage<T>, private va
      * (SAM interfaces in kotlin are a pain)
      */
     @JvmSynthetic
-    inline fun set(crossinline f: () -> T) {
+    public inline fun set(crossinline f: () -> T) {
         set(Supplier { f() })
     }
 
@@ -84,7 +83,7 @@ class IMValue<T> private constructor(private var storage: Storage<T>, private va
         get() = get()
 
     override fun lerp(from: T, to: T, fraction: Float): T {
-        if(lerper == null)
+        if (lerper == null)
             throw IllegalStateException("Can not lerp an IMValue that has no lerper")
         return lerper.lerp(from, to, fraction)
     }

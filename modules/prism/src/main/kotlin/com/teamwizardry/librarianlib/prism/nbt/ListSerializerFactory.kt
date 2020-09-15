@@ -9,7 +9,7 @@ import net.minecraft.nbt.CompoundNBT
 import net.minecraft.nbt.INBT
 import net.minecraft.nbt.ListNBT
 
-open class ListSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<List<*>>()) {
+internal class ListSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, Mirror.reflect<List<*>>()) {
     override fun create(mirror: TypeMirror): NBTSerializer<*> {
         return ListSerializer(prism, mirror as ClassMirror)
     }
@@ -42,7 +42,7 @@ open class ListSerializerFactory(prism: NBTPrism): NBTSerializerFactory(prism, M
             val state = analyzer.getState()
             val tag = ListNBT()
             state.populate(value)
-            state.buffer.forEachIndexed { index, v ->
+            state.buffer.forEach { v ->
                 val entry = CompoundNBT()
                 if(v != null)
                     entry.put("V", analyzer.elementSerializer.write(v))

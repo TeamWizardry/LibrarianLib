@@ -20,49 +20,49 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
 
-class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y, width, height) {
-    constructor(color: Color, x: Int, y: Int): this(color, x, y, 0, 0)
-    constructor(color: Color): this(color, 0, 0, 0, 0)
+public class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y, width, height) {
+    public constructor(color: Color, x: Int, y: Int): this(color, x, y, 0, 0)
+    public constructor(color: Color): this(color, 0, 0, 0, 0)
 
-    val color_im: IMValue<Color> = imValue(color)
-    var color: Color by color_im
-
-    /**
-     * The clockwise start angle in radians
-     */
-    val startAngle_im: IMValueDouble = imDouble(0.0)
+    public val color_im: IMValue<Color> = imValue(color)
+    public var color: Color by color_im
 
     /**
      * The clockwise start angle in radians
      */
-    var startAngle: Double by startAngle_im
+    public val startAngle_im: IMValueDouble = imDouble(0.0)
+
+    /**
+     * The clockwise start angle in radians
+     */
+    public var startAngle: Double by startAngle_im
 
     /**
      * The clockwise end angle in radians
      */
-    val endAngle_im: IMValueDouble = imDouble(2*PI)
+    public val endAngle_im: IMValueDouble = imDouble(2 * PI)
 
     /**
      * The clockwise end angle in radians
      */
-    var endAngle: Double by endAngle_im
+    public var endAngle: Double by endAngle_im
 
-    val segmentSize_im: IMValueDouble = imDouble(Math.toRadians(5.0))
-    var segmentSize: Double by segmentSize_im
+    public val segmentSize_im: IMValueDouble = imDouble(Math.toRadians(5.0))
+    public var segmentSize: Double by segmentSize_im
 
     override fun isPointInBounds(point: Vec2d): Boolean {
         if (point !in bounds)
             return false
 
         val size = bounds.size
-        if(size.x == 0.0 || size.y == 0.0) return false
+        if (size.x == 0.0 || size.y == 0.0) return false
         // divide by size to adjust for non-square bounds. This puts values on the edges at ±1 on each axis
-        val delta = (point/size - vec(0.5, 0.5)) * 2
+        val delta = (point / size - vec(0.5, 0.5)) * 2
         val angle = atan2(-delta.x, delta.y) + PI
 
         val start = startAngle
         var end = endAngle
-        if(end > start + PI*2) end = start + PI*2
+        if (end > start + PI * 2) end = start + PI * 2
 
         return angle in start..end && delta.length() <= 1
     }
@@ -70,44 +70,42 @@ class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): GuiLayer(
     override fun draw(context: GuiDrawContext) {
         val start = min(startAngle, endAngle)
         var end = max(startAngle, endAngle)
-        if(end > start + PI*2) end = start + PI*2
-        if(start == end) return
-        val rX = size.x/2
-        val rY = size.y/2
+        if (end > start + PI * 2) end = start + PI * 2
+        if (start == end) return
+        val rX = size.x / 2
+        val rY = size.y / 2
 
         val segmentSize = segmentSize
 
         val c = color
 
-
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
 
-        context.matrix.translate(size.x/2, size.y/2)
+        context.matrix.translate(size.x / 2, size.y / 2)
 
         vb.pos2d(context.matrix, 0, 0).color(c).endVertex()
 
         // we go from end to start because while the angles are measured clockwise, we need the vertices to be in
         // counterclockwise order
         var a = end
-        while(a > start) {
+        while (a > start) {
             val cos = cos(a)
             val sin = sin(a)
             vb.pos2d(context.matrix, rX * sin, rY * -cos).color(c).endVertex()
             a -= segmentSize
         }
 
-        if(a != start) {
+        if (a != start) {
             val cos = cos(start)
             val sin = sin(start)
             vb.pos2d(context.matrix, rX * sin, rY * -cos).color(c).endVertex()
         }
 
         buffer.finish()
-
     }
 
-    companion object {
+    private companion object {
         private val renderType = SimpleRenderTypes.flat(GL11.GL_TRIANGLE_FAN)
     }
 }

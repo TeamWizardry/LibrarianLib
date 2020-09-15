@@ -12,9 +12,11 @@ public class IMValueBoolean extends GuiValue<Boolean> {
     private IMValueBoolean(Storage initialStorage) {
         this.storage = initialStorage;
     }
+
     public IMValueBoolean(boolean initialValue) {
         this.storage = new Storage.Fixed(initialValue);
     }
+
     public IMValueBoolean(BooleanSupplier initialCallback) {
         this.storage = new Storage.Callback(initialCallback);
     }
@@ -30,7 +32,7 @@ public class IMValueBoolean extends GuiValue<Boolean> {
      * Sets the callback, unsetting the fixed value in the process
      */
     public void set(BooleanSupplier callback) {
-        if(storage instanceof Storage.Callback) {
+        if (storage instanceof Storage.Callback) {
             ((Storage.Callback) storage).callback = callback;
         } else {
             storage = new Storage.Callback(callback);
@@ -42,7 +44,7 @@ public class IMValueBoolean extends GuiValue<Boolean> {
      * access this value (`someProperty` will call booleano `somePropery_im` for its value)
      */
     public void setValue(boolean value) {
-        if(storage instanceof Storage.Fixed) {
+        if (storage instanceof Storage.Fixed) {
             ((Storage.Fixed) storage).value = value;
         } else {
             storage = new Storage.Fixed(value);
@@ -68,7 +70,7 @@ public class IMValueBoolean extends GuiValue<Boolean> {
      */
     @Nullable
     public BooleanSupplier getCallback() {
-        if(storage instanceof Storage.Callback) {
+        if (storage instanceof Storage.Callback) {
             return ((Storage.Callback) storage).callback;
         } else {
             return null;
@@ -105,6 +107,7 @@ public class IMValueBoolean extends GuiValue<Boolean> {
 
         static class Fixed extends IMValueBoolean.Storage {
             boolean value;
+
             public Fixed(boolean value) {
                 this.value = value;
             }
@@ -117,6 +120,7 @@ public class IMValueBoolean extends GuiValue<Boolean> {
 
         static class Callback extends IMValueBoolean.Storage {
             BooleanSupplier callback;
+
             public Callback(BooleanSupplier callback) {
                 this.callback = callback;
             }

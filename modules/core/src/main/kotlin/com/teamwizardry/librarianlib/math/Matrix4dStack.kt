@@ -1,23 +1,22 @@
 package com.teamwizardry.librarianlib.math
 
 import java.lang.IndexOutOfBoundsException
-import java.util.EmptyStackException
-import kotlin.math.abs
 
-class Matrix4dStack: MutableMatrix4d() {
+public class Matrix4dStack: MutableMatrix4d() {
     private val stack = mutableListOf(MutableMatrix4d())
+
     /**
      * The number of matrices currently in the stack. Useful with [assertDepth] to make sure every value pushed in a
      * method has been popped by the end of it.
      */
-    var depth = 0
+    public var depth: Int = 0
         private set
 
     /**
      * Pushes the current state onto the stack
      */
-    fun push() {
-        if(depth == stack.size) {
+    public fun push() {
+        if (depth == stack.size) {
             stack.add(MutableMatrix4d())
         }
         stack[depth].set(this)
@@ -27,14 +26,14 @@ class Matrix4dStack: MutableMatrix4d() {
     /**
      * Pops the last state off the stack
      */
-    fun pop() {
-        if(depth == 0) {
+    public fun pop() {
+        if (depth == 0) {
             throw IndexOutOfBoundsException("Tried to pop off an empty stack")
         }
         depth--
         this.set(stack[depth])
         // keep at most 10 matrices above us in the stack.
-        if(stack.size - depth > 10) {
+        if (stack.size - depth > 10) {
             stack.removeAt(stack.lastIndex)
         }
     }
@@ -56,9 +55,9 @@ class Matrix4dStack: MutableMatrix4d() {
      * @throws UnevenStackOperationException if the stack depth is not equal to the expected value
      */
     @JvmOverloads
-    fun assertDepth(expected: Int, message: String? = null) {
-        if(depth == expected) return
-        throw UnevenStackOperationException(if(message == null) {
+    public fun assertDepth(expected: Int, message: String? = null) {
+        if (depth == expected) return
+        throw UnevenStackOperationException(if (message == null) {
             "Expected a stack depth of $expected, but the stack depth was $depth."
         } else {
             "$message (expected $expected, actually $depth)"
@@ -80,7 +79,7 @@ class Matrix4dStack: MutableMatrix4d() {
      * appended to this message if it is present
      * @throws UnevenStackOperationException if the stack depth is not equal to the expected value
      */
-    inline fun <R> assertEvenDepth(message: String? = null, block: () -> R): R {
+    public inline fun <R> assertEvenDepth(message: String? = null, block: () -> R): R {
         val expected = this.depth
         val returnValue = block()
         assertDepth(expected, message)

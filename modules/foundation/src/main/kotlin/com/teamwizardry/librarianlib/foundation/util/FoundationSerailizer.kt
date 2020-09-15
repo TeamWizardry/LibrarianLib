@@ -10,34 +10,34 @@ import dev.thecodewarrior.prism.PrismException
 import net.minecraft.nbt.CompoundNBT
 import java.util.function.Predicate
 
-interface FoundationSerializer {
+public interface FoundationSerializer {
     /**
      * Create a tag containing the fields marked with any of the passed [markers] types.
      */
-    fun createTag(instance: Any, vararg markers: Class<out Annotation>): CompoundNBT
+    public fun createTag(instance: Any, vararg markers: Class<out Annotation>): CompoundNBT
 
     /**
      * Create a tag containing the fields with marker annotations that succeed in the passed filter. If possible, prefer
      * using the version of [createTag] that accepts marker classes, since it can be more optimized.
      */
-    fun createTag(instance: Any, predicate: Predicate<Collection<Annotation>>): CompoundNBT
+    public fun createTag(instance: Any, predicate: Predicate<Collection<Annotation>>): CompoundNBT
 
     /**
      * Applies a tag containing the fields marked with any of the passed [markers] type.
      */
-    fun applyTag(tag: CompoundNBT, instance: Any, vararg markers: Class<out Annotation>)
+    public fun applyTag(tag: CompoundNBT, instance: Any, vararg markers: Class<out Annotation>)
 
     /**
      * Applies a tag containing the fields with marker annotations that succeed in the passed filter. If possible,
      * prefer using the version of [applyTag] that accepts marker classes, since it can be more optimized.
      */
-    fun applyTag(tag: CompoundNBT, instance: Any, predicate: Predicate<Collection<Annotation>>)
+    public fun applyTag(tag: CompoundNBT, instance: Any, predicate: Predicate<Collection<Annotation>>)
 
-    companion object {
+    public companion object {
         private val typeMap = mutableMapOf<Class<*>, FoundationSerializerImpl>()
 
         @JvmStatic
-        fun get(clazz: Class<*>): FoundationSerializer {
+        public fun get(clazz: Class<*>): FoundationSerializer {
             return typeMap.getOrPut(clazz) { FoundationSerializerImpl(clazz) }
         }
     }
@@ -47,13 +47,13 @@ interface FoundationSerializer {
  * Any annotations with this meta-annotation will be treated as markers for Foundation's serialization system.
  */
 @Target(AnnotationTarget.ANNOTATION_CLASS)
-annotation class SerializationMarker
+public annotation class SerializationMarker
 
 /**
  * Sets a custom name for a property
  */
 @Target(AnnotationTarget.FIELD)
-annotation class PropertyName(val name: String)
+public annotation class PropertyName(val name: String)
 
 private class FoundationSerializerImpl(val clazz: Class<*>): FoundationSerializer {
     val mirror = Mirror.reflectClass(clazz)

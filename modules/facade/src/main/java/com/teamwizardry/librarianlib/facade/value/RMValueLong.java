@@ -38,7 +38,7 @@ public class RMValueLong extends GuiValue<Long> {
     public void set(long value) {
         long oldValue = this.value;
         this.value = value;
-        if(oldValue != value && change != null && !getUseAnimationValue()) {
+        if (oldValue != value && change != null && !getUseAnimationValue()) {
             change.report(oldValue, value);
         }
     }
@@ -69,12 +69,12 @@ public class RMValueLong extends GuiValue<Long> {
 
     @Override
     protected Long lerp(Long from, Long to, float fraction) {
-        return (long)(from + (to - from) * fraction);
+        return (long) (from + (to - from) * fraction);
     }
 
     @Override
     protected void animationChange(Long from, Long to) {
-        if(change != null)
+        if (change != null)
             change.report(from, to);
     }
 

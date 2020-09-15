@@ -6,10 +6,9 @@ import java.awt.image.BufferedImage
 /**
  * This class represents a section of a [Mosaic]
  */
-class Sprite internal constructor(private val mosaic: Mosaic, val name: String) : ISprite {
+public class Sprite internal constructor(private val mosaic: Mosaic, public val name: String) : ISprite {
 
-    lateinit var definition: SpriteDefinition
-        internal set
+    private lateinit var definition: SpriteDefinition
     override val renderType: RenderType
         get() = mosaic.renderType
 
@@ -44,7 +43,7 @@ class Sprite internal constructor(private val mosaic: Mosaic, val name: String) 
     override var frameCount: Int = 1
         private set
 
-    var images: List<BufferedImage> = listOf()
+    public var images: List<BufferedImage> = emptyList()
         private set
 
     init {

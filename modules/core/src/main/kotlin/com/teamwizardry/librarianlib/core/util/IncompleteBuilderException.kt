@@ -1,17 +1,20 @@
 package com.teamwizardry.librarianlib.core.util
 
-class IncompleteBuilderException: RuntimeException {
-    constructor(): super()
-    constructor(missingProperties: List<String>): super(makeMessage("Missing properties: ", missingProperties))
+/**
+ * A general-purpose exception for when a builder was finalized before some required options were set
+ */
+public class IncompleteBuilderException: RuntimeException {
+    public constructor(): super()
+    public constructor(missingProperties: List<String>): super(makeMessage("Missing properties: ", missingProperties))
 
-    constructor(message: String): super(message)
-    constructor(message: String, missingProperties: List<String>): super(makeMessage(message, missingProperties))
+    public constructor(message: String): super(message)
+    public constructor(message: String, missingProperties: List<String>): super(makeMessage(message, missingProperties))
 
-    constructor(message: String, cause: Throwable): super(message, cause)
-    constructor(message: String, missingProperties: List<String>, cause: Throwable): super(makeMessage(message, missingProperties), cause)
+    public constructor(message: String, cause: Throwable): super(message, cause)
+    public constructor(message: String, missingProperties: List<String>, cause: Throwable): super(makeMessage(message, missingProperties), cause)
 
-    constructor(cause: Throwable): super(cause)
-    constructor(missingProperties: List<String>, cause: Throwable): super(makeMessage("Missing properties: ", missingProperties), cause)
+    public constructor(cause: Throwable): super(cause)
+    public constructor(missingProperties: List<String>, cause: Throwable): super(makeMessage("Missing properties: ", missingProperties), cause)
 
     private companion object {
         fun makeMessage(message: String, missingProperties: List<String>): String {

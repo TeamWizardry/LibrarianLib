@@ -20,44 +20,44 @@ import org.lwjgl.opengl.GL11
  * with a non-zero value in [isEnd], at which point it breaks the chain and uses the next particle as the starts of the
  * next chain of lines.
  */
-class GlLineBeamRenderModule(
-        /**
-         * When this binding is non-zero the chain of lines will be broken, this particle being the end of the current
-         * chain and the next being the start of the next chain.
-         */
-        @JvmField val isEnd: ReadParticleBinding,
-        /**
-         * Whether to enable blending in OpenGL
-         */
-        @JvmField val blend: Boolean,
-        /**
-         * The previous position binding. This is used to interpolate between ticks
-         */
-        @JvmField val previousPosition: ReadParticleBinding,
-        /**
-         * The current position binding.
-         */
-        @JvmField val position: ReadParticleBinding,
-        /**
-         * The color of the line
-         */
-        @JvmField val color: ReadParticleBinding,
-        /**
-         * The width of the line in pixels
-         */
-        @JvmField val size: Float,
-        /**
-         * The alpha multiplier for the color. If null this defaults to `1.0`
-         */
-        @JvmField val alpha: ReadParticleBinding?,
-        /**
-         * The pair of source/dest enableBlend factors to use while rendering, or the default if null.
-         */
-        @JvmField val blendFactors: Pair<GlStateManager.SourceFactor, GlStateManager.DestFactor>? = null,
-        /**
-         * Whether to enable the depth mask (false = don't write to the depth buffer)
-         */
-        @JvmField val depthMask: Boolean = true
+public class GlLineBeamRenderModule(
+    /**
+     * When this binding is non-zero the chain of lines will be broken, this particle being the end of the current
+     * chain and the next being the start of the next chain.
+     */
+    @JvmField public val isEnd: ReadParticleBinding,
+    /**
+     * Whether to enable blending in OpenGL
+     */
+    @JvmField public val blend: Boolean,
+    /**
+     * The previous position binding. This is used to interpolate between ticks
+     */
+    @JvmField public val previousPosition: ReadParticleBinding,
+    /**
+     * The current position binding.
+     */
+    @JvmField public val position: ReadParticleBinding,
+    /**
+     * The color of the line
+     */
+    @JvmField public val color: ReadParticleBinding,
+    /**
+     * The width of the line in pixels
+     */
+    @JvmField public val size: Float,
+    /**
+     * The alpha multiplier for the color. If null this defaults to `1.0`
+     */
+    @JvmField public val alpha: ReadParticleBinding?,
+    /**
+     * The pair of source/dest enableBlend factors to use while rendering, or the default if null.
+     */
+    @JvmField public val blendFactors: Pair<GlStateManager.SourceFactor, GlStateManager.DestFactor>? = null,
+    /**
+     * Whether to enable the depth mask (false = don't write to the depth buffer)
+     */
+    @JvmField public val depthMask: Boolean = true
 ): ParticleRenderModule {
     init {
         isEnd.require(1)
@@ -66,14 +66,15 @@ class GlLineBeamRenderModule(
         color.require(4)
         alpha?.require(1)
     }
+
     override fun render(matrixStack: MatrixStack, projectionMatrix: Matrix4f, particles: List<DoubleArray>, prepModules: List<ParticleUpdateModule>) {
         RenderSystem.disableTexture()
-        if(blend) {
+        if (blend) {
             RenderSystem.enableBlend()
         } else {
             RenderSystem.disableBlend()
         }
-        if(blendFactors != null) {
+        if (blendFactors != null) {
             RenderSystem.blendFunc(blendFactors.first.param, blendFactors.second.param)
         }
         RenderSystem.depthMask(depthMask)
@@ -97,7 +98,7 @@ class GlLineBeamRenderModule(
         var prevA = Float.NaN
 
         particles.forEach { particle ->
-            for(i in 0 until prepModules.size) {
+            for (i in 0 until prepModules.size) {
                 prepModules[i].update(particle)
             }
 
@@ -115,17 +116,17 @@ class GlLineBeamRenderModule(
             val g = color.contents[1].toFloat()
             val b = color.contents[2].toFloat()
             var a = color.contents[3].toFloat()
-            if(alpha != null)
+            if (alpha != null)
                 a *= alpha.contents[0].toFloat()
 
-            if(isStart) {
+            if (isStart) {
                 isStart = false
             } else {
                 vb.pos(prevX, prevY, prevZ).color(prevR, prevG, prevB, prevA).endVertex()
                 vb.pos(x, y, z).color(r, g, b, a).endVertex()
             }
 
-            if(isEnd.contents[0] != 0.0) {
+            if (isEnd.contents[0] != 0.0) {
                 isStart = true
             } else {
                 prevX = x

@@ -9,16 +9,16 @@ import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.IResourceManager
 import net.minecraft.util.ResourceLocation
 
-object Fonts {
-    var classic: Bitfont
+public object Fonts {
+    public var classic: Bitfont
         private set
-    var unifont: Bitfont
+    public var unifont: Bitfont
         private set
 
     init {
         val classicLoc = loc("librarianlib:facade/fonts/mcclassicplus.bitfont")
         val unifontLoc = loc("librarianlib:facade/fonts/unifont.bitfont")
-        Client.resourceReloadHandler.register(object : ISimpleReloadListener<Pair<Bitfont, Bitfont>> {
+        Client.resourceReloadHandler.register(object: ISimpleReloadListener<Pair<Bitfont, Bitfont>> {
             override fun prepare(resourceManager: IResourceManager, profiler: IProfiler): Pair<Bitfont, Bitfont> {
                 return load(classicLoc) to load(unifontLoc)
             }
@@ -40,7 +40,7 @@ object Fonts {
             val font = Bitfont.unpack(bytes)
             logger.debug("Finished loading font")
             return font
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             RuntimeException("Error loading $fontLocation", e).printStackTrace()
             return Bitfont("<err>", 10, 4, 9, 6, 2)
         }

@@ -47,7 +47,6 @@ object FloodSystem: TestSystem("flood") {
 
     override fun spawn(player: Entity) {
         val eyePos = player.getEyePosition(0f)
-        val spread = 45
 
         repeat(20) {
             doSpawn(

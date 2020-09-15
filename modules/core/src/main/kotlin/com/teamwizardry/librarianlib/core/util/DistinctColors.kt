@@ -4,60 +4,60 @@ import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import java.awt.Color
 import kotlin.math.abs
 
-object DistinctColors {
+public object DistinctColors {
     @JvmField
-    val red = Color(0xe6194B)
+    public val red: Color = Color(0xe6194B)
     @JvmField
-    val green = Color(0x3cb44b)
+    public val green: Color = Color(0x3cb44b)
     @JvmField
-    val yellow = Color(0xffe119)
+    public val yellow: Color = Color(0xffe119)
     @JvmField
-    val blue = Color(0x4363d8)
+    public val blue: Color = Color(0x4363d8)
     @JvmField
-    val orange = Color(0xf58231)
+    public val orange: Color = Color(0xf58231)
     @JvmField
-    val purple = Color(0x911eb4)
+    public val purple: Color = Color(0x911eb4)
     @JvmField
-    val cyan = Color(0x42d4f4)
+    public val cyan: Color = Color(0x42d4f4)
     @JvmField
-    val magenta = Color(0xf032e6)
+    public val magenta: Color = Color(0xf032e6)
     @JvmField
-    val lime = Color(0xbfef45)
+    public val lime: Color = Color(0xbfef45)
     @JvmField
-    val pink = Color(0xfabebe)
+    public val pink: Color = Color(0xfabebe)
     @JvmField
-    val teal = Color(0x469990)
+    public val teal: Color = Color(0x469990)
     @JvmField
-    val lavender = Color(0xe6beff)
+    public val lavender: Color = Color(0xe6beff)
     @JvmField
-    val brown = Color(0x9A6324)
+    public val brown: Color = Color(0x9A6324)
     @JvmField
-    val beige = Color(0xfffac8)
+    public val beige: Color = Color(0xfffac8)
     @JvmField
-    val maroon = Color(0x800000)
+    public val maroon: Color = Color(0x800000)
     @JvmField
-    val mint = Color(0xaaffc3)
+    public val mint: Color = Color(0xaaffc3)
     @JvmField
-    val olive = Color(0x808000)
+    public val olive: Color = Color(0x808000)
     @JvmField
-    val apricot = Color(0xffd8b1)
+    public val apricot: Color = Color(0xffd8b1)
     @JvmField
-    val navy = Color(0x000075)
+    public val navy: Color = Color(0x000075)
     @JvmField
-    val grey = Color(0xa9a9a9)
+    public val grey: Color = Color(0xa9a9a9)
     @JvmField
-    val white = Color(0xffffff)
+    public val white: Color = Color(0xffffff)
     @JvmField
-    val black = Color(0x000000)
+    public val black: Color = Color(0x000000)
 
     @JvmField
-    val colors: List<Color> = listOf(
+    public val colors: List<Color> = listOf(
         red, green, yellow, blue, orange, purple, cyan, magenta, lime, pink, teal, lavender, brown, beige, maroon, mint,
         olive, apricot, navy, grey, white, black
     ).unmodifiableView()
 
     @JvmField
-    val named: Map<String, Color> = mapOf(
+    public val named: Map<String, Color> = mapOf(
         "red" to red, "green" to green, "yellow" to yellow, "blue" to blue, "orange" to orange, "purple" to purple,
         "cyan" to cyan, "magenta" to magenta, "lime" to lime, "pink" to pink, "teal" to teal, "lavender" to lavender,
         "brown" to brown, "beige" to beige, "maroon" to maroon, "mint" to mint, "olive" to olive, "apricot" to apricot,
@@ -68,7 +68,7 @@ object DistinctColors {
      * Picks a color for the passed object, designed for color coding
      */
     @JvmStatic
-    fun forObject(value: Any?): Color {
+    public fun forObject(value: Any?): Color {
         return colors[abs(value.hashCode()) % colors.size]
     }
 }

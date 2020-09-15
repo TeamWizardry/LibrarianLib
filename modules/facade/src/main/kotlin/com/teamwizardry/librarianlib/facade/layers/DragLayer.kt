@@ -12,15 +12,15 @@ import com.teamwizardry.librarianlib.math.vec
  * A layer that will move the [targetLayer] when the mouse is dragged on it. If the target is null this layer will move
  * itself.
  */
-class DragLayer : GuiLayer {
-    constructor(posX: Int, posY: Int, width: Int, height: Int): super(posX, posY, width, height)
-    constructor(posX: Int, posY: Int): super(posX, posY)
-    constructor(): super()
+public class DragLayer : GuiLayer {
+    public constructor(posX: Int, posY: Int, width: Int, height: Int): super(posX, posY, width, height)
+    public constructor(posX: Int, posY: Int): super(posX, posY)
+    public constructor(): super()
 
     /**
      * The button that should activate the dragging action. Defaults to the left mouse button
      */
-    var button: Int = 0
+    public var button: Int = 0
         set(value) {
             if(field != value) {
                 currentlyDragging = false
@@ -32,18 +32,18 @@ class DragLayer : GuiLayer {
      * The layer that should be moved by this layer. The target layer should be an ancestor of this layer, otherwise
      * the dragging will behave oddly. If the target is null this layer will move itself.
      */
-    var targetLayer: GuiLayer? = null
+    public var targetLayer: GuiLayer? = null
 
     /**
      * Whether the dragging is active.
      */
-    var active_im: IMValueBoolean = imBoolean(true)
+    public var active_im: IMValueBoolean = imBoolean(true)
     /**
      * Whether the dragging is active.
      */
-    var active: Boolean by active_im
+    public var active: Boolean by active_im
 
-    class DragEvent(var targetPosition: Vec2d): CancelableEvent()
+    public class DragEvent(public var targetPosition: Vec2d): CancelableEvent()
 
     private var currentlyDragging: Boolean = false
     private var mouseDownPos: Vec2d = vec(0, 0)

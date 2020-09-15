@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.core.util.lerp
 
-object Lerpers: LerperMatcher() {
+public object Lerpers: LerperMatcher() {
     init {
         registerDefaultLerpers()
     }

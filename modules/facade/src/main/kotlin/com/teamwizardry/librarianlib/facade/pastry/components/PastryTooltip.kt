@@ -19,12 +19,12 @@ import net.minecraft.util.text.StringTextComponent
 import java.awt.Color
 import kotlin.math.max
 
-abstract class PastryTooltip: GuiLayer() {
-    val contents = GuiLayer()
-    val background = PastryBackground(BackgroundTexture.BLACK, 0, 0, 20, 20)
+public abstract class PastryTooltip: GuiLayer() {
+    public val contents: GuiLayer = GuiLayer()
+    public val background: PastryBackground = PastryBackground(BackgroundTexture.BLACK, 0, 0, 20, 20)
 
     init {
-        this.zIndex = GuiLayer.TOOLTIP_Z
+        this.zIndex = TOOLTIP_Z
         this.add(background, contents)
         background.zIndex = -1.0
     }
@@ -32,7 +32,7 @@ abstract class PastryTooltip: GuiLayer() {
     /**
      * Lay out [contents], ensuring its width is no larger than [maxWidth].
      */
-    abstract fun layoutContents(maxWidth: Double)
+    public abstract fun layoutContents(maxWidth: Double)
 
     @Hook
     private fun preFrame(e: GuiLayerEvents.Update) {
@@ -53,7 +53,7 @@ abstract class PastryTooltip: GuiLayer() {
         layoutContents(maxSpace)
 
         contents.pos = vec(rightCursorOffset, 0)
-        if(contents.frame.maxX > screenBounds.maxX) {
+        if (contents.frame.maxX > screenBounds.maxX) {
             contents.x = -(contents.width + leftCursorOffset)
         }
 
@@ -61,14 +61,16 @@ abstract class PastryTooltip: GuiLayer() {
     }
 }
 
-class PastryBasicTooltip: PastryTooltip() {
+public class PastryBasicTooltip: PastryTooltip() {
     private val textLayer = TextLayer(1, 1)
 
-    val text_im: IMValue<String?> = textLayer.text_im
-    var text: String? by text_im
-    var attributedText: AttributedString
+    public val text_im: IMValue<String?> = textLayer.text_im
+    public var text: String? by text_im
+    public var attributedText: AttributedString
         get() = textLayer.attributedText
-        set(value) { textLayer.attributedText = value }
+        set(value) {
+            textLayer.attributedText = value
+        }
 
     init {
         contents.add(textLayer)
@@ -84,9 +86,9 @@ class PastryBasicTooltip: PastryTooltip() {
     }
 }
 
-class ItemStackTooltip: GuiLayer() {
-    val stack_im: IMValue<ItemStack?> = imValue()
-    var stack: ItemStack? by stack_im
+public class ItemStackTooltip: GuiLayer() {
+    public val stack_im: IMValue<ItemStack?> = imValue()
+    public var stack: ItemStack? by stack_im
 
     override fun draw(context: GuiDrawContext) {
         val rootMousePos = root.mousePos
@@ -97,15 +99,15 @@ class ItemStackTooltip: GuiLayer() {
     }
 }
 
-class VanillaTooltip: GuiLayer() {
-    val text_im: IMValue<String?> = imValue()
-    var text: String? by text_im
+public class VanillaTooltip: GuiLayer() {
+    public val text_im: IMValue<String?> = imValue()
+    public var text: String? by text_im
 
-    val lines_im: IMValue<List<String>?> = imValue()
-    var lines: List<String>? by lines_im
+    public val lines_im: IMValue<List<String>?> = imValue()
+    public var lines: List<String>? by lines_im
 
-    val font_im: IMValue<FontRenderer> = imValue(Client.fontRenderer)
-    var font: FontRenderer by font_im
+    public val font_im: IMValue<FontRenderer> = imValue(Client.fontRenderer)
+    public var font: FontRenderer by font_im
 
     override fun draw(context: GuiDrawContext) {
         val rootMousePos = root.mousePos
@@ -122,14 +124,16 @@ private object TooltipProvider: Screen(StringTextComponent("")) {
     }
 
     private fun initIfNeeded() {
-        if(width != Client.window.scaledWidth || height != Client.window.scaledHeight)
+        if (width != Client.window.scaledWidth || height != Client.window.scaledHeight)
             this.init(Client.minecraft, Client.window.scaledWidth, Client.window.scaledHeight)
     }
+
     private fun prepareTooltip() {
         initIfNeeded()
         val s = Client.guiScaleFactor
         RenderSystem.scaled(s, s, 1.0)
     }
+
     private fun cleanupTooltip() {
         val s = Client.guiScaleFactor
         RenderSystem.scaled(1 / s, 1 / s, 1.0)

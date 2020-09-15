@@ -9,7 +9,7 @@ import net.minecraft.nbt.ListNBT
 import net.minecraft.nbt.LongArrayNBT
 import net.minecraft.nbt.NumberNBT
 
-object PrimitiveDoubleArraySerializer: NBTSerializer<DoubleArray>() {
+internal object PrimitiveDoubleArraySerializer: NBTSerializer<DoubleArray>() {
     override fun deserialize(tag: INBT, existing: DoubleArray?): DoubleArray {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<ListNBT>("tag")
         val array = if(tag.size == existing?.size) existing else DoubleArray(tag.size)
@@ -24,7 +24,7 @@ object PrimitiveDoubleArraySerializer: NBTSerializer<DoubleArray>() {
     }
 }
 
-object PrimitiveFloatArraySerializer: NBTSerializer<FloatArray>() {
+internal object PrimitiveFloatArraySerializer: NBTSerializer<FloatArray>() {
     override fun deserialize(tag: INBT, existing: FloatArray?): FloatArray {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<ListNBT>("tag")
         val array = if(tag.size == existing?.size) existing else FloatArray(tag.size)
@@ -39,7 +39,7 @@ object PrimitiveFloatArraySerializer: NBTSerializer<FloatArray>() {
     }
 }
 
-object PrimitiveLongArraySerializer: NBTSerializer<LongArray>() {
+internal object PrimitiveLongArraySerializer: NBTSerializer<LongArray>() {
     override fun deserialize(tag: INBT, existing: LongArray?): LongArray {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<LongArrayNBT>("tag")
         if(tag.asLongArray.size == existing?.size) {
@@ -55,7 +55,7 @@ object PrimitiveLongArraySerializer: NBTSerializer<LongArray>() {
     }
 }
 
-object PrimitiveIntArraySerializer: NBTSerializer<IntArray>() {
+internal object PrimitiveIntArraySerializer: NBTSerializer<IntArray>() {
     override fun deserialize(tag: INBT, existing: IntArray?): IntArray {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<IntArrayNBT>("tag")
         if(tag.intArray.size == existing?.size) {
@@ -71,7 +71,7 @@ object PrimitiveIntArraySerializer: NBTSerializer<IntArray>() {
     }
 }
 
-object PrimitiveShortArraySerializer: NBTSerializer<ShortArray>() {
+internal object PrimitiveShortArraySerializer: NBTSerializer<ShortArray>() {
     override fun deserialize(tag: INBT, existing: ShortArray?): ShortArray {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<IntArrayNBT>("tag")
         if(tag.intArray.size == existing?.size) {
@@ -89,7 +89,7 @@ object PrimitiveShortArraySerializer: NBTSerializer<ShortArray>() {
     }
 }
 
-object PrimitiveCharArraySerializer: NBTSerializer<CharArray>() {
+internal object PrimitiveCharArraySerializer: NBTSerializer<CharArray>() {
     override fun deserialize(tag: INBT, existing: CharArray?): CharArray {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<IntArrayNBT>("tag")
         if(tag.intArray.size == existing?.size) {
@@ -107,7 +107,7 @@ object PrimitiveCharArraySerializer: NBTSerializer<CharArray>() {
     }
 }
 
-object PrimitiveByteArraySerializer: NBTSerializer<ByteArray>() {
+internal object PrimitiveByteArraySerializer: NBTSerializer<ByteArray>() {
     override fun deserialize(tag: INBT, existing: ByteArray?): ByteArray {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<ByteArrayNBT>("tag")
         if(tag.byteArray.size == existing?.size) {
@@ -123,7 +123,7 @@ object PrimitiveByteArraySerializer: NBTSerializer<ByteArray>() {
     }
 }
 
-object PrimitiveBooleanArraySerializer: NBTSerializer<BooleanArray>() {
+internal object PrimitiveBooleanArraySerializer: NBTSerializer<BooleanArray>() {
     override fun deserialize(tag: INBT, existing: BooleanArray?): BooleanArray {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<ByteArrayNBT>("tag")
         if(tag.byteArray.size == existing?.size) {

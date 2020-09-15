@@ -1,4 +1,5 @@
 @file:JvmName("AttributedStringUtils")
+
 package com.teamwizardry.librarianlib.facade.text
 
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
@@ -49,7 +50,7 @@ private class Formatting<T: Any>(val attributedString: MutableAttributedString, 
         set(value) {
             end()
             field = value
-            if(value != null) {
+            if (value != null) {
                 start = i()
             }
         }
@@ -61,8 +62,8 @@ private class Formatting<T: Any>(val attributedString: MutableAttributedString, 
     }
 }
 
-fun attributedStringFromMC(mcString: String): AttributedString {
-    if("§" !in mcString)
+public fun attributedStringFromMC(mcString: String): AttributedString {
+    if ("§" !in mcString)
         return AttributedString(mcString)
     val split = mcString.splitWithDelimiters("§.")
     val attributed = MutableAttributedString(mcString.replace("§[^§]".toRegex(), "").replace("§§", "§"))
@@ -91,7 +92,7 @@ fun attributedStringFromMC(mcString: String): AttributedString {
     }
 
     split.forEach { element ->
-        if(element.startsWith("§") && element.length == 2) {
+        if (element.startsWith("§") && element.length == 2) {
             val code = element[1].toLowerCase()
             when (code) {
                 '§' -> i++
@@ -121,6 +122,7 @@ fun attributedStringFromMC(mcString: String): AttributedString {
     return attributed
 }
 
-fun AttributedString.Companion.fromMC(mcString: String): AttributedString {
+@JvmSynthetic
+public fun AttributedString.Companion.fromMC(mcString: String): AttributedString {
     return attributedStringFromMC(mcString)
 }

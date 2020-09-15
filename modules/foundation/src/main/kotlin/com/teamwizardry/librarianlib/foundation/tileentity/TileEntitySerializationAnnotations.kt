@@ -4,8 +4,8 @@ import com.teamwizardry.librarianlib.foundation.util.SerializationMarker
 
 @Target(AnnotationTarget.FIELD)
 @SerializationMarker
-annotation class Save
+public annotation class Save
 
 @Target(AnnotationTarget.FIELD)
 @SerializationMarker
-annotation class Sync
+public annotation class Sync

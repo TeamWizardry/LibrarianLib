@@ -10,15 +10,15 @@ import java.awt.Color
 /**
  * Displays a sprite
  */
-class SpriteLayer(var sprite: ISprite?, x: Int, y: Int, width: Int, height: Int) : GuiLayer(x, y, width, height) {
-    constructor(sprite: ISprite?, x: Int, y: Int): this(sprite, x, y, sprite?.width ?: 16, sprite?.height ?: 16)
-    constructor(sprite: ISprite?): this(sprite, 0, 0)
-    constructor(): this(null, 0, 0)
+public class SpriteLayer(public var sprite: ISprite?, x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y, width, height) {
+    public constructor(sprite: ISprite?, x: Int, y: Int): this(sprite, x, y, sprite?.width ?: 16, sprite?.height ?: 16)
+    public constructor(sprite: ISprite?): this(sprite, 0, 0)
+    public constructor(): this(null, 0, 0)
 
-    var tint_im: IMValue<Color> = imValue(Color.WHITE)
-    var tint: Color by tint_im
-    var animationFrame_im: IMValueInt = imInt(0)
-    var animationFrame: Int by animationFrame_im
+    public var tint_im: IMValue<Color> = imValue(Color.WHITE)
+    public var tint: Color by tint_im
+    public var animationFrame_im: IMValueInt = imInt(0)
+    public var animationFrame: Int by animationFrame_im
 
     override fun draw(context: GuiDrawContext) {
         val sp = sprite ?: return

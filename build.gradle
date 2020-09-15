@@ -8,7 +8,7 @@ buildscript {
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.61"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
         // rolled back from 4.0.4 to 4.0.1 due to #425: https://github.com/johnrengelman/shadow/issues/425
         classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.1'
@@ -34,7 +34,6 @@ if(hasProperty('liblibVersion')) {
 ext.allmodules = rootProject.subprojects.findAll { it.findProperty("non_module") != "true" }
 
 allprojects {
-    apply plugin: 'kotlin'
     apply plugin: 'java-library'
 
     ext.allmodules = rootProject.allmodules
@@ -44,6 +43,7 @@ allprojects {
     repositories {
         mavenLocal()
         jcenter()
+        mavenCentral()
         maven { url = "https://jitpack.io" }
         maven { url = "https://minecraft.curseforge.com/api/maven/" }
         maven { url = 'http://repo.spongepowered.org/maven' }
@@ -65,8 +65,9 @@ configure(allmodules) {
 }
 
 dependencies {
-    // we need this to exist so we can compile the combined mixin connector. Pulling in the entirety of mixin triggers
-    // the mixin plugin, which we don't need.
+    // We need to compile the mixin connector against Mixin, however, pulling in the actual library triggers the Mixin
+    // plugin, which leads to odd issues. To resolve this I created a skeleton jar to build against which contains only
+    // the `IMixinConnector` interface and an empty `Mixins.addConfiguration` method.
     compileOnly(files("$rootDir/libs/mixin-connector-api.jar"))
 }
 

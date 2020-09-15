@@ -31,51 +31,65 @@ import java.io.IOException
 import java.io.InputStream
 import java.util.concurrent.CompletableFuture
 
-object Client {
+public object Client {
     @JvmStatic
-    val minecraft: Minecraft get() = Minecraft.getInstance()
+    public val minecraft: Minecraft
+        get() = Minecraft.getInstance()
+
     @JvmStatic
-    val window: MainWindow get() = minecraft.mainWindow
+    public val window: MainWindow
+        get() = minecraft.mainWindow
+
     @JvmStatic
-    val guiScaleFactor: Double get() = window.guiScaleFactor
+    public val guiScaleFactor: Double
+        get() = window.guiScaleFactor
+
     @JvmStatic
-    val resourceManager: IResourceManager get() = minecraft.resourceManager
+    public val resourceManager: IResourceManager
+        get() = minecraft.resourceManager
+
     @JvmStatic
-    val textureManager: TextureManager get() = minecraft.textureManager
+    public val textureManager: TextureManager
+        get() = minecraft.textureManager
+
     @JvmStatic
-    val fontRenderer: FontRenderer get() = minecraft.fontRenderer
+    public val fontRenderer: FontRenderer
+        get() = minecraft.fontRenderer
+
     @JvmStatic
-    val tessellator: Tessellator get() = Tessellator.getInstance()
+    public val tessellator: Tessellator
+        get() = Tessellator.getInstance()
 
     /**
      * The game time, as measured from the game launch
      */
     @JvmStatic
-    val time: Time = object: Time() {
+    public val time: Time = object: Time() {
         override val ticks: Int
             get() = globalTicks
         override val partialTicks: Float
             get() = timer.renderPartialTicks
     }
+
     /**
      * The world time, as measured from the game launch
      */
     @JvmStatic
-    val worldTime: Time = object: Time() {
+    public val worldTime: Time = object: Time() {
         override val ticks: Int
             get() = worldTicks
         override val partialTicks: Float
-            get() = if(minecraft.isGamePaused)
+            get() = if (minecraft.isGamePaused)
                 renderPartialTicksPaused.get(minecraft) as Float
             else
                 timer.renderPartialTicks
     }
 
     @JvmStatic
-    val resourceReloadHandler = ResourceReload()
+    public val resourceReloadHandler: ResourceReload = ResourceReload()
 
     @JvmStatic
-    fun displayGuiScreen(screen: Screen?) {
+    public fun displayGuiScreen(screen: Screen?) {
         minecraft.displayGuiScreen(screen)
     }
 
@@ -84,26 +98,18 @@ object Client {
      * client thread.
      */
     @JvmStatic
-    fun runAsync(task: Runnable): CompletableFuture<Void> {
+    public fun runAsync(task: Runnable): CompletableFuture<Void> {
         return minecraft.runAsync(task)
     }
 
-    /**
-     * Queue a block to run on the client thread. The block is executed immediately if this is called from the client
-     * thread.
-     */
-    inline fun runAsync(crossinline task: () -> Unit): CompletableFuture<Void> {
-        return minecraft.runAsync { task() }
-    }
-
     @JvmStatic
-    fun getBlockAtlasSprite(sprite: ResourceLocation): TextureAtlasSprite {
+    public fun getBlockAtlasSprite(sprite: ResourceLocation): TextureAtlasSprite {
         @Suppress("DEPRECATION")
         return getAtlasSprite(AtlasTexture.LOCATION_BLOCKS_TEXTURE, sprite)
     }
 
     @JvmStatic
-    fun getAtlasSprite(atlas: ResourceLocation, texture: ResourceLocation): TextureAtlasSprite {
+    public fun getAtlasSprite(atlas: ResourceLocation, texture: ResourceLocation): TextureAtlasSprite {
         return minecraft.getAtlasSpriteGetter(atlas).apply(texture)
     }
 
@@ -114,7 +120,7 @@ object Client {
      */
     @JvmStatic
     @Throws(IOException::class)
-    fun getResourceInputStream(resourceManager: IResourceManager, location: ResourceLocation): InputStream {
+    public fun getResourceInputStream(resourceManager: IResourceManager, location: ResourceLocation): InputStream {
         return resourceManager.getResource(location).inputStream
     }
 
@@ -124,10 +130,10 @@ object Client {
      * @see getResourceInputStream
      */
     @JvmStatic
-    fun getResourceInputStreamOrNull(resourceManager: IResourceManager, location: ResourceLocation): InputStream? {
+    public fun getResourceInputStreamOrNull(resourceManager: IResourceManager, location: ResourceLocation): InputStream? {
         return try {
             getResourceInputStream(resourceManager, location)
-        } catch(e: IOException) {
+        } catch (e: IOException) {
             null
         }
     }
@@ -139,7 +145,7 @@ object Client {
      */
     @JvmStatic
     @Throws(IOException::class)
-    fun getResourceBytes(resourceManager: IResourceManager, location: ResourceLocation): ByteArray {
+    public fun getResourceBytes(resourceManager: IResourceManager, location: ResourceLocation): ByteArray {
         return resourceManager.getResource(location).inputStream.use { it.readBytes() }
     }
 
@@ -149,10 +155,10 @@ object Client {
      * @see getResourceBytes
      */
     @JvmStatic
-    fun getResourceBytesOrNull(resourceManager: IResourceManager, location: ResourceLocation): ByteArray? {
+    public fun getResourceBytesOrNull(resourceManager: IResourceManager, location: ResourceLocation): ByteArray? {
         return try {
             getResourceBytes(resourceManager, location)
-        } catch(e: IOException) {
+        } catch (e: IOException) {
             null
         }
     }
@@ -164,7 +170,7 @@ object Client {
      */
     @JvmStatic
     @Throws(IOException::class)
-    fun getResourceText(resourceManager: IResourceManager, location: ResourceLocation): String {
+    public fun getResourceText(resourceManager: IResourceManager, location: ResourceLocation): String {
         return resourceManager.getResource(location).inputStream.bufferedReader().use { it.readText() }
     }
 
@@ -174,10 +180,10 @@ object Client {
      * @see getResourceText
      */
     @JvmStatic
-    fun getResourceTextOrNull(resourceManager: IResourceManager, location: ResourceLocation): String? {
+    public fun getResourceTextOrNull(resourceManager: IResourceManager, location: ResourceLocation): String? {
         return try {
             getResourceText(resourceManager, location)
-        } catch(e: IOException) {
+        } catch (e: IOException) {
             null
         }
     }
@@ -189,7 +195,7 @@ object Client {
      */
     @JvmStatic
     @Throws(IOException::class)
-    fun getResourceInputStream(location: ResourceLocation): InputStream {
+    public fun getResourceInputStream(location: ResourceLocation): InputStream {
         return getResourceInputStream(resourceManager, location)
     }
 
@@ -199,7 +205,7 @@ object Client {
      * @see getResourceInputStream
      */
     @JvmStatic
-    fun getResourceInputStreamOrNull(location: ResourceLocation): InputStream? {
+    public fun getResourceInputStreamOrNull(location: ResourceLocation): InputStream? {
         return getResourceInputStreamOrNull(resourceManager, location)
     }
 
@@ -210,7 +216,7 @@ object Client {
      */
     @JvmStatic
     @Throws(IOException::class)
-    fun getResourceBytes(location: ResourceLocation): ByteArray {
+    public fun getResourceBytes(location: ResourceLocation): ByteArray {
         return getResourceBytes(resourceManager, location)
     }
 
@@ -220,7 +226,7 @@ object Client {
      * @see getResourceBytes
      */
     @JvmStatic
-    fun getResourceBytesOrNull(location: ResourceLocation): ByteArray? {
+    public fun getResourceBytesOrNull(location: ResourceLocation): ByteArray? {
         return getResourceBytesOrNull(resourceManager, location)
     }
 
@@ -231,7 +237,7 @@ object Client {
      */
     @JvmStatic
     @Throws(IOException::class)
-    fun getResourceText(location: ResourceLocation): String {
+    public fun getResourceText(location: ResourceLocation): String {
         return getResourceText(resourceManager, location)
     }
 
@@ -241,28 +247,28 @@ object Client {
      * @see getResourceText
      */
     @JvmStatic
-    fun getResourceTextOrNull(location: ResourceLocation): String? {
+    public fun getResourceTextOrNull(location: ResourceLocation): String? {
         return getResourceTextOrNull(resourceManager, location)
     }
 
-    abstract class Time {
-        abstract val ticks: Int
-        abstract val partialTicks: Float
-        val time: Float get() = ticks + partialTicks
-        val seconds: Float get() = time / 20
+    public abstract class Time {
+        public abstract val ticks: Int
+        public abstract val partialTicks: Float
+        public val time: Float get() = ticks + partialTicks
+        public val seconds: Float get() = time / 20
 
-        fun interp(previous: Double, current: Double): Double {
+        public fun interp(previous: Double, current: Double): Double {
             return previous + (current - previous) * partialTicks
         }
 
         @Suppress("NOTHING_TO_INLINE")
-        inline fun interp(previous: Number, current: Number): Double = interp(previous.toDouble(), current.toDouble())
+        public inline fun interp(previous: Number, current: Number): Double = interp(previous.toDouble(), current.toDouble())
 
-        fun interp(previous: Vec2d, current: Vec2d): Vec2d {
+        public fun interp(previous: Vec2d, current: Vec2d): Vec2d {
             return vec(interp(previous.x, current.x), interp(previous.y, current.y))
         }
 
-        fun interp(previous: Vec3d, current: Vec3d): Vec3d {
+        public fun interp(previous: Vec3d, current: Vec3d): Vec3d {
             return vec(interp(previous.x, current.x), interp(previous.y, current.y), interp(previous.z, current.z))
         }
     }
@@ -278,11 +284,12 @@ object Client {
         MinecraftForge.EVENT_BUS.register(this)
     }
 
+    @JvmSynthetic
     @SubscribeEvent
     internal fun clientTickEnd(event: TickEvent.ClientTickEvent) {
         if (event.phase == TickEvent.Phase.END) {
             val mc = Minecraft.getInstance()
-            if(!mc.isGamePaused)
+            if (!mc.isGamePaused)
                 worldTicks += timer.elapsedTicks
             globalTicks += timer.elapsedTicks
         }

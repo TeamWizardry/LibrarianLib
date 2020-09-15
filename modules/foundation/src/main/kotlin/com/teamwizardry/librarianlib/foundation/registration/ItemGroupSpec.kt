@@ -6,16 +6,17 @@ import java.util.function.Function
 /**
  * A wrapper around an item's [ItemGroup], allowing deferred evaluation based on the [RegistrationManager].
  */
-class ItemGroupSpec(private val getter: Function<RegistrationManager, ItemGroup?>) {
+public class ItemGroupSpec(private val getter: Function<RegistrationManager, ItemGroup?>) {
 
-    fun get(manager: RegistrationManager): ItemGroup? {
+    public fun get(manager: RegistrationManager): ItemGroup? {
         return getter.apply(manager)
     }
 
-    companion object {
+    public companion object {
         @JvmField
-        val NONE: ItemGroupSpec = ItemGroupSpec( Function { null })
+        public val NONE: ItemGroupSpec = ItemGroupSpec { null }
+
         @JvmField
-        val DEFAULT: ItemGroupSpec = ItemGroupSpec( Function { it.itemGroup })
+        public val DEFAULT: ItemGroupSpec = ItemGroupSpec { it.itemGroup }
     }
 }

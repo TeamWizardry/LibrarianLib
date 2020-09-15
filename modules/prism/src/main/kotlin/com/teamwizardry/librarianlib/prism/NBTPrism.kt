@@ -5,9 +5,9 @@ import com.teamwizardry.librarianlib.prism.nbt.*
 import dev.thecodewarrior.prism.Prism
 
 @get:JvmSynthetic
-inline val NBTPrism: NBTPrism get() = instance
+public inline val NBTPrism: NBTPrism get() = instance
 
-val instance: NBTPrism = Prism<NBTSerializer<*>>().also { prism ->
+public val instance: NBTPrism = Prism<NBTSerializer<*>>().also { prism ->
     prism.register(
         // java types
         ArraySerializerFactory(prism),

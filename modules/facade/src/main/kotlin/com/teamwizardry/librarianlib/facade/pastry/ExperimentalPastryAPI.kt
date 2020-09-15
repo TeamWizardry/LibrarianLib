@@ -7,6 +7,6 @@ package com.teamwizardry.librarianlib.facade.pastry
  * would get tiresome pretty quick, so much of it is unannotated. However, some components are so volatile that they
  * necessitate a compile-time check, so that's what this is for.
  */
-@Experimental(Experimental.Level.WARNING)
+@RequiresOptIn(level = RequiresOptIn.Level.WARNING)
 @Retention(AnnotationRetention.BINARY)
-annotation class ExperimentalPastryAPI
+public annotation class ExperimentalPastryAPI

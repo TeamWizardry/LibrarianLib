@@ -11,7 +11,7 @@ import java.util.PriorityQueue
 /**
  * The common functionality for both primitive and generic GuiValues
  */
-abstract class GuiValue<T>: AnimationTimeListener {
+public abstract class GuiValue<T>: AnimationTimeListener {
     private var _animationValue: T? = null
     private var currentTime: Float = 0f
     private val animations = PriorityQueue<ScheduledAnimation<T>>()
@@ -19,8 +19,8 @@ abstract class GuiValue<T>: AnimationTimeListener {
 
     //region API
     @JvmOverloads
-    fun animate(from: T, to: T, duration: Float, easing: Easing = Easing.linear, delay: Float = 0f): BasicAnimation<T> {
-        if(!hasLerper)
+    public fun animate(from: T, to: T, duration: Float, easing: Easing = Easing.linear, delay: Float = 0f): BasicAnimation<T> {
+        if (!hasLerper)
             throw IllegalStateException("Can not animate a GuiValue that has no lerper")
         val animation = SimpleAnimation(from, to, duration, easing, false)
         scheduleAnimation(delay, animation)
@@ -28,8 +28,8 @@ abstract class GuiValue<T>: AnimationTimeListener {
     }
 
     @JvmOverloads
-    fun animate(to: T, duration: Float, easing: Easing = Easing.linear, delay: Float = 0f): BasicAnimation<T> {
-        if(!hasLerper)
+    public fun animate(to: T, duration: Float, easing: Easing = Easing.linear, delay: Float = 0f): BasicAnimation<T> {
+        if (!hasLerper)
             throw IllegalStateException("Can not animate a GuiValue that has no lerper")
         // `delay == 0f` should be interpreted as *immediately* reading the starting value, not reading it when the
         // animation actually starts.
@@ -39,7 +39,7 @@ abstract class GuiValue<T>: AnimationTimeListener {
     }
 
     @JvmOverloads
-    fun animateKeyframes(initialValue: T, delay: Float = 0f): KeyframeAnimation<T> {
+    public fun animateKeyframes(initialValue: T, delay: Float = 0f): KeyframeAnimation<T> {
         if(!hasLerper)
             throw IllegalStateException("Can not animate a GuiValue that has no lerper")
         val animation = KeyframeAnimation(initialValue, lerperInstance)
@@ -50,7 +50,7 @@ abstract class GuiValue<T>: AnimationTimeListener {
     /**
      * Schedule an animation to run in [delay] ticks
      */
-    fun scheduleAnimation(delay: Float, animation: Animation<T>) {
+    public fun scheduleAnimation(delay: Float, animation: Animation<T>) {
         animations.add(ScheduledAnimation(currentTime + delay, animation))
     }
     //endregion
@@ -98,7 +98,7 @@ abstract class GuiValue<T>: AnimationTimeListener {
 
     override fun updateTime(time: Float) {
         currentTime = time
-        if(animation == null && animations.isEmpty())
+        if (animation == null && animations.isEmpty())
             return
 
         val oldValue = currentValue
@@ -113,19 +113,19 @@ abstract class GuiValue<T>: AnimationTimeListener {
                 animation = null
             }
         }
+
         fun startAnimation(newAnimation: ScheduledAnimation<T>) {
             animation = newAnimation
             newAnimation.start()
-
         }
 
-        while(animations.isNotEmpty() && animations.peek().start <= time) {
+        while (animations.isNotEmpty() && animations.peek().start <= time) {
             finishAnimations()
             startAnimation(animations.poll())
         }
 
         // if we're past the end of the animation, wrap it up
-        if(animation != null && time >= animation!!.end) {
+        if (animation != null && time >= animation!!.end) {
             finishAnimations()
         }
 
@@ -135,7 +135,7 @@ abstract class GuiValue<T>: AnimationTimeListener {
             didAnimate = true
         }
 
-        if(didAnimate) {
+        if (didAnimate) {
             _animationValue = newValue
             if (oldValue != newValue) {
                 animationChange(oldValue, newValue)
@@ -148,13 +148,13 @@ abstract class GuiValue<T>: AnimationTimeListener {
         }
     }
 
-    val lerperInstance = object: Lerper<T>() {
+    private val lerperInstance = object: Lerper<T>() {
         override fun lerp(from: T, to: T, fraction: Float): T {
             return this@GuiValue.lerp(from, to, fraction)
         }
     }
 
-    protected class ScheduledAnimation<T>(val start: Float, val animation: Animation<T>): Comparable<ScheduledAnimation<T>> {
+    private class ScheduledAnimation<T>(val start: Float, val animation: Animation<T>): Comparable<ScheduledAnimation<T>> {
         val end: Float get() = start + animation.end
 
         fun update(time: Float): T {
@@ -174,7 +174,7 @@ abstract class GuiValue<T>: AnimationTimeListener {
         }
     }
 
-    protected inner class SimpleAnimation(
+    private inner class SimpleAnimation(
         var from: T,
         val to: T,
         duration: Float,
@@ -187,7 +187,7 @@ abstract class GuiValue<T>: AnimationTimeListener {
     ): BasicAnimation<T>(duration) {
         override fun onStarted() {
             super.onStarted()
-            if(fromCurrentValue)
+            if (fromCurrentValue)
                 from = currentValue
         }
 

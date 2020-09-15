@@ -13,18 +13,19 @@ import net.minecraft.client.renderer.IRenderTypeBuffer
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class GradientLayer(val axis: Axis2d, posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, posY, width, height) {
-    constructor(axis: Axis2d, min: Color, max: Color, posX: Int, posY: Int, width: Int, height: Int)
+public class GradientLayer(public val axis: Axis2d, posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, posY, width, height) {
+    public constructor(axis: Axis2d, min: Color, max: Color, posX: Int, posY: Int, width: Int, height: Int)
         : this(axis, posX, posY, width, height) {
         this.addStop(0.0, min)
         this.addStop(1.0, max)
     }
-    constructor(axis: Axis2d, min: Color, max: Color, x: Int, y: Int): this(axis, min, max, x, y, 0, 0)
-    constructor(axis: Axis2d, min: Color, max: Color): this(axis, min, max, 0, 0, 0, 0)
 
-    val stops = mutableListOf<ColorStop>()
+    public constructor(axis: Axis2d, min: Color, max: Color, x: Int, y: Int): this(axis, min, max, x, y, 0, 0)
+    public constructor(axis: Axis2d, min: Color, max: Color): this(axis, min, max, 0, 0, 0, 0)
 
-    fun addStop(location: Double, color: Color): ColorStop {
+    public val stops: MutableList<ColorStop> = mutableListOf<ColorStop>()
+
+    public fun addStop(location: Double, color: Color): ColorStop {
         val stop = ColorStop(location, color)
         stops.add(stop)
         return stop
@@ -38,9 +39,9 @@ class GradientLayer(val axis: Axis2d, posX: Int, posY: Int, width: Int, height: 
         val maxY = size.yi.toDouble()
 
 
-        if(stops.isNotEmpty()) {
+        if (stops.isNotEmpty()) {
             val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
-            val vb = buffer.getBuffer(GradientLayer.renderType)
+            val vb = buffer.getBuffer(renderType)
 
             if (axis == Axis2d.X) {
                 if (stops.first().location != 0.0) {
@@ -49,8 +50,8 @@ class GradientLayer(val axis: Axis2d, posX: Int, posY: Int, width: Int, height: 
                 }
 
                 stops.forEach { stop ->
-                    vb.pos2d(context.matrix, minX + (maxX-minX)*stop.location, minY).color(stop.color).endVertex()
-                    vb.pos2d(context.matrix, minX + (maxX-minX)*stop.location, maxY).color(stop.color).endVertex()
+                    vb.pos2d(context.matrix, minX + (maxX - minX) * stop.location, minY).color(stop.color).endVertex()
+                    vb.pos2d(context.matrix, minX + (maxX - minX) * stop.location, maxY).color(stop.color).endVertex()
                 }
 
                 if (stops.last().location != 1.0) {
@@ -64,8 +65,8 @@ class GradientLayer(val axis: Axis2d, posX: Int, posY: Int, width: Int, height: 
                 }
 
                 stops.forEach { stop ->
-                    vb.pos2d(context.matrix, minX, minY + (maxY-minY)*stop.location).color(stop.color).endVertex()
-                    vb.pos2d(context.matrix, maxX, minY + (maxY-minY)*stop.location).color(stop.color).endVertex()
+                    vb.pos2d(context.matrix, minX, minY + (maxY - minY) * stop.location).color(stop.color).endVertex()
+                    vb.pos2d(context.matrix, maxX, minY + (maxY - minY) * stop.location).color(stop.color).endVertex()
                 }
 
                 if (stops.last().location != 1.0) {
@@ -76,14 +77,13 @@ class GradientLayer(val axis: Axis2d, posX: Int, posY: Int, width: Int, height: 
 
             buffer.finish()
         }
-
     }
 
-    inner class ColorStop(location: Double, color: Color) {
-        val location_rm: RMValueDouble = rmDouble(location)
-        val location: Double by location_rm
-        val color_rm: RMValue<Color> = rmValue(color)
-        var color: Color by color_rm
+    public inner class ColorStop(location: Double, color: Color) {
+        public val location_rm: RMValueDouble = rmDouble(location)
+        public val location: Double by location_rm
+        public val color_rm: RMValue<Color> = rmValue(color)
+        public var color: Color by color_rm
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -106,7 +106,7 @@ class GradientLayer(val axis: Axis2d, posX: Int, posY: Int, width: Int, height: 
         }
     }
 
-    companion object {
+    private companion object {
         private val renderType = SimpleRenderTypes.flat(GL11.GL_QUADS)
     }
 }

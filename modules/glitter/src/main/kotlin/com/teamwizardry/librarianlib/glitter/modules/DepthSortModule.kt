@@ -12,16 +12,16 @@ import net.minecraft.client.Minecraft
  * The sort first stores the depth in the provided [depth] binding, allowing the depth to be calculated once per
  * particle and not repeatedly with each comparison, then sorts based upon the values in that binding.
  */
-class DepthSortModule(
-        /**
-         * The binding for the position of a given particle. Any tomfoolery with renderers not drawing at this position
-         * means that information can't be factored into the sorting
-         */
-        @JvmField val position: ReadParticleBinding,
-        /**
-         * A temporary binding used to cache the distance from the player before sorting.
-         */
-        @JvmField val depth: StoredBinding
+public class DepthSortModule(
+    /**
+     * The binding for the position of a given particle. Any tomfoolery with renderers not drawing at this position
+     * means that information can't be factored into the sorting
+     */
+    @JvmField public val position: ReadParticleBinding,
+    /**
+     * A temporary binding used to cache the distance from the player before sorting.
+     */
+    @JvmField public val depth: StoredBinding
 ): ParticleGlobalUpdateModule {
     init {
         position.require(3)
@@ -37,11 +37,11 @@ class DepthSortModule(
 
         //dot(particle-eye,normal)
 
-        for(particle in particles) {
+        for (particle in particles) {
             position.load(particle)
-            val distance = (position.contents[0]-eyeX)*normal.x +
-                    (position.contents[1]-eyeY)*normal.y +
-                    (position.contents[2]-eyeZ)*normal.z
+            val distance = (position.contents[0] - eyeX) * normal.x +
+                (position.contents[1] - eyeY) * normal.y +
+                (position.contents[2] - eyeZ) * normal.z
             particle[depth.index] = distance
         }
 

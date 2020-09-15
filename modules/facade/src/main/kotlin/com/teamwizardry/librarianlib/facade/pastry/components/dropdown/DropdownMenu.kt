@@ -17,7 +17,7 @@ import com.teamwizardry.librarianlib.math.vec
 import java.awt.Color
 import kotlin.math.max
 
-class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean): GuiLayer(0, 0) {
+internal class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean): GuiLayer(0, 0) {
     private val creationTime = Client.time.time
 
     val background = SpriteLayer(PastryTexture.dropdownBackground)
@@ -32,7 +32,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
     var disableLayout = false
 
     init {
-        zIndex = GuiLayer.OVERLAY_Z
+        zIndex = OVERLAY_Z
         this.add(background, contents)
         contents.add(contentsClip)
         contentsClip.add(stack)
@@ -49,12 +49,12 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
 
     override fun layoutChildren() {
         super.layoutChildren()
-        if(disableLayout) return
+        if (disableLayout) return
         this.size = button.size
 
         items.values.forEach { it.width = button.width }
 
-        contents.size = vec(button.width, max(button.height, stack.height+4))
+        contents.size = vec(button.width, max(button.height, stack.height + 4))
 
         val contentsFrame = contents.frame
         var top = contentsFrame.minY
@@ -62,16 +62,16 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
 
         val rootMinLimit = root.bounds.minY + 10
         val rootMaxLimit = root.bounds.maxY - 10
-        if(convertPointTo(vec(0, top), root).y < rootMinLimit) {
+        if (convertPointTo(vec(0, top), root).y < rootMinLimit) {
             top = root.convertPointTo(vec(0, rootMinLimit), this).y
         }
-        if(convertPointTo(vec(0, bottom), root).y > rootMaxLimit) {
+        if (convertPointTo(vec(0, bottom), root).y > rootMaxLimit) {
             bottom = root.convertPointTo(vec(0, rootMaxLimit), this).y
         }
 
-        background.frame = rect(contentsFrame.minX, top, contentsFrame.width, bottom-top)
-        val clipY = top-contentsFrame.minY
-        contentsClip.frame = rect(0, clipY+2, contentsFrame.width, bottom-top-4)
+        background.frame = rect(contentsFrame.minX, top, contentsFrame.width, bottom - top)
+        val clipY = top - contentsFrame.minY
+        contentsClip.frame = rect(0, clipY + 2, contentsFrame.width, bottom - top - 4)
         stack.pos = vec(0, -clipY)
     }
 
@@ -84,11 +84,11 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
 
     // TODO - use ticks to prevent framerate-dependent motion
     @Hook
-    fun preFrame(e: GuiLayerEvents.Update) {
+    private fun preFrame(e: GuiLayerEvents.Update) {
         val parent = this.parent ?: return
         val min = button.convertPointTo(vec(0, 0), parent)
         this.pos = min
-        if(stack.frame.minY < contentsClip.bounds.minY && this.mouseOver && !disableLayout) {
+        if (stack.frame.minY < contentsClip.bounds.minY && this.mouseOver && !disableLayout) {
             val y = contentsClip.mousePos.y - contentsClip.bounds.minY
             when {
                 y <= 4.0 -> contents.yi += 5
@@ -96,7 +96,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
                 y <= 16.0 -> contents.yi += 1
             }
         }
-        if(stack.frame.maxY > contentsClip.bounds.maxY && this.mouseOver && !disableLayout) {
+        if (stack.frame.maxY > contentsClip.bounds.maxY && this.mouseOver && !disableLayout) {
             val y = contentsClip.bounds.maxY - contentsClip.mousePos.y
             when {
                 y <= 4.0 -> contents.yi -= 5
@@ -107,8 +107,8 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
     }
 
     @Hook
-    fun mouseDown(e: GuiLayerEvents.MouseDown) {
-        if(!mouseOver) {
+    private fun mouseDown(e: GuiLayerEvents.MouseDown) {
+        if (!mouseOver) {
             close()
             return
         }
@@ -116,21 +116,21 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
     }
 
     @Hook
-    fun mouseUp(e: GuiLayerEvents.MouseUp) {
-        if(!mouseOver) {
+    private fun mouseUp(e: GuiLayerEvents.MouseUp) {
+        if (!mouseOver) {
             close()
             return
         }
-        if(mouseClickStarted) {
-            if(items.values.any { it.mouseOver })
+        if (mouseClickStarted) {
+            if (items.values.any { it.mouseOver })
                 select()
             return
         }
-        if(mouseActivated) {
+        if (mouseActivated) {
             val newMousePos = root.let { gui ->
                 gui.convertPointTo(gui.mousePos, ScreenSpace)
-            } ?: initialMousePos
-            if(Client.time.time - creationTime > dragSelectTime ||
+            }
+            if (Client.time.time - creationTime > dragSelectTime ||
                 initialMousePos.squareDist(newMousePos) > dragSelectDist * dragSelectDist) {
                 select()
             }
@@ -140,7 +140,7 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
     fun select() {
         val selected = items.values.firstOrNull { it.mouseOver }
         val index = button.items.indexOfFirst { it === selected?.item }
-        if(selected == null || selected.item.decoration || index < 0) {
+        if (selected == null || selected.item.decoration || index < 0) {
             close()
             return
         }
@@ -180,15 +180,14 @@ class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated: Boolean
         this.parent?.remove(this)
         button.menuClosed()
     }
-
 }
 
-class DropdownStackItem(val item: PastryDropdownItem<*>): GuiLayer(0, 0) {
+internal class DropdownStackItem(val item: PastryDropdownItem<*>): GuiLayer(0, 0) {
     val itemLayer = item.createLayer()
     val highlight = SpriteLayer(PastryTexture.dropdownHighlight)
     val inset: Vec2d =
-        if(item.decoration) {
-            if(item.listDynamicWidth) {
+        if (item.decoration) {
+            if (item.listDynamicWidth) {
                 vec(0, 0)
             } else {
                 vec(4, 0)
@@ -198,27 +197,26 @@ class DropdownStackItem(val item: PastryDropdownItem<*>): GuiLayer(0, 0) {
         }
 
     init {
-        if(!item.decoration) {
+        if (!item.decoration) {
             add(highlight)
         }
 
         itemLayer.pos = inset
-        height = itemLayer.height + inset.y*2
+        height = itemLayer.height + inset.y * 2
         add(itemLayer)
     }
 
     override fun update() {
         super.update()
-        if(!item.decoration)
+        if (!item.decoration)
             highlight.isVisible = mouseOver
     }
 
     override fun layoutChildren() {
         super.layoutChildren()
-        if(item.listDynamicWidth) {
-            itemLayer.width = this.width - inset.x*2
+        if (item.listDynamicWidth) {
+            itemLayer.width = this.width - inset.x * 2
         }
         highlight.frame = this.bounds
     }
-
 }

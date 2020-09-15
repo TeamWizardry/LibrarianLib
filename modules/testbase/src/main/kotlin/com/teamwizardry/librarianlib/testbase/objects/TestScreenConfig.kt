@@ -1,10 +1,7 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.SidedConsumer
-import com.teamwizardry.librarianlib.core.util.SidedRunnable
-import com.teamwizardry.librarianlib.core.util.SidedSupplier
-import com.teamwizardry.librarianlib.math.Matrix3dStack
+import com.teamwizardry.librarianlib.core.util.sided.ClientSupplier
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.Minecraft
@@ -16,8 +13,8 @@ import net.minecraft.item.ItemGroup
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 
-class TestScreenConfig(val id: String, val name: String, activatorItemGroup: ItemGroup): TestConfig() {
-    constructor(id: String, name: String, activatorItemGroup: ItemGroup, block: TestScreenConfig.() -> Unit): this(id, name, activatorItemGroup) {
+public class TestScreenConfig(public val id: String, public val name: String, activatorItemGroup: ItemGroup): TestConfig() {
+    public constructor(id: String, name: String, activatorItemGroup: ItemGroup, block: TestScreenConfig.() -> Unit): this(id, name, activatorItemGroup) {
         this.block()
     }
 
@@ -28,170 +25,189 @@ class TestScreenConfig(val id: String, val name: String, activatorItemGroup: Ite
             activatorItem.config.description = value
         }
 
-    var customScreen: SidedSupplier.Client<Screen>? = null
+    public var customScreen: ClientSupplier<Screen>? = null
 
     /**
      * Use an entirely custom screen
      */
-    inline fun customScreen(crossinline client: () -> Screen) {
-        customScreen = SidedSupplier.Client { client() }
+    public inline fun customScreen(crossinline client: () -> Screen) {
+        customScreen = ClientSupplier { client() }
     }
 
     /**
      * The title of the screen, used for accessibility through screen readers
      */
-    var title: String = name
+    public var title: String = name
 
     /**
      * The size of the GUI pane. The origin point of the GUI will be placed in the top-left corner of a centered
      * rectangle of the given size.
      */
-    var size: Vec2d = vec(0, 0)
+    public var size: Vec2d = vec(0, 0)
 
     /**
      * The scaling factor of the GUI pane.
      */
-    var scale: Int = 1
+    public var scale: Int = 1
 
     /**
      * Whether the screen should be closed when pressing the escape key
      */
-    var closeOnEsc: Boolean = true
+    public var closeOnEsc: Boolean = true
 
     /**
      * Whether the screen should pause the game while it is open
      */
-    var pausesGame: Boolean = true
+    public var pausesGame: Boolean = true
 
     /**
      * Called when the screen first opens and when the game window is resized
      */
-    val init = ClientAction<ScreenContext>()
+    public val init: ClientAction<ScreenContext> = ClientAction()
 
     /**
      * Called when the screen is about to close itself.
      */
-    val onClose = ClientAction<ScreenContext>()
+    public val onClose: ClientAction<ScreenContext> = ClientAction<ScreenContext>()
 
     /**
      * Called before the screen has been removed from the [Minecraft] instance. Similar to [onClose] except it runs
      * even when the screen is being replaced by another screen
      */
-    val onRemoved = ClientAction<ScreenContext>()
+    public val onRemoved: ClientAction<ScreenContext> = ClientAction<ScreenContext>()
 
     /**
      * Called each frame to draw the screen
      */
-    val draw = ClientAction<DrawContext>()
+    public val draw: ClientAction<DrawContext> = ClientAction<DrawContext>()
 
     /**
      * Called each client tick while the screen is open
      */
-    val tick = ClientAction<ScreenContext>()
+    public val tick: ClientAction<ScreenContext> = ClientAction<ScreenContext>()
 
-    val mouseClicked = ClientAction<MouseButtonContext>()
+    public val mouseClicked: ClientAction<MouseButtonContext> = ClientAction<MouseButtonContext>()
 
-    val mouseReleased = ClientAction<MouseButtonContext>()
+    public val mouseReleased: ClientAction<MouseButtonContext> = ClientAction<MouseButtonContext>()
 
-    val mouseScrolled = ClientAction<MouseScrollContext>()
+    public val mouseScrolled: ClientAction<MouseScrollContext> = ClientAction<MouseScrollContext>()
 
-    val mouseMoved = ClientAction<MouseMovedContext>()
+    public val mouseMoved: ClientAction<MouseMovedContext> = ClientAction<MouseMovedContext>()
 
-    val mouseDragged = ClientAction<MouseDraggedContext>()
+    public val mouseDragged: ClientAction<MouseDraggedContext> = ClientAction<MouseDraggedContext>()
 
-    val charTyped = ClientAction<CharContext>()
+    public val charTyped: ClientAction<CharContext> = ClientAction<CharContext>()
 
-    val keyPressed = ClientAction<KeyContext>()
+    public val keyPressed: ClientAction<KeyContext> = ClientAction<KeyContext>()
 
-    val keyReleased = ClientAction<KeyContext>()
+    public val keyReleased: ClientAction<KeyContext> = ClientAction<KeyContext>()
 
     private val lazies = mutableListOf<() -> Unit>()
 
     /**
      * Run the passed configuration block lazily the first time the screen is used.
      */
-    fun lazyConfig(block: () -> Unit) {
+    public fun lazyConfig(block: () -> Unit) {
         lazies.add(block)
     }
 
     @Suppress("NOTHING_TO_INLINE")
     @OnlyIn(Dist.CLIENT)
-    data class DrawContext(val screen: TestScreen, val mousePos: Vec2d, val partialTicks: Float): TestContext() {
-        fun hLine(left: Int, right: Int, y: Int, color: Int) =
+    public data class DrawContext(val screen: TestScreen, val mousePos: Vec2d, val partialTicks: Float): TestContext() {
+        public fun hLine(left: Int, right: Int, y: Int, color: Int) {
             screen.hLine(left, right, y, color)
-        inline fun hLine(left: Int, right: Int, y: Int, color: UInt) =
+        }
+        public inline fun hLine(left: Int, right: Int, y: Int, color: UInt) {
             hLine(left, right, y, color.toInt())
+        }
 
-        fun vLine(x: Int, top: Int, bottom: Int, color: Int) =
+        public fun vLine(x: Int, top: Int, bottom: Int, color: Int) {
             screen.vLine(x,  top, bottom, color)
-        inline fun vLine(x: Int, top: Int, bottom: Int, color: UInt) =
+        }
+        public inline fun vLine(x: Int, top: Int, bottom: Int, color: UInt) {
             vLine(x,  top, bottom, color.toInt())
+        }
 
-        fun fillGradient(minX: Int, minY: Int, maxX: Int, maxY: Int, topColor: Int, bottomColor: Int) =
+        public fun fillGradient(minX: Int, minY: Int, maxX: Int, maxY: Int, topColor: Int, bottomColor: Int) {
             screen.fillGradient(minX, minY, maxX, maxY, topColor, bottomColor)
-        inline fun fillGradient(minX: Int, minY: Int, maxX: Int, maxY: Int, topColor: Int, bottomColor: UInt) =
+        }
+        public inline fun fillGradient(minX: Int, minY: Int, maxX: Int, maxY: Int, topColor: Int, bottomColor: UInt) {
             fillGradient(minX, minY, maxX, maxY, topColor, bottomColor.toInt())
+        }
 
-        fun fill(minX: Int, minY: Int, maxX: Int, maxY: Int, color: Int) =
+        public fun fill(minX: Int, minY: Int, maxX: Int, maxY: Int, color: Int) {
             AbstractGui.fill(minX, minY, maxX, maxY, color)
-        inline fun fill(minX: Int, minY: Int, maxX: Int, maxY: Int, color: UInt) =
+        }
+        public inline fun fill(minX: Int, minY: Int, maxX: Int, maxY: Int, color: UInt) {
             fill(minX, minY, maxX, maxY, color.toInt())
+        }
 
-        fun drawCenteredString(fr: FontRenderer, text: String, x: Int, y: Int, color: Int) =
+        public fun drawCenteredString(fr: FontRenderer, text: String, x: Int, y: Int, color: Int) {
             screen.drawCenteredString(fr, text, x, y, color)
-        inline fun drawCenteredString(fr: FontRenderer, text: String, x: Int, y: Int, color: UInt) =
+        }
+        public inline fun drawCenteredString(fr: FontRenderer, text: String, x: Int, y: Int, color: UInt) {
             drawCenteredString(fr, text, x, y, color.toInt())
+        }
 
-        fun drawRightAlignedString(fr: FontRenderer, text: String, x: Int, y: Int, color: Int) =
+        public fun drawRightAlignedString(fr: FontRenderer, text: String, x: Int, y: Int, color: Int) {
             screen.drawRightAlignedString(fr, text, x, y, color)
-        inline fun drawRightAlignedString(fr: FontRenderer, text: String, x: Int, y: Int, color: UInt) =
+        }
+        public inline fun drawRightAlignedString(fr: FontRenderer, text: String, x: Int, y: Int, color: UInt) {
             drawRightAlignedString(fr, text, x, y, color.toInt())
+        }
 
-        fun drawString(fr: FontRenderer, text: String, x: Int, y: Int, color: Int) =
+        public fun drawString(fr: FontRenderer, text: String, x: Int, y: Int, color: Int) {
             screen.drawString(fr, text, x, y, color)
-        inline fun drawString(fr: FontRenderer, text: String, x: Int, y: Int, color: UInt) =
+        }
+        public inline fun drawString(fr: FontRenderer, text: String, x: Int, y: Int, color: UInt) {
             drawString(fr, text, x, y, color.toInt())
+        }
 
-        fun blit(x: Int, y: Int, z: Int, width: Int, height: Int, sprite: TextureAtlasSprite) =
+        public fun blit(x: Int, y: Int, z: Int, width: Int, height: Int, sprite: TextureAtlasSprite) {
             AbstractGui.blit(x, y, z, width, height, sprite)
+        }
 
-        fun blit(p_blit_1_: Int, p_blit_2_: Int, p_blit_3_: Int, p_blit_4_: Int, p_blit_5_: Int, p_blit_6_: Int) =
+        public fun blit(p_blit_1_: Int, p_blit_2_: Int, p_blit_3_: Int, p_blit_4_: Int, p_blit_5_: Int, p_blit_6_: Int) {
             screen.blit(p_blit_1_, p_blit_2_, p_blit_3_, p_blit_4_, p_blit_5_, p_blit_6_)
+        }
 
-        fun blit(x: Int, y: Int, z: Int, p_blit_3_: Float, p_blit_4_: Float, width: Int, height: Int, p_blit_7_: Int, p_blit_8_: Int) =
+        public fun blit(x: Int, y: Int, z: Int, p_blit_3_: Float, p_blit_4_: Float, width: Int, height: Int, p_blit_7_: Int, p_blit_8_: Int) {
             AbstractGui.blit(x, y, z, p_blit_3_, p_blit_4_, width, height, p_blit_7_, p_blit_8_)
+        }
 
-        fun blit(p_blit_0_: Int, p_blit_1_: Int, p_blit_2_: Int, p_blit_3_: Int, p_blit_4_: Float, p_blit_5_: Float, p_blit_6_: Int, p_blit_7_: Int, p_blit_8_: Int, p_blit_9_: Int) =
+        public fun blit(p_blit_0_: Int, p_blit_1_: Int, p_blit_2_: Int, p_blit_3_: Int, p_blit_4_: Float, p_blit_5_: Float, p_blit_6_: Int, p_blit_7_: Int, p_blit_8_: Int, p_blit_9_: Int) {
             AbstractGui.blit(p_blit_0_, p_blit_1_, p_blit_2_, p_blit_3_, p_blit_4_, p_blit_5_, p_blit_6_, p_blit_7_, p_blit_8_, p_blit_9_)
+        }
 
-        fun blit(p_blit_0_: Int, p_blit_1_: Int, p_blit_2_: Float, p_blit_3_: Float, p_blit_4_: Int, p_blit_5_: Int, p_blit_6_: Int, p_blit_7_: Int) =
+        public fun blit(p_blit_0_: Int, p_blit_1_: Int, p_blit_2_: Float, p_blit_3_: Float, p_blit_4_: Int, p_blit_5_: Int, p_blit_6_: Int, p_blit_7_: Int) {
             AbstractGui.blit(p_blit_0_, p_blit_1_, p_blit_2_, p_blit_3_, p_blit_4_, p_blit_5_, p_blit_6_, p_blit_7_)
+        }
 
     }
     @OnlyIn(Dist.CLIENT)
-    data class ScreenContext(val screen: TestScreen): TestContext()
+    public data class ScreenContext(val screen: TestScreen): TestContext()
     @OnlyIn(Dist.CLIENT)
-    data class MouseButtonContext(val screen: TestScreen, val mousePos: Vec2d, val button: Int): TestContext()
+    public data class MouseButtonContext(val screen: TestScreen, val mousePos: Vec2d, val button: Int): TestContext()
     @OnlyIn(Dist.CLIENT)
-    data class MouseScrollContext(val screen: TestScreen, val mousePos: Vec2d, val amount: Double): TestContext()
+    public data class MouseScrollContext(val screen: TestScreen, val mousePos: Vec2d, val amount: Double): TestContext()
     @OnlyIn(Dist.CLIENT)
-    data class MouseMovedContext(val screen: TestScreen, val mousePos: Vec2d): TestContext()
+    public data class MouseMovedContext(val screen: TestScreen, val mousePos: Vec2d): TestContext()
     @OnlyIn(Dist.CLIENT)
-    data class MouseDraggedContext(val screen: TestScreen, val startPos: Vec2d, val delta: Vec2d, val button: Int): TestContext()
+    public data class MouseDraggedContext(val screen: TestScreen, val startPos: Vec2d, val delta: Vec2d, val button: Int): TestContext()
     @OnlyIn(Dist.CLIENT)
-    data class CharContext(val screen: TestScreen, val character: Char, val modifiers: Int): TestContext()
+    public data class CharContext(val screen: TestScreen, val character: Char, val modifiers: Int): TestContext()
     @OnlyIn(Dist.CLIENT)
-    data class KeyContext(val screen: TestScreen, val key: Int, val scanCode: Int, val modifiers: Int): TestContext()
+    public data class KeyContext(val screen: TestScreen, val key: Int, val scanCode: Int, val modifiers: Int): TestContext()
 
 
     @OnlyIn(Dist.CLIENT)
-    fun activate() {
+    public fun activate() {
         lazies.forEach { it() }
         lazies.clear()
         Client.displayGuiScreen(customScreen?.get() ?: TestScreen(this))
     }
 
-    var activatorItem = TestItem(TestItemConfig(this.id + "_screen", this.name + " Screen", activatorItemGroup) {
+    public var activatorItem: TestItem = TestItem(TestItemConfig(this.id + "_screen", this.name + " Screen", activatorItemGroup) {
         client {
             rightClick {
                 activate()

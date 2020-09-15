@@ -10,14 +10,14 @@ import java.lang.IllegalArgumentException
 /**
  * Yoinked from [Prism](https://github.com/thecodewarrior/Prism/blob/bc714f6/core/src/main/kotlin/dev/thecodewarrior/prism/Prism.kt)
  */
-open class LerperMatcher {
+public open class LerperMatcher {
     private val _lerpers = mutableMapOf<TypeMirror, Lazy<Lerper<*>>>()
-    val lerpers: Map<TypeMirror, Lazy<Lerper<*>>> = _lerpers.unmodifiableView()
+    public val lerpers: Map<TypeMirror, Lazy<Lerper<*>>> = _lerpers.unmodifiableView()
 
     private val _factories = mutableListOf<LerperFactory<Lerper<*>>>()
-    val factories: List<LerperFactory<Lerper<*>>> = _factories.unmodifiableView()
+    public val factories: List<LerperFactory<Lerper<*>>> = _factories.unmodifiableView()
 
-    fun getOrNull(mirror: TypeMirror): Lazy<Lerper<*>>? {
+    public fun getOrNull(mirror: TypeMirror): Lazy<Lerper<*>>? {
         try {
             return get(mirror)
         } catch(e: InvalidTypeException) {
@@ -27,7 +27,7 @@ open class LerperMatcher {
         }
     }
 
-    operator fun get(mirror: TypeMirror): Lazy<Lerper<*>> {
+    public operator fun get(mirror: TypeMirror): Lazy<Lerper<*>> {
         @Suppress("NAME_SHADOWING")
         val mirror =
             if(mirror is VariableMirror) {
@@ -69,7 +69,7 @@ open class LerperMatcher {
         return lazy
     }
 
-    fun register(vararg factories: LerperFactory<Lerper<*>>): LerperMatcher {
+    public fun register(vararg factories: LerperFactory<Lerper<*>>): LerperMatcher {
         factories.forEach { factory ->
             _factories.removeIf { it === factory }
             _factories.add(factory)
@@ -77,7 +77,7 @@ open class LerperMatcher {
         return this
     }
 
-    fun register(vararg lerpers: Lerper<*>): LerperMatcher {
+    public fun register(vararg lerpers: Lerper<*>): LerperMatcher {
         lerpers.forEach { lerper ->
             if(lerper.type in _lerpers)
                 throw IllegalArgumentException("Duplicate lerper for ${lerper.type}")

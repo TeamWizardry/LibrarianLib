@@ -18,8 +18,6 @@ import net.alexwells.kottle.FMLKotlinModLoadingContext
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.RenderTypeLookup
-import net.minecraft.client.renderer.color.IBlockColor
-import net.minecraft.client.renderer.color.IItemColor
 import net.minecraft.entity.EntityType
 import net.minecraft.item.BlockItem
 import net.minecraft.item.Item
@@ -35,14 +33,13 @@ import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.client.registry.RenderingRegistry
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
-import net.minecraftforge.registries.ForgeRegistries
 import org.apache.logging.log4j.Logger
 import java.awt.Color
 
-abstract class TestMod(val targetName: String, val humanName: String, val logger: Logger) {
-    val modid = MiscUtil.getModId(this.javaClass)
-    val name = "$targetName-test"
-    val itemGroup = object : ItemGroup("librarianlib-$name") {
+public abstract class TestMod(public val targetName: String, public val humanName: String, public val logger: Logger) {
+    public val modid: String = MiscUtil.getModId(this.javaClass)
+    public val name: String = "$targetName-test"
+    public val itemGroup: ItemGroup = object : ItemGroup("librarianlib-$name") {
         private val stack: ItemStack by lazy {
             val stack = ItemStack(LibrarianLibTestBaseModule.testTool)
             stack.orCreateTag.putString("mod", name)
@@ -53,41 +50,41 @@ abstract class TestMod(val targetName: String, val humanName: String, val logger
         }
     }
 
-    val _items: MutableList<Item> = mutableListOf()
-    val _blocks: MutableList<Block> = mutableListOf()
-    val _entities: MutableList<EntityType<*>> = mutableListOf()
-    val _testEntities: MutableList<EntityType<TestEntity>> = mutableListOf()
-    val _unitTests: MutableList<UnitTestSuite> = mutableListOf()
+    private val _items: MutableList<Item> = mutableListOf()
+    private val _blocks: MutableList<Block> = mutableListOf()
+    private val _entities: MutableList<EntityType<*>> = mutableListOf()
+    private val _testEntities: MutableList<EntityType<TestEntity>> = mutableListOf()
+    private val _unitTests: MutableList<UnitTestSuite> = mutableListOf()
 
-    val items: List<Item> = _items.unmodifiableView()
-    val blocks: List<Block> = _blocks.unmodifiableView()
-    val entities: List<EntityType<*>> = _entities.unmodifiableView()
-    val unitTests: List<UnitTestSuite> = _unitTests.unmodifiableView()
+    public val items: List<Item> = _items.unmodifiableView()
+    public val blocks: List<Block> = _blocks.unmodifiableView()
+    public val entities: List<EntityType<*>> = _entities.unmodifiableView()
+    public val unitTests: List<UnitTestSuite> = _unitTests.unmodifiableView()
 
     // auto-fill the item group
-    fun TestItemConfig(id: String, name: String, block: TestItemConfig.() -> Unit): TestItemConfig
+    public fun TestItemConfig(id: String, name: String, block: TestItemConfig.() -> Unit): TestItemConfig
         = TestItemConfig(id, name, itemGroup, block)
-    fun TestItemConfig(id: String, name: String): TestItemConfig
+    public fun TestItemConfig(id: String, name: String): TestItemConfig
         = TestItemConfig(id, name, itemGroup)
-    fun TestEntityConfig(id: String, name: String, block: TestEntityConfig.() -> Unit): TestEntityConfig
+    public fun TestEntityConfig(id: String, name: String, block: TestEntityConfig.() -> Unit): TestEntityConfig
         = TestEntityConfig(id, name, itemGroup, block)
-    fun TestEntityConfig(id: String, name: String): TestEntityConfig
+    public fun TestEntityConfig(id: String, name: String): TestEntityConfig
         = TestEntityConfig(id, name, itemGroup)
-    fun TestScreenConfig(id: String, name: String, block: TestScreenConfig.() -> Unit): TestScreenConfig
+    public fun TestScreenConfig(id: String, name: String, block: TestScreenConfig.() -> Unit): TestScreenConfig
         = TestScreenConfig(id, name, itemGroup, block)
-    fun TestScreenConfig(id: String, name: String): TestScreenConfig
+    public fun TestScreenConfig(id: String, name: String): TestScreenConfig
         = TestScreenConfig(id, name, itemGroup)
-    fun UnitTestSuite(id: String, block: UnitTestSuite.() -> Unit): UnitTestSuite
+    public fun UnitTestSuite(id: String, block: UnitTestSuite.() -> Unit): UnitTestSuite
         = UnitTestSuite(id).also { it.block() }
-    fun UnitTestSuite(id: String): UnitTestSuite
+    public fun UnitTestSuite(id: String): UnitTestSuite
         = UnitTestSuite().also { it.registryName = ResourceLocation(modid, id) }
 
-    operator fun <T: Item> T.unaryPlus(): T {
+    public operator fun <T: Item> T.unaryPlus(): T {
         _items.add(this)
         return this
     }
 
-    operator fun <T: Block> T.unaryPlus(): T {
+    public operator fun <T: Block> T.unaryPlus(): T {
         val properties = Item.Properties()
             .group(itemGroup)
         val item = if(this is TestBlock)
@@ -100,24 +97,24 @@ abstract class TestMod(val targetName: String, val humanName: String, val logger
         return this
     }
 
-    operator fun <T: EntityType<*>> T.unaryPlus(): T {
+    public operator fun <T: EntityType<*>> T.unaryPlus(): T {
         _entities.add(this)
         return this
     }
 
-    operator fun TestEntityConfig.unaryPlus(): TestEntityConfig {
+    public operator fun TestEntityConfig.unaryPlus(): TestEntityConfig {
         _entities.add(this.type)
         _testEntities.add(this.type)
         +this.spawnerItem
         return this
     }
 
-    operator fun TestScreenConfig.unaryPlus(): TestScreenConfig {
+    public operator fun TestScreenConfig.unaryPlus(): TestScreenConfig {
         +this.activatorItem
         return this
     }
 
-    operator fun UnitTestSuite.unaryPlus(): UnitTestSuite {
+    public operator fun UnitTestSuite.unaryPlus(): UnitTestSuite {
         _unitTests.add(this)
         return this
     }
@@ -162,12 +159,12 @@ abstract class TestMod(val targetName: String, val humanName: String, val logger
     }
 
     @Suppress("UNUSED_PARAMETER")
-    open fun setup(event: FMLCommonSetupEvent) {
+    public open fun setup(event: FMLCommonSetupEvent) {
     }
 
     @Suppress("UNUSED_PARAMETER")
     @OnlyIn(Dist.CLIENT)
-    open fun clientSetup(event: FMLClientSetupEvent) {
+    public open fun clientSetup(event: FMLClientSetupEvent) {
     }
 
     private fun generateItemAssets() {
@@ -261,7 +258,7 @@ abstract class TestMod(val targetName: String, val humanName: String, val logger
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     internal fun registerColors(colorHandlerEvent: ColorHandlerEvent.Item) {
-        colorHandlerEvent.itemColors.register(IItemColor { stack, tintIndex ->
+        colorHandlerEvent.itemColors.register({ stack, tintIndex ->
             val item = stack.item
             if(tintIndex == 1 && item is TestBlockItem)
                 DistinctColors.forObject(item.block.registryName).rgb
@@ -270,7 +267,7 @@ abstract class TestMod(val targetName: String, val humanName: String, val logger
             else
                 Color.WHITE.rgb
         }, *items.toTypedArray())
-        colorHandlerEvent.blockColors.register(IBlockColor { state, _, _, tintIndex ->
+        colorHandlerEvent.blockColors.register({ state, _, _, tintIndex ->
             if(tintIndex == 1 && state.block is TestBlock)
                 DistinctColors.forObject(state.block.registryName).rgb
             else
@@ -279,28 +276,28 @@ abstract class TestMod(val targetName: String, val humanName: String, val logger
     }
 
     @SubscribeEvent
-    open fun registerUnitTests(e: RegistryEvent.Register<UnitTestSuite>) {
+    public open fun registerUnitTests(e: RegistryEvent.Register<UnitTestSuite>) {
         unitTests.forEach {
             e.registry.register(it)
         }
     }
 
     @SubscribeEvent
-    open fun registerBlocks(e: RegistryEvent.Register<Block>) {
+    public open fun registerBlocks(e: RegistryEvent.Register<Block>) {
         blocks.forEach {
             e.registry.register(it)
         }
     }
 
     @SubscribeEvent
-    open fun registerItems(e: RegistryEvent.Register<Item>) {
+    public open fun registerItems(e: RegistryEvent.Register<Item>) {
         items.forEach {
             e.registry.register(it)
         }
     }
 
     @SubscribeEvent
-    open fun registerEntities(e: RegistryEvent.Register<EntityType<*>>) {
+    public open fun registerEntities(e: RegistryEvent.Register<EntityType<*>>) {
         entities.forEach {
             e.registry.register(it)
         }

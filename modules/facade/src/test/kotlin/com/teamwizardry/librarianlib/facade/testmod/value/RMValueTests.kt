@@ -138,5 +138,4 @@ class RMValueTests {
         rmValue.set(1)
         assertFalse(called)
     }
-
 }

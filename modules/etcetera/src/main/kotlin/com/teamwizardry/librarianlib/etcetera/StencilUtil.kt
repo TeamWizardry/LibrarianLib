@@ -1,30 +1,25 @@
 package com.teamwizardry.librarianlib.etcetera
 
-import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.SidedRunnable
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.shader.Framebuffer
-import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
 
 /**
  * Easily push and pop from the stencil mask
  */
-object StencilUtil {
+public object StencilUtil {
     /**
      * The current stencil level.
      */
-    var currentStencil: Int = 0
+    public var currentStencil: Int = 0
         private set
 
     /**
      * Enables the stencil buffer for MC's main framebuffer, if it isn't enabled already
      */
     @JvmStatic
-    fun enableStencilBuffer() {
+    public fun enableStencilBuffer() {
         enableStencilBuffer(Client.minecraft.framebuffer)
     }
 
@@ -32,7 +27,7 @@ object StencilUtil {
      * Enables the stencil buffer for the passed framebuffer, if it isn't enabled already
      */
     @JvmStatic
-    fun enableStencilBuffer(fbo: Framebuffer) {
+    public fun enableStencilBuffer(fbo: Framebuffer) {
         if (!fbo.isStencilEnabled)
             fbo.enableStencil()
     }
@@ -40,7 +35,7 @@ object StencilUtil {
     /**
      * Clear the stencil buffer
      */
-    fun clear() {
+    public fun clear() {
         currentStencil = 0
 
         glEnable(GL_STENCIL_TEST)
@@ -57,18 +52,18 @@ object StencilUtil {
     /**
      * Enable stencil tests
      */
-    fun enable() {
+    public fun enable() {
         glEnable(GL_STENCIL_TEST)
     }
 
     /**
      * Disable stencil tests
      */
-    fun disable() {
+    public fun disable() {
         glDisable(GL_STENCIL_TEST)
     }
 
-    fun resetTest(level: Int) {
+    public fun resetTest(level: Int) {
         currentStencil = level
 
         RenderSystem.stencilMask(0x00)
@@ -76,7 +71,7 @@ object StencilUtil {
     }
 
     @JvmStatic
-    fun push(draw: Runnable) {
+    public fun push(draw: Runnable) {
         currentStencil += 1
 
         RenderSystem.depthMask(false)
@@ -95,7 +90,7 @@ object StencilUtil {
     }
 
     @JvmStatic
-    fun pop(draw: Runnable) {
+    public fun pop(draw: Runnable) {
         currentStencil -= 1
 
         RenderSystem.depthMask(false)
@@ -112,7 +107,4 @@ object StencilUtil {
         RenderSystem.stencilMask(0x00)
         RenderSystem.stencilFunc(GL_EQUAL, currentStencil, 0xFF)
     }
-
-    fun push(kotlin: () -> Unit) = push(Runnable(kotlin))
-    fun pop(kotlin: () -> Unit) = pop(Runnable(kotlin))
 }

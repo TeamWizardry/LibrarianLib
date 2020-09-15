@@ -9,8 +9,8 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-abstract class WrappedSprite: ISprite {
-    abstract val wrapped: ISprite?
+public abstract class WrappedSprite: ISprite {
+    public abstract val wrapped: ISprite?
 
     override fun minU(animFrames: Int): Float = wrapped?.minU(animFrames) ?: 0f
     override fun minV(animFrames: Int): Float = wrapped?.minV(animFrames) ?: 0f

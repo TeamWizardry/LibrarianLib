@@ -30,45 +30,45 @@ import java.lang.IllegalArgumentException
  * disabling interpolation by passing the current position for both [previousPosition] and [position] can make
  * the particles rock solid in their positions as opposed to jittering about slightly.
  */
-class SpriteRenderModule @JvmOverloads constructor(
+public class SpriteRenderModule @JvmOverloads constructor(
     /**
      * The [RenderType] that is used to draw the particles. It should have both position and texture components.
      */
-    @JvmField var renderType: RenderType,
+    @JvmField public var renderType: RenderType,
     /**
      * The current position of the particle
      */
-    @JvmField val position: ReadParticleBinding,
+    @JvmField public val position: ReadParticleBinding,
     /**
      * The position of the particle last tick, used to interpolate between ticks
      */
-    @JvmField val previousPosition: ReadParticleBinding? = null,
+    @JvmField public val previousPosition: ReadParticleBinding? = null,
     /**
      * The OpenGL color of the particle
      */
-    @JvmField val color: ReadParticleBinding = ConstantBinding(1.0, 1.0, 1.0, 1.0),
+    @JvmField public val color: ReadParticleBinding = ConstantBinding(1.0, 1.0, 1.0, 1.0),
     /**
      * The width and height of the particle in meters
      */
-    @JvmField val size: ReadParticleBinding = ConstantBinding(1.0),
+    @JvmField public val size: ReadParticleBinding = ConstantBinding(1.0),
     /**
      * If present, an artificial facing vector used instead of the player's look vector. This vector _does not need
      * to be normalized._
      */
-    @JvmField val facingVector: ReadParticleBinding? = null,
+    @JvmField public val facingVector: ReadParticleBinding? = null,
     /**
      * The alpha multiplier for the color. Defaults to 1 if not present.
      */
-    @JvmField val alphaMultiplier: ReadParticleBinding = ConstantBinding(1.0),
+    @JvmField public val alphaMultiplier: ReadParticleBinding = ConstantBinding(1.0),
     /**
      * The size of the sprite sheet (must be a power of 2)
      */
-    @JvmField val spriteSheetSize: Int = 1,
+    @JvmField public val spriteSheetSize: Int = 1,
     /**
      * The sprite index (indexed left-to-right, top-to-bottom)
      */
-    @JvmField val spriteIndex: ReadParticleBinding = ConstantBinding(0.0)
-) : ParticleRenderModule {
+    @JvmField public val spriteIndex: ReadParticleBinding = ConstantBinding(0.0)
+): ParticleRenderModule {
     init {
         previousPosition?.require(3)
         position.require(3)
@@ -78,7 +78,7 @@ class SpriteRenderModule @JvmOverloads constructor(
         alphaMultiplier.require(1)
         spriteIndex.require(1)
 
-        if(spriteSheetSize and (spriteSheetSize - 1) != 0) {
+        if (spriteSheetSize and (spriteSheetSize - 1) != 0) {
             throw IllegalArgumentException("Sprite sheet size $spriteSheetSize is not a power of 2")
         }
     }
@@ -145,9 +145,9 @@ class SpriteRenderModule @JvmOverloads constructor(
                 val facingX = facingVector.contents[0]
                 val facingY = facingVector.contents[1]
                 val facingZ = facingVector.contents[2]
-                if(!facingX.isNaN() && !facingY.isNaN() && !facingZ.isNaN()) {
+                if (!facingX.isNaN() && !facingY.isNaN() && !facingZ.isNaN()) {
                     // x axis, facing • (0, 1, 0)
-                    if(facingX == 0.0 && facingZ == 0.0) {
+                    if (facingX == 0.0 && facingZ == 0.0) {
                         rightX = 1.0
                         rightY = 0.0
                         rightZ = 0.0
@@ -203,7 +203,7 @@ class SpriteRenderModule @JvmOverloads constructor(
             var x = position.contents[0]
             var y = position.contents[1]
             var z = position.contents[2]
-            if(previousPosition != null) {
+            if (previousPosition != null) {
                 previousPosition.load(particle)
                 x = Client.worldTime.interp(previousPosition.contents[0], x)
                 y = Client.worldTime.interp(previousPosition.contents[1], y)
@@ -229,7 +229,7 @@ class SpriteRenderModule @JvmOverloads constructor(
             var maxU = 1f
             var maxV = 1f
 
-            if(spriteSheetSize > 1) {
+            if (spriteSheetSize > 1) {
                 spriteIndex.load(particle)
                 val index = spriteIndex.contents[0].toInt()
                 val uIndex = index and spriteIndexMask
@@ -249,10 +249,10 @@ class SpriteRenderModule @JvmOverloads constructor(
         buffer.finish()
     }
 
-    companion object {
+    public companion object {
         @JvmStatic
         @JvmOverloads
-        fun simpleRenderType(
+        public fun simpleRenderType(
             /**
              * The sprite texture to use
              */
@@ -276,17 +276,17 @@ class SpriteRenderModule @JvmOverloads constructor(
                 .cull(DefaultRenderStates.CULL_DISABLED)
                 .alpha(DefaultRenderStates.DEFAULT_ALPHA)
 
-            if(blendMode != null) {
-                renderState.transparency(RenderState.TransparencyState("particle_transparency", Runnable {
+            if (blendMode != null) {
+                renderState.transparency(RenderState.TransparencyState("particle_transparency", {
                     RenderSystem.enableBlend()
                     blendMode.glApply()
-                }, Runnable {
+                }, {
                     RenderSystem.disableBlend()
                     RenderSystem.defaultBlendFunc()
                 }))
             }
 
-            if(!writeDepth) {
+            if (!writeDepth) {
                 renderState.writeMask(DefaultRenderStates.COLOR_WRITE)
             }
 

@@ -13,13 +13,13 @@ import net.minecraft.util.text.TextFormatting
 import net.minecraft.util.text.TranslationTextComponent
 import net.minecraft.world.World
 
-class TestBlockItem(block: TestBlock, builder: Properties): BlockItem(block, builder) {
+public class TestBlockItem(block: TestBlock, builder: Properties): BlockItem(block, builder) {
     override fun getBlock(): TestBlock {
         return super.getBlock() as TestBlock
     }
 
     override fun placeBlock(context: BlockItemUseContext, state: BlockState): Boolean {
-        if(super.placeBlock(context, state)) {
+        if (super.placeBlock(context, state)) {
             context.item.grow(1)
             return true
         }
@@ -28,7 +28,7 @@ class TestBlockItem(block: TestBlock, builder: Properties): BlockItem(block, bui
 
     override fun addInformation(stack: ItemStack, worldIn: World?, tooltip: MutableList<ITextComponent>, flagIn: ITooltipFlag) {
         super.addInformation(stack, worldIn, tooltip, flagIn)
-        if(block.config.description != null) {
+        if (block.config.description != null) {
             val description = TranslationTextComponent(registryName!!.translationKey("block", "tooltip"))
             description.style.color = TextFormatting.GRAY
             tooltip.add(description)

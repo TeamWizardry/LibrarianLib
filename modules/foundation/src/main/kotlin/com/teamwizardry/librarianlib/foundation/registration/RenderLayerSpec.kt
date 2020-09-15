@@ -7,21 +7,21 @@ import net.minecraftforge.api.distmarker.OnlyIn
 /**
  * A wrapper around a block's [RenderType].
  */
-class RenderLayerSpec private constructor(private val getter: () -> Any) {
+public class RenderLayerSpec private constructor(private val getter: () -> Any) {
 
     @OnlyIn(Dist.CLIENT)
-    fun getRenderType(): RenderType {
+    public fun getRenderType(): RenderType {
         return getter() as RenderType
     }
 
-    companion object {
+    public companion object {
         @JvmField
-        val SOLID: RenderLayerSpec = RenderLayerSpec { RenderType.getSolid() }
+        public val SOLID: RenderLayerSpec = RenderLayerSpec { RenderType.getSolid() }
         @JvmField
-        val CUTOUT: RenderLayerSpec = RenderLayerSpec { RenderType.getCutout() }
+        public val CUTOUT: RenderLayerSpec = RenderLayerSpec { RenderType.getCutout() }
         @JvmField
-        val CUTOUT_MIPPED: RenderLayerSpec = RenderLayerSpec { RenderType.getCutoutMipped() }
+        public val CUTOUT_MIPPED: RenderLayerSpec = RenderLayerSpec { RenderType.getCutoutMipped() }
         @JvmField
-        val TRANSLUCENT: RenderLayerSpec = RenderLayerSpec { RenderType.getTranslucent() }
+        public val TRANSLUCENT: RenderLayerSpec = RenderLayerSpec { RenderType.getTranslucent() }
     }
 }

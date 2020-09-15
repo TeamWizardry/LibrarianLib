@@ -11,7 +11,7 @@ import dev.thecodewarrior.mirror.type.TypeMirror
  * [GuiLayer]s
  */
 @Target(AnnotationTarget.FUNCTION)
-annotation class Hook
+public annotation class Hook
 
 internal object EventHookAnnotationReflector {
     val cache = mutableMapOf<Class<*>, EventCache>()

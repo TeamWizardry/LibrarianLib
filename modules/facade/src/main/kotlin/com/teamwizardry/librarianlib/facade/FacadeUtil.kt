@@ -11,7 +11,7 @@ import java.util.function.Supplier
  * @param action The action that is being performed in the passed block. Should fit in the sentence "Safety net caught
  * an exception while _____". For example "rendering", "handling mouse input", "updating layout"
  */
-fun safetyNet(action: String, block: Runnable) {
+public fun safetyNet(action: String, block: Runnable) {
     try {
         block.run()
     } catch (e: Exception) {
@@ -26,7 +26,7 @@ fun safetyNet(action: String, block: Runnable) {
  * an exception while _____". For example "rendering", "handling mouse input", "updating layout"
  * @return The result of the passed block or the result of [defaultValue] if an exception occurred.
  */
-fun <T> safetyNet(action: String, defaultValue: Supplier<T>, block: Supplier<T>): T? {
+public fun <T> safetyNet(action: String, defaultValue: Supplier<T>, block: Supplier<T>): T? {
     try {
         return block.get()
     } catch (e: Exception) {
@@ -42,7 +42,7 @@ fun <T> safetyNet(action: String, defaultValue: Supplier<T>, block: Supplier<T>)
  * an exception while _____". For example "rendering", "handling mouse input", "updating layout"
  */
 @JvmSynthetic
-inline fun safetyNet(action: String, block: () -> Unit) {
+public inline fun safetyNet(action: String, block: () -> Unit) {
     try {
         block()
     } catch (e: Exception) {
@@ -58,7 +58,7 @@ inline fun safetyNet(action: String, block: () -> Unit) {
  * @return The result of the passed block or null if an exception occurred.
  */
 @JvmSynthetic
-inline fun <T> safetyNet(action: String, defaultValue: () -> T, block: () -> T): T {
+public inline fun <T> safetyNet(action: String, defaultValue: () -> T, block: () -> T): T {
     try {
         return block()
     } catch (e: Exception) {

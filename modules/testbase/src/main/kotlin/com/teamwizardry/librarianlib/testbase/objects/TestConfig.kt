@@ -1,21 +1,22 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
-import com.teamwizardry.librarianlib.core.util.SidedRunnable
+import com.teamwizardry.librarianlib.core.util.sided.SidedRunnable
 import net.minecraftforge.fml.ModLoadingContext
 
-abstract class TestConfig {
-    val modid: String = ModLoadingContext.get().activeContainer.modId
+public abstract class TestConfig {
+    public val modid: String = ModLoadingContext.get().activeContainer.modId
 
     /**
      * Additional text to show in the item tooltip
      */
-    open var description: String? = null
+    public open var description: String? = null
 
-    inline fun client(crossinline block: ClientActions.() -> Unit) = ClientActions.also {
+    public inline fun client(crossinline block: ClientActions.() -> Unit): ClientActions = ClientActions.also {
         SidedRunnable.client {
             it.block()
         }
     }
-    inline fun server(block: ServerActions.() -> Unit) = ServerActions.also { it.block() }
-    inline fun common(block: CommonActions.() -> Unit) = CommonActions.also { it.block() }
+
+    public inline fun server(block: ServerActions.() -> Unit): ServerActions = ServerActions.also { it.block() }
+    public inline fun common(block: CommonActions.() -> Unit): CommonActions = CommonActions.also { it.block() }
 }

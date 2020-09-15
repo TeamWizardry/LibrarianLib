@@ -30,13 +30,12 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent
-import java.util.function.Function
 
 /**
  * The main class for registering objects in LibrarianLib Foundation. This class manages when to register them, along
  * with any secondary registrations, such as [block items][BlockItem] and block render layers.
  */
-class RegistrationManager(val modid: String, modEventBus: IEventBus) {
+public class RegistrationManager(public val modid: String, modEventBus: IEventBus) {
     init {
         modEventBus.register(this)
     }
@@ -44,7 +43,7 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     /**
      * The default item group for items registered with this registration manager.
      */
-    val itemGroup: ItemGroup = object: ItemGroup(modid) {
+    public val itemGroup: ItemGroup = object: ItemGroup(modid) {
         @OnlyIn(Dist.CLIENT)
         override fun createIcon(): ItemStack {
             return ItemStack(itemGroupIcon?.get() ?: Items.AIR)
@@ -54,7 +53,7 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     /**
      * The default item group icon for items registered with this registration manager.
      */
-    var itemGroupIcon: LazyItem? = null
+    public var itemGroupIcon: LazyItem? = null
 
     private val blocks = mutableListOf<BlockSpec>()
     private val items = mutableListOf<ItemSpec>()
@@ -63,12 +62,12 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     /**
      * Methods for performing data generation
      */
-    val datagen: DataGen = DataGen()
+    public val datagen: DataGen = DataGen()
 
     /**
      * Adds a block to this registration manager and returns a lazy reference to it
      */
-    fun add(spec: BlockSpec): LazyBlock {
+    public fun add(spec: BlockSpec): LazyBlock {
         spec.modid = modid
         @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
         spec.itemProperties.group(spec.itemGroup.get(this))
@@ -79,7 +78,7 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     /**
      * Adds an item to this registration manager and returns a lazy reference to it
      */
-    fun add(spec: ItemSpec): LazyItem {
+    public fun add(spec: ItemSpec): LazyItem {
         spec.modid = modid
         @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
         spec.itemProperties.group(spec.itemGroup.get(this))
@@ -90,7 +89,7 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     /**
      * Adds a tile entity type to this registration manager and returns a lazy reference to it
      */
-    fun add(spec: TileEntitySpec): LazyTileEntityType {
+    public fun add(spec: TileEntitySpec): LazyTileEntityType {
         spec.modid = modid
         tileEntities.add(spec)
         return spec.lazy
@@ -143,9 +142,9 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
         tileEntities.forEach { spec ->
             val renderer = spec.renderer ?: return@forEach
             logger.debug("Manager for $modid: Registering TER for ${spec.registryName}")
-            ClientRegistry.bindTileEntityRenderer(spec.typeInstance) {
-                @Suppress("UNCHECKED_CAST")
-                renderer.applyClient(it) as TileEntityRenderer<in TileEntity>
+            @Suppress("UNCHECKED_CAST")
+            ClientRegistry.bindTileEntityRenderer(spec.typeInstance as TileEntityType<TileEntity>) {
+                renderer.applyClient(it) as TileEntityRenderer<TileEntity>
             }
         }
     }
@@ -156,7 +155,8 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
     }
 
     @SubscribeEvent
-    fun gatherData(e: GatherDataEvent) {
+    @JvmSynthetic
+    internal fun gatherData(e: GatherDataEvent) {
         e.generator.addProvider(BlockStateGeneration(e.generator, e.existingFileHelper))
 
         val locales = mutableSetOf<String>()
@@ -170,11 +170,11 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
         e.generator.addProvider(ItemTagsGeneration(e.generator))
     }
 
-    inner class DataGen {
-        val blockTags: TagGen<Block> = TagGen()
-        val itemTags: TagGen<Item> = TagGen()
+    public class DataGen {
+        public val blockTags: TagGen<Block> = TagGen()
+        public val itemTags: TagGen<Item> = TagGen()
 
-        inner class TagGen<T> {
+        public class TagGen<T> {
             @get:JvmSynthetic
             internal val metaTags = mutableMapOf<Tag<T>, MutableList<Tag<T>>>()
 
@@ -184,7 +184,7 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
             /**
              * Add values to the given tag
              */
-            fun add(tag: Tag<T>, vararg values: T): TagGen<T> {
+            public fun add(tag: Tag<T>, vararg values: T): TagGen<T> {
                 valueTags.getOrPut(tag) { mutableListOf() }.addAll(values)
                 return this
             }
@@ -192,7 +192,7 @@ class RegistrationManager(val modid: String, modEventBus: IEventBus) {
             /**
              * Add tags to the given tag
              */
-            fun meta(tag: Tag<T>, vararg tags: Tag<T>): TagGen<T> {
+            public fun meta(tag: Tag<T>, vararg tags: Tag<T>): TagGen<T> {
                 metaTags.getOrPut(tag) { mutableListOf() }.addAll(tags)
                 return this
             }

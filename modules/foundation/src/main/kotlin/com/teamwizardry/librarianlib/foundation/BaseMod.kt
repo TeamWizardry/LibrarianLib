@@ -38,9 +38,9 @@ import net.minecraftforge.registries.IForgeRegistry
  * @param kottleContext Pass a value of true if your mod uses Kottle's kotlin language provider
  */
 @Suppress("LeakingThis")
-abstract class BaseMod @JvmOverloads constructor(private val kottleContext: Boolean = false){
-    val modid: String = MiscUtil.getModId(this.javaClass)
-    val registrationManager: RegistrationManager
+public abstract class BaseMod @JvmOverloads constructor(private val kottleContext: Boolean = false){
+    public val modid: String = MiscUtil.getModId(this.javaClass)
+    public val registrationManager: RegistrationManager
 
     init {
         val eventBus = modLoadingContextEventBus()

@@ -34,7 +34,7 @@ public class RMValueBoolean extends GuiValue<Boolean> {
     public void set(boolean value) {
         boolean oldValue = this.value;
         this.value = value;
-        if(oldValue != value && change != null && !getUseAnimationValue()) {
+        if (oldValue != value && change != null && !getUseAnimationValue()) {
             change.report(oldValue, value);
         }
     }
@@ -70,7 +70,7 @@ public class RMValueBoolean extends GuiValue<Boolean> {
 
     @Override
     protected void animationChange(Boolean from, Boolean to) {
-        if(change != null)
+        if (change != null)
             change.report(from, to);
     }
 

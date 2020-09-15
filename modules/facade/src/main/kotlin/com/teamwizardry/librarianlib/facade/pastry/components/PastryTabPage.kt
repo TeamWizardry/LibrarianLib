@@ -8,36 +8,36 @@ import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
 import com.teamwizardry.librarianlib.math.vec
 
-open class PastryTabPage() : GuiLayer() {
-    constructor(labelText: String) : this() {
+public open class PastryTabPage(): GuiLayer() {
+    public constructor(labelText: String): this() {
         val label = PastryLabel(labelText)
         tab.contents.add(label)
         tab.contents.size = label.size
     }
 
-    var selected: Boolean = false
+    public var selected: Boolean = false
         set(value) {
             field = value
             contents.isVisible = value
-            tab.background.sprite = if(value) PastryTexture.tabsButtonPressed else PastryTexture.tabsButton
-            if(value)
+            tab.background.sprite = if (value) PastryTexture.tabsButtonPressed else PastryTexture.tabsButton
+            if (value)
                 siblings.forEach {
                     it.selected = false
                 }
         }
 
-    val tab: Tab = Tab()
-    val contents: GuiLayer = GuiLayer()
-    val siblings: List<PastryTabPage>
+    public val tab: Tab = Tab()
+    public val contents: GuiLayer = GuiLayer()
+    public val siblings: List<PastryTabPage>
         get() = parent?.children?.filterIsInstance<PastryTabPage>()?.filter { it !== this } ?: emptyList()
 
     init {
         add(tab, contents)
     }
 
-    inner class Tab : GuiLayer() {
+    public inner class Tab: GuiLayer() {
         internal val background = SpriteLayer(PastryTexture.tabsButton)
-        val contents: GuiLayer = GuiLayer(0, 0, 25, 12)
+        public val contents: GuiLayer = GuiLayer(0, 0, 25, 12)
 
         init {
             add(background, contents)
@@ -52,7 +52,7 @@ open class PastryTabPage() : GuiLayer() {
         }
 
         @Hook
-        fun click(e: GuiLayerEvents.MouseClick) {
+        private fun click(e: GuiLayerEvents.MouseClick) {
             this@PastryTabPage.selected = true
         }
     }

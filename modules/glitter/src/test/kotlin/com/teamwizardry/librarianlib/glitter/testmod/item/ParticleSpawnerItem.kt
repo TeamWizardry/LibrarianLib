@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.glitter.testmod.item
 
-import com.teamwizardry.librarianlib.core.util.SidedRunnable
+import com.teamwizardry.librarianlib.core.util.sided.SidedRunnable
 import com.teamwizardry.librarianlib.glitter.testmod.entity.ParticleSpawnerEntity
 import com.teamwizardry.librarianlib.glitter.testmod.init.TestItemGroup
 import com.teamwizardry.librarianlib.glitter.testmod.modid

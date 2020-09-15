@@ -14,12 +14,12 @@ private val obfTest = Vec3i::getX.javaMethod!! // has to be a separate field, ot
 /**
  * True if the current environment is obfuscated
  */
-val IS_OBFUSCATED: Boolean = obfTest.name == "func_177958_n"
+public val IS_OBFUSCATED: Boolean = obfTest.name == "func_177958_n"
 
 /**
  * True if this mod is running in a development environment.
  */
-val IS_DEV_ENV: Boolean = run {
+public val IS_DEV_ENV: Boolean = run {
     val target = Launcher.INSTANCE?.environment()?.getProperty(IEnvironment.Keys.LAUNCHTARGET.get())?.getOrNull()
         ?: return@run false
     return@run target.startsWith("fmldev") || target.startsWith("fmluserdev")
@@ -32,7 +32,7 @@ private val nameMappingService: BiFunction<INameMappingService.Domain, String, S
 /**
  * Deobfuscate the passed srg field or method name using the current mappings
  */
-fun mapSrgName(srgName: String): String {
+public fun mapSrgName(srgName: String): String {
     val nameMappingService = nameMappingService ?: return srgName
     return if(srgName.startsWith("field_")) {
         nameMappingService.apply(INameMappingService.Domain.FIELD, srgName)

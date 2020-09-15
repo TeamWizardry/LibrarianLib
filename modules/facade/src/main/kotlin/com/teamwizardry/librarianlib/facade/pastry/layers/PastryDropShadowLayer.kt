@@ -10,20 +10,19 @@ import com.teamwizardry.librarianlib.math.vec
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class PastryDropShadowLayer(
+public class PastryDropShadowLayer(
     x: Int, y: Int, width: Int, height: Int,
     radius: Int, color: Color = Color(0f, 0f, 0f, 0.5f)
 ): GuiLayer(x, y, width, height) {
     private val spriteLayer = SpriteLayer(PastryTexture.shadowSprite, 0, 0, 0, 0)
 
-    var color_rm: RMValue<Color> = rmValue(color) { _, _ ->
-    }
-    var color: Color by color_rm
+    public var color_rm: RMValue<Color> = rmValue(color)
+    public var color: Color by color_rm
 
-    var radius_rm: RMValueInt = rmInt(radius) { _, _ ->
+    public var radius_rm: RMValueInt = rmInt(radius) { _, _ ->
         this.markLayoutDirty()
     }
-    var radius: Int by radius_rm
+    public var radius: Int by radius_rm
 
     init {
         spriteLayer.tint_im.set { color }

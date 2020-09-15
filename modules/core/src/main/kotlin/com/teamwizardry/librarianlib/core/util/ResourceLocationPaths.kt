@@ -12,7 +12,7 @@ import java.net.URI
  * ResourceLocation("mymod:my/path").resolve("file.png") == ResourceLocation("mymod:my/path/file.png")
  * ```
  */
-fun ResourceLocation.resolve(path: String): ResourceLocation {
+public fun ResourceLocation.resolve(path: String): ResourceLocation {
     return ResourceLocation(this.namespace, URI(this.path + "/", null, null).resolve(path).path)
 }
 
@@ -23,7 +23,7 @@ fun ResourceLocation.resolve(path: String): ResourceLocation {
  * ResourceLocation("mymod:my/path/file1.png").resolveSibling("file2.png") == ResourceLocation("mymod:my/path/file2.png")
  * ```
  */
-fun ResourceLocation.resolveSibling(path: String): ResourceLocation {
+public fun ResourceLocation.resolveSibling(path: String): ResourceLocation {
     return ResourceLocation(this.namespace, URI(this.path, null, null).resolve(path).path)
 }
 
@@ -34,5 +34,5 @@ fun ResourceLocation.resolveSibling(path: String): ResourceLocation {
  * ResourceLocation("mymod:my/path/file1.png").parent == ResourceLocation("mymod:my/path")
  * ```
  */
-val ResourceLocation.parent: ResourceLocation
+public val ResourceLocation.parent: ResourceLocation
     get() = ResourceLocation(this.namespace, URI(this.path, null, null).resolve(".").path)

@@ -43,6 +43,7 @@ open class PastryTestBase: GuiLayer() {
 
     private class Separator: GuiLayer() {
         val line = RectLayer(Color.darkGray, 0, 0, 1, 1)
+
         init {
             this.add(line)
             this.height = 1.0
@@ -50,7 +51,7 @@ open class PastryTestBase: GuiLayer() {
 
         override fun layoutChildren() {
             super.layoutChildren()
-            line.frame = rect(8, 0, max(0.0, this.width-16), 1)
+            line.frame = rect(8, 0, max(0.0, this.width - 16), 1)
         }
     }
 }

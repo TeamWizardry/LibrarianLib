@@ -11,27 +11,27 @@ import kotlin.math.pow
 import kotlin.math.round
 
 // adapted from flow/math: https://github.com/flow/math
-open class MutableMatrix3d: Matrix3d {
-    constructor(m: Matrix3d): super(m)
+public open class MutableMatrix3d: Matrix3d {
+    public constructor(m: Matrix3d): super(m)
 
-    constructor(): super()
+    public constructor(): super()
 
-    constructor(
+    public constructor(
         m00: Float, m01: Float, m02: Float,
         m10: Float, m11: Float, m12: Float,
         m20: Float, m21: Float, m22: Float
     ): super(m00, m01, m02, m10, m11, m12, m20, m21, m22)
 
-    constructor(
+    public constructor(
         m00: Double, m01: Double, m02: Double,
         m10: Double, m11: Double, m12: Double,
         m20: Double, m21: Double, m22: Double
     ): super(m00, m01, m02, m10, m11, m12, m20, m21, m22)
 
-    constructor(m: Matrix3f): super(m)
+    public constructor(m: Matrix3f): super(m)
 
-    operator fun set(row: Int, col: Int, value: Double) {
-        if(row !in 0 .. 2 || col !in 0 .. 2) {
+    public operator fun set(row: Int, col: Int, value: Double) {
+        if (row !in 0..2 || col !in 0..2) {
             throw IllegalArgumentException(
                 (if (row < 0 || row > 2) "row must be greater than zero and smaller than 2. " else "") + if (col < 0 || col > 2) "col must be greater than zero and smaller than 2." else "")
         }
@@ -54,7 +54,7 @@ open class MutableMatrix3d: Matrix3d {
         }
     }
 
-    fun set(
+    public fun set(
         m00: Double, m01: Double, m02: Double,
         m10: Double, m11: Double, m12: Double,
         m20: Double, m21: Double, m22: Double
@@ -71,7 +71,7 @@ open class MutableMatrix3d: Matrix3d {
         return this
     }
 
-    fun set(m: Matrix3d): MutableMatrix3d {
+    public fun set(m: Matrix3d): MutableMatrix3d {
         this.m00 = m.m00
         this.m01 = m.m01
         this.m02 = m.m02
@@ -84,7 +84,7 @@ open class MutableMatrix3d: Matrix3d {
         return this
     }
 
-    fun set(m: Matrix3f): MutableMatrix3d {
+    public fun set(m: Matrix3f): MutableMatrix3d {
         @Suppress("CAST_NEVER_SUCCEEDS") val imatrix = m as IMatrix3f
         this.m00 = imatrix.m00.toDouble()
         this.m01 = imatrix.m01.toDouble()
@@ -138,9 +138,15 @@ open class MutableMatrix3d: Matrix3d {
     }
 
     override fun mul(m: Matrix3d): MutableMatrix3d {
-        val _m00 = m00; val _m01 = m01; val _m02 = m02
-        val _m10 = m10; val _m11 = m11; val _m12 = m12
-        val _m20 = m20; val _m21 = m21; val _m22 = m22
+        val _m00 = m00;
+        val _m01 = m01;
+        val _m02 = m02
+        val _m10 = m10;
+        val _m11 = m11;
+        val _m12 = m12
+        val _m20 = m20;
+        val _m21 = m21;
+        val _m22 = m22
         m00 = _m00 * m.m00 + _m01 * m.m10 + _m02 * m.m20
         m01 = _m00 * m.m01 + _m01 * m.m11 + _m02 * m.m21
         m02 = _m00 * m.m02 + _m01 * m.m12 + _m02 * m.m22
@@ -153,10 +159,16 @@ open class MutableMatrix3d: Matrix3d {
         return this
     }
 
-    fun reverseMul(m: Matrix3d): MutableMatrix3d {
-        val _m00 = m00; val _m01 = m01; val _m02 = m02
-        val _m10 = m10; val _m11 = m11; val _m12 = m12
-        val _m20 = m20; val _m21 = m21; val _m22 = m22
+    public fun reverseMul(m: Matrix3d): MutableMatrix3d {
+        val _m00 = m00;
+        val _m01 = m01;
+        val _m02 = m02
+        val _m10 = m10;
+        val _m11 = m11;
+        val _m12 = m12
+        val _m20 = m20;
+        val _m21 = m21;
+        val _m22 = m22
         m00 = m.m00 * _m00 + m.m01 * _m10 + m.m02 * _m20
         m01 = m.m00 * _m01 + m.m01 * _m11 + m.m02 * _m21
         m02 = m.m00 * _m02 + m.m01 * _m12 + m.m02 * _m22
@@ -261,9 +273,15 @@ open class MutableMatrix3d: Matrix3d {
     }
 
     override fun transpose(): MutableMatrix3d {
-        val _m00 = m00; val _m01 = m01; val _m02 = m02
-        val _m10 = m10; val _m11 = m11; val _m12 = m12
-        val _m20 = m20; val _m21 = m21; val _m22 = m22
+        val _m00 = m00;
+        val _m01 = m01;
+        val _m02 = m02
+        val _m10 = m10;
+        val _m11 = m11;
+        val _m12 = m12
+        val _m20 = m20;
+        val _m21 = m21;
+        val _m22 = m22
         m00 = _m00
         m01 = _m10
         m02 = _m20
@@ -281,21 +299,27 @@ open class MutableMatrix3d: Matrix3d {
         if (abs(det) < DBL_EPSILON) {
             throw ArithmeticException("Cannot inverse a matrix with a zero determinant")
         }
-        val _m00 = m00; val _m01 = m01; val _m02 = m02
-        val _m10 = m10; val _m11 = m11; val _m12 = m12
-        val _m20 = m20; val _m21 = m21; val _m22 = m22
+        val _m00 = m00;
+        val _m01 = m01;
+        val _m02 = m02
+        val _m10 = m10;
+        val _m11 = m11;
+        val _m12 = m12
+        val _m20 = m20;
+        val _m21 = m21;
+        val _m22 = m22
 
-        m00 =  (_m11 * _m22 - _m21 * _m12) / det
+        m00 = (_m11 * _m22 - _m21 * _m12) / det
         m01 = -(_m01 * _m22 - _m21 * _m02) / det
-        m02 =  (_m01 * _m12 - _m02 * _m11) / det
+        m02 = (_m01 * _m12 - _m02 * _m11) / det
 
         m10 = -(_m10 * _m22 - _m20 * _m12) / det
-        m11 =  (_m00 * _m22 - _m20 * _m02) / det
+        m11 = (_m00 * _m22 - _m20 * _m02) / det
         m12 = -(_m00 * _m12 - _m10 * _m02) / det
 
-        m20 =  (_m10 * _m21 - _m20 * _m11) / det
+        m20 = (_m10 * _m21 - _m20 * _m11) / det
         m21 = -(_m00 * _m21 - _m20 * _m01) / det
-        m22 =  (_m00 * _m11 - _m01 * _m10) / det
+        m22 = (_m00 * _m11 - _m01 * _m10) / det
         return this
     }
 
@@ -304,7 +328,7 @@ open class MutableMatrix3d: Matrix3d {
     }
 
     @JvmSynthetic
-    operator fun plusAssign(m: Matrix3d) {
+    public operator fun plusAssign(m: Matrix3d) {
         add(m)
     }
 
@@ -313,7 +337,7 @@ open class MutableMatrix3d: Matrix3d {
     }
 
     @JvmSynthetic
-    operator fun minusAssign(m: Matrix3d) {
+    public operator fun minusAssign(m: Matrix3d) {
         sub(m)
     }
 
@@ -326,7 +350,7 @@ open class MutableMatrix3d: Matrix3d {
     }
 
     @JvmSynthetic
-    operator fun timesAssign(a: Float) {
+    public operator fun timesAssign(a: Float) {
         mul(a)
     }
 
@@ -335,7 +359,7 @@ open class MutableMatrix3d: Matrix3d {
     }
 
     @JvmSynthetic
-    operator fun timesAssign(a: Double) {
+    public operator fun timesAssign(a: Double) {
         mul(a)
     }
 
@@ -344,12 +368,12 @@ open class MutableMatrix3d: Matrix3d {
     }
 
     @JvmSynthetic
-    operator fun timesAssign(m: Matrix3d) {
+    public operator fun timesAssign(m: Matrix3d) {
         mul(m)
     }
 
     @JvmSynthetic
-    operator fun divAssign(a: Double) {
+    public operator fun divAssign(a: Double) {
         div(a)
     }
 
@@ -358,7 +382,7 @@ open class MutableMatrix3d: Matrix3d {
     }
 
     @JvmSynthetic
-    operator fun divAssign(a: Float) {
+    public operator fun divAssign(a: Float) {
         div(a)
     }
 
@@ -368,7 +392,7 @@ open class MutableMatrix3d: Matrix3d {
     }
 
     @JvmSynthetic
-    operator fun divAssign(m: Matrix3d) {
+    public operator fun divAssign(m: Matrix3d) {
         div(m)
     }
 
@@ -432,7 +456,7 @@ open class MutableMatrix3d: Matrix3d {
         return Matrix3d(this)
     }
 
-    companion object {
+    private companion object {
         private val DBL_EPSILON = Double.fromBits(0x3cb0000000000000L)
 
         private val temporaryMatrix: MutableMatrix3d by threadLocal { MutableMatrix3d() }

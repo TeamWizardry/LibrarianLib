@@ -8,17 +8,17 @@ import dev.thecodewarrior.prism.Serializer
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.nbt.INBT
 
-typealias NBTPrism = Prism<NBTSerializer<*>>
+public typealias NBTPrism = Prism<NBTSerializer<*>>
 
-abstract class NBTSerializer<T: Any>: Serializer<T> {
-    constructor(type: TypeMirror): super(type)
-    constructor(): super()
+public abstract class NBTSerializer<T: Any>: Serializer<T> {
+    public constructor(type: TypeMirror): super(type)
+    public constructor(): super()
 
     protected abstract fun deserialize(tag: INBT, existing: T?): T
     protected abstract fun serialize(value: T): INBT
 
     @Suppress("UNCHECKED_CAST")
-    fun read(tag: INBT, existing: Any?): Any {
+    public fun read(tag: INBT, existing: Any?): Any {
         try {
             return deserialize(tag, existing as T?)
         } catch (e: Exception) {
@@ -27,7 +27,7 @@ abstract class NBTSerializer<T: Any>: Serializer<T> {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun write(value: Any): INBT {
+    public fun write(value: Any): INBT {
         try {
             return serialize(value as T)
         } catch (e: Exception) {
@@ -41,7 +41,7 @@ abstract class NBTSerializer<T: Any>: Serializer<T> {
      * - `Missing <<name>>`
      * - `Unexpected type <<actual type>> for <<name>>`
      */
-    fun<T: INBT> expectType(tag: INBT?, type: Class<T>, name: String): T {
+    public fun<T: INBT> expectType(tag: INBT?, type: Class<T>, name: String): T {
         if(tag == null)
             throw DeserializationException("Missing $name")
         if(!type.isAssignableFrom(tag.javaClass))
@@ -56,14 +56,14 @@ abstract class NBTSerializer<T: Any>: Serializer<T> {
      * - `Missing <<name>>`
      * - `Unexpected type <<actual type>> for <<name>>`
      */
-    inline fun<reified T: INBT> INBT?.expectType(name: String): T {
+    public inline fun<reified T: INBT> INBT?.expectType(name: String): T {
         return expectType(this, T::class.java, name)
     }
 
     /**
      * Throws an exception if [key] is missing from [compound] or it isn't the passed type.
      */
-    fun<T: INBT> expect(compound: CompoundNBT, key: String, type: Class<T>): T {
+    public fun<T: INBT> expect(compound: CompoundNBT, key: String, type: Class<T>): T {
         val tag = compound[key] ?: throw DeserializationException("Missing `$key`")
         if(!type.isAssignableFrom(tag.javaClass))
             throw DeserializationException("Unexpected type ${tag.type.func_225648_a_()} for `$key`")
@@ -74,7 +74,7 @@ abstract class NBTSerializer<T: Any>: Serializer<T> {
     /**
      * Throws an exception if [key] is missing from this tag or it isn't the passed type
      */
-    inline fun<reified T: INBT> CompoundNBT.expect(key: String): T {
+    public inline fun<reified T: INBT> CompoundNBT.expect(key: String): T {
         return expect(this, key, T::class.java)
     }
 }

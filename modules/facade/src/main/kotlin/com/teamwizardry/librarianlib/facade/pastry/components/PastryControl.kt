@@ -4,25 +4,27 @@ import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 
-open class PastryControl: GuiLayer {
-    constructor(posX: Int, posY: Int): super(posX, posY)
-    constructor(posX: Int, posY: Int, width: Int, height: Int): super(posX, posY, width, height)
+public open class PastryControl: GuiLayer {
+    public constructor(posX: Int, posY: Int): super(posX, posY)
+    public constructor(posX: Int, posY: Int, width: Int, height: Int): super(posX, posY, width, height)
 
     /**
      * The next control in the sequence
      */
-    var next: PastryControl? = null
+    public var next: PastryControl? = null
+
     /**
      * The previous control in the sequence
      */
-    var previous: PastryControl? = null
+    public var previous: PastryControl? = null
 
-    fun <T: PastryControl> tabTo(next: T): T {
+    public fun <T: PastryControl> tabTo(next: T): T {
         this.next = next
         next.previous = this
         return next
     }
 
+    // TODO: focus
     /**
      * Focuses the next control, or if there's no next control focuses the first control.
      *
@@ -32,10 +34,10 @@ open class PastryControl: GuiLayer {
      *
      * @return whether the focus successfully switched
      */
-    fun focusNext(): Boolean {
+    public fun focusNext(): Boolean {
         var target = next
-        if(target == null) {
-            if(previous === this) {
+        if (target == null) {
+            if (previous === this) {
                 target = this
             } else {
                 var head = previous ?: run {
@@ -65,10 +67,10 @@ open class PastryControl: GuiLayer {
      *
      * @return whether the focus successfully switched
      */
-    fun focusPrevious(): Boolean {
+    public fun focusPrevious(): Boolean {
         var target = previous
-        if(target == null) {
-            if(next === this) {
+        if (target == null) {
+            if (next === this) {
                 target = this
             } else {
                 var head = next ?: run {

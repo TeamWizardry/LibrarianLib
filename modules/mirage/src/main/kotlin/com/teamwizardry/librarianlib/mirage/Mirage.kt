@@ -10,25 +10,24 @@ import net.minecraft.resources.SimpleReloadableResourceManager
 import net.minecraft.resources.data.IMetadataSectionSerializer
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.text.LanguageMap
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.api.distmarker.OnlyIn
 import java.io.ByteArrayInputStream
 import java.io.FileNotFoundException
 import java.io.InputStream
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import java.util.function.Predicate
+import java.util.function.Supplier
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 
-class Mirage internal constructor(val type: ResourcePackType) {
+public class Mirage private constructor(public val type: ResourcePackType) {
     internal val fallback = FallbackResourceManager(type, "librarianlib")
     internal val files = mutableMapOf<ResourceLocation, ByteArray>().synchronized()
-    internal val generators = mutableMapOf<ResourceLocation, () -> ByteArray>().synchronized()
+    internal val generators = mutableMapOf<ResourceLocation, Supplier<ByteArray>>().synchronized()
     internal val packs = mutableListOf<VirtualResourcePack>().synchronized()
     internal val languageKeys = mutableMapOf<String, String>().synchronized()
     internal val lock = ReentrantReadWriteLock()
 
-    fun remove(location: ResourceLocation): Boolean {
+    public fun remove(location: ResourceLocation): Boolean {
         lock.write {
             var removed = false
             removed = removeFile(location) || removed // can't do removeFile || removeGenerator because of short-circuiting
@@ -37,7 +36,7 @@ class Mirage internal constructor(val type: ResourcePackType) {
         }
     }
 
-    fun removeFile(location: ResourceLocation): Boolean {
+    public fun removeFile(location: ResourceLocation): Boolean {
         lock.write {
             if(files.remove(location) != null) {
                 logger.debug("Removed file $location")
@@ -47,7 +46,7 @@ class Mirage internal constructor(val type: ResourcePackType) {
         }
     }
 
-    fun removeGenerator(location: ResourceLocation): Boolean {
+    public fun removeGenerator(location: ResourceLocation): Boolean {
         lock.write {
             if(generators.remove(location) != null) {
                 logger.debug("Removed generator $location")
@@ -57,11 +56,11 @@ class Mirage internal constructor(val type: ResourcePackType) {
         }
     }
 
-    fun add(location: ResourceLocation, text: String) {
+    public fun add(location: ResourceLocation, text: String) {
         addRaw(location, text.toByteArray())
     }
 
-    fun addRaw(location: ResourceLocation, data: ByteArray) {
+    public fun addRaw(location: ResourceLocation, data: ByteArray) {
         lock.write {
             files[location] = data
             logger.debug("Added resource $location")
@@ -71,16 +70,16 @@ class Mirage internal constructor(val type: ResourcePackType) {
     /**
      * Note: the passed generator may be run on another thread
      */
-    fun add(location: ResourceLocation, generator: () -> String) {
+    public fun add(location: ResourceLocation, generator: Supplier<String>) {
         addRaw(location) {
-            generator().toByteArray()
+            generator.get().toByteArray()
         }
     }
 
     /**
      * Note: the passed generator may be run on another thread
      */
-    fun addRaw(location: ResourceLocation, generator: () -> ByteArray) {
+    public fun addRaw(location: ResourceLocation, generator: Supplier<ByteArray>) {
         lock.write {
             generators[location] = generator
             logger.debug("Added resource generator $location")
@@ -90,7 +89,7 @@ class Mirage internal constructor(val type: ResourcePackType) {
     /**
      * Add a language key.
      */
-    fun addLanguageKey(name: String, value: String) {
+    public fun addLanguageKey(name: String, value: String) {
         lock.write {
             languageKeys[name] = value
             logger.debug("Added language key $name")
@@ -100,14 +99,14 @@ class Mirage internal constructor(val type: ResourcePackType) {
     internal inline fun <T> read(callback: (Mirage) -> T): T = lock.read { callback(this) }
     internal inline fun <T> write(callback: (Mirage) -> T): T = lock.write { callback(this) }
 
-    companion object {
+    public companion object {
         @JvmField
-        val client = Mirage(ResourcePackType.CLIENT_RESOURCES)
+        public val client: Mirage = Mirage(ResourcePackType.CLIENT_RESOURCES)
         @JvmField
-        val data = Mirage(ResourcePackType.SERVER_DATA)
+        public val data: Mirage = Mirage(ResourcePackType.SERVER_DATA)
 
         @JvmStatic
-        fun resources(type: ResourcePackType): Mirage = when(type) {
+        public fun resources(type: ResourcePackType): Mirage = when(type) {
             ResourcePackType.CLIENT_RESOURCES -> client
             ResourcePackType.SERVER_DATA -> data
         }
@@ -120,7 +119,7 @@ class Mirage internal constructor(val type: ResourcePackType) {
          * - [FallbackResourceManager.&lt;init&gt;][FallbackResourceManager]
          */
         @JvmStatic
-        fun `fallbackresourcemanager-init-asm`(pack: FallbackResourceManager) {
+        public fun `fallbackresourcemanager-init-asm`(pack: FallbackResourceManager) {
             pack.resourcePacks.add(Pack)
         }
 
@@ -137,7 +136,8 @@ class Mirage internal constructor(val type: ResourcePackType) {
          * - [SimpleReloadableResourceManager.getAllResourceLocations]
          */
         @JvmStatic
-        fun `simplereloadableresourcemanager-namespace_fallback-asm`(manager: IResourceManager?, type: ResourcePackType): IResourceManager? {
+        @JvmName("simplereloadableresourcemanager-namespace_fallback-asm")
+        internal fun simpleReloadableResourceManagerNamespaceFallback(manager: IResourceManager?, type: ResourcePackType): IResourceManager? {
             return manager ?: resources(type).fallback
         }
 
@@ -146,7 +146,8 @@ class Mirage internal constructor(val type: ResourcePackType) {
          * - [LanguageMap.tryTranslateKey]
          */
         @JvmStatic
-        fun `languagemap-trytranslatekey-asm`(result: String?, key: String?): String? {
+        @JvmName("languagemap-trytranslatekey-asm")
+        internal fun languageMapTryTranslateKey(result: String?, key: String?): String? {
             return result
                 ?: resources(ResourcePackType.SERVER_DATA).read { it.languageKeys[key] }
                 ?: resources(ResourcePackType.CLIENT_RESOURCES).read { it.languageKeys[key] }
@@ -157,7 +158,8 @@ class Mirage internal constructor(val type: ResourcePackType) {
          * - [LanguageMap.exists]
          */
         @JvmStatic
-        fun `languagemap-exists-asm`(result: Boolean, key: String?): Boolean {
+        @JvmName("languagemap-exists-asm")
+        internal fun languageMapExists(result: Boolean, key: String?): Boolean {
             return result ||
                 resources(ResourcePackType.SERVER_DATA).read { key in it.languageKeys } ||
                 resources(ResourcePackType.CLIENT_RESOURCES).read { key in it.languageKeys }
@@ -167,7 +169,8 @@ class Mirage internal constructor(val type: ResourcePackType) {
          *
          */
         @JvmStatic
-        fun `locale-translatekeyprivate-asm`(result: String?, key: String?): String? {
+        @JvmName("locale-translatekeyprivate-asm")
+        internal fun localeTranslateKeyPrivate(result: String?, key: String?): String? {
             return result
                 ?: resources(ResourcePackType.SERVER_DATA).read { it.languageKeys[key] }
                 ?: resources(ResourcePackType.CLIENT_RESOURCES).read { it.languageKeys[key] }
@@ -177,7 +180,8 @@ class Mirage internal constructor(val type: ResourcePackType) {
          *
          */
         @JvmStatic
-        fun `locale-haskey-asm`(result: Boolean, key: String?): Boolean {
+        @JvmName("locale-haskey-asm")
+        internal fun localeHasKey(result: Boolean, key: String?): Boolean {
             return result ||
                 resources(ResourcePackType.SERVER_DATA).read { key in it.languageKeys } ||
                 resources(ResourcePackType.CLIENT_RESOURCES).read { key in it.languageKeys }
@@ -192,7 +196,7 @@ class Mirage internal constructor(val type: ResourcePackType) {
                     return ByteArrayInputStream(it)
                 }
                 resources.generators[location]?.also {
-                    return ByteArrayInputStream(it())
+                    return ByteArrayInputStream(it.get())
                 }
                 resources.packs.forEach { pack ->
                     pack.getStream(location)?.also {

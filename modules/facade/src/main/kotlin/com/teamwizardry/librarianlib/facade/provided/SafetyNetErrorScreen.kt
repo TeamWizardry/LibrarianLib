@@ -10,7 +10,7 @@ import net.minecraft.util.text.StringTextComponent
 import java.awt.Color
 import kotlin.math.min
 
-class SafetyNetErrorScreen(val message: String, val e: Exception): Screen(StringTextComponent("§4§nSafety net caught an exception:")) {
+public class SafetyNetErrorScreen(private val message: String, private val e: Exception): Screen(StringTextComponent("§4§nSafety net caught an exception:")) {
     private val guiWidth: Int
     private val guiHeight: Int
 
@@ -29,14 +29,14 @@ class SafetyNetErrorScreen(val message: String, val e: Exception): Screen(String
             parts.add(TextScreenPart(exceptionMessage, maxWidth))
         }
 
-        guiWidth = min(maxWidth, parts.map { it.width }.max() ?: 0) / 2 * 2
+        guiWidth = min(maxWidth, parts.map { it.width }.maxOrNull() ?: 0) / 2 * 2
 
         guiHeight = parts.sumBy { it.height } + (parts.size - 1) * gap
     }
 
     override fun init() {
         super.init()
-        if(!hasLogged) {
+        if (!hasLogged) {
             logger.error("Safety net caught an exception while $message", e)
             hasLogged = true
         }
@@ -45,7 +45,7 @@ class SafetyNetErrorScreen(val message: String, val e: Exception): Screen(String
     override fun render(mouseX: Int, mouseY: Int, partialTicks: Float) {
         this.renderBackground()
 
-        val topLeft = vec(width-guiWidth, height-guiHeight) / 2
+        val topLeft = vec(width - guiWidth, height - guiHeight) / 2
         val border = 8
 
         fill(
@@ -55,7 +55,7 @@ class SafetyNetErrorScreen(val message: String, val e: Exception): Screen(String
         )
 
         RenderSystem.pushMatrix()
-        RenderSystem.translatef(width/2f, (height-guiHeight)/2f, 0f)
+        RenderSystem.translatef(width / 2f, (height - guiHeight) / 2f, 0f)
 
         var y = 0
         parts.forEach { part ->
@@ -66,7 +66,7 @@ class SafetyNetErrorScreen(val message: String, val e: Exception): Screen(String
         RenderSystem.popMatrix()
     }
 
-    private fun drawCenteredStringNoShadow(fontRenderer: FontRenderer, text: String , x: Int, y: Int, color: Int) {
+    private fun drawCenteredStringNoShadow(fontRenderer: FontRenderer, text: String, x: Int, y: Int, color: Int) {
         fontRenderer.drawString(text, x - fontRenderer.getStringWidth(text) / 2f, y.toFloat(), color)
     }
 
@@ -79,7 +79,7 @@ class SafetyNetErrorScreen(val message: String, val e: Exception): Screen(String
     private inner class DividerScreenPart(override val height: Int): ScreenPart() {
         override val width: Int = 0
         override fun render(yPos: Int) {
-            fill(-guiWidth/2, yPos, guiWidth/2, yPos + height, Color.darkGray.rgb)
+            fill(-guiWidth / 2, yPos, guiWidth / 2, yPos + height, Color.darkGray.rgb)
         }
     }
 
@@ -90,28 +90,28 @@ class SafetyNetErrorScreen(val message: String, val e: Exception): Screen(String
 
         init {
             val fontRenderer = Client.minecraft.fontRenderer
-            if(maxWidth == null) {
+            if (maxWidth == null) {
                 lines = listOf(text)
             } else {
                 lines = fontRenderer.listFormattedStringToWidth(text, maxWidth)
             }
 
             height = lines.size * fontRenderer.FONT_HEIGHT + // line height
-                (lines.size-1) // 1px between lines
+                (lines.size - 1) // 1px between lines
 
-            width = (lines.map { fontRenderer.getStringWidth(it) }.max() ?: 0) / 2 * 2
+            width = (lines.map { fontRenderer.getStringWidth(it) }.maxOrNull() ?: 0) / 2 * 2
         }
 
         override fun render(yPos: Int) {
             var y = yPos
             val fontRenderer = Client.minecraft.fontRenderer
-            if(lines.isNotEmpty()) {
-                if(lines.size == 1) {
+            if (lines.isNotEmpty()) {
+                if (lines.size == 1) {
                     drawCenteredStringNoShadow(fontRenderer, lines[0], 0, y, 0)
                     y += fontRenderer.FONT_HEIGHT + 1
                 } else {
                     lines.forEach { line ->
-                        fontRenderer.drawString(line, -guiWidth/2f, y.toFloat(), 0)
+                        fontRenderer.drawString(line, -guiWidth / 2f, y.toFloat(), 0)
                         y += fontRenderer.FONT_HEIGHT + 1
                     }
                 }

@@ -29,8 +29,8 @@ import org.junit.platform.engine.TestExecutionResult
 import java.util.concurrent.CompletableFuture
 import java.util.function.Function
 
-object UnitTestCommand {
-    fun register(dispatcher: CommandDispatcher<CommandSource>) {
+public object UnitTestCommand {
+    public fun register(dispatcher: CommandDispatcher<CommandSource>) {
         dispatcher.register(
             Commands.literal("unittest").then(
                 Commands.argument("test", UnitTestArgument())
@@ -92,7 +92,7 @@ object UnitTestCommand {
     }
 }
 
-class UnitTestArgument: ArgumentType<UnitTestSuite> {
+public class UnitTestArgument: ArgumentType<UnitTestSuite> {
     private val registry = GameRegistry.findRegistry(UnitTestSuite::class.java)
 
     @Throws(CommandSyntaxException::class)
@@ -106,11 +106,11 @@ class UnitTestArgument: ArgumentType<UnitTestSuite> {
         return ISuggestionProvider.suggestIterable(registry.keys, p_listSuggestions_2_)
     }
 
-    companion object {
-        val TEST_NOT_FOUND = DynamicCommandExceptionType(Function { p_208663_0_: Any? -> TranslationTextComponent("librarianlib-testbase.unitTestNotFound", p_208663_0_) })
+    public companion object {
+        public val TEST_NOT_FOUND: DynamicCommandExceptionType = DynamicCommandExceptionType { p_208663_0_: Any? -> TranslationTextComponent("librarianlib-testbase.unitTestNotFound", p_208663_0_) }
 
         @Throws(CommandSyntaxException::class)
-        fun getUnitTest(context: CommandContext<CommandSource>, name: String): UnitTestSuite {
+        public fun getUnitTest(context: CommandContext<CommandSource>, name: String): UnitTestSuite {
             return context.getArgument(name, UnitTestSuite::class.java)
         }
     }

@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.facade.layer
 
-class LayerHierarchyException: RuntimeException {
-    constructor(): super()
-    constructor(message: String?): super(message)
-    constructor(message: String?, cause: Throwable?): super(message, cause)
-    constructor(cause: Throwable?): super(cause)
+public class LayerHierarchyException: RuntimeException {
+    internal constructor(): super()
+    internal constructor(message: String?): super(message)
+    internal constructor(message: String?, cause: Throwable?): super(message, cause)
+    internal constructor(cause: Throwable?): super(cause)
 }

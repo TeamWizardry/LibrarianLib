@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.math
 /**
  * A read-only view into a potentially mutable matrix
  */
-class Matrix3dView(var target: Matrix3d): Matrix3d() {
+public class Matrix3dView(public var target: Matrix3d): Matrix3d() {
     override var m00: Double
         get() = target.m00
         set(_) {}

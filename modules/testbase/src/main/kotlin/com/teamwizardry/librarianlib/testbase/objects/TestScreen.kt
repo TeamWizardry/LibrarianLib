@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
 
-class TestScreen(val config: TestScreenConfig): Screen(StringTextComponent(config.title)) {
+public class TestScreen(public val config: TestScreenConfig): Screen(StringTextComponent(config.title)) {
 
     override fun shouldCloseOnEsc(): Boolean = config.closeOnEsc
     override fun isPauseScreen(): Boolean = config.pausesGame
@@ -48,7 +48,7 @@ class TestScreen(val config: TestScreenConfig): Screen(StringTextComponent(confi
 
         config.draw.run(TestScreenConfig.DrawContext(this, vec(mouseX - left, mouseY - top) / config.scale, partialTicks))
 
-        RenderSystem.scaled(1/config.scale.toDouble(), 1/config.scale.toDouble(), 1.0)
+        RenderSystem.scaled(1 / config.scale.toDouble(), 1 / config.scale.toDouble(), 1.0)
         RenderSystem.translated(-left, -top, 0.0)
         super.render(mouseX, mouseY, partialTicks)
     }
@@ -114,5 +114,4 @@ class TestScreen(val config: TestScreenConfig): Screen(StringTextComponent(confi
     public override fun fillGradient(p_fillGradient_1_: Int, p_fillGradient_2_: Int, p_fillGradient_3_: Int, p_fillGradient_4_: Int, p_fillGradient_5_: Int, p_fillGradient_6_: Int) {
         super.fillGradient(p_fillGradient_1_, p_fillGradient_2_, p_fillGradient_3_, p_fillGradient_4_, p_fillGradient_5_, p_fillGradient_6_)
     }
-
 }

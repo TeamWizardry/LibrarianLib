@@ -5,10 +5,8 @@ import com.teamwizardry.librarianlib.glitter.testmod.systems.ParticleSystems
 import com.teamwizardry.librarianlib.glitter.testmod.systems.SystemNames
 import com.teamwizardry.librarianlib.testbase.TestMod
 import net.minecraft.entity.EntityType
-import net.minecraft.item.Item
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import org.apache.logging.log4j.LogManager
 
 internal const val modid: String = "librarianlib-glitter-test"
@@ -42,8 +40,8 @@ object LibrarianLibGlitterTestMod: TestMod("glitter", "Glitter", logger) {
         }
     }
 
-    override fun registerEntities(entityRegistryEvent: RegistryEvent.Register<EntityType<*>>) {
-        super.registerEntities(entityRegistryEvent)
+    override fun registerEntities(e: RegistryEvent.Register<EntityType<*>>) {
+        super.registerEntities(e)
         TestEntities.register()
     }
 }

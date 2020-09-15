@@ -10,7 +10,6 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.awt.image.BufferedImage
-import java.lang.ref.WeakReference
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -72,26 +71,24 @@ import kotlin.reflect.KProperty
  * }
  * ```
  */
-class Mosaic(
-    val location: ResourceLocation,
+public class Mosaic(
+    public val location: ResourceLocation,
     /**
      * The logical width of this texture in pixels. Used to determine the scaling factor from texture pixels to
      * logical pixels
      */
-    val width: Int,
+    public val width: Int,
     /**
      * The logical height of this texture in pixels. Used to determine the scaling factor from texture pixels to
      * logical pixels
      */
-    val height: Int
+    public val height: Int
 ) {
-    lateinit var definition: MosaicDefinition
-        internal set
+    private lateinit var definition: MosaicDefinition
+    public val image: BufferedImage
+        get() = definition.image
 
-    lateinit var image: BufferedImage
-        private set
-
-    lateinit var renderType: RenderType
+    public lateinit var renderType: RenderType
         private set
 
     private var sprites: MutableMap<String, Sprite> = mutableMapOf()
@@ -106,7 +103,6 @@ class Mosaic(
 
     internal fun loadDefinition() {
         definition = MosaicLoader.getDefinition(location)
-        image = definition.image
         renderType = createRenderType()
 
         sprites.forEach { (_, sprite) ->
@@ -155,14 +151,14 @@ class Mosaic(
     /**
      * Gets the sprite with the specified name
      */
-    fun getSprite(name: String): Sprite {
+    public fun getSprite(name: String): Sprite {
         return sprites.getOrPut(name) { Sprite(this, name) }
     }
 
     /**
      * Gets the color with the specified name
      */
-    fun getColor(name: String): Color {
+    public fun getColor(name: String): Color {
         return colors.getOrPut(name) { TextureColor(this, name) }.color
     }
 
@@ -171,11 +167,12 @@ class Mosaic(
      * access, so a separate delegate must be used for each property.
      */
     @get:JvmSynthetic
-    val delegate: ReadOnlyProperty<Any?, Sprite>
+    public val delegate: ReadOnlyProperty<Any?, Sprite>
         get() = SpriteDelegate()
 
-    companion object {
-        internal var textures = weakSetOf<Mosaic>().synchronized()
+    internal companion object {
+        @get:JvmSynthetic
+        internal val textures = weakSetOf<Mosaic>().synchronized()
     }
 
     private class TextureColor(private val mosaic: Mosaic, val name: String) {
@@ -186,14 +183,14 @@ class Mosaic(
             private set
         var v: Int = 0
             private set
-        var color = Color.WHITE
+        var color: Color = Color.WHITE
             private set
 
         init {
             loadDefinition()
         }
 
-        internal fun loadDefinition() {
+        fun loadDefinition() {
             definition = mosaic.getColorDefinition(name)
             u = definition.uv.x
             v = definition.uv.y

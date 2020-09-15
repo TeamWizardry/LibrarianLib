@@ -2,15 +2,17 @@ package com.teamwizardry.librarianlib.math
 
 import net.minecraft.util.math.Vec3d
 
-class SimpleCoordinateSpace2D: CoordinateSpace2D {
+public class SimpleCoordinateSpace2D: CoordinateSpace2D {
     override var parentSpace: CoordinateSpace2D? = null
 
-    var pos: Vec2d = vec(0, 0)
-    var scale2d: Vec2d = vec(1, 1)
-    var scale: Double
+    public var pos: Vec2d = vec(0, 0)
+    public var scale2d: Vec2d = vec(1, 1)
+    public var scale: Double
         get() = (scale2d.x + scale2d.y) / 2
-        set(value) { scale2d = vec(value, value) }
-    var rotation: Double = 0.0
+        set(value) {
+            scale2d = vec(value, value)
+        }
+    public var rotation: Double = 0.0
 
     override var transform: Matrix3d = Matrix3d.IDENTITY
         get() {
@@ -26,11 +28,11 @@ class SimpleCoordinateSpace2D: CoordinateSpace2D {
         }
         private set
 
-    data class MatrixParams(val pos: Vec2d = Vec2d.ZERO,
+    private data class MatrixParams(val pos: Vec2d = Vec2d.ZERO,
         val rotation: Quaternion = Quaternion.IDENTITY, val scale: Vec3d = vec(1, 1, 1),
         val inverseRotation: Quaternion = Quaternion.IDENTITY, val inverseScale: Vec3d = vec(1, 1, 1))
 
-    var matrixParams = MatrixParams()
+    private var matrixParams = MatrixParams()
 
     private fun createMatrix() {
         val matrix = MutableMatrix3d()
@@ -48,8 +50,8 @@ class SimpleCoordinateSpace2D: CoordinateSpace2D {
 
     private fun updateMatrixIfNeeded() {
         val inverseScale = vec(
-            if(scale2d.x == 0.0) Double.POSITIVE_INFINITY else 1.0/scale2d.x,
-            if(scale2d.y == 0.0) Double.POSITIVE_INFINITY else 1.0/scale2d.y,
+            if (scale2d.x == 0.0) Double.POSITIVE_INFINITY else 1.0 / scale2d.x,
+            if (scale2d.y == 0.0) Double.POSITIVE_INFINITY else 1.0 / scale2d.y,
             1
         )
         val rotation = Quaternion.fromAngleDegAxis(rotation, 0.0, 1.0, 0.0)
@@ -58,7 +60,7 @@ class SimpleCoordinateSpace2D: CoordinateSpace2D {
             rotation.invert(), inverseScale
         )
 
-        if(newParams != matrixParams) {
+        if (newParams != matrixParams) {
             matrixParams = newParams
             createMatrix()
         }
