@@ -138,9 +138,10 @@ task generateFiles {
         packMcmetaOut.text = corePackMcmeta.text
 
         // add additional external dependencies to main mods.toml
-        modsTomlOut.text = coreModsToml.text + allDependencies
+        modsTomlOut.text = (coreModsToml.text + allDependencies
                 .findAll { it.exists() }
-                .collect { it.text }.join("\n")
+                .collect { it.text }.join("\n")).replaceAll("@version@", mod_version)
+
     }
 }
 sourceSets.main.java.srcDirs(generateFiles.genJava)
@@ -159,7 +160,6 @@ CopySpec createMergeSpec(String jarTaskName) {
                 exclude 'META-INF/mods.toml'
                 exclude 'META-INF/dependencies.toml'
                 exclude 'META-INF/mixins.txt'
-                exclude 'META-INF/mods.toml'
                 exclude 'pack.mcmeta'
                 // the core module generates an `index.txt` that stores a list of modules to load at runtime. This list
                 // includes the dev-only testbase module, so we have to strip that out first
