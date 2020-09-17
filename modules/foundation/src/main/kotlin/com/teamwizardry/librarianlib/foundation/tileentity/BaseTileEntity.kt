@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.foundation.tileentity
 
-import com.teamwizardry.librarianlib.foundation.util.FoundationSerializer
+import com.teamwizardry.librarianlib.prism.SimpleSerializer
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.network.NetworkManager
 import net.minecraft.network.play.server.SUpdateTileEntityPacket
@@ -8,7 +8,7 @@ import net.minecraft.tileentity.TileEntity
 import net.minecraft.tileentity.TileEntityType
 
 public abstract class BaseTileEntity(tileEntityTypeIn: TileEntityType<*>): TileEntity(tileEntityTypeIn) {
-    private val serializer = FoundationSerializer.get(this.javaClass)
+    private val serializer = SimpleSerializer.get(this.javaClass)
 
     override fun write(compound: CompoundNBT): CompoundNBT {
         super.write(compound)

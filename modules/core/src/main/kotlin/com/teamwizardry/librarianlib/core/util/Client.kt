@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.math.vec
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.client.MainWindow
 import net.minecraft.client.Minecraft
+import net.minecraft.client.entity.player.ClientPlayerEntity
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.renderer.Tessellator
@@ -35,6 +36,10 @@ public object Client {
     @JvmStatic
     public val minecraft: Minecraft
         get() = Minecraft.getInstance()
+
+    @JvmStatic
+    public val player: ClientPlayerEntity?
+        get() = minecraft.player
 
     @JvmStatic
     public val window: MainWindow

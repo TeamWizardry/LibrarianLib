@@ -1,5 +1,6 @@
 dependencies {
     api project(":core")
     api project(":prism")
+    api project(":courier")
     testApi project(":testbase")
 }

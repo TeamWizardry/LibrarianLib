@@ -1,61 +1,64 @@
-package com.teamwizardry.librarianlib.foundation.util
+package com.teamwizardry.librarianlib.prism
 
-import com.teamwizardry.librarianlib.foundation.LibrarianLibFoundationModule
-import com.teamwizardry.librarianlib.prism.NBTPrism
 import com.teamwizardry.librarianlib.prism.nbt.NBTSerializer
 import dev.thecodewarrior.mirror.Mirror
+import dev.thecodewarrior.mirror.member.ConstructorMirror
 import dev.thecodewarrior.mirror.member.FieldMirror
 import dev.thecodewarrior.mirror.type.TypeMirror
+import dev.thecodewarrior.prism.DeserializationException
+import dev.thecodewarrior.prism.InvalidTypeException
 import dev.thecodewarrior.prism.PrismException
+import dev.thecodewarrior.prism.SerializationException
 import net.minecraft.nbt.CompoundNBT
 import java.util.function.Predicate
 
-public interface FoundationSerializer {
-    /**
-     * Create a tag containing the fields marked with any of the passed [markers] types.
-     */
-    public fun createTag(instance: Any, vararg markers: Class<out Annotation>): CompoundNBT
-
-    /**
-     * Create a tag containing the fields with marker annotations that succeed in the passed filter. If possible, prefer
-     * using the version of [createTag] that accepts marker classes, since it can be more optimized.
-     */
-    public fun createTag(instance: Any, predicate: Predicate<Collection<Annotation>>): CompoundNBT
-
-    /**
-     * Applies a tag containing the fields marked with any of the passed [markers] type.
-     */
-    public fun applyTag(tag: CompoundNBT, instance: Any, vararg markers: Class<out Annotation>)
-
-    /**
-     * Applies a tag containing the fields with marker annotations that succeed in the passed filter. If possible,
-     * prefer using the version of [applyTag] that accepts marker classes, since it can be more optimized.
-     */
-    public fun applyTag(tag: CompoundNBT, instance: Any, predicate: Predicate<Collection<Annotation>>)
-
-    public companion object {
-        private val typeMap = mutableMapOf<Class<*>, FoundationSerializerImpl>()
-
-        @JvmStatic
-        public fun get(clazz: Class<*>): FoundationSerializer {
-            return typeMap.getOrPut(clazz) { FoundationSerializerImpl(clazz) }
-        }
-    }
-}
-
 /**
- * Any annotations with this meta-annotation will be treated as markers for Foundation's serialization system.
+ * Any annotations with this meta-annotation will be treated as markers for simple serializers
  */
 @Target(AnnotationTarget.ANNOTATION_CLASS)
-public annotation class SerializationMarker
+public annotation class SimpleSerializationMarker
 
 /**
  * Sets a custom name for a property
  */
 @Target(AnnotationTarget.FIELD)
-public annotation class PropertyName(val name: String)
+public annotation class SimpleSerializationName(val name: String)
 
-private class FoundationSerializerImpl(val clazz: Class<*>): FoundationSerializer {
+public interface SimpleSerializer<T: Any> {
+    /**
+     * Create a tag containing the fields marked with any of the passed [markers] types.
+     */
+    public fun createTag(instance: T, vararg markers: Class<out Annotation>): CompoundNBT
+
+    /**
+     * Create a tag containing the fields with marker annotations that succeed in the passed filter. If possible, prefer
+     * using the version of [createTag] that accepts marker classes, since it can be more optimized.
+     */
+    public fun createTag(instance: T, predicate: Predicate<Collection<Annotation>>): CompoundNBT
+
+    /**
+     * Applies a tag containing the fields marked with any of the passed [markers] types.
+     */
+    public fun applyTag(tag: CompoundNBT, instance: T, vararg markers: Class<out Annotation>)
+
+    /**
+     * Applies a tag containing the fields that succeed in the passed filter. If possible, prefer using the version of
+     * [applyTag] that accepts marker classes, since it can be more optimized.
+     */
+    public fun applyTag(tag: CompoundNBT, instance: T, predicate: Predicate<Collection<Annotation>>)
+
+    public companion object {
+        private val typeMap = mutableMapOf<Class<*>, SimpleSerializerImpl<*>>()
+
+        @JvmStatic
+        public fun <T: Any> get(clazz: Class<T>): SimpleSerializer<T> {
+            @Suppress("UNCHECKED_CAST")
+            return typeMap.getOrPut(clazz) { SimpleSerializerImpl(clazz) } as SimpleSerializer<T>
+        }
+    }
+}
+
+private class SimpleSerializerImpl<T: Any>(val clazz: Class<T>): SimpleSerializer<T> {
     val mirror = Mirror.reflectClass(clazz)
     val properties = mutableListOf<Property>()
 
@@ -70,9 +73,9 @@ private class FoundationSerializerImpl(val clazz: Class<*>): FoundationSerialize
 
         val nameMap = mutableMapOf<String, MutableList<FieldMirror>>()
         mirror.fields.forEach { field ->
-            val name = field.getAnnotation<PropertyName>()?.name ?: field.name
+            val name = field.getAnnotation<SimpleSerializationName>()?.name ?: field.name
 
-            val markers = field.annotations.filter { it.annotationType().isAnnotationPresent(SerializationMarker::class.java) }
+            val markers = field.annotations.filter { it.annotationType().isAnnotationPresent(SimpleSerializationMarker::class.java) }
             if (markers.isEmpty()) return@forEach
             logger.debug("Found marked field $field")
 
@@ -118,14 +121,16 @@ private class FoundationSerializerImpl(val clazz: Class<*>): FoundationSerialize
                     message += "\n- $field: $exception"
                 }
             }
-            throw InvalidSerializedClassException(message)
+            throw InvalidTypeException(message)
         }
     }
 
-    private data class Property(val name: String, val markers: List<Annotation>, val markerClasses: Set<Class<out Annotation>>,
-        val field: FieldMirror, val nbtSerializer: NBTSerializer<*>)
+    private data class Property(val name: String,
+        val markers: List<Annotation>, val markerClasses: Set<Class<out Annotation>>,
+        val field: FieldMirror, val nbtSerializer: NBTSerializer<*>
+    )
 
-    private inline fun createTagImpl(instance: Any, test: (Property) -> Boolean): CompoundNBT {
+    private inline fun createTagImpl(instance: T, test: (Property) -> Boolean): CompoundNBT {
         val tag = CompoundNBT()
         properties.forEach { property ->
             try {
@@ -136,21 +141,21 @@ private class FoundationSerializerImpl(val clazz: Class<*>): FoundationSerialize
                     }
                 }
             } catch (e: Exception) {
-                throw FoundationSerializerException("Error serializing property ${property.name} in ${mirror.simpleName}")
+                throw SerializationException("Error serializing property ${property.name} in ${mirror.simpleName}")
             }
         }
         return tag
     }
 
-    override fun createTag(instance: Any, vararg markers: Class<out Annotation>): CompoundNBT {
+    override fun createTag(instance: T, vararg markers: Class<out Annotation>): CompoundNBT {
         return createTagImpl(instance) { property -> markers.any { it in property.markerClasses } }
     }
 
-    override fun createTag(instance: Any, predicate: Predicate<Collection<Annotation>>): CompoundNBT {
+    override fun createTag(instance: T, predicate: Predicate<Collection<Annotation>>): CompoundNBT {
         return createTagImpl(instance) { property -> predicate.test(property.markers) }
     }
 
-    private inline fun applyTagImpl(tag: CompoundNBT, instance: Any, test: (Property) -> Boolean) {
+    private inline fun applyTagImpl(tag: CompoundNBT, instance: T, test: (Property) -> Boolean) {
         properties.forEach { property ->
             try {
                 if (test(property)) {
@@ -161,7 +166,7 @@ private class FoundationSerializerImpl(val clazz: Class<*>): FoundationSerialize
                     property.field.set(instance, newValue)
                 }
             } catch (e: Exception) {
-                throw FoundationSerializerException("Error deserializing property ${property.name} in ${mirror.simpleName}")
+                throw DeserializationException("Error deserializing property ${property.name} in ${mirror.simpleName}")
             }
         }
     }
@@ -180,15 +185,15 @@ private class FoundationSerializerImpl(val clazz: Class<*>): FoundationSerialize
         }
     }
 
-    override fun applyTag(tag: CompoundNBT, instance: Any, vararg markers: Class<out Annotation>) {
+    override fun applyTag(tag: CompoundNBT, instance: T, vararg markers: Class<out Annotation>) {
         applyTagImpl(tag, instance) { property -> markers.any { it in property.markerClasses } }
     }
 
-    override fun applyTag(tag: CompoundNBT, instance: Any, predicate: Predicate<Collection<Annotation>>) {
+    override fun applyTag(tag: CompoundNBT, instance: T, predicate: Predicate<Collection<Annotation>>) {
         applyTagImpl(tag, instance) { property -> predicate.test(property.markers) }
     }
 
     companion object {
-        private val logger = LibrarianLibFoundationModule.makeLogger<FoundationSerializer>()
+        private val logger = LibrarianLibPrismModule.makeLogger<SimpleSerializer<*>>()
     }
 }

@@ -24,40 +24,6 @@ public interface SidedSupplier<T>: Supplier<T> {
 
     @OnlyIn(Dist.DEDICATED_SERVER)
     public fun getServer(): T
-
-    public companion object {
-        /**
-         * Runs a block of code only on the client.
-         */
-        @JvmStatic
-        public fun <T> client(supplier: ClientSupplier<T>): T? {
-            return supplier.get()
-        }
-
-        /**
-         * Runs a block of code only on the server.
-         */
-        @JvmStatic
-        public fun <T> server(supplier: ServerSupplier<T>): T? {
-            return supplier.get()
-        }
-
-        /**
-         * Runs different blocks of code on the client and the server.
-         */
-        @JvmStatic
-        public fun <T> sided(clientSupplier: ClientSupplier<T>, serverSupplier: ServerSupplier<T>): T {
-            return object: SidedSupplier<T> {
-                override fun getClient(): T {
-                    return clientSupplier.getClient()
-                }
-
-                override fun getServer(): T {
-                    return serverSupplier.getServer()
-                }
-            }.get()
-        }
-    }
 }
 
 /**

@@ -218,8 +218,8 @@ task generateFiles {
                    |    modId="librarianlib"
                    |    versionRange="[$mod_version]"
                    |    mandatory=true
-                   |    ordering="BEFORE"
-            |""".stripMargin()
+                   |    ordering="AFTER"
+            |""".stripMargin() // ordering after so by depending on liblib, all the modules will load before it too.
             modsTomlOut.text = tomlString
 
             packMcmetaOut.text = """\

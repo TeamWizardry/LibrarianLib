@@ -1,11 +1,11 @@
 package com.teamwizardry.librarianlib.foundation.tileentity
 
-import com.teamwizardry.librarianlib.foundation.util.SerializationMarker
+import com.teamwizardry.librarianlib.prism.SimpleSerializationMarker
 
 @Target(AnnotationTarget.FIELD)
-@SerializationMarker
+@SimpleSerializationMarker
 public annotation class Save
 
 @Target(AnnotationTarget.FIELD)
-@SerializationMarker
+@SimpleSerializationMarker
 public annotation class Sync
