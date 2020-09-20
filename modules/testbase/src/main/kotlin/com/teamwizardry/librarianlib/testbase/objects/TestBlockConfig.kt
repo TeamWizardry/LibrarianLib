@@ -1,12 +1,17 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
+import com.teamwizardry.librarianlib.core.util.sided.ClientFunction
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.block.material.Material
 import net.minecraft.block.material.MaterialColor
 import net.minecraft.block.material.PushReaction
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
+import net.minecraft.tileentity.TileEntity
+import net.minecraft.tileentity.TileEntityType
 import net.minecraft.util.Hand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.BlockRayTraceResult
@@ -43,6 +48,14 @@ public class TestBlockConfig(public val id: String, public val name: String): Te
     public val leftClick: SidedAction<LeftClickContext> = SidedAction()
     public val destroy: SidedAction<DestroyContext> = SidedAction()
     public val place: SidedAction<PlaceContext> = SidedAction()
+
+    internal var tileConfig: TestTileConfig<*>? = null
+
+    public fun <T: TileEntity> tile(factory: (TileEntityType<T>) -> T): TestTileConfig<T> {
+        val config = TestTileConfig(factory)
+        tileConfig = config
+        return config
+    }
 
     public data class RightClickContext(
         val state: BlockState, val world: World, val pos: BlockPos,

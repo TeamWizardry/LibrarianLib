@@ -19,11 +19,14 @@ import net.alexwells.kottle.FMLKotlinModLoadingContext
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.RenderTypeLookup
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer
 import net.minecraft.entity.EntityType
 import net.minecraft.item.BlockItem
 import net.minecraft.item.Item
 import net.minecraft.item.ItemGroup
 import net.minecraft.item.ItemStack
+import net.minecraft.tileentity.TileEntity
+import net.minecraft.tileentity.TileEntityType
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
@@ -31,6 +34,7 @@ import net.minecraftforge.client.event.ColorHandlerEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.client.registry.ClientRegistry
 import net.minecraftforge.fml.client.registry.RenderingRegistry
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
@@ -41,12 +45,13 @@ import java.awt.Color
 public abstract class TestMod(public val module: LibrarianLibModule) {
     public val modid: String = MiscUtil.getModId(this.javaClass)
     public val name: String = "${module.name}-test"
-    public val itemGroup: ItemGroup = object : ItemGroup("librarianlib-$name") {
+    public val itemGroup: ItemGroup = object: ItemGroup("librarianlib-$name") {
         private val stack: ItemStack by lazy {
             val stack = ItemStack(LibrarianLibTestBaseModule.testTool)
             stack.orCreateTag.putString("mod", name)
             return@lazy stack
         }
+
         override fun createIcon(): ItemStack {
             return stack
         }
@@ -65,22 +70,14 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
     public val unitTests: List<UnitTestSuite> = _unitTests.unmodifiableView()
 
     // auto-fill the item group
-    public fun TestItemConfig(id: String, name: String, block: TestItemConfig.() -> Unit): TestItemConfig
-        = TestItemConfig(id, name, itemGroup, block)
-    public fun TestItemConfig(id: String, name: String): TestItemConfig
-        = TestItemConfig(id, name, itemGroup)
-    public fun TestEntityConfig(id: String, name: String, block: TestEntityConfig.() -> Unit): TestEntityConfig
-        = TestEntityConfig(id, name, itemGroup, block)
-    public fun TestEntityConfig(id: String, name: String): TestEntityConfig
-        = TestEntityConfig(id, name, itemGroup)
-    public fun TestScreenConfig(id: String, name: String, block: TestScreenConfig.() -> Unit): TestScreenConfig
-        = TestScreenConfig(id, name, itemGroup, block)
-    public fun TestScreenConfig(id: String, name: String): TestScreenConfig
-        = TestScreenConfig(id, name, itemGroup)
-    public fun UnitTestSuite(id: String, block: UnitTestSuite.() -> Unit): UnitTestSuite
-        = UnitTestSuite(id).also { it.block() }
-    public fun UnitTestSuite(id: String): UnitTestSuite
-        = UnitTestSuite().also { it.registryName = ResourceLocation(modid, id) }
+    public fun TestItemConfig(id: String, name: String, block: TestItemConfig.() -> Unit): TestItemConfig = TestItemConfig(id, name, itemGroup, block)
+    public fun TestItemConfig(id: String, name: String): TestItemConfig = TestItemConfig(id, name, itemGroup)
+    public fun TestEntityConfig(id: String, name: String, block: TestEntityConfig.() -> Unit): TestEntityConfig = TestEntityConfig(id, name, itemGroup, block)
+    public fun TestEntityConfig(id: String, name: String): TestEntityConfig = TestEntityConfig(id, name, itemGroup)
+    public fun TestScreenConfig(id: String, name: String, block: TestScreenConfig.() -> Unit): TestScreenConfig = TestScreenConfig(id, name, itemGroup, block)
+    public fun TestScreenConfig(id: String, name: String): TestScreenConfig = TestScreenConfig(id, name, itemGroup)
+    public fun UnitTestSuite(id: String, block: UnitTestSuite.() -> Unit): UnitTestSuite = UnitTestSuite(id).also { it.block() }
+    public fun UnitTestSuite(id: String): UnitTestSuite = UnitTestSuite().also { it.registryName = ResourceLocation(modid, id) }
 
     public operator fun <T: Item> T.unaryPlus(): T {
         _items.add(this)
@@ -90,7 +87,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
     public operator fun <T: Block> T.unaryPlus(): T {
         val properties = Item.Properties()
             .group(itemGroup)
-        val item = if(this is TestBlock)
+        val item = if (this is TestBlock)
             TestBlockItem(this, properties.maxStackSize(1))
         else
             BlockItem(this, properties)
@@ -121,7 +118,6 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
         _unitTests.add(this)
         return this
     }
-
 
     /**
      * Create a logger for this module.
@@ -178,11 +174,24 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
         _testEntities.forEach { entity ->
             RenderingRegistry.registerEntityRenderingHandler(entity) { TestEntityRenderer(it) }
         }
+
+        blocks.forEach { block ->
+            if (block is TestBlock) {
+                block.tileEntityRenderer?.also { renderer ->
+                    @Suppress("UNCHECKED_CAST")
+                    ClientRegistry.bindTileEntityRenderer(block.tileEntityType as TileEntityType<TileEntity>) {
+                        renderer.applyClient(it) as TileEntityRenderer<TileEntity>
+                    }
+                }
+            }
+        }
+
         generateItemAssets()
         generateBlockAssets()
         generateLanguageAssets()
+
         blocks.forEach { block ->
-            if(block is TestBlock) {
+            if (block is TestBlock) {
                 RenderTypeLookup.setRenderLayer(block, RenderType.getCutout())
             }
         }
@@ -199,7 +208,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
 
     private fun generateItemAssets() {
         items.forEach { item ->
-            if(item is TestBlockItem) {
+            if (item is TestBlockItem) {
                 val name = item.registryName!!
                 Mirage.client.add(
                     ResourceLocation(name.namespace, "models/item/${name.path}.json"),
@@ -209,7 +218,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
                         }
                     """.trimIndent()
                 )
-            } else if(item is TestItem) {
+            } else if (item is TestItem) {
                 val name = item.registryName!!
                 Mirage.client.add(
                     ResourceLocation(name.namespace, "models/item/${name.path}.json"),
@@ -229,7 +238,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
             val model = "block/test_block/${block.modelName}"
             Mirage.client.add(
                 ResourceLocation(name.namespace, "blockstates/${name.path}.json"),
-                if(block.config.directional) {
+                if (block.config.directional) {
                     """
                         {
                             "variants": {
@@ -265,7 +274,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
         val keys = mutableMapOf<String, String>()
         keys[itemGroup.translationKey] = "${module.humanName} Test"
         items.forEach { item ->
-            if(item is TestItem) {
+            if (item is TestItem) {
                 val registryName = item.registryName!!
                 keys[registryName.translationKey("item")] = item.config.name
                 item.config.description?.also {
@@ -274,7 +283,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
             }
         }
         blocks.forEach { block ->
-            if(block is TestBlock) {
+            if (block is TestBlock) {
                 val registryName = block.registryName!!
                 keys[registryName.translationKey("block")] = block.config.name
                 block.config.description?.also {
@@ -290,15 +299,15 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
     internal fun registerColors(colorHandlerEvent: ColorHandlerEvent.Item) {
         colorHandlerEvent.itemColors.register({ stack, tintIndex ->
             val item = stack.item
-            if(tintIndex == 1 && item is TestBlockItem)
+            if (tintIndex == 1 && item is TestBlockItem)
                 DistinctColors.forObject(item.block.registryName).rgb
-            else if(tintIndex == 1 && item is TestItem)
+            else if (tintIndex == 1 && item is TestItem)
                 DistinctColors.forObject(item.registryName).rgb
             else
                 Color.WHITE.rgb
         }, *items.toTypedArray())
         colorHandlerEvent.blockColors.register({ state, _, _, tintIndex ->
-            if(tintIndex == 1 && state.block is TestBlock)
+            if (tintIndex == 1 && state.block is TestBlock)
                 DistinctColors.forObject(state.block.registryName).rgb
             else
                 Color.WHITE.rgb
@@ -316,6 +325,17 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
     public open fun registerBlocks(e: RegistryEvent.Register<Block>) {
         blocks.forEach {
             e.registry.register(it)
+        }
+    }
+
+    @SubscribeEvent
+    public open fun registerTileEntities(e: RegistryEvent.Register<TileEntityType<*>>) {
+        blocks.forEach { block ->
+            if (block is TestBlock) {
+                block.tileEntityType?.also { type ->
+                    e.registry.register(type)
+                }
+            }
         }
     }
 

@@ -16,6 +16,8 @@ dependencies {
     api project(":mosaic")
     api project(":albedo")
     api project(":etcetera")
+    api project(":prism")
+    api project(":courier")
     testApi project(":testbase")
     shade("com.github.thecodewarrior:bitfont:proper-typesetter-SNAPSHOT") {
         exclude group: 'org.jetbrains.kotlin'

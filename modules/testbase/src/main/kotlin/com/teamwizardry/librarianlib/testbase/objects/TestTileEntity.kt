@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.foundation.tileentity
+package com.teamwizardry.librarianlib.testbase.objects
 
 import com.teamwizardry.librarianlib.prism.Save
 import com.teamwizardry.librarianlib.prism.SimpleSerializer
@@ -9,7 +9,7 @@ import net.minecraft.network.play.server.SUpdateTileEntityPacket
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.tileentity.TileEntityType
 
-public abstract class BaseTileEntity(tileEntityTypeIn: TileEntityType<*>): TileEntity(tileEntityTypeIn) {
+public abstract class TestTileEntity(tileEntityTypeIn: TileEntityType<*>): TileEntity(tileEntityTypeIn) {
     private val serializer = SimpleSerializer.get(this.javaClass)
 
     override fun write(compound: CompoundNBT): CompoundNBT {

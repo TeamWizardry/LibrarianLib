@@ -6,6 +6,10 @@ import com.teamwizardry.librarianlib.testbase.TestMod
 import com.teamwizardry.librarianlib.testbase.objects.TestBlock
 import com.teamwizardry.librarianlib.testbase.objects.TestBlockConfig
 import com.teamwizardry.librarianlib.testbase.objects.TestItem
+import com.teamwizardry.librarianlib.testbase.objects.TestTileEntity
+import net.minecraft.tileentity.ITickableTileEntity
+import net.minecraft.tileentity.TileEntityType
+import net.minecraft.util.text.StringTextComponent
 import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
 
@@ -90,6 +94,28 @@ object LibrarianLibTestBaseTestMod: TestMod(LibrarianLibTestBaseModule) {
             }
             server {
                 rightClick { chat("[Server] rightClick") }
+            }
+        })
+
+        +TestBlock(TestBlockConfig("simple_tile", "Simple Tile Entity") {
+            class Tile(tileEntityTypeIn: TileEntityType<*>): TestTileEntity(tileEntityTypeIn), ITickableTileEntity {
+                var ticks: Int = 0
+
+                override fun tick() {
+                    ticks++
+                }
+            }
+
+            tile(::Tile)
+
+            rightClick.client {
+                val tile = world.getTileEntity(pos) as? Tile ?: return@client
+                player.sendMessage(StringTextComponent("[Client] ${tile.ticks} ticks"))
+            }
+
+            rightClick.server {
+                val tile = world.getTileEntity(pos) as? Tile ?: return@server
+                player.sendMessage(StringTextComponent("[Server] ${tile.ticks} ticks"))
             }
         })
 

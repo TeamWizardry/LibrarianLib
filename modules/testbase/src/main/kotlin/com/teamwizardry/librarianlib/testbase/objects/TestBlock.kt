@@ -1,9 +1,12 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
+import com.teamwizardry.librarianlib.core.util.sided.ClientFunction
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.block.DirectionalBlock
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
@@ -12,6 +15,8 @@ import net.minecraft.item.ItemStack
 import net.minecraft.state.DirectionProperty
 import net.minecraft.state.StateContainer
 import net.minecraft.state.properties.BlockStateProperties
+import net.minecraft.tileentity.TileEntity
+import net.minecraft.tileentity.TileEntityType
 import net.minecraft.util.ActionResultType
 import net.minecraft.util.Direction
 import net.minecraft.util.Hand
@@ -30,10 +35,29 @@ import net.minecraftforge.fml.ModLoadingContext
 import java.util.Random
 
 public open class TestBlock(public val config: TestBlockConfig): Block(config.also { configHolder = it }.properties) {
+    public var tileEntityType: TileEntityType<*>? = null
+        private set
+    public val tileEntityRenderer: ClientFunction<in TileEntityRendererDispatcher, out TileEntityRenderer<*>>?
+    private var tileFactory: (() -> TileEntity)? = null
+
     init {
         this.registryName = ResourceLocation(ModLoadingContext.get().activeContainer.modId, config.id)
         if (config.directional) {
             this.defaultState = this.stateContainer.baseState.with(FACING, Direction.UP)
+        }
+        @Suppress("UNCHECKED_CAST")
+        val tileConfig = config.tileConfig as TestTileConfig<TileEntity>?
+        if(tileConfig != null) {
+            tileFactory = {
+                @Suppress("UNCHECKED_CAST")
+                tileConfig.factory(tileEntityType as TileEntityType<TileEntity>)
+            }
+            val type = TileEntityType.Builder.create(tileFactory, this).build(null)
+            type.registryName = this.registryName
+            tileEntityType = type
+            tileEntityRenderer = tileConfig.renderer
+        } else {
+            tileEntityRenderer = null
         }
     }
 
@@ -163,6 +187,14 @@ public open class TestBlock(public val config: TestBlockConfig): Block(config.al
 
     override fun isSideInvisible(state: BlockState, adjacentBlockState: BlockState, side: Direction): Boolean {
         return if (adjacentBlockState.block === this) true else super.isSideInvisible(state, adjacentBlockState, side)
+    }
+
+    override fun hasTileEntity(state: BlockState?): Boolean {
+        return tileEntityType != null
+    }
+
+    override fun createTileEntity(state: BlockState?, world: IBlockReader?): TileEntity? {
+        return tileFactory!!.invoke()
     }
 
     public companion object {

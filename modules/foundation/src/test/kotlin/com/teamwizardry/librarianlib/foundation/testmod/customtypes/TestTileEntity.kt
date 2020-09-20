@@ -3,8 +3,8 @@ package com.teamwizardry.librarianlib.foundation.testmod.customtypes
 import com.teamwizardry.librarianlib.foundation.testmod.ModTiles
 import com.teamwizardry.librarianlib.foundation.testmod.logger
 import com.teamwizardry.librarianlib.foundation.tileentity.BaseTileEntity
-import com.teamwizardry.librarianlib.foundation.tileentity.Save
-import com.teamwizardry.librarianlib.foundation.tileentity.Sync
+import com.teamwizardry.librarianlib.prism.Save
+import com.teamwizardry.librarianlib.prism.Sync
 import net.minecraft.entity.Entity
 import net.minecraft.particles.ParticleTypes
 import net.minecraft.world.server.ServerWorld

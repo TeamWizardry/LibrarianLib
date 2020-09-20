@@ -1,6 +1,4 @@
-package com.teamwizardry.librarianlib.foundation.tileentity
-
-import com.teamwizardry.librarianlib.prism.SimpleSerializationMarker
+package com.teamwizardry.librarianlib.prism
 
 @Target(AnnotationTarget.FIELD)
 @SimpleSerializationMarker
