@@ -2,7 +2,6 @@ package com.teamwizardry.librarianlib.prism
 
 import com.teamwizardry.librarianlib.prism.nbt.NBTSerializer
 import dev.thecodewarrior.mirror.Mirror
-import dev.thecodewarrior.mirror.member.ConstructorMirror
 import dev.thecodewarrior.mirror.member.FieldMirror
 import dev.thecodewarrior.mirror.type.TypeMirror
 import dev.thecodewarrior.prism.DeserializationException
@@ -10,6 +9,7 @@ import dev.thecodewarrior.prism.InvalidTypeException
 import dev.thecodewarrior.prism.PrismException
 import dev.thecodewarrior.prism.SerializationException
 import net.minecraft.nbt.CompoundNBT
+import java.lang.IllegalStateException
 import java.util.function.Predicate
 
 /**
@@ -65,7 +65,6 @@ private class SimpleSerializerImpl<T: Any>(val clazz: Class<T>): SimpleSerialize
     init {
         logger.debug("FoundationSerialization: Scanning $mirror")
 
-        val finalErrors = mutableListOf<FieldMirror>()
         val noSerializerErrors = mutableMapOf<FieldMirror, PrismException>()
 
         @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
@@ -80,18 +79,16 @@ private class SimpleSerializerImpl<T: Any>(val clazz: Class<T>): SimpleSerialize
             logger.debug("Found marked field $field")
 
             nameMap.getOrPut(name) { mutableListOf() }.add(field)
-            if (field.isFinal)
-                finalErrors.add(field)
 
             val serializer = try {
-                NBTPrism[field.type]
+                Prisms.nbt[field.type]
             } catch (e: PrismException) {
                 noSerializerErrors[field] = e
                 logger.error("Error getting serializer for $field", e)
                 null
             }
 
-            if (!field.isFinal && serializer != null) {
+            if (serializer != null) {
                 properties.add(Property(name, markers, markers.map { it.annotationType() }.toSet(), field,
                     serializer.value))
                 logger.debug("Successfully added field $field")
@@ -101,11 +98,8 @@ private class SimpleSerializerImpl<T: Any>(val clazz: Class<T>): SimpleSerialize
 
         val duplicateErrors = nameMap.filterValues { it.size > 1 }
 
-        if (finalErrors.isNotEmpty() || duplicateErrors.isNotEmpty() || noSerializerErrors.isNotEmpty()) {
+        if (duplicateErrors.isNotEmpty() || noSerializerErrors.isNotEmpty()) {
             var message = "Problems serializing class $mirror:"
-            if (finalErrors.isNotEmpty()) {
-                message += "\nFinal fields not supported:\n" + finalErrors.joinToString("\n") { "- $it" }
-            }
             if (duplicateErrors.isNotEmpty()) {
                 message += "\nDuplicate names:"
                 duplicateErrors.forEach { (name, fields) ->
@@ -163,6 +157,9 @@ private class SimpleSerializerImpl<T: Any>(val clazz: Class<T>): SimpleSerialize
                     val newValue = tag.get(property.name)?.let {
                         property.nbtSerializer.read(it, existingValue)
                     } ?: defaultValue(property.field.type)
+                    if(newValue !== existingValue && property.field.isFinal) {
+                        throw IllegalStateException("The serializer created a new object for an immutable property")
+                    }
                     property.field.set(instance, newValue)
                 }
             } catch (e: Exception) {

@@ -3,11 +3,9 @@ package com.teamwizardry.librarianlib.facade.container
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.sided.clientOnly
 import com.teamwizardry.librarianlib.courier.PacketType
-import com.teamwizardry.librarianlib.prism.NBTPrism
+import com.teamwizardry.librarianlib.prism.Prisms
 import dev.thecodewarrior.mirror.member.MethodMirror
 import dev.thecodewarrior.prism.PrismException
-import dev.thecodewarrior.prism.annotation.Refract
-import dev.thecodewarrior.prism.annotation.RefractConstructor
 import dev.thecodewarrior.prism.utils.annotation
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.network.PacketBuffer
@@ -29,7 +27,7 @@ public class ContainerMessager(private val receiver: Any, private val windowId: 
         val name = method.annotation<Message>()?.name ?: method.name
         val parameterSerializers = method.parameters.map { parameter ->
             try {
-                NBTPrism[parameter.type].value
+                Prisms.nbt[parameter.type].value
             } catch(e: PrismException) {
                 throw IllegalStateException("Error getting serializer for parameter ${parameter.index} of message '$name'")
             }

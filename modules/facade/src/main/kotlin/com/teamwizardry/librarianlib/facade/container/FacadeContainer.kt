@@ -11,16 +11,7 @@ import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.fml.network.NetworkHooks
 import java.lang.IllegalStateException
 
-/**
- * The base facade container. This object *must* be opened using [ExtraDataContainer.open], not [NetworkHooks.openGui].
- */
-public abstract class FacadeContainer(type: ContainerType<*>?, id: Int): Container(type, id), ExtraDataContainer {
+public abstract class FacadeContainer(type: ContainerType<*>?, id: Int): Container(type, id) {
 //    @get:JvmSynthetic
 //    internal val messager = ContainerMessager(this, windowId, )
-
-    override fun writeExtraData(buffer: PacketBuffer) {
-    }
-
-    override fun readExtraData(buffer: PacketBuffer) {
-    }
 }

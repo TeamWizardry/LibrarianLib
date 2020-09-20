@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.prism.testmod.nbt
 
 import com.teamwizardry.librarianlib.prism.nbt.NBTPrism
-import com.teamwizardry.librarianlib.prism.NBTPrism
+import com.teamwizardry.librarianlib.prism.Prisms
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.type.TypeMirror
 import net.minecraft.nbt.INBT
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
 
 abstract class NBTPrismTest {
-    val prism: NBTPrism = NBTPrism
+    val prism: NBTPrism = Prisms.nbt
 
     /**
      * Does some simple assertions for reading/writing:

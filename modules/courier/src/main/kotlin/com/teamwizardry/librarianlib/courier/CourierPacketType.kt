@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.courier
 
-import com.teamwizardry.librarianlib.prism.NBTPrism
+import com.teamwizardry.librarianlib.prism.Prisms
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.prism.annotation.RefractClass
 import net.minecraft.nbt.CompoundNBT
@@ -19,7 +19,7 @@ internal class CourierPacketType<T: Any>(type: Class<T>, val handler: BiConsumer
         if(!type.isAnnotationPresent(RefractClass::class.java))
             throw IllegalArgumentException("Courier packets must be annotated with @RefractClass")
     }
-    private val serializer by NBTPrism[Mirror.reflect(type)]
+    private val serializer by Prisms.nbt[Mirror.reflect(type)]
 
     override fun encode(packet: T, buffer: PacketBuffer) {
         val tag = serializer.write(packet) as CompoundNBT
