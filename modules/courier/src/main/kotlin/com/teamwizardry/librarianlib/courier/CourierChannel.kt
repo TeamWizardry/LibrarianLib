@@ -35,8 +35,8 @@ public class CourierChannel(private val name: ResourceLocation, private var vers
         baseChannel.sendToServer(packet)
     }
 
-    public fun send(distributer: PacketDistributor.PacketTarget, packet: Any) {
-        baseChannel.send(distributer, packet)
+    public fun send(distributor: PacketDistributor.PacketTarget, packet: Any) {
+        baseChannel.send(distributor, packet)
     }
 
     public fun reply(message: Any, context: NetworkEvent.Context) {

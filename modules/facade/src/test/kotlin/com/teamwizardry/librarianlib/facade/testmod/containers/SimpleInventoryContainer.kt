@@ -11,7 +11,11 @@ import net.minecraftforge.items.CapabilityItemHandler
 import net.minecraftforge.items.SlotItemHandler
 import java.lang.IllegalStateException
 
-class SimpleInventoryContainer(windowId: Int, player: PlayerEntity, pos: BlockPos): FacadeContainer(LibrarianLibFacadeTestMod.simpleInventoryContainerType, windowId) {
+class SimpleInventoryContainer(
+    windowId: Int,
+    player: PlayerEntity,
+    pos: BlockPos
+): FacadeContainer(LibrarianLibFacadeTestMod.simpleInventoryContainerType, windowId, player) {
     init {
         for (i in 0..2) {
             for (j in 0..8) {

@@ -5,9 +5,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 import it.unimi.dsi.fastutil.ints.IntSet
 
-private val obfTransforms = mutableMapOf<Bitfont, ObfTransforms>()
-
-private class ObfTransforms(val font: Bitfont) {
+internal class ObfTransform(val font: Bitfont) {
     val cache = Int2ObjectOpenHashMap<IntSet>()
 
     init {
@@ -22,8 +20,11 @@ private class ObfTransforms(val font: Bitfont) {
         set.add(codepoint)
         return set.random()
     }
-}
 
-internal fun Bitfont.obfTransform(codepoint: Int): Int {
-    return obfTransforms.getOrPut(this) { ObfTransforms(this) }.get(codepoint)
+    companion object {
+        private val cache = mutableMapOf<Bitfont, ObfTransform>()
+        fun transform(font: Bitfont, codepoint: Int): Int {
+            return cache.getOrPut(font) { ObfTransform(font) }.get(codepoint)
+        }
+    }
 }

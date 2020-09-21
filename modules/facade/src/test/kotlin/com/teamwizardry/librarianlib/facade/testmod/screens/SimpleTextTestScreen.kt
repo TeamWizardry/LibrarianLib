@@ -3,8 +3,7 @@ package com.teamwizardry.librarianlib.facade.testmod.screens
 import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
-import com.teamwizardry.librarianlib.facade.testmod.FacadeTestScreen
-import com.teamwizardry.librarianlib.facade.text.attributedStringFromMC
+import com.teamwizardry.librarianlib.facade.text.BitfontFormat
 import net.minecraft.util.text.ITextComponent
 import java.awt.Color
 
@@ -13,7 +12,7 @@ class SimpleTextTestScreen(title: ITextComponent): FacadeScreen(title) {
         val bg = RectLayer(Color.WHITE, 0, 0, 200, 300)
         // https://minecraft.gamepedia.com/File:Minecraft_Formatting.gif
         val text = TextLayer(25, 25, 200, 300, "")
-        text.attributedText = attributedStringFromMC("""
+        text.attributedText = BitfontFormat.convertMC("""
                 §nMinecraft Formatting
 
                 §r§00 §11 §22 §33

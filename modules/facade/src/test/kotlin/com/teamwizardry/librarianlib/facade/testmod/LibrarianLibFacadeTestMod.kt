@@ -73,11 +73,8 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
             }
         }
 
-        simpleContainerType = FacadeContainerType(SimpleContainer::class.java)
-        simpleContainerType.registryName = loc("librarianlib-facade-test", "simple_container")
         simpleInventoryContainerType = FacadeContainerType(SimpleInventoryContainer::class.java)
         simpleInventoryContainerType.registryName = loc("librarianlib-facade-test", "simple_inventory")
-
         +TestBlock(TestBlockConfig("simple_inventory", "Simple Inventory") {
             tile(::SimpleInventoryTile)
 
@@ -86,6 +83,8 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
             }
         })
 
+        simpleContainerType = FacadeContainerType(SimpleContainer::class.java)
+        simpleContainerType.registryName = loc("librarianlib-facade-test", "simple_container")
         +TestItem(TestItemConfig("simple_container", "Simple Container") {
             rightClick.server {
                 simpleContainerType.open(player as ServerPlayerEntity, StringTextComponent("Simple Container"))

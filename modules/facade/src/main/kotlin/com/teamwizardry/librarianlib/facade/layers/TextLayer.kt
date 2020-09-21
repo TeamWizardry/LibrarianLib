@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.text.BitfontRenderer
 import com.teamwizardry.librarianlib.facade.text.Fonts
-import com.teamwizardry.librarianlib.facade.text.fromMC
+import com.teamwizardry.librarianlib.facade.text.BitfontFormat
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.math.Rect2d
 import com.teamwizardry.librarianlib.math.rect
@@ -38,7 +38,7 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     public var text: String? by text_im
     private var lastText: String? = null
 
-    private var _attributedText: AttributedString = AttributedString.fromMC(text)
+    private var _attributedText: AttributedString = BitfontFormat.convertMC(text)
 
     /**
      * The string to be drawn. if [text]
@@ -115,7 +115,7 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
         val plainText = text
         if (plainText != null && plainText != lastText) {
             lastText = plainText
-            _attributedText = AttributedString.fromMC(plainText)
+            _attributedText = BitfontFormat.convertMC(plainText)
         }
 
         layoutManager.attributedString = this.attributedText

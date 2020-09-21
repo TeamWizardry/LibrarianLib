@@ -9,7 +9,6 @@ import com.teamwizardry.librarianlib.core.util.kotlin.tex
 import com.teamwizardry.librarianlib.math.Matrix3d
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
 import dev.thecodewarrior.bitfont.typesetting.TypesetGlyph
-import dev.thecodewarrior.bitfont.utils.Attribute
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import java.awt.Color
 
@@ -40,8 +39,8 @@ public object BitfontRenderer {
     public fun draw(matrix: Matrix3d, vb: IVertexBuilder, typesetGlyph: TypesetGlyph, posX: Int, posY: Int, defaultColor: Color) {
         val solid = BitfontAtlas.solidTex()
         val font = typesetGlyph.glyph.font
-        val obf = typesetGlyph[Attribute.obfuscated] == true
-        val codepoint = if (obf && font != null) font.obfTransform(typesetGlyph.codepoint) else typesetGlyph.codepoint
+        val obf = typesetGlyph[BitfontFormat.obfuscated] == true
+        val codepoint = if (obf && font != null) ObfTransform.transform(font, typesetGlyph.codepoint) else typesetGlyph.codepoint
         val glyph = if (obf && font != null) font.glyphs[codepoint] else typesetGlyph.glyph
 
         val tex = BitfontAtlas.rectFor(glyph.image)
@@ -53,14 +52,14 @@ public object BitfontRenderer {
         var minV = tex.y
         var maxU = tex.x + tex.width
         var maxV = tex.y + tex.height
-        val color = typesetGlyph[Attribute.color] ?: defaultColor
+        val color = typesetGlyph[BitfontFormat.color] ?: defaultColor
 
         vb.pos2d(matrix, minX, maxY).color(color).tex(minU, maxV).endVertex()
         vb.pos2d(matrix, maxX, maxY).color(color).tex(maxU, maxV).endVertex()
         vb.pos2d(matrix, maxX, minY).color(color).tex(maxU, minV).endVertex()
         vb.pos2d(matrix, minX, minY).color(color).tex(minU, minV).endVertex()
 
-        var underline = typesetGlyph[Attribute.underline]
+        var underline = typesetGlyph[BitfontFormat.underline]
         if (underline != null && typesetGlyph.codepoint !in newlines) {
             if (underline == Color(0, 0, 0, 0))
                 underline = color
