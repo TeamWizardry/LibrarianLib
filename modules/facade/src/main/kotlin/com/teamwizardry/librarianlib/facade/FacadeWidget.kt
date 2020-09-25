@@ -7,8 +7,8 @@ import com.teamwizardry.librarianlib.facade.input.Cursor
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
-import com.teamwizardry.librarianlib.facade.layer.supporting.ContainerSpace
 import com.teamwizardry.librarianlib.math.Matrix3dStack
+import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.gui.screen.Screen
 import org.lwjgl.glfw.GLFW
@@ -38,85 +38,55 @@ public open class FacadeWidget(
      * We keep track of the mouse position ourselves both so we can provide deltas for move events and so we can provide
      * subpixel mouse positions in [render]
      */
-    private var mouseX = 0.0
-    private var mouseY = 0.0
-    private var mouseOver: GuiLayer? = null
+    private var mousePos: Vec2d = Vec2d.ZERO
 
-    public fun mouseMoved(_xPos: Double, _yPos: Double) {
-        val s = Client.guiScaleFactor // rescale to absolute screen coordinates
-        val xPos = _xPos * s
-        val yPos = _yPos * s
-        computeMouseOver(xPos, yPos)
+    /**
+     * The mouse hit for the current mouse position
+     */
+    public var mouseHit: MouseHit = MouseHit(null, false, Vec2d.ZERO)
+        private set
+
+    //region Delegates
+    public fun mouseMoved(xPos: Double, yPos: Double) {
+        val pos = rescale(xPos, yPos)
+        computeMouseOver(pos)
         safetyNet("firing a MouseMove event") {
-            root.triggerEvent(GuiLayerEvents.MouseMove(vec(xPos, yPos), vec(mouseX, mouseY)))
+            root.triggerEvent(GuiLayerEvents.MouseMove(pos, mousePos))
         }
-        mouseX = xPos
-        mouseY = yPos
+        mousePos = pos
     }
 
-    public fun mouseClicked(_xPos: Double, _yPos: Double, button: Int) {
-        val s = Client.guiScaleFactor // rescale to absolute screen coordinates
-        val xPos = _xPos * s
-        val yPos = _yPos * s
-        computeMouseOver(xPos, yPos)
+    public fun mouseClicked(xPos: Double, yPos: Double, button: Int) {
+        val pos = rescale(xPos, yPos)
+        computeMouseOver(pos)
         safetyNet("firing a MouseDown event") {
-            root.triggerEvent(GuiLayerEvents.MouseDown(vec(xPos, yPos), button))
+            root.triggerEvent(GuiLayerEvents.MouseDown(pos, button))
         }
     }
 
-    @Suppress("UNUSED_PARAMETER")
-    public fun isMouseOver(xPos: Double, yPos: Double) {
-    }
-
-    public fun mouseReleased(_xPos: Double, _yPos: Double, button: Int) {
-        val s = Client.guiScaleFactor // rescale to absolute screen coordinates
-        val xPos = _xPos * s
-        val yPos = _yPos * s
-        computeMouseOver(xPos, yPos)
+    public fun mouseReleased(xPos: Double, yPos: Double, button: Int) {
+        val pos = rescale(xPos, yPos)
+        computeMouseOver(pos)
         safetyNet("firing a MouseUp event") {
-            root.triggerEvent(GuiLayerEvents.MouseUp(vec(xPos, yPos), button))
+            root.triggerEvent(GuiLayerEvents.MouseUp(pos, button))
         }
     }
 
-    public fun mouseScrolled(_xPos: Double, _yPos: Double, _delta: Double) {
-        val s = Client.guiScaleFactor // rescale to absolute screen coordinates
-        val xPos = _xPos * s
-        val yPos = _yPos * s
-        val delta = _delta * s
-        computeMouseOver(xPos, yPos)
+    public fun mouseScrolled(xPos: Double, yPos: Double, deltaY: Double) {
+        val pos = rescale(xPos, yPos)
+        val delta = rescale(0.0, deltaY)
+        computeMouseOver(pos)
         safetyNet("firing a MouseScroll event") {
-            root.triggerEvent(GuiLayerEvents.MouseScroll(vec(xPos, yPos), vec(0.0, delta)))
+            root.triggerEvent(GuiLayerEvents.MouseScroll(pos, delta))
         }
     }
 
-    public fun mouseDragged(_xPos: Double, _yPos: Double, button: Int, _deltaX: Double, _deltaY: Double) {
-        val s = Client.guiScaleFactor // rescale to absolute screen coordinates
-        val xPos = _xPos * s
-        val yPos = _yPos * s
-        val deltaX = _deltaX * s
-        val deltaY = _deltaY * s
-        computeMouseOver(xPos, yPos)
+    public fun mouseDragged(xPos: Double, yPos: Double, button: Int, deltaX: Double, deltaY: Double) {
+        val pos = rescale(xPos, yPos)
+        val lastPos = rescale(xPos - deltaX, yPos - deltaY)
+        computeMouseOver(pos)
         safetyNet("firing a MouseDrag event") {
-            root.triggerEvent(GuiLayerEvents.MouseDrag(vec(xPos, yPos), vec(xPos - deltaX, yPos - deltaY), button))
-        }
-    }
-
-    private fun computeMouseOver(xPos: Double, yPos: Double) {
-        safetyNet("computing the mouse position") {
-            mouseOver = root.computeMouseInfo(vec(xPos, yPos), Matrix3dStack())
-            if(screen is FacadeMouseMask) {
-                val rootZ = mouseOver?.let { over ->
-                    root.children.find {
-                        over == it || over in it
-                    }
-                }?.zIndex ?: 1000.0
-                if(rootZ < 1000 && screen.isMouseMasked(xPos / Client.guiScaleFactor, yPos / Client.guiScaleFactor)) {
-                    mouseOver = null
-                }
-            }
-            generateSequence(mouseOver) { if(it.propagatesMouseOver) it.parent else null }.forEach {
-                it.mouseOver = true
-            }
+            root.triggerEvent(GuiLayerEvents.MouseDrag(pos, lastPos, button))
         }
     }
 
@@ -146,6 +116,67 @@ public open class FacadeWidget(
         }
     }
 
+    public fun removed() {
+        Cursor.setCursor(null)
+    }
+    //endregion
+
+    /**
+     * Convert logical pixels to screen pixels
+     */
+    private fun rescale(logical: Double): Double = logical * Client.guiScaleFactor
+
+    /**
+     * Convert logical pixels to screen pixels
+     */
+    private fun rescale(logicalX: Double, logicalY: Double): Vec2d
+        = vec(logicalX * Client.guiScaleFactor, logicalY * Client.guiScaleFactor)
+
+    private fun computeMouseOver(absolute: Vec2d) {
+        safetyNet("computing the mouse position") {
+            lastHit = null
+            mouseHit = computeMouseHit(absolute, true)
+            generateSequence(mouseHit.layer) { if(it.propagatesMouseOver) it.parent else null }.forEach {
+                it.mouseOver = true
+            }
+        }
+    }
+
+    private fun computeMouseHit(absolute: Vec2d, isMousePos: Boolean): MouseHit {
+        var hitLayer = root.hitTest(absolute, Matrix3dStack(), isMousePos)
+        val rootZ = hitLayer?.let { over ->
+            root.children.find {
+                over == it || over in it
+            }
+        }?.zIndex ?: .0
+        val isAboveVanilla = rootZ >= 1000
+        if(screen is FacadeMouseMask) {
+            if(!isAboveVanilla && screen.isMouseMasked(absolute.x / Client.guiScaleFactor, absolute.y / Client.guiScaleFactor)) {
+                hitLayer = null
+            }
+        }
+        return MouseHit(hitLayer, isAboveVanilla, absolute)
+    }
+
+    private var lastHit: MouseHit? = null
+
+    /**
+     * Perform a hit test on the layer hierarchy. This method is optimized for repeated accesses with the same position.
+     * If the passed position is identical to the last passed position it will reuse the result. This cache is reset
+     * when real mouse position is recalculated.
+     *
+     * @param xPos the absolute x coordinate to test in logical pixels
+     * @param yPos the absolute y coordinate to test in logical pixels
+     */
+    public fun hitTest(xPos: Double, yPos: Double): MouseHit {
+        val pos = rescale(xPos, yPos)
+        lastHit?.also {
+            if(pos == it.pos)
+                return it
+        }
+        return computeMouseHit(pos, false).also { lastHit = it }
+    }
+
     /**
      * Performs all the logical updates that occur on a frame, e.g. computing mouseover, etc. This is the first step in
      * rendering a frame.
@@ -161,10 +192,10 @@ public open class FacadeWidget(
             main.pos = ((root.size - main.size) / 2).round()
             tooltipContainer.frame = root.bounds
 
-            computeMouseOver(mouseX, mouseY)
+            computeMouseOver(mousePos)
             var tooltip: GuiLayer? = null
             var cursor: Cursor? = null
-            generateSequence(mouseOver) { it.parent }.forEach {
+            generateSequence(mouseHit.layer) { it.parent }.forEach {
                 tooltip = tooltip ?: it.tooltipLayer
                 cursor = cursor ?: it.cursor
             }
@@ -216,7 +247,21 @@ public open class FacadeWidget(
         }
     }
 
-    public fun removed() {
-        Cursor.setCursor(null)
-    }
+    /**
+     * The result of hit testing the layer hierarchy
+     */
+    public data class MouseHit(
+        /**
+         * The layer the mouse hit, if any
+         */
+        val layer: GuiLayer?,
+        /**
+         * True if the layer that was hit is above the vanilla GUI (its root has a zIndex >= 1000)
+         */
+        val isOverVanilla: Boolean,
+        /**
+         * The absolute position of the hit test in display pixels (not logical pixels)
+         */
+        val pos: Vec2d
+    )
 }

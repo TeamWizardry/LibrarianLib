@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.teamwizardry.librarianlib.facade.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "ll-facade.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+    "ContainerScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

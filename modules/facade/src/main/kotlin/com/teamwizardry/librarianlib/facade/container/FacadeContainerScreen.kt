@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
 import com.teamwizardry.librarianlib.facade.FacadeMouseMask
 import com.teamwizardry.librarianlib.facade.FacadeWidget
 import com.teamwizardry.librarianlib.facade.LibrarianLibFacadeModule
+import com.teamwizardry.librarianlib.facade.bridge.FacadeContainerScreenHooks
 import com.teamwizardry.librarianlib.facade.container.messaging.MessageEncoder
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.supporting.ContainerSpace
@@ -30,7 +31,7 @@ public abstract class FacadeContainerScreen<T: Container>(
     container: T,
     inventory: PlayerInventory,
     title: ITextComponent
-): ContainerScreen<T>(container, inventory, title), FacadeMouseMask {
+): ContainerScreen<T>(container, inventory, title), FacadeMouseMask, FacadeContainerScreenHooks {
     public val player: PlayerEntity = inventory.player
 
     @Suppress("LeakingThis")
@@ -70,6 +71,14 @@ public abstract class FacadeContainerScreen<T: Container>(
         return getEventListenerForPos(mouseX, mouseY).isPresent || container.inventorySlots.any {
             isPointInRegion(it.xPos, it.yPos, 16, 16, mouseX, mouseY) && it.isEnabled
         }
+    }
+
+    override fun isSlotSelectedHook(slotIn: Slot?, mouseX: Double, mouseY: Double, result: Boolean): Boolean {
+        return result && !facade.hitTest(mouseX, mouseY).isOverVanilla
+    }
+
+    override fun hasClickedOutside(mouseX: Double, mouseY: Double, guiLeftIn: Int, guiTopIn: Int, mouseButton: Int): Boolean {
+        return facade.hitTest(mouseX, mouseY).layer == null
     }
 
     override fun drawGuiContainerBackgroundLayer(partialTicks: Float, mouseX: Int, mouseY: Int) {
@@ -136,21 +145,29 @@ public abstract class FacadeContainerScreen<T: Container>(
         return true
     }
 
+    private val blockedDowns = mutableSetOf<Int>()
+
     override fun mouseClicked(p_mouseClicked_1_: Double, p_mouseClicked_3_: Double, p_mouseClicked_5_: Int): Boolean {
         facade.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_)
-        super.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_)
+        if(facade.mouseHit.isOverVanilla)
+            blockedDowns.add(p_mouseClicked_5_)
+        else
+            super.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_)
         return true
     }
 
     override fun mouseReleased(p_mouseReleased_1_: Double, p_mouseReleased_3_: Double, p_mouseReleased_5_: Int): Boolean {
         facade.mouseReleased(p_mouseReleased_1_, p_mouseReleased_3_, p_mouseReleased_5_)
-        super.mouseReleased(p_mouseReleased_1_, p_mouseReleased_3_, p_mouseReleased_5_)
+        if(p_mouseReleased_5_ !in blockedDowns)
+            super.mouseReleased(p_mouseReleased_1_, p_mouseReleased_3_, p_mouseReleased_5_)
+        blockedDowns.remove(p_mouseReleased_5_)
         return true
     }
 
     override fun mouseScrolled(p_mouseScrolled_1_: Double, p_mouseScrolled_3_: Double, p_mouseScrolled_5_: Double): Boolean {
         facade.mouseScrolled(p_mouseScrolled_1_, p_mouseScrolled_3_, p_mouseScrolled_5_)
-        super.mouseScrolled(p_mouseScrolled_1_, p_mouseScrolled_3_, p_mouseScrolled_5_)
+        if(!facade.mouseHit.isOverVanilla)
+            super.mouseScrolled(p_mouseScrolled_1_, p_mouseScrolled_3_, p_mouseScrolled_5_)
         return true
     }
 
@@ -160,12 +177,14 @@ public abstract class FacadeContainerScreen<T: Container>(
 
     override fun mouseDragged(p_mouseDragged_1_: Double, p_mouseDragged_3_: Double, p_mouseDragged_5_: Int, p_mouseDragged_6_: Double, p_mouseDragged_8_: Double): Boolean {
         facade.mouseDragged(p_mouseDragged_1_, p_mouseDragged_3_, p_mouseDragged_5_, p_mouseDragged_6_, p_mouseDragged_8_)
-        super.mouseDragged(p_mouseDragged_1_, p_mouseDragged_3_, p_mouseDragged_5_, p_mouseDragged_6_, p_mouseDragged_8_)
+        if(!facade.mouseHit.isOverVanilla)
+            super.mouseDragged(p_mouseDragged_1_, p_mouseDragged_3_, p_mouseDragged_5_, p_mouseDragged_6_, p_mouseDragged_8_)
         return true
     }
 
     override fun changeFocus(p_changeFocus_1_: Boolean): Boolean {
         facade.changeFocus(p_changeFocus_1_)
+        // todo: implement facade focus system and integrate
         super.changeFocus(p_changeFocus_1_)
         return true
     }

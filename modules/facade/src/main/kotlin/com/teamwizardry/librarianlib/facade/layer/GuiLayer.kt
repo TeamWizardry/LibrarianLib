@@ -1391,24 +1391,38 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         private set
 
     /**
-     * Computes the mouse position, resets the `mouseOver` flag, and returns the component with the mouse over it, if
-     * any.
+     * Performs a mouse hit test, returning the topmost layer the mouse is directly over (including this layer).
+     */
+    public fun hitTest(pos: Vec2d): GuiLayer? {
+        return hitTest(convertPointToParent(pos), Matrix3dStack(), false)
+    }
+
+    /**
+     * Computes the mouse position and its derived property values. If [isMousePos] is true, the hit test will be
+     * treated as a change to the mouse position, updating [mousePos] and [mouseInside], and clearing [mouseOver].
      */
     @JvmSynthetic
-    internal fun computeMouseInfo(rootPos: Vec2d, stack: Matrix3dStack): GuiLayer? {
+    internal fun hitTest(rootPos: Vec2d, stack: Matrix3dStack, isMousePos: Boolean): GuiLayer? {
         stack.push()
         stack.reverseMul(inverseTransform)
-        mousePos = stack.transform(rootPos)
+
+        val mousePos = stack.transform(rootPos)
+        if(isMousePos) this.mousePos = mousePos
+
         val clipped = isPointClipped(mousePos)
-        mouseInside = isPointInBounds(mousePos) && !clipped
-        mouseOver = false
+        val mouseInside = isPointInBounds(mousePos) && !clipped
+        if(isMousePos) this.mouseInside = mouseInside
+
+        if(isMousePos) this.mouseOver = false
         var mouseOverChild: GuiLayer? = null
         forEachChild { child ->
-            mouseOverChild = child.computeMouseInfo(rootPos, stack) ?: mouseOverChild
+            mouseOverChild = child.hitTest(rootPos, stack, isMousePos) ?: mouseOverChild
         }
         stack.pop()
+
         if (!interactive || !isVisible || clipped)
             return null
+
         return when {
             mouseOverChild != null -> mouseOverChild
             mouseInside && !ignoreMouseOverBounds -> this
