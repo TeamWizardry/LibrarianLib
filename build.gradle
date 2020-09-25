@@ -17,6 +17,10 @@ buildscript {
     }
 }
 
+// there are occasionally exceptions during building. However, I can't tell IDEA to pass --stacktrace to the build
+// command, only to run configs. Thus, I have to do it manually. https://stackoverflow.com/a/29983737/1541907
+gradle.startParameter.showStacktrace = org.gradle.api.logging.configuration.ShowStacktrace.ALWAYS
+
 def maven_version = mod_version
 def snapshotBranch = System.getenv('SNAPSHOT_BRANCH')
 if(snapshotBranch != null) {

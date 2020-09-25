@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.core.util.lerp
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import dev.thecodewarrior.mirror.type.ConcreteTypeMirror
 import dev.thecodewarrior.mirror.type.TypeMirror
-import dev.thecodewarrior.mirror.type.VariableMirror
+import dev.thecodewarrior.mirror.type.TypeVariableMirror
 import dev.thecodewarrior.mirror.type.WildcardMirror
 import java.lang.IllegalArgumentException
 
@@ -30,7 +30,7 @@ public open class LerperMatcher {
     public operator fun get(mirror: TypeMirror): Lazy<Lerper<*>> {
         @Suppress("NAME_SHADOWING")
         val mirror =
-            if(mirror is VariableMirror) {
+            if(mirror is TypeVariableMirror) {
                 throw InvalidTypeException("Type variable $mirror can't be lerped")
             } else if(mirror is WildcardMirror) {
                 mirror.upperBound ?: throw InvalidTypeException("Wildcard $mirror can't be lerped since it has no upper bound")

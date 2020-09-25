@@ -7,15 +7,17 @@ import com.teamwizardry.librarianlib.facade.input.Cursor
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
-import com.teamwizardry.librarianlib.facade.provided.SafetyNetErrorScreen
+import com.teamwizardry.librarianlib.facade.layer.supporting.ContainerSpace
 import com.teamwizardry.librarianlib.math.Matrix3dStack
 import com.teamwizardry.librarianlib.math.vec
-import net.minecraft.client.GameSettings
 import net.minecraft.client.gui.screen.Screen
 import org.lwjgl.glfw.GLFW
+import java.util.function.Predicate
 
 /**
+ * The abstract Facade GUI implementation.
  *
+ * If the passed [screen] implements [FacadeMouseMask], any root layers with zIndex < 1000 will be masked.
  */
 public open class FacadeWidget(
     private val screen: Screen
@@ -26,7 +28,9 @@ public open class FacadeWidget(
     private var currentTooltip: GuiLayer? = null
 
     init {
+        root.ignoreMouseOverBounds = true
         root.add(main, tooltipContainer)
+        tooltipContainer.zIndex = 100_000.0
         tooltipContainer.interactive = false
     }
 
@@ -100,6 +104,16 @@ public open class FacadeWidget(
     private fun computeMouseOver(xPos: Double, yPos: Double) {
         safetyNet("computing the mouse position") {
             mouseOver = root.computeMouseInfo(vec(xPos, yPos), Matrix3dStack())
+            if(screen is FacadeMouseMask) {
+                val rootZ = mouseOver?.let { over ->
+                    root.children.find {
+                        over == it || over in it
+                    }
+                }?.zIndex ?: 1000.0
+                if(rootZ < 1000 && screen.isMouseMasked(xPos / Client.guiScaleFactor, yPos / Client.guiScaleFactor)) {
+                    mouseOver = null
+                }
+            }
             generateSequence(mouseOver) { if(it.propagatesMouseOver) it.parent else null }.forEach {
                 it.mouseOver = true
             }
@@ -132,8 +146,12 @@ public open class FacadeWidget(
         }
     }
 
-    public fun render() {
-        safetyNet("rendering") {
+    /**
+     * Performs all the logical updates that occur on a frame, e.g. computing mouseover, etc. This is the first step in
+     * rendering a frame.
+     */
+    public fun update() {
+        safetyNet("updating") {
             val guiScale = Client.guiScaleFactor
 
             root.pos = vec(0, 0)
@@ -164,6 +182,15 @@ public open class FacadeWidget(
             root.triggerEvent(GuiLayerEvents.PrepareLayout())
             root.runLayout()
             root.clearAllDirtyLayout()
+        }
+    }
+
+    /**
+     * The second step in rendering a frame. This can be split up into multiple passes using [filterRendering].
+     */
+    public fun render() {
+        safetyNet("rendering") {
+            val guiScale = Client.guiScaleFactor
 
             StencilUtil.clear()
             StencilUtil.enable()
@@ -173,6 +200,19 @@ public open class FacadeWidget(
             root.renderLayer(context)
             RenderSystem.popMatrix()
             StencilUtil.disable()
+        }
+    }
+
+    /**
+     * Configures the rendering system to only render children of the root layer that match the given predicate.
+     * This is used in containers to render the foreground and background at separate times.
+     */
+    public fun filterRendering(filter: Predicate<GuiLayer>)
+    {
+        safetyNet("filtering rendering") {
+            root.forEachChild {
+                it.skipRender = !filter.test(it)
+            }
         }
     }
 

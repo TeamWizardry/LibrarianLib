@@ -10,6 +10,11 @@ public class BasicTransferRule: TransferRule {
     private var filter: Predicate<Slot> = Predicate { true }
     private val targets = mutableListOf<SlotRegion>()
 
+    public fun from(slots: SlotRegion): BasicTransferRule {
+        fromSet.addAll(slots)
+        return this
+    }
+
     public fun from(slots: List<Slot>): BasicTransferRule {
         fromSet.addAll(slots)
         return this

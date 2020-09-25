@@ -29,7 +29,7 @@ public class RectLayer(color: Color, x: Int, y: Int, width: Int, height: Int): G
         val c = color
 
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(renderType)
+        val vb = buffer.getBuffer(SimpleRenderTypes.flatQuads)
 
         vb.pos2d(context.matrix, minX, maxY).color(c).endVertex()
         vb.pos2d(context.matrix, maxX, maxY).color(c).endVertex()
@@ -37,9 +37,5 @@ public class RectLayer(color: Color, x: Int, y: Int, width: Int, height: Int): G
         vb.pos2d(context.matrix, minX, minY).color(c).endVertex()
 
         buffer.finish()
-    }
-
-    private companion object {
-        private val renderType = SimpleRenderTypes.flat(GL11.GL_QUADS)
     }
 }

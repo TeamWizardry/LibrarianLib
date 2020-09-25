@@ -103,7 +103,7 @@ public class Mosaic(
 
     internal fun loadDefinition() {
         definition = MosaicLoader.getDefinition(location)
-        renderType = createRenderType()
+        renderType = createRenderType(RenderState.TextureState(location, definition.blur, definition.mipmap))
 
         sprites.forEach { (_, sprite) ->
             sprite.loadDefinition()
@@ -111,19 +111,6 @@ public class Mosaic(
         colors.forEach { (_, color) ->
             color.loadDefinition()
         }
-    }
-
-    private fun createRenderType(): RenderType {
-        val renderState = RenderType.State.getBuilder()
-            .texture(RenderState.TextureState(location, definition.blur, definition.mipmap))
-            .alpha(DefaultRenderStates.DEFAULT_ALPHA)
-            .depthTest(DefaultRenderStates.DEPTH_LEQUAL)
-            .transparency(DefaultRenderStates.TRANSLUCENT_TRANSPARENCY)
-
-        @Suppress("INACCESSIBLE_TYPE")
-        return RenderType.makeType("sprite_type",
-            DefaultVertexFormats.POSITION_COLOR_TEX, GL11.GL_QUADS, 256, false, false, renderState.build(true)
-        )
     }
 
     internal fun getSpriteDefinition(name: String): SpriteDefinition {
@@ -173,6 +160,24 @@ public class Mosaic(
     internal companion object {
         @get:JvmSynthetic
         internal val textures = weakSetOf<Mosaic>().synchronized()
+
+        private val types = mutableMapOf<RenderState.TextureState, RenderType>()
+
+        private fun createRenderType(texture: RenderState.TextureState): RenderType {
+            return types.getOrPut(texture) {
+                val renderState = RenderType.State.getBuilder()
+                    .texture(texture)
+                    .alpha(DefaultRenderStates.DEFAULT_ALPHA)
+                    .depthTest(DefaultRenderStates.DEPTH_LEQUAL)
+                    .transparency(DefaultRenderStates.TRANSLUCENT_TRANSPARENCY)
+
+                @Suppress("INACCESSIBLE_TYPE")
+                RenderType.makeType("sprite_type",
+                    DefaultVertexFormats.POSITION_COLOR_TEX, GL11.GL_QUADS, 256, false, false, renderState.build(true)
+                )
+            }
+        }
+
     }
 
     private class TextureColor(private val mosaic: Mosaic, val name: String) {

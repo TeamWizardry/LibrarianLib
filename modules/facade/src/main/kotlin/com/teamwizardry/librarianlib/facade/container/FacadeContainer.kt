@@ -7,6 +7,8 @@ import com.teamwizardry.librarianlib.facade.container.messaging.MessageEncoder
 import com.teamwizardry.librarianlib.facade.container.messaging.MessageHandler
 import com.teamwizardry.librarianlib.facade.container.messaging.MessagePacket
 import com.teamwizardry.librarianlib.facade.container.slot.CustomClickSlot
+import com.teamwizardry.librarianlib.facade.container.slot.SlotRegion
+import com.teamwizardry.librarianlib.facade.container.transfer.BasicTransferRule
 import com.teamwizardry.librarianlib.facade.container.transfer.TransferManager
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.ServerPlayerEntity
@@ -44,6 +46,16 @@ public abstract class FacadeContainer(
 
     override fun receiveMessage(packet: MessagePacket) {
         decoder.execute(packet)
+    }
+
+    public fun addSlots(region: SlotRegion) {
+        region.forEach {
+            addSlot(it)
+        }
+    }
+
+    public fun createTransferRule(): BasicTransferRule {
+        return transferManager.createBasicRule()
     }
 
     override fun transferStackInSlot(playerIn: PlayerEntity, index: Int): ItemStack {

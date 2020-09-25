@@ -3,14 +3,13 @@ package com.teamwizardry.librarianlib.facade.pastry.components.dropdown
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.identityMapOf
 import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
-import com.teamwizardry.librarianlib.facade.input.Cursor
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
 import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
 import com.teamwizardry.librarianlib.math.Easing
-import com.teamwizardry.librarianlib.math.ScreenSpace
+import com.teamwizardry.librarianlib.facade.layer.supporting.ScreenSpace
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.rect
 import com.teamwizardry.librarianlib.math.vec

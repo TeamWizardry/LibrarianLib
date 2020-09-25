@@ -35,6 +35,7 @@ import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.etcetera.eventbus.Event
 import com.teamwizardry.librarianlib.etcetera.eventbus.EventBus
 import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
+import com.teamwizardry.librarianlib.facade.FacadeWidget
 import com.teamwizardry.librarianlib.facade.input.Cursor
 import com.teamwizardry.librarianlib.facade.pastry.components.PastryBasicTooltip
 import com.teamwizardry.librarianlib.facade.value.ChangeListener
@@ -44,7 +45,6 @@ import com.teamwizardry.librarianlib.facade.value.IMValueLong
 import com.teamwizardry.librarianlib.facade.value.RMValueBoolean
 import com.teamwizardry.librarianlib.facade.value.RMValueInt
 import com.teamwizardry.librarianlib.facade.value.RMValueLong
-import com.teamwizardry.librarianlib.math.ScreenSpace
 import com.teamwizardry.librarianlib.mosaic.ISprite
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.client.renderer.IRenderTypeBuffer
@@ -398,12 +398,11 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     public var parent: GuiLayer? = null
         private set
 
-    private val _parents = mutableSetOf<GuiLayer>()
-
     /**
      * A read-only set containing all the parents of this layer, recursively.
      */
-    public val parents: Set<GuiLayer> = _parents.unmodifiableView()
+    public val parents: Set<GuiLayer>
+        get() = generateSequence(parent) { it.parent }.toSet()
 
     /**
      * The root of this component's hierarchy. i.e. the last layer found when iterating back through the parents. If this
@@ -420,12 +419,12 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * @throws LayerHierarchyException if one of the passed layers already had a parent that wasn't this layer
      */
     public fun add(vararg layers: GuiLayer) {
-        for (component in layers) {
-            if (component === this)
+        for (layer in layers) {
+            if (layer === this)
                 throw LayerHierarchyException("Tried to add a layer to itself")
 
-            if (component.parent != null) {
-                if (component.parent == this) {
+            if (layer.parent != null) {
+                if (layer.parent == this) {
                     logger.warn("The passed layer was already a child of this layer", Exception())
                     return
                 } else {
@@ -433,16 +432,16 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
                 }
             }
 
-            if (component in parents) {
+            if (layer in parents) {
                 throw LayerHierarchyException("Recursive layer hierarchy, the passed layer is an ancestor of this layer")
             }
 
-            if (this.BUS.fire(GuiLayerEvents.AddChildEvent(component)).isCanceled())
+            if (this.BUS.fire(GuiLayerEvents.AddChildEvent(layer)).isCanceled())
                 return
-            component.BUS.fire(GuiLayerEvents.AddToParentEvent(this))
-            _children.add(component)
+            layer.BUS.fire(GuiLayerEvents.AddToParentEvent(this))
+            _children.add(layer)
             markLayoutDirty()
-            component.parent = this
+            layer.parent = this
         }
     }
 
@@ -450,7 +449,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * Checks whether this layer has the passed layer as a descendent
      */
     public operator fun contains(layer: GuiLayer): Boolean =
-        layer in children || children.any { layer in it }
+        generateSequence(layer) { it.parent }.any { it == this }
 
     /**
      * Removes the passed layer from this layer's children. If the passed layer has no parent this will log an error
@@ -944,7 +943,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     }
 
     override val parentSpace: CoordinateSpace2D?
-        get() = parent ?: ScreenSpace
+        get() = parent ?: DisplaySpace
 
     private var matrixDirty = true
     private var _matrix = MutableMatrix3d()
@@ -1071,10 +1070,20 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     }
 
     /**
+     * An internal field created so containers to render different portions of the layer hierarchy at different times.
+     * For example, rendering the foreground layer in a separate method. See [FacadeWidget.filterRendering] for details.
+     */
+    @get:JvmSynthetic
+    @set:JvmSynthetic
+    internal var skipRender: Boolean = false
+
+    /**
      * Renders this layer and its sublayers. This method handles the internals of rendering a layer. Override [draw] for
      * custom rendering.
      */
     public fun renderLayer(context: GuiDrawContext) {
+        if(skipRender) return
+
         context.matrix.push()
         context.matrix *= transform
 

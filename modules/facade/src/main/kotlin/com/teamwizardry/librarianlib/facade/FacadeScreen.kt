@@ -32,6 +32,7 @@ public open class FacadeScreen(title: ITextComponent): Screen(title /* todo beha
     override fun render(mouseX: Int, mouseY: Int, partialTicks: Float) {
         this.renderBackground()
         super.render(mouseX, mouseY, partialTicks)
+        this.facade.update()
         this.facade.render()
     }
 
