@@ -128,8 +128,8 @@ public class Raycaster {
      * Cast the ray through the passed world, colliding with blocks using the specified mode, ignoring fluid and
      * entities.
      *
-     * The result of the raycast is made available as properties of this raycaster. Call [reset] once you're done with
-     * the result to avoid leaking [entity].
+     * The result of the raycast is made available as properties of this raycaster. It is ***vitally*** important that
+     * you call [reset] once you're done with the result to prepare for the next raycast.
      *
      * @see hitType
      * @see blockX
@@ -156,8 +156,8 @@ public class Raycaster {
      * Cast the ray through the passed world, colliding with blocks and fluids using the specified modes, and colliding
      * with entities according to the specified filter, if present. An [entityFilter] of `null` will ignore entities.
      *
-     * The result of the raycast is made available as properties of this raycaster. Call [reset] once you're done with
-     * the result to avoid leaking [entity].
+     * The result of the raycast is made available as properties of this raycaster. It is ***vitally*** important that
+     * you call [reset] once you're done with the result to prepare for the next raycast and avoid leaking [entity].
      *
      * @param blockMode The type of collisions to make with solid blocks
      * @param fluidMode The type of collisions to make with fluids
