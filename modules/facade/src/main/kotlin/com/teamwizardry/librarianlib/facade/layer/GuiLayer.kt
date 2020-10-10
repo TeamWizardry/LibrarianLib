@@ -1332,10 +1332,68 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     @JvmField
     public val BUS: EventBus = EventBus()
 
-    public inline fun <reified E: Event> hook(hook: Consumer<E>): Unit = BUS.hook(hook)
+    /**
+     * Hook into `T` events (or any subclass of `T`).
+     *
+     * @param hook the event consumer
+     */
+    public inline fun <reified E: Event> hook(hook: Consumer<E>) {
+        BUS.hook(hook)
+    }
 
-    @Suppress("UNCHECKED_CAST")
-    public fun <E: Event> hook(clazz: Class<E>, hook: Consumer<E>): Unit = BUS.hook(clazz, hook)
+    /**
+     * Hook into `T` events (or any subclass of `T`).
+     *
+     * @param hook the event consumer
+     * @param priority the hook priority
+     */
+    public inline fun <reified E: Event> hook(priority: EventBus.Priority, hook: Consumer<E>) {
+        BUS.hook(priority, hook)
+    }
+
+    /**
+     * Hook into `T` events (or any subclass of `T`).
+     *
+     * @param hook the event consumer
+     * @param priority the hook priority
+     * @param receiveCanceled whether the hook should still receive canceled events
+     */
+    public inline fun <reified E: Event> hook(priority: EventBus.Priority, receiveCanceled: Boolean, hook: Consumer<E>) {
+        BUS.hook(priority, receiveCanceled, hook)
+    }
+
+    /**
+     * Hook into [clazz] events (or any subclass of [clazz]).
+     *
+     * @param clazz the event type to hook into
+     * @param priority the hook priority
+     * @param receiveCanceled whether the hook should still receive canceled events
+     * @param hook the event consumer
+     */
+    public fun <E: Event> hook(clazz: Class<E>, priority: EventBus.Priority, receiveCanceled: Boolean, hook: Consumer<E>) {
+        BUS.hook(clazz, priority, receiveCanceled, hook)
+    }
+
+    /**
+     * Hook into [clazz] events (or any subclass of [clazz]).
+     *
+     * @param clazz the event type to hook into
+     * @param priority the hook priority
+     * @param hook the event consumer
+     */
+    public fun <E: Event> hook(clazz: Class<E>, priority: EventBus.Priority, hook: Consumer<E>) {
+        BUS.hook(clazz, priority, hook)
+    }
+
+    /**
+     * Hook into [clazz] events (or any subclass of [clazz]).
+     *
+     * @param clazz the event type to hook into
+     * @param hook the event consumer
+     */
+    public fun <E: Event> hook(clazz: Class<E>, hook: Consumer<E>) {
+        BUS.hook(clazz, hook)
+    }
 
     init {
         BUS.register(this)

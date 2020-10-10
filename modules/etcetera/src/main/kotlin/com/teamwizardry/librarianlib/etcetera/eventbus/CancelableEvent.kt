@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.etcetera.eventbus
 
-public abstract class CancelableEvent(reversed: Boolean = false) : Event(reversed) {
+public abstract class CancelableEvent : Event() {
     private var canceled: Boolean = false
 
     public fun isCanceled(): Boolean = canceled

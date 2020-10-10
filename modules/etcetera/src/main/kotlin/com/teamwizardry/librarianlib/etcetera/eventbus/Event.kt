@@ -1,46 +1,35 @@
 package com.teamwizardry.librarianlib.etcetera.eventbus
 
-public abstract class Event @JvmOverloads constructor(public val reversed: Boolean = false) {
+public abstract class Event {
     /**
-     * Persistent data stored in the event hook. Before each hook is called this is set to the currently stored hook
-     * data, and after the event fires the current value is stored as the new hook data.
+     * Called before each event hook is called so the event can adjust itself based on the per-hook state persisted by
+     * [storePerHookState].
      */
-    protected var hookData: Any? = null
-
-    /**
-     * Called before each hook is called and after [hookData] is set to allow this event to (re)initialize any state
-     * it needs to.
-     */
-    protected open fun initializeHookState() {
+    protected open fun loadPerHookState(state: Any?) {
 
     }
 
     /**
-     * Called after each hook is called and before [hookData] is stored to allow this event to finalize anything it
-     * needs to before being reset.
+     * Called after each event hook is called to persist any per-hook state necessary. The return value from this method
+     * is passed to [loadPerHookState] the next time that particular event hook is called.
      */
-    protected open fun finalizeHookState() {
-
+    protected open fun storePerHookState(): Any? {
+        return null
     }
 
     /**
-     * An internal delegate for [EventBus]
+     * Provides internal access for [EventBus].
      */
-    internal var hookDataInternal: Any?
-        get() = hookData
-        set(value) { hookData = value }
-
-    /**
-     * An internal delegate for [EventBus]
-     */
-    internal fun initializeHookStateInternal() {
-        initializeHookState()
+    @JvmSynthetic
+    internal fun loadPerHookStateInternal(state: Any?) {
+        loadPerHookState(state)
     }
 
     /**
-     * An internal delegate for [EventBus]
+     * Provides internal access for [EventBus].
      */
-    internal fun finalizeHookStateInternal() {
-        finalizeHookState()
+    @JvmSynthetic
+    internal fun storePerHookStateInternal(): Any? {
+        return storePerHookState()
     }
 }

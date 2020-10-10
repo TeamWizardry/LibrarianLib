@@ -34,7 +34,8 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
             FacadeTest("Empty", ::EmptyTestScreen),
             FacadeTest("zIndex", ::ZIndexTestScreen),
             FacadeTest("Layer Transform", ::LayerTransformTestScreen),
-            FacadeTest("Layer MouseOver/MouseOff", ::LayerMouseOverOffTestScreen)
+            FacadeTest("Layer MouseOver/MouseOff", ::LayerMouseOverOffTestScreen),
+            FacadeTest("Event Priority", ::EventPriorityScreen),
         )),
         FacadeTestGroup("layers", "Layers", listOf(
             FacadeTest("Simple Sprite", ::SimpleSpriteTestScreen),
