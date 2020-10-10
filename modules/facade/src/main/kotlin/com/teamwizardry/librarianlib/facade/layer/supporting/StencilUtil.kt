@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.etcetera
+package com.teamwizardry.librarianlib.facade.layer.supporting
 
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client

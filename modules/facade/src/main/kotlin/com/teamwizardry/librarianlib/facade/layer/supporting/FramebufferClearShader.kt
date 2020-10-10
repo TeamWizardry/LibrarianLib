@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.facade.layer.supporting
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.Shader
-import com.teamwizardry.librarianlib.etcetera.StencilUtil
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 

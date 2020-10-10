@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.facade
 
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.etcetera.StencilUtil
+import com.teamwizardry.librarianlib.facade.layer.supporting.StencilUtil
 import com.teamwizardry.librarianlib.facade.input.Cursor
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents

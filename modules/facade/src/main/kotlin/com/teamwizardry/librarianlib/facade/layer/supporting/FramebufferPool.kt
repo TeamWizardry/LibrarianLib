@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.facade.layer.supporting
 
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.etcetera.StencilUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.client.shader.Framebuffer
 import java.util.LinkedList
