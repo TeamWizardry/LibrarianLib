@@ -5,7 +5,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 
 object ParticleSystems {
-    val systems = listOf(
+    val systems: List<TestSystem> = listOf(
         StaticSystem,
         PhysicsSystem,
         FloodSystem,
@@ -22,7 +22,7 @@ object ParticleSystems {
 
     init {
         systems.forEach {
-            ParticleSystemManager.add(it)
+            it.addToGame()
         }
     }
 

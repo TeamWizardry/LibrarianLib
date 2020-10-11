@@ -40,10 +40,6 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 public abstract class ParticleSystem {
 
-    init {
-        addToGame()
-    }
-
     /**
      * The modules that are called every tick for each particle. They are called in sequence for each particle, meaning
      * temporary state set in one module can be safely used in the subsequent modules.
@@ -193,7 +189,7 @@ public abstract class ParticleSystem {
      * @param lifetime the lifetime of the particle in ticks
      * @param params an array of values to initialize the particle array with.
      */
-    public fun addParticle(lifetime: Int, vararg params: Double): DoubleArray {
+    protected fun addParticle(lifetime: Int, vararg params: Double): DoubleArray {
         if (!systemInitialized) {
             reload()
             systemInitialized = true
@@ -267,6 +263,7 @@ public abstract class ParticleSystem {
         this.canBind = false
     }
 
+    @JvmSynthetic
     internal fun update() {
         shouldQueue.set(true)
         while (true) {

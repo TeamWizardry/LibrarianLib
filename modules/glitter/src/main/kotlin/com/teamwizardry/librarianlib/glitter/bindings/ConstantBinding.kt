@@ -7,12 +7,13 @@ import com.teamwizardry.librarianlib.glitter.ReadParticleBinding
  */
 public class ConstantBinding(
     /**
-     * The backing array of elements to use. Theoretically an array can be passed and that array modified
-     * externally, however using a [VariableBinding] is the more orthodox way of achieving that effect.
+     * The array of elements to use.
      */
-    override vararg val contents: Double
+    private vararg val constantContents: Double
 ): ReadParticleBinding {
+    override val contents: DoubleArray = DoubleArray(constantContents.size)
+
     override fun load(particle: DoubleArray) {
-        // nop
+        constantContents.copyInto(contents)
     }
 }

@@ -41,7 +41,7 @@ public class EaseBinding @JvmOverloads constructor(
     /**
      * The start value to interpolate from.
      */
-    @JvmField public val origin: ReadParticleBinding = ConstantBinding(*DoubleArray(bindingSize) { 1.0 }),
+    @JvmField public val origin: ReadParticleBinding = ConstantBinding(*DoubleArray(bindingSize) { 0.0 }),
     /**
      * The end value to interpolate to.
      */
