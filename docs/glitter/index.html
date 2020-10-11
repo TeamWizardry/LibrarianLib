@@ -1,0 +1,449 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Glitter - LibrarianLib</title>
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="../favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="../favicon.png">
+        
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        
+        <link rel="stylesheet" href="../css/print.css" media="print">
+        
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="../fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../librarianlib.html"><strong aria-hidden="true">1.</strong> LibrarianLib</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../reading_kotlin.html"><strong aria-hidden="true">1.1.</strong> Reading Kotlin cheat sheet</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Foundation</li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Foundation</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Mod Setup</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Registration</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">4.1.</strong> Items</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.2.</strong> Blocks</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.3.</strong> Tile Entities</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.4.</strong> Entities</div></li></ol></li><li class="chapter-item expanded "><li class="part-title">Facade</li><li class="chapter-item expanded "><div><strong aria-hidden="true">5.</strong> Facade</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> Layers</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">6.1.</strong> What is a Layer</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.2.</strong> Transforms</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.3.</strong> Events</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.4.</strong> IMValue/RMValue</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.5.</strong> Self-layout</div></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">7.</strong> Input</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">7.1.</strong> mouseOver</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">7.2.</strong> Keyboard Input</div></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> Animation</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">8.1.</strong> Basics</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.2.</strong> Keyframes</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.3.</strong> Lerpers</div></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> Advanced topics</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">9.1.</strong> Clipping and Render to Texture</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.2.</strong> Opacity</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.3.</strong> Masks</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.4.</strong> Blend Modes</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.5.</strong> Tooltips</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.6.</strong> Yoga Layout</div></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> Containers</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">10.1.</strong> Woo boy…</div></li></ol></li><li class="chapter-item expanded "><li class="part-title">Other modules</li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> Core</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">11.1.</strong> Useful Shit</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.2.</strong> Math?</div></li></ol></li><li class="chapter-item expanded "><a href="../glitter/index.html" class="active"><strong aria-hidden="true">12.</strong> Glitter</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">13.</strong> Albedo</div></li><li class="chapter-item expanded "><a href="../courier/index.html"><strong aria-hidden="true">14.</strong> Courier</a></li><li class="chapter-item expanded "><a href="../etcetera/index.html"><strong aria-hidden="true">15.</strong> Etcetera</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../etcetera/event_bus.html"><strong aria-hidden="true">15.1.</strong> Event Bus</a></li><li class="chapter-item expanded "><a href="../etcetera/raycasting.html"><strong aria-hidden="true">15.2.</strong> Raycasting</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">16.</strong> Mirage</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">17.</strong> Mosaic</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">17.1.</strong> Sprites</div></li></ol></li><li class="chapter-item expanded "><a href="../prism/index.html"><strong aria-hidden="true">18.</strong> Prism</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../prism/refract_class.html"><strong aria-hidden="true">18.1.</strong> @RefractClass</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">18.2.</strong> Woo boy…</div></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">LibrarianLib</h1>
+
+                    <div class="right-buttons">
+                        
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#glitter" id="glitter">Glitter</a></h1>
+<p>Glitter is LibrarianLib’s high-performance particle module, which is inspired primarily by Unreal
+Engine’s Niagara particle systems.</p>
+<p>As an example of the performance, here are over sixty thousand particles with full world
+collision running at a solid 30 FPS. Part of the reason the system is so performant is that it’s
+designed to do everything with nearly zero object allocations, meaning there’s barely any memory
+churn even with tens of thousands of particles active at once.</p>
+<p><video width="750" autoplay loop><source src="60k_Glitter.mp4" type="video/mp4"></video>
+<img src="60k_Glitter.png" alt="60,000 particles at 30 FPS" /></p>
+<p>For reference and as an easy jumping off point, here’s a complete particle system. All of this
+will be explained further down.</p>
+<pre><code class="language-java"><span class="boring">import com.teamwizardry.librarianlib.glitter.ParticleSystem;
+</span><span class="boring">import com.teamwizardry.librarianlib.glitter.bindings.ConstantBinding;
+</span><span class="boring">import com.teamwizardry.librarianlib.glitter.bindings.StoredBinding;
+</span><span class="boring">import com.teamwizardry.librarianlib.glitter.modules.BasicPhysicsUpdateModule;
+</span><span class="boring">import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule;
+</span><span class="boring">import net.minecraft.util.ResourceLocation;
+</span><span class="boring">
+</span>public class QuickstartSystem extends ParticleSystem {
+    @Override
+    public void configure() {
+        StoredBinding position = bind(3);
+        StoredBinding previousPosition = bind(3);
+        StoredBinding velocity = bind(3);
+        StoredBinding color = bind(4);
+
+        getUpdateModules().add(new BasicPhysicsUpdateModule(
+                position, previousPosition, velocity
+        ));
+
+        getRenderModules().add(new SpriteRenderModule(
+                SpriteRenderModule.simpleRenderType(
+                        new ResourceLocation(&quot;modid&quot;, &quot;textures/particle/sprite.png&quot;)
+                ),
+                position,
+                previousPosition,
+                color,
+                new ConstantBinding(0.25) // size
+        ));
+    }
+
+    public void spawn(
+            double x, double y, double z,
+            double vx, double vy, double vz,
+            float r, float g, float b, float a
+    ) {
+        this.addParticle(
+                20,         // lifetime
+                x, y, z,    // position
+                x, y, z,    // previousPosition
+                vx, vy, vz, // velocity
+                r, g, b, a  // color
+        );
+    }
+}
+</code></pre>
+<h2><a class="header" href="#systems" id="systems">Systems</a></h2>
+<p>Systems are the core of Glitter. They define the data (bindings), behavior (update modules), and
+appearance (render modules) of particles. </p>
+<p>Particle systems are configured by overriding the <code>configure()</code> method, which may be called
+multiple times (reloading textures reloads particle systems, to facilitate hot swapping). There
+should only be one instance of a particle system, and it should be registered using the
+<code>addToGame</code> method.</p>
+<p>Particles are created using the protected <code>addParticle</code> method. Subclasses should provide custom
+<code>spawn</code> methods that have meaningful parameters (<code>addParticle</code> just accepts a bunch of <code>double</code>s
+for reasons I’ll go into in the next section).</p>
+<h2><a class="header" href="#bindings" id="bindings">Bindings</a></h2>
+<p>In order for a particle system to do anything useful, each particle needs to hold some data. In
+Glitter particles aren’t represented by instances of classes, since classes introduce unnecessary
+overhead. Instead, each particle is represented as a <code>double[]</code>, and bindings provide access and
+meaning to those array elements.</p>
+<p>Bindings can be created in the <code>configure()</code> method using the <code>bind(int)</code> method. Each binding
+is allocated the specified number of elements in the particle array. However, the only time this
+layout will actually matter to you is when spawning particles.</p>
+<pre><code class="language-java"><span class="boring">import com.teamwizardry.librarianlib.glitter.ParticleSystem;
+</span><span class="boring">import com.teamwizardry.librarianlib.glitter.bindings.StoredBinding;
+</span><span class="boring">
+</span>public class BindingExampleSystem extends ParticleSystem {
+    @Override
+    public void configure() {
+        StoredBinding position = bind(3);
+        StoredBinding color = bind(4);
+        
+        // The resulting particle array layout: 
+        // [
+        //     age,
+        //     lifetime,
+        //     pos, pos, pos,
+        //     color, color, color, color
+        // ]
+    }
+}
+</code></pre>
+<p>To use a binding, pass the particle array into the binding’s <code>load(double[])</code> method. Once the
+data has been loaded into the binding, it can be accessed from the <code>getContents()</code> array. If the
+binding is writable then passing the particle into the <code>store(double[])</code> method will store the
+modified values back into particle array.</p>
+<p>Because of this abstraction (using <code>load</code>/<code>store</code>), bindings don’t necessarily have to be
+directly accessing values from the particle array. Glitter has a number of built in bindings that
+do more than directly index into the particles. </p>
+<ul>
+<li><code>ConstantBinding</code><br />
+One of the more common bindings</li>
+<li><code>EaseBinding</code><br />
+This will ease between two values based on the contents of other bindings</li>
+<li><code>PathBinding</code><br />
+This will ease a value along a <code>ParticlePath</code> (e.g. <code>BezierPath</code> and <code>EllipsePath</code>)</li>
+<li><code>VariableBinding</code><br />
+A binding that can store temporary state for use between multiple modules.</li>
+</ul>
+<h2><a class="header" href="#update-modules" id="update-modules">Update Modules</a></h2>
+<p>Without update modules, the most a particle can do is exist in a current state. It can’t move,
+change color, or really change at all. Every tick, each particle is passed to the configured
+update modules for processing. (e.g. particle 0 will be passed to modules A, B, then C, then
+particle 1 will be passed to modules A, B, then C, …)</p>
+<p>The most commonly used update module is the <code>BasicPhysicsUpdateModule</code>. This module handles
+everything needed for most physics-based particles, including gravitational acceleration, block
+collision, bouncing, and friction. All these parameters are configurable through bindings, but have
+sensible defaults that you likely won’t need to change.</p>
+<pre><code class="language-java"><span class="boring">import com.teamwizardry.librarianlib.glitter.ParticleSystem;
+</span><span class="boring">import com.teamwizardry.librarianlib.glitter.bindings.StoredBinding;
+</span><span class="boring">import com.teamwizardry.librarianlib.glitter.modules.BasicPhysicsUpdateModule;
+</span><span class="boring">
+</span>public class BasicPhysicsExampleSystem extends ParticleSystem {
+    @Override
+    public void configure() {
+        StoredBinding position = bind(3);
+        StoredBinding previousPosition = bind(3);
+        StoredBinding velocity = bind(3);
+
+        getUpdateModules().add(new BasicPhysicsUpdateModule(
+                position, previousPosition, velocity
+        ));
+    }
+}
+</code></pre>
+<h2><a class="header" href="#render-modules" id="render-modules">Render Modules</a></h2>
+<p>Render modules are what take your particles and render them on the screen. A system can have any
+number of render modules, meaning you can overlay multiple render effects on top of each other
+(e.g. an opaque sprite with an additive halo sprite).</p>
+<p>You can either implement your own or use the built-in <code>SpriteRenderModule</code>. At its simplest, the
+<code>SpriteRenderModule</code> takes just a render type and position binding. The next two optional
+parameters—particle color and particle size—are the most commonly used ones, but it has several 
+other useful features.</p>
+<pre><code class="language-java"><span class="boring">import com.teamwizardry.librarianlib.glitter.ParticleSystem;
+</span><span class="boring">import com.teamwizardry.librarianlib.glitter.bindings.ConstantBinding;
+</span><span class="boring">import com.teamwizardry.librarianlib.glitter.bindings.StoredBinding;
+</span><span class="boring">import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule;
+</span><span class="boring">import net.minecraft.util.ResourceLocation;
+</span><span class="boring">
+</span>public class SpriteRenderExampleSystem extends ParticleSystem {
+    @Override
+    public void configure() {
+        StoredBinding position = bind(3);
+        StoredBinding previousPosition = bind(3);
+        StoredBinding color = bind(4);
+
+        getRenderModules().add(new SpriteRenderModule(
+                SpriteRenderModule.simpleRenderType(
+                        new ResourceLocation(&quot;modid&quot;, &quot;textures/particle/sprite.png&quot;)
+                ),
+                position,
+                previousPosition,
+                color,
+                new ConstantBinding(0.25) // size
+        ));
+    }
+}
+</code></pre>
+<h3><a class="header" href="#advanced-spriterendermodule-features" id="advanced-spriterendermodule-features">Advanced <code>SpriteRenderModule</code> Features</a></h3>
+<h4><a class="header" href="#alpha-multiplier" id="alpha-multiplier">Alpha Multiplier</a></h4>
+<p>The easiest to understand would be the <code>alphaMultiplier</code>. This acts as an additional modifier on
+the color’s alpha channel, allowing easier opacity manipulation.</p>
+<h4><a class="header" href="#facing-vector" id="facing-vector">Facing Vector</a></h4>
+<p>One of the most interesting features of the sprite renderer is support for particles with sprites
+that don’t directly face the player. By default, sprites are always rotated such that they face
+directly toward the camera, essentially appearing 2D. However, by passing a custom 3D binding for
+the <code>facingVector</code>, particles can be made to face any direction you want. By a fortunate quirk of
+the math, the facing vector doesn’t even need to be normalized.</p>
+<p>In this example I’ve set the facing vector to the velocity binding.</p>
+<p><img src="sprite_facing.png" alt="sprite facing example" /></p>
+<h4><a class="header" href="#sprite-sheet" id="sprite-sheet">Sprite Sheet</a></h4>
+<p>Often you’ll have a large number of particle systems that are identical in every way except the
+texture. It can be tedious, repetitive, and downright inefficient to have separate systems for
+each texture, so the <code>SpriteRenderModule</code> has two parameters to fix that: the <code>spriteSheetSize</code>
+and the <code>spriteSheetIndex</code> binding. The sprite sheet size must be a power of two (2, 4, 8, ...),
+and the sprite sheet index is an index in left to right, top to bottom order. This index can even
+be an <code>EaseBinding</code> to support animations.</p>
+<h2><a class="header" href="#depth-sorting--other-modules" id="depth-sorting--other-modules">Depth Sorting &amp; Other Modules</a></h2>
+<p>There are two other types of modules which are more rarely used: global update modules
+(<code>getGlobalUpdateModules()</code>) and render prep modules (<code>getRenderPrepModules()</code>). The
+<code>DepthSortModule</code> is a global update module, and likely the one you’ll use most.</p>
+<h3><a class="header" href="#global-update-modules" id="global-update-modules">Global Update Modules</a></h3>
+<p>Global update modules are given the entire backing list of particles before each frame, and are
+useful for things like depth sorting.</p>
+<h3><a class="header" href="#render-prep-modules" id="render-prep-modules">Render Prep Modules</a></h3>
+<p>These modules are identical to update modules, but are run during the render phase. These have
+limited usefulness, but are available if you need them. Note that frames are often rendered much
+faster than the tick rate, and their impact gets larger and larger the higher the frame rate, so
+these modules are even more performance critical than the update modules.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../reading_kotlin.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../courier/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a rel="prev" href="../reading_kotlin.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a rel="next" href="../courier/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+        <!-- Livereload script (if served using the cli tool) -->
+        <script type="text/javascript">
+            var socket = new WebSocket("ws://localhost:3000/__livereload");
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+        
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>
