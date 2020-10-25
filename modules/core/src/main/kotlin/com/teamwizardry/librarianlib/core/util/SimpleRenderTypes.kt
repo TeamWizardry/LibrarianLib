@@ -118,4 +118,16 @@ public object SimpleRenderTypes {
      */
     @JvmStatic
     public val flatQuads: RenderType = flat(GL11.GL_QUADS)
+
+    /**
+     * Flat colored lines
+     */
+    @JvmStatic
+    public val flatLines: RenderType = flat(GL11.GL_LINES)
+
+    /**
+     * Flat colored line strip
+     */
+    @JvmStatic
+    public val flatLineStrip: RenderType = flat(GL11.GL_LINE_STRIP)
 }

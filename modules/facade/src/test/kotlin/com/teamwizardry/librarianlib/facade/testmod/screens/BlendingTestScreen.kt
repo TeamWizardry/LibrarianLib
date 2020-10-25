@@ -19,7 +19,7 @@ class BlendingTestScreen(title: ITextComponent): FacadeScreen(title) {
         main.add(RectLayer(Color.BLUE, 110, 10, 80, 80))
 
         val diff = GuiLayer(0, 0, 100, 100)
-        diff.pos_rm.animate(vec(100, 0), 40f, Easing.easeInOutQuart).reverseOnRepeat().repeatForever()
+        diff.pos_rm.animate(vec(100, 0), 40f, Easing.easeInOutQuart).reverseOnRepeat().repeat()
         diff.blendMode = BlendMode.ADDITIVE
         diff.add(RectLayer(Color.GREEN, 10, 10, 80, 80))
 

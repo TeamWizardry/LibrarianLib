@@ -9,7 +9,7 @@ public class SimpleAnimation<T>(
     duration: Float,
     public val easing: Easing
 ): BasicAnimation<T>(duration) {
-    override fun getValueAt(time: Float): T {
+    override fun getValueAt(time: Float, loopCount: Int): T {
         return lerper.lerp(from, to, easing.ease(time))
     }
 }

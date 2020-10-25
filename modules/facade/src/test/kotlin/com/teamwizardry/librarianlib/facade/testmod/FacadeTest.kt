@@ -7,8 +7,10 @@ import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
 import net.minecraft.util.text.TextComponent
 
-class FacadeTest(val name: String, val screenConstructor: (ITextComponent) -> Screen) {
-    fun create(): Screen {
+class FacadeTest(override val name: String, val screenConstructor: (ITextComponent) -> Screen): FacadeTestEntry {
+    constructor(name: String, screenConstructor: () -> Screen): this(name, { _ -> screenConstructor() })
+
+    override fun create(): Screen {
         return try {
             screenConstructor(StringTextComponent(name))
         } catch (e: Exception) {

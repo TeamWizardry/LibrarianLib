@@ -59,12 +59,7 @@ import java.awt.Color
 import java.lang.Exception
 import java.util.ConcurrentModificationException
 import java.util.PriorityQueue
-import java.util.function.BooleanSupplier
-import java.util.function.Consumer
-import java.util.function.DoubleSupplier
-import java.util.function.IntSupplier
-import java.util.function.LongSupplier
-import java.util.function.Predicate
+import java.util.function.*
 import kotlin.math.PI
 import kotlin.math.floor
 import kotlin.math.max
@@ -139,6 +134,9 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * Unless necessary, layers shouldn't change any global GL state. However, as a precaution, there are a number of
      * state guarantees made before every call to [draw]. The authoritative list is provided as a "sample" in these
      * docs.
+     *
+     * The passed context's matrix can be modified. Any changes will be popped at the end. However, if any more matrices
+     * are pushed in the draw method, they *must* be popped by the end.
      *
      * @sample glStateGuarantees
      */
@@ -224,10 +222,25 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
 
     //region GuiValue
     //region RMValue
+
     /**
-     * Creates an RMValue and registers it for animation updates.
+     * Creates an RMValue and registers it for animation updates. Automatically detects the lerper based on the reified
+     * type.
      */
-    public fun <T> rmValue(initialValue: T): RMValue<T> = rmValue(initialValue, null, null)
+    @JvmSynthetic
+    public inline fun <reified T> rmValue(initialValue: T): RMValue<T> {
+        @Suppress("UNCHECKED_CAST") val lerper = Lerpers.getOrNull(Mirror.reflect<T>())?.value as Lerper<T>?
+        return rmValue(initialValue, lerper, null)
+    }
+
+    /**
+     * Creates an RMValue and registers it for animation updates. Automatically detects the lerper based on the passed
+     * type.
+     */
+    public fun <T> rmValue(initialValue: T, type: Class<T>): RMValue<T> {
+        @Suppress("UNCHECKED_CAST") val lerper = Lerpers.getOrNull(Mirror.reflect(type))?.value as Lerper<T>?
+        return rmValue(initialValue, lerper, null)
+    }
 
     /**
      * Creates an RMValue and registers it for animation updates.
@@ -235,9 +248,23 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     public fun <T> rmValue(initialValue: T, lerper: Lerper<T>): RMValue<T> = rmValue(initialValue, lerper, null)
 
     /**
-     * Creates an RMValue and registers it for animation updates.
+     * Creates an RMValue and registers it for animation updates. Automatically detects the lerper based on the reified
+     * type.
      */
-    public fun <T> rmValue(initialValue: T, change: ChangeListener<T>): RMValue<T> = rmValue(initialValue, null, change)
+    @JvmSynthetic
+    public inline fun <reified T> rmValue(initialValue: T, change: ChangeListener<T>): RMValue<T> {
+        @Suppress("UNCHECKED_CAST") val lerper = Lerpers.getOrNull(Mirror.reflect<T>())?.value as Lerper<T>?
+        return rmValue(initialValue, lerper, change)
+    }
+
+    /**
+     * Creates an RMValue and registers it for animation updates. Automatically detects the lerper based on the passed
+     * type.
+     */
+    public fun <T> rmValue(initialValue: T, change: ChangeListener<T>, type: Class<T>): RMValue<T> {
+        @Suppress("UNCHECKED_CAST") val lerper = Lerpers.getOrNull(Mirror.reflect(type))?.value as Lerper<T>?
+        return rmValue(initialValue, lerper, change)
+    }
 
     /**
      * Creates an RMValue and registers it for animation updates.
@@ -283,8 +310,16 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     /**
      * Create an IMValue, automatically detecting lerpers if they exist and registering it for animation updates.
      */
-    public inline fun <reified T> imValue(noinline callback: () -> T): IMValue<T> {
+    public inline fun <reified T> imValue(callback: Supplier<T>): IMValue<T> {
         @Suppress("UNCHECKED_CAST") val lerper = Lerpers.getOrNull(Mirror.reflect<T>())?.value as Lerper<T>?
+        return addAnimationTimeListener(IMValue(callback, lerper))
+    }
+
+    /**
+     * Create an IMValue, automatically detecting lerpers if they exist and registering it for animation updates.
+     */
+    public fun <T> imValue(callback: Supplier<T>, type: Class<T>): IMValue<T> {
+        @Suppress("UNCHECKED_CAST") val lerper = Lerpers.getOrNull(Mirror.reflect(type))?.value as Lerper<T>?
         return addAnimationTimeListener(IMValue(callback, lerper))
     }
 
@@ -294,6 +329,14 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     @JvmSynthetic
     public inline fun <reified T> imValue(initialValue: T): IMValue<T> {
         @Suppress("UNCHECKED_CAST") val lerper = Lerpers.getOrNull(Mirror.reflect<T>())?.value as Lerper<T>?
+        return addAnimationTimeListener(IMValue(initialValue, lerper))
+    }
+
+    /**
+     * Create an IMValue, automatically detecting lerpers if they exist and registering it for animation updates.
+     */
+    public fun <T> imValue(initialValue: T, type: Class<T>): IMValue<T> {
+        @Suppress("UNCHECKED_CAST") val lerper = Lerpers.getOrNull(Mirror.reflect(type))?.value as Lerper<T>?
         return addAnimationTimeListener(IMValue(initialValue, lerper))
     }
 
@@ -522,8 +565,9 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         // calling `toList` just creates an array and then an ArrayList, so we just use the array
         for (child in children.toTypedArray()) {
             // a component may have been removed, in which case it won't be expecting any interaction
-            if (child.parent != null && (includeMask || child !== maskLayer))
-                block(child)
+            if (child.parent !== this || (child === maskLayer && !includeMask))
+                continue
+            block(child)
         }
     }
 
@@ -538,8 +582,9 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         // calling `toList` just creates an array and then an ArrayList, so we just use the array
         for (child in children.toTypedArray()) {
             // a component may have been removed, in which case it won't be expecting any interaction
-            if (child.parent != null && (includeMask || child !== maskLayer))
-                block.accept(child)
+            if (child.parent !== this || (child === maskLayer && !includeMask))
+                continue
+            block.accept(child)
         }
     }
 
@@ -663,8 +708,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
 
     /**
      * The fractional anchor position in this layer's coordinate space.
-     * (0, 0) is the top-left corner, (1, 1) is the bottom-right, and (0.5, 0.5) is the middle
-     * outside the bounds of the layer.
+     * (0, 0) is the top-left corner, (1, 1) is the bottom-right, and (0.5, 0.5) is the middle.
      *
      * Setting [pos] sets the position of the anchor, not the layer's origin.
      *
@@ -943,7 +987,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     }
 
     override val parentSpace: CoordinateSpace2D?
-        get() = parent ?: DisplaySpace
+        get() = parent ?: ScreenSpace
 
     private var matrixDirty = true
     private var _matrix = MutableMatrix3d()
@@ -1260,7 +1304,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * Draws a bounding box around the edge of this component
      */
     @Suppress("UNUSED_PARAMETER") // TODO: update to use matrices
-    public fun drawDebugBoundingBox(context: GuiDrawContext, color: Color) {
+    private fun drawDebugBoundingBox(context: GuiDrawContext, color: Color) {
         val points = getBoundingBoxPoints()
 
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
@@ -1279,7 +1323,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * Creates a series of points defining the path the debug bounding box follows. For culling reasons this list
      * must be in clockwise order
      */
-    private fun getBoundingBoxPoints(): List<Vec2d> {
+    protected fun getBoundingBoxPoints(): List<Vec2d> {
         val list = mutableListOf<Vec2d>()
         if (cornerRadius != 0.0) {
             val rad = cornerRadius
@@ -1495,6 +1539,10 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
 
     @JvmSynthetic
     internal fun triggerEvent(event: Event) {
+        // We won't send the event to any layers added during the event handling. If we don't do this than the game can
+        // infinitely recurse when a layer adds another of itself inside an event.
+        val preChildren = children.toTypedArray()
+
         when (event) {
             is GuiLayerEvents.MouseEvent -> {
                 if (!interactive)
@@ -1524,39 +1572,30 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
                     wasMouseOver = mouseOver
                 }
 
-                this.forEachChild {
+                preChildren.forEach {
+                    if (it.parent !== this)
+                        return@forEach
                     it.triggerEvent(event)
                 }
                 event.stack.pop()
+                return // early return because we already fired the event and iterated children
             }
             is GuiLayerEvents.KeyEvent -> {
                 if (!interactive)
                     return
-                BUS.fire(event)
-                this.forEachChild {
-                    it.triggerEvent(event)
-                }
             }
             is GuiLayerEvents.Update -> {
                 this.update()
-                BUS.fire(event)
-                this.forEachChild {
-                    it.triggerEvent(event)
-                }
             }
             is GuiLayerEvents.PrepareLayout -> {
                 this.prepareLayout()
-                BUS.fire(event)
-                this.forEachChild {
-                    it.triggerEvent(event)
-                }
             }
-            else -> {
-                BUS.fire(event)
-                this.forEachChild {
-                    it.triggerEvent(event)
-                }
-            }
+        }
+        BUS.fire(event)
+        preChildren.forEach {
+            if (it.parent !== this)
+                return@forEach
+            it.triggerEvent(event)
         }
     }
 

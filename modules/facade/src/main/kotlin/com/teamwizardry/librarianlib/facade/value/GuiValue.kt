@@ -191,7 +191,7 @@ public abstract class GuiValue<T>: AnimationTimeListener {
                 from = currentValue
         }
 
-        override fun getValueAt(time: Float): T {
+        override fun getValueAt(time: Float, loopCount: Int): T {
             return lerp(from, to, easing.ease(time))
         }
     }

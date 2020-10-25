@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.math.Matrix3dView
 import com.teamwizardry.librarianlib.math.MutableMatrix3d
 
 /**
- * The logical pixel coordinate space for GUIs. Any component within a GUI can convert points to [ScreenSpace] to get an
+ * The logical pixel coordinate space for GUIs. Any layer within a GUI can convert points to [ScreenSpace] to get an
  * objective location on the display (measured in logical pixels at Minecraft's GUI scale, not literal screen pixels).
  */
 public object ScreenSpace: CoordinateSpace2D {

@@ -9,6 +9,7 @@ public class KeyframeAnimation<T>(initialValue: T, private val lerper: Lerper<T>
         private set
     private val keyframes = mutableListOf<Keyframe>()
 
+    private var hasCallbacks: Boolean = false
     /**
      * Animations are often invoked incrementally, so we cache the last index. If the time falls within this
      * keyframe's range it's used, otherwise a normal search is performed.
@@ -45,11 +46,12 @@ public class KeyframeAnimation<T>(initialValue: T, private val lerper: Lerper<T>
     }
 
     /**
-     * Specifies a function to run when a keyframe is reached. NOTE: this will behave erratically if this animation is
-     * used multiple times at once or is called non-sequentially.
+     * Specifies a function to run when a keyframe is reached. NOTE: this makes the animation incompatible with
+     * [reverseOnRepeat].
      */
     public fun onKeyframe(callback: Runnable?): KeyframeAnimation<T> {
         keyframes.last().onKeyframe = callback
+        hasCallbacks = keyframes.any { it.onKeyframe != null }
         return this
     }
 
@@ -59,14 +61,25 @@ public class KeyframeAnimation<T>(initialValue: T, private val lerper: Lerper<T>
         return value
     }
 
-    override fun getValueAt(time: Float): T {
+    override fun getValueAt(time: Float, loopCount: Int): T {
+
+        // run callbacks in a loop
+        if(loopCount != 0 && hasCallbacks) {
+            for (i in 0 until loopCount) {
+                for (j in index until keyframes.size) {
+                    keyframes[j].onKeyframe?.run()
+                }
+                index = 0
+            }
+        }
+
         if(time <= 0)
             return keyframes.first().value
         if(time >= 1) {
             for(i in index until keyframes.size) {
                 keyframes[i].onKeyframe?.run()
             }
-            index = keyframes.size
+            index = keyframes.lastIndex
             return keyframes.last().value
         }
         if(keyframes.size == 1)
@@ -77,9 +90,8 @@ public class KeyframeAnimation<T>(initialValue: T, private val lerper: Lerper<T>
             val newIndex = keyframes.indexOfFirst { it.duration != 0f && absTime in it }
             if(newIndex < 0) {
                 throw IllegalStateException("No keyframe found for time $absTime (duration is $duration)")
-            } else if(newIndex < index) {
-                logger.warn("Backtracking from keyframe $index to $newIndex. Keyframe callbacks may be run " +
-                    "multiple times.")
+            } else if(newIndex < index && hasCallbacks) {
+                throw IllegalStateException("Keyframe animations with callbacks can't be run backward")
             } else {
                 for(i in index until newIndex) {
                     keyframes[i].onKeyframe?.run()

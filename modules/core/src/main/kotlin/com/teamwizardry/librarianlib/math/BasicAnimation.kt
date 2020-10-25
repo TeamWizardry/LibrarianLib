@@ -24,8 +24,11 @@ public abstract class BasicAnimation<T>(
     /**
      * Get the value of the animation at the passed fractional time, which has been adjusted based on the duration and
      * repeat settings to be in the range `[0, 1]`.
+     *
+     * @param time The time to sample in the range `[0, 1]`
+     * @param loopCount The number of times the animation wrapped around between the previous sample and this sample
      */
-    protected abstract fun getValueAt(time: Float): T
+    protected abstract fun getValueAt(time: Float, loopCount: Int): T
 
     override val end: Float
         get() = if(repeatCount == Int.MAX_VALUE)
@@ -33,24 +36,28 @@ public abstract class BasicAnimation<T>(
         else
             duration * repeatCount.clamp(1, Int.MAX_VALUE)
 
+    /**
+     * Get the value at the specified [time]. Time should increase monotonically for each instance. Some animations may
+     * behave erratically if [time] ever decreases.
+     */
     override fun animate(time: Float): T {
         if(duration == 0f)
-            return if(time == 0f) getValueAt(0f) else getValueAt(1f)
+            return if(time == 0f) getValueAt(0f, 0) else getValueAt(1f, 0)
 
-        var loopIndex = (time / duration).toInt()
-        var loopTime = time % duration
+        var loopCount = (time / duration).toInt()
+        var loopedTime = time % duration
 
         // If we don't do this check the animation will snap back to its initial value exactly at the end of its loop.
-        if(time != 0f && loopTime == 0f) {
-            loopTime = duration
-            loopIndex--
+        if(time != 0f && loopedTime == 0f) {
+            loopedTime = duration
+            loopCount--
         }
 
-        if(reverseOnRepeat && loopIndex % 2 == 1) {
-            loopTime = duration - loopTime
+        if(reverseOnRepeat && loopCount % 2 == 1) {
+            loopedTime = duration - loopedTime
         }
 
-        return getValueAt(loopTime / duration)
+        return getValueAt(loopedTime / duration, loopCount)
     }
 
     override fun onStarted() {
@@ -58,7 +65,7 @@ public abstract class BasicAnimation<T>(
     }
 
     override fun onStopped(time: Float): T {
-        val finalValue = getValueAt(1f)
+        val finalValue = getValueAt(1f, 0)
         completionCallback?.run()
         return finalValue
     }
@@ -68,7 +75,7 @@ public abstract class BasicAnimation<T>(
         this.repeatCount = repeatCount
     }
 
-    public fun repeatForever(): BasicAnimation<T> = build {
+    public fun repeat(): BasicAnimation<T> = build {
         this.repeatCount = Int.MAX_VALUE
     }
 

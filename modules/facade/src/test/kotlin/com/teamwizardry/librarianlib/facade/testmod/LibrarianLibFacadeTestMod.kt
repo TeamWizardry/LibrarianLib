@@ -5,6 +5,9 @@ package com.teamwizardry.librarianlib.facade.testmod
 import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import com.teamwizardry.librarianlib.facade.LibrarianLibFacadeModule
 import com.teamwizardry.librarianlib.facade.container.FacadeContainerType
+import com.teamwizardry.librarianlib.facade.example.*
+import com.teamwizardry.librarianlib.facade.example.gettingstarted.*
+import com.teamwizardry.librarianlib.facade.example.transform.*
 import com.teamwizardry.librarianlib.facade.testmod.containers.SimpleContainer
 import com.teamwizardry.librarianlib.facade.testmod.containers.SimpleContainerScreen
 import com.teamwizardry.librarianlib.facade.testmod.containers.SimpleInventoryContainer
@@ -29,25 +32,25 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 
 @Mod("librarianlib-facade-test")
 object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
-    val groups: List<FacadeTestGroup> = listOf(
-        FacadeTestGroup("basics", "Basics", listOf(
+    val groups: Map<String, FacadeTestGroup> = mapOf(
+        "basics" to FacadeTestGroup("Basics", listOf(
             FacadeTest("Empty", ::EmptyTestScreen),
             FacadeTest("zIndex", ::ZIndexTestScreen),
             FacadeTest("Layer Transform", ::LayerTransformTestScreen),
             FacadeTest("Layer MouseOver/MouseOff", ::LayerMouseOverOffTestScreen),
             FacadeTest("Event Priority", ::EventPriorityScreen),
         )),
-        FacadeTestGroup("layers", "Layers", listOf(
+        "layers" to FacadeTestGroup("Layers", listOf(
             FacadeTest("Simple Sprite", ::SimpleSpriteTestScreen),
             FacadeTest("Simple Text", ::SimpleTextTestScreen),
             FacadeTest("DragLayer", ::DragLayerTestScreen)
         )),
-        FacadeTestGroup("animations", "Animations/Time", listOf(
+        "animations" to FacadeTestGroup("Animations/Time", listOf(
             FacadeTest("Animations", ::AnimationTestScreen),
             FacadeTest("Scheduled Callbacks", ::ScheduledCallbacksTestScreen),
             FacadeTest("Scheduled Repeated Callbacks", ::ScheduledRepeatedCallbacksTestScreen)
         )),
-        FacadeTestGroup("clipping_compositing", "Clipping/Compositing", listOf(
+        "clipping_compositing" to FacadeTestGroup("Clipping/Compositing", listOf(
             FacadeTest("Clip to Bounds", ::ClipToBoundsTestScreen),
             FacadeTest("Masking", ::MaskingTestScreen),
             FacadeTest("Opacity", ::OpacityTestScreen),
@@ -55,19 +58,30 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
             FacadeTest("Render to FBO Scale", ::RenderFBOScaleTest),
             FacadeTest("Render to Quad Scale", ::RenderQuadScaleTest)
         )),
-        FacadeTestGroup("advanced", "Advanced", listOf(
+        "advanced" to FacadeTestGroup("Advanced", listOf(
             FacadeTest("Yoga Simple Flex", ::SimpleYogaScreen),
             FacadeTest("Yoga List", ::YogaListScreen),
             FacadeTest("Pastry", ::PastryTestScreen)
-        ))
+        )),
+        "examples" to FacadeTestGroup("Examples", listOf(
+            FacadeTest("Alignment", ::ExampleAlignmentScreen),
+            FacadeTest("Getting Started > Hello Square", ::HelloSquareScreen),
+            FacadeTest("Getting Started > All the Squares", ::AllTheSquaresScreen),
+            FacadeTest("Getting Started > Squares all the Way Down", ::SquaresAllTheWayDownScreen),
+            FacadeTest("Guessing Game", ::GuessingGameScreen),
+            FacadeTestGroup("Transform >", listOf(
+                FacadeTest("Visualization Test", ::VisualizationTestScreen),
+                FacadeTest("Position", ::PositionExampleScreen),
+            )),
+        )),
     )
 
     val simpleContainerType: FacadeContainerType<SimpleContainer>
     val simpleInventoryContainerType: FacadeContainerType<SimpleInventoryContainer>
 
     init {
-        groups.forEach { group ->
-            +TestScreenConfig(group.id, group.name, itemGroup) {
+        groups.forEach { (id, group) ->
+            +TestScreenConfig(id, group.name, itemGroup) {
                 customScreen {
                     TestListScreen(group.name, group.tests)
                 }

@@ -71,4 +71,9 @@ public object DistinctColors {
     public fun forObject(value: Any?): Color {
         return colors[abs(value.hashCode()) % colors.size]
     }
+
+    @JvmStatic
+    public fun random(): Color {
+        return colors[(Math.random() * colors.size).toInt()]
+    }
 }

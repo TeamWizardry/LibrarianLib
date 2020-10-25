@@ -9,7 +9,7 @@ import net.minecraft.util.text.StringTextComponent
 import java.awt.Color
 import kotlin.math.max
 
-class TestListScreen(name: String, val tests: List<FacadeTest>): Screen(StringTextComponent(name)) {
+class TestListScreen(name: String, val tests: List<FacadeTestEntry>): Screen(StringTextComponent(name)) {
     val itemHeight: Int = Client.fontRenderer.FONT_HEIGHT + 1
     val border: Int = 3
 
