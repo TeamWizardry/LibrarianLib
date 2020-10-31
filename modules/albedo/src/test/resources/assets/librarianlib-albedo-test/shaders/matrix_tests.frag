@@ -66,7 +66,7 @@ mat2x2 matrix2x2_expected = mat2x2(
     01, 11  // column 1
 );
 
-#pragma import <gridutil.glsl>
+#pragma include <gridutil.glsl>
 
 
 ivec2 dimensions = ivec2(9, 9);

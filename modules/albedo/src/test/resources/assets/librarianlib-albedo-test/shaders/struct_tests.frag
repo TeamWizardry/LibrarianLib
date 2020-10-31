@@ -34,7 +34,7 @@ Simple[2] simpleArray_expected = Simple[2](
     )
 );
 
-#pragma import <gridutil.glsl>
+#pragma include <gridutil.glsl>
 
 ivec2 dimensions = ivec2(6, 4);
 void main() {

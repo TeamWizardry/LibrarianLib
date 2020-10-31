@@ -10,7 +10,7 @@ bvec3[2] vector3_expected = bvec3[2](bvec3(true, false, true), bvec3(false, true
 uniform bvec4[2] vector4;
 bvec4[2] vector4_expected = bvec4[2](bvec4(true, false, true, false), bvec4(false, true, false, true));
 
-#pragma import <gridutil.glsl>
+#pragma include <gridutil.glsl>
 
 ivec2 dimensions = ivec2(4, 4);
 void main() {

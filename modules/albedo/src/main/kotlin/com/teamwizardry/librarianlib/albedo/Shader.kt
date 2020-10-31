@@ -244,30 +244,30 @@ public abstract class Shader(
     ): String {
         if (name in stack) {
             val cycleString = stack.reversed().joinToString(" -> ") { if (it == name) "[$it" else "$it" } + " -> $name]"
-            throw ShaderCompilationException("#import cycle: $cycleString")
+            throw ShaderCompilationException("#pragma include cycle: $cycleString")
         }
         stack.push(name)
         val sourceNumber = files.getOrPut(name) { sourceNumberBase + files.size }
-        val importRegex = """^\s*#pragma\s+import\s*<\s*(\S*)\s*>\s*$""".toRegex()
+        val includeRegex = """^\s*#pragma\s+include\s*<\s*(\S*)\s*>\s*$""".toRegex()
 
         val text = Client.getResourceText(resourceManager, name)
         var out = ""
         text.lineSequence().forEachIndexed { i, line ->
             val lineNumber = i + 1
-            val importMatch = importRegex.matchEntire(line)
+            val includeMatch = includeRegex.matchEntire(line)
             if (lineNumber == 1 && "#version" !in text) {
                 out += "#line 0 $sourceNumber // $name\n"
             }
 
-            if (importMatch != null) {
-                val importName = importMatch.groupValues[1]
-                val importLocation = if (':' !in importName) {
-                    name.resolveSibling(importName)
+            if (includeMatch != null) {
+                val includeName = includeMatch.groupValues[1]
+                val includeLocation = if (':' !in includeName) {
+                    name.resolveSibling(includeName)
                 } else {
-                    ResourceLocation(importName)
+                    ResourceLocation(includeName)
                 }
 
-                out += readShader(resourceManager, importLocation, files, stack)
+                out += readShader(resourceManager, includeLocation, files, stack)
                 out += "\n#line $lineNumber $sourceNumber // $name\n"
             } else {
                 out += "$line\n"
@@ -340,8 +340,6 @@ public abstract class Shader(
         val program = GlStateManager.createProgram()
         if (program == 0)
             throw ShaderCompilationException("could not create program object")
-
-        // todo set up linking: https://www.khronos.org/opengl/wiki/Shader_Compilation#Before_linking
 
         if (vertexHandle != 0)
             GlStateManager.attachShader(program, vertexHandle)

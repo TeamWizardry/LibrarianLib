@@ -16,7 +16,6 @@ internal object UniformBinder {
                 if(uniform is GLSL.GLSLSampler) uniform.textureUnit = 0
                 if(uniform is GLSL.GLSLSampler.GLSLSamplerArray) uniform.textureUnits.fill(0)
             }
-            // TODO: struct recursion
         }
     }
 
