@@ -540,7 +540,7 @@ public abstract class GLSL(public val glConstant: Int) {
     //endregion
 
     //region Int vectors ========================================================================================================
-    public class ivec2: GLSL(GL20.GL_BOOL_VEC2) {
+    public class ivec2: GLSL(GL20.GL_INT_VEC2) {
         public var x: Int = 0
         public var y: Int = 0
 
@@ -553,7 +553,7 @@ public abstract class GLSL(public val glConstant: Int) {
             GL20.glUniform2i(location, x, y)
         }
 
-        public class array(length: Int): GLSLArray(GL20.GL_BOOL_VEC2, length) {
+        public class array(length: Int): GLSLArray(GL20.GL_INT_VEC2, length) {
             private val values: IntArray = IntArray(length * 2)
 
             public fun getX(index: Int): Int = values[index * 2]
@@ -585,7 +585,7 @@ public abstract class GLSL(public val glConstant: Int) {
         }
     }
 
-    public class ivec3: GLSL(GL20.GL_BOOL_VEC3) {
+    public class ivec3: GLSL(GL20.GL_INT_VEC3) {
         public var x: Int = 0
         public var y: Int = 0
         public var z: Int = 0
@@ -600,7 +600,7 @@ public abstract class GLSL(public val glConstant: Int) {
             GL20.glUniform3i(location, x, y, z)
         }
 
-        public class array(length: Int): GLSLArray(GL20.GL_BOOL_VEC3, length) {
+        public class array(length: Int): GLSLArray(GL20.GL_INT_VEC3, length) {
             private val values: IntArray = IntArray(length * 3)
 
             public fun getX(index: Int): Int = values[index * 3]
@@ -638,7 +638,7 @@ public abstract class GLSL(public val glConstant: Int) {
         }
     }
 
-    public class ivec4: GLSL(GL20.GL_BOOL_VEC4) {
+    public class ivec4: GLSL(GL20.GL_INT_VEC4) {
         public var x: Int = 0
         public var y: Int = 0
         public var z: Int = 0
@@ -655,7 +655,7 @@ public abstract class GLSL(public val glConstant: Int) {
             GL20.glUniform4i(location, x, y, z, w)
         }
 
-        public class array(length: Int): GLSLArray(GL20.GL_BOOL_VEC4, length) {
+        public class array(length: Int): GLSLArray(GL20.GL_INT_VEC4, length) {
             private val values: IntArray = IntArray(length * 4)
 
             public fun getX(index: Int): Int = values[index * 4]
