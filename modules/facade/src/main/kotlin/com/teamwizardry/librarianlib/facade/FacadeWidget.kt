@@ -95,9 +95,20 @@ public open class FacadeWidget(
         // todo
     }
 
+    private var f3Pressed = false
     public fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             screen.onClose()
+        }
+        if(keyCode == GLFW.GLFW_KEY_F3) {
+            f3Pressed = true
+        }
+        if(f3Pressed) {
+            when(keyCode) {
+                GLFW.GLFW_KEY_B -> {
+                    debugBoundingBox = !debugBoundingBox
+                }
+            }
         }
         safetyNet("firing a KeyDown event") {
             root.triggerEvent(GuiLayerEvents.KeyDown(keyCode, scanCode, modifiers))
@@ -105,6 +116,9 @@ public open class FacadeWidget(
     }
 
     public fun keyReleased(keyCode: Int, scanCode: Int, modifiers: Int) {
+        if(keyCode == GLFW.GLFW_KEY_F3) {
+            f3Pressed = false
+        }
         safetyNet("firing a KeyUp event") {
             root.triggerEvent(GuiLayerEvents.KeyUp(keyCode, scanCode, modifiers))
         }
@@ -151,7 +165,10 @@ public open class FacadeWidget(
         }?.zIndex ?: .0
         val isAboveVanilla = rootZ >= 1000
         if(screen is FacadeMouseMask) {
-            if(!isAboveVanilla && screen.isMouseMasked(absolute.x / Client.guiScaleFactor, absolute.y / Client.guiScaleFactor)) {
+            if(!isAboveVanilla && screen.isMouseMasked(
+                    absolute.x / Client.guiScaleFactor,
+                    absolute.y / Client.guiScaleFactor
+                )) {
                 hitLayer = null
             }
         }
@@ -227,7 +244,7 @@ public open class FacadeWidget(
             StencilUtil.enable()
             RenderSystem.pushMatrix()
             RenderSystem.scaled(1 / guiScale, 1 / guiScale, 1.0)
-            val context = GuiDrawContext(Matrix3dStack(), Client.minecraft.renderManager.isDebugBoundingBox, false)
+            val context = GuiDrawContext(Matrix3dStack(), debugBoundingBox, false)
             root.renderLayer(context)
             RenderSystem.popMatrix()
             StencilUtil.disable()
@@ -264,4 +281,9 @@ public open class FacadeWidget(
          */
         val pos: Vec2d
     )
+
+    private companion object {
+        var debugBoundingBox: Boolean = false
+    }
+
 }

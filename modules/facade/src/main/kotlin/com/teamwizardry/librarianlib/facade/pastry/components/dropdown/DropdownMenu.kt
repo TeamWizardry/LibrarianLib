@@ -151,7 +151,7 @@ internal class DropdownMenu<T>(val button: PastryDropdown<T>, val mouseActivated
         }
         selected.isVisible = true
         selected.highlight.isVisible = false
-//        contentsClip.clipToBounds = false TODO
+        contentsClip.clipToBounds = false
 
         layoutChildren()
         disableLayout = true

@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.facade.pastry.Pastry
 import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
 import com.teamwizardry.librarianlib.math.Align2d
 import com.teamwizardry.librarianlib.math.vec
+import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import dev.thecodewarrior.bitfont.utils.ExperimentalBitfont
 
 @ExperimentalBitfont
@@ -42,9 +43,7 @@ public class PastryButton @JvmOverloads constructor(
         }
 
     init {
-        label.wrap = false
-//        label.maxLines = 1 TODO
-//        label.truncate = true TODO
+        label.enableDefaultTruncation()
         label.text = buttonText
         if (callback != null)
             this.BUS.hook<ClickEvent> {

@@ -75,12 +75,11 @@ public class PastryBasicTooltip: PastryTooltip() {
     init {
         contents.add(textLayer)
         textLayer.color = Color.WHITE
-        textLayer.wrap = true
     }
 
     override fun layoutContents(maxWidth: Double) {
         textLayer.width = maxWidth - 4
-        textLayer.fitToText()
+        textLayer.fitToText(TextLayer.FitType.VERTICAL_SHRINK)
 
         contents.size = vec(textLayer.width + 2, textLayer.height + 2)
     }

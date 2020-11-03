@@ -10,17 +10,21 @@ import java.awt.Color
 class PositionExampleScreen(title: ITextComponent): TransformExampleScreen(title) {
     init {
         val box = RectLayer(Color.LIGHT_GRAY, 0, 0, 20, 20)
-        box.add(PositionVisualizationLayer())
+        origin.add(PositionVisualizationLayer(box))
         origin.add(box)
         topCrosshairs.isVisible = false
 
         box.pos_rm.animateKeyframes(vec(0, 0))
+            .hold(10f)
+            .add(15f, Easing.easeInOutQuad, vec(50, 0))
             .hold(5f)
-            .add(15f, Easing.easeOutQuad, vec(50, 0))
             .add(15f, Easing.easeInOutQuad, vec(50, 50))
+            .hold(5f)
             .add(30f, Easing.easeInOutQuad, vec(-50, -50))
+            .hold(5f)
             .add(15f, Easing.easeInOutQuad, vec(0, -50))
-            .add(15f, Easing.easeInQuad, vec(0, 0))
+            .hold(5f)
+            .add(15f, Easing.easeInOutQuad, vec(0, 0))
             .repeat()
     }
 }

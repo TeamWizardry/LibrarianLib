@@ -2,18 +2,19 @@ package com.teamwizardry.librarianlib.facade.text
 
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import dev.thecodewarrior.bitfont.typesetting.MutableAttributedString
-import dev.thecodewarrior.bitfont.utils.Attribute
+import dev.thecodewarrior.bitfont.typesetting.TextAttribute
 import java.awt.Color
 
 /**
  * Convert Minecraft formatting codes into Bitfont [attributed strings][AttributedString].
  */
-public object BitfontFormat {
-    public val color: Attribute<Color> = Attribute.get("color")
-    public val obfuscated: Attribute<Boolean> = Attribute.get("obfuscated")
-    public val bold: Attribute<Boolean> = Attribute.get("bold")
-    public val underline: Attribute<Color> = Attribute.get("underline")
+public object BitfontFormatting {
+    public val color: TextAttribute<Color> = TextAttribute.get("color")
+    public val obfuscated: TextAttribute<Boolean> = TextAttribute.get("obfuscated")
+    public val bold: TextAttribute<Boolean> = TextAttribute.get("bold")
+    public val underline: TextAttribute<Color> = TextAttribute.get("underline")
 
+    @JvmStatic
     public fun convertMC(mcString: String): AttributedString {
         if ("§" !in mcString)
             return AttributedString(mcString)
@@ -39,7 +40,7 @@ public object BitfontFormat {
         }
         val bold = Formatting<Boolean>(attributed, { i }) {
             mapOf(
-//            Attribute.font to Fonts.MCBitfontBold
+                bold to it
             )
         }
 
@@ -112,7 +113,7 @@ public object BitfontFormat {
         'f' to Color(0x3f3f3f)
     )
 
-    private class Formatting<T: Any>(val attributedString: MutableAttributedString, val i: () -> Int, val mapGen: (T) -> Map<Attribute<*>, Any>) {
+    private class Formatting<T: Any>(val attributedString: MutableAttributedString, val i: () -> Int, val mapGen: (T) -> Map<TextAttribute<*>, Any>) {
         var value: T? = null
             set(value) {
                 end()

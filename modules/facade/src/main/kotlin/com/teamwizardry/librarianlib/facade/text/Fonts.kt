@@ -36,7 +36,7 @@ public object Fonts {
     private fun load(fontLocation: ResourceLocation): Bitfont {
         try {
             logger.debug("Loading Bitfont font $fontLocation")
-            val bytes = Client.minecraft.resourceManager.getResource(fontLocation).inputStream.readBytes()
+            val bytes = Client.minecraft.resourceManager.getResource(fontLocation).inputStream
             val font = Bitfont.unpack(bytes)
             logger.debug("Finished loading font")
             return font

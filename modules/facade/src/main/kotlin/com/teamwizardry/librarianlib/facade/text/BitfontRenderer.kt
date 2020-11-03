@@ -7,41 +7,57 @@ import com.teamwizardry.librarianlib.core.util.kotlin.color
 import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
 import com.teamwizardry.librarianlib.core.util.kotlin.tex
 import com.teamwizardry.librarianlib.math.Matrix3d
+import dev.thecodewarrior.bitfont.data.Glyph
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
 import dev.thecodewarrior.bitfont.typesetting.TypesetGlyph
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import java.awt.Color
 
 public object BitfontRenderer {
+    @JvmStatic
     public fun draw(matrix: Matrix3d, container: TextContainer, defaultColor: Color) {
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
 
         for (line in container.lines) {
-            for (glyph in line.glyphs) {
-                BitfontAtlas.insert(glyph.glyph.image)
-                glyph.attachments?.forEach { BitfontAtlas.insert(it.glyph.image) }
+            for (glyph in line) {
+                (glyph.textObject as? Glyph)?.also {
+                    BitfontAtlas.insert(it.image)
+                }
             }
         }
 
+        val deferredEmbeds = mutableListOf<DeferredTextEmbed>()
+
         for (line in container.lines) {
-            for (glyph in line.glyphs) {
-                draw(matrix, vb, glyph, line.posX + glyph.posX, line.posY + glyph.posY, defaultColor)
-                glyph.attachments?.forEach { attachment ->
-                    draw(matrix, vb, attachment, line.posX + glyph.posX + attachment.posX, line.posY + glyph.posY + attachment.posY, defaultColor)
+            for (glyph in line) {
+                when(val textObject = glyph.textObject) {
+                    is Glyph -> {
+                        drawGlyph(matrix, vb, glyph, textObject, line.posX + glyph.posX, line.posY + glyph.posY, defaultColor)
+                    }
+                    is FacadeTextEmbed -> {
+                        deferredEmbeds.add(DeferredTextEmbed(glyph, textObject, line.posX + glyph.posX, line.posY + glyph.posY))
+                    }
                 }
             }
         }
 
         buffer.finish()
+
+        deferredEmbeds.forEach {
+            val color = it.glyph[BitfontFormatting.color] ?: defaultColor
+            it.embed.draw(matrix, it.glyph, it.posX, it.posY, color)
+        }
     }
 
-    public fun draw(matrix: Matrix3d, vb: IVertexBuilder, typesetGlyph: TypesetGlyph, posX: Int, posY: Int, defaultColor: Color) {
+    private class DeferredTextEmbed(val glyph: TypesetGlyph, val embed: FacadeTextEmbed, val posX: Int, val posY: Int)
+
+    private fun drawGlyph(matrix: Matrix3d, vb: IVertexBuilder, typesetGlyph: TypesetGlyph, textObject: Glyph, posX: Int, posY: Int, defaultColor: Color) {
         val solid = BitfontAtlas.solidTex()
-        val font = typesetGlyph.glyph.font
-        val obf = typesetGlyph[BitfontFormat.obfuscated] == true
-        val codepoint = if (obf && font != null) ObfTransform.transform(font, typesetGlyph.codepoint) else typesetGlyph.codepoint
-        val glyph = if (obf && font != null) font.glyphs[codepoint] else typesetGlyph.glyph
+        val font = textObject.font
+        val obf = typesetGlyph[BitfontFormatting.obfuscated] == true
+        val codepoint = if (obf) ObfTransform.transform(font, typesetGlyph.codepoint) else typesetGlyph.codepoint
+        val glyph = if (obf) font.glyphs[codepoint] else textObject
 
         val tex = BitfontAtlas.rectFor(glyph.image)
         var minX = posX + glyph.bearingX
@@ -52,20 +68,20 @@ public object BitfontRenderer {
         var minV = tex.y
         var maxU = tex.x + tex.width
         var maxV = tex.y + tex.height
-        val color = typesetGlyph[BitfontFormat.color] ?: defaultColor
+        val color = typesetGlyph[BitfontFormatting.color] ?: defaultColor
 
         vb.pos2d(matrix, minX, maxY).color(color).tex(minU, maxV).endVertex()
         vb.pos2d(matrix, maxX, maxY).color(color).tex(maxU, maxV).endVertex()
         vb.pos2d(matrix, maxX, minY).color(color).tex(maxU, minV).endVertex()
         vb.pos2d(matrix, minX, minY).color(color).tex(minU, minV).endVertex()
 
-        var underline = typesetGlyph[BitfontFormat.underline]
+        var underline = typesetGlyph[BitfontFormatting.underline]
         if (underline != null && typesetGlyph.codepoint !in newlines) {
             if (underline == Color(0, 0, 0, 0))
                 underline = color
             minX = posX - 1
             minY = posY + 1
-            maxX = posX + typesetGlyph.glyph.calcAdvance() + 1
+            maxX = posX + textObject.advance + 1
             maxY = posY + 2
             minU = solid.x
             minV = solid.y

@@ -43,6 +43,7 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
         "layers" to FacadeTestGroup("Layers", listOf(
             FacadeTest("Simple Sprite", ::SimpleSpriteTestScreen),
             FacadeTest("Simple Text", ::SimpleTextTestScreen),
+            FacadeTest("Text Embeds", ::TextEmbedsTestScreen),
             FacadeTest("DragLayer", ::DragLayerTestScreen)
         )),
         "animations" to FacadeTestGroup("Animations/Time", listOf(

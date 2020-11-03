@@ -11,7 +11,7 @@ public class PastryLabel: TextLayer {
 
     public constructor(posX: Int, posY: Int, text: String): this(posX, posY, 0, 0) {
         this.text = text
-        this.fitToText()
+        this.fitToText(FitType.BOTH)
     }
 
     public constructor(text: String): this(0, 0, text)

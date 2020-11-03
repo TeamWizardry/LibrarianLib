@@ -71,7 +71,6 @@ class ComplexTooltip(val stack: ItemStack, val text: String): PastryTooltip() {
     init {
         contents.add(itemStackLayer, textLayer)
         textLayer.color = Color.WHITE
-        textLayer.wrap = true
 
         itemStackLayer.stack = stack
         textLayer.text = text
@@ -79,7 +78,7 @@ class ComplexTooltip(val stack: ItemStack, val text: String): PastryTooltip() {
 
     override fun layoutContents(maxWidth: Double) {
         textLayer.width = maxWidth - 20
-        textLayer.fitToText()
+        textLayer.fitToText(TextLayer.FitType.VERTICAL_SHRINK)
 
         contents.size = vec(textLayer.frame.maxX + 2, textLayer.height + 2)
     }

@@ -13,7 +13,7 @@ import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import java.awt.Color
 
-class AnchorVisualizationLayer: GuiLayer() {
+class AnchorVisualizationLayer(val target: GuiLayer): GuiLayer() {
     val anchorSize_im: IMValueDouble = imDouble(3.0)
     var anchorSize: Double by anchorSize_im
 
@@ -45,10 +45,10 @@ class AnchorVisualizationLayer: GuiLayer() {
         // get into their parent space
         context.matrix *= parent.inverseTransform
 
-        vb.pos2d(context.matrix, parent.pos.x - anchorSize, parent.pos.y - anchorSize).color(color).endVertex()
-        vb.pos2d(context.matrix, parent.pos.x + anchorSize, parent.pos.y + anchorSize).color(color).endVertex()
-        vb.pos2d(context.matrix, parent.pos.x + anchorSize, parent.pos.y - anchorSize).color(color).endVertex()
-        vb.pos2d(context.matrix, parent.pos.x - anchorSize, parent.pos.y + anchorSize).color(color).endVertex()
+        vb.pos2d(context.matrix, target.pos.x - anchorSize, target.pos.y - anchorSize).color(color).endVertex()
+        vb.pos2d(context.matrix, target.pos.x + anchorSize, target.pos.y + anchorSize).color(color).endVertex()
+        vb.pos2d(context.matrix, target.pos.x + anchorSize, target.pos.y - anchorSize).color(color).endVertex()
+        vb.pos2d(context.matrix, target.pos.x - anchorSize, target.pos.y + anchorSize).color(color).endVertex()
 
         buffer.finish()
         RenderSystem.lineWidth(1f)

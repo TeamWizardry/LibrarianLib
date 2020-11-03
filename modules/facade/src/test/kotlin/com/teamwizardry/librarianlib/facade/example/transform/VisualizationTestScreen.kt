@@ -17,9 +17,9 @@ class VisualizationTestScreen(title: ITextComponent): TransformExampleScreen(tit
         box.rotation = Math.toRadians(10.0)
 
         box.add(ScaleVisualizationLayer(20.0))
-//        box.add(BoundsVisualizationLayer())
-        box.add(AnchorVisualizationLayer())
-        box.add(PositionVisualizationLayer())
+//        origin.add(BoundsVisualizationLayer(box))
+        origin.add(AnchorVisualizationLayer(box))
+        origin.add(PositionVisualizationLayer(box))
 
         origin.add(box)
     }

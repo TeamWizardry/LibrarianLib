@@ -16,7 +16,7 @@ internal class ObfTransform(val font: Bitfont) {
 
     fun get(codepoint: Int): Int {
         val glyph = font.glyphs[codepoint] ?: return codepoint
-        val set = cache.getOrPut(glyph.calcAdvance(font.spacing)) { IntOpenHashSet() }
+        val set = cache.getOrPut(glyph.advance) { IntOpenHashSet() }
         set.add(codepoint)
         return set.random()
     }

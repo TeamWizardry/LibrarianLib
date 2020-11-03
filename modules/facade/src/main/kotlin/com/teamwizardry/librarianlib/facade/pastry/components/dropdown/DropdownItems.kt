@@ -30,8 +30,8 @@ public abstract class PastryDropdownItem<T>(
 public class DropdownTextItem<T>(value: T, public val string: String): PastryDropdownItem<T>(value, false, false) {
     override fun createLayer(): GuiLayer {
         val layer = TextLayer(0, 0, string)
-//        layer.maxLines = 1 TODO
-        layer.fitToText()
+        layer.maxLines = 1
+        layer.fitToText(TextLayer.FitType.BOTH)
         return layer
     }
 }
