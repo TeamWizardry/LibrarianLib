@@ -148,15 +148,9 @@ public class EventBus {
 
         private fun getEventClassList(clazz: Class<*>): Iterable<Class<*>> {
             return classLists.getOrPut(clazz) {
-                val list = mutableListOf<Class<*>>()
-
-                var c = clazz
-                while (Event::class.java.isAssignableFrom(c)) {
-                    list.add(c)
-                    c = c.superclass ?: break
-                }
-
-                list
+                generateSequence(clazz) { it.superclass }
+                    .takeWhile { Event::class.java.isAssignableFrom(it) }
+                    .toList()
             }
         }
     }

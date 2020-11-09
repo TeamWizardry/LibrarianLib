@@ -65,7 +65,10 @@ class TestListScreen(name: String, val tests: List<FacadeTestEntry>): Screen(Str
         val hoveredIndex = if(relX < 0 || relX > size.x) -1 else relY / itemHeight + scrollCount
 
         tests.getOrNull(hoveredIndex)?.also { test ->
-            Client.displayGuiScreen(test.create())
+            val start = System.nanoTime()
+            val screen = test.create()
+            logger.debug("Creating `${test.name}` screen took ${(System.nanoTime() - start) / 1_000_000} ms")
+            Client.displayGuiScreen(screen)
         }
 
         return false
