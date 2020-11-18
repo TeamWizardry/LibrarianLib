@@ -21,11 +21,16 @@ public class CourierChannel(private val name: ResourceLocation, private var vers
     private fun clientAcceptedVersions(other: String): Boolean {
         return this.clientAcceptedVersions.test(other)
     }
+
     private fun serverAcceptedVersions(other: String): Boolean {
         return this.serverAcceptedVersions.test(other)
     }
 
-    public fun configureVersion(version: String, clientAcceptedVersions: Predicate<String>, serverAcceptedVersions: Predicate<String>) {
+    public fun configureVersion(
+        version: String,
+        clientAcceptedVersions: Predicate<String>,
+        serverAcceptedVersions: Predicate<String>
+    ) {
         this.version = version
         this.clientAcceptedVersions = clientAcceptedVersions
         this.serverAcceptedVersions = serverAcceptedVersions
@@ -47,17 +52,44 @@ public class CourierChannel(private val name: ResourceLocation, private var vers
         packetType.index = packets.size
         packets.add(packetType)
         @Suppress("INACCESSIBLE_TYPE")
-        baseChannel.registerMessage(packetType.index, packetType.type, packetType::encode, packetType::decode, packetType::handle)
+
+        baseChannel.registerMessage(
+            packetType.index,
+            packetType.type,
+            packetType::encode,
+            packetType::decode
+        ) { packet, context ->
+            // because for some ungodly reason you have to do this yourself, otherwise you get spammed with
+            // "Unknown custom packet identifier" log messages
+            context.get().packetHandled = true
+            packetType.handle(packet, context)
+        }
     }
 
     public fun <T> register(packetType: PacketType<T>, direction: NetworkDirection?) {
         packetType.index = packets.size
         packets.add(packetType)
         @Suppress("INACCESSIBLE_TYPE")
-        baseChannel.registerMessage(packetType.index, packetType.type, packetType::encode, packetType::decode, packetType::handle, Optional.ofNullable(direction))
+        baseChannel.registerMessage(
+            packetType.index,
+            packetType.type,
+            packetType::encode,
+            packetType::decode,
+            { packet, context ->
+                // because for some ungodly reason you have to do this yourself, otherwise you get spammed with
+                // "Unknown custom packet identifier" log messages
+                context.get().packetHandled = true
+                packetType.handle(packet, context)
+            },
+            Optional.ofNullable(direction)
+        )
     }
 
-    public fun <T: Any> registerCourierPacket(type: Class<T>, direction: NetworkDirection?, handler: BiConsumer<T, NetworkEvent.Context>) {
+    public fun <T: Any> registerCourierPacket(
+        type: Class<T>,
+        direction: NetworkDirection?,
+        handler: BiConsumer<T, NetworkEvent.Context>
+    ) {
         register(CourierPacketType(type, handler), direction)
     }
 
