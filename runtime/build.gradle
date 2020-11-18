@@ -63,6 +63,8 @@ task(createDataGenSymlinks).doLast {
     allmodules.each { mod ->
         link(file("run/datagen/$mod.modid/assets"), mod.file('src/main/datagen/assets'))
         link(file("run/datagen/$mod.modid_test/assets"), mod.file('src/test/datagen/assets'))
+        link(file("run/datagen/$mod.modid/data"), mod.file('src/main/datagen/data'))
+        link(file("run/datagen/$mod.modid_test/data"), mod.file('src/test/datagen/data'))
     }
 }
 

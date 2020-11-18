@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.core.util.MiscUtil
 import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import com.teamwizardry.librarianlib.courier.CourierChannel
 import com.teamwizardry.librarianlib.foundation.registration.RegistrationManager
+import com.teamwizardry.librarianlib.foundation.util.ModLogManager
 import net.alexwells.kottle.FMLKotlinModLoadingContext
 import net.minecraft.block.Block
 import net.minecraft.entity.EntityType
@@ -24,6 +25,8 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
 import net.minecraftforge.registries.IForgeRegistry
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 
 /**
  *
@@ -41,20 +44,24 @@ import net.minecraftforge.registries.IForgeRegistry
  * @param kottleContext Pass a value of true if your mod uses Kottle's kotlin language provider
  */
 @Suppress("LeakingThis")
-public abstract class BaseMod @JvmOverloads constructor(private val kottleContext: Boolean = false){
+public abstract class BaseMod @JvmOverloads constructor(private val kottleContext: Boolean = false) {
     public val modid: String = MiscUtil.getModId(this.javaClass)
     public val version: String = ModLoadingContext.get().activeContainer.modInfo.version.toString()
     public val registrationManager: RegistrationManager
     public val courier: CourierChannel
+    public val eventBus: IEventBus = modLoadingContextEventBus()
+
+    public val logManager: ModLogManager = ModLogManager(modid)
+    public val logger: Logger by lazy { makeLogger(null) }
 
     init {
-        val eventBus = modLoadingContextEventBus()
         registrationManager = RegistrationManager(modid, eventBus)
         courier = CourierChannel(loc(modid, "courier"), version)
         eventBus.register(this)
         MinecraftForge.EVENT_BUS.register(this)
     }
 
+    //region Override points
     /**
      * Create any custom registries here using the [RegistryBuilder][net.minecraftforge.registries.RegistryBuilder]
      */
@@ -104,6 +111,41 @@ public abstract class BaseMod @JvmOverloads constructor(private val kottleContex
             FMLJavaModLoadingContext.get().modEventBus
         }
     }
+    //endregion
+
+    //region Public API
+    /**
+     * Sets the base name for this mod's loggers. The root logger will be `"<logBaseName>"`, and any class loggers will
+     * be `"<logBaseName> (<className>)"`.
+     *
+     * Any loggers created before this is called will not be affected by the change
+     */
+    protected fun setLoggerBaseName(name: String) {
+        logManager.baseName = name
+    }
+
+    /**
+     * Create a logger for the specified class.
+     */
+    public fun makeLogger(clazz: Class<*>): Logger {
+        return logManager.makeLogger(clazz.simpleName)
+    }
+
+    /**
+     * Create a logger for the specified class.
+     */
+    @JvmSynthetic
+    public inline fun <reified T> makeLogger(): Logger {
+        return logManager.makeLogger(T::class.java)
+    }
+
+    /**
+     * Create a logger with the specified label.
+     */
+    public fun makeLogger(label: String?): Logger {
+        return logManager.makeLogger(label)
+    }
+    //endregion
 
     //region Internal implementation
     @SubscribeEvent

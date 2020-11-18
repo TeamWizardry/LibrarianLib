@@ -24,6 +24,8 @@ import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.model.generators.BlockStateProvider
 import net.minecraftforge.client.model.generators.ExistingFileHelper
+import net.minecraftforge.common.capabilities.CapabilityInject
+import net.minecraftforge.common.capabilities.CapabilityManager
 import net.minecraftforge.common.data.LanguageProvider
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.IEventBus
@@ -63,6 +65,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     private val items = mutableListOf<ItemSpec>()
     private val tileEntities = mutableListOf<TileEntitySpec<*>>()
     private val entities = mutableListOf<EntitySpec<*>>()
+    private val capabilities = mutableListOf<CapabilitySpec<*>>()
 
     /**
      * Methods for performing data generation
@@ -107,6 +110,14 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
         spec.modid = modid
         entities.add(spec)
         return spec.lazy
+    }
+
+    /**
+     * Adds a capability type to this registration manager. To access the resulting capability, use
+     * [@CapabilityInject][CapabilityInject].
+     */
+    public fun <T> add(spec: CapabilitySpec<T>) {
+        capabilities.add(spec)
     }
 
     @SubscribeEvent
@@ -154,6 +165,11 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     @SubscribeEvent
     @JvmSynthetic
     internal fun commonSetup(e: FMLCommonSetupEvent) {
+        capabilities.forEach { cap ->
+            @Suppress("UNCHECKED_CAST")
+            cap as CapabilitySpec<Any> // appease the type checking gods
+            CapabilityManager.INSTANCE.register(cap.type, cap.storage, cap.defaultImpl)
+        }
     }
 
     @SubscribeEvent

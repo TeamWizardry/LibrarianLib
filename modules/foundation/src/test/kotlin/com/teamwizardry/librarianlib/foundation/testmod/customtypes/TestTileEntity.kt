@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.foundation.testmod.customtypes
 
+import com.teamwizardry.librarianlib.foundation.testmod.LibrarianLibFoundationTestMod
 import com.teamwizardry.librarianlib.foundation.testmod.ModTiles
-import com.teamwizardry.librarianlib.foundation.testmod.logger
 import com.teamwizardry.librarianlib.foundation.tileentity.BaseTileEntity
 import com.teamwizardry.librarianlib.prism.Save
 import com.teamwizardry.librarianlib.prism.Sync
@@ -35,5 +35,9 @@ class TestTileEntity: BaseTileEntity(ModTiles.testTile.get()) {
             0.1, 0.0, 0.1,
             0.0
         )
+    }
+
+    companion object {
+        private val logger = LibrarianLibFoundationTestMod.makeLogger<TestTileEntity>()
     }
 }

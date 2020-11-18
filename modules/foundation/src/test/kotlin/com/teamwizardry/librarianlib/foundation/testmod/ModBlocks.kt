@@ -28,6 +28,5 @@ object ModBlocks {
                 .block { BaseLogBlock(MaterialColor.PINK, it.blockProperties) }
                 .datagen { tags(ModTags.TEST_LOGS).name("Test Log") }
         ))
-
     }
 }
