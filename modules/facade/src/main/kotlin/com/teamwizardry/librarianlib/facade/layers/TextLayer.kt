@@ -85,6 +85,18 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
         }
 
     /**
+     * The horizontal alignment of text within lines.
+     */
+    public var textAlignment: TextLayoutManager.Alignment
+        get() = options.alignment
+        set(value) {
+            if(value != options.alignment) {
+                options.alignment = value
+                markTextDirty()
+            }
+        }
+
+    /**
      * If and how this layer should automatically fit its size to the contained text.
      */
     public var textFitting: FitType = FitType.NONE
