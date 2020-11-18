@@ -7,5 +7,3 @@ dependencies {
         exclude group: 'org.apache.logging.log4j'
     }
 }
-
-shadePackages('dev.thecodewarrior.prism')

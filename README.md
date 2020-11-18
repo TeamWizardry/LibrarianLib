@@ -6,7 +6,7 @@
   LibrarianLib
   <br>
   <img id="mc-version-shield" src="https://img.shields.io/badge/Minecraft-1.15.2-blue" alt="Minecraft 1.15.2"/>
-  <img id="forge-version-shield" src="https://img.shields.io/badge/Forge-31.2.36-blue" alt="Minecraft Forge 31.2.36"/>
+  <img id="forge-version-shield" src="https://img.shields.io/badge/Forge-31.2.45-blue" alt="Minecraft Forge 31.2.45"/>
   <img id="mcp-mappings-shield" src="https://img.shields.io/badge/MCP-snapshot__20200803--1.15.1-blue" alt="MCP snapshot_20200803-1.15.1"/>
   <img src="https://github.com/TeamWizardry/LibrarianLib/workflows/Publish%20Snapshots/badge.svg?branch=1.15" alt="Publish Snapshots"/>
 </h1>
@@ -19,6 +19,7 @@ repositories {
     jcenter()
     maven { url = 'https://jitpack.io' }
     maven { url = 'https://minecraft.curseforge.com/api/maven/' }
+    maven { url = 'http://repo.spongepowered.org/maven' }
 }
 
 dependencies {
@@ -31,6 +32,7 @@ repositories {
     maven { url = 'https://oss.jfrog.org/artifactory/oss-snapshot-local' }
     maven { url = 'https://jitpack.io' }
     maven { url = 'https://minecraft.curseforge.com/api/maven/' }
+    maven { url = 'http://repo.spongepowered.org/maven' }
 }
 
 dependencies {

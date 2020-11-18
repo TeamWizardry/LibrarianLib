@@ -16,7 +16,6 @@ dependencies {
     minecraft "net.minecraftforge:forge:$mc_version-$forge_version"
 //    mod "kottle:Kottle:$kottle_version"
     mod rootProject.files('libs/Kottle-2.0.0.jar')
-    mod "mixinbootstrap:MixinBootstrap:$mixinbootstrap_version"
 
     allmodules.each {
         mod project(path: it.path, configuration: "mod")

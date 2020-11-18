@@ -1,0 +1,5 @@
+shadePackages(
+        'com.ibm.icu',
+        'dev.thecodewarrior.bitfont',
+        'org.msgpack',
+)

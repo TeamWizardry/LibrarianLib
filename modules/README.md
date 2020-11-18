@@ -1,5 +1,8 @@
 # Creating modules
 
+- `build.gradle` - the main module file
+- `prebuild.gradle` - configure shading packages and custom maven repositories here
+
 # Module structure
 
 ### Packages

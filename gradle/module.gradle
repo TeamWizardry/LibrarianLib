@@ -37,6 +37,16 @@ ext.modid_test = "$modid-test".toString()
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 archivesBaseName = modid
 
+ext.shadeRules = new HashSet<String>()
+ext.shadePackages = { String... packages ->
+    shadeRules.addAll(packages)
+}
+allmodules.each {
+    if(file("$it.projectDir/prebuild.gradle").exists()) {
+        apply from: "$it.projectDir/prebuild.gradle"
+    }
+}
+
 configurations {
     compileOnly.extendsFrom(shade)
     testCompileOnly.extendsFrom(shade)
@@ -54,8 +64,6 @@ minecraft {
 
 dependencies {
     minecraft "net.minecraftforge:forge:$mc_version-$forge_version"
-    api "org.spongepowered:mixin:$mixin_version"
-    testApi "org.spongepowered:mixin:$mixin_version"
     annotationProcessor "org.spongepowered:mixin:$mixin_version:processor"
     testAnnotationProcessor "org.spongepowered:mixin:$mixin_version:processor"
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
@@ -329,10 +337,6 @@ compileTestKotlin.dependsOn(generateTestFiles)
 // ---------------------------------------------------------------------------------------------------------------------
 //region // Shading
 
-ext.shadePackages = { String... packages ->
-    rootProject.shadePackages.addAll(packages)
-}
-
 def shadeOutput = file("$buildDir/shade/main")
 // Gross, but ForgeGradle forces my hand by directly using `getResourcesDir()` and `getClassesDirs()` instead of
 // using `getOutput()`, meaning I can't just do `output.dir(shadeOutput, builtBy: 'copyShadeClasses')`. I could
@@ -388,7 +392,7 @@ task deobfJar(type: ShadowJar) {
 
     afterEvaluate {
         // add relocation rules after all the projects have added their packages to the list
-        rootProject.shadePackages.each {
+        project.shadeRules.each {
             relocate it, "ll.$it"
         }
     }

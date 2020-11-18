@@ -37,13 +37,13 @@ if(hasProperty('liblibVersion')) {
 
 ext.allmodules = rootProject.subprojects.findAll { it.findProperty("non_module") != "true" }
 
+// this is populated by the modules, since the modules need to know about each other's relocation packages
+
 allprojects {
     apply plugin: 'java-library'
 
     ext.allmodules = rootProject.allmodules
 
-    // unfortunately, due to the interdependence of the modules, all the repositories used must be specified here. Any
-    // repositories defined in the module `build.gradle` files won't be seen by any of the other modules
     repositories {
         mavenLocal()
         jcenter()
@@ -78,9 +78,6 @@ dependencies {
 // =====================================================================================================================
 // Build setup
 // =====================================================================================================================
-
-// this is populated by the modules, since the modules need to know about each other's relocation packages
-ext.shadePackages = new HashSet<String>()
 
 ext.productionModules = allmodules.findAll { it.name != "testbase" }
 

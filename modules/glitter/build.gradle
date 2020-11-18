@@ -4,5 +4,3 @@ dependencies {
     testApi project(":testbase")
     shade "org.magicwerk:brownies-collections:0.9.13"
 }
-
-shadePackages('org.magicwerk.brownies')

@@ -48,9 +48,3 @@ dependencies {
     devClasspath "org.lwjgl:lwjgl-yoga:$yoga_version:$lwjglNatives"
     devClasspath "org.lwjgl:lwjgl-yoga:$yoga_version"
 }
-
-shadePackages(
-        'com.ibm.icu',
-        'dev.thecodewarrior.bitfont',
-        'org.msgpack',
-)
