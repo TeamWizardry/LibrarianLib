@@ -6,7 +6,6 @@ import com.teamwizardry.librarianlib.prism.nbt.NBTSerializer
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.member.MethodMirror
 import dev.thecodewarrior.prism.PrismException
-import dev.thecodewarrior.prism.utils.annotation
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.nbt.ListNBT
 import net.minecraftforge.common.util.Constants
@@ -26,7 +25,7 @@ public object MessageScanner {
     }
 
     public class MessageScan(public val method: MethodMirror) {
-        public val name: String = method.annotation<Message>()!!.name.let {
+        public val name: String = method.getDeclaredAnnotation<Message>()!!.name.let {
             if(it == "") method.name else it
         }
         public val parameterSerializers: List<NBTSerializer<*>> = method.parameters.map { parameter ->

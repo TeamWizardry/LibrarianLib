@@ -18,6 +18,7 @@ import org.lwjgl.opengl.GL21
 import org.lwjgl.system.MemoryStack
 import java.lang.IndexOutOfBoundsException
 
+//todo: improve naming (not GLSL.vec2, maybe Uniform.Vec2)
 @Suppress("ClassName", "unused")
 public abstract class GLSL(public val glConstant: Int) {
     internal var location: Int = -1

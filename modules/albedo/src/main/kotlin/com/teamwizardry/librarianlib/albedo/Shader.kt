@@ -331,7 +331,7 @@ public abstract class Shader(
     private fun checkVersion(source: String) {
         val match = """^\s*#version\s+(\d+)\s*$""".toRegex().find(source) ?: return
         val version = match.groupValues[1].toInt()
-        if (version > 120) // Apple doesn't support OpenGL 3.0+ properly, so we're stuck with OpenGL 2.1 shaders
+        if (version > 120) // Apple doesn't support OpenGL 3.0+ compatibility profile, so we're stuck with OpenGL 2.1 shaders
             throw ShaderCompilationException("Maximum GLSL version supported by LibrarianLib is 1.20, found `${match.value}`")
     }
 

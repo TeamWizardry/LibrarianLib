@@ -135,7 +135,7 @@ private class SimpleSerializerImpl<T: Any>(val clazz: Class<T>): SimpleSerialize
                     }
                 }
             } catch (e: Exception) {
-                throw SerializationException("Error serializing property ${property.name} in ${mirror.simpleName}")
+                throw SerializationException("Error serializing property ${property.name} in ${mirror.simpleName}", e)
             }
         }
         return tag
@@ -154,16 +154,19 @@ private class SimpleSerializerImpl<T: Any>(val clazz: Class<T>): SimpleSerialize
             try {
                 if (test(property)) {
                     val existingValue = property.field.get<Any?>(instance)
-                    val newValue = tag.get(property.name)?.let {
-                        property.nbtSerializer.read(it, existingValue)
-                    } ?: defaultValue(property.field.type)
+                    val propertyTag = tag.get(property.name)
+                    val newValue = when {
+                        propertyTag != null -> property.nbtSerializer.read(propertyTag, existingValue)
+                        property.field.isFinal -> existingValue // assume no tag and final field => keep existing value
+                        else -> defaultValue(property.field.type)
+                    }
                     if(newValue !== existingValue && property.field.isFinal) {
                         throw IllegalStateException("The serializer created a new object for an immutable property")
                     }
                     property.field.set(instance, newValue)
                 }
             } catch (e: Exception) {
-                throw DeserializationException("Error deserializing property ${property.name} in ${mirror.simpleName}")
+                throw DeserializationException("Error deserializing property ${property.name} in ${mirror.simpleName}", e)
             }
         }
     }

@@ -9,7 +9,6 @@ import com.teamwizardry.librarianlib.prism.Prisms
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.member.MethodMirror
 import dev.thecodewarrior.prism.PrismException
-import dev.thecodewarrior.prism.utils.annotation
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.nbt.ListNBT

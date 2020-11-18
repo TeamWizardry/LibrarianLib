@@ -1,8 +1,8 @@
 dependencies {
     api project(":core")
     testApi project(":testbase")
-    shade("com.github.thecodewarrior:Prism:bc69a46b5b") {
-        exclude group: 'com.github.thecodewarrior', module: 'Mirror'
+    shade("dev.thecodewarrior.prism:prism:0.1.0b1") {
+        exclude module: 'mirror'
         exclude group: 'org.jetbrains.kotlin'
         exclude group: 'org.apache.logging.log4j'
     }

@@ -18,48 +18,45 @@ internal class ObjectSerializerFactory(prism: NBTPrism): NBTSerializerFactory(pr
     }
 
     class ObjectSerializer(prism: NBTPrism, type: TypeMirror): NBTSerializer<Any>(type) {
-        private val analyzer = ObjectAnalyzer<Any?, NBTSerializer<*>>(prism, type.asClassMirror())
+        private val analyzer = ObjectAnalyzer<Any, NBTSerializer<*>>(prism, type.asClassMirror())
 
         @Suppress("UNCHECKED_CAST")
         override fun deserialize(tag: INBT, existing: Any?): Any {
-            val state = analyzer.getState()
-            @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
-            analyzer.properties.forEach { property ->
-                try {
-                    val existingProperty = existing?.let { property.getValue(it) }
-                    val valueTag = tag[property.name]
-                    if(valueTag != null) {
-                        state.setValue(property, property.serializer.read(valueTag, existingProperty))
-                    } else {
-                        state.setValue(property, null)
+            analyzer.getReader(existing).use { state ->
+                @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
+                state.properties.forEach { property ->
+                    try {
+                        val valueTag = tag[property.name]
+                        if (valueTag != null) {
+                            property.value = property.serializer.read(valueTag, property.existing)
+                        } else {
+                            property.value = null
+                        }
+                    } catch (e: Exception) {
+                        // TODO: if `setValue` fails it'll throw an exception with the property name already. Write a test
+                        //   to fail this
+                        throw DeserializationException("Property ${property.name}", e)
                     }
-                } catch(e: Exception) {
-                    // TODO: if `setValue` fails it'll throw an exception with the property name already. Write a test
-                    //   to fail this
-                    throw DeserializationException("Property ${property.name}")
                 }
+                return state.apply()
             }
-            val newValue = state.apply(existing)
-            analyzer.releaseState(state)
-            return newValue
         }
 
         override fun serialize(value: Any): INBT {
-            val state = analyzer.getState()
-            val tag = CompoundNBT()
-            state.populate(value)
-            state.values.forEach { (property, propertyValue) ->
-                val v = propertyValue.value
-                if(propertyValue.isPresent && v != null) {
-                    try {
-                        tag.put(property.name, property.serializer.write(v))
-                    } catch(e: Exception) {
-                        throw SerializationException("Property ${property.name}")
+            analyzer.getWriter(value).use { state ->
+                val tag = CompoundNBT()
+                state.properties.forEach { property ->
+                    val v = property.value
+                    if (v != null) {
+                        try {
+                            tag.put(property.name, property.serializer.write(v))
+                        } catch (e: Exception) {
+                            throw SerializationException("Property ${property.name}", e)
+                        }
                     }
                 }
+                return tag
             }
-            analyzer.releaseState(state)
-            return tag
         }
     }
 }

@@ -4,6 +4,7 @@ import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.type.ArrayMirror
 import dev.thecodewarrior.mirror.type.TypeMirror
 import dev.thecodewarrior.prism.DeserializationException
+import dev.thecodewarrior.prism.SerializationException
 import dev.thecodewarrior.prism.base.analysis.ArrayAnalyzer
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.nbt.INBT
@@ -19,38 +20,40 @@ internal class ArraySerializerFactory(prism: NBTPrism): NBTSerializerFactory(pri
 
         @Suppress("UNCHECKED_CAST")
         override fun deserialize(tag: INBT, existing: Array<Any?>?): Array<Any?> {
-            val state = analyzer.getState()
-            @Suppress("NAME_SHADOWING") val tag = tag.expectType<ListNBT>("tag")
+            analyzer.getReader(existing).use { state ->
+                @Suppress("NAME_SHADOWING") val tag = tag.expectType<ListNBT>("tag")
 
-            state.reserve(tag.size)
-            tag.forEachIndexed { i, it ->
-                try {
-                    val entry = it.expectType<CompoundNBT>("element $i")
-                    if(entry.contains("V"))
-                        state.add(analyzer.elementSerializer.read(entry.expect("V"), existing?.getOrNull(i)))
-                    else
-                        state.add(null)
-                } catch(e: Exception) {
-                    throw DeserializationException("Error deserializing element $i", e)
+                state.reserve(tag.size)
+                tag.forEachIndexed { i, it ->
+                    try {
+                        val entry = it.expectType<CompoundNBT>("element $i")
+                        if (entry.contains("V"))
+                            state.add(state.serializer.read(entry.expect("V"), existing?.getOrNull(i)))
+                        else
+                            state.add(null)
+                    } catch (e: Exception) {
+                        throw DeserializationException("Error deserializing element $i", e)
+                    }
                 }
+                return state.apply()
             }
-            val newValue = state.apply(existing)
-            analyzer.releaseState(state)
-            return newValue
         }
 
         override fun serialize(value: Array<Any?>): INBT {
-            val state = analyzer.getState()
-            val tag = ListNBT()
-            state.populate(value)
-            state.buffer.forEach { v ->
-                val entry = CompoundNBT()
-                if(v != null)
-                    entry.put("V", analyzer.elementSerializer.write(v))
-                tag.add(entry)
+            analyzer.getWriter(value).use { state ->
+                val tag = ListNBT()
+                state.elements.forEachIndexed { i, v ->
+                    try {
+                        val entry = CompoundNBT()
+                        if (v != null)
+                            entry.put("V", state.serializer.write(v))
+                        tag.add(entry)
+                    } catch (e: Exception) {
+                        throw SerializationException("Error serializing element $i", e)
+                    }
+                }
+                return tag
             }
-            analyzer.releaseState(state)
-            return tag
         }
     }
 }
