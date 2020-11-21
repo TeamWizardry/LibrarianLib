@@ -8,6 +8,7 @@ import com.teamwizardry.librarianlib.glitter.modules.DepthSortModule
 import net.minecraft.client.renderer.Matrix4f
 import net.minecraft.client.settings.ParticleStatus
 import org.magicwerk.brownies.collections.GapList
+import java.lang.RuntimeException
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
@@ -98,6 +99,8 @@ public abstract class ParticleSystem {
     private var currentSpawnChance: Double = 1.0
 
     private var systemInitialized: Boolean = false
+    private var registered: Boolean = false
+    private var registerWarned: Boolean = false
 
     internal val queuedAdditions = ConcurrentLinkedQueue<DoubleArray>()
     internal val shouldQueue = AtomicBoolean(false)
@@ -190,6 +193,10 @@ public abstract class ParticleSystem {
      * @param params an array of values to initialize the particle array with.
      */
     protected fun addParticle(lifetime: Int, vararg params: Double): DoubleArray {
+        if (!registered && !registerWarned) {
+            logger.warn("Adding particles to an unregistered system", RuntimeException())
+            registerWarned = true
+        }
         if (!systemInitialized) {
             reload()
             systemInitialized = true
@@ -231,6 +238,7 @@ public abstract class ParticleSystem {
      */
     public fun addToGame() {
         ParticleSystemManager.add(this)
+        registered = true
     }
 
     /**
@@ -238,6 +246,8 @@ public abstract class ParticleSystem {
      */
     public fun removeFromGame() {
         ParticleSystemManager.remove(this)
+        registered = false
+        registerWarned = false
     }
 
     /**
@@ -317,5 +327,9 @@ public abstract class ParticleSystem {
             renderModules[i].render(stack, projectionMatrix, particles, renderPrepModules)
         }
         shouldQueue.set(false)
+    }
+
+    private companion object {
+        private val logger = LibrarianLibGlitterModule.makeLogger<ParticleSystem>()
     }
 }
