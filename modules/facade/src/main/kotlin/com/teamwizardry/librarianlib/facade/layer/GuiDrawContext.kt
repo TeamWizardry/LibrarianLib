@@ -8,12 +8,9 @@ import com.teamwizardry.librarianlib.math.MutableMatrix4d
 
 public class GuiDrawContext(
     public val matrix: Matrix3dStack,
-    showDebugBoundingBox: Boolean,
+    public val debugOptions: FacadeDebugOptions,
     isInMask: Boolean
 ) {
-    public var showDebugBoundingBox: Boolean = showDebugBoundingBox
-        @JvmSynthetic
-        internal set
     public var isInMask: Boolean = isInMask
         @JvmSynthetic
         internal set

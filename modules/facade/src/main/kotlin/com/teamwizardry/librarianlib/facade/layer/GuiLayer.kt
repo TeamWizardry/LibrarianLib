@@ -4,10 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.bridge.IRenderTypeState
 import com.teamwizardry.librarianlib.core.rendering.BlendMode
-import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
-import com.teamwizardry.librarianlib.core.util.GlResourceGc
-import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
+import com.teamwizardry.librarianlib.core.util.*
 import com.teamwizardry.librarianlib.core.util.kotlin.color
 import com.teamwizardry.librarianlib.core.util.kotlin.mixinCast
 import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
@@ -61,6 +58,7 @@ import java.util.ConcurrentModificationException
 import java.util.PriorityQueue
 import java.util.function.*
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.max
 
@@ -1146,7 +1144,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
             renderDirect(context)
         } else {
             val flatContext = if (renderMode == RenderMode.RENDER_TO_QUAD) {
-                GuiDrawContext(Matrix3dStack(), context.showDebugBoundingBox, context.isInMask).also {
+                GuiDrawContext(Matrix3dStack(), context.debugOptions, context.isInMask).also {
                     it.matrix.scale(max(1, rasterizationScale).toDouble())
                 }
             } else {
@@ -1201,13 +1199,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         if (enableClipping)
             StencilUtil.pop { stencil(context) }
 
-        if (context.showDebugBoundingBox) {
-            RenderSystem.lineWidth(1f)
-            drawDebugBoundingBox(context, if (mouseOver) Color.WHITE else Color(.75f, 0f, .75f, 1f))
-        }
-        if (didLayout /*&& !isInMask*/) {
-            drawLayerOverlay(context)
-        }
+        drawDebugInfo(context)
         didLayout = false
 
         context.matrix.pop()
@@ -1271,22 +1263,47 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     public fun renderSkeleton(context: GuiDrawContext) {
         forEachChild { it.renderSkeleton(context) }
 
-        if (context.showDebugBoundingBox && //!isInMask && TODO: isInMask (or a better system?)
-            GuiLayer.showDebugTilt && shouldDrawSkeleton()) {
+        if (context.debugOptions.showDebugBoundingBox && !context.isInMask &&
+            GuiLayer.showDebugTilt && shouldDrawSkeleton()
+        ) {
             RenderSystem.lineWidth(1f)
             GL11.glEnable(GL11.GL_LINE_STIPPLE)
             GL11.glLineStipple(2, 0b0011_0011_0011_0011.toShort())
-            drawDebugBoundingBox(context, Color(.75f, 0f, .75f, 1f))
+            drawBoundingBox(context, Color(.75f, 0f, .75f, 1f))
             GL11.glDisable(GL11.GL_LINE_STIPPLE)
+        }
+    }
+
+    private fun drawDebugInfo(context: GuiDrawContext) {
+        if (context.isInMask)
+            return
+
+        val options = context.debugOptions
+        val debugColor = Color(.75f, 0f, .75f, 1f)
+        if (options.showDebugBoundingBox) {
+            RenderSystem.lineWidth(1f)
+            drawBoundingBox(context, if (mouseOver) Color.WHITE else debugColor)
+        }
+        if (options.showClippedBoundingBoxes && clipToBounds) {
+            RenderSystem.lineWidth(2f)
+            drawBoundingBox(context, Color.RED)
+        }
+
+        if (options.highlightLayout && didLayout) {
+            drawLayerOverlay(context, Color(1f, 0f, 0f, 0.1f))
+        }
+        if (options.highlightFractionalScale &&
+            (abs(scale2d.x - scale2d.xi) > 0.001 || abs(scale2d.y - scale2d.yi) > 0.001)
+        ) {
+            RenderSystem.lineWidth(2f)
+            drawBoundingBox(context, Color.RED)
         }
     }
 
     /**
      * Draws a flat colored box over this layer, rounding corners as necessary
      */
-    @Suppress("UNUSED_PARAMETER") // TODO: update to use matrices
-    public fun drawLayerOverlay(context: GuiDrawContext) {
-        val color = Color(1f, 0f, 0f, 0.1f)
+    private fun drawLayerOverlay(context: GuiDrawContext, color: Color) {
 
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(flatColorFanRenderType)
@@ -1303,8 +1320,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     /**
      * Draws a bounding box around the edge of this component
      */
-    @Suppress("UNUSED_PARAMETER") // TODO: update to use matrices
-    private fun drawDebugBoundingBox(context: GuiDrawContext, color: Color) {
+    private fun drawBoundingBox(context: GuiDrawContext, color: Color) {
         val points = getBoundingBoxPoints()
 
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
@@ -1695,6 +1711,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
 
     private fun updateDirtyLayout(event: GuiLayerEvents.LayoutChildren) {
         if (isLayoutDirty) {
+            didLayout = true
             layoutChildren()
             BUS.fire(event)
         }
@@ -1839,7 +1856,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
             YGConfigSetUseWebDefaults(config, true)
         }
 
-        private val debugBoundingBoxRenderType: RenderType = SimpleRenderTypes.flat(GL11.GL_LINE_STRIP)
+        private val debugBoundingBoxRenderType: RenderType = SimpleRenderTypes.flat(GL11.GL_LINE_LOOP)
         private val flatColorFanRenderType: RenderType = SimpleRenderTypes.flat(GL11.GL_TRIANGLE_FAN)
         private val flatLayerRenderType: RenderType = run {
             val renderState = RenderType.State.getBuilder()

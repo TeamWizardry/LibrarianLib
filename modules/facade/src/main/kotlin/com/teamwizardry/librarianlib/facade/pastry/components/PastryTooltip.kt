@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.facade.pastry.BackgroundTexture
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
+import com.teamwizardry.librarianlib.facade.provided.VanillaTooltipRenderer
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.math.vec
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
@@ -93,7 +94,10 @@ public class ItemStackTooltip: GuiLayer() {
         val rootMousePos = root.mousePos
 
         stack?.also { stack ->
-            TooltipProvider.renderTooltip(stack, rootMousePos.xi, rootMousePos.yi)
+            val s = Client.guiScaleFactor
+            RenderSystem.scaled(s, s, 1.0)
+            VanillaTooltipRenderer.renderTooltip(stack, rootMousePos.xi, rootMousePos.yi)
+            RenderSystem.scaled(1 / s, 1 / s, 1.0)
         }
     }
 }
@@ -112,52 +116,11 @@ public class VanillaTooltip: GuiLayer() {
         val rootMousePos = root.mousePos
 
         (lines ?: text?.let { listOf(it) })?.also { lines ->
-            TooltipProvider.renderTooltip(lines, rootMousePos.xi, rootMousePos.yi, font)
+            val s = Client.guiScaleFactor
+            RenderSystem.scaled(s, s, 1.0)
+            VanillaTooltipRenderer.renderTooltip(lines, rootMousePos.xi, rootMousePos.yi, font)
+            RenderSystem.scaled(1 / s, 1 / s, 1.0)
         }
     }
 }
 
-private object TooltipProvider: Screen(StringTextComponent("")) {
-    init {
-        this.init(Client.minecraft, Client.window.scaledWidth, Client.window.scaledHeight)
-    }
-
-    private fun initIfNeeded() {
-        if (width != Client.window.scaledWidth || height != Client.window.scaledHeight)
-            this.init(Client.minecraft, Client.window.scaledWidth, Client.window.scaledHeight)
-    }
-
-    private fun prepareTooltip() {
-        initIfNeeded()
-        val s = Client.guiScaleFactor
-        RenderSystem.scaled(s, s, 1.0)
-    }
-
-    private fun cleanupTooltip() {
-        val s = Client.guiScaleFactor
-        RenderSystem.scaled(1 / s, 1 / s, 1.0)
-    }
-
-    override fun renderTooltip(p_renderTooltip_1_: String, p_renderTooltip_2_: Int, p_renderTooltip_3_: Int) {
-        prepareTooltip()
-        super.renderTooltip(p_renderTooltip_1_, p_renderTooltip_2_, p_renderTooltip_3_)
-        cleanupTooltip()
-    }
-
-    override fun renderTooltip(p_renderTooltip_1_: List<String>, p_renderTooltip_2_: Int, p_renderTooltip_3_: Int) {
-        prepareTooltip()
-        super.renderTooltip(p_renderTooltip_1_, p_renderTooltip_2_, p_renderTooltip_3_)
-        cleanupTooltip()
-    }
-
-    override fun renderTooltip(p_renderTooltip_1_: List<String>, p_renderTooltip_2_: Int, p_renderTooltip_3_: Int, font: FontRenderer) {
-        prepareTooltip()
-        super.renderTooltip(p_renderTooltip_1_, p_renderTooltip_2_, p_renderTooltip_3_, font)
-        cleanupTooltip()
-    }
-
-    public override fun renderTooltip(p_renderTooltip_1_: ItemStack, p_renderTooltip_2_: Int, p_renderTooltip_3_: Int) {
-        initIfNeeded() // for some reason itemstack tooltips don't need to be scaled
-        super.renderTooltip(p_renderTooltip_1_, p_renderTooltip_2_, p_renderTooltip_3_)
-    }
-}

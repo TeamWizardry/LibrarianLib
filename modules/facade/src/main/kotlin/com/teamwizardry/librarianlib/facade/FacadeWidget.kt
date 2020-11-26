@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.facade.layer.supporting.StencilUtil
 import com.teamwizardry.librarianlib.facade.input.Cursor
+import com.teamwizardry.librarianlib.facade.layer.FacadeDebugOptions
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
@@ -27,6 +28,17 @@ public open class FacadeWidget(
     private val tooltipContainer = GuiLayer()
     private var currentTooltip: GuiLayer? = null
 
+    /**
+     * Whether F3 is currently pressed. Used to trigger F3+_ debug shortcuts
+     */
+    private var isF3Pressed: Boolean = false
+    /**
+     * Set to true when F3 is pressed, then set to false if a shortcut (e.g. F3+B) is pressed. If F3 is released with
+     * this set to true, the configurator is opened
+     */
+    private var isOpeningDebugConfigurator: Boolean = false
+    private val debugConfigurator = FacadeDebugOptionsConfigurator(debugOptions)
+
     init {
         root.ignoreMouseOverBounds = true
         root.add(main, tooltipContainer)
@@ -48,6 +60,10 @@ public open class FacadeWidget(
 
     //region Delegates
     public fun mouseMoved(xPos: Double, yPos: Double) {
+        if (debugConfigurator.isOpen) {
+            debugConfigurator.mouseMoved(xPos, yPos)
+            return
+        }
         val pos = rescale(xPos, yPos)
         computeMouseOver(pos)
         safetyNet("firing a MouseMove event") {
@@ -57,6 +73,10 @@ public open class FacadeWidget(
     }
 
     public fun mouseClicked(xPos: Double, yPos: Double, button: Int) {
+        if (debugConfigurator.isOpen) {
+            debugConfigurator.mouseClicked(xPos, yPos, button)
+            return
+        }
         val pos = rescale(xPos, yPos)
         computeMouseOver(pos)
         safetyNet("firing a MouseDown event") {
@@ -65,6 +85,7 @@ public open class FacadeWidget(
     }
 
     public fun mouseReleased(xPos: Double, yPos: Double, button: Int) {
+        if (debugConfigurator.isOpen) return
         val pos = rescale(xPos, yPos)
         computeMouseOver(pos)
         safetyNet("firing a MouseUp event") {
@@ -73,6 +94,7 @@ public open class FacadeWidget(
     }
 
     public fun mouseScrolled(xPos: Double, yPos: Double, deltaY: Double) {
+        if (debugConfigurator.isOpen) return
         val pos = rescale(xPos, yPos)
         val delta = rescale(0.0, deltaY)
         computeMouseOver(pos)
@@ -82,6 +104,7 @@ public open class FacadeWidget(
     }
 
     public fun mouseDragged(xPos: Double, yPos: Double, button: Int, deltaX: Double, deltaY: Double) {
+        if (debugConfigurator.isOpen) return
         val pos = rescale(xPos, yPos)
         val lastPos = rescale(xPos - deltaX, yPos - deltaY)
         computeMouseOver(pos)
@@ -95,36 +118,53 @@ public open class FacadeWidget(
         // todo
     }
 
-    private var f3Pressed = false
     public fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int) {
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            screen.onClose()
-        }
-        if(keyCode == GLFW.GLFW_KEY_F3) {
-            f3Pressed = true
-        }
-        if(f3Pressed) {
-            when(keyCode) {
-                GLFW.GLFW_KEY_B -> {
-                    debugBoundingBox = !debugBoundingBox
+        when (keyCode) {
+            GLFW.GLFW_KEY_F3 -> {
+                isF3Pressed = true
+                if (debugConfigurator.isOpen) {
+                    debugConfigurator.isOpen = false
+                } else {
+                    isOpeningDebugConfigurator = true
+                }
+            }
+            GLFW.GLFW_KEY_ESCAPE -> {
+                if (debugConfigurator.isOpen) {
+                    debugConfigurator.isOpen = false
+                } else {
+                    screen.onClose()
                 }
             }
         }
+        if (isF3Pressed) {
+            if (debugConfigurator.shortcutKeyPressed(keyCode)) {
+                isOpeningDebugConfigurator = false
+            }
+        }
+
+        if (debugConfigurator.isOpen) return
+
         safetyNet("firing a KeyDown event") {
             root.triggerEvent(GuiLayerEvents.KeyDown(keyCode, scanCode, modifiers))
         }
     }
 
     public fun keyReleased(keyCode: Int, scanCode: Int, modifiers: Int) {
-        if(keyCode == GLFW.GLFW_KEY_F3) {
-            f3Pressed = false
+        if (keyCode == GLFW.GLFW_KEY_F3) {
+            isF3Pressed = false
+            if(isOpeningDebugConfigurator) {
+                isOpeningDebugConfigurator = false
+                debugConfigurator.isOpen = true
+            }
         }
+        if (debugConfigurator.isOpen) return
         safetyNet("firing a KeyUp event") {
             root.triggerEvent(GuiLayerEvents.KeyUp(keyCode, scanCode, modifiers))
         }
     }
 
     public fun charTyped(codepoint: Char, modifiers: Int) {
+        if (debugConfigurator.isOpen) return
         safetyNet("firing a CharTyped event") {
             root.triggerEvent(GuiLayerEvents.CharTyped(codepoint, modifiers))
         }
@@ -143,14 +183,14 @@ public open class FacadeWidget(
     /**
      * Convert logical pixels to screen pixels
      */
-    private fun rescale(logicalX: Double, logicalY: Double): Vec2d
-        = vec(logicalX * Client.guiScaleFactor, logicalY * Client.guiScaleFactor)
+    private fun rescale(logicalX: Double, logicalY: Double): Vec2d =
+        vec(logicalX * Client.guiScaleFactor, logicalY * Client.guiScaleFactor)
 
     private fun computeMouseOver(absolute: Vec2d) {
         safetyNet("computing the mouse position") {
             lastHit = null
             mouseHit = computeMouseHit(absolute, true)
-            generateSequence(mouseHit.layer) { if(it.propagatesMouseOver) it.parent else null }.forEach {
+            generateSequence(mouseHit.layer) { if (it.propagatesMouseOver) it.parent else null }.forEach {
                 it.mouseOver = true
             }
         }
@@ -164,11 +204,12 @@ public open class FacadeWidget(
             }
         }?.zIndex ?: .0
         val isAboveVanilla = rootZ >= 1000
-        if(screen is FacadeMouseMask) {
-            if(!isAboveVanilla && screen.isMouseMasked(
+        if (screen is FacadeMouseMask) {
+            if (!isAboveVanilla && screen.isMouseMasked(
                     absolute.x / Client.guiScaleFactor,
                     absolute.y / Client.guiScaleFactor
-                )) {
+                )
+            ) {
                 hitLayer = null
             }
         }
@@ -188,7 +229,7 @@ public open class FacadeWidget(
     public fun hitTest(xPos: Double, yPos: Double): MouseHit {
         val pos = rescale(xPos, yPos)
         lastHit?.also {
-            if(pos == it.pos)
+            if (pos == it.pos)
                 return it
         }
         return computeMouseHit(pos, false).also { lastHit = it }
@@ -244,10 +285,13 @@ public open class FacadeWidget(
             StencilUtil.enable()
             RenderSystem.pushMatrix()
             RenderSystem.scaled(1 / guiScale, 1 / guiScale, 1.0)
-            val context = GuiDrawContext(Matrix3dStack(), debugBoundingBox, false)
+            val context = GuiDrawContext(Matrix3dStack(), debugOptions, false)
             root.renderLayer(context)
             RenderSystem.popMatrix()
             StencilUtil.disable()
+        }
+        if(debugConfigurator.isOpen) {
+            debugConfigurator.render()
         }
     }
 
@@ -255,8 +299,7 @@ public open class FacadeWidget(
      * Configures the rendering system to only render children of the root layer that match the given predicate.
      * This is used in containers to render the foreground and background at separate times.
      */
-    public fun filterRendering(filter: Predicate<GuiLayer>)
-    {
+    public fun filterRendering(filter: Predicate<GuiLayer>) {
         safetyNet("filtering rendering") {
             root.forEachChild {
                 it.skipRender = !filter.test(it)
@@ -282,8 +325,8 @@ public open class FacadeWidget(
         val pos: Vec2d
     )
 
-    private companion object {
-        var debugBoundingBox: Boolean = false
+    public companion object {
+        @JvmStatic
+        public val debugOptions: FacadeDebugOptions = FacadeDebugOptions()
     }
-
 }
