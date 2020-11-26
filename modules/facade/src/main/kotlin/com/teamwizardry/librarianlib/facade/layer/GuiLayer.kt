@@ -469,7 +469,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
             if (layer.parent != null) {
                 if (layer.parent == this) {
                     logger.warn("The passed layer was already a child of this layer", Exception())
-                    return
+                    continue
                 } else {
                     throw LayerHierarchyException("The passed layer already had another parent")
                 }
