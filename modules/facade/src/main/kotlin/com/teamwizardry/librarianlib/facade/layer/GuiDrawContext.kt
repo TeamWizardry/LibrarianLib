@@ -43,12 +43,12 @@ public class GuiDrawContext(
 
     private fun create3dTransform(m: Matrix3d): Matrix4d {
         val m4d = MutableMatrix4d()
-        m4d[0, 0] = m[0, 0]
-        m4d[1, 0] = m[1, 0]
-        m4d[0, 1] = m[0, 1]
-        m4d[1, 1] = m[1, 1]
-        m4d[0, 3] = m[0, 2]
-        m4d[1, 3] = m[1, 2]
+        m4d.m00 = m.m00
+        m4d.m10 = m.m10
+        m4d.m01 = m.m01
+        m4d.m11 = m.m11
+        m4d.m03 = m.m02
+        m4d.m13 = m.m12
         return m4d
     }
 }

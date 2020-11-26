@@ -748,48 +748,48 @@ public class Quaternion(
         public fun fromRotationMatrix(matrix: Matrix3d): Quaternion {
             val trace = matrix.trace()
             if (trace < 0) {
-                if (matrix[1, 1] > matrix[0, 0]) {
-                    if (matrix[2, 2] > matrix[1, 1]) {
-                        val r = sqrt(matrix[2, 2] - matrix[0, 0] - matrix[1, 1] + 1)
+                if (matrix.m11 > matrix.m00) {
+                    if (matrix.m22 > matrix.m11) {
+                        val r = sqrt(matrix.m22 - matrix.m00 - matrix.m11 + 1)
                         val s = 0.5f / r
                         return Quaternion(
-                            (matrix[2, 0] + matrix[0, 2]) * s,
-                            (matrix[1, 2] + matrix[2, 1]) * s,
+                            (matrix.m20 + matrix.m02) * s,
+                            (matrix.m12 + matrix.m21) * s,
                             0.5f * r,
-                            (matrix[1, 0] - matrix[0, 1]) * s)
+                            (matrix.m10 - matrix.m01) * s)
                     } else {
-                        val r = sqrt(matrix[1, 1] - matrix[2, 2] - matrix[0, 0] + 1)
+                        val r = sqrt(matrix.m11 - matrix.m22 - matrix.m00 + 1)
                         val s = 0.5f / r
                         return Quaternion(
-                            (matrix[0, 1] + matrix[1, 0]) * s,
+                            (matrix.m01 + matrix.m10) * s,
                             0.5f * r,
-                            (matrix[1, 2] + matrix[2, 1]) * s,
-                            (matrix[0, 2] - matrix[2, 0]) * s)
+                            (matrix.m12 + matrix.m21) * s,
+                            (matrix.m02 - matrix.m20) * s)
                     }
-                } else if (matrix[2, 2] > matrix[0, 0]) {
-                    val r = sqrt(matrix[2, 2] - matrix[0, 0] - matrix[1, 1] + 1)
+                } else if (matrix.m22 > matrix.m00) {
+                    val r = sqrt(matrix.m22 - matrix.m00 - matrix.m11 + 1)
                     val s = 0.5f / r
                     return Quaternion(
-                        (matrix[2, 0] + matrix[0, 2]) * s,
-                        (matrix[1, 2] + matrix[2, 1]) * s,
+                        (matrix.m20 + matrix.m02) * s,
+                        (matrix.m12 + matrix.m21) * s,
                         0.5f * r,
-                        (matrix[1, 0] - matrix[0, 1]) * s)
+                        (matrix.m10 - matrix.m01) * s)
                 } else {
-                    val r = sqrt(matrix[0, 0] - matrix[1, 1] - matrix[2, 2] + 1)
+                    val r = sqrt(matrix.m00 - matrix.m11 - matrix.m22 + 1)
                     val s = 0.5f / r
                     return Quaternion(
                         0.5f * r,
-                        (matrix[0, 1] + matrix[1, 0]) * s,
-                        (matrix[2, 0] - matrix[0, 2]) * s,
-                        (matrix[2, 1] - matrix[1, 2]) * s)
+                        (matrix.m01 + matrix.m10) * s,
+                        (matrix.m20 - matrix.m02) * s,
+                        (matrix.m21 - matrix.m12) * s)
                 }
             } else {
                 val r = sqrt(trace + 1)
                 val s = 0.5f / r
                 return Quaternion(
-                    (matrix[2, 1] - matrix[1, 2]) * s,
-                    (matrix[0, 2] - matrix[2, 0]) * s,
-                    (matrix[1, 0] - matrix[0, 1]) * s,
+                    (matrix.m21 - matrix.m12) * s,
+                    (matrix.m02 - matrix.m20) * s,
+                    (matrix.m10 - matrix.m01) * s,
                     0.5f * r)
             }
         }

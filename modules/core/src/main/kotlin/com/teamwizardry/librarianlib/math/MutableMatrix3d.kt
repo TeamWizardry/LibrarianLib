@@ -11,24 +11,52 @@ import kotlin.math.pow
 import kotlin.math.round
 
 // adapted from flow/math: https://github.com/flow/math
-public open class MutableMatrix3d: Matrix3d {
-    public constructor(m: Matrix3d): super(m)
+public open class MutableMatrix3d(
+    override var m00: Double,
+    override var m01: Double,
+    override var m02: Double,
+    override var m10: Double,
+    override var m11: Double,
+    override var m12: Double,
+    override var m20: Double,
+    override var m21: Double,
+    override var m22: Double
+): Matrix3d() {
 
-    public constructor(): super()
+    public constructor(m: Matrix3d): this(
+        m.m00, m.m01, m.m02,
+        m.m10, m.m11, m.m12,
+        m.m20, m.m21, m.m22
+    )
+
+    public constructor(): this(
+        1.0, 0.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 0.0, 1.0
+    )
 
     public constructor(
         m00: Float, m01: Float, m02: Float,
         m10: Float, m11: Float, m12: Float,
         m20: Float, m21: Float, m22: Float
-    ): super(m00, m01, m02, m10, m11, m12, m20, m21, m22)
+    ): this(
+        m00.toDouble(), m01.toDouble(), m02.toDouble(),
+        m10.toDouble(), m11.toDouble(), m12.toDouble(),
+        m20.toDouble(), m21.toDouble(), m22.toDouble()
+    )
 
-    public constructor(
-        m00: Double, m01: Double, m02: Double,
-        m10: Double, m11: Double, m12: Double,
-        m20: Double, m21: Double, m22: Double
-    ): super(m00, m01, m02, m10, m11, m12, m20, m21, m22)
-
-    public constructor(m: Matrix3f): super(m)
+    @Suppress("CAST_NEVER_SUCCEEDS")
+    public constructor(m: Matrix3f): this(
+        (m as IMatrix3f).m00,
+        (m as IMatrix3f).m01,
+        (m as IMatrix3f).m02,
+        (m as IMatrix3f).m10,
+        (m as IMatrix3f).m11,
+        (m as IMatrix3f).m12,
+        (m as IMatrix3f).m20,
+        (m as IMatrix3f).m21,
+        (m as IMatrix3f).m22
+    )
 
     public operator fun set(row: Int, col: Int, value: Double) {
         if (row !in 0..2 || col !in 0..2) {

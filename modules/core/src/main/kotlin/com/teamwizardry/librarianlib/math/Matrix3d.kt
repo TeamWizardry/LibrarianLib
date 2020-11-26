@@ -12,25 +12,21 @@ import kotlin.math.sin
 
 // adapted from flow/math: https://github.com/flow/math
 public open class Matrix3d(
-    @get:JvmSynthetic @set:JvmSynthetic internal open var m00: Double,
-    @get:JvmSynthetic @set:JvmSynthetic internal open var m01: Double,
-    @get:JvmSynthetic @set:JvmSynthetic internal open var m02: Double,
-    @get:JvmSynthetic @set:JvmSynthetic internal open var m10: Double,
-    @get:JvmSynthetic @set:JvmSynthetic internal open var m11: Double,
-    @get:JvmSynthetic @set:JvmSynthetic internal open var m12: Double,
-    @get:JvmSynthetic @set:JvmSynthetic internal open var m20: Double,
-    @get:JvmSynthetic @set:JvmSynthetic internal open var m21: Double,
-    @get:JvmSynthetic @set:JvmSynthetic internal open var m22: Double
+    public open val m00: Double,
+    public open val m01: Double,
+    public open val m02: Double,
+    public open val m10: Double,
+    public open val m11: Double,
+    public open val m12: Double,
+    public open val m20: Double,
+    public open val m21: Double,
+    public open val m22: Double
 ): Cloneable {
-
-    @Volatile
-    @Transient
-    private var hashCode = 0
-
     public constructor(m: Matrix3d): this(
         m.m00, m.m01, m.m02,
         m.m10, m.m11, m.m12,
-        m.m20, m.m21, m.m22)
+        m.m20, m.m21, m.m22
+    )
 
     public constructor(
         m00: Float, m01: Float, m02: Float,
@@ -413,19 +409,16 @@ public open class Matrix3d(
     }
 
     override fun hashCode(): Int {
-        if (hashCode == 0) {
-            var result = m00.hashCode()
-            result = 31 * result + m01.hashCode()
-            result = 31 * result + m02.hashCode()
-            result = 31 * result + m10.hashCode()
-            result = 31 * result + m11.hashCode()
-            result = 31 * result + m12.hashCode()
-            result = 31 * result + m20.hashCode()
-            result = 31 * result + m21.hashCode()
-            result = 31 * result + m22.hashCode()
-            hashCode = if (result == 0) 1 else result
-        }
-        return hashCode
+        var result = m00.hashCode()
+        result = 31 * result + m01.hashCode()
+        result = 31 * result + m02.hashCode()
+        result = 31 * result + m10.hashCode()
+        result = 31 * result + m11.hashCode()
+        result = 31 * result + m12.hashCode()
+        result = 31 * result + m20.hashCode()
+        result = 31 * result + m21.hashCode()
+        result = 31 * result + m22.hashCode()
+        return result
     }
 
     override fun clone(): Matrix3d {

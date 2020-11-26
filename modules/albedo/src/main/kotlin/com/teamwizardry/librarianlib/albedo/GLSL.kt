@@ -993,9 +993,9 @@ public abstract class GLSL(public val glConstant: Int) {
 
         public fun set(matrix: Matrix3d) {
             this.set(
-                matrix[0, 0].toFloat(), matrix[1, 0].toFloat(), matrix[2, 0].toFloat(),
-                matrix[0, 1].toFloat(), matrix[1, 1].toFloat(), matrix[2, 1].toFloat(),
-                matrix[0, 2].toFloat(), matrix[1, 2].toFloat(), matrix[2, 2].toFloat()
+                matrix.m00.toFloat(), matrix.m10.toFloat(), matrix.m20.toFloat(),
+                matrix.m01.toFloat(), matrix.m11.toFloat(), matrix.m21.toFloat(),
+                matrix.m02.toFloat(), matrix.m12.toFloat(), matrix.m22.toFloat()
             )
         }
 
@@ -1099,9 +1099,9 @@ public abstract class GLSL(public val glConstant: Int) {
 
             public fun set(index: Int, matrix: Matrix3d) {
                 this.set(index,
-                    matrix[0, 0].toFloat(), matrix[1, 0].toFloat(), matrix[2, 0].toFloat(),
-                    matrix[0, 1].toFloat(), matrix[1, 1].toFloat(), matrix[2, 1].toFloat(),
-                    matrix[0, 2].toFloat(), matrix[1, 2].toFloat(), matrix[2, 2].toFloat()
+                    matrix.m00.toFloat(), matrix.m10.toFloat(), matrix.m20.toFloat(),
+                    matrix.m01.toFloat(), matrix.m11.toFloat(), matrix.m21.toFloat(),
+                    matrix.m02.toFloat(), matrix.m12.toFloat(), matrix.m22.toFloat()
                 )
             }
 
@@ -1301,10 +1301,10 @@ public abstract class GLSL(public val glConstant: Int) {
 
         public fun set(matrix: Matrix4d) {
             this.set(
-                matrix[0, 0].toFloat(), matrix[1, 0].toFloat(), matrix[2, 0].toFloat(), matrix[3, 0].toFloat(),
-                matrix[0, 1].toFloat(), matrix[1, 1].toFloat(), matrix[2, 1].toFloat(), matrix[3, 1].toFloat(),
-                matrix[0, 2].toFloat(), matrix[1, 2].toFloat(), matrix[2, 2].toFloat(), matrix[3, 2].toFloat(),
-                matrix[0, 3].toFloat(), matrix[1, 3].toFloat(), matrix[2, 3].toFloat(), matrix[3, 3].toFloat()
+                matrix.m00.toFloat(), matrix.m10.toFloat(), matrix.m20.toFloat(), matrix.m30.toFloat(),
+                matrix.m01.toFloat(), matrix.m11.toFloat(), matrix.m21.toFloat(), matrix.m31.toFloat(),
+                matrix.m02.toFloat(), matrix.m12.toFloat(), matrix.m22.toFloat(), matrix.m32.toFloat(),
+                matrix.m03.toFloat(), matrix.m13.toFloat(), matrix.m23.toFloat(), matrix.m33.toFloat()
             )
         }
 
@@ -1475,10 +1475,10 @@ public abstract class GLSL(public val glConstant: Int) {
 
             public fun set(index: Int, matrix: Matrix4d) {
                 this.set(index,
-                    matrix[0, 0].toFloat(), matrix[1, 0].toFloat(), matrix[2, 0].toFloat(), matrix[3, 0].toFloat(),
-                    matrix[0, 1].toFloat(), matrix[1, 1].toFloat(), matrix[2, 1].toFloat(), matrix[3, 1].toFloat(),
-                    matrix[0, 2].toFloat(), matrix[1, 2].toFloat(), matrix[2, 2].toFloat(), matrix[3, 2].toFloat(),
-                    matrix[0, 3].toFloat(), matrix[1, 3].toFloat(), matrix[2, 3].toFloat(), matrix[3, 3].toFloat()
+                    matrix.m00.toFloat(), matrix.m10.toFloat(), matrix.m20.toFloat(), matrix.m30.toFloat(),
+                    matrix.m01.toFloat(), matrix.m11.toFloat(), matrix.m21.toFloat(), matrix.m31.toFloat(),
+                    matrix.m02.toFloat(), matrix.m12.toFloat(), matrix.m22.toFloat(), matrix.m32.toFloat(),
+                    matrix.m03.toFloat(), matrix.m13.toFloat(), matrix.m23.toFloat(), matrix.m33.toFloat()
                 )
             }
 

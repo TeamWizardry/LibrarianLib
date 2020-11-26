@@ -18,27 +18,24 @@ import kotlin.math.sin
 import kotlin.math.tan
 
 // adapted from flow/math: https://github.com/flow/math
-public open class Matrix4d: Cloneable {
-    internal open var m00: Double
-    internal open var m01: Double
-    internal open var m02: Double
-    internal open var m03: Double
-    internal open var m10: Double
-    internal open var m11: Double
-    internal open var m12: Double
-    internal open var m13: Double
-    internal open var m20: Double
-    internal open var m21: Double
-    internal open var m22: Double
-    internal open var m23: Double
-    internal open var m30: Double
-    internal open var m31: Double
-    internal open var m32: Double
-    internal open var m33: Double
-
-    @Volatile
-    @Transient
-    private var hashCode = 0
+public open class Matrix4d(
+    public open val m00: Double,
+    public open val m01: Double,
+    public open val m02: Double,
+    public open val m03: Double,
+    public open val m10: Double,
+    public open val m11: Double,
+    public open val m12: Double,
+    public open val m13: Double,
+    public open val m20: Double,
+    public open val m21: Double,
+    public open val m22: Double,
+    public open val m23: Double,
+    public open val m30: Double,
+    public open val m31: Double,
+    public open val m32: Double,
+    public open val m33: Double
+): Cloneable {
 
     public constructor(m: Matrix4d): this(
         m.m00, m.m01, m.m02, m.m03,
@@ -63,48 +60,25 @@ public open class Matrix4d: Cloneable {
         m20.toDouble(), m21.toDouble(), m22.toDouble(), m23.toDouble(),
         m30.toDouble(), m31.toDouble(), m32.toDouble(), m33.toDouble())
 
-    public constructor(
-        m00: Double, m01: Double, m02: Double, m03: Double,
-        m10: Double, m11: Double, m12: Double, m13: Double,
-        m20: Double, m21: Double, m22: Double, m23: Double,
-        m30: Double, m31: Double, m32: Double, m33: Double) {
-        this.m00 = m00
-        this.m01 = m01
-        this.m02 = m02
-        this.m03 = m03
-        this.m10 = m10
-        this.m11 = m11
-        this.m12 = m12
-        this.m13 = m13
-        this.m20 = m20
-        this.m21 = m21
-        this.m22 = m22
-        this.m23 = m23
-        this.m30 = m30
-        this.m31 = m31
-        this.m32 = m32
-        this.m33 = m33
-    }
-
-    public constructor(m: Matrix4f) {
-        @Suppress("CAST_NEVER_SUCCEEDS") val imatrix = m as IMatrix4f
-        this.m00 = imatrix.m00.toDouble()
-        this.m01 = imatrix.m01.toDouble()
-        this.m02 = imatrix.m02.toDouble()
-        this.m03 = imatrix.m03.toDouble()
-        this.m10 = imatrix.m10.toDouble()
-        this.m11 = imatrix.m11.toDouble()
-        this.m12 = imatrix.m12.toDouble()
-        this.m13 = imatrix.m13.toDouble()
-        this.m20 = imatrix.m20.toDouble()
-        this.m21 = imatrix.m21.toDouble()
-        this.m22 = imatrix.m22.toDouble()
-        this.m23 = imatrix.m23.toDouble()
-        this.m30 = imatrix.m30.toDouble()
-        this.m31 = imatrix.m31.toDouble()
-        this.m32 = imatrix.m32.toDouble()
-        this.m33 = imatrix.m33.toDouble()
-    }
+    @Suppress("CAST_NEVER_SUCCEEDS")
+    public constructor(m: Matrix4f): this(
+        (m as IMatrix4f).m00,
+        (m as IMatrix4f).m01,
+        (m as IMatrix4f).m02,
+        (m as IMatrix4f).m03,
+        (m as IMatrix4f).m10,
+        (m as IMatrix4f).m11,
+        (m as IMatrix4f).m12,
+        (m as IMatrix4f).m13,
+        (m as IMatrix4f).m20,
+        (m as IMatrix4f).m21,
+        (m as IMatrix4f).m22,
+        (m as IMatrix4f).m23,
+        (m as IMatrix4f).m30,
+        (m as IMatrix4f).m31,
+        (m as IMatrix4f).m32,
+        (m as IMatrix4f).m33
+    )
 
     public operator fun get(row: Int, col: Int): Double {
         when (row) {
@@ -488,26 +462,23 @@ public open class Matrix4d: Cloneable {
     }
 
     override fun hashCode(): Int {
-        if (hashCode == 0) {
-            var result = if (m00 != +0.0) m00.hashCode() else 0
-            result = 31 * result + if (m01 != +0.0) m01.hashCode() else 0
-            result = 31 * result + if (m02 != +0.0) m02.hashCode() else 0
-            result = 31 * result + if (m03 != +0.0) m03.hashCode() else 0
-            result = 31 * result + if (m10 != +0.0) m10.hashCode() else 0
-            result = 31 * result + if (m11 != +0.0) m11.hashCode() else 0
-            result = 31 * result + if (m12 != +0.0) m12.hashCode() else 0
-            result = 31 * result + if (m13 != +0.0) m13.hashCode() else 0
-            result = 31 * result + if (m20 != +0.0) m20.hashCode() else 0
-            result = 31 * result + if (m21 != +0.0) m21.hashCode() else 0
-            result = 31 * result + if (m22 != +0.0) m22.hashCode() else 0
-            result = 31 * result + if (m23 != +0.0) m23.hashCode() else 0
-            result = 31 * result + if (m30 != +0.0) m30.hashCode() else 0
-            result = 31 * result + if (m31 != +0.0) m31.hashCode() else 0
-            result = 31 * result + if (m32 != +0.0) m32.hashCode() else 0
-            result = 31 * result + if (m33 != +0.0) m33.hashCode() else 0
-            hashCode = if (result == 0) 1 else result
-        }
-        return hashCode
+        var result = m00.hashCode()
+        result = 31 * result + m01.hashCode()
+        result = 31 * result + m02.hashCode()
+        result = 31 * result + m03.hashCode()
+        result = 31 * result + m10.hashCode()
+        result = 31 * result + m11.hashCode()
+        result = 31 * result + m12.hashCode()
+        result = 31 * result + m13.hashCode()
+        result = 31 * result + m20.hashCode()
+        result = 31 * result + m21.hashCode()
+        result = 31 * result + m22.hashCode()
+        result = 31 * result + m23.hashCode()
+        result = 31 * result + m30.hashCode()
+        result = 31 * result + m31.hashCode()
+        result = 31 * result + m32.hashCode()
+        result = 31 * result + m33.hashCode()
+        return result
     }
 
     override fun clone(): Matrix4d {

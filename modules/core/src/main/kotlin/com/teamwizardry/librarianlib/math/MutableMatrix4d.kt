@@ -10,44 +10,67 @@ import kotlin.math.pow
 import kotlin.math.roundToLong
 
 // adapted from flow/math: https://github.com/flow/math
-public open class MutableMatrix4d: Matrix4d {
-    public constructor(m: Matrix4d): super(m)
+public open class MutableMatrix4d(
+    override var m00: Double,
+    override var m01: Double,
+    override var m02: Double,
+    override var m03: Double,
+    override var m10: Double,
+    override var m11: Double,
+    override var m12: Double,
+    override var m13: Double,
+    override var m20: Double,
+    override var m21: Double,
+    override var m22: Double,
+    override var m23: Double,
+    override var m30: Double,
+    override var m31: Double,
+    override var m32: Double,
+    override var m33: Double
+): Matrix4d() {
 
-    public constructor(): super()
+    public constructor(m: Matrix4d): this(
+        m.m00, m.m01, m.m02, m.m03,
+        m.m10, m.m11, m.m12, m.m13,
+        m.m20, m.m21, m.m22, m.m23,
+        m.m30, m.m31, m.m32, m.m33)
+
+    public constructor(): this(
+        1f, 0f, 0f, 0f,
+        0f, 1f, 0f, 0f,
+        0f, 0f, 1f, 0f,
+        0f, 0f, 0f, 1f
+    )
 
     public constructor(
         m00: Float, m01: Float, m02: Float, m03: Float,
         m10: Float, m11: Float, m12: Float, m13: Float,
         m20: Float, m21: Float, m22: Float, m23: Float,
-        m30: Float, m31: Float, m32: Float, m33: Float
-    ): super(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33)
+        m30: Float, m31: Float, m32: Float, m33: Float): this(
+        m00.toDouble(), m01.toDouble(), m02.toDouble(), m03.toDouble(),
+        m10.toDouble(), m11.toDouble(), m12.toDouble(), m13.toDouble(),
+        m20.toDouble(), m21.toDouble(), m22.toDouble(), m23.toDouble(),
+        m30.toDouble(), m31.toDouble(), m32.toDouble(), m33.toDouble())
 
-    public constructor(
-        m00: Double, m01: Double, m02: Double, m03: Double,
-        m10: Double, m11: Double, m12: Double, m13: Double,
-        m20: Double, m21: Double, m22: Double, m23: Double,
-        m30: Double, m31: Double, m32: Double, m33: Double
-    ): super(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33)
-
-    public constructor(m: Matrix4f) {
-        @Suppress("CAST_NEVER_SUCCEEDS") val imatrix = m as IMatrix4f
-        this.m00 = imatrix.m00.toDouble()
-        this.m01 = imatrix.m01.toDouble()
-        this.m02 = imatrix.m02.toDouble()
-        this.m03 = imatrix.m03.toDouble()
-        this.m10 = imatrix.m10.toDouble()
-        this.m11 = imatrix.m11.toDouble()
-        this.m12 = imatrix.m12.toDouble()
-        this.m13 = imatrix.m13.toDouble()
-        this.m20 = imatrix.m20.toDouble()
-        this.m21 = imatrix.m21.toDouble()
-        this.m22 = imatrix.m22.toDouble()
-        this.m23 = imatrix.m23.toDouble()
-        this.m30 = imatrix.m30.toDouble()
-        this.m31 = imatrix.m31.toDouble()
-        this.m32 = imatrix.m32.toDouble()
-        this.m33 = imatrix.m33.toDouble()
-    }
+    @Suppress("CAST_NEVER_SUCCEEDS")
+    public constructor(m: Matrix4f): this(
+        (m as IMatrix4f).m00,
+        (m as IMatrix4f).m01,
+        (m as IMatrix4f).m02,
+        (m as IMatrix4f).m03,
+        (m as IMatrix4f).m10,
+        (m as IMatrix4f).m11,
+        (m as IMatrix4f).m12,
+        (m as IMatrix4f).m13,
+        (m as IMatrix4f).m20,
+        (m as IMatrix4f).m21,
+        (m as IMatrix4f).m22,
+        (m as IMatrix4f).m23,
+        (m as IMatrix4f).m30,
+        (m as IMatrix4f).m31,
+        (m as IMatrix4f).m32,
+        (m as IMatrix4f).m33
+    )
 
     public operator fun set(row: Int, col: Int, value: Double) {
         if (row !in 0..3 || col !in 0..3) {

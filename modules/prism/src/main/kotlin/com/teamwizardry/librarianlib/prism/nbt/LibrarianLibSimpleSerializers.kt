@@ -88,15 +88,15 @@ internal object Matrix3dSerializer: NBTSerializer<Matrix3d>() {
 
     override fun serialize(value: Matrix3d): INBT {
         return ListNBT().also {
-            it.add(DoubleNBT.valueOf(value[0, 0]))
-            it.add(DoubleNBT.valueOf(value[0, 1]))
-            it.add(DoubleNBT.valueOf(value[0, 2]))
-            it.add(DoubleNBT.valueOf(value[1, 0]))
-            it.add(DoubleNBT.valueOf(value[1, 1]))
-            it.add(DoubleNBT.valueOf(value[1, 2]))
-            it.add(DoubleNBT.valueOf(value[2, 0]))
-            it.add(DoubleNBT.valueOf(value[2, 1]))
-            it.add(DoubleNBT.valueOf(value[2, 2]))
+            it.add(DoubleNBT.valueOf(value.m00))
+            it.add(DoubleNBT.valueOf(value.m01))
+            it.add(DoubleNBT.valueOf(value.m02))
+            it.add(DoubleNBT.valueOf(value.m10))
+            it.add(DoubleNBT.valueOf(value.m11))
+            it.add(DoubleNBT.valueOf(value.m12))
+            it.add(DoubleNBT.valueOf(value.m20))
+            it.add(DoubleNBT.valueOf(value.m21))
+            it.add(DoubleNBT.valueOf(value.m22))
         }
     }
 }
@@ -119,15 +119,15 @@ internal object MutableMatrix3dSerializer: NBTSerializer<MutableMatrix3d>() {
 
     override fun serialize(value: MutableMatrix3d): INBT {
         return ListNBT().also {
-            it.add(DoubleNBT.valueOf(value[0, 0]))
-            it.add(DoubleNBT.valueOf(value[0, 1]))
-            it.add(DoubleNBT.valueOf(value[0, 2]))
-            it.add(DoubleNBT.valueOf(value[1, 0]))
-            it.add(DoubleNBT.valueOf(value[1, 1]))
-            it.add(DoubleNBT.valueOf(value[1, 2]))
-            it.add(DoubleNBT.valueOf(value[2, 0]))
-            it.add(DoubleNBT.valueOf(value[2, 1]))
-            it.add(DoubleNBT.valueOf(value[2, 2]))
+            it.add(DoubleNBT.valueOf(value.m00))
+            it.add(DoubleNBT.valueOf(value.m01))
+            it.add(DoubleNBT.valueOf(value.m02))
+            it.add(DoubleNBT.valueOf(value.m10))
+            it.add(DoubleNBT.valueOf(value.m11))
+            it.add(DoubleNBT.valueOf(value.m12))
+            it.add(DoubleNBT.valueOf(value.m20))
+            it.add(DoubleNBT.valueOf(value.m21))
+            it.add(DoubleNBT.valueOf(value.m22))
         }
     }
 }
@@ -157,22 +157,22 @@ internal object Matrix4dSerializer: NBTSerializer<Matrix4d>() {
 
     override fun serialize(value: Matrix4d): INBT {
         return ListNBT().also {
-            it.add(DoubleNBT.valueOf(value[0, 0]))
-            it.add(DoubleNBT.valueOf(value[0, 1]))
-            it.add(DoubleNBT.valueOf(value[0, 2]))
-            it.add(DoubleNBT.valueOf(value[0, 3]))
-            it.add(DoubleNBT.valueOf(value[1, 0]))
-            it.add(DoubleNBT.valueOf(value[1, 1]))
-            it.add(DoubleNBT.valueOf(value[1, 2]))
-            it.add(DoubleNBT.valueOf(value[1, 3]))
-            it.add(DoubleNBT.valueOf(value[2, 0]))
-            it.add(DoubleNBT.valueOf(value[2, 1]))
-            it.add(DoubleNBT.valueOf(value[2, 2]))
-            it.add(DoubleNBT.valueOf(value[2, 3]))
-            it.add(DoubleNBT.valueOf(value[3, 0]))
-            it.add(DoubleNBT.valueOf(value[3, 1]))
-            it.add(DoubleNBT.valueOf(value[3, 2]))
-            it.add(DoubleNBT.valueOf(value[3, 3]))
+            it.add(DoubleNBT.valueOf(value.m00))
+            it.add(DoubleNBT.valueOf(value.m01))
+            it.add(DoubleNBT.valueOf(value.m02))
+            it.add(DoubleNBT.valueOf(value.m03))
+            it.add(DoubleNBT.valueOf(value.m10))
+            it.add(DoubleNBT.valueOf(value.m11))
+            it.add(DoubleNBT.valueOf(value.m12))
+            it.add(DoubleNBT.valueOf(value.m13))
+            it.add(DoubleNBT.valueOf(value.m20))
+            it.add(DoubleNBT.valueOf(value.m21))
+            it.add(DoubleNBT.valueOf(value.m22))
+            it.add(DoubleNBT.valueOf(value.m23))
+            it.add(DoubleNBT.valueOf(value.m30))
+            it.add(DoubleNBT.valueOf(value.m31))
+            it.add(DoubleNBT.valueOf(value.m32))
+            it.add(DoubleNBT.valueOf(value.m33))
         }
     }
 }
@@ -202,22 +202,22 @@ internal object MutableMatrix4dSerializer: NBTSerializer<MutableMatrix4d>() {
 
     override fun serialize(value: MutableMatrix4d): INBT {
         return ListNBT().also {
-            it.add(DoubleNBT.valueOf(value[0, 0]))
-            it.add(DoubleNBT.valueOf(value[0, 1]))
-            it.add(DoubleNBT.valueOf(value[0, 2]))
-            it.add(DoubleNBT.valueOf(value[0, 3]))
-            it.add(DoubleNBT.valueOf(value[1, 0]))
-            it.add(DoubleNBT.valueOf(value[1, 1]))
-            it.add(DoubleNBT.valueOf(value[1, 2]))
-            it.add(DoubleNBT.valueOf(value[1, 3]))
-            it.add(DoubleNBT.valueOf(value[2, 0]))
-            it.add(DoubleNBT.valueOf(value[2, 1]))
-            it.add(DoubleNBT.valueOf(value[2, 2]))
-            it.add(DoubleNBT.valueOf(value[2, 3]))
-            it.add(DoubleNBT.valueOf(value[3, 0]))
-            it.add(DoubleNBT.valueOf(value[3, 1]))
-            it.add(DoubleNBT.valueOf(value[3, 2]))
-            it.add(DoubleNBT.valueOf(value[3, 3]))
+            it.add(DoubleNBT.valueOf(value.m00))
+            it.add(DoubleNBT.valueOf(value.m01))
+            it.add(DoubleNBT.valueOf(value.m02))
+            it.add(DoubleNBT.valueOf(value.m03))
+            it.add(DoubleNBT.valueOf(value.m10))
+            it.add(DoubleNBT.valueOf(value.m11))
+            it.add(DoubleNBT.valueOf(value.m12))
+            it.add(DoubleNBT.valueOf(value.m13))
+            it.add(DoubleNBT.valueOf(value.m20))
+            it.add(DoubleNBT.valueOf(value.m21))
+            it.add(DoubleNBT.valueOf(value.m22))
+            it.add(DoubleNBT.valueOf(value.m23))
+            it.add(DoubleNBT.valueOf(value.m30))
+            it.add(DoubleNBT.valueOf(value.m31))
+            it.add(DoubleNBT.valueOf(value.m32))
+            it.add(DoubleNBT.valueOf(value.m33))
         }
     }
 }
