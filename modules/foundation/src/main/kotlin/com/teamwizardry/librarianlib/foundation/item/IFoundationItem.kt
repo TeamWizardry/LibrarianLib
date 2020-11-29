@@ -9,5 +9,5 @@ public interface IFoundationItem {
     /**
      * Generates the models for this item
      */
-    public fun generateItemModel(gen: ItemModelProvider)
+    public fun generateItemModel(gen: ItemModelProvider) {}
 }

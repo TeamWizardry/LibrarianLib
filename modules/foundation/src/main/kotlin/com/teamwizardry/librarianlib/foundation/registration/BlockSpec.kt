@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.foundation.registration
 
 import com.teamwizardry.librarianlib.core.util.mapSrgName
 import com.teamwizardry.librarianlib.foundation.block.IFoundationBlock
+import com.teamwizardry.librarianlib.foundation.item.IFoundationItem
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.block.Block
 import net.minecraft.block.SoundType
@@ -18,6 +19,7 @@ import net.minecraft.item.Rarity
 import net.minecraft.tags.Tag
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.model.generators.BlockStateProvider
+import net.minecraftforge.client.model.generators.ItemModelProvider
 import net.minecraftforge.common.ToolType
 import java.lang.RuntimeException
 import java.util.concurrent.Callable
@@ -26,7 +28,9 @@ import java.util.function.Supplier
 import java.util.function.Function
 
 /**
- * The specs for creating and registering a block.
+ * The specs for creating and registering a block. The [BlockItem] instance is generated using the callback provided to
+ * [blockItem], or the block if it's an [IFoundationBlock], or [BlockItem]. Item generation can be completely disabled
+ * using [noItem].
  */
 public class BlockSpec(
     /**
@@ -71,7 +75,7 @@ public class BlockSpec(
     public val datagen: DataGen = DataGen()
 
     private var blockConstructor: Function<BlockSpec, Block> = Function { Block(it.blockProperties) }
-    private var itemConstructor: Function<BlockSpec, BlockItem> = Function { BlockItem(it.blockInstance, it.itemProperties) }
+    private var itemConstructor: Function<BlockSpec, BlockItem>? = null
 
     /** Disables the registration of a [BlockItem] for this block */
     public fun noItem(): BlockSpec = build {
@@ -239,7 +243,10 @@ public class BlockSpec(
     public val itemInstance: Item? by lazy {
         if (!hasItem) return@lazy null
         try {
-            itemConstructor.apply(this).setRegistryName(registryName)
+            val item = itemConstructor?.apply(this)
+                ?: (blockInstance as? IFoundationBlock)?.createBlockItem(itemProperties)
+                ?: BlockItem(blockInstance, itemProperties)
+            item.setRegistryName(registryName)
         } catch(e: Exception) {
             throw RuntimeException("Error instantiating block item $registryName", e)
         }
@@ -253,6 +260,9 @@ public class BlockSpec(
     public inner class DataGen {
         @get:JvmSynthetic
         internal var model: Consumer<BlockStateProvider>? = null
+            private set
+        @get:JvmSynthetic
+        internal var itemModel: Consumer<ItemModelProvider>? = null
             private set
         @get:JvmSynthetic
         internal val names: MutableMap<String, String> = mutableMapOf()
@@ -274,6 +284,20 @@ public class BlockSpec(
          */
         @JvmSynthetic
         public inline fun model(crossinline model: BlockStateProvider.() -> Unit): DataGen = model(Consumer { it.model() })
+
+        /**
+         * Sets the item model generation function. Note: this will override [IFoundationItem.generateItemModel].
+         */
+        public fun itemModel(model: Consumer<ItemModelProvider>): DataGen {
+            this.itemModel = model
+            return this
+        }
+
+        /**
+         * Sets the item model generation function. Note: this will override [IFoundationItem.generateItemModel].
+         */
+        @JvmSynthetic
+        public inline fun itemModel(crossinline model: ItemModelProvider.() -> Unit): DataGen = itemModel(Consumer { it.model() })
 
         /**
          * Sets the model generation function to create a simple cube block using the texture at
