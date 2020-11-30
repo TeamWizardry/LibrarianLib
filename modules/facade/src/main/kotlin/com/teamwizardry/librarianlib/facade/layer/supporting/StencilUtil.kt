@@ -76,12 +76,18 @@ public object StencilUtil {
 
         RenderSystem.depthMask(false)
         RenderSystem.colorMask(false, false, false, false)
+        RenderSystem.disableDepthTest()
 
-        RenderSystem.stencilFunc(GL_NEVER, 0, 0xFF)
-        RenderSystem.stencilOp(GL_INCR, GL_KEEP, GL_KEEP)
+        // One option here is to set the function to `GL_NEVER` and make the test fail operation `GL_INCR`
+        // However, by doing it that way all the fragments are discarded, so we can't debug the mask by setting the
+        // color mask in `draw`. By setting the function to `GL_ALWAYS` and disabling depth testing, we're able to
+        // enable the color mask in `draw` to make the mask visible.
+        RenderSystem.stencilFunc(GL_ALWAYS, 0, 0xFF)
+        RenderSystem.stencilOp(GL_KEEP, GL_KEEP, GL_INCR)
         RenderSystem.stencilMask(0xFF)
         draw.run()
 
+        RenderSystem.enableDepthTest()
         RenderSystem.colorMask(true, true, true, true)
         RenderSystem.depthMask(true)
 
@@ -95,12 +101,18 @@ public object StencilUtil {
 
         RenderSystem.depthMask(false)
         RenderSystem.colorMask(false, false, false, false)
+        RenderSystem.disableDepthTest()
 
-        RenderSystem.stencilFunc(GL_NEVER, 0, 0xFF)
-        RenderSystem.stencilOp(GL_DECR, GL_KEEP, GL_KEEP)
+        // One option here is to set the function to `GL_NEVER` and make the test fail operation `GL_DECR`
+        // However, by doing it that way all the fragments are discarded, so we can't debug the mask by setting the
+        // color mask in `draw`. By setting the function to `GL_ALWAYS` and disabling depth testing, we're able to
+        // enable the color mask in `draw` to make the mask visible.
+        RenderSystem.stencilFunc(GL_ALWAYS, 0, 0xFF)
+        RenderSystem.stencilOp(GL_KEEP, GL_KEEP, GL_DECR)
         RenderSystem.stencilMask(0xFF)
         draw.run()
 
+        RenderSystem.enableDepthTest()
         RenderSystem.colorMask(true, true, true, true)
         RenderSystem.depthMask(true)
 

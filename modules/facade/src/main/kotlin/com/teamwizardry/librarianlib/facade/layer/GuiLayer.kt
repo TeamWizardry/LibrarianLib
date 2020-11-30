@@ -1197,7 +1197,11 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         }
 
         if (enableClipping)
-            StencilUtil.pop { stencil(context) }
+            StencilUtil.pop {
+                if (context.debugOptions.makeStencilMasksVisible)
+                    RenderSystem.colorMask(true, true, true, true)
+                stencil(context)
+            }
 
         drawDebugInfo(context)
         didLayout = false

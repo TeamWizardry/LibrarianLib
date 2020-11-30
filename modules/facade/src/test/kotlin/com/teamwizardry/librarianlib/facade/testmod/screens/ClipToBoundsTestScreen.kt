@@ -22,6 +22,7 @@ class ClipToBoundsTestScreen(title: ITextComponent): FacadeScreen(title) {
 
         val clip2 = GuiLayer(20, -20, 30, 30)
         clip2.clipToBounds = true
+        clip2.cornerRadius = 5.0
         val clipped2 = RectLayer(Color.MAGENTA, -10, -10, 50, 50)
         val nonClipped2 = RectLayer(Color.BLUE, 0, 0, 30, 30)
         clip2.add(clipped2, nonClipped2)

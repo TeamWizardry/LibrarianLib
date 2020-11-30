@@ -50,6 +50,13 @@ internal class FacadeDebugOptionsConfigurator(private val options: FacadeDebugOp
                     Fractional scales can cause rendering artifacts. Note that this only detects literal scaling, so \
                     it won't detect sprite layers with sprites of mismatched sizes.
                 """, "§2Enabled", "§cDisabled", options::highlightFractionalScale
+            ),
+            OptionRow.BooleanRow(
+                "Make Stencil Masks Visible:", """
+                    Enables color output when drawing stencil masks, rendering them visible. Normally drawing the mask 
+                    doesn't touch the color buffer so it isn't visible, but it can be useful to see exactly the calls
+                    that the mask is using.
+                """, "§2Enabled", "§cDisabled", options::makeStencilMasksVisible
             )
         )
 

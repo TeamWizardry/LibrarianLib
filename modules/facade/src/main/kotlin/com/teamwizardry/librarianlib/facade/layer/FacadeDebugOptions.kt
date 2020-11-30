@@ -5,4 +5,5 @@ public class FacadeDebugOptions {
     public var showClippedBoundingBoxes: Boolean = false
     public var highlightLayout: Boolean = false
     public var highlightFractionalScale: Boolean = false
+    public var makeStencilMasksVisible: Boolean = false
 }
